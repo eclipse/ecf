@@ -28,7 +28,7 @@ import org.eclipse.ecf.core.util.SimpleQueueImpl;
 import org.eclipse.ecf.provider.Trace;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
-final class SOWrapper {
+public class SOWrapper {
     static Trace debug = Trace.create("sharedobjectwrapper");
     protected ISharedObject sharedObject;
     private SOConfig sharedObjectConfig;
