@@ -20,28 +20,31 @@ import org.eclipse.ecf.core.identity.ID;
  */
 public interface IUpdateConsumer {
 
-    /**
-     * Consumes the remote update. The implementor is expected to leave behind
-     * an empty Change Summary.
-     * 
-     * @param graph
-     *            shared data graph whose remote changes to consume
-     * @param containerID
-     *            id of the remote container that made the change
-     * @return <code>true</code> if the update has been consumed,
-     *         <code>false</code> otherwise (the update will be rejected as a
-     *         result)
-     */
-    boolean consumeUpdate(ISharedDataGraph graph, ID containerID);
+	/**
+	 * Gives implementor the opportunity to consume the remote update. The
+	 * implementor is expected to leave behind an empty Change Summary (with
+	 * logging turned on).
+	 * 
+	 * @param graph
+	 *            shared data graph whose remote changes to consume
+	 * @param containerID
+	 *            id of the remote container that made the change
+	 * @return <code>true</code> if the update has been consumed,
+	 *         <code>false</code> otherwise (the update will be rejected as a
+	 *         result)
+	 */
+	boolean consumeUpdate(ISharedDataGraph graph, ID containerID);
 
-    /**
-     * Notifies the implementor that a remote update has been received, but was
-     * not successfully applied (i.e., cannot be consumed).
-     * 
-     * @param graph
-     *            shared data graph whose update failed
-     * @param containerID
-     *            id of the container that sent the update
-     */
-    void updateFailed(ISharedDataGraph graph, ID containerID);
+	/**
+	 * Notifies the implementor that a remote update has been received, but was
+	 * not successfully applied (i.e., cannot be consumed).
+	 * 
+	 * @param graph
+	 *            shared data graph whose update failed
+	 * @param containerID
+	 *            id of the container that sent the update
+	 * @param cause
+	 *            optional exception that caused the failure
+	 */
+	void updateFailed(ISharedDataGraph graph, ID containerID, Throwable cause);
 }

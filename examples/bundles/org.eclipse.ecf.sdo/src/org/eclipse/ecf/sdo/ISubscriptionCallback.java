@@ -14,20 +14,30 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Interface used by service implementations to notify subscribing applications
- * when the initial copy of the data graph has been obtained.
+ * of the subscription status.
  * 
  * @author pnehrer
  */
 public interface ISubscriptionCallback {
 
-    /**
-     * Notifies the implementor that the given graph has been successfully
-     * subscribed to.
-     * 
-     * @param graph
-     *            shared data graph that has been subscribed
-     * @param containerID
-     *            id of the container that originated the initial copy
-     */
-    void dataGraphSubscribed(ISharedDataGraph graph, ID containerID);
+	/**
+	 * Notifies the implementor that the given graph has been successfully
+	 * subscribed to.
+	 * 
+	 * @param graph
+	 *            shared data graph that has been subscribed
+	 * @param containerID
+	 *            id of the container that originated the initial copy
+	 */
+	void dataGraphSubscribed(ISharedDataGraph graph, ID containerID);
+
+	/**
+	 * Notifies the implementor that the subscription failed.
+	 * 
+	 * @param graph
+	 *            shared data graph whose subscription failed
+	 * @param cause
+	 *            exception that is the cause of the failure
+	 */
+	void subscriptionFailed(ISharedDataGraph graph, Throwable cause);
 }

@@ -17,4 +17,6 @@ import java.io.Serializable;
  */
 public class RequestDataGraphMessage implements Serializable {
 
+	private static final long serialVersionUID = 3546646511992713267L;
+
 }

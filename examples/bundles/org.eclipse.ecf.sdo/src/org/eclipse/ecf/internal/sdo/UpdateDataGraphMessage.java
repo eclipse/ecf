@@ -17,42 +17,44 @@ import java.io.Serializable;
  */
 public class UpdateDataGraphMessage implements Serializable {
 
-    private final Version version;
+	private static final long serialVersionUID = 3256439205344260914L;
 
-    private final byte[] data;
+	private final Version version;
 
-    public UpdateDataGraphMessage(Version version, byte[] data) {
-        this.version = version;
-        this.data = data;
-    }
+	private final Object data;
 
-    public Version getVersion() {
-        return version;
-    }
+	public UpdateDataGraphMessage(Version version, Object data) {
+		this.version = version;
+		this.data = data;
+	}
 
-    public byte[] getData() {
-        return data;
-    }
+	public Version getVersion() {
+		return version;
+	}
 
-    public boolean equals(Object other) {
-        if (other instanceof UpdateDataGraphMessage) {
-            UpdateDataGraphMessage o = (UpdateDataGraphMessage) other;
-            return version.equals(o.version) && data.equals(o.data);
-        } else
-            return false;
-    }
+	public Object getData() {
+		return data;
+	}
 
-    public int hashCode() {
-        int c = 17;
-        c = 37 * c + version.hashCode();
-        c = 37 * c + data.hashCode();
-        return c;
-    }
+	public boolean equals(Object other) {
+		if (other instanceof UpdateDataGraphMessage) {
+			UpdateDataGraphMessage o = (UpdateDataGraphMessage) other;
+			return version.equals(o.version) && data.equals(o.data);
+		} else
+			return false;
+	}
 
-    public String toString() {
-        StringBuffer buf = new StringBuffer("UpdateDataGraphMessage[");
-        buf.append("version=").append(version).append(";");
-        buf.append("data=").append(data).append("]");
-        return buf.toString();
-    }
+	public int hashCode() {
+		int c = 17;
+		c = 37 * c + version.hashCode();
+		c = 37 * c + data.hashCode();
+		return c;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("UpdateDataGraphMessage[");
+		buf.append("version=").append(version).append(";");
+		buf.append("data=").append(data).append("]");
+		return buf.toString();
+	}
 }

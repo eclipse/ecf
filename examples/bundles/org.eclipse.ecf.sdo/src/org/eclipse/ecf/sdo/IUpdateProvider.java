@@ -25,7 +25,7 @@ import commonj.sdo.DataGraph;
  * update to the local data graph.
  * </p>
  * <p>
- * Until serialization-related issues witin ECF are resolved, the service also
+ * Until serialization-related issues within ECF are resolved, the service also
  * needs to delegate data graph (de)serialization during subscription.
  * </p>
  * 
@@ -33,46 +33,49 @@ import commonj.sdo.DataGraph;
  */
 public interface IUpdateProvider {
 
-    /**
-     * Creates an update from the given data graph, which will be forwarded to
-     * other group members. The implementor may use the graph's Change Summary
-     * to find out what changed.
-     * 
-     * @param graph
-     *            shared data graph from whose changes to create the update
-     * @return serialized update data
-     * @throws ECFException
-     */
-    byte[] createUpdate(ISharedDataGraph graph) throws ECFException;
+	/**
+	 * Creates an update from the given data graph, which will be forwarded to
+	 * other group members. The implementor may use the graph's Change Summary
+	 * to find out what changed.
+	 * 
+	 * @param graph
+	 *            shared data graph from whose changes to create the update
+	 * @return serialized update data
+	 * @throws ECFException when an update cannot be created
+	 */
+	byte[] createUpdate(ISharedDataGraph graph) throws ECFException;
 
-    /**
-     * Applies the remote update to the given data graph. The implementor is
-     * expected to create a Change Summary that reflects the received changes.
-     * 
-     * @param graph
-     *            local data graph to which to apply the update
-     * @param data
-     *            update data received from a remote group member
-     */
-    void applyUpdate(ISharedDataGraph graph, byte[] data);
+	/**
+	 * Applies the remote update to the given data graph. The implementor is
+	 * expected to create a Change Summary that reflects the received changes.
+	 * 
+	 * @param graph
+	 *            local data graph to which to apply the update
+	 * @param data
+	 *            update data received from a remote group member
+	 * @throws ECFException when this update cannot be applied
+	 */
+	void applyUpdate(ISharedDataGraph graph, Object data) throws ECFException;
 
-    /**
-     * Serializes the given data graph.
-     * 
-     * @param graph
-     *            data graph instance to serialize
-     * @return serialized data graph
-     * @throws IOException
-     */
-    byte[] serializeDataGraph(DataGraph graph) throws IOException;
+	/**
+	 * Serializes the given data graph.
+	 * 
+	 * @param graph
+	 *            data graph instance to serialize
+	 * @return serialized data graph
+	 * @throws IOException
+	 */
+	Object serializeDataGraph(DataGraph graph) throws IOException;
 
-    /**
-     * Deserializes the given data graph.
-     * 
-     * @param data
-     *            serialized data graph
-     * @return deserialized instance of data graph
-     * @throws ClassNotFoundException
-     */
-    DataGraph deserializeDataGraph(byte[] data) throws ClassNotFoundException;
+	/**
+	 * Deserializes the given data graph.
+	 * 
+	 * @param data
+	 *            serialized data graph
+	 * @return deserialized instance of data graph
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	DataGraph deserializeDataGraph(Object data) throws IOException,
+			ClassNotFoundException;
 }

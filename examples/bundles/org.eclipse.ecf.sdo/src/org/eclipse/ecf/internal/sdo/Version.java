@@ -19,7 +19,9 @@ import org.eclipse.ecf.core.identity.ID;
  */
 public class Version implements Serializable {
 
-    private final long sequence;
+	private static final long serialVersionUID = 3258415036413456951L;
+
+	private final long sequence;
 
     private final ID containerID;
 

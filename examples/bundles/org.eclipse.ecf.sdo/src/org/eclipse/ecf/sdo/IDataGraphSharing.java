@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.ecf.sdo;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
 
 import commonj.sdo.DataGraph;
 
@@ -24,48 +24,48 @@ import commonj.sdo.DataGraph;
  */
 public interface IDataGraphSharing {
 
-    /**
-     * Publishes the given data graph under the given id.
-     * 
-     * @param dataGraph
-     *            local data graph instance to share
-     * @param id
-     *            identifier under which to share this data graph
-     * @param provider
-     *            update provider compatible with the given data graph's
-     *            implementation
-     * @param consumer
-     *            application-specific update consumer
-     * @return shared data graph
-     * @throws CoreException
-     */
-    ISharedDataGraph publish(DataGraph dataGraph, ID id,
-            IUpdateProvider provider, IUpdateConsumer consumer)
-            throws CoreException;
+	/**
+	 * Publishes the given data graph under the given id.
+	 * 
+	 * @param dataGraph
+	 *            local data graph instance to share
+	 * @param id
+	 *            identifier under which to share this data graph
+	 * @param provider
+	 *            update provider compatible with the given data graph's
+	 *            implementation
+	 * @param consumer
+	 *            application-specific update consumer
+	 * @return shared data graph
+	 * @throws ECFException
+	 */
+	ISharedDataGraph publish(DataGraph dataGraph, ID id,
+			IUpdateProvider provider, IUpdateConsumer consumer)
+			throws ECFException;
 
-    /**
-     * Subscribes to a data graph with the given id.
-     * 
-     * @param id
-     *            identifier of a previously-published data graph
-     * @param callback
-     *            callback used to notify the caller when the subscription
-     *            completes
-     * @param provider
-     *            update provider compatible with the given data graph's
-     *            implementation
-     * @param consumer
-     *            application-specific update consumer
-     * @return shared data graph
-     * @throws CoreException
-     */
-    ISharedDataGraph subscribe(ID id, ISubscriptionCallback callback,
-            IUpdateProvider provider, IUpdateConsumer consumer)
-            throws CoreException;
+	/**
+	 * Subscribes to a data graph with the given id.
+	 * 
+	 * @param id
+	 *            identifier of a previously-published data graph
+	 * @param callback
+	 *            optional callback used to notify the caller about subscription
+	 *            status
+	 * @param provider
+	 *            update provider compatible with the given data graph's
+	 *            implementation
+	 * @param consumer
+	 *            application-specific update consumer
+	 * @return shared data graph
+	 * @throws ECFException
+	 */
+	ISharedDataGraph subscribe(ID id, ISubscriptionCallback callback,
+			IUpdateProvider provider, IUpdateConsumer consumer)
+			throws ECFException;
 
-    /**
-     * Disposes this instance, after which it will be no longer possible to
-     * publish or subscribe.
-     */
-    void dispose();
+	/**
+	 * Disposes this instance, after which it will be no longer possible to
+	 * publish or subscribe.
+	 */
+	void dispose();
 }
