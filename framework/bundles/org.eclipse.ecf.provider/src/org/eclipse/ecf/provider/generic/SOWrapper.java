@@ -149,6 +149,8 @@ public class SOWrapper {
                                             .getEvent());
                                 } else if (evt instanceof DisposeEvent) {
                                     SOWrapper.this.doDestroy();
+                                } else {
+                                    SOWrapper.this.svc(evt);
                                 }
                             } catch (Throwable t) {
                                 handleRuntimeException(t);
