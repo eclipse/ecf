@@ -167,6 +167,7 @@ public class ChatComposite extends Composite {
 		// make actions
 		makeActions();
 		hookContextMenu();
+		contributeToActionBars();
 		initializeDropTargets();
 	}
 
@@ -194,7 +195,9 @@ public class ChatComposite extends Composite {
 	private void contributeToActionBars() {
 		IActionBars bars = this.view.view.getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
+		//fillLocalToolBar(bars.getToolBarManager());
+		//bars.getToolBarManager().markDirty();
+		
 	}
 
 	protected void copyFileLocally(String inputFile, String outputFile)

@@ -22,6 +22,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.IActionBars;
@@ -33,11 +34,16 @@ import org.eclipse.ui.part.ViewPart;
 
 public class LineChatView extends ViewPart {
 	// The single view
+	private static final String COLLABORATION_PROJECTS_ARE_NOT_AVAILABLE_ = "No project collaboration sessions joined\n\nTo join a project collaboration session, select a project in either the Navigator or Package Explorer view,\nright-click to open context menu for project, choose ECF menu, and choose 'Join ECF Collaboration...'";
 	static protected LineChatView singleton = null;
 	
 	static protected Hashtable clientViews = new Hashtable();
 	
 	TabFolder tabFolder = null;	
+	
+	Composite parentComposite = null;
+	
+	Label inactiveLabel = null;
 	
     /*
 	protected static ID appShare = null;
@@ -74,15 +80,17 @@ public class LineChatView extends ViewPart {
 	}
 	protected void removeClientView(LineChatClientView cv) {
 		final TabItem ti = (TabItem) clientViews.remove(cv);
+		
+
 		// Clean up app share
-        /*
-		final ID appShareID = cv.getAppShareID();
+        
+/*		final ID appShareID = cv.getAppShareID();
 		if (appShareID != null) {
 			if (appShareID.equals(appShare)) {
 				appShareServer.destroySelf();
 			}
-		}
-        */
+		}*/
+        
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
                 /*
@@ -93,8 +101,22 @@ public class LineChatView extends ViewPart {
 				}
                 */
 				if (ti != null) ti.dispose();
+				
+				if (clientViews.isEmpty()) {
+					singleton.tabFolder.dispose();
+					singleton.tabFolder = null;
+					
+					createInactiveComposite(singleton.parentComposite);
+					actionBars.getToolBarManager().removeAll();
+					actionBars.getMenuManager().removeAll();
+					actionBars.updateActionBars();
+					singleton.parentComposite.layout();
+				}
 			}
 		});
+		
+
+		
 		//if (clientViews.size()==0) {
 		//	this.hideView();
 		//} 
@@ -118,18 +140,29 @@ public class LineChatView extends ViewPart {
 		LineChatClientView newView = null;
 		synchronized (clientViews) {
 			if (singleton == null) throw new InstantiationException("View not initialized");
+			
+			if (singleton.inactiveLabel != null) {
+				singleton.inactiveLabel.dispose();
+			}
+			
+			if (singleton.tabFolder == null) {
+				singleton.tabFolder = new TabFolder(singleton.parentComposite, SWT.NORMAL);
+			}
+			
 			newView = new LineChatClientView(lch,singleton,name,initText,downloaddir);
 			TabItem ti = new TabItem(singleton.tabFolder,SWT.NULL);
 			ti.setControl(newView.getTeamChat());
 			ti.setText(newView.name);
 			singleton.addClientView(newView,ti);
+			actionBars.updateActionBars();
+			singleton.parentComposite.layout();
 		}
 		return newView;
 	}
 	
 	public void setFocus() {
 		synchronized (clientViews) {
-			singleton.tabFolder.setFocus();
+			singleton.parentComposite.setFocus();
 		}
 	}
 	
@@ -196,8 +229,15 @@ public class LineChatView extends ViewPart {
 		IViewSite viewSite = this.getViewSite();
 		actionBars = viewSite.getActionBars();
 		toolbarManager = actionBars.getToolBarManager();
-		singleton.tabFolder = new TabFolder(parent,SWT.NORMAL);
+		parentComposite = parent;
+		createInactiveComposite(parent);
 	}
+	
+	private void createInactiveComposite(Composite parent) {
+		inactiveLabel = new Label(parent, SWT.NONE);
+		inactiveLabel.setText(COLLABORATION_PROJECTS_ARE_NOT_AVAILABLE_);
+	}
+	
 	protected void disposeClient(LineChatClientView lccv) {
 		if (singleton != null) singleton.removeClientView(lccv);		
 	}
