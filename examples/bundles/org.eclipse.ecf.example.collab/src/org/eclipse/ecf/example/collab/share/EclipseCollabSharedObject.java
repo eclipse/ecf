@@ -987,7 +987,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
                     nick = user.getNickname();
                 }
                 showRawLine(from, "\t'" + aFile.getName() + "' from " + nick
-                        + " has arrived " + aFile.getAbsolutePath());
+                        + " has completed and placed in directory: "+getLocalFullDownloadPath());
                 refreshProject();
             }
         };
