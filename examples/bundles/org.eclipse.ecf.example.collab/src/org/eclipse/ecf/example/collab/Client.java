@@ -21,7 +21,9 @@ import java.util.Vector;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.ISharedObjectContainerListener;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
@@ -288,7 +290,7 @@ public class Client {
         
         // Check for IPresenceContainer....if it is, setup
         IPresenceContainer pc = (IPresenceContainer) client.getAdapter(IPresenceContainer.class);
-        if (pc != null) setupPresenceContainer(pc,groupID,username);
+        if (pc != null) setupPresenceContainer(client,pc,groupID,username);
         
         try {
             client.joinGroup(groupID, data);
@@ -308,7 +310,7 @@ public class Client {
     protected RosterView rosterView = null;
     protected IMessageSender messageSender = null;
     
-    protected void setupPresenceContainer(IPresenceContainer pc, final ID localUser, final String nick) {
+    protected void setupPresenceContainer(final ISharedObjectContainer container, IPresenceContainer pc, final ID localUser, final String nick) {
         
         messageSender = pc.getMessageSender();
         
@@ -338,13 +340,13 @@ public class Client {
                         }
 
                         public void disconnect() {
-                            System.out.println("disconnect()");
+                            container.leaveGroup();
                         }
                         
                     });
                 } catch (Exception e) {
-                    System.err.println("Exception showing view");
-                    e.printStackTrace(System.err);
+                    IStatus status = new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Excetion showing presence view",e);
+                    ClientPlugin.getDefault().getLog().log(status);
                 }
             }
         });
@@ -391,6 +393,7 @@ public class Client {
                     }
                 });
                 messageSender = null;
+                rosterView = null;
             }
             
         });

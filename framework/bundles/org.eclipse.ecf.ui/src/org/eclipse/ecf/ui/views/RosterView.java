@@ -62,8 +62,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-public class RosterView extends ViewPart implements IConfigViewer,
-        IPresenceListener, IMessageListener {
+public class RosterView extends ViewPart implements IPresenceListener, IMessageListener {
     public static final String DISCONNECT_ICON_DISABLED = "icons/disabled/terminate_co.gif";
     public static final String DISCONNECT_ICON_ENABLED = "icons/enabled/terminate_co.gif";
     
@@ -253,8 +252,8 @@ public class RosterView extends ViewPart implements IConfigViewer,
             return fillPresence(obj, entry.getPresenceState());
         }
 
-        public void addEntry(TreeParent parent, IRosterEntry entry) {
-            TreeObject[] objs = parent.getChildren();
+        public void addGroupEntry(TreeParent group, String groupName, IRosterEntry entry) {
+            TreeObject[] objs = group.getChildren();
             TreeParent found = null;
             if (objs != null) {
                 for (int i = 0; i < objs.length; i++) {
@@ -263,6 +262,46 @@ public class RosterView extends ViewPart implements IConfigViewer,
                         found = fillWithEntry((TreeParent) objs[i], entry);
                     }
                 }
+            }
+            
+            if (found == null) {
+                found = new TreeParent(entry.getUserID().getName(), entry
+                        .getUserID());
+                found = fillWithEntry(found, entry);
+                group.addChild(found);
+            } else {
+                group.removeChild(found);
+                group.addChild(found);
+            }
+        }
+        
+        public TreeParent findGroup(TreeParent parent, IRosterEntry entry) {
+            TreeObject [] objs = parent.getChildren();
+            Iterator groups = entry.getGroups();
+            for( ; groups.hasNext(); ) {
+                IRosterGroup grp = (IRosterGroup) groups.next();
+                String groupName = grp.getName();
+                if (objs != null) {
+                    for(int i = 0; i < objs.length; i++) {
+                        if (objs[i].getName().equals(groupName)) {
+                            return (TreeParent) objs[i];
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        public void findAndReplaceEntry(TreeParent parent, IRosterEntry entry) {
+            TreeObject [] objs = parent.getChildren();
+            TreeParent found = null;
+            if (objs != null) {
+                for (int i = 0; i < objs.length; i++) {
+                    if (objs[i].getName().equals(entry.getUserID().getName())) {
+                        // Found it...replace values with new
+                        found = fillWithEntry((TreeParent) objs[i], entry);
+                    }
+                }
+                
             }
             if (found == null) {
                 found = new TreeParent(entry.getUserID().getName(), entry
@@ -274,31 +313,29 @@ public class RosterView extends ViewPart implements IConfigViewer,
                 parent.addChild(found);
             }
         }
-
-        public TreeParent addEntriesToGroup(TreeParent grp, IRosterGroup group) {
-            Iterator i = group.getRosterEntries();
-            for (; i.hasNext();) {
-                IRosterEntry entry = (IRosterEntry) i.next();
-                if (entry != null) {
-                    addEntry(grp, entry);
+        public void addEntry(TreeParent parent, IRosterEntry entry) {
+            TreeParent group = findGroup(parent,entry);
+            if (group != null) {
+                findAndReplaceEntry(group,entry);
+            } else {
+                // Existing group not found, so see if entry has a group associated with it
+                Iterator groups = entry.getGroups();
+                if (groups.hasNext()) {
+                    // There's a group associated with entry...so add with group name
+                    String groupName = ((IRosterGroup) groups.next()).getName();
+                    TreeParent newgrp = new TreeParent(groupName);
+                    findAndReplaceEntry(newgrp,entry);
+                    parent.addChild(newgrp);
+                } else {
+                    // No group for entry...just add to parent
+                    findAndReplaceEntry(parent,entry);
                 }
             }
-            return grp;
         }
-
         public void addEntry(IRosterEntry entry) {
             addEntry(root, entry);
         }
 
-        public void addGroup(IRosterGroup group) {
-            TreeParent grp = hasGroup(group);
-            if (grp == null) {
-                // Need to add it
-                grp = new TreeParent(group.getName());
-            }
-            grp = addEntriesToGroup(grp, group);
-            root.addChild(grp);
-        }
         public void removeAllEntries() {
             root = null;
         }
@@ -576,8 +613,6 @@ public class RosterView extends ViewPart implements IConfigViewer,
                         System.out.println("disconnect()");
                 }
             };
-        } else if (clazz.equals(IConfigViewer.class)) {
-            return this;
         } else if (clazz.equals(IPresenceListener.class)) {
             return this;
         } else if (clazz.equals(IMessageListener.class)) {
@@ -626,7 +661,7 @@ public class RosterView extends ViewPart implements IConfigViewer,
         }
     }
     public void handleContainerJoined(ID containerID) {
-        // XXX
+        // do nothing on this notification for now
     }
     public void handleContainerDeparted(ID containerID) {
         handleGroupManagerDeparted();
