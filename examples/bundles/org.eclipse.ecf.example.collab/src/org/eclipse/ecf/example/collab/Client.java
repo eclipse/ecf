@@ -34,6 +34,17 @@ import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.SharedObjectEventListener;
 import org.eclipse.ecf.example.collab.share.TreeItem;
 import org.eclipse.ecf.example.collab.share.User;
+import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IMessageSender;
+import org.eclipse.ecf.presence.IPresence;
+import org.eclipse.ecf.presence.IPresenceContainer;
+import org.eclipse.ecf.presence.IPresenceListener;
+import org.eclipse.ecf.presence.IRosterEntry;
+import org.eclipse.ecf.ui.views.ITextInputHandler;
+import org.eclipse.ecf.ui.views.RosterView;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
@@ -274,6 +285,11 @@ public class Client {
                 
             },"");           
         }
+        
+        // Check for IPresenceContainer....if it is, setup
+        IPresenceContainer pc = (IPresenceContainer) client.getAdapter(IPresenceContainer.class);
+        if (pc != null) setupPresenceContainer(pc,groupID,username);
+        
         try {
             client.joinGroup(groupID, data);
         } catch (SharedObjectContainerJoinException e) {
@@ -289,6 +305,96 @@ public class Client {
         addClientEntry(proj,newClient);
     }
 
+    protected RosterView rosterView = null;
+    protected IMessageSender messageSender = null;
+    
+    protected void setupPresenceContainer(IPresenceContainer pc, final ID localUser, final String nick) {
+        
+        messageSender = pc.getMessageSender();
+        
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                try {
+                    IWorkbenchWindow ww = PlatformUI.getWorkbench()
+                            .getActiveWorkbenchWindow();
+                    IWorkbenchPage wp = ww.getActivePage();
+                    IViewPart view = wp.showView("org.eclipse.ecf.ui.view.rosterview");
+                    rosterView = (RosterView) view;
+                    String nickname = null;
+                    if (nick != null) {
+                        nickname = nick;
+                    } else {
+                        String name = localUser.getName();
+                        nickname = name.substring(0,name.indexOf("@"));
+                    }
+                    rosterView.setLocalUser(new org.eclipse.ecf.core.user.User(localUser,nickname),new ITextInputHandler() {
+
+                        public void handleTextLine(ID userID, String text) {
+                            messageSender.sendMessage(localUser,userID,null,null,text);
+                        }
+
+                        public void handleStartTyping(ID userID) {
+                            //System.out.println("handleStartTyping("+userID+")");
+                        }
+
+                        public void disconnect() {
+                            System.out.println("disconnect()");
+                        }
+                        
+                    });
+                } catch (Exception e) {
+                    System.err.println("Exception showing view");
+                    e.printStackTrace(System.err);
+                }
+            }
+        });
+
+        pc.addMessageListener(new IMessageListener() {
+            public void handleMessage(final ID fromID, final ID toID, final Type type, final String subject, final String message) {
+                Display.getDefault().syncExec(new Runnable() {
+                    public void run() {
+                        rosterView.handleMessage(fromID,toID,type,subject,message);
+                    }
+                });
+            }                
+        });
+        pc.addPresenceListener(new IPresenceListener() {
+
+            public void handleContainerJoined(final ID joinedContainer) {
+                Display.getDefault().syncExec(new Runnable() {
+                    public void run() {
+                        rosterView.setGroup(joinedContainer);
+                    }
+                });
+            }
+
+            public void handleRosterEntry(final IRosterEntry entry) {
+                Display.getDefault().syncExec(new Runnable() {
+                    public void run() {
+                        rosterView.handleRosterEntry(entry);
+                    }
+                });
+            }
+
+            public void handlePresence(final ID fromID, final IPresence presence) {
+                Display.getDefault().syncExec(new Runnable() {
+                    public void run() {
+                        rosterView.handlePresence(fromID,presence);
+                    }
+                });
+            }
+
+            public void handleContainerDeparted(final ID departedContainer) {
+                Display.getDefault().syncExec(new Runnable() {
+                    public void run() {
+                        rosterView.memberDeparted(departedContainer);
+                    }
+                });
+                messageSender = null;
+            }
+            
+        });
+    }
     public synchronized void disposeClient(IResource proj, ClientEntry entry) {
         entry.dispose();
         removeClientEntry(proj,entry.getType());
