@@ -131,34 +131,34 @@ public interface ISharedObjectContext {
      */
     public void sendDispose(ID toContainerID) throws IOException;
     /**
-     * Send arbitrary message to remote instance of the ISharedObject with same
-     * ID as this instance (ISharedObject.getID() returns same unique value).
-     * This method allows ISharedObject instances to send arbitrary data to one
-     * or more remote replicas of this ISharedObject.
-     * 
-     * @param toContainerID
-     *            the ID of the remote ISharedObjectContainer that is the target
-     *            container for the message request. If this parameter is null,
-     *            the request is assumed to be made of <b>all </b> remote
-     *            containers currently in the given group (excepting the local
-     *            container).
-     * 
-     * @throws IOException
-     *             thrown if message cannot be sent by container, or if data
-     *             cannot be serialized
-     */
-    public void sendMessage(ID toContainerID, Object data)
-            throws IOException;
+	 * Send arbitrary message to remote instance of the ISharedObject with same
+	 * ID as this instance (ISharedObject.getID() returns same unique value).
+	 * This method allows ISharedObject instances to send arbitrary data to one
+	 * or more remote replicas of this ISharedObject.
+	 * 
+	 * @param toContainerID
+	 *            the ID of the remote ISharedObjectContainer that is the target
+	 *            container for the message request. If this parameter is null,
+	 *            the request is assumed to be made of <b>all </b> remote
+	 *            containers currently in the given group (excepting the local
+	 *            container).
+	 * @param data
+	 *            arbitrary message object. Must be serializable.
+	 * @throws IOException
+	 *             thrown if message cannot be sent by container, or if data
+	 *             cannot be serialized
+	 */
+	public void sendMessage(ID toContainerID, Object data) throws IOException;
 
     /**
-     * Returns an object which is an instance of the given class associated with
-     * this object.
-     * 
-     * @param clazz
-     *            the adapter class to lookup
-     * @return Object a object castable to the given class, or null if this
-     *         object does not have an adapter for the given class
-     */
+	 * Returns an object which is an instance of the given class associated with
+	 * this object.
+	 * 
+	 * @param clazz
+	 *            the adapter class to lookup
+	 * @return Object a object castable to the given class, or null if this
+	 *         object does not have an adapter for the given class
+	 */
     public Object getAdapter(Class clazz);
 
     /**
