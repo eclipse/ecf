@@ -106,10 +106,10 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 		registry = super.createImageRegistry();
 		
   
-		registry.put(ClientPluginConstants.DECORATION_PROJECT, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT));
-		registry.put(ClientPluginConstants.DECORATION_USER, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE));
+		registry.put(ClientPluginConstants.DECORATION_PROJECT, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
+		registry.put(ClientPluginConstants.DECORATION_USER, AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.ecf.example.collab", "icons/presence_member.gif").createImage());
 		registry.put(ClientPluginConstants.DECORATION_TIME, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_FORWARD));
-		registry.put(ClientPluginConstants.DECORATION_TASK, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
+		registry.put(ClientPluginConstants.DECORATION_TASK, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT));
 		
 		registry.put(ClientPluginConstants.DECORATION_SEND , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_UNDO));
 		registry.put(ClientPluginConstants.DECORATION_RECEIVE , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_REDO));
