@@ -37,7 +37,7 @@ class TeamChat extends Composite {
 		this.view = view;
 		setLayout(new FillLayout());
 		boolean useChatWindow =
-			ClientPlugin.getDefault().getPluginPreferences().getBoolean(ClientPlugin.USE_CHAT_WINDOW);
+			ClientPlugin.getDefault().getPluginPreferences().getBoolean(ClientPlugin.PREF_USE_CHAT_WINDOW);
 		int[] w = null;
 		if (!useChatWindow) {
 			sash = new SashForm(this, SWT.NORMAL);

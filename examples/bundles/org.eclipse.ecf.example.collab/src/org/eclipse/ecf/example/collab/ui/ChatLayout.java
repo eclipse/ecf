@@ -39,7 +39,7 @@ class ChatLayout extends Layout {
         }
         int width = iExtent.x + 5 + tExtent.x;
         int height = Math.max(iExtent.y, tExtent.y);
-        return new Point(width + 2, height + 2);
+        return new Point(width + 2, height + 200);
     }
     protected void layout(Composite composite, boolean changed) {
         Control[] children = composite.getChildren();

@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.StringTokenizer;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -30,6 +31,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.window.Window;
@@ -43,6 +45,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -58,6 +61,7 @@ import org.eclipse.ui.PlatformUI;
 
 
 public class ChatComposite extends Composite {
+	private static final String CHAT_OUTPUT_FONT = "ChatFont";
 	private final LineChatClientView view;
 
 	Action appShare = null;
@@ -113,12 +117,26 @@ public class ChatComposite extends Composite {
 		treeView = tree;
 		textoutput = new TextViewer(this, SWT.V_SCROLL | SWT.H_SCROLL
 				| SWT.WRAP);
+		String fontName = ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_CHAT_FONT);
+		if (!(fontName == null) && !(fontName.equals(""))) {
+			FontRegistry fr = ClientPlugin.getDefault().getFontRegistry();
+			FontData []newFont = {new FontData(fontName)};
+			
+			fr.put(CHAT_OUTPUT_FONT, newFont);
+			textoutput.getTextWidget().setFont(fr.get(CHAT_OUTPUT_FONT));
+		}
+		FontPropertyChangeListener listener = new FontPropertyChangeListener();
+		
+		ClientPlugin.getDefault().getPluginPreferences().addPropertyChangeListener(listener);
+		
 		textoutput.setDocument(new Document(initText));
 		textoutput.setEditable(false);
+		
 		textinput = new Text(this, SWT.SINGLE | SWT.BORDER);
 		cl.setInputTextHeight(textinput.getFont().getFontData()[0]
 				.getHeight() + 2);
 		textinput.setText(TEXT_INPUT_INIT);
+		
 		textinput.selectAll();
 		textinput.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent evt) {
@@ -1117,6 +1135,25 @@ public class ChatComposite extends Composite {
 	protected void initializeDropTargets() {
 		chatDropTarget = new ChatDropTarget(view,textoutput.getControl(), this);
 		treeDropTarget = new TreeDropTarget(view,treeView.getControl(), this);
+	}
+	
+	private class FontPropertyChangeListener implements org.eclipse.core.runtime.Preferences.IPropertyChangeListener {
+		/* (non-Javadoc)
+		 * @see org.eclipse.core.runtime.Preferences.IPropertyChangeListener#propertyChange(org.eclipse.core.runtime.Preferences.PropertyChangeEvent)
+		 */
+		public void propertyChange(org.eclipse.core.runtime.Preferences.PropertyChangeEvent event) {
+			if (event.getProperty().equals(ClientPlugin.PREF_CHAT_FONT)) {
+				String fontName = ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_CHAT_FONT);
+				if (!(fontName == null) && !(fontName.equals(""))) {
+					FontRegistry fr = ClientPlugin.getDefault().getFontRegistry();
+					FontData []newFont = {new FontData(fontName)};
+					
+					fr.put(CHAT_OUTPUT_FONT, newFont);
+					textoutput.getTextWidget().setFont(fr.get(CHAT_OUTPUT_FONT));
+				}
+			}
+		}
+		
 	}
 
 }
