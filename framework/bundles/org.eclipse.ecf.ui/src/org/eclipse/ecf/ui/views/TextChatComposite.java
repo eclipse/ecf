@@ -342,7 +342,7 @@ public class TextChatComposite extends Composite {
     }
 
     protected void handleKeyPressed(KeyEvent evt) {
-        if (evt.keyCode == SWT.CR) {
+        if (evt.character == SWT.CR) {
             handleEnter();
         } 
     }
