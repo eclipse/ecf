@@ -79,8 +79,7 @@ public class StringID extends BaseID {
         return super.toURI();
     }
     protected int namespaceCompareTo(BaseID obj) {
-        String ovalue = ((StringID) obj).value;
-        return value.compareTo(ovalue);
+        return getName().compareTo(obj.getName());
     }
     protected boolean namespaceEquals(BaseID obj) {
         if (!(obj instanceof StringID))

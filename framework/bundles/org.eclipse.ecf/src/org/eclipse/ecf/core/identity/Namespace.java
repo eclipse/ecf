@@ -28,7 +28,9 @@ import org.eclipse.ecf.core.identity.provider.IDInstantiator;
  */
 public class Namespace implements Serializable {
 
-    private String name;
+	private static final long serialVersionUID = 3976740272094720312L;
+	
+	private String name;
     private String instantiatorClass;
     private String description;
 
