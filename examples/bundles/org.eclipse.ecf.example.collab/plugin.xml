@@ -19,7 +19,7 @@
             id="org.eclipse.ecf.example.collab.actionSet">
          <action
                toolbarPath="org.eclipse.ecf.example.collab.topseparator"
-               label="Connect..."
+               label="Join Group..."
                class="org.eclipse.ecf.example.collab.actions.WorkbenchAction"
                tooltip="Join ECF Group"
                icon="icons/person.gif"

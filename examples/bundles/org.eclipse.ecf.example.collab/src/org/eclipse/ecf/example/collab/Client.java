@@ -148,10 +148,10 @@ public class Client {
         defaultGroupID = IDFactory.makeStringID(DEFAULT_SERVER_ID);
     }
 
-    protected User getUserData(String containerType, ID clientID, String usernick, String proj, IResource project) {
+    protected User getUserData(String containerType, ID clientID, String usernick, IResource project) {
         Vector topElements = new Vector();
         String contType = containerType.substring(containerType.lastIndexOf(".")+1);
-        topElements.add(new TreeItem("Project", proj));
+        topElements.add(new TreeItem("Project", getNameForResource(project)));
         SimpleDateFormat sdf = new SimpleDateFormat(JOIN_TIME_FORMAT);
         topElements.add(new TreeItem("Time",sdf.format(new Date())));
         try {
@@ -223,11 +223,9 @@ public class Client {
             String username, IResource proj) throws Exception {
         IResource project = (proj == null) ? getWorkspace()
                 : proj;
-        String fileDir = getSharedFileDirectoryForProject(project);
-        String projName = (project == null) ? "<workspace>" : project.getName();
         User user = getUserData(client.getClass().getName(),client.getContainer().getConfig().getID(),
-                (username == null) ? USERNAME : username, projName, proj);
-        makeAndAddSharedObject(client, project, user, fileDir);
+                (username == null) ? USERNAME : username, proj);
+        makeAndAddSharedObject(client, project, user, getSharedFileDirectoryForProject(project));
     }
 
     public synchronized ClientEntry isConnected(IResource project, String type) {
@@ -245,7 +243,7 @@ public class Client {
     public synchronized void createAndConnectClient(String type, final ID gID, String username,
             Object data, final IResource proj) throws Exception {
         
-        if (proj == null) throw new NullPointerException("Project cannot be null");
+        if (proj == null) throw new NullPointerException("Resource cannot be null");
         ClientEntry entry = getClientEntry(proj,type);
         if (entry != null) {
             // Already got a session going...that's OK as long as it's not of the same type...
