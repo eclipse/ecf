@@ -42,6 +42,7 @@ public class JoinGroupWizardPage extends WizardPage {
     protected static final String USENICKNAME_PROP_NAME = CLASSNAME+".usenickname";
     protected static final String URLPREFIX_NAME = CLASSNAME+".urlprefix";
     protected static final String GROUPIDLABEL_PROP_NAME = CLASSNAME+".groupIDLabel";
+	protected static final String NAMESPACE_PROP_NAME = CLASSNAME+".namespace";
     
     protected static final String PAGE_DESCRIPTION = "Join ECF Collaboration Group";
     protected static final String JOINGROUP_FIELDNAME = "Group ID:";
@@ -73,6 +74,8 @@ public class JoinGroupWizardPage extends WizardPage {
     protected List containerDescriptions = new ArrayList();
     protected String urlPrefix = "";
     protected Label groupIDLabel;
+	
+	protected String namespace = null;
     
     protected void modifyUI(Map props) {
         if (props != null) {
@@ -81,6 +84,7 @@ public class JoinGroupWizardPage extends WizardPage {
             String defaultgroupid = (String) props.get(DEFAULTGROUPID_PROP_NAME);
             String useNickname = (String) props.get(USENICKNAME_PROP_NAME);
             urlPrefix = (String) props.get(URLPREFIX_NAME); 
+			namespace = (String) props.get(NAMESPACE_PROP_NAME);
             if (urlPrefix == null) urlPrefix = "";
             String groupLabel = (String) props.get(GROUPIDLABEL_PROP_NAME);
             if (groupLabel != null) {
@@ -222,10 +226,15 @@ public class JoinGroupWizardPage extends WizardPage {
     
     public String getJoinGroupText() {
         String textValue = joingroup_text.getText().trim();
-        if (!urlPrefix.equals("") && !textValue.startsWith(urlPrefix)) {
-            textValue = urlPrefix+textValue;
-        }
-        return textValue;
+		String namespace = getNamespace();
+		if (namespace != null) {
+			return textValue;
+		} else {
+	        if (!urlPrefix.equals("") && !textValue.startsWith(urlPrefix)) {
+	            textValue = urlPrefix+textValue;
+	        }
+	        return textValue;
+		}
     }
     
     public String getNicknameText() {
@@ -245,4 +254,8 @@ public class JoinGroupWizardPage extends WizardPage {
             return desc.getName();
         }
     }
+	
+	public String getNamespace() {
+		return namespace;
+	}
 }

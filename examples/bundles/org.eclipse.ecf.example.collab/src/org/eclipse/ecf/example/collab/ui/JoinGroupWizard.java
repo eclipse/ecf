@@ -61,8 +61,12 @@ public class JoinGroupWizard extends Wizard {
         String nickName = mainPage.getNicknameText();
         String containerType = mainPage.getContainerType();
         String password = mainPage.getPasswordText();
+		String namespace = mainPage.getNamespace();
         try {
-            ID groupID = IDFactory.makeStringID(groupName);
+			ID groupID = null;
+			if (namespace != null) {
+				groupID = IDFactory.makeID(namespace,new Object[] { groupName });
+			} else groupID = IDFactory.makeStringID(groupName);
             client = new ClientConnectAction();
             client.setProject(project);
             client.setUsername(nickName);
