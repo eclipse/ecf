@@ -59,7 +59,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                     .getToContainerID());
             if (conn != null)
                 conn.sendAsynch(message.getToContainerID(),
-                        getBytesForObject(message));
+                        serializeObject(message));
         }
     }
 
@@ -84,7 +84,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                     if (conn != null) {
                         try {
                             conn.sendAsynch(oldID,
-                                    getBytesForObject(new ContainerMessage(
+                                    serializeObject(new ContainerMessage(
                                             from, oldID,
                                             getNextSequenceNumber(), data
                                                     .getData())));
@@ -191,7 +191,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
             if (conn == null)
                 return;
             try {
-                conn.sendSynch(memberID, getBytesForObject(ContainerMessage
+                conn.sendSynch(memberID, serializeObject(ContainerMessage
                         .makeLeaveGroupMessage(getID(), memberID,
                                 getNextSequenceNumber(), reason)));
             } catch (Exception e) {
@@ -246,7 +246,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
             if (conn != null) {
                 try {
                     conn.sendAsynch(message.getToContainerID(),
-                            getBytesForObject(message));
+                            serializeObject(message));
                 } catch (IOException e) {
                     logException("Exception in queueToAll for ContainerMessage "+message,e);
                 }

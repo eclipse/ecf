@@ -11,6 +11,7 @@ package org.eclipse.ecf.provider.generic;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -44,7 +45,10 @@ import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.core.util.IClassLoaderMapper;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.core.util.IdentifiableObjectInputStream;
+import org.eclipse.ecf.core.util.IdentifiableObjectOutputStream;
 import org.eclipse.ecf.provider.Trace;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
@@ -477,7 +481,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			return null;
 	}
 
-	protected byte[] getBytesForObject(Serializable obj) throws IOException {
+	protected byte[] serializeObject(Serializable obj) throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(bos);
 		oos.writeObject(obj);
@@ -556,7 +560,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			return sequenceNumber++;
 	}
 
-	protected ContainerMessage getObjectFromBytes(byte[] bytes)
+	protected ContainerMessage deserializeContainerMessage(byte[] bytes)
 			throws IOException {
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		ObjectInputStream ois = new ObjectInputStream(bis);
@@ -741,11 +745,21 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		long seq = mess.getSequence();
 		ContainerMessage.SharedObjectMessage resp = (ContainerMessage.SharedObjectMessage) mess
 				.getData();
+        
+        // Get bytes from SharedObjectMessage instance
+        byte [] databytes = (byte []) resp.getData();
+        Serializable obj = null;
+        try {
+            obj = (Serializable) deserializeSharedObjectMessage(databytes);
+        } catch (ClassNotFoundException e) {
+            dumpStack("Classnotfoundexception in handleSharedObjectMessage",e);
+            e.printStackTrace(System.err);
+        }
 		synchronized (getGroupMembershipLock()) {
 			SOWrapper sow = getSharedObjectWrapper(resp
 					.getFromSharedObjectID());
 			if (sow != null) {
-				sow.deliverSharedObjectMessage(fromID, resp.getData());
+				sow.deliverSharedObjectMessage(fromID, obj);
 			}
 			forward(fromID, toID, mess);
 		}
@@ -921,7 +935,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			if (!(obj instanceof byte[])) {
 				debug("Ignoring event without valid data " + e);
 			}
-			ContainerMessage mess = validateContainerMessage(getObjectFromBytes((byte[]) obj));
+			ContainerMessage mess = validateContainerMessage(deserializeContainerMessage((byte[]) obj));
 			if (mess == null) {
 				return;
 			}
@@ -970,7 +984,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	protected Serializable processSynch(SynchConnectionEvent e)
 			throws IOException {
 		debug("processSynch:" + e);
-		ContainerMessage mess = getObjectFromBytes((byte[]) e.getData());
+		ContainerMessage mess = deserializeContainerMessage((byte[]) e.getData());
 		Serializable data = mess.getData();
 		// Must be non null
 		if (data != null && data instanceof ContainerMessage.LeaveGroupMessage) {
@@ -1081,16 +1095,50 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		}
 	}
 
+    protected byte [] serializeSharedObjectMessage(ID sharedObjectID, Object message) throws IOException {
+        if (!(message instanceof Serializable)) throw new NotSerializableException("sharedobjectmessage "+message+" not serializable");
+        ByteArrayOutputStream bouts = new ByteArrayOutputStream();
+        IdentifiableObjectOutputStream ioos = new IdentifiableObjectOutputStream(sharedObjectID,bouts);
+        ioos.writeObject(message);
+        return bouts.toByteArray();
+    }
+    protected Object deserializeSharedObjectMessage(byte [] bytes) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
+        IdentifiableObjectInputStream iins = new IdentifiableObjectInputStream(new IClassLoaderMapper() {
+            public ClassLoader mapNameToClassLoader(String name) {
+                ISharedObjectManager manager = getSharedObjectManager();
+                ID [] ids = manager.getSharedObjectIDs();
+                ID found = null;
+                for(int i=0; i < ids.length; i++) {
+                    ID id = ids[i];
+                    if (name.equals(id.getName())) {
+                        found = id;
+                        break;
+                    }
+                }
+                if (found == null) return null;
+                ISharedObject obj = manager.getSharedObject(found);
+                if (obj == null) return null;
+                return obj.getClass().getClassLoader();
+            }
+            
+        },bins);
+        Object obj = iins.readObject();
+        return obj;
+    }
 	protected void sendMessage(ID toContainerID, ID sharedObjectID,
 			Object message) throws IOException {
 		if (message == null)
 			return;
+        byte [] sendData = serializeSharedObjectMessage(sharedObjectID,message);
 		sendSharedObjectMessage(toContainerID, sharedObjectID,
-				(Serializable) message);
+				sendData);
 	}
 
 	protected void sendSharedObjectMessage(ID toContainerID,
 			ID fromSharedObject, Serializable data) throws IOException {
+        
+        
 		sendMessage(ContainerMessage.makeSharedObjectMessage(getID(),
 				toContainerID, getNextSequenceNumber(), fromSharedObject, data));
 	}

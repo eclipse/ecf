@@ -271,7 +271,7 @@ public abstract class ClientSOContainer extends SOContainer {
 				synchronized (connection) {
 					try {
 						connection.sendSynch(groupID,
-								getBytesForObject(ContainerMessage
+								serializeObject(ContainerMessage
 										.makeLeaveGroupMessage(getID(),
 												groupID,
 												getNextSequenceNumber(),
@@ -301,7 +301,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			throws IOException {
 		// Do it
 		connection.sendAsynch(message.getToContainerID(),
-				getBytesForObject(message));
+				serializeObject(message));
 	}
 
 	protected void forwardExcluding(ID from, ID excluding, byte msg,

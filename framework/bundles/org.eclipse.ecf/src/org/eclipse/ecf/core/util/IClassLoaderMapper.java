@@ -9,10 +9,14 @@
 
 package org.eclipse.ecf.core.util;
 
-import org.eclipse.ecf.core.identity.ID;
-
+/**
+ * Map a given name onto a classloader.  The container that provides an IClassLoaderMapper to
+ * the constructor of an IdentifiableObjectInputStream can use the name provided to lookup
+ * a shared object of same name and map that name to a classloader instance
+ *
+ */
 public interface IClassLoaderMapper {
 
-    public ClassLoader mapIDToClassLoader(ID id);
+    public ClassLoader mapNameToClassLoader(String name);
     
 }

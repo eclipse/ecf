@@ -37,7 +37,8 @@ public class IdentifiableObjectOutputStream extends ObjectOutputStream {
      * @see java.io.ObjectOutputStream#annotateClass(java.lang.Class)
      */
     protected void annotateClass(Class cl) throws IOException {
-        writeObject(objectID);
+        String name = objectID.getName();
+        writeUTF(name);
     }
 
 }

@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
-import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Restores Java objects from the underlying stream by using the classloader
@@ -40,12 +39,11 @@ public class IdentifiableObjectInputStream extends ObjectInputStream {
      */
     protected Class resolveClass(ObjectStreamClass desc) throws IOException,
             ClassNotFoundException {
-
-        ID annotateID = (ID) readObject();
-        if (annotateID == null || mapper == null) {
+        String name = readUTF();
+        if (name == null || mapper == null) {
             return super.resolveClass(desc);
         } else {
-            ClassLoader cl = mapper.mapIDToClassLoader(annotateID);
+            ClassLoader cl = mapper.mapNameToClassLoader(name);
             if (cl == null) return super.resolveClass(desc);
             else return cl.loadClass(desc.getName());
         }
