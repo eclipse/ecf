@@ -1,0 +1,45 @@
+## Composent .group configuration file.  
+## $groupid is the unique identifier for the collaboration group 
+## associated with this project 
+
+# Group ID.  This is the group id of the collaboration group
+# associated with this project
+group=lU7TqVH67bHXmBpu4XMXtg--
+
+# Enabled flag.  If this is set to false, no collab session will be started
+enabled=true
+
+# Appserver URL
+appserverurl=http://www.composent.com:8100/Makalu
+
+# uncomment following line load object classes from remote server
+repobjectcodebase=http://www.composent.com/code/composent/;http://www.composent.com/code/composent/bin/
+
+# Group Home Page
+grouphomepage=http://www.composent.com/
+
+# Group cache directory.  Relative to project directory.
+groupcachedir=teamfiles
+
+# Group Blogger Account Types
+blogger.accounttypes=
+# Group Blogger Accounts
+blogger.accounts=
+# Group Blogger Passwords
+blogger.passwords=
+
+# Group Mailing List Account Types
+mailinglist.accounttypes=
+# Group Mailing List Accounts
+mailinglist.accounts=
+# Group Mailing List Passwords
+mailinglist.passwords=
+
+# Group IM Account Types
+im.accounttypes=
+# Group IM Accounts
+im.accounts=
+# Group IM Passwords
+im.passwords=
+
+## end .group file

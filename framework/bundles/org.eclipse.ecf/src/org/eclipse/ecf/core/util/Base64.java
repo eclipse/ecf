@@ -1,0 +1,161 @@
+/*******************************************************************************
+ * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Composent, Inc. - initial API and implementation
+ ******************************************************************************/
+
+package org.eclipse.ecf.core.util;
+
+/**
+ * 
+ * Encode/decode byte arrays into base64 strings. Code originally
+ * acquired from
+ * ftp://ftp.ora.com/pub/examples/java/crypto/files/oreilly/jonathan/util/
+ * 
+ * Several small modifications were made: the '_' character was substituted for
+ * the '/' character, the '-' char substituted for the '=' char, and the '.'
+ * substituted for the '+' char so that the resulting string does not use any of
+ * the reserved characters in the URI reserved character set as described in
+ * RFC2396. See ftp://ftp.isi.edu/in-notes/rfc2396.txt for details.
+ * 
+ */
+public final class Base64 {
+
+    /**
+     * Encode a byte array into a String
+     * 
+     * @param raw
+     *            the raw data to encode
+     * @return String that is base64 encoded
+     */
+    public static String encode(byte[] raw) {
+        if (raw == null)
+            throw new NumberFormatException("Input data cannot be null");
+
+        StringBuffer encoded = new StringBuffer();
+        for (int i = 0; i < raw.length; i += 3) {
+            encoded.append(encodeBlock(raw, i));
+        }
+        return encoded.toString();
+    }
+
+    protected static char[] encodeBlock(byte[] raw, int offset) {
+        int block = 0;
+        int slack = raw.length - offset - 1;
+        int end = (slack >= 2) ? 2 : slack;
+        for (int i = 0; i <= end; i++) {
+            byte b = raw[offset + i];
+            int neuter = (b < 0) ? b + 256 : b;
+            block += neuter << (8 * (2 - i));
+        }
+        char[] base64 = new char[4];
+        for (int i = 0; i < 4; i++) {
+            int sixbit = (block >>> (6 * (3 - i))) & 0x3f;
+            base64[i] = getChar(sixbit);
+        }
+        // modify to use '-' instead of '='
+        if (slack < 1)
+            base64[2] = '-';
+        if (slack < 2)
+            base64[3] = '-';
+        return base64;
+    }
+
+    protected static char getChar(int sixBit) {
+        if (sixBit >= 0 && sixBit <= 25)
+            return (char) ('A' + sixBit);
+        if (sixBit >= 26 && sixBit <= 51)
+            return (char) ('a' + (sixBit - 26));
+        if (sixBit >= 52 && sixBit <= 61)
+            return (char) ('0' + (sixBit - 52));
+        if (sixBit == 62)
+            return '.';
+        // modify to use '_' instead of '/'
+        if (sixBit == 63)
+            return '_';
+        return '?';
+    }
+
+    /**
+     * Decode base64 string into a byte array.
+     * 
+     * @param base64
+     *            the base64 encoded string
+     * @return byte[] the resulting decoded data array
+     * @exception NumberFormatException
+     *                thrown if String not in base64 format.
+     */
+    public static byte[] decode(String base64) throws NumberFormatException {
+        int pad = 0;
+        for (int i = base64.length() - 1; base64.charAt(i) == '-'; i--)
+            pad++;
+        int length = base64.length() * 6 / 8 - pad;
+        byte[] raw = new byte[length];
+        int rawIndex = 0;
+        for (int i = 0; i < base64.length(); i += 4) {
+            int block = (getValue(base64.charAt(i)) << 18)
+                    + (getValue(base64.charAt(i + 1)) << 12)
+                    + (getValue(base64.charAt(i + 2)) << 6)
+                    + (getValue(base64.charAt(i + 3)));
+            for (int j = 0; j < 3 && rawIndex + j < raw.length; j++)
+                raw[rawIndex + j] = (byte) ((block >> (8 * (2 - j))) & 0xff);
+            rawIndex += 3;
+        }
+        return raw;
+    }
+
+    protected static int getValue(char c) throws NumberFormatException {
+        if (c >= 'A' && c <= 'Z')
+            return c - 'A';
+        if (c >= 'a' && c <= 'z')
+            return c - 'a' + 26;
+        if (c >= '0' && c <= '9')
+            return c - '0' + 52;
+        if (c == '.')
+            return 62;
+        // modify to use '_' instead of '/'
+        if (c == '_')
+            return 63;
+        // modify to use '-' instead of '='
+        if (c == '-')
+            return 0;
+        throw new NumberFormatException("Invalid value '" + c
+                + "' in base64 string");
+    }
+
+    public static void main(String[] args) throws Exception {
+        System.out.println("Starting Base64 test program.");
+
+        int byteLength = 16;
+
+        java.security.SecureRandom ar = new java.security.SecureRandom();
+        byte[] buf = new byte[byteLength];
+        ar.nextBytes(buf);
+        System.out.println("Secure random bytes are:");
+        for (int i = 0; i < buf.length; i++)
+            System.out.print(buf[i] + " ");
+        System.out.println();
+
+        System.out.println("Converting secure random number to Base64...");
+        String res = Base64.encode(buf);
+        System.out.println("Converted string is: ");
+        System.out.println(res);
+
+        byte[] buf2 = new byte[byteLength];
+        System.out.println("Converting string back to byte array...");
+        buf2 = Base64.decode(res);
+        System.out.println("Converted byte array as: ");
+        for (int i = 0; i < buf2.length; i++)
+            System.out.print(buf2[i] + " ");
+        System.out.println();
+
+        System.out.println("Trying to decode a bogus string...");
+        buf2 = Base64.decode("ADDFDSFasdfasdf%$###");
+
+        System.out.println("Done.");
+    }
+
+}

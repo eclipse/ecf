@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.ecf">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.ecf" id="containerFactory" name="ECF Container Factory"/>
+      </appInfo>
+      <documentation>
+         This extension allows plugins to register themselves as &apos;providers&apos; of ECF shared object containers.  Once registered via this extension point, plugins can then provide implementations of custom ISharedObjectContainer instances via the ECF container factory (&lt;b&gt;org.eclipse.ecf.core.SharedObjectContainerFactory&lt;/b&gt;).
+&lt;p&gt;Plugins using this extension point can define a new implementation of any desired communications protocol, and expose that protocol as an instance of an &lt;b&gt;ISharedObjectContainer&lt;/b&gt;.  When client requests are made to ECF to create &lt;b&gt;ISharedObjectContainer&lt;/b&gt; instances, then requests to create instances of the appropriate type will be re-directed to the given extension.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <sequence>
+            <element ref="containerFactory" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="containerFactory">
+      <annotation>
+         <documentation>
+            The container factory extension point
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The class implementing the containerFactory extension point.  This class must implement the org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator interface.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  An optional name for the extension.  If no name is provided, the fully qualified class name is used as the name.  Note that this name must &lt;b&gt;not&lt;/b&gt; conflict with any other name in the ECF SharedObjectContainerFactory in order to be successfully registered.  Care should therefore be taken in selection of a name such that it does not conflict with other implementations.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  An optional description of the implementation of this extension point
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         1.0.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         Here&apos;s an extension that associates a class org.eclipse.ecf.test.FooContainerFactory with name &apos;foo&apos; in the ECF &lt;b&gt;SharedObjectContainerFactory&lt;/b&gt;:
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.ecf.containerFactory&quot;&gt;
+    &lt;containerFactory name=&quot;foo&quot; class=&quot;org.eclipse.ecf.test.FooContainerFactory&quot; description=&quot;My container factory&quot;/&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+
+Here is some example code to implement this class:
+
+&lt;pre&gt;
+package org.eclipse.ecf.test;
+
+import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
+import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
+
+public class FooContainerFactory implements ISharedObjectContainerInstantiator {
+
+    public FooContainerFactory() {
+        super();
+    }
+    public ISharedObjectContainer makeInstance(Class[] argTypes, Object[] args)
+            throws SharedObjectContainerInstantiationException {
+        // Create/return instance of FooSharedObjectContainer
+        // Note that FooSharedObjectContainer class must
+        // implement ISharedObjectContainer
+        return new FooSharedObjectContainer();
+    }
+}
+&lt;/pre&gt;
+
+In this example, the given class implements the &lt;b&gt;ISharedObjectContainerInstantiator&lt;/b&gt;.makeInstance method by creating and returning a new instance of FooSharedObjectContainer, a class also defined in the extension plugin.  As noted in the code, this class must implement &lt;b&gt;ISharedObjectContainer&lt;/b&gt;, so that it can successfully be returned from makeInstance.
+
+&lt;h3&gt;Example Usage of Container by Clients&lt;/h3&gt;
+
+Clients that wish to use the &apos;foo&apos; container implementation can do so simply by making the following call to create an &lt;b&gt;ISharedObjectContainer&lt;/b&gt;:
+
+&lt;pre&gt;
+ISharedObjectContainer newContainer = SharedObjectContainerFactory.makeSharedObjectContainer(&apos;foo&apos;); 
+// Further use of newContainer instance here
+
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.SharedObjectContainerFactory&lt;/b&gt; static methods.  Specifically, the &apos;makeSharedObjectContainer&apos; static methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;SharedObjectContainerFactory.addDescription(SharedObjectContainerDescription)&lt;/b&gt; method.
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         The supplied implementations of this extension point are:
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2004 Composent, Inc. and others.
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation
+      </documentation>
+   </annotation>
+
+</schema>
