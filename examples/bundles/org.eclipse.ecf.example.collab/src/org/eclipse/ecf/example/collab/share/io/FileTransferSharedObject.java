@@ -113,7 +113,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
                 }
             }
         } catch (Exception e) {
-        	debug(e,"Exception sending failure back to host");
+        	debug(e,"Exception in receive start");
             try {
                 // Respond with create failure message back to host
                 getContext().sendCreateResponse(getHomeContainerID(), e, getIdentifier());

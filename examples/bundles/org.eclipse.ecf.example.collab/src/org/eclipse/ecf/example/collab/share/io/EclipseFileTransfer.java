@@ -144,9 +144,12 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 	public void receiveStart(FileTransferSharedObject obj, File aFile,
 			long length, float rate) {
 		
-		FileReceiver r = new FileReceiver(obj, aFile, length, rate);
-		Display d = ClientPlugin.getDefault().getActiveShell().getDisplay();
-		d.asyncExec(r);
+		final FileReceiver r = new FileReceiver(obj, aFile, length, rate);
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                if (r != null) r.run();
+            }
+        });
 	}
 
 	public void receiveData(FileTransferSharedObject obj, int dataLength) {

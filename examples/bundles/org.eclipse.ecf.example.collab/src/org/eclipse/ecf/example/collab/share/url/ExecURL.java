@@ -68,8 +68,8 @@ public class ExecURL extends GenericSharedObject {
 	}
 	protected SharedObjectDescription getReplicaDescription(ID remoteMember)
 	{
-		String types[] = { String.class.getName()}; 
-		Object args[] = { url };
+		String types[] = { ID.class.getName(), String.class.getName()}; 
+		Object args[] = { receiver, url };
         HashMap map = new HashMap();
         map.put("args",args);
         map.put("types",types);

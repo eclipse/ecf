@@ -11,7 +11,9 @@
 
 package org.eclipse.ecf.example.collab.share.io;
 
+import java.io.File;
 import org.eclipse.ecf.example.collab.ClientPlugin;
+import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.ui.MessageLoader;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.program.Program;
@@ -30,8 +32,20 @@ public class EclipseFileTransferAndLaunch
 		} else {
 			System.out.println("Sending done for: "+transferParams.getRemoteFile());
 		}
-		// Now launch file locally
-		if (e == null) launchFile(transferParams.getRemoteFile().getAbsolutePath());
+        EclipseCollabSharedObject sender = null;
+        try {
+            sender = (EclipseCollabSharedObject) getContext()
+                    .getSharedObjectManager().getSharedObject(eclipseStageID);
+        } catch (Exception except) {
+            // Should never happen
+            except.printStackTrace(System.err);
+        }
+        if (sender != null) {
+            String senderPath = sender.getLocalFullDownloadPath();
+            File senderLaunch = new File(new File(senderPath),transferParams.getRemoteFile().getName());
+            // Now launch file locally
+            if (e == null) launchFile(senderLaunch.getAbsolutePath());
+        }
 	}
 	protected void launchFile(String fileName) {
 		try {
@@ -52,10 +66,10 @@ public class EclipseFileTransferAndLaunch
 		if (receiverUI != null) {
 			receiverUI.receiveDone(getHomeContainerID(),localFile,e);
 		} else {
-			System.out.println("Receiving done for: "+localFile);
+			System.out.println("Receive done for: "+localFile);
 		}
 		// Now...we launch the file
-		if (e == null) {
+		if (e == null && localFile != null) {
 		    launchFile(localFile.getAbsolutePath());
 		}
 	}
