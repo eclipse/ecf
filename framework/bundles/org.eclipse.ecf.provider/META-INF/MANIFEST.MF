@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.eclipse.ecf.provider
-Bundle-Version: 0.2.0
-Bundle-Name: ECF Provider Plugin
+Bundle-Version: 1.0.0
+Bundle-Name: ECF Generic Provider Plugin
 Bundle-Vendor: Eclipse.org
 Bundle-Classpath: provider.jar
 Bundle-Activator: org.eclipse.ecf.provider.ProviderPlugin
