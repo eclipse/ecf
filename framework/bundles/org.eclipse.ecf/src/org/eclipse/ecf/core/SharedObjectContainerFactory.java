@@ -189,7 +189,7 @@ public class SharedObjectContainerFactory {
                             + cd.getName() + " is null");
         // Ask instantiator to actually create instance
         return (ISharedObjectContainer) instantiator
-                .makeInstance(clazzes, args);
+                .makeInstance(desc,clazzes, args);
     }
     /**
      * Make ISharedObjectContainer instance. Given a

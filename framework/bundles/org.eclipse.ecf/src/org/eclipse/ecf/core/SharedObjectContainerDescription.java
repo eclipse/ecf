@@ -6,59 +6,94 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
+import java.util.Arrays;
 import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
 
 /**
- * Description of an ISharedObjectContainer factory implementation.  
+ * Description of an ISharedObjectContainer factory implementation.
  * 
  * @see SharedObjectContainerFactory#addDescription(SharedObjectContainerDescription)
- *
+ *  
  */
 public class SharedObjectContainerDescription {
-
     protected String name;
     protected String instantiatorClass;
     protected ClassLoader classLoader;
     protected ISharedObjectContainerInstantiator instantiator;
     protected String description;
-    
+    protected String[] argTypes;
+    protected String[] argDefaults;
+    protected String[] argNames;
     protected int hashCode = 0;
+    protected static final String[] EMPTY = new String[0];
 
     public SharedObjectContainerDescription(ClassLoader loader, String name,
             String instantiatorClass, String desc) {
+        this(loader, name, instantiatorClass, desc, EMPTY,
+                EMPTY, EMPTY);
+    }
+
+    public SharedObjectContainerDescription(String name,
+            String instantiatorClass, String desc) {
+        this(null, name, instantiatorClass, desc);
+    }
+
+    public SharedObjectContainerDescription(ClassLoader loader, String name,
+            String instantiatorClass, String desc, String[] argTypes,
+            String[] argDefaults, String[] argNames) {
         this.classLoader = loader;
         if (name == null)
-            throw new RuntimeException(new InstantiationException(
-                    "SharedObjectContainerDescription<init> name cannot be null"));
+            throw new RuntimeException(
+                    new InstantiationException(
+                            "SharedObjectContainerDescription<init> name cannot be null"));
         this.name = name;
         if (instantiatorClass == null)
-            throw new RuntimeException(new InstantiationException(
-                    "SharedObjectContainerDescription<init> instantiatorClass cannot be null"));
+            throw new RuntimeException(
+                    new InstantiationException(
+                            "SharedObjectContainerDescription<init> instantiatorClass cannot be null"));
         this.instantiatorClass = instantiatorClass;
         this.hashCode = name.hashCode();
         this.description = desc;
+        this.argTypes = argTypes;
+        this.argDefaults = argDefaults;
+        this.argNames = argNames;
     }
-    public SharedObjectContainerDescription(String name, ISharedObjectContainerInstantiator inst, String desc) {
+
+    public SharedObjectContainerDescription(String name,
+            ISharedObjectContainerInstantiator inst, String desc,
+            String[] argTypes, String[] argDefaults, String[] argNames) {
         if (name == null)
-            throw new RuntimeException(new InstantiationException(
-                    "SharedObjectContainerDescription<init> name cannot be null"));
+            throw new RuntimeException(
+                    new InstantiationException(
+                            "SharedObjectContainerDescription<init> name cannot be null"));
         if (inst == null)
-            throw new RuntimeException(new InstantiationException(
-                    "SharedObjectContainerDescription<init> instantiator instance cannot be null"));
+            throw new RuntimeException(
+                    new InstantiationException(
+                            "SharedObjectContainerDescription<init> instantiator instance cannot be null"));
         this.instantiator = inst;
         this.name = name;
         this.classLoader = this.instantiator.getClass().getClassLoader();
         this.description = desc;
+        this.argTypes = argTypes;
+        this.argDefaults = argDefaults;
+        this.argNames = argNames;
     }
+
+    public SharedObjectContainerDescription(String name,
+            ISharedObjectContainerInstantiator inst, String desc) {
+        this(name, inst, desc, EMPTY, EMPTY, EMPTY);
+    }
+
     public String getName() {
         return name;
     }
+
     public ClassLoader getClassLoader() {
         return classLoader;
     }
+
     public boolean equals(Object other) {
         if (!(other instanceof SharedObjectContainerDescription))
             return false;
@@ -74,10 +109,13 @@ public class SharedObjectContainerDescription {
         StringBuffer b = new StringBuffer("SharedObjectContainerDescription[");
         b.append("name:").append(name).append(";");
         if (instantiator == null)
-        	b.append("class:").append(instantiatorClass).append(";");
+            b.append("class:").append(instantiatorClass).append(";");
         else
             b.append("instantiator:").append(instantiator).append(";");
-        b.append("desc:").append(description).append("]");
+        b.append("desc:").append(description).append(";");
+        b.append("argtypes:").append(Arrays.asList(argTypes)).append(";");
+        b.append("argdefaults:").append(Arrays.asList(argDefaults)).append(";");
+        b.append("argnames:").append(Arrays.asList(argNames)).append("]");
         return b.toString();
     }
 
@@ -107,5 +145,17 @@ public class SharedObjectContainerDescription {
      */
     public String getDescription() {
         return description;
+    }
+
+    public String[] getArgDefaults() {
+        return argDefaults;
+    }
+
+    public String[] getArgTypes() {
+        return argTypes;
+    }
+
+    public String[] getArgNames() {
+        return argNames;
     }
 }

@@ -6,3 +6,4 @@ org.eclipse.ecf.provider/debug/container = true
 org.eclipse.ecf.provider/debug/sharedobjectwrapper = true
 org.eclipse.ecf.provider/debug/sharedobjectmanager = true
 org.eclipse.ecf.provider/debug/gmm = true
+org.eclipse.ecf.provider/debug/containerfactory = true

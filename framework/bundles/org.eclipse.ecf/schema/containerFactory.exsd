@@ -6,8 +6,8 @@
          <meta.schema plugin="org.eclipse.ecf" id="containerFactory" name="ECF Container Factory"/>
       </appInfo>
       <documentation>
-         This extension allows plugins to register themselves as &apos;providers&apos; of ECF shared object containers.  Once registered via this extension point, plugins can then provide implementations of custom ISharedObjectContainer instances via the ECF container factory (&lt;b&gt;org.eclipse.ecf.core.SharedObjectContainerFactory&lt;/b&gt;).
-&lt;p&gt;Plugins using this extension point can define a new implementation of any desired communications protocol, and expose that protocol as an instance of an &lt;b&gt;ISharedObjectContainer&lt;/b&gt;.  When client requests are made to ECF to create &lt;b&gt;ISharedObjectContainer&lt;/b&gt; instances, then requests to create instances of the appropriate type will be re-directed to the given extension.
+         This extension allows plugins to register themselves as &apos;providers&apos; of ECF shared object containers.  Once registered via this extension point, plugins can then provide there own implementations of  ISharedObjectContainer in response to client request of the ECF container factory (&lt;b&gt;org.eclipse.ecf.core.SharedObjectContainerFactory&lt;/b&gt;).
+&lt;p&gt;Plugins using this extension point can define a new implementation of any desired communications protocol, and expose that protocol as an instance of an &lt;b&gt;ISharedObjectContainer&lt;/b&gt;.  When client requests are made to ECF SharedObjectContainerFactory to create &lt;b&gt;ISharedObjectContainer&lt;/b&gt; instances, those requests will be re-directed to the given ISharedObjectContainer implementer.
       </documentation>
    </annotation>
 
@@ -43,21 +43,24 @@
    <element name="containerFactory">
       <annotation>
          <documentation>
-            The container factory extension point
+            The container factory extension point.  Can optionally contain a list of &apos;defaultargument&apos; elements that describe the arguments (and provide default values) to be passed to provider implementation
          </documentation>
       </annotation>
       <complexType>
+         <sequence>
+            <element ref="defaultargument" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  The class implementing the containerFactory extension point.  This class must implement the org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator interface.
+                  The class implementing the containerFactory extension point.  The given class must implement the &lt;b&gt;org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator&lt;/b&gt; interface
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  An optional name for the extension.  If no name is provided, the fully qualified class name is used as the name.  Note that this name must &lt;b&gt;not&lt;/b&gt; conflict with any other name in the ECF SharedObjectContainerFactory in order to be successfully registered.  Care should therefore be taken in selection of a name such that it does not conflict with other implementations.
+                  An optional name for the extension.  If no name is explicitly provided by the extension, the containerFactory class name is used as the name.  Note that this name must &lt;b&gt;not&lt;/b&gt; conflict with any other name in the ECF SharedObjectContainerFactory in order to be successfully registered.  Care should therefore be taken in selection of a name such that it does not conflict with other pre-existing names for this factory implementations
                </documentation>
             </annotation>
          </attribute>
@@ -71,12 +74,43 @@
       </complexType>
    </element>
 
+   <element name="defaultargument">
+      <annotation>
+         <documentation>
+            Default argument to be passed to &lt;b&gt;org.eclipse.ecf.core.provider.makeInstance()&lt;/b&gt; method.  Value of this element (if any) is used to indicate a default value for the given argument
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="type" type="string">
+            <annotation>
+               <documentation>
+                  The fully qualified type of the default argument
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string">
+            <annotation>
+               <documentation>
+                  The value for the default argument
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  An optional name for the defaultargument element
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
    <annotation>
       <appInfo>
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         1.0.0
+         0.0.1
       </documentation>
    </annotation>
 
@@ -89,7 +123,8 @@
 
 &lt;pre&gt;
 &lt;extension point=&quot;org.eclipse.ecf.containerFactory&quot;&gt;
-    &lt;containerFactory name=&quot;foo&quot; class=&quot;org.eclipse.ecf.test.FooContainerFactory&quot; description=&quot;My container factory&quot;/&gt;
+    &lt;containerFactory name=&quot;foo&quot; class=&quot;org.eclipse.ecf.test.FooContainerFactory&quot; description=&quot;My container factory&quot;&gt;
+    &lt;defaultargument type=&quot;java.lang.String&quot; value=&quot;defaultvalue&quot; name=&quot;variablename&quot;/&gt;
 &lt;/extension&gt;
 &lt;/pre&gt;
 
@@ -107,7 +142,7 @@ public class FooContainerFactory implements ISharedObjectContainerInstantiator {
     public FooContainerFactory() {
         super();
     }
-    public ISharedObjectContainer makeInstance(Class[] argTypes, Object[] args)
+    public ISharedObjectContainer makeInstance(SharedObjectContainterDescription description, Class[] argTypes, Object[] args)
             throws SharedObjectContainerInstantiationException {
         // Create/return instance of FooSharedObjectContainer
         // Note that FooSharedObjectContainer class must
@@ -148,7 +183,6 @@ ISharedObjectContainer newContainer = SharedObjectContainerFactory.makeSharedObj
          The supplied implementations of this extension point are:
 
 org.eclipse.ecf.provider.generic.ContainerInstantiator
-&lt;b&gt;TEST&lt;/b&gt;:  org.eclipse.ecf.internal.impl.standalone.StandaloneContainerInstantiator
 &lt;b&gt;TEST&lt;/b&gt;:  org.eclipse.ecf.test.TestContainer
       </documentation>
    </annotation>

@@ -41,25 +41,64 @@
    </element>
 
    <element name="connectionFactory">
+      <annotation>
+         <documentation>
+            Connection factory definition
+         </documentation>
+      </annotation>
       <complexType>
+         <sequence>
+            <element ref="defaultargument"/>
+         </sequence>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  Required class that provides implementation of connection factory.  The class must implement &lt;b&gt;org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator&lt;/b&gt;
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  
+                  Optional name for connection factory.  If this name is not explicitly given, the class will be used for the name.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="description" type="string">
             <annotation>
                <documentation>
-                  
+                  An optional description for the connection factory.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="defaultargument">
+      <annotation>
+         <documentation>
+            Default argument to be passed to makeInstance method.  Value of this element (if any) is used to provide a default value for the given argument
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="type" type="string">
+            <annotation>
+               <documentation>
+                  The fully qualified type of the argument.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string">
+            <annotation>
+               <documentation>
+                  The value for the default argument
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  An optional name for the defaultargument
                </documentation>
             </annotation>
          </attribute>
@@ -80,7 +119,53 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         
+         Here&apos;s an extension that associates a class org.eclipse.ecf.test.FooContainerFactory with name &apos;foo&apos; in the ECF &lt;b&gt;SharedObjectContainerFactory&lt;/b&gt;:
+
+&lt;pre&gt;
+   &lt;extension
+         point=&quot;org.eclipse.ecf.connectionFactory&quot;&gt;
+      &lt;connectionFactory
+            class=&quot;org.eclipse.ecf.provider.comm.tcp.Client$Creator&quot;
+            description=&quot;TCP Client Connection Factory&quot;
+            name=&quot;org.eclipse.ecf.provider.comm.tcp.Client&quot;&gt;
+         &lt;defaultargument
+               value=&quot;10000&quot;
+               type=&quot;java.lang.Integer&quot;
+               name=&quot;keepAlive&quot;/&gt;
+      &lt;/connectionFactory&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
+
+Here&apos;s an example implementation of this extension point:
+
+&lt;pre&gt;
+    public ISynchAsynchConnection makeInstance(ConnectionDescription description,
+            ISynchAsynchConnectionEventHandler handler, Class[] clazzes,
+            Object[] args) throws ConnectionInstantiationException {
+        try {
+            String [] argVals = description.getArgDefaults();
+            Integer ka = null;
+            if (argVals != null &amp;&amp; argVals.length != 0) {
+                String val = argVals[0];
+                if (val != null) {
+                    ka = new Integer(val);
+                }
+            }
+            if (args != null &amp;&amp; args.length != 0) {
+                if (args[0] instanceof Integer) {
+                    ka = (Integer) args[0];
+                } else if (args[0] instanceof String) {
+                    ka = new Integer((String) args[0]);
+                }
+            }
+            return new Client(handler, ka);
+        } catch (Exception e) {
+            throw new ConnectionInstantiationException(
+                    &quot;Exception in creating connection &quot;
+                            + Client.class.getName(), e);
+        }
+    }
+&lt;/pre&gt;
       </documentation>
    </annotation>
 

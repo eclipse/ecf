@@ -1,62 +1,88 @@
-/****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
-
+/*******************************************************************************
+ * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Composent, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.core.comm;
 
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 
 public class ConnectionDescription {
-
     protected String name;
     protected String instantiatorClass;
-
     protected ISynchAsynchConnectionInstantiator instantiator;
     protected int hashCode = 0;
     protected ClassLoader classLoader = null;
     protected String description;
-    
-    public ConnectionDescription(ClassLoader loader,
+    protected String[] argTypes;
+    protected String[] argDefaults;
+    protected String[] argNames;
+    protected static final String[] EMPTY = new String[0];
 
-    String name, String instantiatorClass, String desc) {
+    public ConnectionDescription(ClassLoader loader, String name,
+            String instantiatorClass, String desc, String[] defTypes,
+            String[] defValues, String[] defNames) {
         if (name == null)
             throw new RuntimeException(new InstantiationException(
                     "ConnectionDescription<init> name cannot be null"));
         if (instantiatorClass == null)
-            throw new RuntimeException(new InstantiationException(
-                    "ConnectionDescription<init> instantiatorClass cannot be null"));
+            throw new RuntimeException(
+                    new InstantiationException(
+                            "ConnectionDescription<init> instantiatorClass cannot be null"));
         this.classLoader = loader;
         this.name = name;
         this.instantiatorClass = instantiatorClass;
         this.hashCode = name.hashCode();
+        this.argTypes = defTypes;
+        this.argDefaults = defValues;
+        this.argNames = defNames;
     }
-    public ConnectionDescription(String name, ISynchAsynchConnectionInstantiator inst, String desc) {
+
+    public ConnectionDescription(ClassLoader loader, String name,
+            String instantiatorClass, String desc) {
+        this(loader, name, instantiatorClass, desc, EMPTY, EMPTY, EMPTY);
+    }
+
+    public ConnectionDescription(String name, String instantiatorClass,
+            String desc) {
+        this(null, name, instantiatorClass, desc);
+    }
+
+    public ConnectionDescription(String name,
+            ISynchAsynchConnectionInstantiator inst, String desc,
+            String[] defTypes, String[] defValues, String[] defNames) {
         if (name == null)
             throw new RuntimeException(new InstantiationException(
                     "ConnectionDescription<init> name cannot be null"));
         if (inst == null)
-            throw new RuntimeException(new InstantiationException(
-                    "ConnectionDescription<init> instantiator instance cannot be null"));
+            throw new RuntimeException(
+                    new InstantiationException(
+                            "ConnectionDescription<init> instantiator instance cannot be null"));
         this.instantiator = inst;
         this.name = name;
         this.classLoader = this.instantiator.getClass().getClassLoader();
         this.instantiatorClass = this.instantiator.getClass().getName();
         this.hashCode = name.hashCode();
         this.description = desc;
+        this.argTypes = defTypes;
+        this.argDefaults = defValues;
+        this.argNames = defNames;
     }
+    public ConnectionDescription(String name, ISynchAsynchConnectionInstantiator inst, String desc) {
+        this(name,inst,desc,EMPTY,EMPTY,EMPTY);
+    }
+
     public String getName() {
         return name;
     }
+
     public ClassLoader getClassLoader() {
         return classLoader;
     }
+
     public boolean equals(Object other) {
         if (!(other instanceof ConnectionDescription))
             return false;
@@ -72,7 +98,7 @@ public class ConnectionDescription {
         StringBuffer b = new StringBuffer("ConnectionDescription[");
         b.append("name:").append(name).append(";");
         if (instantiator == null)
-        	b.append("class:").append(instantiatorClass).append(";");
+            b.append("class:").append(instantiatorClass).append(";");
         else
             b.append("instantiator:").append(instantiator).append(";");
         b.append("desc:").append(description).append("]");
@@ -103,5 +129,13 @@ public class ConnectionDescription {
     public String getDescription() {
         return description;
     }
-    
+    public String[] getArgDefaults() {
+        return argDefaults;
+    }
+    public String[] getArgNames() {
+        return argNames;
+    }
+    public String[] getArgTypes() {
+        return argTypes;
+    }
 }

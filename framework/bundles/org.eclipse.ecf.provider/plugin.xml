@@ -5,14 +5,43 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.generic.ContainerInstantiator"
-            description="Generic Container Instantiator"
-            name="org.eclipse.ecf.provider.generic.ContainerInstantiator"/>
+            description="Generic Client Container Instantiator"
+            name="org.eclipse.ecf.provider.generic.Client">
+         <defaultargument
+               type="org.eclipse.ecf.core.identity.ID"
+               name="id"/>
+         <defaultargument
+               value="10000"
+               type="java.lang.Integer"
+               name="keepAlive"/>
+      </containerFactory>
    </extension>
    <extension
          point="org.eclipse.ecf.connectionFactory">
       <connectionFactory
             class="org.eclipse.ecf.provider.comm.tcp.Client$Creator"
             description="TCP Client Connection Factory"
-            name="org.eclipse.ecf.provider.comm.tcp.Client"/>
+            name="org.eclipse.ecf.provider.comm.tcp.Client">
+         <defaultargument
+               value="10000"
+               type="java.lang.Integer"
+               name="keepAlive"/>
+      </connectionFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.generic.ContainerInstantiator"
+            description="Generic Server Container Instantiator"
+            name="org.eclipse.ecf.provider.generic.Server">
+         <defaultargument
+               value="ecftcp://localhost:3282/server"
+               type="org.eclipse.ecf.core.identity.ID"
+               name="id"/>
+         <defaultargument
+               value="10000"
+               type="java.lang.Integer"
+               name="keepAlive"/>
+      </containerFactory>
    </extension>
 </plugin>

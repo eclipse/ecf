@@ -10,10 +10,11 @@
 package org.eclipse.ecf.core.provider;
 
 import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.SharedObjectContainerDescription;
 import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
 
 public interface ISharedObjectContainerInstantiator {
 
-    public ISharedObjectContainer makeInstance(Class[] argTypes, Object[] args)
+    public ISharedObjectContainer makeInstance(SharedObjectContainerDescription description, Class[] argTypes, Object[] args)
             throws SharedObjectContainerInstantiationException;
 }

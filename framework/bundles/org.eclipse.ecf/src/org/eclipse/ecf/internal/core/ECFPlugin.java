@@ -49,7 +49,11 @@ public class ECFPlugin extends Plugin {
     public static final String CONTAINER_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
     public static final String CONTAINER_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
     public static final String CONTAINER_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
-
+    public static final String ARG_ELEMENT_NAME = "defaultargument";
+    public static final String ARG_TYPE_ATTRIBUTE = "type";
+    public static final String ARG_VALUE_ATTRIBUTE = "value";
+    public static final String ARG_NAME_ATTRIBUTE = "name";
+    
     public static final String COMM_FACTORY_EPOINT = "org.eclipse.ecf.connectionFactory";
     public static final String COMM_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
     public static final String COMM_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
@@ -135,8 +139,25 @@ public class ECFPlugin extends Plugin {
                 if (description == null) {
                     description = "";
                 }
+                // Get any arguments
+                String[] argTypes = new String[0];
+                String[] argDefaults = new String[0];
+                String[] argNames = new String[0];
+                IConfigurationElement [] argElements = member.getChildren(ARG_ELEMENT_NAME);
+                if (argElements != null) {
+                    if (argElements.length > 0) {
+                        argTypes = new String[argElements.length];
+                        argDefaults = new String[argElements.length];
+                        argNames = new String[argElements.length];
+                        for(int i=0; i < argElements.length; i++) {
+                            argTypes[i] = argElements[i].getAttribute(ARG_TYPE_ATTRIBUTE);
+                            argDefaults[i] = argElements[i].getAttribute(ARG_VALUE_ATTRIBUTE);
+                            argNames[i] = argElements[i].getAttribute(ARG_NAME_ATTRIBUTE);
+                        }
+                    }
+                }
                 SharedObjectContainerDescription scd = new SharedObjectContainerDescription(
-                        name, (ISharedObjectContainerInstantiator) exten, description);
+                        name, (ISharedObjectContainerInstantiator) exten, description, argTypes, argDefaults,argNames);
                 if (SharedObjectContainerFactory.containsDescription(scd)) {
                     // It's already there...log and throw as we can't use the
                     // same named factory
@@ -305,8 +326,25 @@ public class ECFPlugin extends Plugin {
                 if (description == null) {
                     description = "";
                 }
+                // Get any arguments
+                String[] argTypes = new String[0];
+                String[] argDefaults = new String[0];
+                String[] argNames = new String[0];
+                IConfigurationElement [] argElements = member.getChildren(ARG_ELEMENT_NAME);
+                if (argElements != null) {
+                    if (argElements.length > 0) {
+                        argTypes = new String[argElements.length];
+                        argDefaults = new String[argElements.length];
+                        argNames = new String[argElements.length];
+                        for(int i=0; i < argElements.length; i++) {
+                            argTypes[i] = argElements[i].getAttribute(ARG_TYPE_ATTRIBUTE);
+                            argDefaults[i] = argElements[i].getAttribute(ARG_VALUE_ATTRIBUTE);
+                            argNames[i] = argElements[i].getAttribute(ARG_NAME_ATTRIBUTE);
+                        }
+                    }
+                }
                 ConnectionDescription cd = new ConnectionDescription(
-                        name, (ISynchAsynchConnectionInstantiator) exten, description);
+                        name, (ISynchAsynchConnectionInstantiator) exten, description,argTypes,argDefaults,argNames);
                 if (ConnectionFactory.containsDescription(cd)) {
                     // It's already there...log and throw as we can't use the
                     // same named factory

@@ -133,7 +133,7 @@ public class ConnectionFactory {
         }
         debug("makeSynchAsynchConnection:got instantiator:" + instantiator);
         // Ask instantiator to actually create instance
-        return instantiator.makeInstance(handler, clazzes, args);
+        return instantiator.makeInstance(desc,handler, clazzes, args);
     }
 
     public static ISynchAsynchConnection makeSynchAsynchConnection(

@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
+import org.eclipse.ecf.core.comm.ConnectionDescription;
 import org.eclipse.ecf.core.comm.ConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
 import org.eclipse.ecf.core.comm.DisconnectConnectionEvent;
@@ -42,16 +43,27 @@ import org.eclipse.ecf.provider.Trace;
 
 public final class Client implements ISynchAsynchConnection {
     public static class Creator implements ISynchAsynchConnectionInstantiator {
-        public ISynchAsynchConnection makeInstance(
+        public ISynchAsynchConnection makeInstance(ConnectionDescription description,
                 ISynchAsynchConnectionEventHandler handler, Class[] clazzes,
                 Object[] args) throws ConnectionInstantiationException {
             try {
-                Integer ka = new Integer(0);
+                String [] argVals = description.getArgDefaults();
+                Integer ka = null;
+                if (argVals != null && argVals.length > 0) {
+                    String val = argVals[0];
+                    if (val != null) {
+                        ka = new Integer(val);
+                    }
+                }
                 if (args != null && args.length > 0) {
-                    ka = (Integer) args[0];
+                    if (args[0] instanceof Integer) {
+                        ka = (Integer) args[0];
+                    } else if (args[0] instanceof String) {
+                        ka = new Integer((String) args[0]);
+                    }
                 }
                 return new Client(handler, ka);
-            } catch (RuntimeException e) {
+            } catch (Exception e) {
                 throw new ConnectionInstantiationException(
                         "Exception in creating connection "
                                 + Client.class.getName(), e);
