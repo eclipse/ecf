@@ -35,7 +35,7 @@ import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public abstract class ClientSOContainer extends SOContainer {
     ISynchAsynchConnection connection;
-    ID remoteServerID;
+    protected ID remoteServerID;
     byte connectionState;
     public static final byte UNCONNECTED = 0;
     public static final byte CONNECTING = 1;
@@ -93,7 +93,7 @@ public abstract class ClientSOContainer extends SOContainer {
                         + ":" + remote.getName());
                 throw c;
             }
-            ContainerMessage response;
+            Object response;
             synchronized (connectLock) {
                 if (isConnected()) {
                     killConnection(aConnection);
@@ -115,8 +115,8 @@ public abstract class ClientSOContainer extends SOContainer {
             synchronized (aConnection) {
                 try {
                     Object connectData = getConnectData(remote, data);
-                    response = (ContainerMessage) aConnection.connect(remote,
-                            connectData, 0);
+                    response = aConnection.connect(remote,
+                            connectData, getConnectTimeout());
                 } catch (IOException e) {
                     synchronized (connectLock) {
                         killConnection(aConnection);
@@ -141,7 +141,7 @@ public abstract class ClientSOContainer extends SOContainer {
                     }
                     ID serverID = null;
                     try {
-                        serverID = acceptNewServer(response);
+                        serverID = acceptNewServer(remote, response);
                     } catch (Exception e) {
                         killConnection(aConnection);
                         aConnection = null;
@@ -158,8 +158,15 @@ public abstract class ClientSOContainer extends SOContainer {
                 }
             }
         } catch (Exception e) {
-            throw new SharedObjectContainerJoinException("could not join", e);
+            SharedObjectContainerJoinException except = new SharedObjectContainerJoinException(e.getClass().getName()+" wrapped: "+e.getMessage());
+            except.setStackTrace(e.getStackTrace());
+            dumpStack("Exception in joinGroup",e);
+            throw except;
         }
+    }
+
+    protected int getConnectTimeout() {
+        return 0;
     }
 
     protected void handleLeaveGroupMessage(ContainerMessage mess) {
@@ -353,8 +360,8 @@ public abstract class ClientSOContainer extends SOContainer {
             throw new ConnectException("not connected");
     }
 
-    protected ID acceptNewServer(ContainerMessage serverData) throws Exception {
-        ContainerMessage aPacket = serverData;
+    protected ID acceptNewServer(ID orginalTarget, Object serverData) throws Exception {
+        ContainerMessage aPacket = (ContainerMessage) serverData;
         ID fromID = aPacket.getFromContainerID();
         if (fromID == null)
             throw new InvalidObjectException("server id is null");
