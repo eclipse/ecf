@@ -89,7 +89,8 @@ public class Trace {
         if (strings==null) return "";
         StringBuffer sb = new StringBuffer();
         for(int i=0; i < strings.length; i++) {
-            sb.append(strings[i]);
+            if (strings[i]==null) sb.append("(null)");
+            else sb.append(strings[i]);
             if (i != (strings.length-1)) sb.append(";");
         }
         return sb.toString();
@@ -98,7 +99,8 @@ public class Trace {
         if (objs==null) return "";
         StringBuffer sb = new StringBuffer();
         for(int i=0; i < objs.length; i++) {
-            sb.append(objs[i].toString());
+            if (objs[i]==null) sb.append("(null)");
+            else sb.append(objs[i].toString());
             if (i != (objs.length-1)) sb.append(";");
         }
         return sb.toString();

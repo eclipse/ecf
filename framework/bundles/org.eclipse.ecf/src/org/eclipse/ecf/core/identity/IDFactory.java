@@ -266,6 +266,7 @@ public class IDFactory {
 
     public static final ID makeStringID(String idstring)
             throws IDInstantiationException {
+        if (idstring == null) throw new IDInstantiationException("String cannot be null");
         Namespace n = new Namespace(StringID.class.getClassLoader(),
                 StringID.STRINGID_NAME, StringID.STRINGID_INSTANTIATOR_CLASS,
                 null);
@@ -273,6 +274,7 @@ public class IDFactory {
                 new Object[] { idstring });
     }
     public static final ID makeLongID(Long l) throws IDInstantiationException {
+        if (l == null) throw new IDInstantiationException("Long cannot be null");
         Namespace n = new Namespace(LongID.class.getClassLoader(),
                 LongID.LONGID_NAME, LongID.LONGID_INSTANTIATOR_CLASS, null);
         return makeID(n, new String[] { String.class.getName() },
