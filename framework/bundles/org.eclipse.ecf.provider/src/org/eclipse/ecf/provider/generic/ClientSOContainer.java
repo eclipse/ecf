@@ -26,6 +26,7 @@ import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.comm.SynchConnectionEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerEjectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerJoinGroupEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerLeaveGroupEvent;
@@ -161,6 +162,20 @@ public abstract class ClientSOContainer extends SOContainer {
         }
     }
 
+    protected void handleLeaveGroupMessage(ContainerMessage mess) {
+        ContainerMessage.LeaveGroupMessage lgm = (ContainerMessage.LeaveGroupMessage) mess.getData();
+        ID fromID = mess.getFromContainerID();
+        if (fromID == null || !fromID.equals(remoteServerID)) {
+            // we ignore anything not from our server
+            return;
+        }
+        debug("We've been ejected from group "+remoteServerID);
+        synchronized (getGroupMembershipLock()) {
+            memberLeave(fromID,connection);
+        }
+        // Now notify that we've been ejected
+        fireContainerEvent(new SharedObjectContainerEjectedEvent(fromID,getID(),lgm.getData()));
+    }
     protected void handleViewChangeMessage(ContainerMessage mess)
             throws IOException {
         debug("handleViewChangeMessage(" + mess + ")");
@@ -184,9 +199,19 @@ public abstract class ClientSOContainer extends SOContainer {
                     // Notify listeners
                     fireContainerEvent(new SharedObjectContainerJoinedEvent(getID(),changeIDs[i]));
                 } else {
-                    groupManager.removeMember(changeIDs[i]);
-                    // Notify listeners
-                    fireContainerEvent(new SharedObjectContainerDepartedEvent(getID(),changeIDs[i]));
+                    if (changeIDs[i].equals(getID())) {
+                        // We've been ejected.
+                        ID serverID = remoteServerID;
+                        synchronized (getGroupMembershipLock()) {
+                            memberLeave(remoteServerID,connection);
+                        }
+                        // Notify listeners that we've been ejected
+                        fireContainerEvent(new SharedObjectContainerEjectedEvent(getID(),serverID,vc.getData()));
+                    } else {
+                        groupManager.removeMember(changeIDs[i]);
+                        // Notify listeners that another remote has gone away
+                        fireContainerEvent(new SharedObjectContainerDepartedEvent(getID(),changeIDs[i]));
+                    }
                 }
             }
         }

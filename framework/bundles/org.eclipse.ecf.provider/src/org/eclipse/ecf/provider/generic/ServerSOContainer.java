@@ -19,9 +19,10 @@ import java.net.Socket;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
-import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
+import org.eclipse.ecf.core.comm.ISynchConnection;
 import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerEjectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.provider.generic.gmm.Member;
@@ -104,7 +105,7 @@ public class ServerSOContainer extends SOContainer {
     }
 
     public void leaveGroup() {
-        ejectAllGroupMembers();
+        ejectAllGroupMembers(null);
     }
 
     protected ContainerMessage acceptNewClient(Socket socket, String target,
@@ -158,45 +159,49 @@ public class ServerSOContainer extends SOContainer {
             return null;
         }
     }
-
-    protected Serializable getConnectDataFromInput(Serializable input)
-            throws Exception {
-        return input;
-    }
-
     protected Object checkJoin(String hostname, ID id, Serializable data)
             throws Exception {
         return null;
     }
-
-    protected void memberLeave(ID leaveID, IConnection conn) {
-        super.memberLeave(leaveID,conn);
+    protected void handleLeaveGroupMessage(ContainerMessage mess) {
+        ID fromID = mess.getFromContainerID();
+        if (fromID == null) return;
+        ID toID = mess.getToContainerID();
+        debug("Member "+fromID+"leaving group");
+        synchronized (getGroupMembershipLock()) {
+            IAsynchConnection conn = getConnectionForID(fromID);
+            if (conn == null) return;
+            memberLeave(fromID,conn);
+        }
         // Notify listeners
-        fireContainerEvent(new SharedObjectContainerDepartedEvent(getID(),leaveID));
+        fireContainerEvent(new SharedObjectContainerDepartedEvent(getID(),fromID));
     }
 
-    public void ejectGroupMember(ID memberID) {
-        IAsynchConnection conn = null;
+    public void ejectFromGroup(ID memberID, Serializable reason) {
+        if (memberID == null) return;
+        ISynchConnection conn = null;
         synchronized (getGroupMembershipLock()) {
-            conn = getConnectionForID(memberID);
+            conn = getSynchConnectionForID(memberID);
             if (conn == null)
                 return;
             try {
-                conn.sendAsynch(memberID, getBytesForObject(ContainerMessage
+                conn.sendSynch(memberID, getBytesForObject(ContainerMessage
                         .makeLeaveGroupMessage(getID(), memberID,
-                                getNextSequenceNumber(), null)));
+                                getNextSequenceNumber(), reason)));
             } catch (Exception e) {
                 logException("Exception in ejectGroupMember.sendAsynch()",e);
             }
             memberLeave(memberID, conn);
         }
+        // Notify listeners
+        fireContainerEvent(new SharedObjectContainerEjectedEvent(memberID,getID(),reason));        
     }
 
-    public void ejectAllGroupMembers() {
+    public void ejectAllGroupMembers(Serializable reason) {
         synchronized (getGroupMembershipLock()) {
             Object[] members = groupManager.getMembers();
             for (int i = 0; i < members.length; i++) {
-                ejectGroupMember(((Member) members[i]).getID());
+                ejectFromGroup(((Member) members[i]).getID(),reason);
             }
         }
     }
@@ -214,9 +219,17 @@ public class ServerSOContainer extends SOContainer {
 
     protected IAsynchConnection getConnectionForID(ID memberID) {
         Member mem = groupManager.getMemberForID(memberID);
-        if (mem == null)
+        if (mem == null || !(mem.getData() instanceof IAsynchConnection))
             return null;
         return (IAsynchConnection) mem.getData();
+    }
+
+    protected ISynchConnection getSynchConnectionForID(ID memberID) {
+        Member mem = groupManager.getMemberForID(memberID);
+        if (mem == null || !(mem.getData() instanceof ISynchConnection))
+            return null;
+        
+        return (ISynchConnection) mem.getData();
     }
 
     private final void queueToAll(ContainerMessage message) {
@@ -229,7 +242,7 @@ public class ServerSOContainer extends SOContainer {
                     conn.sendAsynch(message.getToContainerID(),
                             getBytesForObject(message));
                 } catch (IOException e) {
-                    // XXX report
+                    logException("Exception in queueToAll for ContainerMessage "+message,e);
                 }
             }
         }
@@ -237,7 +250,7 @@ public class ServerSOContainer extends SOContainer {
 
     public void dispose(long timeout) {
         // For servers, we'll eject all members
-        ejectAllGroupMembers();
+        ejectAllGroupMembers(null);
         super.dispose(timeout);
     }
 }

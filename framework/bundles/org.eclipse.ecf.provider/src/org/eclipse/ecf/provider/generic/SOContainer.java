@@ -757,6 +757,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
     protected void memberLeave(ID target, IConnection conn) {
         debug("memberLeave:" + target + ":" + conn);
+        if (target == null) return;
         if (groupManager.removeMember(target)) {
             try {
                 forwardExcluding(getID(),target,ContainerMessage.makeViewChangeMessage(getID(),null,getNextSequenceNumber(),new ID[] { target },false,null));
@@ -807,6 +808,11 @@ public abstract class SOContainer implements ISharedObjectContainer {
         }
     }
 
+    /**
+     * @param mess
+     */
+    protected abstract void handleLeaveGroupMessage(ContainerMessage mess);
+
     protected void processDisconnect(DisconnectConnectionEvent e) {
         debug("processDisconnect:" + e);
         try {
@@ -820,9 +826,10 @@ public abstract class SOContainer implements ISharedObjectContainer {
             throws IOException {
         debug("processSynch:" + e);
         ContainerMessage mess = getObjectFromBytes((byte[]) e.getData());
-        ID fromID = mess.getFromContainerID();
-        synchronized (getGroupMembershipLock()) {
-            memberLeave(fromID, e.getConnection());
+        Serializable data = mess.getData();
+        // Must be non null
+        if (data != null && data instanceof ContainerMessage.LeaveGroupMessage) {
+            handleLeaveGroupMessage(mess);
         }
         return null;
     }
