@@ -903,19 +903,8 @@ public abstract class SOContainer implements ISharedObjectContainer {
 				debug("Ignoring ContainerMessage from null sender...ignoring");
 				return null;
 			}
-			ID toID = contmess.getToContainerID();
-			if (toID == null) {
-				return contmess;
-			} else {
-				if (toID.equals(getID())) {
-					return contmess;
-				} else {
-					debug("Ignoring ContainerMessage from " + fromID + " to "
-							+ toID);
-					return null;
-				}
-			}
-			// OK
+            //OK..let it continue on it's journey
+            return contmess;
 		} else {
 			debug("Ignoring invalid ContainerMessage:" + mess);
 			return null;

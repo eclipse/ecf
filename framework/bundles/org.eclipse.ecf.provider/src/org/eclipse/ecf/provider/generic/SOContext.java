@@ -24,8 +24,10 @@ import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.QueueEnqueue;
+import org.eclipse.ecf.provider.Trace;
 
 public class SOContext implements ISharedObjectContext {
+    static Trace debug = Trace.create("sharedobjectcontext");
     protected SOContainer container = null;
     protected ID sharedObjectID;
     protected ID homeContainerID;
@@ -42,6 +44,19 @@ public class SOContext implements ISharedObjectContext {
         this.properties = props;
         this.queue = queue;
     }
+
+    protected void trace(String msg) {
+        if (Trace.ON && debug != null) {
+            debug.msg(msg);
+        }
+    }
+
+    protected void traceDump(String msg, Throwable e) {
+        if (Trace.ON && debug != null) {
+            debug.dumpStack(e, msg);
+        }
+    }
+
 
     protected synchronized void makeInactive() {
         container = null;
@@ -98,9 +113,12 @@ public class SOContext implements ISharedObjectContext {
     public synchronized void joinGroup(ID groupID, Object loginData)
             throws SharedObjectContainerJoinException {
         if (isInactive()) {
+            trace("joinGroup("+groupID+") CONTEXT INACTIVE");
             return;
-        } else
+        } else {
+            trace("joinGroup("+groupID+")");
             container.joinGroup(groupID, loginData);
+        }
     }
 
     /*
@@ -110,9 +128,12 @@ public class SOContext implements ISharedObjectContext {
      */
     public synchronized void leaveGroup() {
         if (isInactive()) {
+            trace("leaveGroup() CONTEXT INACTIVE");
             return;
-        } else
+        } else {
+            trace("leaveGroup()");
             container.leaveGroup();
+        }
     }
 
     /*
@@ -172,8 +193,10 @@ public class SOContext implements ISharedObjectContext {
     public synchronized void sendCreate(ID toContainerID,
             SharedObjectDescription sd) throws IOException {
         if (isInactive()) {
+            trace("sendCreate("+toContainerID+","+sd+") CONTEXT INACTIVE");
             return;
         } else {
+            trace("sendCreate("+toContainerID+","+sd+")");
             container.sendCreate(sharedObjectID, toContainerID, sd);
         }
     }
@@ -183,8 +206,10 @@ public class SOContext implements ISharedObjectContext {
      */
     public void sendCreateResponse(ID toContainerID, Throwable throwable, long identifier) throws IOException {
         if (isInactive()) {
+            trace("sendCreateResponse("+toContainerID+","+throwable+","+identifier+") CONTEXT INACTIVE");
             return;
         } else {
+            trace("sendCreateResponse("+toContainerID+","+throwable+","+identifier+")");
             container.sendCreateResponse(toContainerID, sharedObjectID, throwable, identifier);
         }        
     }
@@ -196,8 +221,10 @@ public class SOContext implements ISharedObjectContext {
      */
     public synchronized void sendDispose(ID toContainerID) throws IOException {
         if (isInactive()) {
+            trace("sendDispose("+toContainerID+") CONTEXT INACTIVE");
             return;
         } else {
+            trace("sendDispose("+toContainerID+")");
             container.sendDispose(toContainerID, sharedObjectID);
         }
     }
@@ -210,8 +237,10 @@ public class SOContext implements ISharedObjectContext {
      */
     public void sendMessage(ID toContainerID, Object data) throws IOException {
         if (isInactive()) {
+            trace("sendMessage("+toContainerID+","+data+") CONTEXT INACTIVE");
             return;
         } else {
+            trace("sendMessage("+toContainerID+","+data+") CONTEXT INACTIVE");
             container.sendMessage(toContainerID, sharedObjectID, data);
         }
     }
@@ -232,8 +261,10 @@ public class SOContext implements ISharedObjectContext {
      */
     public IOSGIService getServiceAccess() {
         if (isInactive()) {
+            trace("getServiceAccess() CONTEXT INACTIVE returning null");
             return null;
         } else {
+            trace("getServiceAccess()");
             return container.getOSGIServiceInterface();
         }
     }

@@ -73,6 +73,7 @@ public final class Client implements ISynchAsynchConnection {
 
     public static final String PROTOCOL = "ecftcp";
     public static final Trace debug = Trace.create("connection");
+    public static final Trace pingdebug = Trace.create("connectionping");
     public static final int SNDR_PRIORITY = Thread.NORM_PRIORITY;
     public static final int RCVR_PRIORITY = Thread.NORM_PRIORITY;
     // Default close timeout is 1.5 seconds
@@ -245,6 +246,7 @@ public final class Client implements ISynchAsynchConnection {
         inputStream = new ExObjectInputStream(socket.getInputStream(),
                 compatibility);
         // send connect data
+        debug("send:" + address + ":" + port + ":" + data);
         sendIt(new ConnectRequestMessage(anURI, (Serializable) data));
         ConnectResultMessage res = null;
         res = (ConnectResultMessage) readObject();
@@ -285,6 +287,7 @@ public final class Client implements ISynchAsynchConnection {
                         break;
                     try {
                         // Actually send message
+                        debug("send:" + address + ":" + port + ":" + aMsg);
                         sendIt(aMsg);
                         // Successful...remove message from queue
                         queue.removeHead();
@@ -331,7 +334,6 @@ public final class Client implements ISynchAsynchConnection {
 
     private void sendIt(Serializable snd) throws IOException {
         // Write object to output stream
-        debug("send:" + address + ":" + port + ":" + snd);
         synchronized (outputStream) {
             outputStream.writeObject(snd);
             outputStream.flush();
@@ -353,6 +355,7 @@ public final class Client implements ISynchAsynchConnection {
 
     private void sendClose(Serializable snd) throws IOException {
         isClosing = true;
+        debug("send:" + address + ":" + port + ":" + snd);
         sendIt(snd);
         if (isClosing) {
             try {
@@ -405,21 +408,28 @@ public final class Client implements ISynchAsynchConnection {
         try {
             // We've received some data, so the connection is alive
             receiveResp();
-            debug("recv:" + address + ":" + port + ":" + rcv);
             // Handle all messages
             if (rcv instanceof SynchMessage) {
                 // Handle synch message. The only valid synch message is
                 // 'close'.
+                debug("recv:" + address + ":" + port + ":" + rcv);
                 handler.handleSynchEvent(new SynchConnectionEvent(this,
                         ((SynchMessage) rcv).getData()));
             } else if (rcv instanceof AsynchMessage) {
+                debug("recv:" + address + ":" + port + ":" + rcv);
                 Serializable d = ((AsynchMessage) rcv).getData();
                 // Handle asynch messages.
                 handler.handleAsynchEvent(new AsynchConnectionEvent(this, d));
             } else if (rcv instanceof PingMessage) {
+                if (Trace.ON && pingdebug != null) {
+                    pingdebug.msg("recv:" + address + ":" + port + ":" + rcv);
+                }
                 // Handle ping by sending response back immediately
                 sendIt(pingResp);
             } else if (rcv instanceof PingResponseMessage) {
+                if (Trace.ON && pingdebug != null) {
+                    pingdebug.msg("recv:" + address + ":" + port + ":" + rcv);
+                }
                 // Do nothing with ping response
             } else
                 throw new IOException("Invalid message received.");
@@ -465,6 +475,9 @@ public final class Client implements ISynchAsynchConnection {
                                 // interval, then ping
                                 waitForPing = true;
                                 // Actually send ping instance
+                                if (Trace.ON && pingdebug != null) {
+                                    pingdebug.msg("recv:" + address + ":" + port + ":" + ping);
+                                }
                                 sendIt(ping);
                                 if (waitForPing) {
                                     try {
@@ -498,7 +511,9 @@ public final class Client implements ISynchAsynchConnection {
                         break;
                     }
                 }
-                debug("ping:" + address + ":" + port + " terminating");
+                if (Trace.ON && pingdebug != null) {
+                    pingdebug.msg("ping:" + address + ":" + port + " terminating");
+                }
             }
         }, "ping:" + address + ":" + port);
     }
