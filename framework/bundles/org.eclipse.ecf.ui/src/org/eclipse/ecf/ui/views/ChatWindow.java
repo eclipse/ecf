@@ -222,6 +222,23 @@ public class ChatWindow extends ApplicationWindow implements IMessageViewer {
 
     private boolean hasFocus = false;
     
+    private int openResult = 0;
+    
+    public int open() {
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                openResult = ChatWindow.super.open();
+            }            
+        });
+        return openResult;
+    }
+    public void create() {
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                ChatWindow.super.create();
+            }            
+        });
+    }
 	public boolean hasFocus() {
         boolean result = false;
         Display.getDefault().syncExec(new Runnable() {
