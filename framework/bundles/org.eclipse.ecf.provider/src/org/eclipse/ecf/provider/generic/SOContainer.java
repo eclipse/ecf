@@ -392,10 +392,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			loadingThreadGroup.interrupt();
 			loadingThreadGroup = null;
 		}
-		if (listeners != null) {
-			listeners.clear();
-            listeners = null;
-		}
 	}
 
 	protected void dumpStack(String msg, Throwable e) {

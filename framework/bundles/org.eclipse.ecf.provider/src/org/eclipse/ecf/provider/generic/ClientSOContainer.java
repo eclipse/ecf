@@ -32,11 +32,11 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public abstract class ClientSOContainer extends SOContainer {
-	ISynchAsynchConnection connection;
-
+	
+    protected ISynchAsynchConnection connection;
 	protected ID remoteServerID;
 
-	byte connectionState;
+	protected byte connectionState;
 
 	public static final byte UNCONNECTED = 0;
 
@@ -47,8 +47,14 @@ public abstract class ClientSOContainer extends SOContainer {
 	static final class Lock {
 	}
 
-	Lock connectLock;
+	protected Lock connectLock;
 
+    protected Lock getConnectLock() {
+        return connectLock;
+    }
+    protected ISynchAsynchConnection getConnection() {
+        return connection;
+    }
 	public ClientSOContainer(ISharedObjectContainerConfig config) {
 		super(config);
 		connection = null;
@@ -78,7 +84,9 @@ public abstract class ClientSOContainer extends SOContainer {
 	}
 
 	public ID getGroupID() {
-		return remoteServerID;
+        synchronized (getConnectLock()) {
+            return remoteServerID;
+        }
 	}
 
 	public void joinGroup(ID remote, Object data)
@@ -253,8 +261,8 @@ public abstract class ClientSOContainer extends SOContainer {
 	}
 
 	public void leaveGroup() {
-		debug("leaveGroup");
 		ID groupID = getGroupID();
+        debug("leaveGroup:"+groupID);
 		fireContainerEvent(new SharedObjectContainerLeaveGroupEvent(this
 				.getID(), groupID));
 		synchronized (connectLock) {
@@ -269,6 +277,7 @@ public abstract class ClientSOContainer extends SOContainer {
 												getNextSequenceNumber(),
 												getLeaveData(groupID))));
 					} catch (Exception e) {
+                        dumpStack("Exception in leaveGroup.sendSynch()",e);
 					}
 					synchronized (getGroupMembershipLock()) {
 						memberLeave(groupID, connection);
@@ -383,13 +392,13 @@ public abstract class ClientSOContainer extends SOContainer {
 		ID fromID = aPacket.getFromContainerID();
 		if (fromID == null)
 			throw new InvalidObjectException("server id is null");
-		ID[] ids = ((ContainerMessage.ViewChangeMessage) aPacket.getData()).changeIDs;
+		ID[] ids = ((ContainerMessage.ViewChangeMessage) aPacket.getData()).getChangeIDs();
 		if (ids == null)
 			throw new java.io.InvalidObjectException("id array null");
 		for (int i = 0; i < ids.length; i++) {
 			ID id = ids[i];
 			if (id != null && !id.equals(getID())) {
-				addNewRemoteMember(id, null);
+                    addNewRemoteMember(id, null);
 				// notify listeners
 				fireContainerEvent(new SharedObjectContainerJoinedEvent(this
 						.getID(), id));
