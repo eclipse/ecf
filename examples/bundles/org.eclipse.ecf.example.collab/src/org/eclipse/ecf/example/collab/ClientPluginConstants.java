@@ -26,6 +26,7 @@ public interface ClientPluginConstants {
 	public static final String PREF_CONFIRM_FILE_SEND = "confirmFileSend";
 	public static final String PREF_CONFIRM_REMOTE_VIEW = "confirmRemoteView";
 	public static final String PREF_FILE_SEND_PATH = "findSendPath";
+	public static final String PREF_CONFIRM_FILE_RECEIVE = "confirmFileReceive";
 	
 	/*
 	 * Contstants used to describe decoration images.

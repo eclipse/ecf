@@ -30,7 +30,7 @@ import org.eclipse.ui.part.ViewPart;
 
 public class LineChatView extends ViewPart {
 	// The single view
-	private static final String COLLABORATION_PROJECTS_ARE_NOT_AVAILABLE_ = "No project collaboration sessions joined\n\nTo join a project collaboration session, select a project in either the Navigator or Package Explorer view,\nright-click to open context menu for project, choose ECF menu, and choose 'Join ECF Collaboration...'";
+	private static final String COLLABORATION_PROJECTS_ARE_NOT_AVAILABLE_ = "No project collaboration sessions joined.\n\nTo join a project collaboration session, select a project in either the Navigator or Package Explorer view,\nright-click to open context menu for project, choose ECF menu, and choose 'Join ECF Collaboration...'.";
 	static protected LineChatView singleton = null;
 	
 	static protected Hashtable clientViews = new Hashtable();

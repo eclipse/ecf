@@ -69,7 +69,7 @@ class TeamChat extends Composite {
 		}
 	}
 
-	void appendText(String text) {
+	void appendText(ChatLine text) {
 		if (chatWindow != null 
 				&& chatWindow.getShell() != null 
 				&& !chatWindow.getShell().isDisposed() 

@@ -36,7 +36,10 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
@@ -45,6 +48,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -63,6 +67,9 @@ import org.eclipse.ui.PlatformUI;
 public class ChatComposite extends Composite {
 	private static final String CHAT_OUTPUT_FONT = "ChatFont";
 	private final LineChatClientView view;
+	private Color meColor = null;
+	private Color otherColor = null;
+	private Color systemColor = null;
 
 	Action appShare = null;
 
@@ -112,6 +119,21 @@ public class ChatComposite extends Composite {
 		super(parent, options);
 		this.view = view;
 		this.chatWindow = chatWindow;
+		
+		this.meColor = new Color(getShell().getDisplay(), 23, 135, 65);
+		this.otherColor = new Color(getShell().getDisplay(), 65, 13, 165);
+		this.systemColor = new Color(getShell().getDisplay(), 123, 135, 165);
+		
+		this.addDisposeListener(new DisposeListener() {
+
+			public void widgetDisposed(DisposeEvent e) {
+				meColor.dispose();
+				otherColor.dispose();
+				systemColor.dispose();
+			}
+			
+		});
+		
 		cl = new ChatLayout(DEFAULT_INPUT_HEIGHT, DEFAULT_INPUT_SEPARATOR);
 		setLayout(cl);
 		treeView = tree;
@@ -193,13 +215,46 @@ public class ChatComposite extends Composite {
 		this(view, parent, tree, SWT.NULL, initText);
 	}
 
-	public void appendText(String text) {
-		if (text == null || textoutput == null)
-			return;
+	public void appendText(ChatLine text) {
 		StyledText st = textoutput.getTextWidget();
-		if (st == null)
+		
+		
+		if (text == null || textoutput == null || st == null)
 			return;
-		st.append(text);
+
+		int startRange = st.getText().length();
+		StringBuffer sb = new StringBuffer();
+		
+		if (text.getOriginator() != null) {
+			sb.append(text.getOriginator().getNickname() + ": ");
+			StyleRange sr = new StyleRange();
+			sr.start = startRange;
+			sr.length = sb.length();
+			if (view.userdata.getUserID().equals(text.getOriginator().getUserID())) { //we rote this
+				sr.foreground = meColor;
+			} else {
+				sr.foreground = otherColor;
+			}
+			st.append(sb.toString());
+			st.setStyleRange(sr);
+		}
+		
+		int beforeMessageIndex = st.getText().length();
+		
+		st.append(text.getText());
+		
+		if (text.getOriginator() == null) {
+			StyleRange sr = new StyleRange();
+			sr.start = beforeMessageIndex;
+			sr.length = text.getText().length();
+			sr.foreground = systemColor;
+			st.setStyleRange(sr);
+		}
+		
+		if (!text.isNoCRLF()) {
+			st.append("\n");
+		}
+		
 		String t = st.getText();
 		if (t == null)
 			return;

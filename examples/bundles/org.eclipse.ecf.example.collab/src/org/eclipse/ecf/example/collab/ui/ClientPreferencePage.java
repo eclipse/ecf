@@ -34,6 +34,7 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		//this.getPreferenceStore().setDefault(ClientPlugin.PREF_CHAT_FONT, "");
 
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_SEND, true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, true);
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_REMOTE_VIEW, true);
 		
 	}
@@ -48,7 +49,8 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 				getFieldEditorParent()));
 		addField(new BooleanFieldEditor(ClientPlugin.PREF_DISPLAY_TIMESTAMP,
 				"Show time for each chat entry", getFieldEditorParent()));
-		addField(new FontFieldEditor(ClientPlugin.PREF_CHAT_FONT, "Chat window font", getFieldEditorParent()));
+		addField(new FontFieldEditor(ClientPlugin.PREF_CHAT_FONT, "Chat window font:", getFieldEditorParent()));
+		addField(new BooleanFieldEditor(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, "Confirm before receiving file.", getFieldEditorParent()));
 		
 		/*IntegerFieldEditor rate = new IntegerFieldEditor(ClientPlugin.PREF_FILE_TRANSFER_RATE,
 				"Maximum transfer rate for file transfers.", getFieldEditorParent());*/

@@ -56,7 +56,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             class="org.eclipse.ecf.example.collab.ui.ClientPreferencePage"
-            name="ECF"
+            name="ECF Collaboration"
             id="org.eclipse.ecf.example.collab.ui.preferences"/>
    </extension>
 

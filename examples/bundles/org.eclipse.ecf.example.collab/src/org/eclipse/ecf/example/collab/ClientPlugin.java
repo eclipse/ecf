@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -91,6 +92,10 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 	
 	public FontRegistry getFontRegistry() {
 		return this.fontRegistry;
+	}
+	
+	public Shell getActiveShell() {
+		return this.getWorkbench().getDisplay().getActiveShell();
 	}
 	
 	

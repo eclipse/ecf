@@ -150,14 +150,14 @@ public class LineChatClientView implements FileSenderUI {
 				myNames.put(userID, username);
 				final String str = existingName + " changed name to "
 						+ username;
-				showText(str);
+				showText(new ChatLine(str));
 			}
 			return false;
 		} else {
 			myNames.put(userID, username);
 			final String str = makeChatLine(username + " " + ENTER_STRING);
 			addUserToTree(ud);
-			showText(str);
+			showText(new ChatLine(str));
 			return true;
 		}
 	}
@@ -189,11 +189,11 @@ public class LineChatClientView implements FileSenderUI {
 		refreshTreeView();
 	}
 
-	protected void appendAndScrollToBottom(final String str) {
+	protected void appendAndScrollToBottom(final ChatLine str) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if (teamChat != null)
-					teamChat.appendText(str + "\n");
+					teamChat.appendText(str);
 			}
 		});
 	}
@@ -314,14 +314,14 @@ public class LineChatClientView implements FileSenderUI {
 	}
 
 	protected void handleTextInput(String text) {
-		String fullString = null;
-		if (lch == null) {
-			fullString = "<Unknown> " + CLIENT_PREFIX + text;
-		} else {
-			fullString = getPrefix(userdata.getUserID()) + text;
+		ChatLine line = new ChatLine(text);
+		
+		if (lch != null) {
+			line.setOriginator(userdata);
 		}
-		appendAndScrollToBottom(fullString);
+		appendAndScrollToBottom(line);
 		teamChat.clearInput();
+		
 		if (lch != null)
 			lch.inputText(text);
 	}
@@ -451,7 +451,7 @@ public class LineChatClientView implements FileSenderUI {
 		String name = getUserData(id);
 		if (name != null) {
 			final String str = makeChatLine(" " + name + " " + LEFT_STRING);
-			showText(str);
+			showText(new ChatLine(str));
 		}
 		myNames.remove(id);
 		removeUserFromTree(id);
@@ -486,10 +486,10 @@ public class LineChatClientView implements FileSenderUI {
 
 	public void sendDone(File aFile, Exception e) {
 		if (e != null) {
-			showText("Exception '" + e.getMessage() + "' sending file '"
-					+ aFile.getName());
+			showText(new ChatLine("Exception '" + e.getMessage() + "' sending file '"
+					+ aFile.getName()));
 		} else {
-			showText("\tSend of '" + aFile.getName() + "' completed");
+			showText(new ChatLine("\tSend of '" + aFile.getName() + "' completed"));
 			if (lch != null)
 				lch.refreshProject();
 		}
@@ -497,7 +497,7 @@ public class LineChatClientView implements FileSenderUI {
 
 	public void sendStart(File aFile, long length, float rate) {
 		// present user with notification that file is being transferred
-		showText("\tSending '" + aFile.getName() + "'");
+		showText(new ChatLine("\tSending '" + aFile.getName() + "'"));
 	}
 
 	public void setTitle(String title) {
@@ -509,21 +509,10 @@ public class LineChatClientView implements FileSenderUI {
 		// teamChat.setVisible(visible);
 	}
 
-	public void showLine(ID user, String line) {
-		final String fullString = getPrefix(user) + line;
-		appendAndScrollToBottom(fullString);
+	public void showLine(ChatLine line) {
+		appendAndScrollToBottom(line);
 	}
 
-	public void showPrivate(ID user, String line) {
-		final String fullString = getPrivatePrefix(user) + line;
-		appendAndScrollToBottom(fullString);
-	}
-
-	public void showRawLine(ID sender, String str) {
-		if (getUserData(sender) != null) {
-			appendAndScrollToBottom(str);
-		}
-	}
 
 	public void startedTyping(final User user) {
 		Display.getDefault().asyncExec(new Runnable() {
@@ -534,8 +523,8 @@ public class LineChatClientView implements FileSenderUI {
 		});
 	}
 
-	protected void showText(final String str) {
-		appendAndScrollToBottom(str);
+	protected void showText(final ChatLine line) {
+		appendAndScrollToBottom(line);
 	}
 
 	public void toFront() {
