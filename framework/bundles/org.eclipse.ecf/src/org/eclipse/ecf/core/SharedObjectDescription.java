@@ -26,7 +26,7 @@ public class SharedObjectDescription implements Serializable {
 
     protected transient ClassLoader classLoader;
     protected ID id;
-    protected ID homeid;
+    protected ID homeID;
     protected String className;
     protected Map properties;
     protected long identifier;
@@ -38,7 +38,7 @@ public class SharedObjectDescription implements Serializable {
             String className, Map dict, long ident) {
         this.classLoader = loader;
         this.id = objectID;
-        this.homeid = homeID;
+        this.homeID = homeID;
         this.className = className;
         if (dict != null) this.properties = dict;
         else this.properties = new Hashtable();
@@ -85,10 +85,10 @@ public class SharedObjectDescription implements Serializable {
         this.id = theID;
     }
     public ID getHomeID() {
-        return homeid;
+        return homeID;
     }
     public void setHomeID(ID theID) {
-        this.homeid = theID;
+        this.homeID = theID;
     }
     public String getClassname() {
         return className;
@@ -113,13 +113,13 @@ public class SharedObjectDescription implements Serializable {
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer("SharedObjectDescription[");
-        sb.append("cl:").append(classLoader);
-        sb.append("oid:").append((id==null)?"null":(id.getName()));
-        sb.append("hid:").append((homeid==null)?"null":(homeid.getName()));
-        sb.append("cn:").append(className);
-        sb.append("props:").append(properties);
-        sb.append("id:").append(identifier).append("]");
+        StringBuffer sb = new StringBuffer("SharedObjectDescription {");
+        sb.append("classLoader: ").append(classLoader).append(", ");
+        sb.append("id: ").append(id).append(", ");
+        sb.append("homeID: ").append(homeID).append(", ");
+        sb.append("className: ").append(className).append(", ");
+        sb.append("properties: ").append(properties).append(", ");
+        sb.append("identifier: ").append(identifier).append("}");
         return sb.toString();
     }
 }

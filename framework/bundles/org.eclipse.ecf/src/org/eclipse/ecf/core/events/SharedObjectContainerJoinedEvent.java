@@ -13,20 +13,30 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectContainerJoinedEvent implements ContainerEvent {
 
-    ID other;
-    ID containerID;
+    private final ID joinedContainerID;
+    private final ID localContainerID;
 
     public SharedObjectContainerJoinedEvent(ID container, ID o) {
         super();
-        this.containerID = container;
-        this.other = o;
+        this.localContainerID = container;
+        this.joinedContainerID = o;
     }
 
     public ID getJoinedContainerID() {
-        return other;
+        return joinedContainerID;
     }
 
     public ID getLocalContainerID() {
-        return containerID;
+        return localContainerID;
     }
+    
+    /* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer buf = new StringBuffer("SharedObjectContainerJoinedEvent {");
+		buf.append("joinedContainerID: ").append(joinedContainerID).append(", ");
+		buf.append("localContainerID: ").append(localContainerID).append("}");
+		return buf.toString();
+	}
 }

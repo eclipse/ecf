@@ -13,19 +13,29 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectContainerDepartedEvent implements ContainerEvent {
 
-    ID other;
-    ID containerID;
+    private final ID departedContainerID;
+    private final ID localContainerID;
 
     public SharedObjectContainerDepartedEvent(ID container, ID o) {
         super();
-        this.containerID = container;
-        this.other = o;
+        this.localContainerID = container;
+        this.departedContainerID = o;
     }
 
     public ID getDepartedContainerID() {
-        return other;
+        return departedContainerID;
     }
     public ID getLocalContainerID() {
-        return containerID;
+        return localContainerID;
     }
+    
+    /* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer buf = new StringBuffer("SharedObjectContainerDepartedEvent {");
+		buf.append("departedContainerID: ").append(departedContainerID).append(", ");
+		buf.append("localContainerID: ").append(localContainerID).append("}");
+		return buf.toString();
+	}
 }

@@ -13,29 +13,26 @@ import org.eclipse.ecf.core.util.Event;
 
 public class LocalSharedObjectEvent implements SharedObjectEvent {
 
-    ID sender;
-    Event event;
+    private final ID senderSharedObjectID;
+    private final Event event;
 
     public LocalSharedObjectEvent(ID s, Event evt) {
         super();
-        this.sender = s;
+        this.senderSharedObjectID = s;
         this.event = evt;
     }
 
     public ID getSenderSharedObjectID() {
-        return sender;
+        return senderSharedObjectID;
     }
     public Event getEvent() {
         return event;
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer("LocalSharedObjectEvent[sender:");
-        if (sender != null)
-            sb.append(sender.getName()).append(",");
-        else
-            sb.append("null,");
-        sb.append("event:").append(event).append("]");
+        StringBuffer sb = new StringBuffer("LocalSharedObjectEvent {");
+        sb.append("senderSharedObjectID: ").append(senderSharedObjectID).append(", ");
+        sb.append("event: ").append(event).append("}");
         return sb.toString();
     }
 }

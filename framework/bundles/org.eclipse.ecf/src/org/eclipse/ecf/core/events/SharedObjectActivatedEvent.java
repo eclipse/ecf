@@ -9,46 +9,39 @@
 
 package org.eclipse.ecf.core.events;
 
+import java.util.Arrays;
+
 import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectActivatedEvent implements ContainerEvent {
 
-    ID activated;
-    ID[] members;
-    ID containerID;
+    private final ID activatedID;
+    private final ID[] groupMemberIDs;
+    private final ID localContainerID;
 
     public SharedObjectActivatedEvent(ID container, ID act, ID[] others) {
         super();
-        this.containerID = container;
-        this.activated = act;
-        this.members = others;
+        this.localContainerID = container;
+        this.activatedID = act;
+        this.groupMemberIDs = others;
     }
 
     public ID getActivatedID() {
-        return activated;
+        return activatedID;
     }
 
     public ID getLocalContainerID() {
-        return containerID;
+        return localContainerID;
     }
     public ID[] getGroupMemberIDs() {
-        return members;
+        return groupMemberIDs;
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer(
-                "SharedObjectActivatedEvent[activated:");
-        if (activated != null)
-            sb.append(activated.getName()).append(",");
-        else
-            sb.append("null,");
-        sb.append("[");
-        for (int i = 0; i < members.length; i++) {
-            sb.append(members[i].getName());
-            if (i < members.length - 1)
-                sb.append(",");
-        }
-        sb.append("]]");
+        StringBuffer sb = new StringBuffer("SharedObjectActivatedEvent {");
+        sb.append("activatedID: ").append(activatedID).append(", ");
+        sb.append("groupMemberIDs: ").append(Arrays.asList(groupMemberIDs)).append(", ");
+        sb.append("localContainerID: ").append(localContainerID).append("}");
         return sb.toString();
     }
 }
