@@ -55,7 +55,7 @@ public class ChatWindow extends ApplicationWindow {
 	private final Runnable flipImage = new Runnable() {
 		public void run() {
 			Shell shell = getShell();
-			if (!shell.isDisposed()) 
+			if (shell != null && !shell.isDisposed()) 
 				if (blank == shell.getImage()) {
 					if (image != null && !image.isDisposed())
 						shell.setImage(image);
@@ -67,12 +67,13 @@ public class ChatWindow extends ApplicationWindow {
 	};
 
 	private final Runnable showImageRunnable = new Runnable() {
-		public void run() {
-			Shell shell = getShell();
-			if (!shell.isDisposed() && image != null && !image.isDisposed())
-				shell.setImage(image);
-		}
-	};
+        public void run() {
+            Shell shell = getShell();
+            if (shell != null && !shell.isDisposed() && image != null
+                    && !image.isDisposed())
+                shell.setImage(image);
+        }
+    };
 
 	private Flash flash;
 
