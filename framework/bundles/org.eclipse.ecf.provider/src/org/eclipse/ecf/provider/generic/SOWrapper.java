@@ -6,19 +6,20 @@ import java.security.PrivilegedAction;
 
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.SharedObjectInitException;
+import org.eclipse.ecf.core.events.RemoteSharedObjectCreateResponseEvent;
+import org.eclipse.ecf.core.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.AsynchResult;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.SimpleQueueImpl;
 import org.eclipse.ecf.provider.Trace;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 final class SOWrapper {
-    static Trace debug = Trace.create(SOWrapper.class.getName());
+    static Trace debug = Trace.create("sharedobjectwrapper");
 
     protected ISharedObject sharedObject;
     private SOConfig sharedObjectConfig;
@@ -51,6 +52,7 @@ final class SOWrapper {
     }
 
     void init() throws SharedObjectInitException {
+    	debug("init()");
         sharedObject.init(sharedObjectConfig);
     }
     ID getObjID() {
@@ -62,6 +64,7 @@ final class SOWrapper {
     }
 
     void activated(ID[] ids) {
+    	debug("activated");
         // First, make space reference accessible to use by RepObject
         sharedObjectConfig.makeActive(new QueueEnqueueImpl(queue));
         thread = (Thread) AccessController.doPrivileged(new PrivilegedAction() {
@@ -77,6 +80,7 @@ final class SOWrapper {
 
     }
     void deactivated() {
+    	debug("deactivated()");
         send(new SharedObjectDeactivatedEvent(containerID, sharedObjectID));
         container.notifySharedObjectDeactivated(sharedObjectID);
         destroyed();
@@ -94,6 +98,7 @@ final class SOWrapper {
 
     }
     void otherChanged(ID otherID, boolean activated) {
+    	debug("otherChanged("+otherID+","+activated);
         if (activated && thread != null) {
             send(new SharedObjectActivatedEvent(containerID, otherID, null));
         } else {
@@ -101,6 +106,7 @@ final class SOWrapper {
         }
     }
     void memberChanged(Member m, boolean add) {
+    	debug("memberChanged("+m+","+add);
         if (thread != null) {
             if (add) {
                 send(new SharedObjectContainerJoinedEvent(containerID, m
@@ -116,19 +122,9 @@ final class SOWrapper {
         return container.getNewSharedObjectThread(sharedObjectID,
                 new Runnable() {
                     public void run() {
-                        if (Trace.ON && debug != null) {
-                            debug.msg("Starting runner for " + sharedObjectID);
-                        }
-                        // The debug class will associate this thread with
-                        // container
-                        Trace.setThreadDebugGroup(container.getID());
-                        // Then process messages on queue until interrupted or
-                        // queue closed
-                        //Msg aMsg = null;
+                    	debug("runner("+sharedObjectID+")");
                         Event evt = null;
                         for (;;) {
-                            // make sure the thread hasn't been interrupted and
-                            // get Msg from SimpleQueueImpl
                             if (Thread.currentThread().isInterrupted())
                                 break;
 
@@ -145,28 +141,15 @@ final class SOWrapper {
                                     SOWrapper.this.doDestroy();
                                 }
                             } catch (Throwable t) {
-                                if (Trace.ON && debug != null) {
-                                    debug.dumpStack(t,
-                                            "Exception executing event " + evt
-                                                    + " on meta " + this);
-                                }
                                 handleRuntimeException(t);
                             }
                         }
                         // If the thread was interrupted, then show appropriate
                         // spam
                         if (Thread.currentThread().isInterrupted()) {
-                            if (Trace.ON && debug != null) {
-                                debug
-                                        .msg("Runner for "
-                                                + sharedObjectID
-                                                + " terminating after being interrupted");
-                            }
+                        	debug("runner("+sharedObjectID+") terminating interrupted");
                         } else {
-                            if (Trace.ON && debug != null) {
-                                debug.msg("Runner for " + sharedObjectID
-                                        + " terminating normally");
-                            }
+                        	debug("runner("+sharedObjectID+") terminating normally");
                         }
                     }
                 });
@@ -195,31 +178,11 @@ final class SOWrapper {
         sharedObject.dispose(containerID);
     }
 
-    //void createMsgResp(ID fromID, ContainerMessage.CreateResponse resp) {
-    /*
-     * if (sharedObjectConfig.getMsgMask().get(MsgMask.CREATERESPONSE) && thread !=
-     * null) { send( Msg.makeMsg( null, CREATE_RESP_RCVD, fromID, resp.myExcept,
-     * new Long(resp.mySeq))); }
-     */
-    //}
-    void deliverObjectFromRemote(ID fromID, Serializable data) {
-        // If we have a container, forward message onto container
-        /*
-         * if (myContainerID != null) { forwardToContainer( Msg.makeMsg(null,
-         * REMOTE_REPOBJ_MSG, fromID, data)); // otherwise, send to our object
-         * (assuming it has thread and that it wants to receive message) } else
-         * if ( sharedObjectConfig.getMsgMask().get(MsgMask.REMOTEDATA) &&
-         * thread != null) { send(Msg.makeMsg(null, REMOTE_REPOBJ_MSG, fromID,
-         * data)); }
-         */
+    void deliverSharedObjectMessage(ID fromID, Serializable data) {
+    	send(new RemoteSharedObjectEvent(getObjID(),fromID,data));
     }
-
-    void forwardToContainer(Event msg) {
-        /*
-         * try { container.deliverForwardToRepObject(sharedObjectID,
-         * myContainerID, msg); } catch (Exception e) {
-         * handleRuntimeException(e); }
-         */
+    void deliverCreateResponse(ID fromID, ContainerMessage.CreateResponseMessage resp) {
+    	send(new RemoteSharedObjectCreateResponseEvent(resp.getSharedObjectID(),fromID,resp.getSequence(),resp.getException()));
     }
     void deliverEventFromSharedObject(ID fromID, Event evt) {
         /*
@@ -228,16 +191,6 @@ final class SOWrapper {
          * it has thread and that it wants to receive message) } else if (
          * sharedObjectConfig.getMsgMask().get(MsgMask.REPOBJMSG) && thread !=
          * null) { send(Msg.makeMsg(null, REPOBJ_MSG, fromID, msg)); }
-         */
-    }
-    void deliverRequestFromRepObject(ID fromID, Event evt, AsynchResult future) {
-        /*
-         * if (myContainerID != null) { forwardToContainer( Msg.makeMsg(null,
-         * REPOBJ_REQ, fromID, msg, future)); } else if (
-         * sharedObjectConfig.getMsgMask().get(MsgMask.REPOBJMSG) && thread !=
-         * null) { // Check to see that messages may be received...determined by
-         * the REPOBJMSG // bit in msg mask send(Msg.makeMsg(null, REPOBJ_REQ,
-         * fromID, msg, future)); }
          */
     }
     void deliverForwardedMsg(ID fromID, Event evt) {
@@ -267,16 +220,18 @@ final class SOWrapper {
         sb.append("SharedObjectWrapper[").append(getObjID()).append("]");
         return sb.toString();
     }
-    void handleRuntimeException(Throwable except) {
+    protected void debug(String msg) {
         if (Trace.ON && debug != null) {
-            debug.dumpStack(except, "handleRuntimeException called for "
-                    + sharedObjectID);
-        }
-        try {
-            Trace.errDumpStack(except, "handleRuntimeException called for "
-                    + sharedObjectID);
-        } catch (Throwable e) {
-        }
+            debug.msg(msg);
+        }    	
+    }
+    protected void dumpStack(String msg, Throwable e) {
+        if (Trace.ON && debug != null) {
+            debug.dumpStack(e,msg);
+        }    	
+    }
+    void handleRuntimeException(Throwable except) {
+    	dumpStack("runner:unhandledexception("+sharedObjectID.getName()+")",except);
     }
     /**
      * @return

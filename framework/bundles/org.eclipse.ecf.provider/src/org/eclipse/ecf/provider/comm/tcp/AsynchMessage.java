@@ -15,4 +15,9 @@ public class AsynchMessage implements Serializable {
     Serializable getData() {
         return data;
     }
+    public String toString() {
+    	StringBuffer buf = new StringBuffer("AsynchMessage[");
+    	buf.append(data).append("]");
+    	return buf.toString();
+    }
 }

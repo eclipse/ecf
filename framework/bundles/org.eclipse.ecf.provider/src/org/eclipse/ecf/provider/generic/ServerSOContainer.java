@@ -71,10 +71,9 @@ public class ServerSOContainer extends SOContainer {
             }
         }
     }
-    protected void handleChangeMsg(ID fromID, ID toID, long seqNum,
-            Serializable data) throws IOException {
+	protected void handleViewChangeMessage(ContainerMessage mess) throws IOException {
         // Server should never receive change messages
-    }
+	}
 
     public void joinGroup(ID group, Object data)
             throws SharedObjectContainerJoinException {

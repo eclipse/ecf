@@ -10,4 +10,9 @@ public class SynchMessage extends AsynchMessage {
     protected SynchMessage() {
         super();
     }
+    public String toString() {
+    	StringBuffer buf = new StringBuffer("SynchMessage[");
+    	buf.append(data).append("]");
+    	return buf.toString();
+    }
 }

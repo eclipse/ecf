@@ -25,7 +25,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
     public static final String INVALID_CONNECT = "Invalid connect request.  ";
 
     public static final Trace debug = Trace
-            .create(TCPServerSOContainerGroup.class.getName());
+            .create("connection");
     public static final String DEFAULT_GROUP_NAME = TCPServerSOContainerGroup.class
             .getName();
 
@@ -48,10 +48,18 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
         this(DEFAULT_GROUP_NAME, null, port);
     }
 
-    public synchronized void putOnTheAir() throws IOException {
+    protected void debug(String msg) {
         if (Trace.ON && debug != null) {
-            debug.msg("Putting group " + this + " on the air.");
-        }
+            debug.msg(msg);
+        }    	
+    }
+    protected void dumpStack(String msg, Throwable e) {
+        if (Trace.ON && debug != null) {
+            debug.dumpStack(e,msg);
+        }    	
+    }
+    public synchronized void putOnTheAir() throws IOException {
+    	debug("group at port "+port+" on the air");
         listener = new Server(threadGroup, port, this);
         port = listener.getLocalPort();
         isOnTheAir = true;
@@ -72,7 +80,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
         ConnectRequestMessage req = (ConnectRequestMessage) iStream
                 .readObject();
         if (Trace.ON && debug != null) {
-            debug.msg("Got connect request " + req);
+            debug.msg("serverrecv:" + req);
         }
         if (req == null)
             throw new InvalidObjectException(INVALID_CONNECT
@@ -88,10 +96,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
                     + "Target path is null");
 
         TCPServerSOContainer srs = (TCPServerSOContainer) get(path);
-        if (Trace.ON && debug != null) {
-            debug.msg("Found container with " + srs.getID().getName()
-                    + " for target " + uri);
-        }
+        debug("found container:"+srs.getID().getName()+" for target "+uri);
         if (srs == null)
             throw new InvalidObjectException("Container for target " + path
                     + " not found!");

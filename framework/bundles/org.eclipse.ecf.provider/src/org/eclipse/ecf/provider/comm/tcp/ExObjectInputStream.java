@@ -10,29 +10,21 @@ public class ExObjectInputStream extends ObjectInputStream {
 
     private boolean replace = false;
 
-    public static final Trace debug = Trace.create(ExObjectInputStream.class
-            .getName());
+    public static final Trace debug = Trace.create("connection");
 
     public ExObjectInputStream(InputStream in) throws IOException,
             SecurityException {
         super(in);
-        if (Trace.ON && debug != null) {
-            debug.msg("ExObjectInputStream(" + in + ")");
-        }
     }
 
     public ExObjectInputStream(InputStream in, boolean backwardCompatibility)
             throws IOException, SecurityException {
         super(in);
-        if (Trace.ON && debug != null) {
-            debug.msg("ExObjectInputStream(" + in + "," + backwardCompatibility
-                    + ")");
-        }
         if (backwardCompatibility) {
             try {
                 super.enableResolveObject(true);
                 replace = true;
-                debug("ExObjectInputStream.compatibility set");
+                debug("resolveObject");
             } catch (Exception e) {
                 throw new IOException(
                         "Could not setup backward compatibility object replacers for ExObjectInputStream");
@@ -43,12 +35,11 @@ public class ExObjectInputStream extends ObjectInputStream {
     protected void debug(String msg) {
         if (Trace.ON && debug != null) {
             debug.msg(msg);
-        }
+        }    	
     }
-    protected void debug(String msg, Throwable t) {
+    protected void dumpStack(String msg, Throwable e) {
         if (Trace.ON && debug != null) {
-            debug.dumpStack(t, msg);
-        }
+            debug.dumpStack(e,msg);
+        }    	
     }
-
 }

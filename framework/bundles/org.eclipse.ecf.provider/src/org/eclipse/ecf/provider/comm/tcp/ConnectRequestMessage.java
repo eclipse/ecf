@@ -22,6 +22,8 @@ public class ConnectRequestMessage implements Serializable {
     }
 
     public String toString() {
-        return "ConnectRequestMessage[target:" + target + ";data:" + data + "]";
+    	StringBuffer buf = new StringBuffer("ConnectRequestMessage[");
+    	buf.append(target).append(";").append(data).append("]");
+    	return buf.toString();
     }
 }

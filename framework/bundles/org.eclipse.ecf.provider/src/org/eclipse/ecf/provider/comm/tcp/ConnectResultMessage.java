@@ -13,4 +13,10 @@ public class ConnectResultMessage implements Serializable {
     public Serializable getData() {
         return data;
     }
+    
+    public String toString() {
+    	StringBuffer buf = new StringBuffer("ConnectResultMessage[");
+    	buf.append(data).append("]");
+    	return buf.toString();
+    }
 }

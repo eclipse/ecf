@@ -61,6 +61,7 @@ public abstract class ClientSOContainer extends SOContainer {
         try {
             if (isClosing)
                 throw new IllegalStateException("container is closing");
+            debug("joingroup:"+remote+":"+data);
             ISynchAsynchConnection aConnection = getClientConnection(
             		remote, data);
             if (aConnection == null) {
@@ -137,6 +138,10 @@ public abstract class ClientSOContainer extends SOContainer {
         }
     }
 
+	protected void handleViewChangeMessage(ContainerMessage mess) throws IOException {
+		// XXX TODO
+	}
+
     protected void forwardExcluding(ID from, ID excluding, ContainerMessage data)
             throws IOException {
         // NOP
@@ -149,6 +154,7 @@ public abstract class ClientSOContainer extends SOContainer {
         return null;
     }
     public void leaveGroup() {
+    	debug("leaveGroup");
         synchronized (connectLock) {
             // If we are currently connected
             if (isConnected()) {

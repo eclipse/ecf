@@ -51,7 +51,7 @@ public final class Client implements ISynchAsynchConnection {
     }
     public static final String PROTOCOL = "ecftcp";
 
-    public static final Trace debug = Trace.create(Client.class.getName());
+    public static final Trace debug = Trace.create("connection");
 
     public static final int SNDR_PRIORITY = Thread.NORM_PRIORITY;
     public static final int RCVR_PRIORITY = Thread.NORM_PRIORITY;
@@ -89,6 +89,16 @@ public final class Client implements ISynchAsynchConnection {
 
     public Map getProperties() {
         return properties;
+    }
+    protected void debug(String msg) {
+        if (Trace.ON && debug != null) {
+            debug.msg(msg);
+        }    	
+    }
+    protected void dumpStack(String msg, Throwable e) {
+        if (Trace.ON && debug != null) {
+            debug.dumpStack(e,msg);
+        }    	
     }
     public void setProperties(Map props) {
         this.properties = props;
@@ -180,6 +190,9 @@ public final class Client implements ISynchAsynchConnection {
 
     public synchronized Object connect(ID remote, Object data, int timeout)
             throws IOException {
+
+        debug("connect("+remote+","+data+","+timeout+")");
+        	
         if (socket != null)
             throw new ConnectException("Client already connected");
 
@@ -197,10 +210,8 @@ public final class Client implements ISynchAsynchConnection {
         SocketFactory fact = SocketFactory.getSocketFactory();
         if (fact == null) {
             fact = SocketFactory.getDefaultSocketFactory();
-        }
-        if (Trace.ON && debug != null) {
-            debug.msg("Connecting to " + address + ":" + port);
-        }
+        }        
+        debug("socket connecting to "+address+":"+port);
         // Actually connect to remote using socket from socket factory.
         socket = fact.createSocket(address, port, timeout);
         // Set TCP no delay
@@ -217,6 +228,7 @@ public final class Client implements ISynchAsynchConnection {
 
         ConnectResultMessage res = null;
         res = (ConnectResultMessage) readObject();
+        debug("recv:"+address+":"+port+":"+res);
         // Setup threads
         setupThreads();
         // Return results.
@@ -265,10 +277,7 @@ public final class Client implements ISynchAsynchConnection {
                         } else
                             msgCount++;
                     } catch (IOException e) {
-                        // Log to stderr
-                        Trace.errDumpStack(e, "Exception in sender thread for "
-                                + address + ":" + port);
-
+                    	//dumpStack("read",e);
                         if (isClosing) {
                             isClosing = false;
                             synchronized (Client.this) {
@@ -285,19 +294,15 @@ public final class Client implements ISynchAsynchConnection {
                         break;
                     }
                 }
-                if (Trace.ON && debug != null) {
-                    debug.msg("Sndr for " + address + ":" + port
-                            + " terminating.");
-                }
+                debug("sender:"+address+":"+port+" terminating");
             }
-        }, "Sndr for " + address + ":" + port);
+        }, "sndr:" + address + ":" + port);
         // Set priority for new thread
         aThread.setPriority(SNDR_PRIORITY);
         return aThread;
     }
 
     private void closeSocket() {
-        // Close socket
         try {
             if (socket != null)
                 socket.close();
@@ -307,6 +312,7 @@ public final class Client implements ISynchAsynchConnection {
 
     private void sendIt(Serializable snd) throws IOException {
         // Write object to output stream
+    	debug("send:"+address+":"+port+":"+snd);
         synchronized (outputStream) {
             outputStream.writeObject(snd);
             outputStream.flush();
@@ -336,8 +342,8 @@ public final class Client implements ISynchAsynchConnection {
             }
         }
         // Before returning, actually remove remote objects
-        handler.handleDisconnectEvent(new DisconnectConnectionEvent(
-                Client.this, null, queue));
+        //handler.handleDisconnectEvent(new DisconnectConnectionEvent(
+                //Client.this, null, queue));
     }
 
     private Thread getRcvThread() {
@@ -351,15 +357,7 @@ public final class Client implements ISynchAsynchConnection {
                     try {
                         handleRcv(readObject());
                     } catch (IOException e) {
-                        // Log to stderr
-                        Trace.errDumpStack(e, "Exception in read thread for "
-                                + address + ":" + port);
-
-                        if (Trace.ON && debug != null) {
-                            debug.dumpStack(e, "Exception in read thread for "
-                                    + address + ":" + port + ": "
-                                    + e.getMessage());
-                        }
+                    	//dumpStack("read",e);
                         if (isClosing) {
                             isClosing = false;
                             synchronized (Client.this) {
@@ -376,12 +374,9 @@ public final class Client implements ISynchAsynchConnection {
                         break;
                     }
                 }
-                if (Trace.ON && debug != null) {
-                    debug.msg("Rcvr for " + address + ":" + port
-                            + " terminating.");
-                }
+                debug("read:"+address+":"+port+" terminating");
             }
-        }, "Rcvr for " + address + ":" + port);
+        }, "rcvr:" + address + ":" + port);
         // Set priority and return
         aThread.setPriority(RCVR_PRIORITY);
         return aThread;
@@ -391,6 +386,7 @@ public final class Client implements ISynchAsynchConnection {
         try {
             // We've received some data, so the connection is alive
             receiveResp();
+            debug("recv:"+address+":"+port+":"+rcv);
             // Handle all messages
             if (rcv instanceof SynchMessage) {
                 // Handle synch message. The only valid synch message is
@@ -407,7 +403,7 @@ public final class Client implements ISynchAsynchConnection {
             } else if (rcv instanceof PingResponseMessage) {
                 // Do nothing with ping response
             } else
-                throw new IOException("Invalid packet received.");
+                throw new IOException("Invalid message received.");
         } catch (IOException e) {
             disconnect();
             throw e;
@@ -415,6 +411,7 @@ public final class Client implements ISynchAsynchConnection {
     }
 
     public synchronized void start() {
+    	debug("start("+address+":"+port+")");
         if (sendThread != null)
             sendThread.start();
         if (rcvThread != null)
@@ -463,13 +460,7 @@ public final class Client implements ISynchAsynchConnection {
                             }
                         }
                     } catch (Exception e) {
-                        // Log to stderr
-                        Trace.errDumpStack(e, "Exception in ping thread for "
-                                + address + ":" + port);
-
-                        if (Trace.ON && debug != null) {
-                            debug.dumpStack(e, "Exception in ping.");
-                        }
+                    	//dumpStack("ping",e);
                         if (isClosing) {
                             isClosing = false;
                             synchronized (Client.this) {
@@ -486,17 +477,13 @@ public final class Client implements ISynchAsynchConnection {
                         break;
                     }
                 }
-                if (Trace.ON && debug != null) {
-                    debug.msg("Keepalive terminating.");
-                }
+                debug("ping:"+address+":"+port+" terminating");
             }
-        }, "Keepalive " + address + ":" + port);
+        }, "ping:" + address + ":" + port);
     }
 
     public synchronized void disconnect() throws IOException {
-        if (Trace.ON && debug != null) {
-            debug.msg("disconnect()");
-        }
+    	debug("disconnect("+address+":"+port+")");
         // Close send queue and socket
         queue.close();
         closeSocket();
@@ -521,8 +508,8 @@ public final class Client implements ISynchAsynchConnection {
     public void sendAsynch(ID recipient, byte[] obj) throws IOException {
         queueObject(recipient, obj);
     }
-    public void sendAsynch(ID recipien, Object obj) throws IOException {
-        queueObject(recipien, (Serializable) obj);
+    public void sendAsynch(ID recipient, Object obj) throws IOException {
+        queueObject(recipient, (Serializable) obj);
     }
     public synchronized void queueObject(ID recipient, Serializable obj)
             throws IOException {
@@ -550,9 +537,7 @@ public final class Client implements ISynchAsynchConnection {
         try {
             ret = (Serializable) inputStream.readObject();
         } catch (ClassNotFoundException e) {
-            if (Trace.ON && debug != null) {
-                debug.dumpStack(e, "Class not found exception");
-            }
+        	dumpStack("ClassNotFoundException",e);
             throw new IOException(
                     "Protocol violation due to class load failure.  "
                             + e.getMessage());
