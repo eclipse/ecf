@@ -37,7 +37,7 @@ public final class Client implements ISynchAsynchConnection {
                 Object[] args) throws ConnectionInstantiationException {
             try {
                 Integer ka = new Integer(0);
-                if (args.length > 0) {
+                if (args != null && args.length > 0) {
                     ka = (Integer) args[0];
                 }
                 return new Client(handler,
