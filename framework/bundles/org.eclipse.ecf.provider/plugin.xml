@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.ecf.provider"
+   name="ECF Provider Plug-in"
+   version="0.0.1"
+   provider-name="eclipse.org"
+   class="org.eclipse.ecf.provider.ProviderPlugin">
+
+   <runtime>
+      <library name="provider.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ecf"/>
+   </requires>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.generic.ContainerInstantiator"
+            description="Generic container implementation (server and client)"
+            name="generic"/>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.comm">
+      <connection
+            description="TCP Client Connection"
+            name="tcpclient"
+            instantiatorClass="org.eclipse.ecf.provider.comm.tcp.Client$Creator"/>
+   </extension>
+
+</plugin>

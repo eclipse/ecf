@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-Name: Eclipse Communications Framework Provider Plug-in
+Bundle-SymbolicName: org.eclipse.ecf.provider; singleton=true
+Bundle-Version: 0.0.1
+Bundle-ClassPath: provider.jar
+Bundle-Activator: org.eclipse.ecf.provider.ProviderPlugin
+Bundle-Vendor: eclipse.org
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf
+Eclipse-AutoStart: true
+DynamicImport-Package: *
+Provide-Package: org.eclipse.ecf.provider,
+org.eclipse.ecf.provider.comm.tcp
+org.eclipse.ecf.provider.generic,
+org.eclipse.ecf.provider.generic.events
+org.eclipse.ecf.provider.generic.gmm
+Bundle-SymbolicName: org.eclipse.ecf.provider
+Bundle-Version: 0.0.1
+Bundle-Name: ECF - Provider Plugin
+Bundle-Vendor: Eclipse.org
+Bundle-Activator: org.eclipse.ecf.provider.ProviderPlugin
+
+

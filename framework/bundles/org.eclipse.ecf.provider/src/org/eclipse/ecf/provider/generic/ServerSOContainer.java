@@ -1,0 +1,230 @@
+package org.eclipse.ecf.provider.generic;
+
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.Serializable;
+import java.net.ConnectException;
+import java.net.Socket;
+
+import org.eclipse.ecf.core.ISharedObjectContainerConfig;
+import org.eclipse.ecf.core.SharedObjectContainerJoinException;
+import org.eclipse.ecf.core.comm.IAsynchConnection;
+import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.provider.generic.gmm.Member;
+
+public class ServerSOContainer extends SOContainer {
+
+    public ServerSOContainer(ISharedObjectContainerConfig config) {
+        super(config);
+    }
+    public boolean isGroupServer() {
+        return true;
+    }
+    public boolean isGroupManager() {
+        return true;
+    }
+    public ID getGroupID() {
+        return getID();
+    }
+    protected void queueContainerMessage(ContainerMessage message)
+            throws IOException {
+        if (message.getToContainerID() == null) {
+            queueToAll(message);
+        } else {
+            IAsynchConnection conn = getConnectionForID(message
+                    .getToContainerID());
+            if (conn != null)
+                conn.sendAsynch(message.getToContainerID(),
+                        getBytesForObject(message));
+        }
+    }
+    protected void forwardToRemote(ID from, ID to, ContainerMessage data)
+            throws IOException {
+        queueContainerMessage(new ContainerMessage(from, to,
+                getNextSequenceNumber(), data.getData()));
+    }
+    protected void forwardExcluding(ID from, ID excluding, ContainerMessage data)
+            throws IOException {
+        if (excluding == null) {
+            queueContainerMessage(new ContainerMessage(from, null,
+                    getNextSequenceNumber(), data.getData()));
+        } else {
+            Object ms[] = groupManager.getMembers();
+            for (int i = 0; i < ms.length; i++) {
+                Member m = (Member) ms[i];
+                ID oldID = m.getID();
+                if (!excluding.equals(oldID) && !from.equals(oldID)) {
+                    IAsynchConnection conn = (IAsynchConnection) m.getData();
+                    if (conn != null) {
+                        try {
+                            conn.sendAsynch(oldID,
+                                    getBytesForObject(new ContainerMessage(
+                                            from, oldID,
+                                            getNextSequenceNumber(), data
+                                                    .getData())));
+                        } catch (IOException e) {
+                            // XXX log this
+                        }
+                    }
+                }
+            }
+        }
+    }
+    protected void handleChangeMsg(ID fromID, ID toID, long seqNum,
+            Serializable data) throws IOException {
+        // Server should never receive change messages
+    }
+
+    public void joinGroup(ID group, Object data)
+            throws SharedObjectContainerJoinException {
+        SharedObjectContainerJoinException e = new SharedObjectContainerJoinException(
+                "Server cannot join group " + group.getName());
+        throw e;
+    }
+    public void leaveGroup() {
+        ejectAllGroupMembers();
+    }
+
+    protected ContainerMessage acceptNewClient(Socket socket, String target,
+            Serializable data, ISynchAsynchConnection conn) {
+        try {
+            ContainerMessage mess = (ContainerMessage) data;
+            if (mess == null)
+                throw new InvalidObjectException("container message is null");
+            ID remoteID = mess.getFromContainerID();
+            if (remoteID == null)
+                throw new InvalidObjectException("remote id is null");
+
+            ContainerMessage.JoinGroupMessage jgm = (ContainerMessage.JoinGroupMessage) mess
+                    .getData();
+            if (jgm == null)
+                throw new IOException("join group message is null");
+            ID memberIDs[] = null;
+
+            synchronized (getGroupMembershipLock()) {
+                if (isClosing) {
+                    Exception e = new InvalidObjectException(
+                            "container is closing");
+                    throw e;
+                }
+
+                if (addNewRemoteMember(remoteID, conn)) {
+                    // Notify existing remotes about new member
+                    try {
+                        forwardExcluding(getID(), remoteID, ContainerMessage
+                                .makeViewChangeMessage(getID(), remoteID,
+                                        getNextSequenceNumber(),
+                                        new ID[] { remoteID }, true, null));
+                    } catch (IOException e) {
+                    }
+                    // Get current membership
+                    memberIDs = groupManager.getMemberIDs();
+                    // Start messaging to new member
+                    conn.start();
+                } else {
+                    ConnectException e = new ConnectException(
+                            "server refused connection");
+                    throw e;
+                }
+            }
+            return ContainerMessage.makeViewChangeMessage(getID(), remoteID,
+                    getNextSequenceNumber(), memberIDs, true, null);
+        } catch (Exception e) {
+            // XXX Log this
+
+            // And then return null...which means refusal
+            return null;
+        }
+    }
+
+    protected Serializable getConnectDataFromInput(Serializable input)
+            throws Exception {
+        return input;
+    }
+
+    protected Object checkJoin(String hostname, ID id, Serializable data)
+            throws Exception {
+        return null;
+    }
+
+    protected void memberLeave(ID leaveID, IAsynchConnection conn) {
+        if (removeRemoteMember(leaveID)) {
+            try {
+                forwardExcluding(getID(), leaveID, ContainerMessage
+                        .makeViewChangeMessage(getID(), leaveID,
+                                getNextSequenceNumber(), new ID[] { leaveID },
+                                false, null));
+            } catch (IOException e) {
+            }
+        }
+        killConnection(conn);
+    }
+
+    public void ejectGroupMember(ID memberID) {
+        IAsynchConnection conn = null;
+        synchronized (getGroupMembershipLock()) {
+            conn = getConnectionForID(memberID);
+            if (conn == null)
+                return;
+            try {
+                conn.sendAsynch(
+
+                memberID, getBytesForObject(ContainerMessage
+                        .makeLeaveGroupMessage(getID(), memberID,
+                                getNextSequenceNumber(), null)));
+            } catch (Exception e) {
+            }
+            memberLeave(memberID, conn);
+        }
+    }
+
+    public void ejectAllGroupMembers() {
+        synchronized (getGroupMembershipLock()) {
+            Object[] members = groupManager.getMembers();
+            for (int i = 0; i < members.length; i++) {
+                ejectGroupMember(((Member) members[i]).getID());
+            }
+        }
+    }
+
+    // Support methods
+    protected ID getIDForConnection(IAsynchConnection conn) {
+        Object ms[] = groupManager.getMembers();
+        for (int i = 0; i < ms.length; i++) {
+            Member m = (Member) ms[i];
+            if (conn == (IAsynchConnection) m.getData())
+                return m.getID();
+        }
+        return null;
+    }
+    protected IAsynchConnection getConnectionForID(ID memberID) {
+        Member mem = groupManager.getMemberForID(memberID);
+        if (mem == null)
+            return null;
+        return (IAsynchConnection) mem.getData();
+    }
+
+    private final void queueToAll(ContainerMessage message) {
+        Object[] members = groupManager.getMembers();
+        for (int i = 0; i < members.length; i++) {
+            IAsynchConnection conn = (IAsynchConnection) ((Member) members[i])
+                    .getData();
+            if (conn != null) {
+                try {
+                    conn.sendAsynch(message.getToContainerID(),
+                            getBytesForObject(message));
+                } catch (IOException e) {
+                    // XXX report
+                }
+            }
+        }
+    }
+
+    public void dispose(long timeout) {
+        // For servers, we'll eject all members
+        ejectAllGroupMembers();
+        super.dispose(timeout);
+    }
+
+}

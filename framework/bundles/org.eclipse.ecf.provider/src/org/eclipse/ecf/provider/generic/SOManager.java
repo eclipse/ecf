@@ -1,0 +1,264 @@
+/*
+ * Created on Dec 20, 2004
+ *  
+ */
+package org.eclipse.ecf.provider.generic;
+
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import org.eclipse.ecf.core.ISharedObject;
+import org.eclipse.ecf.core.ISharedObjectConnector;
+import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
+import org.eclipse.ecf.core.ISharedObjectManager;
+import org.eclipse.ecf.core.SharedObjectAddException;
+import org.eclipse.ecf.core.SharedObjectConnectException;
+import org.eclipse.ecf.core.SharedObjectCreateException;
+import org.eclipse.ecf.core.SharedObjectDescription;
+import org.eclipse.ecf.core.SharedObjectDisconnectException;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.AbstractFactory;
+import org.eclipse.ecf.core.util.QueueEnqueue;
+
+/**
+ *  
+ */
+public class SOManager implements ISharedObjectManager {
+
+    SOContainer container = null;
+    Vector connectors = null;
+
+    public SOManager(SOContainer cont) {
+        super();
+        this.container = cont;
+        connectors = new Vector();
+    }
+
+    protected void addConnector(ISharedObjectConnector conn) {
+        connectors.add(conn);
+    }
+    protected boolean removeConnector(ISharedObjectConnector conn) {
+        return connectors.remove(conn);
+    }
+    protected List getConnectors() {
+        return connectors;
+    }
+    protected Class[] getArgTypes(String[] argTypes, Object[] args,
+            ClassLoader cl) throws ClassNotFoundException {
+        return AbstractFactory.getClassesForTypes(argTypes, args, cl);
+    }
+
+    protected ISharedObject makeSharedObjectInstance(final Class newClass,
+            final Class[] argTypes, final Object[] args) throws Exception {
+        Object newObject = null;
+        try {
+            newObject = AccessController
+                    .doPrivileged(new PrivilegedExceptionAction() {
+                        public Object run() throws Exception {
+                            Constructor aConstructor = newClass
+                                    .getConstructor(argTypes);
+                            aConstructor.setAccessible(true);
+                            return aConstructor.newInstance(args);
+                        }
+                    });
+        } catch (java.security.PrivilegedActionException e) {
+            throw e.getException();
+        }
+        return verifySharedObject(newObject);
+    }
+    protected ISharedObject verifySharedObject(Object newSharedObject) {
+        if (newSharedObject instanceof ISharedObject)
+            return (ISharedObject) newSharedObject;
+        else
+            throw new ClassCastException("shared object "
+                    + newSharedObject.toString() + " does not implement "
+                    + ISharedObject.class.getName());
+    }
+    protected ISharedObject loadSharedObject(SharedObjectDescription sd)
+            throws Exception {
+        // First get classloader
+        ClassLoader cl = container.getClassLoaderForSharedObject(sd);
+        // Then get args array from properties
+        Object[] args = container.getArgsFromProperties(sd);
+        // And arg types
+        String[] types = container.getArgTypesFromProperties(sd);
+        Class[] argTypes = getArgTypes(types, args, cl);
+        // Now load top-level class
+        final Class newClass = Class.forName(sd.getClassname(), true, cl);
+        return makeSharedObjectInstance(newClass, argTypes, args);
+    }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObjectManager#getSharedObjectIDs()
+     */
+    public ID[] getSharedObjectIDs() {
+        return container.getSharedObjectIDs();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObjectManager#createSharedObject(org.eclipse.ecf.core.SharedObjectDescription,
+     *      org.eclipse.ecf.core.ISharedObjectContainerTransaction)
+     */
+    public ID createSharedObject(SharedObjectDescription sd,
+            ISharedObjectContainerTransaction trans)
+            throws SharedObjectCreateException {
+        ISharedObject newObject = null;
+        Throwable t = null;
+        ID result = sd.getID();
+        try {
+            newObject = loadSharedObject(sd);
+            return addSharedObject(result, newObject, sd.getProperties(), trans);
+        } catch (Exception e) {
+            throw new SharedObjectCreateException(t);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObjectManager#addSharedObject(org.eclipse.ecf.core.identity.ID,
+     *      org.eclipse.ecf.core.ISharedObject, java.util.Map,
+     *      org.eclipse.ecf.core.ISharedObjectContainerTransaction)
+     */
+    public ID addSharedObject(ID sharedObjectID, ISharedObject sharedObject,
+            Map properties, ISharedObjectContainerTransaction trans)
+            throws SharedObjectAddException {
+        Throwable t = null;
+        ID result = sharedObjectID;
+        try {
+            ISharedObject so = sharedObject;
+            SharedObjectDescription sd = new SharedObjectDescription(
+                    sharedObject.getClass().getClassLoader(), sharedObjectID,
+                    container.getID(), sharedObject.getClass().getName(),
+                    properties, 0);
+            container.addSharedObjectAndWait(sd, so, trans);
+        } catch (Exception except) {
+            throw new SharedObjectAddException(except);
+        }
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObjectManager#getSharedObject(org.eclipse.ecf.core.identity.ID)
+     */
+    public ISharedObject getSharedObject(ID sharedObjectID) {
+        return container.getSharedObject(sharedObjectID);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObjectManager#removeSharedObject(org.eclipse.ecf.core.identity.ID)
+     */
+    public ISharedObject removeSharedObject(ID sharedObjectID) {
+        return container.removeSharedObject(sharedObjectID);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObjectManager#connectSharedObjects(org.eclipse.ecf.core.identity.ID,
+     *      org.eclipse.ecf.core.identity.ID[])
+     */
+    public ISharedObjectConnector connectSharedObjects(ID sharedObjectFrom,
+            ID[] sharedObjectsTo) throws SharedObjectConnectException {
+        if (sharedObjectFrom == null)
+            throw new SharedObjectConnectException("sender cannot be null");
+        if (sharedObjectsTo == null)
+            throw new SharedObjectConnectException("receivers cannot be null");
+        ISharedObjectConnector result = null;
+        synchronized (container.getGroupMembershipLock()) {
+            // Get from to make sure it's there
+            SOWrapper wrap = container.getSharedObjectWrapper(sharedObjectFrom);
+            if (wrap == null)
+                throw new SharedObjectConnectException("sender object "
+                        + sharedObjectFrom.getName() + " not found");
+            QueueEnqueue[] queues = new QueueEnqueue[sharedObjectsTo.length];
+            for (int i = 0; i < sharedObjectsTo.length; i++) {
+                SOWrapper w = container
+                        .getSharedObjectWrapper(sharedObjectsTo[i]);
+                if (w == null)
+                    throw new SharedObjectConnectException("receiver object "
+                            + sharedObjectsTo[i].getName() + " not found");
+                queues[i] = new QueueEnqueueImpl(w.getQueue());
+            }
+            // OK now we've got ids and wrappers, make a connector
+            result = new SOConnector(sharedObjectFrom, sharedObjectsTo, queues);
+        }
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObjectManager#disconnectSharedObjects(org.eclipse.ecf.core.ISharedObjectConnector)
+     */
+    public void disconnectSharedObjects(ISharedObjectConnector connector)
+            throws SharedObjectDisconnectException {
+        if (connector == null)
+            throw new SharedObjectDisconnectException("connect cannot be null");
+        if (!removeConnector(connector)) {
+            throw new SharedObjectDisconnectException("connector " + connector
+                    + " not found");
+        }
+        connector.dispose();
+    }
+    protected void dispose() {
+        for (Enumeration e = connectors.elements(); e.hasMoreElements();) {
+            ISharedObjectConnector conn = (ISharedObjectConnector) e
+                    .nextElement();
+            conn.dispose();
+        }
+        connectors.clear();
+    }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObjectManager#getSharedObjectConnectors(org.eclipse.ecf.core.identity.ID)
+     */
+    public List getSharedObjectConnectors(ID sharedObjectFrom) {
+        List results = new ArrayList();
+        for (Enumeration e = connectors.elements(); e.hasMoreElements();) {
+            ISharedObjectConnector conn = (ISharedObjectConnector) e
+                    .nextElement();
+            if (sharedObjectFrom.equals(conn.getSender())) {
+                results.add(conn);
+            }
+        }
+        return results;
+    }
+
+    public static Class[] getClassesForTypes(String[] argTypes, Object[] args,
+            ClassLoader cl) throws ClassNotFoundException {
+        Class clazzes[] = null;
+        if (args == null || args.length == 0)
+            clazzes = new Class[0];
+        else if (argTypes != null) {
+            clazzes = new Class[argTypes.length];
+            for (int i = 0; i < argTypes.length; i++) {
+                clazzes[i] = Class.forName(argTypes[i], true, cl);
+            }
+        } else {
+            clazzes = new Class[args.length];
+            for (int i = 0; i < args.length; i++) {
+                if (args[i] == null)
+                    clazzes[i] = null;
+                else
+                    clazzes[i] = args[i].getClass();
+            }
+        }
+        return clazzes;
+    }
+
+}
