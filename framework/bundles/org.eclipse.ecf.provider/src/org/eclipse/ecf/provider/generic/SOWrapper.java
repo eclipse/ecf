@@ -76,7 +76,6 @@ final class SOWrapper {
 
     void activated(ID[] ids) {
         debug("activated");
-        // First, make space reference accessible to use by RepObject
         sharedObjectConfig.makeActive(new QueueEnqueueImpl(queue));
         thread = (Thread) AccessController.doPrivileged(new PrivilegedAction() {
             public Object run() {
@@ -100,11 +99,8 @@ final class SOWrapper {
     private void destroyed() {
         if (!queue.isStopped()) {
             sharedObjectConfig.makeInactive();
-            // Enqueue destroy message on our RepObject's queue
             if (thread != null)
                 queue.enqueue(new DisposeEvent());
-            // Close queue...RepObject will receive no more messages from this
-            // point on.
             queue.close();
         }
     }
@@ -132,7 +128,6 @@ final class SOWrapper {
     }
 
     Thread getThread() {
-        // Get new thread instance from space.
         return container.getNewSharedObjectThread(sharedObjectID,
                 new Runnable() {
                     public void run() {
@@ -156,8 +151,6 @@ final class SOWrapper {
                                 handleRuntimeException(t);
                             }
                         }
-                        // If the thread was interrupted, then show appropriate
-                        // spam
                         if (Thread.currentThread().isInterrupted()) {
                             debug("runner(" + sharedObjectID
                                     + ") terminating interrupted");
@@ -209,37 +202,9 @@ final class SOWrapper {
                         .getException()));
     }
 
-    void deliverEventFromSharedObject(ID fromID, Event evt) {
-        /*
-         * if (myContainerID != null) { forwardToContainer(Msg.makeMsg(null,
-         * REPOBJ_MSG, fromID, msg)); // otherwise, send to our object (assuming
-         * it has thread and that it wants to receive message) } else if (
-         * sharedObjectConfig.getMsgMask().get(MsgMask.REPOBJMSG) && thread !=
-         * null) { send(Msg.makeMsg(null, REPOBJ_MSG, fromID, msg)); }
-         */
-    }
-
-    void deliverForwardedMsg(ID fromID, Event evt) {
-        /*
-         * if (myContainerID != null) { forwardToContainer(Msg.makeMsg(null,
-         * REPOBJ_FOR, fromID, msg)); } else if (
-         * sharedObjectConfig.getMsgMask().get(MsgMask.REPOBJMSG) && thread !=
-         * null) { send(Msg.makeMsg(null, REPOBJ_FOR, fromID, msg)); }
-         */
-    }
-
-    void deliverRemoteMessageFailed(ID toID, Serializable object, Throwable e) {
-        /*
-         * if (sharedObjectConfig.getMsgMask().get(MsgMask.REPOBJMSG) && thread !=
-         * null) { send(Msg.makeMsg(null, REMOTE_REPOBJ_MSG_FAILED, toID,
-         * object, e)); }
-         */
-    }
-
     void destroySelf() {
-        /*
-         * if (thread != null) { send(Msg.makeMsg(null, REPOBJ_DESTROY_SELF)); }
-         */
+        debug("destroySelf()");
+        send(new DisposeEvent());
     }
 
     public String toString() {
@@ -266,16 +231,10 @@ final class SOWrapper {
                 except);
     }
 
-    /**
-     * @return
-     */
     protected ISharedObject getSharedObject() {
         return sharedObject;
     }
 
-    /**
-     * @return
-     */
     public SimpleQueueImpl getQueue() {
         return queue;
     }
