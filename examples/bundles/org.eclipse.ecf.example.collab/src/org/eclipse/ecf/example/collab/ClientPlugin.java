@@ -91,6 +91,11 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 		registry.put(ClientPluginConstants.DECORATION_USER, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE));
 		registry.put(ClientPluginConstants.DECORATION_TIME, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_FORWARD));
 		registry.put(ClientPluginConstants.DECORATION_TASK, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
+		
+		registry.put(ClientPluginConstants.DECORATION_SEND , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_UNDO));
+		registry.put(ClientPluginConstants.DECORATION_RECEIVE , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_REDO));
+		registry.put(ClientPluginConstants.DECORATION_PRIVATE , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK));
+		registry.put(ClientPluginConstants.DECORATION_SYSTEM_MESSAGE , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK));
 		return registry;
 	}
 	/**

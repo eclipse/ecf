@@ -22,5 +22,9 @@ public interface ClientPluginConstants {
 	public static final String DECORATION_USER = "user";
 	public static final String DECORATION_TIME = "time";
 	public static final String DECORATION_TASK = "task";
+	public static final String DECORATION_SEND = "send";
+	public static final String DECORATION_RECEIVE = "receive";
+	public static final String DECORATION_PRIVATE = "private";
+	public static final String DECORATION_SYSTEM_MESSAGE = "system message";
 	
 }
