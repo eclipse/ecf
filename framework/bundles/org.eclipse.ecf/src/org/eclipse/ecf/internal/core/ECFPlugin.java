@@ -46,7 +46,7 @@ public class ECFPlugin extends Plugin {
     public static final String INSTANTIATOR_NAME_ATTRIBUTE = "name";
     public static final String NAMESPACE_CLASS_ATTRIBUTE = "namespaceClass";
     public static final String INSTANTIATOR_DATA_ATTRIBUTE = "description";
-    public static final String NAMESPACE_DEFAULT_CLASS = "org.eclipse.ecf.identity.Namespace";
+    public static final String NAMESPACE_DEFAULT_CLASS = "org.eclipse.ecf.core.identity.Namespace";
 
     public static final String CONTAINER_FACTORY_EPOINT = "org.eclipse.ecf.containerFactory";
     public static final String CONTAINER_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
