@@ -71,7 +71,7 @@ public class SharedSDOEditor extends SDOEditor {
                                         .getProject());
             } catch (ECFException e) {
                 throw new PartInitException(
-                        "Error while connecting to the group.", e);
+                        "Error while connecting to the group", e);
             }
 
         super.init(site, editorInput);
