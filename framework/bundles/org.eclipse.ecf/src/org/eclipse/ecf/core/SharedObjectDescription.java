@@ -48,6 +48,9 @@ public class SharedObjectDescription implements Serializable {
     public SharedObjectDescription(ClassLoader loader, ID id, String className, Map dict, long ident) {
         this(loader, id, null, className, dict, ident);
     }
+    public SharedObjectDescription(ID id, Class clazz, Map dict, long ident) {
+        this(clazz.getClassLoader(),id,clazz.getName(),dict,ident);
+    }
     public SharedObjectDescription(ClassLoader loader, ID id, String className, Map dict) {
         this(loader, id, null, className, dict, getNextUniqueIdentifier());
     }
@@ -60,11 +63,20 @@ public class SharedObjectDescription implements Serializable {
     public SharedObjectDescription(ID id, String className, Map dict) {
         this(null, id, null, className, dict, getNextUniqueIdentifier());
     }
+    public SharedObjectDescription(ID id, Class clazz, Map dict) {
+        this(id,clazz,dict,getNextUniqueIdentifier());
+    }
     public SharedObjectDescription(ID id, String className, long ident) {
         this(null, id, null, className, null, ident);
     }
+    public SharedObjectDescription(ID id, Class clazz, long ident) {
+        this(id,clazz,null,ident);
+    }
     public SharedObjectDescription(ID id, String className) {
         this(id, className, getNextUniqueIdentifier());
+    }
+    public SharedObjectDescription(ID id, Class clazz) {
+        this(id,clazz,null);
     }
     public ID getID() {
         return id;
