@@ -13,10 +13,6 @@ public class DisconnectConnectionEvent extends ConnectionEvent {
 		exception = e;
 	}
 
-	public Object getData() {
-		return super.getOData();
-	}
-	
 	public Throwable getException() {
 		return exception;
 	}

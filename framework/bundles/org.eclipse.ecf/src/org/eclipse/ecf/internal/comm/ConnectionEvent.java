@@ -4,26 +4,18 @@ import org.eclipse.ecf.core.util.Event;
 
 public class ConnectionEvent implements Event {
 
-	Object odata = null;
-	byte [] bdata = null;
+	Object data = null;
 	IConnection connection = null;
 	
-	public ConnectionEvent(IConnection source, Object odata) {
+	public ConnectionEvent(IConnection source, Object data) {
 	    this.connection = source;
-		this.odata = odata;
-	}
-	public ConnectionEvent(IConnection source, byte [] bdata) {
-	    this.connection = source;
-	    this.bdata = bdata;
+	    this.data = data;
 	}
 	public IConnection getConnection() {
 		return connection;
 	}
-	public Object getOData() {
-		return odata;
-	}
-	public byte [] getBData() {
-	    return bdata;
+	public Object getData() {
+	    return data;
 	}
 
 }

@@ -468,7 +468,7 @@ public abstract class SharedObjectContainer implements ISharedObjectContainer {
 		throws IOException, IllegalAccessException {
 		if (isClosing)
 			throw new IllegalStateException(CONTAINERCLOSING);
-		processAsynchPacket(verifyPacket((Serializable) evt.getOData()));
+		processAsynchPacket(verifyPacket((Serializable) evt.getData()));
 	}
 	protected void processAsynchPacket(ContainerPacket p) throws IOException, IllegalAccessException {
 		switch (p.msg) {
@@ -521,7 +521,7 @@ public abstract class SharedObjectContainer implements ISharedObjectContainer {
 		throws IOException, IllegalAccessException {
 		if (isClosing)
 			throw new IllegalStateException(CONTAINERCLOSING);
-		return processSynchPacket((IAsynchConnection) evt.getConnection(), verifyPacket((Serializable) evt.getOData()));
+		return processSynchPacket((IAsynchConnection) evt.getConnection(), verifyPacket((Serializable) evt.getData()));
 	}
 	protected Serializable processSynchPacket(
 		IAsynchConnection conn,
@@ -1058,7 +1058,7 @@ public abstract class SharedObjectContainer implements ISharedObjectContainer {
 	}
 	protected final class MsgReceiver implements IAsynchConnectionEventHandler, ISynchConnectionEventHandler {
 
-		public void handleDisconnectEvent(ConnectionEvent evt) {
+		public void handleDisconnectEvent(DisconnectConnectionEvent evt) {
 			SharedObjectContainer.this.handleDisconnectEvent(
 				(DisconnectConnectionEvent) evt);
 		}
