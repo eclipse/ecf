@@ -193,8 +193,8 @@ public final class Client implements ISynchAsynchConnection {
                 return;
             v = eventNotify;
         }
-        for (Enumeration enum = v.elements(); enum.hasMoreElements();) {
-            IConnectionEventHandler h = (IConnectionEventHandler) enum
+        for (Enumeration en = v.elements(); en.hasMoreElements();) {
+            IConnectionEventHandler h = (IConnectionEventHandler) en
                     .nextElement();
             h.handleSuspectEvent(new ConnectionEvent(this, e));
         }
