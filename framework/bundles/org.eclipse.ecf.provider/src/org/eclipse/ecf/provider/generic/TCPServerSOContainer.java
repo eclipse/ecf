@@ -40,8 +40,7 @@ public class TCPServerSOContainer extends ServerSOContainer implements
     }
 
     public static String getServerURL(String host, String name) {
-        return DEFAULT_PROTOCOL + "://" + host + ":" + DEFAULT_PORT + "/"
-                + name;
+        return DEFAULT_PROTOCOL + "://" + host + ":" + DEFAULT_PORT + name;
     }
 
     public static String getDefaultServerURL() {

@@ -36,7 +36,7 @@ public class Client {
     public static final String JOIN_TIME_FORMAT = "hh:mm:ss a z";
     public static final String GENERIC_CONTAINER_CLIENT_NAME = "org.eclipse.ecf.provider.generic.Client";
     public static final String GENERIC_CONTAINER_SERVER_NAME = "org.eclipse.ecf.provider.generic.Server";
-    public static final String DEFAULT_SERVER_ID = "ecftcp://localhost:3282//server";
+    public static final String DEFAULT_SERVER_ID = "ecftcp://localhost:3282/server";
     public static final String COLLAB_SHARED_OBJECT_ID = "chat";
     public static final String FILE_DIRECTORY = "received_files";
     public static final String USERNAME = System.getProperty("user.name");

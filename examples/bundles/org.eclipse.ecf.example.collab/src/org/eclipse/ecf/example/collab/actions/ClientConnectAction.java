@@ -28,7 +28,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
 	private IWorkbenchWindow window;
     
-    public static final String DEFAULT_SERVER_ID = "ecftcp://localhost:3282//server";
+    public static final String DEFAULT_SERVER_ID = "ecftcp://localhost:3282/server";
 
     public void setData(Object data) {
         this.data = data;
