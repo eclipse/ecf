@@ -1,10 +1,20 @@
+/****************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Composent, Inc. - initial API and implementation
+*****************************************************************************/
+
 package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.Serializable;
 import java.net.ConnectException;
-
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectDescription;
@@ -25,8 +35,10 @@ public abstract class ClientSOContainer extends SOContainer {
     public static final byte UNCONNECTED = 0;
     public static final byte CONNECTING = 1;
     public static final byte CONNECTED = 2;
+
     static final class Lock {
     }
+
     Lock connectLock;
 
     public ClientSOContainer(ISharedObjectContainerConfig config) {
@@ -35,35 +47,40 @@ public abstract class ClientSOContainer extends SOContainer {
         connectionState = UNCONNECTED;
         connectLock = new Lock();
     }
+
     public void dispose(long wait) {
-    	synchronized (connectLock) {
-        	isClosing = true;
-    		if (isConnected()) {
-    			this.leaveGroup();
-    		} else if (isConnecting()) {
-    			killConnection(connection);
-    		}
-    		remoteServerID = null;
-    	}
-    	super.dispose(wait);
+        synchronized (connectLock) {
+            isClosing = true;
+            if (isConnected()) {
+                this.leaveGroup();
+            } else if (isConnecting()) {
+                killConnection(connection);
+            }
+            remoteServerID = null;
+        }
+        super.dispose(wait);
     }
+
     public final boolean isGroupServer() {
         return false;
     }
+
     public final boolean isGroupManager() {
         return false;
     }
+
     public ID getGroupID() {
         return remoteServerID;
     }
+
     public void joinGroup(ID remote, Object data)
             throws SharedObjectContainerJoinException {
         try {
             if (isClosing)
                 throw new IllegalStateException("container is closing");
-            debug("joingroup:"+remote+":"+data);
-            ISynchAsynchConnection aConnection = getClientConnection(
-            		remote, data);
+            debug("joingroup:" + remote + ":" + data);
+            ISynchAsynchConnection aConnection = getClientConnection(remote,
+                    data);
             if (aConnection == null) {
                 ConnectException c = new ConnectException("join failed to"
                         + ":" + remote.getName());
@@ -91,8 +108,8 @@ public abstract class ClientSOContainer extends SOContainer {
             synchronized (aConnection) {
                 try {
                     Object connectData = getConnectData(remote, data);
-                    response = (ContainerMessage) aConnection.connect(
-                    		remote, connectData, 0);
+                    response = (ContainerMessage) aConnection.connect(remote,
+                            connectData, 0);
                 } catch (IOException e) {
                     synchronized (connectLock) {
                         killConnection(aConnection);
@@ -138,42 +155,49 @@ public abstract class ClientSOContainer extends SOContainer {
         }
     }
 
-	protected void handleViewChangeMessage(ContainerMessage mess) throws IOException {
-		debug("handleViewChangeMessage("+mess+")");
-		ContainerMessage.ViewChangeMessage vc = (ContainerMessage.ViewChangeMessage) mess.getData();
-		if (vc == null) throw new IOException("view change message is null");
-		ID fromID = mess.getFromContainerID();
-		ID toID = mess.getToContainerID();
-		if (fromID == null || !fromID.equals(remoteServerID)) {
-			throw new IOException("view change message from "+fromID+" is not same as "+remoteServerID);
-		}
-		ID [] changeIDs = vc.getChangeIDs();
-		if (changeIDs == null) {
-			// do nothing if we've got no changes
-		} else {
-			for(int i=0; i < changeIDs.length; i++) {
-				if (vc.isAdd()) {
-					groupManager.addMember(new Member(changeIDs[i]));
-				} else {
-					groupManager.removeMember(changeIDs[i]);
-				}
-			}
-		}
-	}
+    protected void handleViewChangeMessage(ContainerMessage mess)
+            throws IOException {
+        debug("handleViewChangeMessage(" + mess + ")");
+        ContainerMessage.ViewChangeMessage vc = (ContainerMessage.ViewChangeMessage) mess
+                .getData();
+        if (vc == null)
+            throw new IOException("view change message is null");
+        ID fromID = mess.getFromContainerID();
+        ID toID = mess.getToContainerID();
+        if (fromID == null || !fromID.equals(remoteServerID)) {
+            throw new IOException("view change message from " + fromID
+                    + " is not same as " + remoteServerID);
+        }
+        ID[] changeIDs = vc.getChangeIDs();
+        if (changeIDs == null) {
+            // do nothing if we've got no changes
+        } else {
+            for (int i = 0; i < changeIDs.length; i++) {
+                if (vc.isAdd()) {
+                    groupManager.addMember(new Member(changeIDs[i]));
+                } else {
+                    groupManager.removeMember(changeIDs[i]);
+                }
+            }
+        }
+    }
 
     protected void forwardExcluding(ID from, ID excluding, ContainerMessage data)
             throws IOException {
         // NOP
     }
+
     protected Serializable getConnectData(ID target, Object data) {
         return ContainerMessage.makeJoinGroupMessage(getID(), target,
                 getNextSequenceNumber(), (Serializable) data);
     }
+
     protected Serializable getLeaveData(ID target) {
         return null;
     }
+
     public void leaveGroup() {
-    	debug("leaveGroup");
+        debug("leaveGroup");
         synchronized (connectLock) {
             // If we are currently connected
             if (isConnected()) {
@@ -199,7 +223,8 @@ public abstract class ClientSOContainer extends SOContainer {
     }
 
     protected abstract ISynchAsynchConnection getClientConnection(
-            ID remoteSpace, Object data) throws ConnectionInstantiationException;
+            ID remoteSpace, Object data)
+            throws ConnectionInstantiationException;
 
     protected void handleChangeMsg(ID fromID, ID toID, long seqNum,
             Serializable data) throws IOException {
@@ -234,15 +259,19 @@ public abstract class ClientSOContainer extends SOContainer {
         connection.sendAsynch(message.getToContainerID(),
                 getBytesForObject(message));
     }
+
     protected void forwardExcluding(ID from, ID excluding, byte msg,
             Serializable data) throws IOException { /* NOP */
     }
+
     protected void forwardToRemote(ID from, ID to, ContainerMessage message)
             throws IOException { /* NOP */
     }
+
     protected ID getIDForConnection(IAsynchConnection conn) {
         return remoteServerID;
     }
+
     protected void memberLeave(ID fromID, IAsynchConnection conn) {
         if (fromID.equals(remoteServerID)) {
             groupManager.removeAllMembers();
@@ -254,6 +283,7 @@ public abstract class ClientSOContainer extends SOContainer {
             super.memberLeave(fromID, conn);
         }
     }
+
     protected void sendMessage(ContainerMessage data) throws IOException {
         // Get connect lock, then call super version
         synchronized (connectLock) {
@@ -261,6 +291,7 @@ public abstract class ClientSOContainer extends SOContainer {
             super.sendMessage(data);
         }
     }
+
     protected ID[] sendCreateMsg(ID toID, SharedObjectDescription createInfo)
             throws IOException {
         // Get connect lock, then call super version
@@ -269,6 +300,7 @@ public abstract class ClientSOContainer extends SOContainer {
             return super.sendCreateSharedObjectMessage(toID, createInfo);
         }
     }
+
     protected void processDisconnect(DisconnectConnectionEvent evt) {
         // Get connect lock, and just return if this connection has been
         // terminated
@@ -276,6 +308,7 @@ public abstract class ClientSOContainer extends SOContainer {
             super.processDisconnect(evt);
         }
     }
+
     protected void processAsynchPacket(AsynchConnectionEvent evt)
             throws IOException {
         // Get connect lock, then call super version
@@ -284,6 +317,7 @@ public abstract class ClientSOContainer extends SOContainer {
             super.processAsynch(evt);
         }
     }
+
     protected Serializable processSynch(SynchConnectionEvent evt)
             throws IOException {
         synchronized (connectLock) {
@@ -298,20 +332,21 @@ public abstract class ClientSOContainer extends SOContainer {
     protected boolean isConnected() {
         return (connectionState == CONNECTED);
     }
+
     protected boolean isConnecting() {
         return (connectionState == CONNECTING);
     }
+
     private void checkConnected() throws ConnectException {
         if (!isConnected())
             throw new ConnectException("not connected");
     }
+
     protected ID acceptNewServer(ContainerMessage serverData) throws Exception {
         ContainerMessage aPacket = serverData;
         ID fromID = aPacket.getFromContainerID();
-
         if (fromID == null)
             throw new InvalidObjectException("server id is null");
-
         ID[] ids = ((ContainerMessage.ViewChangeMessage) aPacket.getData()).changeIDs;
         if (ids == null)
             throw new java.io.InvalidObjectException("id array null");

@@ -1,13 +1,22 @@
+/****************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Composent, Inc. - initial API and implementation
+*****************************************************************************/
+
 package org.eclipse.ecf.provider.generic;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.identity.ID;
 
 public class SOContainerConfig implements ISharedObjectContainerConfig {
-
     ID id;
     Map properties;
 
@@ -15,10 +24,12 @@ public class SOContainerConfig implements ISharedObjectContainerConfig {
         this.id = id;
         this.properties = props;
     }
+
     public SOContainerConfig(ID id) {
         this.id = id;
         this.properties = new HashMap();
     }
+
     /*
      * (non-Javadoc)
      * 
@@ -45,5 +56,4 @@ public class SOContainerConfig implements ISharedObjectContainerConfig {
     public ID getID() {
         return id;
     }
-
 }

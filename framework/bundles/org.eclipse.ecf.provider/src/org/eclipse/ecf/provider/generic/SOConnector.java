@@ -1,3 +1,14 @@
+/****************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Composent, Inc. - initial API and implementation
+*****************************************************************************/
+
 /*
  * Created on Dec 20, 2004
  *  
@@ -6,7 +17,6 @@ package org.eclipse.ecf.provider.generic;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-
 import org.eclipse.ecf.core.ISharedObjectConnector;
 import org.eclipse.ecf.core.events.ISharedObjectEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -16,7 +26,6 @@ import org.eclipse.ecf.core.util.QueueException;
 import org.eclipse.ecf.provider.generic.events.SharedObjectCallEvent;
 
 public class SOConnector implements ISharedObjectConnector {
-
     ID sender;
     Hashtable receiverQueues = null;
 
@@ -34,6 +43,7 @@ public class SOConnector implements ISharedObjectConnector {
             queue.enqueue(event);
         }
     }
+
     protected void fireEvents(ISharedObjectEvent[] event) throws QueueException {
         for (Enumeration e = receiverQueues.elements(); e.hasMoreElements();) {
             QueueEnqueue queue = (QueueEnqueue) e.nextElement();
@@ -42,6 +52,7 @@ public class SOConnector implements ISharedObjectConnector {
             }
         }
     }
+
     protected AsynchResult[] fireCallEvent(ISharedObjectEvent event)
             throws QueueException {
         AsynchResult[] results = new AsynchResult[receiverQueues.size()];
@@ -54,6 +65,7 @@ public class SOConnector implements ISharedObjectConnector {
         }
         return results;
     }
+
     /*
      * (non-Javadoc)
      * 
@@ -112,5 +124,4 @@ public class SOConnector implements ISharedObjectConnector {
         }
         sender = null;
     }
-
 }

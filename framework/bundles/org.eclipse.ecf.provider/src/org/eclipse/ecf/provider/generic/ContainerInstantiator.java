@@ -1,3 +1,14 @@
+/****************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Composent, Inc. - initial API and implementation
+*****************************************************************************/
+
 package org.eclipse.ecf.provider.generic;
 
 import org.eclipse.ecf.core.ISharedObjectContainer;
@@ -6,8 +17,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
 
-public class ContainerInstantiator implements ISharedObjectContainerInstantiator {
-
+public class ContainerInstantiator implements
+        ISharedObjectContainerInstantiator {
     public ContainerInstantiator() {
         super();
     }
@@ -18,14 +29,14 @@ public class ContainerInstantiator implements ISharedObjectContainerInstantiator
             Boolean isClient = new Boolean(true);
             ID id = null;
             if (args != null) {
-	            if (args.length == 2) {
-	            	isClient = (Boolean) args[0];
-	            	id = (ID) args[1];
-	            } else if (args.length == 1) {
-	            	id = (ID) args[0];
-	            }
+                if (args.length == 2) {
+                    isClient = (Boolean) args[0];
+                    id = (ID) args[1];
+                } else if (args.length == 1) {
+                    id = (ID) args[0];
+                }
             } else {
-            	id = IDFactory.makeGUID();
+                id = IDFactory.makeGUID();
             }
             ISharedObjectContainer result = null;
             if (isClient.booleanValue()) {
@@ -34,8 +45,8 @@ public class ContainerInstantiator implements ISharedObjectContainerInstantiator
                 return new TCPServerSOContainer(new SOContainerConfig(id));
             }
         } catch (Exception e) {
-            throw new SharedObjectContainerInstantiationException("Exception creating generic container",e);
+            throw new SharedObjectContainerInstantiationException(
+                    "Exception creating generic container", e);
         }
     }
-
 }

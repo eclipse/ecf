@@ -1,3 +1,14 @@
+/****************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Composent, Inc. - initial API and implementation
+*****************************************************************************/
+
 package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
@@ -5,7 +16,6 @@ import java.io.InvalidObjectException;
 import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.Socket;
-
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
@@ -14,19 +24,22 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public class ServerSOContainer extends SOContainer {
-
     public ServerSOContainer(ISharedObjectContainerConfig config) {
         super(config);
     }
+
     public boolean isGroupServer() {
         return true;
     }
+
     public boolean isGroupManager() {
         return true;
     }
+
     public ID getGroupID() {
         return getID();
     }
+
     protected void queueContainerMessage(ContainerMessage message)
             throws IOException {
         if (message.getToContainerID() == null) {
@@ -39,11 +52,13 @@ public class ServerSOContainer extends SOContainer {
                         getBytesForObject(message));
         }
     }
+
     protected void forwardToRemote(ID from, ID to, ContainerMessage data)
             throws IOException {
         queueContainerMessage(new ContainerMessage(from, to,
                 getNextSequenceNumber(), data.getData()));
     }
+
     protected void forwardExcluding(ID from, ID excluding, ContainerMessage data)
             throws IOException {
         if (excluding == null) {
@@ -64,16 +79,19 @@ public class ServerSOContainer extends SOContainer {
                                             getNextSequenceNumber(), data
                                                     .getData())));
                         } catch (IOException e) {
-                        	logException("Exception in forwardExcluding from "+from+" with oldID "+oldID,e);
+                            logException("Exception in forwardExcluding from "
+                                    + from + " with oldID " + oldID, e);
                         }
                     }
                 }
             }
         }
     }
-	protected void handleViewChangeMessage(ContainerMessage mess) throws IOException {
+
+    protected void handleViewChangeMessage(ContainerMessage mess)
+            throws IOException {
         // Server should never receive change messages
-	}
+    }
 
     public void joinGroup(ID group, Object data)
             throws SharedObjectContainerJoinException {
@@ -81,6 +99,7 @@ public class ServerSOContainer extends SOContainer {
                 "Server cannot join group " + group.getName());
         throw e;
     }
+
     public void leaveGroup() {
         ejectAllGroupMembers();
     }
@@ -94,20 +113,17 @@ public class ServerSOContainer extends SOContainer {
             ID remoteID = mess.getFromContainerID();
             if (remoteID == null)
                 throw new InvalidObjectException("remote id is null");
-
             ContainerMessage.JoinGroupMessage jgm = (ContainerMessage.JoinGroupMessage) mess
                     .getData();
             if (jgm == null)
                 throw new IOException("join group message is null");
             ID memberIDs[] = null;
-
             synchronized (getGroupMembershipLock()) {
                 if (isClosing) {
                     Exception e = new InvalidObjectException(
                             "container is closing");
                     throw e;
                 }
-
                 if (addNewRemoteMember(remoteID, conn)) {
                     // Notify existing remotes about new member
                     try {
@@ -130,7 +146,8 @@ public class ServerSOContainer extends SOContainer {
             return ContainerMessage.makeViewChangeMessage(getID(), remoteID,
                     getNextSequenceNumber(), memberIDs, true, null);
         } catch (Exception e) {
-        	logException("Exception in acceptNewClient("+socket+","+target+","+data+","+conn,e);
+            logException("Exception in acceptNewClient(" + socket + ","
+                    + target + "," + data + "," + conn, e);
             // And then return null...which means refusal
             return null;
         }
@@ -166,9 +183,7 @@ public class ServerSOContainer extends SOContainer {
             if (conn == null)
                 return;
             try {
-                conn.sendAsynch(
-
-                memberID, getBytesForObject(ContainerMessage
+                conn.sendAsynch(memberID, getBytesForObject(ContainerMessage
                         .makeLeaveGroupMessage(getID(), memberID,
                                 getNextSequenceNumber(), null)));
             } catch (Exception e) {
@@ -196,6 +211,7 @@ public class ServerSOContainer extends SOContainer {
         }
         return null;
     }
+
     protected IAsynchConnection getConnectionForID(ID memberID) {
         Member mem = groupManager.getMemberForID(memberID);
         if (mem == null)
@@ -224,5 +240,4 @@ public class ServerSOContainer extends SOContainer {
         ejectAllGroupMembers();
         super.dispose(timeout);
     }
-
 }

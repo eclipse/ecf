@@ -1,3 +1,14 @@
+/****************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Composent, Inc. - initial API and implementation
+*****************************************************************************/
+
 /*
  * Created on Dec 20, 2004
  *  
@@ -12,7 +23,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConnector;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
@@ -31,10 +41,8 @@ import org.eclipse.ecf.provider.Trace;
  *  
  */
 public class SOManager implements ISharedObjectManager {
-
-	static Trace debug = Trace.create("sharedobjectmanager");
-
-	SOContainer container = null;
+    static Trace debug = Trace.create("sharedobjectmanager");
+    SOContainer container = null;
     Vector connectors = null;
 
     public SOManager(SOContainer cont) {
@@ -43,26 +51,30 @@ public class SOManager implements ISharedObjectManager {
         connectors = new Vector();
     }
 
-	protected void debug(String msg) {
-		if (Trace.ON && debug != null) {
-			debug.msg(msg + ":" + container.getID());
-		}
-	}
+    protected void debug(String msg) {
+        if (Trace.ON && debug != null) {
+            debug.msg(msg + ":" + container.getID());
+        }
+    }
 
-	protected void dumpStack(String msg, Throwable e) {
-		if (Trace.ON && debug != null) {
-			debug.dumpStack(e, msg + ":" + container.getID());
-		}
-	}
+    protected void dumpStack(String msg, Throwable e) {
+        if (Trace.ON && debug != null) {
+            debug.dumpStack(e, msg + ":" + container.getID());
+        }
+    }
+
     protected void addConnector(ISharedObjectConnector conn) {
         connectors.add(conn);
     }
+
     protected boolean removeConnector(ISharedObjectConnector conn) {
         return connectors.remove(conn);
     }
+
     protected List getConnectors() {
         return connectors;
     }
+
     protected Class[] getArgTypes(String[] argTypes, Object[] args,
             ClassLoader cl) throws ClassNotFoundException {
         return AbstractFactory.getClassesForTypes(argTypes, args, cl);
@@ -86,6 +98,7 @@ public class SOManager implements ISharedObjectManager {
         }
         return verifySharedObject(newObject);
     }
+
     protected ISharedObject verifySharedObject(Object newSharedObject) {
         if (newSharedObject instanceof ISharedObject)
             return (ISharedObject) newSharedObject;
@@ -94,6 +107,7 @@ public class SOManager implements ISharedObjectManager {
                     + newSharedObject.toString() + " does not implement "
                     + ISharedObject.class.getName());
     }
+
     protected ISharedObject loadSharedObject(SharedObjectDescription sd)
             throws Exception {
         // First get classloader
@@ -107,13 +121,14 @@ public class SOManager implements ISharedObjectManager {
         final Class newClass = Class.forName(sd.getClassname(), true, cl);
         return makeSharedObjectInstance(newClass, argTypes, args);
     }
+
     /*
      * (non-Javadoc)
      * 
      * @see org.eclipse.ecf.core.ISharedObjectManager#getSharedObjectIDs()
      */
     public ID[] getSharedObjectIDs() {
-    	debug("getSharedObjectIDs()");
+        debug("getSharedObjectIDs()");
         return container.getSharedObjectIDs();
     }
 
@@ -126,7 +141,7 @@ public class SOManager implements ISharedObjectManager {
     public ID createSharedObject(SharedObjectDescription sd,
             ISharedObjectContainerTransaction trans)
             throws SharedObjectCreateException {
-    	debug("createSharedObject("+sd+","+trans+")");
+        debug("createSharedObject(" + sd + "," + trans + ")");
         ISharedObject newObject = null;
         Throwable t = null;
         ID result = sd.getID();
@@ -148,7 +163,8 @@ public class SOManager implements ISharedObjectManager {
     public ID addSharedObject(ID sharedObjectID, ISharedObject sharedObject,
             Map properties, ISharedObjectContainerTransaction trans)
             throws SharedObjectAddException {
-    	debug("addSharedObject("+sharedObjectID+","+sharedObject+","+properties+","+trans+")");
+        debug("addSharedObject(" + sharedObjectID + "," + sharedObject + ","
+                + properties + "," + trans + ")");
         Throwable t = null;
         ID result = sharedObjectID;
         try {
@@ -170,7 +186,7 @@ public class SOManager implements ISharedObjectManager {
      * @see org.eclipse.ecf.core.ISharedObjectManager#getSharedObject(org.eclipse.ecf.core.identity.ID)
      */
     public ISharedObject getSharedObject(ID sharedObjectID) {
-    	debug("getSharedObject("+sharedObjectID+")");
+        debug("getSharedObject(" + sharedObjectID + ")");
         return container.getSharedObject(sharedObjectID);
     }
 
@@ -180,7 +196,7 @@ public class SOManager implements ISharedObjectManager {
      * @see org.eclipse.ecf.core.ISharedObjectManager#removeSharedObject(org.eclipse.ecf.core.identity.ID)
      */
     public ISharedObject removeSharedObject(ID sharedObjectID) {
-    	debug("getSharedObject("+sharedObjectID+")");
+        debug("getSharedObject(" + sharedObjectID + ")");
         return container.removeSharedObject(sharedObjectID);
     }
 
@@ -192,7 +208,8 @@ public class SOManager implements ISharedObjectManager {
      */
     public ISharedObjectConnector connectSharedObjects(ID sharedObjectFrom,
             ID[] sharedObjectsTo) throws SharedObjectConnectException {
-    	debug("connectSharedObjects("+sharedObjectFrom+","+sharedObjectsTo+")");
+        debug("connectSharedObjects(" + sharedObjectFrom + ","
+                + sharedObjectsTo + ")");
         if (sharedObjectFrom == null)
             throw new SharedObjectConnectException("sender cannot be null");
         if (sharedObjectsTo == null)
@@ -226,7 +243,8 @@ public class SOManager implements ISharedObjectManager {
      */
     public void disconnectSharedObjects(ISharedObjectConnector connector)
             throws SharedObjectDisconnectException {
-    	if (connector != null) debug("disconnectSharedObjects("+connector.getSender()+")");
+        if (connector != null)
+            debug("disconnectSharedObjects(" + connector.getSender() + ")");
         if (connector == null)
             throw new SharedObjectDisconnectException("connect cannot be null");
         if (!removeConnector(connector)) {
@@ -235,8 +253,9 @@ public class SOManager implements ISharedObjectManager {
         }
         connector.dispose();
     }
+
     protected void dispose() {
-    	debug("dispose()");
+        debug("dispose()");
         for (Enumeration e = connectors.elements(); e.hasMoreElements();) {
             ISharedObjectConnector conn = (ISharedObjectConnector) e
                     .nextElement();
@@ -244,13 +263,14 @@ public class SOManager implements ISharedObjectManager {
         }
         connectors.clear();
     }
+
     /*
      * (non-Javadoc)
      * 
      * @see org.eclipse.ecf.core.ISharedObjectManager#getSharedObjectConnectors(org.eclipse.ecf.core.identity.ID)
      */
     public List getSharedObjectConnectors(ID sharedObjectFrom) {
-    	debug("getSharedObjectConnectors("+sharedObjectFrom+")");
+        debug("getSharedObjectConnectors(" + sharedObjectFrom + ")");
         List results = new ArrayList();
         for (Enumeration e = connectors.elements(); e.hasMoreElements();) {
             ISharedObjectConnector conn = (ISharedObjectConnector) e
@@ -283,5 +303,4 @@ public class SOManager implements ISharedObjectManager {
         }
         return clazzes;
     }
-
 }

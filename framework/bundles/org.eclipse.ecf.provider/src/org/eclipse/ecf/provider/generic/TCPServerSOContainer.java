@@ -1,3 +1,14 @@
+/****************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Composent, Inc. - initial API and implementation
+*****************************************************************************/
+
 package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
@@ -5,7 +16,6 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.comm.ConnectionRequestHandler;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
@@ -14,7 +24,6 @@ import org.eclipse.ecf.core.identity.IDFactory;
 
 public class TCPServerSOContainer extends ServerSOContainer implements
         ConnectionRequestHandler {
-
     public static final String DEFAULT_PROTOCOL = "ecftcp";
     public static final int DEFAULT_PORT = 3282;
     public static final int DEFAULT_KEEPALIVE = 30000;
@@ -26,13 +35,16 @@ public class TCPServerSOContainer extends ServerSOContainer implements
     protected int getKeepAlive() {
         return keepAlive;
     }
+
     public static String getServerURL(String host, String name) {
         return DEFAULT_PROTOCOL + "://" + host + ":" + DEFAULT_PORT + "/"
                 + name;
     }
+
     public static String getDefaultServerURL() {
         return getServerURL("localhost", DEFAULT_NAME);
     }
+
     public TCPServerSOContainer(ISharedObjectContainerConfig config,
             TCPServerSOContainerGroup grp, int keepAlive) throws IOException,
             URISyntaxException {
@@ -55,12 +67,14 @@ public class TCPServerSOContainer extends ServerSOContainer implements
         super(config);
         initialize(listener, path, keepAlive);
     }
+
     protected void initialize(TCPServerSOContainerGroup listener, String path,
             int keepAlive) {
         this.keepAlive = keepAlive;
         this.group = listener;
         this.group.add(path, this);
     }
+
     public void dispose(long timeout) {
         URI aURI = null;
         try {
@@ -73,10 +87,12 @@ public class TCPServerSOContainer extends ServerSOContainer implements
         group = null;
         super.dispose(timeout);
     }
+
     public TCPServerSOContainer(ISharedObjectContainerConfig config)
             throws IOException, URISyntaxException {
         this(config, null, DEFAULT_PORT);
     }
+
     public Serializable checkConnect(Socket socket, String target,
             Serializable data, ISynchAsynchConnection conn) {
         return acceptNewClient(socket, target, data, conn);
@@ -91,7 +107,6 @@ public class TCPServerSOContainer extends ServerSOContainer implements
         ID server = IDFactory.makeStringID(getDefaultServerURL());
         TCPServerSOContainer cont = new TCPServerSOContainer(
                 new SOContainerConfig(server));
-
         Thread.sleep(3000000);
     }
 }

@@ -1,3 +1,14 @@
+/****************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Composent, Inc. - initial API and implementation
+*****************************************************************************/
+
 /*
  * Created on Nov 29, 2004
  *  
@@ -5,14 +16,12 @@
 package org.eclipse.ecf.provider.generic;
 
 import java.util.Map;
-
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.QueueEnqueue;
 
 public class SOConfig implements ISharedObjectConfig {
-
     SOContainer container = null;
     ID sharedObjectID;
     ID homeContainerID;
@@ -80,5 +89,4 @@ public class SOConfig implements ISharedObjectConfig {
     public Map getProperties() {
         return properties;
     }
-
 }
