@@ -29,11 +29,20 @@ public class Trace {
             pluginName = ECFPlugin.getDefault().getBundle()
                     .getSymbolicName();
         } catch (Exception e) {
-            // No eclipse Platform available
-            System.out.println("Eclipse platform not available.  "+Trace.class.getName());
+            try {
+                String val = System.getProperty("org.eclipse.ecf.core.internal.Trace");
+                if (val != null) {
+                    setTrace(true);
+                    isEclipse = false;
+                    // No eclipse Platform available
+                    System.out.println("WARNING:  Eclipse platform not available for trace...using system.out for org.eclipse.ecf");
+                } else {
+                    System.out.println(Trace.class.getName()+": OFF");
+                }
+            } catch (Exception except) {
+            }
         }
     }
-
     public static void setTrace(boolean on) {
         ON = on;
     }

@@ -29,8 +29,18 @@ public class Trace {
             pluginName = ProviderPlugin.getDefault().getBundle()
                     .getSymbolicName();
         } catch (Exception e) {
-            // No eclipse Platform available
-            System.out.println("Eclipse platform not available.  "+Trace.class.getName());
+            try {
+                String val = System.getProperty("org.eclipse.ecf.provider.Trace");
+                if (val != null) {
+                    setTrace(true);
+                    isEclipse = false;
+                    // No eclipse Platform available
+                    System.out.println("WARNING:  Eclipse platform not available for trace...using system.out for org.eclipse.ecf.provider");                    
+                } else {
+                    System.out.println(Trace.class.getName()+": OFF");
+                }
+            } catch (Exception except) {
+            }
         }
     }
 
@@ -78,7 +88,4 @@ public class Trace {
         name = tracePrefix+str;
     }
 
-    public static void setThreadDebugGroup(Object obj) {
-        // Do nothing
-    }
 }

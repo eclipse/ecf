@@ -26,8 +26,10 @@ public class TCPServerSOContainer extends ServerSOContainer implements
         ConnectionRequestHandler {
     public static final String DEFAULT_PROTOCOL = "ecftcp";
     public static final int DEFAULT_PORT = 3282;
-    public static final int DEFAULT_KEEPALIVE = 30000;
-    public static final String DEFAULT_NAME = "server";
+    public static final int DEFAULT_KEEPALIVE = 10000;
+    public static final String DEFAULT_NAME = "/server";
+    public static final String DEFAULT_HOST = "localhost";
+    
     // Keep alive value
     protected int keepAlive;
     protected TCPServerSOContainerGroup group;
@@ -90,9 +92,11 @@ public class TCPServerSOContainer extends ServerSOContainer implements
 
     public TCPServerSOContainer(ISharedObjectContainerConfig config)
             throws IOException, URISyntaxException {
-        this(config, null, DEFAULT_PORT);
+        this(config, null, DEFAULT_KEEPALIVE);
     }
-
+    public TCPServerSOContainer(ISharedObjectContainerConfig config, int keepAlive) throws IOException, URISyntaxException {
+        this(config,null,keepAlive);
+    }
     public Serializable checkConnect(Socket socket, String target,
             Serializable data, ISynchAsynchConnection conn) {
         return acceptNewClient(socket, target, data, conn);

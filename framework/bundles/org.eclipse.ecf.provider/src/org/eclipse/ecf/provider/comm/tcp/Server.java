@@ -68,7 +68,7 @@ public class Server extends ServerSocket {
                     debug.msg("Closing listener normally.");
                 }
             }
-        }, "Server(" + getLocalPort() + ")");
+        }, "ServerApplication(" + getLocalPort() + ")");
     }
 
     protected void handleAccept(final Socket aSocket) {

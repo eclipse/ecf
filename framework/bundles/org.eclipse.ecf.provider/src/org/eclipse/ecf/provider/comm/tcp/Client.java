@@ -204,7 +204,7 @@ public final class Client implements ISynchAsynchConnection {
             throws IOException {
         debug("connect(" + remote + "," + data + "," + timeout + ")");
         if (socket != null)
-            throw new ConnectException("Client already connected");
+            throw new ConnectException("ClientApplication already connected");
         URI anURI = null;
         try {
             anURI = remote.toURI();
@@ -348,7 +348,7 @@ public final class Client implements ISynchAsynchConnection {
         }
         // Before returning, actually remove remote objects
         //handler.handleDisconnectEvent(new DisconnectConnectionEvent(
-        //Client.this, null, queue));
+        //ClientApplication.this, null, queue));
     }
 
     private Thread getRcvThread() {

@@ -100,13 +100,13 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 
     protected void handleViewChangeMessage(ContainerMessage mess)
             throws IOException {
-        // Server should never receive change messages
+        // ServerApplication should never receive change messages
     }
 
     public void joinGroup(ID group, Object data)
             throws SharedObjectContainerJoinException {
         SharedObjectContainerJoinException e = new SharedObjectContainerJoinException(
-                "Server cannot join group " + group.getName());
+                "ServerApplication cannot join group " + group.getName());
         throw e;
     }
 

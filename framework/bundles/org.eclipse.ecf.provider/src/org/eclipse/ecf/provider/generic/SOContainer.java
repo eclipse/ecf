@@ -392,7 +392,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
     /**
      * @param sd
-     * @return
+     * @return Object []
      */
     public Object[] getArgsFromProperties(SharedObjectDescription sd) {
         if (sd == null)
@@ -413,7 +413,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
     /**
      * @param sd
-     * @return
+     * @return String []
      */
     public String[] getArgTypesFromProperties(SharedObjectDescription sd) {
         if (sd == null)
@@ -445,7 +445,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
     /**
      * @param sd
-     * @return
+     * @return ClassLoader
      */
     protected ClassLoader getClassLoaderForSharedObject(
             SharedObjectDescription sd) {

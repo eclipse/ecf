@@ -28,10 +28,15 @@ public class ContainerInstantiator implements
         try {
             Boolean isClient = new Boolean(true);
             ID id = null;
+            Integer keepAlive = new Integer(TCPServerSOContainer.DEFAULT_KEEPALIVE);
             if (args != null) {
-                if (args.length == 2) {
+                if (args.length == 3) {
                     isClient = (Boolean) args[0];
                     id = (ID) args[1];
+                    keepAlive = (Integer) args[2];
+                } else if (args.length == 2) {
+                    id = (ID) args[0];
+                    keepAlive = (Integer) args[1];
                 } else if (args.length == 1) {
                     id = (ID) args[0];
                 }
@@ -40,9 +45,9 @@ public class ContainerInstantiator implements
             }
             ISharedObjectContainer result = null;
             if (isClient.booleanValue()) {
-                return new TCPClientSOContainer(new SOContainerConfig(id));
+                return new TCPClientSOContainer(new SOContainerConfig(id),keepAlive.intValue());
             } else {
-                return new TCPServerSOContainer(new SOContainerConfig(id));
+                return new TCPServerSOContainer(new SOContainerConfig(id),keepAlive.intValue());
             }
         } catch (Exception e) {
             throw new SharedObjectContainerInstantiationException(
