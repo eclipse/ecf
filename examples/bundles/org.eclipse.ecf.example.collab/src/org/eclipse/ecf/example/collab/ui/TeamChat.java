@@ -50,7 +50,7 @@ class TeamChat extends Composite {
 
 		treeView = 
 			new ChatTreeViewer(
-				useChatWindow ? (Composite) this : (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+				useChatWindow ? (Composite) this : (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		treeView.setAutoExpandLevel(LineChatClientView.TREE_EXPANSION_LEVELS);
 		vc = new ViewContentProvider(view);
 		
@@ -87,7 +87,7 @@ class TeamChat extends Composite {
         if (showTree) {
             treeView = 
                 new ChatTreeViewer(
-                    useChatWindow ? (Composite) this : (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+                    useChatWindow ? (Composite) this : (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
             treeView.setAutoExpandLevel(LineChatClientView.TREE_EXPANSION_LEVELS);
             vc = new ViewContentProvider(view);
             

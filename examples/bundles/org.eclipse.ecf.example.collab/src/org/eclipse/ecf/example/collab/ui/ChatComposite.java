@@ -138,7 +138,7 @@ public class ChatComposite extends Composite {
 		setLayout(cl);
 		treeView = tree;
 		textoutput = new TextViewer(this, SWT.V_SCROLL | SWT.H_SCROLL
-				| SWT.WRAP);
+				| SWT.WRAP | SWT.BORDER);
 		String fontName = ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_CHAT_FONT);
 		if (!(fontName == null) && !(fontName.equals(""))) {
 			FontRegistry fr = ClientPlugin.getDefault().getFontRegistry();
