@@ -22,6 +22,7 @@ import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.sdo.IPublicationCallback;
 import org.eclipse.ecf.sdo.ISharedDataGraph;
 import org.eclipse.ecf.sdo.ISubscriptionCallback;
 import org.eclipse.ecf.sdo.IUpdateConsumer;
@@ -40,6 +41,8 @@ public class SharedDataGraph extends PlatformObject implements ISharedObject,
 
 	private final ISubscriptionCallback subscriptionCallback;
 
+	private final IPublicationCallback publicationCallback;
+
 	private final IUpdateProvider updateProvider;
 
 	private ISharedObjectConfig config;
@@ -52,6 +55,7 @@ public class SharedDataGraph extends PlatformObject implements ISharedObject,
 
 	SharedDataGraph(DataGraph dataGraph, IUpdateProvider updateProvider,
 			IUpdateConsumer updateConsumer,
+			IPublicationCallback publicationCallback,
 			ISubscriptionCallback subscriptionCallback) {
 		if (updateProvider == null)
 			throw new IllegalArgumentException("updateProvider");
@@ -62,6 +66,7 @@ public class SharedDataGraph extends PlatformObject implements ISharedObject,
 		this.dataGraph = dataGraph;
 		this.updateProvider = updateProvider;
 		this.updateConsumer = updateConsumer;
+		this.publicationCallback = publicationCallback;
 		this.subscriptionCallback = subscriptionCallback;
 	}
 
@@ -138,6 +143,12 @@ public class SharedDataGraph extends PlatformObject implements ISharedObject,
 			config = initData;
 		else
 			throw new SharedObjectInitException("Already initialized.");
+
+		if (version == null)
+			version = new Version(config.getSharedObjectID());
+
+		if (dataGraph != null)
+			dataGraph.getChangeSummary().beginLogging();
 	}
 
 	/*
@@ -158,12 +169,8 @@ public class SharedDataGraph extends PlatformObject implements ISharedObject,
 						if (subscriptionCallback != null)
 							subscriptionCallback.subscriptionFailed(this, e);
 					}
-				} else {
-					if (version == null)
-						version = new Version(config.getSharedObjectID());
-
-					dataGraph.getChangeSummary().beginLogging();
-				}
+				} else if (publicationCallback != null)
+					publicationCallback.dataGraphPublished(this);
 			}
 		} else if (event instanceof ISharedObjectDeactivatedEvent
 				&& ((ISharedObjectDeactivatedEvent) event).getDeactivatedID()

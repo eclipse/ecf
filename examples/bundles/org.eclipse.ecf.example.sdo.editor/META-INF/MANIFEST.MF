@@ -15,3 +15,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ecf.test.provider,
  org.eclipse.ecf.example.collab
 Eclipse-AutoStart: true
+Provide-Package: org.eclipse.ecf.example.sdo.editor
+Export-Package: org.eclipse.ecf.example.sdo.editor

@@ -36,31 +36,35 @@ public interface IDataGraphSharing {
 	 *            implementation
 	 * @param consumer
 	 *            application-specific update consumer
+	 * @param callback
+	 *            optional callback used to notify the caller about publication
+	 *            status
 	 * @return shared data graph
 	 * @throws ECFException
 	 */
 	ISharedDataGraph publish(DataGraph dataGraph, ID id,
-			IUpdateProvider provider, IUpdateConsumer consumer)
-			throws ECFException;
+			IUpdateProvider provider, IUpdateConsumer consumer,
+			IPublicationCallback callback) throws ECFException;
 
 	/**
 	 * Subscribes to a data graph with the given id.
 	 * 
 	 * @param id
 	 *            identifier of a previously-published data graph
-	 * @param callback
-	 *            optional callback used to notify the caller about subscription
-	 *            status
 	 * @param provider
 	 *            update provider compatible with the given data graph's
 	 *            implementation
 	 * @param consumer
 	 *            application-specific update consumer
+	 * @param callback
+	 *            optional callback used to notify the caller about subscription
+	 *            status
+	 * 
 	 * @return shared data graph
 	 * @throws ECFException
 	 */
-	ISharedDataGraph subscribe(ID id, ISubscriptionCallback callback,
-			IUpdateProvider provider, IUpdateConsumer consumer)
+	ISharedDataGraph subscribe(ID id, IUpdateProvider provider,
+			IUpdateConsumer consumer, ISubscriptionCallback callback)
 			throws ECFException;
 
 	/**

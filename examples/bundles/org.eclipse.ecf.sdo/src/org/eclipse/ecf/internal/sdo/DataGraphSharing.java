@@ -19,6 +19,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.sdo.IDataGraphSharing;
+import org.eclipse.ecf.sdo.IPublicationCallback;
 import org.eclipse.ecf.sdo.ISharedDataGraph;
 import org.eclipse.ecf.sdo.ISubscriptionCallback;
 import org.eclipse.ecf.sdo.IUpdateConsumer;
@@ -45,11 +46,12 @@ public class DataGraphSharing extends PlatformObject implements
 	 * @see org.eclipse.ecf.sdo.IDataGraphSharing#publish(commonj.sdo.DataGraph,
 	 *      org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.sdo.IUpdateProvider,
-	 *      org.eclipse.ecf.sdo.IUpdateConsumer)
+	 *      org.eclipse.ecf.sdo.IUpdateConsumer,
+	 *      org.eclipse.ecf.sdo.IPublicationCallback)
 	 */
 	public synchronized ISharedDataGraph publish(DataGraph dataGraph, ID id,
-			IUpdateProvider provider, IUpdateConsumer consumer)
-			throws ECFException {
+			IUpdateProvider provider, IUpdateConsumer consumer,
+			IPublicationCallback callback) throws ECFException {
 
 		if (config == null)
 			throw new ECFException("Not initialized.");
@@ -57,7 +59,7 @@ public class DataGraphSharing extends PlatformObject implements
 		// create local object
 		ISharedObjectManager mgr = config.getContext().getSharedObjectManager();
 		SharedDataGraph sdg = new SharedDataGraph(dataGraph, provider,
-				consumer, null);
+				consumer, callback, null);
 		sdg.setDebug(debug);
 
 		mgr.addSharedObject(id, sdg, null, null);
@@ -73,8 +75,8 @@ public class DataGraphSharing extends PlatformObject implements
 	 *      org.eclipse.ecf.sdo.IUpdateConsumer)
 	 */
 	public synchronized ISharedDataGraph subscribe(ID id,
-			ISubscriptionCallback callback, IUpdateProvider provider,
-			IUpdateConsumer consumer) throws ECFException {
+			IUpdateProvider provider, IUpdateConsumer consumer,
+			ISubscriptionCallback callback) throws ECFException {
 
 		if (config == null)
 			throw new ECFException("Not initialized.");
@@ -82,7 +84,7 @@ public class DataGraphSharing extends PlatformObject implements
 		// create local object
 		ISharedObjectManager mgr = config.getContext().getSharedObjectManager();
 		SharedDataGraph sdg = new SharedDataGraph(null, provider, consumer,
-				callback);
+				null, callback);
 		sdg.setDebug(debug);
 
 		mgr.addSharedObject(id, sdg, null, null);

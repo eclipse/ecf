@@ -17,7 +17,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.sdo.ISharedDataGraph;
 import org.eclipse.ecf.sdo.IUpdateConsumer;
-import org.eclipse.ecf.sdo.WaitableSubscriptionCallback;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.sdo.EDataGraph;
@@ -32,104 +31,86 @@ import commonj.sdo.DataGraph;
  */
 public class SharedSDOEditor extends SDOEditor {
 
-    private class UpdateConsumer implements IUpdateConsumer {
-        public boolean consumeUpdate(ISharedDataGraph graph, ID containerID) {
-            ChangeSummary changeSummary = graph.getDataGraph()
-                    .getChangeSummary();
-            changeSummary.endLogging();
-            SharedSDOEditor.super.doSave(null);
-            changeSummary.beginLogging();
-            return true;
-        }
+	private class UpdateConsumer implements IUpdateConsumer {
+		public boolean consumeUpdate(ISharedDataGraph graph, ID containerID) {
+			ChangeSummary changeSummary = graph.getDataGraph()
+					.getChangeSummary();
+			changeSummary.endLogging();
+			SharedSDOEditor.super.doSave(null);
+			changeSummary.beginLogging();
+			return true;
+		}
 
-        public void updateFailed(ISharedDataGraph graph, ID containerID,
-                Throwable cause) {
-            EditorPlugin.getDefault().log(
-                    new CoreException(new Status(Status.ERROR, EditorPlugin
-                            .getDefault().getBundle().getSymbolicName(), 0,
-                            "Data graph upate failed.", cause)));
-        }
-    }
+		public void updateFailed(ISharedDataGraph graph, ID containerID,
+				Throwable cause) {
+			EditorPlugin.getDefault().log(
+					new CoreException(new Status(Status.ERROR, EditorPlugin
+							.getDefault().getBundle().getSymbolicName(), 0,
+							"Data graph upate failed.", cause)));
+		}
+	}
 
-    private ISharedDataGraph sharedDataGraph;
+	private ISharedDataGraph sharedDataGraph;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.emf.ecore.sdo.presentation.SDOEditor#createModel()
-     */
-    public void createModel() {
-        try {
-            IFileEditorInput modelFile = (IFileEditorInput) getEditorInput();
-            String path = modelFile.getFile().getFullPath().toString();
-            URI uri = URI.createPlatformResourceURI(modelFile.getFile()
-                    .getFullPath().toString());
-            if (EditorPlugin.getDefault().isPublished(path)) {
-                WaitableSubscriptionCallback mutex = new WaitableSubscriptionCallback();
-                sharedDataGraph = EditorPlugin.getDefault().subscribe(path,
-                        mutex, new UpdateConsumer());
-                ID containerID = null;
-                Throwable cause = null;
-                try {
-                    containerID = mutex.waitForSubscription(10000);
-                } catch (InterruptedException e) {
-                    cause = e;
-                }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.emf.ecore.sdo.presentation.SDOEditor#createModel()
+	 */
+	public void createModel() {
+		try {
+			IFileEditorInput modelFile = (IFileEditorInput) getEditorInput();
+			String path = modelFile.getFile().getFullPath().toString();
+			URI uri = URI.createPlatformResourceURI(modelFile.getFile()
+					.getFullPath().toString());
+			if (EditorPlugin.getDefault().isPublished(path)) {
+				sharedDataGraph = EditorPlugin.getDefault().subscribe(path,
+						new UpdateConsumer());
+				EDataGraph dataGraph = (EDataGraph) sharedDataGraph
+						.getDataGraph();
+				dataGraph.getDataGraphResource().setURI(uri);
+				editingDomain.getResourceSet().getResources().addAll(
+						dataGraph.getResourceSet().getResources());
+				dataGraph.setResourceSet(editingDomain.getResourceSet());
+			} else {
+				Resource resource = editingDomain.loadResource(uri.toString());
+				DataGraph dataGraph = (DataGraph) resource.getContents().get(0);
+				sharedDataGraph = EditorPlugin.getDefault().publish(path,
+						dataGraph, new UpdateConsumer());
+			}
+		} catch (ECFException e) {
+			EditorPlugin.getDefault().log(e);
+			if (sharedDataGraph != null) {
+				sharedDataGraph.dispose();
+				sharedDataGraph = null;
+			}
+		}
+	}
 
-                if (containerID == null) {
-                    EditorPlugin.getDefault().log(
-                            new CoreException(new Status(Status.ERROR,
-                                    EditorPlugin.getDefault().getBundle()
-                                            .getSymbolicName(), 0,
-                                    "Failed to subscribe.", cause)));
-                    return;
-                }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.emf.ecore.sdo.presentation.SDOEditor#doSave(org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public void doSave(IProgressMonitor progressMonitor) {
+		super.doSave(progressMonitor);
+		if (sharedDataGraph != null)
+			try {
+				sharedDataGraph.commit();
+			} catch (ECFException e) {
+				EditorPlugin.getDefault().log(e);
+			}
+	}
 
-                EDataGraph dataGraph = (EDataGraph) sharedDataGraph
-                        .getDataGraph();
-                dataGraph.getDataGraphResource().setURI(uri);
-                editingDomain.getResourceSet().getResources().addAll(
-                        dataGraph.getResourceSet().getResources());
-                dataGraph.setResourceSet(editingDomain.getResourceSet());
-            } else {
-                Resource resource = editingDomain.loadResource(uri.toString());
-                DataGraph dataGraph = (DataGraph) resource.getContents().get(0);
-                sharedDataGraph = EditorPlugin.getDefault().publish(path,
-                        dataGraph, new UpdateConsumer());
-            }
-        } catch (ECFException e) {
-            EditorPlugin.getDefault().log(e);
-            if (sharedDataGraph != null) {
-                sharedDataGraph.dispose();
-                sharedDataGraph = null;
-            }
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.emf.ecore.sdo.presentation.SDOEditor#dispose()
+	 */
+	public void dispose() {
+		if (sharedDataGraph != null)
+			sharedDataGraph.dispose();
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.emf.ecore.sdo.presentation.SDOEditor#doSave(org.eclipse.core.runtime.IProgressMonitor)
-     */
-    public void doSave(IProgressMonitor progressMonitor) {
-        super.doSave(progressMonitor);
-        if (sharedDataGraph != null)
-            try {
-                sharedDataGraph.commit();
-            } catch (ECFException e) {
-                EditorPlugin.getDefault().log(e);
-            }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.emf.ecore.sdo.presentation.SDOEditor#dispose()
-     */
-    public void dispose() {
-        if (sharedDataGraph != null)
-            sharedDataGraph.dispose();
-
-        super.dispose();
-    }
+		super.dispose();
+	}
 }
