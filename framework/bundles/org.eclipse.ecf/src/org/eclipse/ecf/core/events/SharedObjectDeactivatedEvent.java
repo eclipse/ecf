@@ -21,10 +21,10 @@ public class SharedObjectDeactivatedEvent implements ContainerEvent {
         this.containerID = container;
         this.deactivated = deact;
     }
-    public ID getDeactivated() {
+    public ID getDeactivatedID() {
         return deactivated;
     }
-    public ID getContainerID() {
+    public ID getLocalContainerID() {
         return containerID;
     }
     public String toString() {

@@ -9,30 +9,24 @@
 
 package org.eclipse.ecf.core.events;
 
-import java.io.Serializable;
-
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectContainerLeaveEvent implements ContainerEvent {
+public class SharedObjectContainerJoinedEvent implements ContainerEvent {
 
-    ID containerID = null;
-    ID groupManagerID = null;
+    ID other;
+    ID containerID;
 
-    Serializable data = null;
-
-    public SharedObjectContainerLeaveEvent(ID containerID, ID groupManagerID) {
-        this.containerID = containerID;
-        this.groupManagerID = groupManagerID;
+    public SharedObjectContainerJoinedEvent(ID container, ID o) {
+        super();
+        this.containerID = container;
+        this.other = o;
     }
-    public ID getContainerID() {
+
+    public ID getJoinedContainerID() {
+        return other;
+    }
+
+    public ID getLocalContainerID() {
         return containerID;
     }
-
-    public ID getGroupManager() {
-        return groupManagerID;
-    }
-    public void setData(Serializable data) {
-        this.data = data;
-    }
-
 }

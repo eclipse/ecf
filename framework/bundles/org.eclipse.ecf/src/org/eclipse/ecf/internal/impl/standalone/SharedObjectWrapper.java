@@ -9,7 +9,7 @@ import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerJoinEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.AsynchResult;
@@ -95,12 +95,6 @@ final class SharedObjectWrapper {
 	}
 	private void destroyed() {
 		if (!queue.isStopped()) {
-		    /*
-			RepSpaceReference mySpaceRef = sharedObjectConfig.getSpaceReference();
-			if (mySpaceRef != null) {
-				mySpaceRef.clear();
-			}
-			*/
 			// Enqueue destroy message on our RepObject's queue
 			if (thread != null)
 				queue.enqueue(new DisposeEvent());
@@ -119,7 +113,7 @@ final class SharedObjectWrapper {
 	void memberChanged(Item m, boolean add) {
 		if (thread != null) {
 			if (add) {
-				send(new SharedObjectContainerJoinEvent(containerID,m.getID()));
+				send(new SharedObjectContainerJoinedEvent(containerID,m.getID()));
 			} else {
 				send(new SharedObjectContainerDepartedEvent(containerID,m.getID()));
 			}

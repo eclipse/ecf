@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * @see ISharedObjectContainer#getConfig()
  */
-public interface ISharedObjectContainerConfig extends IIDentifiable {
+public interface ISharedObjectContainerConfig extends IIdentifiable {
 
     /**
      * The properties associated with the owner ISharedObjectContainer

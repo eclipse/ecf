@@ -24,14 +24,14 @@ public class SharedObjectActivatedEvent implements ContainerEvent {
         this.members = others;
     }
 
-    public ID getActivated() {
+    public ID getActivatedID() {
         return activated;
     }
 
-    public ID getContainerID() {
+    public ID getLocalContainerID() {
         return containerID;
     }
-    public ID[] getMembers() {
+    public ID[] getGroupMemberIDs() {
         return members;
     }
 

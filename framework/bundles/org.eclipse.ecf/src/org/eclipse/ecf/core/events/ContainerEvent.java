@@ -14,5 +14,5 @@ import org.eclipse.ecf.core.util.Event;
 
 public interface ContainerEvent extends Event {
 
-    public ID getContainerID();
+    public ID getLocalContainerID();
 }

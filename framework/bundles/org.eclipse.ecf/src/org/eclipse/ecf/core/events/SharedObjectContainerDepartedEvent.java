@@ -22,10 +22,10 @@ public class SharedObjectContainerDepartedEvent implements ContainerEvent {
         this.other = o;
     }
 
-    public ID getDepartedContainer() {
+    public ID getDepartedContainerID() {
         return other;
     }
-    public ID getContainerID() {
+    public ID getLocalContainerID() {
         return containerID;
     }
 }

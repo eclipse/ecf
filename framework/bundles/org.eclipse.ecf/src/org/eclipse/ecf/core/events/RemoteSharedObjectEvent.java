@@ -18,15 +18,18 @@ public class RemoteSharedObjectEvent implements SharedObjectEvent, Serializable 
 
     ID senderSharedObjectID;
     ID containerID;
-    Serializable data;
+    ID remoteContainerID;
+    Object data;
 
-    public RemoteSharedObjectEvent(ID sender, ID cont, Serializable data) {
+    public RemoteSharedObjectEvent(ID senderObj, ID localCont, ID remoteCont, Object data) {
         super();
-        this.senderSharedObjectID = sender;
-        this.containerID = cont;
+        this.senderSharedObjectID = senderObj;
+        this.containerID = localCont;
+        this.remoteContainerID = remoteCont;
+        this.data = data;
     }
 
-    public ID getContainer() {
+    public ID getLocalContainerID() {
         return containerID;
     }
     /*
@@ -37,24 +40,22 @@ public class RemoteSharedObjectEvent implements SharedObjectEvent, Serializable 
     public ID getSenderSharedObjectID() {
         return senderSharedObjectID;
     }
+    public ID getRemoteContainerID() {
+        return remoteContainerID;
+    }
     public Event getEvent() {
         return this;
     }
-    public Serializable getData() {
+    public Object getData() {
         return data;
     }
 
     public String toString() {
         StringBuffer sb = new StringBuffer("RemoteSharedObjectEvent[sender:");
-        if (senderSharedObjectID != null)
-            sb.append(senderSharedObjectID.getName()).append(",");
-        else
-            sb.append("null,");
-        sb.append("container:");
-        if (containerID != null)
-            sb.append(containerID.getName()).append(",");
-        sb.append("data:");
-        sb.append(data).append("]");
+        sb.append("soid:").append((senderSharedObjectID==null)?"null":senderSharedObjectID.getName()).append(";");
+        sb.append("lcont:").append((containerID==null)?"null":containerID.getName()).append(";");
+        sb.append("rcont:").append((remoteContainerID==null)?"null":remoteContainerID.getName()).append(";");
+        sb.append("data:").append("]");
         return sb.toString();
     }
 }

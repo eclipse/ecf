@@ -7,7 +7,7 @@ import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerJoinEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
@@ -95,7 +95,7 @@ final class StandaloneSharedObjectWrapper {
 	void memberChanged(Item m, boolean add) {
 		if (thread != null) {
 			if (add) {
-				send(new SharedObjectContainerJoinEvent(containerID,m.getID()));
+				send(new SharedObjectContainerJoinedEvent(containerID,m.getID()));
 			} else {
 				send(new SharedObjectContainerDepartedEvent(containerID,m.getID()));
 			}

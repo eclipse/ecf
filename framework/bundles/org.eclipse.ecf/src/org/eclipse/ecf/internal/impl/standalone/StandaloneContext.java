@@ -44,7 +44,7 @@ public class StandaloneContext implements ISharedObjectContext {
     /* (non-Javadoc)
      * @see org.eclipse.ecf.core.ISharedObjectContext#getContainerID()
      */
-    public synchronized ID getContainerID() {
+    public synchronized ID getLocalContainerID() {
         if (isInactive()) {
             return null;
         } return container.getConfig().getID();
@@ -117,10 +117,10 @@ public class StandaloneContext implements ISharedObjectContext {
     /* (non-Javadoc)
      * @see org.eclipse.ecf.core.ISharedObjectContext#getGroupMembership()
      */
-    public synchronized ID[] getGroupMembership() {
+    public synchronized ID[] getGroupMemberIDs() {
         if (isInactive()) {
             return null;
-        } else return container.getGroupMembership();
+        } else return container.getGroupMemberIDs();
     }
 
     /* (non-Javadoc)

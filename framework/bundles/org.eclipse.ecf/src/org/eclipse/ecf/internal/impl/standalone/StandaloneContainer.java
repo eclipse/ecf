@@ -162,7 +162,7 @@ public class StandaloneContainer implements ISharedObjectContainer,
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContainer#getGroupMembership()
      */
-    public ID[] getGroupMembership() {
+    public ID[] getGroupMemberIDs() {
         return new ID[] { getID() };
     }
 

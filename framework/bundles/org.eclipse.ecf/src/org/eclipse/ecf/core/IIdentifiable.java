@@ -7,7 +7,7 @@ import org.eclipse.ecf.core.identity.ID;
  * an ECF identity.  
  *
  */
-public interface IIDentifiable {
+public interface IIdentifiable {
 
     /**
      * Get the ID for this 'identifiable' object

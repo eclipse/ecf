@@ -1302,7 +1302,7 @@ public abstract class SharedObjectContainer implements ISharedObjectContainer {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContainer#getGroupMembership()
      */
-    public ID[] getGroupMembership() {
+    public ID[] getGroupMemberIDs() {
         return getOtherItemsIDs();
     }
 

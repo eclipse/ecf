@@ -33,7 +33,7 @@ public interface ISharedObjectContext {
      * 
      * @return the ID of the enclosing container
      */
-    public ID getContainerID();
+    public ID getLocalContainerID();
     /**
      * Get the ISharedObjectManager for this context
      * @return ISharedObjectManager the shared object manager instance for this
@@ -88,9 +88,9 @@ public interface ISharedObjectContext {
     /**
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.ISharedObjectContainer#getGroupMembership()
+     * @see org.eclipse.ecf.core.ISharedObjectContainer#getGroupMemberIDs()
      */
-    public ID[] getGroupMembership();
+    public ID[] getGroupMemberIDs();
 
     /**
      * Send message to create a remote instance of an ISharedObject with the

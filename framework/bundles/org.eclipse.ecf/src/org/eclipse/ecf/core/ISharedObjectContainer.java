@@ -89,7 +89,7 @@ public interface ISharedObjectContainer {
      * 
      * @return ID[] the IDs of the current group membership
      */
-    public ID[] getGroupMembership();
+    public ID[] getGroupMemberIDs();
     /**
      * @return true if this ISharedObjectContainer instance is in the
      *         'manager' role for the group, false otherwise
