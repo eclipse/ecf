@@ -123,7 +123,7 @@
 
 &lt;pre&gt;
 &lt;extension point=&quot;org.eclipse.ecf.containerFactory&quot;&gt;
-    &lt;containerFactory name=&quot;foo&quot; class=&quot;org.eclipse.ecf.test.FooContainerFactory&quot; description=&quot;My container factory&quot;&gt;
+    &lt;containerFactory name=&quot;foo&quot; class=&quot;org.eclipse.ecf.test.FooContainerFactory&quot; description=&quot;My container factory&quot;/&gt;
     &lt;defaultargument type=&quot;java.lang.String&quot; value=&quot;defaultvalue&quot; name=&quot;variablename&quot;/&gt;
 &lt;/extension&gt;
 &lt;/pre&gt;
