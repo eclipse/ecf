@@ -7,7 +7,7 @@
             icon="icons/person.gif"
             class="org.eclipse.ecf.example.collab.ui.LineChatView"
             category="org.eclipse.ecf.client.category"
-            name="ECF Project Collab"
+            name="ECF Collaboration"
             id="org.eclipse.ecf.example.collab.ui.LineChatView"/>
       <category
             name="ECF"
