@@ -1,31 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.eclipse.ecf.provider"
-   name="ECF Provider Plugin"
-   version="0.0.1"
-   provider-name="eclipse.org"
-   class="org.eclipse.ecf.provider.ProviderPlugin">
-
-   <runtime>
-      <library name="provider.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
+<plugin>
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.generic.ContainerInstantiator"
-            description="Generic container implementation (server and client)"
+            description="Generic Container Instantiator"
             name="generic"/>
    </extension>
-   <extension
-         point="org.eclipse.ecf.comm">
-      <connection
-            description="TCP Client Connection"
-            name="tcpclient"
-            instantiatorClass="org.eclipse.ecf.provider.comm.tcp.Client$Creator"/>
-   </extension>
-
 </plugin>
