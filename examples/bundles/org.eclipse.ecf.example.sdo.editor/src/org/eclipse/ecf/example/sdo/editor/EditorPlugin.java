@@ -24,6 +24,7 @@ import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.sdo.ISharedDataGraph;
 import org.eclipse.ecf.sdo.ISubscriptionCallback;
 import org.eclipse.ecf.sdo.IUpdateConsumer;
@@ -165,7 +166,7 @@ public class EditorPlugin extends AbstractUIPlugin {
 			return SDOPlugin.getDefault().getDataGraphSharing(container)
 					.subscribe(IDFactory.makeStringID(path), callback,
 							new EMFUpdateProvider(), consumer);
-		} catch (IDInstantiationException e) {
+		} catch (ECFException e) {
 			throw new CoreException(new Status(Status.ERROR, getBundle()
 					.getSymbolicName(), 0,
 					"Could not subscribe to graph with id " + path + ".", e));
@@ -182,7 +183,7 @@ public class EditorPlugin extends AbstractUIPlugin {
 					new EMFUpdateProvider(), consumer);
 			published.put(path, container);
 			return sdg;
-		} catch (IDInstantiationException e) {
+		} catch (ECFException e) {
 			throw new CoreException(new Status(Status.ERROR, getBundle()
 					.getSymbolicName(), 0, "Could not publish graph with id "
 					+ path + ".", e));

@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.sdo.ISharedDataGraph;
 import org.eclipse.ecf.sdo.IUpdateConsumer;
-import org.eclipse.ecf.sdo.SubscriptionBlocker;
+import org.eclipse.ecf.sdo.WaitableSubscriptionCallback;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.sdo.EDataGraph;
@@ -42,11 +42,12 @@ public class SharedSDOEditor extends SDOEditor {
 			return true;
 		}
 
-		public void updateFailed(ISharedDataGraph graph, ID containerID) {
+		public void updateFailed(ISharedDataGraph graph, ID containerID,
+				Throwable cause) {
 			EditorPlugin.getDefault().log(
 					new CoreException(new Status(Status.ERROR, EditorPlugin
 							.getDefault().getBundle().getSymbolicName(), 0,
-							"Data graph upate failed.", null)));
+							"Data graph upate failed.", cause)));
 		}
 	}
 
@@ -65,7 +66,7 @@ public class SharedSDOEditor extends SDOEditor {
 		URI uri = URI.createPlatformResourceURI(modelFile.getFile()
 				.getFullPath().toString());
 		if (EditorPlugin.getDefault().isPublished(path)) {
-			SubscriptionBlocker mutex = new SubscriptionBlocker();
+			WaitableSubscriptionCallback mutex = new WaitableSubscriptionCallback();
 			try {
 				sharedDataGraph = EditorPlugin.getDefault().subscribe(path,
 						mutex, new UpdateConsumer());
@@ -75,21 +76,24 @@ public class SharedSDOEditor extends SDOEditor {
 				return;
 			}
 
-			boolean subscribed;
+			ID containerID = null;
+			Throwable cause = null;
 			try {
-				subscribed = mutex.waitForSubscription(1000);
+				containerID = mutex.waitForSubscription(1000);
 			} catch (InterruptedException e) {
-				subscribed = false;
+				cause = e;
+			} catch (ECFException e) {
+				cause = e;
 			}
 
-			if (!subscribed) {
+			if (containerID == null) {
 				EditorPlugin.getDefault().log(
 						new CoreException(new Status(Status.ERROR, EditorPlugin
 								.getDefault().getBundle().getSymbolicName(), 0,
-								"Failed to subscribe.", null)));
+								"Failed to subscribe.", cause)));
 				return;
 			}
-			
+
 			EDataGraph dataGraph = (EDataGraph) sharedDataGraph.getDataGraph();
 			dataGraph.getDataGraphResource().setURI(uri);
 			editingDomain.getResourceSet().getResources().addAll(
