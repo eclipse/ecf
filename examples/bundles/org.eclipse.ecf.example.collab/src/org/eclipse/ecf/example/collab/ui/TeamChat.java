@@ -29,7 +29,7 @@ class TeamChat extends Composite {
 	LineChatClientView view;
 	ChatWindow chatWindow;
 
-    static final int DEFAULT_TREE_WIDGET_PERCENT = 40;
+    static final int DEFAULT_TREE_WIDGET_PERCENT = 30;
 
 	TeamChat(LineChatClientView view,Composite parent, int options, String initText) {
 		super(parent, options);
@@ -68,6 +68,43 @@ class TeamChat extends Composite {
 			sash.setWeights(w);
 		}
 	}
+
+    TeamChat(LineChatClientView view,Composite parent, int options, String initText, boolean useChatWindow, boolean showTree) {
+        super(parent, options);
+
+        this.view = view;
+        setLayout(new FillLayout());
+        int[] w = null;
+        if (!useChatWindow) {
+            sash = new SashForm(this, SWT.NORMAL);
+            sash.setLayout(new FillLayout());
+            sash.setOrientation(SWT.HORIZONTAL);
+            w = new int[2];
+            w[0] = DEFAULT_TREE_WIDGET_PERCENT;
+            w[1] = 100 - w[0];
+        }
+
+        if (showTree) {
+            treeView = 
+                new ChatTreeViewer(
+                    useChatWindow ? (Composite) this : (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+            treeView.setAutoExpandLevel(LineChatClientView.TREE_EXPANSION_LEVELS);
+            vc = new ViewContentProvider(view);
+            
+            treeView.setContentProvider(vc);
+            treeView.setLabelProvider(new ViewLabelProvider());
+            treeView.setInput(ResourcesPlugin.getWorkspace());
+        }
+        
+        if (useChatWindow) {
+            chatWindow = new ChatWindow(view, this, treeView, initText);
+            chatWindow.create();
+            chat = chatWindow.getChat();
+        } else {
+            chat = new ChatComposite(view, sash, treeView, SWT.NORMAL, initText);
+            sash.setWeights(w);
+        }
+    }
 
 	void appendText(ChatLine text) {
 		if (chatWindow != null 
