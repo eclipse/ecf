@@ -56,4 +56,14 @@ public class Presence implements IPresence {
         return null;
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer("Presence[");
+        sb.append("type=").append(type).append(";");
+        sb.append("mode=").append(mode).append(";");
+        sb.append("priority=").append(priority).append(";");
+        sb.append("status=").append(status).append(";");
+        sb.append("props=").append(properties).append(";");
+        sb.append("]");
+        return sb.toString();
+    }
 }

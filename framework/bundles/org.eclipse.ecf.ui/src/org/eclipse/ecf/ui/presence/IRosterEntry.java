@@ -9,12 +9,15 @@ import org.eclipse.ecf.core.identity.ID;
 
 public interface IRosterEntry {
     
+    public void add(IRosterGroup group);
+    public void remove(IRosterGroup group);
     public Iterator getGroups();
     public String getName();
     public ID getUserID();
     public void setName(String name);
     public InterestType getInterestType();
     public IPresence getPresenceState();
+    public void setPresenceState(IPresence presence);
     
     public static class InterestType {
         
