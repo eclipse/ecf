@@ -233,6 +233,7 @@ public class SOWrapper {
     }
 
     protected void handleRuntimeException(Throwable except) {
+        except.printStackTrace(System.err);
         dumpStack(
                 "runner:unhandledexception(" + sharedObjectID.getName() + ")",
                 except);
