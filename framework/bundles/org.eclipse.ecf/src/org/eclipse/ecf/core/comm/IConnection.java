@@ -29,4 +29,5 @@ public interface IConnection {
     public Map getProperties();
     public void addCommEventListener(IConnectionEventHandler listener);
     public void removeCommEventListener(IConnectionEventHandler listener);
+    public Object getAdapter(Class clazz);
 }

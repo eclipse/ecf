@@ -102,7 +102,9 @@ public final class Client implements ISynchAsynchConnection {
     public Map getProperties() {
         return properties;
     }
-
+    public Object getAdapter(Class clazz) {
+        return null;
+    }
     protected void debug(String msg) {
         if (Trace.ON && debug != null) {
             debug.msg(msg);
