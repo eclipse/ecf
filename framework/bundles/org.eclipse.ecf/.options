@@ -1,0 +1,6 @@
+org.eclipse.ecf/debug = true
+org.eclipse.ecf/debug/filter = *
+org.eclipse.ecf/debug/flag = true
+org.eclipse.ecf/debug/containerfactory = true
+org.eclipse.ecf/debug/idfactory = true
+org.eclipse.ecf/debug/connectionfactory = true

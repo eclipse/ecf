@@ -123,6 +123,13 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
     protected void memberLeave(ID target, IConnection conn) {
         debug("memberLeave:" + target + ":" + conn);
+        if (groupManager.removeMember(target)) {
+            try {
+                forwardExcluding(getID(),target,ContainerMessage.makeViewChangeMessage(getID(),null,getNextSequenceNumber(),new ID[] { target },false,null));
+            } catch (IOException e) {
+                logException("Exception in memberLeave.forwardExcluding",e);
+            }
+        }
         if (conn != null)
             killConnection(conn);
     }

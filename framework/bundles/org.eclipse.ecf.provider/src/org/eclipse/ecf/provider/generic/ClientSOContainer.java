@@ -274,7 +274,7 @@ public abstract class ClientSOContainer extends SOContainer {
 
     protected void memberLeave(ID fromID, IAsynchConnection conn) {
         if (fromID.equals(remoteServerID)) {
-            groupManager.removeAllMembers();
+            groupManager.removeNonLocalMembers();
             super.memberLeave(fromID, conn);
             connectionState = UNCONNECTED;
             connection = null;

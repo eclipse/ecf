@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
+import org.eclipse.ecf.internal.core.Trace;
 
 /**
  * Factory for creating {@link ISharedObjectContainer} instances. This
@@ -35,6 +36,8 @@ import org.eclipse.ecf.core.util.AbstractFactory;
  */
 public class SharedObjectContainerFactory {
 
+    private static Trace debug = Trace.create("containerfactory");
+    
     private static Hashtable containerdescriptions = new Hashtable();
 
     /*
@@ -47,6 +50,7 @@ public class SharedObjectContainerFactory {
      */
     public final static SharedObjectContainerDescription addDescription(
             SharedObjectContainerDescription scd) {
+        debug("addDescription("+scd+")");
         return addDescription0(scd);
     }
     /**
@@ -58,7 +62,19 @@ public class SharedObjectContainerFactory {
      * @return List of SharedObjectContainerDescription instances
      */
     public final static List getDescriptions() {
+        debug("getDescriptions()");
         return getDescriptions0();
+    }
+    private static void debug(String msg) {
+        if (Trace.ON && debug != null) {
+            debug.msg(msg);
+        }
+    }
+
+    private static void dumpStack(String msg, Throwable e) {
+        if (Trace.ON && debug != null) {
+            debug.dumpStack(e, msg);
+        }
     }
     protected static List getDescriptions0() {
         return new ArrayList(containerdescriptions.values());
@@ -80,6 +96,7 @@ public class SharedObjectContainerFactory {
      */
     public final static boolean containsDescription(
             SharedObjectContainerDescription scd) {
+        debug("containsDescription("+scd+")");
         return containsDescription0(scd);
     }
     protected static boolean containsDescription0(
@@ -110,6 +127,7 @@ public class SharedObjectContainerFactory {
      */
     public final static SharedObjectContainerDescription getDescriptionByName(
             String name) throws SharedObjectContainerInstantiationException {
+        debug("getDescriptionByName("+name+")");
         SharedObjectContainerDescription res = getDescription0(name);
         if (res == null) {
             throw new SharedObjectContainerInstantiationException(
@@ -146,6 +164,7 @@ public class SharedObjectContainerFactory {
     public static ISharedObjectContainer makeSharedObjectContainer(
             SharedObjectContainerDescription desc, String[] argTypes,
             Object[] args) throws SharedObjectContainerInstantiationException {
+        debug("makeSharedObjectContainer("+desc+","+argTypes+","+args+")");
         if (desc == null)
             throw new SharedObjectContainerInstantiationException(
                     "SharedObjectContainerDescription cannot be null");
@@ -262,6 +281,7 @@ public class SharedObjectContainerFactory {
      */
     public final static SharedObjectContainerDescription removeDescription(
             SharedObjectContainerDescription scd) {
+        debug("removeDescription("+scd+")");
         return removeDescription0(scd);
     }
     protected static SharedObjectContainerDescription removeDescription0(

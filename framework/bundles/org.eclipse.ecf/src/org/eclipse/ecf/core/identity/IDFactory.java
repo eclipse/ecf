@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.ecf.core.identity.provider.IDInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
+import org.eclipse.ecf.internal.core.Trace;
 
 /**
  * A factory class for creating ID instances. This is the factory for plugins to
@@ -24,6 +25,8 @@ import org.eclipse.ecf.core.util.AbstractFactory;
  */
 public class IDFactory {
 
+    private static final Trace debug = Trace.create("idfactory");
+    
     public static final String SECURITY_PROPERTY = IDFactory.class.getName()
             + ".security";
 
@@ -88,6 +91,7 @@ public class IDFactory {
      */
     public final static boolean containsNamespace(Namespace n)
             throws SecurityException {
+        debug("containsNamespace("+n+")");
         if (n == null)
             return false;
         checkPermission(new NamespacePermission(n.getPermissionName(),
@@ -95,7 +99,19 @@ public class IDFactory {
         return containsNamespace0(n);
     }
     public final static List getNamespaces() {
+        debug("getNamespaces()");
         return new ArrayList(namespaces.values());
+    }
+    private static void debug(String msg) {
+        if (Trace.ON && debug != null) {
+            debug.msg(msg);
+        }
+    }
+
+    private static void dumpStack(String msg, Throwable e) {
+        if (Trace.ON && debug != null) {
+            debug.dumpStack(e, msg);
+        }
     }
     protected final static boolean containsNamespace0(Namespace n) {
         if (n == null)
@@ -114,6 +130,7 @@ public class IDFactory {
      */
     public final static Namespace getNamespace(Namespace n)
             throws SecurityException {
+        debug("getNamespace("+n+")");
         if (n == null)
             return null;
         checkPermission(new NamespacePermission(n.getPermissionName(),
@@ -123,6 +140,7 @@ public class IDFactory {
 
     public final static Namespace getNamespaceByName(String name)
             throws SecurityException {
+        debug("getNamespaceByName("+name+")");
         Namespace ns = new Namespace(null, name, null, null);
         return getNamespace(ns);
     }
@@ -138,6 +156,7 @@ public class IDFactory {
     }
 
     public static final ID makeGUID(int length) throws IDInstantiationException {
+        debug("makeGUID("+length+")");
         Namespace n = new Namespace(GUID.class.getClassLoader(),
                 GUID.GUID_NAME, GUID.GUID_INSTANTIATOR_CLASS, null);
         return makeID(n, new String[] { Namespace.class.getName(),
@@ -146,11 +165,11 @@ public class IDFactory {
     }
 
     protected static void log(String s) {
-        // XXX TODO
+        debug(s);
     }
 
     protected static void logException(String s, Throwable t) {
-        // XXX TODO
+        dumpStack(s,t);
     }
 
     protected static void logAndThrow(String s, Throwable t)
@@ -163,6 +182,24 @@ public class IDFactory {
         IDInstantiationException e = new IDInstantiationException(s);
         logException(s, null);
         throw e;
+    }
+    private static String convertStringAToString(String [] strings) {
+        if (strings==null) return "";
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i < strings.length; i++) {
+            sb.append(strings[i]);
+            if (i != (strings.length-1)) sb.append(";");
+        }
+        return sb.toString();
+    }
+    private static String convertObjectAToString(Object [] objs) {
+        if (objs==null) return "";
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i < objs.length; i++) {
+            sb.append(objs[i].toString());
+            if (i != (objs.length-1)) sb.append(";");
+        }
+        return sb.toString();
     }
     /**
      * Make a new identity. Given a classloader, Namespace, constructor argument
@@ -182,10 +219,10 @@ public class IDFactory {
      */
     public static final ID makeID(Namespace n, String[] argTypes, Object[] args)
             throws IDInstantiationException {
+        debug("makeID("+n+","+convertStringAToString(argTypes)+","+convertObjectAToString(args)+")");
         // Verify namespace is non-null
         if (n == null)
             logAndThrow("Namespace cannot be null");
-        log("makeID(" + n.getName() + ")");
         // Make sure that namespace is in table of known namespace. If not,
         // throw...we don't create any instances that we don't know about!
         Namespace ns = getNamespace0(n);
@@ -207,6 +244,7 @@ public class IDFactory {
         } catch (Exception e) {
             logAndThrow("Exception in getInstantiator", e);
         }
+        debug("makeID:got instantiator:"+instantiator);
         if (instantiator == null)
             throw new IDInstantiationException("Instantiator for namespace '"
                     + n.getName() + "' is null");
@@ -277,6 +315,7 @@ public class IDFactory {
      */
     public final static Namespace removeNamespace(Namespace n)
             throws SecurityException {
+        debug("removeNamespace("+n+")");
         if (n == null)
             return null;
         checkPermission(new NamespacePermission(n.getPermissionName(),
