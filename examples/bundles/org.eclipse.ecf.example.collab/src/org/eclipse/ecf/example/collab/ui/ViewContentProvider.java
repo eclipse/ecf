@@ -19,7 +19,6 @@ import org.eclipse.jface.viewers.Viewer;
 class ViewContentProvider implements IStructuredContentProvider,
 		ITreeContentProvider {
 	private TreeParent invisibleRoot;
-	private TreeParent memberRoot;
 	private TreeParent presenceRoot;
 	protected LineChatClientView view;
 

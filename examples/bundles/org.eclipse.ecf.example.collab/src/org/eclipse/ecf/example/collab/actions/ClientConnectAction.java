@@ -100,7 +100,7 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
                 client.createAndConnectClient(containerType,targetID,username,data,project);
                 return okStatus;
             } catch (Exception e) {
-                return new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Could not connect to group '"+targetID.getName()+"'",e);
+                return new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Could not connect to "+targetID.getName()+".  "+e.getMessage(),e);
             }
         }        
     }

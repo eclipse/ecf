@@ -42,58 +42,34 @@ public class LineChatClientView implements FileSenderUI {
 	 * EclipseAppShareServer.class .getName();
 	 */
 	public static final String CLIENT_PREFIX = " says";
-
 	protected static final String DEFAULT_ECLIPSE_COMPONENT_CLASS = org.eclipse.ecf.example.collab.share.TestEclipseSessionComponent.class
 			.getName();
-
 	public static final String DEFAULT_UNIX_BROWSER = "mozilla";
-
 	public static final String ENTER_STRING = "ARRIVED";
-
 	public static final String EXECPROGARGTYPES[] = { ID.class.getName(),
 			"[Ljava.lang.String;", "[Ljava.lang.String;",
 			Boolean.class.getName(), Boolean.class.getName() };
-
 	public static final String EXECPROGCLASSNAME = ExecProg.class.getName();
-
 	public static final String HOST_PREFIX = "You say";
-
 	public static final String LEFT_STRING = "LEFT";
-
 	public static final String MESSAGECLASSNAME = EclipseMessage.class
 			.getName();
-
 	public static final String REMOTEFILEPATH = null;
-
 	public static final String SHOWURLARGTYPES[] = { ID.class.getName(),
 			"java.lang.String" };
-
 	public static final String SHOWURLCLASSNAME = ExecURL.class.getName();
-
 	protected static final int TREE_EXPANSION_LEVELS = 1;
-
 	public static final String TREE_HEADER = "Participants";
-	
 	private boolean showTimestamp = ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_DISPLAY_TIMESTAMP);
-
 	SimpleDateFormat df = new SimpleDateFormat("MM/dd hh:mm a");
-
 	String downloaddir;
-
 	LineChatHandler lch;
-
 	Hashtable myNames = new Hashtable();
-
 	String name;
-
 	Vector proxyObjects = new Vector();
-
 	TeamChat teamChat;
-
 	User userdata;
-
 	LineChatView view;
-
 	protected ID appShareID = null;
 
 	protected ID getAppShareID() {
