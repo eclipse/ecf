@@ -90,13 +90,13 @@ public class Presence implements Serializable, IAdaptable {
             } else return null;
         }
         
-        public static Type AVAILABLE = new Type(AVAILABLE_NAME);
-        public static Type ERROR = new Type(ERROR_NAME);
-        public static Type SUBSCRIBE = new Type(SUBSCRIBE_NAME);
-        public static Type UNAVAILABLE = new Type(UNAVAILABLE_NAME);
-        public static Type UNSUBSCRIBE = new Type(UNSUBSCRIBE_NAME);
-        public static Type UNSUBSCRIBED = new Type(UNSUBSCRIBED_NAME);
-        public static Type UNKNOWN = new Type(UNKWOWN_NAME);
+        public static final Type AVAILABLE = new Type(AVAILABLE_NAME);
+        public static final Type ERROR = new Type(ERROR_NAME);
+        public static final Type SUBSCRIBE = new Type(SUBSCRIBE_NAME);
+        public static final Type UNAVAILABLE = new Type(UNAVAILABLE_NAME);
+        public static final Type UNSUBSCRIBE = new Type(UNSUBSCRIBE_NAME);
+        public static final Type UNSUBSCRIBED = new Type(UNSUBSCRIBED_NAME);
+        public static final Type UNKNOWN = new Type(UNKWOWN_NAME);
         
         public String toString() { return name; }
         // This is to make sure that subclasses don't screw up these methods
@@ -150,12 +150,12 @@ public class Presence implements Serializable, IAdaptable {
             } else return null;
         }
         
-        public static Mode AVAILABLE = new Mode(AVAILABLE_NAME);
-        public static Mode AWAY = new Mode(AWAY_NAME);
-        public static Mode CHAT = new Mode(CHAT_NAME);
-        public static Mode DND = new Mode(DND_NAME);
-        public static Mode EXTENDED_AWAY = new Mode(EXTENDED_AWAY_NAME);
-        public static Mode INVISIBLE = new Mode(INVISIBLE_NAME);
+        public static final Mode AVAILABLE = new Mode(AVAILABLE_NAME);
+        public static final Mode AWAY = new Mode(AWAY_NAME);
+        public static final Mode CHAT = new Mode(CHAT_NAME);
+        public static final Mode DND = new Mode(DND_NAME);
+        public static final Mode EXTENDED_AWAY = new Mode(EXTENDED_AWAY_NAME);
+        public static final Mode INVISIBLE = new Mode(INVISIBLE_NAME);
         
         public String toString() { return name; }
         // This is to make sure that subclasses don't screw up these methods
