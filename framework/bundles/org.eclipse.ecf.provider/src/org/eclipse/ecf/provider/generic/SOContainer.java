@@ -384,10 +384,12 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			sharedObjectManager.dispose();
 			sharedObjectManager = null;
 		}
+		/*
 		if (sharedObjectThreadGroup != null) {
 			sharedObjectThreadGroup.interrupt();
 			sharedObjectThreadGroup = null;
 		}
+		*/
 		if (loadingThreadGroup != null) {
 			loadingThreadGroup.interrupt();
 			loadingThreadGroup = null;

@@ -81,6 +81,7 @@ public class Client {
             return obj;
         }
         public void dispose() {
+            if (obj != null) obj.destroySelf();
             client.dispose(0);
         }
     }
