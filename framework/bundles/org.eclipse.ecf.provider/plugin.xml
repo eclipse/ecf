@@ -6,7 +6,7 @@
       <containerFactory
             class="org.eclipse.ecf.provider.generic.ContainerInstantiator"
             description="Generic Container Instantiator"
-            name="generic"/>
+            name="org.eclipse.ecf.provider.generic.ContainerInstantiator"/>
    </extension>
    <extension
          point="org.eclipse.ecf.connectionFactory">
