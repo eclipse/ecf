@@ -26,6 +26,12 @@
             file="tocreference.xml">
       </toc>
       <toc
+            file="tocapi.xml">
+      </toc>
+      <toc
+            file="tocextpoint.xml">
+      </toc>
+      <toc
             file="tocsamples.xml">
       </toc>
    </extension>

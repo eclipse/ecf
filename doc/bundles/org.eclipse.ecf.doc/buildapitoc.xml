@@ -1,0 +1,44 @@
+<project default="toc">
+
+	<target name="init">
+		<property name="package-list.path" location="${basedir}/html/reference/api/package-list"/>
+		<uptodate property="BuildAPITOC.uptodate" srcfile="${package-list.path}" targetfile="BuildAPITOC.class"/>
+	</target>
+	
+	<target name="toc" depends="init,compile">
+		<echo file="tocapi.xml"><![CDATA[
+<toc label="JavaDoc">
+]]></echo>
+		<java classname="BuildAPITOC" classpath="." output="tocapi.xml" append="true">
+			<arg line="${package-list.path}"/>
+		</java>
+		<echo file="tocapi.xml" append="true"><![CDATA[
+</toc>
+]]></echo>
+	</target>
+
+	<target name="compile" unless="BuildAPITOC.uptodate">
+		<echo file="BuildAPITOC.java"><![CDATA[
+import java.io.*;
+public class BuildAPITOC {
+	public static void main(String[] args) throws Exception {
+		BufferedReader r = new BufferedReader(new FileReader(args[0]));
+		String line;
+		try {
+			while ((line = r.readLine()) != null)
+				System.out.println("<topic label=\"" + line + "\" href=\"html/reference/api/" + line.replace('.', '/') + "/package-summary.html\"/>");
+		} finally {
+			r.close();
+		}
+	}
+}
+]]></echo>
+		<javac srcDir="." includes="BuildAPITOC.java"/>
+	</target>
+	
+	<target name="clean">
+		<delete>
+			<fileset dir="." includes="BuildAPITOC.*,tocapi.xml"/>
+		</delete>
+	</target>
+</project>

@@ -1,0 +1,48 @@
+<project default="schema">
+
+	<property name="dest.path" value="html/reference/extension-points"/>
+
+	<target name="org.eclipse.ecf">
+		<eclipse.convertPath property="org.eclipse.ecf.manifest" resourcePath="/org.eclipse.ecf/plugin.xml"/>
+		<antcall target="_plugin">
+			<param name="manifest.path" value="${org.eclipse.ecf.manifest}"/>
+		</antcall>
+	</target>
+
+	<target name="org.eclipse.ecf.provider">
+		<eclipse.convertPath property="org.eclipse.ecf.provider.manifest" resourcePath="/org.eclipse.ecf.provider/plugin.xml"/>
+		<antcall target="_plugin">
+			<param name="manifest.path" value="${org.eclipse.ecf.provider.manifest}"/>
+		</antcall>
+	</target>
+
+	<target name="org.eclipse.ecf.ui">
+		<eclipse.convertPath property="org.eclipse.ecf.ui.manifest" resourcePath="/org.eclipse.ecf.ui/plugin.xml"/>
+		<antcall target="_plugin">
+			<param name="manifest.path" value="${org.eclipse.ecf.ui.manifest}"/>
+		</antcall>
+	</target>
+
+	<target name="org.eclipse.ecf.sdo">
+		<eclipse.convertPath property="org.eclipse.ecf.sdo.manifest" resourcePath="/org.eclipse.ecf.sdo/plugin.xml"/>
+		<antcall target="_plugin">
+			<param name="manifest.path" value="${org.eclipse.ecf.sdo.manifest}"/>
+		</antcall>
+	</target>
+
+	<target name="schema" depends="org.eclipse.ecf,org.eclipse.ecf.provider,org.eclipse.ecf.ui,org.eclipse.ecf.sdo">
+		<!-- unfortunately, the task generates local filesystem references... fix them! -->
+		<property name="cssurl" value="${osgi.install.area}plugins/org.eclipse.platform.doc.isv_3.1.0"/>
+		<replace dir="${dest.path}" token="${cssurl}" value="../../../../org.eclipse.platform.doc.isv" includes="*.html"/>
+	</target>
+	
+	<target name="_plugin">
+		<pde.convertSchemaToHTML manifest="${manifest.path}" destination="${dest.path}"/>
+	</target>
+	
+	<target name="clean">
+		<delete>
+			<fileset dir="${dest.path}" includes="*.html"/>
+		</delete>
+	</target>
+</project>

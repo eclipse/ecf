@@ -2,10 +2,10 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Reference" link_to="toc.xml#reference"> 
-	<topic label="JavaDoc" href="html/reference/api/index.html"/>
+	<topic label="JavaDoc" href="html/reference/api/overview-summary.html">
+		<link toc="tocapi.xml"/>
+	</topic>
 	<topic label="Extension Points">
-		<topic label="org.eclipse.ecf.comm" href="html/reference/extension-points/org.eclipse.ecf.comm.html"/>
-		<topic label="org.eclipse.ecf.containerFactory" href="html/reference/extension-points/org.eclipse.ecf.containerFactory.html"/>
-		<topic label="org.eclipse.ecf.namespace" href="html/reference/extension-points/org.eclipse.ecf.namespace.html"/>
+		<link toc="tocextpoint.xml"/>
 	</topic>
 </toc>
