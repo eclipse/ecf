@@ -139,7 +139,26 @@ public abstract class ClientSOContainer extends SOContainer {
     }
 
 	protected void handleViewChangeMessage(ContainerMessage mess) throws IOException {
-		// XXX TODO
+		debug("handleViewChangeMessage("+mess+")");
+		ContainerMessage.ViewChangeMessage vc = (ContainerMessage.ViewChangeMessage) mess.getData();
+		if (vc == null) throw new IOException("view change message is null");
+		ID fromID = mess.getFromContainerID();
+		ID toID = mess.getToContainerID();
+		if (fromID == null || !fromID.equals(remoteServerID)) {
+			throw new IOException("view change message from "+fromID+" is not same as "+remoteServerID);
+		}
+		ID [] changeIDs = vc.getChangeIDs();
+		if (changeIDs == null) {
+			// do nothing if we've got no changes
+		} else {
+			for(int i=0; i < changeIDs.length; i++) {
+				if (vc.isAdd()) {
+					groupManager.addMember(new Member(changeIDs[i]));
+				} else {
+					groupManager.removeMember(changeIDs[i]);
+				}
+			}
+		}
 	}
 
     protected void forwardExcluding(ID from, ID excluding, ContainerMessage data)

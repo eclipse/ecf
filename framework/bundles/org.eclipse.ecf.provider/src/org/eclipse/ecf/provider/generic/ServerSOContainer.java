@@ -64,7 +64,7 @@ public class ServerSOContainer extends SOContainer {
                                             getNextSequenceNumber(), data
                                                     .getData())));
                         } catch (IOException e) {
-                            // XXX log this
+                        	logException("Exception in forwardExcluding from "+from+" with oldID "+oldID,e);
                         }
                     }
                 }
@@ -130,8 +130,7 @@ public class ServerSOContainer extends SOContainer {
             return ContainerMessage.makeViewChangeMessage(getID(), remoteID,
                     getNextSequenceNumber(), memberIDs, true, null);
         } catch (Exception e) {
-            // XXX Log this
-
+        	logException("Exception in acceptNewClient("+socket+","+target+","+data+","+conn,e);
             // And then return null...which means refusal
             return null;
         }

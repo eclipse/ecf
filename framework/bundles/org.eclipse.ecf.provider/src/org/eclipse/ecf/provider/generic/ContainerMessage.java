@@ -158,6 +158,24 @@ public class ContainerMessage implements Serializable {
 					.append("]");
 			return sb.toString();
 		}
+		/**
+		 * @return Returns the add.
+		 */
+		public boolean isAdd() {
+			return add;
+		}
+		/**
+		 * @return Returns the changeIDs.
+		 */
+		public ID[] getChangeIDs() {
+			return changeIDs;
+		}
+		/**
+		 * @return Returns the data.
+		 */
+		public Serializable getData() {
+			return data;
+		}
 	}
 
 	public static final class CreateMessage implements Serializable {

@@ -116,10 +116,15 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			if (conn != null)
 				conn.disconnect();
 		} catch (IOException e) {
-			// XXX log
+			logException("Exception in killConnection",e);
 		}
 	}
-
+	protected void logException(String msg, Throwable e) {
+		dumpStack(msg,e);
+	}
+	protected void log(String msg) {
+		debug(msg);
+	}
 	protected void memberLeave(ID target, IConnection conn) {
 		debug("memberLeave:" + target + ":" + conn);
 		if (conn != null)
@@ -420,10 +425,11 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		try {
 			ContainerMessage mess = getObjectFromBytes((byte[]) e.getData());
 		} catch (IOException except) {
-
+			logException("Exception in processDisconnect ",except);
 		}
 	}
 	protected Object checkCreate(ID fromID, ID toID, long seq, SharedObjectDescription desc) {
+		debug("checkCreate("+fromID+","+toID+","+seq+","+desc+")");
 		// XXX TODO
 		return desc;
 	}
@@ -446,7 +452,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 					try {
 						sendCreateResponse(fromID,sharedObjectID,new SharedObjectAddException("shared object "+sharedObjectID),desc.getIdentifier());
 					} catch (IOException e) {
-						// XXX Log this
+						logException("Exception in handleCreateMessage",e);
 					}
 				}
 				forward(fromID, toID, mess);
@@ -464,11 +470,12 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		long seq = mess.getSequence();
 		ContainerMessage.CreateResponseMessage resp = (ContainerMessage.CreateResponseMessage) mess.getData();
 		if (toID != null && toID.equals(getID())) {
-			SOWrapper sow = getSharedObjectWrapper(resp.getSharedObjectID());
+			ID sharedObjectID = resp.getSharedObjectID();
+			SOWrapper sow = getSharedObjectWrapper(sharedObjectID);
 			if (sow != null) {
 				sow.deliverCreateResponse(fromID,resp);
 			} else {
-				// XXX log here
+				log("handleCreateResponseMessage...wrapper now found for "+sharedObjectID);
 			}
 		} else {
 			forwardToRemote(fromID,toID,mess);
@@ -556,6 +563,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
 	protected void notifyGroupLeave(ContainerMessage mess) {
 		// XXX todo
+		debug("notifyGroupLeave("+mess+")");
 	}
 
 	class LoadingSharedObject implements ISharedObject {
