@@ -23,7 +23,7 @@ public class ClientConnectComposentAction extends ClientConnectAction {
         try {
             targetID = IDFactory.makeStringID(COMPOSENT_TARGET);
         } catch (Exception e) {
-            // 
+            throw new RuntimeException("Exception in ClientConnectAction()",e);
         }
 	}
 }

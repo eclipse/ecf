@@ -7,12 +7,9 @@
       <view
             icon="icons/person.gif"
             class="org.eclipse.ecf.example.collab.ui.LineChatView"
-            category="org.eclipse.ecf.client.category"
+            category="org.eclipse.ecf.ui.viewcategory"
             name="ECF Collaboration"
             id="org.eclipse.ecf.example.collab.ui.LineChatView"/>
-      <category
-            name="ECF"
-            id="org.eclipse.ecf.client.category"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">

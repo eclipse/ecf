@@ -65,7 +65,7 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
             targetID = IDFactory.makeStringID(DEFAULT_SERVER_ID);
             client = new Client();
         } catch (Exception e) {
-            
+            throw new RuntimeException("Exception in ClientConnectAction()",e);
         }
 	}
     
@@ -91,7 +91,7 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
                             MessageDialog.openInformation(
                                     null,
                                     "Already connected",
-                                    "Already connected for provider "+containerType);
+                                    "Already connected for provider "+((containerType==null)?Client.GENERIC_CONTAINER_CLIENT_NAME:containerType));
                         }
                     });
                     return okStatus;
