@@ -11,14 +11,10 @@
 
 package org.eclipse.ecf.example.collab.ui;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -185,6 +181,7 @@ public class LineChatView extends ViewPart {
 		}
         */
 		protected void activateAction() {
+            /*
 			setText(ClientPlugin.getResourceString(id + ".text"));
 			setDescription(ClientPlugin.getResourceString(id + ".tooltip"));
 			setToolTipText(ClientPlugin.getResourceString(id + ".description"));
@@ -196,6 +193,7 @@ public class LineChatView extends ViewPart {
 			} catch (MalformedURLException e) {
 				ClientPlugin.log("Exception loading image for action: "+id, e);	
 			}
+            */
 		}
 		
 		public void run() {
