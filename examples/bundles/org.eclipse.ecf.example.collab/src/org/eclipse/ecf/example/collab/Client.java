@@ -24,7 +24,10 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.ISharedObjectContainerListener;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
+import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
@@ -75,18 +78,6 @@ public class Client {
             return obj;
         }
         public void dispose() {
-            /*
-            if (obj != null) {
-                obj.destroySelf();
-                obj = null;
-            } 
-            */
-            /*
-            if (client != null) {
-                client.dispose(1000);
-                client = null;
-            }
-            */
         }
     }
     
@@ -227,8 +218,8 @@ public class Client {
         if (name.equals(type)) return true;
         else return false;
     }
-    public synchronized void createAndConnectClient(String type, ID gID, String username,
-            Object data, IProject proj) throws Exception {
+    public synchronized void createAndConnectClient(String type, final ID gID, String username,
+            Object data, final IProject proj) throws Exception {
         
         if (proj == null) throw new NullPointerException("Project cannot be null");
         ClientEntry entry = getClientEntry(proj,type);
@@ -238,14 +229,30 @@ public class Client {
         }
         
         String containerType = (type==null)?GENERIC_CONTAINER_CLIENT_NAME:type;
-        ISharedObjectContainer client = SharedObjectContainerFactory
+        final ISharedObjectContainer client = SharedObjectContainerFactory
         .makeSharedObjectContainer(containerType);
-        ClientEntry newClient = new ClientEntry(containerType,client);
-        if (gID == null) {
-            gID = defaultGroupID;
-        } 
-        if (containerType.equals(GENERIC_CONTAINER_CLIENT_NAME)) addObjectToClient(newClient, username, proj);
-        client.joinGroup(gID, data);
+        final ClientEntry newClient = new ClientEntry(containerType,client);
+        final ID groupID = (gID==null)?defaultGroupID:gID;
+        
+        if (containerType.equals(GENERIC_CONTAINER_CLIENT_NAME)) {
+            addObjectToClient(newClient, username, proj);
+        } else {
+            client.addListener(new ISharedObjectContainerListener() {
+                public void handleEvent(IContainerEvent evt) {
+                    if (evt instanceof ISharedObjectContainerDepartedEvent) {
+                        ISharedObjectContainerDepartedEvent cd = (ISharedObjectContainerDepartedEvent) evt;
+                        final ID departedContainerID = cd.getDepartedContainerID();
+                        if (groupID.equals(departedContainerID)) {
+                            // This container is done
+                            client.dispose(0);
+                            disposeClient(proj,newClient);                        
+                        }
+                    }
+                }
+                
+            },"");           
+        }
+        client.joinGroup(groupID, data);
         // only add client if the join successful
         addClientEntry(proj,newClient);
     }
