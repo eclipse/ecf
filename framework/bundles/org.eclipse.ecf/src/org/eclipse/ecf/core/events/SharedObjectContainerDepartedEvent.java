@@ -11,7 +11,7 @@ package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectContainerDepartedEvent implements ContainerEvent {
+public class SharedObjectContainerDepartedEvent implements ISharedObjectContainerDepartedEvent {
 
     private final ID departedContainerID;
     private final ID localContainerID;

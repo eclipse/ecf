@@ -9,7 +9,7 @@
 
 package org.eclipse.ecf.core;
 
-import org.eclipse.ecf.core.events.SharedObjectEvent;
+import org.eclipse.ecf.core.events.ISharedObjectEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.AsynchResult;
 import org.eclipse.ecf.core.util.QueueException;
@@ -24,8 +24,8 @@ public interface ISharedObjectConnector {
 
     public ID getSender();
     public ID[] getReceivers();
-    public void enqueue(SharedObjectEvent event) throws QueueException;
-    public void enqueue(SharedObjectEvent[] events) throws QueueException;
-    public AsynchResult[] callAsynch(SharedObjectEvent arg) throws Exception;
+    public void enqueue(ISharedObjectEvent event) throws QueueException;
+    public void enqueue(ISharedObjectEvent[] events) throws QueueException;
+    public AsynchResult[] callAsynch(ISharedObjectEvent arg) throws Exception;
     public void dispose();
 }

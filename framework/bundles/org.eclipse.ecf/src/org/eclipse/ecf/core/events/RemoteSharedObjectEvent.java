@@ -14,28 +14,23 @@ import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 
-public class RemoteSharedObjectEvent implements SharedObjectEvent, Serializable {
+public class RemoteSharedObjectEvent implements ISharedObjectMessageEvent, Serializable {
 
     private final ID senderSharedObjectID;
-    private final ID localContainerID;
     private final ID remoteContainerID;
     private final Object data;
 
-    public RemoteSharedObjectEvent(ID senderObj, ID localCont, ID remoteCont, Object data) {
+    public RemoteSharedObjectEvent(ID senderObj, ID remoteCont, Object data) {
         super();
         this.senderSharedObjectID = senderObj;
-        this.localContainerID = localCont;
         this.remoteContainerID = remoteCont;
         this.data = data;
     }
 
-    public ID getLocalContainerID() {
-        return localContainerID;
-    }
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.api.events.SharedObjectEvent#getSenderSharedObject()
+     * @see org.eclipse.ecf.api.events.ISharedObjectEvent#getSenderSharedObject()
      */
     public ID getSenderSharedObjectID() {
         return senderSharedObjectID;
@@ -53,7 +48,6 @@ public class RemoteSharedObjectEvent implements SharedObjectEvent, Serializable 
     public String toString() {
         StringBuffer sb = new StringBuffer("RemoteSharedObjectEvent {");
         sb.append("senderSharedObjectID: ").append(senderSharedObjectID).append(", ");
-        sb.append("localContainerID: ").append(localContainerID).append(", ");
         sb.append("remoteContainerID: ").append(remoteContainerID).append(", ");
         sb.append("data: ").append(data).append("}");
         return sb.toString();

@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectActivatedEvent implements ContainerEvent {
+public class SharedObjectActivatedEvent implements ISharedObjectActivatedEvent {
 
     private final ID activatedID;
     private final ID[] groupMemberIDs;

@@ -10,9 +10,7 @@
 package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.Event;
 
-public interface ContainerEvent extends Event {
-
-    public ID getLocalContainerID();
+public interface ISharedObjectContainerDepartedEvent extends IContainerEvent {
+    public ID getDepartedContainerID();
 }

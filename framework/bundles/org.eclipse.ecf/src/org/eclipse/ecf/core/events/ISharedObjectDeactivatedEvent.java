@@ -7,16 +7,10 @@
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.ecf.core;
+package org.eclipse.ecf.core.events;
 
-import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.identity.ID;
 
-/**
- * Listener for objects that wish to receive events from an ISharedObjectContainer
- * instance.
- * 
- * @see ISharedObjectContainer#addListener(ISharedObjectContainerListener, String)
- */
-public interface ISharedObjectContainerListener {
-    public void handleEvent(IContainerEvent evt);
+public interface ISharedObjectDeactivatedEvent extends IContainerEvent {
+    public ID getDeactivatedID();
 }

@@ -35,7 +35,7 @@ import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectDisconnectException;
 import org.eclipse.ecf.core.SharedObjectNotFoundException;
-import org.eclipse.ecf.core.events.ContainerEvent;
+import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.osgi.framework.BundleContext;
@@ -99,7 +99,7 @@ public class StandaloneContainer implements ISharedObjectContainer,
     public void removeListener(ISharedObjectContainerListener l) {
         listeners.remove(l);
     }
-    protected void fireListeners(ContainerEvent evt) {
+    protected void fireListeners(IContainerEvent evt) {
         for (Enumeration e = listeners.elements(); e.hasMoreElements();) {
             ISharedObjectContainerListener l = (ISharedObjectContainerListener) e
                     .nextElement();

@@ -12,10 +12,9 @@ package org.eclipse.ecf.core.events;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 
-public interface SharedObjectEvent extends Event {
+public interface ISharedObjectEvent extends Event {
 
     public ID getSenderSharedObjectID();
-
     public Event getEvent();
 
 }
