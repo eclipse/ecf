@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bundle-Name: ECF SDO Plug-in
+Bundle-Name: ECF SDO Core
 Bundle-SymbolicName: org.eclipse.ecf.sdo
 Bundle-Version: 1.0.0
 Bundle-ClassPath: ecf.sdo.jar
