@@ -79,7 +79,7 @@ public class ECFPlugin extends Plugin {
 
     public ECFPlugin() {
         super();
-        debug("<init>");
+        debug("ECFPlugin.<init>");
         plugin = this;
         try {
             resourceBundle = ResourceBundle.getBundle(PLUGIN_RESOURCE_BUNDLE);
@@ -158,7 +158,6 @@ public class ECFPlugin extends Plugin {
                 .getConfigurationElements();
         // For each configuration element
         for (int m = 0; m < members.length; m++) {
-            debug("setupContainerExtensionPoint:" + members[m].getName());
             IConfigurationElement member = members[m];
             // Get the label of the extender plugin and the ID of the extension.
             IExtension extension = member.getDeclaringExtension();
@@ -220,7 +219,6 @@ public class ECFPlugin extends Plugin {
                 .getConfigurationElements();
         // For each service:
         for (int m = 0; m < members.length; m++) {
-            debug("setupIdentityExtensionPoint:" + members[m].getName());
             IConfigurationElement member = members[m];
             // Get the label of the extender plugin and the ID of the
             // extension.
@@ -300,7 +298,6 @@ public class ECFPlugin extends Plugin {
                 .getConfigurationElements();
         // For each configuration element
         for (int m = 0; m < members.length; m++) {
-            debug("setupCommExtensionPoint:" + members[m].getName());
             IConfigurationElement member = members[m];
             // Get the label of the extender plugin and the ID of the extension.
             IExtension extension = member.getDeclaringExtension();
