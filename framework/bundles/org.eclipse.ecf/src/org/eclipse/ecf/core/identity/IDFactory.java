@@ -141,7 +141,7 @@ public class IDFactory {
     public final static Namespace getNamespaceByName(String name)
             throws SecurityException {
         debug("getNamespaceByName("+name+")");
-        Namespace ns = new Namespace(null, name, null, null);
+        Namespace ns = new Namespace(null, name, name, null);
         return getNamespace(ns);
     }
 
