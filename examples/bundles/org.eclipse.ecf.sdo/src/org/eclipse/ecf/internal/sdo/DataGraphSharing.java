@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.sdo;
 
-import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectManager;
@@ -30,7 +29,7 @@ import commonj.sdo.DataGraph;
 /**
  * @author pnehrer
  */
-public class DataGraphSharing extends PlatformObject implements
+public class DataGraphSharing implements
         IDataGraphSharing, ISharedObject {
 
     static final String DATA_GRAPH_SHARING_ID = DataGraphSharing.class
@@ -154,5 +153,12 @@ public class DataGraphSharing extends PlatformObject implements
                 && config.getContext().getLocalContainerID()
                         .equals(containerID))
             config = null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ecf.core.ISharedObject#getAdapter(java.lang.Class)
+     */
+    public Object getAdapter(Class clazz) {
+        return null;
     }
 }

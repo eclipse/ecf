@@ -12,7 +12,6 @@ package org.eclipse.ecf.internal.sdo;
 
 import java.io.IOException;
 
-import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.SharedObjectInitException;
@@ -34,7 +33,7 @@ import commonj.sdo.DataGraph;
 /**
  * @author pnehrer
  */
-public class SharedDataGraph extends PlatformObject implements ISharedObject,
+public class SharedDataGraph implements ISharedObject,
 		ISharedDataGraph {
 
 	private final IUpdateConsumer updateConsumer;
@@ -290,4 +289,11 @@ public class SharedDataGraph extends PlatformObject implements ISharedObject,
 		buf.append("version=").append(version).append("]");
 		return buf.toString();
 	}
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ecf.core.ISharedObject#getAdapter(java.lang.Class)
+     */
+    public Object getAdapter(Class clazz) {
+        return null;
+    }
 }
