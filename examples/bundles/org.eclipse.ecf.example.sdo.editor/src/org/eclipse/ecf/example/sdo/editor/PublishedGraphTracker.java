@@ -174,7 +174,7 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
             switch (type.intValue()) {
             case JOIN:
                 handleJoin(e.getRemoteContainerID(),
-                        data.length > 2 ? (String[]) data[1] : null);
+                        data.length > 1 ? (String[]) data[1] : null);
                 break;
 
             case LEAVE:
