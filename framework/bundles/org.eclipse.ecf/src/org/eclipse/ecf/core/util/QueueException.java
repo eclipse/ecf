@@ -11,12 +11,6 @@ package org.eclipse.ecf.core.util;
 
 public class QueueException extends Exception {
 
-    /**
-     * 
-     * @uml.property name="theQueue"
-     * @uml.associationEnd
-     * @uml.property name="theQueue" multiplicity="(0 1)"
-     */
     Queue theQueue = null;
 
     public QueueException() {

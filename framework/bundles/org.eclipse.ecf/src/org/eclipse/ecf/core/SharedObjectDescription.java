@@ -15,6 +15,11 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Description of an ISharedObject instance.
+ * 
+ * @see org.eclipse.ecf.core.ISharedObjectManager#createSharedObject(SharedObjectDescription, ISharedObjectContainerTransaction)
+ */
 public class SharedObjectDescription implements Serializable {
 
     protected static long staticID = 0;

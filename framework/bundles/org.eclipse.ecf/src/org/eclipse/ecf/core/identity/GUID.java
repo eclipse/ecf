@@ -15,8 +15,10 @@ import org.eclipse.ecf.core.identity.provider.IDInstantiator;
 import org.eclipse.ecf.core.util.Base64;
 
 /**
- * Globally unique ID class.
- * 
+ * Globally unique ID implementation class.  Uses {@link java.security.SecureRandom}
+ * to create a unique number of given byte length.  Default byte length for secure 
+ * number is 20 bytes.  Default algorithm used for creating a SecureRandom instance
+ * is SHA1PRNG.
  */
 public class GUID extends StringID {
 
@@ -44,8 +46,9 @@ public class GUID extends StringID {
      * 
      * @param n
      *            the Namespace this identity will belong to
-     * @param s
-     *            the String defining this StringID
+     * @param provider
+     *            the name of the algorithm to use. See {@link SecureRandom}
+     * @param byteLength the length of the target number (in bytes)
      */
     protected GUID(Namespace n, String algo, String provider, int byteLength)
             throws IDInstantiationException {

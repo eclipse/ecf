@@ -17,12 +17,11 @@ import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.internal.impl.standalone.StandaloneContainer;
 
-/*
- * Factory class for creating ISharedObjectContainer instances. This is the
- * top-level class for the org.eclipse.ecf 'asynch container' factory. The
- * static methods on this class can be used to create ISharedObjectContainer and
- * SharedObjectContainerGroup instances.
- *  
+/**
+ * Factory for creating {@link ISharedObjectContainer} instances. This
+ * class provides ECF clients an entry point to constructing {@link ISharedObjectContainer}
+ * instances.  
+ * 
  */
 public class SharedObjectContainerFactory {
 
@@ -187,7 +186,7 @@ public class SharedObjectContainerFactory {
      * return an instance of ISharedObjectContainer</li>
      * </ul>
      * 
-     * @param desc
+     * @param descriptionName
      *            the SharedObjectContainerDescription name to lookup
      * @return a valid instance of ISharedObjectContainer
      * @throws SharedObjectContainerInstantiationException
@@ -211,7 +210,7 @@ public class SharedObjectContainerFactory {
      * return an instance of ISharedObjectContainer</li>
      * </ul>
      * 
-     * @param desc
+     * @param descriptionName
      *            the SharedObjectContainerDescription name to lookup
      * @param args
      *            the Object [] of arguments passed to the
@@ -238,7 +237,7 @@ public class SharedObjectContainerFactory {
      * return an instance of ISharedObjectContainer</li>
      * </ul>
      * 
-     * @param desc
+     * @param descriptionName
      *            the SharedObjectContainerDescription name to lookup
      * @param argsTypes
      *            the String [] of argument types of the following args

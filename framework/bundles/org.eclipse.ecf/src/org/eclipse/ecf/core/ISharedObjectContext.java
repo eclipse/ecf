@@ -15,6 +15,17 @@ import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.QueueEnqueue;
 
+/**
+ * Context reference provided to all ISharedObjects upon initialization.  Implementers of
+ * this interface provide a runtime context for ISharedObject instances.  Upon initialization
+ * within a container (see {@link ISharedObject#init(ISharedObjectConfig)}, ISharedObject instances
+ * can access an instance of this context by calling {@link ISharedObjectConfig#getContext()}.  They
+ * then can have access to the functions provided by this context object for use in implementing
+ * their behavior.
+ *
+ * @see ISharedObject#init
+ * @see ISharedObjectConfig#getContext()
+ */
 public interface ISharedObjectContext {
 
     /**
@@ -25,7 +36,8 @@ public interface ISharedObjectContext {
     public ID getContainerID();
     /**
      * Get the ISharedObjectManager for this context
-     * @return
+     * @return ISharedObjectManager the shared object manager instance for this
+     * container.  Null if none available.
      */
     public ISharedObjectManager getSharedObjectManager();
     /**
@@ -40,40 +52,40 @@ public interface ISharedObjectContext {
      */
     public QueueEnqueue getQueue();
 
-    /*
+    /**
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.ISharedObjectContainer#joinGroup(org.eclipse.ecf.identity.ID,
+     * @see org.eclipse.ecf.core.ISharedObjectContainer#joinGroup(org.eclipse.ecf.core.identity.ID,
      *      java.lang.Object)
      */
-    public Object joinGroup(ID groupID, Object loginData)
+    public void joinGroup(ID groupID, Object loginData)
             throws SharedObjectContainerJoinException;
-    /*
+    /**
      * (non-Javadoc)
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContainer#leaveGroup()
      */
     public Object leaveGroup();
 
-    /*
+    /**
      * (non-Javadoc)
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContainer#getGroupID()
      */
     public ID getGroupID();
-    /*
+    /**
      * (non-Javadoc)
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContainer#isGroupManager()
      */
     public boolean isGroupManager();
-    /*
+    /**
      * (non-Javadoc)
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContainer#isGroupServer()
      */
     public boolean isGroupServer();
-    /*
+    /**
      * (non-Javadoc)
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContainer#getGroupMembership()
@@ -160,7 +172,7 @@ public interface ISharedObjectContext {
      * Returns an object which is an instance of the given class associated with
      * this object.
      * 
-     * @param adapter
+     * @param clazz
      *            the adapter class to lookup
      * @return Object a object castable to the given class, or null if this
      *         object does not have an adapter for the given class

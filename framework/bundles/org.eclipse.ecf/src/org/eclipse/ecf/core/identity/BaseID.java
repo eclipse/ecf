@@ -14,12 +14,6 @@ import java.net.URISyntaxException;
 
 public abstract class BaseID implements ID {
 
-    /**
-     * 
-     * @uml.property name="namespace"
-     * @uml.associationEnd
-     * @uml.property name="namespace" multiplicity="(1 1)"
-     */
     Namespace namespace;
 
     protected BaseID(Namespace namespace) {
@@ -46,10 +40,6 @@ public abstract class BaseID implements ID {
         return namespace.getNameForID(this);
     }
 
-    /**
-     * 
-     * @uml.property name="namespace"
-     */
     public Namespace getNamespace() {
         return namespace;
     }

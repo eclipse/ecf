@@ -11,6 +11,12 @@ package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.events.ContainerEvent;
 
+/**
+ * Listener for objects that wish to receive events from an ISharedObjectContainer
+ * instance.
+ * 
+ * @see ISharedObjectContainer#addListener(ISharedObjectContainerListener, String)
+ */
 public interface ISharedObjectContainerListener {
     public void handleEvent(ContainerEvent evt);
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="protected" author="false" classpath="C:\eclipse\plugins\org.eclipse.osgi_3.0.0\console.jar;C:\eclipse\plugins\org.eclipse.osgi_3.0.0\eclipseAdaptor.jar;C:\eclipse\plugins\org.eclipse.osgi_3.0.0\defaultAdaptor.jar;C:\eclipse\plugins\org.eclipse.osgi_3.0.0\core.jar;C:\eclipse\plugins\org.eclipse.core.runtime_3.0.0\runtime.jar;bin;C:\eclipse\plugins\org.eclipse.osgi_3.0.0\resolver.jar;C:\eclipse\plugins\org.eclipse.osgi_3.0.0\osgi.jar" destdir="../ecf website/ecf/docs/api" doctitle="Eclipse Communications Framework (ECF)" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="org.eclipse.ecf.core.events,org.eclipse.ecf.core.util,org.eclipse.ecf.core.identity.provider,org.eclipse.ecf.core.identity,org.eclipse.ecf.core,org.eclipse.ecf.core.provider" sourcepath="src" splitindex="true" use="true" version="true">
+            <link href="http://java.sun.com/j2se/1.4.2/docs/api"/>
+        </javadoc>
+    </target>
+</project>

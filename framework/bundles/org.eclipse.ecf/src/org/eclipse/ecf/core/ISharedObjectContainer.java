@@ -9,13 +9,12 @@
 
 package org.eclipse.ecf.core;
 
-import java.io.IOException;
-
 import org.eclipse.ecf.core.identity.ID;
 
-/*
- * ISharedObjectContainer. The core interface that must be implemented by all
- * instances of ISharedObjectContainer
+/**
+ * Core interface that must be implemented by all ECF container instances.
+ * Instances are typically
+ * created via {@link SharedObjectContainerFactory}  
  */
 public interface ISharedObjectContainer {
 
@@ -66,7 +65,7 @@ public interface ISharedObjectContainer {
      * @param loginData
      *            any required login/authentication data to allow this container
      *            to authenticate
-     * @exception IOException
+     * @exception SharedObjectContainerJoinException
      *                thrown if communication cannot be established with remote
      *                service
      */

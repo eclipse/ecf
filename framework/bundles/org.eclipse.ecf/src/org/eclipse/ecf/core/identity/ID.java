@@ -30,7 +30,6 @@ import java.net.URISyntaxException;
  * addNamespace) in order to allow the custom creation of instances that
  * implement this interface.
  * 
- * @author Scott B. Lewis, slewis@composent.com
  */
 
 public interface ID extends java.io.Serializable, java.lang.Comparable,
@@ -42,8 +41,6 @@ public interface ID extends java.io.Serializable, java.lang.Comparable,
      * Get the unique name of this identity.
      * 
      * @return String unique name for this identity
-     * 
-     * @uml.property name="name"
      */
     public String getName();
 
@@ -51,10 +48,6 @@ public interface ID extends java.io.Serializable, java.lang.Comparable,
      * Get the Namespace instance associated with this identity
      * 
      * @return Namespace the Namespace corresponding to this identity
-     * 
-     * @uml.property name="namespace"
-     * @uml.associationEnd
-     * @uml.property name="namespace" multiplicity="(0 1)"
      */
     public Namespace getNamespace();
 

@@ -31,10 +31,6 @@ public class NamespacePermission extends BasicPermission {
         actions = s1;
     }
 
-    /**
-     * 
-     * @uml.property name="actions"
-     */
     public String getActions() {
         return actions;
     }

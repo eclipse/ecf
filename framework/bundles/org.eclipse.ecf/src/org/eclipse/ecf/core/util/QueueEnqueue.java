@@ -20,18 +20,8 @@ public interface QueueEnqueue {
 
     boolean enqueue_lossy(Event element);
 
-    /**
-     * 
-     * @uml.property name="enqueuePredicate"
-     */
     void setEnqueuePredicate(EnqueuePredicate pred);
 
-    /**
-     * 
-     * @uml.property name="enqueuePredicate"
-     * @uml.associationEnd
-     * @uml.property name="enqueuePredicate" multiplicity="(0 1)"
-     */
     EnqueuePredicate getEnqueuePredicate();
 
     int size();

@@ -37,16 +37,6 @@ public class Namespace implements Serializable {
 
     private transient IDInstantiator instantiator = null;
 
-    /**
-     * 
-     * @param name
-     *            the name of the Namespace
-     * @param instantiatorClass
-     *            the fully qualified classname of the class responsible for
-     *            creating id instances that can exist within this namespace.
-     * @param description
-     *            a description to be associated with this Namespace
-     */
     public Namespace(ClassLoader cl, String name, String instantiatorClass,
             String desc) {
         this.classLoader = cl;
@@ -91,8 +81,6 @@ public class Namespace implements Serializable {
      *                thrown if instantiator class cannot be loaded, or if it
      *                cannot be cast to ISharedObjectContainerInstantiator
      *                interface
-     * 
-     * @uml.property name="instantiator"
      */
     protected IDInstantiator getInstantiator() throws ClassNotFoundException,
             InstantiationException, IllegalAccessException {
@@ -126,7 +114,6 @@ public class Namespace implements Serializable {
     /**
      * @return String name of Namespace instance
      * 
-     * @uml.property name="name"
      */
     public String getName() {
         return name;

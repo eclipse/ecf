@@ -9,6 +9,13 @@
 
 package org.eclipse.ecf.core;
 
+/**
+ * Implementers represent a transaction associated with the creation of a SharedObject
+ * within the scope of a given SharedObjectContainer
+ *
+ * @see ISharedObjectContainer#getSharedObjectManager()
+ * @see ISharedObjectManager#createSharedObject(SharedObjectDescription, ISharedObjectContainerTransaction)
+ */
 public interface ISharedObjectContainerTransaction {
 
     public static final byte ACTIVE = 0;

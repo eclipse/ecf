@@ -13,6 +13,11 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Configuration information provided to ISharedObject via its enclosing ISharedObjectContainer
+ *
+ * @see ISharedObject#init(ISharedObjectConfig)
+ */
 public interface ISharedObjectConfig {
 
     /**
@@ -21,7 +26,7 @@ public interface ISharedObjectConfig {
      * provides a non-null ID instance in response to this method call.
      * 
      * @return ID that ISharedObject can use for imlementing its own
-     *         ISharedObject.getID(). Cannot be null.
+     *         ISharedObject.getID(). Must not be null.
      */
     public ID getSharedObjectID();
     /**
@@ -29,7 +34,7 @@ public interface ISharedObjectConfig {
      * ISharedObject instance.
      * 
      * @return the ID of the container that is the home of the primary copy of
-     *         the ISharedObject instance. Cannot be null.
+     *         the ISharedObject instance. Must not be null.
      */
     public ID getHomeContainerID();
     /**

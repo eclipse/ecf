@@ -14,6 +14,11 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Manager for creating, disposing, and accessing ISharedObjects from an ISharedObjectContainer.
+ *
+ * @see ISharedObjectContainer#getSharedObjectManager()
+ */
 public interface ISharedObjectManager {
 
     /**
@@ -57,7 +62,7 @@ public interface ISharedObjectManager {
      *             if the add cannot be accomplished for any reason
      */
     public ID addSharedObject(ID sharedObjectID, ISharedObject sharedObject,
-            Map dict, ISharedObjectContainerTransaction trans)
+            Map properties, ISharedObjectContainerTransaction trans)
             throws SharedObjectAddException;
 
     /**

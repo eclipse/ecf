@@ -14,6 +14,12 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.AsynchResult;
 import org.eclipse.ecf.core.util.QueueException;
 
+/**
+ * Implementers which represent the one-way associations between SharedObject
+ * instances within the scope of a given ISharedObjectContainer
+ * 
+ * @see ISharedObjectManager#connectSharedObjects(ID, ID[])
+ */
 public interface ISharedObjectConnector {
 
     public ID getSender();
