@@ -14,12 +14,13 @@ package org.eclipse.ecf.core.user;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.IIdentifiable;
 
 /**
  * Interface for arbitrary ECF system user.  Instances represent a user within ECF providers and/or clients.
  */
-public interface IUser extends IIdentifiable, Serializable {
+public interface IUser extends IIdentifiable, Serializable, IAdaptable {
 
 	/**
 	 * Get basic name for user

@@ -9,7 +9,7 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.provider.generic.user;
+package org.eclipse.ecf.core.user;
 
 import java.util.Map;
 
@@ -47,4 +47,8 @@ public class User implements IUser {
 	public String getName() {
 		return name;
 	}
+    
+    public Object getAdapter(Class clazz) {
+        return null;
+    }
 }
