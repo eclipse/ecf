@@ -14,9 +14,23 @@
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
-            label="Test Actions"
+            label="ECF"
             visible="true"
             id="org.eclipse.ecf.example.collab.actionSet">
+         <action
+               toolbarPath="org.eclipse.ecf.example.collab.topseparator"
+               label="Connect..."
+               class="org.eclipse.ecf.example.collab.actions.WorkbenchAction"
+               tooltip="Join ECF Group"
+               icon="icons/person.gif"
+               style="push"
+               menubarPath="org.eclipse.ecf.example.collab.topmenu/org.eclipse.ecf.example.collab.topseparator"
+               id="org.eclipse.ecf.example.collab.joingroupaction"/>
+         <menu
+               label="ECF"
+               id="org.eclipse.ecf.example.collab.topmenu">
+            <separator name="org.eclipse.ecf.example.collab.topseparator"/>
+         </menu>
       </actionSet>
    </extension>
    <extension

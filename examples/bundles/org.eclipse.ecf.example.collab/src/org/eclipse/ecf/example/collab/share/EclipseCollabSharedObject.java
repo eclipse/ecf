@@ -50,7 +50,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
 	public static final String ECLIPSEOBJECTNAME = "chat";
 
-	public static final String INIT_TEXT = "Collaboration for '";
+	public static final String INIT_TEXT = "Collaboration for ";
 
 	Date creationTime = new Date();
 
@@ -206,17 +206,17 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	}
 
 	protected LineChatClientView getOutputWindow() {
-		final String pn = (localProject == null) ? "<workspace>" : localProject
+		final String pn = (localProject == null || localProject.getName().trim().equals("")) ? "<workspace>" : localProject
 				.getName();
 		final String projectName = pn;
-		final String init = INIT_TEXT + pn + "' project\n\n";
+		final String init = INIT_TEXT + pn + "\n\n";
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				try {
 					if (LineChatView.isDisposed())
 						showView();
 					localGUI = LineChatView.makeClientView(
-							EclipseCollabSharedObject.this, projectName, init,
+							EclipseCollabSharedObject.this, pn, init,
 							getLocalFullDownloadPath());
 				} catch (Exception e) {
 					debugdump(e,
