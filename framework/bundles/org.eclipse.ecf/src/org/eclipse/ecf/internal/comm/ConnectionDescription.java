@@ -1,6 +1,6 @@
 package org.eclipse.ecf.internal.comm;
 
-public class AsynchConnectionDescription {
+public class ConnectionDescription {
 
     protected String name;
     protected String instantiatorClass;
@@ -9,7 +9,7 @@ public class AsynchConnectionDescription {
     protected int hashCode = 0;
     protected ClassLoader classLoader = null;
 
-    public AsynchConnectionDescription(ClassLoader loader,
+    public ConnectionDescription(ClassLoader loader,
 
     String name, String instantiatorClass) {
         if (name == null)
@@ -20,7 +20,7 @@ public class AsynchConnectionDescription {
         this.instantiatorClass = instantiatorClass;
         this.hashCode = name.hashCode();
     }
-    public AsynchConnectionDescription(String name,
+    public ConnectionDescription(String name,
             IAsynchConnectionInstantiator inst) {
         this.instantiator = inst;
         this.classLoader = this.instantiator.getClass().getClassLoader();
@@ -34,9 +34,9 @@ public class AsynchConnectionDescription {
         return classLoader;
     }
     public boolean equals(Object other) {
-        if (!(other instanceof AsynchConnectionDescription))
+        if (!(other instanceof ConnectionDescription))
             return false;
-        AsynchConnectionDescription scd = (AsynchConnectionDescription) other;
+        ConnectionDescription scd = (ConnectionDescription) other;
         return scd.name.equals(name);
     }
 
