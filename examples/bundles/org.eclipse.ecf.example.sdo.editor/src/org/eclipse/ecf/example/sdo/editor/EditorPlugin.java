@@ -162,6 +162,12 @@ public class EditorPlugin extends AbstractUIPlugin {
             container.getSharedObjectManager().addSharedObject(
                     IDFactory.makeStringID(PublishedGraphTracker.class
                             .getName()), tracker, null, null);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+            
             this.tracker = tracker;
             container.getSharedObjectManager()
                     .addSharedObject(IDFactory.makeStringID("debug"),
