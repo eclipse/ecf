@@ -8,39 +8,30 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.events;
 
-import java.util.Arrays;
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectActivatedEvent implements ISharedObjectActivatedEvent {
-    private final ID activatedID;
-    private final ID[] groupMemberIDs;
+public class SharedObjectContainerDisposeEvent implements
+        ISharedObjectContainerDisposeEvent {
     private final ID localContainerID;
 
-    public SharedObjectActivatedEvent(ID container, ID act, ID[] others) {
+    public SharedObjectContainerDisposeEvent(ID container) {
         super();
         this.localContainerID = container;
-        this.activatedID = act;
-        this.groupMemberIDs = others;
-    }
-
-    public ID getActivatedID() {
-        return activatedID;
     }
 
     public ID getLocalContainerID() {
         return localContainerID;
     }
 
-    public ID[] getGroupMemberIDs() {
-        return groupMemberIDs;
-    }
-
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
     public String toString() {
-        StringBuffer sb = new StringBuffer("SharedObjectActivatedEvent[");
-        sb.append(getLocalContainerID()).append(";");
-        sb.append(Arrays.asList(getGroupMemberIDs()))
-                .append(";");
-        sb.append(getActivatedID()).append("]");
-        return sb.toString();
+        StringBuffer buf = new StringBuffer(
+                "SharedObjectContainerDisposeEvent[");
+        buf.append(getLocalContainerID()).append("]");
+        return buf.toString();
     }
 }

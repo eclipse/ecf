@@ -20,6 +20,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -42,6 +43,7 @@ import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnectionEventHandler;
 import org.eclipse.ecf.core.comm.SynchConnectionEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.provider.Trace;
@@ -210,6 +212,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
             return processSynch(event);
         }
     }
+
     static Trace debug = Trace.create("container");
     public static final String DEFAULT_OBJECT_ARG_KEY = SOContainer.class
             .getName()
@@ -248,7 +251,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
      */
     public void addListener(ISharedObjectContainerListener l, String filter) {
         synchronized (listeners) {
-            listeners.add(l);
+            listeners.add(new ContainerListener(l,filter));
         }
     }
 
@@ -320,9 +323,10 @@ public abstract class SOContainer implements ISharedObjectContainer {
      * @see org.eclipse.ecf.core.ISharedObjectContainer#dispose(long)
      */
     public void dispose(long waittime) {
-        debug("dispose:" + waittime);
+        debug("dispose(" + waittime+")");
         isClosing = true;
-        // XXX Notify listeners that we're going away
+        // notify listeners
+        fireContainerEvent(new SharedObjectContainerDisposeEvent(getID()));
         // Clear group manager
         if (groupManager != null) {
             groupManager.removeAllMembers();
@@ -355,8 +359,10 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
     protected void fireContainerEvent(IContainerEvent event) {
         synchronized (listeners) {
-            for (Iterator i = listeners.iterator(); i.hasNext();)
-                ((ISharedObjectContainerListener) i.next()).handleEvent(event);
+            for (Iterator i = listeners.iterator(); i.hasNext();) {
+                ContainerListener l = (ContainerListener) i.next();
+                l.handleEvent(event);
+            }
         }
     }
 
@@ -766,11 +772,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
         groupManager.moveSharedObjectFromLoadingToActive(wrap);
     }
 
-    protected void notifyGroupLeave(ContainerMessage mess) {
-        // XXX todo
-        debug("notifyGroupLeave(" + mess + ")");
-    }
-
     protected void notifySharedObjectActivated(ID sharedObjectID) {
         groupManager.notifyOthersActivated(sharedObjectID);
     }
@@ -820,7 +821,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
         debug("processSynch:" + e);
         ContainerMessage mess = getObjectFromBytes((byte[]) e.getData());
         ID fromID = mess.getFromContainerID();
-        notifyGroupLeave(mess);
         synchronized (getGroupMembershipLock()) {
             memberLeave(fromID, e.getConnection());
         }
@@ -841,7 +841,13 @@ public abstract class SOContainer implements ISharedObjectContainer {
      */
     public void removeListener(ISharedObjectContainerListener l) {
         synchronized (listeners) {
-            listeners.remove(l);
+            for(Enumeration e=listeners.elements(); e.hasMoreElements(); ) {
+                ContainerListener list = (ContainerListener) e.nextElement();
+                if (list.isListener(l)) {
+                    // found it...so remove
+                    listeners.remove(list);
+                }
+            }
         }
     }
 

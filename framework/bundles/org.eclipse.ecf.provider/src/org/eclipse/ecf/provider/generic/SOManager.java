@@ -32,6 +32,12 @@ import org.eclipse.ecf.core.SharedObjectConnectException;
 import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectDisconnectException;
+import org.eclipse.ecf.core.events.SharedObjectActivatedEvent;
+import org.eclipse.ecf.core.events.SharedObjectManagerAddEvent;
+import org.eclipse.ecf.core.events.SharedObjectManagerConnectEvent;
+import org.eclipse.ecf.core.events.SharedObjectManagerCreateEvent;
+import org.eclipse.ecf.core.events.SharedObjectManagerDisconnectEvent;
+import org.eclipse.ecf.core.events.SharedObjectManagerRemoveEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.QueueEnqueue;
@@ -142,15 +148,18 @@ public class SOManager implements ISharedObjectManager {
             ISharedObjectContainerTransaction trans)
             throws SharedObjectCreateException {
         debug("createSharedObject(" + sd + "," + trans + ")");
+        // notify listeners
+        container.fireContainerEvent(new SharedObjectManagerCreateEvent(container.getID(),sd));
         ISharedObject newObject = null;
         Throwable t = null;
         ID result = sd.getID();
         try {
             newObject = loadSharedObject(sd);
-            return addSharedObject(result, newObject, sd.getProperties(), trans);
+            result = addSharedObject(sd.getID(), newObject, sd.getProperties(), trans);
         } catch (Exception e) {
-            throw new SharedObjectCreateException(t);
+            throw new SharedObjectCreateException("Container "+container.getID()+" had exception creating shared object "+sd.getID(),t);
         }
+        return result;
     }
 
     /*
@@ -165,6 +174,8 @@ public class SOManager implements ISharedObjectManager {
             throws SharedObjectAddException {
         debug("addSharedObject(" + sharedObjectID + "," + sharedObject + ","
                 + properties + "," + trans + ")");
+        // notify listeners
+        container.fireContainerEvent(new SharedObjectManagerAddEvent(container.getID(),sharedObjectID,sharedObject,properties));
         Throwable t = null;
         ID result = sharedObjectID;
         try {
@@ -175,8 +186,10 @@ public class SOManager implements ISharedObjectManager {
                     properties, 0);
             container.addSharedObjectAndWait(sd, so, trans);
         } catch (Exception except) {
-            throw new SharedObjectAddException(except);
+            throw new SharedObjectAddException("Container "+container.getID()+" had exception adding shared object "+sharedObjectID,except);
         }
+        // notify listeners
+        container.fireContainerEvent(new SharedObjectActivatedEvent(container.getID(), result, container.getGroupMemberIDs()));
         return result;
     }
 
@@ -196,7 +209,9 @@ public class SOManager implements ISharedObjectManager {
      * @see org.eclipse.ecf.core.ISharedObjectManager#removeSharedObject(org.eclipse.ecf.core.identity.ID)
      */
     public ISharedObject removeSharedObject(ID sharedObjectID) {
-        debug("getSharedObject(" + sharedObjectID + ")");
+        debug("removeSharedObject(" + sharedObjectID + ")");
+        // notify listeners
+        container.fireContainerEvent(new SharedObjectManagerRemoveEvent(container.getID(),sharedObjectID));
         return container.removeSharedObject(sharedObjectID);
     }
 
@@ -210,6 +225,8 @@ public class SOManager implements ISharedObjectManager {
             ID[] sharedObjectsTo) throws SharedObjectConnectException {
         debug("connectSharedObjects(" + sharedObjectFrom + ","
                 + sharedObjectsTo + ")");
+        // notify listeners
+        container.fireContainerEvent(new SharedObjectManagerConnectEvent(container.getID(),sharedObjectFrom,sharedObjectsTo));
         if (sharedObjectFrom == null)
             throw new SharedObjectConnectException("sender cannot be null");
         if (sharedObjectsTo == null)
@@ -243,8 +260,11 @@ public class SOManager implements ISharedObjectManager {
      */
     public void disconnectSharedObjects(ISharedObjectConnector connector)
             throws SharedObjectDisconnectException {
-        if (connector != null)
+        if (connector != null) {
             debug("disconnectSharedObjects(" + connector.getSender() + ")");
+            // notify listeners
+            container.fireContainerEvent(new SharedObjectManagerDisconnectEvent(container.getID(),connector.getSender()));
+        }
         if (connector == null)
             throw new SharedObjectDisconnectException("connect cannot be null");
         if (!removeConnector(connector)) {

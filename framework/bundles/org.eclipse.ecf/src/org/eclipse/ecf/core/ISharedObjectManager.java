@@ -20,31 +20,6 @@ import org.eclipse.ecf.core.identity.ID;
  * @see ISharedObjectContainer#getSharedObjectManager()
  */
 public interface ISharedObjectManager {
-
-    /**
-     * Get the array of SharedObject instances currently contained by this
-     * ISharedObjectContainer
-     * 
-     * @return ID[] the IDs of currently contained ISharedObject instances
-     */
-    public ID[] getSharedObjectIDs();
-    /**
-     * Create a new ISharedObject within this container from the given
-     * SharedObjectDescription.
-     * 
-     * @param sd
-     *            the SharedObjectDescription that describes the SharedObject to
-     *            be created
-     * @param trans
-     *            the transaction governing the creation of the shared object.
-     *            If null, creation will not be transactional
-     * @return ID the sharedObjectID of the added ISharedObject
-     * @throws SharedObjectCreateException
-     *             if the SharedObject cannot be created
-     */
-    public ID createSharedObject(SharedObjectDescription sd,
-            ISharedObjectContainerTransaction trans)
-            throws SharedObjectCreateException;
     /**
      * Add an ISharedObject to this container.
      * 
@@ -64,23 +39,6 @@ public interface ISharedObjectManager {
     public ID addSharedObject(ID sharedObjectID, ISharedObject sharedObject,
             Map properties, ISharedObjectContainerTransaction trans)
             throws SharedObjectAddException;
-
-    /**
-     * Get the ISharedObject instance corresponding to the given sharedObjectID.
-     * 
-     * @param sharedObjectID
-     *            of the desired ISharedObject
-     * @return ISharedObject found. Return null if ISharedObject not found.
-     */
-    public ISharedObject getSharedObject(ID sharedObjectID);
-    /**
-     * Remove the given sharedObjectID from this ISharedObjectContainer.
-     * 
-     * @param sharedObjectID
-     *            the ID of the ISharedObject to remove
-     * @return ISharedObject removed. Returns null if ISharedObject not found
-     */
-    public ISharedObject removeSharedObject(ID sharedObjectID);
     /**
      * Create an ISharedObjectConnector instance for sending messages from a
      * single ISharedObject to one or more receiver ISharedObjects. All
@@ -100,6 +58,23 @@ public interface ISharedObjectManager {
     public ISharedObjectConnector connectSharedObjects(ID sharedObjectFrom,
             ID[] sharedObjectsTo) throws SharedObjectConnectException;
     /**
+     * Create a new ISharedObject within this container from the given
+     * SharedObjectDescription.
+     * 
+     * @param sd
+     *            the SharedObjectDescription that describes the SharedObject to
+     *            be created
+     * @param trans
+     *            the transaction governing the creation of the shared object.
+     *            If null, creation will not be transactional
+     * @return ID the sharedObjectID of the added ISharedObject
+     * @throws SharedObjectCreateException
+     *             if the SharedObject cannot be created
+     */
+    public ID createSharedObject(SharedObjectDescription sd,
+            ISharedObjectContainerTransaction trans)
+            throws SharedObjectCreateException;
+    /**
      * Destroy an ISharedObjectConnector instance.
      * 
      * @param connector
@@ -110,6 +85,15 @@ public interface ISharedObjectManager {
      */
     public void disconnectSharedObjects(ISharedObjectConnector connector)
             throws SharedObjectDisconnectException;
+
+    /**
+     * Get the ISharedObject instance corresponding to the given sharedObjectID.
+     * 
+     * @param sharedObjectID
+     *            of the desired ISharedObject
+     * @return ISharedObject found. Return null if ISharedObject not found.
+     */
+    public ISharedObject getSharedObject(ID sharedObjectID);
     
     /**
      * Get the sharedObjectConnectors associated with the given sharedObjectID
@@ -117,4 +101,20 @@ public interface ISharedObjectManager {
      * @return List of ISharedObjectConnector instances
      */
     public List getSharedObjectConnectors(ID sharedObjectFrom);
+
+    /**
+     * Get the array of SharedObject instances currently contained by this
+     * ISharedObjectContainer
+     * 
+     * @return ID[] the IDs of currently contained ISharedObject instances
+     */
+    public ID[] getSharedObjectIDs();
+    /**
+     * Remove the given sharedObjectID from this ISharedObjectContainer.
+     * 
+     * @param sharedObjectID
+     *            the ID of the ISharedObject to remove
+     * @return ISharedObject removed. Returns null if ISharedObject not found
+     */
+    public ISharedObject removeSharedObject(ID sharedObjectID);
 }
