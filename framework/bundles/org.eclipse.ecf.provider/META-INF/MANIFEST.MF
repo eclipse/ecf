@@ -8,6 +8,9 @@ Bundle-Localization: plugin
 Eclipse-AutoStart: true
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
-Provide-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.gmm
+Provide-Package: org.eclipse.ecf.provider.comm.tcp, 
+org.eclipse.ecf.provider.generic, 
+org.eclipse.ecf.provider.generic.gmm,
+org.eclipse.ecf.provider.generic.user
 DynamicImport-Package: *
 
