@@ -11,6 +11,8 @@ public class UiPlugin extends AbstractUIPlugin {
 	
 	public static final String PLUGIN_ID = "org.eclipse.ecf.ui";
 	
+    public static final String PREF_DISPLAY_TIMESTAMP = "TextChatComposite.displaytimestamp";
+    
 	//The shared instance.
 	private static UiPlugin plugin;
 	//Resource bundle.
