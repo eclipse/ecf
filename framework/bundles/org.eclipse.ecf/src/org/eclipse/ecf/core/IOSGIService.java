@@ -19,8 +19,6 @@ import org.osgi.framework.ServiceRegistration;
  * Interaction with local OSGI services via ECF plugin.  
  * Provided to ISharedObject instances via ISharedObjectContext
  * 
- * @see ISharedObjectConfig#getContext()
- * @see org.osgi.framework.BundleContext
  */
 public interface IOSGIService {
 

@@ -340,7 +340,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 *            the SharedObjectDescription that describes the shared object
 	 *            to be created
 	 * 
-	 * @returns Object null if the create message is to be ignored, non-null if
+	 * @return Object null if the create message is to be ignored, non-null if
 	 *          the creation should continue
 	 * 
 	 * @throws Exception

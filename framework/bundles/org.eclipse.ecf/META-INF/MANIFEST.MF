@@ -16,4 +16,5 @@ Provide-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.provider,
  org.eclipse.ecf.core.comm,
  org.eclipse.ecf.core.comm.provider,
+ ort.eclipse.ecf.core.user,
  org.eclipse.ecf.core.util
