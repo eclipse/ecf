@@ -103,10 +103,8 @@ public abstract class SOContainer implements ISharedObjectContainer {
 						// list.
 						SOWrapper wrap = makeNewRemoteSharedObjectWrapper(
 								fromID, description, obj);
-						// Get config info for new object
-						SOConfig aConfig = wrap.getConfig();
-						// Call init method on new object.
-						obj.init(aConfig);
+                        
+                        wrap.init();
 						// Check to make sure thread has not been
 						// interrupted...if it has, throw
 						if (Thread.currentThread().isInterrupted()
@@ -702,7 +700,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			if (sow != null) {
 				sow.deliverCreateResponse(fromID, resp);
 			} else {
-				log("handleCreateResponseMessage...wrapper now found for "
+				log("handleCreateResponseMessage...wrapper not found for "
 						+ sharedObjectID);
 			}
 		} else {

@@ -48,10 +48,12 @@ public class SOConfig implements ISharedObjectConfig {
         }
     }
 
-    protected void makeInactive() {
-        this.context.makeInactive();
-        this.context = null;
-        isActive = false;
+    protected synchronized void makeInactive() {
+        if (isActive) {
+            this.context.makeInactive();
+            this.context = null;
+            isActive = false;
+        }
     }
 
     /*
