@@ -3,4 +3,11 @@
 <plugin>
    <extension-point id="containerFactory" name="ECF Container Factory" schema="schema/containerFactory.exsd"/>
    <extension-point id="namespace" name="ECF Namespace" schema="schema/namespace.exsd"/>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.internal.impl.standalone.StandaloneContainerInstantiator"
+            description="standalone container implementation for testing"
+            name="standalone"/>
+   </extension>
 </plugin>

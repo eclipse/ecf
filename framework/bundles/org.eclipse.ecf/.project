@@ -24,6 +24,6 @@
 	<natures>
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-	    <nature>com.composent.client.collabnature</nature>
-</natures>
+		<nature>com.composent.client.collabnature</nature>
+	</natures>
 </projectDescription>

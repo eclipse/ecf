@@ -53,7 +53,7 @@ final class StandaloneSharedObjectWrapper {
 
 	void activated(ID[] ids) {
 		// First, make space reference accessible to use by RepObject
-		sharedObjectConfig.makeActive();
+		sharedObjectConfig.makeActive(new QueueEnqueueImpl(queue));
 		thread =
 				(Thread) AccessController.doPrivileged(new PrivilegedAction() {
 				public Object run() {
@@ -71,15 +71,12 @@ final class StandaloneSharedObjectWrapper {
 		send(new SharedObjectDeactivatedEvent(containerID,sharedObjectID));
 		container.notifySharedObjectDeactivated(sharedObjectID);
 		destroyed();
+		
 	}
 	private void destroyed() {
 		if (!queue.isStopped()) {
-		    /*
-			RepSpaceReference mySpaceRef = sharedObjectConfig.getSpaceReference();
-			if (mySpaceRef != null) {
-				mySpaceRef.clear();
-			}
-			*/
+		    
+		    sharedObjectConfig.makeInactive();
 			// Enqueue destroy message on our RepObject's queue
 			if (thread != null)
 				queue.enqueue(new DisposeEvent());

@@ -65,7 +65,7 @@ public interface ISharedObjectContext {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContainer#leaveGroup()
      */
-    public Object leaveGroup();
+    public void leaveGroup();
 
     /**
      * (non-Javadoc)

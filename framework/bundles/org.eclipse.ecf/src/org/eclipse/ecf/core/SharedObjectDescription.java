@@ -111,4 +111,15 @@ public class SharedObjectDescription implements Serializable {
     public void setIdentifier(long identifier) {
         this.identifier = identifier;
     }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer("SharedObjectDescription[");
+        sb.append("cl:").append(classLoader);
+        sb.append("oid:").append((id==null)?"null":(id.getName()));
+        sb.append("hid:").append((homeid==null)?"null":(homeid.getName()));
+        sb.append("cn:").append(className);
+        sb.append("props:").append(properties);
+        sb.append("id:").append(identifier).append("]");
+        return sb.toString();
+    }
 }

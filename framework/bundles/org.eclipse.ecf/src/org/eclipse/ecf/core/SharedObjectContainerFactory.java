@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
-import org.eclipse.ecf.internal.impl.standalone.StandaloneContainer;
 
 /**
  * Factory for creating {@link ISharedObjectContainer} instances. This
@@ -36,19 +35,8 @@ import org.eclipse.ecf.internal.impl.standalone.StandaloneContainer;
  */
 public class SharedObjectContainerFactory {
 
-    protected static final String DEFAULT_SHAREDOBJECT_CONTAINER = "standalone";
-    protected static final String DEFAULT_SHAREDOBJECT_CONTAINER_INSTANTIATOR = StandaloneContainer.Creator.class
-            .getName();
-    protected static final String DEFAULT_SHAREDOBJECT_CONTAINER_DESCRIPTION = "standalone container";
-    
     private static Hashtable containerdescriptions = new Hashtable();
 
-    static {
-        addDescription0(new SharedObjectContainerDescription(null,
-                DEFAULT_SHAREDOBJECT_CONTAINER,
-                DEFAULT_SHAREDOBJECT_CONTAINER_INSTANTIATOR,
-                DEFAULT_SHAREDOBJECT_CONTAINER_DESCRIPTION));
-    }
     /*
      * Add a SharedObjectContainerDescription to the set of known
      * SharedObjectContainerDescriptions.

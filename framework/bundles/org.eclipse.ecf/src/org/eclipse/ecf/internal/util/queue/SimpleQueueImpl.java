@@ -95,6 +95,9 @@ public class SimpleQueueImpl implements SimpleQueue {
         return stopped;
     }
 
+    public synchronized int size() {
+        return list.size();
+    }
     public synchronized Object[] flush() {
         Object[] out = list.toArray();
         list.clear();

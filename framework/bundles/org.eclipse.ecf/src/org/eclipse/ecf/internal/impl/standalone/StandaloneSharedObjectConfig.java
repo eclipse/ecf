@@ -9,6 +9,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.QueueEnqueue;
 
 public class StandaloneSharedObjectConfig implements ISharedObjectConfig {
 
@@ -17,18 +18,26 @@ public class StandaloneSharedObjectConfig implements ISharedObjectConfig {
     ID homeContainerID;
     boolean isActive;
     Map properties;
+    StandaloneContext standAloneContext;
     
     public StandaloneSharedObjectConfig(ID sharedObjectID, ID homeContainerID, StandaloneContainer cont, Map dict) {
         super();
         this.sharedObjectID = sharedObjectID;
         this.homeContainerID = homeContainerID;
-        this.container = cont;
         isActive = false;
         properties = dict;
+        this.container = cont;
     }
     
-    protected void makeActive() {
+    protected void makeActive(QueueEnqueue queue) {
         isActive = true;
+        this.standAloneContext = new StandaloneContext(sharedObjectID,homeContainerID,container,properties,queue);
+    }
+    
+    protected void makeInactive() {
+        this.standAloneContext.makeInactive();
+        this.standAloneContext = null;
+        isActive = false;
     }
 
     /* (non-Javadoc)

@@ -9,17 +9,19 @@
 
 package org.eclipse.ecf.internal.impl.standalone;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConnector;
 import org.eclipse.ecf.core.ISharedObjectContainer;
@@ -29,7 +31,6 @@ import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.SharedObjectConnectException;
-import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
 import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
@@ -37,12 +38,11 @@ import org.eclipse.ecf.core.SharedObjectDisconnectException;
 import org.eclipse.ecf.core.SharedObjectNotFoundException;
 import org.eclipse.ecf.core.events.ContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
-import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
+import org.osgi.framework.BundleContext;
 
-public class StandaloneContainer implements ISharedObjectContainer, ISharedObjectManager {
+public class StandaloneContainer implements ISharedObjectContainer,
+        ISharedObjectManager {
 
     protected static final Object[] nullArgs = new Object[0];
     protected static final Class[] nullTypes = new Class[0];
@@ -51,41 +51,15 @@ public class StandaloneContainer implements ISharedObjectContainer, ISharedObjec
     Vector listeners = new Vector();
     Hashtable sharedObjectTable;
     
+    BundleContext context = null;
+
     public static final String STANDALONE_NAME = "standalone";
 
-    public static class Creator implements ISharedObjectContainerInstantiator {
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator#makeInstance(java.lang.Class[],
-         *      java.lang.Object[])
-         */
-        public ISharedObjectContainer makeInstance(Class[] argTypes,
-                Object[] args)
-                throws SharedObjectContainerInstantiationException {
-            ID newID = null;
-            if (args == null || args.length == 0) {
-	            try {
-	                newID = IDFactory.makeGUID();
-	            } catch (IDInstantiationException e) {
-	                throw new SharedObjectContainerInstantiationException(
-	                        "Cannot create GUID ID for StandaloneContainer");
-	            }
-            } else {
-	            try {
-	                newID = IDFactory.makeStringID((String) args[0]);
-	            } catch (IDInstantiationException e) {
-	                throw new SharedObjectContainerInstantiationException(
-	                        "Cannot create GUID ID for StandaloneContainer");
-	            }
-            }
-            return new StandaloneContainer(new StandaloneConfig(newID));
-        }
-    }
-    public StandaloneContainer(StandaloneConfig config) {
+    public StandaloneContainer(StandaloneConfig config, BundleContext ctx) {
         super();
         this.config = config;
         sharedObjectTable = new Hashtable();
+        this.context = ctx;
     }
 
     public ISharedObjectManager getSharedObjectManager() {
@@ -134,13 +108,14 @@ public class StandaloneContainer implements ISharedObjectContainer, ISharedObjec
         }
     }
 
-	private void disposeSharedObjects() {
-		Enumeration e = sharedObjectTable.elements();
-		while (e.hasMoreElements()) {
-			SharedObjectWrapper wrapper = (SharedObjectWrapper) e.nextElement();
-			wrapper.deactivated();
-		}
-	}
+    private void disposeSharedObjects() {
+        Enumeration e = sharedObjectTable.elements();
+        while (e.hasMoreElements()) {
+            StandaloneSharedObjectWrapper wrapper = (StandaloneSharedObjectWrapper) e
+                    .nextElement();
+            wrapper.deactivated();
+        }
+    }
 
     /*
      * (non-Javadoc)
@@ -224,7 +199,7 @@ public class StandaloneContainer implements ISharedObjectContainer, ISharedObjec
      * @see org.eclipse.ecf.core.ISharedObjectContainer#getSharedObjectIDs()
      */
     public ID[] getSharedObjectIDs() {
-		return (ID[]) sharedObjectTable.keySet().toArray(new ID[0]);
+        return (ID[]) sharedObjectTable.keySet().toArray(new ID[0]);
     }
 
     protected static Object loadObject(final ClassLoader cl, String className,
@@ -254,96 +229,103 @@ public class StandaloneContainer implements ISharedObjectContainer, ISharedObjec
         }
         return newObject;
     }
-	protected ISharedObject loadSharedObject(SharedObjectDescription desc) throws Exception {
-	    ClassLoader descClassLoader = desc.getClassLoader();
-	    Map dict = desc.getProperties();
-	    String [] constructorArgTypes = null;
-	    Object [] constructorArgs = null;
-	    if (dict != null) {
-	        constructorArgTypes = (String []) dict.get("constructorArgTypes");
-	        constructorArgs = (Object []) dict.get("constructorArgs");
-	    }
-		return (ISharedObject) loadObject((descClassLoader==null)?getSharedObjectClassLoader(desc):descClassLoader,desc.getClassname(),constructorArgTypes,constructorArgs);
-	}
-	protected ClassLoader getSharedObjectClassLoader(SharedObjectDescription desc) {
-	    return this.getClass().getClassLoader();
-	}
-	
-	protected ISharedObject addSharedObjectAndWait(
-			SharedObjectDescription sd,
-			ISharedObject s,
-			ISharedObjectContainerTransaction t)
-			throws Exception {
-			if (sd.getID() == null || s == null)
-				return null;
-			// Wait right here until committed
-			ISharedObject so =
-				addSharedObject0(
-					sd,
-					s);
-			if (t != null)
-				t.waitToCommit();
-			return s;
-		}
-		protected ISharedObject addSharedObject0(
-			SharedObjectDescription sd,
-			ISharedObject s)
-			throws Exception {
-			addSharedObjectWrapper(
-				makeNewSharedObjectWrapper(sd, s));
-			return s;
-		}
-		protected StandaloneSharedObjectWrapper makeNewSharedObjectWrapper(SharedObjectDescription sd, ISharedObject s) {
-		    StandaloneSharedObjectConfig newConfig = makeNewSharedObjectConfig(sd,this);
-		    return new StandaloneSharedObjectWrapper(newConfig,s,this);
-		}
-		protected StandaloneSharedObjectConfig makeNewSharedObjectConfig(SharedObjectDescription sd, StandaloneContainer cont) {
-		    ID homeID = sd.getHomeID();
-		    if (homeID == null) homeID = getID();
-		    return new StandaloneSharedObjectConfig(sd.getID(),homeID,this,sd.getProperties());
-		}
-		protected StandaloneSharedObjectWrapper addSharedObjectWrapper(StandaloneSharedObjectWrapper wrapper) throws Exception {
-			if (wrapper == null)
-				return null;
-			ID id = wrapper.getObjID();
-			synchronized (sharedObjectTable) {
-				if (sharedObjectTable.get(id) != null) {
-					throw new SharedObjectAddException(
-						"SharedObject with id " + id + " already in use");
-				}
-				// Put in table
-				sharedObjectTable.put(id, wrapper);
-				// Call initialize
-				wrapper.init();
-				// Send activated message
-				wrapper.activated(getSharedObjectIDs());
-			}
-			return wrapper;
-		}
+    protected ISharedObject loadSharedObject(SharedObjectDescription desc)
+            throws Exception {
+        ClassLoader descClassLoader = desc.getClassLoader();
+        Map dict = desc.getProperties();
+        String[] constructorArgTypes = null;
+        Object[] constructorArgs = null;
+        if (dict != null) {
+            constructorArgTypes = (String[]) dict.get("constructorArgTypes");
+            constructorArgs = (Object[]) dict.get("constructorArgs");
+        }
+        return (ISharedObject) loadObject(
+                (descClassLoader == null) ? getSharedObjectClassLoader(desc)
+                        : descClassLoader, desc.getClassname(),
+                constructorArgTypes, constructorArgs);
+    }
+    protected ClassLoader getSharedObjectClassLoader(
+            SharedObjectDescription desc) {
+        return this.getClass().getClassLoader();
+    }
+
+    protected ISharedObject addSharedObjectAndWait(SharedObjectDescription sd,
+            ISharedObject s, ISharedObjectContainerTransaction t)
+            throws Exception {
+        if (sd.getID() == null || s == null)
+            return null;
+        // Wait right here until committed
+        ISharedObject so = addSharedObject0(sd, s);
+        if (t != null)
+            t.waitToCommit();
+        return s;
+    }
+    protected ISharedObject addSharedObject0(SharedObjectDescription sd,
+            ISharedObject s) throws Exception {
+        addSharedObjectWrapper(makeNewSharedObjectWrapper(sd, s));
+        return s;
+    }
+    protected StandaloneSharedObjectWrapper makeNewSharedObjectWrapper(
+            SharedObjectDescription sd, ISharedObject s) {
+        StandaloneSharedObjectConfig newConfig = makeNewSharedObjectConfig(sd,
+                this);
+        return new StandaloneSharedObjectWrapper(newConfig, s, this);
+    }
+    protected StandaloneSharedObjectConfig makeNewSharedObjectConfig(
+            SharedObjectDescription sd, StandaloneContainer cont) {
+        ID homeID = sd.getHomeID();
+        if (homeID == null)
+            homeID = getID();
+        return new StandaloneSharedObjectConfig(sd.getID(), homeID, this, sd
+                .getProperties());
+    }
+    protected StandaloneSharedObjectWrapper addSharedObjectWrapper(
+            StandaloneSharedObjectWrapper wrapper) throws Exception {
+        if (wrapper == null)
+            return null;
+        ID id = wrapper.getObjID();
+        synchronized (sharedObjectTable) {
+            if (sharedObjectTable.get(id) != null) {
+                throw new SharedObjectAddException("SharedObject with id " + id
+                        + " already in use");
+            }
+            // Put in table
+            sharedObjectTable.put(id, wrapper);
+            // Call initialize
+            wrapper.init();
+            // Send activated message
+            wrapper.activated(getSharedObjectIDs());
+        }
+        return wrapper;
+    }
 
     protected void notifySharedObjectActivated(ID activated) {
         synchronized (sharedObjectTable) {
-            for(Enumeration e=sharedObjectTable.elements(); e.hasMoreElements(); ) {
-                StandaloneSharedObjectWrapper w = (StandaloneSharedObjectWrapper) e.nextElement();
+            for (Enumeration e = sharedObjectTable.elements(); e
+                    .hasMoreElements();) {
+                StandaloneSharedObjectWrapper w = (StandaloneSharedObjectWrapper) e
+                        .nextElement();
                 if (!activated.equals(w.getObjID())) {
-                    w.otherChanged(activated,getSharedObjectIDs(),true);
+                    w.otherChanged(activated, getSharedObjectIDs(), true);
                 }
             }
         }
     }
     protected void notifySharedObjectDeactivated(ID deactivated) {
         synchronized (sharedObjectTable) {
-            for(Enumeration e=sharedObjectTable.elements(); e.hasMoreElements(); ) {
-                StandaloneSharedObjectWrapper w = (StandaloneSharedObjectWrapper) e.nextElement();
+            for (Enumeration e = sharedObjectTable.elements(); e
+                    .hasMoreElements();) {
+                StandaloneSharedObjectWrapper w = (StandaloneSharedObjectWrapper) e
+                        .nextElement();
                 if (!deactivated.equals(w.getObjID())) {
-                    w.otherChanged(deactivated,getSharedObjectIDs(),false);
+                    w.otherChanged(deactivated, getSharedObjectIDs(), false);
                 }
             }
         }
     }
-    
+
     protected Thread getSharedObjectThread(ID id, Runnable target, String name) {
-        return new Thread(target,name);
+        return new Thread(target, name);
     }
     /*
      * (non-Javadoc)
@@ -357,9 +339,10 @@ public class StandaloneContainer implements ISharedObjectContainer, ISharedObjec
         try {
             ISharedObject so = loadSharedObject(sd);
             result = sd.getID();
-            addSharedObjectAndWait(sd,so,trans);
+            addSharedObjectAndWait(sd, so, trans);
         } catch (Exception e) {
-            throw new SharedObjectCreateException("Exception creating shared object",e);
+            throw new SharedObjectCreateException(
+                    "Exception creating shared object", e);
         }
         return result;
     }
@@ -378,11 +361,13 @@ public class StandaloneContainer implements ISharedObjectContainer, ISharedObjec
         try {
             ISharedObject so = sharedObject;
             result = sharedObjectID;
-            SharedObjectDescription sd = new SharedObjectDescription(sharedObject.getClass().getClassLoader(),
-                    sharedObjectID,getID(),sharedObject.getClass().getName(),dict,0);
-            addSharedObjectAndWait(sd,so,trans);
+            SharedObjectDescription sd = new SharedObjectDescription(
+                    sharedObject.getClass().getClassLoader(), sharedObjectID,
+                    getID(), sharedObject.getClass().getName(), dict, 0);
+            addSharedObjectAndWait(sd, so, trans);
         } catch (Exception e) {
-            throw new SharedObjectAddException("Exception creating shared object",e);
+            throw new SharedObjectAddException(
+                    "Exception creating shared object", e);
         }
         return result;
     }
@@ -396,7 +381,9 @@ public class StandaloneContainer implements ISharedObjectContainer, ISharedObjec
     public Object getSharedObjectAdapter(ID sharedObjectID, Class adapterClass)
             throws SharedObjectNotFoundException {
         ISharedObject so = getSharedObject(sharedObjectID);
-        if (so == null) throw new SharedObjectNotFoundException("Shared object "+sharedObjectID.getName() + " not found");
+        if (so == null)
+            throw new SharedObjectNotFoundException("Shared object "
+                    + sharedObjectID.getName() + " not found");
         return so.getAdapter(adapterClass);
     }
 
@@ -406,9 +393,12 @@ public class StandaloneContainer implements ISharedObjectContainer, ISharedObjec
      * @see org.eclipse.ecf.core.ISharedObjectContainer#getSharedObject(org.eclipse.ecf.identity.ID)
      */
     public ISharedObject getSharedObject(ID sharedObjectID) {
-        StandaloneSharedObjectWrapper w = (StandaloneSharedObjectWrapper) sharedObjectTable.get(sharedObjectID);
-        if (w == null) return null;
-        else return w.sharedObject;
+        StandaloneSharedObjectWrapper w = (StandaloneSharedObjectWrapper) sharedObjectTable
+                .get(sharedObjectID);
+        if (w == null)
+            return null;
+        else
+            return w.sharedObject;
     }
 
     /*
@@ -417,9 +407,12 @@ public class StandaloneContainer implements ISharedObjectContainer, ISharedObjec
      * @see org.eclipse.ecf.core.ISharedObjectContainer#removeSharedObject(org.eclipse.ecf.identity.ID)
      */
     public ISharedObject removeSharedObject(ID sharedObjectID) {
-        StandaloneSharedObjectWrapper w = (StandaloneSharedObjectWrapper) sharedObjectTable.remove(sharedObjectID);
-        if (w == null) return null;
-        else return w.sharedObject;
+        StandaloneSharedObjectWrapper w = (StandaloneSharedObjectWrapper) sharedObjectTable
+                .remove(sharedObjectID);
+        if (w == null)
+            return null;
+        else
+            return w.sharedObject;
     }
 
     /*
@@ -446,7 +439,7 @@ public class StandaloneContainer implements ISharedObjectContainer, ISharedObjec
 
     /**
      * Get the sharedObjectConnectors associated with the given sharedObjectID
-     *
+     * 
      * @return List of ISharedObjectConnector instances
      */
     public List getSharedObjectConnectors(ID sharedObjectFrom) {
@@ -454,4 +447,24 @@ public class StandaloneContainer implements ISharedObjectContainer, ISharedObjec
         return new ArrayList();
     }
 
+    protected void sendCreate(ID objID, ID containerID, SharedObjectDescription sd) {
+        System.out.println("Container.sendCreate("+objID+","+containerID+","+sd+")");
+    }
+    
+    protected void sendMessage(ID objID, ID containerID, byte [] data) {
+        System.out.println("Container.sendMessage("+objID+","+containerID+","+new String(data)+")");
+    }
+
+    protected void sendMessage(ID objID, ID containerID, Serializable data) {
+        System.out.println("Container.sendMessage("+objID+","+containerID+","+data+")");
+    }
+
+    protected void sendDispose(ID objID, ID containerID) {
+        System.out.println("Container.sendDispose("+objID+","+containerID+")");
+    }
+    
+    protected IOSGIService getServiceAccess() {
+        if (context == null) return null;
+        else return new OSGIServiceAccessImpl(context);
+    }
 }

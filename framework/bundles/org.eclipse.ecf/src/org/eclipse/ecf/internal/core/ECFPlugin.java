@@ -65,6 +65,8 @@ public class ECFPlugin extends Plugin {
     //Resource bundle.
     private ResourceBundle resourceBundle;
 
+    BundleContext context = null;
+    
     public ECFPlugin() {
         super();
         plugin = this;
@@ -262,6 +264,7 @@ public class ECFPlugin extends Plugin {
         super.start(context);
         setupContainerExtensionPoint(context);
         setupIdentityExtensionPoint(context);
+        this.context = context;
     }
 
     /**
@@ -269,6 +272,11 @@ public class ECFPlugin extends Plugin {
      */
     public void stop(BundleContext context) throws Exception {
         super.stop(context);
+        this.context = null;
+    }
+    
+    public BundleContext getBundleContext() {
+        return context;
     }
 
     /**
