@@ -10,5 +10,21 @@
 package org.eclipse.ecf.core.util;
 
 public interface IEventProcessor {
-    public Object processEvent(Event e);
+    /**
+     * Returns true if given Event will actually be processed by this event processor, false if not
+     * 
+     * @param e the event to check
+     * @return true if given Event will actually be processed by this event processor, false if not
+     */
+    public boolean willProcess(Event e);
+    /**
+     * Process given Event
+     * @param e the Event to process
+     */
+    public void process(Event e);
+    /**
+     * Dispose this event processor.  Once disposed, given processor cannot be reused
+     *
+     */
+    public void dispose();
 }
