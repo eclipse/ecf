@@ -15,4 +15,3 @@ Provide-Package: org.eclipse.ecf.sdo,
  org.eclipse.ecf.sdo.emf
 Export-Package: org.eclipse.ecf.sdo,
  org.eclipse.ecf.internal.sdo
- 

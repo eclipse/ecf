@@ -14,5 +14,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.presence
 Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.provider.xmpp.container, org.eclipse.ecf.provider.xmpp.identity
-Provide-Package: org.eclipse.ecf.provider.xmpp, org.eclipse.ecf.provider.xmpp.container, org.eclipse.ecf.provider.xmpp.smack, org.eclipse.ecf.provider.xmpp.identity, org.eclipse.ecf.provider.xmpp.ui.views
+Provide-Package: org.eclipse.ecf.provider.xmpp, org.eclipse.ecf.provider.xmpp.container, org.eclipse.ecf.provider.xmpp.smack, org.eclipse.ecf.provider.xmpp.identity
 DynamicImport-Package: *
