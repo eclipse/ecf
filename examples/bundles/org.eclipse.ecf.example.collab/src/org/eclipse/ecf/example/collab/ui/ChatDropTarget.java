@@ -95,7 +95,8 @@ class ChatDropTarget implements DropTargetListener {
                 if (file.exists() && !file.isDirectory()
                         && composite != null) {
                     composite.sendFile(file.getPath(), this.view.downloaddir
-                            + file.getName(), null, target,false);
+                            + File.separatorChar + file.getName(), null, target,false);
+                    
                 }
             }
         }
