@@ -11,7 +11,7 @@
 
 package org.eclipse.ecf.example.collab.actions;
 
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -35,7 +35,7 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
     public void setData(Object data) {
         this.data = data;
     }
-    public void setProject(IProject project) {
+    public void setProject(IResource project) {
         this.project = project;
         if (project==null) {
             projectName = "<workspace>";
@@ -56,7 +56,7 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
     protected ID targetID = null;
     protected String username = null;
     protected Object data = null;
-    protected IProject project = null;
+    protected IResource project = null;
     protected String projectName = null;
     protected Client client = null;
     
@@ -69,7 +69,7 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
         }
 	}
     
-    public ClientConnectAction(ID targetID, String username, Object data, IProject project) {
+    public ClientConnectAction(ID targetID, String username, Object data, IResource project) {
         this.targetID = targetID;
         this.username = username;
         this.data = data;

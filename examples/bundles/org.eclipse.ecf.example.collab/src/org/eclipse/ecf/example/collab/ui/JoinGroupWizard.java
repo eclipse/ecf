@@ -10,7 +10,7 @@
 *****************************************************************************/
 package org.eclipse.ecf.example.collab.ui;
 
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -25,10 +25,10 @@ import org.eclipse.ui.IWorkbench;
 
 public class JoinGroupWizard extends Wizard {
     JoinGroupWizardPage mainPage;
-    private IProject project;
+    private IResource project;
     private IWorkbench workbench;
 
-    public JoinGroupWizard(IProject project, IWorkbench workbench) {
+    public JoinGroupWizard(IResource project, IWorkbench workbench) {
         super();
         this.project = project;
         this.workbench = workbench;
