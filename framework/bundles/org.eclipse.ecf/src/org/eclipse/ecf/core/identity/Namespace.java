@@ -40,12 +40,24 @@ public class Namespace implements Serializable {
     public Namespace(ClassLoader cl, String name, String instantiatorClass,
             String desc) {
         this.classLoader = cl;
+        if (name == null)
+            throw new RuntimeException(new InstantiationException(
+                    "Namespace<init> name cannot be null"));
         this.name = name;
+        if (instantiatorClass == null)
+            throw new RuntimeException(new InstantiationException(
+                    "Namespace<init> instantiatorClass cannot be null"));
         this.instantiatorClass = instantiatorClass;
         this.description = desc;
         this.hashCode = name.hashCode();
     }
     public Namespace(String name, IDInstantiator inst, String desc) {
+        if (name == null)
+            throw new RuntimeException(new InstantiationException(
+                    "Namespace<init> name cannot be null"));
+        if (inst == null)
+            throw new RuntimeException(new InstantiationException(
+                    "Namespace<init> instantiator instance cannot be null"));
         this.instantiator = inst;
         this.instantiatorClass = this.instantiator.getClass().getName();
         this.classLoader = this.instantiator.getClass().getClassLoader();
