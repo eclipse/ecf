@@ -34,7 +34,7 @@ import org.eclipse.ecf.core.util.Event;
  */
 class PublishedGraphTracker extends PlatformObject implements ISharedObject {
 
-    private static final String[] NO_PATHS = {};
+    private static final ID[] NO_GRAPHS = {};
 
     private static final int JOIN = 0;
 
@@ -46,68 +46,68 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
 
     private class Table {
 
-        private final Hashtable paths = new Hashtable();
+        private final Hashtable graphs = new Hashtable();
 
         private final Hashtable containers = new Hashtable();
 
-        public synchronized void add(ID containerID, String[] path) {
-            HashSet list = (HashSet) paths.get(containerID);
+        public synchronized void add(ID containerID, ID[] graphs) {
+            HashSet list = (HashSet) this.graphs.get(containerID);
             if (list == null) {
                 list = new HashSet();
-                paths.put(containerID, list);
+                this.graphs.put(containerID, list);
             }
 
-            list.addAll(Arrays.asList(path));
-            for (int i = 0; i < path.length; ++i) {
-                list = (HashSet) containers.get(path[i]);
+            list.addAll(Arrays.asList(graphs));
+            for (int i = 0; i < graphs.length; ++i) {
+                list = (HashSet) containers.get(graphs[i]);
                 if (list == null) {
                     list = new HashSet();
-                    containers.put(path[i], list);
+                    containers.put(graphs[i], list);
                 }
 
                 list.add(containerID);
             }
         }
 
-        public synchronized void remove(ID containerID, String path) {
-            HashSet list = (HashSet) paths.get(containerID);
+        public synchronized void remove(ID containerID, ID graph) {
+            HashSet list = (HashSet) graphs.get(containerID);
             if (list != null) {
-                list.remove(path);
+                list.remove(graph);
                 if (list.isEmpty())
-                    paths.remove(containerID);
+                    graphs.remove(containerID);
             }
 
-            list = (HashSet) containers.get(path);
+            list = (HashSet) containers.get(graph);
             if (list != null) {
                 list.remove(containerID);
                 if (list.isEmpty())
-                    containers.remove(path);
+                    containers.remove(graph);
             }
         }
 
         public synchronized void remove(ID containerID) {
-            HashSet list = (HashSet) paths.get(containerID);
+            HashSet list = (HashSet) graphs.get(containerID);
             if (list != null) {
                 for (Iterator i = list.iterator(); i.hasNext();) {
-                    String path = (String) i.next();
-                    list = (HashSet) containers.get(path);
+                    ID graph = (ID) i.next();
+                    list = (HashSet) containers.get(graph);
                     if (list != null) {
                         list.remove(containerID);
                         if (list.isEmpty())
-                            containers.remove(path);
+                            containers.remove(graph);
                     }
                 }
             }
         }
 
-        public synchronized boolean contains(String path) {
-            return containers.contains(path);
+        public synchronized boolean contains(ID graph) {
+            return containers.contains(graph);
         }
 
-        public synchronized String[] getPaths(ID containerID) {
-            HashSet list = (HashSet) paths.get(containerID);
-            return list == null ? NO_PATHS : (String[]) list
-                    .toArray(new String[list.size()]);
+        public synchronized ID[] getGraphs(ID containerID) {
+            HashSet list = (HashSet) graphs.get(containerID);
+            return list == null ? NO_GRAPHS : (ID[]) list.toArray(new ID[list
+                    .size()]);
         }
     }
 
@@ -115,37 +115,23 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
 
     private ISharedObjectConfig config;
 
-    public synchronized void add(String path) throws ECFException {
+    public synchronized void add(ID graph) throws ECFException {
         if (config == null)
             throw new ECFException("Not connected.");
 
-        String[] paths = new String[] { path };
+        ID[] graphs = new ID[] { graph };
         try {
             config.getContext().sendMessage(null,
-                    new Object[] { new Integer(ADD), paths });
+                    new Object[] { new Integer(ADD), graphs });
         } catch (IOException e) {
             throw new ECFException(e);
         }
 
-        handleAdd(config.getContext().getLocalContainerID(), paths);
+        handleAdd(config.getContext().getLocalContainerID(), graphs);
     }
 
-    public synchronized void remove(String path) throws ECFException {
-        if (config == null)
-            throw new ECFException("Not connected.");
-
-        try {
-            config.getContext().sendMessage(null,
-                    new Object[] { new Integer(REMOVE), path });
-        } catch (IOException e) {
-            throw new ECFException(e);
-        }
-
-        handleRemove(config.getContext().getLocalContainerID(), path);
-    }
-
-    public synchronized boolean isPublished(String path) {
-        return table.contains(path);
+    public synchronized boolean isPublished(ID graph) {
+        return table.contains(graph);
     }
 
     /*
@@ -174,7 +160,7 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
             switch (type.intValue()) {
             case JOIN:
                 handleJoin(e.getRemoteContainerID(),
-                        data.length > 1 ? (String[]) data[1] : null);
+                        data.length > 1 ? (ID[]) data[1] : null);
                 break;
 
             case LEAVE:
@@ -182,11 +168,11 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
                 break;
 
             case ADD:
-                handleAdd(e.getRemoteContainerID(), (String[]) data[1]);
+                handleAdd(e.getRemoteContainerID(), (ID[]) data[1]);
                 break;
 
             case REMOVE:
-                handleRemove(e.getRemoteContainerID(), (String) data[1]);
+                handleRemove(e.getRemoteContainerID(), (ID) data[1]);
             }
         } else if (event instanceof ISharedObjectContainerJoinedEvent) {
             if (((ISharedObjectContainerJoinedEvent) event)
@@ -199,25 +185,27 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
                     config.getContext().getLocalContainerID()))
                 handleLeave(e.getDepartedContainerID());
         } else if (event instanceof ISharedObjectActivatedEvent) {
-            if (((ISharedObjectActivatedEvent) event).getActivatedID().equals(
-                    config.getSharedObjectID()))
+            ISharedObjectActivatedEvent e = (ISharedObjectActivatedEvent) event;
+            if (e.getActivatedID().equals(config.getSharedObjectID()))
                 handleJoined();
         } else if (event instanceof ISharedObjectDeactivatedEvent) {
-            if (((ISharedObjectDeactivatedEvent) event).getDeactivatedID()
-                    .equals(config.getSharedObjectID()))
+            ISharedObjectDeactivatedEvent e = (ISharedObjectDeactivatedEvent) event;
+            if (e.getDeactivatedID().equals(config.getSharedObjectID()))
                 handleDeactivated();
+            else if (table.contains(e.getDeactivatedID()))
+                handleRemoved(e.getDeactivatedID());
         }
     }
 
-    private void handleJoin(ID containerID, String[] paths) {
-        if (paths != null)
-            table.add(containerID, paths);
+    private void handleJoin(ID containerID, ID[] graphs) {
+        if (graphs != null)
+            table.add(containerID, graphs);
 
-        paths = table.getPaths(config.getContext().getLocalContainerID());
-        if (paths.length > 0)
+        graphs = table.getGraphs(config.getContext().getLocalContainerID());
+        if (graphs.length > 0)
             try {
                 config.getContext().sendMessage(containerID,
-                        new Object[] { new Integer(ADD), paths });
+                        new Object[] { new Integer(ADD), graphs });
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -228,19 +216,19 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
         table.remove(containerID);
     }
 
-    private void handleAdd(ID containerID, String[] paths) {
-        table.add(containerID, paths);
+    private void handleAdd(ID containerID, ID[] graphs) {
+        table.add(containerID, graphs);
     }
 
-    private void handleRemove(ID containerID, String path) {
-        table.remove(containerID, path);
+    private void handleRemove(ID containerID, ID graph) {
+        table.remove(containerID, graph);
     }
 
     private void handleJoined() {
-        String[] paths = table.getPaths(config.getContext()
-                .getLocalContainerID());
-        Object[] data = paths.length == 0 ? new Object[] { new Integer(JOIN) }
-                : new Object[] { new Integer(JOIN), paths };
+        ID[] graphs = table
+                .getGraphs(config.getContext().getLocalContainerID());
+        Object[] data = graphs.length == 0 ? new Object[] { new Integer(JOIN) }
+                : new Object[] { new Integer(JOIN), graphs };
         try {
             config.getContext().sendMessage(null, data);
         } catch (IOException e) {
@@ -257,6 +245,18 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private void handleRemoved(ID graph) {
+        try {
+            config.getContext().sendMessage(null,
+                    new Object[] { new Integer(REMOVE), graph });
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        handleRemove(config.getContext().getLocalContainerID(), graph);
     }
 
     /*

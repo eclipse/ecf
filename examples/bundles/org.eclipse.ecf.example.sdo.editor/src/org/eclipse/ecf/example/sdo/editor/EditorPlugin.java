@@ -16,6 +16,7 @@ import java.util.ResourceBundle;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.example.collab.Client;
@@ -114,23 +115,30 @@ public class EditorPlugin extends AbstractUIPlugin {
             ISubscriptionCallback callback, IUpdateConsumer consumer)
             throws ECFException {
         initialize();
-        return SDOPlugin.getDefault().getDataGraphSharing(container).subscribe(
-                IDFactory.makeStringID(path), callback,
-                new EMFUpdateProvider(), consumer);
+        SDOPlugin.getDefault().setDebug(true);
+        ID id = IDFactory.makeStringID(path);
+        ISharedDataGraph result = SDOPlugin.getDefault().getDataGraphSharing(
+                container).subscribe(id, callback, new EMFUpdateProvider(),
+                consumer);
+        tracker.add(id);
+        return result;
     }
 
     public synchronized ISharedDataGraph publish(String path,
             DataGraph dataGraph, IUpdateConsumer consumer) throws ECFException {
         initialize();
         SDOPlugin.getDefault().setDebug(true);
-        return SDOPlugin.getDefault().getDataGraphSharing(container).publish(
-                dataGraph, IDFactory.makeStringID(path),
-                new EMFUpdateProvider(), consumer);
+        ID id = IDFactory.makeStringID(path);
+        ISharedDataGraph result = SDOPlugin.getDefault().getDataGraphSharing(
+                container).publish(dataGraph, id, new EMFUpdateProvider(),
+                consumer);
+        tracker.add(id);
+        return result;
     }
 
     public synchronized boolean isPublished(String path) throws ECFException {
         initialize();
-        return tracker.isPublished(path);
+        return tracker.isPublished(IDFactory.makeStringID(path));
     }
 
     public synchronized void checkConnected() throws ECFException {
