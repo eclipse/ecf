@@ -10,6 +10,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.ui.Trace;
 import org.eclipse.ecf.ui.UiPlugin;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -29,7 +35,11 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PlatformUI;
 
 public class TextChatComposite extends Composite {
     
@@ -60,6 +70,11 @@ public class TextChatComposite extends Composite {
     protected IUser remoteUser;
     protected boolean showTimestamp = true;
     
+    private Action outputClear = null;
+    private Action outputCopy = null;
+    private Action outputPaste = null;
+    private Action outputSelectAll = null;
+
     public TextChatComposite(Composite parent, int style, String initText, ITextInputHandler handler, IUser localUser, IUser remoteUser) {
         super(parent, style);
 
@@ -146,6 +161,9 @@ public class TextChatComposite extends Composite {
             }
         });
 
+        makeActions();
+        hookContextMenu();
+        
         UiPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent event) {
                 if (event.getProperty().equals(UiPlugin.PREF_DISPLAY_TIMESTAMP)) {
@@ -155,6 +173,95 @@ public class TextChatComposite extends Composite {
             
         });
 
+    }
+
+    private void makeActions() {
+        outputSelectAll = new Action() {
+            public void run() {
+                outputSelectAll();
+            }
+        };
+        outputSelectAll.setText("Select All");
+        outputSelectAll.setAccelerator(SWT.CTRL | 'A');
+        outputCopy = new Action() {
+            public void run() {
+                outputCopy();
+            }
+        };
+        outputCopy.setText("Copy");
+        outputCopy.setAccelerator(SWT.CTRL | 'C');
+        outputCopy.setImageDescriptor(PlatformUI.getWorkbench()
+                .getSharedImages().getImageDescriptor(
+                        ISharedImages.IMG_TOOL_COPY));
+
+        outputClear = new Action() {
+            public void run() {
+                outputClear();
+            }
+        };
+        outputClear.setText("Clear");
+
+        outputPaste = new Action() {
+            public void run() {
+                outputPaste();
+            }
+        };
+        outputPaste.setText("Paste");
+        outputCopy.setAccelerator(SWT.CTRL | 'V');
+        outputPaste.setImageDescriptor(PlatformUI.getWorkbench()
+                .getSharedImages().getImageDescriptor(
+                        ISharedImages.IMG_TOOL_PASTE));
+
+    }
+
+    protected void outputClear() {
+        if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
+                "Are you sure you want to clear output?"))
+            textoutput.getTextWidget().setText("");
+    }
+
+    protected void outputCopy() {
+        String t = textoutput.getTextWidget().getSelectionText();
+        if (t == null || t.length() == 0) {
+            textoutput.getTextWidget().selectAll();
+        }
+        textoutput.getTextWidget().copy();
+        textoutput.getTextWidget().setSelection(
+                textoutput.getTextWidget().getText().length());
+    }
+
+    protected void outputPaste() {
+        textinput.paste();
+    }
+
+    protected void outputSelectAll() {
+        textoutput.getTextWidget().selectAll();
+    }
+
+    private void hookContextMenu() {
+        MenuManager menuMgr = new MenuManager("#PopupMenu");
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(new IMenuListener() {
+            public void menuAboutToShow(IMenuManager manager) {
+                fillContextMenu(manager);
+            }
+        });
+        Menu menu = menuMgr.createContextMenu(textoutput.getControl());
+        textoutput.getControl().setMenu(menu);
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart().getSite().registerContextMenu(menuMgr,textoutput);
+        //registerContextMenu(menuMgr, textoutput);
+    }
+
+    private void fillContextMenu(IMenuManager manager) {
+        manager.add(outputCopy);
+        manager.add(outputPaste);
+        manager.add(outputClear);
+        manager.add(new Separator());
+        manager.add(outputSelectAll);
+        manager.add(new Separator());
+        manager.add(new Separator());
+        // Other plug-ins can contribute there actions here
+        manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
 
     public void setLocalUser(IUser newUser) {

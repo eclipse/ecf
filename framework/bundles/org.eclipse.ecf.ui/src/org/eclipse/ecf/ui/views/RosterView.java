@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.ui.messaging.IMessageViewer;
@@ -23,6 +24,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -54,9 +56,9 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
     protected static final int TREE_EXPANSION_LEVELS = 1;
     private TreeViewer viewer;
     private Action chatAction;
+    private Action selectedChatAction;
     private Action selectedDoubleClickAction;
     private Action disconnectAction;
-    
     protected IUser localUser;
     protected ITextInputHandler textInputHandler;
     protected Hashtable chatThreads = new Hashtable();
@@ -205,9 +207,6 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
             TreeObject type = new TreeObject("Status: "
                     + presence.getType().toString());
             obj.addChild(type);
-            TreeObject mode = new TreeObject("Mode: "
-                    + presence.getMode().toString());
-            obj.addChild(mode);
             String status = presence.getStatus();
             if (status != null && !status.equals("")) {
                 TreeObject stat = new TreeObject("Status Details: " + status);
@@ -372,12 +371,20 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
 
     private void fillContextMenu(IMenuManager manager) {
         TreeObject treeObject = getSelectedTreeObject();
+        final ID targetID = treeObject.getUserID();
         if (treeObject != null) {
-            chatAction.setText("IM with "+treeObject.getUserID().getName());
-            manager.add(chatAction);
+            selectedChatAction = new Action() {
+                public void run() {
+                    openChatWindowForTarget(targetID);
+                }
+            };
+            selectedChatAction.setText("Send IM to "+treeObject.getUserID().getName());
+            selectedChatAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+                    .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+            manager.add(selectedChatAction);
         }
+        
         manager.add(new Separator());
-        manager.add(disconnectAction);
         // Other plug-ins can contribute there actions here
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
@@ -395,26 +402,42 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
         //manager.add(disconnectAction);
     }
 
+    protected ID inputIMTarget() {
+        InputDialog dlg = new InputDialog(getSite().getShell(),"Send IM","Please enter the Jabber ID of the person you would like to IM","",null);
+        dlg.setBlockOnOpen(true);
+        int res = dlg.open();
+        if (res == InputDialog.OK) {
+            String strres = dlg.getValue();
+            if (strres != null && !strres.equals("")) {
+                ID target = null;
+                try {
+                    target = IDFactory.makeStringID(strres);
+                } catch (Exception e) {
+                    MessageDialog.openError(getSite().getShell(),"Error","Error in IM target");
+                    return null;
+                }
+                return target;
+            }
+        }
+        return null;
+    }
     private void makeActions() {
         chatAction = new Action() {
             public void run() {
-                TreeObject treeObject = getSelectedTreeObject();
-                if (treeObject != null) openChatWindowForTarget(treeObject.getUserID());
-                else {
-                    
-                }
+                ID targetID = inputIMTarget();
+                if (targetID != null) openChatWindowForTarget(targetID);
             }
         };
-        chatAction.setText("IM");
-        chatAction.setToolTipText("IM with selected user");
+        chatAction.setText("Send Instant Message...");
         chatAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
                 .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
         selectedDoubleClickAction = new Action() {
             public void run() {
-                chatAction.run();
+                TreeObject treeObject = getSelectedTreeObject();
+                final ID targetID = treeObject.getUserID();
+                if (targetID != null) openChatWindowForTarget(targetID);
             }
         };
-        
         disconnectAction = new Action() {
             public void run() {
                 // XXX disconnect from server and dispose everything here
@@ -425,6 +448,7 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
         disconnectAction.setToolTipText("Disconnect from server");
         
     }
+
 
     protected ChatWindow openChatWindowForTarget(ID targetID) {
         if (targetID == null)
@@ -542,7 +566,7 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
 
     protected String getWindowInitText(ID targetID) {
         String result = "chat with " + targetID.getName() + " started "
-                + getDateAndTime() + "\n";
+                + getDateAndTime() + "\n\n";
         return result;
     }
 
