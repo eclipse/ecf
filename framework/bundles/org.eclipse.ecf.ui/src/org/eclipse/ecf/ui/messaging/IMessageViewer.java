@@ -12,7 +12,7 @@ public interface IMessageViewer {
         private static final String CHAT_NAME = "chat";
         private static final String GROUP_CHAT_NAME = "group_chat";
         private static final String HEADLINE_NAME = "headline";
-        private static final String ERROR_NAME = "to";
+        private static final String ERROR_NAME = "error";
         
         private final transient String name;        
         // Protected constructor so that only subclasses are allowed to create instances
