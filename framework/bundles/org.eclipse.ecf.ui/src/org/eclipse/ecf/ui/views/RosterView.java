@@ -592,4 +592,21 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
             window.setStatus("last message received at "+(new SimpleDateFormat("hh:mm:ss").format(new Date())));
         }
     }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ecf.ui.views.ILocalUserSettable#setGroup(org.eclipse.ecf.core.identity.ID)
+     */
+    public void setGroup(ID groupManager) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ecf.ui.views.ILocalUserSettable#memberDeparted(org.eclipse.ecf.core.identity.ID)
+     */
+    public void memberDeparted(ID member) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
