@@ -28,16 +28,26 @@ public class ConnectionDescription {
     String name, String instantiatorClass, String desc) {
         if (name == null)
             throw new RuntimeException(new InstantiationException(
-                    "stagecontainer description name cannot be null"));
+                    "ConnectionDescription<init> name cannot be null"));
+        if (instantiatorClass == null)
+            throw new RuntimeException(new InstantiationException(
+                    "ConnectionDescription<init> instantiatorClass cannot be null"));
         this.classLoader = loader;
         this.name = name;
         this.instantiatorClass = instantiatorClass;
         this.hashCode = name.hashCode();
     }
     public ConnectionDescription(String name, ISynchAsynchConnectionInstantiator inst, String desc) {
+        if (name == null)
+            throw new RuntimeException(new InstantiationException(
+                    "ConnectionDescription<init> name cannot be null"));
+        if (inst == null)
+            throw new RuntimeException(new InstantiationException(
+                    "ConnectionDescription<init> instantiator instance cannot be null"));
         this.instantiator = inst;
+        this.name = name;
         this.classLoader = this.instantiator.getClass().getClassLoader();
-        this.instantiatorClass = this.instantiatorClass.getClass().getName();
+        this.instantiatorClass = this.instantiator.getClass().getName();
         this.hashCode = name.hashCode();
         this.description = desc;
     }
@@ -60,8 +70,12 @@ public class ConnectionDescription {
 
     public String toString() {
         StringBuffer b = new StringBuffer("ConnectionDescription[");
-        b.append(name).append(";");
-        b.append(instantiatorClass).append(";").append(description).append("]");
+        b.append("name:").append(name).append(";");
+        if (instantiator == null)
+        	b.append("class:").append(instantiatorClass).append(";");
+        else
+            b.append("instantiator:").append(instantiator).append(";");
+        b.append("desc:").append(description).append("]");
         return b.toString();
     }
 

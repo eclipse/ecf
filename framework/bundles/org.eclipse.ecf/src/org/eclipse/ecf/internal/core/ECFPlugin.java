@@ -50,8 +50,8 @@ public class ECFPlugin extends Plugin {
     public static final String CONTAINER_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
     public static final String CONTAINER_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
 
-    public static final String COMM_FACTORY_EPOINT = "org.eclipse.ecf.comm";
-    public static final String COMM_FACTORY_EPOINT_CLASS_ATTRIBUTE = "instantiatorClass";
+    public static final String COMM_FACTORY_EPOINT = "org.eclipse.ecf.connectionFactory";
+    public static final String COMM_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
     public static final String COMM_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
     public static final String COMM_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
     

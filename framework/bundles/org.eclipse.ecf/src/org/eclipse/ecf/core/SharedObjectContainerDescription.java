@@ -32,13 +32,22 @@ public class SharedObjectContainerDescription {
         this.classLoader = loader;
         if (name == null)
             throw new RuntimeException(new InstantiationException(
-                    "sharedobjectcontainer description name cannot be null"));
+                    "SharedObjectContainerDescription<init> name cannot be null"));
         this.name = name;
+        if (instantiatorClass == null)
+            throw new RuntimeException(new InstantiationException(
+                    "SharedObjectContainerDescription<init> instantiatorClass cannot be null"));
         this.instantiatorClass = instantiatorClass;
         this.hashCode = name.hashCode();
         this.description = desc;
     }
     public SharedObjectContainerDescription(String name, ISharedObjectContainerInstantiator inst, String desc) {
+        if (name == null)
+            throw new RuntimeException(new InstantiationException(
+                    "SharedObjectContainerDescription<init> name cannot be null"));
+        if (inst == null)
+            throw new RuntimeException(new InstantiationException(
+                    "SharedObjectContainerDescription<init> instantiator instance cannot be null"));
         this.instantiator = inst;
         this.name = name;
         this.classLoader = this.instantiator.getClass().getClassLoader();
@@ -63,12 +72,12 @@ public class SharedObjectContainerDescription {
 
     public String toString() {
         StringBuffer b = new StringBuffer("SharedObjectContainerDescription[");
-        b.append("name: ").append(name).append(", ");
+        b.append("name:").append(name).append(";");
         if (instantiator == null)
-        	b.append("instantiatorClass: ").append(instantiatorClass).append(", ");
+        	b.append("class:").append(instantiatorClass).append(";");
         else
-            b.append("instantiator: ").append(instantiator).append(", ");
-        b.append("description: ").append(description).append("]");
+            b.append("instantiator:").append(instantiator).append(";");
+        b.append("desc:").append(description).append("]");
         return b.toString();
     }
 

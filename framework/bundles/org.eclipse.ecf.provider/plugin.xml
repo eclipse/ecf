@@ -8,4 +8,11 @@
             description="Generic Container Instantiator"
             name="generic"/>
    </extension>
+   <extension
+         point="org.eclipse.ecf.connectionFactory">
+      <connectionFactory
+            class="org.eclipse.ecf.provider.comm.tcp.Client$Creator"
+            description="TCP Client Connection Factory"
+            name="tcpclient"/>
+   </extension>
 </plugin>

@@ -20,7 +20,7 @@
 
    <extension-point id="containerFactory" name="ECF Container Factory" schema="schema/containerFactory.exsd"/>
    <extension-point id="namespace" name="ECF Namespace" schema="schema/namespace.exsd"/>
-   <extension-point id="comm" name="ECF Connection Factory" schema="schema/comm.exsd"/>
+   <extension-point id="connectionFactory" name="connectionFactory" schema="schema/connectionFactory.exsd"/>
    
    <extension
          point="org.eclipse.ecf.containerFactory">

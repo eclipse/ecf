@@ -11,7 +11,9 @@
 
 package org.eclipse.ecf.core.comm;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
@@ -20,12 +22,6 @@ public class ConnectionFactory {
 
     private static Hashtable connectiontypes = new Hashtable();
 
-    static {
-        ConnectionDescription cd = new ConnectionDescription(
-                (ClassLoader) null, "default",
-                "org.eclipse.ecf.provider.comm.tcp.Client$Creator","default connection");
-        addDescription(cd);
-    }
     public final static ConnectionDescription getDescription(
             ConnectionDescription scd) {
         return getDescription0(scd);
@@ -35,6 +31,9 @@ public class ConnectionFactory {
         if (scd == null)
             return null;
         return (ConnectionDescription) connectiontypes.get(scd.getName());
+    }
+    protected static List getDescriptions0() {
+        return new ArrayList(connectiontypes.values());
     }
     protected static ConnectionDescription getDescription0(String name) {
         if (name == null)
@@ -47,6 +46,9 @@ public class ConnectionFactory {
     public final static ConnectionDescription removeDescription(
             ConnectionDescription scd) {
         return removeDescription0(scd);
+    }
+    public static final List getDescriptions() {
+    	return getDescriptions0();
     }
 
     protected static ConnectionDescription removeDescription0(
@@ -81,11 +83,11 @@ public class ConnectionFactory {
             throws ConnectionInstantiationException {
 
         if (handler == null)
-            throw new ConnectionInstantiationException("handler cannot be null");
+            throw new ConnectionInstantiationException("ISynchAsynchConnectionEventHandler cannot be null");
         if (desc == null)
             throw new ConnectionInstantiationException(
                     "ConnectionDescription cannot be null");
-        ConnectionDescription cd = getDescription0(desc);
+        ConnectionDescription cd = desc;
         if (cd == null)
             throw new ConnectionInstantiationException("ConnectionDescription "
                     + desc.getName() + " not found");
@@ -111,14 +113,18 @@ public class ConnectionFactory {
             ISynchAsynchConnectionEventHandler handler,
             ConnectionDescription desc, Object[] args)
             throws ConnectionInstantiationException {
+        if (handler == null)
+            throw new ConnectionInstantiationException("ISynchAsynchConnectionEventHandler cannot be null");
         return makeSynchAsynchConnection(handler, desc, null, args);
     }
     public static ISynchAsynchConnection makeSynchAsynchConnection(
             ISynchAsynchConnectionEventHandler handler, String descriptionName,
             Object[] args) throws ConnectionInstantiationException {
+        if (handler == null)
+            throw new ConnectionInstantiationException("ISynchAsynchConnectionEventHandler cannot be null");
         ConnectionDescription desc = getDescriptionByName(descriptionName);
         if (desc == null)
-            throw new ConnectionInstantiationException("Connection named '"
+            throw new ConnectionInstantiationException("Connection type named '"
                     + descriptionName + "' not found");
         return makeSynchAsynchConnection(handler, desc, args);
     }
@@ -126,18 +132,22 @@ public class ConnectionFactory {
             ISynchAsynchConnectionEventHandler handler, String descriptionName,
             String[] argTypes, Object[] args)
             throws ConnectionInstantiationException {
+        if (handler == null)
+            throw new ConnectionInstantiationException("ISynchAsynchConnectionEventHandler cannot be null");
         ConnectionDescription desc = getDescriptionByName(descriptionName);
         if (desc == null)
-            throw new ConnectionInstantiationException("Connection named '"
+            throw new ConnectionInstantiationException("Connection type named '"
                     + descriptionName + "' not found");
         return makeSynchAsynchConnection(handler, desc, argTypes, args);
     }
     public static ISynchAsynchConnection makeSynchAsynchConnection(
             ISynchAsynchConnectionEventHandler handler, String descriptionName)
             throws ConnectionInstantiationException {
+        if (handler == null)
+            throw new ConnectionInstantiationException("ISynchAsynchConnectionEventHandler cannot be null");
         ConnectionDescription desc = getDescriptionByName(descriptionName);
         if (desc == null)
-            throw new ConnectionInstantiationException("Connection named '"
+            throw new ConnectionInstantiationException("Connection type named '"
                     + descriptionName + "' not found");
         return makeSynchAsynchConnection(handler, desc, null, null);
     }

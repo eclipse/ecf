@@ -215,7 +215,9 @@ public class IDFactory {
     }
     public static final ID makeID(String namespacename, String[] argTypes,
             Object[] args) throws IDInstantiationException {
-        return makeID(getNamespaceByName(namespacename), argTypes, args);
+    	Namespace n = getNamespaceByName(namespacename);
+    	if (n == null) throw new IDInstantiationException("Namespace named "+namespacename+" not found");
+        return makeID(n, argTypes, args);
     }
     /**
      * Make a new identity. Given a Namespace, and an array of instance
@@ -237,7 +239,9 @@ public class IDFactory {
     }
     public static final ID makeID(String namespacename, Object[] args)
             throws IDInstantiationException {
-        return makeID(getNamespaceByName(namespacename), args);
+    	Namespace n = getNamespaceByName(namespacename);
+    	if (n == null) throw new IDInstantiationException("Namespace named "+namespacename+" not found");
+        return makeID(n, args);
     }
 
     public static final ID makeStringID(String idstring)
