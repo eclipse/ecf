@@ -101,7 +101,7 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
         }
 
         public synchronized boolean contains(ID graph) {
-            return containers.contains(graph);
+            return containers.containsKey(graph);
         }
 
         public synchronized ID[] getGraphs(ID containerID) {
