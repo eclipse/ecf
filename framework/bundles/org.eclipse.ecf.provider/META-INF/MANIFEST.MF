@@ -6,8 +6,13 @@ Bundle-Vendor: Eclipse.org
 Bundle-Activator: org.eclipse.ecf.provider.ProviderPlugin
 Bundle-Localization: plugin
 Eclipse-AutoStart: true
-DynamicImport-Package: *
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
+DynamicImport-Package: *
+Provide-Package: org.eclipse.ecf.provider,
+org.eclipse.ecf.provider.comm.tcp,
+org.eclipse.ecf.provider.generic,
+org.eclipse.ecf.provider.generic.events,
+org.eclipse.ecf.provider.generic.gmm
 
 
