@@ -15,6 +15,6 @@ public interface IConnection {
 	public void stop();
 	public boolean isStarted();
 	public Map getProperties();
-	public IConnectionEventHandler addCommEventListener(IConnectionEventHandler listener);
+	public void addCommEventListener(IConnectionEventHandler listener);
 	public void removeCommEventListener(IConnectionEventHandler listener);
 }
