@@ -296,6 +296,9 @@ public class Client {
 
     public synchronized static ISharedObjectContainer getContainer(IResource proj) {
         ClientEntry entry = getClientEntry(proj,GENERIC_CONTAINER_CLIENT_NAME);
+        if (entry == null) {
+            entry = getClientEntry(ResourcesPlugin.getWorkspace().getRoot(),GENERIC_CONTAINER_CLIENT_NAME);
+        }
         if (entry != null) return entry.getContainer();
         else return null;
     }
