@@ -564,12 +564,14 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		try {
 			obj = ois.readObject();
 		} catch (ClassNotFoundException e) {
+            e.printStackTrace(System.err);
 			dumpStack("class not found for message", e);
 			return null;
 		}
 		if (obj instanceof ContainerMessage) {
 			return (ContainerMessage) obj;
 		} else {
+            System.out.println("message is not a containermessage "+obj);
 			debug("message received is not containermessage:" + obj);
 			return null;
 		}
@@ -740,12 +742,10 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		ContainerMessage.SharedObjectMessage resp = (ContainerMessage.SharedObjectMessage) mess
 				.getData();
 		synchronized (getGroupMembershipLock()) {
-			if (toID == null || toID.equals(getID())) {
-				SOWrapper sow = getSharedObjectWrapper(resp
-						.getFromSharedObjectID());
-				if (sow != null) {
-					sow.deliverSharedObjectMessage(fromID, resp.getData());
-				}
+			SOWrapper sow = getSharedObjectWrapper(resp
+					.getFromSharedObjectID());
+			if (sow != null) {
+				sow.deliverSharedObjectMessage(fromID, resp.getData());
 			}
 			forward(fromID, toID, mess);
 		}
