@@ -21,6 +21,17 @@ import org.eclipse.ecf.internal.impl.standalone.StandaloneContainer;
  * Factory for creating {@link ISharedObjectContainer} instances. This
  * class provides ECF clients an entry point to constructing {@link ISharedObjectContainer}
  * instances.  
+ * <br>
+ * <br>
+ * Here is an example use of the SharedObjectContainerFactory to construct an instance
+ * of the 'standalone' container (has no connection to other containers):
+ * <br><br>
+ * <code>
+ * 	    ISharedObjectContainer container = <br>
+ * 			SharedObjectContainerFactory.makeSharedObjectContainer('standalone');
+ *      <br><br>
+ *      ...further use of container variable here...
+ * </code>
  * 
  */
 public class SharedObjectContainerFactory {
