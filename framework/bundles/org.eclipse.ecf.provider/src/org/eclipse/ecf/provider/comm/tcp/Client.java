@@ -298,14 +298,13 @@ public final class Client implements ISynchAsynchConnection {
                         } else
                             msgCount++;
                     } catch (IOException e) {
-                        //dumpStack("read",e);
                         if (isClosing) {
                             isClosing = false;
                             synchronized (Client.this) {
                                 Client.this.notifyAll();
                             }
                         } else {
-                            if (handler.handleSuspectEvent(new ConnectionEvent(
+                            if (!handler.handleSuspectEvent(new ConnectionEvent(
                                     Client.this, e))) {
                                 handler
                                         .handleDisconnectEvent(new DisconnectConnectionEvent(
@@ -378,14 +377,13 @@ public final class Client implements ISynchAsynchConnection {
                     try {
                         handleRcv(readObject());
                     } catch (IOException e) {
-                        //dumpStack("read",e);
                         if (isClosing) {
                             isClosing = false;
                             synchronized (Client.this) {
                                 Client.this.notifyAll();
                             }
                         } else {
-                            if (handler.handleSuspectEvent(new ConnectionEvent(
+                            if (!handler.handleSuspectEvent(new ConnectionEvent(
                                     Client.this, e))) {
                                 handler
                                         .handleDisconnectEvent(new DisconnectConnectionEvent(
@@ -484,14 +482,13 @@ public final class Client implements ISynchAsynchConnection {
                             }
                         }
                     } catch (Exception e) {
-                        //dumpStack("ping",e);
                         if (isClosing) {
                             isClosing = false;
                             synchronized (Client.this) {
                                 Client.this.notifyAll();
                             }
                         } else {
-                            if (handler.handleSuspectEvent(new ConnectionEvent(
+                            if (!handler.handleSuspectEvent(new ConnectionEvent(
                                     Client.this, e))) {
                                 handler
                                         .handleDisconnectEvent(new DisconnectConnectionEvent(

@@ -35,10 +35,12 @@ import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionEvent;
 import org.eclipse.ecf.core.comm.DisconnectConnectionEvent;
+import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnectionEventHandler;
 import org.eclipse.ecf.core.comm.SynchConnectionEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
@@ -376,7 +378,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		// Clear group manager
 		if (groupManager != null) {
 			groupManager.removeAllMembers();
-			groupManager = null;
 		}
 		// Clear shared object manager
 		if (sharedObjectManager != null) {
@@ -393,7 +394,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		}
 		if (listeners != null) {
 			listeners.clear();
-			listeners = null;
+            listeners = null;
 		}
 	}
 
@@ -949,10 +950,20 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		}
 	}
 
+    protected abstract ID getIDForConnection(IAsynchConnection connection);
+    
 	protected void processDisconnect(DisconnectConnectionEvent e) {
 		debug("processDisconnect:" + e);
 		try {
-			ContainerMessage mess = getObjectFromBytes((byte[]) e.getData());
+            // Get connection responsible for disconnect event
+            IAsynchConnection conn = (IAsynchConnection) e.getConnection();
+            if (!conn.isConnected()) return;
+            ID fromID = null;
+            synchronized (getGroupMembershipLock()) {
+                fromID = getIDForConnection(conn);
+                memberLeave(fromID,conn);
+            }
+            if (fromID != null) fireContainerEvent(new SharedObjectContainerDepartedEvent(getID(),fromID));
 		} catch (Exception except) {
 			logException("Exception in processDisconnect ", except);
 		}
