@@ -11,7 +11,10 @@
 
 package org.eclipse.ecf.ui.presence;
 
+import org.eclipse.ecf.core.identity.ID;
+
 public interface IRosterViewer {
     
     public void receiveRosterEntry(IRosterEntry entry);
+    public void receivePresence(ID userID, IPresence presence);
 }

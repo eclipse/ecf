@@ -26,7 +26,6 @@ import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.ecf.ui.UiPluginConstants;
 import org.eclipse.ecf.ui.messaging.IMessageViewer;
 import org.eclipse.ecf.ui.presence.IPresence;
-import org.eclipse.ecf.ui.presence.IPresenceViewer;
 import org.eclipse.ecf.ui.presence.IRosterEntry;
 import org.eclipse.ecf.ui.presence.IRosterGroup;
 import org.eclipse.ecf.ui.presence.IRosterViewer;
@@ -65,8 +64,8 @@ import org.eclipse.ui.part.ViewPart;
  * WARNING: IN PROGRESS
  * 
  */
-public class RosterView extends ViewPart implements ILocalUserSettable,
-        IRosterViewer, IPresenceViewer, IMessageViewer {
+public class RosterView extends ViewPart implements IConfigViewer,
+        IRosterViewer, IMessageViewer {
     protected static final int TREE_EXPANSION_LEVELS = 1;
     private TreeViewer viewer;
     private Action chatAction;
@@ -554,7 +553,7 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.ui.views.ILocalUserSettable#setUser(org.eclipse.ecf.core.user.IUser)
+     * @see org.eclipse.ecf.ui.views.IConfigViewer#setUser(org.eclipse.ecf.core.user.IUser)
      */
     public void setLocalUser(IUser user, ITextInputHandler textInputHandler) {
         this.localUser = user;
@@ -584,13 +583,11 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
                         System.out.println("disconnect()");
                 }
             };
-        } else if (clazz.equals(ILocalUserSettable.class)) {
+        } else if (clazz.equals(IConfigViewer.class)) {
             return this;
         } else if (clazz.equals(IRosterViewer.class)) {
             return this;
         } else if (clazz.equals(IMessageViewer.class)) {
-            return this;
-        } else if (clazz.equals(IPresenceViewer.class)) {
             return this;
         } else
             return null;
@@ -626,7 +623,7 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.ecf.ui.views.ILocalUserSettable#setGroup(org.eclipse.ecf.core.identity.ID)
+     * @see org.eclipse.ecf.ui.views.IConfigViewer#setGroup(org.eclipse.ecf.core.identity.ID)
      */
     public void setGroup(ID groupManager) {
         if (groupManager != null) {
@@ -637,7 +634,7 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.ecf.ui.views.ILocalUserSettable#memberDeparted(org.eclipse.ecf.core.identity.ID)
+     * @see org.eclipse.ecf.ui.views.IConfigViewer#memberDeparted(org.eclipse.ecf.core.identity.ID)
      */
     public void memberDeparted(ID member) {
         if (groupID != null) {

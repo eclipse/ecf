@@ -9,11 +9,14 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.ui.presence;
+package org.eclipse.ecf.ui.views;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.user.IUser;
 
-public interface IPresenceViewer {
+public interface IConfigViewer {
     
-    public void receivePresence(ID userID, IPresence presence);
+    public void setLocalUser(IUser user, ITextInputHandler inputHandler);
+    public void setGroup(ID groupManager);
+    public void memberDeparted(ID member);
 }
