@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.ecf.sdo" id="manager" name="Data Graph Sharing Manager"/>
       </appInfo>
       <documentation>
-         Allows plugins to provide custom implementations of the Data Graph Sharing facility by registering uniquely named Data Graph Sharing Managers (classes that implement org.eclipse.ecf.sdo.IDataGraphSharingManager), which are responsible for producing per-container instances of Data Graph Sharing (org.eclipse.ecf.sdo.IDataGraphSharing).
+         Allows plugins to provide custom implementations of the Data Graph Sharing facility by registering uniquely named Data Graph Sharing Managers (classes that implement &lt;code&gt;org.eclipse.ecf.sdo.IDataGraphSharingManager&lt;/code&gt;), which are responsible for producing per-container instances of the Data Graph Sharing service implementation (&lt;code&gt;org.eclipse.ecf.sdo.IDataGraphSharing&lt;/code&gt;).
       </documentation>
    </annotation>
 
@@ -52,14 +52,14 @@
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  Unique name that identifies this manager within the system.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The fully qualified name of the class that implements this manager. The class must implement &lt;code&gt;org.eclipse.ecf.sdo.IDataGraphSharingManager&lt;/code&gt;.
                </documentation>
                <appInfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.ecf.sdo.IDataGraphSharingManager"/>
@@ -74,7 +74,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         1.0.0
       </documentation>
    </annotation>
 
@@ -83,7 +83,16 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         This plugin defines a default Data Graph Sharing Manager:
+&lt;pre&gt;
+   &lt;extension
+         point=&quot;org.eclipse.ecf.sdo.manager&quot;&gt;
+      &lt;manager
+            class=&quot;org.eclipse.ecf.internal.sdo.DataGraphSharingManager&quot;
+            name=&quot;default&quot;&gt;
+      &lt;/manager&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
       </documentation>
    </annotation>
 
@@ -92,7 +101,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         To use a registered manager, use the static methods provided by &lt;code&gt;org.eclipse.ecf.sdo.DataGraphSharingFactory&lt;/code&gt;.
       </documentation>
    </annotation>
 
@@ -101,7 +110,7 @@
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         A default implementation (named &lt;code&gt;default&lt;/code&gt;) is provided by this plugin.
       </documentation>
    </annotation>
 
@@ -110,7 +119,8 @@
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         
+         Copyright (c) 2005 Peter Nehrer and Composent, Inc.
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Peter Nehrer - initial API and implementation
       </documentation>
    </annotation>
 
