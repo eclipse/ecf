@@ -22,6 +22,10 @@ import org.eclipse.ecf.core.IIdentifiable;
 public interface IUser extends IIdentifiable, Serializable {
 
 	/**
+	 * Get basic name for user
+	 */
+	public String getName();
+	/**
 	 * Get map of properties associated with this user.
 	 * @return Map
 	 */
