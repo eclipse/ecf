@@ -4,5 +4,5 @@ import java.io.IOException;
 
 public interface ISynchConnectionEventHandler extends IConnectionEventHandler {
 
-	public Object handleSynchEvent(ConnectionEvent event) throws IOException;
+	public Object handleSynchEvent(SynchConnectionEvent event) throws IOException;
 }

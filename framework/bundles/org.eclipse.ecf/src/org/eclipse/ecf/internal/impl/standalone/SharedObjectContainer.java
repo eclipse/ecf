@@ -1071,19 +1071,19 @@ public abstract class SharedObjectContainer implements ISharedObjectContainer {
 		public ClassLoader getClassLoaderForID(ID id) {
 			return this.getClass().getClassLoader();
 		}
-		public void handleAsynchEvent(ConnectionEvent evt) throws IOException {
+		public void handleAsynchEvent(AsynchConnectionEvent evt) throws IOException {
 			// Pass to handler
 		    try {
-		        SharedObjectContainer.this.handleAsynchEvent((AsynchConnectionEvent) evt);
+		        SharedObjectContainer.this.handleAsynchEvent(evt);
 		    } catch (IllegalAccessException e) {
 		        throw new IOException("Illegal data access handling event "+evt);
 		    }
 		}
-		public Object handleSynchEvent(ConnectionEvent evt)
+		public Object handleSynchEvent(SynchConnectionEvent evt)
 			throws IOException {
 			// Handle synch packet
 		    try {
-				return SharedObjectContainer.this.handleSynchEvent((SynchConnectionEvent) evt);
+				return SharedObjectContainer.this.handleSynchEvent(evt);
 		    } catch (IllegalAccessException e) {
 		        throw new IOException("Illegal data access handling event "+evt);
 		    }
