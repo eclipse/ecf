@@ -45,7 +45,8 @@ public class IdentifiableObjectInputStream extends ObjectInputStream {
         } else {
             ClassLoader cl = mapper.mapNameToClassLoader(name);
             if (cl == null) return super.resolveClass(desc);
-            else return cl.loadClass(desc.getName());
+            Class ret = cl.loadClass(desc.getName());
+            return ret;
         }
     }
 

@@ -1098,7 +1098,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
     protected byte [] serializeSharedObjectMessage(ID sharedObjectID, Object message) throws IOException {
         if (!(message instanceof Serializable)) throw new NotSerializableException("sharedobjectmessage "+message+" not serializable");
         ByteArrayOutputStream bouts = new ByteArrayOutputStream();
-        IdentifiableObjectOutputStream ioos = new IdentifiableObjectOutputStream(sharedObjectID,bouts);
+        IdentifiableObjectOutputStream ioos = new IdentifiableObjectOutputStream(sharedObjectID.getName(),bouts);
         ioos.writeObject(message);
         return bouts.toByteArray();
     }

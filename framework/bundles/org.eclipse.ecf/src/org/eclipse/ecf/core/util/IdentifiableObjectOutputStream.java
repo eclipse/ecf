@@ -13,7 +13,6 @@ package org.eclipse.ecf.core.util;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Stores Java objects in the underlying stream in an manner that allows corresponding
@@ -24,11 +23,11 @@ import org.eclipse.ecf.core.identity.ID;
  */
 public class IdentifiableObjectOutputStream extends ObjectOutputStream {
 
-    ID objectID = null;
+    String name = null;
     
-    public IdentifiableObjectOutputStream(ID id, OutputStream outs) throws IOException {
+    public IdentifiableObjectOutputStream(String name, OutputStream outs) throws IOException {
         super(outs);
-        this.objectID = id;
+        this.name = name;
     }
     
     /*
@@ -37,7 +36,6 @@ public class IdentifiableObjectOutputStream extends ObjectOutputStream {
      * @see java.io.ObjectOutputStream#annotateClass(java.lang.Class)
      */
     protected void annotateClass(Class cl) throws IOException {
-        String name = objectID.getName();
         writeUTF(name);
     }
 
