@@ -62,7 +62,8 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
     protected IUser localUser;
     protected ITextInputHandler textInputHandler;
     protected Hashtable chatThreads = new Hashtable();
-
+    protected ID groupID;
+    
     protected IUser getLocalUser() {
         return localUser;
     }
@@ -597,16 +598,22 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
      * @see org.eclipse.ecf.ui.views.ILocalUserSettable#setGroup(org.eclipse.ecf.core.identity.ID)
      */
     public void setGroup(ID groupManager) {
-        // TODO Auto-generated method stub
-        
+        groupID = groupManager;
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.ecf.ui.views.ILocalUserSettable#memberDeparted(org.eclipse.ecf.core.identity.ID)
      */
     public void memberDeparted(ID member) {
-        // TODO Auto-generated method stub
-        
+        if (groupID != null) {
+            if (groupID.equals(member)) {
+                handleGroupManagerDeparted();
+            }
+        }
+    }
+    
+    protected void handleGroupManagerDeparted() {
+        // XXX TODO -- this should indicate visually that the server/group manager departed
     }
 
 }
