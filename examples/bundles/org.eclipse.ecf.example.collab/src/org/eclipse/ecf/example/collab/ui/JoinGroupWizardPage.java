@@ -39,6 +39,7 @@ public class JoinGroupWizardPage extends WizardPage {
     protected static final String DEFAULTGROUPID_PROP_NAME = CLASSNAME+".defaultgroupid";
     protected static final String EXAMPLEGROUPID_PROP_NAME = CLASSNAME+".examplegroupid";
     protected static final String USEPASSWORD_PROP_NAME = CLASSNAME+".usepassword";
+    protected static final String USENICKNAME_PROP_NAME = CLASSNAME+".usenickname";
     protected static final String URLPREFIX_NAME = CLASSNAME+".urlprefix";
     protected static final String GROUPIDLABEL_PROP_NAME = CLASSNAME+".groupIDLabel";
     
@@ -60,9 +61,11 @@ public class JoinGroupWizardPage extends WizardPage {
     protected String template_url = ECF_TEMPLATE_URL;
     protected String default_url = ECF_DEFAULT_URL;
     protected boolean showPassword = true;
+    protected boolean showNickname = true;
     
     protected Label password_label;
     protected Text nickname_text;
+    protected Label nickname_label;
     protected Text joingroup_text;
     protected Label example_label;
     protected Combo combo;
@@ -76,6 +79,7 @@ public class JoinGroupWizardPage extends WizardPage {
             String usePassword = (String) props.get(USEPASSWORD_PROP_NAME);
             String examplegroupid = (String) props.get(EXAMPLEGROUPID_PROP_NAME);
             String defaultgroupid = (String) props.get(DEFAULTGROUPID_PROP_NAME);
+            String useNickname = (String) props.get(USENICKNAME_PROP_NAME);
             urlPrefix = (String) props.get(URLPREFIX_NAME); 
             if (urlPrefix == null) urlPrefix = "";
             String groupLabel = (String) props.get(GROUPIDLABEL_PROP_NAME);
@@ -91,6 +95,14 @@ public class JoinGroupWizardPage extends WizardPage {
             } else {
                 password_label.setVisible(false);
                 password_text.setVisible(false);                        
+            }
+            // turn off nickname unless used
+            if (useNickname != null){
+                nickname_label.setVisible(true);
+                nickname_text.setVisible(true);
+            } else {
+                nickname_label.setVisible(false);
+                nickname_text.setVisible(false);                        
             }
             // set examplegroupid text
             example_label.setText((examplegroupid != null)?examplegroupid:"");
@@ -170,9 +182,9 @@ public class JoinGroupWizardPage extends WizardPage {
             }
         });
 
-        final Label label_1 = new Label(container, SWT.NONE);
-        label_1.setLayoutData(new GridData());
-        label_1.setText(NICKNAME_FIELDNAME);
+        nickname_label = new Label(container, SWT.NONE);
+        nickname_label.setLayoutData(new GridData());
+        nickname_label.setText(NICKNAME_FIELDNAME);
 
         nickname_text = new Text(container, SWT.BORDER);
         final GridData nickname = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
@@ -187,6 +199,10 @@ public class JoinGroupWizardPage extends WizardPage {
             public void focusLost(FocusEvent e) {
             }
         });
+        if (!showNickname) {
+            nickname_text.setVisible(false);
+            nickname_label.setVisible(false);
+        }
 
         password_label = new Label(container, SWT.NONE);
         password_label.setText("Password:");
@@ -210,6 +226,7 @@ public class JoinGroupWizardPage extends WizardPage {
     }
     
     public String getNicknameText() {
+        if (nickname_text == null) return null;
         return nickname_text.getText().trim();
     }
     
