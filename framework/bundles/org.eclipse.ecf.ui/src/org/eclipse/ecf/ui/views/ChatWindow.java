@@ -327,7 +327,7 @@ public class ChatWindow extends ApplicationWindow implements IMessageViewer {
 	 */
 	protected void handleShellCloseEvent() {
 		if (!getShell().isDisposed()) {
-            if (!disposed) {
+            if (disposed) {
                 chat.dispose();
                 chat = null;
                 getShell().dispose();
