@@ -266,16 +266,16 @@ public abstract class SOContainer implements ISharedObjectContainer {
         return s;
     }
 
-    protected ISharedObject addSharedObjectAndWait(SharedObjectDescription sd,
+    protected void addSharedObjectAndWait(SharedObjectDescription sd,
             ISharedObject s, ISharedObjectContainerTransaction t)
             throws Exception {
-        if (sd.getID() == null || s == null)
-            return null;
+        if (sd.getID() == null || s == null) {
+            throw new SharedObjectAddException("Object id is null, or instance is null");
+        }
         ISharedObject so = addSharedObject0(sd, s);
         // Wait right here until committed
         if (t != null)
             t.waitToCommit();
-        return s;
     }
 
     protected void addSharedObjectWrapper(SOWrapper wrapper) throws Exception {

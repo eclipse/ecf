@@ -149,15 +149,21 @@ public class SOManager implements ISharedObjectManager {
             throws SharedObjectCreateException {
         debug("createSharedObject(" + sd + "," + trans + ")");
         // notify listeners
+        if (sd == null) throw new SharedObjectCreateException("SharedObjectDescription cannot be null");
+        ID sharedObjectID = sd.getID();
+        if (sharedObjectID == null) throw new SharedObjectCreateException("New object ID cannot be null");
         container.fireContainerEvent(new SharedObjectManagerCreateEvent(container.getID(),sd));
         ISharedObject newObject = null;
         Throwable t = null;
-        ID result = sd.getID();
+        ID result = sharedObjectID;
         try {
             newObject = loadSharedObject(sd);
-            result = addSharedObject(sd.getID(), newObject, sd.getProperties(), trans);
+            result = addSharedObject(sharedObjectID, newObject, sd.getProperties(), trans);
         } catch (Exception e) {
-            throw new SharedObjectCreateException("Container "+container.getID()+" had exception creating shared object "+sd.getID(),t);
+            dumpStack("Exception in createSharedObject",e);
+            SharedObjectCreateException newExcept = new SharedObjectCreateException("Container "+container.getID()+" had exception creating shared object "+sharedObjectID+": "+e.getClass().getName()+": "+e.getMessage());
+            newExcept.setStackTrace(e.getStackTrace());
+            throw newExcept;
         }
         return result;
     }
@@ -185,8 +191,11 @@ public class SOManager implements ISharedObjectManager {
                     container.getID(), sharedObject.getClass().getName(),
                     properties, 0);
             container.addSharedObjectAndWait(sd, so, trans);
-        } catch (Exception except) {
-            throw new SharedObjectAddException("Container "+container.getID()+" had exception adding shared object "+sharedObjectID,except);
+        } catch (Exception e) {
+            dumpStack("Exception in addSharedObject",e);
+            SharedObjectAddException newExcept = new SharedObjectAddException("Container "+container.getID()+" had exception adding shared object "+sharedObjectID+": "+e.getClass().getName()+": "+e.getMessage());
+            newExcept.setStackTrace(e.getStackTrace());
+            throw newExcept;
         }
         // notify listeners
         container.fireContainerEvent(new SharedObjectActivatedEvent(container.getID(), result, container.getGroupMemberIDs()));
