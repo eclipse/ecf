@@ -147,7 +147,6 @@ public class ECFPlugin extends Plugin {
     }
 
     protected void setupContainerExtensionPoint(BundleContext bc) {
-        debug("setupContainerExtensionPoint(" + bc + ")");
         String bundleName = getDefault().getBundle().getSymbolicName();
         IExtensionRegistry reg = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = reg
@@ -209,7 +208,6 @@ public class ECFPlugin extends Plugin {
     }
 
     protected void setupIdentityExtensionPoint(BundleContext context) {
-        debug("setupIdentityExtensionPoint(" + context + ")");
         String bundleName = getDefault().getBundle().getSymbolicName();
         // Process extension points
         IExtensionRegistry reg = Platform.getExtensionRegistry();
@@ -291,7 +289,6 @@ public class ECFPlugin extends Plugin {
     }
 
     protected void setupCommExtensionPoint(BundleContext bc) {
-        debug("setupCommExtensionPoint(" + bc + ")");
         String bundleName = getDefault().getBundle().getSymbolicName();
         IExtensionRegistry reg = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = reg
