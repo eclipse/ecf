@@ -46,7 +46,7 @@ public class LongID extends BaseID {
         if (!(o instanceof LongID))
             return false;
         LongID obj = (LongID) o;
-        return value.equals(obj);
+        return value.equals(obj.value);
     }
 
     protected String namespaceGetName() {
