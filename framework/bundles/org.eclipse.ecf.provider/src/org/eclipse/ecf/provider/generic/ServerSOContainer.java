@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.Socket;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
+import org.eclipse.ecf.core.ISharedObjectContainerGroupManager;
 import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
@@ -27,7 +28,7 @@ import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
-public class ServerSOContainer extends SOContainer {
+public class ServerSOContainer extends SOContainer implements ISharedObjectContainerGroupManager {
     public ServerSOContainer(ISharedObjectContainerConfig config) {
         super(config);
     }
@@ -35,7 +36,12 @@ public class ServerSOContainer extends SOContainer {
     public boolean isGroupServer() {
         return true;
     }
-
+    public Object getAdapter(Class clazz) {
+        if (clazz.equals(ISharedObjectContainerGroupManager.class)) {
+            debug("getAdapter()");
+            return this;
+        } else return null;
+    }
     public boolean isGroupManager() {
         return true;
     }
@@ -177,7 +183,7 @@ public class ServerSOContainer extends SOContainer {
         fireContainerEvent(new SharedObjectContainerDepartedEvent(getID(),fromID));
     }
 
-    public void ejectFromGroup(ID memberID, Serializable reason) {
+    public void ejectGroupMember(ID memberID, Serializable reason) {
         if (memberID == null) return;
         ISynchConnection conn = null;
         synchronized (getGroupMembershipLock()) {
@@ -201,7 +207,7 @@ public class ServerSOContainer extends SOContainer {
         synchronized (getGroupMembershipLock()) {
             Object[] members = groupManager.getMembers();
             for (int i = 0; i < members.length; i++) {
-                ejectFromGroup(((Member) members[i]).getID(),reason);
+                ejectGroupMember(((Member) members[i]).getID(),reason);
             }
         }
     }
