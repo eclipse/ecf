@@ -10,7 +10,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 public class TCPClientSOContainer extends ClientSOContainer {
     int keepAlive = 0;
 
-    public static final String DEFAULT_COMM_NAME = "tcpclient";
+    public static final String DEFAULT_COMM_NAME = org.eclipse.ecf.provider.comm.tcp.Client.class.getName();
     
     public TCPClientSOContainer(ISharedObjectContainerConfig config) {
         super(config);

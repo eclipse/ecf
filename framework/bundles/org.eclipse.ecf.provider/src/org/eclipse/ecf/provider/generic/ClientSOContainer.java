@@ -56,16 +56,16 @@ public abstract class ClientSOContainer extends SOContainer {
     public ID getGroupID() {
         return remoteServerID;
     }
-    public void joinGroup(ID remoteSpace, Object data)
+    public void joinGroup(ID remote, Object data)
             throws SharedObjectContainerJoinException {
         try {
             if (isClosing)
                 throw new IllegalStateException("container is closing");
             ISynchAsynchConnection aConnection = getClientConnection(
-                    remoteSpace, data);
+            		remote, data);
             if (aConnection == null) {
                 ConnectException c = new ConnectException("join failed to"
-                        + ":" + remoteSpace.getName());
+                        + ":" + remote.getName());
                 throw c;
             }
             ContainerMessage response;
@@ -89,9 +89,9 @@ public abstract class ClientSOContainer extends SOContainer {
             }
             synchronized (aConnection) {
                 try {
-                    Object connectData = getConnectData(remoteSpace, data);
+                    Object connectData = getConnectData(remote, data);
                     response = (ContainerMessage) aConnection.connect(
-                            remoteSpace, connectData, 0);
+                    		remote, connectData, 0);
                 } catch (IOException e) {
                     synchronized (connectLock) {
                         killConnection(aConnection);
