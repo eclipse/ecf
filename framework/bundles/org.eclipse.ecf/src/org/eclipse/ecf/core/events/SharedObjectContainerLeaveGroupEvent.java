@@ -10,29 +10,32 @@ package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectDeactivatedEvent implements
-        ISharedObjectDeactivatedEvent {
-    private final ID deactivatedID;
-    private final ID localContainerID;
+public class SharedObjectContainerLeaveGroupEvent implements
+        ISharedObjectContainerLeaveGroupEvent {
+    ID localContainerID;
+    ID groupID;
 
-    public SharedObjectDeactivatedEvent(ID container, ID deact) {
-        super();
-        this.localContainerID = container;
-        this.deactivatedID = deact;
+    public SharedObjectContainerLeaveGroupEvent(ID localContainerID, ID groupID) {
+        this.localContainerID = localContainerID;
+        this.groupID = groupID;
     }
 
-    public ID getDeactivatedID() {
-        return deactivatedID;
-    }
-
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.events.IContainerEvent#getLocalContainerID()
+     */
     public ID getLocalContainerID() {
         return localContainerID;
     }
 
+    public ID getGroupID() {
+        return groupID;
+    }
     public String toString() {
-        StringBuffer sb = new StringBuffer("SharedObjectDeactivatedEvent[");
-        sb.append(getLocalContainerID()).append(";");
-        sb.append(getDeactivatedID()).append("]");
-        return sb.toString();
+        StringBuffer buf = new StringBuffer("SharedObjectContainerLeaveGroupEvent[");
+        buf.append(getLocalContainerID()).append(";");
+        buf.append(getGroupID()).append("]");
+        return buf.toString();
     }
 }

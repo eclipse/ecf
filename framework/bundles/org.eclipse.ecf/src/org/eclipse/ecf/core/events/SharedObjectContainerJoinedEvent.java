@@ -6,20 +6,19 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectContainerJoinedEvent implements ISharedObjectContainerJoinedEvent {
-
+public class SharedObjectContainerJoinedEvent implements
+        ISharedObjectContainerJoinedEvent {
     private final ID joinedContainerID;
     private final ID localContainerID;
 
-    public SharedObjectContainerJoinedEvent(ID container, ID o) {
+    public SharedObjectContainerJoinedEvent(ID local, ID joinContainerID) {
         super();
-        this.localContainerID = container;
-        this.joinedContainerID = o;
+        this.localContainerID = local;
+        this.joinedContainerID = joinContainerID;
     }
 
     public ID getJoinedContainerID() {
@@ -29,14 +28,18 @@ public class SharedObjectContainerJoinedEvent implements ISharedObjectContainerJ
     public ID getLocalContainerID() {
         return localContainerID;
     }
-    
-    /* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		StringBuffer buf = new StringBuffer("SharedObjectContainerJoinedEvent {");
-		buf.append("joinedContainerID: ").append(joinedContainerID).append(", ");
-		buf.append("localContainerID: ").append(localContainerID).append("}");
-		return buf.toString();
-	}
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        StringBuffer buf = new StringBuffer(
+                "SharedObjectContainerJoinedEvent[");
+        buf.append(getJoinedContainerID())
+                .append(";");
+        buf.append(getLocalContainerID()).append("]");
+        return buf.toString();
+    }
 }

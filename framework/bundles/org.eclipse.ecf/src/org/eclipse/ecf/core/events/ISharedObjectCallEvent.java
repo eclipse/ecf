@@ -6,12 +6,10 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.util.AsynchResult;
 
 public interface ISharedObjectCallEvent extends ISharedObjectEvent {
-
     AsynchResult getAsynchResult();
 }

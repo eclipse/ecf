@@ -6,13 +6,12 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectContainerDepartedEvent implements ISharedObjectContainerDepartedEvent {
-
+public class SharedObjectContainerDepartedEvent implements
+        ISharedObjectContainerDepartedEvent {
     private final ID departedContainerID;
     private final ID localContainerID;
 
@@ -25,17 +24,21 @@ public class SharedObjectContainerDepartedEvent implements ISharedObjectContaine
     public ID getDepartedContainerID() {
         return departedContainerID;
     }
+
     public ID getLocalContainerID() {
         return localContainerID;
     }
-    
-    /* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		StringBuffer buf = new StringBuffer("SharedObjectContainerDepartedEvent {");
-		buf.append("departedContainerID: ").append(departedContainerID).append(", ");
-		buf.append("localContainerID: ").append(localContainerID).append("}");
-		return buf.toString();
-	}
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        StringBuffer buf = new StringBuffer(
+                "SharedObjectContainerDepartedEvent[");
+        buf.append(getDepartedContainerID()).append(";");
+        buf.append(getLocalContainerID()).append("]");
+        return buf.toString();
+    }
 }

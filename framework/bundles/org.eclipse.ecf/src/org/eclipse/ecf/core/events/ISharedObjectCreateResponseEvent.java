@@ -6,10 +6,11 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.events;
 
-public interface ISharedObjectCreateResponseEvent extends ISharedObjectMessageEvent {
-	public long getSequence();
-	public Throwable getException();
+public interface ISharedObjectCreateResponseEvent extends
+        ISharedObjectMessageEvent {
+    public long getSequence();
+
+    public Throwable getException();
 }

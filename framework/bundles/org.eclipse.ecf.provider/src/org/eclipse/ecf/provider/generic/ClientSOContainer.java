@@ -25,6 +25,10 @@ import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.comm.SynchConnectionEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerJoinGroupEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerLeaveGroupEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
@@ -75,6 +79,8 @@ public abstract class ClientSOContainer extends SOContainer {
 
     public void joinGroup(ID remote, Object data)
             throws SharedObjectContainerJoinException {
+        // first notify synchonously
+        fireContainerEvent(new SharedObjectContainerJoinGroupEvent(this.getID(),remote,data));
         try {
             if (isClosing)
                 throw new IllegalStateException("container is closing");
@@ -175,8 +181,12 @@ public abstract class ClientSOContainer extends SOContainer {
             for (int i = 0; i < changeIDs.length; i++) {
                 if (vc.isAdd()) {
                     groupManager.addMember(new Member(changeIDs[i]));
+                    // Notify listeners
+                    fireContainerEvent(new SharedObjectContainerJoinedEvent(getID(),changeIDs[i]));
                 } else {
                     groupManager.removeMember(changeIDs[i]);
+                    // Notify listeners
+                    fireContainerEvent(new SharedObjectContainerDepartedEvent(getID(),changeIDs[i]));
                 }
             }
         }
@@ -198,21 +208,23 @@ public abstract class ClientSOContainer extends SOContainer {
 
     public void leaveGroup() {
         debug("leaveGroup");
+        ID groupID = getGroupID();
+        fireContainerEvent(new SharedObjectContainerLeaveGroupEvent(this.getID(),groupID));
         synchronized (connectLock) {
             // If we are currently connected
             if (isConnected()) {
                 synchronized (connection) {
                     try {
-                        connection.sendSynch(remoteServerID,
+                        connection.sendSynch(groupID,
                                 getBytesForObject(ContainerMessage
                                         .makeLeaveGroupMessage(getID(),
-                                                remoteServerID,
+                                                groupID,
                                                 getNextSequenceNumber(),
-                                                getLeaveData(remoteServerID))));
+                                                getLeaveData(groupID))));
                     } catch (Exception e) {
                     }
                     synchronized (getGroupMembershipLock()) {
-                        memberLeave(remoteServerID, connection);
+                        memberLeave(groupID, connection);
                     }
                 }
             }
@@ -220,39 +232,13 @@ public abstract class ClientSOContainer extends SOContainer {
             connection = null;
             remoteServerID = null;
         }
+        // notify listeners
+        fireContainerEvent(new SharedObjectContainerDepartedEvent(this.getID(),groupID));
     }
 
     protected abstract ISynchAsynchConnection getClientConnection(
             ID remoteSpace, Object data)
             throws ConnectionInstantiationException;
-
-    protected void handleChangeMsg(ID fromID, ID toID, long seqNum,
-            Serializable data) throws IOException {
-        ContainerMessage.ViewChangeMessage c = null;
-        // Check data in packge for validity
-        ID ids[] = null;
-        try {
-            c = (ContainerMessage.ViewChangeMessage) data;
-            if (fromID == null || c == null)
-                throw new Exception();
-            ids = c.changeIDs;
-            if (ids == null || ids[0] == null || !fromID.equals(remoteServerID))
-                throw new IOException();
-        } catch (Exception e) {
-            InvalidObjectException t = new InvalidObjectException("bad data"
-                    + ":" + fromID + ":" + toID + ":" + seqNum);
-            throw t;
-        }
-        // Now actually add/remove member
-        Member m = new Member(ids[0]);
-        synchronized (getGroupMembershipLock()) {
-            if (c.add) {
-                groupManager.addMember(m);
-            } else
-                groupManager.removeMember(m);
-        }
-    }
-
     protected void queueContainerMessage(ContainerMessage message)
             throws IOException {
         // Do it
@@ -352,8 +338,11 @@ public abstract class ClientSOContainer extends SOContainer {
             throw new java.io.InvalidObjectException("id array null");
         for (int i = 0; i < ids.length; i++) {
             ID id = ids[i];
-            if (id != null && !id.equals(getID()))
+            if (id != null && !id.equals(getID())) {
                 addNewRemoteMember(id, null);
+                // notify listeners
+                fireContainerEvent(new SharedObjectContainerJoinedEvent(this.getID(),id));
+            }
         }
         return fromID;
     }

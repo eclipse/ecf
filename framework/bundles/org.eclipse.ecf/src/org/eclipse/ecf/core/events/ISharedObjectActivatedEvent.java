@@ -6,12 +6,12 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
 public interface ISharedObjectActivatedEvent extends IContainerEvent {
     public ID getActivatedID();
+
     public ID[] getGroupMemberIDs();
 }

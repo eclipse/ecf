@@ -6,16 +6,14 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.events;
 
 import java.io.Serializable;
-
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 
-public class RemoteSharedObjectEvent implements ISharedObjectMessageEvent, Serializable {
-
+public class RemoteSharedObjectEvent implements ISharedObjectMessageEvent,
+        Serializable {
     private final ID senderSharedObjectID;
     private final ID remoteContainerID;
     private final Object data;
@@ -35,21 +33,24 @@ public class RemoteSharedObjectEvent implements ISharedObjectMessageEvent, Seria
     public ID getSenderSharedObjectID() {
         return senderSharedObjectID;
     }
+
     public ID getRemoteContainerID() {
         return remoteContainerID;
     }
+
     public Event getEvent() {
         return this;
     }
+
     public Object getData() {
         return data;
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer("RemoteSharedObjectEvent {");
-        sb.append("senderSharedObjectID: ").append(senderSharedObjectID).append(", ");
-        sb.append("remoteContainerID: ").append(remoteContainerID).append(", ");
-        sb.append("data: ").append(data).append("}");
+        StringBuffer sb = new StringBuffer("RemoteSharedObjectEvent[");
+        sb.append(getSenderSharedObjectID()).append(";");
+        sb.append(getRemoteContainerID()).append(";");
+        sb.append(getData()).append("]");
         return sb.toString();
     }
 }

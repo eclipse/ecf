@@ -6,15 +6,12 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.events;
 
 import java.util.Arrays;
-
 import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectActivatedEvent implements ISharedObjectActivatedEvent {
-
     private final ID activatedID;
     private final ID[] groupMemberIDs;
     private final ID localContainerID;
@@ -33,15 +30,17 @@ public class SharedObjectActivatedEvent implements ISharedObjectActivatedEvent {
     public ID getLocalContainerID() {
         return localContainerID;
     }
+
     public ID[] getGroupMemberIDs() {
         return groupMemberIDs;
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer("SharedObjectActivatedEvent {");
-        sb.append("activatedID: ").append(activatedID).append(", ");
-        sb.append("groupMemberIDs: ").append(Arrays.asList(groupMemberIDs)).append(", ");
-        sb.append("localContainerID: ").append(localContainerID).append("}");
+        StringBuffer sb = new StringBuffer("SharedObjectActivatedEvent[");
+        sb.append(getActivatedID()).append(";");
+        sb.append(Arrays.asList(getGroupMemberIDs()))
+                .append(";");
+        sb.append(getLocalContainerID()).append("]");
         return sb.toString();
     }
 }

@@ -19,7 +19,10 @@ import java.net.Socket;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
+import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
+import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
@@ -143,6 +146,9 @@ public class ServerSOContainer extends SOContainer {
                     throw e;
                 }
             }
+            // notify listeners
+            fireContainerEvent(new SharedObjectContainerJoinedEvent(this.getID(),remoteID));
+            
             return ContainerMessage.makeViewChangeMessage(getID(), remoteID,
                     getNextSequenceNumber(), memberIDs, true, null);
         } catch (Exception e) {
@@ -163,17 +169,10 @@ public class ServerSOContainer extends SOContainer {
         return null;
     }
 
-    protected void memberLeave(ID leaveID, IAsynchConnection conn) {
-        if (removeRemoteMember(leaveID)) {
-            try {
-                forwardExcluding(getID(), leaveID, ContainerMessage
-                        .makeViewChangeMessage(getID(), leaveID,
-                                getNextSequenceNumber(), new ID[] { leaveID },
-                                false, null));
-            } catch (IOException e) {
-            }
-        }
-        killConnection(conn);
+    protected void memberLeave(ID leaveID, IConnection conn) {
+        super.memberLeave(leaveID,conn);
+        // Notify listeners
+        fireContainerEvent(new SharedObjectContainerDepartedEvent(getID(),leaveID));
     }
 
     public void ejectGroupMember(ID memberID) {
@@ -187,6 +186,7 @@ public class ServerSOContainer extends SOContainer {
                         .makeLeaveGroupMessage(getID(), memberID,
                                 getNextSequenceNumber(), null)));
             } catch (Exception e) {
+                logException("Exception in ejectGroupMember.sendAsynch()",e);
             }
             memberLeave(memberID, conn);
         }

@@ -108,14 +108,8 @@ public class GUID extends StringID {
     }
 
     public String toString() {
-        if (value == null)
-            return "";
-        int strlen = value.length();
-        StringBuffer sb = new StringBuffer(strlen + 10);
-        String packname = this.getClass().getPackage().getName();
-        int pnLength = packname.length();
-        sb.insert(0, packname + ".GUID[").insert(pnLength + 6, value).insert(
-                strlen + pnLength + 6, ']');
+        StringBuffer sb = new StringBuffer("GUID[");
+        sb.append(value).append("]");
         return sb.toString();
     }
 
