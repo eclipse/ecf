@@ -26,7 +26,6 @@ import org.eclipse.ecf.sdo.SDOPlugin;
 import org.eclipse.ecf.sdo.WaitablePublicationCallback;
 import org.eclipse.ecf.sdo.WaitableSubscriptionCallback;
 import org.eclipse.ecf.sdo.emf.EMFUpdateProvider;
-import org.eclipse.ecf.test.EventSpy;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -188,9 +187,6 @@ public class EditorPlugin extends AbstractUIPlugin {
 			}
 
 			this.tracker = tracker;
-			container.getSharedObjectManager()
-					.addSharedObject(IDFactory.makeStringID("debug"),
-							new EventSpy(), null, null);
 		}
 	}
 }
