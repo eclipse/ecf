@@ -201,7 +201,7 @@ public class SOWrapper {
                 resp.getSharedObjectID(), fromID, resp.getSequence(), resp
                         .getException()));
     }
-    protected void deliverEvent(Event evt) {
+    public void deliverEvent(Event evt) {
         send(evt);
     }
     protected void destroySelf() {
