@@ -13,10 +13,15 @@ package org.eclipse.ecf.example.collab.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -29,12 +34,19 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontRegistry;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.TextViewer;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -51,6 +63,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -62,6 +75,11 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.dialogs.ISelectionStatusValidator;
+import org.eclipse.ui.model.IWorkbenchAdapter;
+import org.eclipse.ui.views.IViewDescriptor;
+import org.eclipse.ui.views.IViewRegistry;
 
 
 
@@ -814,16 +832,161 @@ public class ChatComposite extends Composite {
 		}
 	}
 	protected void sendShowViewRequest(User touser) {
-	    String viewid = null;
-		IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		String viewid = null;
+		IWorkbenchWindow ww = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
 		IWorkbenchPage page = ww.getActivePage();
 		if (page == null)
 			return;
-	    ShowViewsDialog dlg = new ShowViewsDialog(getShell(),view.lch);
+
+		ElementTreeSelectionDialog dlg = new ElementTreeSelectionDialog(
+				getShell(), 
+				new LabelProvider() {
+					private HashMap images = new HashMap();
+					public Image getImage(Object element) {
+						ImageDescriptor desc = null;
+						if (element instanceof IWorkbenchAdapter)
+							desc = ((IWorkbenchAdapter) element).getImageDescriptor(element);
+						else if (element instanceof IViewDescriptor)
+							desc = ((IViewDescriptor) element).getImageDescriptor();
+
+						if (desc == null)
+							return null;
+						
+						Image image = (Image) images.get(desc);
+						if (image == null) {
+							image = desc.createImage();
+							images.put(desc, image);
+						}
+						
+						return image;
+					}
+					public String getText(Object element) {
+						String label;
+						if (element instanceof IWorkbenchAdapter)
+							label = ((IWorkbenchAdapter) element).getLabel(element);
+						else if (element instanceof IViewDescriptor)
+							label = ((IViewDescriptor) element).getLabel();
+						else
+							label = super.getText(element);
+						
+						for (
+								int i = label.indexOf('&'); 
+								i >= 0 && i < label.length() - 1; 
+								i = label.indexOf('&', i + 1))
+							if (!Character.isWhitespace(label.charAt(i + 1)))
+								return label.substring(0, i) + label.substring(i + 1);
+						
+						return label;
+					}
+					public void dispose() {
+						for (Iterator i = images.values().iterator(); i.hasNext();)
+							((Image) i.next()).dispose();
+
+						images = null;
+						super.dispose();
+					}
+				}, 
+				new ITreeContentProvider() {
+					private HashMap parents = new HashMap();
+					public Object[] getChildren(Object element) {
+						if (element.getClass().isArray())
+							return (Object[]) element;
+						else if (element instanceof IWorkbenchAdapter) {
+							Object[] children =
+								((IWorkbenchAdapter) element).getChildren(element);
+							for (int i = 0; i < children.length; ++i)
+								if (children[i] instanceof IViewDescriptor)
+									parents.put(children[i], element);
+							
+							return children; 
+						} else
+							return new Object[0];
+					}
+					public Object getParent(Object element) {
+						if (element instanceof IWorkbenchAdapter)
+							return ((IWorkbenchAdapter) element).getParent(element);
+						else if (element instanceof IViewDescriptor)
+							return parents.get(element);
+						else
+							return null;
+					}
+					public boolean hasChildren(Object element) {
+						if (element.getClass().isArray())
+							return ((Object[]) element).length > 0;
+						else if (element instanceof IWorkbenchAdapter)
+							return true;
+						else
+							return false;
+					}
+					public Object[] getElements(Object inputElement) {
+						return getChildren(inputElement);
+					}
+					public void dispose() {
+						parents = null;
+					}
+					public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+						parents.clear();
+					}
+				});
+		dlg.setTitle(MessageLoader
+				.getString("LineChatClientView.contextmenu.sendShowViewRequest.dialog.title"));
+		dlg.addFilter(new ViewerFilter() {
+			public boolean select(Viewer viewer, Object parentElement, Object element) {
+				if (element instanceof IViewDescriptor
+						&& "org.eclipse.ui.internal.introview".equals(
+								((IViewDescriptor) element).getId()))
+					return false;
+				else
+					return true;
+			}});
+		dlg.setSorter(new ViewerSorter());
+		dlg.setValidator(new ISelectionStatusValidator() {
+			public IStatus validate(Object[] selection) {
+				for (int i = 0; i < selection.length; ++i)
+					if (!(selection[i] instanceof IViewDescriptor))
+						return new Status(Status.ERROR, ClientPlugin.PLUGIN_ID, 0, "", null);
+				
+				return new Status(Status.OK, ClientPlugin.PLUGIN_ID, 0, "", null);
+			}
+		});
+		IViewRegistry reg = PlatformUI.getWorkbench().getViewRegistry(); 
+		dlg.setInput(reg.getCategories());
+		IDialogSettings dlgSettings = ClientPlugin.getDefault().getDialogSettings();
+		final String DIALOG_SETTINGS = "SendShowViewRequestDialog";
+		final String SELECTION_SETTING = "SELECTION";
+		IDialogSettings section = dlgSettings.getSection(DIALOG_SETTINGS);
+		if (section == null)
+			section = dlgSettings.addNewSection(DIALOG_SETTINGS);
+		else {
+			String[] selectedIDs = section.getArray(SELECTION_SETTING);
+			if (selectedIDs != null && selectedIDs.length > 0) {
+				ArrayList list = new ArrayList(selectedIDs.length);
+				for (int i = 0; i < selectedIDs.length; ++i) {
+					IViewDescriptor desc = reg.find(selectedIDs[i]);
+					if (desc != null)
+						list.add(desc);
+				}
+				
+				dlg.setInitialElementSelections(list);
+			}
+		}
+
 		dlg.open();
 		if (dlg.getReturnCode() == Window.CANCEL)
 			return;
-		dlg.showViews(touser);
+
+		Object[] descs = dlg.getResult();
+		if (descs == null)
+			return;
+		
+		String[] selectedIDs = new String[descs.length];
+		for (int i = 0; i < descs.length; ++i) {
+			selectedIDs[i] = ((IViewDescriptor)descs[i]).getId();
+			view.lch.sendShowView(touser, selectedIDs[i]);
+		}
+		
+		section.put(SELECTION_SETTING, selectedIDs);
 	}
 	protected void sendCVSUpdateRequest(User touser) {
 	    //String initStr = MessageLoader.getString("LineChatClientView.contextmenu.sendCVSUpdateRequestInitStr");
