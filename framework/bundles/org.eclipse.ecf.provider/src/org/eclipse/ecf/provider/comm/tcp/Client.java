@@ -73,7 +73,6 @@ public final class Client implements ISynchAsynchConnection {
 
     public static final String PROTOCOL = "ecftcp";
     public static final Trace debug = Trace.create("connection");
-    public static final Trace pingdebug = Trace.create("connectionping");
     public static final int SNDR_PRIORITY = Thread.NORM_PRIORITY;
     public static final int RCVR_PRIORITY = Thread.NORM_PRIORITY;
     // Default close timeout is 1.5 seconds
@@ -421,15 +420,9 @@ public final class Client implements ISynchAsynchConnection {
                 // Handle asynch messages.
                 handler.handleAsynchEvent(new AsynchConnectionEvent(this, d));
             } else if (rcv instanceof PingMessage) {
-                if (Trace.ON && pingdebug != null) {
-                    pingdebug.msg("recv:" + address + ":" + port + ":" + rcv);
-                }
                 // Handle ping by sending response back immediately
                 sendIt(pingResp);
             } else if (rcv instanceof PingResponseMessage) {
-                if (Trace.ON && pingdebug != null) {
-                    pingdebug.msg("recv:" + address + ":" + port + ":" + rcv);
-                }
                 // Do nothing with ping response
             } else
                 throw new IOException("Invalid message received.");
@@ -475,9 +468,6 @@ public final class Client implements ISynchAsynchConnection {
                                 // interval, then ping
                                 waitForPing = true;
                                 // Actually send ping instance
-                                if (Trace.ON && pingdebug != null) {
-                                    pingdebug.msg("recv:" + address + ":" + port + ":" + ping);
-                                }
                                 sendIt(ping);
                                 if (waitForPing) {
                                     try {
@@ -510,9 +500,6 @@ public final class Client implements ISynchAsynchConnection {
                         }
                         break;
                     }
-                }
-                if (Trace.ON && pingdebug != null) {
-                    pingdebug.msg("ping:" + address + ":" + port + " terminating");
                 }
             }
         }, "ping:" + address + ":" + port);
