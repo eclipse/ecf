@@ -71,7 +71,7 @@ public class SharedSDOEditor extends SDOEditor {
                 ID containerID = null;
                 Throwable cause = null;
                 try {
-                    containerID = mutex.waitForSubscription(1000);
+                    containerID = mutex.waitForSubscription(10000);
                 } catch (InterruptedException e) {
                     cause = e;
                 }
