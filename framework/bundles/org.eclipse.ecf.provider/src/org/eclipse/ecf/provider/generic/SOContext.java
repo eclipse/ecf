@@ -26,12 +26,12 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.QueueEnqueue;
 
 public class SOContext implements ISharedObjectContext {
-    SOContainer container = null;
-    ID sharedObjectID;
-    ID homeContainerID;
-    boolean isActive;
-    Map properties;
-    QueueEnqueue queue;
+    protected SOContainer container = null;
+    protected ID sharedObjectID;
+    protected ID homeContainerID;
+    protected boolean isActive;
+    protected Map properties;
+    protected QueueEnqueue queue;
 
     public SOContext(ID objID, ID homeID, SOContainer cont, Map props,
             QueueEnqueue queue) {
