@@ -10,7 +10,6 @@
 package org.eclipse.ecf.core;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.QueueEnqueue;
@@ -145,27 +144,10 @@ public interface ISharedObjectContext {
      *            container).
      * 
      * @throws IOException
-     *             thrown if message cannot be sent by container
-     */
-    public void sendMessage(ID toContainerID, byte[] data) throws IOException;
-    /**
-     * Send arbitrary message to remote instance of the ISharedObject with same
-     * ID as this instance (ISharedObject.getID() returns same unique value).
-     * This method allows ISharedObject instances to send arbitrary data to one
-     * or more remote replicas of this ISharedObject.
-     * 
-     * @param toContainerID
-     *            the ID of the remote ISharedObjectContainer that is the target
-     *            container for the message request. If this parameter is null,
-     *            the request is assumed to be made of <b>all </b> remote
-     *            containers currently in the given group (excepting the local
-     *            container).
-     * 
-     * @throws IOException
      *             thrown if message cannot be sent by container, or if data
      *             cannot be serialized
      */
-    public void sendMessage(ID toContainerID, Serializable data)
+    public void sendMessage(ID toContainerID, Object data)
             throws IOException;
 
     /**

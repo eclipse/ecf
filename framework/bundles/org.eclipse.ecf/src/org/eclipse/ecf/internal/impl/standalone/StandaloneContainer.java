@@ -9,7 +9,6 @@
 
 package org.eclipse.ecf.internal.impl.standalone;
 
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -451,11 +450,7 @@ public class StandaloneContainer implements ISharedObjectContainer,
         System.out.println("Container.sendCreate("+objID+","+containerID+","+sd+")");
     }
     
-    protected void sendMessage(ID objID, ID containerID, byte [] data) {
-        System.out.println("Container.sendMessage("+objID+","+containerID+","+new String(data)+")");
-    }
-
-    protected void sendMessage(ID objID, ID containerID, Serializable data) {
+    protected void sendMessage(ID objID, ID containerID, Object data) {
         System.out.println("Container.sendMessage("+objID+","+containerID+","+data+")");
     }
 

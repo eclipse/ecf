@@ -5,7 +5,6 @@
 package org.eclipse.ecf.internal.impl.standalone;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Map;
 
 import org.eclipse.ecf.core.IOSGIService;
@@ -147,20 +146,9 @@ public class StandaloneContext implements ISharedObjectContext {
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.ecf.core.ISharedObjectContext#sendMessage(org.eclipse.ecf.core.identity.ID, byte[])
+     * @see org.eclipse.ecf.core.ISharedObjectContext#sendMessage(org.eclipse.ecf.core.identity.ID, java.lang.Object)
      */
-    public void sendMessage(ID toContainerID, byte[] data) throws IOException {
-        if (isInactive()) {
-            return;
-        } else {
-            container.sendMessage(sharedObjectID,toContainerID,data); 
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.ecf.core.ISharedObjectContext#sendMessage(org.eclipse.ecf.core.identity.ID, java.io.Serializable)
-     */
-    public void sendMessage(ID toContainerID, Serializable data)
+    public void sendMessage(ID toContainerID, Object data)
             throws IOException {
         if (isInactive()) {
             return;
