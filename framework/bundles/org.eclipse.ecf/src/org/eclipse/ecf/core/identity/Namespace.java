@@ -33,7 +33,7 @@ public class Namespace implements Serializable {
     private String description;
 
     private int hashCode = 0;
-    private ClassLoader classLoader = null;
+    private transient ClassLoader classLoader = null;
 
     private transient IDInstantiator instantiator = null;
 
