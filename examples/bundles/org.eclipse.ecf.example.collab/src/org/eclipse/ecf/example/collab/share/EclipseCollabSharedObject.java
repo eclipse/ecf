@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Date;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -59,7 +58,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
 	protected LineChatClientView localGUI;
 
-	IProject localProject;
+	IResource localProject;
 
 	User localUser;
 
@@ -80,7 +79,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public EclipseCollabSharedObject() {
 	}
 
-	public EclipseCollabSharedObject(IProject proj, IWorkbenchWindow shell,
+	public EclipseCollabSharedObject(IResource proj, IWorkbenchWindow shell,
 			User user, String downloaddir) {
 		this.localProject = proj;
 		this.shellWindow = shell;
@@ -187,10 +186,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			eclipseDir = ".";
 		}
 		String projectDir = null;
-		if (getProject() == null) {
+		if (getResource() == null) {
 			projectDir = downloaddir;
 		} else {
-			projectDir = getProject().getFullPath().toOSString();
+			projectDir = getResource().getFullPath().toOSString();
 		}
 		File fresult = new File(eclipseDir, projectDir);
 		return fresult.getAbsolutePath();
@@ -228,7 +227,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		return localGUI;
 	}
 
-	public IProject getProject() {
+	public IResource getResource() {
 		return localProject;
 	}
 
@@ -724,7 +723,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 	}
 
-	protected void doCVSUpdateOperation(IProject proj, User fromUser) {
+	protected void doCVSUpdateOperation(IResource proj, User fromUser) {
 		/*
 		 * IResource[] resources = new IResource[1]; resources[0] = proj; try {
 		 * new UpdateOperation(getViewPart(), resources,
@@ -738,7 +737,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
 	protected void handleCVSProjectUpdateRequest(final User fromUser,
 			final String msg) {
-		final IProject proj = getProject();
+		final IResource proj = getResource();
 		// If project doesn't actually exist, just return silently
 		if (!proj.exists() || !isCVSShared())
 			return;

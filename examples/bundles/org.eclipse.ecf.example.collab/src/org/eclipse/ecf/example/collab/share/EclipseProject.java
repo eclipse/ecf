@@ -11,7 +11,7 @@
 
 package org.eclipse.ecf.example.collab.share;
 
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.swt.widgets.Control;
@@ -29,7 +29,7 @@ public interface EclipseProject {
 
 	public ID getID();
 	
-	public IProject getProject();
+	public IResource getResource();
 	public IWorkbenchWindow getWorkbenchWindow();
 	
 	public ISharedObjectContext getContext();

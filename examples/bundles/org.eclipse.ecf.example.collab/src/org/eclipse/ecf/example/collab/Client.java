@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -75,7 +75,7 @@ public class Client {
         }
     }
     
-    protected static void addClientEntry(IProject proj, ClientEntry entry) {
+    protected static void addClientEntry(IResource proj, ClientEntry entry) {
         synchronized (clients) {
             Vector v = (Vector) clients.get(proj.getName());
             if (v == null) {
@@ -85,12 +85,12 @@ public class Client {
             clients.put(proj.getName(),v);
         }
     }
-    protected static Vector getClientEntries(IProject proj) {
+    protected static Vector getClientEntries(IResource proj) {
         synchronized (clients) {
             return (Vector) clients.get(proj.getName());
         }
     }
-    protected  static ClientEntry getClientEntry(IProject proj, String type) {
+    protected  static ClientEntry getClientEntry(IResource proj, String type) {
         synchronized (clients) {
             Vector v = (Vector) getClientEntries(proj);
             if (v == null) return null;
@@ -103,7 +103,7 @@ public class Client {
         }
         return null;
     }
-    protected static boolean containsEntry(IProject proj, String type) {
+    protected static boolean containsEntry(IResource proj, String type) {
         synchronized (clients) {
             Vector v = (Vector) clients.get(proj.getName());
             if (v == null) return false;
@@ -116,7 +116,7 @@ public class Client {
         }
         return false;
     }
-    protected static void removeClientEntry(IProject proj, String type) {
+    protected static void removeClientEntry(IResource proj, String type) {
         synchronized (clients) {
             Vector v = (Vector) clients.get(proj.getName());
             if (v == null) return;
@@ -137,7 +137,7 @@ public class Client {
         defaultGroupID = IDFactory.makeStringID(DEFAULT_SERVER_ID);
     }
 
-    protected User getUserData(String containerType, ID clientID, String usernick, String proj, IProject project) {
+    protected User getUserData(String containerType, ID clientID, String usernick, String proj, IResource project) {
         Vector topElements = new Vector();
         String contType = containerType.substring(containerType.lastIndexOf(".")+1);
         topElements.add(new TreeItem("Project", proj));
@@ -170,24 +170,24 @@ public class Client {
         return new User(clientID, usernick, topElements);
     }
 
-    protected String getSharedFileDirectoryForProject(IProject proj) {
+    protected String getSharedFileDirectoryForProject(IResource proj) {
         String eclipseDir = Platform.getLocation().lastSegment();
         if (proj == null)
             return eclipseDir + "/" + ECFDIRECTORY;
         else return FILE_DIRECTORY;
     }
 
-    protected IProject getFirstProjectFromWorkspace() throws Exception {
+    protected IResource getFirstProjectFromWorkspace() throws Exception {
         IWorkspace ws = ResourcesPlugin.getWorkspace();
         IWorkspaceRoot wr = ws.getRoot();
-        IProject[] projects = wr.getProjects();
+        IResource[] projects = wr.getProjects();
         if (projects == null)
             return null;
         return projects[0];
     }
 
     protected void makeAndAddSharedObject(final ClientEntry client,
-            final IProject proj, User user, String fileDir) throws Exception {
+            final IResource proj, User user, String fileDir) throws Exception {
         IWorkbenchWindow ww = PlatformUI.getWorkbench()
                 .getActiveWorkbenchWindow();
         EclipseCollabSharedObject sharedObject = new EclipseCollabSharedObject(proj, ww,
@@ -213,8 +213,8 @@ public class Client {
     }
 
     protected void addObjectToClient(ClientEntry client,
-            String username, IProject proj) throws Exception {
-        IProject project = (proj == null) ? getFirstProjectFromWorkspace()
+            String username, IResource proj) throws Exception {
+        IResource project = (proj == null) ? getFirstProjectFromWorkspace()
                 : proj;
         String fileDir = getSharedFileDirectoryForProject(project);
         String projName = (project == null) ? "<workspace>" : project.getName();
@@ -223,7 +223,7 @@ public class Client {
         makeAndAddSharedObject(client, project, user, fileDir);
     }
 
-    public synchronized ClientEntry isConnected(IProject project, String type) {
+    public synchronized ClientEntry isConnected(IResource project, String type) {
         if (type == null) type = GENERIC_CONTAINER_CLIENT_NAME;
         ClientEntry entry = getClientEntry(project,type);
         return entry;
@@ -236,7 +236,7 @@ public class Client {
         else return false;
     }
     public synchronized void createAndConnectClient(String type, final ID gID, String username,
-            Object data, final IProject proj) throws Exception {
+            Object data, final IResource proj) throws Exception {
         
         if (proj == null) throw new NullPointerException("Project cannot be null");
         ClientEntry entry = getClientEntry(proj,type);
@@ -274,12 +274,12 @@ public class Client {
         addClientEntry(proj,newClient);
     }
 
-    public synchronized void disposeClient(IProject proj, ClientEntry entry) {
+    public synchronized void disposeClient(IResource proj, ClientEntry entry) {
         entry.dispose();
         removeClientEntry(proj,entry.getType());
     }
 
-    public synchronized static ISharedObjectContainer getContainer(IProject proj) {
+    public synchronized static ISharedObjectContainer getContainer(IResource proj) {
         ClientEntry entry = getClientEntry(proj,GENERIC_CONTAINER_CLIENT_NAME);
         if (entry != null) return entry.getContainer();
         else return null;
