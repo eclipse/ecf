@@ -9,10 +9,13 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.jface.text,
  org.eclipse.ui;reprovide=true,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.ecf.presence
 Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.ui.presence,
  org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.messaging,
  org.eclipse.ecf.ui.views
+Export-Package:  org.eclipse.ecf.ui.views
+DynamicImport-Package: org.eclipse.ecf.presence, org.eclipse.ecf.presence.impl
 

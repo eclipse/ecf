@@ -14,8 +14,8 @@ package org.eclipse.ecf.ui.views;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
+import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.ui.UiPlugin;
-import org.eclipse.ecf.ui.messaging.IMessageViewer;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -38,7 +38,7 @@ import org.eclipse.ui.part.ViewPart;
  * @author pnehrer
  * 
  */
-public class ChatWindow extends ApplicationWindow implements IMessageViewer {
+public class ChatWindow extends ApplicationWindow implements IMessageListener {
 	
 	protected static final String ICONS_PERSON_GIF = "icons/person.gif";
     private static final long FLASH_INTERVAL = 600;
@@ -337,10 +337,7 @@ public class ChatWindow extends ApplicationWindow implements IMessageViewer {
         }
 	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ecf.ui.messaging.IMessageViewer#showMessage(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.ui.messaging.IMessageViewer.Type, java.lang.String, java.lang.String)
-     */
-    public void showMessage(final ID fromID, ID toID, Type type, String subject, final String message) {
+    public void handleMessage(final ID fromID, ID toID, Type type, String subject, final String message) {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
                 if (!disposed && chat != null) {

@@ -22,14 +22,14 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
+import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IPresence;
+import org.eclipse.ecf.presence.IPresenceListener;
+import org.eclipse.ecf.presence.IRosterEntry;
+import org.eclipse.ecf.presence.IRosterGroup;
+import org.eclipse.ecf.presence.impl.RosterEntry;
 import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.ecf.ui.UiPluginConstants;
-import org.eclipse.ecf.ui.messaging.IMessageViewer;
-import org.eclipse.ecf.ui.presence.IPresence;
-import org.eclipse.ecf.ui.presence.IRosterEntry;
-import org.eclipse.ecf.ui.presence.IRosterGroup;
-import org.eclipse.ecf.ui.presence.IRosterViewer;
-import org.eclipse.ecf.ui.presence.RosterEntry;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -60,12 +60,8 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-/**
- * WARNING: IN PROGRESS
- * 
- */
 public class RosterView extends ViewPart implements IConfigViewer,
-        IRosterViewer, IMessageViewer {
+        IPresenceListener, IMessageListener {
     protected static final int TREE_EXPANSION_LEVELS = 1;
     private TreeViewer viewer;
     private Action chatAction;
@@ -522,12 +518,7 @@ public class RosterView extends ViewPart implements IConfigViewer,
         viewer.getControl().setFocus();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.ui.presence.IRosterViewer#receiveRosterEntry(org.eclipse.ecf.ui.presence.IRosterEntry)
-     */
-    public void receiveRosterEntry(IRosterEntry entry) {
+    public void handleRosterEntry(IRosterEntry entry) {
         if (entry == null)
             return;
         ViewContentProvider vcp = (ViewContentProvider) viewer
@@ -538,15 +529,9 @@ public class RosterView extends ViewPart implements IConfigViewer,
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.ui.presence.IPresenceViewer#receivePresence(org.eclipse.ecf.core.identity.ID,
-     *      org.eclipse.ecf.ui.presence.IPresence)
-     */
-    public void receivePresence(ID userID, IPresence presence) {
+    public void handlePresence(ID userID, IPresence presence) {
         IRosterEntry entry = new RosterEntry(userID, null, presence);
-        receiveRosterEntry(entry);
+        handleRosterEntry(entry);
         refreshView();
     }
 
@@ -585,9 +570,9 @@ public class RosterView extends ViewPart implements IConfigViewer,
             };
         } else if (clazz.equals(IConfigViewer.class)) {
             return this;
-        } else if (clazz.equals(IRosterViewer.class)) {
+        } else if (clazz.equals(IPresenceListener.class)) {
             return this;
-        } else if (clazz.equals(IMessageViewer.class)) {
+        } else if (clazz.equals(IMessageListener.class)) {
             return this;
         } else
             return null;
@@ -604,20 +589,12 @@ public class RosterView extends ViewPart implements IConfigViewer,
         return sdf.format(new Date());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.ui.messaging.IMessageViewer#showMessage(org.eclipse.ecf.core.identity.ID,
-     *      org.eclipse.ecf.core.identity.ID,
-     *      org.eclipse.ecf.ui.messaging.IMessageViewer.Type, java.lang.String,
-     *      java.lang.String)
-     */
-    public void showMessage(ID fromID, ID toID, Type type, String subject,
+    public void handleMessage(ID fromID, ID toID, Type type, String subject,
             String message) {
         ChatWindow window = openChatWindowForTarget(fromID);
         // finally, show message
         if (window != null) {
-            window.showMessage(fromID, toID, type, subject, message);
+            window.handleMessage(fromID, toID, type, subject, message);
             window.setStatus("last message received at "+(new SimpleDateFormat("hh:mm:ss").format(new Date())));
         }
     }
@@ -633,9 +610,6 @@ public class RosterView extends ViewPart implements IConfigViewer,
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ecf.ui.views.IConfigViewer#memberDeparted(org.eclipse.ecf.core.identity.ID)
-     */
     public void memberDeparted(ID member) {
         if (groupID != null) {
             if (groupID.equals(member)) {
@@ -643,7 +617,12 @@ public class RosterView extends ViewPart implements IConfigViewer,
             }
         }
     }
-    
+    public void handleContainerJoined(ID containerID) {
+        // XXX
+    }
+    public void handleContainerDeparted(ID containerID) {
+        handleGroupManagerDeparted();
+    }
     protected void disposeAllChatWindows(String status) {
         synchronized (chatThreads) {
             for(Iterator i=chatThreads.values().iterator(); i.hasNext(); ) {

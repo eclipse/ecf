@@ -7,4 +7,13 @@
             name="ECF"
             id="org.eclipse.ecf.ui.viewcategory"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            icon="icons/person.gif"
+            class="org.eclipse.ecf.ui.views.RosterView"
+            category="org.eclipse.ecf.ui.viewcategory"
+            name="ECF Buddy List"
+            id="org.eclipse.ecf.ui.view.rosterview"/>
+   </extension>
 </plugin>
