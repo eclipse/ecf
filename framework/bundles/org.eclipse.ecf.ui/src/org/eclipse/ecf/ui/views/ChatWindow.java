@@ -55,6 +55,9 @@ public class ChatWindow extends ApplicationWindow implements IMessageViewer {
     protected IUser localUser;
     protected IUser remoteUser;
     
+    protected boolean disposed = false;
+    protected Thread flashThread = null;
+    
     protected IUser getLocalUser() {
         return localUser;
     }
@@ -165,7 +168,8 @@ public class ChatWindow extends ApplicationWindow implements IMessageViewer {
 		blank = new Image(newShell.getDisplay(), data);
 
 		flash = new Flash(newShell.getDisplay());
-		new Thread(flash).start();
+        flashThread = new Thread(flash);
+        flashThread.start();
 		
 		newShell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
@@ -288,6 +292,24 @@ public class ChatWindow extends ApplicationWindow implements IMessageViewer {
 		}
 	}
 
+    public void setDisposed(final String message) {
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                disposed = true;
+                if (flashThread != null) {
+                    flashThread.interrupt();
+                    flashThread = null;
+                }
+                if (chat != null) {
+                    chat.setDisposed();
+                }
+                if (!getShell().isDisposed()) {
+                    getShell().setText(getShell().getText()+" (inactive)");
+                }
+                setStatus(message);
+            }            
+        });
+    }
     public void openAndFlash() {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
@@ -304,8 +326,15 @@ public class ChatWindow extends ApplicationWindow implements IMessageViewer {
 	 * @see org.eclipse.jface.window.Window#handleShellCloseEvent()
 	 */
 	protected void handleShellCloseEvent() {
-		if (!getShell().isDisposed())
-			getShell().setVisible(false);
+		if (!getShell().isDisposed()) {
+            if (!disposed) {
+                chat.dispose();
+                chat = null;
+                getShell().dispose();
+            } else {
+                getShell().setVisible(false);
+            }
+        }
 	}
 
     /* (non-Javadoc)
@@ -314,7 +343,7 @@ public class ChatWindow extends ApplicationWindow implements IMessageViewer {
     public void showMessage(final ID fromID, ID toID, Type type, String subject, final String message) {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
-                if (chat != null) {
+                if (!disposed && chat != null) {
                     chat.appendText(new ChatLine(message,getRemoteUser()));
                 }
             }            

@@ -285,7 +285,9 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
             grp = addEntriesToGroup(grp, group);
             root.addChild(grp);
         }
-
+        public void removeAllEntries() {
+            root = null;
+        }
         private void initialize() {
             root = new TreeParent("Buddy List");
             /*
@@ -400,7 +402,7 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
     private void fillLocalToolBar(IToolBarManager manager) {
         manager.add(chatAction);
         manager.add(new Separator());
-        //manager.add(disconnectAction);
+        manager.add(disconnectAction);
     }
 
     protected ID inputIMTarget() {
@@ -422,6 +424,7 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
         }
         return null;
     }
+    
     private void makeActions() {
         chatAction = new Action() {
             public void run() {
@@ -432,6 +435,7 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
         chatAction.setText("Send Instant Message...");
         chatAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
                 .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+        chatAction.setEnabled(false);
         selectedDoubleClickAction = new Action() {
             public void run() {
                 TreeObject treeObject = getSelectedTreeObject();
@@ -441,12 +445,16 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
         };
         disconnectAction = new Action() {
             public void run() {
-                // XXX disconnect from server and dispose everything here
-                showMessage("Disconnecting");
+                if (textInputHandler != null) {
+                    textInputHandler.disconnect();
+                    chatAction.setEnabled(false);
+                    this.setEnabled(false);
+                }
             }
         };
         disconnectAction.setText("Disconnect");
-        disconnectAction.setToolTipText("Disconnect from server");
+        disconnectAction.setToolTipText("Disconnect from server "+((groupID==null)?"<disconnected>":groupID.getName()));
+        disconnectAction.setEnabled(false);
         
     }
 
@@ -552,6 +560,12 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
                     } else
                         System.out.println("handleStartTyping()");
                 }
+                public void disconnect() {
+                    if (textInputHandler != null) {
+                        textInputHandler.disconnect();
+                    } else
+                        System.out.println("disconnect()");
+                }
             };
         } else if (clazz.equals(ILocalUserSettable.class)) {
             return this;
@@ -598,7 +612,11 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
      * @see org.eclipse.ecf.ui.views.ILocalUserSettable#setGroup(org.eclipse.ecf.core.identity.ID)
      */
     public void setGroup(ID groupManager) {
-        groupID = groupManager;
+        if (groupManager != null) {
+            groupID = groupManager;
+            disconnectAction.setEnabled(true);
+            chatAction.setEnabled(true);
+        }
     }
 
     /* (non-Javadoc)
@@ -612,8 +630,30 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
         }
     }
     
+    protected void disposeAllChatWindows(String status) {
+        synchronized (chatThreads) {
+            for(Iterator i=chatThreads.values().iterator(); i.hasNext(); ) {
+                ChatWindow window = (ChatWindow) i.next();
+                window.setDisposed(status);
+            }
+            chatThreads.clear();
+        }
+    }
+    
+    protected void removeAllRosterEntries() {
+        ViewContentProvider vcp = (ViewContentProvider) viewer
+                .getContentProvider();
+        if (vcp != null) {
+            vcp.removeAllEntries();
+            refreshView();
+        }
+    }
+
     protected void handleGroupManagerDeparted() {
-        // XXX TODO -- this should indicate visually that the server/group manager departed
+        removeAllRosterEntries();
+        disposeAllChatWindows("Disconnected from server.  Chat is inactive");
+        chatAction.setEnabled(false);
+        disconnectAction.setEnabled(false);
     }
 
 }

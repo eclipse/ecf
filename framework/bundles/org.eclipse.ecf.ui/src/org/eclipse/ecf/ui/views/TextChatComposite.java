@@ -388,6 +388,9 @@ public class TextChatComposite extends Composite {
         super.dispose();
     }
 
+    protected void setDisposed() {
+        textinput.setEnabled(false);
+    }
     protected void checkSubclass() {
     }
 }
