@@ -21,7 +21,7 @@ public class LongID extends BaseID {
     public static class Creator implements IDInstantiator {
         public ID makeInstance(Namespace ns, Class[] argTypes, Object[] args)
                 throws IDInstantiationException {
-            return new StringID(ns, (String) args[0]);
+            return new LongID(ns, (Long) args[0]);
         }
     }
     public static final String LONGID_INSTANTIATOR_CLASS = LongID.Creator.class
