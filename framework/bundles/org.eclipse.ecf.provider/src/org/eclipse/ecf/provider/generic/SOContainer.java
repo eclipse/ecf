@@ -486,17 +486,16 @@ public abstract class SOContainer implements ISharedObjectContainer {
         // XXX Notify listeners that we're going away
         // Clear group manager
         groupManager.removeAllMembers();
+        groupManager = null;
         // Clear shared object manager
         sharedObjectManager.dispose();
-        try {
-            synchronized (this) {
-                wait(waittime);
-            }
-        } catch (InterruptedException e) {
-
-        }
+        sharedObjectManager = null;
         sharedObjectThreadGroup.interrupt();
+        sharedObjectThreadGroup = null;
         loadingThreadGroup.interrupt();
+        loadingThreadGroup = null;
+        listeners.clear();
+        listeners = null;
     }
 
     /*

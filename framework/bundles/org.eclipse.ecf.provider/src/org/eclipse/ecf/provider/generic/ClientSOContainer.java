@@ -35,6 +35,18 @@ public abstract class ClientSOContainer extends SOContainer {
         connectionState = UNCONNECTED;
         connectLock = new Lock();
     }
+    public void dispose(long wait) {
+    	synchronized (connectLock) {
+        	isClosing = true;
+    		if (isConnected()) {
+    			this.leaveGroup();
+    		} else if (isConnecting()) {
+    			killConnection(connection);
+    		}
+    		remoteServerID = null;
+    	}
+    	super.dispose(wait);
+    }
     public final boolean isGroupServer() {
         return false;
     }
