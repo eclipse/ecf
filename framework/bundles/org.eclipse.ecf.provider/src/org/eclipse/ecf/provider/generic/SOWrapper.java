@@ -63,6 +63,7 @@ public class SOWrapper {
 
     protected void init() throws SharedObjectInitException {
         debug("init()");
+        sharedObjectConfig.makeActive(new QueueEnqueueImpl(queue));
         sharedObject.init(sharedObjectConfig);
     }
 
@@ -79,7 +80,6 @@ public class SOWrapper {
     }
     protected void activated(ID[] ids) {
         debug("activated");
-        sharedObjectConfig.makeActive(new QueueEnqueueImpl(queue));
         thread = (Thread) AccessController.doPrivileged(new PrivilegedAction() {
             public Object run() {
                 // Get thread instance
