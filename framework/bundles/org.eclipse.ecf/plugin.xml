@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin>
+<plugin
+   id="org.eclipse.ecf"
+   name="ECF - Eclipse Communications Framework"
+   version="0.1.0"
+   provider-name="Eclipse.org"
+   class="org.eclipse.ecf.internal.core.ECFPlugin">
+
+   <runtime>
+      <library name="ecf.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+   </requires>
+
    <extension-point id="containerFactory" name="ECF Container Factory" schema="schema/containerFactory.exsd"/>
    <extension-point id="namespace" name="ECF Namespace" schema="schema/namespace.exsd"/>
    <extension-point id="comm" name="ECF Connection Factory" schema="schema/comm.exsd"/>
+   
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory

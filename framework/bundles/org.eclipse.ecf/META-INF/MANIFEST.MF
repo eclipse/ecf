@@ -15,3 +15,5 @@ Provide-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.comm,
  org.eclipse.ecf.core.comm.provider,
  org.eclipse.ecf.core.util
+Require-Bundle: org.eclipse.osgi,
+ org.eclipse.core.runtime
