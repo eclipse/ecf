@@ -72,6 +72,24 @@ public class Trace {
     protected Trace(String str) {
         name = str;
     }
+    public static String convertStringAToString(String [] strings) {
+        if (strings==null) return "";
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i < strings.length; i++) {
+            sb.append(strings[i]);
+            if (i != (strings.length-1)) sb.append(";");
+        }
+        return sb.toString();
+    }
+    public static String convertObjectAToString(Object [] objs) {
+        if (objs==null) return "";
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i < objs.length; i++) {
+            sb.append(objs[i].toString());
+            if (i != (objs.length-1)) sb.append(";");
+        }
+        return sb.toString();
+    }
 
     public static void setThreadDebugGroup(Object obj) {
         // Do nothing

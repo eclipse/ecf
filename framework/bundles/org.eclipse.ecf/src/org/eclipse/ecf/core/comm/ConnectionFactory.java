@@ -17,13 +17,28 @@ import java.util.List;
 
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
+import org.eclipse.ecf.internal.core.Trace;
 
 public class ConnectionFactory {
 
+    private static Trace debug = Trace.create("connectionfactory");
+    
     private static Hashtable connectiontypes = new Hashtable();
 
+    private static void debug(String msg) {
+        if (Trace.ON && debug != null) {
+            debug.msg(msg);
+        }
+    }
+
+    private static void dumpStack(String msg, Throwable e) {
+        if (Trace.ON && debug != null) {
+            debug.dumpStack(e, msg);
+        }
+    }
     public final static ConnectionDescription getDescription(
             ConnectionDescription scd) {
+        debug("getDescription("+scd+")");
         return getDescription0(scd);
     }
     protected static ConnectionDescription getDescription0(
@@ -41,13 +56,16 @@ public class ConnectionFactory {
         return (ConnectionDescription) connectiontypes.get(name);
     }
     public final static ConnectionDescription getDescriptionByName(String name) {
+        debug("getDescriptionByName("+name+")");
         return getDescription0(name);
     }
     public final static ConnectionDescription removeDescription(
             ConnectionDescription scd) {
+        debug("removeDescription("+scd+")");
         return removeDescription0(scd);
     }
     public static final List getDescriptions() {
+        debug("getDescriptions()");
     	return getDescriptions0();
     }
 
@@ -59,6 +77,7 @@ public class ConnectionFactory {
     }
     public final static ConnectionDescription addDescription(
             ConnectionDescription scd) {
+        debug("addDescription("+scd+")");
         return addDescription0(scd);
     }
 
@@ -69,6 +88,7 @@ public class ConnectionFactory {
         return (ConnectionDescription) connectiontypes.put(n.getName(), n);
     }
     public final static boolean containsDescription(ConnectionDescription scd) {
+        debug("containsDescription("+scd+")");
         return containsDescription0(scd);
     }
     protected static boolean containsDescription0(ConnectionDescription scd) {
@@ -82,6 +102,7 @@ public class ConnectionFactory {
             ConnectionDescription desc, String[] argTypes, Object[] args)
             throws ConnectionInstantiationException {
 
+        debug("makeSynchAsynchConnection("+handler+","+desc+","+Trace.convertStringAToString(argTypes)+","+Trace.convertObjectAToString(args)+")");
         if (handler == null)
             throw new ConnectionInstantiationException("ISynchAsynchConnectionEventHandler cannot be null");
         if (desc == null)
@@ -106,6 +127,7 @@ public class ConnectionFactory {
                     "Exception getting instantiator for '" + desc.getName()
                             + "'", e);
         }
+        debug("makeSynchAsynchConnection:got instantiator:"+instantiator);
         // Ask instantiator to actually create instance
         return instantiator.makeInstance(handler, clazzes, args);
     }

@@ -164,7 +164,7 @@ public class SharedObjectContainerFactory {
     public static ISharedObjectContainer makeSharedObjectContainer(
             SharedObjectContainerDescription desc, String[] argTypes,
             Object[] args) throws SharedObjectContainerInstantiationException {
-        debug("makeSharedObjectContainer("+desc+","+argTypes+","+args+")");
+        debug("makeSharedObjectContainer("+desc+","+Trace.convertStringAToString(argTypes)+","+Trace.convertObjectAToString(args)+")");
         if (desc == null)
             throw new SharedObjectContainerInstantiationException(
                     "SharedObjectContainerDescription cannot be null");

@@ -183,24 +183,6 @@ public class IDFactory {
         logException(s, null);
         throw e;
     }
-    private static String convertStringAToString(String [] strings) {
-        if (strings==null) return "";
-        StringBuffer sb = new StringBuffer();
-        for(int i=0; i < strings.length; i++) {
-            sb.append(strings[i]);
-            if (i != (strings.length-1)) sb.append(";");
-        }
-        return sb.toString();
-    }
-    private static String convertObjectAToString(Object [] objs) {
-        if (objs==null) return "";
-        StringBuffer sb = new StringBuffer();
-        for(int i=0; i < objs.length; i++) {
-            sb.append(objs[i].toString());
-            if (i != (objs.length-1)) sb.append(";");
-        }
-        return sb.toString();
-    }
     /**
      * Make a new identity. Given a classloader, Namespace, constructor argument
      * types, and an array of arguments, return a new instance of an ID
@@ -219,7 +201,7 @@ public class IDFactory {
      */
     public static final ID makeID(Namespace n, String[] argTypes, Object[] args)
             throws IDInstantiationException {
-        debug("makeID("+n+","+convertStringAToString(argTypes)+","+convertObjectAToString(args)+")");
+        debug("makeID("+n+","+Trace.convertStringAToString(argTypes)+","+Trace.convertObjectAToString(args)+")");
         // Verify namespace is non-null
         if (n == null)
             logAndThrow("Namespace cannot be null");
