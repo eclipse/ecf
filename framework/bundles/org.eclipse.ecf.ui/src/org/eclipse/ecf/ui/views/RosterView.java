@@ -359,7 +359,10 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
             ImageRegistry registry = UiPlugin.getDefault().getImageRegistry();
             
             if (obj instanceof TreeParent) {
-                image = registry.get(UiPluginConstants.DECORATION_USER);
+                TreeParent o = (TreeParent) obj;
+                if (o.getUserID() != null) {
+                    image = registry.get(UiPluginConstants.DECORATION_USER);
+                }
             }            
             return image;
         }
