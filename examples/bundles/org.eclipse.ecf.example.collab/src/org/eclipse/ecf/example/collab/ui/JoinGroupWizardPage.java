@@ -35,7 +35,7 @@ public class JoinGroupWizardPage extends WizardPage {
     
     protected static final String USER_NAME_SYSTEM_PROPERTY = "user.name";
     
-    protected static final String ISCLIENT_PROP_NAME = CLASSNAME+".isClient";
+    protected static final String ISSERVER_PROP_NAME = CLASSNAME+".isServer";
     protected static final String DEFAULTGROUPID_PROP_NAME = CLASSNAME+".defaultgroupid";
     protected static final String EXAMPLEGROUPID_PROP_NAME = CLASSNAME+".examplegroupid";
     protected static final String USEPASSWORD_PROP_NAME = CLASSNAME+".usepassword";
@@ -119,14 +119,17 @@ public class JoinGroupWizardPage extends WizardPage {
             String name = desc.getName();
             String description = desc.getDescription();
             Map props = desc.getProperties();
-            if (DEFAULT_CLIENT.equals(name)) {
-                def = index;
-                defProps = props;
+            String isServer = (String) props.get(ISSERVER_PROP_NAME);
+            if (isServer == null || !isServer.equalsIgnoreCase("true")) {
+                if (DEFAULT_CLIENT.equals(name)) {
+                    def = index;
+                    defProps = props;
+                }
+                combo.add(description+" - "+name,index);
+                combo.setData(""+index,desc);
+                containerDescriptions.add(desc);
+                index++;
             }
-            combo.add(description+" - "+name,index);
-            combo.setData(""+index,desc);
-            containerDescriptions.add(desc);
-            index++;
         }
         combo.addSelectionListener(new SelectionListener() {
             public void widgetSelected(SelectionEvent e) {

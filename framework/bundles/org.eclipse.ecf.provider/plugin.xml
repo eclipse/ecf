@@ -5,7 +5,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.generic.ContainerInstantiator"
-            description="ECF Generic Provider"
+            description="ECF Generic Client"
             name="org.eclipse.ecf.provider.generic.Client">
          <defaultargument
                type="org.eclipse.ecf.core.identity.ID"
@@ -20,9 +20,6 @@
          <property
                value="ecftcp://localhost:3282/server"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"/>
-         <property
-               value="true"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.isClient"/>
          <property
                value="true"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usenickname"/>
@@ -54,6 +51,9 @@
                value="10000"
                type="java.lang.Integer"
                name="keepAlive"/>
+         <property
+               value="true"
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.isServer"/>
       </containerFactory>
    </extension>
 </plugin>
