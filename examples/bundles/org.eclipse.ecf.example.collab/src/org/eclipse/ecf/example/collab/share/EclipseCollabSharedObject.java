@@ -13,7 +13,6 @@ package org.eclipse.ecf.example.collab.share;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Date;
@@ -36,10 +35,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.team.internal.ccvs.core.client.Command;
-import org.eclipse.team.internal.ccvs.core.resources.CVSWorkspaceRoot;
-import org.eclipse.team.internal.ccvs.ui.CVSUIPlugin;
-import org.eclipse.team.internal.ccvs.ui.operations.UpdateOperation;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -696,7 +691,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
     public boolean isCVSShared() {
         try {
-            return CVSWorkspaceRoot.isSharedWithCVS(getProject());
+            //return CVSWorkspaceRoot.isSharedWithCVS(getProject());
+            return false;
         } catch (Exception e) {
             ClientPlugin
                     .log(
@@ -707,6 +703,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
     }
 
     protected void doCVSUpdateOperation(IProject proj, User fromUser) {
+        /*
         IResource[] resources = new IResource[1];
         resources[0] = proj;
         try {
@@ -719,6 +716,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
                     null, e);
         } catch (InterruptedException e) {
         }
+        */
     }
 
     protected void handleCVSProjectUpdateRequest(final User fromUser,
