@@ -39,7 +39,7 @@ final class SOWrapper {
     private Thread thread;
     private SimpleQueueImpl queue;
 
-    SOWrapper(SOContainer.LoadingSharedObject obj, SOContainer cont) {
+    protected SOWrapper(SOContainer.LoadingSharedObject obj, SOContainer cont) {
         sharedObjectID = obj.getID();
         sharedObjectHomeID = obj.getHomeID();
         sharedObject = obj;
@@ -50,7 +50,7 @@ final class SOWrapper {
         queue = new SimpleQueueImpl();
     }
 
-    SOWrapper(SOConfig aConfig, ISharedObject obj, SOContainer cont) {
+    protected SOWrapper(SOConfig aConfig, ISharedObject obj, SOContainer cont) {
         sharedObjectConfig = aConfig;
         sharedObjectID = sharedObjectConfig.getSharedObjectID();
         sharedObjectHomeID = sharedObjectConfig.getHomeContainerID();
@@ -61,20 +61,20 @@ final class SOWrapper {
         queue = new SimpleQueueImpl();
     }
 
-    void init() throws SharedObjectInitException {
+    protected void init() throws SharedObjectInitException {
         debug("init()");
         sharedObject.init(sharedObjectConfig);
     }
 
-    ID getObjID() {
+    protected ID getObjID() {
         return sharedObjectConfig.getSharedObjectID();
     }
 
-    ID getHomeID() {
+    protected ID getHomeID() {
         return sharedObjectConfig.getHomeContainerID();
     }
 
-    void activated(ID[] ids) {
+    protected void activated(ID[] ids) {
         debug("activated");
         sharedObjectConfig.makeActive(new QueueEnqueueImpl(queue));
         thread = (Thread) AccessController.doPrivileged(new PrivilegedAction() {
@@ -89,14 +89,14 @@ final class SOWrapper {
         container.notifySharedObjectActivated(sharedObjectID);
     }
 
-    void deactivated() {
+    protected void deactivated() {
         debug("deactivated()");
         send(new SharedObjectDeactivatedEvent(containerID, sharedObjectID));
         container.notifySharedObjectDeactivated(sharedObjectID);
         destroyed();
     }
 
-    private void destroyed() {
+    protected  void destroyed() {
         if (!queue.isStopped()) {
             sharedObjectConfig.makeInactive();
             if (thread != null)
@@ -105,7 +105,7 @@ final class SOWrapper {
         }
     }
 
-    void otherChanged(ID otherID, boolean activated) {
+    protected void otherChanged(ID otherID, boolean activated) {
         debug("otherChanged(" + otherID + "," + activated);
         if (activated && thread != null) {
             send(new SharedObjectActivatedEvent(containerID, otherID, null));
@@ -114,7 +114,7 @@ final class SOWrapper {
         }
     }
 
-    void memberChanged(Member m, boolean add) {
+    protected void memberChanged(Member m, boolean add) {
         debug("memberChanged(" + m + "," + add);
         if (thread != null) {
             if (add) {
@@ -127,7 +127,7 @@ final class SOWrapper {
         }
     }
 
-    Thread getThread() {
+    protected Thread getThread() {
         return container.getNewSharedObjectThread(sharedObjectID,
                 new Runnable() {
                     public void run() {
@@ -183,26 +183,28 @@ final class SOWrapper {
         }
     }
 
-    void svc(Event evt) {
+    protected void svc(Event evt) {
         sharedObject.handleEvent(evt);
     }
 
-    void doDestroy() {
+    protected void doDestroy() {
         sharedObject.dispose(containerID);
     }
 
-    void deliverSharedObjectMessage(ID fromID, Serializable data) {
+    protected void deliverSharedObjectMessage(ID fromID, Serializable data) {
         send(new RemoteSharedObjectEvent(getObjID(), fromID, data));
     }
 
-    void deliverCreateResponse(ID fromID,
+    protected void deliverCreateResponse(ID fromID,
             ContainerMessage.CreateResponseMessage resp) {
         send(new RemoteSharedObjectCreateResponseEvent(
                 resp.getSharedObjectID(), fromID, resp.getSequence(), resp
                         .getException()));
     }
-
-    void destroySelf() {
+    protected void deliverEvent(Event evt) {
+        send(evt);
+    }
+    protected void destroySelf() {
         debug("destroySelf()");
         send(new DisposeEvent());
     }
@@ -225,7 +227,7 @@ final class SOWrapper {
         }
     }
 
-    void handleRuntimeException(Throwable except) {
+    protected void handleRuntimeException(Throwable except) {
         dumpStack(
                 "runner:unhandledexception(" + sharedObjectID.getName() + ")",
                 except);
