@@ -18,6 +18,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.user.IUser;
@@ -38,6 +39,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -62,6 +64,9 @@ import org.eclipse.ui.part.ViewPart;
 
 public class RosterView extends ViewPart implements IConfigViewer,
         IPresenceListener, IMessageListener {
+    public static final String DISCONNECT_ICON_DISABLED = "icons/disabled/terminate_co.gif";
+    public static final String DISCONNECT_ICON_ENABLED = "icons/enabled/terminate_co.gif";
+    
     protected static final int TREE_EXPANSION_LEVELS = 1;
     private TreeViewer viewer;
     private Action chatAction;
@@ -467,7 +472,10 @@ public class RosterView extends ViewPart implements IConfigViewer,
         disconnectAction.setText("Disconnect");
         disconnectAction.setToolTipText("Disconnect from server");
         disconnectAction.setEnabled(false);
-        
+        disconnectAction.setImageDescriptor(ImageDescriptor.createFromURL(
+                UiPlugin.getDefault().find(new Path(DISCONNECT_ICON_ENABLED))));        
+        disconnectAction.setDisabledImageDescriptor(ImageDescriptor.createFromURL(
+                UiPlugin.getDefault().find(new Path(DISCONNECT_ICON_DISABLED))));        
     }
 
 
