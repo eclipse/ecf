@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
@@ -27,8 +28,10 @@ import org.eclipse.ecf.ui.presence.RosterEntry;
  *
  */
 public class RosterView extends ViewPart implements IRosterViewer, IPresenceViewer {
-	private TreeViewer viewer;
-	private DrillDownAdapter drillDownAdapter;
+
+    protected static final int TREE_EXPANSION_LEVELS = 1;
+
+    private TreeViewer viewer;
 	private Action action1;
 	private Action doubleClickAction;
 
@@ -96,8 +99,8 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
 		}
 		public Object[] getElements(Object parent) {
 			if (parent.equals(getViewSite())) {
-				if (invisibleRoot==null) initialize();
-				return getChildren(invisibleRoot);
+				if (root==null) initialize();
+				return getChildren(root);
 			}
 			return getChildren(parent);
 		}
@@ -132,13 +135,13 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
         
         public TreeParent fillPresence(TreeParent obj, IPresence presence) {
             if (presence == null) return obj;
-            TreeObject type = new TreeObject(presence.getType().toString());
+            TreeObject type = new TreeObject("Status: "+presence.getType().toString());
             obj.addChild(type);
             TreeObject mode = new TreeObject("Mode: "+presence.getMode().toString());
             obj.addChild(mode);
             String status = presence.getStatus();
             if (status != null && !status.equals("")) {
-                TreeObject stat = new TreeObject("Status: "+status);
+                TreeObject stat = new TreeObject("Status Details: "+status);
                 obj.addChild(stat);
             }
             int priority = presence.getPriority();
@@ -163,7 +166,6 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
             if (name != null) {
                 obj.addChild(new TreeObject("Name: "+name));
             }
-            obj.addChild(new TreeObject("User ID: "+entry.getUserID().getName()));
             return fillPresence(obj,entry.getPresenceState());
         }
         public void addEntry(TreeParent parent, IRosterEntry entry) {
@@ -171,7 +173,7 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
             TreeParent found = null;
             if (objs != null) {
                 for(int i=0; i < objs.length; i++) {
-                    if (objs[i].getName().equals(entry.getName())) {
+                    if (objs[i].getName().equals(entry.getUserID().getName())) {
                         // Found it...replace values with new 
                         found = fillWithEntry((TreeParent) objs[i],entry);
                     }
@@ -180,8 +182,11 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
             if (found == null) {
                 found = new TreeParent(entry.getUserID().getName());
                 found = fillWithEntry(found,entry);
+                parent.addChild(found);
+            } else {
+                parent.removeChild(found);
+                parent.addChild(found);
             }
-            parent.addChild(found);
         }
         public TreeParent addEntriesToGroup(TreeParent grp, IRosterGroup group) {
             Iterator i = group.getRosterEntries();
@@ -196,7 +201,6 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
         
         public void addEntry(IRosterEntry entry) {
             addEntry(root,entry);
-            viewer.expandAll();
         }
 		public void addGroup(IRosterGroup group) {
             TreeParent grp = hasGroup(group);
@@ -221,7 +225,7 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
 			TreeParent p2 = new TreeParent("Parent 2");
 			p2.addChild(to4);
 			*/
-            root = new TreeParent("Buddies");
+            root = new TreeParent("Buddy List");
             /*
 			root.addChild(p1);
 			root.addChild(p2);
@@ -248,9 +252,24 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
 	public RosterView() {
 	}
 
+    protected void refreshView() {
+        Display.getDefault().asyncExec(new Runnable() {
+            public void run() {
+                    try {
+                        viewer.refresh();
+                        expandAll();
+                    } catch (Exception e) {
+                    }
+                }
+        });
+    }
+
+    protected void expandAll() {
+        viewer.expandToLevel(TREE_EXPANSION_LEVELS);
+    }
+
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		drillDownAdapter = new DrillDownAdapter(viewer);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(new NameSorter());
@@ -289,7 +308,6 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(action1);
 		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
@@ -297,7 +315,6 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(action1);
 		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
 	}
 
 	private void makeActions() {
@@ -345,10 +362,10 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
      * @see org.eclipse.ecf.ui.presence.IRosterViewer#receiveRosterEntry(org.eclipse.ecf.ui.presence.IRosterEntry)
      */
     public void receiveRosterEntry(IRosterEntry entry) {
-        System.out.println("Received roster entry: "+entry);
         if (entry == null) return;
         ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
         vcp.addEntry(entry);
+        refreshView();
     }
 
     /* (non-Javadoc)
@@ -357,5 +374,6 @@ public class RosterView extends ViewPart implements IRosterViewer, IPresenceView
     public void receivePresence(ID userID, IPresence presence) {
         IRosterEntry entry = new RosterEntry(userID,null,presence);
         receiveRosterEntry(entry);
+        refreshView();
     }
 }
