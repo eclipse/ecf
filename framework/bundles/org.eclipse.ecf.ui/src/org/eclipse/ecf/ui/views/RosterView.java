@@ -22,6 +22,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
+import org.eclipse.ecf.ui.UiPlugin;
+import org.eclipse.ecf.ui.UiPluginConstants;
 import org.eclipse.ecf.ui.messaging.IMessageViewer;
 import org.eclipse.ecf.ui.presence.IPresence;
 import org.eclipse.ecf.ui.presence.IPresenceViewer;
@@ -37,6 +39,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -315,11 +318,13 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
         }
 
         public Image getImage(Object obj) {
-            String imageKey = null;
-            if (obj instanceof TreeParent)
-                imageKey = ISharedImages.IMG_OBJ_FOLDER;
-            return PlatformUI.getWorkbench().getSharedImages().getImage(
-                    imageKey);
+            Image image = null;     //By default, no image exists for obj, but if found to be a specific instance, load from plugin repository.
+            ImageRegistry registry = UiPlugin.getDefault().getImageRegistry();
+            
+            if (obj instanceof TreeParent) {
+                image = registry.get(UiPluginConstants.DECORATION_USER);
+            }            
+            return image;
         }
     }
 

@@ -11,6 +11,9 @@
 
 package org.eclipse.ecf.ui;
 
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.*;
 import org.osgi.framework.BundleContext;
 import java.util.*;
@@ -22,6 +25,8 @@ public class UiPlugin extends AbstractUIPlugin {
 	
 	public static final String PLUGIN_ID = "org.eclipse.ecf.ui";
 	
+    private ImageRegistry registry = null;
+    
     public static final String PREF_DISPLAY_TIMESTAMP = "TextChatComposite.displaytimestamp";
     
 	//The shared instance.
@@ -85,4 +90,23 @@ public class UiPlugin extends AbstractUIPlugin {
 		}
 		return resourceBundle;
 	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#createImageRegistry()
+     */
+    protected ImageRegistry createImageRegistry() {
+        registry = super.createImageRegistry();
+        
+  
+        registry.put(UiPluginConstants.DECORATION_PROJECT, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
+        registry.put(UiPluginConstants.DECORATION_USER, AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.ecf.example.collab", "icons/presence_member.gif").createImage());
+        registry.put(UiPluginConstants.DECORATION_TIME, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_FORWARD));
+        registry.put(UiPluginConstants.DECORATION_TASK, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT));
+        
+        registry.put(UiPluginConstants.DECORATION_SEND , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_UNDO));
+        registry.put(UiPluginConstants.DECORATION_RECEIVE , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_REDO));
+        registry.put(UiPluginConstants.DECORATION_PRIVATE , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK));
+        registry.put(UiPluginConstants.DECORATION_SYSTEM_MESSAGE , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK));
+        return registry;
+    }
+
 }
