@@ -173,7 +173,8 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
             Integer type = (Integer) data[0];
             switch (type.intValue()) {
             case JOIN:
-                handleJoin(e.getRemoteContainerID(), (String[]) data[1]);
+                handleJoin(e.getRemoteContainerID(),
+                        data.length > 2 ? (String[]) data[1] : null);
                 break;
 
             case LEAVE:
@@ -209,14 +210,18 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
     }
 
     private void handleJoin(ID containerID, String[] paths) {
-        table.add(containerID, paths);
-        try {
-            config.getContext().sendMessage(null,
-                    new Object[] { new Integer(ADD), paths });
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        if (paths != null)
+            table.add(containerID, paths);
+
+        paths = table.getPaths(config.getContext().getLocalContainerID());
+        if (paths.length > 0)
+            try {
+                config.getContext().sendMessage(containerID,
+                        new Object[] { new Integer(ADD), paths });
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
     }
 
     private void handleLeave(ID containerID) {
@@ -232,13 +237,12 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
     }
 
     private void handleJoined() {
+        String[] paths = table.getPaths(config.getContext()
+                .getLocalContainerID());
+        Object[] data = paths.length == 0 ? new Object[] { new Integer(JOIN) }
+                : new Object[] { new Integer(JOIN), paths };
         try {
-            config.getContext().sendMessage(
-                    null,
-                    new Object[] {
-                            new Integer(JOIN),
-                            table.getPaths(config.getContext()
-                                    .getLocalContainerID()) });
+            config.getContext().sendMessage(null, data);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
