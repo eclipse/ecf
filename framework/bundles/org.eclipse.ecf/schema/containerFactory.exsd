@@ -49,6 +49,7 @@
       <complexType>
          <sequence>
             <element ref="defaultargument" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="property" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="class" type="string" use="required">
             <annotation>
@@ -99,6 +100,30 @@
             <annotation>
                <documentation>
                   An optional name for the defaultargument element
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="property">
+      <annotation>
+         <documentation>
+            Property (name,value) associated with SharedObjectContainerDescription
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The name of the property
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The value of the property
                </documentation>
             </annotation>
          </attribute>

@@ -9,7 +9,9 @@
 package org.eclipse.ecf.internal.core;
 
 import java.lang.reflect.Constructor;
+import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -50,6 +52,9 @@ public class ECFPlugin extends Plugin {
     public static final String ARG_TYPE_ATTRIBUTE = "type";
     public static final String ARG_VALUE_ATTRIBUTE = "value";
     public static final String ARG_NAME_ATTRIBUTE = "name";
+    public static final String PROPERTY_ELEMENT_NAME = "property";
+    public static final String PROPERTY_NAME_ATTRIBUTE = "name";
+    public static final String PROPERTY_VALUE_ATTRIBUTE = "value";
     public static final String COMM_FACTORY_EPOINT = "org.eclipse.ecf.connectionFactory";
     public static final String COMM_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
     public static final String COMM_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
@@ -59,9 +64,9 @@ public class ECFPlugin extends Plugin {
     public static final int INSTANTIATOR_DOES_NOT_IMPLEMENT_ERRORCODE = 30;
     public static final int INSTANTIATOR_NAME_COLLISION_ERRORCODE = 50;
     public static final int INSTANTIATOR_NAMESPACE_LOAD_ERRORCODE = 60;
-    //The shared instance.
+    // The shared instance.
     private static ECFPlugin plugin;
-    //Resource bundle.
+    // Resource bundle.
     private ResourceBundle resourceBundle;
     BundleContext context = null;
 
@@ -146,6 +151,25 @@ public class ECFPlugin extends Plugin {
         return new DefaultArgs(argTypes, argDefaults, argNames);
     }
 
+    protected Map getProperties(IConfigurationElement[] propertyElements) {
+        Properties props = new Properties();
+        if (propertyElements != null) {
+            if (propertyElements.length > 0) {
+                for (int i = 0; i < propertyElements.length; i++) {
+                    String name = propertyElements[i]
+                            .getAttribute(PROPERTY_NAME_ATTRIBUTE);
+                    String value = propertyElements[i]
+                            .getAttribute(PROPERTY_VALUE_ATTRIBUTE);
+                    if (name != null && !name.equals("") && value != null
+                            && !value.equals("")) {
+                        props.setProperty(name, value);
+                    }
+                }
+            }
+        }
+        return props;
+    }
+
     protected void setupContainerExtensionPoint(BundleContext bc) {
         String bundleName = getDefault().getBundle().getSymbolicName();
         IExtensionRegistry reg = Platform.getExtensionRegistry();
@@ -175,6 +199,7 @@ public class ECFPlugin extends Plugin {
                 if (name == null) {
                     name = clazz;
                 }
+                // Get description, if present
                 String description = member
                         .getAttribute(CONTAINER_FACTORY_EPOINT_DESC_ATTRIBUTE);
                 if (description == null) {
@@ -183,14 +208,18 @@ public class ECFPlugin extends Plugin {
                 // Get any arguments
                 DefaultArgs defaults = getDefaultArgs(member
                         .getChildren(ARG_ELEMENT_NAME));
+                // Get any property elements
+                Map properties = getProperties(member
+                        .getChildren(PROPERTY_ELEMENT_NAME));
                 // Now make description instance
                 SharedObjectContainerDescription scd = new SharedObjectContainerDescription(
                         name, (ISharedObjectContainerInstantiator) exten,
                         description, defaults.getTypes(), defaults
-                                .getDefaults(), defaults.getNames());
+                                .getDefaults(), defaults.getNames(), properties);
                 debug("setupContainerExtensionPoint:created description:" + scd);
                 if (SharedObjectContainerFactory.containsDescription(scd)) {
-                    throw new CoreException(getStatusForContException(extension,bundleName,name));
+                    throw new CoreException(getStatusForContException(
+                            extension, bundleName, name));
                 }
                 // Now add the description and we're ready to go.
                 SharedObjectContainerFactory.addDescription(scd);
@@ -230,8 +259,7 @@ public class ECFPlugin extends Plugin {
                 if (nsInstantiatorClass == null) {
                     throw new CoreException(null);
                 }
-                nsName = member
-                        .getAttribute(INSTANTIATOR_NAME_ATTRIBUTE);
+                nsName = member.getAttribute(INSTANTIATOR_NAME_ATTRIBUTE);
                 if (nsName == null) {
                     nsName = nsInstantiatorClass;
                 }
@@ -270,7 +298,8 @@ public class ECFPlugin extends Plugin {
                 }
                 debug("setupIdentityExtensionPoint:created namespace:" + ns);
                 if (IDFactory.containsNamespace(ns)) {
-                    throw new CoreException(getStatusForIDException(extension,bundleName,nsName));
+                    throw new CoreException(getStatusForIDException(extension,
+                            bundleName, nsName));
                 }
                 // Now add to known namespaces
                 IDFactory.addNamespace(ns);
@@ -280,8 +309,8 @@ public class ECFPlugin extends Plugin {
                 log(e.getStatus());
                 dumpStack("Exception in setupIdentityExtensionPoint", e);
             } catch (Exception e) {
-                log(getStatusForIDException(extension,bundleName,nsName));
-                dumpStack("Exception in setupIdentityExtensionPoint",e);
+                log(getStatusForIDException(extension, bundleName, nsName));
+                dumpStack("Exception in setupIdentityExtensionPoint", e);
             }
         }
     }

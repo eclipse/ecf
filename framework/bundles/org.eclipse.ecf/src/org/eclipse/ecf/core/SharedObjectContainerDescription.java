@@ -9,6 +9,8 @@
 package org.eclipse.ecf.core;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Properties;
 import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
 
 /**
@@ -28,6 +30,7 @@ public class SharedObjectContainerDescription {
     protected String[] argNames;
     protected int hashCode = 0;
     protected static final String[] EMPTY = new String[0];
+    protected Map properties;
 
     public SharedObjectContainerDescription(ClassLoader loader, String name,
             String instantiatorClass, String desc) {
@@ -43,6 +46,12 @@ public class SharedObjectContainerDescription {
     public SharedObjectContainerDescription(ClassLoader loader, String name,
             String instantiatorClass, String desc, String[] argTypes,
             String[] argDefaults, String[] argNames) {
+        this(loader,name,instantiatorClass,desc,argTypes,argDefaults,argNames,new Properties());
+    }
+
+    public SharedObjectContainerDescription(ClassLoader loader, String name,
+            String instantiatorClass, String desc, String[] argTypes,
+            String[] argDefaults, String[] argNames, Map props) {
         this.classLoader = loader;
         if (name == null)
             throw new RuntimeException(
@@ -59,11 +68,18 @@ public class SharedObjectContainerDescription {
         this.argTypes = argTypes;
         this.argDefaults = argDefaults;
         this.argNames = argNames;
+        this.properties = props;
+    }
+    
+    public SharedObjectContainerDescription(String name,
+            ISharedObjectContainerInstantiator inst, String desc,
+            String[] argTypes, String[] argDefaults, String[] argNames) {
+        this(name,inst,desc,argTypes,argDefaults,argNames,new Properties());
     }
 
     public SharedObjectContainerDescription(String name,
             ISharedObjectContainerInstantiator inst, String desc,
-            String[] argTypes, String[] argDefaults, String[] argNames) {
+            String[] argTypes, String[] argDefaults, String[] argNames, Map props) {
         if (name == null)
             throw new RuntimeException(
                     new InstantiationException(
@@ -79,8 +95,9 @@ public class SharedObjectContainerDescription {
         this.argTypes = argTypes;
         this.argDefaults = argDefaults;
         this.argNames = argNames;
+        this.properties = props;
     }
-
+    
     public SharedObjectContainerDescription(String name,
             ISharedObjectContainerInstantiator inst, String desc) {
         this(name, inst, desc, EMPTY, EMPTY, EMPTY);
@@ -157,5 +174,9 @@ public class SharedObjectContainerDescription {
 
     public String[] getArgNames() {
         return argNames;
+    }
+    
+    public Map getProperties() {
+        return properties;
     }
 }
