@@ -18,11 +18,7 @@ import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.internal.sdo.DataGraphSharing;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -36,147 +32,132 @@ import org.osgi.framework.BundleContext;
  */
 public class SDOPlugin extends Plugin {
 
-	private static final String MANAGER_EXTENSION_POINT = "manager";
+    private static final String MANAGER_EXTENSION_POINT = "manager";
 
-	private static final String MANAGER_EXTENSION = "manager";
+    private static final String MANAGER_EXTENSION = "manager";
 
-	private static final String ATTR_NAME = "name";
+    private static final String ATTR_NAME = "name";
 
-	private static final String ATTR_CLASS = "class";
+    private static final String ATTR_CLASS = "class";
 
-	// The shared instance.
-	private static SDOPlugin plugin;
+    // The shared instance.
+    private static SDOPlugin plugin;
 
-	private IRegistryChangeListener registryChangeListener;
+    private IRegistryChangeListener registryChangeListener;
 
-	private boolean debug;
+    private boolean debug;
 
-	/**
-	 * The constructor.
-	 */
-	public SDOPlugin() {
-		super();
-		plugin = this;
-	}
+    /**
+     * The constructor.
+     */
+    public SDOPlugin() {
+        super();
+        plugin = this;
+    }
 
-	/**
-	 * This method is called upon plug-in activation
-	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		registryChangeListener = new IRegistryChangeListener() {
-			public void registryChanged(IRegistryChangeEvent event) {
-				IExtensionDelta[] deltas = event.getExtensionDeltas(getBundle()
-						.getSymbolicName(), MANAGER_EXTENSION_POINT);
-				for (int i = 0; i < deltas.length; ++i) {
-					switch (deltas[i].getKind()) {
-					case IExtensionDelta.ADDED:
-						registerManagers(deltas[i].getExtension()
-								.getConfigurationElements());
-						break;
+    /**
+     * This method is called upon plug-in activation
+     */
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        registryChangeListener = new IRegistryChangeListener() {
+            public void registryChanged(IRegistryChangeEvent event) {
+                IExtensionDelta[] deltas = event.getExtensionDeltas(getBundle()
+                        .getSymbolicName(), MANAGER_EXTENSION_POINT);
+                for (int i = 0; i < deltas.length; ++i) {
+                    switch (deltas[i].getKind()) {
+                    case IExtensionDelta.ADDED:
+                        registerManagers(deltas[i].getExtension()
+                                .getConfigurationElements());
+                        break;
 
-					case IExtensionDelta.REMOVED:
-						IConfigurationElement[] elems = deltas[i]
-								.getExtension().getConfigurationElements();
-						for (int j = 0; j < elems.length; ++j) {
-							IConfigurationElement[] children = elems[j]
-									.getChildren(MANAGER_EXTENSION);
-							for (int k = 0; k < children.length; ++k) {
-								String name = children[k]
-										.getAttribute(ATTR_NAME);
-								if (name != null && name.length() > 0)
-									DataGraphSharingFactory
-											.unregisterManager(name);
-							}
-						}
+                    case IExtensionDelta.REMOVED:
+                        IConfigurationElement[] elems = deltas[i]
+                                .getExtension().getConfigurationElements();
+                        for (int j = 0; j < elems.length; ++j) {
+                            if (!MANAGER_EXTENSION.equals(elems[j].getName()))
+                                continue;
 
-						break;
-					}
-				}
-			}
-		};
+                            String name = elems[j].getAttribute(ATTR_NAME);
+                            if (name != null && name.length() > 0)
+                                DataGraphSharingFactory.unregisterManager(name);
+                        }
 
-		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IConfigurationElement[] elems = reg.getConfigurationElementsFor(
-				getBundle().getSymbolicName(), MANAGER_EXTENSION_POINT);
-		registerManagers(elems);
-	}
+                        break;
+                    }
+                }
+            }
+        };
 
-	private void registerManagers(IConfigurationElement[] elems) {
-		for (int i = 0; i < elems.length; ++i) {
-			IConfigurationElement[] children = elems[i]
-					.getChildren(MANAGER_EXTENSION);
-			for (int j = 0; j < children.length; ++j) {
-				String name = children[j].getAttribute(ATTR_NAME);
-				if (name == null || name.length() == 0)
-					continue;
+        IExtensionRegistry reg = Platform.getExtensionRegistry();
+        IConfigurationElement[] elems = reg.getConfigurationElementsFor(
+                getBundle().getSymbolicName(), MANAGER_EXTENSION_POINT);
+        registerManagers(elems);
+    }
 
-				IDataGraphSharingManager mgr;
-				try {
-					mgr = (IDataGraphSharingManager) children[j]
-							.createExecutableExtension(ATTR_CLASS);
-				} catch (Exception ex) {
-					continue;
-				}
+    private void registerManagers(IConfigurationElement[] elems) {
+        for (int i = 0; i < elems.length; ++i) {
+            if (!MANAGER_EXTENSION.equals(elems[i].getName()))
+                continue;
 
-				DataGraphSharingFactory.registerManager(name, mgr);
-			}
-		}
-	}
+            String name = elems[i].getAttribute(ATTR_NAME);
+            if (name == null || name.length() == 0)
+                continue;
 
-	/**
-	 * This method is called when the plug-in is stopped
-	 */
-	public void stop(BundleContext context) throws Exception {
-		if (registryChangeListener != null)
-			Platform.getExtensionRegistry().removeRegistryChangeListener(
-					registryChangeListener);
+            IDataGraphSharingManager mgr;
+            try {
+                mgr = (IDataGraphSharingManager) elems[i]
+                        .createExecutableExtension(ATTR_CLASS);
+            } catch (Exception ex) {
+                continue;
+            }
 
-		DataGraphSharingFactory.unregisterAllManagers();
-		super.stop(context);
-	}
+            DataGraphSharingFactory.registerManager(name, mgr);
+        }
+    }
 
-	/**
-	 * Returns the shared instance.
-	 */
-	public static SDOPlugin getDefault() {
-		return plugin;
-	}
+    /**
+     * This method is called when the plug-in is stopped
+     */
+    public void stop(BundleContext context) throws Exception {
+        if (registryChangeListener != null)
+            Platform.getExtensionRegistry().removeRegistryChangeListener(
+                    registryChangeListener);
 
-	/**
-	 * @param container
-	 * @return
-	 * @throws ECFException
-	 * @deprecated Use
-	 *             {@link DataGraphSharingFactory#getDataGraphSharing(ISharedObjectContainer, String) DataGraphSharingFactory.getDataGraphSharing(ISharedObjectContainer, String)}
-	 *             instead.
-	 */
-	public IDataGraphSharing getDataGraphSharing(
-			ISharedObjectContainer container) throws ECFException {
+        DataGraphSharingFactory.unregisterAllManagers();
+        super.stop(context);
+    }
 
-		ISharedObjectManager mgr = container.getSharedObjectManager();
-		ID id = IDFactory.makeStringID(DataGraphSharing.DATA_GRAPH_SHARING_ID);
-		synchronized (container) {
-			DataGraphSharing result = (DataGraphSharing) mgr
-					.getSharedObject(id);
-			if (result == null) {
-				result = new DataGraphSharing();
-				result.setDebug(debug);
-				mgr.addSharedObject(id, result, null, null);
-			}
+    /**
+     * Returns the shared instance.
+     */
+    public static SDOPlugin getDefault() {
+        return plugin;
+    }
 
-			return result;
-		}
-	}
+    /**
+     * @param container
+     * @return
+     * @throws ECFException
+     * @deprecated Use
+     *             {@link DataGraphSharingFactory#getDataGraphSharing(ISharedObjectContainer, String) DataGraphSharingFactory.getDataGraphSharing(ISharedObjectContainer, String)}
+     *             instead.
+     */
+    public IDataGraphSharing getDataGraphSharing(
+            ISharedObjectContainer container) throws ECFException {
 
-	/**
-	 * Sets the debug flag.
-	 * 
-	 * @param debug
-	 * @deprecated Use Eclipse plug-in tracing support instead.
-	 */
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
+        return DataGraphSharingFactory
+                .getDataGraphSharing(container, "default");
+    }
+
+    /**
+     * Sets the debug flag.
+     * 
+     * @param debug
+     * @deprecated Use Eclipse plug-in tracing support instead.
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
 
 }
