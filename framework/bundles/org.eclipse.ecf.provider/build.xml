@@ -64,7 +64,7 @@
 				<pathelement path="../../plugins/org.eclipse.osgi_3.1.0/eclipseAdaptor.jar"/>
 				<pathelement path="../org.eclipse.ecf/bin"/>
 				<pathelement path="../org.eclipse.ecf/ecf.jar"/>
-				<pathelement path="@dot"/>
+				<pathelement path="."/>
 			</classpath>
 			<src path="src/"			/>
 			</javac>
@@ -129,7 +129,7 @@
 	</target>
 
 	<target name="refresh" depends="init" if="eclipse.running" description="Refresh this folder.">
-		<eclipse.convertPath fileSystemPath="C:/eclipse3.1m4/eclipse/workspace/org.eclipse.ecf.provider" property="resourcePath"/>
+		<eclipse.convertPath fileSystemPath="." property="resourcePath"/>
 		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite"/>
 	</target>
 
