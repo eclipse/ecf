@@ -6,7 +6,8 @@
          <meta.schema plugin="org.eclipse.ecf" id="comm" name="ECF Connection Factory"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         This extension allows plugins to register themselves as &apos;providers&apos; of ECF connection factories.  Once registered via this extension point, plugins can provide implementations of custom ISynchAsynchConnection instances via the ECF connection factory (&lt;b&gt;org.eclipse.ecf.core.comm.ConnectionFactory&lt;/b&gt;).
+&lt;p&gt;Plugins using this extension point can define new implementation classes of the core ISynchAsynchConnection interface.  When client requests are made to ECF to create &lt;b&gt;ISynchAsynchConnection&lt;/b&gt; instances via the ConnectionFactory.makeSynchAsynchConnection() methods, requests to create instances of the appropriate type will be re-directed to the given extension.
       </documentation>
    </annotation>
 
@@ -70,7 +71,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         0.2.0
       </documentation>
    </annotation>
 
@@ -79,7 +80,7 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         
       </documentation>
    </annotation>
 
@@ -88,7 +89,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.comm.ContainerFactory&lt;/b&gt; static methods.  Specifically, the &apos;makeSynchAsynchConnection&apos; static methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;ConnectionFactory.addDescription(ConnectionDescription)&lt;/b&gt; method.  The available connection factories can be queried with the &lt;b&gt;ConnectionFactory.getDescriptions()&lt;/b&gt; method.
       </documentation>
    </annotation>
 
@@ -97,7 +98,11 @@
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         The supplied implementations of this extension point are:
+
+In org.eclipse.ecf.provider plugin:
+
+org.eclipse.ecf.provider.tcp.Client$Creator
       </documentation>
    </annotation>
 
@@ -106,7 +111,8 @@
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         
+         Copyright (c) 2005 Composent, Inc. and others.
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation
       </documentation>
    </annotation>
 

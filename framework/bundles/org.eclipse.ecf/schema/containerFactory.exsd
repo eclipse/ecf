@@ -146,6 +146,10 @@ ISharedObjectContainer newContainer = SharedObjectContainerFactory.makeSharedObj
       </appInfo>
       <documentation>
          The supplied implementations of this extension point are:
+
+org.eclipse.ecf.provider.generic.ContainerInstantiator
+&lt;b&gt;TEST&lt;/b&gt;:  org.eclipse.ecf.internal.impl.standalone.StandaloneContainerInstantiator
+&lt;b&gt;TEST&lt;/b&gt;:  org.eclipse.ecf.test.TestContainer
       </documentation>
    </annotation>
 
