@@ -56,8 +56,12 @@ public class Trace {
 
     public static Trace create(String key) {
         if (isEclipse) {
-            String res = Platform
-                    .getDebugOption(pluginName + debugPrefix + key);
+            String res = "";
+            try {
+                res = Platform.getDebugOption(pluginName + debugPrefix + key);
+            } catch (Exception e) {
+                // ignore...this means that the Platform class not found.
+            }
             if (res != null) {
                 Boolean on = new Boolean(res);
                 if (on.booleanValue())
