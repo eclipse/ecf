@@ -24,6 +24,7 @@ import org.eclipse.ecf.sdo.ISubscriptionCallback;
 import org.eclipse.ecf.sdo.IUpdateConsumer;
 import org.eclipse.ecf.sdo.SDOPlugin;
 import org.eclipse.ecf.sdo.emf.EMFUpdateProvider;
+import org.eclipse.ecf.test.EventSpy;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -131,7 +132,7 @@ public class EditorPlugin extends AbstractUIPlugin {
         initialize();
         return tracker.isPublished(path);
     }
-    
+
     public synchronized void checkConnected() throws ECFException {
         initialize();
     }
@@ -154,6 +155,9 @@ public class EditorPlugin extends AbstractUIPlugin {
                     IDFactory.makeStringID(PublishedGraphTracker.class
                             .getName()), tracker, null, null);
             this.tracker = tracker;
+            container.getSharedObjectManager()
+                    .addSharedObject(IDFactory.makeStringID("debug"),
+                            new EventSpy(), null, null);
         }
     }
 }
