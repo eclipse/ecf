@@ -62,7 +62,6 @@ public class SharedObjectContainerFactory {
      * @return List of SharedObjectContainerDescription instances
      */
     public final static List getDescriptions() {
-        debug("getDescriptions()");
         return getDescriptions0();
     }
     private static void debug(String msg) {
@@ -96,7 +95,6 @@ public class SharedObjectContainerFactory {
      */
     public final static boolean containsDescription(
             SharedObjectContainerDescription scd) {
-        debug("containsDescription("+scd+")");
         return containsDescription0(scd);
     }
     protected static boolean containsDescription0(

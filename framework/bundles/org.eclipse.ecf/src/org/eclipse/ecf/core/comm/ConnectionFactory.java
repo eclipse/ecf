@@ -33,7 +33,6 @@ public class ConnectionFactory {
     }
 
     public final static boolean containsDescription(ConnectionDescription scd) {
-        debug("containsDescription(" + scd + ")");
         return containsDescription0(scd);
     }
 
@@ -57,7 +56,6 @@ public class ConnectionFactory {
 
     public final static ConnectionDescription getDescription(
             ConnectionDescription scd) {
-        debug("getDescription(" + scd + ")");
         return getDescription0(scd);
     }
 
@@ -75,12 +73,10 @@ public class ConnectionFactory {
     }
 
     public final static ConnectionDescription getDescriptionByName(String name) {
-        debug("getDescriptionByName(" + name + ")");
         return getDescription0(name);
     }
 
     public static final List getDescriptions() {
-        debug("getDescriptions()");
         return getDescriptions0();
     }
 
@@ -94,7 +90,7 @@ public class ConnectionFactory {
             throws ConnectionInstantiationException {
         if (handler == null)
             throw new ConnectionInstantiationException(
-                    "ISynchAsynchConnectionEventHandler cannot be null");
+                    "handler cannot be null");
         return makeSynchAsynchConnection(handler, desc, null, args);
     }
 
