@@ -30,19 +30,19 @@ import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectDisconnectException;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.SharedObjectNotFoundException;
+import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
+import org.eclipse.ecf.core.comm.ConnectionEvent;
+import org.eclipse.ecf.core.comm.DisconnectConnectionEvent;
+import org.eclipse.ecf.core.comm.IAsynchConnection;
+import org.eclipse.ecf.core.comm.IAsynchConnectionEventHandler;
+import org.eclipse.ecf.core.comm.ISynchConnectionEventHandler;
+import org.eclipse.ecf.core.comm.SynchConnectionEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.internal.comm.AsynchConnectionEvent;
-import org.eclipse.ecf.internal.comm.ConnectionEvent;
-import org.eclipse.ecf.internal.comm.DisconnectConnectionEvent;
-import org.eclipse.ecf.internal.comm.IAsynchConnection;
-import org.eclipse.ecf.internal.comm.IAsynchConnectionEventHandler;
-import org.eclipse.ecf.internal.comm.ISynchConnectionEventHandler;
-import org.eclipse.ecf.internal.comm.SynchConnectionEvent;
+import org.eclipse.ecf.core.util.SimpleQueueImpl;
 import org.eclipse.ecf.internal.impl.standalone.gmm.Item;
-import org.eclipse.ecf.internal.util.queue.SimpleQueueImpl;
 
 public abstract class SharedObjectContainer implements ISharedObjectContainer {
 	public static Debug debug =

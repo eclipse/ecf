@@ -1,4 +1,4 @@
-package org.eclipse.ecf.internal.comm;
+package org.eclipse.ecf.core.comm;
 
 public interface ISynchAsynchConnection extends IAsynchConnection,
         ISynchConnection {

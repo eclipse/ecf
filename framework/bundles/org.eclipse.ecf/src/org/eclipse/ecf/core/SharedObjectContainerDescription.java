@@ -62,15 +62,13 @@ public class SharedObjectContainerDescription {
     }
 
     public String toString() {
-        StringBuffer b = new StringBuffer("SharedObjectContainerDescription {");
+        StringBuffer b = new StringBuffer("SharedObjectContainerDescription[");
         b.append("name: ").append(name).append(", ");
         if (instantiator == null)
         	b.append("instantiatorClass: ").append(instantiatorClass).append(", ");
         else
             b.append("instantiator: ").append(instantiator).append(", ");
-
-        b.append("classLoader: ").append(classLoader).append(", ");
-        b.append("description: ").append(description).append("}");
+        b.append("description: ").append(description).append("]");
         return b.toString();
     }
 

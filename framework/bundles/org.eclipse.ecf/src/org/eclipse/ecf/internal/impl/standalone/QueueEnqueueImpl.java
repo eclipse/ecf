@@ -8,7 +8,7 @@ import org.eclipse.ecf.core.util.EnqueuePredicate;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.QueueEnqueue;
 import org.eclipse.ecf.core.util.QueueException;
-import org.eclipse.ecf.internal.util.queue.SimpleQueueImpl;
+import org.eclipse.ecf.core.util.SimpleQueueImpl;
 
 public class QueueEnqueueImpl implements QueueEnqueue {
 

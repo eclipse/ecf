@@ -11,8 +11,8 @@ import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.core.util.SimpleQueueImpl;
 import org.eclipse.ecf.internal.impl.standalone.gmm.Item;
-import org.eclipse.ecf.internal.util.queue.SimpleQueueImpl;
 
 final class StandaloneSharedObjectWrapper {
 	static Debug debug = Debug.create(StandaloneSharedObjectWrapper.class.getName());

@@ -25,18 +25,15 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.SharedObjectContainerDescription;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
+import org.eclipse.ecf.core.comm.ConnectionDescription;
+import org.eclipse.ecf.core.comm.ConnectionFactory;
+import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.provider.IDInstantiator;
 import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
 import org.osgi.framework.BundleContext;
 
-/*
- * Plugin class for Eclipse Communications Framework core
- * 
- * @author slewis
- *  
- */
 public class ECFPlugin extends Plugin {
 
     public static final String PLUGIN_RESOURCE_BUNDLE = "org.eclipse.ecf.ECFPluginResources";
@@ -53,6 +50,11 @@ public class ECFPlugin extends Plugin {
     public static final String CONTAINER_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
     public static final String CONTAINER_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
 
+    public static final String COMM_FACTORY_EPOINT = "org.eclipse.ecf.comm";
+    public static final String COMM_FACTORY_EPOINT_CLASS_ATTRIBUTE = "instantiatorClass";
+    public static final String COMM_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
+    public static final String COMM_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
+    
     public static final int FACTORY_DOES_NOT_IMPLEMENT_ERRORCODE = 10;
     public static final int FACTORY_NAME_COLLISION_ERRORCODE = 20;
 
@@ -257,6 +259,79 @@ public class ECFPlugin extends Plugin {
 
     }
 
+    protected void setupCommExtensionPoint(BundleContext bc) {
+        String bundleName = getDefault().getBundle().getSymbolicName();
+        IExtensionRegistry reg = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = reg
+                .getExtensionPoint(COMM_FACTORY_EPOINT);
+        if (extensionPoint == null) {
+            return;
+        }
+        IConfigurationElement[] members = extensionPoint
+                .getConfigurationElements();
+        // For each configuration element
+        for (int m = 0; m < members.length; m++) {
+            IConfigurationElement member = members[m];
+            // Get the label of the extender plugin and the ID of the extension.
+            IExtension extension = member.getDeclaringExtension();
+            Object exten = null;
+            try {
+                // The only required attribute is "instantiatorClass"
+                exten = member
+                        .createExecutableExtension(COMM_FACTORY_EPOINT_CLASS_ATTRIBUTE);
+                // Verify that object implements ISynchAsynchConnectionInstantiator
+                if (!(exten instanceof ISynchAsynchConnectionInstantiator)) {
+                    IStatus s = new Status(
+                            Status.ERROR,
+                            bundleName,
+                            FACTORY_DOES_NOT_IMPLEMENT_ERRORCODE,
+                            getResourceString("ExtPointError.CommNoImplPrefix")
+                                    + exten.getClass().getName()
+                                    + getResourceString("ExtPointError.CommNoImplSuffix")
+                                    + extension
+                                            .getExtensionPointUniqueIdentifier(),
+                            null);
+                    throw new CoreException(s);
+                }
+                ClassLoader cl = exten.getClass().getClassLoader();
+                String clazz = exten.getClass().getName();
+                // Get name and get version, if available
+                String name = member
+                        .getAttribute(COMM_FACTORY_EPOINT_NAME_ATTRIBUTE);
+                if (name == null) {
+                    name = clazz;
+                }
+                String description = member.getAttribute(COMM_FACTORY_EPOINT_DESC_ATTRIBUTE);
+                if (description == null) {
+                    description = "";
+                }
+                ConnectionDescription cd = new ConnectionDescription(
+                        name, (ISynchAsynchConnectionInstantiator) exten, description);
+                if (ConnectionFactory.containsDescription(cd)) {
+                    // It's already there...log and throw as we can't use the
+                    // same named factory
+                    IStatus s = new Status(
+                            Status.ERROR,
+                            bundleName,
+                            FACTORY_NAME_COLLISION_ERRORCODE,
+                            getResourceString("ExtPointError.CommNameCollisionPrefix")
+                                    + name
+                                    + getResourceString("ExtPointError.CommNameCollisionSuffix")
+                                    + extension
+                                            .getExtensionPointUniqueIdentifier(),
+                            null);
+                    throw new CoreException(s);
+                }
+                // Now add the description and we're ready to go.
+                ConnectionFactory.addDescription(cd);
+            } catch (CoreException e) {
+                log(e.getStatus());
+            }
+        }
+
+    }
+
+
     /**
      * This method is called upon plug-in activation
      */
@@ -264,6 +339,7 @@ public class ECFPlugin extends Plugin {
         super.start(context);
         setupContainerExtensionPoint(context);
         setupIdentityExtensionPoint(context);
+        setupCommExtensionPoint(context);
         this.context = context;
     }
 

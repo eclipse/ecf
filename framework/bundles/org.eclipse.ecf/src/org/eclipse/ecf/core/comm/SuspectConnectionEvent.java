@@ -1,4 +1,4 @@
-package org.eclipse.ecf.internal.comm;
+package org.eclipse.ecf.core.comm;
 
 class SuspectConnectionEvent extends ConnectionEvent {
 

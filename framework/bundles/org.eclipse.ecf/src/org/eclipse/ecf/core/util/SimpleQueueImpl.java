@@ -7,12 +7,11 @@
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.ecf.internal.util.queue;
+package org.eclipse.ecf.core.util;
 
 import java.util.List;
 import java.util.LinkedList;
 
-import org.eclipse.ecf.core.util.SimpleQueue;
 
 public class SimpleQueueImpl implements SimpleQueue {
     List list;

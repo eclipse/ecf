@@ -1,16 +1,17 @@
 Manifest-Version: 1.0
-Bundle-Name: Eclipse Communications Framework (ECF)
+Bundle-Name: ECF - Eclipse Communications Framework
 Bundle-SymbolicName: org.eclipse.ecf
 Bundle-Version: 0.1.0
 Bundle-ClassPath: ecf.jar
 Bundle-Activator: org.eclipse.ecf.internal.core.ECFPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime
 Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.events,
  org.eclipse.ecf.core.identity,
  org.eclipse.ecf.core.identity.provider,
  org.eclipse.ecf.core.provider,
+ org.eclipse.ecf.core.comm,
+ org.eclipse.ecf.core.comm.provider,
  org.eclipse.ecf.core.util

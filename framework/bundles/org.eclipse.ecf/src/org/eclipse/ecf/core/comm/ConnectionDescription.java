@@ -1,17 +1,20 @@
-package org.eclipse.ecf.internal.comm;
+package org.eclipse.ecf.core.comm;
+
+import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 
 public class ConnectionDescription {
 
     protected String name;
     protected String instantiatorClass;
 
-    protected IAsynchConnectionInstantiator instantiator;
+    protected ISynchAsynchConnectionInstantiator instantiator;
     protected int hashCode = 0;
     protected ClassLoader classLoader = null;
-
+    protected String description;
+    
     public ConnectionDescription(ClassLoader loader,
 
-    String name, String instantiatorClass) {
+    String name, String instantiatorClass, String desc) {
         if (name == null)
             throw new RuntimeException(new InstantiationException(
                     "stagecontainer description name cannot be null"));
@@ -20,12 +23,12 @@ public class ConnectionDescription {
         this.instantiatorClass = instantiatorClass;
         this.hashCode = name.hashCode();
     }
-    public ConnectionDescription(String name,
-            IAsynchConnectionInstantiator inst) {
+    public ConnectionDescription(String name, ISynchAsynchConnectionInstantiator inst, String desc) {
         this.instantiator = inst;
         this.classLoader = this.instantiator.getClass().getClassLoader();
         this.instantiatorClass = this.instantiatorClass.getClass().getName();
         this.hashCode = name.hashCode();
+        this.description = desc;
     }
     public String getName() {
         return name;
@@ -45,15 +48,15 @@ public class ConnectionDescription {
     }
 
     public String toString() {
-        StringBuffer b = new StringBuffer("AsynchConnectionDescription[");
+        StringBuffer b = new StringBuffer("ConnectionDescription[");
         b.append(name).append(";");
-        b.append(instantiatorClass).append("]");
+        b.append(instantiatorClass).append(";").append(description).append("]");
         return b.toString();
     }
 
-    protected IAsynchConnectionInstantiator getInstantiator() 
-    throws ClassNotFoundException, InstantiationException,
-    IllegalAccessException {
+    protected ISynchAsynchConnectionInstantiator getInstantiator()
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException {
         synchronized (this) {
             if (instantiator == null)
                 initializeInstantiator(classLoader);
@@ -69,7 +72,11 @@ public class ConnectionDescription {
         // Load instantiator class
         Class clazz = Class.forName(instantiatorClass, true, cl);
         // Make new instance
-        instantiator = (IAsynchConnectionInstantiator) clazz.newInstance();
+        instantiator = (ISynchAsynchConnectionInstantiator) clazz.newInstance();
     }
 
+    public String getDescription() {
+        return description;
+    }
+    
 }
