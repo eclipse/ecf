@@ -141,4 +141,8 @@ public class Client {
             sharedObject = null;
         }
     }
+    
+    public synchronized ISharedObjectContainer getContainer() {
+        return client;
+    }
 }

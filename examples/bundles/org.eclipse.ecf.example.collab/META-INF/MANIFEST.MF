@@ -15,3 +15,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text
 Export-Package: org.eclipse.ecf.example.collab.share, org.eclipse.ecf.example.collab.share.url, org.eclipse.ecf.example.collab.share.io
 Eclipse-AutoStart: true
+Provide-Package: org.eclipse.ecf.example.collab
