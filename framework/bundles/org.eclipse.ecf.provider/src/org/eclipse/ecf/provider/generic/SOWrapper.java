@@ -74,6 +74,9 @@ public class SOWrapper {
         return sharedObjectConfig.getHomeContainerID();
     }
 
+    protected SOConfig getConfig() {
+        return sharedObjectConfig;
+    }
     protected void activated(ID[] ids) {
         debug("activated");
         sharedObjectConfig.makeActive(new QueueEnqueueImpl(queue));

@@ -51,8 +51,10 @@ public abstract class SOContainer implements ISharedObjectContainer {
         Object credentials;
         SharedObjectDescription description;
         Thread runner = null;
+        ID fromID = null;
 
-        LoadingSharedObject(SharedObjectDescription sd, Object credentials) {
+        LoadingSharedObject(ID fromID, SharedObjectDescription sd, Object credentials) {
+            this.fromID = fromID;
             this.description = sd;
             this.credentials = credentials;
         }
@@ -91,11 +93,13 @@ public abstract class SOContainer implements ISharedObjectContainer {
                             throw new InterruptedException(
                                     "Loading interrupted for object "
                                             + getID().getName());
-                        // First load given object
+                        // First load object
                         ISharedObject obj = load(description);
+                        // Create wrapper object and move from loading to active
+                        // list.
+                        SOWrapper wrap = makeNewRemoteSharedObjectWrapper(fromID,description,obj);
                         // Get config info for new object
-                        SOConfig aConfig = makeNewSharedObjectConfig(
-                                description, obj);
+                        SOConfig aConfig = wrap.getConfig();
                         // Call init method on new object.
                         obj.init(aConfig);
                         // Check to make sure thread has not been
@@ -105,10 +109,8 @@ public abstract class SOContainer implements ISharedObjectContainer {
                             throw new InterruptedException(
                                     "Loading interrupted for object "
                                             + getID().getName());
-                        // Create meta object and move from loading to active
-                        // list.
-                        SOContainer.this.moveFromLoadingToActive(new SOWrapper(
-                                aConfig, obj, SOContainer.this));
+                        // Finally, we move from loading to active, and then the object is done
+                        SOContainer.this.moveFromLoadingToActive(wrap);
                     } catch (Exception e) {
                         dumpStack("Exception loading object ", e);
                         SOContainer.this.removeFromLoading(getID());
@@ -116,7 +118,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
                             sendCreateResponse(getHomeID(), getID(), e,
                                     description.getIdentifier());
                         } catch (Exception e1) {
-                            dumpStack("Exception sending create response", e1);
+                            dumpStack("Exception sending create response from LoadingSharedObject.run", e1);
                         }
                     }
                 }
@@ -297,11 +299,30 @@ public abstract class SOContainer implements ISharedObjectContainer {
         return groupManager.addLoadingSharedObject(lso);
     }
 
-    protected Object checkCreate(ID fromID, ID toID, long seq,
-            SharedObjectDescription desc) {
-        debug("checkCreate(" + fromID + "," + toID + "," + seq + "," + desc
+    /**
+     * Check remote creation of shared objects.  This method is called by the remote shared object
+     * creation message handler, to verify that the shared object from container 'fromID' to 
+     * container 'toID' with description 'desc' is to be allowed to be created within the current
+     * container.  If this method throws, a failure (and exception will be sent back to caller
+     * If this method returns null, the create message is ignored.  If this method returns a 
+     * non-null object, the creation is allowed to proceed.  The default implementation is to return
+     * a non-null object
+     * 
+     * @param fromID the ID of the container sending us this create request
+     * @param toID the ID (or null) of the container intended to receive this request
+     * @param seq the sequence number associated with the container message
+     * @param desc the SharedObjectDescription that describes the shared object to be created
+     * 
+     * @returns Object null if the create message is to be ignored, non-null if the creation
+     * should continue
+     * 
+     * @throws Exception may throw any Exception to communicate back (via sendCreateResponse) to
+     * the sender that the creation has failed
+    */
+    protected Object checkRemoteCreate(ID fromID, ID toID, long seq,
+            SharedObjectDescription desc) throws Exception {
+        debug("checkRemoteCreate(" + fromID + "," + toID + "," + seq + "," + desc
                 + ")");
-        // XXX TODO
         return desc;
     }
 
@@ -585,18 +606,36 @@ public abstract class SOContainer implements ISharedObjectContainer {
         ID fromID = mess.getFromContainerID();
         ID toID = mess.getToContainerID();
         long seq = mess.getSequence();
-        Object result = checkCreate(fromID, toID, seq, desc);
-        if (result != null) {
-            LoadingSharedObject lso = new LoadingSharedObject(desc, result);
+        Object checkCreateResult = null;
+        ID sharedObjectID = desc.getID();
+        // Check to make sure that the remote creation is allowed. 
+        // If this method throws, a failure (and exception will be sent back to caller
+        // If this method returns null, the create message is ignored.  If this method
+        // returns a non-null object, the creation is allowed to proceed
+        try {
+            checkCreateResult = checkRemoteCreate(fromID, toID, seq, desc);
+        } catch (Exception e) {
+            SharedObjectAddException addException = new SharedObjectAddException("shared object "
+                    + sharedObjectID + " rejected by container "+getID(),e);
+            dumpStack("Exception in checkRemoteCreate",addException);
+            try {
+                sendCreateResponse(fromID, sharedObjectID,addException, desc.getIdentifier());
+            } catch (IOException except) {
+                logException("Exception from sendCreateResponse in handleCreateResponse", except);
+            }
+            return;
+        }
+        // Then if result from check is non-null, we continue.  If null, we ignore
+        if (checkCreateResult != null) {
+            LoadingSharedObject lso = new LoadingSharedObject(fromID,desc, checkCreateResult);
             synchronized (getGroupMembershipLock()) {
                 if (!addToLoading(lso)) {
-                    ID sharedObjectID = desc.getID();
                     try {
                         sendCreateResponse(fromID, sharedObjectID,
                                 new SharedObjectAddException("shared object "
-                                        + sharedObjectID), desc.getIdentifier());
+                                        + sharedObjectID + " already exists in container "+getID()), desc.getIdentifier());
                     } catch (IOException e) {
-                        logException("Exception in handleCreateMessage", e);
+                        logException("Exception in handleCreateMessage.sendCreateResponse", e);
                     }
                 }
                 forward(fromID, toID, mess);
@@ -750,7 +789,20 @@ public abstract class SOContainer implements ISharedObjectContainer {
         return new SOConfig(sd.getID(), homeID, this, sd.getProperties());
     }
 
+    protected SOConfig makeNewRemoteSharedObjectConfig(ID fromID, SharedObjectDescription sd,
+            ISharedObject obj) {
+        ID homeID = sd.getHomeID();
+        if (homeID == null)
+            homeID = fromID;
+        return new SOConfig(sd.getID(), homeID, this, sd.getProperties());
+    }
+
     protected SOContext makeNewSharedObjectContext(SOConfig config,
+            QueueEnqueue queue) {
+        return new SOContext(config.getSharedObjectID(), config
+                .getHomeContainerID(), this, config.getProperties(), queue);
+    }
+    protected SOContext makeNewRemoteSharedObjectContext(SOConfig config,
             QueueEnqueue queue) {
         return new SOContext(config.getSharedObjectID(), config
                 .getHomeContainerID(), this, config.getProperties(), queue);
@@ -759,6 +811,11 @@ public abstract class SOContainer implements ISharedObjectContainer {
     protected SOWrapper makeNewSharedObjectWrapper(SharedObjectDescription sd,
             ISharedObject s) {
         SOConfig newConfig = makeNewSharedObjectConfig(sd, s);
+        return new SOWrapper(newConfig, s, this);
+    }
+    protected SOWrapper makeNewRemoteSharedObjectWrapper(ID fromID, SharedObjectDescription sd,
+            ISharedObject s) {
+        SOConfig newConfig = makeNewRemoteSharedObjectConfig(fromID, sd, s);
         return new SOWrapper(newConfig, s, this);
     }
 
@@ -791,11 +848,51 @@ public abstract class SOContainer implements ISharedObjectContainer {
     protected void notifySharedObjectDeactivated(ID sharedObjectID) {
         groupManager.notifyOthersDeactivated(sharedObjectID);
     }
-
+    protected ContainerMessage validateContainerMessage(Object mess) {
+        // Message must not be null
+        if (mess == null) {
+            debug("Ignoring null ContainerMessage");
+            return null;
+        }
+        if (mess instanceof ContainerMessage) {
+            ContainerMessage contmess = (ContainerMessage) mess;
+            ID fromID = contmess.getFromContainerID();
+            if (fromID == null) {
+                debug("Ignoring ContainerMessage from null sender...ignoring");
+                return null;
+            }
+            ID toID = contmess.getToContainerID();
+            if (toID == null) {
+                return contmess;
+            } else {
+                if (toID.equals(getID())) {
+                    return contmess;
+                } else {
+                    debug("Ignoring ContainerMessage from "+fromID+" to "+toID);
+                    return null;
+                }
+            }
+            // OK
+        } else {
+            debug("Ignoring invalid ContainerMessage:"+mess);
+            return null;
+        }
+        
+    }
     protected void processAsynch(AsynchConnectionEvent e) {
-        debug("processAsynch:" + e);
         try {
-            ContainerMessage mess = getObjectFromBytes((byte[]) e.getData());
+            Object obj = e.getData();
+            if (obj == null) {
+                debug("Ignoring null data in event "+e);
+                return;
+            }
+            if (!(obj instanceof byte [])) {
+                debug("Ignoring event without valid data "+e);
+            }
+            ContainerMessage mess = validateContainerMessage(getObjectFromBytes((byte[]) obj));
+            if (mess == null) {
+                return;
+            }
             Serializable submess = mess.getData();
             if (submess != null) {
                 if (submess instanceof ContainerMessage.CreateMessage) {
@@ -823,7 +920,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
         debug("processDisconnect:" + e);
         try {
             ContainerMessage mess = getObjectFromBytes((byte[]) e.getData());
-        } catch (IOException except) {
+        } catch (Exception except) {
             logException("Exception in processDisconnect ", except);
         }
     }

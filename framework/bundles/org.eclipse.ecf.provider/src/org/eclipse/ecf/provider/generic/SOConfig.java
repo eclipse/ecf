@@ -41,7 +41,11 @@ public class SOConfig implements ISharedObjectConfig {
 
     protected void makeActive(QueueEnqueue queue) {
         isActive = true;
-        this.context = container.makeNewSharedObjectContext(this,queue);
+        if (container.getID().equals(homeContainerID)) {
+            this.context = container.makeNewSharedObjectContext(this,queue);
+        } else {
+            this.context = container.makeNewRemoteSharedObjectContext(this,queue);
+        }
     }
 
     protected void makeInactive() {
