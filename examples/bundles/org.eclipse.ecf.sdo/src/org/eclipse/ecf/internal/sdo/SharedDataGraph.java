@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
@@ -273,10 +274,12 @@ public class SharedDataGraph implements ISharedObject,
 	 * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.identity.ID)
 	 */
 	public synchronized void dispose(ID containerID) {
-		if (config != null
-				&& config.getContext().getLocalContainerID()
-						.equals(containerID))
-			config = null;
+		if (config != null) {
+		    ISharedObjectContext context = config.getContext();
+            if (context != null && context.getLocalContainerID().equals(containerID)) {
+                config = null;
+            }
+        }
 	}
 
 	public String toString() {
