@@ -10,15 +10,12 @@
  *******************************************************************************/
 package org.eclipse.ecf.sdo;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.sdo.DataGraphSharing;
 import org.osgi.framework.BundleContext;
 
@@ -65,31 +62,17 @@ public class SDOPlugin extends Plugin {
     }
 
     public IDataGraphSharing getDataGraphSharing(
-            ISharedObjectContainer container) throws CoreException {
+            ISharedObjectContainer container) throws ECFException {
 
         ISharedObjectManager mgr = container.getSharedObjectManager();
-        ID id;
-        try {
-            id = IDFactory.makeStringID(DataGraphSharing.DATA_GRAPH_SHARING_ID);
-        } catch (IDInstantiationException e) {
-            throw new CoreException(new Status(Status.ERROR, getBundle()
-                    .getSymbolicName(), 0,
-                    "Could not create data graph sharing ID.", e));
-        }
-
+        ID id = IDFactory.makeStringID(DataGraphSharing.DATA_GRAPH_SHARING_ID);
         synchronized (container) {
             DataGraphSharing result = (DataGraphSharing) mgr
                     .getSharedObject(id);
             if (result == null) {
                 result = new DataGraphSharing();
                 result.setDebug(debug);
-                try {
-                    mgr.addSharedObject(id, result, null, null);
-                } catch (SharedObjectAddException e) {
-                    throw new CoreException(new Status(Status.ERROR,
-                            getBundle().getSymbolicName(), 0,
-                            "Could not add data sharing to the container.", e));
-                }
+                mgr.addSharedObject(id, result, null, null);
             }
 
             return result;
