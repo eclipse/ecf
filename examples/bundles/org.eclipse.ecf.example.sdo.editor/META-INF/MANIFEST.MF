@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bundle-Name: Shareable SDO Editor Plug-in
+Bundle-Name: ECF Example SDO Editor 
 Bundle-SymbolicName: org.eclipse.ecf.example.sdo.editor
 Bundle-Version: 1.0.0
 Bundle-ClassPath: editor.jar
