@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -40,6 +41,8 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 	
 	private ImageRegistry registry = null;
 	
+	private FontRegistry fontRegistry = null;
+	
 	public static String getAppShareBinPath() {
 		return appShareBinPath;
 	}
@@ -60,8 +63,16 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 	public ClientPlugin() {
 		super();
 		plugin = this;
+		this.fontRegistry = new FontRegistry();
+		/*
+		 * The the plugin preferences to automatically define defaults.
+		 */
+		/*ClientPreferencePage prefs = new ClientPreferencePage();
+		prefs.performDefaults();
+		prefs.dispose();*/
 	}
 
+	
 	/**
 	 * This method is called upon plug-in activation
 	 */
@@ -78,6 +89,9 @@ public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConsta
 		resourceBundle = null;
 	}
 	
+	public FontRegistry getFontRegistry() {
+		return this.fontRegistry;
+	}
 	
 	
 	/* (non-Javadoc)

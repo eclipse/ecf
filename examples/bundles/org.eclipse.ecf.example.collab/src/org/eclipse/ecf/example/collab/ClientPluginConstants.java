@@ -16,8 +16,20 @@ public interface ClientPluginConstants {
     public static final String DEFAULT_FILE_TRANSFER_CHUNKTIME_NAME = "filetransferchunksize";
     public static final String DEFAULT_FILE_TRANSFER_DELAY_NAME= "filetransferdelay";
 
-	public static final String USE_CHAT_WINDOW = "useChatWindow";
+    /*
+     * Contants for perference items.
+     */
+	public static final String PREF_USE_CHAT_WINDOW = "useChatWindow";
+	public static final String PREF_DISPLAY_TIMESTAMP = "displayTimeStamp";
+	public static final String PREF_CHAT_FONT = "chatFont";
+	public static final String PREF_FILE_TRANSFER_RATE = "fileTransferRate";
+	public static final String PREF_CONFIRM_FILE_SEND = "confirmFileSend";
+	public static final String PREF_CONFIRM_REMOTE_VIEW = "confirmRemoteView";
+	public static final String PREF_FILE_SEND_PATH = "findSendPath";
 	
+	/*
+	 * Contstants used to describe decoration images.
+	 */
 	public static final String DECORATION_PROJECT = "project";
 	public static final String DECORATION_USER = "user";
 	public static final String DECORATION_TIME = "time";
