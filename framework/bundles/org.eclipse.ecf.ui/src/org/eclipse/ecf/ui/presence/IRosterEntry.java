@@ -14,6 +14,7 @@ public interface IRosterEntry {
     public ID getUserID();
     public void setName(String name);
     public InterestType getInterestType();
+    public IPresence getPresenceState();
     
     public static class InterestType {
         
