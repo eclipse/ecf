@@ -14,11 +14,11 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.AsynchResult;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.SimpleQueueImpl;
-import org.eclipse.ecf.provider.Debug;
+import org.eclipse.ecf.provider.Trace;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 final class SOWrapper {
-    static Debug debug = Debug.create(SOWrapper.class.getName());
+    static Trace debug = Trace.create(SOWrapper.class.getName());
 
     protected ISharedObject sharedObject;
     private SOConfig sharedObjectConfig;
@@ -116,12 +116,12 @@ final class SOWrapper {
         return container.getNewSharedObjectThread(sharedObjectID,
                 new Runnable() {
                     public void run() {
-                        if (Debug.ON && debug != null) {
+                        if (Trace.ON && debug != null) {
                             debug.msg("Starting runner for " + sharedObjectID);
                         }
                         // The debug class will associate this thread with
                         // container
-                        Debug.setThreadDebugGroup(container.getID());
+                        Trace.setThreadDebugGroup(container.getID());
                         // Then process messages on queue until interrupted or
                         // queue closed
                         //Msg aMsg = null;
@@ -145,7 +145,7 @@ final class SOWrapper {
                                     SOWrapper.this.doDestroy();
                                 }
                             } catch (Throwable t) {
-                                if (Debug.ON && debug != null) {
+                                if (Trace.ON && debug != null) {
                                     debug.dumpStack(t,
                                             "Exception executing event " + evt
                                                     + " on meta " + this);
@@ -156,14 +156,14 @@ final class SOWrapper {
                         // If the thread was interrupted, then show appropriate
                         // spam
                         if (Thread.currentThread().isInterrupted()) {
-                            if (Debug.ON && debug != null) {
+                            if (Trace.ON && debug != null) {
                                 debug
                                         .msg("Runner for "
                                                 + sharedObjectID
                                                 + " terminating after being interrupted");
                             }
                         } else {
-                            if (Debug.ON && debug != null) {
+                            if (Trace.ON && debug != null) {
                                 debug.msg("Runner for " + sharedObjectID
                                         + " terminating normally");
                             }
@@ -268,12 +268,12 @@ final class SOWrapper {
         return sb.toString();
     }
     void handleRuntimeException(Throwable except) {
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.dumpStack(except, "handleRuntimeException called for "
                     + sharedObjectID);
         }
         try {
-            Debug.errDumpStack(except, "handleRuntimeException called for "
+            Trace.errDumpStack(except, "handleRuntimeException called for "
                     + sharedObjectID);
         } catch (Throwable e) {
         }

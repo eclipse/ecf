@@ -1,0 +1,3 @@
+org.eclipse.ecf.provider/debug = true
+org.eclipse.ecf.provider/debug/flag = true
+org.eclipse.ecf.provider/debug/filter = *

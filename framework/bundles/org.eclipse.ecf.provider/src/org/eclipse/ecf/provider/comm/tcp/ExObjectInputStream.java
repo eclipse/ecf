@@ -4,19 +4,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
-import org.eclipse.ecf.provider.Debug;
+import org.eclipse.ecf.provider.Trace;
 
 public class ExObjectInputStream extends ObjectInputStream {
 
     private boolean replace = false;
 
-    public static final Debug debug = Debug.create(ExObjectInputStream.class
+    public static final Trace debug = Trace.create(ExObjectInputStream.class
             .getName());
 
     public ExObjectInputStream(InputStream in) throws IOException,
             SecurityException {
         super(in);
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.msg("ExObjectInputStream(" + in + ")");
         }
     }
@@ -24,7 +24,7 @@ public class ExObjectInputStream extends ObjectInputStream {
     public ExObjectInputStream(InputStream in, boolean backwardCompatibility)
             throws IOException, SecurityException {
         super(in);
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.msg("ExObjectInputStream(" + in + "," + backwardCompatibility
                     + ")");
         }
@@ -41,12 +41,12 @@ public class ExObjectInputStream extends ObjectInputStream {
     }
 
     protected void debug(String msg) {
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.msg(msg);
         }
     }
     protected void debug(String msg, Throwable t) {
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.dumpStack(t, msg);
         }
     }

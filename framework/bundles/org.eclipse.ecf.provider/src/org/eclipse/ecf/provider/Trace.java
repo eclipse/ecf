@@ -1,11 +1,13 @@
 package org.eclipse.ecf.provider;
 
-public class Debug {
+import org.eclipse.core.runtime.Platform;
 
-	public static boolean ON = false;
+public class Trace {
+
+	public static boolean ON = Platform.inDebugMode();
 	
-	public static Debug create(String key) {
-		return new Debug(key);
+	public static Trace create(String key) {
+		return new Trace(key);
 	}
 	
 	public static void errDumpStack(Throwable e, String msg) {
@@ -19,7 +21,7 @@ public class Debug {
 	public void msg(String msg) {
 	    System.err.println(msg);
 	}
-	protected Debug(String str) {
+	protected Trace(String str) {
 	}
 	public static void setThreadDebugGroup(Object obj) {
 		// Do nothing

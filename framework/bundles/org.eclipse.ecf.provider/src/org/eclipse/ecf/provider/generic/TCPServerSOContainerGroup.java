@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.net.URI;
 
-import org.eclipse.ecf.provider.Debug;
+import org.eclipse.ecf.provider.Trace;
 import org.eclipse.ecf.core.comm.ConnectionRequestHandler;
 import org.eclipse.ecf.provider.comm.tcp.Client;
 import org.eclipse.ecf.provider.comm.tcp.ConnectRequestMessage;
@@ -24,7 +24,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 
     public static final String INVALID_CONNECT = "Invalid connect request.  ";
 
-    public static final Debug debug = Debug
+    public static final Trace debug = Trace
             .create(TCPServerSOContainerGroup.class.getName());
     public static final String DEFAULT_GROUP_NAME = TCPServerSOContainerGroup.class
             .getName();
@@ -49,7 +49,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
     }
 
     public synchronized void putOnTheAir() throws IOException {
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.msg("Putting group " + this + " on the air.");
         }
         listener = new Server(threadGroup, port, this);
@@ -71,7 +71,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 
         ConnectRequestMessage req = (ConnectRequestMessage) iStream
                 .readObject();
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.msg("Got connect request " + req);
         }
         if (req == null)
@@ -88,7 +88,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
                     + "Target path is null");
 
         TCPServerSOContainer srs = (TCPServerSOContainer) get(path);
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.msg("Found container with " + srs.getID().getName()
                     + " for target " + uri);
         }
@@ -115,13 +115,13 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 
     public synchronized void takeOffTheAir() {
         if (listener != null) {
-            if (Debug.ON && debug != null) {
+            if (Trace.ON && debug != null) {
                 debug.msg("Taking " + getName() + " on the air.");
             }
             try {
                 listener.close();
             } catch (IOException e) {
-                if (Debug.ON && debug != null) {
+                if (Trace.ON && debug != null) {
                     debug.dumpStack(e, "Exception in closeListener");
                 }
             }

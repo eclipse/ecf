@@ -28,7 +28,7 @@ import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.SimpleQueueImpl;
-import org.eclipse.ecf.provider.Debug;
+import org.eclipse.ecf.provider.Trace;
 
 public final class Client implements ISynchAsynchConnection {
 
@@ -51,7 +51,7 @@ public final class Client implements ISynchAsynchConnection {
     }
     public static final String PROTOCOL = "ecftcp";
 
-    public static final Debug debug = Debug.create(Client.class.getName());
+    public static final Trace debug = Trace.create(Client.class.getName());
 
     public static final int SNDR_PRIORITY = Thread.NORM_PRIORITY;
     public static final int RCVR_PRIORITY = Thread.NORM_PRIORITY;
@@ -198,7 +198,7 @@ public final class Client implements ISynchAsynchConnection {
         if (fact == null) {
             fact = SocketFactory.getDefaultSocketFactory();
         }
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.msg("Connecting to " + address + ":" + port);
         }
         // Actually connect to remote using socket from socket factory.
@@ -266,7 +266,7 @@ public final class Client implements ISynchAsynchConnection {
                             msgCount++;
                     } catch (IOException e) {
                         // Log to stderr
-                        Debug.errDumpStack(e, "Exception in sender thread for "
+                        Trace.errDumpStack(e, "Exception in sender thread for "
                                 + address + ":" + port);
 
                         if (isClosing) {
@@ -285,7 +285,7 @@ public final class Client implements ISynchAsynchConnection {
                         break;
                     }
                 }
-                if (Debug.ON && debug != null) {
+                if (Trace.ON && debug != null) {
                     debug.msg("Sndr for " + address + ":" + port
                             + " terminating.");
                 }
@@ -352,10 +352,10 @@ public final class Client implements ISynchAsynchConnection {
                         handleRcv(readObject());
                     } catch (IOException e) {
                         // Log to stderr
-                        Debug.errDumpStack(e, "Exception in read thread for "
+                        Trace.errDumpStack(e, "Exception in read thread for "
                                 + address + ":" + port);
 
-                        if (Debug.ON && debug != null) {
+                        if (Trace.ON && debug != null) {
                             debug.dumpStack(e, "Exception in read thread for "
                                     + address + ":" + port + ": "
                                     + e.getMessage());
@@ -376,7 +376,7 @@ public final class Client implements ISynchAsynchConnection {
                         break;
                     }
                 }
-                if (Debug.ON && debug != null) {
+                if (Trace.ON && debug != null) {
                     debug.msg("Rcvr for " + address + ":" + port
                             + " terminating.");
                 }
@@ -464,10 +464,10 @@ public final class Client implements ISynchAsynchConnection {
                         }
                     } catch (Exception e) {
                         // Log to stderr
-                        Debug.errDumpStack(e, "Exception in ping thread for "
+                        Trace.errDumpStack(e, "Exception in ping thread for "
                                 + address + ":" + port);
 
-                        if (Debug.ON && debug != null) {
+                        if (Trace.ON && debug != null) {
                             debug.dumpStack(e, "Exception in ping.");
                         }
                         if (isClosing) {
@@ -486,7 +486,7 @@ public final class Client implements ISynchAsynchConnection {
                         break;
                     }
                 }
-                if (Debug.ON && debug != null) {
+                if (Trace.ON && debug != null) {
                     debug.msg("Keepalive terminating.");
                 }
             }
@@ -494,7 +494,7 @@ public final class Client implements ISynchAsynchConnection {
     }
 
     public synchronized void disconnect() throws IOException {
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.msg("disconnect()");
         }
         // Close send queue and socket
@@ -550,7 +550,7 @@ public final class Client implements ISynchAsynchConnection {
         try {
             ret = (Serializable) inputStream.readObject();
         } catch (ClassNotFoundException e) {
-            if (Debug.ON && debug != null) {
+            if (Trace.ON && debug != null) {
                 debug.dumpStack(e, "Class not found exception");
             }
             throw new IOException(

@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.eclipse.ecf.provider.Debug;
+import org.eclipse.ecf.provider.Trace;
 
 public class Server extends ServerSocket {
-    public static Debug debug = Debug.create(Server.class.getName());
+    public static Trace debug = Trace.create(Server.class.getName());
 
     ISocketAcceptHandler acceptHandler;
 
@@ -36,7 +36,7 @@ public class Server extends ServerSocket {
                     try {
                         handleAccept(accept());
                     } catch (Exception e) {
-                        if (Debug.ON && debug != null) {
+                        if (Trace.ON && debug != null) {
                             debug.dumpStack(e, "Exception in accept");
                         }
                         // If we get an exception on accept(), we should just
@@ -44,7 +44,7 @@ public class Server extends ServerSocket {
                         break;
                     }
                 }
-                if (Debug.ON && debug != null) {
+                if (Trace.ON && debug != null) {
                     debug.msg("Closing listener normally.");
                 }
             }
@@ -57,7 +57,7 @@ public class Server extends ServerSocket {
                 try {
                     acceptHandler.handleAccept(aSocket);
                 } catch (Exception e) {
-                    if (Debug.ON && debug != null) {
+                    if (Trace.ON && debug != null) {
                         debug.dumpStack(e,
                                 "Unexplained exception in connect.  Closing.");
                     }
@@ -67,7 +67,7 @@ public class Server extends ServerSocket {
                     }
                     ;
                 } finally {
-                    if (Debug.ON && debug != null) {
+                    if (Trace.ON && debug != null) {
                         debug.msg("handleAcceptAsych terminating.");
                     }
                 }
@@ -76,7 +76,7 @@ public class Server extends ServerSocket {
     }
 
     public synchronized void close() throws IOException {
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.msg("close()");
         }
         super.close();

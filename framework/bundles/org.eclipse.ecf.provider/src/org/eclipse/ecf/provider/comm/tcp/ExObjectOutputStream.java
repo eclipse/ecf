@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-import org.eclipse.ecf.provider.Debug;
+import org.eclipse.ecf.provider.Trace;
 
 public class ExObjectOutputStream extends ObjectOutputStream {
 
     private boolean replace = false;
 
-    public static final Debug debug = Debug.create(ExObjectOutputStream.class
+    public static final Trace debug = Trace.create(ExObjectOutputStream.class
             .getName());
 
     public ExObjectOutputStream(OutputStream out) throws IOException {
@@ -33,12 +33,12 @@ public class ExObjectOutputStream extends ObjectOutputStream {
         }
     }
     protected void debug(String msg) {
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.msg(msg);
         }
     }
     protected void debug(String msg, Throwable t) {
-        if (Debug.ON && debug != null) {
+        if (Trace.ON && debug != null) {
             debug.dumpStack(t, msg);
         }
     }
