@@ -20,32 +20,43 @@ import org.eclipse.ecf.core.util.ECFException;
  */
 public class DataGraphSharingFactory {
 
-	private static final Hashtable managers = new Hashtable();
+    public static final String TRACE_TAG = "DataGraphSharingFactory";
 
-	private DataGraphSharingFactory() {
-	}
+    private static final Hashtable managers = new Hashtable();
 
-	public static final IDataGraphSharing getDataGraphSharing(
-			ISharedObjectContainer container, String name) throws ECFException {
+    private DataGraphSharingFactory() {
+    }
 
-		IDataGraphSharingManager instantiator = (IDataGraphSharingManager) managers
-				.get(name);
-		if (instantiator == null)
-			return null;
-		else
-			return instantiator.getInstance(container);
-	}
+    public static final IDataGraphSharing getDataGraphSharing(
+            ISharedObjectContainer container, String name) throws ECFException {
 
-	public static void registerManager(String name,
-			IDataGraphSharingManager manager) {
-		managers.put(name, manager);
-	}
+        IDataGraphSharingManager instantiator = (IDataGraphSharingManager) managers
+                .get(name);
+        if (instantiator == null)
+            return null;
+        else
+            return instantiator.getInstance(container);
+    }
 
-	public static void unregisterManager(String name) {
-		managers.remove(name);
-	}
+    public static void registerManager(String name,
+            IDataGraphSharingManager manager) {
+        if (SDOPlugin.isTracing(TRACE_TAG))
+            SDOPlugin.getTraceLog().println("registerManager: " + name);
 
-	static void unregisterAllManagers() {
-		managers.clear();
-	}
+        managers.put(name, manager);
+    }
+
+    public static void unregisterManager(String name) {
+        if (SDOPlugin.isTracing(TRACE_TAG))
+            SDOPlugin.getTraceLog().println("unregisterManager: " + name);
+
+        managers.remove(name);
+    }
+
+    static void unregisterAllManagers() {
+        if (SDOPlugin.isTracing(TRACE_TAG))
+            SDOPlugin.getTraceLog().println("unregisterAllManagers");
+
+        managers.clear();
+    }
 }

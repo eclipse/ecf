@@ -3,7 +3,7 @@ Bundle-Name: ECF SDO Core
 Bundle-SymbolicName: org.eclipse.ecf.sdo
 Bundle-Version: 1.0.0
 Bundle-ClassPath: ecf.sdo.jar
-Bundle-Activator: org.eclipse.ecf.sdo.SDOPlugin
+Bundle-Activator: org.eclipse.ecf.sdo.SDOPlugin$EclipsePlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,

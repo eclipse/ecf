@@ -37,8 +37,6 @@ public class DataGraphSharing implements
 
     private ISharedObjectConfig config;
 
-    private boolean debug;
-
     /*
      * (non-Javadoc)
      * 
@@ -59,8 +57,6 @@ public class DataGraphSharing implements
         ISharedObjectManager mgr = config.getContext().getSharedObjectManager();
         SharedDataGraph sdg = new SharedDataGraph(dataGraph, provider,
                 consumer, callback, null);
-        sdg.setDebug(debug);
-
         mgr.addSharedObject(id, sdg, null, null);
         return sdg;
     }
@@ -84,8 +80,6 @@ public class DataGraphSharing implements
         ISharedObjectManager mgr = config.getContext().getSharedObjectManager();
         SharedDataGraph sdg = new SharedDataGraph(null, provider, consumer,
                 null, callback);
-        sdg.setDebug(debug);
-
         mgr.addSharedObject(id, sdg, null, null);
         return sdg;
     }
@@ -99,16 +93,6 @@ public class DataGraphSharing implements
         if (config != null)
             config.getContext().getSharedObjectManager().removeSharedObject(
                     config.getSharedObjectID());
-    }
-
-    /**
-     * Sets the debug flag.
-     * 
-     * @param debug
-     * @deprecated Use Eclipse's plugin tracing support instead.
-     */
-    public void setDebug(boolean debug) {
-        this.debug = debug;
     }
 
     /*

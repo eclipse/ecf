@@ -12,6 +12,7 @@ package org.eclipse.ecf.example.sdo.editor;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -22,14 +23,15 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.example.collab.Client;
+import org.eclipse.ecf.sdo.DataGraphSharingFactory;
 import org.eclipse.ecf.sdo.ISharedDataGraph;
 import org.eclipse.ecf.sdo.IUpdateConsumer;
-import org.eclipse.ecf.sdo.SDOPlugin;
 import org.eclipse.ecf.sdo.WaitablePublicationCallback;
 import org.eclipse.ecf.sdo.WaitableSubscriptionCallback;
 import org.eclipse.ecf.sdo.emf.EMFUpdateProvider;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
 import commonj.sdo.DataGraph;
 
 /**
@@ -117,12 +119,11 @@ public class EditorPlugin extends AbstractUIPlugin {
                 .getWorkspace().getRoot().getProject(p.segment(0)));
         PublishedGraphTracker tracker = getTracker(container);
 
-        SDOPlugin.getDefault().setDebug(true);
         ID id = IDFactory.makeStringID(path);
         WaitableSubscriptionCallback mutex = new WaitableSubscriptionCallback();
-        ISharedDataGraph result = SDOPlugin.getDefault().getDataGraphSharing(
-                container).subscribe(id, new EMFUpdateProvider(), consumer,
-                mutex);
+        ISharedDataGraph result = DataGraphSharingFactory.getDataGraphSharing(
+                container, "default").subscribe(id, new EMFUpdateProvider(),
+                consumer, mutex);
         ID containerID = null;
         try {
             containerID = mutex.waitForSubscription(5000);
@@ -144,12 +145,11 @@ public class EditorPlugin extends AbstractUIPlugin {
                 .getWorkspace().getRoot().getProject(p.segment(0)));
         PublishedGraphTracker tracker = getTracker(container);
 
-        SDOPlugin.getDefault().setDebug(true);
         ID id = IDFactory.makeStringID(path);
         WaitablePublicationCallback mutex = new WaitablePublicationCallback();
-        ISharedDataGraph result = SDOPlugin.getDefault().getDataGraphSharing(
-                container).publish(dataGraph, id, new EMFUpdateProvider(),
-                consumer, mutex);
+        ISharedDataGraph result = DataGraphSharingFactory.getDataGraphSharing(
+                container, "default").publish(dataGraph, id,
+                new EMFUpdateProvider(), consumer, mutex);
         try {
             if (!mutex.waitForPublication(5000))
                 throw new ECFException("Publication timed out.");

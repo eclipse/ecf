@@ -1,0 +1,4 @@
+org.eclipse.ecf.sdo/debug=true
+org.eclipse.ecf.sdo/DataGraphSharingFactory=true
+org.eclipse.ecf.sdo/SharedDataGraph=true
+org.eclipse.ecf.sdo/EMFUpdateManager=true
