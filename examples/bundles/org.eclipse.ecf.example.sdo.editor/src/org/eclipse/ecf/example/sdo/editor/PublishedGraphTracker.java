@@ -11,13 +11,18 @@
 package org.eclipse.ecf.example.sdo.editor;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.SharedObjectInitException;
+import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerJoinedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
@@ -28,119 +33,234 @@ import org.eclipse.ecf.core.util.Event;
  */
 class PublishedGraphTracker extends PlatformObject implements ISharedObject {
 
-	private ISharedObjectConfig config;
+    private static final String[] NO_PATHS = {};
 
-	private final Hashtable paths = new Hashtable();
+    private static final int JOIN = 0;
 
-	synchronized void add(String path) throws ECFException {
-		if (config == null)
-			throw new ECFException("Not connected.");
+    private static final int LEAVE = 1;
 
-		try {
-			config.getContext().sendMessage(
-					null,
-					new Object[] { Boolean.TRUE, config.getSharedObjectID(),
-							path });
-		} catch (IOException e) {
-			throw new ECFException(e);
-		}
+    private static final int ADD = 2;
 
-		handleAdded(config.getContext().getLocalContainerID(), path);
-	}
+    private static final int REMOVE = 3;
 
-	synchronized void remove(String path) throws ECFException {
-		if (config == null)
-			throw new ECFException("Not connected.");
+    private class Table {
 
-		try {
-			config.getContext().sendMessage(
-					null,
-					new Object[] { Boolean.FALSE, config.getSharedObjectID(),
-							path });
-		} catch (IOException e) {
-			throw new ECFException(e);
-		}
+        private final Hashtable paths = new Hashtable();
 
-		handleRemoved(config.getContext().getLocalContainerID(), path);
-	}
+        private final Hashtable containers = new Hashtable();
 
-	synchronized boolean isPublished(String path) {
-		synchronized (paths) {
-			return paths.contains(path);
-		}
-	}
+        public synchronized void add(ID containerID, String[] path) {
+            HashSet list = (HashSet) paths.get(containerID);
+            if (list == null) {
+                list = new HashSet();
+                paths.put(containerID, list);
+            }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.ISharedObject#init(org.eclipse.ecf.core.ISharedObjectConfig)
-	 */
-	public synchronized void init(ISharedObjectConfig initData)
-			throws SharedObjectInitException {
-		if (config == null)
-			config = initData;
-		else
-			throw new SharedObjectInitException("Already initialized.");
-	}
+            list.addAll(Arrays.asList(path));
+            for (int i = 0; i < path.length; ++i) {
+                list = (HashSet) containers.get(path[i]);
+                if (list == null) {
+                    list = new HashSet();
+                    containers.put(path[i], list);
+                }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
-	 */
-	public void handleEvent(Event event) {
-		if (event instanceof ISharedObjectMessageEvent) {
-			Object[] data = (Object[]) ((ISharedObjectMessageEvent) event)
-					.getData();
-			if (Boolean.TRUE.equals(data[0]))
-				handleAdded((ID) data[1], (String) data[2]);
-			else
-				handleRemoved((ID) data[1], (String) data[2]);
-		}
-	}
+                list.add(containerID);
+            }
+        }
 
-	private void handleAdded(ID containerID, String path) {
-		synchronized (paths) {
-			HashSet list = (HashSet) paths.get(path);
-			if (list == null) {
-				list = new HashSet();
-				paths.put(path, list);
-			}
+        public synchronized void remove(ID containerID, String path) {
+            HashSet list = (HashSet) paths.get(containerID);
+            if (list != null) {
+                list.remove(path);
+                if (list.isEmpty())
+                    paths.remove(containerID);
+            }
 
-			list.add(containerID);
-		}
-	}
+            list = (HashSet) containers.get(path);
+            if (list != null) {
+                list.remove(containerID);
+                if (list.isEmpty())
+                    containers.remove(path);
+            }
+        }
 
-	private void handleRemoved(ID containerID, String path) {
-		synchronized (paths) {
-			HashSet list = (HashSet) paths.get(path);
-			if (list != null) {
-				list.remove(containerID);
-				if (list.isEmpty())
-					paths.remove(path);
-			}
-		}
-	}
+        public synchronized void remove(ID containerID) {
+            HashSet list = (HashSet) paths.get(containerID);
+            if (list != null) {
+                for (Iterator i = list.iterator(); i.hasNext();) {
+                    String path = (String) i.next();
+                    list = (HashSet) containers.get(path);
+                    if (list != null) {
+                        list.remove(containerID);
+                        if (list.isEmpty())
+                            containers.remove(path);
+                    }
+                }
+            }
+        }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.ISharedObject#handleEvents(org.eclipse.ecf.core.util.Event[])
-	 */
-	public void handleEvents(Event[] events) {
-		for (int i = 0; i < events.length; ++i)
-			handleEvent(events[i]);
-	}
+        public synchronized boolean contains(String path) {
+            return containers.contains(path);
+        }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
-	 */
-	public synchronized void dispose(ID containerID) {
-		if (config != null
-				&& config.getContext().getLocalContainerID()
-						.equals(containerID))
-			config = null;
-	}
+        public synchronized String[] getPaths(ID containerID) {
+            HashSet list = (HashSet) paths.get(containerID);
+            return list == null ? NO_PATHS : (String[]) list
+                    .toArray(new String[list.size()]);
+        }
+    }
+
+    private final Table table = new Table();
+
+    private ISharedObjectConfig config;
+
+    public synchronized void add(String path) throws ECFException {
+        if (config == null)
+            throw new ECFException("Not connected.");
+
+        try {
+            config.getContext().sendMessage(null,
+                    new Object[] { new Integer(ADD), path });
+        } catch (IOException e) {
+            throw new ECFException(e);
+        }
+
+        handleAdd(config.getContext().getLocalContainerID(), path);
+    }
+
+    public synchronized void remove(String path) throws ECFException {
+        if (config == null)
+            throw new ECFException("Not connected.");
+
+        try {
+            config.getContext().sendMessage(null,
+                    new Object[] { new Integer(REMOVE), path });
+        } catch (IOException e) {
+            throw new ECFException(e);
+        }
+
+        handleRemove(config.getContext().getLocalContainerID(), path);
+    }
+
+    public synchronized boolean isPublished(String path) {
+        return table.contains(path);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObject#init(org.eclipse.ecf.core.ISharedObjectConfig)
+     */
+    public synchronized void init(ISharedObjectConfig initData)
+            throws SharedObjectInitException {
+        if (config == null)
+            config = initData;
+        else
+            throw new SharedObjectInitException("Already initialized.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
+     */
+    public void handleEvent(Event event) {
+        if (event instanceof ISharedObjectMessageEvent) {
+            ISharedObjectMessageEvent e = (ISharedObjectMessageEvent) event;
+            Object[] data = (Object[]) e.getData();
+            Integer type = (Integer) data[0];
+            switch (type.intValue()) {
+            case JOIN:
+                handleJoin(e.getRemoteContainerID(), (String[]) data[1]);
+                break;
+
+            case LEAVE:
+                handleLeave(e.getRemoteContainerID());
+                break;
+
+            case ADD:
+                handleAdd(e.getRemoteContainerID(), (String) data[1]);
+                break;
+
+            case REMOVE:
+                handleRemove(e.getRemoteContainerID(), (String) data[1]);
+            }
+        } else if (event instanceof ISharedObjectContainerJoinedEvent) {
+            if (((ISharedObjectContainerJoinedEvent) event)
+                    .getJoinedContainerID().equals(
+                            config.getContext().getLocalContainerID()))
+                handleJoined();
+        } else if (event instanceof ISharedObjectContainerDepartedEvent) {
+            ISharedObjectContainerDepartedEvent e = (ISharedObjectContainerDepartedEvent) event;
+            if (!e.getDepartedContainerID().equals(
+                    config.getContext().getLocalContainerID()))
+                handleLeave(e.getDepartedContainerID());
+        } else if (event instanceof ISharedObjectDeactivatedEvent) {
+            if (((ISharedObjectDeactivatedEvent) event).getDeactivatedID()
+                    .equals(config.getSharedObjectID()))
+                handleDeactivated();
+        }
+    }
+
+    private void handleJoin(ID containerID, String[] paths) {
+        table.add(containerID, paths);
+    }
+
+    private void handleLeave(ID containerID) {
+        table.remove(containerID);
+    }
+
+    private void handleAdd(ID containerID, String path) {
+        table.add(containerID, new String[] { path });
+    }
+
+    private void handleRemove(ID containerID, String path) {
+        table.remove(containerID, path);
+    }
+
+    private void handleJoined() {
+        try {
+            config.getContext().sendMessage(
+                    null,
+                    new Object[] {
+                            new Integer(JOIN),
+                            table.getPaths(config.getContext()
+                                    .getLocalContainerID()) });
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private void handleDeactivated() {
+        try {
+            config.getContext().sendMessage(null,
+                    new Object[] { new Integer(LEAVE) });
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObject#handleEvents(org.eclipse.ecf.core.util.Event[])
+     */
+    public void handleEvents(Event[] events) {
+        for (int i = 0; i < events.length; ++i)
+            handleEvent(events[i]);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
+     */
+    public synchronized void dispose(ID containerID) {
+        if (config != null
+                && config.getContext().getLocalContainerID()
+                        .equals(containerID))
+            config = null;
+    }
 }
