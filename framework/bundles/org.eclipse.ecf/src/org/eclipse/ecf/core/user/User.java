@@ -22,7 +22,14 @@ public class User implements IUser {
 	protected String name;
 	protected Map properties;
 	
+    public User(ID userID) {
+        this(userID,userID.getName());
+    }
+    public User(ID userID, String name) {
+        this(userID,name,null);
+    }
 	public User(ID userID, String name, Map properties) {
+        if (userID == null) throw new NullPointerException("userID must not be null");
 		this.id = userID;
 		this.name = name;
 		this.properties = properties;
@@ -50,5 +57,11 @@ public class User implements IUser {
     
     public Object getAdapter(Class clazz) {
         return null;
+    }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer("User[");
+        sb.append("id="+getID()).append(";name="+getName()).append(";props="+getProperties()).append("]");
+        return sb.toString();
     }
 }
