@@ -16,6 +16,8 @@ import java.util.Date;
 import org.eclipse.core.runtime.Platform;
 
 public class Trace {
+    public static final String tracePrefix = "(trace)";
+    
     public static boolean ON = false;
     protected static boolean isEclipse = false;
     protected static String pluginName = "";
@@ -28,6 +30,7 @@ public class Trace {
                     .getSymbolicName();
         } catch (Exception e) {
             // No eclipse Platform available
+            System.out.println("Eclipse platform not available.  "+Trace.class.getName());
         }
     }
 
@@ -60,17 +63,19 @@ public class Trace {
     }
 
     public void msg(String msg) {
-        System.err.println(name + "[" + getTimeString() + "]" + msg);
+        StringBuffer sb = new StringBuffer(name);
+        sb.append(getTimeString()).append(msg);
+        System.out.println(sb.toString());
     }
 
     protected static String getTimeString() {
         Date d = new Date();
-        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yy;HH:mm:ss:SSS");
+        SimpleDateFormat df = new SimpleDateFormat("[MM/dd/yy;HH:mm:ss:SSS]");
         return df.format(d);
     }
 
     protected Trace(String str) {
-        name = str;
+        name = tracePrefix+str;
     }
 
     public static void setThreadDebugGroup(Object obj) {
