@@ -99,14 +99,18 @@ public class LineChatView extends ViewPart {
 				if (ti != null) ti.dispose();
 				
 				if (clientViews.isEmpty()) {
-					singleton.tabFolder.dispose();
-					singleton.tabFolder = null;
+                    if (singleton != null) {
+                        if (singleton.tabFolder != null) {
+                            singleton.tabFolder.dispose();
+                            singleton.tabFolder = null;
+                        }
 					
-					createInactiveComposite(singleton.parentComposite);
-					actionBars.getToolBarManager().removeAll();
-					actionBars.getMenuManager().removeAll();
-					actionBars.updateActionBars();
-					singleton.parentComposite.layout();
+                        createInactiveComposite(singleton.parentComposite);
+                        actionBars.getToolBarManager().removeAll();
+                        actionBars.getMenuManager().removeAll();
+                        actionBars.updateActionBars();
+                        singleton.parentComposite.layout();
+                    }
 				}
 			}
 		});

@@ -26,6 +26,7 @@ public interface IPresence extends IAdaptable, Serializable {
         private static final String AVAILABLE_NAME = "available";
         private static final String ERROR_NAME = "error";
         private static final String SUBSCRIBE_NAME = "subscribe";
+        private static final String SUBSCRIBED_NAME = "subscribed";
         private static final String UNAVAILABLE_NAME = "unavailable";
         private static final String UNSUBSCRIBE_NAME = "unsubscribe";
         private static final String UNSUBSCRIBED_NAME = "unsubscribed";
@@ -44,6 +45,8 @@ public interface IPresence extends IAdaptable, Serializable {
                 return ERROR;
             } else if (presenceType.equals(SUBSCRIBE_NAME)) {
                 return SUBSCRIBE;
+            } else if (presenceType.equals(SUBSCRIBED_NAME)) {
+                return SUBSCRIBED;
             } else if (presenceType.equals(UNAVAILABLE_NAME)) {
                 return UNAVAILABLE;
             } else if (presenceType.equals(UNSUBSCRIBE_NAME)) {
@@ -58,6 +61,7 @@ public interface IPresence extends IAdaptable, Serializable {
         public static final Type AVAILABLE = new Type(AVAILABLE_NAME);
         public static final Type ERROR = new Type(ERROR_NAME);
         public static final Type SUBSCRIBE = new Type(SUBSCRIBE_NAME);
+        public static final Type SUBSCRIBED = new Type(SUBSCRIBED_NAME);
         public static final Type UNAVAILABLE = new Type(UNAVAILABLE_NAME);
         public static final Type UNSUBSCRIBE = new Type(UNSUBSCRIBE_NAME);
         public static final Type UNSUBSCRIBED = new Type(UNSUBSCRIBED_NAME);
@@ -74,7 +78,7 @@ public interface IPresence extends IAdaptable, Serializable {
         // For serialization
         private static int nextOrdinal = 0;
         private final int ordinal = nextOrdinal++;
-        private static final Type [] VALUES = { AVAILABLE, ERROR, SUBSCRIBE, UNAVAILABLE, UNSUBSCRIBE, UNSUBSCRIBED, UNKNOWN };
+        private static final Type [] VALUES = { AVAILABLE, ERROR, SUBSCRIBE, SUBSCRIBED, UNAVAILABLE, UNSUBSCRIBE, UNSUBSCRIBED, UNKNOWN };
         Object readResolve() throws ObjectStreamException {
             return VALUES[ordinal];
         }

@@ -10,12 +10,16 @@
 *****************************************************************************/
 package org.eclipse.ecf.example.collab.ui;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.ecf.core.SharedObjectContainerDescription;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -31,33 +35,83 @@ public class JoinGroupWizardPage extends WizardPage {
     protected static final String ECF_TEMPLATE_URL = "ecftcp://<machinename>:<port>/<name>";
     protected static final String PAGE_TITLE = "Join ECF Group";
     
+    protected static final String DEFAULT_CLIENT = "org.eclipse.ecf.provider.generic.Client";
+    
     public JoinGroupWizardPage() {
         super("wizardPage");
         setTitle(PAGE_TITLE);
         setDescription(PAGE_DESCRIPTION);
     }
 
+    protected String template_url = ECF_TEMPLATE_URL;
+    protected String default_url = ECF_DEFAULT_URL;
+    protected boolean showPassword = true;
+    
+    protected Label password_label;
     protected Text nickname_text;
     protected Text joingroup_text;
+    protected Label example_label;
     protected Combo combo;
     protected Text password_text;
-    protected List containerDescriptions;
+    protected List containerDescriptions = new ArrayList();
     
+    protected void modifyUI(Map props) {
+        if (props != null) {
+            String usePassword = (String) props.get("usepassword");
+            String examplegroupid = (String) props.get("examplegroupid");
+            String defaultgroupid = (String) props.get("defaultgroupid");
+            // turn off password unless used
+            if (usePassword != null){
+                password_label.setVisible(true);
+                password_text.setVisible(true);
+            } else {
+                password_label.setVisible(false);
+                password_text.setVisible(false);                        
+            }
+            // set examplegroupid text
+            example_label.setText((examplegroupid != null)?examplegroupid:"");
+            joingroup_text.setText((defaultgroupid != null)?defaultgroupid:"");
+        }
+    }
     protected void fillCombo() {
-        combo.add("Default");
-        containerDescriptions = SharedObjectContainerFactory.getDescriptions();
-        for(Iterator i=containerDescriptions.iterator(); i.hasNext(); ) {
-            SharedObjectContainerDescription desc = (SharedObjectContainerDescription) i.next();
+        List rawDescriptions = SharedObjectContainerFactory.getDescriptions();
+        int index = 0;
+        int def = 0;
+        Map defProps = null;
+        for(Iterator i=rawDescriptions.iterator(); i.hasNext(); ) {
+            final SharedObjectContainerDescription desc = (SharedObjectContainerDescription) i.next();
             String name = desc.getName();
             String description = desc.getDescription();
-            if (description != null && !description.equals("")) {
-                name = name + " - " + description;
+            Map props = desc.getProperties();
+            String isClient = (String) props.get("isClient");
+            if (isClient != null) {
+                if (DEFAULT_CLIENT.equals(name)) {
+                    def = index;
+                    defProps = props;
+                }
+                combo.add(description+" - "+name,index);
+                combo.setData(""+index,desc);
+                containerDescriptions.add(desc);
+                index++;
             }
-            combo.add(name);
         }
+        combo.addSelectionListener(new SelectionListener() {
+            public void widgetSelected(SelectionEvent e) {
+                SharedObjectContainerDescription desc = (SharedObjectContainerDescription) combo.getData(combo.getSelectionIndex()+"");
+                Map props = desc.getProperties();
+                modifyUI(props);
+            }
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
+        });
         // Set to default
-        combo.select(0);
+        if (combo.getItemCount() > 0) combo.select(def);
+        if (defProps != null) modifyUI(defProps);
     }
+    
+    //protected 
     public void createControl(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         final GridLayout gridLayout = new GridLayout();
@@ -67,23 +121,22 @@ public class JoinGroupWizardPage extends WizardPage {
         setControl(container);
 
         final Label label_4 = new Label(container, SWT.NONE);
-        label_4.setText("ECF Provider:");
+        label_4.setText("Provider:");
 
         combo = new Combo(container, SWT.NONE);
         final GridData gridData_1 = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
         combo.setLayoutData(gridData_1);
-        fillCombo();
 
         final Label label_2 = new Label(container, SWT.NONE);
 
-        final Label label_3 = new Label(container, SWT.NONE);
-        label_3.setText(ECF_TEMPLATE_URL);
+        example_label = new Label(container, SWT.NONE);
+        example_label.setText(template_url);
 
         final Label label = new Label(container, SWT.NONE);
         label.setText(JOINGROUP_FIELDNAME);
 
         joingroup_text = new Text(container, SWT.BORDER);
-        joingroup_text.setText(ECF_DEFAULT_URL);
+        joingroup_text.setText(default_url);
         final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.widthHint = 140;
         joingroup_text.setLayoutData(gridData);
@@ -97,12 +150,17 @@ public class JoinGroupWizardPage extends WizardPage {
         nickname_text.setLayoutData(nickname);
         nickname_text.setText(System.getProperty("user.name"));
 
-        final Label label_5 = new Label(container, SWT.NONE);
-        label_5.setText("Password:");
+        password_label = new Label(container, SWT.NONE);
+        password_label.setText("Password:");
 
         password_text = new Text(container, SWT.BORDER);
         password_text.setEchoChar('*');
         password_text.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+        if (!showPassword) {
+            password_text.setVisible(false);
+            password_label.setVisible(false);
+        }
+        fillCombo();
     }
     
     public String getJoinGroupText() {
@@ -119,9 +177,9 @@ public class JoinGroupWizardPage extends WizardPage {
     
     public String getContainerType() {
         int index = combo.getSelectionIndex();
-        if (index == 0) return null;
+        if (index == -1) return null;
         else {
-            SharedObjectContainerDescription desc = (SharedObjectContainerDescription) containerDescriptions.get(index-1);
+            SharedObjectContainerDescription desc = (SharedObjectContainerDescription) containerDescriptions.get(index);
             return desc.getName();
         }
     }
