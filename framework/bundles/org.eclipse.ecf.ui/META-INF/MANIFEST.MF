@@ -6,10 +6,10 @@ Bundle-ClassPath: ui.jar
 Bundle-Activator: org.eclipse.ecf.ui.UiPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.ui;reprovide=true,
- org.eclipse.ecf,
- org.eclipse.core.runtime,
- org.eclipse.jface.text
+Require-Bundle: org.eclipse.ecf,
+ org.eclipse.jface.text,
+ org.eclipse.ui,
+ org.eclipse.core.runtime
 Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.ui.presence,
  org.eclipse.ecf.ui,
