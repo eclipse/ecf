@@ -48,12 +48,6 @@ public class Client {
     public static final String USERNAME = System.getProperty("user.name");
     public static final String ECFDIRECTORY = "ECF_" + FILE_DIRECTORY + "/";
     static ID defaultGroupID = null;
-    /*
-    static ISharedObjectContainer client = null;
-    static EclipseCollabSharedObject sharedObject = null;
-    static ID groupID = null;
-    static ID sharedObjectID = null;
-    */
     static Hashtable clients = new Hashtable();
 
     public static class ClientEntry {
@@ -143,13 +137,36 @@ public class Client {
         defaultGroupID = IDFactory.makeStringID(DEFAULT_SERVER_ID);
     }
 
-    protected User getUserData(String containerType, ID clientID, String usernick, String proj) {
+    protected User getUserData(String containerType, ID clientID, String usernick, String proj, IProject project) {
         Vector topElements = new Vector();
         String contType = containerType.substring(containerType.lastIndexOf(".")+1);
         topElements.add(new TreeItem("Project", proj));
         SimpleDateFormat sdf = new SimpleDateFormat(JOIN_TIME_FORMAT);
-        topElements.add(new TreeItem("Join Time",sdf.format(new Date())));
-        topElements.add(new TreeItem("Container Type",contType));
+        topElements.add(new TreeItem("Time",sdf.format(new Date())));
+        try {
+            String activeTitle = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart().getTitle();
+            topElements.add(new TreeItem("Active Part",activeTitle));
+        } catch (Exception e) {}
+        try {
+            String userLang = System.getProperty("user.language");
+            topElements.add(new TreeItem("Language",userLang));
+        } catch (Exception e) {}
+        try {
+            String timeZone = System.getProperty("user.timezone");
+            topElements.add(new TreeItem("Time Zone",timeZone));
+        } catch (Exception e) {}
+        try {
+            String osgiVersion = System.getProperty("org.osgi.framework.version");
+            topElements.add(new TreeItem("OSGI version",osgiVersion));
+        } catch (Exception e) {}
+        try {
+            String javaVersion = System.getProperty("java.version");
+            topElements.add(new TreeItem("Java",javaVersion));
+        } catch (Exception e) {}
+        try {
+            String osName = Platform.getOS();
+            topElements.add(new TreeItem("OS",osName));
+        } catch (Exception e) {}
         return new User(clientID, usernick, topElements);
     }
 
@@ -202,7 +219,7 @@ public class Client {
         String fileDir = getSharedFileDirectoryForProject(project);
         String projName = (project == null) ? "<workspace>" : project.getName();
         User user = getUserData(client.getClass().getName(),client.getContainer().getConfig().getID(),
-                (username == null) ? USERNAME : username, projName);
+                (username == null) ? USERNAME : username, projName, proj);
         makeAndAddSharedObject(client, project, user, fileDir);
     }
 

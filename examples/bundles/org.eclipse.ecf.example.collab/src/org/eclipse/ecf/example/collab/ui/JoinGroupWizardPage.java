@@ -158,7 +158,7 @@ public class JoinGroupWizardPage extends WizardPage {
         final Label label_4 = new Label(container, SWT.NONE);
         label_4.setText("Provider:");
 
-        combo = new Combo(container, SWT.NONE);
+        combo = new Combo(container, SWT.READ_ONLY);
         final GridData gridData_1 = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
         combo.setLayoutData(gridData_1);
 
