@@ -13,7 +13,10 @@ package org.eclipse.ecf.example.sdo.editor;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -37,156 +40,169 @@ import commonj.sdo.DataGraph;
  * @author pnehrer
  */
 public class EditorPlugin extends AbstractUIPlugin {
-	// The shared instance.
-	private static EditorPlugin plugin;
+    // The shared instance.
+    private static EditorPlugin plugin;
 
-	// Resource bundle.
-	private ResourceBundle resourceBundle;
+    // Resource bundle.
+    private ResourceBundle resourceBundle;
 
-	private ISharedObjectContainer container;
+    private Client client;
 
-	private PublishedGraphTracker tracker;
+    /**
+     * The constructor.
+     */
+    public EditorPlugin() {
+        super();
+        plugin = this;
+        try {
+            resourceBundle = ResourceBundle
+                    .getBundle("org.eclipse.ecf.example.sdo.editor.EditorPluginResources");
+        } catch (MissingResourceException x) {
+            resourceBundle = null;
+        }
+    }
 
-	/**
-	 * The constructor.
-	 */
-	public EditorPlugin() {
-		super();
-		plugin = this;
-		try {
-			resourceBundle = ResourceBundle
-					.getBundle("org.eclipse.ecf.example.sdo.editor.EditorPluginResources");
-		} catch (MissingResourceException x) {
-			resourceBundle = null;
-		}
-	}
+    /**
+     * This method is called upon plug-in activation
+     */
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+    }
 
-	/**
-	 * This method is called upon plug-in activation
-	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-	}
+    /**
+     * This method is called when the plug-in is stopped
+     */
+    public void stop(BundleContext context) throws Exception {
+        super.stop(context);
+    }
 
-	/**
-	 * This method is called when the plug-in is stopped
-	 */
-	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
-	}
+    /**
+     * Returns the shared instance.
+     */
+    public static EditorPlugin getDefault() {
+        return plugin;
+    }
 
-	/**
-	 * Returns the shared instance.
-	 */
-	public static EditorPlugin getDefault() {
-		return plugin;
-	}
+    /**
+     * Returns the string from the plugin's resource bundle, or 'key' if not
+     * found.
+     */
+    public static String getResourceString(String key) {
+        ResourceBundle bundle = EditorPlugin.getDefault().getResourceBundle();
+        try {
+            return (bundle != null) ? bundle.getString(key) : key;
+        } catch (MissingResourceException e) {
+            return key;
+        }
+    }
 
-	/**
-	 * Returns the string from the plugin's resource bundle, or 'key' if not
-	 * found.
-	 */
-	public static String getResourceString(String key) {
-		ResourceBundle bundle = EditorPlugin.getDefault().getResourceBundle();
-		try {
-			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e) {
-			return key;
-		}
-	}
+    /**
+     * Returns the plugin's resource bundle,
+     */
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
 
-	/**
-	 * Returns the plugin's resource bundle,
-	 */
-	public ResourceBundle getResourceBundle() {
-		return resourceBundle;
-	}
+    public void log(Throwable t) {
+        if (t instanceof CoreException)
+            getLog().log(((CoreException) t).getStatus());
+        else
+            getLog().log(
+                    new Status(Status.ERROR, getBundle().getSymbolicName(), 0,
+                            "An unexpected error occurred.", t));
+    }
 
-	public void log(Throwable t) {
-		if (t instanceof CoreException)
-			getLog().log(((CoreException) t).getStatus());
-		else
-			getLog().log(
-					new Status(Status.ERROR, getBundle().getSymbolicName(), 0,
-							"An unexpected error occurred.", t));
-	}
+    public synchronized ISharedDataGraph subscribe(String path,
+            IUpdateConsumer consumer) throws ECFException {
+        Path p = new Path(path);
+        ISharedObjectContainer container = getContainer(ResourcesPlugin
+                .getWorkspace().getRoot().getProject(p.segment(0)));
+        PublishedGraphTracker tracker = getTracker(container);
 
-	public synchronized ISharedDataGraph subscribe(String path,
-			IUpdateConsumer consumer) throws ECFException {
-		initialize();
-		SDOPlugin.getDefault().setDebug(true);
-		ID id = IDFactory.makeStringID(path);
-		WaitableSubscriptionCallback mutex = new WaitableSubscriptionCallback();
-		ISharedDataGraph result = SDOPlugin.getDefault().getDataGraphSharing(
-				container).subscribe(id, new EMFUpdateProvider(), consumer,
-				mutex);
-		ID containerID = null;
-		try {
-			containerID = mutex.waitForSubscription(5000);
-		} catch (InterruptedException e) {
-			throw new ECFException(e);
-		}
+        SDOPlugin.getDefault().setDebug(true);
+        ID id = IDFactory.makeStringID(path);
+        WaitableSubscriptionCallback mutex = new WaitableSubscriptionCallback();
+        ISharedDataGraph result = SDOPlugin.getDefault().getDataGraphSharing(
+                container).subscribe(id, new EMFUpdateProvider(), consumer,
+                mutex);
+        ID containerID = null;
+        try {
+            containerID = mutex.waitForSubscription(5000);
+        } catch (InterruptedException e) {
+            throw new ECFException(e);
+        }
 
-		if (containerID == null)
-			throw new ECFException("Subscription timed out.");
+        if (containerID == null)
+            throw new ECFException("Subscription timed out.");
 
-		tracker.add(id);
-		return result;
-	}
+        tracker.add(id);
+        return result;
+    }
 
-	public synchronized ISharedDataGraph publish(String path,
-			DataGraph dataGraph, IUpdateConsumer consumer) throws ECFException {
-		initialize();
-		SDOPlugin.getDefault().setDebug(true);
-		ID id = IDFactory.makeStringID(path);
-		WaitablePublicationCallback mutex = new WaitablePublicationCallback();
-		ISharedDataGraph result = SDOPlugin.getDefault().getDataGraphSharing(
-				container).publish(dataGraph, id, new EMFUpdateProvider(),
-				consumer, mutex);
-		try {
-			if (!mutex.waitForPublication(5000))
-				throw new ECFException("Publication timed out.");
-		} catch (InterruptedException e) {
-			throw new ECFException(e);
-		}
+    public synchronized ISharedDataGraph publish(String path,
+            DataGraph dataGraph, IUpdateConsumer consumer) throws ECFException {
+        Path p = new Path(path);
+        ISharedObjectContainer container = getContainer(ResourcesPlugin
+                .getWorkspace().getRoot().getProject(p.segment(0)));
+        PublishedGraphTracker tracker = getTracker(container);
 
-		tracker.add(id);
-		return result;
-	}
+        SDOPlugin.getDefault().setDebug(true);
+        ID id = IDFactory.makeStringID(path);
+        WaitablePublicationCallback mutex = new WaitablePublicationCallback();
+        ISharedDataGraph result = SDOPlugin.getDefault().getDataGraphSharing(
+                container).publish(dataGraph, id, new EMFUpdateProvider(),
+                consumer, mutex);
+        try {
+            if (!mutex.waitForPublication(5000))
+                throw new ECFException("Publication timed out.");
+        } catch (InterruptedException e) {
+            throw new ECFException(e);
+        }
 
-	public synchronized boolean isPublished(String path) throws ECFException {
-		initialize();
-		return tracker.isPublished(IDFactory.makeStringID(path));
-	}
+        tracker.add(id);
+        return result;
+    }
 
-	public synchronized void checkConnected() throws ECFException {
-		initialize();
-	}
+    public synchronized boolean isPublished(String path) throws ECFException {
+        Path p = new Path(path);
+        ISharedObjectContainer container = getContainer(ResourcesPlugin
+                .getWorkspace().getRoot().getProject(p.segment(0)));
+        PublishedGraphTracker tracker = getTracker(container);
+        return tracker.isPublished(IDFactory.makeStringID(path));
+    }
 
-	private void initialize() throws ECFException {
-		if (tracker == null) {
-			Client client;
-			try {
-				client = new Client();
-			} catch (Exception e) {
-				throw new ECFException(e);
-			}
+    public synchronized void checkConnected(IProject project)
+            throws ECFException {
+        if (getContainer(project) == null)
+            throw new ECFException("Project " + project.getName()
+                    + " is not connected.");
+    }
 
-			container = client.getContainer();
-			if (container == null)
-				throw new ECFException("Not connected.");
+    private ISharedObjectContainer getContainer(IProject project)
+            throws ECFException {
+        if (client == null) {
+            try {
+                client = new Client();
+            } catch (Exception e) {
+                throw new ECFException(e);
+            }
+        }
 
-			ID id = IDFactory.makeStringID(PublishedGraphTracker.class
-					.getName());
-			PublishedGraphTracker tracker = (PublishedGraphTracker) container
-					.getSharedObjectManager().getSharedObject(id);
-			if (tracker == null) {
-				tracker = new PublishedGraphTracker();
-				container.getSharedObjectManager().addSharedObject(id, tracker,
-						null, null);
-			}
+        // TODO Change to getContainer(project) when API available.
+        return client.getContainer();
+    }
 
-			this.tracker = tracker;
-		}
-	}
+    private PublishedGraphTracker getTracker(ISharedObjectContainer container)
+            throws ECFException {
+        ID id = IDFactory.makeStringID(PublishedGraphTracker.class.getName());
+        PublishedGraphTracker tracker = (PublishedGraphTracker) container
+                .getSharedObjectManager().getSharedObject(id);
+        if (tracker == null) {
+            tracker = new PublishedGraphTracker();
+            container.getSharedObjectManager().addSharedObject(id, tracker,
+                    null, null);
+        }
+
+        return tracker;
+    }
 }
