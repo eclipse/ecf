@@ -6,13 +6,11 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.internal.core;
 
 import java.lang.reflect.Constructor;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -35,16 +33,15 @@ import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
 import org.osgi.framework.BundleContext;
 
 public class ECFPlugin extends Plugin {
-
+    public static final String PLUGIN_ID = "org.eclipse.ecf";
+    public static final Trace trace = Trace.create("factoryinit");
     public static final String PLUGIN_RESOURCE_BUNDLE = "org.eclipse.ecf.ECFPluginResources";
-
     public static final String NAMESPACE_EPOINT = "org.eclipse.ecf.namespace";
     public static final String INSTANTIATOR_CLASS_ATTRIBUTE = "instantiatorClass";
     public static final String INSTANTIATOR_NAME_ATTRIBUTE = "name";
     public static final String NAMESPACE_CLASS_ATTRIBUTE = "namespaceClass";
     public static final String INSTANTIATOR_DATA_ATTRIBUTE = "description";
     public static final String NAMESPACE_DEFAULT_CLASS = "org.eclipse.ecf.core.identity.Namespace";
-
     public static final String CONTAINER_FACTORY_EPOINT = "org.eclipse.ecf.containerFactory";
     public static final String CONTAINER_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
     public static final String CONTAINER_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
@@ -53,28 +50,36 @@ public class ECFPlugin extends Plugin {
     public static final String ARG_TYPE_ATTRIBUTE = "type";
     public static final String ARG_VALUE_ATTRIBUTE = "value";
     public static final String ARG_NAME_ATTRIBUTE = "name";
-    
     public static final String COMM_FACTORY_EPOINT = "org.eclipse.ecf.connectionFactory";
     public static final String COMM_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
     public static final String COMM_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
     public static final String COMM_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
-    
     public static final int FACTORY_DOES_NOT_IMPLEMENT_ERRORCODE = 10;
     public static final int FACTORY_NAME_COLLISION_ERRORCODE = 20;
-
     public static final int INSTANTIATOR_DOES_NOT_IMPLEMENT_ERRORCODE = 30;
     public static final int INSTANTIATOR_NAME_COLLISION_ERRORCODE = 50;
     public static final int INSTANTIATOR_NAMESPACE_LOAD_ERRORCODE = 60;
-
     //The shared instance.
     private static ECFPlugin plugin;
     //Resource bundle.
     private ResourceBundle resourceBundle;
-
     BundleContext context = null;
-    
+
+    private static void debug(String msg) {
+        if (Trace.ON && trace != null) {
+            trace.msg(msg);
+        }
+    }
+
+    private static void dumpStack(String msg, Throwable e) {
+        if (Trace.ON && trace != null) {
+            trace.dumpStack(e, msg);
+        }
+    }
+
     public ECFPlugin() {
         super();
+        debug("<init>");
         plugin = this;
         try {
             resourceBundle = ResourceBundle.getBundle(PLUGIN_RESOURCE_BUNDLE);
@@ -82,6 +87,7 @@ public class ECFPlugin extends Plugin {
             resourceBundle = null;
         }
     }
+
     public static void log(IStatus status) {
         if (status == null)
             return;
@@ -93,7 +99,55 @@ public class ECFPlugin extends Plugin {
                     + status.getMessage());
         }
     }
+
+    class DefaultArgs {
+        String[] types;
+        String[] defaults;
+        String[] names;
+
+        public DefaultArgs(String[] types, String[] defaults, String[] names) {
+            this.types = types;
+            this.defaults = defaults;
+            this.names = names;
+        }
+
+        public String[] getDefaults() {
+            return defaults;
+        }
+
+        public String[] getNames() {
+            return names;
+        }
+
+        public String[] getTypes() {
+            return types;
+        }
+    }
+
+    protected DefaultArgs getDefaultArgs(IConfigurationElement[] argElements) {
+        String[] argTypes = new String[0];
+        String[] argDefaults = new String[0];
+        String[] argNames = new String[0];
+        if (argElements != null) {
+            if (argElements.length > 0) {
+                argTypes = new String[argElements.length];
+                argDefaults = new String[argElements.length];
+                argNames = new String[argElements.length];
+                for (int i = 0; i < argElements.length; i++) {
+                    argTypes[i] = argElements[i]
+                            .getAttribute(ARG_TYPE_ATTRIBUTE);
+                    argDefaults[i] = argElements[i]
+                            .getAttribute(ARG_VALUE_ATTRIBUTE);
+                    argNames[i] = argElements[i]
+                            .getAttribute(ARG_NAME_ATTRIBUTE);
+                }
+            }
+        }
+        return new DefaultArgs(argTypes, argDefaults, argNames);
+    }
+
     protected void setupContainerExtensionPoint(BundleContext bc) {
+        debug("setupContainerExtensionPoint(" + bc + ")");
         String bundleName = getDefault().getBundle().getSymbolicName();
         IExtensionRegistry reg = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = reg
@@ -105,84 +159,57 @@ public class ECFPlugin extends Plugin {
                 .getConfigurationElements();
         // For each configuration element
         for (int m = 0; m < members.length; m++) {
+            debug("setupContainerExtensionPoint:" + members[m].getName());
             IConfigurationElement member = members[m];
             // Get the label of the extender plugin and the ID of the extension.
             IExtension extension = member.getDeclaringExtension();
             Object exten = null;
+            String name = null;
             try {
                 // The only required attribute is "class"
                 exten = member
                         .createExecutableExtension(CONTAINER_FACTORY_EPOINT_CLASS_ATTRIBUTE);
-                // Verify that object implements ISharedObjectContainerFactory
-                if (!(exten instanceof ISharedObjectContainerInstantiator)) {
-                    IStatus s = new Status(
-                            Status.ERROR,
-                            bundleName,
-                            FACTORY_DOES_NOT_IMPLEMENT_ERRORCODE,
-                            getResourceString("ExtPointError.ContainerNoImplPrefix")
-                                    + exten.getClass().getName()
-                                    + getResourceString("ExtPointError.ContainerNoImplSuffix")
-                                    + extension
-                                            .getExtensionPointUniqueIdentifier(),
-                            null);
-                    throw new CoreException(s);
-                }
                 ClassLoader cl = exten.getClass().getClassLoader();
                 String clazz = exten.getClass().getName();
                 // Get name and get version, if available
-                String name = member
+                name = member
                         .getAttribute(CONTAINER_FACTORY_EPOINT_NAME_ATTRIBUTE);
                 if (name == null) {
                     name = clazz;
                 }
-                String description = member.getAttribute(CONTAINER_FACTORY_EPOINT_DESC_ATTRIBUTE);
+                String description = member
+                        .getAttribute(CONTAINER_FACTORY_EPOINT_DESC_ATTRIBUTE);
                 if (description == null) {
                     description = "";
                 }
                 // Get any arguments
-                String[] argTypes = new String[0];
-                String[] argDefaults = new String[0];
-                String[] argNames = new String[0];
-                IConfigurationElement [] argElements = member.getChildren(ARG_ELEMENT_NAME);
-                if (argElements != null) {
-                    if (argElements.length > 0) {
-                        argTypes = new String[argElements.length];
-                        argDefaults = new String[argElements.length];
-                        argNames = new String[argElements.length];
-                        for(int i=0; i < argElements.length; i++) {
-                            argTypes[i] = argElements[i].getAttribute(ARG_TYPE_ATTRIBUTE);
-                            argDefaults[i] = argElements[i].getAttribute(ARG_VALUE_ATTRIBUTE);
-                            argNames[i] = argElements[i].getAttribute(ARG_NAME_ATTRIBUTE);
-                        }
-                    }
-                }
+                DefaultArgs defaults = getDefaultArgs(member
+                        .getChildren(ARG_ELEMENT_NAME));
+                // Now make description instance
                 SharedObjectContainerDescription scd = new SharedObjectContainerDescription(
-                        name, (ISharedObjectContainerInstantiator) exten, description, argTypes, argDefaults,argNames);
+                        name, (ISharedObjectContainerInstantiator) exten,
+                        description, defaults.getTypes(), defaults
+                                .getDefaults(), defaults.getNames());
+                debug("setupContainerExtensionPoint:created description:" + scd);
                 if (SharedObjectContainerFactory.containsDescription(scd)) {
-                    // It's already there...log and throw as we can't use the
-                    // same named factory
-                    IStatus s = new Status(
-                            Status.ERROR,
-                            bundleName,
-                            FACTORY_NAME_COLLISION_ERRORCODE,
-                            getResourceString("ExtPointError.ContainerNameCollisionPrefix")
-                                    + name
-                                    + getResourceString("ExtPointError.ContainerNameCollisionSuffix")
-                                    + extension
-                                            .getExtensionPointUniqueIdentifier(),
-                            null);
-                    throw new CoreException(s);
+                    throw new CoreException(getStatusForContException(extension,bundleName,name));
                 }
                 // Now add the description and we're ready to go.
                 SharedObjectContainerFactory.addDescription(scd);
+                debug("setupContainerExtensionPoint:added description to factory:"
+                        + scd);
             } catch (CoreException e) {
                 log(e.getStatus());
+                dumpStack("CoreException in setupContainerExtensionPoint", e);
+            } catch (Exception e) {
+                log(getStatusForContException(extension, bundleName, name));
+                dumpStack("Exception in setupContainerExtensionPoint", e);
             }
         }
-
     }
 
     protected void setupIdentityExtensionPoint(BundleContext context) {
+        debug("setupIdentityExtensionPoint(" + context + ")");
         String bundleName = getDefault().getBundle().getSymbolicName();
         // Process extension points
         IExtensionRegistry reg = Platform.getExtensionRegistry();
@@ -195,17 +222,19 @@ public class ECFPlugin extends Plugin {
                 .getConfigurationElements();
         // For each service:
         for (int m = 0; m < members.length; m++) {
+            debug("setupIdentityExtensionPoint:" + members[m].getName());
             IConfigurationElement member = members[m];
             // Get the label of the extender plugin and the ID of the
             // extension.
             IExtension extension = member.getDeclaringExtension();
+            String nsName = null;
             try {
                 String nsInstantiatorClass = member
                         .getAttribute(INSTANTIATOR_CLASS_ATTRIBUTE);
                 if (nsInstantiatorClass == null) {
                     throw new CoreException(null);
                 }
-                String nsName = member
+                nsName = member
                         .getAttribute(INSTANTIATOR_NAME_ATTRIBUTE);
                 if (nsName == null) {
                     nsName = nsInstantiatorClass;
@@ -221,19 +250,6 @@ public class ECFPlugin extends Plugin {
                 Object obj = member
                         .createExecutableExtension(INSTANTIATOR_CLASS_ATTRIBUTE);
                 // Verify that object implements IDInstantiator
-                if (!(obj instanceof IDInstantiator)) {
-                    IStatus s = new Status(
-                            Status.ERROR,
-                            bundleName,
-                            INSTANTIATOR_DOES_NOT_IMPLEMENT_ERRORCODE,
-                            getResourceString("ExtPointError.IDNoImplPrefix")
-                                    + obj.getClass().getName()
-                                    + getResourceString("ExtPointError.IDNoImplSuffix")
-                                    + extension
-                                            .getExtensionPointUniqueIdentifier(),
-                            null);
-                    throw new CoreException(s);
-                }
                 ClassLoader loader = obj.getClass().getClassLoader();
                 Namespace ns = null;
                 try {
@@ -256,31 +272,26 @@ public class ECFPlugin extends Plugin {
                             e);
                     throw new CoreException(s);
                 }
+                debug("setupIdentityExtensionPoint:created namespace:" + ns);
                 if (IDFactory.containsNamespace(ns)) {
-                    // It's already there...log and throw as we can't use the
-                    // same named factory
-                    IStatus s = new Status(
-                            Status.ERROR,
-                            bundleName,
-                            INSTANTIATOR_NAME_COLLISION_ERRORCODE,
-                            getResourceString("ExtPointError.IDNameCollisionPrefix")
-                                    + nsName
-                                    + getResourceString("ExtPointError.IDNameCollisionSuffix")
-                                    + extension
-                                            .getExtensionPointUniqueIdentifier(),
-                            null);
-                    throw new CoreException(s);
+                    throw new CoreException(getStatusForIDException(extension,bundleName,nsName));
                 }
                 // Now add to known namespaces
                 IDFactory.addNamespace(ns);
+                debug("setupIdentityExtensionPoint:added namespace to factory:"
+                        + ns);
             } catch (CoreException e) {
                 log(e.getStatus());
+                dumpStack("Exception in setupIdentityExtensionPoint", e);
+            } catch (Exception e) {
+                log(getStatusForIDException(extension,bundleName,nsName));
+                dumpStack("Exception in setupIdentityExtensionPoint",e);
             }
         }
-
     }
 
     protected void setupCommExtensionPoint(BundleContext bc) {
+        debug("setupCommExtensionPoint(" + bc + ")");
         String bundleName = getDefault().getBundle().getSymbolicName();
         IExtensionRegistry reg = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = reg
@@ -292,59 +303,39 @@ public class ECFPlugin extends Plugin {
                 .getConfigurationElements();
         // For each configuration element
         for (int m = 0; m < members.length; m++) {
+            debug("setupCommExtensionPoint:" + members[m].getName());
             IConfigurationElement member = members[m];
             // Get the label of the extender plugin and the ID of the extension.
             IExtension extension = member.getDeclaringExtension();
             Object exten = null;
+            String name = null;
             try {
                 // The only required attribute is "instantiatorClass"
                 exten = member
                         .createExecutableExtension(COMM_FACTORY_EPOINT_CLASS_ATTRIBUTE);
-                // Verify that object implements ISynchAsynchConnectionInstantiator
-                if (!(exten instanceof ISynchAsynchConnectionInstantiator)) {
-                    IStatus s = new Status(
-                            Status.ERROR,
-                            bundleName,
-                            FACTORY_DOES_NOT_IMPLEMENT_ERRORCODE,
-                            getResourceString("ExtPointError.CommNoImplPrefix")
-                                    + exten.getClass().getName()
-                                    + getResourceString("ExtPointError.CommNoImplSuffix")
-                                    + extension
-                                            .getExtensionPointUniqueIdentifier(),
-                            null);
-                    throw new CoreException(s);
-                }
+                // Verify that object implements
+                // ISynchAsynchConnectionInstantiator
                 ClassLoader cl = exten.getClass().getClassLoader();
                 String clazz = exten.getClass().getName();
                 // Get name and get version, if available
-                String name = member
-                        .getAttribute(COMM_FACTORY_EPOINT_NAME_ATTRIBUTE);
+                name = member.getAttribute(COMM_FACTORY_EPOINT_NAME_ATTRIBUTE);
                 if (name == null) {
                     name = clazz;
                 }
-                String description = member.getAttribute(COMM_FACTORY_EPOINT_DESC_ATTRIBUTE);
+                String description = member
+                        .getAttribute(COMM_FACTORY_EPOINT_DESC_ATTRIBUTE);
                 if (description == null) {
                     description = "";
                 }
                 // Get any arguments
-                String[] argTypes = new String[0];
-                String[] argDefaults = new String[0];
-                String[] argNames = new String[0];
-                IConfigurationElement [] argElements = member.getChildren(ARG_ELEMENT_NAME);
-                if (argElements != null) {
-                    if (argElements.length > 0) {
-                        argTypes = new String[argElements.length];
-                        argDefaults = new String[argElements.length];
-                        argNames = new String[argElements.length];
-                        for(int i=0; i < argElements.length; i++) {
-                            argTypes[i] = argElements[i].getAttribute(ARG_TYPE_ATTRIBUTE);
-                            argDefaults[i] = argElements[i].getAttribute(ARG_VALUE_ATTRIBUTE);
-                            argNames[i] = argElements[i].getAttribute(ARG_NAME_ATTRIBUTE);
-                        }
-                    }
-                }
-                ConnectionDescription cd = new ConnectionDescription(
-                        name, (ISynchAsynchConnectionInstantiator) exten, description,argTypes,argDefaults,argNames);
+                // Get any arguments
+                DefaultArgs defaults = getDefaultArgs(member
+                        .getChildren(ARG_ELEMENT_NAME));
+                ConnectionDescription cd = new ConnectionDescription(name,
+                        (ISynchAsynchConnectionInstantiator) exten,
+                        description, defaults.getTypes(), defaults
+                                .getDefaults(), defaults.getNames());
+                debug("setupCommExtensionPoint:created description:" + cd);
                 if (ConnectionFactory.containsDescription(cd)) {
                     // It's already there...log and throw as we can't use the
                     // same named factory
@@ -358,17 +349,61 @@ public class ECFPlugin extends Plugin {
                                     + extension
                                             .getExtensionPointUniqueIdentifier(),
                             null);
-                    throw new CoreException(s);
+                    throw new CoreException(getStatusForCommException(
+                            extension, bundleName, name));
                 }
                 // Now add the description and we're ready to go.
                 ConnectionFactory.addDescription(cd);
+                debug("setupCommExtensionPoint:added description to factory:"
+                        + cd);
             } catch (CoreException e) {
                 log(e.getStatus());
+                dumpStack("CoreException in setupCommExtensionPoint", e);
+            } catch (Exception e) {
+                log(getStatusForCommException(extension, bundleName, name));
+                dumpStack("Exception in setupCommExtensionPoint", e);
             }
         }
-
     }
 
+    protected IStatus getStatusForCommException(IExtension ext,
+            String bundleName, String name) {
+        IStatus s = new Status(
+                Status.ERROR,
+                bundleName,
+                FACTORY_NAME_COLLISION_ERRORCODE,
+                getResourceString("ExtPointError.CommNameCollisionPrefix")
+                        + name
+                        + getResourceString("ExtPointError.CommNameCollisionSuffix")
+                        + ext.getExtensionPointUniqueIdentifier(), null);
+        return s;
+    }
+
+    protected IStatus getStatusForContException(IExtension ext,
+            String bundleName, String name) {
+        IStatus s = new Status(
+                Status.ERROR,
+                bundleName,
+                FACTORY_NAME_COLLISION_ERRORCODE,
+                getResourceString("ExtPointError.ContainerNameCollisionPrefix")
+                        + name
+                        + getResourceString("ExtPointError.ContainerNameCollisionSuffix")
+                        + ext.getExtensionPointUniqueIdentifier(), null);
+        return s;
+    }
+
+    protected IStatus getStatusForIDException(IExtension ext,
+            String bundleName, String name) {
+        IStatus s = new Status(
+                Status.ERROR,
+                bundleName,
+                FACTORY_NAME_COLLISION_ERRORCODE,
+                getResourceString("ExtPointError.CommNameCollisionPrefix")
+                        + name
+                        + getResourceString("ExtPointError.CommNameCollisionSuffix")
+                        + ext.getExtensionPointUniqueIdentifier(), null);
+        return s;
+    }
 
     /**
      * This method is called upon plug-in activation
@@ -388,7 +423,7 @@ public class ECFPlugin extends Plugin {
         super.stop(context);
         this.context = null;
     }
-    
+
     public BundleContext getBundleContext() {
         return context;
     }
@@ -419,5 +454,4 @@ public class ECFPlugin extends Plugin {
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
-
 }

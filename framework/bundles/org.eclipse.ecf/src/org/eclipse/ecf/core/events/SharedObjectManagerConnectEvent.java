@@ -34,7 +34,7 @@ public class SharedObjectManagerConnectEvent implements
         return localContainerID;
     }
     public ID[] getSharedObjectReceiverIDs() {
-        return sharedObjectReceiverIDs;
+        return (sharedObjectReceiverIDs==null)?new ID[0]:sharedObjectReceiverIDs;
     }
     public ID getSharedObjectSenderID() {
         return sharedObjectSenderID;

@@ -26,11 +26,10 @@ public class Trace {
         try {
             ON = Platform.inDebugMode();
             isEclipse = true;
-            pluginName = ProviderPlugin.getDefault().getBundle()
-                    .getSymbolicName();
+            pluginName = ProviderPlugin.PROVIDERPLUGIN_ID;
         } catch (Exception e) {
             try {
-                String val = System.getProperty("org.eclipse.ecf.provider.Trace");
+                String val = System.getProperty(ProviderPlugin.PROVIDERPLUGIN_ID+".Trace");
                 if (val != null) {
                     setTrace(true);
                     isEclipse = false;

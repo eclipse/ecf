@@ -33,7 +33,8 @@ public class TCPServerSOContainer extends ServerSOContainer implements
     // Keep alive value
     protected int keepAlive;
     protected TCPServerSOContainerGroup group;
-
+    protected boolean isSingle = false;
+    
     protected int getKeepAlive() {
         return keepAlive;
     }
@@ -56,6 +57,7 @@ public class TCPServerSOContainer extends ServerSOContainer implements
         URI aURI = new URI(config.getID().getName());
         int urlPort = aURI.getPort();
         if (group == null) {
+            isSingle = true;
             this.group = new TCPServerSOContainerGroup(urlPort);
             this.group.putOnTheAir();
         } else
@@ -86,6 +88,9 @@ public class TCPServerSOContainer extends ServerSOContainer implements
         }
         if (aURI != null)
             group.remove(aURI.getPath());
+        if (isSingle) {
+            group.takeOffTheAir();
+        }
         group = null;
         super.dispose(timeout);
     }

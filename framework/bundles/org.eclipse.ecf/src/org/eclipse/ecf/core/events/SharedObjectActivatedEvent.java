@@ -32,7 +32,7 @@ public class SharedObjectActivatedEvent implements ISharedObjectActivatedEvent {
     }
 
     public ID[] getGroupMemberIDs() {
-        return groupMemberIDs;
+        return (groupMemberIDs==null)?new ID[0]:groupMemberIDs;
     }
 
     public String toString() {
