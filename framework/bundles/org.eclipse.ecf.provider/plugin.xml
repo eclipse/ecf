@@ -16,13 +16,13 @@
                name="keepAlive"/>
          <property
                value="ecftcp://&lt;server&gt;:&lt;port&gt;/&lt;servicename&gt;"
-               name="examplegroupid"/>
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"/>
          <property
                value="ecftcp://localhost:3282/server"
-               name="defaultgroupid"/>
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"/>
          <property
                value="true"
-               name="isClient"/>
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.isClient"/>
       </containerFactory>
    </extension>
    <extension

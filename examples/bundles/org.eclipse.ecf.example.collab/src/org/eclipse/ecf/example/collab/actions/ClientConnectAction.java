@@ -21,7 +21,9 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.example.collab.Client;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
@@ -56,10 +58,12 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
     protected Object data = null;
     protected IProject project = null;
     protected String projectName = null;
+    protected Client client = null;
     
 	public ClientConnectAction() {
         try {
             targetID = IDFactory.makeStringID(DEFAULT_SERVER_ID);
+            client = new Client();
         } catch (Exception e) {
             
         }
@@ -76,20 +80,26 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
             super(name);
         }
         public IStatus run(IProgressMonitor pm) {
-            Client ct = null;
             try {
-                ct = new Client();
+                Status okStatus = new Status(IStatus.OK,ClientPlugin.PLUGIN_ID,IStatus.OK,"Connected",null);
                 // Make sure we're disconnected
-                if (ct.isConnected()) {
-                    ct.disposeClient();
+                Client.ClientEntry entry = client.isConnected(project,containerType);
+                if (entry != null) {
+                    Display.getDefault().syncExec(new Runnable() {
+                        public void run() {
+                            Display.getDefault().beep();
+                            MessageDialog.openInformation(
+                                    null,
+                                    "Already connected",
+                                    "Already connected for provider "+containerType);
+                        }
+                    });
+                    return okStatus;
                 }
                 // Actually create and connect client
-                ct.createAndConnectClient(containerType,targetID,username,data,project);
-                return new Status(IStatus.OK,ClientPlugin.PLUGIN_ID,IStatus.OK,"Connected",null);
+                client.createAndConnectClient(containerType,targetID,username,data,project);
+                return okStatus;
             } catch (Exception e) {
-                if (ct != null) {
-                    ct.disposeClient();
-                }
                 return new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Could not connect to group '"+targetID.getName()+"'",e);
             }
         }        

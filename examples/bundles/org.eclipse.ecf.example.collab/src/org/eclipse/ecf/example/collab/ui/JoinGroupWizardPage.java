@@ -18,6 +18,8 @@ import org.eclipse.ecf.core.SharedObjectContainerDescription;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -28,11 +30,23 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 public class JoinGroupWizardPage extends WizardPage {
+    
+    protected static final String CLASSNAME = JoinGroupWizardPage.class.getName();
+    
+    protected static final String USER_NAME_SYSTEM_PROPERTY = "user.name";
+    
+    protected static final String ISCLIENT_PROP_NAME = CLASSNAME+".isClient";
+    protected static final String DEFAULTGROUPID_PROP_NAME = CLASSNAME+".defaultgroupid";
+    protected static final String EXAMPLEGROUPID_PROP_NAME = CLASSNAME+".examplegroupid";
+    protected static final String USEPASSWORD_PROP_NAME = CLASSNAME+".usepassword";
+    protected static final String URLPREFIX_NAME = CLASSNAME+".urlprefix";
+    protected static final String GROUPIDLABEL_PROP_NAME = CLASSNAME+".groupIDLabel";
+    
     protected static final String PAGE_DESCRIPTION = "Join ECF Collaboration Group";
-    private static final String JOINGROUP_FIELDNAME = "Group ID:";
-    private static final String NICKNAME_FIELDNAME = "Nickname:";
-    private static final String ECF_DEFAULT_URL = "ecftcp://localhost:3282/server";
-    protected static final String ECF_TEMPLATE_URL = "ecftcp://<machinename>:<port>/<name>";
+    protected static final String JOINGROUP_FIELDNAME = "Group ID:";
+    protected static final String NICKNAME_FIELDNAME = "Nickname:";
+    protected static final String ECF_DEFAULT_URL = "ecftcp://localhost:3282/server";
+    protected static final String ECF_TEMPLATE_URL = "<protocol>://<machinename>:<port>/<servicename>";
     protected static final String PAGE_TITLE = "Join ECF Group";
     
     protected static final String DEFAULT_CLIENT = "org.eclipse.ecf.provider.generic.Client";
@@ -54,12 +68,22 @@ public class JoinGroupWizardPage extends WizardPage {
     protected Combo combo;
     protected Text password_text;
     protected List containerDescriptions = new ArrayList();
+    protected String urlPrefix = "";
+    protected Label groupIDLabel;
     
     protected void modifyUI(Map props) {
         if (props != null) {
-            String usePassword = (String) props.get("usepassword");
-            String examplegroupid = (String) props.get("examplegroupid");
-            String defaultgroupid = (String) props.get("defaultgroupid");
+            String usePassword = (String) props.get(USEPASSWORD_PROP_NAME);
+            String examplegroupid = (String) props.get(EXAMPLEGROUPID_PROP_NAME);
+            String defaultgroupid = (String) props.get(DEFAULTGROUPID_PROP_NAME);
+            urlPrefix = (String) props.get(URLPREFIX_NAME); 
+            if (urlPrefix == null) urlPrefix = "";
+            String groupLabel = (String) props.get(GROUPIDLABEL_PROP_NAME);
+            if (groupLabel != null) {
+                groupIDLabel.setText(groupLabel);
+            } else {
+                groupIDLabel.setText(JOINGROUP_FIELDNAME);
+            }
             // turn off password unless used
             if (usePassword != null){
                 password_label.setVisible(true);
@@ -83,17 +107,14 @@ public class JoinGroupWizardPage extends WizardPage {
             String name = desc.getName();
             String description = desc.getDescription();
             Map props = desc.getProperties();
-            String isClient = (String) props.get("isClient");
-            if (isClient != null) {
-                if (DEFAULT_CLIENT.equals(name)) {
-                    def = index;
-                    defProps = props;
-                }
-                combo.add(description+" - "+name,index);
-                combo.setData(""+index,desc);
-                containerDescriptions.add(desc);
-                index++;
+            if (DEFAULT_CLIENT.equals(name)) {
+                def = index;
+                defProps = props;
             }
+            combo.add(description+" - "+name,index);
+            combo.setData(""+index,desc);
+            containerDescriptions.add(desc);
+            index++;
         }
         combo.addSelectionListener(new SelectionListener() {
             public void widgetSelected(SelectionEvent e) {
@@ -111,7 +132,6 @@ public class JoinGroupWizardPage extends WizardPage {
         if (defProps != null) modifyUI(defProps);
     }
     
-    //protected 
     public void createControl(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         final GridLayout gridLayout = new GridLayout();
@@ -132,14 +152,23 @@ public class JoinGroupWizardPage extends WizardPage {
         example_label = new Label(container, SWT.NONE);
         example_label.setText(template_url);
 
-        final Label label = new Label(container, SWT.NONE);
-        label.setText(JOINGROUP_FIELDNAME);
+        groupIDLabel = new Label(container, SWT.NONE);
+        groupIDLabel.setText(JOINGROUP_FIELDNAME);
 
         joingroup_text = new Text(container, SWT.BORDER);
         joingroup_text.setText(default_url);
         final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         gridData.widthHint = 140;
         joingroup_text.setLayoutData(gridData);
+        joingroup_text.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+                String t = joingroup_text.getText();
+                joingroup_text.setSelection(t.length());
+            }
+
+            public void focusLost(FocusEvent e) {
+            }
+        });
 
         final Label label_1 = new Label(container, SWT.NONE);
         label_1.setLayoutData(new GridData());
@@ -148,7 +177,16 @@ public class JoinGroupWizardPage extends WizardPage {
         nickname_text = new Text(container, SWT.BORDER);
         final GridData nickname = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
         nickname_text.setLayoutData(nickname);
-        nickname_text.setText(System.getProperty("user.name"));
+        nickname_text.setText(System.getProperty(USER_NAME_SYSTEM_PROPERTY));
+        nickname_text.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+                String t = nickname_text.getText();
+                    nickname_text.selectAll();
+            }
+
+            public void focusLost(FocusEvent e) {
+            }
+        });
 
         password_label = new Label(container, SWT.NONE);
         password_label.setText("Password:");
@@ -164,7 +202,11 @@ public class JoinGroupWizardPage extends WizardPage {
     }
     
     public String getJoinGroupText() {
-        return joingroup_text.getText().trim();
+        String textValue = joingroup_text.getText().trim();
+        if (!urlPrefix.equals("") && !textValue.startsWith(urlPrefix)) {
+            textValue = urlPrefix+textValue;
+        }
+        return textValue;
     }
     
     public String getNicknameText() {

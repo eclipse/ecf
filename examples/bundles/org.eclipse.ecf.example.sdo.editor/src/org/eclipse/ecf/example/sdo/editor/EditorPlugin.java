@@ -12,7 +12,6 @@ package org.eclipse.ecf.example.sdo.editor;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -31,7 +30,6 @@ import org.eclipse.ecf.sdo.WaitableSubscriptionCallback;
 import org.eclipse.ecf.sdo.emf.EMFUpdateProvider;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-
 import commonj.sdo.DataGraph;
 
 /**
@@ -180,16 +178,7 @@ public class EditorPlugin extends AbstractUIPlugin {
 
     private ISharedObjectContainer getContainer(IProject project)
             throws ECFException {
-        if (client == null) {
-            try {
-                client = new Client();
-            } catch (Exception e) {
-                throw new ECFException(e);
-            }
-        }
-
-        // TODO Change to getContainer(project) when API available.
-        return client.getContainer();
+        return Client.getContainer(project);
     }
 
     private PublishedGraphTracker getTracker(ISharedObjectContainer container)
