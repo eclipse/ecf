@@ -7,7 +7,11 @@ import org.eclipse.ecf.core.util.AbstractFactory;
 public class ConnectionFactory {
 
 	private static Hashtable connectiontypes = new Hashtable();
-
+	
+	static {
+	    ConnectionDescription cd = new ConnectionDescription((ClassLoader)null,"default","org.eclipse.ecf.provider.comm.tcp.Client$Creator");
+	    addDescription(cd);
+	}
 	public final static ConnectionDescription getDescription(ConnectionDescription scd) {
 		return getDescription0(scd);
 	}
@@ -57,11 +61,11 @@ public class ConnectionFactory {
 		throws ConnectionInstantiationException {
         
 		if (desc == null)
-			throw new ConnectionInstantiationException("AsynchConnectionDescription cannot be null");
+			throw new ConnectionInstantiationException("ConnectionDescription cannot be null");
 		ConnectionDescription cd = getDescription0(desc);
 		if (cd == null)
 			throw new ConnectionInstantiationException(
-				"AsynchConnectionDescription " + desc.getName() + " not found");
+				"ConnectionDescription " + desc.getName() + " not found");
 		IAsynchConnectionInstantiator instantiator = null;
 		Class clazzes[] = null;
 		try {
@@ -69,7 +73,7 @@ public class ConnectionFactory {
 		    clazzes = AbstractFactory.getClassesForTypes(argTypes, args, cd.getClassLoader());
 		    if (instantiator == null)
 		        throw new InstantiationException(
-				"Instantiator for AsynchConnectionDescription "
+				"Instantiator for ConnectionDescription "
 					+ cd.getName()
 					+ " is null");
 		} catch (Exception e) {
