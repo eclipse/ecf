@@ -1,0 +1,8 @@
+org.eclipse.ecf.example.collab/debug = true
+org.eclipse.ecf.example.collab/debug/filter = *
+org.eclipse.ecf.example.collab/debug/flag = true
+org.eclipse.ecf.example.collab/debug/genericsharedobject = true
+org.eclipse.ecf.example.collab/debug/transactionsharedobject = true
+org.eclipse.ecf.example.collab/debug/urlsharedobject = true
+org.eclipse.ecf.example.collab/debug/progsharedobject = true
+org.eclipse.ecf.example.collab/debug/filetransfersharedobject = true
