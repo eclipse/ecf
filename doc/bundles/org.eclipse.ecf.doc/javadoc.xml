@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" author="true" classpath="." destdir="html/reference/api" doctitle="Eclipse Communication Framework (ECF) 1.0.0" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="org.eclipse.ecf.core.comm,org.eclipse.ecf.provider,org.eclipse.ecf.sdo.emf,org.eclipse.ecf.core.identity,org.eclipse.ecf.provider.generic.events,org.eclipse.ecf.core.identity.provider,org.eclipse.ecf.provider.comm.tcp,org.eclipse.ecf.provider.generic.gmm,org.eclipse.ecf.provider.app,org.eclipse.ecf.provider.generic,org.eclipse.ecf.sdo,org.eclipse.ecf.provider.generic.user,org.eclipse.ecf.core,org.eclipse.ecf.provider.generic.sobject,org.eclipse.ecf.core.user,org.eclipse.ecf.core.provider,org.eclipse.ecf.core.events,org.eclipse.ecf.core.util,org.eclipse.ecf.core.comm.provider" source="1.4" sourcepath="../org.eclipse.ecf.sdo/src;../org.eclipse.ecf.provider/src;../org.eclipse.ecf/src" splitindex="true" use="true" version="true">
+            <link href="http://java.sun.com/j2se/1.4.1/docs/api"/>
+        </javadoc>
+    </target>
+</project>

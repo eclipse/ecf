@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+</head>
+<body>
+<h2>Introduction: ECF Communication via Shared Object Containers</h2>
+<p> The two fundamental concepts in ECF are the <b>SharedObjectContainer</b>
+and the <b>SharedObject</b>. SharedObjectContainers provide a specific
+<b><i>communications context</i></b> for contained SharedObject
+instances. The context provided by ECF SharedObjectContainers allows
+contained SharedObjects to communicate with a group of remote processes
+using protocols provided by the container. <br>
+<br>
+In the ECF model, SharedObjects represent communications components or
+whole communications applications. Components use container-provided
+messaging to implement their necessary communications, but are
+completely free to implement whatever other functionality is required.
+All a given ECF component must do is implement a single interface
+(org.eclipse.ecf.core.ISharedObject), and add itself/be added to some
+instance of a container. <br>
+<br>
+ECF itself defines the basic required interfaces for
+SharedObjectContainers and SharedObjects. ECF also provides
+implementations of various common communications protocols, in the form
+of specific type of containers, and various sorts of application-level
+communications (e.g conferencing or chat) via communications components
+implemented as SharedObjects. <br>
+<br>
+In some respects, the ECF container/shared object design resembles the
+design of other container architectures such a Servlet container. The
+difference, however, is that the ECF container model is based upon a
+group model of communication rather than client/server, where a given
+shared object can communicate with one or many remote processes either
+asynchronously and/or synchronously with a single primitive. </p>
+<br>
+</body>
+</html>

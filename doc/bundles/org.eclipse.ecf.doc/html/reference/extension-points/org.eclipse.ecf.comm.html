@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>ECF Connection Factory</title>
+
+<style>@import url("file:/c:/cygwin/home/pnehrer/eclipse-SDK-3.1M4/eclipse/plugins/org.eclipse.platform.doc.isv_3.1.0/book.css");</style>
+<style>@import url("file:/c:/cygwin/home/pnehrer/eclipse-SDK-3.1M4/eclipse/plugins/org.eclipse.platform.doc.isv_3.1.0/schema.css");</style></head>
+
+<body>
+<h1><center>ECF Connection Factory</center></h1>
+<p></p>
+<h6 class="CaptionFigColumn" id="header">Identifier: </h6>org.eclipse.ecf.comm<p></p>
+<h6 class="CaptionFigColumn" id="header">Since: </h6>0.2.0
+<p></p>
+
+<p>
+</p><h6 class="CaptionFigColumn" id="header">Description: </h6>This
+extension allows plugins to register themselves as 'providers' of ECF
+connection factories. Once registered via this extension point, plugins
+can provide implementations of custom ISynchAsynchConnection instances
+via the ECF connection factory (<b>org.eclipse.ecf.core.comm.ConnectionFactory</b>).
+<p>Plugins using this extension point can define new implementation
+classes of the core ISynchAsynchConnection interface. When client
+requests are made to ECF to create <b>ISynchAsynchConnection</b>
+instances via the ConnectionFactory.makeSynchAsynchConnection()
+methods, requests to create instances of the appropriate type will be
+re-directed to the given extension.</p>
+<p></p><h6 class="CaptionFigColumn" id="header">Configuration Markup:</h6><p></p>
+<p class="code" id="dtd">&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.connectionFactory">connectionFactory</a>)&gt;</p>
+<p class="code" id="dtd">&lt;!ATTLIST extension</p>
+<p class="code" id="dtdAttlist">point&nbsp;CDATA #REQUIRED</p><p class="code" id="dtdAttlist">id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</p><p class="code" id="dtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class="ConfigMarkup" id="attlistDesc">
+</ul>
+<br><p class="code" id="dtd">&lt;!ELEMENT <a name="e.connectionFactory">connectionFactory</a> (<a href="#e.defaultargument">defaultargument</a>)&gt;</p>
+<p class="code" id="dtd">&lt;!ATTLIST connectionFactory</p>
+<p class="code" id="dtdAttlist">class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</p><p class="code" id="dtdAttlist">name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</p><p class="code" id="dtdAttlist">description&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<p class="ConfigMarkup" id="elementDesc">
+Connection factory definition</p>
+<br>
+<ul class="ConfigMarkup" id="attlistDesc">
+<li><b>class</b> - Required class that provides implementation of connection factory.  The class must implement <b>org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator</b></li>
+<li><b>name</b> - Optional name for connection factory.  If this name is not explicitly given, the class will be used for the name.</li>
+<li><b>description</b> - An optional description for the connection factory.</li>
+</ul>
+<br><p class="code" id="dtd">&lt;!ELEMENT <a name="e.defaultargument">defaultargument</a> EMPTY&gt;</p>
+<p class="code" id="dtd">&lt;!ATTLIST defaultargument</p>
+<p class="code" id="dtdAttlist">type&nbsp;&nbsp;CDATA #IMPLIED</p><p class="code" id="dtdAttlist">value&nbsp;CDATA #IMPLIED</p><p class="code" id="dtdAttlist">name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<p class="ConfigMarkup" id="elementDesc">
+Default argument to be passed to makeInstance method. Value of this
+element (if any) is used to provide a default value for the given
+argument</p>
+<br>
+<ul class="ConfigMarkup" id="attlistDesc">
+<li><b>type</b> - The fully qualified type of the argument.</li>
+<li><b>value</b> - The value for the default argument</li>
+<li><b>name</b> - An optional name for the defaultargument</li>
+</ul>
+<br><h6 class="CaptionFigColumn" id="header">Examples: </h6>Here's an extension that associates a class org.eclipse.ecf.test.FooContainerFactory with name 'foo' in the ECF <b>SharedObjectContainerFactory</b>:
+
+<pre>   <p class="code" id="tag">&lt;extension
+         point=</p><p class="code" id="cstring">"org.eclipse.ecf.connectionFactory"</p><p class="code" id="tag">&gt;</p>
+      <p class="code" id="tag">&lt;connectionFactory
+            class=</p><p class="code" id="cstring">"org.eclipse.ecf.provider.comm.tcp.Client$Creator"</p><p class="code" id="tag">
+            description=</p><p class="code" id="cstring">"TCP Client Connection Factory"</p><p class="code" id="tag">
+            name=</p><p class="code" id="cstring">"org.eclipse.ecf.provider.comm.tcp.Client"</p><p class="code" id="tag">&gt;</p>
+         <p class="code" id="tag">&lt;defaultargument
+               value=</p><p class="code" id="cstring">"10000"</p><p class="code" id="tag">
+               type=</p><p class="code" id="cstring">"java.lang.Integer"</p><p class="code" id="tag">
+               name=</p><p class="code" id="cstring">"keepAlive"</p><p class="code" id="tag">/&gt;</p>
+      <p class="code" id="tag">&lt;/connectionFactory&gt;</p>
+   <p class="code" id="tag">&lt;/extension&gt;</p>
+</pre>
+
+Here's an example implementation of this extension point:
+
+<pre>    public ISynchAsynchConnection makeInstance(ConnectionDescription description,
+            ISynchAsynchConnectionEventHandler handler, Class[] clazzes,
+            Object[] args) throws ConnectionInstantiationException {
+        try {
+            String [] argVals = description.getArgDefaults();
+            Integer ka = null;
+            if (argVals != null &amp;&amp; argVals.length != 0) {
+                String val = argVals[0];
+                if (val != null) {
+                    ka = new Integer(val);
+                }
+            }
+            if (args != null &amp;&amp; args.length != 0) {
+                if (args[0] instanceof Integer) {
+                    ka = (Integer) args[0];
+                } else if (args[0] instanceof String) {
+                    ka = new Integer((String) args[0]);
+                }
+            }
+            return new Client(handler, ka);
+        } catch (Exception e) {
+            throw new ConnectionInstantiationException(
+                    "Exception in creating connection "
+                            + Client.class.getName(), e);
+        }
+    }
+</pre>
+<p></p>
+
+<h6 class="CaptionFigColumn" id="header">API Information: </h6>The API for this extension point is provided by the <b>org.eclipse.ecf.core.comm.ContainerFactory</b>
+static methods. Specifically, the 'makeSynchAsynchConnection' static
+methods are to be used by clients. The functionality provided by the
+extension point mechanism can be used at runtime via the <b>ConnectionFactory.addDescription(ConnectionDescription)</b> method.  The available connection factories can be queried with the <b>ConnectionFactory.getDescriptions()</b> method.
+<p></p>
+
+<h6 class="CaptionFigColumn" id="header">Supplied Implementation: </h6>The supplied implementations of this extension point are:
+
+In org.eclipse.ecf.provider plugin:
+
+org.eclipse.ecf.provider.tcp.Client$Creator
+<p></p>
+
+<br>
+<p class="note" id="copyright">
+Copyright (c) 2005 Composent, Inc. and others.
+All rights reserved. This program and the accompanying materials are
+made available under the terms of the Eclipse Public License v1.0 which
+accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html. Contributors: Composent,
+Inc. - initial API and implementation
+</p><p></p>
+
+<p></p>
+</body></html>

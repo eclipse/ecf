@@ -2,4 +2,7 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Getting Started" link_to="toc.xml#gettingstarted"> 
+	<topic label="System Requirements" href="html/gettingstarted/prerequisites.html"/>
+	<topic label="Connecting to Test Server" href="html/gettingstarted/connect.html"/>
+	<topic label="Running Test Server" href="html/gettingstarted/runserver.html"/>
 </toc>
