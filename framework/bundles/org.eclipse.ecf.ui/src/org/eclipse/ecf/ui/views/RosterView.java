@@ -400,6 +400,9 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
             public void run() {
                 TreeObject treeObject = getSelectedTreeObject();
                 if (treeObject != null) openChatWindowForTarget(treeObject.getUserID());
+                else {
+                    
+                }
             }
         };
         chatAction.setText("IM");
