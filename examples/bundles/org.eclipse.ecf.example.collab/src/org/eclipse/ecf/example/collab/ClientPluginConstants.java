@@ -27,6 +27,9 @@ public interface ClientPluginConstants {
 	public static final String PREF_CONFIRM_REMOTE_VIEW = "confirmRemoteView";
 	public static final String PREF_FILE_SEND_PATH = "findSendPath";
 	public static final String PREF_CONFIRM_FILE_RECEIVE = "confirmFileReceive";
+	public static final String PREF_ME_TEXT_COLOR = "prefMeTextColor";
+	public static final String PREF_OTHER_TEXT_COLOR = "prefOtherTextColor";
+	public static final String PREF_SYSTEM_TEXT_COLOR = "prefSystemTextColor";
 	
 	/*
 	 * Contstants used to describe decoration images.

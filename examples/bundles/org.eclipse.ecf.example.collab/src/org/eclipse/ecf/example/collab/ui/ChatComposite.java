@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.example.collab.ClientPlugin;
@@ -120,16 +121,25 @@ public class ChatComposite extends Composite {
 		this.view = view;
 		this.chatWindow = chatWindow;
 		
-		this.meColor = new Color(getShell().getDisplay(), 23, 135, 65);
-		this.otherColor = new Color(getShell().getDisplay(), 65, 13, 165);
-		this.systemColor = new Color(getShell().getDisplay(), 123, 135, 165);
+		meColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_ME_TEXT_COLOR));
+		otherColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_OTHER_TEXT_COLOR));
+		systemColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_SYSTEM_TEXT_COLOR));
+		ClientPlugin.getDefault().getPluginPreferences().addPropertyChangeListener(new ColorPropertyChangeListener());
 		
 		this.addDisposeListener(new DisposeListener() {
 
 			public void widgetDisposed(DisposeEvent e) {
-				meColor.dispose();
-				otherColor.dispose();
-				systemColor.dispose();
+				if (meColor != null) {
+					meColor.dispose();
+				}
+				
+				if (otherColor != null) {
+					otherColor.dispose();
+				}
+				
+				if (systemColor != null) {
+					systemColor.dispose();
+				}
 			}
 			
 		});
@@ -147,9 +157,8 @@ public class ChatComposite extends Composite {
 			fr.put(CHAT_OUTPUT_FONT, newFont);
 			textoutput.getTextWidget().setFont(fr.get(CHAT_OUTPUT_FONT));
 		}
-		FontPropertyChangeListener listener = new FontPropertyChangeListener();
 		
-		ClientPlugin.getDefault().getPluginPreferences().addPropertyChangeListener(listener);
+		ClientPlugin.getDefault().getPluginPreferences().addPropertyChangeListener(new FontPropertyChangeListener());
 		
 		textoutput.setDocument(new Document(initText));
 		textoutput.setEditable(false);
@@ -230,7 +239,7 @@ public class ChatComposite extends Composite {
 			StyleRange sr = new StyleRange();
 			sr.start = startRange;
 			sr.length = sb.length();
-			if (view.userdata.getUserID().equals(text.getOriginator().getUserID())) { //we rote this
+			if (view.userdata.getUserID().equals(text.getOriginator().getUserID())) { 
 				sr.foreground = meColor;
 			} else {
 				sr.foreground = otherColor;
@@ -1190,6 +1199,36 @@ public class ChatComposite extends Composite {
 	protected void initializeDropTargets() {
 		chatDropTarget = new ChatDropTarget(view,textoutput.getControl(), this);
 		treeDropTarget = new TreeDropTarget(view,treeView.getControl(), this);
+	}
+	
+	private Color colorFromRGBString(String rgb) {
+		Color color = null;
+		
+		if (rgb == null || rgb.equals("")) {
+			color = new Color(getShell().getDisplay(), 0, 0, 0);
+			return color;
+		}
+		
+		if (color != null) {
+			color.dispose();
+		}
+		
+		String[] vals = rgb.split(",");
+		color = new Color(getShell().getDisplay(), Integer.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer.parseInt(vals[2]));
+		return color;
+	}
+	
+	private class ColorPropertyChangeListener implements org.eclipse.core.runtime.Preferences.IPropertyChangeListener {
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.core.runtime.Preferences.IPropertyChangeListener#propertyChange(org.eclipse.core.runtime.Preferences.PropertyChangeEvent)
+		 */
+		public void propertyChange(PropertyChangeEvent event) {
+			meColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_ME_TEXT_COLOR));
+			otherColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_OTHER_TEXT_COLOR));
+			systemColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_SYSTEM_TEXT_COLOR));
+		}
+		
 	}
 	
 	private class FontPropertyChangeListener implements org.eclipse.core.runtime.Preferences.IPropertyChangeListener {

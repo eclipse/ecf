@@ -13,6 +13,7 @@ package org.eclipse.ecf.example.collab.ui;
 
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FontFieldEditor;
 import org.eclipse.ui.IWorkbench;
@@ -34,7 +35,7 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		//this.getPreferenceStore().setDefault(ClientPlugin.PREF_CHAT_FONT, "");
 
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_SEND, true);
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, true);
+		//this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, true);
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_REMOTE_VIEW, true);
 		
 	}
@@ -50,7 +51,10 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		addField(new BooleanFieldEditor(ClientPlugin.PREF_DISPLAY_TIMESTAMP,
 				"Show time for each chat entry", getFieldEditorParent()));
 		addField(new FontFieldEditor(ClientPlugin.PREF_CHAT_FONT, "Chat window font:", getFieldEditorParent()));
-		addField(new BooleanFieldEditor(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, "Confirm before receiving file.", getFieldEditorParent()));
+		//addField(new BooleanFieldEditor(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, "Confirm before receiving file.", getFieldEditorParent()));
+		addField(new ColorFieldEditor(ClientPlugin.PREF_ME_TEXT_COLOR, "Chat Text Color For Me:", getFieldEditorParent()));
+		addField(new ColorFieldEditor(ClientPlugin.PREF_OTHER_TEXT_COLOR, "Chat Text Color For Other:", getFieldEditorParent()));
+		addField(new ColorFieldEditor(ClientPlugin.PREF_SYSTEM_TEXT_COLOR, "Chat Text Color For System:", getFieldEditorParent()));
 		
 		/*IntegerFieldEditor rate = new IntegerFieldEditor(ClientPlugin.PREF_FILE_TRANSFER_RATE,
 				"Maximum transfer rate for file transfers.", getFieldEditorParent());*/
