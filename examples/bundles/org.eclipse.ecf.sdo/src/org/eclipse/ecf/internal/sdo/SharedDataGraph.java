@@ -1,0 +1,275 @@
+/*******************************************************************************
+ * Copyright (c) 2004 Peter Nehrer and Composent, Inc.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Peter Nehrer - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.ecf.internal.sdo;
+
+import java.io.IOException;
+
+import org.eclipse.core.runtime.PlatformObject;
+import org.eclipse.ecf.core.ISharedObject;
+import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.SharedObjectInitException;
+import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.sdo.ISharedDataGraph;
+import org.eclipse.ecf.sdo.ISubscriptionCallback;
+import org.eclipse.ecf.sdo.IUpdateConsumer;
+import org.eclipse.ecf.sdo.IUpdateProvider;
+
+import commonj.sdo.ChangeSummary;
+import commonj.sdo.DataGraph;
+
+/**
+ * @author pnehrer
+ */
+public class SharedDataGraph extends PlatformObject implements ISharedObject,
+        ISharedDataGraph {
+
+    private final IUpdateConsumer updateConsumer;
+
+    private final ISubscriptionCallback subscriptionCallback;
+
+    private final IUpdateProvider updateProvider;
+
+    private ISharedObjectConfig config;
+
+    private DataGraph dataGraph;
+
+    private Version version;
+
+    private boolean debug;
+
+    SharedDataGraph(DataGraph dataGraph, IUpdateProvider updateProvider,
+            IUpdateConsumer updateConsumer,
+            ISubscriptionCallback subscriptionCallback) {
+        this.dataGraph = dataGraph;
+        this.updateProvider = updateProvider;
+        this.updateConsumer = updateConsumer;
+        this.subscriptionCallback = subscriptionCallback;
+    }
+
+    SharedDataGraph(DataGraph dataGraph, IUpdateProvider updateProvider,
+            IUpdateConsumer updateConsumer) {
+        this(dataGraph, updateProvider, updateConsumer, null);
+    }
+
+    void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.sdo.ISharedDataGraph#getID()
+     */
+    public synchronized ID getID() {
+        return config == null ? null : config.getSharedObjectID();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.sdo.ISharedDataGraph#getDataGraph()
+     */
+    public synchronized DataGraph getDataGraph() {
+        return dataGraph;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.sdo.ISharedDataGraph#dispose()
+     */
+    public synchronized void dispose() {
+        if (config != null)
+            config.getContext().getSharedObjectManager().removeSharedObject(
+                    config.getSharedObjectID());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.sdo.ISharedDataGraph#commit()
+     */
+    public synchronized void commit() throws ECFException {
+        if (config == null)
+            throw new ECFException("Object is disconnected.");
+
+        if (dataGraph == null)
+            throw new ECFException("Not subscribed.");
+
+        ChangeSummary changeSummary = dataGraph.getChangeSummary();
+        if (changeSummary.getChangedDataObjects().isEmpty())
+            return;
+
+        changeSummary.endLogging();
+        byte[] data = updateProvider.createUpdate(this);
+        try {
+            config.getContext().sendMessage(null,
+                    new UpdateDataGraphMessage(version, data));
+        } catch (IOException e) {
+            throw new ECFException(e);
+        }
+
+        changeSummary.beginLogging();
+        version = version.getNext(config.getContext().getLocalContainerID());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObject#init(org.eclipse.ecf.core.ISharedObjectConfig)
+     */
+    public synchronized void init(ISharedObjectConfig initData)
+            throws SharedObjectInitException {
+
+        if (config == null)
+            config = initData;
+        else
+            throw new SharedObjectInitException("Already initialized.");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.util.Event)
+     */
+    public void handleEvent(Event event) {
+        if (event instanceof ISharedObjectActivatedEvent
+                && ((ISharedObjectActivatedEvent) event).getActivatedID()
+                        .equals(config.getSharedObjectID())) {
+            synchronized (this) {
+                if (dataGraph == null) {
+                    try {
+                        config.getContext().sendMessage(null,
+                                new RequestDataGraphMessage());
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                } else {
+                    if (version == null)
+                        version = new Version(config.getSharedObjectID());
+
+                    dataGraph.getChangeSummary().beginLogging();
+                }
+            }
+        } else if (event instanceof ISharedObjectDeactivatedEvent
+                && ((ISharedObjectDeactivatedEvent) event).getDeactivatedID()
+                        .equals(config.getSharedObjectID())) {
+            synchronized (this) {
+                if (dataGraph != null
+                        && dataGraph.getChangeSummary().isLogging())
+                    dataGraph.getChangeSummary().endLogging();
+            }
+        } else if (event instanceof ISharedObjectMessageEvent) {
+            ISharedObjectMessageEvent e = (ISharedObjectMessageEvent) event;
+            Object msg = e.getData();
+            if (msg instanceof RequestDataGraphMessage)
+                handleRequestDataGraphMessage(e.getRemoteContainerID());
+            else if (msg instanceof ReceiveDataGraphMessage) {
+                ReceiveDataGraphMessage m = (ReceiveDataGraphMessage) msg;
+                handleReceiveDataGraphMessage(e.getRemoteContainerID(), m
+                        .getVersion(), m.getData());
+            } else if (msg instanceof UpdateDataGraphMessage) {
+                UpdateDataGraphMessage m = (UpdateDataGraphMessage) msg;
+                handleUpdateDataGraphMessage(e.getRemoteContainerID(), m
+                        .getVersion(), m.getData());
+            }
+        }
+    }
+
+    private synchronized void handleRequestDataGraphMessage(ID containerID) {
+        if (dataGraph == null)
+            return;
+
+        try {
+            byte[] data = updateProvider.serializeDataGraph(dataGraph);
+            config.getContext().sendMessage(containerID,
+                    new ReceiveDataGraphMessage(version, data));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private synchronized void handleReceiveDataGraphMessage(ID containerID,
+            Version version, byte[] data) {
+        if (dataGraph == null) {
+            try {
+                dataGraph = updateProvider.deserializeDataGraph(data);
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return;
+            }
+
+            this.version = version;
+            dataGraph.getChangeSummary().beginLogging();
+            if (subscriptionCallback != null)
+                subscriptionCallback.dataGraphSubscribed(this, containerID);
+        }
+    }
+
+    private synchronized void handleUpdateDataGraphMessage(ID containerID,
+            Version version, byte[] data) {
+
+        if (dataGraph == null)
+            return;
+
+        if (!version.equals(this.version)) {
+            if (debug)
+                System.err.println("Version mismatch: current=" + this.version
+                        + "; new=" + version);
+
+            updateConsumer.updateFailed(this, containerID);
+            return;
+        }
+
+        updateProvider.applyUpdate(this, data);
+        if (updateConsumer.consumeUpdate(this, containerID))
+            this.version = version.getNext(containerID);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObject#handleEvents(org.eclipse.ecf.util.Event[])
+     */
+    public void handleEvents(Event[] events) {
+        for (int i = 0; i < events.length; ++i)
+            handleEvent(events[i]);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.identity.ID)
+     */
+    public synchronized void dispose(ID containerID) {
+        if (config != null
+                && config.getContext().getLocalContainerID()
+                        .equals(containerID))
+            config = null;
+    }
+
+    public String toString() {
+        StringBuffer buf = new StringBuffer("SharedDataGraph[");
+        buf.append("config=").append(config).append(";");
+        buf.append("dataGraph=").append(dataGraph).append(";");
+        buf.append("version=").append(version).append(";");
+        buf.append("debug=").append(debug).append("]");
+        return buf.toString();
+    }
+}

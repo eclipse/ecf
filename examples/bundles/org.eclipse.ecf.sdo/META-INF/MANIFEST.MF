@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-Name: ECF SDO Plug-in
+Bundle-SymbolicName: org.eclipse.ecf.sdo
+Bundle-Version: 1.0.0
+Bundle-ClassPath: ecf.sdo.jar
+Bundle-Activator: org.eclipse.ecf.sdo.SDOPlugin
+Bundle-Vendor: Eclipse.org
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;reprovide=true,
+ org.eclipse.emf.ecore.sdo;reprovide=true,
+ org.eclipse.ecf;reprovide=true
+Eclipse-AutoStart: true
+Provide-Package: org.eclipse.ecf.sdo,
+ org.eclipse.ecf.internal.sdo,
+ org.eclipse.ecf.sdo.emf
+Export-Package: org.eclipse.ecf.sdo,
+ org.eclipse.ecf.internal.sdo
+ 
