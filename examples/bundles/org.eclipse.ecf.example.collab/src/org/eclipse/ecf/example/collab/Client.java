@@ -19,13 +19,13 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.ISharedObjectContainerListener;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
+import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -47,9 +47,18 @@ public class Client {
     public static final String FILE_DIRECTORY = "received_files";
     public static final String USERNAME = System.getProperty("user.name");
     public static final String ECFDIRECTORY = "ECF_" + FILE_DIRECTORY + "/";
+    public static final String WORKSPACE_NAME = "<workspace>";
+    
     static ID defaultGroupID = null;
     static Hashtable clients = new Hashtable();
 
+    public static String getNameForResource(IResource res) {
+        String preName = res.getName().trim();
+        if (preName == null || preName.equals("")) {
+            preName = WORKSPACE_NAME;
+        }
+        return preName;
+    }
     public static class ClientEntry {
         String type;
         ISharedObjectContainer client;
@@ -72,22 +81,24 @@ public class Client {
             return obj;
         }
         public void dispose() {
+            client.dispose(0);
         }
     }
     
     protected static void addClientEntry(IResource proj, ClientEntry entry) {
         synchronized (clients) {
-            Vector v = (Vector) clients.get(proj.getName());
+            String name = getNameForResource(proj);
+            Vector v = (Vector) clients.get(name);
             if (v == null) {
                 v = new Vector();
             }
             v.add(entry);
-            clients.put(proj.getName(),v);
+            clients.put(name,v);
         }
     }
     protected static Vector getClientEntries(IResource proj) {
         synchronized (clients) {
-            return (Vector) clients.get(proj.getName());
+            return (Vector) clients.get(getNameForResource(proj));
         }
     }
     protected  static ClientEntry getClientEntry(IResource proj, String type) {
@@ -105,7 +116,7 @@ public class Client {
     }
     protected static boolean containsEntry(IResource proj, String type) {
         synchronized (clients) {
-            Vector v = (Vector) clients.get(proj.getName());
+            Vector v = (Vector) clients.get(getNameForResource(proj));
             if (v == null) return false;
             for(Iterator i=v.iterator(); i.hasNext(); ) {
                 ClientEntry e = (ClientEntry) i.next();
@@ -118,7 +129,7 @@ public class Client {
     }
     protected static void removeClientEntry(IResource proj, String type) {
         synchronized (clients) {
-            Vector v = (Vector) clients.get(proj.getName());
+            Vector v = (Vector) clients.get(getNameForResource(proj));
             if (v == null) return;
             ClientEntry remove = null;
             for(Iterator i=v.iterator(); i.hasNext(); ) {
@@ -129,7 +140,7 @@ public class Client {
             }
             if (remove != null) v.remove(remove);
             if (v.size()==0) {
-                clients.remove(proj.getName());
+                clients.remove(getNameForResource(proj));
             }
         }
     }
@@ -177,13 +188,9 @@ public class Client {
         else return FILE_DIRECTORY;
     }
 
-    protected IResource getFirstProjectFromWorkspace() throws Exception {
-        IWorkspace ws = ResourcesPlugin.getWorkspace();
-        IWorkspaceRoot wr = ws.getRoot();
-        IResource[] projects = wr.getProjects();
-        if (projects == null)
-            return null;
-        return projects[0];
+    protected IResource getWorkspace() throws Exception {
+        IWorkspaceRoot ws = ResourcesPlugin.getWorkspace().getRoot();
+        return ws;
     }
 
     protected void makeAndAddSharedObject(final ClientEntry client,
@@ -203,7 +210,7 @@ public class Client {
             public void otherActivated(ID other) {}
             public void otherDeactivated(ID other) {}
             public void windowClosing() {
-                disposeClient(proj, client);
+                removeClientEntry(proj,client.getType());
             }
         });
         ID newID = IDFactory.makeStringID(COLLAB_SHARED_OBJECT_ID);
@@ -214,7 +221,7 @@ public class Client {
 
     protected void addObjectToClient(ClientEntry client,
             String username, IResource proj) throws Exception {
-        IResource project = (proj == null) ? getFirstProjectFromWorkspace()
+        IResource project = (proj == null) ? getWorkspace()
                 : proj;
         String fileDir = getSharedFileDirectoryForProject(project);
         String projName = (project == null) ? "<workspace>" : project.getName();
@@ -261,7 +268,6 @@ public class Client {
                         final ID departedContainerID = cd.getDepartedContainerID();
                         if (groupID.equals(departedContainerID)) {
                             // This container is done
-                            client.dispose(0);
                             disposeClient(proj,newClient);                        
                         }
                     }
@@ -269,7 +275,17 @@ public class Client {
                 
             },"");           
         }
-        client.joinGroup(groupID, data);
+        try {
+            client.joinGroup(groupID, data);
+        } catch (SharedObjectContainerJoinException e) {
+            try {
+                EclipseCollabSharedObject so = newClient.getObject();
+                if (so != null) {
+                    so.destroySelf();
+                }
+            } catch (Exception e1) {}
+            throw e;
+        }
         // only add client if the join successful
         addClientEntry(proj,newClient);
     }

@@ -37,11 +37,7 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
     }
     public void setProject(IResource project) {
         this.project = project;
-        if (project==null) {
-            projectName = "<workspace>";
-        } else {
-            projectName = project.getName();
-        }
+        projectName = Client.getNameForResource(project);
     }
     public void setTargetID(ID targetID) {
         this.targetID = targetID;
@@ -88,10 +84,11 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
                     Display.getDefault().syncExec(new Runnable() {
                         public void run() {
                             Display.getDefault().beep();
+                            String msg = "Already connected for resource "+Client.getNameForResource(project);
                             MessageDialog.openInformation(
                                     null,
                                     "Already connected",
-                                    "Already connected for provider "+((containerType==null)?Client.GENERIC_CONTAINER_CLIENT_NAME:containerType));
+                                    msg);
                         }
                     });
                     return okStatus;
@@ -100,12 +97,12 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
                 client.createAndConnectClient(containerType,targetID,username,data,project);
                 return okStatus;
             } catch (Exception e) {
-                return new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Could not connect to "+targetID.getName()+".  "+e.getMessage(),e);
+                return new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Could not connect to "+targetID.getName()+"\n\n"+e.getMessage(),e);
             }
         }        
     }
 	public void run(IAction action) {
-        ClientConnectJob clientConnect = new ClientConnectJob("Collaboration for '"+projectName+"'");
+        ClientConnectJob clientConnect = new ClientConnectJob("Join group for "+projectName);
         clientConnect.schedule();
 	}
 
