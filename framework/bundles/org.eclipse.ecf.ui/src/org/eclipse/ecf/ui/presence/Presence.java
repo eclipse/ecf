@@ -71,7 +71,7 @@ public class Presence implements Serializable, IAdaptable {
         protected Type(String name) {
             this.name = name;
         }
-        public Type fromString(String presenceType) {
+        public static Type fromString(String presenceType) {
             if (presenceType == null) return null;
             if (presenceType.equals(AVAILABLE_NAME)) {
                 return AVAILABLE;
@@ -133,7 +133,7 @@ public class Presence implements Serializable, IAdaptable {
         protected Mode(String name) {
             this.name = name;
         }
-        public Mode fromString(String presenceMode) {
+        public static Mode fromString(String presenceMode) {
             if (presenceMode == null) return null;
             if (presenceMode.equals(AVAILABLE_NAME)) {
                 return AVAILABLE;
