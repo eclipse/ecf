@@ -178,6 +178,17 @@ public class SOContext implements ISharedObjectContext {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.ecf.core.ISharedObjectContext#sendCreateResponse(org.eclipse.ecf.core.identity.ID, java.lang.Throwable, long)
+     */
+    public void sendCreateResponse(ID toContainerID, Throwable throwable, long identifier) throws IOException {
+        if (isInactive()) {
+            return;
+        } else {
+            container.sendCreateResponse(toContainerID, sharedObjectID, throwable, identifier);
+        }        
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -226,4 +237,5 @@ public class SOContext implements ISharedObjectContext {
             return container.getOSGIServiceInterface();
         }
     }
+
 }

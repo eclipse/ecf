@@ -114,6 +114,23 @@ public interface ISharedObjectContext {
 	 */
     public void sendCreate(ID toContainerID, SharedObjectDescription sd)
             throws IOException;
+    
+    /**
+	 * Send create response back to an ISharedObject with the
+	 * same ID as this instance. This method allows ISharedObject instances
+	 * (with a reference to a valid ISharedObjectContext) to send messages to
+	 * remote containers asking them to deliver the create response status back to the 
+	 * ISharedObject. 
+	 * 
+	 * @param toContainerID the ID of the container that is to receive this response
+	 * @param throwable a throwable associated with the creation.  Null means that
+	 * no exception occured
+	 * @param identifier the identifier used in the original create message (in the shared
+	 * object description)
+	 * @exception IOException thrown if the create response cannot be sent
+	 */
+    public void sendCreateResponse(ID toContainerID, Throwable throwable, long identifier)
+    		throws IOException;
     /**
      * Send message to dispose of a remote instance of the ISharedObject with
      * same ID as this instance. This method allows ISharedObject instances to control the
