@@ -100,10 +100,10 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
             throw new InvalidObjectException(INVALID_CONNECT
                     + "Target path is null");
         TCPServerSOContainer srs = (TCPServerSOContainer) get(path);
-        debug("found container:" + srs.getID().getName() + " for target " + uri);
         if (srs == null)
             throw new InvalidObjectException("Container for target " + path
                     + " not found!");
+        debug("found container:" + srs.getID().getName() + " for target " + uri);
         // Create our local messaging interface
         Client newClient = new Client(aSocket, iStream, oStream, srs
                 .getReceiver(), srs.keepAlive);
