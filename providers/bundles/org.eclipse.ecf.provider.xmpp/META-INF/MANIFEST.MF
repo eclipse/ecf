@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-Name: ECF XMPP Provider Plug-in
+Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp
+Bundle-Version: 1.0.0
+Bundle-ClassPath: xmpp.jar,lib/smack.jar,lib/smackx.jar,lib/smackx-debug.jar
+Bundle-Activator: org.eclipse.ecf.provider.xmpp.XmppPlugin
+Bundle-Vendor: Eclipse.org
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ecf.provider,
+ org.junit,
+ org.eclipse.ecf.ui,
+ org.eclipse.ecf.presence
+Eclipse-AutoStart: true
+Export-Package: org.eclipse.ecf.provider.xmpp.container, org.eclipse.ecf.provider.xmpp.identity
+Provide-Package: org.eclipse.ecf.provider.xmpp, org.eclipse.ecf.provider.xmpp.container, org.eclipse.ecf.provider.xmpp.smack, org.eclipse.ecf.provider.xmpp.identity, org.eclipse.ecf.provider.xmpp.ui.views
+DynamicImport-Package: *

@@ -1,0 +1,7 @@
+org.eclipse.ecf.provider.xmpp/debug = true
+org.eclipse.ecf.provider.xmpp/debug/filter = *
+org.eclipse.ecf.provider.xmpp/debug/flag = true
+org.eclipse.ecf.provider.xmpp/debug/smackconnection = true
+org.eclipse.ecf.provider.xmpp/debug/xmppsharedobject = true
+org.eclipse.ecf.provider.xmpp/debug/xmpppresencesharedobject = true
+org.eclipse.ecf.provider.xmpp/debug/smackdebug = true
