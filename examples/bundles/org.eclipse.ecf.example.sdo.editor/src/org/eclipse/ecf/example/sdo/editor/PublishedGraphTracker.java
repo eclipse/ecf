@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.SharedObjectInitException;
+import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
@@ -118,14 +119,15 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
         if (config == null)
             throw new ECFException("Not connected.");
 
+        String[] paths = new String[] { path };
         try {
             config.getContext().sendMessage(null,
-                    new Object[] { new Integer(ADD), path });
+                    new Object[] { new Integer(ADD), paths });
         } catch (IOException e) {
             throw new ECFException(e);
         }
 
-        handleAdd(config.getContext().getLocalContainerID(), path);
+        handleAdd(config.getContext().getLocalContainerID(), paths);
     }
 
     public synchronized void remove(String path) throws ECFException {
@@ -179,7 +181,7 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
                 break;
 
             case ADD:
-                handleAdd(e.getRemoteContainerID(), (String) data[1]);
+                handleAdd(e.getRemoteContainerID(), (String[]) data[1]);
                 break;
 
             case REMOVE:
@@ -195,6 +197,10 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
             if (!e.getDepartedContainerID().equals(
                     config.getContext().getLocalContainerID()))
                 handleLeave(e.getDepartedContainerID());
+        } else if (event instanceof ISharedObjectActivatedEvent) {
+            if (((ISharedObjectActivatedEvent) event).getActivatedID().equals(
+                    config.getSharedObjectID()))
+                handleJoined();
         } else if (event instanceof ISharedObjectDeactivatedEvent) {
             if (((ISharedObjectDeactivatedEvent) event).getDeactivatedID()
                     .equals(config.getSharedObjectID()))
@@ -204,14 +210,21 @@ class PublishedGraphTracker extends PlatformObject implements ISharedObject {
 
     private void handleJoin(ID containerID, String[] paths) {
         table.add(containerID, paths);
+        try {
+            config.getContext().sendMessage(null,
+                    new Object[] { new Integer(ADD), paths });
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     private void handleLeave(ID containerID) {
         table.remove(containerID);
     }
 
-    private void handleAdd(ID containerID, String path) {
-        table.add(containerID, new String[] { path });
+    private void handleAdd(ID containerID, String[] paths) {
+        table.add(containerID, paths);
     }
 
     private void handleRemove(ID containerID, String path) {
