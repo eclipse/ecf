@@ -9,6 +9,7 @@
 
 package org.eclipse.ecf.core.util;
 
-public interface EventProcessor {
-    public Object processEvent(Event e) throws Exception;
+public interface ICallable {
+    /** Perform some action that returns a result or throws an exception * */
+    Object call() throws Throwable;
 }

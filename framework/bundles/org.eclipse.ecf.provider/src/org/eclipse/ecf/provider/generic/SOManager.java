@@ -40,7 +40,7 @@ import org.eclipse.ecf.core.events.SharedObjectManagerDisconnectEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerRemoveEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.AbstractFactory;
-import org.eclipse.ecf.core.util.QueueEnqueue;
+import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.provider.Trace;
 
 /**
@@ -267,7 +267,7 @@ public class SOManager implements ISharedObjectManager {
 			if (wrap == null)
 				throw new SharedObjectConnectException("sender object "
 						+ sharedObjectFrom.getName() + " not found");
-			QueueEnqueue[] queues = new QueueEnqueue[sharedObjectsTo.length];
+			IQueueEnqueue[] queues = new IQueueEnqueue[sharedObjectsTo.length];
 			for (int i = 0; i < sharedObjectsTo.length; i++) {
 				SOWrapper w = container
 						.getSharedObjectWrapper(sharedObjectsTo[i]);

@@ -18,7 +18,7 @@ public class AsynchResult {
 
     public AsynchResult() {
     }
-    public Runnable setter(final Callable function) {
+    public Runnable setter(final ICallable function) {
         return new Runnable() {
             public void run() {
                 try {

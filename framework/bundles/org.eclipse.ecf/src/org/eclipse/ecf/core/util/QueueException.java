@@ -9,15 +9,15 @@
 
 package org.eclipse.ecf.core.util;
 
-public class QueueException extends Exception {
+public class QueueException extends ECFException {
 
-    Queue theQueue = null;
+    IQueue theQueue = null;
 
     public QueueException() {
         super();
     }
 
-    public QueueException(Queue queue) {
+    public QueueException(IQueue queue) {
         theQueue = queue;
     }
     public QueueException(String message) {
@@ -29,7 +29,7 @@ public class QueueException extends Exception {
     public QueueException(Throwable cause) {
         super(cause);
     }
-    public Queue getQueue() {
+    public IQueue getQueue() {
         return theQueue;
     }
 }

@@ -9,11 +9,6 @@
 
 package org.eclipse.ecf.core.util;
 
-public interface SimpleQueue {
-
-    public boolean enqueue(Object obj);
-    public Object dequeue();
-    public Object peekQueue();
-    public Object removeHead();
-    public void close();
+public interface IEventProcessor {
+    public Object processEvent(Event e);
 }

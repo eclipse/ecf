@@ -9,7 +9,7 @@
 
 package org.eclipse.ecf.core.util;
 
-public interface QueueDequeue {
+public interface IQueueDequeue {
     /*
      * Dequeue a single event. Returns null if no Events available for dequeue
      * @return Event the Event dequeued. Null if queue is empty.

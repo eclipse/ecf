@@ -23,7 +23,7 @@ import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.QueueEnqueue;
+import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.provider.Trace;
 
 public class SOContext implements ISharedObjectContext {
@@ -33,10 +33,10 @@ public class SOContext implements ISharedObjectContext {
     protected ID homeContainerID;
     protected boolean isActive;
     protected Map properties;
-    protected QueueEnqueue queue;
+    protected IQueueEnqueue queue;
 
     public SOContext(ID objID, ID homeID, SOContainer cont, Map props,
-            QueueEnqueue queue) {
+            IQueueEnqueue queue) {
         super();
         this.sharedObjectID = objID;
         this.homeContainerID = homeID;
@@ -97,7 +97,7 @@ public class SOContext implements ISharedObjectContext {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#getQueue()
      */
-    public synchronized QueueEnqueue getQueue() {
+    public synchronized IQueueEnqueue getQueue() {
         if (isInactive()) {
             return null;
         }

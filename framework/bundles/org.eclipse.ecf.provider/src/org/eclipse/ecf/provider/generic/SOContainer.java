@@ -44,7 +44,7 @@ import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.QueueEnqueue;
+import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.provider.Trace;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
@@ -838,13 +838,13 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	}
 
 	protected SOContext makeNewSharedObjectContext(SOConfig config,
-			QueueEnqueue queue) {
+			IQueueEnqueue queue) {
 		return new SOContext(config.getSharedObjectID(), config
 				.getHomeContainerID(), this, config.getProperties(), queue);
 	}
 
 	protected SOContext makeNewRemoteSharedObjectContext(SOConfig config,
-			QueueEnqueue queue) {
+			IQueueEnqueue queue) {
 		return new SOContext(config.getSharedObjectID(), config
 				.getHomeContainerID(), this, config.getProperties(), queue);
 	}

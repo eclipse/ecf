@@ -9,6 +9,6 @@
 
 package org.eclipse.ecf.core.util;
 
-public interface EnqueuePredicate {
+public interface IEnqueuePredicate {
     boolean accept(Event element);
 }

@@ -12,7 +12,7 @@ package org.eclipse.ecf.core;
 import java.io.IOException;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.QueueEnqueue;
+import org.eclipse.ecf.core.util.IQueueEnqueue;
 
 /**
  * Context reference provided to all ISharedObjects upon initialization.  Implementers of
@@ -40,16 +40,16 @@ public interface ISharedObjectContext {
      */
     public ISharedObjectManager getSharedObjectManager();
     /**
-     * Get the QueueEnqueue instance associated with this ISharedObject. If the
+     * Get the IQueueEnqueue instance associated with this ISharedObject. If the
      * given container provides a queue for this ISharedObject, this method will
-     * return a QueueEnqueue reference to the appropriate queue.
+     * return a IQueueEnqueue reference to the appropriate queue.
      * 
-     * @return QueueEnqueue instance if an active queue is associated with this
+     * @return IQueueEnqueue instance if an active queue is associated with this
      *         ISharedObject. If no active queue is associated with the
      *         ISharedObject, returns null.
      *  
      */
-    public QueueEnqueue getQueue();
+    public IQueueEnqueue getQueue();
 
     /**
      * (non-Javadoc)

@@ -34,7 +34,7 @@ import org.eclipse.ecf.core.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.QueueEnqueue;
+import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.QueueException;
 import org.eclipse.ecf.example.collab.Trace;
 
@@ -435,7 +435,7 @@ public void handleEvent(Event event) {
     protected void sendSelf(SharedObjectMsg msg) {
         ISharedObjectContext context = getContext();
         if (context == null) return;
-        QueueEnqueue queue = context.getQueue();
+        IQueueEnqueue queue = context.getQueue();
         try {
             queue.enqueue(new RemoteSharedObjectMsgEvent(getID(), getContext()
                     .getLocalContainerID(), msg));

@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.ISharedObjectConnector;
 import org.eclipse.ecf.core.events.ISharedObjectEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.AsynchResult;
-import org.eclipse.ecf.core.util.QueueEnqueue;
+import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.QueueException;
 import org.eclipse.ecf.provider.generic.events.SharedObjectCallEvent;
 
@@ -29,7 +29,7 @@ public class SOConnector implements ISharedObjectConnector {
     ID sender;
     Hashtable receiverQueues = null;
 
-    public SOConnector(ID sender, ID[] recv, QueueEnqueue[] queues) {
+    public SOConnector(ID sender, ID[] recv, IQueueEnqueue[] queues) {
         super();
         this.receiverQueues = new Hashtable();
         for (int i = 0; i < recv.length; i++) {
@@ -39,14 +39,14 @@ public class SOConnector implements ISharedObjectConnector {
 
     protected void fireEvent(ISharedObjectEvent event) throws QueueException {
         for (Enumeration e = receiverQueues.elements(); e.hasMoreElements();) {
-            QueueEnqueue queue = (QueueEnqueue) e.nextElement();
+            IQueueEnqueue queue = (IQueueEnqueue) e.nextElement();
             queue.enqueue(event);
         }
     }
 
     protected void fireEvents(ISharedObjectEvent[] event) throws QueueException {
         for (Enumeration e = receiverQueues.elements(); e.hasMoreElements();) {
-            QueueEnqueue queue = (QueueEnqueue) e.nextElement();
+            IQueueEnqueue queue = (IQueueEnqueue) e.nextElement();
             if (queue != null) {
                 queue.enqueue(event);
             }
@@ -58,7 +58,7 @@ public class SOConnector implements ISharedObjectConnector {
         AsynchResult[] results = new AsynchResult[receiverQueues.size()];
         int i = 0;
         for (Enumeration e = receiverQueues.elements(); e.hasMoreElements();) {
-            QueueEnqueue queue = (QueueEnqueue) e.nextElement();
+            IQueueEnqueue queue = (IQueueEnqueue) e.nextElement();
             results[i] = new AsynchResult();
             queue.enqueue(new SharedObjectCallEvent(event
                     .getSenderSharedObjectID(), event, results[i]));

@@ -19,7 +19,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.QueueEnqueue;
+import org.eclipse.ecf.core.util.IQueueEnqueue;
 
 public class SOConfig implements ISharedObjectConfig {
     protected SOContainer container = null;
@@ -39,7 +39,7 @@ public class SOConfig implements ISharedObjectConfig {
         this.container = cont;
     }
 
-    protected void makeActive(QueueEnqueue queue) {
+    protected void makeActive(IQueueEnqueue queue) {
         isActive = true;
         if (container.getID().equals(homeContainerID)) {
             this.context = container.makeNewSharedObjectContext(this,queue);

@@ -9,6 +9,11 @@
 
 package org.eclipse.ecf.core.util;
 
-public interface Queue extends QueueDequeue, QueueEnqueue {
+public interface ISimpleQueue {
 
+    public boolean enqueue(Object obj);
+    public Object dequeue();
+    public Object peekQueue();
+    public Object removeHead();
+    public void close();
 }

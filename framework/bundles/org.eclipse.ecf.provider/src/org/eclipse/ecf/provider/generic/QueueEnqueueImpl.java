@@ -15,13 +15,13 @@
  */
 package org.eclipse.ecf.provider.generic;
 
-import org.eclipse.ecf.core.util.EnqueuePredicate;
+import org.eclipse.ecf.core.util.IEnqueuePredicate;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.QueueEnqueue;
+import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.QueueException;
 import org.eclipse.ecf.core.util.SimpleQueueImpl;
 
-public class QueueEnqueueImpl implements QueueEnqueue {
+public class QueueEnqueueImpl implements IQueueEnqueue {
     SimpleQueueImpl queue = null;
 
     public QueueEnqueueImpl(SimpleQueueImpl impl) {
@@ -32,7 +32,7 @@ public class QueueEnqueueImpl implements QueueEnqueue {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.util.QueueEnqueue#enqueue(org.eclipse.ecf.core.util.Event)
+     * @see org.eclipse.ecf.core.util.IQueueEnqueue#enqueue(org.eclipse.ecf.core.util.Event)
      */
     public void enqueue(Event element) throws QueueException {
         queue.enqueue(element);
@@ -41,7 +41,7 @@ public class QueueEnqueueImpl implements QueueEnqueue {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.util.QueueEnqueue#enqueue(org.eclipse.ecf.core.util.Event[])
+     * @see org.eclipse.ecf.core.util.IQueueEnqueue#enqueue(org.eclipse.ecf.core.util.Event[])
      */
     public void enqueue(Event[] elements) throws QueueException {
         if (elements != null) {
@@ -54,7 +54,7 @@ public class QueueEnqueueImpl implements QueueEnqueue {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.util.QueueEnqueue#enqueue_prepare(org.eclipse.ecf.core.util.Event[])
+     * @see org.eclipse.ecf.core.util.IQueueEnqueue#enqueue_prepare(org.eclipse.ecf.core.util.Event[])
      */
     public Object enqueue_prepare(Event[] elements) throws QueueException {
         return elements;
@@ -63,7 +63,7 @@ public class QueueEnqueueImpl implements QueueEnqueue {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.util.QueueEnqueue#enqueue_commit(java.lang.Object)
+     * @see org.eclipse.ecf.core.util.IQueueEnqueue#enqueue_commit(java.lang.Object)
      */
     public void enqueue_commit(Object enqueue_key) {
         if (enqueue_key instanceof Event[]) {
@@ -80,7 +80,7 @@ public class QueueEnqueueImpl implements QueueEnqueue {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.util.QueueEnqueue#enqueue_abort(java.lang.Object)
+     * @see org.eclipse.ecf.core.util.IQueueEnqueue#enqueue_abort(java.lang.Object)
      */
     public void enqueue_abort(Object enqueue_key) {
         // Do nothing
@@ -89,7 +89,7 @@ public class QueueEnqueueImpl implements QueueEnqueue {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.util.QueueEnqueue#enqueue_lossy(org.eclipse.ecf.core.util.Event)
+     * @see org.eclipse.ecf.core.util.IQueueEnqueue#enqueue_lossy(org.eclipse.ecf.core.util.Event)
      */
     public boolean enqueue_lossy(Event element) {
         queue.enqueue(element);
@@ -99,9 +99,9 @@ public class QueueEnqueueImpl implements QueueEnqueue {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.util.QueueEnqueue#setEnqueuePredicate(org.eclipse.ecf.core.util.EnqueuePredicate)
+     * @see org.eclipse.ecf.core.util.IQueueEnqueue#setEnqueuePredicate(org.eclipse.ecf.core.util.IEnqueuePredicate)
      */
-    public void setEnqueuePredicate(EnqueuePredicate pred) {
+    public void setEnqueuePredicate(IEnqueuePredicate pred) {
         // This queue does not support enqueue predicate
         // So we do nothing
     }
@@ -109,9 +109,9 @@ public class QueueEnqueueImpl implements QueueEnqueue {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.util.QueueEnqueue#getEnqueuePredicate()
+     * @see org.eclipse.ecf.core.util.IQueueEnqueue#getEnqueuePredicate()
      */
-    public EnqueuePredicate getEnqueuePredicate() {
+    public IEnqueuePredicate getEnqueuePredicate() {
         // We don't support enqueue predicate, so return null;
         return null;
     }
@@ -119,7 +119,7 @@ public class QueueEnqueueImpl implements QueueEnqueue {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.util.QueueEnqueue#size()
+     * @see org.eclipse.ecf.core.util.IQueueEnqueue#size()
      */
     public int size() {
         return queue.size();

@@ -9,7 +9,21 @@
 
 package org.eclipse.ecf.core.util;
 
-public interface Callable {
-    /** Perform some action that returns a result or throws an exception * */
-    Object call() throws Throwable;
+public interface IQueueEnqueue {
+    void enqueue(Event element) throws QueueException;
+    void enqueue(Event[] elements) throws QueueException;
+
+    Object enqueue_prepare(Event[] elements) throws QueueException;
+
+    void enqueue_commit(Object enqueue_key);
+    void enqueue_abort(Object enqueue_key);
+
+    boolean enqueue_lossy(Event element);
+
+    void setEnqueuePredicate(IEnqueuePredicate pred);
+
+    IEnqueuePredicate getEnqueuePredicate();
+
+    int size();
+
 }
