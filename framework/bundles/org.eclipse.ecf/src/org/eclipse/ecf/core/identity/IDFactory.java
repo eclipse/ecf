@@ -174,7 +174,13 @@ public class IDFactory {
 
     protected static void logAndThrow(String s, Throwable t)
             throws IDInstantiationException {
-        IDInstantiationException e = new IDInstantiationException(s, t);
+    	IDInstantiationException e = null;
+    	if (t != null) {
+    		e = new IDInstantiationException(s+": "+t.getClass().getName()+": "+t.getMessage());
+    		e.setStackTrace(t.getStackTrace());
+    	} else {
+    		e = new IDInstantiationException(s);
+    	}
         logException(s, t);
         throw e;
     }

@@ -178,8 +178,11 @@ public class SharedObjectContainerFactory {
             .getInstantiator();
             clazzes = AbstractFactory.getClassesForTypes(argTypes, args, cd.getClassLoader());
         } catch (Exception e) {
-            throw new SharedObjectContainerInstantiationException(
-                    "Exception getting ISharedObjectContainerInstantiatior", e);
+            SharedObjectContainerInstantiationException newexcept = new SharedObjectContainerInstantiationException(
+                    "makeSharedObjectContainer exception with description: "+desc+": "+e.getClass().getName()+": "+e.getMessage());
+            newexcept.setStackTrace(e.getStackTrace());
+            dumpStack("Exception in makeSharedObjectContainer",newexcept);
+            throw newexcept;
         }
         if (instantiator == null)
             throw new SharedObjectContainerInstantiationException(
