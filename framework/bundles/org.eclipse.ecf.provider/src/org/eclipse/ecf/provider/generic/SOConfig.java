@@ -22,12 +22,12 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.QueueEnqueue;
 
 public class SOConfig implements ISharedObjectConfig {
-    SOContainer container = null;
-    ID sharedObjectID;
-    ID homeContainerID;
-    boolean isActive;
-    Map properties;
-    SOContext standAloneContext;
+    protected SOContainer container = null;
+    protected ID sharedObjectID;
+    protected ID homeContainerID;
+    protected boolean isActive;
+    protected Map properties;
+    protected SOContext context;
 
     public SOConfig(ID sharedObjectID, ID homeContainerID, SOContainer cont,
             Map dict) {
@@ -41,13 +41,12 @@ public class SOConfig implements ISharedObjectConfig {
 
     protected void makeActive(QueueEnqueue queue) {
         isActive = true;
-        this.standAloneContext = new SOContext(sharedObjectID, homeContainerID,
-                container, properties, queue);
+        this.context = container.makeNewSharedObjectContext(this,queue);
     }
 
     protected void makeInactive() {
-        this.standAloneContext.makeInactive();
-        this.standAloneContext = null;
+        this.context.makeInactive();
+        this.context = null;
         isActive = false;
     }
 
@@ -76,7 +75,7 @@ public class SOConfig implements ISharedObjectConfig {
      */
     public ISharedObjectContext getContext() {
         if (isActive) {
-            return null;
+            return context;
         } else
             return null;
     }
