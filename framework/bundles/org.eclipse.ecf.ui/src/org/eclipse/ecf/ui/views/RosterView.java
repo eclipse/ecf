@@ -433,6 +433,7 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
             }
         };
         chatAction.setText("Send Instant Message...");
+        chatAction.setToolTipText("Send Instant Message");
         chatAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
                 .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
         chatAction.setEnabled(false);
@@ -453,7 +454,7 @@ public class RosterView extends ViewPart implements ILocalUserSettable,
             }
         };
         disconnectAction.setText("Disconnect");
-        disconnectAction.setToolTipText("Disconnect from server "+((groupID==null)?"<disconnected>":groupID.getName()));
+        disconnectAction.setToolTipText("Disconnect from server");
         disconnectAction.setEnabled(false);
         
     }
