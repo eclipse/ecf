@@ -4,7 +4,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -19,9 +18,11 @@ public class AuthorizeRequest extends Dialog {
 	
 	private Label target_username;
 	private Label requester_userid;
-	private static final int REFUSE_ID = IDialogConstants.CLIENT_ID + 3;
-	private static final int AUTHORIZE_AND_ADD = IDialogConstants.CLIENT_ID + 2;
-	private static final int AUTHORIZE_ID = IDialogConstants.CLIENT_ID + 1;
+	public static final int REFUSE_ID = IDialogConstants.CLIENT_ID + 3;
+	public static final int AUTHORIZE_AND_ADD = IDialogConstants.CLIENT_ID + 2;
+	public static final int AUTHORIZE_ID = IDialogConstants.CLIENT_ID + 1;
+	
+	int buttonPressed = 0;
 	
 	public AuthorizeRequest(Shell parentShell) {
 		super(parentShell);
@@ -100,7 +101,12 @@ public class AuthorizeRequest extends Dialog {
 		super.configureShell(newShell);
 		newShell.setText("ECF Authorization request from "+requesterName);
 	}
+	public int getButtonPressed() {
+		return buttonPressed;
+	}
 	protected void buttonPressed(int button) {
-		System.out.println("button "+button+" pressed");
+		//System.out.println("button "+button+" pressed");
+		buttonPressed = button;
+		this.close();
 	}
 }

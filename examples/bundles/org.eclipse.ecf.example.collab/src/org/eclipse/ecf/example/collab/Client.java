@@ -47,6 +47,7 @@ import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.impl.Presence;
+import org.eclipse.ecf.ui.dialogs.AuthorizeRequest;
 import org.eclipse.ecf.ui.views.ITextInputHandler;
 import org.eclipse.ecf.ui.views.RosterView;
 import org.eclipse.swt.widgets.Display;
@@ -354,7 +355,7 @@ public class Client {
                         
                     });
                 } catch (Exception e) {
-                    IStatus status = new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Excetion showing presence view",e);
+                    IStatus status = new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Exception showing presence view",e);
                     ClientPlugin.getDefault().getLog().log(status);
                 }
             }
@@ -419,11 +420,35 @@ public class Client {
         });
 		pc.addSubscribeListener(new ISubscribeListener() {
 
-			public void handleSubscribeRequest(ID fromID, IPresence presence) {
-				System.out.println("subscribe request from "+fromID);		
-				if (presenceSender != null) {
-					presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBED));
-				}
+			public void handleSubscribeRequest(final ID fromID, IPresence presence) {
+		        Display.getDefault().syncExec(new Runnable() {
+		            public void run() {
+		                try {
+		                    IWorkbenchWindow ww = PlatformUI.getWorkbench()
+		                            .getActiveWorkbenchWindow();
+							AuthorizeRequest authRequest = new AuthorizeRequest(ww.getShell(),fromID.getName(),localUser.getName());
+							authRequest.open();
+							int res = authRequest.getButtonPressed();
+							if (res == AuthorizeRequest.AUTHORIZE_AND_ADD) {
+								if (presenceSender != null) {
+									presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBED));
+									presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBE));
+								} 
+							} else if (res == AuthorizeRequest.AUTHORIZE_ID) {
+								if (presenceSender != null) {
+									presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBED));
+								} 
+							} else if (res == AuthorizeRequest.REFUSE_ID) {
+								System.out.println("Refuse hit");
+							} else {
+								System.out.println("No buttons hit");
+							}
+						} catch (Exception e) {
+		                    IStatus status = new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Exception showing authorization dialog",e);
+		                    ClientPlugin.getDefault().getLog().log(status);
+						}
+		            }
+		        });
 			}
 
 			public void handleUnsubscribeRequest(ID fromID, IPresence presence) {
