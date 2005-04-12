@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -36,13 +37,15 @@ import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.SharedObjectEventListener;
 import org.eclipse.ecf.example.collab.share.TreeItem;
 import org.eclipse.ecf.example.collab.share.User;
+import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.IPresenceListener;
-import org.eclipse.ecf.presence.ISubscribeListener;
+import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
+import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.impl.Presence;
 import org.eclipse.ecf.ui.views.ITextInputHandler;
 import org.eclipse.ecf.ui.views.RosterView;
@@ -311,11 +314,15 @@ public class Client {
 
     protected RosterView rosterView = null;
     protected IMessageSender messageSender = null;
-    
+    protected IPresenceSender presenceSender = null;
+	protected IAccountManager accountManager = null;
+	
     protected void setupPresenceContainer(final ISharedObjectContainer container, IPresenceContainer pc, final ID localUser, final String nick) {
         
         messageSender = pc.getMessageSender();
-        
+        presenceSender = pc.getPresenceSender();
+		accountManager = pc.getAccountManager();
+		
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
                 try {
@@ -370,6 +377,15 @@ public class Client {
                         rosterView.setGroup(joinedContainer);
                     }
                 });
+				// XXX TESTING OF ACCOUNT CREATION
+				/*
+				try {
+					accountManager.createAccount("foo1","foo1",null);
+				} catch (ECFException e) {
+					e.printStackTrace();
+				}
+				*/
+				
             }
 
             public void handleRosterEntry(final IRosterEntry entry) {
@@ -405,8 +421,8 @@ public class Client {
 
 			public void handleSubscribeRequest(ID fromID, IPresence presence) {
 				System.out.println("subscribe request from "+fromID);		
-				if (messageSender != null) {
-					messageSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBED));
+				if (presenceSender != null) {
+					presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBED));
 				}
 			}
 

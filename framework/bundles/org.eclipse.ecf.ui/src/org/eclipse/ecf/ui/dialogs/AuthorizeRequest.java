@@ -14,6 +14,9 @@ import org.eclipse.swt.widgets.Shell;
 
 public class AuthorizeRequest extends Dialog {
 
+	private String targetName = "target";
+	private String requesterName = "requester";
+	
 	private Label target_username;
 	private Label requester_userid;
 	private static final int REFUSE_ID = IDialogConstants.CLIENT_ID + 3;
@@ -22,6 +25,12 @@ public class AuthorizeRequest extends Dialog {
 	
 	public AuthorizeRequest(Shell parentShell) {
 		super(parentShell);
+	}
+	
+	public AuthorizeRequest(Shell parentShell, String fromName, String toName) {
+		super(parentShell);
+		this.requesterName = fromName;
+		this.targetName = toName;
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -33,34 +42,38 @@ public class AuthorizeRequest extends Dialog {
 		gridLayout.numColumns = 4;
 		composite.setLayout(gridLayout);
 		final GridData gridData_1 = new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_VERTICAL);
-		gridData_1.heightHint = 22;
+		gridData_1.heightHint = 52;
 		gridData_1.verticalSpan = 2;
 		composite.setLayoutData(gridData_1);
 
 		requester_userid = new Label(composite, SWT.NONE);
-		final GridData gridData_2 = new GridData();
+		final GridData gridData_2 = new GridData(GridData.GRAB_VERTICAL);
 		requester_userid.setLayoutData(gridData_2);
-		requester_userid.setText("slewis@cerf.composent.com");
+		requester_userid.setText(requesterName);
 
 		final Label label_4 = new Label(composite, SWT.NONE);
 		label_4.setText(" would like to add ");
 
 		target_username = new Label(composite, SWT.NONE);
 		target_username.setLayoutData(new GridData());
-		target_username.setText("slewis@composent.com");
+		target_username.setText(targetName);
 
 		final Label label_5 = new Label(composite, SWT.NONE);
 		label_5.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		label_5.setText(" to their buddy list");
 
 		final Composite composite_1 = new Composite(container, SWT.NONE);
-		composite_1.setLayout(new FillLayout(SWT.VERTICAL));
+		composite_1.setLayout(new GridLayout());
 		final GridData gridData = new GridData(GridData.FILL_BOTH);
-		gridData.heightHint = 82;
+		gridData.heightHint = 73;
 		composite_1.setLayoutData(gridData);
 
 		final Label label = new Label(composite_1, SWT.WRAP);
-		label.setText("\nYou can choose to authorize and also add them to your own buddy list, authorize them without adding them to your buddy list, or refuse to authorize");
+		final GridData gridData_4 = new GridData();
+		gridData_4.heightHint = 56;
+		gridData_4.widthHint = 462;
+		label.setLayoutData(gridData_4);
+		label.setText("You may choose to authorize and add them to your own buddy list, authorize without adding them to your buddy list, or refuse to authorize");
 
 		final Label label_3 = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
 		final GridData gridData_3 = new GridData(GridData.FILL_HORIZONTAL);
@@ -81,11 +94,13 @@ public class AuthorizeRequest extends Dialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(507, 196);
+		return new Point(486, 223);
 	}
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("ECF Authorization Request");
+		newShell.setText("ECF Authorization request from "+requesterName);
 	}
-
+	protected void buttonPressed(int button) {
+		System.out.println("button "+button+" pressed");
+	}
 }

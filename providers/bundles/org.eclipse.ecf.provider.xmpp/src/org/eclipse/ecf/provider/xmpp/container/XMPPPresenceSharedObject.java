@@ -8,7 +8,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.xmpp.container;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
@@ -21,7 +24,9 @@ import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceListener;
@@ -34,10 +39,12 @@ import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
+import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
@@ -49,11 +56,12 @@ import org.jivesoftware.smack.packet.Presence.Type;
  * @author slewis
  * 
  */
-public class XMPPPresenceSharedObject implements ISharedObject {
+public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager {
     
     public static Trace trace = Trace.create("xmpppresencesharedobject");
     ISharedObjectConfig config = null;
     XMPPConnection connection = null;
+	AccountManager accountManager = null;
     Vector messageListeners = new Vector();
     Vector presenceListeners = new Vector();
     Vector sharedObjectMessageListeners = new Vector();
@@ -113,6 +121,7 @@ public class XMPPPresenceSharedObject implements ISharedObject {
      */
     public void dispose(ID containerID) {
         config = null;
+		accountManager = null;
     }
 
     protected void dumpStack(String msg, Throwable e) {
@@ -517,6 +526,58 @@ public class XMPPPresenceSharedObject implements ISharedObject {
 
     protected void setConnection(XMPPConnection connection) {
         this.connection = connection;
+		if (connection != null) {
+			accountManager = new AccountManager(connection);
+		}
     }
+	public void changePassword(String newpassword) throws ECFException {
+		if (accountManager == null) throw new ECFException("not connected");
+		try {
+			accountManager.changePassword(newpassword);
+		} catch (XMPPException e) {
+			dumpStack("server exception changing password",e);
+			throw new ECFException("server exception changing password",e);
+		}
+	}
+	public void createAccount(String username, String password, Map attributes) throws ECFException {
+		if (accountManager == null) throw new ECFException("not connected");
+		try {
+			accountManager.createAccount(username,password,attributes);
+		} catch (XMPPException e) {
+			dumpStack("server exception creating account for "+username,e);
+			throw new ECFException("server exception creating account for "+username,e);
+		}
+	}
+	public void deleteAccount() throws ECFException {
+		if (accountManager == null) throw new ECFException("not connected");
+		try {
+			accountManager.deleteAccount();
+		} catch (XMPPException e) {
+			dumpStack("server exception deleting account",e);
+			throw new ECFException("server exception deleting account",e);
+		}
+	}
+	public String getAccountInstructions() {
+		if (accountManager == null) return null;
+		return accountManager.getAccountInstructions();
+	}
+	public String[] getAccountAttributeNames() {
+		if (accountManager == null) return null;
+		Iterator i = accountManager.getAccountAttributes();
+		List l = new ArrayList();
+		for(; i.hasNext(); ) {
+			l.add(i.next());
+		}
+		return (String []) l.toArray(new String[] {});
+	}
+	public Object getAccountAttribute(String name) {
+		if (accountManager == null) return null;
+		return accountManager.getAccountAttribute(name);
+	}
+	
+	public boolean supportsCreation() {
+		if (accountManager == null) return false;
+		return accountManager.supportsAccountCreation();
+	}
 
 }

@@ -10,10 +10,17 @@
 *****************************************************************************/
 package org.eclipse.ecf.presence;
 
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.presence.IMessageListener.Type;
+import java.util.Map;
 
-public interface IMessageSender {
-    
-    public void sendMessage(ID fromID, ID toID, Type type, String subject, String message);
+import org.eclipse.ecf.core.util.ECFException;
+
+public interface IAccountManager {
+
+	public void changePassword(String newpassword) throws ECFException;
+	public void createAccount(String username, String password, Map attributes) throws ECFException;
+	public void deleteAccount() throws ECFException;
+	public String getAccountInstructions();
+	public String[] getAccountAttributeNames();
+	public Object getAccountAttribute(String name);
+	public boolean supportsCreation();
 }

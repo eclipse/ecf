@@ -11,9 +11,9 @@
 package org.eclipse.ecf.presence;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.presence.IMessageListener.Type;
 
-public interface IMessageSender {
-    
-    public void sendMessage(ID fromID, ID toID, Type type, String subject, String message);
+public interface IPresenceSender {
+
+	public void sendPresenceUpdate(ID fromID, ID toID, IPresence presence);
+	
 }

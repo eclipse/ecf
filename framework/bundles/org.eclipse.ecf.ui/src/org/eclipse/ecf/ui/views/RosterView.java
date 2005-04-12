@@ -278,21 +278,15 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
             return newBuddy;
         }
 
-		public TreeParent findGroup(TreeParent parent, IRosterEntry entry) {
+		public TreeGroup findGroup(TreeParent parent, String name) {
             TreeObject [] objs = parent.getChildren();
-            Iterator groups = entry.getGroups();
-            for( ; groups.hasNext(); ) {
-                IRosterGroup grp = (IRosterGroup) groups.next();
-                String groupName = grp.getName();
-                if (objs != null) {
-                    for(int i = 0; i < objs.length; i++) {
-                        if (objs[i].getName().equals(groupName)) {
-                            return (TreeParent) objs[i];
-                        }
+            if (objs != null) {
+                for(int i = 0; i < objs.length; i++) {
+                    if (objs[i].getName().equals(name)) {
+                        return (TreeGroup) objs[i];
                     }
                 }
             }
-			
             return null;
         }
 		
@@ -336,9 +330,14 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
                 if (groups.hasNext()) {
                     // There's a group associated with entry...so add with group name
                     String groupName = ((IRosterGroup) groups.next()).getName();
-                    TreeGroup newgrp = new TreeGroup(groupName);
-					newgrp.addChild(newBuddy);
-                    parent.addChild(newgrp);
+					TreeGroup oldgrp = findGroup(parent,groupName);
+					if (oldgrp != null) {
+						oldgrp.addChild(newBuddy);
+					} else {
+						TreeGroup newgrp = new TreeGroup(groupName);
+						newgrp.addChild(newBuddy);
+						parent.addChild(newgrp);
+					}
                 } else {
 					parent.addChild(newBuddy);
                 }

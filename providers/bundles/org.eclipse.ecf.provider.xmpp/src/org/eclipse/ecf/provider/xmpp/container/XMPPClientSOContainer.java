@@ -11,6 +11,7 @@ package org.eclipse.ecf.provider.xmpp.container;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.SharedObjectAddException;
@@ -24,12 +25,15 @@ import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerLeaveGroupEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.IPresenceListener;
+import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.ISharedObjectMessageListener;
 import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.IMessageListener.Type;
@@ -329,6 +333,10 @@ public class XMPPClientSOContainer extends ClientSOContainer {
                             
                         }
 
+                    };
+                }
+				public IPresenceSender getPresenceSender() {
+					return new IPresenceSender() {
 						public void sendPresenceUpdate(ID fromID, ID toID, IPresence presence) {
                             try {
 								Presence newPresence = makePresenceFromIPresence(presence);
@@ -337,10 +345,42 @@ public class XMPPClientSOContainer extends ClientSOContainer {
                                 dumpStack("Exception in sendPresenceUpdate to "+toID+" with presence "+presence,e);
                             }
 						}
-                        
-                    };
-                }
+                        						
+					};
+				}
+				
+				public IAccountManager getAccountManager() {
+					return new IAccountManager() {
 
+						public void changePassword(String newpassword) throws ECFException {
+							sharedObject.changePassword(newpassword);
+						}
+
+						public void createAccount(String username, String password, Map attributes) throws ECFException {
+							sharedObject.createAccount(username,password,attributes);
+						}
+
+						public void deleteAccount() throws ECFException {
+							sharedObject.deleteAccount();
+						}
+
+						public String getAccountInstructions() {
+							return sharedObject.getAccountInstructions();
+						}
+
+						public String[] getAccountAttributeNames() {
+							return sharedObject.getAccountAttributeNames();
+						}
+
+						public Object getAccountAttribute(String name) {
+							return sharedObject.getAccountAttribute(name);
+						}
+						
+						public boolean supportsCreation() {
+							return sharedObject.supportsCreation();
+						}
+					};
+				}
                 public ISharedObjectContainer makeSharedObjectContainer(Class[] types, Object[] args) throws SharedObjectContainerInstantiationException {
                     return null;
                 }

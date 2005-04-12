@@ -22,7 +22,9 @@ public interface IPresenceContainer {
     public void addSharedObjectMessageListener(ISharedObjectMessageListener listener);
 
     public IMessageSender getMessageSender();
-    
+    public IPresenceSender getPresenceSender();
+	public IAccountManager getAccountManager();
+	
     public ISharedObjectContainer makeSharedObjectContainer(Class [] types, Object [] args) throws SharedObjectContainerInstantiationException;
     
 }
