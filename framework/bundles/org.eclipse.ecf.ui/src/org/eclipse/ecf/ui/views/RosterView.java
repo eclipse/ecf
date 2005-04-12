@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
@@ -37,6 +38,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -65,13 +67,18 @@ import org.eclipse.ui.part.ViewPart;
 public class RosterView extends ViewPart implements IPresenceListener, IMessageListener {
     public static final String DISCONNECT_ICON_DISABLED = "icons/disabled/terminate_co.gif";
     public static final String DISCONNECT_ICON_ENABLED = "icons/enabled/terminate_co.gif";
-    
+
+    public static final String INSTANT_MESSAGE_ICON = "icons/enabled/message.gif";
+    public static final String ADDGROUP_ICON = "icons/enabled/addgroup.gif";
+
     protected static final int TREE_EXPANSION_LEVELS = 2;
     private TreeViewer viewer;
     private Action chatAction;
     private Action selectedChatAction;
     private Action selectedDoubleClickAction;
     private Action disconnectAction;
+	private Action addGroupAction;
+	
     protected IUser localUser;
     protected ITextInputHandler textInputHandler;
     protected Hashtable chatThreads = new Hashtable();
@@ -295,7 +302,20 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
             }
             return null;
         }
-		
+		public String[] getAllGroupNames() {
+			TreeObject [] objs = root.getChildren();
+			String [] groups = null;
+			if (objs != null) {
+				List l = new ArrayList();
+				for(int i=0; i < objs.length; i++) {
+					TreeObject o = objs[i];
+					if (o instanceof TreeGroup) {
+						l.add(((TreeGroup)o).getName());
+					}
+				}
+				return (String []) l.toArray(new String[] {});
+			} else return new String[0];
+		}
 		public TreeBuddy findBuddy(TreeParent parent, IRosterEntry entry) {
 			TreeObject [] objs = parent.getChildren();
 			if (objs == null) return null;
@@ -349,6 +369,34 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
                 }
 			}
 		}
+		
+		public void addGroup(String name) {
+			if (name == null) return;
+			addGroup(root,name);
+		}
+		public void addGroup(TreeParent parent, String name) {
+			TreeGroup oldgrp = findGroup(parent,name);
+			if (oldgrp != null) {
+				// If the name is already there, then skip
+				return;
+			}
+			// Group not there...add it
+			TreeGroup newgrp = new TreeGroup(name);
+			parent.addChild(newgrp);
+		}
+		public void removeGroup(TreeParent parent, String name) {
+			TreeGroup oldgrp = findGroup(parent,name);
+			if (oldgrp == null) {
+				// if not there, simply return
+				return;
+			}
+			// Else it is there...and we remove it
+			parent.removeChild(oldgrp);
+		}
+		public void removeGroup(String name) {
+			if (name == null) return;
+			removeGroup(root,name);
+		}
         public void addEntry(IRosterEntry entry) {
             addEntry(root, entry);
         }
@@ -385,7 +433,9 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
 						image = registry.get(UiPluginConstants.DECORATION_USER_INACTIVE);
 					}
                 }
-            }            
+            } else if (obj instanceof TreeGroup) {
+				image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
+            }
             return image;
         }
     }
@@ -445,24 +495,53 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
     }
 
     private void fillLocalPullDown(IMenuManager manager) {
+        manager.add(addGroupAction);
+        manager.add(new Separator());
         manager.add(chatAction);
         manager.add(new Separator());
         manager.add(disconnectAction);
     }
 
     private void fillContextMenu(IMenuManager manager) {
-        TreeObject treeObject = getSelectedTreeObject();
+        final TreeObject treeObject = getSelectedTreeObject();
         final ID targetID = treeObject.getUserID();
         if (treeObject != null) {
-            selectedChatAction = new Action() {
-                public void run() {
-                    openChatWindowForTarget(targetID);
-                }
-            };
-            selectedChatAction.setText("Send IM to "+treeObject.getUserID().getName());
-            selectedChatAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-                    .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-            manager.add(selectedChatAction);
+			if (treeObject instanceof TreeBuddy) {
+				final TreeBuddy tb = (TreeBuddy) treeObject;
+	            selectedChatAction = new Action() {
+	                public void run() {
+	                    openChatWindowForTarget(targetID);
+	                }
+	            };
+	            selectedChatAction.setText("Send IM to "+treeObject.getUserID().getName());
+	            selectedChatAction.setImageDescriptor(ImageDescriptor.createFromURL(
+		                UiPlugin.getDefault().find(new Path(INSTANT_MESSAGE_ICON))));
+	            manager.add(selectedChatAction);
+				
+				TreeObject parent = treeObject.getParent();
+				if (parent != null && parent instanceof TreeGroup) {
+					final TreeGroup treeGroup = (TreeGroup) parent;
+					Action removeUserAction = new Action() {
+						public void run() {
+							removeUserFromGroup(tb,treeGroup);
+						}
+					};
+					removeUserAction.setText("Remove "+treeObject.getName()+" from "+treeGroup.getName());
+					manager.add(removeUserAction);
+				}
+			} else if (treeObject instanceof TreeGroup) {
+				final TreeGroup treeGroup = (TreeGroup) treeObject;
+				final String groupName = treeGroup.getName();
+				Action addUserAction = new Action() {
+					public void run() {
+						addUserToGroup(groupName);
+					}
+				};
+				addUserAction.setText("Add buddy to "+treeObject.getName()+" group");
+				addUserAction.setImageDescriptor(ImageDescriptor.createFromURL(
+                UiPlugin.getDefault().find(new Path(ADDGROUP_ICON))));
+				manager.add(addUserAction);
+			}
         }
         
         manager.add(new Separator());
@@ -470,6 +549,15 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
         manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
     }
 
+	protected void addUserToGroup(String groupName) {
+		// XXX TODO
+		System.out.println("adding user to group "+groupName);
+	}
+	
+	protected void removeUserFromGroup(TreeBuddy buddy, TreeGroup group) {
+		// XXX TODO
+		System.out.println("removing user "+buddy.getName()+ " from group "+group);
+	}
     protected TreeObject getSelectedTreeObject() {
         ISelection selection = viewer.getSelection();
         Object obj = ((IStructuredSelection) selection)
@@ -478,6 +566,8 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
         return treeObject;
     }
     private void fillLocalToolBar(IToolBarManager manager) {
+        manager.add(addGroupAction);
+        manager.add(new Separator());
         manager.add(chatAction);
         manager.add(new Separator());
         manager.add(disconnectAction);
@@ -512,8 +602,8 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
         };
         chatAction.setText("Send Instant Message...");
         chatAction.setToolTipText("Send Instant Message");
-        chatAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-                .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+        chatAction.setImageDescriptor(ImageDescriptor.createFromURL(
+		                UiPlugin.getDefault().find(new Path(INSTANT_MESSAGE_ICON))));
         chatAction.setEnabled(false);
         selectedDoubleClickAction = new Action() {
             public void run() {
@@ -527,6 +617,8 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
                 if (textInputHandler != null) {
                     textInputHandler.disconnect();
                     chatAction.setEnabled(false);
+					addGroupAction.setEnabled(false);
+					disconnectAction.setEnabled(false);
                     this.setEnabled(false);
                 }
             }
@@ -537,7 +629,41 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
         disconnectAction.setImageDescriptor(ImageDescriptor.createFromURL(
                 UiPlugin.getDefault().find(new Path(DISCONNECT_ICON_ENABLED))));        
         disconnectAction.setDisabledImageDescriptor(ImageDescriptor.createFromURL(
-                UiPlugin.getDefault().find(new Path(DISCONNECT_ICON_DISABLED))));        
+                UiPlugin.getDefault().find(new Path(DISCONNECT_ICON_DISABLED))));     
+		
+		
+		addGroupAction = new Action() {
+			public void run() {
+				// handle add group operation here
+				String defaultNewGroupName = "New Group";
+				InputDialog input = new InputDialog(viewer.getControl().getShell(),"Add Group","Please enter the name of the group to be added",defaultNewGroupName,new IInputValidator() {
+
+					public String isValid(String newText) {
+						if (newText == null || newText.length() == 0) {
+							return "New group name cannot be empty";
+						} else {
+							String [] groupNames = getGroupNames();
+							for(int i=0; i < groupNames.length; i++) {
+								if (groupNames[i].equals(newText)) {
+									return "A group named '"+newText+"' already exists.  Please choose another name";
+								}
+							}
+						}
+						return null;
+					}
+					
+				});
+				input.open();
+				String result = input.getValue();
+				// Now add the group
+				addGroup(result);
+			}
+		};
+		addGroupAction.setText("Add Group...");
+		addGroupAction.setToolTipText("Add group to list");
+		addGroupAction.setEnabled(false);
+		addGroupAction.setImageDescriptor(ImageDescriptor.createFromURL(
+                UiPlugin.getDefault().find(new Path(ADDGROUP_ICON))));
     }
 
 
@@ -675,6 +801,7 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
             groupID = groupManager;
             disconnectAction.setEnabled(true);
             chatAction.setEnabled(true);
+			addGroupAction.setEnabled(true);
         }
     }
 
@@ -709,7 +836,39 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
             refreshView();
         }
     }
-
+	
+	public String[] getGroupNames() {
+        ViewContentProvider vcp = (ViewContentProvider) viewer
+        .getContentProvider();
+		if (vcp != null) {
+			return vcp.getAllGroupNames();
+		} else return new String[0];
+	}
+	public String getSelectedGroupName() {
+		TreeObject to = getSelectedTreeObject();
+		if (to == null) return null;
+		if (to instanceof TreeGroup) {
+			TreeGroup tg = (TreeGroup) to;
+			return tg.getName();
+		}
+		return null;
+	}
+	public void addGroup(String name) {
+        ViewContentProvider vcp = (ViewContentProvider) viewer
+        .getContentProvider();
+		if (vcp != null) {
+			vcp.addGroup(name);
+			refreshView();
+		} 
+	}
+	public void removeGroup(String name) {
+        ViewContentProvider vcp = (ViewContentProvider) viewer
+        .getContentProvider();
+		if (vcp != null) {
+			vcp.removeGroup(name);
+			refreshView();
+		} 
+	}
     protected void handleGroupManagerDeparted() {
         removeAllRosterEntries();
         disposeAllChatWindows("Disconnected from server.  Chat is inactive");
