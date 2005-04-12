@@ -11,6 +11,7 @@ package org.eclipse.ecf.provider.xmpp.container;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
@@ -26,9 +27,11 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
+import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.ISharedObjectMessageListener;
+import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.IMessageListener.Type;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
 import org.eclipse.ecf.provider.generic.ContainerMessage;
@@ -288,6 +291,16 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		}
 	}
     
+	protected Presence makePresenceFromIPresence(IPresence presence) {
+		return sharedObject.makePresence(presence);
+	}
+	public void sendPresenceUpdate(ID target, Presence presence) throws IOException {
+		if (messageSender != null) {
+			if (presence == null) throw new NullPointerException("presence cannot be null");
+			messageSender.sendPresenceUpdate(target, presence);
+		}
+	}
+
     public Object getAdapter(Class clazz) {
         if (clazz.equals(IPresenceContainer.class)) {
             return new IPresenceContainer() {
@@ -315,6 +328,15 @@ public class XMPPClientSOContainer extends ClientSOContainer {
                             }
                             
                         }
+
+						public void sendPresenceUpdate(ID fromID, ID toID, IPresence presence) {
+                            try {
+								Presence newPresence = makePresenceFromIPresence(presence);
+                                XMPPClientSOContainer.this.sendPresenceUpdate(toID,newPresence);
+                            } catch (IOException e) {
+                                dumpStack("Exception in sendPresenceUpdate to "+toID+" with presence "+presence,e);
+                            }
+						}
                         
                     };
                 }
@@ -322,6 +344,10 @@ public class XMPPClientSOContainer extends ClientSOContainer {
                 public ISharedObjectContainer makeSharedObjectContainer(Class[] types, Object[] args) throws SharedObjectContainerInstantiationException {
                     return null;
                 }
+
+				public void addSubscribeListener(ISubscribeListener listener) {
+					sharedObject.addSubscribeListener(listener);
+				}
                 
             };
         }

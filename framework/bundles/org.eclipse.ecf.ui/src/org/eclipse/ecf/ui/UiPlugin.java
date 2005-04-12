@@ -95,10 +95,10 @@ public class UiPlugin extends AbstractUIPlugin {
      */
     protected ImageRegistry createImageRegistry() {
         registry = super.createImageRegistry();
-        
-  
+       
         registry.put(UiPluginConstants.DECORATION_PROJECT, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
-        registry.put(UiPluginConstants.DECORATION_USER, AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.ecf.example.collab", "icons/presence_member.gif").createImage());
+        registry.put(UiPluginConstants.DECORATION_USER, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/enabled/presence_member.gif").createImage());
+        registry.put(UiPluginConstants.DECORATION_USER_INACTIVE, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/disabled/presence_member.gif").createImage());
         registry.put(UiPluginConstants.DECORATION_TIME, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_FORWARD));
         registry.put(UiPluginConstants.DECORATION_TASK, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT));
         

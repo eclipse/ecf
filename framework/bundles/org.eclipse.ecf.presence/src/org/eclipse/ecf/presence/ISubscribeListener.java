@@ -11,11 +11,11 @@
 package org.eclipse.ecf.presence;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.presence.IMessageListener.Type;
 
-public interface IMessageSender {
-    
-    public void sendMessage(ID fromID, ID toID, Type type, String subject, String message);
-	public void sendPresenceUpdate(ID fromID, ID toID, IPresence presence);
-	
+public interface ISubscribeListener {
+
+	public void handleSubscribeRequest(ID fromID, IPresence presence);
+	public void handleUnsubscribeRequest(ID fromID, IPresence presence);
+	public void handleSubscribed(ID fromID, IPresence presence);
+	public void handleUnsubscribed(ID fromID, IPresence presence);
 }

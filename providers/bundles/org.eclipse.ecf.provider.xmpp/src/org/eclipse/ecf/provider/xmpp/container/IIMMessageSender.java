@@ -11,6 +11,7 @@ package org.eclipse.ecf.provider.xmpp.container;
 import java.io.IOException;
 import org.eclipse.ecf.core.identity.ID;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.packet.Presence;
 
 /**
  * @author slewis
@@ -19,7 +20,8 @@ import org.jivesoftware.smack.Roster;
 public interface IIMMessageSender {
     
     public void sendMessage(ID target, String message) throws IOException;
-    
+    public void sendPresenceUpdate(ID target, Presence presence) throws IOException;
+	
     public Roster getRoster() throws IOException;
 
 }

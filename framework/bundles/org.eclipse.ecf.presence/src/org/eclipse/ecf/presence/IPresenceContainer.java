@@ -15,6 +15,8 @@ import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
 
 public interface IPresenceContainer {
     
+	public void addSubscribeListener(ISubscribeListener listener);
+	
     public void addPresenceListener(IPresenceListener listener);
     public void addMessageListener(IMessageListener listener);
     public void addSharedObjectMessageListener(ISharedObjectMessageListener listener);

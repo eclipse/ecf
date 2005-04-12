@@ -2,7 +2,10 @@ Manifest-Version: 1.0
 Bundle-Name: ECF XMPP Provider Plug-in
 Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp
 Bundle-Version: 1.0.0
-Bundle-ClassPath: xmpp.jar,lib/smack.jar,lib/smackx.jar,lib/smackx-debug.jar
+Bundle-ClassPath: xmpp.jar,
+ lib/smackx-debug.jar,
+ lib/smack.jar,
+ lib/smackx.jar
 Bundle-Activator: org.eclipse.ecf.provider.xmpp.XmppPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin

@@ -132,7 +132,6 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
             super(name, userID);
             children = new ArrayList();
         }
-
         public void addChild(TreeObject child) {
             children.add(child);
             child.setParent(this);
@@ -159,7 +158,50 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
         public boolean hasChildren() {
             return children.size() > 0;
         }
+		
     }
+	
+	class TreeGroup extends TreeParent {
+		
+		public TreeGroup(String name) {
+			super(name);
+		}
+		public int getActiveCount() {
+			TreeObject [] childs = getChildren();
+			int totCount = 0;
+			for(int i=0; i < childs.length; i++) {
+				if (childs[i] instanceof TreeBuddy) {
+					TreeBuddy tb = (TreeBuddy) childs[i];
+					if (tb.isActive()) {
+						totCount++;
+					}
+				}
+			}
+			return totCount;
+		}
+		public int getTotalCount() {
+			return getChildren().length;
+		}
+	}
+	
+	class TreeBuddy extends TreeParent {
+		IPresence presence = null;
+		public TreeBuddy(String name, ID id, IPresence p) {
+			super(name,id);
+			this.presence = p;
+		}
+		public IPresence getPresence() {
+			return presence;
+		}
+		public void setPresence(IPresence p) {
+			this.presence = p;
+		}
+		public boolean isActive() {
+			IPresence p = getPresence();
+			if (p == null) return false;
+			return presence.getType().equals(IPresence.Type.AVAILABLE);
+		}
+	}
 
     class ViewContentProvider implements IStructuredContentProvider,
             ITreeContentProvider {
@@ -201,35 +243,17 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
             return false;
         }
 
-        public TreeParent hasGroup(IRosterGroup group) {
-            if (group == null)
-                return null;
-            TreeObject[] children = root.getChildren();
-            if (children == null)
-                return null;
-            for (int i = 0; i < children.length; i++) {
-                if (group.getName().equals(children[i].getName())) {
-                    return (TreeParent) children[i];
-                }
-            }
-            return null;
-        }
-
-        public TreeParent fillPresence(TreeParent obj, IPresence presence) {
+		public TreeBuddy fillPresence(TreeBuddy obj, IPresence presence) {
             if (presence == null)
                 return obj;
+			obj.removeChildren();
             TreeObject type = new TreeObject("Status: "
                     + presence.getType().toString());
-            obj.addChild(type);
+			obj.addChild(type);
             String status = presence.getStatus();
             if (status != null && !status.equals("")) {
                 TreeObject stat = new TreeObject("Status Details: " + status);
-                obj.addChild(stat);
-            }
-            int priority = presence.getPriority();
-            if (priority != -1) {
-                TreeObject prior = new TreeObject("Priority: " + priority);
-                obj.addChild(prior);
+				obj.addChild(stat);
             }
             Map props = presence.getProperties();
             for (Iterator i = props.keySet().iterator(); i.hasNext();) {
@@ -237,45 +261,24 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
                 String value = (String) props.get(key);
                 if (key != null && value != null) {
                     TreeObject prop = new TreeObject(key + ": " + value);
-                    obj.addChild(prop);
+					obj.addChild(prop);
                 }
             }
             return obj;
         }
 
-        public TreeParent fillWithEntry(TreeParent obj, IRosterEntry entry) {
-            obj.removeChildren();
-            String name = entry.getName();
-            if (name != null) {
-                obj.addChild(new TreeObject("Name: " + name));
-            }
-            return fillPresence(obj, entry.getPresenceState());
+        public TreeBuddy createBuddy(TreeBuddy oldBuddy, IRosterEntry entry) {
+			TreeBuddy newBuddy = (oldBuddy==null)?new TreeBuddy(entry.getUserID().getName(),entry.getUserID(),entry.getPresenceState()):oldBuddy;
+            IPresence presence = entry.getPresenceState();
+			if (presence != null) {
+				newBuddy.setPresence(presence);
+				newBuddy.addChild(new TreeObject("Name: "+entry.getName()));
+				fillPresence(newBuddy, presence);
+			}
+            return newBuddy;
         }
 
-        public void addGroupEntry(TreeParent group, String groupName, IRosterEntry entry) {
-            TreeObject[] objs = group.getChildren();
-            TreeParent found = null;
-            if (objs != null) {
-                for (int i = 0; i < objs.length; i++) {
-                    if (objs[i].getName().equals(entry.getUserID().getName())) {
-                        // Found it...replace values with new
-                        found = fillWithEntry((TreeParent) objs[i], entry);
-                    }
-                }
-            }
-            
-            if (found == null) {
-                found = new TreeParent(entry.getUserID().getName(), entry
-                        .getUserID());
-                found = fillWithEntry(found, entry);
-                group.addChild(found);
-            } else {
-                group.removeChild(found);
-                group.addChild(found);
-            }
-        }
-        
-        public TreeParent findGroup(TreeParent parent, IRosterEntry entry) {
+		public TreeParent findGroup(TreeParent parent, IRosterEntry entry) {
             TreeObject [] objs = parent.getChildren();
             Iterator groups = entry.getGroups();
             for( ; groups.hasNext(); ) {
@@ -289,49 +292,58 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
                     }
                 }
             }
+			
             return null;
         }
-        public void findAndReplaceEntry(TreeParent parent, IRosterEntry entry) {
-            TreeObject [] objs = parent.getChildren();
-            TreeParent found = null;
-            if (objs != null) {
-                for (int i = 0; i < objs.length; i++) {
-                    if (objs[i].getName().equals(entry.getUserID().getName())) {
-                        // Found it...replace values with new
-                        found = fillWithEntry((TreeParent) objs[i], entry);
-                    }
-                }
-                
-            }
-            if (found == null) {
-                found = new TreeParent(entry.getUserID().getName(), entry
-                        .getUserID());
-                found = fillWithEntry(found, entry);
-                parent.addChild(found);
-            } else {
-                parent.removeChild(found);
-                parent.addChild(found);
-            }
+		
+		public TreeBuddy findBuddy(TreeParent parent, IRosterEntry entry) {
+			TreeObject [] objs = parent.getChildren();
+			if (objs == null) return null;
+			for(int i=0; i < objs.length; i++) {
+				if (objs[i] instanceof TreeBuddy) {
+					TreeBuddy tb = (TreeBuddy) objs[i];
+					ID tbid = tb.getUserID();
+					if (tbid != null && tbid.equals(entry.getUserID())) {
+						return (TreeBuddy) objs[i];
+					}
+				} else if (objs[i] instanceof TreeGroup) {
+					TreeBuddy found = findBuddy((TreeParent) objs[i],entry);
+					if (found != null) return found;
+				}
+			}
+			return null;
+		}
+		
+        public TreeBuddy findAndReplaceEntry(TreeParent parent, IRosterEntry entry) {
+			TreeBuddy tb = findBuddy(parent,entry);
+			TreeBuddy result = createBuddy(tb,entry);
+			// If buddy found already, then remove old and add new
+			if (tb != null) {
+				TreeParent tbparent = tb.getParent();
+				tbparent.removeChild(tb);
+				tbparent.addChild(result);
+			}
+			return result;
         }
         public void addEntry(TreeParent parent, IRosterEntry entry) {
-            TreeParent group = findGroup(parent,entry);
-            if (group != null) {
-                findAndReplaceEntry(group,entry);
-            } else {
+			
+			TreeBuddy newBuddy = findAndReplaceEntry(parent,entry);
+			TreeParent buddyParent = newBuddy.getParent();
+			
+			if (buddyParent == null) {
                 // Existing group not found, so see if entry has a group associated with it
                 Iterator groups = entry.getGroups();
                 if (groups.hasNext()) {
                     // There's a group associated with entry...so add with group name
                     String groupName = ((IRosterGroup) groups.next()).getName();
-                    TreeParent newgrp = new TreeParent(groupName);
-                    findAndReplaceEntry(newgrp,entry);
+                    TreeGroup newgrp = new TreeGroup(groupName);
+					newgrp.addChild(newBuddy);
                     parent.addChild(newgrp);
                 } else {
-                    // No group for entry...just add to parent
-                    findAndReplaceEntry(parent,entry);
+					parent.addChild(newBuddy);
                 }
-            }
-        }
+			}
+		}
         public void addEntry(IRosterEntry entry) {
             addEntry(root, entry);
         }
@@ -341,9 +353,6 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
         }
         private void initialize() {
             root = new TreeParent("Buddy List");
-            /*
-             * root.addChild(p1); root.addChild(p2);
-             */
             invisibleRoot = new TreeParent("");
             invisibleRoot.addChild(root);
         }
@@ -351,17 +360,25 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
 
     class ViewLabelProvider extends LabelProvider {
         public String getText(Object obj) {
-            return obj.toString();
+			String label = null;
+			if (obj instanceof TreeGroup) {
+				TreeGroup tg = (TreeGroup) obj;
+				label = tg.getName() + " ("+tg.getActiveCount()+"/"+tg.getTotalCount()+")";
+				return label;
+			} else return obj.toString();
         }
 
         public Image getImage(Object obj) {
             Image image = null;     //By default, no image exists for obj, but if found to be a specific instance, load from plugin repository.
-            ImageRegistry registry = UiPlugin.getDefault().getImageRegistry();
-            
-            if (obj instanceof TreeParent) {
-                TreeParent o = (TreeParent) obj;
+            if (obj instanceof TreeBuddy) {
+	            ImageRegistry registry = UiPlugin.getDefault().getImageRegistry();	            
+                TreeBuddy o = (TreeBuddy) obj;
                 if (o.getUserID() != null) {
-                    image = registry.get(UiPluginConstants.DECORATION_USER);
+					if (o.isActive()) {
+						image = registry.get(UiPluginConstants.DECORATION_USER);
+					} else {
+						image = registry.get(UiPluginConstants.DECORATION_USER_INACTIVE);
+					}
                 }
             }            
             return image;
@@ -396,7 +413,7 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
         viewer.setLabelProvider(new ViewLabelProvider());
         viewer.setSorter(new NameSorter());
         viewer.setInput(getViewSite());
-        viewer.setAutoExpandLevel(2);
+        viewer.setAutoExpandLevel(3);
         makeActions();
         hookContextMenu();
         hookDoubleClickAction();

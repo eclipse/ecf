@@ -25,6 +25,7 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceListener;
+import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
 import org.eclipse.ecf.presence.ISharedObjectMessageListener;
@@ -56,7 +57,8 @@ public class XMPPPresenceSharedObject implements ISharedObject {
     Vector messageListeners = new Vector();
     Vector presenceListeners = new Vector();
     Vector sharedObjectMessageListeners = new Vector();
-    
+    Vector subscribeListeners = new Vector();
+	
     protected void addPresenceListener(IPresenceListener listener) {
         presenceListeners.add(listener);
     }
@@ -75,6 +77,12 @@ public class XMPPPresenceSharedObject implements ISharedObject {
     protected void removeSharedObjectMessageListener(ISharedObjectMessageListener listener) {
         sharedObjectMessageListeners.remove(listener);
     }
+	protected void addSubscribeListener(ISubscribeListener listener) {
+		subscribeListeners.add(listener);
+	}
+	protected void removeSubscribeListener(ISubscribeListener listener) {
+		subscribeListeners.remove(listener);
+	}
     protected String canonicalizePresenceFrom(String from) {
         if (from == null)
             return null;
@@ -139,6 +147,21 @@ public class XMPPPresenceSharedObject implements ISharedObject {
         for (Iterator i = presenceListeners.iterator(); i.hasNext();) {
             IPresenceListener l = (IPresenceListener) i.next();
             l.handlePresence(fromID, presence);
+        }
+    }
+
+    protected void fireSubscribe(ID fromID, IPresence presence) {
+        for (Iterator i = subscribeListeners.iterator(); i.hasNext();) {
+            ISubscribeListener l = (ISubscribeListener) i.next();
+			if (presence.getType().equals(IPresence.Type.SUBSCRIBE)) {
+				l.handleSubscribeRequest(fromID,presence);
+			} else if (presence.getType().equals(IPresence.Type.SUBSCRIBED)) {
+				l.handleSubscribed(fromID,presence);
+			} else if (presence.getType().equals(IPresence.Type.UNSUBSCRIBE)) {
+				l.handleUnsubscribeRequest(fromID,presence);
+			} else if (presence.getType().equals(IPresence.Type.UNSUBSCRIBED)) {
+				l.handleUnsubscribed(fromID,presence);
+			}
         }
     }
 
@@ -265,9 +288,14 @@ public class XMPPPresenceSharedObject implements ISharedObject {
         Type type = xmppPresence.getType();
         int priority = xmppPresence.getPriority();
         String status = xmppPresence.getStatus();
-        IPresence newPresence = makePresence(xmppPresence);
+        IPresence newPresence = makeIPresence(xmppPresence);
         ID fromID = makeIDFromName(from);
-        firePresence(fromID, newPresence);
+		if (newPresence.getType().equals(IPresence.Type.SUBSCRIBE) || 
+				newPresence.getType().equals(IPresence.Type.UNSUBSCRIBE) ||
+				newPresence.getType().equals(IPresence.Type.SUBSCRIBED) ||
+				newPresence.getType().equals(IPresence.Type.UNSUBSCRIBED)) {
+			fireSubscribe(fromID,newPresence);
+		} else firePresence(fromID, newPresence);
     }
 
     protected void handleRoster(Roster roster) {
@@ -331,18 +359,29 @@ public class XMPPPresenceSharedObject implements ISharedObject {
             return IMessageListener.Type.NORMAL;
     }
 
-    protected IPresence makePresence(Presence xmppPresence) {
+    protected IPresence makeIPresence(Presence xmppPresence) {
         Mode mode = xmppPresence.getMode();
         Type type = xmppPresence.getType();
         int priority = xmppPresence.getPriority();
         String status = xmppPresence.getStatus();
         IPresence newPresence = new org.eclipse.ecf.presence.impl.Presence(
-                makePresenceType(xmppPresence), priority, status,
-                makePresenceMode(xmppPresence));
+                makeIPresenceType(xmppPresence), priority, status,
+                makeIPresenceMode(xmppPresence));
         return newPresence;
     }
 
-    protected IPresence.Mode makePresenceMode(Presence xmppPresence) {
+    protected Presence makePresence(IPresence ipresence) {
+        IPresence.Mode mode = ipresence.getMode();
+        IPresence.Type type = ipresence.getType();
+        int priority = ipresence.getPriority();
+        String status = ipresence.getStatus();
+        Presence newPresence = new Presence(
+                makePresenceType(ipresence), status, priority,
+                makePresenceMode(ipresence));
+        return newPresence;
+    }
+
+    protected IPresence.Mode makeIPresenceMode(Presence xmppPresence) {
         if (xmppPresence == null)
             return IPresence.Mode.AVAILABLE;
         Mode mode = xmppPresence.getMode();
@@ -362,7 +401,27 @@ public class XMPPPresenceSharedObject implements ISharedObject {
         return IPresence.Mode.AVAILABLE;
     }
 
-    protected IPresence.Type makePresenceType(Presence xmppPresence) {
+    protected Presence.Mode makePresenceMode(IPresence ipresence) {
+        if (ipresence == null)
+            return Presence.Mode.AVAILABLE;
+        IPresence.Mode mode = ipresence.getMode();
+        if (mode == IPresence.Mode.AVAILABLE) {
+            return Presence.Mode.AVAILABLE;
+        } else if (mode == IPresence.Mode.AWAY) {
+            return Presence.Mode.AWAY;
+        } else if (mode == IPresence.Mode.CHAT) {
+            return Presence.Mode.CHAT;
+        } else if (mode == IPresence.Mode.DND) {
+            return Presence.Mode.DO_NOT_DISTURB;
+        } else if (mode == IPresence.Mode.EXTENDED_AWAY) {
+            return Presence.Mode.EXTENDED_AWAY;
+        } else if (mode == IPresence.Mode.INVISIBLE) {
+            return Presence.Mode.INVISIBLE;
+        }
+        return Presence.Mode.AVAILABLE;
+    }
+
+    protected IPresence.Type makeIPresenceType(Presence xmppPresence) {
         if (xmppPresence == null)
             return IPresence.Type.AVAILABLE;
         Type type = xmppPresence.getType();
@@ -382,6 +441,28 @@ public class XMPPPresenceSharedObject implements ISharedObject {
             return IPresence.Type.UNAVAILABLE;
         }
         return IPresence.Type.AVAILABLE;
+    }
+
+    protected Presence.Type makePresenceType(IPresence ipresence) {
+        if (ipresence == null)
+            return Presence.Type.AVAILABLE;
+        IPresence.Type type = ipresence.getType();
+        if (type == IPresence.Type.AVAILABLE) {
+            return Presence.Type.AVAILABLE;
+        } else if (type == IPresence.Type.ERROR) {
+            return Presence.Type.ERROR;
+        } else if (type == IPresence.Type.SUBSCRIBE) {
+            return Presence.Type.SUBSCRIBE;
+        } else if (type == IPresence.Type.SUBSCRIBED) {
+            return Presence.Type.SUBSCRIBED;
+        } else if (type == IPresence.Type.UNSUBSCRIBE) {
+            return Presence.Type.UNSUBSCRIBE;
+        } else if (type == IPresence.Type.UNSUBSCRIBED) {
+            return Presence.Type.UNSUBSCRIBED;
+        } else if (type == IPresence.Type.UNAVAILABLE) {
+            return Presence.Type.UNAVAILABLE;
+        }
+        return Presence.Type.AVAILABLE;
     }
 
     protected IRosterEntry makeRosterEntry(RosterEntry entry) {

@@ -17,7 +17,9 @@ import org.eclipse.ecf.presence.IPresence;
 
 public class Presence implements IPresence {
     
-    protected Type type;
+	private static final long serialVersionUID = 3906369346107618354L;
+	
+	protected Type type;
     protected Mode mode;
     protected int priority;
     protected String status;

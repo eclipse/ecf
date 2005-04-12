@@ -29,6 +29,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Presence;
 
 public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender {
 
@@ -80,7 +81,7 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 	}
 	public ChatConnection(IAsynchConnectionEventHandler h) {
 		this.handler = h;
-		if (Trace.create("smackdebug") != null) {
+		if (smack != null) {
 			XMPPConnection.DEBUG_ENABLED = true;
 		}
 	}
@@ -92,6 +93,9 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 		debug("connect(" + remote + "," + data + "," + timeout + ")");
 		if (timeout > 0)
 			SmackConfiguration.setPacketReplyTimeout(timeout);
+
+		Roster.setDefaultSubscriptionMode(Roster.SUBSCRIPTION_MANUAL);
+		
 		XMPPID jabberURI = null;
 		try {
 			jabberURI = (XMPPID) remote;
@@ -120,8 +124,18 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 			} else {
 				connection = new XMPPConnection(serverName, serverPort);
 			}
+			connection.addPacketListener(new PacketListener() {
+				/*
+				 * (non-Javadoc)
+				 * 
+				 * @see org.jivesoftware.smack.PacketListener#processPacket(org.jivesoftware.smack.packet.Packet)
+				 */
+				public void processPacket(Packet arg0) {
+					handlePacket(arg0);
+				}
+			}, null);
 			// Login
-			connection.login(username, (String) data);
+			connection.login(username, (String) data, "ECF");
 			isConnected = true;
 			debug("User: " + username + " logged into " + serverName);
 			roster = getRoster();
@@ -145,16 +159,6 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 			}
 		});
 
-		connection.addPacketListener(new PacketListener() {
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see org.jivesoftware.smack.PacketListener#processPacket(org.jivesoftware.smack.packet.Packet)
-			 */
-			public void processPacket(Packet arg0) {
-				handlePacket(arg0);
-			}
-		}, null);
 		return roster;
 	}
 
@@ -247,7 +251,7 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 			}
 		}
 	}
-
+	
 	public synchronized void sendAsynch(ID receiver, byte[] data)
 			throws IOException {
 		if (data == null)
@@ -292,6 +296,20 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 		sendMessage(target, aMsg);
 	}
 
+	public void sendPresenceUpdate(ID target, Presence presence) throws IOException {
+		if (target == null)
+			throw new IOException("target cannot be null");
+		if (presence == null)
+			throw new IOException("presence cannot be null");
+		debug("sendPresenceUpdate(" + target + "," + presence + ")");
+		presence.setFrom(connection.getUser());
+		presence.setTo(target.getName());
+		synchronized (this) {
+			if (!isConnected())
+				throw new IOException("not connected");
+				connection.sendPacket(presence);
+		}
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -303,7 +321,6 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 		if (!connection.isConnected())
 			return null;
 		Roster roster = connection.getRoster();
-		roster.setSubscriptionMode(Roster.SUBSCRIPTION_ACCEPT_ALL);
 		return roster;
 	}
 }

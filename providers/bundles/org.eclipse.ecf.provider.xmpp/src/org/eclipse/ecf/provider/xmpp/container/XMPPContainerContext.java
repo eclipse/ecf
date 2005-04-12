@@ -12,9 +12,11 @@ import java.io.IOException;
 import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.provider.generic.SOContainer;
 import org.eclipse.ecf.provider.generic.SOContext;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.packet.Presence;
 
 /**
  * @author slewis
@@ -32,9 +34,15 @@ public class XMPPContainerContext extends SOContext {
                 public void sendMessage(ID target, String message) throws IOException {
                     ((XMPPClientSOContainer) container).sendMessage(target,message);
                 }
+				public void sendPresenceUpdate(ID target, IPresence presence) throws IOException {
+ 				}
                 public Roster getRoster() throws IOException {
                     return ((XMPPClientSOContainer) container).getRoster();
                 }
+				public void sendPresenceUpdate(ID target, Presence presence) throws IOException {
+					if (presence == null) throw new NullPointerException("presence cannot be null");
+	                ((XMPPClientSOContainer) container).sendPresenceUpdate(target,presence);
+				}
             };
         } else return null;
     }

@@ -18,6 +18,7 @@ public interface UiPluginConstants {
 
     public static final String DECORATION_PROJECT = "project";
     public static final String DECORATION_USER = "user";
+	public static final String DECORATION_USER_INACTIVE = "userinactive";
     public static final String DECORATION_TIME = "time";
     public static final String DECORATION_TASK = "task";
     public static final String DECORATION_SEND = "send";

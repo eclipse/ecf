@@ -41,7 +41,9 @@ import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.IPresenceListener;
+import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.IRosterEntry;
+import org.eclipse.ecf.presence.impl.Presence;
 import org.eclipse.ecf.ui.views.ITextInputHandler;
 import org.eclipse.ecf.ui.views.RosterView;
 import org.eclipse.swt.widgets.Display;
@@ -389,7 +391,9 @@ public class Client {
             public void handleContainerDeparted(final ID departedContainer) {
                 Display.getDefault().syncExec(new Runnable() {
                     public void run() {
-                        rosterView.memberDeparted(departedContainer);
+						if (rosterView != null) {
+							rosterView.memberDeparted(departedContainer);
+						}
                     }
                 });
                 messageSender = null;
@@ -397,7 +401,28 @@ public class Client {
             }
             
         });
-    }
+		pc.addSubscribeListener(new ISubscribeListener() {
+
+			public void handleSubscribeRequest(ID fromID, IPresence presence) {
+				System.out.println("subscribe request from "+fromID);		
+				if (messageSender != null) {
+					messageSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBED));
+				}
+			}
+
+			public void handleUnsubscribeRequest(ID fromID, IPresence presence) {
+				System.out.println("unsubscribe request from "+fromID);			
+			}
+
+			public void handleSubscribed(ID fromID, IPresence presence) {
+				System.out.println("subscribed from "+fromID);			
+			}
+
+			public void handleUnsubscribed(ID fromID, IPresence presence) {
+				System.out.println("unsubscribed from "+fromID);			
+			}
+		});
+	}
     public synchronized void disposeClient(IResource proj, ClientEntry entry) {
         entry.dispose();
         removeClientEntry(proj,entry.getType());

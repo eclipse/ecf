@@ -30,7 +30,9 @@ public interface IPresence extends IAdaptable, Serializable {
      */
     public static class Type implements Serializable {
         
-        private static final String AVAILABLE_NAME = "available";
+		private static final long serialVersionUID = 3546921402750743089L;
+		
+		private static final String AVAILABLE_NAME = "available";
         private static final String ERROR_NAME = "error";
         private static final String SUBSCRIBE_NAME = "subscribe";
         private static final String SUBSCRIBED_NAME = "subscribed";
@@ -97,7 +99,8 @@ public interface IPresence extends IAdaptable, Serializable {
      */
     public static class Mode implements Serializable {
         
-        private static final String AVAILABLE_NAME = "available";
+		private static final long serialVersionUID = 3834588811853640499L;
+		private static final String AVAILABLE_NAME = "available";
         private static final String AWAY_NAME = "away";
         private static final String CHAT_NAME = "chat";
         private static final String DND_NAME = "do not disturb";
