@@ -66,7 +66,7 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
     public static final String DISCONNECT_ICON_DISABLED = "icons/disabled/terminate_co.gif";
     public static final String DISCONNECT_ICON_ENABLED = "icons/enabled/terminate_co.gif";
     
-    protected static final int TREE_EXPANSION_LEVELS = 1;
+    protected static final int TREE_EXPANSION_LEVELS = 2;
     private TreeViewer viewer;
     private Action chatAction;
     private Action selectedChatAction;
@@ -80,7 +80,13 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
     protected IUser getLocalUser() {
         return localUser;
     }
-
+	public void dispose() {
+		if (textInputHandler != null) {
+			textInputHandler.disconnect();
+			textInputHandler = null;
+		}
+		super.dispose();
+	}
     class TreeObject implements IAdaptable {
         private String name;
         private TreeParent parent;
