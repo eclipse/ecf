@@ -71,7 +71,7 @@ public class TextChatComposite extends Composite {
     protected ChatLayout cl = null;
     protected boolean isTyping;
     protected String initText;
-    protected ITextInputHandler inputHandler;
+    protected ILocalInputHandler inputHandler;
     SimpleDateFormat df = new SimpleDateFormat("hh:mm a");
     protected IUser localUser;
     protected IUser remoteUser;
@@ -82,7 +82,7 @@ public class TextChatComposite extends Composite {
     private Action outputPaste = null;
     private Action outputSelectAll = null;
 
-    public TextChatComposite(Composite parent, int style, String initText, ITextInputHandler handler, IUser localUser, IUser remoteUser) {
+    public TextChatComposite(Composite parent, int style, String initText, ILocalInputHandler handler, IUser localUser, IUser remoteUser) {
         super(parent, style);
 
         this.initText = initText;
@@ -364,7 +364,7 @@ public class TextChatComposite extends Composite {
             IUser localUser = getLocalUser();
             IUser remoteUser = getRemoteUser();
             if (localUser != null && remoteUser != null) {
-                inputHandler.handleTextLine(remoteUser.getID(),text);
+                inputHandler.inputText(remoteUser.getID(),text);
                 appendText(new ChatLine(text,localUser));
             } else {
                 UiPlugin.getDefault().getLog().log(new Status(Status.ERROR,UiPlugin.PLUGIN_ID,100,"Null localUser or remoteUser for textchatcomposite",new NullPointerException()));
@@ -379,7 +379,7 @@ public class TextChatComposite extends Composite {
             IUser localUser = getLocalUser();
             IUser remoteUser = getRemoteUser();
             if (localUser != null && remoteUser != null) {
-                inputHandler.handleStartTyping(remoteUser.getID());
+                inputHandler.startTyping(remoteUser.getID());
             } else {
                 UiPlugin.getDefault().getLog().log(new Status(Status.ERROR,UiPlugin.PLUGIN_ID,100,"Null localUser or remoteUser for textchatcomposite",new NullPointerException()));
             }

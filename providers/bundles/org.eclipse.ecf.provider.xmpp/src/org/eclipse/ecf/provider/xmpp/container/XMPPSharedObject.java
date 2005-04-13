@@ -130,8 +130,8 @@ public class XMPPSharedObject implements ISharedObject {
 			};
 	}
 
-	protected ITextInputHandler getTextInputHandler() {
-		return new ITextInputHandler() {
+	protected ILocalInputHandler getTextInputHandler() {
+		return new ILocalInputHandler() {
 			public void disconnect() {
 				XMPPSharedObject.this.disconnect();
 			}

@@ -198,13 +198,13 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 	 */
 	protected Control createContents(Composite parent) {
         if (view == null) throw new NullPointerException("view cannot be null");
-        // Get ITextInputHandler from view
-        ITextInputHandler inputHandler = null;
-        Object obj = view.getAdapter(ITextInputHandler.class);
+        // Get ILocalInputHandler from view
+        ILocalInputHandler inputHandler = null;
+        Object obj = view.getAdapter(ILocalInputHandler.class);
         if (obj == null) {
-            throw new NullPointerException("view "+view+" did not provide ITextInputHandler adapter");
-        } else if (obj instanceof ITextInputHandler) {
-            inputHandler = (ITextInputHandler) obj;
+            throw new NullPointerException("view "+view+" did not provide ILocalInputHandler adapter");
+        } else if (obj instanceof ILocalInputHandler) {
+            inputHandler = (ILocalInputHandler) obj;
         }
 		chat = new TextChatComposite(parent, SWT.NORMAL, initText, inputHandler,getLocalUser(),getRemoteUser());
 		chat.setLayoutData(new GridData(GridData.FILL_BOTH));

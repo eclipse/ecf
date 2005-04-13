@@ -48,7 +48,7 @@ import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.impl.Presence;
 import org.eclipse.ecf.ui.dialogs.AuthorizeRequest;
-import org.eclipse.ecf.ui.views.ITextInputHandler;
+import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.ecf.ui.views.RosterView;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
@@ -339,19 +339,23 @@ public class Client {
                         String name = localUser.getName();
                         nickname = name.substring(0,name.indexOf("@"));
                     }
-                    rosterView.setLocalUser(new org.eclipse.ecf.core.user.User(localUser,nickname),new ITextInputHandler() {
+                    rosterView.setLocalUser(new org.eclipse.ecf.core.user.User(localUser,nickname),new ILocalInputHandler() {
 
-                        public void handleTextLine(ID userID, String text) {
+                        public void inputText(ID userID, String text) {
                             messageSender.sendMessage(localUser,userID,null,null,text);
                         }
 
-                        public void handleStartTyping(ID userID) {
+                        public void startTyping(ID userID) {
                             //System.out.println("handleStartTyping("+userID+")");
                         }
 
                         public void disconnect() {
                             container.leaveGroup();
                         }
+
+						public void updatePresence(ID userID, IPresence presence) {
+							presenceSender.sendPresenceUpdate(localUser,userID,presence);
+						}
                         
                     });
                 } catch (Exception e) {
@@ -429,9 +433,14 @@ public class Client {
 							AuthorizeRequest authRequest = new AuthorizeRequest(ww.getShell(),fromID.getName(),localUser.getName());
 							authRequest.open();
 							int res = authRequest.getButtonPressed();
-							if (res == AuthorizeRequest.AUTHORIZE_AND_ADD) {
+							if (res == AuthorizeRequest.AUTHORIZE_AND_ADD) {								
 								if (presenceSender != null) {
 									presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBED));
+									// Get group info here
+									if (rosterView != null) {
+										String [] groupNames = rosterView.getGroupNames();
+										// XXX TODO
+									}
 									presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBE));
 								} 
 							} else if (res == AuthorizeRequest.AUTHORIZE_ID) {

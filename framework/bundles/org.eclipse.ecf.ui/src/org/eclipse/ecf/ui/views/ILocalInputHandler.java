@@ -12,9 +12,11 @@
 package org.eclipse.ecf.ui.views;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.presence.IPresence;
 
-public interface ITextInputHandler {
-    public void handleTextLine(ID userID, String text);
-    public void handleStartTyping(ID userID);
+public interface ILocalInputHandler {
+    public void inputText(ID userID, String text);
+    public void startTyping(ID userID);
+	public void updatePresence(ID userID, IPresence presence);
     public void disconnect();
 }

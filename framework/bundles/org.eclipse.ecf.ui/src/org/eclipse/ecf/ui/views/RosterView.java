@@ -80,13 +80,22 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
 	private Action addGroupAction;
 	
     protected IUser localUser;
-    protected ITextInputHandler textInputHandler;
+    protected ILocalInputHandler textInputHandler;
     protected Hashtable chatThreads = new Hashtable();
     protected ID groupID;
     
     protected IUser getLocalUser() {
         return localUser;
     }
+	
+	protected String getUserNameFromID(ID userID) {
+		if (userID == null) return "";
+		String uname = userID.getName();
+		String username = uname.substring(0,uname.indexOf("@"));
+		if (username.equals("")) {
+			return uname;
+		} else return username;
+	}
 	public void dispose() {
 		if (textInputHandler != null) {
 			textInputHandler.disconnect();
@@ -257,15 +266,13 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
         }
 
 		public TreeBuddy fillPresence(TreeBuddy obj, IPresence presence) {
-            if (presence == null)
-                return obj;
-			obj.removeChildren();
+			obj.setPresence(presence);
             TreeObject type = new TreeObject("Status: "
                     + presence.getType().toString());
 			obj.addChild(type);
             String status = presence.getStatus();
             if (status != null && !status.equals("")) {
-                TreeObject stat = new TreeObject("Status Details: " + status);
+                TreeObject stat = new TreeObject("Details: " + status);
 				obj.addChild(stat);
             }
             Map props = presence.getProperties();
@@ -281,13 +288,14 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
         }
 
         public TreeBuddy createBuddy(TreeBuddy oldBuddy, IRosterEntry entry) {
-			TreeBuddy newBuddy = (oldBuddy==null)?new TreeBuddy(entry.getUserID().getName(),entry.getUserID(),entry.getPresenceState()):oldBuddy;
+			String name = entry.getName();
+			if (name == null) name = getUserNameFromID(entry.getUserID());
             IPresence presence = entry.getPresenceState();
-			if (presence != null) {
-				newBuddy.setPresence(presence);
-				newBuddy.addChild(new TreeObject("Name: "+entry.getName()));
-				fillPresence(newBuddy, presence);
-			}
+			TreeBuddy newBuddy = null;
+			if (oldBuddy==null) newBuddy = new TreeBuddy(name,entry.getUserID(),presence);
+			else newBuddy = oldBuddy;
+			if (presence != null) fillPresence(newBuddy, presence);
+			else if (oldBuddy == null) newBuddy.addChild(new TreeObject("Account: "+newBuddy.getUserID().getName()));				
             return newBuddy;
         }
 
@@ -574,7 +582,7 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
     }
 
     protected ID inputIMTarget() {
-        InputDialog dlg = new InputDialog(getSite().getShell(),"Send IM","Please enter the Jabber ID of the person you would like to IM","",null);
+        InputDialog dlg = new InputDialog(getSite().getShell(),"Send IM","Please enter the XMPP ID of the person you would like to IM","",null);
         dlg.setBlockOnOpen(true);
         int res = dlg.open();
         if (res == InputDialog.OK) {
@@ -601,7 +609,7 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
             }
         };
         chatAction.setText("Send Instant Message...");
-        chatAction.setToolTipText("Send Instant Message");
+        chatAction.setToolTipText("Send instant message to arbitrary user");
         chatAction.setImageDescriptor(ImageDescriptor.createFromURL(
 		                UiPlugin.getDefault().find(new Path(INSTANT_MESSAGE_ICON))));
         chatAction.setEnabled(false);
@@ -736,24 +744,24 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
      * 
      * @see org.eclipse.ecf.ui.views.IConfigViewer#setUser(org.eclipse.ecf.core.user.IUser)
      */
-    public void setLocalUser(IUser user, ITextInputHandler textInputHandler) {
+    public void setLocalUser(IUser user, ILocalInputHandler textInputHandler) {
         this.localUser = user;
         this.textInputHandler = textInputHandler;
     }
 
     public Object getAdapter(Class clazz) {
-        if (clazz != null && clazz.equals(ITextInputHandler.class)) {
-            return new ITextInputHandler() {
-                public void handleTextLine(ID userID, String text) {
+        if (clazz != null && clazz.equals(ILocalInputHandler.class)) {
+            return new ILocalInputHandler() {
+                public void inputText(ID userID, String text) {
                     if (textInputHandler != null) {
-                        textInputHandler.handleTextLine(userID, text);
+                        textInputHandler.inputText(userID, text);
                     } else
                         System.out.println("handleTextLine(" + text + ")");
                 }
 
-                public void handleStartTyping(ID userID) {
+                public void startTyping(ID userID) {
                     if (textInputHandler != null) {
-                        textInputHandler.handleStartTyping(userID);
+                        textInputHandler.startTyping(userID);
                     } else
                         System.out.println("handleStartTyping()");
                 }
@@ -763,6 +771,13 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
                     } else
                         System.out.println("disconnect()");
                 }
+
+				public void updatePresence(ID userID, IPresence presence) {
+                    if (textInputHandler != null) {
+                        textInputHandler.updatePresence(userID,presence);
+                    } else
+                        System.out.println("disconnect()");
+				}
             };
         } else if (clazz.equals(IPresenceListener.class)) {
             return this;
