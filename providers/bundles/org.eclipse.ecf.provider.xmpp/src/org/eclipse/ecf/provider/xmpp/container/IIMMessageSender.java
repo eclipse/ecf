@@ -23,5 +23,6 @@ public interface IIMMessageSender {
     public void sendPresenceUpdate(ID target, Presence presence) throws IOException;
 	
     public Roster getRoster() throws IOException;
-
+	public void sendRosterAdd(String user, String name, String [] groups) throws IOException;
+	public void sendRosterRemove(String user) throws IOException;
 }

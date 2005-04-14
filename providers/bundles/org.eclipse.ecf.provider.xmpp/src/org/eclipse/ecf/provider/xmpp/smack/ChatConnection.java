@@ -24,6 +24,7 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -135,7 +136,7 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 				}
 			}, null);
 			// Login
-			connection.login(username, (String) data, "ECF");
+			connection.login(username, (String) data, "ECF_XMPP");
 			isConnected = true;
 			debug("User: " + username + " logged into " + serverName);
 			roster = getRoster();
@@ -310,6 +311,24 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 				connection.sendPacket(presence);
 		}
 	}
+	
+	public void sendRosterAdd(String user, String name, String [] groups) throws IOException {
+		Roster r = getRoster();
+		try {
+			r.createEntry(user,name,groups);
+		} catch (XMPPException e) {
+			e.printStackTrace();
+		}
+	}
+	public void sendRosterRemove(String user) throws IOException {
+		Roster r = getRoster();
+		RosterEntry re = r.getEntry(user);
+		try {
+			r.removeEntry(re);
+		} catch (XMPPException e) {
+			e.printStackTrace();
+		}
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -323,4 +342,5 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 		Roster roster = connection.getRoster();
 		return roster;
 	}
+
 }

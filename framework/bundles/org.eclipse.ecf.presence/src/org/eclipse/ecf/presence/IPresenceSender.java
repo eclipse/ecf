@@ -15,5 +15,6 @@ import org.eclipse.ecf.core.identity.ID;
 public interface IPresenceSender {
 
 	public void sendPresenceUpdate(ID fromID, ID toID, IPresence presence);
-	
+	public void sendRosterAdd(ID fromID, String user, String name, String [] groups);
+	public void sendRosterRemove(ID fromID, ID userID);
 }

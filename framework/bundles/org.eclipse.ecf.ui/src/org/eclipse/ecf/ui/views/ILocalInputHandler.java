@@ -18,5 +18,7 @@ public interface ILocalInputHandler {
     public void inputText(ID userID, String text);
     public void startTyping(ID userID);
 	public void updatePresence(ID userID, IPresence presence);
+	public void sendRosterAdd(String user, String name, String [] groups);
+	public void sendRosterRemove(ID userID);
     public void disconnect();
 }

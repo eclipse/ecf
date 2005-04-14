@@ -264,11 +264,13 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         if (iq instanceof RosterPacket) {
             // Roster packet...report to UI
             RosterPacket rosterPacket = (RosterPacket) iq;
+			if (rosterPacket.getType() == IQ.Type.SET || rosterPacket.getType() == IQ.Type.RESULT) {
             for (Iterator i = rosterPacket.getRosterItems(); i.hasNext();) {
                 IRosterEntry entry = makeRosterEntry((RosterPacket.Item) i
                         .next());
                 fireRosterEntry(entry);
             }
+			}
         } else {
             debug("Received unknown IQ message: " + iq.toXML());
         }

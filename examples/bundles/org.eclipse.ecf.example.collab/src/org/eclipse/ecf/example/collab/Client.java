@@ -13,10 +13,12 @@ package org.eclipse.ecf.example.collab;
 
 import java.net.ConnectException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IResource;
@@ -47,9 +49,11 @@ import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.impl.Presence;
-import org.eclipse.ecf.ui.dialogs.AuthorizeRequest;
+import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
+import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
 import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.ecf.ui.views.RosterView;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -356,6 +360,15 @@ public class Client {
 						public void updatePresence(ID userID, IPresence presence) {
 							presenceSender.sendPresenceUpdate(localUser,userID,presence);
 						}
+
+						public void sendRosterAdd(String user, String name, String[] groups) {
+							// Send roster add
+							presenceSender.sendRosterAdd(localUser, user,name,groups);
+						}
+						
+						public void sendRosterRemove(ID userID) {
+							presenceSender.sendRosterRemove(localUser, userID);
+						}
                         
                     });
                 } catch (Exception e) {
@@ -430,24 +443,40 @@ public class Client {
 		                try {
 		                    IWorkbenchWindow ww = PlatformUI.getWorkbench()
 		                            .getActiveWorkbenchWindow();
-							AuthorizeRequest authRequest = new AuthorizeRequest(ww.getShell(),fromID.getName(),localUser.getName());
+							ReceiveAuthorizeRequestDialog authRequest = new ReceiveAuthorizeRequestDialog(ww.getShell(),fromID.getName(),localUser.getName());
+							authRequest.setBlockOnOpen(true);
 							authRequest.open();
 							int res = authRequest.getButtonPressed();
-							if (res == AuthorizeRequest.AUTHORIZE_AND_ADD) {								
+							if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_AND_ADD) {								
 								if (presenceSender != null) {
 									presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBED));
 									// Get group info here
 									if (rosterView != null) {
 										String [] groupNames = rosterView.getGroupNames();
-										// XXX TODO
+										List g = Arrays.asList(groupNames);
+										String selectedGroup = rosterView.getSelectedGroupName();
+										int selected = (selectedGroup==null)?-1:g.indexOf(selectedGroup);
+										AddBuddyDialog sg = new AddBuddyDialog(ww.getShell(),fromID.getName(),groupNames,selected);
+										sg.open();
+										if (sg.getReturnCode() == Window.OK) {
+											String group = sg.getGroup();
+											String user = sg.getUser();
+											String nickname = sg.getNickname();
+											sg.close();
+											if (!g.contains(group)) {
+												// create group with name
+												rosterView.addGroup(group);
+											}
+											// Finally, send the information and request subscription
+											presenceSender.sendRosterAdd(localUser, user,nickname,new String[] { group } );
+										}
 									}
-									presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBE));
 								} 
-							} else if (res == AuthorizeRequest.AUTHORIZE_ID) {
+							} else if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_ID) {
 								if (presenceSender != null) {
 									presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBED));
 								} 
-							} else if (res == AuthorizeRequest.REFUSE_ID) {
+							} else if (res == ReceiveAuthorizeRequestDialog.REFUSE_ID) {
 								System.out.println("Refuse hit");
 							} else {
 								System.out.println("No buttons hit");
@@ -462,6 +491,9 @@ public class Client {
 
 			public void handleUnsubscribeRequest(ID fromID, IPresence presence) {
 				System.out.println("unsubscribe request from "+fromID);			
+				if (presenceSender != null) {
+					presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.UNSUBSCRIBED));
+				}
 			}
 
 			public void handleSubscribed(ID fromID, IPresence presence) {

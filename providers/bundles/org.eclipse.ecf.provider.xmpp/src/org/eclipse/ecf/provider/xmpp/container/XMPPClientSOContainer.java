@@ -298,10 +298,22 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	protected Presence makePresenceFromIPresence(IPresence presence) {
 		return sharedObject.makePresence(presence);
 	}
-	public void sendPresenceUpdate(ID target, Presence presence) throws IOException {
+	protected void sendPresenceUpdate(ID target, Presence presence) throws IOException {
 		if (messageSender != null) {
 			if (presence == null) throw new NullPointerException("presence cannot be null");
 			messageSender.sendPresenceUpdate(target, presence);
+		}
+	}
+
+	protected void sendRosterAdd(String user, String name, String [] groups) throws IOException {
+		if (messageSender != null) {
+			messageSender.sendRosterAdd(user,name,groups);
+		}
+	}
+
+	protected void sendRosterRemove(String user) throws IOException {
+		if (messageSender != null) {
+			messageSender.sendRosterRemove(user);
 		}
 	}
 
@@ -345,7 +357,24 @@ public class XMPPClientSOContainer extends ClientSOContainer {
                                 dumpStack("Exception in sendPresenceUpdate to "+toID+" with presence "+presence,e);
                             }
 						}
-                        						
+
+						public void sendRosterAdd(ID fromID, String user, String name, String[] groups) {
+                            try {
+                                XMPPClientSOContainer.this.sendRosterAdd(user,name,groups);
+                            } catch (IOException e) {
+                                dumpStack("Exception in sendRosterAdd",e);
+                            }
+						}
+
+						public void sendRosterRemove(ID fromID, ID userID) {
+                            try {
+								if (userID == null) return;
+                                XMPPClientSOContainer.this.sendRosterRemove(userID.getName());
+                            } catch (IOException e) {
+                                dumpStack("Exception in sendRosterAdd",e);
+                            }
+						}
+
 					};
 				}
 				

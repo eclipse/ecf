@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-public class AuthorizeRequest extends Dialog {
+public class ReceiveAuthorizeRequestDialog extends Dialog {
 
 	private String targetName = "target";
 	private String requesterName = "requester";
@@ -24,11 +24,11 @@ public class AuthorizeRequest extends Dialog {
 	
 	int buttonPressed = 0;
 	
-	public AuthorizeRequest(Shell parentShell) {
+	public ReceiveAuthorizeRequestDialog(Shell parentShell) {
 		super(parentShell);
 	}
 	
-	public AuthorizeRequest(Shell parentShell, String fromName, String toName) {
+	public ReceiveAuthorizeRequestDialog(Shell parentShell, String fromName, String toName) {
 		super(parentShell);
 		this.requesterName = fromName;
 		this.targetName = toName;
