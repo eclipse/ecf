@@ -4,8 +4,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
@@ -50,19 +48,23 @@ public class AddBuddyDialog extends Dialog {
 		container.setLayout(gridLayout);
 
 		final Composite composite = new Composite(container, SWT.NONE);
-		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
+		composite.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.FILL_VERTICAL));
 		final GridLayout gridLayout_2 = new GridLayout();
 		gridLayout_2.numColumns = 2;
 		composite.setLayout(gridLayout_2);
 
+		final Label label = new Label(composite, SWT.NONE);
+
+		final Label label_4 = new Label(composite, SWT.NONE);
+		label_4.setText("<user>@<jabberserver>");
+
 		final Label label_3 = new Label(composite, SWT.NONE);
-		label_3.setText("User ID:");
+		label_3.setText("Jabber User ID:");
 
 		usertext = new Text(composite, SWT.BORDER);
 		usertext.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		if (user != null) {
 			usertext.setText(user);
-			usertext.setEnabled(false);
 		}
 		usertext.addModifyListener(new ModifyListener() {
 
@@ -119,7 +121,7 @@ public class AddBuddyDialog extends Dialog {
 		return nicknameresult;
 	}
 	protected Point getInitialSize() {
-		return new Point(302, 168);
+		return new Point(302, 197);
 	}
 	public void buttonPressed(int button) {
 		result = button;
