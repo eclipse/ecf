@@ -296,6 +296,10 @@ public class LineChatClientView implements FileSenderUI {
 	}
 
 	protected void handleTextInput(String text) {
+		if (showTimestamp) {
+			text = dateTime() + text;
+		}
+		
 		ChatLine line = new ChatLine(text);
 		
 		if (lch != null) {
