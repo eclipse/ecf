@@ -90,17 +90,17 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			fireContainerEvent(new SharedObjectContainerJoinedEvent(this
 					.getID(), originalTarget));
 		}
+		// If we've got the connection then pass it onto shared object also
+		ChatConnection conn = (ChatConnection) getConnection();
+		if (conn != null && sharedObject != null) {
+			sharedObject.setConnection(conn.getXMPPConnection());
+		}
 		// If we've got roster data then pass it onto shared object
 		if (serverData != null && serverData instanceof Roster) {
 			Roster roster = (Roster) serverData;
 			if (sharedObject != null) {
 				sharedObject.handleRoster(roster);
 			}
-		}
-		// If we've got the connection then pass it onto shared object also
-		ChatConnection conn = (ChatConnection) getConnection();
-		if (conn != null && sharedObject != null) {
-			sharedObject.setConnection(conn.getXMPPConnection());
 		}
 		return originalTarget;
 	}

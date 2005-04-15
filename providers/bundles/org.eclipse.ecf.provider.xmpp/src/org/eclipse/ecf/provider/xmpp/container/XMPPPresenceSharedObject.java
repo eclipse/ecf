@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
@@ -30,10 +31,10 @@ import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceListener;
-import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
 import org.eclipse.ecf.presence.ISharedObjectMessageListener;
+import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.provider.xmpp.Trace;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
@@ -174,6 +175,12 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         }
     }
 
+    protected void fireSetRosterEntry(IRosterEntry entry) {
+        for (Iterator i = presenceListeners.iterator(); i.hasNext();) {
+            IPresenceListener l = (IPresenceListener) i.next();
+            l.handleSetRosterEntry(entry);
+        }
+    }
     protected void fireRosterEntry(IRosterEntry entry) {
         for (Iterator i = presenceListeners.iterator(); i.hasNext();) {
             IPresenceListener l = (IPresenceListener) i.next();
@@ -268,7 +275,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
             for (Iterator i = rosterPacket.getRosterItems(); i.hasNext();) {
                 IRosterEntry entry = makeRosterEntry((RosterPacket.Item) i
                         .next());
-                fireRosterEntry(entry);
+                fireSetRosterEntry(entry);
             }
 			}
         } else {

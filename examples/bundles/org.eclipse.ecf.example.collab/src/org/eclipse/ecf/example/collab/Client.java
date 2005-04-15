@@ -433,6 +433,14 @@ public class Client {
                 messageSender = null;
                 rosterView = null;
             }
+
+			public void handleSetRosterEntry(final IRosterEntry entry) {
+                Display.getDefault().syncExec(new Runnable() {
+                    public void run() {
+                        rosterView.handleSetRosterEntry(entry);
+                    }
+                });
+			}
             
         });
 		pc.addSubscribeListener(new ISubscribeListener() {
@@ -458,7 +466,7 @@ public class Client {
 										int selected = (selectedGroup==null)?-1:g.indexOf(selectedGroup);
 										AddBuddyDialog sg = new AddBuddyDialog(ww.getShell(),fromID.getName(),groupNames,selected);
 										sg.open();
-										if (sg.getReturnCode() == Window.OK) {
+										if (sg.getResult() == Window.OK) {
 											String group = sg.getGroup();
 											String user = sg.getUser();
 											String nickname = sg.getNickname();
@@ -490,7 +498,6 @@ public class Client {
 			}
 
 			public void handleUnsubscribeRequest(ID fromID, IPresence presence) {
-				System.out.println("unsubscribe request from "+fromID);			
 				if (presenceSender != null) {
 					presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.UNSUBSCRIBED));
 				}

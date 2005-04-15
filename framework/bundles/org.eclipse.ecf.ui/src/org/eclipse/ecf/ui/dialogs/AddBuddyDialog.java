@@ -2,10 +2,16 @@ package org.eclipse.ecf.ui.dialogs;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -23,11 +29,13 @@ public class AddBuddyDialog extends Dialog {
 	private String [] existing = null;
 	private int selectedGroup = -1;
 	
-	private int result;
+	private int result = Window.CANCEL;
 	
-	private String userresult = null;
-	private String nicknameresult = null;
-	private String groupsresult = null;
+	private String userresult = "";
+	private String nicknameresult = "";
+	private String groupsresult = "";
+	
+	Button okButton = null;
 	
 	public AddBuddyDialog(Shell parentShell,String username, String [] existingGroups, int selectedGroup) {
 		super(parentShell);
@@ -56,6 +64,13 @@ public class AddBuddyDialog extends Dialog {
 			usertext.setText(user);
 			usertext.setEnabled(false);
 		}
+		usertext.addModifyListener(new ModifyListener() {
+
+			public void modifyText(ModifyEvent e) {
+				if (usertext.getText().length() > 3 && usertext.getText().indexOf("@") != -1) {
+					okButton.setEnabled(true);
+				}
+			}});
 
 		final Label label_1 = new Label(composite, SWT.NONE);
 		label_1.setText("Group:");
@@ -86,9 +101,13 @@ public class AddBuddyDialog extends Dialog {
 
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
-				true);
+				false);
 		createButton(parent, IDialogConstants.CANCEL_ID,
-				IDialogConstants.CANCEL_LABEL, false);
+				IDialogConstants.CANCEL_LABEL, true);
+		okButton = getButton(IDialogConstants.OK_ID);
+		if (okButton != null) {
+			okButton.setEnabled(false);
+		}
 	}
 	public String getGroup() {
 		return groupsresult;
@@ -108,6 +127,9 @@ public class AddBuddyDialog extends Dialog {
 		nicknameresult = nicknametext.getText();
 		groupsresult = groups.getText();
 		close();
+	}
+	public int getResult() {
+		return result;
 	}
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);

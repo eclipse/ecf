@@ -16,6 +16,7 @@ public interface IPresenceListener {
     
     public void handleContainerJoined(ID joinedContainer);
     public void handleRosterEntry(IRosterEntry entry);
+	public void handleSetRosterEntry(IRosterEntry entry);
     public void handlePresence(ID fromID, IPresence presence);
     public void handleContainerDeparted(ID departedContainer);
     
