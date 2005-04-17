@@ -65,12 +65,15 @@ public class AddBuddyDialog extends Dialog {
 		usertext.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		if (user != null) {
 			usertext.setText(user);
+			okButton.setEnabled(true);
 		}
 		usertext.addModifyListener(new ModifyListener() {
 
 			public void modifyText(ModifyEvent e) {
-				if (usertext.getText().length() > 3 && usertext.getText().indexOf("@") != -1) {
+				if (user != null || (usertext.getText().length() > 3 && usertext.getText().indexOf("@") != -1)) {
 					okButton.setEnabled(true);
+				} else {
+					okButton.setEnabled(false);
 				}
 			}});
 
