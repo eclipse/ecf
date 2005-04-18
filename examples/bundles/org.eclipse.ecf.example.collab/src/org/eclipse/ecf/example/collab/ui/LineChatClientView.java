@@ -204,7 +204,7 @@ public class LineChatClientView implements FileSenderUI {
 
 	protected String dateTime() {
 		StringBuffer sb = new StringBuffer("[");
-		sb.append(df.format(new Date())).append("]");
+		sb.append(df.format(new Date())).append("] ");
 		return sb.toString();
 	}
 
@@ -436,7 +436,7 @@ public class LineChatClientView implements FileSenderUI {
 	public void removeUser(ID id) {
 		String name = getUserData(id);
 		if (name != null) {
-			final String str = makeChatLine(" " + name + " " + LEFT_STRING);
+			final String str = makeChatLine(name + " " + LEFT_STRING);
 			showText(new ChatLine(str));
 		}
 		myNames.remove(id);
