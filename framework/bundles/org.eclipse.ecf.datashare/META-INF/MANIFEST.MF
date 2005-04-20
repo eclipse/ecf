@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF DataShare Plug-in
+Bundle-SymbolicName: org.eclipse.ecf.datashare
+Bundle-Version: 1.0.0
+Bundle-ClassPath: datashare.jar
+Bundle-Activator: org.eclipse.ecf.internal.datashare.DataSharePlugin
+Bundle-Vendor: Eclipse.org
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf
+Eclipse-AutoStart: true
