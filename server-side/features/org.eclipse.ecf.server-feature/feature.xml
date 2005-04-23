@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.ecf.serverfeature"
+      label="org.eclipse.ecf.server-feature"
+      version="1.0.0"
+      provider-name="Eclipse.org">
+
+   <description url="http://www.eclipse.org/ecf">
+      This feature provides a ECF reference server
+   </description>
+
+   <copyright url="http://www.eclipse.org/ecf">
+      /*******************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others. All rights reserved.
+This program and the accompanying materials are made available
+under the terms of
+* the Eclipse Public License v1.0 which accompanies this distribution,
+and is
+* available at http://www.eclipse.org/legal/epl-v10.html
+* 
+* Contributors: Composent, Inc. - initial API and implementation
+******************************************************************************/
+   </copyright>
+
+   <license url="http://www.eclipse.org/ecf">
+      &lt;h2&gt;About This Content&lt;/h2&gt;
+
+&lt;p&gt;
+February 24, 2005&lt;/p&gt; 
+&lt;h3&gt;License&lt;/h3&gt;
+
+&lt;p&gt;
+The Eclipse Foundation makes available all content in this plug-in
+(&amp;quot;Content&amp;quot;).  Unless otherwise indicated below, the
+Content is provided to you under the terms and conditions of
+the
+Eclipse Public License Version 1.0 (&amp;quot;EPL&amp;quot;).  A copy
+of the EPL is available at &lt;a href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;.
+For purposes of the EPL, &amp;quot;Program&amp;quot; will mean the Content.&lt;/p&gt;
+
+&lt;p&gt;
+If you did not receive this Content directly from the Eclipse
+Foundation, the Content is being redistributed by another party
+(&amp;quot;Redistributor&amp;quot;) and different terms and conditions
+may
+apply to your use of any object code in the Content.  Check the
+Redistributor&apos;s license that was provided with the Content. 
+If no such license exists, contact the Redistributor.  Unless
+otherwise
+indicated below, the terms and conditions of the EPL still apply
+to any source code in the Content.&lt;/p&gt;
+   </license>
+
+   <plugin
+         id="org.eclipse.ecf"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.example.collab"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.example.hello"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.example.library"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.example.sdo.editor"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.example.sdo.gefeditor"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.presence"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.provider"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.sdo"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.ui"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+</feature>
