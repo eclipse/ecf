@@ -19,112 +19,145 @@ import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.datashare.IPublicationCallback;
+import org.eclipse.ecf.datashare.ISharedData;
+import org.eclipse.ecf.datashare.IUpdateListener;
+import org.eclipse.ecf.datashare.IUpdateProvider;
 
 /**
  * @author pnehrer
  */
-public class Agent implements ISharedObject {
+public class Agent implements ISharedData, ISharedObject {
 
-    private Object sharedData;
+	private Object sharedData;
 
-    private ISharedObjectConfig config;
+	private ISharedObjectConfig config;
 
-    private IBootstrap bootstrap;
+	private IBootstrap bootstrap;
 
-    public Agent() {
-    }
+	private IUpdateProvider updateProvider;
 
-    public Agent(Object sharedData) {
-        this.sharedData = sharedData;
-    }
+	private IUpdateListener updateListener;
 
-    public Object getSharedData() {
-        return sharedData;
-    }
+	private IPublicationCallback pubCallback;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.core.ISharedObject#init(org.eclipse.ecf.core.ISharedObjectConfig)
-     */
-    public synchronized void init(ISharedObjectConfig config)
-            throws SharedObjectInitException {
-        this.config = config;
-        Map params = config.getProperties();
-        if (params != null)
-            sharedData = params.get("sharedData");
+	public Agent() {
+	}
 
-        bootstrap = new LazyElectionBootstrap();
-        bootstrap.setAgent(this);
-        bootstrap.init(config);
-    }
+	public Agent(Object sharedData) {
+		this.sharedData = sharedData;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
-     */
-    public void handleEvent(Event event) {
-        if (event instanceof ISharedObjectActivatedEvent) {
-            ISharedObjectActivatedEvent e = (ISharedObjectActivatedEvent) event;
-            if (e.getActivatedID().equals(config.getSharedObjectID()))
-                handleActivated();
-        }
+	public synchronized ID getID() {
+		return config == null ? null : config.getSharedObjectID();
+	}
 
-        bootstrap.handleEvent(event);
-    }
+	public Object getData() {
+		return sharedData;
+	}
 
-    private void handleActivated() {
-        if (config.getHomeContainerID().equals(
-                config.getContext().getLocalContainerID()))
-            try {
-                config.getContext().sendCreate(
-                        null,
-                        new SharedObjectDescription(config.getSharedObjectID(),
-                                getClass()));
-            } catch (IOException e) {
-                handleError(e);
-            }
+	public synchronized void commit() throws ECFException {
+	}
 
-        // TODO tell client we're ready
-    }
+	public synchronized void dispose() {
+		if (config != null)
+			try {
+				config.getContext().sendDispose(
+						config.getContext().getLocalContainerID());
+			} catch (IOException e) {
+				handleError(e);
+			}
+	}
 
-    public void doBootstrap(ID containerID) {
-        // TODO bootstrap the new member
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.ISharedObject#init(org.eclipse.ecf.core.ISharedObjectConfig)
+	 */
+	public synchronized void init(ISharedObjectConfig config)
+			throws SharedObjectInitException {
+		this.config = config;
+		Map params = config.getProperties();
+		if (params != null)
+			sharedData = params.get("sharedData");
 
-    private void handleError(Throwable t) {
-        t.printStackTrace();
-    }
+		bootstrap = new LazyElectionBootstrap();
+		bootstrap.setAgent(this);
+		bootstrap.init(config);
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.core.ISharedObject#handleEvents(org.eclipse.ecf.core.util.Event[])
-     */
-    public void handleEvents(Event[] events) {
-        for (int i = 0; i < events.length; ++i)
-            handleEvent(events[i]);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
+	 */
+	public void handleEvent(Event event) {
+		if (event instanceof ISharedObjectActivatedEvent) {
+			ISharedObjectActivatedEvent e = (ISharedObjectActivatedEvent) event;
+			if (e.getActivatedID().equals(config.getSharedObjectID()))
+				handleActivated();
+		}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
-     */
-    public synchronized void dispose(ID containerID) {
-        bootstrap.dispose(containerID);
-        bootstrap = null;
-        config = null;
-    }
+		bootstrap.handleEvent(event);
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.core.ISharedObject#getAdapter(java.lang.Class)
-     */
-    public Object getAdapter(Class clazz) {
-        return null;
-    }
+	private void handleActivated() {
+		if (config.getHomeContainerID().equals(
+				config.getContext().getLocalContainerID()))
+			try {
+				config.getContext().sendCreate(
+						null,
+						new SharedObjectDescription(config.getSharedObjectID(),
+								getClass()));
+
+				if (pubCallback != null)
+					pubCallback.dataPublished(this);
+			} catch (IOException e) {
+				handleError(e);
+				if (pubCallback != null)
+					pubCallback.publicationFailed(this, e);
+			} finally {
+				pubCallback = null;
+			}
+	}
+
+	public void doBootstrap(ID containerID) {
+		// TODO bootstrap the new member
+	}
+
+	private void handleError(Throwable t) {
+		t.printStackTrace();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.ISharedObject#handleEvents(org.eclipse.ecf.core.util.Event[])
+	 */
+	public void handleEvents(Event[] events) {
+		for (int i = 0; i < events.length; ++i)
+			handleEvent(events[i]);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
+	 */
+	public synchronized void dispose(ID containerID) {
+		bootstrap.dispose(containerID);
+		bootstrap = null;
+		config = null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.ISharedObject#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class clazz) {
+		return null;
+	}
 }

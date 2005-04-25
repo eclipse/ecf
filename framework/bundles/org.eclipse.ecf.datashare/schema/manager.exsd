@@ -62,7 +62,7 @@
                   The fully qualified name of the class that implements this manager. The class must implement &lt;code&gt;org.eclipse.ecf.sdo.IDataGraphSharingManager&lt;/code&gt;.
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.ecf.sdo.IDataGraphSharingManager"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.ecf.datashare.IDataShareServiceManager"/>
                </appInfo>
             </annotation>
          </attribute>

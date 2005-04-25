@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 Peter Nehrer and Composent, Inc.
+ * Copyright (c) 2005 Peter Nehrer and Composent, Inc.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ecf.datashare.util;
 
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IPublicationCallback;
 import org.eclipse.ecf.datashare.ISharedData;
 
@@ -23,6 +24,8 @@ public class WaitablePublicationCallback implements IPublicationCallback {
 
 	private boolean published;
 
+	private Throwable cause;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -30,6 +33,18 @@ public class WaitablePublicationCallback implements IPublicationCallback {
 	 */
 	public synchronized void dataPublished(ISharedData graph) {
 		published = true;
+		notifyAll();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.datashare.IPublicationCallback#publicationFailed(org.eclipse.ecf.datashare.ISharedData,
+	 *      java.lang.Throwable)
+	 */
+	public synchronized void publicationFailed(ISharedData graph,
+			Throwable cause) {
+		this.cause = cause;
 		notifyAll();
 	}
 
@@ -42,9 +57,12 @@ public class WaitablePublicationCallback implements IPublicationCallback {
 	 *             if interrupted while waiting for notification
 	 */
 	public synchronized boolean waitForPublication(long timeout)
-			throws InterruptedException {
-		if (!published)
+			throws InterruptedException, ECFException {
+		if (!published && cause == null)
 			wait(timeout);
+
+		if (cause != null)
+			throw new ECFException(cause);
 
 		return published;
 	}
