@@ -71,6 +71,9 @@ public interface ISharedObjectContainer {
      */
     public void joinGroup(ID groupID, Object loginData)
             throws SharedObjectContainerJoinException;
+	
+	// public void joinGroup(ID groupID, CallbackHandler handler) throws SharedObjectContainerJoinException;
+	
     /**
      * Leave a container group. This operation will disconnect the local
      * container instance from any previously joined group.
