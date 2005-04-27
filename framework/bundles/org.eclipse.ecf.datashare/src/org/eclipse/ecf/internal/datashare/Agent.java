@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
@@ -98,6 +99,10 @@ public class Agent implements ISharedData, ISharedObject {
 			ISharedObjectActivatedEvent e = (ISharedObjectActivatedEvent) event;
 			if (e.getActivatedID().equals(config.getSharedObjectID()))
 				handleActivated();
+		} else if (event instanceof ISharedObjectMessageEvent) {
+			ISharedObjectMessageEvent e = (ISharedObjectMessageEvent) event;
+			if (e.getData() instanceof Update)
+				handleUpdate((Update) e.getData());
 		}
 
 		bootstrap.handleEvent(event);
@@ -121,6 +126,10 @@ public class Agent implements ISharedData, ISharedObject {
 			} finally {
 				pubCallback = null;
 			}
+	}
+	
+	private void handleUpdate(Update upate) {
+		// TODO implement me!
 	}
 
 	public void doBootstrap(ID containerID) {
