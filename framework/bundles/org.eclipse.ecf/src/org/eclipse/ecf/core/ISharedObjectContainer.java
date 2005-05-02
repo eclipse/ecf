@@ -72,7 +72,25 @@ public interface ISharedObjectContainer {
     public void joinGroup(ID groupID, Object loginData)
             throws SharedObjectContainerJoinException;
 	
-	// public void joinGroup(ID groupID, CallbackHandler handler) throws SharedObjectContainerJoinException;
+    /**
+     * Join a container group. The group to join is identified by the first
+     * parameter (groupID) using any required authentication provided via the
+     * second parameter (joinContext). This method provides an implementation
+     * independent way for container implementations to connect, authenticate,
+     * and communicate with a remote service or group of services. Providers are
+     * responsible for implementing this operation in a way appropriate to the
+     * given remote service and expected protocol.
+     * 
+     * @param groupID
+     *            the ID of the remote service to join
+     * @param joinContext
+     *            any required login/authentication context to allow this container
+     *            to authenticate
+     * @exception SharedObjectContainerJoinException
+     *                thrown if communication cannot be established with remote
+     *                service
+     */
+	//public void joinGroup(ID groupID, IJoinContext joinContext) throws SharedObjectContainerJoinException;
 	
     /**
      * Leave a container group. This operation will disconnect the local

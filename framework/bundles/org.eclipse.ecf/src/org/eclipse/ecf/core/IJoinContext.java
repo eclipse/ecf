@@ -12,6 +12,6 @@ package org.eclipse.ecf.core;
 import javax.security.auth.callback.CallbackHandler;
 
 public interface IJoinContext {
-	public Object [] getParameters();
+	public Object [] getRawParameters();
 	public CallbackHandler getCallbackHandler();
 }
