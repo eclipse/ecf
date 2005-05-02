@@ -11,6 +11,7 @@
 package org.eclipse.ecf.internal.datashare;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.ecf.core.ISharedObject;
@@ -44,11 +45,14 @@ public class Agent implements ISharedData, ISharedObject {
 
 	private IPublicationCallback pubCallback;
 
+	private Version version;
+
 	public Agent() {
 	}
 
-	public Agent(Object sharedData) {
+	public Agent(Object sharedData, IBootstrap bootstrap) {
 		this.sharedData = sharedData;
+		this.bootstrap = bootstrap;
 	}
 
 	public synchronized ID getID() {
@@ -60,6 +64,17 @@ public class Agent implements ISharedData, ISharedObject {
 	}
 
 	public synchronized void commit() throws ECFException {
+		byte[] buf = updateProvider.createUpdate(this);
+		if (buf != null) {
+			Version newVersion = version.getNext(config.getSharedObjectID());
+			Update update = new Update(newVersion, buf);
+			version = newVersion;
+			try {
+				config.getContext().sendMessage(null, update);
+			} catch (IOException e) {
+				throw new ECFException(e);
+			}
+		}
 	}
 
 	public synchronized void dispose() {
@@ -81,10 +96,17 @@ public class Agent implements ISharedData, ISharedObject {
 			throws SharedObjectInitException {
 		this.config = config;
 		Map params = config.getProperties();
-		if (params != null)
+		if (params != null) {
 			sharedData = params.get("sharedData");
+			version = (Version) params.get("version");
+			IBootstrapMemento m = (IBootstrapMemento) params.get("bootstrap");
+			if (m != null)
+				bootstrap = m.createBootstrap();
+		}
 
-		bootstrap = new LazyElectionBootstrap();
+		if (version == null)
+			version = new Version(config.getSharedObjectID());
+
 		bootstrap.setAgent(this);
 		bootstrap.init(config);
 	}
@@ -95,6 +117,7 @@ public class Agent implements ISharedData, ISharedObject {
 	 * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
 	 */
 	public void handleEvent(Event event) {
+		bootstrap.handleEvent(event);
 		if (event instanceof ISharedObjectActivatedEvent) {
 			ISharedObjectActivatedEvent e = (ISharedObjectActivatedEvent) event;
 			if (e.getActivatedID().equals(config.getSharedObjectID()))
@@ -104,19 +127,20 @@ public class Agent implements ISharedData, ISharedObject {
 			if (e.getData() instanceof Update)
 				handleUpdate((Update) e.getData());
 		}
-
-		bootstrap.handleEvent(event);
 	}
 
 	private void handleActivated() {
 		if (config.getHomeContainerID().equals(
 				config.getContext().getLocalContainerID()))
 			try {
+				Map params = new HashMap(3);
+				params.put("sharedData", sharedData);
+				params.put("version", version);
+				params.put("bootstrap", bootstrap.createMemento());
 				config.getContext().sendCreate(
 						null,
 						new SharedObjectDescription(config.getSharedObjectID(),
-								getClass()));
-
+								getClass(), params));
 				if (pubCallback != null)
 					pubCallback.dataPublished(this);
 			} catch (IOException e) {
@@ -127,13 +151,29 @@ public class Agent implements ISharedData, ISharedObject {
 				pubCallback = null;
 			}
 	}
-	
-	private void handleUpdate(Update upate) {
-		// TODO implement me!
+
+	private void handleUpdate(Update update) {
+		try {
+			updateProvider.applyUpdate(this, update.getData());
+			version = update.getVersion();
+		} catch (ECFException e) {
+			handleError(e);
+		}
 	}
 
 	public void doBootstrap(ID containerID) {
-		// TODO bootstrap the new member
+		Map params = new HashMap(3);
+		params.put("sharedData", sharedData);
+		params.put("version", version);
+		params.put("bootstrap", bootstrap.createMemento());
+		try {
+			config.getContext().sendCreate(
+					containerID,
+					new SharedObjectDescription(config.getSharedObjectID(),
+							getClass(), params));
+		} catch (IOException e) {
+			handleError(e);
+		}
 	}
 
 	private void handleError(Throwable t) {

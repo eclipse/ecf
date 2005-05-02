@@ -21,49 +21,75 @@ import org.eclipse.ecf.core.util.Event;
  */
 public class ServerBootstrap implements IBootstrap {
 
-    private Agent agent;
+	private Agent agent;
 
-    private ISharedObjectConfig config;
+	private ISharedObjectConfig config;
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ecf.internal.datashare.IBootstrap#setAgent(org.eclipse.ecf.internal.datashare.Agent)
-     */
-    public void setAgent(Agent agent) {
-        this.agent = agent;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.internal.datashare.IBootstrap#setAgent(org.eclipse.ecf.internal.datashare.Agent)
+	 */
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ecf.internal.datashare.IBootstrap#init(org.eclipse.ecf.core.ISharedObjectConfig)
-     */
-    public void init(ISharedObjectConfig config)
-            throws SharedObjectInitException {
-        this.config = config;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.internal.datashare.IBootstrap#init(org.eclipse.ecf.core.ISharedObjectConfig)
+	 */
+	public void init(ISharedObjectConfig config)
+			throws SharedObjectInitException {
+		this.config = config;
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ecf.internal.datashare.IBootstrap#handleEvent(org.eclipse.ecf.core.util.Event)
-     */
-    public void handleEvent(Event event) {
-        if (event instanceof ISharedObjectContainerJoinedEvent) {
-            ISharedObjectContainerJoinedEvent e = (ISharedObjectContainerJoinedEvent) event;
-            if (!e.getJoinedContainerID().equals(e.getLocalContainerID()))
-                handleJoined(e.getJoinedContainerID());
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.internal.datashare.IBootstrap#handleEvent(org.eclipse.ecf.core.util.Event)
+	 */
+	public void handleEvent(Event event) {
+		if (event instanceof ISharedObjectContainerJoinedEvent) {
+			ISharedObjectContainerJoinedEvent e = (ISharedObjectContainerJoinedEvent) event;
+			if (!e.getJoinedContainerID().equals(e.getLocalContainerID()))
+				handleJoined(e.getJoinedContainerID());
+		}
+	}
 
-    private void handleJoined(ID containerID) {
-        if (config.getContext().isGroupServer())    // TODO how about isGroupManager()?
-            agent.doBootstrap(containerID);
-    }
+	private void handleJoined(ID containerID) {
+		if (config.getContext().isGroupServer()) // TODO how about isGroupManager()?
+			agent.doBootstrap(containerID);
+	}
 
-    private void handleError(Throwable t) {
-        t.printStackTrace();
-    }
+	private void handleError(Throwable t) {
+		t.printStackTrace();
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.ecf.internal.datashare.IBootstrap#dispose(org.eclipse.ecf.core.identity.ID)
-     */
-    public void dispose(ID containerID) {
-        config = null;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.internal.datashare.IBootstrap#dispose(org.eclipse.ecf.core.identity.ID)
+	 */
+	public void dispose(ID containerID) {
+		config = null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.internal.datashare.IBootstrap#createMemento()
+	 */
+	public IBootstrapMemento createMemento() {
+		return new BootstrapMemento();
+	}
+
+	public static class BootstrapMemento implements IBootstrapMemento {
+
+		private static final long serialVersionUID = 3691040980384299317L;
+
+		public IBootstrap createBootstrap() {
+			return new ServerBootstrap();
+		}
+	}
 }
