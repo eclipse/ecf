@@ -11,7 +11,8 @@ package org.eclipse.ecf.core.util;
 
 public class QueueException extends ECFException {
 
-    IQueue theQueue = null;
+	private static final long serialVersionUID = 3691039863709118774L;
+	IQueue theQueue = null;
 
     public QueueException() {
         super();

@@ -12,7 +12,9 @@
 package org.eclipse.ecf.core.comm;
 
 public class SynchConnectionEvent extends ConnectionEvent {
-    public SynchConnectionEvent(ISynchConnection conn, Object data) {
+	private static final long serialVersionUID = 3257288019714324532L;
+
+	public SynchConnectionEvent(ISynchConnection conn, Object data) {
         super(conn, data);
     }
 }

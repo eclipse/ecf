@@ -13,7 +13,9 @@ import org.eclipse.ecf.core.util.ECFException;
 
 public class SharedObjectNotFoundException extends ECFException {
 
-    public SharedObjectNotFoundException() {
+	private static final long serialVersionUID = 3256725086957285689L;
+
+	public SharedObjectNotFoundException() {
         super();
     }
 

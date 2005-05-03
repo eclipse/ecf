@@ -12,7 +12,8 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectContainerDepartedEvent implements
         ISharedObjectContainerDepartedEvent {
-    private final ID departedContainerID;
+	private static final long serialVersionUID = 3256437002059527733L;
+	private final ID departedContainerID;
     private final ID localContainerID;
 
     public SharedObjectContainerDepartedEvent(ID container, ID o) {

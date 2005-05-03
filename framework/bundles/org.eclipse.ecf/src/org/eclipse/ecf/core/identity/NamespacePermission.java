@@ -14,7 +14,8 @@ import java.security.Permission;
 
 public class NamespacePermission extends BasicPermission {
 
-    public static final String ADD_NAMESPACE = "add";
+	private static final long serialVersionUID = 3257004371500806969L;
+	public static final String ADD_NAMESPACE = "add";
     public static final String ALL_NAMESPACE = "all";
     public static final String CONTAINS_NAMESPACE = "contains";
     public static final String GET_NAMESPACE = "get";

@@ -12,7 +12,8 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class RemoteSharedObjectCreateResponseEvent extends
         RemoteSharedObjectEvent implements ISharedObjectCreateResponseEvent {
-    long sequence = 0;
+	private static final long serialVersionUID = 3618421544527738673L;
+	long sequence = 0;
 
     public RemoteSharedObjectCreateResponseEvent(ID senderObj, ID remoteCont,
             long seq, Throwable exception) {

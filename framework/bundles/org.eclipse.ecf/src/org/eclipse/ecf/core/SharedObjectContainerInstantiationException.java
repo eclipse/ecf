@@ -13,7 +13,9 @@ import org.eclipse.ecf.core.util.ECFException;
 
 public class SharedObjectContainerInstantiationException extends ECFException {
 
-    public SharedObjectContainerInstantiationException() {
+	private static final long serialVersionUID = 3257283617356265781L;
+
+	public SharedObjectContainerInstantiationException() {
         super();
     }
 

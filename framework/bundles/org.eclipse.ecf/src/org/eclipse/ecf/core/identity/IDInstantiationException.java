@@ -13,7 +13,9 @@ import org.eclipse.ecf.core.util.ECFException;
 
 public class IDInstantiationException extends ECFException {
 
-    public IDInstantiationException() {
+	private static final long serialVersionUID = 3258416140119323960L;
+
+	public IDInstantiationException() {
         super();
     }
 

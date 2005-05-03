@@ -12,7 +12,8 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectContainerDisposeEvent implements
         ISharedObjectContainerDisposeEvent {
-    private final ID localContainerID;
+	private static final long serialVersionUID = 3618138961349062706L;
+	private final ID localContainerID;
 
     public SharedObjectContainerDisposeEvent(ID container) {
         super();

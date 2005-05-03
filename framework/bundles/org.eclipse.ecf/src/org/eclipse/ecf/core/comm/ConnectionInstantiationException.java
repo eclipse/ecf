@@ -13,7 +13,9 @@ package org.eclipse.ecf.core.comm;
 
 public class ConnectionInstantiationException extends Exception {
 
-    public ConnectionInstantiationException() {
+	private static final long serialVersionUID = 3904958651231058229L;
+
+	public ConnectionInstantiationException() {
         super();
     }
 

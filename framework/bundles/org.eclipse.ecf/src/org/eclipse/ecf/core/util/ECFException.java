@@ -11,7 +11,9 @@ package org.eclipse.ecf.core.util;
 
 public class ECFException extends Exception {
 
-    public ECFException() {
+	private static final long serialVersionUID = 3256440309134406707L;
+
+	public ECFException() {
         super();
     }
 

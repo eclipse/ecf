@@ -12,7 +12,8 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectDeactivatedEvent implements
         ISharedObjectDeactivatedEvent {
-    private final ID deactivatedID;
+	private static final long serialVersionUID = 3257291344119476786L;
+	private final ID deactivatedID;
     private final ID localContainerID;
 
     public SharedObjectDeactivatedEvent(ID container, ID deact) {

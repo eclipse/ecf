@@ -12,7 +12,8 @@ import java.util.Arrays;
 import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectActivatedEvent implements ISharedObjectActivatedEvent {
-    private final ID activatedID;
+	private static final long serialVersionUID = 3258416110105079864L;
+	private final ID activatedID;
     private final ID[] groupMemberIDs;
     private final ID localContainerID;
 

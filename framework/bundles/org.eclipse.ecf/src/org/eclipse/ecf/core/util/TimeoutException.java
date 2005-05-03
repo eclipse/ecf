@@ -11,7 +11,8 @@ package org.eclipse.ecf.core.util;
 
 public class TimeoutException extends InterruptedException {
 
-    public final long duration;
+	private static final long serialVersionUID = 3256439218179158322L;
+	public final long duration;
     public TimeoutException(long time) {
         duration = time;
     }

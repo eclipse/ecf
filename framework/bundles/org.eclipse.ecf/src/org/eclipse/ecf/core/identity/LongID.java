@@ -16,7 +16,9 @@ import org.eclipse.ecf.core.identity.provider.IDInstantiator;
 
 public class LongID extends BaseID {
 
-    Long value = null;
+	private static final long serialVersionUID = 4049072748317914423L;
+
+	Long value = null;
 
     public static class Creator implements IDInstantiator {
         public ID makeInstance(Namespace ns, Class[] argTypes, Object[] args)

@@ -24,6 +24,8 @@ import org.eclipse.ecf.core.util.Base64;
  */
 public class GUID extends StringID {
 
+	private static final long serialVersionUID = 3545794369039972407L;
+
 	public static class Creator implements IDInstantiator {
 		public ID makeInstance(Namespace ns, Class[] argTypes, Object[] args)
 				throws IDInstantiationException {

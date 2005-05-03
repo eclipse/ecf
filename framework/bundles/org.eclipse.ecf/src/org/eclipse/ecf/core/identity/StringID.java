@@ -21,7 +21,8 @@ import org.eclipse.ecf.core.identity.provider.IDInstantiator;
  */
 public class StringID extends BaseID {
 
-    public static class Creator implements IDInstantiator {
+	private static final long serialVersionUID = 3256437019155446068L;
+	public static class Creator implements IDInstantiator {
         public ID makeInstance(Namespace ns, Class[] argTypes, Object[] args)
                 throws IDInstantiationException {
             return new StringID(ns, (String) args[0]);

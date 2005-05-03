@@ -16,7 +16,8 @@ import org.eclipse.ecf.core.identity.ID;
  */
 public class SharedObjectManagerDisconnectEvent implements
         ISharedObjectManagerEvent {
-    ID localContainerID = null;
+	private static final long serialVersionUID = 3257008743777448761L;
+	ID localContainerID = null;
     ID sharedObjectSenderID = null;
     
     public SharedObjectManagerDisconnectEvent(ID localContainerID, ID sharedObjectSenderID) {

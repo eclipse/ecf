@@ -12,7 +12,9 @@
 package org.eclipse.ecf.core.comm;
 
 public class AsynchConnectionEvent extends ConnectionEvent {
-    public AsynchConnectionEvent(IAsynchConnection conn, Object data) {
+	private static final long serialVersionUID = 3618136762325873465L;
+
+	public AsynchConnectionEvent(IAsynchConnection conn, Object data) {
         super(conn, data);
     }
 }

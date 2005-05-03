@@ -13,7 +13,8 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectContainerEjectedEvent implements
         ISharedObjectContainerEjectedEvent {
-    private final ID localContainerID;
+	private static final long serialVersionUID = 3257567299946033970L;
+	private final ID localContainerID;
     private final ID groupID;
     private final Serializable reason;
     

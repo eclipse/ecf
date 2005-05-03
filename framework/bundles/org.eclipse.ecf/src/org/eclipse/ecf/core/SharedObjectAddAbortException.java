@@ -11,7 +11,9 @@ package org.eclipse.ecf.core;
 
 public class SharedObjectAddAbortException extends SharedObjectAddException {
 
-    protected long timeout = -1L;
+	private static final long serialVersionUID = 4120851079287223088L;
+
+	protected long timeout = -1L;
 
     public SharedObjectAddAbortException() {
         super();

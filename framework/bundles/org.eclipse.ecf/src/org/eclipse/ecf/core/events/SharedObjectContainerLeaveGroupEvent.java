@@ -12,7 +12,8 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectContainerLeaveGroupEvent implements
         ISharedObjectContainerLeaveGroupEvent {
-    ID localContainerID;
+	private static final long serialVersionUID = 3257570607204742200L;
+	ID localContainerID;
     ID groupID;
 
     public SharedObjectContainerLeaveGroupEvent(ID localContainerID, ID groupID) {

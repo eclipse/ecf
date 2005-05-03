@@ -14,7 +14,8 @@ import org.eclipse.ecf.core.util.Event;
 
 public class RemoteSharedObjectEvent implements ISharedObjectMessageEvent,
         Serializable {
-    private final ID senderSharedObjectID;
+	private static final long serialVersionUID = 3257572797621680182L;
+	private final ID senderSharedObjectID;
     private final ID remoteContainerID;
     private final Object data;
 

@@ -10,6 +10,7 @@
 package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.security.IJoinAuthorizationContext;
 
 /**
  * Core interface that must be implemented by all ECF container instances.
@@ -84,13 +85,13 @@ public interface ISharedObjectContainer {
      * @param groupID
      *            the ID of the remote service to join
      * @param joinContext
-     *            any required login/authentication context to allow this container
-     *            to authenticate
+     *            any required authentication context to allow this container
+     *            to authenticate on join with remote containers
      * @exception SharedObjectContainerJoinException
      *                thrown if communication cannot be established with remote
      *                service
      */
-	//public void joinGroup(ID groupID, IJoinContext joinContext) throws SharedObjectContainerJoinException;
+	public void joinGroup(ID groupID, IJoinAuthorizationContext joinContext) throws SharedObjectContainerJoinException;
 	
     /**
      * Leave a container group. This operation will disconnect the local

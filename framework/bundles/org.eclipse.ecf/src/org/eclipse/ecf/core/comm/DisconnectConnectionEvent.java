@@ -13,7 +13,8 @@ package org.eclipse.ecf.core.comm;
 
 public class DisconnectConnectionEvent extends ConnectionEvent {
 
-    Throwable exception = null;
+	private static final long serialVersionUID = 3545519491132832050L;
+	Throwable exception = null;
 
     public DisconnectConnectionEvent(IAsynchConnection conn, Throwable e,
             Object data) {

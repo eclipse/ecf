@@ -11,7 +11,9 @@ package org.eclipse.ecf.core;
 
 public class SharedObjectContainerJoinException extends Exception {
 
-    public SharedObjectContainerJoinException() {
+	private static final long serialVersionUID = 3834874676269561909L;
+
+	public SharedObjectContainerJoinException() {
         super();
     }
 

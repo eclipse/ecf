@@ -22,7 +22,9 @@ import org.eclipse.ecf.core.identity.ID;
  */
 public class SharedObjectDescription implements Serializable {
 
-    protected static long staticID = 0;
+	private static final long serialVersionUID = 3257848783613146929L;
+
+	protected static long staticID = 0;
 
     protected transient ClassLoader classLoader;
     protected ID id;

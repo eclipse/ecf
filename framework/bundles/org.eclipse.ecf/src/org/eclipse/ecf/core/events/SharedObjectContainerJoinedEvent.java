@@ -12,7 +12,8 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectContainerJoinedEvent implements
         ISharedObjectContainerJoinedEvent {
-    private final ID joinedContainerID;
+	private static final long serialVersionUID = 3833467322827617078L;
+	private final ID joinedContainerID;
     private final ID localContainerID;
 
     public SharedObjectContainerJoinedEvent(ID local, ID joinContainerID) {

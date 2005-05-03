@@ -13,7 +13,9 @@ import org.eclipse.ecf.core.util.ECFException;
 
 public class SharedObjectInitException extends ECFException {
 
-    public SharedObjectInitException() {
+	private static final long serialVersionUID = 3617579318620862771L;
+
+	public SharedObjectInitException() {
         super();
     }
 

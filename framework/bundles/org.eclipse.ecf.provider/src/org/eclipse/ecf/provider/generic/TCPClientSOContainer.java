@@ -12,11 +12,13 @@
 package org.eclipse.ecf.provider.generic;
 
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
+import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.security.IJoinAuthorizationContext;
 
 public class TCPClientSOContainer extends ClientSOContainer {
     int keepAlive = 0;
@@ -52,4 +54,5 @@ public class TCPClientSOContainer extends ClientSOContainer {
         container.joinGroup(serverID, null);
         Thread.sleep(200000);
     }
+
 }

@@ -19,7 +19,8 @@ import org.eclipse.ecf.core.identity.ID;
 public class SharedObjectManagerAddEvent implements
         ISharedObjectManagerEvent {
     
-    ID localContainerID = null;
+	private static final long serialVersionUID = 3258413923916330551L;
+	ID localContainerID = null;
     Map properties = null;
     ISharedObject sharedObject = null;
     ID sharedObjectID = null;

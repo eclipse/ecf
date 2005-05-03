@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.user.IUser;
 
 public class User implements IUser {
 
+	private static final long serialVersionUID = 3978709484518586169L;
 	protected ID id;
 	protected String name;
 	protected Map properties;

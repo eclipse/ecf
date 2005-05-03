@@ -13,7 +13,9 @@ package org.eclipse.ecf.core.comm;
 
 class SuspectConnectionEvent extends ConnectionEvent {
 
-    public SuspectConnectionEvent(IConnection source, Object data) {
+	private static final long serialVersionUID = 3688783665748588344L;
+
+	public SuspectConnectionEvent(IConnection source, Object data) {
         super(source, data);
     }
 
