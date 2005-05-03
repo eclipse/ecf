@@ -266,7 +266,7 @@ public class IDFactory {
     public static final ID makeID(String namespacename, Object[] args)
             throws IDInstantiationException {
     	Namespace n = getNamespaceByName(namespacename);
-    	if (n == null) throw new IDInstantiationException("Namespace named "+namespacename+" not found");
+    	if (n == null) throw new IDInstantiationException("Namespace "+namespacename+" not found");
         return makeID(n, args);
     }
 
