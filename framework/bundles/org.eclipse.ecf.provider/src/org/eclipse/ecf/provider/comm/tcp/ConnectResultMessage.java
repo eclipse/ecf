@@ -14,7 +14,8 @@ package org.eclipse.ecf.provider.comm.tcp;
 import java.io.Serializable;
 
 public class ConnectResultMessage implements Serializable {
-    Serializable data;
+	private static final long serialVersionUID = 3833188038300938804L;
+	Serializable data;
 
     public ConnectResultMessage(Serializable data) {
         this.data = data;

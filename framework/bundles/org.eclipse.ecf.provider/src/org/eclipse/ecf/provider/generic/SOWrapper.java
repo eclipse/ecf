@@ -172,7 +172,8 @@ public class SOWrapper {
     }
 
     protected static class ProcEvent implements Event {
-        Event theEvent = null;
+		private static final long serialVersionUID = 3257002142513378616L;
+		Event theEvent = null;
 
         ProcEvent(Event event) {
             theEvent = event;
@@ -184,7 +185,9 @@ public class SOWrapper {
     }
 
     protected static class DisposeEvent implements Event {
-        DisposeEvent() {
+		private static final long serialVersionUID = 3688503311859135536L;
+
+		DisposeEvent() {
         }
     }
 

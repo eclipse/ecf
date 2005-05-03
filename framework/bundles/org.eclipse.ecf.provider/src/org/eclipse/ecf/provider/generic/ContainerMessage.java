@@ -15,7 +15,8 @@ import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 
 public class ContainerMessage implements Serializable {
-    ID fromContainerID;
+	private static final long serialVersionUID = 3257009847533975857L;
+	ID fromContainerID;
     public ID toContainerID;
     long sequence;
     Serializable data;
@@ -135,7 +136,8 @@ public class ContainerMessage implements Serializable {
     }
 
     public static final class ViewChangeMessage implements Serializable {
-        ID changeIDs[];
+		private static final long serialVersionUID = 3256999977782882869L;
+		ID changeIDs[];
         boolean add;
         Serializable data;
 
@@ -187,7 +189,8 @@ public class ContainerMessage implements Serializable {
     }
 
     public static final class CreateMessage implements Serializable {
-        Serializable data;
+		private static final long serialVersionUID = 3257849874417595703L;
+		Serializable data;
 
         CreateMessage(Serializable data) {
             this.data = data;
@@ -205,7 +208,8 @@ public class ContainerMessage implements Serializable {
     }
 
     public static final class CreateResponseMessage implements Serializable {
-        ID sharedObjectID;
+		private static final long serialVersionUID = 3762531213570554166L;
+		ID sharedObjectID;
         Throwable exception;
         long sequence;
 
@@ -245,7 +249,8 @@ public class ContainerMessage implements Serializable {
     }
 
     public static final class SharedObjectMessage implements Serializable {
-        Serializable data;
+		private static final long serialVersionUID = 3257281448531867441L;
+		Serializable data;
         ID fromSharedObjectID;
 
         SharedObjectMessage(ID fromSharedObject, Serializable data) {
@@ -276,7 +281,8 @@ public class ContainerMessage implements Serializable {
 
     public static final class SharedObjectDisposeMessage implements
             Serializable {
-        ID sharedObjectID;
+		private static final long serialVersionUID = 3905241221474498104L;
+		ID sharedObjectID;
 
         SharedObjectDisposeMessage(ID objID) {
             this.sharedObjectID = objID;
@@ -297,7 +303,8 @@ public class ContainerMessage implements Serializable {
     }
 
     public static final class JoinGroupMessage implements Serializable {
-        Serializable data;
+		private static final long serialVersionUID = 3257564022885855287L;
+		Serializable data;
 
         public JoinGroupMessage(Serializable data) {
             this.data = data;
@@ -315,7 +322,8 @@ public class ContainerMessage implements Serializable {
     }
 
     public static final class LeaveGroupMessage implements Serializable {
-        Serializable data;
+		private static final long serialVersionUID = 3258128072350972213L;
+		Serializable data;
 
         public LeaveGroupMessage(Serializable data) {
             this.data = data;

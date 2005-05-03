@@ -15,7 +15,8 @@ import java.io.Serializable;
 import java.net.URI;
 
 public class ConnectRequestMessage implements Serializable {
-    URI target;
+	private static final long serialVersionUID = 3257844363974226229L;
+	URI target;
     Serializable data;
 
     public ConnectRequestMessage(URI target, Serializable data) {

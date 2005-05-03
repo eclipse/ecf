@@ -17,7 +17,8 @@ import org.eclipse.ecf.core.util.AsynchResult;
 import org.eclipse.ecf.core.util.Event;
 
 public class SharedObjectCallEvent implements ISharedObjectCallEvent {
-    ID sender;
+	private static final long serialVersionUID = 3904674977264250933L;
+	ID sender;
     Event event;
     AsynchResult result;
 

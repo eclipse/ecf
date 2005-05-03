@@ -14,7 +14,9 @@ package org.eclipse.ecf.provider.comm.tcp;
 import java.io.Serializable;
 
 public class SynchMessage extends AsynchMessage {
-    protected SynchMessage(Serializable data) {
+	private static final long serialVersionUID = 3906091152452434226L;
+
+	protected SynchMessage(Serializable data) {
         super(data);
     }
 

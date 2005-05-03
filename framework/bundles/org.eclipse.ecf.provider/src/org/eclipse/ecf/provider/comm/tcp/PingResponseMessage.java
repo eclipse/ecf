@@ -14,7 +14,9 @@ package org.eclipse.ecf.provider.comm.tcp;
 import java.io.Serializable;
 
 public class PingResponseMessage implements Serializable {
-    protected PingResponseMessage() {
+	private static final long serialVersionUID = 3257569516165740857L;
+
+	protected PingResponseMessage() {
     }
 
     public String toString() {
