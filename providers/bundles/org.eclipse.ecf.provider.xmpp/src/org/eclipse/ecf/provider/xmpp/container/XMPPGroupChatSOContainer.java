@@ -191,7 +191,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
                 groupID));
     }
 
-    protected SOContext makeNewSharedObjectContext(SOConfig config,
+    protected SOContext makeSharedObjectContext(SOConfig config,
             IQueueEnqueue queue) {
         return new XMPPContainerContext(config.getSharedObjectID(), config
                 .getHomeContainerID(), this, config.getProperties(), queue);

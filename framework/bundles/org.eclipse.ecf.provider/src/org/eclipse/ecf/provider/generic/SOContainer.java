@@ -108,7 +108,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 						ISharedObject obj = load(description);
 						// Create wrapper object and move from loading to active
 						// list.
-						SOWrapper wrap = makeNewRemoteSharedObjectWrapper(
+						SOWrapper wrap = makeRemoteSharedObjectWrapper(
 								fromID, description, obj);
                         
                         wrap.init();
@@ -286,7 +286,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
 	protected ISharedObject addSharedObject0(SharedObjectDescription sd,
 			ISharedObject s) throws Exception {
-		addSharedObjectWrapper(makeNewSharedObjectWrapper(sd, s));
+		addSharedObjectWrapper(makeSharedObjectWrapper(sd, s));
 		return s;
 	}
 
@@ -834,7 +834,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return new ThreadGroup(getID() + ":load");
 	}
 
-	protected SOConfig makeNewSharedObjectConfig(SharedObjectDescription sd,
+	protected SOConfig makeSharedObjectConfig(SharedObjectDescription sd,
 			ISharedObject obj) {
 		ID homeID = sd.getHomeID();
 		if (homeID == null)
@@ -842,7 +842,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return new SOConfig(sd.getID(), homeID, this, sd.getProperties());
 	}
 
-	protected SOConfig makeNewRemoteSharedObjectConfig(ID fromID,
+	protected SOConfig makeRemoteSharedObjectConfig(ID fromID,
 			SharedObjectDescription sd, ISharedObject obj) {
 		ID homeID = sd.getHomeID();
 		if (homeID == null)
@@ -850,27 +850,27 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return new SOConfig(sd.getID(), homeID, this, sd.getProperties());
 	}
 
-	protected SOContext makeNewSharedObjectContext(SOConfig config,
+	protected SOContext makeSharedObjectContext(SOConfig config,
 			IQueueEnqueue queue) {
 		return new SOContext(config.getSharedObjectID(), config
 				.getHomeContainerID(), this, config.getProperties(), queue);
 	}
 
-	protected SOContext makeNewRemoteSharedObjectContext(SOConfig config,
+	protected SOContext makeRemoteSharedObjectContext(SOConfig config,
 			IQueueEnqueue queue) {
 		return new SOContext(config.getSharedObjectID(), config
 				.getHomeContainerID(), this, config.getProperties(), queue);
 	}
 
-	protected SOWrapper makeNewSharedObjectWrapper(SharedObjectDescription sd,
+	protected SOWrapper makeSharedObjectWrapper(SharedObjectDescription sd,
 			ISharedObject s) {
-		SOConfig newConfig = makeNewSharedObjectConfig(sd, s);
+		SOConfig newConfig = makeSharedObjectConfig(sd, s);
 		return new SOWrapper(newConfig, s, this);
 	}
 
-	protected SOWrapper makeNewRemoteSharedObjectWrapper(ID fromID,
+	protected SOWrapper makeRemoteSharedObjectWrapper(ID fromID,
 			SharedObjectDescription sd, ISharedObject s) {
-		SOConfig newConfig = makeNewRemoteSharedObjectConfig(fromID, sd, s);
+		SOConfig newConfig = makeRemoteSharedObjectConfig(fromID, sd, s);
 		return new SOWrapper(newConfig, s, this);
 	}
 
