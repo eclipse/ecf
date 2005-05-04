@@ -39,7 +39,6 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
     }
     public Object getAdapter(Class clazz) {
         if (clazz.equals(ISharedObjectContainerGroupManager.class)) {
-            debug("getAdapter()");
             return this;
         } else return null;
     }
@@ -102,13 +101,6 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
     protected void handleViewChangeMessage(ContainerMessage mess)
             throws IOException {
         // ServerApplication should never receive change messages
-    }
-
-    public void joinGroup(ID group, Object data)
-            throws SharedObjectContainerJoinException {
-        SharedObjectContainerJoinException e = new SharedObjectContainerJoinException(
-                "ServerApplication cannot join group " + group.getName());
-        throw e;
     }
 
     public void leaveGroup() {

@@ -24,4 +24,10 @@ public interface ISharedObjectContainerGroupManager {
      * @param reason a reason for the ejection
      */
     public void ejectGroupMember(ID groupMemberID, Serializable reason);
+    /**
+     * Eject all, for the given reason.
+     * 
+     * @param reason a reason for the ejection
+     */
+    public void ejectAllGroupMembers(Serializable reason);
 }
