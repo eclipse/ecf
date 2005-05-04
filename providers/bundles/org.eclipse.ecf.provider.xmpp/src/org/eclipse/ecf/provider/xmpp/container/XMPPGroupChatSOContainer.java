@@ -232,7 +232,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
      * @see org.eclipse.ecf.provider.generic.ClientSOContainer#getClientConnection(org.eclipse.ecf.core.identity.ID,
      *      java.lang.Object)
      */
-    protected ISynchAsynchConnection getClientConnection(ID remoteSpace,
+    protected ISynchAsynchConnection makeConnection(ID remoteSpace,
             Object data) throws ConnectionInstantiationException {
         return null;
     }

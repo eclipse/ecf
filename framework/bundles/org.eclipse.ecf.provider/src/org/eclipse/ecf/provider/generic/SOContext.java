@@ -23,6 +23,7 @@ import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.security.IJoinContext;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.provider.Trace;
 
@@ -108,18 +109,18 @@ public class SOContext implements ISharedObjectContext {
      * (non-Javadoc)
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#joinGroup(org.eclipse.ecf.core.identity.ID,
-     *      java.lang.Object)
+     *      org.eclipse.ecf.core.security.IJoinContext)
      */
-    public synchronized void joinGroup(ID groupID, Object loginData)
-            throws SharedObjectContainerJoinException {
+	public synchronized void joinGroup(ID groupID, IJoinContext joinContext)
+	throws SharedObjectContainerJoinException {
         if (isInactive()) {
             trace("joinGroup("+groupID+") CONTEXT INACTIVE");
             return;
         } else {
             trace("joinGroup("+groupID+")");
-            container.joinGroup(groupID, loginData);
+            container.joinGroup(groupID, joinContext);
         }
-    }
+	}
 
     /*
      * (non-Javadoc)

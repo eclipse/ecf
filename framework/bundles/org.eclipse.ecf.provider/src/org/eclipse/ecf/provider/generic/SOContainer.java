@@ -44,6 +44,7 @@ import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.security.IJoinContext;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IClassLoaderMapper;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
@@ -795,9 +796,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#joinGroup(org.eclipse.ecf.core.identity.ID,
-	 *      java.lang.Object)
+	 *      org.eclipse.ecf.core.security.IJoinContext)
 	 */
-	public abstract void joinGroup(ID groupID, Object loginData)
+	public abstract void joinGroup(ID groupID, IJoinContext joinContext)
 			throws SharedObjectContainerJoinException;
 
 	protected void killConnection(IConnection conn) {

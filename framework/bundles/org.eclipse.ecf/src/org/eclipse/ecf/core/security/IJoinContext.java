@@ -11,7 +11,7 @@ package org.eclipse.ecf.core.security;
 
 import javax.security.auth.callback.CallbackHandler;
 
-public interface IJoinAuthorizationContext {
+public interface IJoinContext {
 	/**
 	 * Get the callbackhandler instance used by the provider to
 	 * callback into application code.  The provider will typically use the

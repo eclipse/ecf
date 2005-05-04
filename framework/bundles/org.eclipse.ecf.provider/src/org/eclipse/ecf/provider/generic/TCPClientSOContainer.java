@@ -32,7 +32,7 @@ public class TCPClientSOContainer extends ClientSOContainer {
         keepAlive = ka;
     }
 
-    protected ISynchAsynchConnection getClientConnection(ID remoteSpace,
+    protected ISynchAsynchConnection makeConnection(ID remoteSpace,
             Object data) throws ConnectionInstantiationException {
         debug("getClientConnection:" + remoteSpace + ":" + data);
         Object[] args = { new Integer(keepAlive) };

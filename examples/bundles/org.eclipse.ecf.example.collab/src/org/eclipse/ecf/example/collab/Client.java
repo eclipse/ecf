@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.example.collab;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -20,6 +21,11 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -35,6 +41,8 @@ import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.security.IJoinContext;
+import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.SharedObjectEventListener;
 import org.eclipse.ecf.example.collab.share.TreeItem;
@@ -264,6 +272,26 @@ public class Client {
         if (name.equals(type)) return true;
         else return false;
     }
+	protected IJoinContext getJoinContext(final String username, final Object password) {
+		return new IJoinContext() {
+			public CallbackHandler getCallbackHandler() {
+				return new CallbackHandler() {
+					public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+						if (callbacks == null) return;
+						for (int i=0; i < callbacks.length; i++) {
+							if (callbacks[i] instanceof NameCallback) {
+								NameCallback ncb = (NameCallback) callbacks[i];
+								ncb.setName(username);
+							} else if (callbacks[i] instanceof ObjectCallback) {
+								ObjectCallback ocb = (ObjectCallback) callbacks[i];
+								ocb.setObject(password);
+							}
+						}
+					}					
+				};
+			}			
+		};
+	}
     public synchronized void createAndConnectClient(String type, final ID gID, String username,
             Object data, final IResource proj) throws Exception {
         
@@ -303,7 +331,7 @@ public class Client {
         if (pc != null) setupPresenceContainer(client,pc,groupID,username);
         
         try {
-            client.joinGroup(groupID, data);
+            client.joinGroup(groupID, getJoinContext(username,data));
         } catch (SharedObjectContainerJoinException e) {
             try {
                 EclipseCollabSharedObject so = newClient.getObject();

@@ -23,6 +23,7 @@ import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.security.IJoinContext;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer;
 import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
@@ -441,7 +442,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		return super.isHost();
 	}
 
-	public void joinGroup(ID remote, Object data)
+	public void joinGroup(ID remote, IJoinContext data)
 			throws SharedObjectContainerJoinException {
 		ISharedObjectContext crs = getContext();
 		if (crs == null) {

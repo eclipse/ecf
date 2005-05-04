@@ -33,12 +33,13 @@ import org.eclipse.ecf.core.events.SharedObjectContainerJoinGroupEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerLeaveGroupEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IJoinAuthorizationContext;
+import org.eclipse.ecf.core.security.IJoinContext;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public abstract class ClientSOContainer extends SOContainer {
-	
-    protected ISynchAsynchConnection connection;
+
+	protected ISynchAsynchConnection connection;
+
 	protected ID remoteServerID;
 
 	protected byte connectionState;
@@ -54,12 +55,14 @@ public abstract class ClientSOContainer extends SOContainer {
 
 	protected Lock connectLock;
 
-    protected Lock getConnectLock() {
-        return connectLock;
-    }
-    protected ISynchAsynchConnection getConnection() {
-        return connection;
-    }
+	protected Lock getConnectLock() {
+		return connectLock;
+	}
+
+	protected ISynchAsynchConnection getConnection() {
+		return connection;
+	}
+
 	public ClientSOContainer(ISharedObjectContainerConfig config) {
 		super(config);
 		connection = null;
@@ -89,14 +92,17 @@ public abstract class ClientSOContainer extends SOContainer {
 	}
 
 	public ID getGroupID() {
-        synchronized (getConnectLock()) {
-            return remoteServerID;
-        }
+		synchronized (getConnectLock()) {
+			return remoteServerID;
+		}
 	}
-	protected Callback[] makeJoinCallbacks(Object connectData) {
+
+	protected Callback[] makeAuthorizationCallbacks() {
 		return null;
 	}
-	public void joinGroup(ID remote, IJoinAuthorizationContext joinContext) throws SharedObjectContainerJoinException {
+
+	public void joinGroup(ID remote, IJoinContext joinContext)
+			throws SharedObjectContainerJoinException {
 		// first notify synchonously
 		fireContainerEvent(new SharedObjectContainerJoinGroupEvent(
 				this.getID(), remote, joinContext));
@@ -104,137 +110,48 @@ public abstract class ClientSOContainer extends SOContainer {
 			if (isClosing)
 				throw new IllegalStateException("container is closing");
 			debug("joingroup:" + remote + ":" + joinContext);
-			ISynchAsynchConnection aConnection = getClientConnection(remote,
+			ISynchAsynchConnection aConnection = makeConnection(remote,
 					joinContext);
-			if (aConnection == null) {
-				ConnectException c = new ConnectException("join failed to"
-						+ ":" + remote.getName());
-				throw c;
-			}
-			Object response;
+			if (aConnection == null)
+				throw new ConnectException("join failed to" + ":"
+						+ remote.getName()
+						+ " because makeConnection returned null");
+			Object response = null;
 			synchronized (connectLock) {
+				// Throw if already connected
 				if (isConnected()) {
 					killConnection(aConnection);
 					aConnection = null;
-					ConnectException c = new ConnectException(
-							"already connected to " + getGroupID());
-					throw c;
+					throw new ConnectException("already connected to "
+							+ getGroupID());
 				}
+				// Throw if connecting
 				if (isConnecting()) {
 					killConnection(aConnection);
 					aConnection = null;
-					ConnectException c = new ConnectException(
-							"currently connecting");
-					throw c;
+					throw new ConnectException("currently connecting");
 				}
+				// else we're entering connecting state
 				connectionState = CONNECTING;
 				connection = aConnection;
 			}
+			// Now call join callback handler, if it exists
+			Callback[] callbacks = makeAuthorizationCallbacks();
+			if (joinContext != null) {
+				CallbackHandler handler = joinContext.getCallbackHandler();
+				if (handler != null) {
+					handler.handle(callbacks);
+				}
+			}
+
 			synchronized (aConnection) {
 				try {
-					Object connectData = getConnectData(remote, joinContext);
-					// Get handler from joinContext and get appropriate data
-					if (joinContext != null) {
-						CallbackHandler handler = joinContext.getCallbackHandler();
-						if (handler != null) {
-							handler.handle(makeJoinCallbacks(connectData));
-						}
-					}
+					Object connectData = makeConnectData(remote, callbacks,
+							null);
 					// Make connect call
 					response = aConnection.connect(remote, connectData,
 							getConnectTimeout());
-					
-				} catch (IOException e) {
-					synchronized (connectLock) {
-						killConnection(aConnection);
-						if (connection != aConnection) {
-							aConnection = null;
-							throw e;
-						}
-						connectionState = UNCONNECTED;
-						connection = null;
-						remoteServerID = null;
-					}
-					throw e;
-				}
-				synchronized (connectLock) {
-					// If not in correct state, disconnect and return
-					if (connection != aConnection) {
-						killConnection(aConnection);
-						aConnection = null;
-						ConnectException c = new ConnectException(
-								"join failed because not in correct state");
-						throw c;
-					}
-					ID serverID = null;
-					try {
-						serverID = acceptNewServer(remote, response);
-					} catch (Exception e) {
-						killConnection(aConnection);
-						aConnection = null;
-						connection = null;
-						remoteServerID = null;
-						connectionState = UNCONNECTED;
-						ConnectException c = new ConnectException(
-								"join refused locally via acceptNewServer");
-						throw c;
-					}
-					aConnection.start();
-					remoteServerID = serverID;
-					connectionState = CONNECTED;
-				}
-			}
-		} catch (Exception e) {
-			dumpStack("Exception in joinGroup", e);
-			SharedObjectContainerJoinException except = new SharedObjectContainerJoinException(
-					"joinGroup exception in container " + getID() + " joining "
-							+ remote + ": " + e.getClass().getName() + ": "
-							+ e.getMessage());
 
-			except.setStackTrace(e.getStackTrace());
-			throw except;
-		}
-	}
-	public void joinGroup(ID remote, Object data)
-			throws SharedObjectContainerJoinException {
-		// first notify synchonously
-		fireContainerEvent(new SharedObjectContainerJoinGroupEvent(
-				this.getID(), remote, data));
-		try {
-			if (isClosing)
-				throw new IllegalStateException("container is closing");
-			debug("joingroup:" + remote + ":" + data);
-			ISynchAsynchConnection aConnection = getClientConnection(remote,
-					data);
-			if (aConnection == null) {
-				ConnectException c = new ConnectException("join failed to"
-						+ ":" + remote.getName());
-				throw c;
-			}
-			Object response;
-			synchronized (connectLock) {
-				if (isConnected()) {
-					killConnection(aConnection);
-					aConnection = null;
-					ConnectException c = new ConnectException(
-							"already connected to " + getGroupID());
-					throw c;
-				}
-				if (isConnecting()) {
-					killConnection(aConnection);
-					aConnection = null;
-					ConnectException c = new ConnectException(
-							"currently connecting");
-					throw c;
-				}
-				connectionState = CONNECTING;
-				connection = aConnection;
-			}
-			synchronized (aConnection) {
-				try {
-					Object connectData = getConnectData(remote, data);
-					response = aConnection.connect(remote, connectData,
-							getConnectTimeout());
 				} catch (IOException e) {
 					synchronized (connectLock) {
 						killConnection(aConnection);
@@ -253,22 +170,20 @@ public abstract class ClientSOContainer extends SOContainer {
 					if (connection != aConnection) {
 						killConnection(aConnection);
 						aConnection = null;
-						ConnectException c = new ConnectException(
+						throw new ConnectException(
 								"join failed because not in correct state");
-						throw c;
 					}
 					ID serverID = null;
 					try {
-						serverID = acceptNewServer(remote, response);
+						serverID = handleConnectResponse(remote, response);
 					} catch (Exception e) {
 						killConnection(aConnection);
 						aConnection = null;
 						connection = null;
 						remoteServerID = null;
 						connectionState = UNCONNECTED;
-						ConnectException c = new ConnectException(
+						throw new ConnectException(
 								"join refused locally via acceptNewServer");
-						throw c;
 					}
 					aConnection.start();
 					remoteServerID = serverID;
@@ -357,7 +272,7 @@ public abstract class ClientSOContainer extends SOContainer {
 		// NOP
 	}
 
-	protected Serializable getConnectData(ID target, Object data) {
+	protected Object makeConnectData(ID target, Callback[] cbs, Object data) {
 		return ContainerMessage.makeJoinGroupMessage(getID(), target,
 				getNextSequenceNumber(), (Serializable) data);
 	}
@@ -368,7 +283,7 @@ public abstract class ClientSOContainer extends SOContainer {
 
 	public void leaveGroup() {
 		ID groupID = getGroupID();
-        debug("leaveGroup:"+groupID);
+		debug("leaveGroup:" + groupID);
 		fireContainerEvent(new SharedObjectContainerLeaveGroupEvent(this
 				.getID(), groupID));
 		synchronized (connectLock) {
@@ -383,7 +298,7 @@ public abstract class ClientSOContainer extends SOContainer {
 												getNextSequenceNumber(),
 												getLeaveData(groupID))));
 					} catch (Exception e) {
-                        dumpStack("Exception in leaveGroup.sendSynch()",e);
+						dumpStack("Exception in leaveGroup.sendSynch()", e);
 					}
 					synchronized (getGroupMembershipLock()) {
 						memberLeave(groupID, connection);
@@ -399,9 +314,8 @@ public abstract class ClientSOContainer extends SOContainer {
 				groupID));
 	}
 
-	protected abstract ISynchAsynchConnection getClientConnection(
-			ID remoteSpace, Object data)
-			throws ConnectionInstantiationException;
+	protected abstract ISynchAsynchConnection makeConnection(ID remoteSpace,
+			Object data) throws ConnectionInstantiationException;
 
 	protected void queueContainerMessage(ContainerMessage message)
 			throws IOException {
@@ -492,19 +406,20 @@ public abstract class ClientSOContainer extends SOContainer {
 			throw new ConnectException("not connected");
 	}
 
-	protected ID acceptNewServer(ID orginalTarget, Object serverData)
+	protected ID handleConnectResponse(ID orginalTarget, Object serverData)
 			throws Exception {
 		ContainerMessage aPacket = (ContainerMessage) serverData;
 		ID fromID = aPacket.getFromContainerID();
 		if (fromID == null)
 			throw new InvalidObjectException("server id is null");
-		ID[] ids = ((ContainerMessage.ViewChangeMessage) aPacket.getData()).getChangeIDs();
+		ID[] ids = ((ContainerMessage.ViewChangeMessage) aPacket.getData())
+				.getChangeIDs();
 		if (ids == null)
 			throw new java.io.InvalidObjectException("id array null");
 		for (int i = 0; i < ids.length; i++) {
 			ID id = ids[i];
 			if (id != null && !id.equals(getID())) {
-                    addNewRemoteMember(id, null);
+				addNewRemoteMember(id, null);
 				// notify listeners
 				fireContainerEvent(new SharedObjectContainerJoinedEvent(this
 						.getID(), id));

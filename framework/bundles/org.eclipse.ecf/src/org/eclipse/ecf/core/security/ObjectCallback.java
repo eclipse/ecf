@@ -5,14 +5,17 @@ import javax.security.auth.callback.Callback;
 public class ObjectCallback implements Callback {
 	Object data;
 	
+	public ObjectCallback() {
+		data = null;
+	}
 	public ObjectCallback(Object val) {
 		this.data = val;
 	}
 	
-	public void setData(Object val) {
+	public void setObject(Object val) {
 		this.data = val;
 	}
-	public Object getData() {
+	public Object getObject() {
 		return this.data;
 	}
 }

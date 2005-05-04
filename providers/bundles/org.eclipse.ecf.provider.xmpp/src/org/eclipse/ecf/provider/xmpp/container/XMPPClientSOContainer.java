@@ -9,9 +9,10 @@
 package org.eclipse.ecf.provider.xmpp.container;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.security.auth.callback.Callback;
 
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.SharedObjectAddException;
@@ -25,6 +26,8 @@ import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerLeaveGroupEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.security.IJoinContext;
+import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.presence.IAccountManager;
@@ -82,7 +85,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		initializeSharedObject();
 	}
 
-	protected ID acceptNewServer(ID originalTarget, Object serverData)
+	protected ID handleConnectResponse(ID originalTarget, Object serverData)
 			throws Exception {
 		if (originalTarget != null && !originalTarget.equals(getID())) {
 			addNewRemoteMember(originalTarget, null);
@@ -125,7 +128,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		messageSender = null;
 	}
 
-	protected ISynchAsynchConnection getClientConnection(ID remoteSpace,
+	protected ISynchAsynchConnection makeConnection(ID remoteSpace,
 			Object data) throws ConnectionInstantiationException {
 		Object[] args = { new Integer(keepAlive) };
 		ISynchAsynchConnection conn = null;
@@ -138,9 +141,23 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		return conn;
 	}
 
-	protected Serializable getConnectData(ID target, Object data) {
-		return (Serializable) data;
+	protected Object makeConnectData(ID target, Callback [] cbs, Object data) {
+		// first one is password callback
+		if (cbs.length > 0) {
+			if (cbs[0] instanceof ObjectCallback) {
+				ObjectCallback cb = (ObjectCallback) cbs[0];
+				return cb.getObject();
+			}
+		}
+		return data;
 	}
+
+	protected Callback[] makeAuthorizationCallbacks() {
+		Callback [] cbs = new Callback[1];
+		cbs[0] = new ObjectCallback();
+		return cbs;
+	}
+
 
 	protected int getConnectTimeout() {
 		return keepAlive;
@@ -212,11 +229,11 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		sharedObject = new XMPPPresenceSharedObject();
 	}
 
-	public void joinGroup(ID remote, Object data)
+	public void joinGroup(ID remote, IJoinContext joinContext)
 			throws SharedObjectContainerJoinException {
 		try {
 			addSharedObjectToContainer(remote);
-			super.joinGroup(remote, data);
+			super.joinGroup(remote, joinContext);
 		} catch (SharedObjectContainerJoinException e) {
 			cleanUpConnectFail();
 			throw e;

@@ -26,7 +26,7 @@ import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerEjectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IJoinAuthorizationContext;
+import org.eclipse.ecf.core.security.IJoinContext;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public class ServerSOContainer extends SOContainer implements ISharedObjectContainerGroupManager {
@@ -261,7 +261,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
         super.dispose(timeout);
     }
 
-	public void joinGroup(ID groupID, IJoinAuthorizationContext joinContext) throws SharedObjectContainerJoinException {
+	public void joinGroup(ID groupID, IJoinContext joinContext) throws SharedObjectContainerJoinException {
         SharedObjectContainerJoinException e = new SharedObjectContainerJoinException(
                 "ServerApplication cannot join group " + groupID.getName());
         throw e;
