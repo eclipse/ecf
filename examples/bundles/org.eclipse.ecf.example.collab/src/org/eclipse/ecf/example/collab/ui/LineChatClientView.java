@@ -212,10 +212,11 @@ public class LineChatClientView implements FileSenderUI {
 		myNames.clear();
 		if (teamChat != null) {
             final ChatWindow chatWindow = teamChat.chatWindow; 
-			if (chatWindow != null) {
+			if (chatWindow != null && !Display.getDefault().isDisposed()) {
                 Display.getDefault().syncExec(new Runnable() {
                     public void run() {
-                        chatWindow.close();
+						if (chatWindow != null)
+							chatWindow.close();
                     }
                 });
             }
