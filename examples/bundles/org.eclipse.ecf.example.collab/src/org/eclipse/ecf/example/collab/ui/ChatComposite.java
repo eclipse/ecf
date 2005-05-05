@@ -77,7 +77,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
-import org.eclipse.ui.model.IWorkbenchAdapter;
+import org.eclipse.ui.views.IViewCategory;
 import org.eclipse.ui.views.IViewDescriptor;
 import org.eclipse.ui.views.IViewRegistry;
 
@@ -845,8 +845,10 @@ public class ChatComposite extends Composite {
 					private HashMap images = new HashMap();
 					public Image getImage(Object element) {
 						ImageDescriptor desc = null;
-						if (element instanceof IWorkbenchAdapter)
-							desc = ((IWorkbenchAdapter) element).getImageDescriptor(element);
+						if (element instanceof IViewCategory)
+							desc = PlatformUI.getWorkbench().getSharedImages()
+									.getImageDescriptor(
+											ISharedImages.IMG_OBJ_FOLDER);
 						else if (element instanceof IViewDescriptor)
 							desc = ((IViewDescriptor) element).getImageDescriptor();
 
@@ -863,8 +865,8 @@ public class ChatComposite extends Composite {
 					}
 					public String getText(Object element) {
 						String label;
-						if (element instanceof IWorkbenchAdapter)
-							label = ((IWorkbenchAdapter) element).getLabel(element);
+						if (element instanceof IViewCategory)
+							label = ((IViewCategory) element).getLabel();
 						else if (element instanceof IViewDescriptor)
 							label = ((IViewDescriptor) element).getLabel();
 						else
@@ -890,31 +892,29 @@ public class ChatComposite extends Composite {
 				new ITreeContentProvider() {
 					private HashMap parents = new HashMap();
 					public Object[] getChildren(Object element) {
-						if (element.getClass().isArray())
-							return (Object[]) element;
-						else if (element instanceof IWorkbenchAdapter) {
-							Object[] children =
-								((IWorkbenchAdapter) element).getChildren(element);
+						if (element instanceof IViewRegistry)
+							return ((IViewRegistry) element).getCategories();
+						else if (element instanceof IViewCategory) {
+							IViewDescriptor[] children =
+								((IViewCategory) element).getViews();
 							for (int i = 0; i < children.length; ++i)
-								if (children[i] instanceof IViewDescriptor)
-									parents.put(children[i], element);
+								parents.put(children[i], element);
 							
 							return children; 
 						} else
 							return new Object[0];
 					}
 					public Object getParent(Object element) {
-						if (element instanceof IWorkbenchAdapter)
-							return ((IWorkbenchAdapter) element).getParent(element);
+						if (element instanceof IViewCategory)
+							return PlatformUI.getWorkbench().getViewRegistry();
 						else if (element instanceof IViewDescriptor)
 							return parents.get(element);
 						else
 							return null;
 					}
 					public boolean hasChildren(Object element) {
-						if (element.getClass().isArray())
-							return ((Object[]) element).length > 0;
-						else if (element instanceof IWorkbenchAdapter)
+						if (element instanceof IViewRegistry
+								|| element instanceof IViewCategory)
 							return true;
 						else
 							return false;
@@ -930,6 +930,8 @@ public class ChatComposite extends Composite {
 					}
 				});
 		dlg.setTitle(MessageLoader
+				.getString("LineChatClientView.contextmenu.sendShowViewRequest"));
+		dlg.setMessage(MessageLoader
 				.getString("LineChatClientView.contextmenu.sendShowViewRequest.dialog.title"));
 		dlg.addFilter(new ViewerFilter() {
 			public boolean select(Viewer viewer, Object parentElement, Object element) {
@@ -951,7 +953,7 @@ public class ChatComposite extends Composite {
 			}
 		});
 		IViewRegistry reg = PlatformUI.getWorkbench().getViewRegistry(); 
-		dlg.setInput(reg.getCategories());
+		dlg.setInput(reg);
 		IDialogSettings dlgSettings = ClientPlugin.getDefault().getDialogSettings();
 		final String DIALOG_SETTINGS = "SendShowViewRequestDialog";
 		final String SELECTION_SETTING = "SELECTION";
