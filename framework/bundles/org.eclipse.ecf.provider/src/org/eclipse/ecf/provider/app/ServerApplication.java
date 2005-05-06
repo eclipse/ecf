@@ -1,7 +1,13 @@
 package org.eclipse.ecf.provider.app;
 
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.provider.generic.SOContainerConfig;
 import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
 import org.eclipse.ecf.provider.generic.TCPServerSOContainerGroup;
@@ -9,8 +15,9 @@ import org.eclipse.ecf.provider.generic.TCPServerSOContainerGroup;
 /**
  * An ECF server container implementation that runs as an application.
  * <p>
- * Usage: java org.eclipse.ecf.provider.app.ServerApplication &lt;serverid&gt
+ * Usage: java org.eclipse.ecf.provider.app.ServerApplication [-c &lt;configfile&gt | &lt;serverid&gt]
  * <p>
+ * If -p &lt;configfile&gt is used, the server configuration is loaded and used to setup servers.
  * If &lt;serverid&gt; is omitted or "-" is specified,
  * ecftcp://localhost:3282/server" is used.  The &lt;serverid&gt; must correspond to URI syntax as 
  * defined by <a href="http://www.ietf.org/rfc/rfc2396.txt"><i>RFC&nbsp;2396: Uniform
@@ -20,42 +27,80 @@ import org.eclipse.ecf.provider.generic.TCPServerSOContainerGroup;
  */
 public class ServerApplication {
     public static final int DEFAULT_KEEPALIVE = TCPServerSOContainer.DEFAULT_KEEPALIVE;
-    static TCPServerSOContainerGroup serverGroup = null;
-    static TCPServerSOContainer server = null;
+    static TCPServerSOContainerGroup serverGroups[] = null;
+    static List servers = new ArrayList();
 
     public static void main(String args[]) throws Exception {
         // Get server identity
         String serverName = null;
+		List connectors = null;
         if (args.length > 0) {
-            if (!args[0].equals("-"))
+			if (args[0].equals("-c")) {
+				ServerConfigParser parser = new ServerConfigParser();
+				connectors = parser.load(new FileInputStream(args[1]));
+			} else if (!args[0].equals("-"))
                 serverName = args[0];
         }
-        if (serverName == null) {
-            serverName = TCPServerSOContainer.getDefaultServerURL();
-        }
-        java.net.URI anURL = new java.net.URI(serverName);
-        int port = anURL.getPort();
-        if (port == -1) {
-            port = TCPServerSOContainer.DEFAULT_PORT;
-        }
-        String name = anURL.getPath();
-        if (name == null) {
-            name = TCPServerSOContainer.DEFAULT_NAME;
-        }
-        // Setup server group
-        serverGroup = new TCPServerSOContainerGroup(anURL.getPort());
-        // Create identity for server
-        ID id = IDFactory.makeStringID(serverName);
-        // Create server config object with identity and default timeout
-        SOContainerConfig config = new SOContainerConfig(id);
-        // Make server instance
-        System.out.print("Creating ECF server container...");
-        server = new TCPServerSOContainer(config, serverGroup, name,
-                TCPServerSOContainer.DEFAULT_KEEPALIVE);
-        serverGroup.putOnTheAir();
-        System.out.println("success!");
-        System.out
-                .println("Waiting for client connections at '" + id.getName() + "'...");
-        System.out.println("<ctrl>-c to stop server");
+		if (connectors != null) {
+			serverGroups = new TCPServerSOContainerGroup[connectors.size()];
+			int j=0;
+			for(Iterator i=connectors.iterator(); i.hasNext(); ) {
+				Connector connect = (Connector) i.next();
+				serverGroups[j] = makeServerGroup(connect.getHostname(),connect.getPort());
+				List groups = connect.getGroups();
+				
+				for(Iterator g=groups.iterator(); g.hasNext(); ) {
+					NamedGroup group = (NamedGroup) g.next();
+					TCPServerSOContainer cont = makeServerContainer(group.getIDForGroup(),serverGroups[j],group.getName(),connect.getTimeout());
+					servers.add(cont);
+				}
+				System.out.println("Putting server "+connect.getHostname()+" on the air");
+				serverGroups[j].putOnTheAir();
+				j++;
+		        System.out.println("<ctrl>-c to stop server");			
+			}
+		} else {
+	        if (serverName == null) {
+	            serverName = TCPServerSOContainer.getDefaultServerURL();
+	        }
+	        java.net.URI anURL = new java.net.URI(serverName);
+	        int port = anURL.getPort();
+	        if (port == -1) {
+	            port = TCPServerSOContainer.DEFAULT_PORT;
+	        }
+	        String name = anURL.getPath();
+	        if (name == null) {
+	            name = TCPServerSOContainer.DEFAULT_NAME;
+	        }
+			serverGroups = new TCPServerSOContainerGroup[1];
+	        // Setup server group
+	        serverGroups[0] = new TCPServerSOContainerGroup(anURL.getPort());
+	        // Create identity for server
+	        ID id = IDFactory.makeStringID(serverName);
+	        // Create server config object with identity and default timeout
+	        SOContainerConfig config = new SOContainerConfig(id);
+	        // Make server instance
+	        System.out.print("Creating ECF server container...");
+	        TCPServerSOContainer server = new TCPServerSOContainer(config, serverGroups[0], name,
+	                TCPServerSOContainer.DEFAULT_KEEPALIVE);
+	        serverGroups[0].putOnTheAir();
+			servers.add(server);
+	        System.out.println("success!");
+	        System.out
+	                .println("Waiting for client connections at '" + id.getName() + "'...");
+	        System.out.println("<ctrl>-c to stop server");			
+		}
     }
+	
+	protected static TCPServerSOContainerGroup makeServerGroup(String name, int port) {
+		System.out.println("Creating server named "+name+" to listen on port "+port);
+		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,port);
+		return group;
+	}
+	protected static TCPServerSOContainer makeServerContainer(String id, TCPServerSOContainerGroup group, String path, int keepAlive) throws IDInstantiationException {
+		System.out.println("  Creating container with identity "+id+", path "+path+" keepAlive="+keepAlive);
+		ID newServerID = IDFactory.makeStringID(id);
+		SOContainerConfig config = new SOContainerConfig(newServerID);
+		return new TCPServerSOContainer(config,group,path,keepAlive);
+	}
 }

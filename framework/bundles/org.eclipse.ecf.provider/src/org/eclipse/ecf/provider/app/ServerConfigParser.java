@@ -1,5 +1,6 @@
 package org.eclipse.ecf.provider.app;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,60 +20,17 @@ import org.xml.sax.SAXException;
 
 public class ServerConfigParser {
 
-	public static final int DEFAULT_PORT = 3282;
-	public static final long DEFAULT_TIMEOUT = 10000L;
-	
 	public static final String SERVER_ELEMENT = "server";
 	public static final String CONNECTOR_ELEMENT = "connector";
 	public static final String GROUP_ELEMENT = "group";
 	
+	public static final String PROTOCOL_ATTR = "protocol";
+	public static final String HOSTNAME_ATTR = "hostname";
 	public static final String PORT_ATTR = "port";
 	public static final String TIMEOUT_ATTR = "timeout";
 	public static final String NAME_ATTR = "name";
 	
-	protected int defaultPort = DEFAULT_PORT;
-	protected long defaultTimeout = DEFAULT_TIMEOUT;
-	
-	class Connector {
-		int port = defaultPort;
-		long timeout = defaultTimeout;
-		List groups = new ArrayList();
-		
-		public Connector() {
-			
-		}
-		public Connector(int port, long timeout) {
-			this.port = port;
-			this.timeout = timeout;
-		}
-		public void addGroup(NamedGroup grp) {
-			groups.add(grp);
-		}
-		public int getPort() {
-			return port;
-		}
-		public long getTimeout() {
-			return timeout;
-		}
-		public List getGroups() {
-			return groups;
-		}
-	}
-	class NamedGroup {
-		Connector parent;
-		String name;
-		
-		public NamedGroup(String name) {
-			this.name = name;
-		}
-		protected void setParent(Connector c) {
-			this.parent = c;
-		}
-		public String getGroup() {
-			return name;
-		}
-	}
-    protected void findElementsNamed(Node top, String name, List aList) {
+	protected void findElementsNamed(Node top, String name, List aList) {
         int type = top.getNodeType();
         switch (type) {
         case Node.DOCUMENT_TYPE_NODE:
@@ -100,7 +58,7 @@ public class ServerConfigParser {
 		for(Iterator i=connectorNodes.iterator(); i.hasNext(); ) {
 			Node n = (Node) i.next();
 			String ports = getAttributeValue(n,PORT_ATTR);
-			int port = defaultPort;
+			int port = Connector.DEFAULT_PORT;
 			if (ports != null) {
 				try {
 					Integer porti = new Integer(ports);
@@ -110,16 +68,18 @@ public class ServerConfigParser {
 				}
 			}
 			String timeouts = getAttributeValue(n,TIMEOUT_ATTR);
-			long timeout = defaultTimeout;
+			int timeout = Connector.DEFAULT_TIMEOUT;
 			if (timeouts != null) {
 				try {
-					Long timeouti = new Long(timeouts);
-					timeout = timeouti.longValue();
+					Integer timeouti = new Integer(timeouts);
+					timeout = timeouti.intValue();
 				} catch (NumberFormatException e) {
 					// ignore
 				}
 			}
-			Connector c = new Connector(port,timeout);
+			String prot = getAttributeValue(n,PROTOCOL_ATTR);
+			String host = getAttributeValue(n,HOSTNAME_ATTR);
+			Connector c = new Connector(this, prot,host,port,timeout);
 			processConnector(n,c);
 			res.add(c);
 		}
@@ -130,10 +90,11 @@ public class ServerConfigParser {
 		findElementsNamed(n,GROUP_ELEMENT,groupList);
 		for(Iterator i=groupList.iterator(); i.hasNext(); ) {
 			Node node = (Node) i.next();
-			String name = getAttributeValue(n,NAME_ATTR);
+			String name = getAttributeValue(node,NAME_ATTR);
 			if (name != null && !name.equals("")) {
 				NamedGroup g = new NamedGroup(name);
 				c.addGroup(g);
+				g.setParent(c);
 			}
 		}
 	}
@@ -155,5 +116,12 @@ public class ServerConfigParser {
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(ins);
 		return loadConnectors(doc);
+	}
+	
+	public static void main(String [] args) throws Exception {
+		InputStream ins = new FileInputStream(args[0]);
+		ServerConfigParser configParser = new ServerConfigParser();
+		List res = configParser.load(ins);
+		System.out.println("result is "+res);
 	}
 }

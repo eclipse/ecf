@@ -20,7 +20,7 @@ set TRACE=-Dorg.eclipse.ecf.Trace=true -Dorg.eclipse.ecf.provider.Trace=true
 set OPTIONS=
 
 set MAINCLASS=org.eclipse.ecf.provider.app.ServerApplication
-set ARGS=%*
+set ARGS=-c ..\conf\server.xml %*
 
 rem Start server
 echo "Starting server with options: %OPTIONS% and args: %ARGS%"

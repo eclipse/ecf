@@ -20,7 +20,7 @@ TRACE="-Dorg.eclipse.ecf.Trace=true -Dorg.eclipse.ecf.provider.Trace=true"
 OPTIONS=
 
 MAINCLASS=org.eclipse.ecf.provider.app.ServerApplication
-ARGS=$*
+ARGS=-c ../conf/server.xml $*
 
 # Start server
 echo "Starting server with options: ${OPTIONS} and args: ${ARGS}"
