@@ -34,6 +34,7 @@ import org.jivesoftware.smack.packet.Presence;
 
 public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender {
 
+	public static final String CLIENT_TYPE = "ECF_XMPP";
 	public static final Trace trace = Trace.create("smackconnection");
 	public static final Trace smack = Trace.create("smackdebug");
 	protected static final String STRING_ENCODING = "UTF-8";
@@ -86,39 +87,39 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 			XMPPConnection.DEBUG_ENABLED = true;
 		}
 	}
-
-	public synchronized Object connect(ID remote, Object data, int timeout)
-			throws IOException {
-		if (connection != null)
-			throw new IOException("Currently connected");
-		debug("connect(" + remote + "," + data + "," + timeout + ")");
-		if (timeout > 0)
-			SmackConfiguration.setPacketReplyTimeout(timeout);
-
-		Roster.setDefaultSubscriptionMode(Roster.SUBSCRIPTION_MANUAL);
-		
-		XMPPID jabberURI = null;
+	protected String getPasswordForObject(Object data) {
+		String password = null;
 		try {
-			jabberURI = (XMPPID) remote;
+			password = (String) data;
+		} catch (ClassCastException e) {
+			return null;
+		}
+		return password;
+	}
+	
+	protected XMPPID getXMPPID(ID remote) throws IOException {
+		XMPPID jabberID = null;
+		try {
+			jabberID = (XMPPID) remote;
 		} catch (ClassCastException e) {
 			IOException throwMe = new IOException(e.getMessage());
 			throwMe.setStackTrace(e.getStackTrace());
 			throw throwMe;
 		}
+		return jabberID;
+	}
+	public synchronized Object connect(ID remote, Object data, int timeout)
+			throws IOException {
+		if (connection != null)
+			throw new IOException("already connected");
+		if (timeout > 0)
+			SmackConfiguration.setPacketReplyTimeout(timeout);
+		Roster.setDefaultSubscriptionMode(Roster.SUBSCRIPTION_MANUAL);
+		
+		XMPPID jabberURI = getXMPPID(remote);
 		String username = jabberURI.getUsername();
 		serverName = jabberURI.getHostname();
-		String password = null;
-		if (data == null)
-			throw new IOException("data parameter (password) must be provided");
-		try {
-			password = (String) data;
-		} catch (ClassCastException e) {
-			IOException throwMe = new IOException(e.getClass().getName()
-					+ " wrapped: " + e.getMessage());
-			throwMe.setStackTrace(e.getStackTrace());
-			throw throwMe;
-		}
-		Roster roster = null;
+		String password = getPasswordForObject(data);
 		try {
 			if (serverPort == -1) {
 				connection = new XMPPConnection(serverName);
@@ -126,21 +127,23 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 				connection = new XMPPConnection(serverName, serverPort);
 			}
 			connection.addPacketListener(new PacketListener() {
-				/*
-				 * (non-Javadoc)
-				 * 
-				 * @see org.jivesoftware.smack.PacketListener#processPacket(org.jivesoftware.smack.packet.Packet)
-				 */
 				public void processPacket(Packet arg0) {
 					handlePacket(arg0);
 				}
 			}, null);
+			connection.addConnectionListener(new ConnectionListener() {
+				public void connectionClosed() {
+					handleConnectionClosed(null);
+				}
+
+				public void connectionClosedOnError(Exception e) {
+					handleConnectionClosed(e);
+				}
+			});
 			// Login
-			connection.login(username, (String) data, "ECF_XMPP");
+			connection.login(username, (String) data, CLIENT_TYPE);
 			isConnected = true;
 			debug("User: " + username + " logged into " + serverName);
-			roster = getRoster();
-			roster.reload();
 		} catch (XMPPException e) {
 			if (connection != null) {
 				connection.close();
@@ -149,18 +152,7 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 			result.setStackTrace(e.getStackTrace());
 			throw result;
 		}
-		// Now setup listener
-		connection.addConnectionListener(new ConnectionListener() {
-			public void connectionClosed() {
-				handleConnectionClosed(null);
-			}
-
-			public void connectionClosedOnError(Exception e) {
-				handleConnectionClosed(e);
-			}
-		});
-
-		return roster;
+		return null;
 	}
 
 	public synchronized void disconnect() throws IOException {

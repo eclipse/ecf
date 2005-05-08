@@ -98,13 +98,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		if (conn != null && sharedObject != null) {
 			sharedObject.setConnection(conn.getXMPPConnection());
 		}
-		// If we've got roster data then pass it onto shared object
-		if (serverData != null && serverData instanceof Roster) {
-			Roster roster = (Roster) serverData;
-			if (sharedObject != null) {
-				sharedObject.handleRoster(roster);
-			}
-		}
 		return originalTarget;
 	}
 
