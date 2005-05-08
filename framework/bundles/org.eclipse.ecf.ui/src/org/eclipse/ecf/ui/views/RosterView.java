@@ -75,6 +75,7 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
 
     public static final String INSTANT_MESSAGE_ICON = "icons/enabled/message.gif";
     public static final String ADDGROUP_ICON = "icons/enabled/addgroup.gif";
+    public static final String ADDBUDDY_ICON = "icons/enabled/addbuddy.gif";
 
 	public static final String UNFILED_GROUP_NAME = "Unfiled";
 	
@@ -824,7 +825,7 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
 		addBuddyAction.setToolTipText("Add buddy");
 		addBuddyAction.setEnabled(false);
 		addBuddyAction.setImageDescriptor(ImageDescriptor.createFromURL(
-                UiPlugin.getDefault().find(new Path(ADDGROUP_ICON))));
+                UiPlugin.getDefault().find(new Path(ADDBUDDY_ICON))));
 }
 
 
