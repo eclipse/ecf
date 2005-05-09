@@ -136,7 +136,6 @@ public class SOManager implements ISharedObjectManager {
 	 * @see org.eclipse.ecf.core.ISharedObjectManager#getSharedObjectIDs()
 	 */
 	public ID[] getSharedObjectIDs() {
-		debug("getSharedObjectIDs()");
 		return container.getSharedObjectIDs();
 	}
 
@@ -226,7 +225,6 @@ public class SOManager implements ISharedObjectManager {
 	 * @see org.eclipse.ecf.core.ISharedObjectManager#getSharedObject(org.eclipse.ecf.core.identity.ID)
 	 */
 	public ISharedObject getSharedObject(ID sharedObjectID) {
-		debug("getSharedObject(" + sharedObjectID + ")");
 		return container.getSharedObject(sharedObjectID);
 	}
 

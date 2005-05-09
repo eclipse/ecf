@@ -241,7 +241,7 @@ public class SOContext implements ISharedObjectContext {
             trace("sendMessage("+toContainerID+","+data+") CONTEXT INACTIVE");
             return;
         } else {
-            trace("sendMessage("+toContainerID+","+data+") CONTEXT INACTIVE");
+            trace("sendMessage("+toContainerID+","+data+") CONTEXT ACTIVE");
             container.sendMessage(toContainerID, sharedObjectID, data);
         }
     }
