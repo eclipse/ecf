@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.core"
       label="ECF Core"
-      version="1.0.0.20050506"
+      version="0.2.0"
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
@@ -63,30 +63,36 @@ to any source code in the Content.&lt;/p&gt;
          id="org.eclipse.ecf"
          download-size="0"
          install-size="0"
-         version="1.0.0"/>
+         version="0.2.0"/>
 
    <plugin
          id="org.eclipse.ecf.doc"
          download-size="0"
          install-size="0"
-         version="1.0.0"/>
+         version="0.2.0"/>
 
    <plugin
          id="org.eclipse.ecf.presence"
          download-size="0"
          install-size="0"
-         version="1.0.0"/>
+         version="0.2.0"/>
 
    <plugin
          id="org.eclipse.ecf.provider"
          download-size="0"
          install-size="0"
-         version="1.0.0"/>
+         version="0.2.0"/>
 
    <plugin
          id="org.eclipse.ecf.ui"
          download-size="0"
          install-size="0"
-         version="1.0.0"/>
+         version="0.2.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.example.hello"
+         download-size="0"
+         install-size="0"
+         version="0.2.0"/>
 
 </feature>
