@@ -1069,8 +1069,7 @@ public class RosterView extends ViewPart implements IPresenceListener, IMessageL
     protected void handleGroupManagerDeparted() {
         removeAllRosterEntries();
         disposeAllChatWindows("Disconnected from server.  Chat is inactive");
-        chatAction.setEnabled(false);
-        disconnectAction.setEnabled(false);
+		setToolbarEnabled(false);
     }
 
 	public void handleSetRosterEntry(IRosterEntry entry) {
