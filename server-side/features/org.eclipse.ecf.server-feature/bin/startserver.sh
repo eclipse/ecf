@@ -2,16 +2,16 @@
 #
 # Relative path for accessing plugins
 RP=../../../plugins
-ECF=${RP}/org.eclipse.ecf_1.0.0/ecf.jar
-UI=${RP}/org.eclipse.ecf.ui_1.0.0/ui.jar
-SDO=${RP}/org.eclipse.ecf.sdo_1.0.0/ecf.sdo.jar
-PROVIDER=${RP}/org.eclipse.ecf.provider_1.0.0/provider.jar
-PRESENCE=${RP}/org.eclipse.ecf.presence_1.0.0/presence.jar
-GED=${RP}/org.eclipse.ecf.example.sdo.gefeditor_1.0.0/editor.jar
-ED=${RP}/org.eclipse.ecf.example.sdo.editor_1.0.0/editor.jar
-LIBRARY=${RP}/org.eclipse.ecf.example.sdo.library_1.0.0/runtime/org.eclipse.ecf.example.library.jar
-HELLO=${RP}/org.eclipse.ecf.example.hello_1.0.0/hello.jar
-COLLAB=${RP}/org.eclipse.ecf.example.collab_1.0.0/client.jar
+ECF=${RP}/org.eclipse.ecf_0.2.0/ecf.jar
+UI=${RP}/org.eclipse.ecf.ui_0.2.0/ui.jar
+SDO=${RP}/org.eclipse.ecf.sdo_0.2.0/ecf.sdo.jar
+PROVIDER=${RP}/org.eclipse.ecf.provider_0.2.0/provider.jar
+PRESENCE=${RP}/org.eclipse.ecf.presence_0.2.0/presence.jar
+GED=${RP}/org.eclipse.ecf.example.sdo.gefeditor_0.2.0/editor.jar
+ED=${RP}/org.eclipse.ecf.example.sdo.editor_0.2.0/editor.jar
+LIBRARY=${RP}/org.eclipse.ecf.example.sdo.library_0.2.0/runtime/org.eclipse.ecf.example.library.jar
+HELLO=${RP}/org.eclipse.ecf.example.hello_0.2.0/hello.jar
+COLLAB=${RP}/org.eclipse.ecf.example.collab_0.2.0/client.jar
 
 CP="../lib/core.jar:../lib/runtime.jar:../lib/osgi.jar:${ECF}:${UI}:${SDO}:${PROVIDER}:${PRESENCE}:${GED}:${ED}:${LIBRARY}:${HELLO}:${COLLAB}:."
 
