@@ -1,0 +1,3 @@
+org.eclipse.ecf.discovery/debug = true
+org.eclipse.ecf.discovery/debug/filter = *
+org.eclipse.ecf.discovery/debug/flag = true
