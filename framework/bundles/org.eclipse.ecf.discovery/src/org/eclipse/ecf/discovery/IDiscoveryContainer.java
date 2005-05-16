@@ -9,10 +9,17 @@
 
 package org.eclipse.ecf.discovery;
 
+import java.io.IOException;
+
+import org.eclipse.ecf.core.identity.ServiceID;
+
 public interface IDiscoveryContainer {
-	public void addServiceListener(IServiceListener listener);
-	public void removeServiceListener(IServiceListener listener);
+	public void addServiceListener(ServiceID type, IServiceListener listener);
+	public void removeServiceListener(ServiceID type, IServiceListener listener);
 	public void addServiceTypeListener(IServiceTypeListener listener);
 	public void removeServiceTypeListener(IServiceTypeListener listener);
-	public void registerService(IServiceInfo serviceInfo);
+	public void registerService(IServiceInfo serviceInfo) throws IOException;
+	public void unregisterService(IServiceInfo serviceInfo);
+	public void unregisterAllServices();
+	public IServiceInfo [] getServices(ServiceID type);
 }

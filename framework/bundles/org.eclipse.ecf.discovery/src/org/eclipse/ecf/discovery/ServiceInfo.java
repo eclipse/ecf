@@ -7,27 +7,32 @@
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.ecf.discovery.impl;
+package org.eclipse.ecf.discovery;
 
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ServiceID;
-import org.eclipse.ecf.discovery.IServiceInfo;
 
 public class ServiceInfo implements IServiceInfo, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	InetAddress addr = null;
+
 	ServiceID serviceID;
+
 	int port;
+
 	int priority;
+
 	int weight;
+
 	Map properties;
-	
-	public ServiceInfo(InetAddress address, ServiceID id, int port, int priority, int weight, Map props) {
+
+	public ServiceInfo(InetAddress address, ServiceID id, int port,
+			int priority, int weight, Map props) {
 		this.addr = address;
 		this.serviceID = id;
 		this.port = port;
@@ -35,6 +40,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		this.weight = weight;
 		this.properties = props;
 	}
+
 	public InetAddress getAddress() {
 		return addr;
 	}
@@ -42,6 +48,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	protected void setAddress(InetAddress address) {
 		this.addr = address;
 	}
+
 	public ServiceID getServiceID() {
 		return serviceID;
 	}
@@ -60,5 +67,14 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 
 	public Map getProperties() {
 		return properties;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("ServiceInfo[");
+		buf.append("addr=").append(addr).append(";id=").append(serviceID).append(
+				";port=").append(port).append(";priority=").append(priority)
+				.append(";weight=").append(weight).append(";props=").append(
+						properties).append("]");
+		return buf.toString();
 	}
 }

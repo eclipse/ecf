@@ -7,23 +7,23 @@
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.ecf.discovery.impl;
+package org.eclipse.ecf.discovery;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.discovery.IServiceEvent;
-import org.eclipse.ecf.discovery.IServiceInfo;
 
 public class ServiceContainerEvent implements IServiceEvent {
 
 	private static final long serialVersionUID = 1L;
 
 	protected IServiceInfo info;
+
 	protected ID containerID;
-	
+
 	public ServiceContainerEvent(IServiceInfo info, ID containerID) {
 		this.info = info;
 		this.containerID = containerID;
 	}
+
 	public IServiceInfo getServiceInfo() {
 		return info;
 	}
@@ -32,4 +32,10 @@ public class ServiceContainerEvent implements IServiceEvent {
 		return containerID;
 	}
 
+	public String toString() {
+		StringBuffer buf = new StringBuffer("ServiceContainerEvent[");
+		buf.append("serviceinfo=")
+				.append(info).append("]");
+		return buf.toString();
+	}
 }

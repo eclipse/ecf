@@ -10,5 +10,4 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
 Eclipse-AutoStart: true
-Export-Package: org.eclipse.ecf.discovery,
- org.eclipse.ecf.discovery.impl
+Export-Package: org.eclipse.ecf.discovery
