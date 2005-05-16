@@ -12,40 +12,44 @@ package org.eclipse.ecf.core.identity;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-
 public class ServiceID extends BaseID {
 
 	private static final long serialVersionUID = 1L;
 
 	String type;
 	String name;
-	
+
 	protected ServiceID(Namespace namespace, String type, String name) {
 		super(namespace);
-		if (type == null) throw new NullPointerException("ServiceID type cannot be null");
-		if (name == null) throw new NullPointerException("ServiceID name cannot be null");
+		if (type == null)
+			throw new NullPointerException("ServiceID type cannot be null");
 		this.type = type;
 		this.name = name;
 	}
 
 	protected String getFullyQualifiedName() {
-		return type+name;
+		if (name == null)
+			return type;
+		else
+			return type + name;
 	}
+
 	protected int namespaceCompareTo(BaseID o) {
 		if (o instanceof ServiceID) {
 			ServiceID other = (ServiceID) o;
 			String typename = other.getFullyQualifiedName();
-			return getFullyQualifiedName().compareTo(typename); 
+			return getFullyQualifiedName().compareTo(typename);
 		} else {
 			return 1;
 		}
 	}
 
 	protected boolean namespaceEquals(BaseID o) {
-		if (o == null) return false;
+		if (o == null)
+			return false;
 		if (o instanceof ServiceID) {
 			ServiceID other = (ServiceID) o;
-			if (other.getServiceType().equals(type) && other.getName().equals(name)) {
+			if (other.getName().equals(getName())) {
 				return true;
 			}
 		}
@@ -53,17 +57,27 @@ public class ServiceID extends BaseID {
 	}
 
 	protected String namespaceGetName() {
-		return name;
+		return getFullyQualifiedName();
 	}
 
 	protected int namespaceHashCode() {
-		return name.hashCode();
+		return getFullyQualifiedName().hashCode();
 	}
 
 	protected URI namespaceToURI() throws URISyntaxException {
-		throw new URISyntaxException("cannot create URI from service id with name "+getName(),getName());
+		throw new URISyntaxException(
+				"cannot create URI from service id with name " + getName(),
+				getName());
 	}
+
 	public String getServiceType() {
 		return type;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("ServiceID[");
+		buf.append("type=").append(type).append(";name=").append(name).append(
+				";full=" + getFullyQualifiedName()).append("]");
+		return buf.toString();
 	}
 }
