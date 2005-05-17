@@ -193,7 +193,7 @@ public class DiscoveryView extends ViewPart {
 			return obj.toString();
 		}
 		public Image getImage(Object obj) {
-			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
+			String imageKey = null;
 			if (obj instanceof TreeParent)
 			   imageKey = ISharedImages.IMG_OBJ_FOLDER;
 			return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
