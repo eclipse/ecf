@@ -43,6 +43,11 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.IJoinContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
+import org.eclipse.ecf.discovery.IDiscoveryContainer;
+import org.eclipse.ecf.discovery.IServiceEvent;
+import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.IServiceListener;
+import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.SharedObjectEventListener;
 import org.eclipse.ecf.example.collab.share.TreeItem;
@@ -59,6 +64,7 @@ import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.impl.Presence;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
+import org.eclipse.ecf.ui.views.DiscoveryView;
 import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.ecf.ui.views.RosterView;
 import org.eclipse.jface.window.Window;
@@ -329,6 +335,9 @@ public class Client {
         // Check for IPresenceContainer....if it is, setup
         IPresenceContainer pc = (IPresenceContainer) client.getAdapter(IPresenceContainer.class);
         if (pc != null) setupPresenceContainer(client,pc,groupID,username);
+        // Check for discoverycontainer...if it is, setup
+        IDiscoveryContainer dc = (IDiscoveryContainer) client.getAdapter(IDiscoveryContainer.class);
+        if (dc != null) setupDiscoveryContainer(dc);
         
         try {
             client.joinGroup(groupID, getJoinContext(username,data));
@@ -540,6 +549,58 @@ public class Client {
 			}
 		});
 	}
+
+    protected DiscoveryView discoveryView = null;
+    
+    protected void setupDiscoveryContainer(final IDiscoveryContainer dc) {
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                try {
+                    IWorkbenchWindow ww = PlatformUI.getWorkbench()
+                            .getActiveWorkbenchWindow();
+                    IWorkbenchPage wp = ww.getActivePage();
+                    IViewPart view = wp.showView("org.eclipse.ecf.ui.view.discoveryview");
+                    discoveryView = (DiscoveryView) view;
+                    discoveryView.setDiscoveryContainer(dc);
+                } catch (Exception e) {
+                    IStatus status = new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Exception showing presence view",e);
+                    ClientPlugin.getDefault().getLog().log(status);
+                }
+            }
+        });
+        if (discoveryView != null) {
+	        dc.addServiceTypeListener(new IServiceTypeListener() {
+	
+				public void serviceTypeAdded(IServiceEvent event) {
+					System.out.println("Client.serviceTypeAdded("+event+")");
+					dc.addServiceListener(event.getServiceInfo().getServiceID(), new IServiceListener() {
+	
+						public void serviceAdded(IServiceEvent event) {
+							System.out.println("Client.serviceAdded("+event+")");
+							IServiceInfo info = dc.getServiceInfo(event.getServiceInfo().getServiceID(),3000);
+							if (info != null) {
+								discoveryView.addServiceInfo(info);
+							} else {
+								discoveryView.addServiceInfo(event.getServiceInfo().getServiceID());
+							}
+							dc.requestServiceInfo(event.getServiceInfo().getServiceID(),3000);
+						}
+	
+						public void serviceRemoved(IServiceEvent event) {
+							System.out.println("Client.serviceRemoved("+event+")");
+							discoveryView.removeServiceInfo(event.getServiceInfo());
+						}
+	
+						public void serviceResolved(IServiceEvent event) {
+							System.out.println("Client.serviceResolved("+event+")");
+							discoveryView.addServiceInfo(event.getServiceInfo());
+						}});
+				}});
+        }
+        
+
+	}
+    
     public synchronized void disposeClient(IResource proj, ClientEntry entry) {
         entry.dispose();
         removeClientEntry(proj,entry.getType());
