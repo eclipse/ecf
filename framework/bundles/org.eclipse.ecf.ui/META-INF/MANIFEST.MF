@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.ecf,
  org.eclipse.jface.text,
  org.eclipse.ui;reprovide=true,
  org.eclipse.core.runtime,
- org.eclipse.ecf.presence
+ org.eclipse.ecf.presence,
+ org.eclipse.ecf.discovery
 Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.views
