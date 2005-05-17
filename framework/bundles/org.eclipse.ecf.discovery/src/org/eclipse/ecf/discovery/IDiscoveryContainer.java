@@ -21,6 +21,7 @@ public interface IDiscoveryContainer {
 	public void registerServiceType(ServiceID serviceType);
 	public void registerService(IServiceInfo serviceInfo) throws IOException;
 	public IServiceInfo getServiceInfo(ServiceID service, int timeout);
+	public void requestServiceInfo(ServiceID service, int timeout);
 	public void unregisterService(IServiceInfo serviceInfo);
 	public void unregisterAllServices();
 	public IServiceInfo [] getServices(ServiceID type);
