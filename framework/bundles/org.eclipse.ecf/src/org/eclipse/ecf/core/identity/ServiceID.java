@@ -16,8 +16,8 @@ public class ServiceID extends BaseID {
 
 	private static final long serialVersionUID = 1L;
 
-	String type;
-	String name;
+	protected String type;
+	protected String name;
 
 	protected ServiceID(Namespace namespace, String type, String name) {
 		super(namespace);
@@ -73,7 +73,9 @@ public class ServiceID extends BaseID {
 	public String getServiceType() {
 		return type;
 	}
-
+	public String getServiceName() {
+		return name;
+	}
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ServiceID[");
 		buf.append("type=").append(type).append(";name=").append(name).append(
