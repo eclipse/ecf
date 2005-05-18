@@ -9,9 +9,29 @@
 
 package org.eclipse.ecf.discovery;
 
+/**
+ * Listener for receiving service events.
+ * 
+ * @author slewis
+ *
+ */
 public interface IServiceListener {
-
+	/**
+	 * Notification that a service has been added.
+	 * 
+	 * @param event
+	 */
 	public void serviceAdded(IServiceEvent event);
+	/**
+	 * Notification that a service has been removed.
+	 * 
+	 * @param event
+	 */
 	public void serviceRemoved(IServiceEvent event);
+	/**
+	 * Notification that a service has been resolved (that complete service info is now available).
+	 * 
+	 * @param event
+	 */
 	public void serviceResolved(IServiceEvent event);
 }

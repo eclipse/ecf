@@ -18,17 +18,11 @@ import org.eclipse.ecf.core.identity.ServiceID;
 public class ServiceInfo implements IServiceInfo, Serializable {
 
 	private static final long serialVersionUID = 1L;
-
 	InetAddress addr = null;
-
 	ServiceID serviceID;
-
 	int port;
-
 	int priority;
-
 	int weight;
-
 	Map properties;
 
 	public ServiceInfo(InetAddress address, ServiceID id, int port,

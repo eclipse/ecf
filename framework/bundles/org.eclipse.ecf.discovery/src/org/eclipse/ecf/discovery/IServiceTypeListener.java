@@ -10,6 +10,10 @@
 package org.eclipse.ecf.discovery;
 
 public interface IServiceTypeListener {
-
+	/**
+	 * Notification that a service type has been added
+	 * 
+	 * @param event
+	 */
 	public void serviceTypeAdded(IServiceEvent event);
 }
