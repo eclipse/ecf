@@ -10,6 +10,10 @@ import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -23,7 +27,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -31,7 +37,7 @@ import org.eclipse.ui.part.ViewPart;
 public class DiscoveryView extends ViewPart {
     protected static final int TREE_EXPANSION_LEVELS = 2;
 	private TreeViewer viewer;
-	private Action doubleClickAction;
+	private Action requestServiceInfoAction;
 
 	IDiscoveryContainer container = null;
 	
@@ -91,7 +97,8 @@ public class DiscoveryView extends ViewPart {
 	class ViewContentProvider implements IStructuredContentProvider, 
 										   ITreeContentProvider {
 		private TreeParent invisibleRoot;
-
+		private TreeParent root;
+		
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
 		}
 		public void dispose() {
@@ -122,27 +129,31 @@ public class DiscoveryView extends ViewPart {
 		}
 		private void initialize() {
 			invisibleRoot = new TreeParent(null,"");
+			root = new TreeParent(null,"Network Services");
+			invisibleRoot.addChild(root);
 		}
 		void replaceOrAdd(TreeParent newEntry) {
-			TreeObject [] childs = invisibleRoot.getChildren();
+			TreeObject [] childs = root.getChildren();
 			for(int i=0; i < childs.length; i++) {
-				String childName = childs[i].getName();
-				if (childName.equals(newEntry.getName())) {
-					// It's already there...replace
-					invisibleRoot.removeChild(childs[i]);
+				if (childs[i] instanceof TreeParent) {
+					ServiceID childID = ((TreeParent) childs[i]).getID();
+					if (childID.equals(newEntry.getID())) {
+						// It's already there...replace
+						root.removeChild(childs[i]);
+					}
 				}
 			}
 			// Now add
-			invisibleRoot.addChild(newEntry);
+			root.addChild(newEntry);
 		}
 		void addServiceInfo(ServiceID id) { 
-			TreeParent newEntry = new TreeParent(id,id.getName());
+			TreeParent newEntry = new TreeParent(id,id.getServiceName());
 			replaceOrAdd(newEntry);
 		}
 		void addServiceInfo(IServiceInfo serviceInfo) {
 			if (serviceInfo == null) return;
 			ServiceID svcID = serviceInfo.getServiceID();
-			TreeParent newEntry = new TreeParent(svcID,svcID.getName());
+			TreeParent newEntry = new TreeParent(svcID,svcID.getServiceName());
 			InetAddress addr = serviceInfo.getAddress();
 			if (addr != null) {
 				TreeObject toaddr = new TreeObject("Address: "+addr.getHostAddress());
@@ -175,13 +186,13 @@ public class DiscoveryView extends ViewPart {
 		void removeServiceInfo(IServiceInfo serviceInfo) {
 			if (serviceInfo == null) return;
 			ServiceID svcID = serviceInfo.getServiceID();
-			TreeObject [] childs = (TreeObject []) invisibleRoot.getChildren();
+			TreeObject [] childs = (TreeObject []) root.getChildren();
 			for(int i=0; i < childs.length; i++) {
 				if (childs[i] instanceof TreeParent) {
 					TreeParent parent = (TreeParent) childs[i];
-					String existingName = parent.getName();
-					if (existingName.equals(svcID.getName())) {
-						invisibleRoot.removeChild(parent);
+					ServiceID existingID = parent.getID();
+					if (existingID.equals(svcID)) {
+						root.removeChild(parent);
 					}
 				}
 			}
@@ -194,8 +205,13 @@ public class DiscoveryView extends ViewPart {
 		}
 		public Image getImage(Object obj) {
 			String imageKey = null;
-			if (obj instanceof TreeParent)
-			   imageKey = ISharedImages.IMG_OBJ_FOLDER;
+			if (obj instanceof TreeParent) {
+				if (((TreeParent) obj).getID() != null) {
+					imageKey = ISharedImages.IMG_OBJ_ELEMENT;
+				} else {
+					imageKey = ISharedImages.IMG_OBJ_FOLDER;
+				}
+			}
 			return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 		}
 	}
@@ -265,6 +281,35 @@ public class DiscoveryView extends ViewPart {
         viewer.expandToLevel(TREE_EXPANSION_LEVELS);
     }
 
+	private void makeActions() {
+		requestServiceInfoAction = new Action() {
+            public void run() {
+                TreeObject treeObject = getSelectedTreeObject();
+                if (treeObject instanceof TreeParent) {
+                	TreeParent p = (TreeParent) treeObject;
+                    final ServiceID targetID = p.getID();
+                    if (container != null) {
+                    	container.requestServiceInfo(targetID,3000);
+                    }
+                }
+            }
+		};
+		requestServiceInfoAction.setText("Request info...");
+		requestServiceInfoAction.setToolTipText("Request info for selected service");
+		requestServiceInfoAction.setEnabled(true);
+	}
+	private void fillContextMenu(IMenuManager manager) {
+		final TreeObject treeObject = getSelectedTreeObject();
+		if (treeObject != null && treeObject instanceof TreeParent) {
+			TreeParent tp = (TreeParent) treeObject;
+			if (tp.getID() != null) {
+				requestServiceInfoAction.setText("Request info about "+tp.getName());
+				manager.add(requestServiceInfoAction);
+			}
+		}
+		// Other plug-ins can contribute there actions here
+		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+	}
     protected TreeObject getSelectedTreeObject() {
         ISelection selection = viewer.getSelection();
         Object obj = ((IStructuredSelection) selection)
@@ -277,25 +322,28 @@ public class DiscoveryView extends ViewPart {
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setInput(getViewSite());
-		doubleClickAction = new Action() {
-            public void run() {
-                TreeObject treeObject = getSelectedTreeObject();
-                if (treeObject instanceof TreeParent) {
-                	TreeParent p = (TreeParent) treeObject;
-                    final ServiceID targetID = p.getID();
-                    if (container != null) {
-                    	container.requestServiceInfo(targetID,3000);
-                    }
-                }
-            }
-		};
+		makeActions();
+		hookContextMenu();
 		hookDoubleClickAction();
 	}
 
+	private void hookContextMenu() {
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager manager) {
+				DiscoveryView.this.fillContextMenu(manager);
+			}
+		});
+		Menu menu = menuMgr.createContextMenu(viewer.getControl());
+		viewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, viewer);
+	}
+	
 	private void hookDoubleClickAction() {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
+				requestServiceInfoAction.run();
 			}
 		});
 	}
