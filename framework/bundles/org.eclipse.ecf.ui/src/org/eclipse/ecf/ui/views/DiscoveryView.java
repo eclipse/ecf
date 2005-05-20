@@ -35,7 +35,7 @@ import org.eclipse.ui.part.ViewPart;
 
 
 public class DiscoveryView extends ViewPart {
-    protected static final int TREE_EXPANSION_LEVELS = 2;
+    protected static final int TREE_EXPANSION_LEVELS = 3;
 	private TreeViewer viewer;
 	private Action requestServiceInfoAction;
 
@@ -132,27 +132,55 @@ public class DiscoveryView extends ViewPart {
 			root = new TreeParent(null,"Network Services");
 			invisibleRoot.addChild(root);
 		}
-		void replaceOrAdd(TreeParent newEntry) {
-			TreeObject [] childs = root.getChildren();
+		void replaceOrAdd(TreeParent top, TreeParent newEntry) {
+			TreeObject [] childs = top.getChildren();
 			for(int i=0; i < childs.length; i++) {
 				if (childs[i] instanceof TreeParent) {
 					ServiceID childID = ((TreeParent) childs[i]).getID();
 					if (childID.equals(newEntry.getID())) {
 						// It's already there...replace
-						root.removeChild(childs[i]);
+						top.removeChild(childs[i]);
 					}
 				}
 			}
 			// Now add
-			root.addChild(newEntry);
+			top.addChild(newEntry);
+		}
+		void addServiceTypeInfo(String type) {
+			TreeParent typenode = findServiceTypeNode(type);
+			if (typenode == null) {
+				root.addChild(new TreeParent(null,type));
+			}
+		}
+		TreeParent findServiceTypeNode(String typename) {
+			TreeObject[] types = root.getChildren();
+			for(int i=0; i < types.length; i++) {
+				if (types[i] instanceof TreeParent) {
+					String type = types[i].getName();
+					if (type.equals(typename)) {
+						return (TreeParent) types[i];
+					}
+				}
+			}
+			return null;
 		}
 		void addServiceInfo(ServiceID id) { 
+			TreeParent typenode = findServiceTypeNode(id.getServiceType());
+			if (typenode == null) {
+				typenode = new TreeParent(null,id.getServiceType());
+				root.addChild(typenode);
+			}
 			TreeParent newEntry = new TreeParent(id,id.getServiceName());
-			replaceOrAdd(newEntry);
+			replaceOrAdd(typenode,newEntry);
 		}
 		void addServiceInfo(IServiceInfo serviceInfo) {
 			if (serviceInfo == null) return;
 			ServiceID svcID = serviceInfo.getServiceID();
+			TreeParent typenode = findServiceTypeNode(svcID.getServiceType());
+			if (typenode == null) {
+				typenode = new TreeParent(null,svcID.getServiceType());
+				root.addChild(typenode);
+			}
 			TreeParent newEntry = new TreeParent(svcID,svcID.getServiceName());
 			InetAddress addr = serviceInfo.getAddress();
 			if (addr != null) {
@@ -181,18 +209,22 @@ public class DiscoveryView extends ViewPart {
 					}
 				}
 			}
-			replaceOrAdd(newEntry);
+			replaceOrAdd(typenode,newEntry);
 		}
 		void removeServiceInfo(IServiceInfo serviceInfo) {
 			if (serviceInfo == null) return;
 			ServiceID svcID = serviceInfo.getServiceID();
-			TreeObject [] childs = (TreeObject []) root.getChildren();
+			TreeParent typenode = findServiceTypeNode(svcID.getServiceType());
+			if (typenode == null) {
+				return;
+			}
+			TreeObject [] childs = (TreeObject []) typenode.getChildren();
 			for(int i=0; i < childs.length; i++) {
 				if (childs[i] instanceof TreeParent) {
 					TreeParent parent = (TreeParent) childs[i];
 					ServiceID existingID = parent.getID();
 					if (existingID.equals(svcID)) {
-						root.removeChild(parent);
+						typenode.removeChild(parent);
 					}
 				}
 			}
@@ -220,7 +252,21 @@ public class DiscoveryView extends ViewPart {
 	 */
 	public DiscoveryView() {
 	}
-
+	public void addServiceTypeInfo(final String type) {
+        Display.getDefault().asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    ViewContentProvider vcp = (ViewContentProvider) viewer
+                    .getContentProvider();
+            		if (vcp != null) {
+            			vcp.addServiceTypeInfo(type);
+            			refreshView();
+            		} 
+                } catch (Exception e) {
+                }
+            }
+        });
+	}
 	public void addServiceInfo(final IServiceInfo serviceInfo) {
         Display.getDefault().asyncExec(new Runnable() {
             public void run() {

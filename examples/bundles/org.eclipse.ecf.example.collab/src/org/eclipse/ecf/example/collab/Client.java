@@ -570,13 +570,10 @@ public class Client {
         });
         if (discoveryView != null) {
 	        dc.addServiceTypeListener(new IServiceTypeListener() {
-	
 				public void serviceTypeAdded(IServiceEvent event) {
-					System.out.println("Client.serviceTypeAdded("+event+")");
+					discoveryView.addServiceTypeInfo(event.getServiceInfo().getServiceID().getServiceType());
 					dc.addServiceListener(event.getServiceInfo().getServiceID(), new IServiceListener() {
-	
 						public void serviceAdded(IServiceEvent event) {
-							System.out.println("Client.serviceAdded("+event+")");
 							IServiceInfo info = dc.getServiceInfo(event.getServiceInfo().getServiceID(),3000);
 							if (info != null) {
 								discoveryView.addServiceInfo(info);
@@ -585,20 +582,14 @@ public class Client {
 							}
 							dc.requestServiceInfo(event.getServiceInfo().getServiceID(),3000);
 						}
-	
 						public void serviceRemoved(IServiceEvent event) {
-							System.out.println("Client.serviceRemoved("+event+")");
 							discoveryView.removeServiceInfo(event.getServiceInfo());
 						}
-	
 						public void serviceResolved(IServiceEvent event) {
-							System.out.println("Client.serviceResolved("+event+")");
 							discoveryView.addServiceInfo(event.getServiceInfo());
 						}});
 				}});
         }
-        
-
 	}
     
     public synchronized void disposeClient(IResource proj, ClientEntry entry) {
