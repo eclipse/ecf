@@ -757,10 +757,12 @@ public abstract class SOContainer implements ISharedObjectContainer {
             e.printStackTrace(System.err);
         }
 		synchronized (getGroupMembershipLock()) {
-			SOWrapper sow = getSharedObjectWrapper(resp
+			if (toID == null || toID.equals(getID())) {
+				SOWrapper sow = getSharedObjectWrapper(resp
 					.getFromSharedObjectID());
-			if (sow != null) {
-				sow.deliverSharedObjectMessage(fromID, obj);
+				if (sow != null) {
+					sow.deliverSharedObjectMessage(fromID, obj);
+				}
 			}
 			forward(fromID, toID, mess);
 		}
