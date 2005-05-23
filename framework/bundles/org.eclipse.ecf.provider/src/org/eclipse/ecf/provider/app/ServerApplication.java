@@ -1,6 +1,7 @@
 package org.eclipse.ecf.provider.app;
 
 import java.io.FileInputStream;
+import java.net.SocketAddress;
 import java.security.PermissionCollection;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,8 +38,8 @@ public class ServerApplication {
     static List servers = new ArrayList();
 
     static class JoinListener implements IJoinPolicy {
-		public PermissionCollection checkJoin(ID fromID, ID targetID, String targetGroup, Object joinData) throws SecurityException {
-			System.out.println("JOIN From="+fromID+";Group="+targetGroup+";Data="+joinData);
+		public PermissionCollection checkJoin(SocketAddress addr, ID fromID, ID targetID, String targetGroup, Object joinData) throws SecurityException {
+			System.out.println("JOIN Addr="+addr+";From="+fromID+";Group="+targetGroup+";Data="+joinData);
 			return null;
 		}
 

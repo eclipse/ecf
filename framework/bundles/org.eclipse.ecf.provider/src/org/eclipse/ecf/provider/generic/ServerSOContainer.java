@@ -16,6 +16,8 @@ import java.io.InvalidObjectException;
 import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketAddress;
+
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.ISharedObjectContainerGroupManager;
 import org.eclipse.ecf.core.SharedObjectContainerJoinException;
@@ -132,7 +134,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                     throw e;
                 }
                 // Now check to see if this request is going to be allowed
-                checkJoin(remoteID,target,jgm.getData());
+                checkJoin(socket.getRemoteSocketAddress(),remoteID,target,jgm.getData());
                 
                 if (addNewRemoteMember(remoteID, conn)) {
                     // Notify existing remotes about new member
@@ -165,10 +167,10 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
             return null;
         }
     }
-    protected Object checkJoin(ID fromID, String target, Serializable data)
+    protected Object checkJoin(SocketAddress saddr, ID fromID, String target, Serializable data)
             throws Exception {
     	if (this.policy != null) {
-    		return this.policy.checkJoin(fromID,getID(),target,data);
+    		return this.policy.checkJoin(saddr,fromID,getID(),target,data);
     	}
         return null;
     }

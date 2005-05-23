@@ -9,6 +9,7 @@
 
 package org.eclipse.ecf.core.security;
 
+import java.net.SocketAddress;
 import java.security.PermissionCollection;
 
 import org.eclipse.ecf.core.identity.ID;
@@ -17,6 +18,7 @@ public interface IJoinPolicy extends IContainerPolicy {
 	/**
 	 * Check join request
 	 * 
+	 * @param socketaddress the SocketAddress for the remote client
 	 * @param fromID
 	 *            the ID of the container making the join request
 	 * @param targetID
@@ -30,6 +32,6 @@ public interface IJoinPolicy extends IContainerPolicy {
 	 * @throws SecurityException
 	 *             if join is to be refused
 	 */
-	public PermissionCollection checkJoin(ID fromID, ID targetID,
+	public PermissionCollection checkJoin(SocketAddress socketaddress, ID fromID, ID targetID,
 			String targetGroup, Object joinData) throws SecurityException;
 }
