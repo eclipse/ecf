@@ -10,12 +10,22 @@ package org.eclipse.ecf.core;
 
 import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.security.IJoinPolicy;
 
 /**
  * @author slewis
  *
  */
 public interface ISharedObjectContainerGroupManager {
+	/**
+	 * Set the join policy for this group manager.  If the policy is set to null, the
+	 * implementing container is not obligated to consult the policy.  If non-null,
+	 * the given policy's checkJoin method is called before the manager agrees to the
+	 * join of a given group participant.
+	 * 
+	 * @param policy
+	 */
+	public void setJoinPolicy(IJoinPolicy policy);
     /**
      * Eject the given groupMemberID from the current group of containers, for the given reason.
      * 

@@ -45,6 +45,7 @@ import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IJoinContext;
+import org.eclipse.ecf.core.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IClassLoaderMapper;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
@@ -225,32 +226,22 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			return processSynch(event);
 		}
 	}
-
 	static Trace debug = Trace.create("container");
-
 	public static final String DEFAULT_OBJECT_ARG_KEY = SOContainer.class
 			.getName()
 			+ ".sharedobjectargs";
-
 	public static final String DEFAULT_OBJECT_ARGTYPES_KEY = SOContainer.class
 			.getName()
 			+ ".sharedobjectargs";
-
 	protected ISharedObjectContainerConfig config = null;
-
 	protected SOContainerGMM groupManager = null;
-
 	protected boolean isClosing = false;
-
 	private Vector listeners = null;
-
 	protected ThreadGroup loadingThreadGroup = null;
-
 	protected MessageReceiver receiver;
-
 	private long sequenceNumber = 0L;
-
 	protected SOManager sharedObjectManager = null;
+	protected ISharedObjectPolicy policy = null;
 
 	protected ThreadGroup sharedObjectThreadGroup = null;
 
@@ -279,6 +270,11 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		}
 	}
 
+	protected void setRemoteAddPolicy(ISharedObjectPolicy policy) {
+		synchronized (getGroupMembershipLock()) {
+			this.policy = policy;
+		}
+	}
 	protected boolean addNewRemoteMember(ID memberID, Object data) {
 		debug("addNewRemoteMember:" + memberID);
 		return groupManager.addMember(new Member(memberID, data));
@@ -353,10 +349,11 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 *             sendCreateResponse) to the sender that the creation has
 	 *             failed
 	 */
-	protected Object checkRemoteCreate(ID fromID, ID toID, long seq,
-			SharedObjectDescription desc) throws Exception {
-		debug("checkRemoteCreate(" + fromID + "," + toID + "," + seq + ","
-				+ desc + ")");
+	protected Object checkRemoteCreate(ID fromID, ID toID, SharedObjectDescription desc) throws Exception {
+		debug("checkRemoteCreate(" + fromID + "," + toID + "," + desc + ")");
+		if (policy != null) {
+			policy.checkAddSharedObject(fromID,toID,getID(),desc);
+		}
 		return desc;
 	}
 
@@ -648,7 +645,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		// method
 		// returns a non-null object, the creation is allowed to proceed
 		try {
-			checkCreateResult = checkRemoteCreate(fromID, toID, seq, desc);
+			checkCreateResult = checkRemoteCreate(fromID, toID, desc);
 		} catch (Exception e) {
 			SharedObjectAddException addException = new SharedObjectAddException(
 					"shared object " + sharedObjectID

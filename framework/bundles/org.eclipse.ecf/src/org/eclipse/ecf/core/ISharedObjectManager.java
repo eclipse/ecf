@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.security.ISharedObjectPolicy;
 
 /**
  * Manager for creating, disposing, and accessing ISharedObjects from an ISharedObjectContainer.
@@ -117,4 +118,12 @@ public interface ISharedObjectManager {
      * @return ISharedObject removed. Returns null if ISharedObject not found
      */
     public ISharedObject removeSharedObject(ID sharedObjectID);
+    /**
+     * Set this shared object manager's policy for adding remote shared objects.
+     * 
+     * @param policy the ISharedObjectPolicy instance to use to check the validity 
+     * of remote requests to add/replicate a shared object into this container
+     */
+    public void setRemoteAddPolicy(ISharedObjectPolicy policy);
+    
 }

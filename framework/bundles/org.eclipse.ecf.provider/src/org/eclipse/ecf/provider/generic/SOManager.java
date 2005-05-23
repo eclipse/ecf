@@ -39,6 +39,7 @@ import org.eclipse.ecf.core.events.SharedObjectManagerCreateEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerDisconnectEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerRemoveEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.provider.Trace;
@@ -351,5 +352,9 @@ public class SOManager implements ISharedObjectManager {
 			}
 		}
 		return clazzes;
+	}
+
+	public void setRemoteAddPolicy(ISharedObjectPolicy policy) {
+		container.setRemoteAddPolicy(policy);
 	}
 }

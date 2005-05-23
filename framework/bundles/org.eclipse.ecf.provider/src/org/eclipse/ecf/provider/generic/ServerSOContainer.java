@@ -27,9 +27,13 @@ import org.eclipse.ecf.core.events.SharedObjectContainerEjectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IJoinContext;
+import org.eclipse.ecf.core.security.IJoinPolicy;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public class ServerSOContainer extends SOContainer implements ISharedObjectContainerGroupManager {
+	
+	protected IJoinPolicy policy;
+	
     public ServerSOContainer(ISharedObjectContainerConfig config) {
         super(config);
     }
@@ -127,6 +131,9 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                             "container is closing");
                     throw e;
                 }
+                // Now check to see if this request is going to be allowed
+                checkJoin(remoteID,target,jgm.getData());
+                
                 if (addNewRemoteMember(remoteID, conn)) {
                     // Notify existing remotes about new member
                     try {
@@ -158,8 +165,11 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
             return null;
         }
     }
-    protected Object checkJoin(String hostname, ID id, Serializable data)
+    protected Object checkJoin(ID fromID, String target, Serializable data)
             throws Exception {
+    	if (this.policy != null) {
+    		return this.policy.checkJoin(fromID,getID(),target,data);
+    	}
         return null;
     }
     protected void handleLeaveGroupMessage(ContainerMessage mess) {
@@ -257,5 +267,11 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
         SharedObjectContainerJoinException e = new SharedObjectContainerJoinException(
                 "ServerApplication cannot join group " + groupID.getName());
         throw e;
+	}
+
+	public void setJoinPolicy(IJoinPolicy policy) {
+		synchronized (getGroupMembershipLock()) {
+			this.policy = policy;
+		}
 	}
 }

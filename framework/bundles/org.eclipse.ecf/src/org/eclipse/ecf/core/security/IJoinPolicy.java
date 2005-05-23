@@ -9,7 +9,6 @@
 
 package org.eclipse.ecf.core.security;
 
-import java.io.Serializable;
 import java.security.PermissionCollection;
 
 import org.eclipse.ecf.core.identity.ID;
@@ -32,5 +31,5 @@ public interface IJoinPolicy extends IContainerPolicy {
 	 *             if join is to be refused
 	 */
 	public PermissionCollection checkJoin(ID fromID, ID targetID,
-			String targetGroup, Serializable joinData) throws SecurityException;
+			String targetGroup, Object joinData) throws SecurityException;
 }

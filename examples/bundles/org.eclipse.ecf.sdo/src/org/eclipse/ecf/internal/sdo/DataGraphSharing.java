@@ -12,6 +12,7 @@ package org.eclipse.ecf.internal.sdo;
 
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
@@ -133,10 +134,14 @@ public class DataGraphSharing implements
      * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
      */
     public synchronized void dispose(ID containerID) {
-        if (config != null
-                && config.getContext().getLocalContainerID()
-                        .equals(containerID))
-            config = null;
+        if (config != null) {
+        	ISharedObjectContext context = config.getContext();
+        	if (context != null) {
+        		if (context.getLocalContainerID().equals(containerID)) {
+        			config = null;
+        		}
+        	}
+        }
     }
 
     /* (non-Javadoc)

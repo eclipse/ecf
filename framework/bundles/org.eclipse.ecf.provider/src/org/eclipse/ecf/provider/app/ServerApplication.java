@@ -1,13 +1,19 @@
 package org.eclipse.ecf.provider.app;
 
 import java.io.FileInputStream;
+import java.security.PermissionCollection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.ecf.core.ISharedObjectContainerGroupManager;
+import org.eclipse.ecf.core.ISharedObjectManager;
+import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.security.IJoinPolicy;
+import org.eclipse.ecf.core.security.ISharedObjectPolicy;
 import org.eclipse.ecf.provider.generic.SOContainerConfig;
 import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
 import org.eclipse.ecf.provider.generic.TCPServerSOContainerGroup;
@@ -29,6 +35,30 @@ public class ServerApplication {
     public static final int DEFAULT_KEEPALIVE = TCPServerSOContainer.DEFAULT_KEEPALIVE;
     static TCPServerSOContainerGroup serverGroups[] = null;
     static List servers = new ArrayList();
+
+    static class JoinListener implements IJoinPolicy {
+		public PermissionCollection checkJoin(ID fromID, ID targetID, String targetGroup, Object joinData) throws SecurityException {
+			System.out.println("JOIN From="+fromID+";Group="+targetGroup+";Data="+joinData);
+			return null;
+		}
+
+		public void refresh() {
+			System.out.println("joinpolicy.refresh()");
+		}
+    	
+    }
+    static class SharedObjectAddListener implements ISharedObjectPolicy {
+
+		public PermissionCollection checkAddSharedObject(ID fromID, ID toID, ID localID, SharedObjectDescription newObject) throws SecurityException {
+			System.out.println("ADDSHAREDOBJECT From="+fromID+";To="+toID+";SharedObject="+newObject);
+			return null;
+		}
+
+		public void refresh() {
+			System.out.println("joinpolicy.refresh()");
+		}
+    	
+    }
 
     public static void main(String args[]) throws Exception {
         // Get server identity
@@ -83,22 +113,28 @@ public class ServerApplication {
 	        System.out.print("Creating ECF server container...");
 	        TCPServerSOContainer server = new TCPServerSOContainer(config, serverGroups[0], name,
 	                TCPServerSOContainer.DEFAULT_KEEPALIVE);
+	        // Setup join policy
+	        ((ISharedObjectContainerGroupManager)server).setJoinPolicy(new JoinListener());
+	        // Setup add shared object policy
+	        ISharedObjectManager manager = server.getSharedObjectManager();
+	        manager.setRemoteAddPolicy(new SharedObjectAddListener());
+
 	        serverGroups[0].putOnTheAir();
 			servers.add(server);
 	        System.out.println("success!");
 	        System.out
-	                .println("Waiting for client connections at '" + id.getName() + "'...");
+	                .println("Waiting for JOIN requests at '" + id.getName() + "'...");
 	        System.out.println("<ctrl>-c to stop server");			
 		}
     }
 	
 	protected static TCPServerSOContainerGroup makeServerGroup(String name, int port) {
-		System.out.println("Creating server named "+name+" to listen on port "+port);
+		System.out.println("Creating server group named "+name+" to listen on port "+port);
 		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,port);
 		return group;
 	}
 	protected static TCPServerSOContainer makeServerContainer(String id, TCPServerSOContainerGroup group, String path, int keepAlive) throws IDInstantiationException {
-		System.out.println("  Creating container with identity "+id+", path "+path+" keepAlive="+keepAlive);
+		System.out.println("  Creating container with id="+id+", group="+path+" keepAlive="+keepAlive);
 		ID newServerID = IDFactory.makeStringID(id);
 		SOContainerConfig config = new SOContainerConfig(newServerID);
 		return new TCPServerSOContainer(config,group,path,keepAlive);
