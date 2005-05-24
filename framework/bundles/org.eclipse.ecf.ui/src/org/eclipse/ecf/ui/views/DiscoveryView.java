@@ -38,7 +38,8 @@ public class DiscoveryView extends ViewPart {
     protected static final int TREE_EXPANSION_LEVELS = 3;
 	private TreeViewer viewer;
 	private Action requestServiceInfoAction;
-
+	private Action registerServiceTypeAction;
+	
 	IDiscoveryContainer container = null;
 	
 	public void setDiscoveryContainer(IDiscoveryContainer container) {
@@ -97,7 +98,7 @@ public class DiscoveryView extends ViewPart {
 	class ViewContentProvider implements IStructuredContentProvider, 
 										   ITreeContentProvider {
 		private TreeParent invisibleRoot;
-		private TreeParent root;
+		protected TreeParent root;
 		
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
 		}
@@ -343,6 +344,22 @@ public class DiscoveryView extends ViewPart {
 		requestServiceInfoAction.setText("Request info...");
 		requestServiceInfoAction.setToolTipText("Request info for selected service");
 		requestServiceInfoAction.setEnabled(true);
+		
+		registerServiceTypeAction = new Action() {
+            public void run() {
+                TreeObject treeObject = getSelectedTreeObject();
+                if (treeObject instanceof TreeParent) {
+                	TreeParent p = (TreeParent) treeObject;
+                    final ServiceID targetID = p.getID();
+                    if (container != null) {
+                    	container.registerServiceType(targetID);
+                    }
+                }
+            }
+		};
+		registerServiceTypeAction.setText("Register type...");
+		registerServiceTypeAction.setToolTipText("Register for selected service type");
+		registerServiceTypeAction.setEnabled(true);
 	}
 	private void fillContextMenu(IMenuManager manager) {
 		final TreeObject treeObject = getSelectedTreeObject();
@@ -351,6 +368,11 @@ public class DiscoveryView extends ViewPart {
 			if (tp.getID() != null) {
 				requestServiceInfoAction.setText("Request info about "+tp.getName());
 				manager.add(requestServiceInfoAction);
+			} else {
+				if (!tp.equals(((ViewContentProvider) viewer.getContentProvider()).root)) {
+					registerServiceTypeAction.setText("Register type "+tp.getName());
+					manager.add(registerServiceTypeAction);
+				}
 			}
 		}
 		// Other plug-ins can contribute there actions here
