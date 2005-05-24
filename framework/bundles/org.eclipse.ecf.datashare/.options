@@ -1,0 +1,2 @@
+org.eclipse.ecf.datashare/debug=true
+org.eclipse.ecf.datashare/ConsistentMulticaster=true

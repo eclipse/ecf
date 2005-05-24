@@ -1,0 +1,22 @@
+Service
+- create/obtain Agents
+- manage subscriptions
+
+Agent
+- create remote replicas when/where needed
+- stay alive only when connected
+- client facade
+- coordinate sub-components to implement the service
+
+Synchronizer
+- pause/resume messages (commits)
+
+Coordinator
+- ensures there's exactly one coordinator replica (when needed)
+
+Multicaster
+- implements 1/2/3-phase "commit" protocol
+
+Disposer (Garbage Collector)
+- dispose Agents with no subscriptions
+

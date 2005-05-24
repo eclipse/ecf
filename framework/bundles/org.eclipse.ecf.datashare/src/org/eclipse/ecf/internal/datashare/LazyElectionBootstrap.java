@@ -11,10 +11,10 @@
 package org.eclipse.ecf.internal.datashare;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -82,7 +82,8 @@ public class LazyElectionBootstrap implements IBootstrap {
 	}
 
 	private void handleJoined(ID containerID) {
-		List members = Arrays.asList(config.getContext().getGroupMemberIDs());
+		ArrayList members = new ArrayList(Arrays.asList(config.getContext()
+				.getGroupMemberIDs()));
 		members.remove(containerID);
 		members.remove(config.getContext().getLocalContainerID());
 		if (members.isEmpty())

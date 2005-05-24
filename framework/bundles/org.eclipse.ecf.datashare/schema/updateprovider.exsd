@@ -3,17 +3,17 @@
 <schema targetNamespace="org.eclipse.ecf.datashare">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.ecf.datashare" id="manager" name="Data Graph Sharing Manager"/>
+         <meta.schema plugin="org.eclipse.ecf.datashare" id="updateprovider" name="DataShare Update Provider"/>
       </appInfo>
       <documentation>
-         Allows plugins to provide custom implementations of the Data Graph Sharing facility by registering uniquely named Data Graph Sharing Managers (classes that implement &lt;code&gt;org.eclipse.ecf.sdo.IDataGraphSharingManager&lt;/code&gt;), which are responsible for producing per-container instances of the Data Graph Sharing service implementation (&lt;code&gt;org.eclipse.ecf.sdo.IDataGraphSharing&lt;/code&gt;).
+         [Enter description of this extension point.]
       </documentation>
    </annotation>
 
    <element name="extension">
       <complexType>
          <sequence>
-            <element ref="manager" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="updateProvider" minOccurs="1" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -42,27 +42,27 @@
       </complexType>
    </element>
 
-   <element name="manager">
+   <element name="updateProvider">
       <annotation>
          <appInfo>
-            <meta.element labelAttribute="name"/>
+            <meta.element labelAttribute="id"/>
          </appInfo>
       </annotation>
       <complexType>
-         <attribute name="name" type="string" use="required">
+         <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  Unique name that identifies this manager within the system.
+                  
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="class" type="string" use="required">
+         <attribute name="factory" type="string" use="required">
             <annotation>
                <documentation>
-                  The fully qualified name of the class that implements this manager. The class must implement &lt;code&gt;org.eclipse.ecf.sdo.IDataGraphSharingManager&lt;/code&gt;.
+                  
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.ecf.datashare.IDataShareServiceManager"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.ecf.datashare.IUpdateProvider"/>
                </appInfo>
             </annotation>
          </attribute>
@@ -74,7 +74,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         1.0.0
+         [Enter the first release in which this extension point appears.]
       </documentation>
    </annotation>
 
@@ -83,16 +83,7 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         This plugin defines a default Data Graph Sharing Manager:
-&lt;pre&gt;
-   &lt;extension
-         point=&quot;org.eclipse.ecf.sdo.manager&quot;&gt;
-      &lt;manager
-            class=&quot;org.eclipse.ecf.internal.sdo.DataGraphSharingManager&quot;
-            name=&quot;default&quot;&gt;
-      &lt;/manager&gt;
-   &lt;/extension&gt;
-&lt;/pre&gt;
+         [Enter extension point usage example here.]
       </documentation>
    </annotation>
 
@@ -101,7 +92,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         To use a registered manager, use the static methods provided by &lt;code&gt;org.eclipse.ecf.sdo.DataGraphSharingFactory&lt;/code&gt;.
+         [Enter API information here.]
       </documentation>
    </annotation>
 
@@ -110,7 +101,7 @@
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         A default implementation (named &lt;code&gt;default&lt;/code&gt;) is provided by this plugin.
+         [Enter information about supplied implementation of this extension point.]
       </documentation>
    </annotation>
 
@@ -119,8 +110,7 @@
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         Copyright (c) 2005 Peter Nehrer and Composent, Inc.
-All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Peter Nehrer - initial API and implementation
+         
       </documentation>
    </annotation>
 

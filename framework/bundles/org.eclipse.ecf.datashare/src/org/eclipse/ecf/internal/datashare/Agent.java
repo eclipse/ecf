@@ -25,10 +25,18 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.datashare.IPublicationCallback;
 import org.eclipse.ecf.datashare.ISharedData;
-import org.eclipse.ecf.datashare.IUpdateListener;
 import org.eclipse.ecf.datashare.IUpdateProvider;
+import org.eclipse.ecf.datashare.UpdateProviderRegistry;
 
 /**
+ * <p>
+ * State chart:
+ * </p>
+ * <p>
+ * 1. DataShareService.publish(Object, ID, IUpdateProvider,
+ * IPublicationCallback) -> PUBLISHED
+ * </p>
+ * 
  * @author pnehrer
  */
 public class Agent implements ISharedData, ISharedObject {
@@ -41,18 +49,28 @@ public class Agent implements ISharedData, ISharedObject {
 
 	private IUpdateProvider updateProvider;
 
-	private IUpdateListener updateListener;
-
 	private IPublicationCallback pubCallback;
 
-	private Version version;
-
+	/**
+	 * Default constructor; necessary for replication.
+	 */
 	public Agent() {
 	}
 
-	public Agent(Object sharedData, IBootstrap bootstrap) {
+	/**
+	 * Publisher's constructor; fully initializes the instance.
+	 * 
+	 * @param sharedData
+	 * @param bootstrap
+	 * @param updateProvider
+	 * @param pubCallback
+	 */
+	public Agent(Object sharedData, IBootstrap bootstrap,
+			IUpdateProvider updateProvider, IPublicationCallback pubCallback) {
 		this.sharedData = sharedData;
 		this.bootstrap = bootstrap;
+		this.updateProvider = updateProvider;
+		this.pubCallback = pubCallback;
 	}
 
 	public synchronized ID getID() {
@@ -64,27 +82,25 @@ public class Agent implements ISharedData, ISharedObject {
 	}
 
 	public synchronized void commit() throws ECFException {
-		byte[] buf = updateProvider.createUpdate(this);
-		if (buf != null) {
-			Version newVersion = version.getNext(config.getSharedObjectID());
-			Update update = new Update(newVersion, buf);
-			version = newVersion;
-			try {
-				config.getContext().sendMessage(null, update);
-			} catch (IOException e) {
-				throw new ECFException(e);
-			}
+		// lock on transaction (wait till there's none)
+		// send prepare
+		// collect replies
+		// send commit/abort
+		Object update = updateProvider.createUpdate(this);
+		if (update != null) {
+//			Version newVersion = version.getNext(config.getSharedObjectID());
+//			Commit msg = new Commit(newVersion, update);
+//			version = newVersion;
+//			try {
+//				config.getContext().sendMessage(null, msg);
+//			} catch (IOException e) {
+//				throw new ECFException(e);
+//			}
 		}
 	}
 
 	public synchronized void dispose() {
-		if (config != null)
-			try {
-				config.getContext().sendDispose(
-						config.getContext().getLocalContainerID());
-			} catch (IOException e) {
-				handleError(e);
-			}
+		// TODO Finish implementing.
 	}
 
 	/*
@@ -97,15 +113,26 @@ public class Agent implements ISharedData, ISharedObject {
 		this.config = config;
 		Map params = config.getProperties();
 		if (params != null) {
-			sharedData = params.get("sharedData");
-			version = (Version) params.get("version");
-			IBootstrapMemento m = (IBootstrapMemento) params.get("bootstrap");
-			if (m != null)
-				bootstrap = m.createBootstrap();
+			Object param = params.get("sharedData");
+			if (param != null)
+				sharedData = param;
+
+			param = params.get("version");
+//			if (param != null)
+//				version = (Version) param;
+
+			param = params.get("bootstrap");
+			if (param != null)
+				bootstrap = ((IBootstrapMemento) param).createBootstrap();
+
+			param = params.get("updateProvider");
+			if (param != null)
+				updateProvider = UpdateProviderRegistry.createProvider(
+						(String) param, null); // TODO what about params?
 		}
 
-		if (version == null)
-			version = new Version(config.getSharedObjectID());
+//		if (version == null)
+//			version = new Version(config.getSharedObjectID());
 
 		bootstrap.setAgent(this);
 		bootstrap.init(config);
@@ -124,8 +151,6 @@ public class Agent implements ISharedData, ISharedObject {
 				handleActivated();
 		} else if (event instanceof ISharedObjectMessageEvent) {
 			ISharedObjectMessageEvent e = (ISharedObjectMessageEvent) event;
-			if (e.getData() instanceof Update)
-				handleUpdate((Update) e.getData());
 		}
 	}
 
@@ -135,8 +160,10 @@ public class Agent implements ISharedData, ISharedObject {
 			try {
 				Map params = new HashMap(3);
 				params.put("sharedData", sharedData);
-				params.put("version", version);
+//				params.put("version", version);
 				params.put("bootstrap", bootstrap.createMemento());
+				params.put("updateProvider", updateProvider.getFactory()
+						.getID());
 				config.getContext().sendCreate(
 						null,
 						new SharedObjectDescription(config.getSharedObjectID(),
@@ -152,20 +179,12 @@ public class Agent implements ISharedData, ISharedObject {
 			}
 	}
 
-	private void handleUpdate(Update update) {
-		try {
-			updateProvider.applyUpdate(this, update.getData());
-			version = update.getVersion();
-		} catch (ECFException e) {
-			handleError(e);
-		}
-	}
-
 	public void doBootstrap(ID containerID) {
 		Map params = new HashMap(3);
 		params.put("sharedData", sharedData);
-		params.put("version", version);
+//		params.put("version", version);
 		params.put("bootstrap", bootstrap.createMemento());
+		params.put("updateProvider", updateProvider.getFactory().getID());
 		try {
 			config.getContext().sendCreate(
 					containerID,

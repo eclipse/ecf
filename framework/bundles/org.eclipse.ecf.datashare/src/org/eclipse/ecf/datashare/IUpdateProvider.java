@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.datashare;
 
-import java.io.IOException;
-
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -30,7 +28,9 @@ import org.eclipse.ecf.core.util.ECFException;
  * @author pnehrer
  */
 public interface IUpdateProvider {
-
+	
+	IUpdateProviderFactory getFactory();
+	
 	/**
 	 * Creates an update from the given data graph, which will be forwarded to
 	 * other group members. The implementor may use the graph's Change Summary
@@ -42,7 +42,7 @@ public interface IUpdateProvider {
 	 * @throws ECFException
 	 *             when an update cannot be created
 	 */
-	byte[] createUpdate(ISharedData graph) throws ECFException;
+	Object createUpdate(ISharedData graph) throws ECFException;
 
 	/**
 	 * Applies the remote update to the given data graph. The implementor is
@@ -56,26 +56,4 @@ public interface IUpdateProvider {
 	 *             when this update cannot be applied
 	 */
 	void applyUpdate(ISharedData graph, Object data) throws ECFException;
-
-	/**
-	 * Serializes the given data graph.
-	 * 
-	 * @param graph
-	 *            data graph instance to serialize
-	 * @return serialized data graph
-	 * @throws IOException
-	 */
-	Object serializeData(Object graph) throws IOException;
-
-	/**
-	 * Deserializes the given data graph.
-	 * 
-	 * @param data
-	 *            serialized data graph
-	 * @return deserialized instance of data graph
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 */
-	Object deserializeData(Object data) throws IOException,
-			ClassNotFoundException;
 }

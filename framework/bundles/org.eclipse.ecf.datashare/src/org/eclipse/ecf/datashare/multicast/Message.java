@@ -8,22 +8,19 @@
  * Contributors:
  *     Peter Nehrer - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ecf.internal.datashare;
+package org.eclipse.ecf.datashare.multicast;
 
 import java.io.Serializable;
 
-/**
- * @author pnehrer
- */
-public class Update implements Serializable {
+public class Message implements Serializable {
 
-	private static final long serialVersionUID = 3256439205344260914L;
+	private static final long serialVersionUID = 3257281414121993014L;
 
-	private final Version version;
+	final Version version;
 
-	private final Object data;
+	final Object data;
 
-	public Update(Version version, Object data) {
+	public Message(Version version, Object data) {
 		this.version = version;
 		this.data = data;
 	}
@@ -36,25 +33,10 @@ public class Update implements Serializable {
 		return data;
 	}
 
-	public boolean equals(Object other) {
-		if (other instanceof Update) {
-			Update o = (Update) other;
-			return version.equals(o.version) && data.equals(o.data);
-		} else
-			return false;
-	}
-
-	public int hashCode() {
-		int c = 17;
-		c = 37 * c + version.hashCode();
-		c = 37 * c + data.hashCode();
-		return c;
-	}
-
 	public String toString() {
-		StringBuffer buf = new StringBuffer("Update[");
-		buf.append("version=").append(version).append(";");
-		buf.append("data=").append(data).append("]");
+		StringBuffer buf = new StringBuffer("Message[version=");
+		buf.append(version).append(";data=");
+		buf.append(data).append(']');
 		return buf.toString();
 	}
 }
