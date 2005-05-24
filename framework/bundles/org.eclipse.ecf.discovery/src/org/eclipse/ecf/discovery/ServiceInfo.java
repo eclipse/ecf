@@ -62,7 +62,9 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	public Map getProperties() {
 		return properties;
 	}
-
+	public boolean isResolved() {
+		return (addr == null);
+	}
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ServiceInfo[");
 		buf.append("addr=").append(addr).append(";id=").append(serviceID).append(

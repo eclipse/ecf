@@ -58,4 +58,11 @@ public interface IServiceInfo {
 	 * @return Map the properties associated with this service
 	 */
 	public Map getProperties();
+	/**
+	 * Returns true if this service info has been resolved by the service
+	 * publisher, false if not.
+	 * 
+	 * @return true if this instance has been resolved, false if not
+	 */
+	public boolean isResolved();
 }
