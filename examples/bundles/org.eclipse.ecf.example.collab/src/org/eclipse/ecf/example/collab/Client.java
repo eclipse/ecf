@@ -41,11 +41,11 @@ import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.core.security.IJoinContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceEvent;
-import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
@@ -571,15 +571,11 @@ public class Client {
         if (discoveryView != null) {
 	        dc.addServiceTypeListener(new IServiceTypeListener() {
 				public void serviceTypeAdded(IServiceEvent event) {
-					discoveryView.addServiceTypeInfo(event.getServiceInfo().getServiceID().getServiceType());
+					ServiceID svcID = event.getServiceInfo().getServiceID();
+					discoveryView.addServiceTypeInfo(svcID.getServiceType());
 					dc.addServiceListener(event.getServiceInfo().getServiceID(), new IServiceListener() {
 						public void serviceAdded(IServiceEvent event) {
-							IServiceInfo info = dc.getServiceInfo(event.getServiceInfo().getServiceID(),3000);
-							if (info != null) {
-								discoveryView.addServiceInfo(info);
-							} else {
-								discoveryView.addServiceInfo(event.getServiceInfo().getServiceID());
-							}
+							discoveryView.addServiceInfo(event.getServiceInfo().getServiceID());
 							dc.requestServiceInfo(event.getServiceInfo().getServiceID(),3000);
 						}
 						public void serviceRemoved(IServiceEvent event) {
@@ -588,6 +584,7 @@ public class Client {
 						public void serviceResolved(IServiceEvent event) {
 							discoveryView.addServiceInfo(event.getServiceInfo());
 						}});
+					dc.registerServiceType(svcID);
 				}});
         }
 	}

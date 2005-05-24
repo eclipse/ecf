@@ -389,7 +389,15 @@ public class DiscoveryView extends ViewPart {
 	private void hookDoubleClickAction() {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				requestServiceInfoAction.run();
+				Object obj = ((IStructuredSelection) event.getSelection())
+                .getFirstElement();
+				final TreeObject treeObject = (TreeObject) obj;
+				if (treeObject != null && treeObject instanceof TreeParent) {
+					TreeParent tp = (TreeParent) treeObject;
+					if (tp.getID() != null) {
+						requestServiceInfoAction.run();
+					}
+				}
 			}
 		});
 	}
