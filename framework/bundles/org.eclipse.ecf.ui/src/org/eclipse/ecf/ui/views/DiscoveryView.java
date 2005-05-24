@@ -350,9 +350,8 @@ public class DiscoveryView extends ViewPart {
                 TreeObject treeObject = getSelectedTreeObject();
                 if (treeObject instanceof TreeParent) {
                 	TreeParent p = (TreeParent) treeObject;
-                    final ServiceID targetID = p.getID();
                     if (container != null) {
-                    	container.registerServiceType(targetID);
+                    	container.registerServiceType(p.getName());
                     }
                 }
             }

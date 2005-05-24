@@ -68,6 +68,13 @@ public interface IDiscoveryContainer {
 	 */
 	public void registerServiceType(ServiceID serviceType);
 	/**
+	 * Register the given service type.  This publishes the given service type to the
+	 * underlying publishing mechanism
+	 * 
+	 * @param serviceType the String of the type to be published
+	 */
+	public void registerServiceType(String serviceType);
+	/**
 	 * Register the given service.  This publishes the service defined by the first parameter to the
 	 * underlying publishing mechanism
 	 * 
