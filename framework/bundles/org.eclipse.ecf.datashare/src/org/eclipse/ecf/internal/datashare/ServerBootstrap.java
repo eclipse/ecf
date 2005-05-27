@@ -11,6 +11,7 @@
 package org.eclipse.ecf.internal.datashare;
 
 import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -75,21 +76,8 @@ public class ServerBootstrap implements IBootstrap {
 		config = null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.internal.datashare.IBootstrap#createMemento()
-	 */
-	public IBootstrapMemento createMemento() {
-		return new BootstrapMemento();
-	}
-
-	public static class BootstrapMemento implements IBootstrapMemento {
-
-		private static final long serialVersionUID = 3691040980384299317L;
-
-		public IBootstrap createBootstrap() {
-			return new ServerBootstrap();
-		}
+	public SharedObjectDescription createDescription() {
+		return new SharedObjectDescription(config.getSharedObjectID(),
+				getClass());
 	}
 }

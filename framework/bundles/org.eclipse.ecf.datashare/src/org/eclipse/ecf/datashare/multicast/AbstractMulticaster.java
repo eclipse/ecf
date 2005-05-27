@@ -12,12 +12,15 @@ package org.eclipse.ecf.datashare.multicast;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
+import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
@@ -37,9 +40,7 @@ public abstract class AbstractMulticaster implements ISharedObject {
 
 	public static final short READY = 1;
 
-	public static final short PAUSED = 2;
-
-	public static final short DISPOSED = 3;
+	public static final short DISPOSED = 2;
 
 	public class Testable {
 
@@ -55,6 +56,8 @@ public abstract class AbstractMulticaster implements ISharedObject {
 			return getStateStr();
 		}
 	}
+
+	protected final HashSet listeners = new HashSet();
 
 	protected ISharedObjectConfig config;
 
@@ -74,7 +77,21 @@ public abstract class AbstractMulticaster implements ISharedObject {
 
 	protected HashSet pauseRequests;
 
+	protected final HashSet groupMembers = new HashSet();
+
 	protected Testable testable;
+
+	public void addMessageListener(IMessageListener l) {
+		synchronized (listeners) {
+			listeners.add(l);
+		}
+	}
+
+	public void removeMessageListener(IMessageListener l) {
+		synchronized (listeners) {
+			listeners.remove(l);
+		}
+	}
 
 	public abstract boolean sendMessage(Object message) throws ECFException;
 
@@ -95,12 +112,13 @@ public abstract class AbstractMulticaster implements ISharedObject {
 
 		boolean wasEmpty = pauses.isEmpty();
 		pauses.add(localContainerID);
-		pauseRequests = new HashSet(Arrays.asList(context.getGroupMemberIDs()));
-		pauseRequests.remove(localContainerID);
+		pauseRequests = new HashSet(groupMembers);
 		try {
-			context.sendMessage(null, new Pause());
-			synchronized (pauses) {
-				pauses.wait(1000);
+			if (!pauseRequests.isEmpty()) {
+				context.sendMessage(null, new Pause());
+				synchronized (pauses) {
+					pauses.wait(1000);
+				}
 			}
 
 			if (!pauseRequests.isEmpty())
@@ -135,7 +153,18 @@ public abstract class AbstractMulticaster implements ISharedObject {
 		}
 	}
 
-	protected abstract void receiveMessage(Object message);
+	public synchronized SharedObjectDescription createDescription() {
+		HashMap params = new HashMap(1);
+		params.put("version", version);
+		return new SharedObjectDescription(sharedObjectID, getClass(), params);
+	}
+
+	protected void receiveMessage(Version version, Object message) {
+		synchronized (listeners) {
+			for (Iterator i = listeners.iterator(); i.hasNext();)
+				((IMessageListener) i.next()).messageReceived(version, message);
+		}
+	}
 
 	protected synchronized boolean waitToSend() {
 		while (state != READY || !pauses.isEmpty()) {
@@ -180,7 +209,7 @@ public abstract class AbstractMulticaster implements ISharedObject {
 		case READY:
 			return "RDY";
 		case DISPOSED:
-			return "DSP";
+			return "DIS";
 		default:
 			return "UNK";
 		}
@@ -205,7 +234,7 @@ public abstract class AbstractMulticaster implements ISharedObject {
 		Map params = config.getProperties();
 		if (params != null) {
 			Object param = params.get("version");
-			if (param instanceof Version)
+			if (param != null)
 				version = (Version) param;
 		}
 
@@ -251,6 +280,15 @@ public abstract class AbstractMulticaster implements ISharedObject {
 				}
 			else {
 				synchronized (this) {
+					groupMembers.addAll(Arrays.asList(context
+							.getGroupMemberIDs()));
+					groupMembers.remove(localContainerID);
+					try {
+						context.sendMessage(null, new Activated());
+					} catch (IOException e) {
+						DataSharePlugin.log(e);
+					}
+
 					state = READY;
 					notifyAll();
 				}
@@ -270,6 +308,16 @@ public abstract class AbstractMulticaster implements ISharedObject {
 	protected void handleDeparted(ISharedObjectContainerDepartedEvent event) {
 		if (event.getDepartedContainerID().equals(localContainerID))
 			context.getSharedObjectManager().removeSharedObject(sharedObjectID);
+		else {
+			synchronized (this) {
+				groupMembers.remove(event.getDepartedContainerID());
+			}
+		}
+	}
+
+	protected synchronized void handleActivated(ID remoteContainerID,
+			Activated activated) {
+		groupMembers.add(remoteContainerID);
 	}
 
 	protected synchronized void handlePause(ID remoteContainerID, Pause pause) {
@@ -280,8 +328,7 @@ public abstract class AbstractMulticaster implements ISharedObject {
 	}
 
 	protected synchronized void handlePaused(ID remoteContainerID, Paused paused) {
-		if (pauses.contains(localContainerID)
-				&& pauseRequests != null
+		if (pauses.contains(localContainerID) && pauseRequests != null
 				&& pauseRequests.remove(remoteContainerID)
 				&& pauseRequests.isEmpty())
 			synchronized (pauses) {
@@ -299,7 +346,7 @@ public abstract class AbstractMulticaster implements ISharedObject {
 			version = message.getVersion();
 		}
 
-		receiveMessage(message.getData());
+		receiveMessage(message.getVersion(), message.getData());
 	}
 
 	/*

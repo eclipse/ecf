@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
@@ -27,6 +28,10 @@ import org.eclipse.ecf.datashare.IPublicationCallback;
 import org.eclipse.ecf.datashare.ISharedData;
 import org.eclipse.ecf.datashare.IUpdateProvider;
 import org.eclipse.ecf.datashare.UpdateProviderRegistry;
+import org.eclipse.ecf.datashare.multicast.AbstractMulticaster;
+import org.eclipse.ecf.datashare.multicast.Activated;
+import org.eclipse.ecf.datashare.multicast.IMessageListener;
+import org.eclipse.ecf.datashare.multicast.Version;
 
 /**
  * <p>
@@ -39,13 +44,17 @@ import org.eclipse.ecf.datashare.UpdateProviderRegistry;
  * 
  * @author pnehrer
  */
-public class Agent implements ISharedData, ISharedObject {
+public class Agent implements ISharedData, ISharedObject, IMessageListener {
 
 	private Object sharedData;
 
 	private ISharedObjectConfig config;
 
 	private IBootstrap bootstrap;
+
+	private ID newContainerID;
+
+	private AbstractMulticaster sender;
 
 	private IUpdateProvider updateProvider;
 
@@ -66,9 +75,11 @@ public class Agent implements ISharedData, ISharedObject {
 	 * @param pubCallback
 	 */
 	public Agent(Object sharedData, IBootstrap bootstrap,
-			IUpdateProvider updateProvider, IPublicationCallback pubCallback) {
+			AbstractMulticaster sender, IUpdateProvider updateProvider,
+			IPublicationCallback pubCallback) {
 		this.sharedData = sharedData;
 		this.bootstrap = bootstrap;
+		this.sender = sender;
 		this.updateProvider = updateProvider;
 		this.pubCallback = pubCallback;
 	}
@@ -82,21 +93,10 @@ public class Agent implements ISharedData, ISharedObject {
 	}
 
 	public synchronized void commit() throws ECFException {
-		// lock on transaction (wait till there's none)
-		// send prepare
-		// collect replies
-		// send commit/abort
 		Object update = updateProvider.createUpdate(this);
-		if (update != null) {
-//			Version newVersion = version.getNext(config.getSharedObjectID());
-//			Commit msg = new Commit(newVersion, update);
-//			version = newVersion;
-//			try {
-//				config.getContext().sendMessage(null, msg);
-//			} catch (IOException e) {
-//				throw new ECFException(e);
-//			}
-		}
+		boolean sent = sender.sendMessage(update);
+		if (!sent)
+			throw new ECFException("Commit failed.");
 	}
 
 	public synchronized void dispose() {
@@ -112,18 +112,44 @@ public class Agent implements ISharedData, ISharedObject {
 			throws SharedObjectInitException {
 		this.config = config;
 		Map params = config.getProperties();
+		ISharedObjectConfig bootstrapConfig = null;
+		ISharedObjectConfig senderConfig = null;
 		if (params != null) {
 			Object param = params.get("sharedData");
 			if (param != null)
 				sharedData = param;
 
-			param = params.get("version");
-//			if (param != null)
-//				version = (Version) param;
-
 			param = params.get("bootstrap");
-			if (param != null)
-				bootstrap = ((IBootstrapMemento) param).createBootstrap();
+			if (param != null) {
+				SharedObjectDescription sd = (SharedObjectDescription) param;
+				try {
+					Class bootstrapClass = Class.forName(sd.getClassname());
+					bootstrap = (IBootstrap) bootstrapClass.newInstance();
+					bootstrapConfig = new ComponentConfig(sd);
+				} catch (ClassNotFoundException e) {
+					throw new SharedObjectInitException(e);
+				} catch (InstantiationException e) {
+					throw new SharedObjectInitException(e);
+				} catch (IllegalAccessException e) {
+					throw new SharedObjectInitException(e);
+				}
+			}
+
+			param = params.get("sender");
+			if (param != null) {
+				SharedObjectDescription sd = (SharedObjectDescription) param;
+				try {
+					Class senderClass = Class.forName(sd.getClassname());
+					sender = (AbstractMulticaster) senderClass.newInstance();
+					senderConfig = new ComponentConfig(sd);
+				} catch (ClassNotFoundException e) {
+					throw new SharedObjectInitException(e);
+				} catch (InstantiationException e) {
+					throw new SharedObjectInitException(e);
+				} catch (IllegalAccessException e) {
+					throw new SharedObjectInitException(e);
+				}
+			}
 
 			param = params.get("updateProvider");
 			if (param != null)
@@ -131,11 +157,13 @@ public class Agent implements ISharedData, ISharedObject {
 						(String) param, null); // TODO what about params?
 		}
 
-//		if (version == null)
-//			version = new Version(config.getSharedObjectID());
-
 		bootstrap.setAgent(this);
-		bootstrap.init(config);
+		bootstrap.init(bootstrapConfig == null ? new ComponentConfig(null)
+				: bootstrapConfig);
+
+		sender.addMessageListener(this);
+		sender.init(senderConfig == null ? new ComponentConfig(null)
+				: senderConfig);
 	}
 
 	/*
@@ -145,12 +173,16 @@ public class Agent implements ISharedData, ISharedObject {
 	 */
 	public void handleEvent(Event event) {
 		bootstrap.handleEvent(event);
+		sender.handleEvent(event);
 		if (event instanceof ISharedObjectActivatedEvent) {
 			ISharedObjectActivatedEvent e = (ISharedObjectActivatedEvent) event;
 			if (e.getActivatedID().equals(config.getSharedObjectID()))
 				handleActivated();
 		} else if (event instanceof ISharedObjectMessageEvent) {
 			ISharedObjectMessageEvent e = (ISharedObjectMessageEvent) event;
+			if (e.getData() instanceof Activated)
+				handleActivated(e.getRemoteContainerID(), (Activated) e
+						.getData());
 		}
 	}
 
@@ -158,10 +190,10 @@ public class Agent implements ISharedData, ISharedObject {
 		if (config.getHomeContainerID().equals(
 				config.getContext().getLocalContainerID()))
 			try {
-				Map params = new HashMap(3);
+				Map params = new HashMap(4);
 				params.put("sharedData", sharedData);
-//				params.put("version", version);
-				params.put("bootstrap", bootstrap.createMemento());
+				params.put("bootstrap", bootstrap.createDescription());
+				params.put("sender", sender.createDescription());
 				params.put("updateProvider", updateProvider.getFactory()
 						.getID());
 				config.getContext().sendCreate(
@@ -179,20 +211,55 @@ public class Agent implements ISharedData, ISharedObject {
 			}
 	}
 
-	public void doBootstrap(ID containerID) {
-		Map params = new HashMap(3);
+	public synchronized void doBootstrap(ID containerID) {
+		while (newContainerID != null)
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				handleError(e);
+			}
+
+		try {
+			sender.pause();
+		} catch (IllegalStateException e) {
+			handleError(e);
+			return;
+		} catch (ECFException e) {
+			handleError(e);
+			return;
+		}
+
+		Map params = new HashMap(4);
 		params.put("sharedData", sharedData);
-//		params.put("version", version);
-		params.put("bootstrap", bootstrap.createMemento());
+		params.put("bootstrap", bootstrap.createDescription());
+		params.put("sender", sender.createDescription());
 		params.put("updateProvider", updateProvider.getFactory().getID());
 		try {
 			config.getContext().sendCreate(
 					containerID,
 					new SharedObjectDescription(config.getSharedObjectID(),
 							getClass(), params));
+			wait(1000);
+			newContainerID = null;
 		} catch (IOException e) {
 			handleError(e);
+		} catch (InterruptedException e) {
+			handleError(e);
+		} finally {
+			try {
+				sender.resume();
+			} catch (IllegalStateException e) {
+				handleError(e);
+			} catch (ECFException e) {
+				handleError(e);
+			}
 		}
+	}
+
+	private synchronized void handleActivated(ID remoteContainerID,
+			Activated activated) {
+		if (remoteContainerID.equals(newContainerID))
+			notify();
 	}
 
 	private void handleError(Throwable t) {
@@ -209,15 +276,22 @@ public class Agent implements ISharedData, ISharedObject {
 			handleEvent(events[i]);
 	}
 
+	public synchronized void messageReceived(Version version, Object message) {
+		try {
+			updateProvider.applyUpdate(this, message);
+		} catch (ECFException e) {
+			handleError(e);
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
 	 */
-	public synchronized void dispose(ID containerID) {
+	public void dispose(ID containerID) {
+		sender.dispose(containerID);
 		bootstrap.dispose(containerID);
-		bootstrap = null;
-		config = null;
 	}
 
 	/*
@@ -227,5 +301,30 @@ public class Agent implements ISharedData, ISharedObject {
 	 */
 	public Object getAdapter(Class clazz) {
 		return null;
+	}
+
+	private class ComponentConfig implements ISharedObjectConfig {
+
+		private final SharedObjectDescription sd;
+
+		public ComponentConfig(SharedObjectDescription sd) {
+			this.sd = sd;
+		}
+
+		public ID getSharedObjectID() {
+			return config.getSharedObjectID();
+		}
+
+		public ID getHomeContainerID() {
+			return config.getHomeContainerID();
+		}
+
+		public ISharedObjectContext getContext() {
+			return config.getContext();
+		}
+
+		public Map getProperties() {
+			return sd == null ? null : sd.getProperties();
+		}
 	}
 }

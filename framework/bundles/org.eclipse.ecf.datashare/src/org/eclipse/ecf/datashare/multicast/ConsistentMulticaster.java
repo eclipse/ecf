@@ -11,8 +11,6 @@
 package org.eclipse.ecf.datashare.multicast;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -70,16 +68,16 @@ public class ConsistentMulticaster extends AbstractMulticaster implements
 			state = SEND;
 			nextVersion = new Version(localContainerID,
 					version.getSequence() + 1);
-			ArrayList others = new ArrayList(Arrays.asList(context
-					.getGroupMemberIDs()));
-			others.remove(localContainerID);
+			HashSet others = new HashSet(groupMembers);
 			requests = new HashSet(others);
 			granted = true;
 			try {
-				context.sendMessage(null, new Request(nextVersion));
-				wait(sendTimeout);
-				if (state != SEND)
-					return false;
+				if (!requests.isEmpty()) {
+					context.sendMessage(null, new Request(nextVersion));
+					wait(sendTimeout);
+					if (state != SEND)
+						return false;
+				}
 
 				if (!granted || !requests.isEmpty()) {
 					context.sendMessage(null, new Abort(nextVersion));
@@ -87,10 +85,14 @@ public class ConsistentMulticaster extends AbstractMulticaster implements
 				}
 
 				requests.addAll(others);
-				context.sendMessage(null, new Message(nextVersion, message));
-				wait(sendTimeout);
-				if (state != SEND)
-					return false;
+				if (!requests.isEmpty()) {
+					context
+							.sendMessage(null,
+									new Message(nextVersion, message));
+					wait(sendTimeout);
+					if (state != SEND)
+						return false;
+				}
 
 				if (!requests.isEmpty()) {
 					context.sendMessage(null, new Abort(nextVersion));
@@ -123,9 +125,6 @@ public class ConsistentMulticaster extends AbstractMulticaster implements
 		default:
 			return super.getStateStr();
 		}
-	}
-
-	protected void receiveMessage(Object message) {
 	}
 
 	/*
@@ -340,7 +339,7 @@ public class ConsistentMulticaster extends AbstractMulticaster implements
 					notify();
 				}
 
-				receiveMessage(commits.remove(version));
+				receiveMessage(version, commits.remove(version));
 			}
 		} finally {
 			if (DataSharePlugin.isTracing(TRACE_TAG))

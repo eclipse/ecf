@@ -11,8 +11,6 @@
 package org.eclipse.ecf.datashare.multicast;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -67,16 +65,16 @@ public class OrderedMulticaster extends AbstractMulticaster implements
 			state = SEND;
 			nextVersion = new Version(localContainerID,
 					version.getSequence() + 1);
-			ArrayList others = new ArrayList(Arrays.asList(context
-					.getGroupMemberIDs()));
-			others.remove(localContainerID);
+			HashSet others = new HashSet(groupMembers);
 			requests = new HashSet(others);
 			granted = true;
 			try {
-				context.sendMessage(null, new Request(nextVersion));
-				wait(sendTimeout);
-				if (state != SEND)
-					return false;
+				if (!requests.isEmpty()) {
+					context.sendMessage(null, new Request(nextVersion));
+					wait(sendTimeout);
+					if (state != SEND)
+						return false;
+				}
 
 				if (!granted || !requests.isEmpty()) {
 					context.sendMessage(null, new Abort(nextVersion));
@@ -109,9 +107,6 @@ public class OrderedMulticaster extends AbstractMulticaster implements
 		default:
 			return super.getStateStr();
 		}
-	}
-
-	protected void receiveMessage(Object message) {
 	}
 
 	/*
@@ -255,7 +250,7 @@ public class OrderedMulticaster extends AbstractMulticaster implements
 					notify();
 				}
 
-				receiveMessage(message.getData());
+				receiveMessage(message.getVersion(), message.getData());
 			}
 		} finally {
 			if (DataSharePlugin.isTracing(TRACE_TAG))
@@ -298,32 +293,5 @@ public class OrderedMulticaster extends AbstractMulticaster implements
 			if (DataSharePlugin.isTracing(TRACE_TAG))
 				traceExit(method);
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.ISharedObject#handleEvents(org.eclipse.ecf.core.util.Event[])
-	 */
-	public void handleEvents(Event[] events) {
-		for (int i = 0; i < events.length; ++i)
-			handleEvent(events[i]);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
-	 */
-	public void dispose(ID containerID) {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.ISharedObject#getAdapter(java.lang.Class)
-	 */
-	public Object getAdapter(Class clazz) {
-		return null;
 	}
 }

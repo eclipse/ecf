@@ -18,6 +18,8 @@ import org.eclipse.ecf.datashare.IPublicationCallback;
 import org.eclipse.ecf.datashare.ISharedData;
 import org.eclipse.ecf.datashare.ISubscriptionCallback;
 import org.eclipse.ecf.datashare.IUpdateProvider;
+import org.eclipse.ecf.datashare.multicast.AbstractMulticaster;
+import org.eclipse.ecf.datashare.multicast.ConsistentMulticaster;
 
 /**
  * @author pnehrer
@@ -50,7 +52,8 @@ public class DataShareService implements IDataShareService {
 			throw new ECFException("Already published!");
 
 		IBootstrap bootstrap = getBootstrap();
-		agent = new Agent(dataGraph, bootstrap, provider, callback);
+		AbstractMulticaster sender = getSender();
+		agent = new Agent(dataGraph, bootstrap, sender, provider, callback);
 		container.getSharedObjectManager().addSharedObject(id, agent, null,
 				null);
 	}
@@ -87,5 +90,9 @@ public class DataShareService implements IDataShareService {
 
 	private IBootstrap getBootstrap() {
 		return new ServerBootstrap(); // TODO strategize
+	}
+	
+	private AbstractMulticaster getSender() {
+		return new ConsistentMulticaster(); // TODO strategize
 	}
 }

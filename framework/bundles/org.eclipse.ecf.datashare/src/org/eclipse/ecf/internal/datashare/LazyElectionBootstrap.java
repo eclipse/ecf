@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerJoinedEvent;
@@ -167,21 +168,8 @@ public class LazyElectionBootstrap implements IBootstrap {
 		config = null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.internal.datashare.IBootstrap#createMemento()
-	 */
-	public IBootstrapMemento createMemento() {
-		return new BootstrapMemento();
-	}
-
-	public static class BootstrapMemento implements IBootstrapMemento {
-
-		private static final long serialVersionUID = 3256438127341418808L;
-
-		public IBootstrap createBootstrap() {
-			return new LazyElectionBootstrap();
-		}
+	public SharedObjectDescription createDescription() {
+		return new SharedObjectDescription(config.getSharedObjectID(),
+				getClass());
 	}
 }

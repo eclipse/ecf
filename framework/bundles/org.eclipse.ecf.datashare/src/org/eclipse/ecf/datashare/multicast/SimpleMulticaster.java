@@ -41,7 +41,4 @@ public class SimpleMulticaster extends AbstractMulticaster {
 				traceExit(method);
 		}
 	}
-
-	protected void receiveMessage(Object message) {
-	}
 }

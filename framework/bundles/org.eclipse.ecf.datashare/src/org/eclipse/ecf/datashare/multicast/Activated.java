@@ -8,7 +8,7 @@
  * Contributors:
  *     Peter Nehrer - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ecf.internal.datashare;
+package org.eclipse.ecf.datashare.multicast;
 
 import java.io.Serializable;
 
@@ -16,7 +16,8 @@ import java.io.Serializable;
  * @author pnehrer
  *
  */
-public interface IBootstrapMemento extends Serializable {
+public class Activated implements Serializable {
 
-	IBootstrap createBootstrap();
+	private static final long serialVersionUID = 3256726186536351801L;
+
 }

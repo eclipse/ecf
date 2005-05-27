@@ -12,12 +12,15 @@ package org.eclipse.ecf.internal.datashare;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
@@ -62,6 +65,12 @@ public class EagerElectionBootstrap implements IBootstrap {
 	public void init(ISharedObjectConfig config)
 			throws SharedObjectInitException {
 		this.config = config;
+		Map params = config.getProperties();
+		if (params != null) {
+			Object param = params.get("coordinatorID");
+			if (param != null)
+				coordinatorID = (ID) param;
+		}
 	}
 
 	/*
@@ -181,13 +190,11 @@ public class EagerElectionBootstrap implements IBootstrap {
 		config = null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.internal.datashare.IBootstrap#createMemento()
-	 */
-	public IBootstrapMemento createMemento() {
-		return new BootstrapMemento(coordinatorID);
+	public SharedObjectDescription createDescription() {
+		HashMap params = new HashMap(1);
+		params.put("coordinatorID", coordinatorID);
+		return new SharedObjectDescription(config.getSharedObjectID(),
+				getClass(), params);
 	}
 
 	private class Pinger extends TimerTask {
@@ -205,23 +212,6 @@ public class EagerElectionBootstrap implements IBootstrap {
 
 		public void run() {
 			startElection();
-		}
-	}
-
-	public static class BootstrapMemento implements IBootstrapMemento {
-
-		private static final long serialVersionUID = 3257562910522814772L;
-
-		private final ID coordinatorID;
-
-		private BootstrapMemento(ID coordinatorID) {
-			this.coordinatorID = coordinatorID;
-		}
-
-		public IBootstrap createBootstrap() {
-			EagerElectionBootstrap b = new EagerElectionBootstrap();
-			b.coordinatorID = this.coordinatorID;
-			return b;
 		}
 	}
 }
