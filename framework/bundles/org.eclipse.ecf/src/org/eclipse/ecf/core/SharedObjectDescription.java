@@ -101,7 +101,7 @@ public class SharedObjectDescription implements Serializable {
     public Map getProperties() {
         return properties;
     }
-    public void getProperties(Map props) {
+    public void setProperties(Map props) {
         this.properties = props;
     }
     public ClassLoader getClassLoader() {
