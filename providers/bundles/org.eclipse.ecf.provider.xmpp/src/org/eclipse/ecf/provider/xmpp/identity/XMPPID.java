@@ -15,8 +15,14 @@ public class XMPPID extends BaseID {
     
 	URI uri;
 	
+	protected static String fixEscape(String src) {
+		if (src == null) return null;
+		return src.replaceAll("%","%25");
+	}
+	
 	protected XMPPID(Namespace namespace, String username, String host, String query) throws URISyntaxException {
 		super(namespace);
+		username = fixEscape(username);
 		uri = new URI(PROTOCOL+":"+username+ADDRESS_SEPARATOR+host+((query==null)?"":("?"+query)));
 	}
 	protected XMPPID(Namespace namespace, String username, String host) throws URISyntaxException {
@@ -24,6 +30,7 @@ public class XMPPID extends BaseID {
 	}
 	protected XMPPID(Namespace namespace, String unamehost) throws URISyntaxException {
 		super(namespace);
+		unamehost = fixEscape(unamehost);
 		uri = new URI(PROTOCOL+":"+unamehost);
 	}
 	protected int namespaceCompareTo(BaseID o) {
