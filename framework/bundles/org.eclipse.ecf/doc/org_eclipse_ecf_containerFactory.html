@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>ECF Container Factory</title>
+<style>@import url("file:/c:/eclipse3.1m7/eclipse/plugins/org.eclipse.platform_3.1.0/book.css");</style>
+<style>@import url("file:/c:/eclipse3.1m7/eclipse/plugins/org.eclipse.platform.doc.isv_3.1.0/schema.css");</style>
+</HEAD>
+<BODY>
+<H1><CENTER>ECF Container Factory</CENTER></H1>
+<p></p>
+<h6 class=CaptionFigColumn id=header>Identifier: </h6>org.eclipse.ecf.containerFactory<p></p>
+<h6 class=CaptionFigColumn id=header>Since: </h6>0.0.1
+<p></p>
+
+<p>
+<h6 class=CaptionFigColumn id=header>Description: </h6>This extension allows plugins to register themselves as 'providers' of ECF shared object containers.  Once registered via this extension point, plugins can then provide there own implementations of  ISharedObjectContainer in response to client request of the ECF container factory (<b>org.eclipse.ecf.core.SharedObjectContainerFactory</b>).
+<p>Plugins using this extension point can define a new implementation of any desired communications protocol, and expose that protocol as an instance of an <b>ISharedObjectContainer</b>.  When client requests are made to ECF SharedObjectContainerFactory to create <b>ISharedObjectContainer</b> instances, those requests will be re-directed to the given ISharedObjectContainer implementer.</p>
+<p><h6 class=CaptionFigColumn id=header>Configuration Markup:</h6></p>
+<p class=code id=dtd>&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.containerFactory">containerFactory</a>+)&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST extension</p>
+<p class=code id=dtdAttlist>point&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.containerFactory">containerFactory</a> (<a href="#e.defaultargument">defaultargument</a>* , <a href="#e.property">property</a>*)&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST containerFactory</p>
+<p class=code id=dtdAttlist>class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>description&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<p class=ConfigMarkup id=elementDesc>
+The container factory extension point.  Can optionally contain a list of 'defaultargument' elements that describe the arguments (and provide default values) to be passed to provider implementation</p>
+<br>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>class</b> - The class implementing the containerFactory extension point.  The given class must implement the <b>org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator</b> interface</li>
+<li><b>name</b> - An optional name for the extension.  If no name is explicitly provided by the extension, the containerFactory class name is used as the name.  Note that this name must <b>not</b> conflict with any other name in the ECF SharedObjectContainerFactory in order to be successfully registered.  Care should therefore be taken in selection of a name such that it does not conflict with other pre-existing names for this factory implementations</li>
+<li><b>description</b> - An optional description of the implementation of this extension point</li>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.defaultargument">defaultargument</a> EMPTY&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST defaultargument</p>
+<p class=code id=dtdAttlist>type&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>value&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<p class=ConfigMarkup id=elementDesc>
+Default argument to be passed to <b>org.eclipse.ecf.core.provider.makeInstance()</b> method.  Value of this element (if any) is used to indicate a default value for the given argument</p>
+<br>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>type</b> - The fully qualified type of the default argument</li>
+<li><b>value</b> - The value for the default argument</li>
+<li><b>name</b> - An optional name for the defaultargument element</li>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.property">property</a> EMPTY&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST property</p>
+<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>value&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class=ConfigMarkup id=elementDesc>
+Property (name,value) associated with SharedObjectContainerDescription</p>
+<br>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>name</b> - The name of the property</li>
+<li><b>value</b> - The value of the property</li>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.containerFactory">containerFactory</a>+)&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST extension</p>
+<p class=code id=dtdAttlist>point&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.containerFactory">containerFactory</a> (<a href="#e.defaultargument">defaultargument</a>* , <a href="#e.property">property</a>*)&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST containerFactory</p>
+<p class=code id=dtdAttlist>class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>description&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<p class=ConfigMarkup id=elementDesc>
+The container factory extension point.  Can optionally contain a list of 'defaultargument' elements that describe the arguments (and provide default values) to be passed to provider implementation</p>
+<br>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>class</b> - The class implementing the containerFactory extension point.  The given class must implement the <b>org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator</b> interface</li>
+<li><b>name</b> - An optional name for the extension.  If no name is explicitly provided by the extension, the containerFactory class name is used as the name.  Note that this name must <b>not</b> conflict with any other name in the ECF SharedObjectContainerFactory in order to be successfully registered.  Care should therefore be taken in selection of a name such that it does not conflict with other pre-existing names for this factory implementations</li>
+<li><b>description</b> - An optional description of the implementation of this extension point</li>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.defaultargument">defaultargument</a> EMPTY&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST defaultargument</p>
+<p class=code id=dtdAttlist>type&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>value&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<p class=ConfigMarkup id=elementDesc>
+Default argument to be passed to <b>org.eclipse.ecf.core.provider.makeInstance()</b> method.  Value of this element (if any) is used to indicate a default value for the given argument</p>
+<br>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>type</b> - The fully qualified type of the default argument</li>
+<li><b>value</b> - The value for the default argument</li>
+<li><b>name</b> - An optional name for the defaultargument element</li>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.property">property</a> EMPTY&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST property</p>
+<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>value&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class=ConfigMarkup id=elementDesc>
+Property (name,value) associated with SharedObjectContainerDescription</p>
+<br>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>name</b> - The name of the property</li>
+<li><b>value</b> - The value of the property</li>
+</ul>
+<br><h6 class=CaptionFigColumn id=header>Examples: </h6>Here's an extension that associates a class org.eclipse.ecf.test.FooContainerFactory with name 'foo' in the ECF <b>SharedObjectContainerFactory</b>:
+
+<pre>
+<p class=code id=tag>&lt;extension point=<p class=code id=cstring>&quot;org.eclipse.ecf.containerFactory&quot;</p><p class=code id=tag>&gt;</p>
+    <p class=code id=tag>&lt;containerFactory name=<p class=code id=cstring>&quot;foo&quot;</p><p class=code id=tag> class=<p class=code id=cstring>&quot;org.eclipse.ecf.test.FooContainerFactory&quot;</p><p class=code id=tag> description=<p class=code id=cstring>&quot;My container factory&quot;</p><p class=code id=tag>/&gt;</p>
+    <p class=code id=tag>&lt;defaultargument type=<p class=code id=cstring>&quot;java.lang.String&quot;</p><p class=code id=tag> value=<p class=code id=cstring>&quot;defaultvalue&quot;</p><p class=code id=tag> name=<p class=code id=cstring>&quot;variablename&quot;</p><p class=code id=tag>/&gt;</p>
+<p class=code id=tag>&lt;/extension&gt;</p>
+</pre>
+
+Here is some example code to implement this class:
+
+<pre>
+package org.eclipse.ecf.test;
+
+import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
+import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
+
+public class FooContainerFactory implements ISharedObjectContainerInstantiator {
+
+    public FooContainerFactory() {
+        super();
+    }
+    public ISharedObjectContainer makeInstance(SharedObjectContainterDescription description, Class[] argTypes, Object[] args)
+            throws SharedObjectContainerInstantiationException {
+        // Create/return instance of FooSharedObjectContainer
+        // Note that FooSharedObjectContainer class must
+        // implement ISharedObjectContainer
+        return new FooSharedObjectContainer();
+    }
+}
+</pre>
+
+In this example, the given class implements the <b>ISharedObjectContainerInstantiator</b>.makeInstance method by creating and returning a new instance of FooSharedObjectContainer, a class also defined in the extension plugin.  As noted in the code, this class must implement <b>ISharedObjectContainer</b>, so that it can successfully be returned from makeInstance.
+
+<h3>Example Usage of Container by Clients</h3>
+
+Clients that wish to use the 'foo' container implementation can do so simply by making the following call to create an <b>ISharedObjectContainer</b>:
+
+<pre>
+ISharedObjectContainer newContainer = SharedObjectContainerFactory.makeSharedObjectContainer(&apos;foo&apos;); 
+// Further use of newContainer instance here
+
+</pre>
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>API Information: </h6>The API for this extension point is provided by the <b>org.eclipse.ecf.core.SharedObjectContainerFactory</b> static methods.  Specifically, the 'makeSharedObjectContainer' static methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the <b>SharedObjectContainerFactory.addDescription(SharedObjectContainerDescription)</b> method.
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>Supplied Implementation: </h6>The supplied implementations of this extension point are:
+
+org.eclipse.ecf.provider.generic.ContainerInstantiator
+<b>TEST</b>:  org.eclipse.ecf.test.TestContainer
+<p></p>
+
+<br>
+<p class=note id=copyright>
+Copyright (c) 2004 Composent, Inc. and others.
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation
+<p></p>
+
+</p>
+</BODY>
+</HTML>
