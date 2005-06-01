@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.serverfeature"
       label="ECF Server"
-      version="0.2.0"
+      version="0.3.0"
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
@@ -55,60 +55,66 @@ to any source code in the Content.&lt;/p&gt;
          id="org.eclipse.ecf"
          download-size="0"
          install-size="0"
-         version="0.2.0"/>
+         version="0.3.0"/>
 
    <plugin
-         id="org.eclipse.ecf.ui"
+         id="org.eclipse.ecf.discovery"
          download-size="0"
          install-size="0"
-         version="0.2.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.sdo"
-         download-size="0"
-         install-size="0"
-         version="0.2.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider"
-         download-size="0"
-         install-size="0"
-         version="0.2.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.presence"
-         download-size="0"
-         install-size="0"
-         version="0.2.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.example.sdo.gefeditor"
-         download-size="0"
-         install-size="0"
-         version="0.2.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.example.sdo.editor"
-         download-size="0"
-         install-size="0"
-         version="0.2.0"/>
+         version="0.3.0"/>
 
    <plugin
          id="org.eclipse.ecf.example.collab"
          download-size="0"
          install-size="0"
-         version="0.2.0"/>
+         version="0.3.0"/>
 
    <plugin
          id="org.eclipse.ecf.example.hello"
          download-size="0"
          install-size="0"
-         version="0.2.0"/>
+         version="0.3.0"/>
 
    <plugin
          id="org.eclipse.ecf.example.library"
          download-size="0"
          install-size="0"
-         version="0.2.0"/>
+         version="0.3.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.example.sdo.editor"
+         download-size="0"
+         install-size="0"
+         version="0.3.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.example.sdo.gefeditor"
+         download-size="0"
+         install-size="0"
+         version="0.3.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.presence"
+         download-size="0"
+         install-size="0"
+         version="0.3.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.provider"
+         download-size="0"
+         install-size="0"
+         version="0.3.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.sdo"
+         download-size="0"
+         install-size="0"
+         version="0.3.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.ui"
+         download-size="0"
+         install-size="0"
+         version="0.3.0"/>
 
 </feature>
