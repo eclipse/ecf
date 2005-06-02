@@ -102,7 +102,7 @@ public class ExecURL extends GenericSharedObject {
 	public void activated(ID [] others) {
 		debug("activated()");
 		try {
-			if (!getContext().isGroupServer()) {
+			if (!getContext().isGroupManager()) {
 				GetExec.showURL(url,true);
 			} else {
 				debug("Not executing commands because is server");

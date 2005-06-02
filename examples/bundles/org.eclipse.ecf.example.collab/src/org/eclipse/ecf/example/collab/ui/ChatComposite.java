@@ -336,7 +336,7 @@ public class ChatComposite extends Composite {
 		manager.add(outputSelectAll);
 		manager.add(new Separator());
 		manager.add(sendFileToGroup);
-		manager.add(sendFileToGroupAndLaunch);
+		//manager.add(sendFileToGroupAndLaunch);
 		manager.add(coBrowseURL);
 		//manager.add(startProgram);
 		//appShare.setEnabled(!LineChatView.appShareActive());
@@ -709,7 +709,7 @@ public class ChatComposite extends Composite {
 		sendFileToGroup.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(
 						ISharedImages.IMG_OBJ_FILE));
-
+		/*
 		sendFileToGroupAndLaunch = new Action() {
 			public void run() {
 				sendFileToGroup(true);
@@ -720,7 +720,7 @@ public class ChatComposite extends Composite {
 		sendFileToGroupAndLaunch.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(
 						ISharedImages.IMG_OBJ_FILE));
-
+        */
 		coBrowseURL = new Action() {
 			public void run() {
 				sendCoBrowseToUser(null);

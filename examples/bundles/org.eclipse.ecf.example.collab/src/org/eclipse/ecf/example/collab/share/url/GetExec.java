@@ -13,10 +13,10 @@ package org.eclipse.ecf.example.collab.share.url;
 
 import java.io.File;
 
+import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.help.browser.IBrowser;
 import org.eclipse.help.internal.browser.BrowserManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
 
 public class GetExec {
@@ -32,33 +32,15 @@ public class GetExec {
 	private static final String WIN_ID = "Windows";
 	// The default system browser under windows.
 	private static final String WIN_PATH = "rundll32";
-	protected static void displayURL(String url, boolean considerInternal) {
-		boolean useEmbedded = false;
+	protected static void displayURL(String url, boolean external) {
 		boolean win32 = SWT.getPlatform().equals("win32");
 
-		if (win32 && considerInternal) {
-			useEmbedded = getUseEmbeddedBrowser();
-		}
-		if (useEmbedded) {
-			IBrowser browser = BrowserManager.getInstance()
-			.createBrowser(false);
-			try {
-				browser.displayURL(url);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			if (win32) {
-				Program.launch(url);
-			} else {
-				// defect 11483
-				IBrowser browser = BrowserManager.getInstance().createBrowser();
-				try {
-					browser.displayURL(url);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+		IBrowser browser = BrowserManager.getInstance()
+		.createBrowser(external);
+		try {
+			browser.displayURL(url);
+		} catch (Exception e) {
+			ClientPlugin.log("Exception in displayURL for URL: "+url,e);
 		}
 	}
 	public static String getBrowserExec(String unixBrowser, String url) {
@@ -80,11 +62,6 @@ public class GetExec {
 		else
 			return fileName;
 	}
-
-	protected static boolean getUseEmbeddedBrowser() {
-		return true;
-	}
-
 	public static boolean isWindowsPlatform() {
 		String os = System.getProperty("os.name");
 		if (os != null && os.startsWith(WIN_ID))
