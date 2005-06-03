@@ -10,10 +10,11 @@ set PRESENCE=%RP%\org.eclipse.ecf.presence_0.2.0\presence.jar
 set GED=%RP%\org.eclipse.ecf.example.sdo.gefeditor_0.2.0\editor.jar
 set ED=%RP%\org.eclipse.ecf.example.sdo.editor_0.2.0\editor.jar
 set LIBRARY=%RP%\org.eclipse.ecf.example.sdo.library_0.2.0\runtime\org.eclipse.ecf.example.library.jar
+set DISCOVERY=%RP%\org.eclipse.ecf.discovery_0.3.0\discovery.jar
 set HELLO=%RP%\org.eclipse.ecf.example.hello_0.2.0\hello.jar
 set COLLAB=%RP%\org.eclipse.ecf.example.collab_0.2.0\client.jar
 
-set CP="..\lib\core.jar;..\lib\runtime.jar;..\lib\osgi.jar;%ECF%;%UI%;%SDO%;%PROVIDER%;%PRESENCE%;%GED%;%ED%;%LIBRARY%;%HELLO%;%COLLAB%;."
+set CP="..\lib\core.jar;..\lib\runtime.jar;..\lib\osgi.jar;%ECF%;%UI%;%SDO%;%PROVIDER%;%PRESENCE%;%GED%;%ED%;%LIBRARY%;%HELLO%;%DISCOVERY%;%COLLAB%;."
 
 set TRACE=-Dorg.eclipse.ecf.Trace=true -Dorg.eclipse.ecf.provider.Trace=true
 
