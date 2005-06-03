@@ -72,39 +72,23 @@ import org.eclipse.ui.part.ViewPart;
 public class RosterView extends ViewPart implements IPresenceListener,
 		IMessageListener {
 	public static final String DISCONNECT_ICON_DISABLED = "icons/disabled/terminate_co.gif";
-
 	public static final String DISCONNECT_ICON_ENABLED = "icons/enabled/terminate_co.gif";
-
 	public static final String INSTANT_MESSAGE_ICON = "icons/enabled/message.gif";
-
 	public static final String ADDGROUP_ICON = "icons/enabled/addgroup.gif";
-
 	public static final String ADDBUDDY_ICON = "icons/enabled/addbuddy.gif";
-
 	public static final String UNFILED_GROUP_NAME = "Unfiled";
-
 	protected static final int TREE_EXPANSION_LEVELS = 2;
 
 	private TreeViewer viewer;
-
 	private Action chatAction;
-
 	private Action selectedChatAction;
-
 	private Action selectedDoubleClickAction;
-
 	private Action disconnectAction;
-
 	private Action addGroupAction;
-
 	private Action addBuddyAction;
-
 	protected IUser localUser;
-
 	protected ILocalInputHandler inputHandler;
-
 	protected Hashtable chatThreads = new Hashtable();
-
 	protected ID groupID;
 
 	protected IUser getLocalUser() {
@@ -455,8 +439,15 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			// If entry already in tree, remove it from current position
 			if (tb != null) {
 				TreeParent tp = (TreeParent) tb.getParent();
-				if (tp != null)
+				if (tp != null) {
 					tp.removeChild(tb);
+					if (tp.getName().equals(UNFILED_GROUP_NAME)) {
+						if (!tp.hasChildren()) {
+							TreeParent tpp = tp.getParent();
+							tpp.removeChild(tp);
+						}
+					}
+				}
 			}
 			// Create new buddy
 			TreeBuddy newBuddy = createBuddy(tb, entry);
@@ -754,7 +745,6 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			String[] sendGroups = new String[] { group };
 			// Finally, send the information and request subscription
 			inputHandler.sendRosterAdd(user, nickname, sendGroups);
-			addPendingEntry(user, nickname, group);
 		}
 	}
 

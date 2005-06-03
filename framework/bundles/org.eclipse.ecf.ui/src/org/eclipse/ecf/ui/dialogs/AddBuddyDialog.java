@@ -65,7 +65,6 @@ public class AddBuddyDialog extends Dialog {
 		usertext.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		if (user != null) {
 			usertext.setText(user);
-			okButton.setEnabled(true);
 		}
 		usertext.addModifyListener(new ModifyListener() {
 
@@ -100,6 +99,9 @@ public class AddBuddyDialog extends Dialog {
 		final GridData gridData_1 = new GridData(GridData.FILL_HORIZONTAL);
 		gridData_1.widthHint = 192;
 		nicknametext.setLayoutData(gridData_1);
+		if (user != null) {
+			nicknametext.setFocus();
+		}
 		//
 		return container;
 	}
@@ -111,7 +113,8 @@ public class AddBuddyDialog extends Dialog {
 				IDialogConstants.CANCEL_LABEL, true);
 		okButton = getButton(IDialogConstants.OK_ID);
 		if (okButton != null) {
-			okButton.setEnabled(false);
+			if (user != null) okButton.setEnabled(true);
+			else okButton.setEnabled(false);
 		}
 	}
 	public String getGroup() {

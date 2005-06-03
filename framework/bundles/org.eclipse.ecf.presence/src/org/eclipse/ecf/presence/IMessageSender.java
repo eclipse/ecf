@@ -13,7 +13,19 @@ package org.eclipse.ecf.presence;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IMessageListener.Type;
 
+/**
+ * Interface for sending text messages (IM) between users.  
+ * @author slewis
+ *
+ */
 public interface IMessageSender {
-    
-    public void sendMessage(ID fromID, ID toID, Type type, String subject, String message);
+    /**
+     * Send text message
+     * @param fromID the user id of the sender.  Cannot be null
+     * @param toID the user id of the target receiver of the message.  Cannot be null
+     * @param type the Type of the message
+     * @param subject the subject of the message
+     * @param messageBody the message body
+     */
+    public void sendMessage(ID fromID, ID toID, Type type, String subject, String messageBody);
 }

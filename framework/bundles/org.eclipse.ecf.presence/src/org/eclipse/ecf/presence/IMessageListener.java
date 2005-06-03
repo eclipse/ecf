@@ -13,9 +13,24 @@ package org.eclipse.ecf.presence;
 
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Listener for text IM messages.  Implementers of this interface are registered
+ * via the IPresenceContainer.addMessageListener interface
+ * 
+ * @author slewis
+ *
+ */
 public interface IMessageListener {
     
-    public void handleMessage(ID fromID, ID toID, Type type, String subject, String message);
+	/**
+	 * Handle message from remote user
+	 * @param fromID the ID of the user sending the message
+	 * @param toID the ID of the user to receive the message
+	 * @param type the Type of the message
+	 * @param subject the subject of the message
+	 * @param messageBody the message body
+	 */
+    public void handleMessage(ID fromID, ID toID, Type type, String subject, String messageBody);
 
     public static class Type {
         
@@ -60,6 +75,5 @@ public interface IMessageListener {
             return super.hashCode();
         }
     }
-
 
 }

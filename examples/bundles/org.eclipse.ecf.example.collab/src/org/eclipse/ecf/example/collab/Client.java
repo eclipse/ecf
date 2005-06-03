@@ -541,11 +541,11 @@ public class Client {
 			}
 
 			public void handleSubscribed(ID fromID, IPresence presence) {
-				System.out.println("subscribed from "+fromID);			
+				//System.out.println("subscribed from "+fromID);			
 			}
 
 			public void handleUnsubscribed(ID fromID, IPresence presence) {
-				System.out.println("unsubscribed from "+fromID);			
+				//System.out.println("unsubscribed from "+fromID);			
 			}
 		});
 	}
