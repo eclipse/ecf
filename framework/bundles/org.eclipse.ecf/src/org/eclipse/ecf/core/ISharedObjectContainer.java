@@ -105,12 +105,6 @@ public interface ISharedObjectContainer {
 	public boolean isGroupManager();
 
 	/**
-	 * @return true if this ISharedObjectContainer instance is in a server role
-	 *         for the group, false otherwise
-	 */
-	public boolean isGroupServer();
-
-	/**
 	 * Get SharedObjectManager for this container
 	 * 
 	 * @return ISharedObjectManager for this container instance
