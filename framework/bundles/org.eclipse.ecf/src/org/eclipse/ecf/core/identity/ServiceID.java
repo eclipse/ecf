@@ -26,7 +26,10 @@ public class ServiceID extends BaseID {
 		this.type = type;
 		this.name = name;
 	}
-
+	public ServiceID(String type, String name) {
+		this.name = name;
+		this.type = type;
+	}
 	protected String getFullyQualifiedName() {
 		if (name == null)
 			return type;

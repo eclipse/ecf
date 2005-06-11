@@ -16,6 +16,8 @@ public abstract class BaseID implements ID {
 
     Namespace namespace;
 
+	protected BaseID() {}
+	
     protected BaseID(Namespace namespace) {
         if (namespace == null)
             throw new RuntimeException(new InstantiationException(
