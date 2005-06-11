@@ -25,6 +25,13 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	int weight;
 	Map properties;
 
+	public ServiceInfo(InetAddress address, String type, int port, int priority, int weight, Map props) {
+		this.addr = address;
+		this.serviceID = new ServiceID(type,null);
+		this.port = port;
+		this.weight = weight;
+		this.properties = props;
+	}
 	public ServiceInfo(InetAddress address, ServiceID id, int port,
 			int priority, int weight, Map props) {
 		this.addr = address;
