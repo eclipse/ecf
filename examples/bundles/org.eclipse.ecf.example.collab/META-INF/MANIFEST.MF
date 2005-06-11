@@ -15,8 +15,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.ui,
- org.eclipse.ecf.discovery
-Export-Package: org.eclipse.ecf.example.collab.share, org.eclipse.ecf.example.collab.share.url, org.eclipse.ecf.example.collab.share.io
+ org.eclipse.ecf.discovery,
+ org.eclipse.ecf.provider
+Export-Package: org.eclipse.ecf.example.collab, org.eclipse.ecf.example.collab.share, org.eclipse.ecf.example.collab.share.url, org.eclipse.ecf.example.collab.share.io
 Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.example.collab
 DynamicImport-Package: org.eclipse.ecf.presence, org.eclipse.ecf.presence.impl

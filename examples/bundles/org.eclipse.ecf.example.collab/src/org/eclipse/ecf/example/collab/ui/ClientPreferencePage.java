@@ -26,7 +26,6 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
 	 */
 	protected void performDefaults() {
-		// TODO Auto-generated method stub
 		super.performDefaults();
 		
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_USE_CHAT_WINDOW, false);
