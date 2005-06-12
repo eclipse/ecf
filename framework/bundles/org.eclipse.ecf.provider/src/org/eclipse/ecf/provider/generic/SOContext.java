@@ -205,7 +205,7 @@ public class SOContext implements ISharedObjectContext {
     /* (non-Javadoc)
      * @see org.eclipse.ecf.core.ISharedObjectContext#sendCreateResponse(org.eclipse.ecf.core.identity.ID, java.lang.Throwable, long)
      */
-    public void sendCreateResponse(ID toContainerID, Throwable throwable, long identifier) throws IOException {
+    public synchronized void sendCreateResponse(ID toContainerID, Throwable throwable, long identifier) throws IOException {
         if (isInactive()) {
             trace("sendCreateResponse("+toContainerID+","+throwable+","+identifier+") CONTEXT INACTIVE");
             return;
@@ -236,7 +236,7 @@ public class SOContext implements ISharedObjectContext {
      * @see org.eclipse.ecf.core.ISharedObjectContext#sendMessage(org.eclipse.ecf.core.identity.ID,
      *      java.lang.Object)
      */
-    public void sendMessage(ID toContainerID, Object data) throws IOException {
+    public synchronized void sendMessage(ID toContainerID, Object data) throws IOException {
         if (isInactive()) {
             trace("sendMessage("+toContainerID+","+data+") CONTEXT INACTIVE");
             return;
