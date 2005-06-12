@@ -387,7 +387,7 @@ public class ChatComposite extends Composite {
 		manager.add(new Separator());
 		manager.add(closeGroup);
 	}
-
+	
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(outputCopy);
 		manager.add(outputPaste);
@@ -409,7 +409,7 @@ public class ChatComposite extends Composite {
 		manager.add(new Separator());
 		manager.add(closeGroup);
 	}
-
+	
 	private void fillTreeContextMenu(IMenuManager manager) {
 		User ud = treeView.getSelectionUser();
 		if (ud != null) {
@@ -606,9 +606,9 @@ public class ChatComposite extends Composite {
 	}
 
 	protected void handleKeyPressed(KeyEvent evt) {
-		if (evt.keyCode == SWT.CR) {
+		if (evt.character == SWT.CR) {
 			handleEnter();
-		} else if (evt.keyCode == SWT.ESC && chatWindow != null) {
+		} else if (evt.character == SWT.ESC && chatWindow != null) {
 			chatWindow.getShell().setVisible(false);
 		}
 	}
