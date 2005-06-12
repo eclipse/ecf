@@ -193,10 +193,6 @@ public class Client {
         SimpleDateFormat sdf = new SimpleDateFormat(JOIN_TIME_FORMAT);
         topElements.add(new TreeItem("Time",sdf.format(new Date())));
         try {
-            String activeTitle = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart().getTitle();
-            topElements.add(new TreeItem("Active Part",activeTitle));
-        } catch (Exception e) {}
-        try {
             String userLang = System.getProperty("user.language");
             topElements.add(new TreeItem("Language",userLang));
         } catch (Exception e) {}
