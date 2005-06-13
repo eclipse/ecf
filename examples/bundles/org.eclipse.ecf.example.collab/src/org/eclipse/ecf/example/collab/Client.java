@@ -75,7 +75,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 public class Client {
-    private static final int CONTAINER_DISPOSE = 1000;
     public static final String JOIN_TIME_FORMAT = "hh:mm:ss a z";
     public static final String GENERIC_CONTAINER_CLIENT_NAME = "org.eclipse.ecf.provider.generic.Client";
     public static final String GENERIC_CONTAINER_SERVER_NAME = "org.eclipse.ecf.provider.generic.Server";
@@ -188,7 +187,6 @@ public class Client {
 
     protected User getUserData(String containerType, ID clientID, String usernick, IResource project) {
         Vector topElements = new Vector();
-        String contType = containerType.substring(containerType.lastIndexOf(".")+1);
         topElements.add(new TreeItem("Project", getNameForResource(project)));
         SimpleDateFormat sdf = new SimpleDateFormat(JOIN_TIME_FORMAT);
         topElements.add(new TreeItem("Time",sdf.format(new Date())));
@@ -570,15 +568,15 @@ public class Client {
 					ServiceID svcID = event.getServiceInfo().getServiceID();
 					discoveryView.addServiceTypeInfo(svcID.getServiceType());
 					dc.addServiceListener(event.getServiceInfo().getServiceID(), new IServiceListener() {
-						public void serviceAdded(IServiceEvent event) {
-							discoveryView.addServiceInfo(event.getServiceInfo().getServiceID());
-							dc.requestServiceInfo(event.getServiceInfo().getServiceID(),3000);
+						public void serviceAdded(IServiceEvent evt) {
+							discoveryView.addServiceInfo(evt.getServiceInfo().getServiceID());
+							dc.requestServiceInfo(evt.getServiceInfo().getServiceID(),3000);
 						}
-						public void serviceRemoved(IServiceEvent event) {
-							discoveryView.removeServiceInfo(event.getServiceInfo());
+						public void serviceRemoved(IServiceEvent evt) {
+							discoveryView.removeServiceInfo(evt.getServiceInfo());
 						}
-						public void serviceResolved(IServiceEvent event) {
-							discoveryView.addServiceInfo(event.getServiceInfo());
+						public void serviceResolved(IServiceEvent evt) {
+							discoveryView.addServiceInfo(evt.getServiceInfo());
 						}});
 					dc.registerServiceType(svcID);
 				}});

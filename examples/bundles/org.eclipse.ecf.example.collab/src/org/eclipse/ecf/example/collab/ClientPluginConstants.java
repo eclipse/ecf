@@ -31,6 +31,9 @@ public interface ClientPluginConstants {
 	public static final String PREF_OTHER_TEXT_COLOR = "prefOtherTextColor";
 	public static final String PREF_SYSTEM_TEXT_COLOR = "prefSystemTextColor";
 	
+	public static final String PREF_START_SERVER = "startServerOnStartup";
+	public static final String PREF_REGISTER_SERVER = "registerServerOnStartup";
+	
 	/*
 	 * Contstants used to describe decoration images.
 	 */

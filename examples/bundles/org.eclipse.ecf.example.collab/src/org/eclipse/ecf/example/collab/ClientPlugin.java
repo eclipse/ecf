@@ -38,7 +38,6 @@ public class ClientPlugin extends AbstractUIPlugin implements
 
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
-	private static String appShareBinPath;
 	private static URL pluginLocation;
 	private ImageRegistry registry = null;
 	private FontRegistry fontRegistry = null;
@@ -67,20 +66,27 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		super();
 		plugin = this;
 		this.fontRegistry = new FontRegistry();
-		/*
-		 * The the plugin preferences to automatically define defaults.
-		 */
-		/*
-		 * ClientPreferencePage prefs = new ClientPreferencePage();
-		 * prefs.performDefaults(); prefs.dispose();
-		 */
 	}
 
+	protected void setPreferenceDefaults() {
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_USE_CHAT_WINDOW, false);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_DISPLAY_TIMESTAMP, true);
+		
+		//this.getPreferenceStore().setDefault(ClientPlugin.PREF_CHAT_FONT, "");
+
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_SEND, true);
+		//this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_REMOTE_VIEW, true);
+		
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_SERVER,false);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,false);
+	}
 	/**
 	 * This method is called upon plug-in activation
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		setPreferenceDefaults();
 		serverStartup = new ServerStartup();
 	}
 

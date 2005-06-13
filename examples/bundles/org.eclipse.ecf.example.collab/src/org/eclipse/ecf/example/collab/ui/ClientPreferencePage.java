@@ -37,6 +37,8 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		//this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, true);
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_REMOTE_VIEW, true);
 		
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_SERVER,false);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,false);
 	}
 	public ClientPreferencePage() {
 		super(GRID);
@@ -54,6 +56,9 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		addField(new ColorFieldEditor(ClientPlugin.PREF_ME_TEXT_COLOR, "Chat Text Color For Me:", getFieldEditorParent()));
 		addField(new ColorFieldEditor(ClientPlugin.PREF_OTHER_TEXT_COLOR, "Chat Text Color For Other:", getFieldEditorParent()));
 		addField(new ColorFieldEditor(ClientPlugin.PREF_SYSTEM_TEXT_COLOR, "Chat Text Color For System:", getFieldEditorParent()));
+		
+		addField(new BooleanFieldEditor(ClientPlugin.PREF_START_SERVER,"Start ECF Group Server on Startup",getFieldEditorParent()));
+		addField(new BooleanFieldEditor(ClientPlugin.PREF_REGISTER_SERVER,"Register ECF Group Server on Startup",getFieldEditorParent()));
 		
 		/*IntegerFieldEditor rate = new IntegerFieldEditor(ClientPlugin.PREF_FILE_TRANSFER_RATE,
 				"Maximum transfer rate for file transfers.", getFieldEditorParent());*/

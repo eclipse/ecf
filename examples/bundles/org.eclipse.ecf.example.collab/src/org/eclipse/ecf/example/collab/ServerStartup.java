@@ -23,15 +23,16 @@ public class ServerStartup {
 	static List servers = new ArrayList();
 	
 	public ServerStartup() {
-		try {
-			InputStream ins = this.getClass().getResourceAsStream(SERVER_FILE_NAME);
-			if (ins != null) {
-				createServers(ins);
+		if (ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_START_SERVER)) {
+			try {
+				InputStream ins = this.getClass().getResourceAsStream(SERVER_FILE_NAME);
+				if (ins != null) {
+					createServers(ins);
+				}
+			} catch (Exception e) {
+				ClientPlugin.log("Exception in ServerStartup initialization",e);
 			}
-		} catch (Exception e) {
-			ClientPlugin.log("Exception in ServerStartup initialization",e);
 		}
-
 	}
 	
 	public void dispose() {
@@ -82,9 +83,9 @@ public class ServerStartup {
 							connect.getTimeout());
 					DiscoveryStartup.registerServer(cont.getConfig().getID());
 					servers.add(cont);
+					ClientPlugin.log("ECF group created: "+cont.getConfig().getID().getName());
 				}
 				serverGroups[j].putOnTheAir();
-				ClientPlugin.log("Server listening on local port: "+serverGroups[j].getPort()+" with path "+serverGroups[j].getName());
 				j++;
 			}
 		}
@@ -101,7 +102,6 @@ public class ServerStartup {
 			TCPServerSOContainerGroup group, String path, int keepAlive)
 			throws IDInstantiationException {
 		ID newServerID = IDFactory.makeStringID(id);
-		ClientPlugin.log("Created server " + newServerID);
 		SOContainerConfig config = new SOContainerConfig(newServerID);
 		return new TCPServerSOContainer(config, group, path, keepAlive);
 	}
