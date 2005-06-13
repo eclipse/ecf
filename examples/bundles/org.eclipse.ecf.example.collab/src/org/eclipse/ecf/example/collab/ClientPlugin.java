@@ -43,6 +43,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	private FontRegistry fontRegistry = null;
 
 	private ServerStartup serverStartup = null;
+	private DiscoveryStartup discoveryStartup = null;
 	
 	public static URL getPluginTopLocation() {
 		return pluginLocation;
@@ -88,6 +89,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		super.start(context);
 		setPreferenceDefaults();
 		serverStartup = new ServerStartup();
+		discoveryStartup = new DiscoveryStartup();
 	}
 
 	/**
@@ -100,6 +102,10 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		if (serverStartup != null) {
 			serverStartup.dispose();
 			serverStartup = null;
+		}
+		if (discoveryStartup != null) {
+			discoveryStartup.dispose();
+			discoveryStartup = null;
 		}
 	}
 

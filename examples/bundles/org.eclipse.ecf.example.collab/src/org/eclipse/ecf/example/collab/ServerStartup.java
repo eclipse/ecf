@@ -83,7 +83,7 @@ public class ServerStartup {
 							connect.getTimeout());
 					DiscoveryStartup.registerServer(cont.getConfig().getID());
 					servers.add(cont);
-					ClientPlugin.log("ECF group created: "+cont.getConfig().getID().getName());
+					ClientPlugin.log("ECF group server created: "+cont.getConfig().getID().getName());
 				}
 				serverGroups[j].putOnTheAir();
 				j++;

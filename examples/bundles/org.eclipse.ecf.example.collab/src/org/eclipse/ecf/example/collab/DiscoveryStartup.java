@@ -17,7 +17,7 @@ public class DiscoveryStartup {
 
 	public static final String DISCOVERY_CONTAINER = "org.eclipse.ecf.provider.jmdns.container.JmDNS";
 	public static final String TCPSERVER_DISCOVERY_TYPE = "_http._tcp._local.";
-
+	
 	static IDiscoveryContainer discovery = null;
 
 	public static IDiscoveryContainer getDefault() {
@@ -25,7 +25,9 @@ public class DiscoveryStartup {
 	}
 	
 	public DiscoveryStartup() {
-		setupDiscovery();
+		if (ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_REGISTER_SERVER)) {
+			setupDiscovery();
+		}
 	}
 	
 	public void dispose() {
