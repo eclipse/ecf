@@ -740,25 +740,20 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		debug("handleSharedObjectMessage:" + mess);
 		ID fromID = mess.getFromContainerID();
 		ID toID = mess.getToContainerID();
-		long seq = mess.getSequence();
 		ContainerMessage.SharedObjectMessage resp = (ContainerMessage.SharedObjectMessage) mess
 				.getData();
         
-        // Get bytes from SharedObjectMessage instance
-        byte [] databytes = (byte []) resp.getData();
-        Serializable obj = null;
-        try {
-            obj = (Serializable) deserializeSharedObjectMessage(databytes);
-        } catch (ClassNotFoundException e) {
-            dumpStack("Classnotfoundexception in handleSharedObjectMessage",e);
-            e.printStackTrace(System.err);
-        }
 		synchronized (getGroupMembershipLock()) {
 			if (toID == null || toID.equals(getID())) {
 				SOWrapper sow = getSharedObjectWrapper(resp
 					.getFromSharedObjectID());
 				if (sow != null) {
-					sow.deliverSharedObjectMessage(fromID, obj);
+			        try {
+						sow.deliverSharedObjectMessage(fromID, (Serializable) deserializeSharedObjectMessage((byte []) resp.getData()));
+			        } catch (ClassNotFoundException e) {
+			            dumpStack("Classnotfoundexception in handleSharedObjectMessage",e);
+			            e.printStackTrace(System.err);
+			        }
 				}
 			}
 			forward(fromID, toID, mess);
