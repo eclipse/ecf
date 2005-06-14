@@ -11,7 +11,7 @@
                type="org.eclipse.ecf.core.identity.ID"
                name="id"/>
          <defaultargument
-               value="10000"
+               value="30000"
                type="java.lang.Integer"
                name="keepAlive"/>
          <property
@@ -32,7 +32,7 @@
             description="TCP Client Connection Factory"
             name="org.eclipse.ecf.provider.comm.tcp.Client">
          <defaultargument
-               value="10000"
+               value="30000"
                type="java.lang.Integer"
                name="keepAlive"/>
       </connectionFactory>
@@ -48,7 +48,7 @@
                type="org.eclipse.ecf.core.identity.ID"
                name="id"/>
          <defaultargument
-               value="10000"
+               value="30000"
                type="java.lang.Integer"
                name="keepAlive"/>
          <property

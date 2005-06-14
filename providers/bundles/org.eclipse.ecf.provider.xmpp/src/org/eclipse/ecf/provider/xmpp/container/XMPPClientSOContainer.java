@@ -60,7 +60,7 @@ import org.jivesoftware.smack.packet.Presence;
 
 public class XMPPClientSOContainer extends ClientSOContainer {
 
-	public static final int DEFAULT_KEEPALIVE = 10000;
+	public static final int DEFAULT_KEEPALIVE = 30000;
 	public static final String XMPP_SHARED_OBJECT_ID = XMPPClientSOContainer.class
 			.getName()
 			+ ".xmpphandler";

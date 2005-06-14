@@ -26,7 +26,7 @@ public class TCPServerSOContainer extends ServerSOContainer implements
         ConnectionRequestHandler {
     public static final String DEFAULT_PROTOCOL = "ecftcp";
     public static final int DEFAULT_PORT = 3282;
-    public static final int DEFAULT_KEEPALIVE = 10000;
+    public static final int DEFAULT_KEEPALIVE = 30000;
     public static final String DEFAULT_NAME = "/server";
     public static final String DEFAULT_HOST = "localhost";
     
