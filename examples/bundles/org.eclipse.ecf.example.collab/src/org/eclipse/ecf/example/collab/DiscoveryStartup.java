@@ -10,6 +10,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceEvent;
+import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
 
@@ -20,6 +21,20 @@ public class DiscoveryStartup {
 	
 	static IDiscoveryContainer discovery = null;
 
+    static String serviceTypes[] = new String[] {
+            "_http._tcp.local.",
+            "_ftp._tcp.local.",
+            "_tftp._tcp.local.",
+            "_ssh._tcp.local.",
+            "_smb._tcp.local.",
+            "_printer._tcp.local.",
+            "_airport._tcp.local.",
+            "_afpovertcp._tcp.local.",
+            "_ichat._tcp.local.",
+            "_eppc._tcp.local.",
+            "_presence._tcp.local."
+        };
+	
 	public static IDiscoveryContainer getDefault() {
 		return discovery;
 	}
@@ -41,8 +56,8 @@ public class DiscoveryStartup {
 					.getAdapter(IDiscoveryContainer.class);
 			if (discovery != null) {
 				setupDiscoveryContainer(discovery);
-				container.joinGroup(new ServiceID(TCPSERVER_DISCOVERY_TYPE, null),null);
-				//registerServerType();
+				container.joinGroup(null,null);
+				registerServiceTypes();
 			}
 			else {
 				ClientPlugin.log("No discovery container available");
@@ -57,29 +72,24 @@ public class DiscoveryStartup {
 		dc.addServiceTypeListener(new IServiceTypeListener() {
 			public void serviceTypeAdded(IServiceEvent event) {
 				System.out.println("serviceTypeAdded("+event.getServiceInfo());
-				//ServiceID svcID = event.getServiceInfo().getServiceID();
-				/*
-				dc.addServiceListener(event.getServiceInfo().getServiceID(),
+				ServiceID svcID = event.getServiceInfo().getServiceID();
+				
+				dc.addServiceListener(svcID,
 						new IServiceListener() {
-							public void serviceAdded(IServiceEvent event) {
-								System.out.println("serviceAdded(" + event.getServiceInfo());
-								log("serviceAdded(" + event.getServiceInfo());
-								dc.requestServiceInfo(event.getServiceInfo()
+							public void serviceAdded(IServiceEvent evt) {
+								System.out.println("serviceAdded(" + evt.getServiceInfo());
+								dc.requestServiceInfo(evt.getServiceInfo()
 										.getServiceID(), 3000);
 							}
 
-							public void serviceRemoved(IServiceEvent event) {
-								System.out.println("serviceRemoved(" + event.getServiceInfo());
-								log("serviceRemoved(" + event.getServiceInfo());
+							public void serviceRemoved(IServiceEvent evt) {
+								System.out.println("serviceRemoved(" + evt.getServiceInfo());
 							}
 
-							public void serviceResolved(IServiceEvent event) {
-								System.out.println("serviceResolved(" + event.getServiceInfo());
-								log("serviceResolved(" + event.getServiceInfo());
+							public void serviceResolved(IServiceEvent evt) {
+								System.out.println("serviceResolved(" + evt.getServiceInfo());
 							}
 						});
-				dc.registerServiceType(svcID);
-				*/
 			}
 		});
 
@@ -121,9 +131,11 @@ public class DiscoveryStartup {
 
 	}
 
-	public static void registerServerType() {
+	public static void registerServiceTypes() {
 		if (discovery != null) {
-			discovery.registerServiceType(TCPSERVER_DISCOVERY_TYPE);
+			for(int i=0; i < serviceTypes.length; i++) {
+				discovery.registerServiceType(serviceTypes[i]);
+			}
 		}
 	}
 
