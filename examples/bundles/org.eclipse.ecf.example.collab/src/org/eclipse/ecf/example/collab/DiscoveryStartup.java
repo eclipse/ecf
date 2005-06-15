@@ -73,7 +73,6 @@ public class DiscoveryStartup {
 			public void serviceTypeAdded(IServiceEvent event) {
 				System.out.println("serviceTypeAdded("+event.getServiceInfo());
 				ServiceID svcID = event.getServiceInfo().getServiceID();
-				
 				dc.addServiceListener(svcID,
 						new IServiceListener() {
 							public void serviceAdded(IServiceEvent evt) {
@@ -90,6 +89,7 @@ public class DiscoveryStartup {
 								System.out.println("serviceResolved(" + evt.getServiceInfo());
 							}
 						});
+				dc.registerServiceType(svcID);
 			}
 		});
 
