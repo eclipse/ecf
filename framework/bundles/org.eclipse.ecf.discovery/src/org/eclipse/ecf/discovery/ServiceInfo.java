@@ -11,6 +11,8 @@ package org.eclipse.ecf.discovery;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ServiceID;
@@ -70,7 +72,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		return properties;
 	}
 	public boolean isResolved() {
-		return (addr == null);
+		return (addr != null);
 	}
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ServiceInfo[");
@@ -79,5 +81,9 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 				.append(";weight=").append(weight).append(";props=").append(
 						properties).append("]");
 		return buf.toString();
+	}
+	
+	public URI getServiceURI() throws URISyntaxException {
+		throw new URISyntaxException("","");
 	}
 }
