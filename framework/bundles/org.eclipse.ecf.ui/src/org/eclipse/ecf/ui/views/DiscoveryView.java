@@ -138,7 +138,7 @@ public class DiscoveryView extends ViewPart {
 		}
 		private void initialize() {
 			invisibleRoot = new TreeParent(null,"",null);
-			root = new TreeParent(null,"Discovered Service Types",null);
+			root = new TreeParent(null,"Services",null);
 			invisibleRoot.addChild(root);
 		}
 		void replaceOrAdd(TreeParent top, TreeParent newEntry) {
