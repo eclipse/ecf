@@ -88,8 +88,8 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		setPreferenceDefaults();
-		serverStartup = new ServerStartup();
 		discoveryStartup = new DiscoveryStartup();
+		serverStartup = new ServerStartup();
 	}
 
 	/**
