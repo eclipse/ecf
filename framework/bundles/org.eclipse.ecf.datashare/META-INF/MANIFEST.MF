@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF DataShare Plug-in
-Bundle-SymbolicName: org.eclipse.ecf.datashare
+Bundle-SymbolicName: org.eclipse.ecf.datashare;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-ClassPath: datashare.jar
 Bundle-Activator: org.eclipse.ecf.internal.datashare.DataSharePlugin$EclipsePlugin
