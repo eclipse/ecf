@@ -12,10 +12,12 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceEvent;
+import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.ui.views.DiscoveryView;
+import org.eclipse.ecf.ui.views.IServiceConnectListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -48,7 +50,11 @@ public class DiscoveryStartup {
 	public static IDiscoveryContainer getDefault() {
 		return discovery;
 	}
-	
+	public void showTypeDetails(boolean val) {
+		if (discoveryView != null) {
+			discoveryView.setShowTypeDetails(val);
+		}
+	}
 	public DiscoveryStartup() {
 		if (ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_REGISTER_SERVER)) {
 			setupDiscovery();
@@ -78,6 +84,10 @@ public class DiscoveryStartup {
 
 	}
 
+	protected void connectToService(IServiceInfo svcInfo) {
+		// XXX TODO
+	}
+	
     protected void setupDiscoveryContainer(final IDiscoveryContainer dc) {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
@@ -88,6 +98,12 @@ public class DiscoveryStartup {
                     IViewPart view = wp.showView("org.eclipse.ecf.ui.view.discoveryview");
                     discoveryView = (DiscoveryView) view;
                     discoveryView.setDiscoveryContainer(dc);
+                    discoveryView.setShowTypeDetails(false);
+                    discoveryView.setServiceConnectListener(new IServiceConnectListener() {
+						public void connectToService(IServiceInfo service) {
+							connectToService(service);
+						}
+                    });
                 } catch (Exception e) {
                     IStatus status = new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Exception showing presence view",e);
                     ClientPlugin.getDefault().getLog().log(status);
@@ -127,6 +143,7 @@ public class DiscoveryStartup {
 				String path = uri.getPath();
 				Properties props = new Properties();
 				String protocol = uri.getScheme();
+				props.setProperty(PROP_CONTAINER_TYPE_NAME,PROP_CONTAINER_TYPE_VALUE);
 				props.setProperty(PROP_PROTOCOL_NAME,protocol);
 				props.setProperty(PROP_PW_REQ_NAME, PROP_PW_REQ_VALUE);
 				props.setProperty(PROP_DEF_USER_NAME, PROP_DEF_USER_VALUE);
