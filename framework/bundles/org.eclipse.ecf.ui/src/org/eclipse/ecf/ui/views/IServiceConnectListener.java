@@ -1,7 +1,7 @@
 package org.eclipse.ecf.ui.views;
 
-import java.net.URI;
+import org.eclipse.ecf.discovery.IServiceInfo;
 
 public interface IServiceConnectListener {
-	public void connectToService(URI serviceURI);
+	public void connectToService(IServiceInfo service);
 }

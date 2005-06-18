@@ -1,3 +1,13 @@
+/****************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Composent, Inc. - initial API and implementation
+*****************************************************************************/
 package org.eclipse.ecf.ui.views;
 
 import java.net.InetAddress;
@@ -44,7 +54,14 @@ public class DiscoveryView extends ViewPart {
 	private Action connectToAction;
 	
 	IDiscoveryContainer container = null;
+	IServiceConnectListener serviceConnectListener = null;
+
+	protected boolean showTypeDetails = false;
 	
+	public void setShowTypeDetails(boolean val) {
+		showTypeDetails = val;
+		refreshView();
+	}
 	public void setDiscoveryContainer(IDiscoveryContainer container) {
 		this.container = container;
 	}
@@ -74,15 +91,15 @@ public class DiscoveryView extends ViewPart {
 	class TreeParent extends TreeObject {
 		private ArrayList children;
 		private ServiceID id;
-		private URI serviceURI;
-		public TreeParent(ServiceID id, String name, URI uri) {
+		private IServiceInfo serviceInfo;
+		public TreeParent(ServiceID id, String name, IServiceInfo svcInfo) {
 			super(name);
 			this.id = id;
 			children = new ArrayList();
-			serviceURI = uri;
+			serviceInfo = svcInfo;
 		}
-		public URI getServiceURI() {
-			return serviceURI;
+		public IServiceInfo getServiceInfo() {
+			return serviceInfo;
 		}
 		public ServiceID getID() {
 			return id;
@@ -190,13 +207,13 @@ public class DiscoveryView extends ViewPart {
 			try {
 				uri = serviceInfo.getServiceURI();
 			} catch (URISyntaxException e) {
-				
+				e.printStackTrace();
 			}
 			if (typenode == null) {
-				typenode = new TreeParent(null,svcID.getServiceType(),uri);
+				typenode = new TreeParent(null,svcID.getServiceType(),serviceInfo);
 				root.addChild(typenode);
 			}
-			TreeParent newEntry = new TreeParent(svcID,svcID.getServiceName(),uri);
+			TreeParent newEntry = new TreeParent(svcID,svcID.getServiceName(),serviceInfo);
 			InetAddress addr = serviceInfo.getAddress();
 			if (addr != null) {
 				TreeObject toaddr = new TreeObject("Address: "+addr.getHostAddress());
@@ -249,9 +266,28 @@ public class DiscoveryView extends ViewPart {
 			}
 		}
 	}
+	protected String cleanTypeName(String inputName) {
+		if (showTypeDetails) return inputName;
+		String res = inputName.trim();
+		while (res.startsWith("_")) {
+			res = res.substring(1);
+		}
+		int dotLoc = res.indexOf(".");
+		if (dotLoc != -1) {
+			res = res.substring(0,dotLoc);
+		}
+		return res;
+	}
 	class ViewLabelProvider extends LabelProvider {
 
 		public String getText(Object obj) {
+			if (obj != null && obj instanceof TreeParent) {
+				TreeParent tp = (TreeParent) obj;
+				ServiceID svcID = tp.getID();
+				if (svcID == null) {
+					return cleanTypeName(tp.getName());
+				}
+			}
 			return obj.toString();
 		}
 		public Image getImage(Object obj) {
@@ -272,9 +308,8 @@ public class DiscoveryView extends ViewPart {
 	public DiscoveryView() {
 	}
 	
-	IServiceConnectListener serviceConnectListener = null;
-	public DiscoveryView(IServiceConnectListener listener) {
-		this.serviceConnectListener = listener;
+	public void setServiceConnectListener(IServiceConnectListener l) {
+		this.serviceConnectListener = l;
 	}
 	public void addServiceTypeInfo(final String type) {
         Display.getDefault().asyncExec(new Runnable() {
@@ -388,8 +423,7 @@ public class DiscoveryView extends ViewPart {
                 TreeObject treeObject = getSelectedTreeObject();
                 if (treeObject instanceof TreeParent) {
                 	TreeParent p = (TreeParent) treeObject;
-                	URI uri = p.getServiceURI();
-                	connectToContainer(uri);
+                	connectToContainer(p.getServiceInfo());
                 }
             }
 		};
@@ -404,10 +438,17 @@ public class DiscoveryView extends ViewPart {
 			if (tp.getID() != null) {
 				requestServiceInfoAction.setText("Request info about "+tp.getName());
 				manager.add(requestServiceInfoAction);
-				URI uri = tp.getServiceURI();
-				if (uri != null) {
-					connectToAction.setText("Connect to this service");
-					manager.add(connectToAction);
+				IServiceInfo si = tp.getServiceInfo();
+				if (si != null) {
+					try {
+						URI uri = si.getServiceURI();
+						if (uri != null) {
+							connectToAction.setText("Connect to this service");
+							manager.add(connectToAction);
+						}
+					} catch (URISyntaxException e) {
+						
+					}
 				}
 			} else {
 				if (!tp.equals(((ViewContentProvider) viewer.getContentProvider()).root)) {
@@ -419,11 +460,11 @@ public class DiscoveryView extends ViewPart {
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
-	protected void connectToContainer(URI svcURI) {
+	protected void connectToContainer(IServiceInfo svcInfo) {
     	if (serviceConnectListener != null) {
-    		serviceConnectListener.connectToService(svcURI);
+    		serviceConnectListener.connectToService(svcInfo);
     	} else {
-    		System.out.println("Would connect to "+svcURI);
+    		System.out.println("No service connect listener to connect to "+svcInfo);
     	}
 	}
     protected TreeObject getSelectedTreeObject() {
