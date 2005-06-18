@@ -161,7 +161,6 @@ public class SOManager implements ISharedObjectManager {
 		container.fireContainerEvent(new SharedObjectManagerCreateEvent(
 				container.getID(), sd));
 		ISharedObject newObject = null;
-		Throwable t = null;
 		ID result = sharedObjectID;
 		try {
 			newObject = loadSharedObject(sd);
@@ -195,7 +194,6 @@ public class SOManager implements ISharedObjectManager {
 		// notify listeners
 		container.fireContainerEvent(new SharedObjectManagerAddEvent(container
 				.getID(), sharedObjectID, sharedObject, properties));
-		Throwable t = null;
 		ID result = sharedObjectID;
 		try {
 			ISharedObject so = sharedObject;

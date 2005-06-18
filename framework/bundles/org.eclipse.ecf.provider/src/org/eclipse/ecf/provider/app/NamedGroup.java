@@ -19,8 +19,8 @@ public class NamedGroup {
 	public String getIDForGroup() {
 		return parent.getID()+getName();
 	}
-	protected String cleanGroupName(String name) {
-		String res = ((name.startsWith("/"))?name:"/"+name);
+	protected String cleanGroupName(String n) {
+		String res = ((n.startsWith("/"))?n:"/"+n);
 		return res;
 	}
 }

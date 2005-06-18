@@ -17,7 +17,6 @@ import java.io.OutputStream;
 import org.eclipse.ecf.provider.Trace;
 
 public class ExObjectOutputStream extends ObjectOutputStream {
-    private boolean replace = false;
     public static final Trace debug = Trace.create("connection");
 
     public ExObjectOutputStream(OutputStream out) throws IOException {
@@ -30,7 +29,6 @@ public class ExObjectOutputStream extends ObjectOutputStream {
         if (backwardCompatibility) {
             try {
                 super.enableReplaceObject(true);
-                replace = true;
                 debug("replaceObject");
             } catch (Exception e) {
                 throw new IOException(

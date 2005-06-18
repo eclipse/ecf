@@ -16,11 +16,10 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.comm.ConnectionRequestHandler;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 
 public class TCPServerSOContainer extends ServerSOContainer implements
         ConnectionRequestHandler {
@@ -72,8 +71,8 @@ public class TCPServerSOContainer extends ServerSOContainer implements
     }
 
     protected void initialize(TCPServerSOContainerGroup listener, String path,
-            int keepAlive) {
-        this.keepAlive = keepAlive;
+            int ka) {
+        this.keepAlive = ka;
         this.group = listener;
         this.group.add(path, this);
     }
@@ -111,10 +110,4 @@ public class TCPServerSOContainer extends ServerSOContainer implements
         return input;
     }
 
-    public static void main(String[] args) throws Exception {
-        ID server = IDFactory.makeStringID(getDefaultServerURL());
-        TCPServerSOContainer cont = new TCPServerSOContainer(
-                new SOContainerConfig(server));
-        Thread.sleep(3000000);
-    }
 }

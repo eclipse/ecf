@@ -231,7 +231,6 @@ public abstract class ClientSOContainer extends SOContainer {
 		if (vc == null)
 			throw new IOException("view change message is null");
 		ID fromID = mess.getFromContainerID();
-		ID toID = mess.getToContainerID();
 		if (fromID == null || !fromID.equals(remoteServerID)) {
 			throw new IOException("view change message from " + fromID
 					+ " is not same as " + remoteServerID);

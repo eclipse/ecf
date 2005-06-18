@@ -79,7 +79,7 @@ public class ServerConfigParser {
 			}
 			String prot = getAttributeValue(n,PROTOCOL_ATTR);
 			String host = getAttributeValue(n,HOSTNAME_ATTR);
-			Connector c = new Connector(this, prot,host,port,timeout);
+			Connector c = new Connector(prot,host,port,timeout);
 			processConnector(n,c);
 			res.add(c);
 		}

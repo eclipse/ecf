@@ -34,7 +34,7 @@ import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public class ServerSOContainer extends SOContainer implements ISharedObjectContainerGroupManager {
 	
-	protected IJoinPolicy policy;
+	protected IJoinPolicy joinpolicy;
 	
     public ServerSOContainer(ISharedObjectContainerConfig config) {
         super(config);
@@ -169,15 +169,14 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
     }
     protected Object checkJoin(SocketAddress saddr, ID fromID, String target, Serializable data)
             throws Exception {
-    	if (this.policy != null) {
-    		return this.policy.checkJoin(saddr,fromID,getID(),target,data);
+    	if (this.joinpolicy != null) {
+    		return this.joinpolicy.checkJoin(saddr,fromID,getID(),target,data);
     	}
         return null;
     }
     protected void handleLeaveGroupMessage(ContainerMessage mess) {
         ID fromID = mess.getFromContainerID();
         if (fromID == null) return;
-        ID toID = mess.getToContainerID();
         debug("Member "+fromID+"leaving group");
         synchronized (getGroupMembershipLock()) {
             IAsynchConnection conn = getConnectionForID(fromID);
@@ -273,7 +272,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 
 	public void setJoinPolicy(IJoinPolicy policy) {
 		synchronized (getGroupMembershipLock()) {
-			this.policy = policy;
+			this.joinpolicy = policy;
 		}
 	}
 }

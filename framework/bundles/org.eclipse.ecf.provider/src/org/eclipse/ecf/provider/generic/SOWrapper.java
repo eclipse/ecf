@@ -33,7 +33,6 @@ public class SOWrapper {
     protected ISharedObject sharedObject;
     private SOConfig sharedObjectConfig;
     private ID sharedObjectID;
-    private ID sharedObjectHomeID;
     private SOContainer container;
     private ID containerID;
     private Thread thread;
@@ -41,7 +40,6 @@ public class SOWrapper {
 
     protected SOWrapper(SOContainer.LoadingSharedObject obj, SOContainer cont) {
         sharedObjectID = obj.getID();
-        sharedObjectHomeID = obj.getHomeID();
         sharedObject = obj;
         container = cont;
         containerID = cont.getID();
@@ -53,7 +51,6 @@ public class SOWrapper {
     protected SOWrapper(SOConfig aConfig, ISharedObject obj, SOContainer cont) {
         sharedObjectConfig = aConfig;
         sharedObjectID = sharedObjectConfig.getSharedObjectID();
-        sharedObjectHomeID = sharedObjectConfig.getHomeContainerID();
         sharedObject = obj;
         container = cont;
         containerID = cont.getID();

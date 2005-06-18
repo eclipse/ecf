@@ -17,15 +17,13 @@ public class Connector {
 	public static final String DEFAULT_SERVERNAME = TCPServerSOContainer.DEFAULT_NAME;
 	public static final String DEFAULT_PROTOCOL = TCPServerSOContainer.DEFAULT_PROTOCOL;
 	
-	private final ServerConfigParser parser;
 	int port = DEFAULT_PORT;
 	int timeout = DEFAULT_TIMEOUT;
 	String protocol = DEFAULT_PROTOCOL;
 	String hostname = DEFAULT_HOSTNAME;
 	List groups = new ArrayList();
 	
-	public Connector(ServerConfigParser parser, String protocol, String host, int port, int timeout) {
-		this.parser = parser;
+	public Connector(String protocol, String host, int port, int timeout) {
 		if (protocol != null && !protocol.equals("")) this.protocol = protocol;
 		if (host != null && !host.equals("")) this.hostname = host;
 		else {

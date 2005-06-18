@@ -294,7 +294,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			throw new SharedObjectAddException(
 					"Object id is null, or instance is null");
 		}
-		ISharedObject so = addSharedObject0(sd, s);
+		addSharedObject0(sd, s);
 		// Wait right here until committed
 		if (t != null)
 			t.waitToCommit();
@@ -636,7 +636,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 				.getData();
 		ID fromID = mess.getFromContainerID();
 		ID toID = mess.getToContainerID();
-		long seq = mess.getSequence();
 		Object checkCreateResult = null;
 		ID sharedObjectID = desc.getID();
 		// Check to make sure that the remote creation is allowed.
@@ -695,7 +694,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		debug("handleCreateResponseMessage:" + mess);
 		ID fromID = mess.getFromContainerID();
 		ID toID = mess.getToContainerID();
-		long seq = mess.getSequence();
 		ContainerMessage.CreateResponseMessage resp = (ContainerMessage.CreateResponseMessage) mess
 				.getData();
 		if (toID != null && toID.equals(getID())) {
@@ -722,7 +720,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		debug("handleSharedObjectDisposeMessage:" + mess);
 		ID fromID = mess.getFromContainerID();
 		ID toID = mess.getToContainerID();
-		long seq = mess.getSequence();
 		ContainerMessage.SharedObjectDisposeMessage resp = (ContainerMessage.SharedObjectDisposeMessage) mess
 				.getData();
 		ID sharedObjectID = resp.getSharedObjectID();
@@ -845,16 +842,16 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return new SOConfig(sd.getID(), homeID, this, sd.getProperties());
 	}
 
-	protected SOContext makeSharedObjectContext(SOConfig config,
+	protected SOContext makeSharedObjectContext(SOConfig soconfig,
 			IQueueEnqueue queue) {
-		return new SOContext(config.getSharedObjectID(), config
-				.getHomeContainerID(), this, config.getProperties(), queue);
+		return new SOContext(soconfig.getSharedObjectID(), soconfig
+				.getHomeContainerID(), this, soconfig.getProperties(), queue);
 	}
 
-	protected SOContext makeRemoteSharedObjectContext(SOConfig config,
+	protected SOContext makeRemoteSharedObjectContext(SOConfig soconfig,
 			IQueueEnqueue queue) {
-		return new SOContext(config.getSharedObjectID(), config
-				.getHomeContainerID(), this, config.getProperties(), queue);
+		return new SOContext(soconfig.getSharedObjectID(), soconfig
+				.getHomeContainerID(), this, soconfig.getProperties(), queue);
 	}
 
 	protected SOWrapper makeSharedObjectWrapper(SharedObjectDescription sd,
