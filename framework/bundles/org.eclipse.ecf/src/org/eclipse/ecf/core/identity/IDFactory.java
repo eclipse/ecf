@@ -9,6 +9,7 @@
 
 package org.eclipse.ecf.core.identity;
 
+import java.net.URI;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -190,20 +191,20 @@ public class IDFactory {
         throw e;
     }
     /**
-     * Make a new identity. Given a classloader, Namespace, constructor argument
+     * Make a new identity. Given a Namespace instance, constructor argument
      * types, and an array of arguments, return a new instance of an ID
      * belonging to the given Namespace
      * 
      * @param n
-     *            the Namespace to which the ID will belong
+     *            the Namespace to which the ID belongs
      * @param argTypes
      *            a String [] of the arg types for the ID instance constructor
      * @param args
      *            an Object [] of the args for the ID instance constructor
-     * @exception Exception
+     * @exception IDInstantiationException
      *                thrown if class for instantiator or instance can't be
      *                loaded, if something goes wrong during instance
-     *                construction or if instance cannot be created
+     *                construction 
      */
     public static final ID makeID(Namespace n, String[] argTypes, Object[] args)
             throws IDInstantiationException {
@@ -239,6 +240,22 @@ public class IDFactory {
         // Ask instantiator to actually create instance
         return instantiator.makeInstance(ns, clazzes, args);
     }
+    /**
+     * Make a new identity. Given a Namespace name, constructor argument
+     * types, and an array of arguments, return a new instance of an ID
+     * belonging to the given Namespace
+     * 
+     * @param namespacename
+     *            the name of the Namespace to which the ID belongs
+     * @param argTypes
+     *            a String [] of the arg types for the ID instance constructor
+     * @param args
+     *            an Object [] of the args for the ID instance constructor
+     * @exception IDInstantiationException
+     *                thrown if class for instantiator or instance can't be
+     *                loaded, if something goes wrong during instance
+     *                construction 
+     */
     public static final ID makeID(String namespacename, String[] argTypes,
             Object[] args) throws IDInstantiationException {
     	Namespace n = getNamespaceByName(namespacename);
@@ -257,19 +274,56 @@ public class IDFactory {
      * @exception Exception
      *                thrown if class for instantiator or instance can't be
      *                loaded, if something goes wrong during instance
-     *                construction or if instance cannot be created
+     *                construction 
      */
     public static final ID makeID(Namespace n, Object[] args)
             throws IDInstantiationException {
         return makeID(n, null, args);
     }
+    /**
+     * Make a new identity. Given a Namespace name, and an array of instance
+     * constructor arguments, return a new instance of an ID belonging to the
+     * given Namespace
+     * 
+     * @param n
+     *            the name of the Namespace to which the ID will belong
+     * @param args
+     *            an Object [] of the args for the ID instance constructor
+     * @exception Exception
+     *                thrown if class for instantiator or instance can't be
+     *                loaded, if something goes wrong during instance
+     *                construction 
+     */
     public static final ID makeID(String namespacename, Object[] args)
             throws IDInstantiationException {
     	Namespace n = getNamespaceByName(namespacename);
     	if (n == null) throw new IDInstantiationException("Namespace "+namespacename+" not found");
         return makeID(n, args);
     }
-
+    /**
+     * Make a new identity instance from a URI. Returns a new instance of an 
+     * ID belonging to the Namespace associated with the URI <b>scheme</b>. The URI scheme (e.g. http) 
+     * is used to lookup the Namespace instance, and the entire URI is then passed to the 
+     * IDInstantiator as a single item Object [].
+     * 
+     * @param uri
+     *            the URI to use to make ID.
+     * @param args
+     *            an Object [] of the args for the ID instance constructor
+     * @exception Exception
+     *                thrown if class for instantiator or iD instance can't be
+     *                loaded, if something goes wrong during instance
+     *                construction 
+     */
+    public static final ID makeID(URI uri) throws IDInstantiationException {
+    	if (uri == null) throw new IDInstantiationException("Null uri not allowed");
+    	String scheme = uri.getScheme();
+    	Namespace n = getNamespaceByName(scheme);
+    	if (n == null) throw new IDInstantiationException("Namespace "+scheme+" not found");
+    	return makeID(n,new Object[] { uri });
+    }
+    
+    
     public static final ID makeStringID(String idstring)
             throws IDInstantiationException {
         if (idstring == null) throw new IDInstantiationException("String cannot be null");
