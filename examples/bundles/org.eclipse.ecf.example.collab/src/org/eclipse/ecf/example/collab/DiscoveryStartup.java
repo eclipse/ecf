@@ -84,8 +84,9 @@ public class DiscoveryStartup {
 
 	}
 
-	protected void connectToService(IServiceInfo svcInfo) {
+	protected void connectToServiceFromInfo(IServiceInfo svcInfo) {
 		// XXX TODO
+		System.out.println("connectToService("+svcInfo+"");
 	}
 	
     protected void setupDiscoveryContainer(final IDiscoveryContainer dc) {
@@ -101,7 +102,7 @@ public class DiscoveryStartup {
                     discoveryView.setShowTypeDetails(false);
                     discoveryView.setServiceConnectListener(new IServiceConnectListener() {
 						public void connectToService(IServiceInfo service) {
-							connectToService(service);
+							connectToServiceFromInfo(service);
 						}
                     });
                 } catch (Exception e) {
