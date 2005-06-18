@@ -146,9 +146,9 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
         String password = "";
         try {
             addSharedObjectToContainer(remote);
-            IGroupChatContainerConfig config = getGroupChatConfig();
-            nickname = config.getNickname();
-            password = config.getPassword();
+            IGroupChatContainerConfig soconfig = getGroupChatConfig();
+            nickname = soconfig.getNickname();
+            password = soconfig.getPassword();
             multiuserchat.join(nickname,password);
         } catch (XMPPException e) {
             cleanUpConnectFail();
@@ -170,20 +170,20 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
         synchronized (getConnectLock()) {
             // If we are currently connected
             if (isConnected()) {
-                ISynchAsynchConnection connection = getConnection();
-                synchronized (connection) {
+                ISynchAsynchConnection conn = getConnection();
+                synchronized (conn) {
                     synchronized (getGroupMembershipLock()) {
                         memberLeave(groupID, null);
                     }
                     try {
-                        connection.disconnect();
+                    	conn.disconnect();
                     } catch (IOException e) {
                         dumpStack("Exception disconnecting", e);
                     }
                 }
             }
             connectionState = UNCONNECTED;
-            connection = null;
+            this.connection = null;
             remoteServerID = null;
         }
         // notify listeners
@@ -191,17 +191,16 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
                 groupID));
     }
 
-    protected SOContext makeSharedObjectContext(SOConfig config,
+    protected SOContext makeSharedObjectContext(SOConfig soconfig,
             IQueueEnqueue queue) {
-        return new XMPPContainerContext(config.getSharedObjectID(), config
-                .getHomeContainerID(), this, config.getProperties(), queue);
+        return new XMPPContainerContext(soconfig.getSharedObjectID(), soconfig
+                .getHomeContainerID(), this, soconfig.getProperties(), queue);
     }
 
     protected void processAsynch(AsynchConnectionEvent e) {
         try {
             if (e instanceof ChatConnectionPacketEvent) {
                 // It's a regular message...just print for now
-                ChatConnectionPacketEvent evt = (ChatConnectionPacketEvent) e;
                 Packet chatMess = (Packet) e.getData();
                 handleXMPPMessage(chatMess);
                 return;
@@ -213,7 +212,6 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
                 if (cm == null)
                     throw new IOException("deserialized object is null");
                 ContainerMessage contMessage = (ContainerMessage) cm;
-                Object cmdata = contMessage.getData();
                 handleContainerMessage(contMessage);
             } else {
                 // Unexpected type...

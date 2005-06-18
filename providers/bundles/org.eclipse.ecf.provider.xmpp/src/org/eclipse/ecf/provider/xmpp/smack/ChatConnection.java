@@ -119,7 +119,6 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 		XMPPID jabberURI = getXMPPID(remote);
 		String username = jabberURI.getUsername();
 		serverName = jabberURI.getHostname();
-		String password = getPasswordForObject(data);
 		try {
 			if (serverPort == -1) {
 				connection = new XMPPConnection(serverName);

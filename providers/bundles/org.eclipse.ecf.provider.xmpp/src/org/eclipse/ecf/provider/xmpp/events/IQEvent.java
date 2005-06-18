@@ -17,7 +17,8 @@ import org.jivesoftware.smack.packet.IQ;
  */
 public class IQEvent implements Event {
     
-    protected IQ iq = null;
+	private static final long serialVersionUID = 8136148813492923513L;
+	protected IQ iq = null;
     
     public IQEvent(IQ iq) {
         this.iq = iq;

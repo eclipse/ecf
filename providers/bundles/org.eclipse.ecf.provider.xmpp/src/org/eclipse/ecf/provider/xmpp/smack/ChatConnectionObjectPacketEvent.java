@@ -14,7 +14,8 @@ import org.jivesoftware.smack.packet.Packet;
 
 public class ChatConnectionObjectPacketEvent extends AsynchConnectionEvent {
 
-    Object value;
+	private static final long serialVersionUID = -1618091206033717358L;
+	Object value;
 	/**
 	 * @param source
 	 * @param param

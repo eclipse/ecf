@@ -17,7 +17,8 @@ import org.jivesoftware.smack.packet.Presence;
  */
 public class PresenceEvent implements Event {
     
-    protected Presence presence = null;
+	private static final long serialVersionUID = -8207158000504357229L;
+	protected Presence presence = null;
     
     public PresenceEvent(Presence presence) {
         this.presence = presence;

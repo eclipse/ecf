@@ -301,11 +301,6 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     protected void handlePresenceEvent(PresenceEvent evt) {
         Presence xmppPresence = evt.getPresence();
         String from = canonicalizePresenceFrom(xmppPresence.getFrom());
-        String to = xmppPresence.getTo();
-        Mode mode = xmppPresence.getMode();
-        Type type = xmppPresence.getType();
-        int priority = xmppPresence.getPriority();
-        String status = xmppPresence.getStatus();
         IPresence newPresence = makeIPresence(xmppPresence);
         ID fromID = makeIDFromName(from);
 		if (newPresence.getType().equals(IPresence.Type.SUBSCRIBE) || 
@@ -378,8 +373,6 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     }
 
     protected IPresence makeIPresence(Presence xmppPresence) {
-        Mode mode = xmppPresence.getMode();
-        Type type = xmppPresence.getType();
         int priority = xmppPresence.getPriority();
         String status = xmppPresence.getStatus();
         IPresence newPresence = new org.eclipse.ecf.presence.impl.Presence(
@@ -389,8 +382,6 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     }
 
     protected Presence makePresence(IPresence ipresence) {
-        IPresence.Mode mode = ipresence.getMode();
-        IPresence.Type type = ipresence.getType();
         int priority = ipresence.getPriority();
         String status = ipresence.getStatus();
         Presence newPresence = new Presence(

@@ -17,7 +17,8 @@ import org.jivesoftware.smack.packet.Message;
  */
 public class MessageEvent implements Event {
     
-    protected Message message = null;
+	private static final long serialVersionUID = 6940577888021931351L;
+	protected Message message = null;
     
     public MessageEvent(Message message) {
         this.message = message;

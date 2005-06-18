@@ -14,9 +14,7 @@ import java.util.Map;
 
 import javax.security.auth.callback.Callback;
 
-import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.SharedObjectAddException;
-import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
 import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
@@ -37,7 +35,6 @@ import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
-import org.eclipse.ecf.presence.ISharedObjectMessageListener;
 import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.IMessageListener.Type;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
@@ -123,7 +120,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 
 	protected ISynchAsynchConnection makeConnection(ID remoteSpace,
 			Object data) throws ConnectionInstantiationException {
-		Object[] args = { new Integer(keepAlive) };
 		ISynchAsynchConnection conn = null;
 		conn = new ChatConnection(receiver);
 		Object res = conn.getAdapter(IIMMessageSender.class);
@@ -244,20 +240,20 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		synchronized (getConnectLock()) {
 			// If we are currently connected
 			if (isConnected()) {
-				ISynchAsynchConnection connection = getConnection();
-				synchronized (connection) {
+				ISynchAsynchConnection conn = getConnection();
+				synchronized (conn) {
 					synchronized (getGroupMembershipLock()) {
 						memberLeave(groupID, null);
 					}
 					try {
-						connection.disconnect();
+						conn.disconnect();
 					} catch (IOException e) {
 						dumpStack("Exception disconnecting", e);
 					}
 				}
 			}
 			connectionState = UNCONNECTED;
-			connection = null;
+			this.connection = null;
 			remoteServerID = null;
 		}
 		// notify listeners
@@ -265,17 +261,16 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 				groupID));
 	}
 
-	protected SOContext makeSharedObjectContext(SOConfig config,
+	protected SOContext makeSharedObjectContext(SOConfig soconfig,
 			IQueueEnqueue queue) {
-		return new XMPPContainerContext(config.getSharedObjectID(), config
-				.getHomeContainerID(), this, config.getProperties(), queue);
+		return new XMPPContainerContext(soconfig.getSharedObjectID(), soconfig
+				.getHomeContainerID(), this, soconfig.getProperties(), queue);
 	}
 
 	protected void processAsynch(AsynchConnectionEvent e) {
 		try {
 			if (e instanceof ChatConnectionPacketEvent) {
 				// It's a regular message...just print for now
-				ChatConnectionPacketEvent evt = (ChatConnectionPacketEvent) e;
 				Packet chatMess = (Packet) e.getData();
 				handleXMPPMessage(chatMess);
 				return;
@@ -286,7 +281,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 				Object cm = deserializeContainerMessage((byte[]) obj);
                 if (cm == null) throw new IOException("deserialized object is null");
 				ContainerMessage contMessage = (ContainerMessage) cm;
-				Object cmdata = contMessage.getData();
 				handleContainerMessage(contMessage);
 			} else {
 				// Unexpected type...
@@ -337,10 +331,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 
                 public void addMessageListener(IMessageListener listener) {
                     sharedObject.addMessageListener(listener);
-                }
-
-                public void addSharedObjectMessageListener(ISharedObjectMessageListener listener) {
-                    sharedObject.addSharedObjectMessageListener(listener);
                 }
 
                 public IMessageSender getMessageSender() {
@@ -420,10 +410,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 						}
 					};
 				}
-                public ISharedObjectContainer makeSharedObjectContainer(Class[] types, Object[] args) throws SharedObjectContainerInstantiationException {
-                    return null;
-                }
-
 				public void addSubscribeListener(ISubscribeListener listener) {
 					sharedObject.addSubscribeListener(listener);
 				}
