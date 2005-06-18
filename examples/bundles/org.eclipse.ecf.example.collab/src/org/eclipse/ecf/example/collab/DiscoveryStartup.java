@@ -2,13 +2,16 @@ package org.eclipse.ecf.example.collab;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.util.Map;
 import java.util.Properties;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceEvent;
@@ -16,6 +19,7 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
+import org.eclipse.ecf.example.collab.actions.ClientConnectAction;
 import org.eclipse.ecf.ui.views.DiscoveryView;
 import org.eclipse.ecf.ui.views.IServiceConnectListener;
 import org.eclipse.swt.widgets.Display;
@@ -85,8 +89,28 @@ public class DiscoveryStartup {
 	}
 
 	protected void connectToServiceFromInfo(IServiceInfo svcInfo) {
-		// XXX TODO
-		System.out.println("connectToService("+svcInfo+"");
+		ClientConnectAction action = new ClientConnectAction();
+		Map props = svcInfo.getProperties();
+		String type = (String) props.get(PROP_CONTAINER_TYPE_NAME);
+		if (type == null || type.equals("")) {
+			action.setContainerType(Client.GENERIC_CONTAINER_CLIENT_NAME);
+		} else {
+			action.setContainerType(type);
+		}
+		String username = System.getProperty("user.name");
+		action.setUsername(username);
+		ID targetID = null;
+		String targetString = null;
+        try {
+    		targetString = svcInfo.getServiceURI().toString();
+            targetID = IDFactory.makeStringID(targetString);
+        } catch (Exception e) {
+        	ClientPlugin.log("cannot create target id for "+targetString,e);
+        }
+		action.setTargetID(targetID);
+		action.setProject(ResourcesPlugin.getWorkspace().getRoot());
+		// do it
+		action.run(null);
 	}
 	
     protected void setupDiscoveryContainer(final IDiscoveryContainer dc) {
