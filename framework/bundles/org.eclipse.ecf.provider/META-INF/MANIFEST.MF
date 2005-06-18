@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.eclipse.ecf.provider;singleton=true
-Bundle-Version: 0.3.0
+Bundle-Version: 0.3.1
 Bundle-Name: ECF Provider API
 Bundle-Vendor: Eclipse.org
 Bundle-Classpath: provider.jar
@@ -11,4 +11,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
 Provide-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.sobject, org.eclipse.ecf.provider.generic.gmm
 DynamicImport-Package: *
+Bundle-ClassPath: provider.jar
 
