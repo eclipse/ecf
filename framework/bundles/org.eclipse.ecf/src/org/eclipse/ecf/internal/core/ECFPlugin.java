@@ -68,7 +68,7 @@ public class ECFPlugin extends Plugin {
     private static ECFPlugin plugin;
     // Resource bundle.
     private ResourceBundle resourceBundle;
-    BundleContext context = null;
+    BundleContext bundlecontext = null;
 
     private static void debug(String msg) {
         if (Trace.ON && trace != null) {
@@ -191,7 +191,6 @@ public class ECFPlugin extends Plugin {
                 // The only required attribute is "class"
                 exten = member
                         .createExecutableExtension(CONTAINER_FACTORY_EPOINT_CLASS_ATTRIBUTE);
-                ClassLoader cl = exten.getClass().getClassLoader();
                 String clazz = exten.getClass().getName();
                 // Get name and get version, if available
                 name = member
@@ -338,7 +337,6 @@ public class ECFPlugin extends Plugin {
                         .createExecutableExtension(COMM_FACTORY_EPOINT_CLASS_ATTRIBUTE);
                 // Verify that object implements
                 // ISynchAsynchConnectionInstantiator
-                ClassLoader cl = exten.getClass().getClassLoader();
                 String clazz = exten.getClass().getName();
                 // Get name and get version, if available
                 name = member.getAttribute(COMM_FACTORY_EPOINT_NAME_ATTRIBUTE);
@@ -362,6 +360,7 @@ public class ECFPlugin extends Plugin {
                 if (ConnectionFactory.containsDescription(cd)) {
                     // It's already there...log and throw as we can't use the
                     // same named factory
+                	
                     IStatus s = new Status(
                             Status.ERROR,
                             bundleName,
@@ -372,6 +371,7 @@ public class ECFPlugin extends Plugin {
                                     + extension
                                             .getExtensionPointUniqueIdentifier(),
                             null);
+                    log(s);
                     throw new CoreException(getStatusForCommException(
                             extension, bundleName, name));
                 }
@@ -436,7 +436,7 @@ public class ECFPlugin extends Plugin {
         setupContainerExtensionPoint(context);
         setupIdentityExtensionPoint(context);
         setupCommExtensionPoint(context);
-        this.context = context;
+        this.bundlecontext = context;
     }
 
     /**
@@ -444,11 +444,11 @@ public class ECFPlugin extends Plugin {
      */
     public void stop(BundleContext context) throws Exception {
         super.stop(context);
-        this.context = null;
+        this.bundlecontext = null;
     }
 
     public BundleContext getBundleContext() {
-        return context;
+        return bundlecontext;
     }
 
     /**

@@ -40,10 +40,10 @@ public class NamespacePermission extends BasicPermission {
         if ((p == null) || (p.getClass() != getClass()))
             return false;
         NamespacePermission np = (NamespacePermission) p;
-        String actions = getActions();
-        if (actions == null)
+        String act = getActions();
+        if (act == null)
             return false;
-        if (actions.equals(ALL_NAMESPACE) || actions.equals(np.getActions()))
+        if (act.equals(ALL_NAMESPACE) || act.equals(np.getActions()))
             return true;
         return false;
     }

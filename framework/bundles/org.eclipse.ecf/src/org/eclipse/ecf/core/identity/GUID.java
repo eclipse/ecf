@@ -64,9 +64,8 @@ public class GUID extends StringID {
 			throws IDInstantiationException {
 		super(n, "");
 		// Get SecureRandom instance for class
-		SecureRandom r = null;
 		try {
-			r = getRandom(algo, provider);
+			getRandom(algo, provider);
 		} catch (Exception e) {
 			throw new IDInstantiationException("GUID creation failure: "
 					+ e.getMessage());
