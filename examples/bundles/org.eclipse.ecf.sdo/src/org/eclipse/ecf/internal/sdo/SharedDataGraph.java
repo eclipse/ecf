@@ -208,7 +208,7 @@ public class SharedDataGraph implements ISharedObject, ISharedDataGraph {
     }
 
     private synchronized void handleReceiveDataGraphMessage(ID containerID,
-            Version version, Object data) {
+            Version v, Object data) {
         if (dataGraph == null) {
             try {
                 dataGraph = updateProvider.deserializeDataGraph(data);
@@ -222,7 +222,7 @@ public class SharedDataGraph implements ISharedObject, ISharedDataGraph {
                 return;
             }
 
-            this.version = version;
+            this.version = v;
             dataGraph.getChangeSummary().beginLogging();
             if (subscriptionCallback != null)
                 subscriptionCallback.dataGraphSubscribed(this, containerID);
@@ -230,15 +230,15 @@ public class SharedDataGraph implements ISharedObject, ISharedDataGraph {
     }
 
     private synchronized void handleUpdateDataGraphMessage(ID containerID,
-            Version version, Object data) {
+            Version v, Object data) {
         if (dataGraph == null)
             return;
 
-        if (!version.equals(this.version)) {
+        if (!v.equals(this.version)) {
             if (SDOPlugin.isTracing(TRACE_TAG))
                 SDOPlugin.getTraceLog().println(
                         "Version mismatch: current=" + this.version + "; new="
-                                + version);
+                                + v);
 
             updateConsumer.updateFailed(this, containerID, null);
             return;

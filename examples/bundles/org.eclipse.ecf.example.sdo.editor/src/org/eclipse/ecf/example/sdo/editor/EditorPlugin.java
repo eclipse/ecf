@@ -46,8 +46,6 @@ public class EditorPlugin extends AbstractUIPlugin {
     // Resource bundle.
     private ResourceBundle resourceBundle;
 
-    private Client client;
-
     /**
      * The constructor.
      */

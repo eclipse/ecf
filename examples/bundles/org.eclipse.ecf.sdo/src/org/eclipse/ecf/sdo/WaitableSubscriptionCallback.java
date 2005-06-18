@@ -32,8 +32,8 @@ public class WaitableSubscriptionCallback implements ISubscriptionCallback {
 	 *      org.eclipse.ecf.core.identity.ID)
 	 */
 	public synchronized void dataGraphSubscribed(ISharedDataGraph graph,
-			ID containerID) {
-		this.containerID = containerID;
+			ID cID) {
+		this.containerID = cID;
 		notifyAll();
 	}
 
@@ -44,8 +44,8 @@ public class WaitableSubscriptionCallback implements ISubscriptionCallback {
 	 *      java.lang.Throwable)
 	 */
 	public synchronized void subscriptionFailed(ISharedDataGraph graph,
-			Throwable cause) {
-		this.cause = cause;
+			Throwable c) {
+		this.cause = c;
 		notifyAll();
 	}
 

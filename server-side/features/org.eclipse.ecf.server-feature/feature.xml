@@ -103,7 +103,8 @@ to any source code in the Content.&lt;/p&gt;
          id="org.eclipse.ecf.provider"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false" />
 
    <plugin
          id="org.eclipse.ecf.sdo"
