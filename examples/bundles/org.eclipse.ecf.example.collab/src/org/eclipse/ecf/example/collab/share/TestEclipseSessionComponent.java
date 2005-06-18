@@ -34,10 +34,10 @@ public class TestEclipseSessionComponent implements EclipseProjectComponent {
         return null;
     }
 
-    public void register(EclipseProject obj, final User requestor)
+    public void register(EclipseProject obj, final User r)
             throws Exception {
         this.repobj = obj;
-        this.requestor = requestor;
+        this.requestor = r;
         showMsg("Registration request from " + requestor.getNickname()
                 + ".  ID: " + requestor.getUserID(),
                 "EclipseProjectComponent '" + this.getClass().getName()

@@ -21,7 +21,7 @@ import org.eclipse.ecf.example.collab.Trace;
 
 public class TransactionSharedObject extends GenericSharedObject implements ISharedObjectContainerTransaction {
 
-    static Trace trace = Trace.create("transactionsharedobject");
+    static Trace tsotrace = Trace.create("transactionsharedobject");
 
     // If the "replicaCommit" method name is changed, the name of this variable should
     // change
@@ -51,8 +51,8 @@ public class TransactionSharedObject extends GenericSharedObject implements ISha
     }
 
     protected void traceDump(String msg, Throwable t) {
-        if (Trace.ON && trace != null) {
-            trace.dumpStack(t, msg);
+        if (Trace.ON && tsotrace != null) {
+        	tsotrace.dumpStack(t, msg);
         }
     }
     protected void init()
@@ -65,8 +65,8 @@ public class TransactionSharedObject extends GenericSharedObject implements ISha
     }
     public void activated(ID [] others)
     {
-        if (Trace.ON && trace != null) {
-            trace.msg("activated() on "+getID());
+        if (Trace.ON && tsotrace != null) {
+        	tsotrace.msg("activated() on "+getID());
         }
         // No other state changes while this is going on
         synchronized (lock) {

@@ -53,8 +53,6 @@ public class AddBuddyDialog extends Dialog {
 		gridLayout_2.numColumns = 2;
 		composite.setLayout(gridLayout_2);
 
-		final Label label = new Label(composite, SWT.NONE);
-
 		final Label label_4 = new Label(composite, SWT.NONE);
 		label_4.setText("<user>@<jabberserver>");
 

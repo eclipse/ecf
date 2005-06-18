@@ -21,7 +21,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
 public class EclipseMessage extends GenericSharedObject {
-    public static final Trace trace = Trace
+    public static final Trace emtrace = Trace
             .create("eclipsemessagesharedobject");
     String message;
     String sender;
@@ -37,21 +37,21 @@ public class EclipseMessage extends GenericSharedObject {
     }
 
     protected void trace(String msg) {
-        if (Trace.ON && trace != null) {
-            trace.msg(msg);
+        if (Trace.ON && emtrace != null) {
+            emtrace.msg(msg);
         }
     }
 
     protected void traceDump(String msg, Throwable e) {
-        if (Trace.ON && trace != null) {
-            trace.dumpStack(e, msg);
+        if (Trace.ON && emtrace != null) {
+        	emtrace.dumpStack(e, msg);
         }
     }
 
-    public void init(ISharedObjectConfig config)
+    public void init(ISharedObjectConfig soconfig)
             throws SharedObjectInitException {
-        super.init(config);
-        Map aMap = config.getProperties();
+        super.init(soconfig);
+        Map aMap = soconfig.getProperties();
         Object[] args = (Object[]) aMap.get("args");
         if (args != null && args.length == 2) {
             this.message = (String) args[0];
@@ -74,8 +74,8 @@ public class EclipseMessage extends GenericSharedObject {
                 .getName(), map, replicateID++);
     }
 
-    protected void showMessage(final String message, final String sender) {
-        final String msg = sender + " says '" + message + "'";
+    protected void showMessage(final String m, final String s) {
+        final String msg = sender + " says '" + m + "'";
         try {
             if (!getContext().isGroupManager()) {
                 Display.getDefault().syncExec(new Runnable() {

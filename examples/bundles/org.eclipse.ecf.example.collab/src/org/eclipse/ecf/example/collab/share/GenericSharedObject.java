@@ -100,9 +100,9 @@ public class GenericSharedObject implements ISharedObject {
 
     public void destroySelfLocal() {
         try {
-            ISharedObjectConfig config = getConfig();
-            if (config != null) {
-                ID myID = config.getSharedObjectID();
+            ISharedObjectConfig soconfig = getConfig();
+            if (soconfig != null) {
+                ID myID = soconfig.getSharedObjectID();
                 ISharedObjectContext context = getContext();
                 if (context != null) {
                     ISharedObjectManager manager = context.getSharedObjectManager();
@@ -195,8 +195,8 @@ public class GenericSharedObject implements ISharedObject {
     }
 
     public ISharedObjectContext getContext() {
-        ISharedObjectConfig config = getConfig();
-        if (config != null) return config.getContext();
+        ISharedObjectConfig soconfig = getConfig();
+        if (soconfig != null) return soconfig.getContext();
         else return null;
     }
 
@@ -204,16 +204,16 @@ public class GenericSharedObject implements ISharedObject {
         return config;
     }
     protected ID getHomeContainerID() {
-        ISharedObjectConfig config = getConfig();
-        if (config != null) {
-            return config.getHomeContainerID();
+        ISharedObjectConfig soconfig = getConfig();
+        if (soconfig != null) {
+            return soconfig.getHomeContainerID();
         } else return null;
     }
 
     public ID getID() {
-        ISharedObjectConfig config = getConfig();
-        if (config != null) {
-            return config.getSharedObjectID();
+        ISharedObjectConfig soconfig = getConfig();
+        if (soconfig != null) {
+            return soconfig.getSharedObjectID();
         } else return null;
     }
 
@@ -226,10 +226,10 @@ public class GenericSharedObject implements ISharedObject {
     }
 
     protected SharedObjectDescription getReplicaDescription(ID receiver) {
-        ISharedObjectConfig config = getConfig();
-        if (config != null) {
+        ISharedObjectConfig soconfig = getConfig();
+        if (soconfig != null) {
             return new SharedObjectDescription(getID(), getClass().getName(),
-                config.getProperties(), replicateID++);
+            		soconfig.getProperties(), replicateID++);
         } else return null;
     }
 

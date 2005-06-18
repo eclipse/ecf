@@ -32,6 +32,8 @@ import org.eclipse.swt.widgets.Display;
 public class EclipseFileTransfer extends FileTransferSharedObject implements
 		FileTransferListener {
 
+	private static final long serialVersionUID = -4496151870561737078L;
+
 	FileSenderUI senderUI;
 
 	ID eclipseStageID;
@@ -144,7 +146,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 	public void receiveStart(FileTransferSharedObject obj, File aFile,
 			long length, float rate) {
 		
-		final FileReceiver r = new FileReceiver(obj, aFile, length, rate);
+		final FileReceiver r = new FileReceiver(aFile, length, rate);
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
                 if (r != null) r.run();
@@ -174,8 +176,6 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 		// participants in
 		// the transaction. If so, we throw.
 		if (failedParticipants != null && failedParticipants.size() > 0) {
-			ID remoteID = (ID) failedParticipants.keys().nextElement();
-			Exception e = (Exception) failedParticipants.get(remoteID);
 			// In this case, we're going to go ahead and continue anyway
 			return true;
 			// Abort!
@@ -193,13 +193,11 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 	}
 	
 	private class FileReceiver implements Runnable {
-		private FileTransferSharedObject obj = null;
 		private File aFile = null;
 		private long length;
 		private float rate;
 		
-		public FileReceiver(FileTransferSharedObject obj, File aFile, long length, float rate) {
-			this.obj = obj;
+		public FileReceiver(File aFile, long length, float rate) {
 			this.aFile = aFile;
 			this.length = length;
 			this.rate = rate;
@@ -211,7 +209,6 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 			boolean isServer = false;
 			
 			if (ClientPlugin.getDefault().getPluginPreferences().getBoolean(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE)) {
-				Display d = ClientPlugin.getDefault().getActiveShell().getDisplay();
 				MessageDialog dialog = new MessageDialog(ClientPlugin.getDefault().getActiveShell(), "File Receive Confirmation", null, "Accept file?", MessageDialog.QUESTION, null , 0);
 				dialog.setBlockOnOpen(true);
 				int response = dialog.open();

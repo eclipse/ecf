@@ -94,7 +94,6 @@ public class RosterGroup implements IRosterGroup {
      */
     public IRosterEntry removeEntry(IRosterEntry entry) {
         synchronized (entries) {
-            boolean hasEntry = entries.containsValue(entry);
             IRosterEntry res = (IRosterEntry) entries.remove(entry.getUserID());
             return res;
         }

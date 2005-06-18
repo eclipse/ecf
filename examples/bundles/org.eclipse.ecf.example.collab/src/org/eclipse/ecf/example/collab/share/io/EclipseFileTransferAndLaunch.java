@@ -23,7 +23,8 @@ import org.eclipse.swt.widgets.Display;
 public class EclipseFileTransferAndLaunch
 	extends EclipseFileTransfer {
 		
-    public EclipseFileTransferAndLaunch() {
+	private static final long serialVersionUID = -7524767418102487435L;
+	public EclipseFileTransferAndLaunch() {
         
     }
 	public void sendDone(FileTransferSharedObject obj, Exception e) {

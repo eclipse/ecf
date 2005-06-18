@@ -79,14 +79,6 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 		}
 	};
 
-	private final Runnable showImageRunnable = new Runnable() {
-		public void run() {
-			Shell shell = getShell();
-			if (!shell.isDisposed() && image != null && !image.isDisposed())
-				shell.setImage(image);
-		}
-	};
-
 	private Flash flash;
 
 	private class Flash implements Runnable  {
@@ -244,7 +236,6 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
         });
     }
 	public boolean hasFocus() {
-        boolean result = false;
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
                 if (getShell().isDisposed())

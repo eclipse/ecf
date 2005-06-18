@@ -176,7 +176,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
 	public String getLocalFullProjectPath() {
 		String eclipseDir = null;
-		String result = null;
 		try {
 			eclipseDir = Platform.getLocation().toOSString();
 		} catch (Exception e) {
@@ -209,7 +208,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	protected LineChatClientView getOutputWindow() {
 		final String pn = (localProject == null || localProject.getName().trim().equals("")) ? "<workspace>" : localProject
 				.getName();
-		final String projectName = pn;
 		final String init = INIT_TEXT + pn + "\n\n";
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
@@ -363,7 +361,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		if (sender == null || name == null)
 			throw new NullPointerException("sender or proxyClass is null");
 		// loadClass and create instance if possible
-		EclipseProjectComponent ec = null;
 		try {
 			checkRegisterProxyPolicy("deregister", sender, name);
 		} catch (SecurityException e) {
@@ -401,7 +398,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
 	protected void handleUserMessage(final User sender, String msg) {
 		// Show line on local interface
-		final String username = sender.getNickname();
 		final String message = msg;
 		if (sender == null)
 			return;
@@ -456,8 +452,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
 				if (localGUI != null) {
 					line.setText("Connecting to " + remote.getName());
-					String name = remote.getName();
-					
 					localGUI.showLine(line);
 				}
 				crs.joinGroup(remote, data);

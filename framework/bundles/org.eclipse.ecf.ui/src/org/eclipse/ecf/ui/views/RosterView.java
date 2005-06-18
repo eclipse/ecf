@@ -356,7 +356,6 @@ public class RosterView extends ViewPart implements IPresenceListener,
 
 		public String[] getAllGroupNames() {
 			TreeObject[] objs = root.getChildren();
-			String[] groups = null;
 			if (objs != null) {
 				List l = new ArrayList();
 				for (int i = 0; i < objs.length; i++) {
@@ -945,11 +944,6 @@ public class RosterView extends ViewPart implements IPresenceListener,
 				selectedDoubleClickAction.run();
 			}
 		});
-	}
-
-	private void showMessage(String message) {
-		MessageDialog.openInformation(viewer.getControl().getShell(),
-				"Roster View", message);
 	}
 
 	/**

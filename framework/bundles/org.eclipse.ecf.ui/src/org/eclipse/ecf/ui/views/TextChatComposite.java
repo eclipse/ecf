@@ -309,8 +309,8 @@ public class TextChatComposite extends Composite {
             StyleRange sr = new StyleRange();
             sr.start = startRange;
             sr.length = sb.length();
-            IUser localUser = getLocalUser();
-            if (localUser != null && localUser.getID().equals(text.getOriginator().getID())) { 
+            IUser lu = getLocalUser();
+            if (lu != null && lu.getID().equals(text.getOriginator().getID())) { 
                 sr.foreground = meColor;
             } else {
                 sr.foreground = otherColor;
@@ -361,11 +361,11 @@ public class TextChatComposite extends Composite {
 
     protected void sendTextLineInput(String text) {
         if (inputHandler != null) {
-            IUser localUser = getLocalUser();
-            IUser remoteUser = getRemoteUser();
-            if (localUser != null && remoteUser != null) {
-                inputHandler.inputText(remoteUser.getID(),text);
-                appendText(new ChatLine(text,localUser));
+            IUser lu = getLocalUser();
+            IUser ru = getRemoteUser();
+            if (lu != null && ru != null) {
+                inputHandler.inputText(ru.getID(),text);
+                appendText(new ChatLine(text,lu));
             } else {
                 UiPlugin.getDefault().getLog().log(new Status(Status.ERROR,UiPlugin.PLUGIN_ID,100,"Null localUser or remoteUser for textchatcomposite",new NullPointerException()));
             }
@@ -376,10 +376,10 @@ public class TextChatComposite extends Composite {
 
     protected void sendStartedTyping() {
         if (inputHandler != null) {
-            IUser localUser = getLocalUser();
-            IUser remoteUser = getRemoteUser();
-            if (localUser != null && remoteUser != null) {
-                inputHandler.startTyping(remoteUser.getID());
+            IUser lu = getLocalUser();
+            IUser ru = getRemoteUser();
+            if (lu != null && ru != null) {
+                inputHandler.startTyping(ru.getID());
             } else {
                 UiPlugin.getDefault().getLog().log(new Status(Status.ERROR,UiPlugin.PLUGIN_ID,100,"Null localUser or remoteUser for textchatcomposite",new NullPointerException()));
             }

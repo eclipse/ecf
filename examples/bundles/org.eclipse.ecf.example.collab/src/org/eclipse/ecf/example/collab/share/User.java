@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class User implements Serializable {
 	
+	private static final long serialVersionUID = -9164887171441293342L;
 	protected Vector userFields;
 	protected ID userID;
 	protected String nickname;

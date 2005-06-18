@@ -16,12 +16,10 @@ import java.io.File;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.help.browser.IBrowser;
 import org.eclipse.help.internal.browser.BrowserManager;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 
 public class GetExec {
 	private static String DEFAULT_UNIX_BROWSER = "mozilla";
-	private static final String EMBEDDED_VALUE = "embedded";
 
 	// The flag to display a url.
 	private static final String UNIX_FLAG = "";
@@ -33,7 +31,6 @@ public class GetExec {
 	// The default system browser under windows.
 	private static final String WIN_PATH = "rundll32";
 	protected static void displayURL(String url, boolean external) {
-		boolean win32 = SWT.getPlatform().equals("win32");
 
 		IBrowser browser = BrowserManager.getInstance()
 		.createBrowser(external);
@@ -45,7 +42,6 @@ public class GetExec {
 	}
 	public static String getBrowserExec(String unixBrowser, String url) {
 		boolean windows = isWindowsPlatform();
-		String cmd = null;
 		if (windows)
 			return WIN_PATH + " " + WIN_FLAG + " " + url;
 		else {

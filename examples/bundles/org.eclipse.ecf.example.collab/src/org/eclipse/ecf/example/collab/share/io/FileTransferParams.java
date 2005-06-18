@@ -17,7 +17,8 @@ import java.util.Date;
 
 public class FileTransferParams implements Serializable
 {
-    protected static int DEFAULT_CHUNK_SIZE = 1024;
+	private static final long serialVersionUID = -2871056005778727843L;
+	protected static int DEFAULT_CHUNK_SIZE = 1024;
     protected static int DEFAULT_WAIT_TIME = 1000;
     protected static int DEFAULT_FILE_LENGTH = -1;
     protected static  boolean DEFAULT_INCLUDE_SERVER = false;
