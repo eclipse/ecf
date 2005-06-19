@@ -5,6 +5,7 @@ set RP=..\..\..\plugins
 set ECF=%RP%\org.eclipse.ecf_0.3.1\ecf.jar
 set UI=%RP%\org.eclipse.ecf.ui_0.3.1\ui.jar
 set SDO=%RP%\org.eclipse.ecf.sdo_0.3.1\ecf.sdo.jar
+set DS=%RP%\org.eclipse.ecf.datashare_0.3.1\datashare.jar
 set PROVIDER=%RP%\org.eclipse.ecf.provider_0.3.1\provider.jar
 set PRESENCE=%RP%\org.eclipse.ecf.presence_0.3.1\presence.jar
 set GED=%RP%\org.eclipse.ecf.example.sdo.gefeditor_0.3.1\editor.jar
@@ -14,7 +15,7 @@ set DISCOVERY=%RP%\org.eclipse.ecf.discovery_0.3.1\discovery.jar
 set HELLO=%RP%\org.eclipse.ecf.example.hello_0.3.1\hello.jar
 set COLLAB=%RP%\org.eclipse.ecf.example.collab_0.3.1\client.jar
 
-set CP="..\lib\core.jar;..\lib\runtime.jar;..\lib\osgi.jar;%ECF%;%UI%;%SDO%;%PROVIDER%;%PRESENCE%;%GED%;%ED%;%LIBRARY%;%HELLO%;%DISCOVERY%;%COLLAB%;."
+set CP="..\lib\core.jar;..\lib\runtime.jar;..\lib\osgi.jar;%ECF%;%UI%;%SDO%;%PROVIDER%;%PRESENCE%;%GED%;%ED%;%LIBRARY%;%HELLO%;%DS%;%DISCOVERY%;%COLLAB%;."
 
 set TRACE=-Dorg.eclipse.ecf.Trace=true -Dorg.eclipse.ecf.provider.Trace=true
 
