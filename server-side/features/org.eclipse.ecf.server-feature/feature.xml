@@ -42,83 +42,38 @@ otherwise indicated below, the terms and conditions of the EPL
 still apply to any source code in the Content.
    </license>
 
-   <plugin
-         id="org.eclipse.ecf"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
+   <includes
+         id="org.eclipse.ecf.collab"
+         version="0.3.1"/>
 
-   <plugin
-         id="org.eclipse.ecf.discovery"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
+   <includes
+         id="org.eclipse.ecf.core"
+         version="0.3.1"/>
 
-   <plugin
-         id="org.eclipse.ecf.example.collab"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
+   <includes
+         id="org.eclipse.ecf.datashare_feature"
+         version="0.3.1"/>
 
-   <plugin
-         id="org.eclipse.ecf.example.hello"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
+   <includes
+         id="org.eclipse.ecf.graphshare"
+         version="0.3.1"/>
 
-   <plugin
-         id="org.eclipse.ecf.example.library"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.example.sdo.editor"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.example.sdo.gefeditor"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.presence"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.provider"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.sdo"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.datashare"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.example.datashare.hello"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
+   <requires>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.help.base"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.emf.ecore"/>
+      <import plugin="org.eclipse.emf.commonj.sdo"/>
+      <import plugin="org.eclipse.emf.ecore.sdo"/>
+      <import plugin="org.eclipse.emf.ecore.sdo.editor"/>
+      <import plugin="org.eclipse.gef"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.forms"/>
+   </requires>
 
 </feature>
