@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceInfo;
@@ -52,9 +53,12 @@ public class DiscoveryView extends ViewPart {
 	private Action requestServiceInfoAction;
 	private Action registerServiceTypeAction;
 	private Action connectToAction;
+	private Action disconnectContainerAction;
+	private Action connectContainerAction;
 	
 	IDiscoveryContainer container = null;
-	IServiceConnectListener serviceConnectListener = null;
+	ISharedObjectContainer socontainer = null;
+	IDiscoveryControlListener serviceConnectListener = null;
 
 	protected boolean showTypeDetails = false;
 	
@@ -62,8 +66,15 @@ public class DiscoveryView extends ViewPart {
 		showTypeDetails = val;
 		refreshView();
 	}
-	public void setDiscoveryContainer(IDiscoveryContainer container) {
+	public synchronized void setDiscoveryContainer(IDiscoveryContainer container, ISharedObjectContainer socontainer) {
 		this.container = container;
+		this.socontainer = socontainer;
+	}
+	public synchronized boolean isConnected() {
+		if (socontainer == null) return false;
+		else {
+			return true;
+		}
 	}
 	class TreeObject implements IAdaptable {
 		private String name;
@@ -155,8 +166,12 @@ public class DiscoveryView extends ViewPart {
 		}
 		private void initialize() {
 			invisibleRoot = new TreeParent(null,"",null);
-			root = new TreeParent(null,"Services",null);
+			root = new TreeParent(null,"Network Services",null);
 			invisibleRoot.addChild(root);
+		}
+		public boolean isRoot(TreeParent tp) {
+			if (tp != null && tp == root) return true;
+			else return false;
 		}
 		void replaceOrAdd(TreeParent top, TreeParent newEntry) {
 			TreeObject [] childs = top.getChildren();
@@ -308,7 +323,7 @@ public class DiscoveryView extends ViewPart {
 	public DiscoveryView() {
 	}
 	
-	public void setServiceConnectListener(IServiceConnectListener l) {
+	public void setServiceConnectListener(IDiscoveryControlListener l) {
 		this.serviceConnectListener = l;
 	}
 	public void addServiceTypeInfo(final String type) {
@@ -430,30 +445,63 @@ public class DiscoveryView extends ViewPart {
 		connectToAction.setText("Connect to service...");
 		connectToAction.setToolTipText("Connect to this service");
 		connectToAction.setEnabled(true);
-}
+		
+		disconnectContainerAction = new Action() {
+			public void run() {
+				ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
+				if (vcp != null) {
+					if (isConnected()) {
+						if (serviceConnectListener != null) serviceConnectListener.disposeDiscoveryContainer(DiscoveryView.this);
+					}
+				}
+			}
+		};
+		disconnectContainerAction.setText("Stop discovery");
+		disconnectContainerAction.setToolTipText("Stop discovery");
+		disconnectContainerAction.setEnabled(true);
+		
+		connectContainerAction = new Action() {
+			public void run() {
+				ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
+				if (vcp != null) {
+					if (!isConnected()) {
+						if (serviceConnectListener != null) serviceConnectListener.setupDiscoveryContainer(DiscoveryView.this);
+					}
+				}
+			}
+		};
+		connectContainerAction.setText("Start discovery");
+		connectContainerAction.setToolTipText("Start discovery");
+		connectContainerAction.setEnabled(true);
+	}
 	private void fillContextMenu(IMenuManager manager) {
 		final TreeObject treeObject = getSelectedTreeObject();
 		if (treeObject != null && treeObject instanceof TreeParent) {
 			TreeParent tp = (TreeParent) treeObject;
-			if (tp.getID() != null) {
-				requestServiceInfoAction.setText("Request info about "+tp.getName());
-				manager.add(requestServiceInfoAction);
-				IServiceInfo si = tp.getServiceInfo();
-				if (si != null) {
-					try {
-						URI uri = si.getServiceURI();
-						if (uri != null) {
-							connectToAction.setText("Connect to this service");
-							manager.add(connectToAction);
-						}
-					} catch (URISyntaxException e) {
-						
-					}
+			ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
+			if (vcp != null && vcp.isRoot(tp)) {
+				// It's the root so let's setup the appropriate action and 
+				if (isConnected()) {
+					if (serviceConnectListener != null) manager.add(disconnectContainerAction);
+				} else {
+					if (serviceConnectListener != null) manager.add(connectContainerAction);
 				}
 			} else {
-				if (!tp.equals(((ViewContentProvider) viewer.getContentProvider()).root)) {
-					registerServiceTypeAction.setText("Register type "+tp.getName());
-					manager.add(registerServiceTypeAction);
+				ServiceID svcID = tp.getID();
+				if (svcID != null) {
+					IServiceInfo svcInfo = tp.getServiceInfo();
+					if (svcInfo != null && svcInfo.isResolved()) {
+						try {
+							URI uri = svcInfo.getServiceURI();
+							if (uri != null) {
+								connectToAction.setText("Connect to service '"+svcID.getServiceName()+"'");
+								manager.add(connectToAction);
+							}
+						} catch (URISyntaxException e) {}
+					} else {
+						requestServiceInfoAction.setText("Request info about '"+svcID.getServiceName()+"'");
+						manager.add(requestServiceInfoAction);
+					}
 				}
 			}
 		}
@@ -506,7 +554,14 @@ public class DiscoveryView extends ViewPart {
 				if (treeObject != null && treeObject instanceof TreeParent) {
 					TreeParent tp = (TreeParent) treeObject;
 					if (tp.getID() != null) {
-						requestServiceInfoAction.run();
+						IServiceInfo info = tp.getServiceInfo();
+						if (info != null) {
+							if (!info.isResolved()) {
+								requestServiceInfoAction.run();
+							} else {
+								connectToAction.run();
+							}
+						}
 					}
 				}
 			}
