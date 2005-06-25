@@ -331,7 +331,7 @@ public class Client {
         if (pc != null) setupPresenceContainer(client,pc,groupID,username);
         // Check for discoverycontainer...if it is, setup
         IDiscoveryContainer dc = (IDiscoveryContainer) client.getAdapter(IDiscoveryContainer.class);
-        if (dc != null) setupDiscoveryContainer(dc);
+        if (dc != null) setupDiscoveryContainer(dc,client);
         
         try {
             client.joinGroup(groupID, getJoinContext(username,data));
@@ -546,7 +546,7 @@ public class Client {
 
     protected DiscoveryView discoveryView = null;
     
-    protected void setupDiscoveryContainer(final IDiscoveryContainer dc) {
+    protected void setupDiscoveryContainer(final IDiscoveryContainer dc, final ISharedObjectContainer socontainer) {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
                 try {
@@ -555,7 +555,7 @@ public class Client {
                     IWorkbenchPage wp = ww.getActivePage();
                     IViewPart view = wp.showView("org.eclipse.ecf.ui.view.discoveryview");
                     discoveryView = (DiscoveryView) view;
-                    discoveryView.setDiscoveryContainer(dc);
+                    discoveryView.setDiscoveryContainer(dc,socontainer);
                 } catch (Exception e) {
                     IStatus status = new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Exception showing presence view",e);
                     ClientPlugin.getDefault().getLog().log(status);

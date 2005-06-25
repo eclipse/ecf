@@ -221,7 +221,7 @@
 <mapEntry key="org.eclipse.core.runtime/loader/debug/prefixes/failure" value="false"/>
 </mapAttribute>
 <booleanAttribute key="automaticAdd" value="false"/>
-<stringAttribute key="checked" value="org.eclipse.ecf.provider.xmpp"/>
+<stringAttribute key="checked" value="org.eclipse.ecf.provider.jmdns"/>
 <booleanAttribute key="includeFragments" value="false"/>
 <stringAttribute key="configLocation" value=""/>
 <booleanAttribute key="clearws" value="false"/>

@@ -2,6 +2,7 @@ package org.eclipse.ecf.example.collab;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
@@ -21,7 +22,7 @@ import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.example.collab.actions.ClientConnectAction;
 import org.eclipse.ecf.ui.views.DiscoveryView;
-import org.eclipse.ecf.ui.views.IServiceConnectListener;
+import org.eclipse.ecf.ui.views.IDiscoveryControlListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -44,11 +45,14 @@ public class DiscoveryStartup {
 	public static final int SVC_DEF_PRIORITY = 0;
 	
 	static IDiscoveryContainer discovery = null;
+	static ISharedObjectContainer socontainer = null;
+	
     protected DiscoveryView discoveryView = null;
     
     static String serviceTypes[] = new String[] {
-            TCPSERVER_DISCOVERY_TYPE,
-            "_http._tcp.local."
+            TCPSERVER_DISCOVERY_TYPE
+            //,
+            //"_http._tcp.local."
         };
 	
 	public static IDiscoveryContainer getDefault() {
@@ -70,13 +74,13 @@ public class DiscoveryStartup {
 	}
 	protected void setupDiscovery() {
 		try {
-			ISharedObjectContainer container = SharedObjectContainerFactory
+			socontainer = SharedObjectContainerFactory
 					.makeSharedObjectContainer(DISCOVERY_CONTAINER);
-			discovery = (IDiscoveryContainer) container
+			discovery = (IDiscoveryContainer) socontainer
 					.getAdapter(IDiscoveryContainer.class);
 			if (discovery != null) {
 				setupDiscoveryContainer(discovery);
-				container.joinGroup(null,null);
+				socontainer.joinGroup(null,null);
 				registerServiceTypes();
 			}
 			else {
@@ -122,11 +126,19 @@ public class DiscoveryStartup {
                     IWorkbenchPage wp = ww.getActivePage();
                     IViewPart view = wp.showView("org.eclipse.ecf.ui.view.discoveryview");
                     discoveryView = (DiscoveryView) view;
-                    discoveryView.setDiscoveryContainer(dc);
+                    discoveryView.setDiscoveryContainer(dc,socontainer);
                     discoveryView.setShowTypeDetails(false);
-                    discoveryView.setServiceConnectListener(new IServiceConnectListener() {
+                    discoveryView.setServiceConnectListener(new IDiscoveryControlListener() {
 						public void connectToService(IServiceInfo service) {
 							connectToServiceFromInfo(service);
+						}
+
+						public void setupDiscoveryContainer(DiscoveryView view) {
+							System.out.println("setupDiscoveryContainer");						
+						}
+
+						public void disposeDiscoveryContainer(DiscoveryView view) {
+							System.out.println("disposeDiscoveryContainer");						
 						}
                     });
                 } catch (Exception e) {
@@ -160,9 +172,11 @@ public class DiscoveryStartup {
 			discovery.unregisterAllServices();
 		}
 	}
+	
+	static Hashtable registeredServices = new Hashtable();
+	
 	public static void registerServer(ID id) {
 		if (discovery != null) {
-			String name = id.getName();
 			try {
 				URI uri = id.toURI();
 				String path = uri.getPath();
@@ -176,10 +190,11 @@ public class DiscoveryStartup {
 				InetAddress host = InetAddress.getByName(uri.getHost());
 				int port = uri.getPort();
 				String svcName = System.getProperty("user.name")+"."+protocol;
-				discovery.registerService(new ServiceInfo(host, new ServiceID(TCPSERVER_DISCOVERY_TYPE,svcName), port, SVC_DEF_PRIORITY,
-						SVC_DEF_WEIGHT, props));
+				ServiceInfo svcInfo = new ServiceInfo(host, new ServiceID(TCPSERVER_DISCOVERY_TYPE,svcName), port, SVC_DEF_PRIORITY,
+						SVC_DEF_WEIGHT, props);
+				discovery.registerService(svcInfo);
 			} catch (Exception e) {
-				ClientPlugin.log("Exception registering server " + name, e);
+				ClientPlugin.log("Exception getting URI for ID"+id);
 			}
 		} 
 	}
