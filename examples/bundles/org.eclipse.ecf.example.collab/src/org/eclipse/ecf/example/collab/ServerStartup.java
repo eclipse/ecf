@@ -1,10 +1,12 @@
 package org.eclipse.ecf.example.collab;
 
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
@@ -81,8 +83,8 @@ public class ServerStartup {
 					TCPServerSOContainer cont = makeServerContainer(group
 							.getIDForGroup(), serverGroups[j], group.getName(),
 							connect.getTimeout());
-					DiscoveryStartup.registerServer(cont.getConfig().getID());
 					servers.add(cont);
+					registerServer(cont);
 					ClientPlugin.log("ECF group server created: "+cont.getConfig().getID().getName());
 				}
 				serverGroups[j].putOnTheAir();
@@ -92,6 +94,9 @@ public class ServerStartup {
 
 	}
 
+	protected void registerServer(ISharedObjectContainer cont) throws URISyntaxException {
+		DiscoveryStartup.registerService(cont.getConfig().getID().toURI());
+	}
 	protected TCPServerSOContainerGroup makeServerGroup(String name, int port) {
 		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,
 				port);

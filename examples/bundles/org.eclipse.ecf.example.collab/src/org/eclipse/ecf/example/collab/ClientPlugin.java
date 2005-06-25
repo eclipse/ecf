@@ -88,10 +88,38 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		setPreferenceDefaults();
-		discoveryStartup = new DiscoveryStartup();
-		serverStartup = new ServerStartup();
+		initDiscovery();
+		initServer();
 	}
 
+	protected void initDiscovery() {
+		if (discoveryStartup == null) {
+			discoveryStartup = new DiscoveryStartup();
+		}
+	}
+	
+	protected void initServer() {
+		if (serverStartup == null) {
+			serverStartup = new ServerStartup();
+		}
+	}
+	
+	protected boolean isDiscoveryActive() {
+		if (discoveryStartup == null) return false;
+		else return true;
+	}
+	protected void disposeDiscovery() {
+		if (discoveryStartup != null) {
+			discoveryStartup.dispose();
+			discoveryStartup = null;
+		}
+	}
+	protected void disposeServer() {
+		if (serverStartup != null) {
+			serverStartup.dispose();
+			serverStartup = null;
+		}
+	}
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
@@ -99,14 +127,8 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		super.stop(context);
 		plugin = null;
 		resourceBundle = null;
-		if (serverStartup != null) {
-			serverStartup.dispose();
-			serverStartup = null;
-		}
-		if (discoveryStartup != null) {
-			discoveryStartup.dispose();
-			discoveryStartup = null;
-		}
+		disposeServer();
+		disposeDiscovery();
 	}
 
 	public FontRegistry getFontRegistry() {
