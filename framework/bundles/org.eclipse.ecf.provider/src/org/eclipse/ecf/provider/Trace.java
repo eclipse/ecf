@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.Platform;
 public class Trace {
     public static final String tracePrefix = "(trace)";
     
-    public static boolean ON = false;
+    public static boolean ON = true;
     protected static boolean isEclipse = false;
     protected static String pluginName = "";
     protected static String debugPrefix = "/debug/";

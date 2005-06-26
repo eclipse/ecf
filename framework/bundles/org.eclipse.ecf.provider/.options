@@ -2,7 +2,6 @@ org.eclipse.ecf.provider/debug = true
 org.eclipse.ecf.provider/debug/filter = *
 org.eclipse.ecf.provider/debug/flag = true
 org.eclipse.ecf.provider/debug/connection = true
-org.eclipse.ecf.provider/debug/connectionping = false
 org.eclipse.ecf.provider/debug/container = true
 org.eclipse.ecf.provider/debug/sharedobjectwrapper = true
 org.eclipse.ecf.provider/debug/sharedobjectcontext = true

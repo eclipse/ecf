@@ -226,6 +226,10 @@ public abstract class SOContainer implements ISharedObjectContainer {
 				throws IOException {
 			return processSynch(event);
 		}
+
+		public ID getEventHandlerID() {
+			return getID();
+		}
 	}
 	static Trace debug = Trace.create("container");
 	public static final String DEFAULT_OBJECT_ARG_KEY = SOContainer.class
