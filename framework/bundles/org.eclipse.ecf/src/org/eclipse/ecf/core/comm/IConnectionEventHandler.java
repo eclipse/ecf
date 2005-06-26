@@ -11,8 +11,11 @@
 
 package org.eclipse.ecf.core.comm;
 
+import org.eclipse.ecf.core.identity.ID;
+
 public interface IConnectionEventHandler {
 
+	public ID getEventHandlerID();
     public boolean handleSuspectEvent(ConnectionEvent event);
     public void handleDisconnectEvent(DisconnectConnectionEvent event);
     public Object getAdapter(Class clazz);
