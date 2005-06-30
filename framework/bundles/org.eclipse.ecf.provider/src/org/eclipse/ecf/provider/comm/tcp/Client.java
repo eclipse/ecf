@@ -425,21 +425,19 @@ public final class Client implements ISynchAsynchConnection {
         try {
             // We've received some data, so the connection is alive
             receiveResp();
+            trace("recv:" + rcv);
             // Handle all messages
             if (rcv instanceof SynchMessage) {
                 // Handle synch message. The only valid synch message is
                 // 'close'.
-                trace("recv:" + rcv);
                 handler.handleSynchEvent(new SynchConnectionEvent(this,
                         ((SynchMessage) rcv).getData()));
             } else if (rcv instanceof AsynchMessage) {
-                trace("recv:" + rcv);
                 Serializable d = ((AsynchMessage) rcv).getData();
                 // Handle asynch messages.
                 handler.handleAsynchEvent(new AsynchConnectionEvent(this, d));
             } else if (rcv instanceof PingMessage) {
                 // Handle ping by sending response back immediately
-            	trace("recv:" + rcv);
                 sendIt(pingResp);
             } else if (rcv instanceof PingResponseMessage) {
                 // Do nothing with ping response
