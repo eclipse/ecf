@@ -116,13 +116,13 @@ public final class Client implements ISynchAsynchConnection {
     }
     protected void trace(String msg) {
         if (Trace.ON && trace != null) {
-            trace.msg(getAddressPort()+";"+msg);
+            trace.msg(getLocalID()+":"+getAddressPort()+";"+msg);
         }
     }
 
     protected void dumpStack(String msg, Throwable e) {
         if (Trace.ON && trace != null) {
-            trace.dumpStack(e, getAddressPort()+";"+msg);
+            trace.dumpStack(e, getLocalID()+":"+getAddressPort()+";"+msg);
         }
     }
 
