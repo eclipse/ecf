@@ -150,7 +150,7 @@ public final class Client implements ISynchAsynchConnection {
             ObjectOutputStream oStream,
             ISynchAsynchConnectionEventHandler handler, int keepAlive,
             int maxmsgs) throws IOException {
-        setSocket(socket);
+        setSocket(aSocket);
         inputStream = iStream;
         outputStream = oStream;
         this.handler = handler;
