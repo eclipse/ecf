@@ -39,7 +39,6 @@ class ChatTreeViewer extends TreeViewer {
 
 	public User getSelectionUser() {
 		User result = null;
-		ViewContentProvider cp = (ViewContentProvider) getContentProvider();
 		ISelection s = getSelection();
 		if (s != null && s instanceof IStructuredSelection) {
 			IStructuredSelection ss = (IStructuredSelection) s;

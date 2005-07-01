@@ -298,7 +298,7 @@ public class Client {
         
         String containerType = (type==null)?GENERIC_CONTAINER_CLIENT_NAME:type;
         final ISharedObjectContainer client = SharedObjectContainerFactory
-        .makeSharedObjectContainer(containerType);
+        .getDefault().makeSharedObjectContainer(containerType);
         final ClientEntry newClient = new ClientEntry(containerType,client);
         final ID groupID = (gID==null)?defaultGroupID:gID;
         

@@ -39,32 +39,17 @@ public class SharedObjectContainerFactory {
     private static Trace debug = Trace.create("containerfactory");
     
     private static Hashtable containerdescriptions = new Hashtable();
-
-    /*
-     * Add a SharedObjectContainerDescription to the set of known
-     * SharedObjectContainerDescriptions.
-     * 
-     * @param scd the SharedObjectContainerDescription to add to this factory
-     * @return SharedObjectContainerDescription the old description of the same
-     * name, null if none found
-     */
-    public final static SharedObjectContainerDescription addDescription(
-            SharedObjectContainerDescription scd) {
-        debug("addDescription("+scd+")");
-        return addDescription0(scd);
+    protected static SharedObjectContainerFactory instance = null;
+    
+    static {
+    	instance = new SharedObjectContainerFactory();
     }
-    /**
-     * Get a collection of the SharedObjectContainerDescriptions currently known to
-     * this factory.  This allows clients to query the factory to determine what if
-     * any other SharedObjectContainerDescriptions are currently registered with
-     * the factory, and if so, what they are.
-     * 
-     * @return List of SharedObjectContainerDescription instances
-     */
-    public final static List getDescriptions() {
-        return getDescriptions0();
+    protected SharedObjectContainerFactory() {
     }
-    private static void debug(String msg) {
+    public static SharedObjectContainerFactory getDefault() {
+    	return instance;
+    }
+    private static void trace(String msg) {
         if (Trace.ON && debug != null) {
             debug.msg(msg);
         }
@@ -75,10 +60,34 @@ public class SharedObjectContainerFactory {
             debug.dumpStack(e, msg);
         }
     }
-    protected static List getDescriptions0() {
+    /*
+     * Add a SharedObjectContainerDescription to the set of known
+     * SharedObjectContainerDescriptions.
+     * 
+     * @param scd the SharedObjectContainerDescription to add to this factory
+     * @return SharedObjectContainerDescription the old description of the same
+     * name, null if none found
+     */
+    public SharedObjectContainerDescription addDescription(
+            SharedObjectContainerDescription scd) {
+        trace("addDescription("+scd+")");
+        return addDescription0(scd);
+    }
+    /**
+     * Get a collection of the SharedObjectContainerDescriptions currently known to
+     * this factory.  This allows clients to query the factory to determine what if
+     * any other SharedObjectContainerDescriptions are currently registered with
+     * the factory, and if so, what they are.
+     * 
+     * @return List of SharedObjectContainerDescription instances
+     */
+    public List getDescriptions() {
+        return getDescriptions0();
+    }
+    protected List getDescriptions0() {
         return new ArrayList(containerdescriptions.values());
     }
-    protected static SharedObjectContainerDescription addDescription0(
+    protected SharedObjectContainerDescription addDescription0(
             SharedObjectContainerDescription n) {
         if (n == null)
             return null;
@@ -93,24 +102,24 @@ public class SharedObjectContainerFactory {
      *            the SharedObjectContainerDescription to look for
      * @return true if description is already known to factory, false otherwise
      */
-    public final static boolean containsDescription(
+    public boolean containsDescription(
             SharedObjectContainerDescription scd) {
         return containsDescription0(scd);
     }
-    protected static boolean containsDescription0(
+    protected boolean containsDescription0(
             SharedObjectContainerDescription scd) {
         if (scd == null)
             return false;
         return containerdescriptions.containsKey(scd.getName());
     }
-    protected static SharedObjectContainerDescription getDescription0(
+    protected SharedObjectContainerDescription getDescription0(
             SharedObjectContainerDescription scd) {
         if (scd == null)
             return null;
         return (SharedObjectContainerDescription) containerdescriptions.get(scd
                 .getName());
     }
-    protected static SharedObjectContainerDescription getDescription0(
+    protected SharedObjectContainerDescription getDescription0(
             String name) {
         if (name == null)
             return null;
@@ -123,9 +132,9 @@ public class SharedObjectContainerFactory {
      * @return SharedObjectContainerDescription found
      * @throws SharedObjectContainerInstantiationException
      */
-    public final static SharedObjectContainerDescription getDescriptionByName(
+    public SharedObjectContainerDescription getDescriptionByName(
             String name) throws SharedObjectContainerInstantiationException {
-        debug("getDescriptionByName("+name+")");
+        trace("getDescriptionByName("+name+")");
         SharedObjectContainerDescription res = getDescription0(name);
         if (res == null) {
             throw new SharedObjectContainerInstantiationException(
@@ -159,10 +168,10 @@ public class SharedObjectContainerFactory {
      * @return a valid instance of ISharedObjectContainer
      * @throws SharedObjectContainerInstantiationException
      */
-    public static ISharedObjectContainer makeSharedObjectContainer(
+    public ISharedObjectContainer makeSharedObjectContainer(
             SharedObjectContainerDescription desc, String[] argTypes,
             Object[] args) throws SharedObjectContainerInstantiationException {
-        debug("makeSharedObjectContainer("+desc+","+Trace.convertStringAToString(argTypes)+","+Trace.convertObjectAToString(args)+")");
+        trace("makeSharedObjectContainer("+desc+","+Trace.convertStringAToString(argTypes)+","+Trace.convertObjectAToString(args)+")");
         if (desc == null)
             throw new SharedObjectContainerInstantiationException(
                     "SharedObjectContainerDescription cannot be null");
@@ -210,7 +219,7 @@ public class SharedObjectContainerFactory {
      * @return a valid instance of ISharedObjectContainer
      * @throws SharedObjectContainerInstantiationException
      */
-    public static ISharedObjectContainer makeSharedObjectContainer(
+    public ISharedObjectContainer makeSharedObjectContainer(
             String descriptionName)
             throws SharedObjectContainerInstantiationException {
         return makeSharedObjectContainer(
@@ -237,7 +246,7 @@ public class SharedObjectContainerFactory {
      * @return a valid instance of ISharedObjectContainer
      * @throws SharedObjectContainerInstantiationException
      */
-    public static ISharedObjectContainer makeSharedObjectContainer(
+    public ISharedObjectContainer makeSharedObjectContainer(
             String descriptionName, Object[] args)
             throws SharedObjectContainerInstantiationException {
         return makeSharedObjectContainer(
@@ -266,7 +275,7 @@ public class SharedObjectContainerFactory {
      * @return a valid instance of ISharedObjectContainer
      * @throws SharedObjectContainerInstantiationException
      */
-    public static ISharedObjectContainer makeSharedObjectContainer(
+    public ISharedObjectContainer makeSharedObjectContainer(
             String descriptionName, String[] argsTypes, Object[] args)
             throws SharedObjectContainerInstantiationException {
         return makeSharedObjectContainer(
@@ -280,21 +289,17 @@ public class SharedObjectContainerFactory {
      * @return the removed SharedObjectContainerDescription, null if nothing
      *         removed
      */
-    public final static SharedObjectContainerDescription removeDescription(
+    public SharedObjectContainerDescription removeDescription(
             SharedObjectContainerDescription scd) {
-        debug("removeDescription("+scd+")");
+        trace("removeDescription("+scd+")");
         return removeDescription0(scd);
     }
-    protected static SharedObjectContainerDescription removeDescription0(
+    protected SharedObjectContainerDescription removeDescription0(
             SharedObjectContainerDescription n) {
         if (n == null)
             return null;
         return (SharedObjectContainerDescription) containerdescriptions.remove(n
                 .getName());
-    }
-
-    private SharedObjectContainerFactory() {
-        // No instantiation other than as factory
     }
 
 }

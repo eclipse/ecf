@@ -67,7 +67,7 @@ public class ClientApplication {
 		ConnectionDescription cd = new ConnectionDescription(ClientApplication.class.getClassLoader(),CONNECTION_NAME,CONNECTION_CLASS,null);
 		ConnectionFactory.addDescription(cd);
 		contd = new SharedObjectContainerDescription(ClientApplication.class.getClassLoader(),CONTAINER_FACTORY_NAME,CONTAINER_FACTORY_CLASS,null);
-		SharedObjectContainerFactory.addDescription(contd);
+		SharedObjectContainerFactory.getDefault().addDescription(contd);
 		for(int i=0; i < clientCount; i++) {
 			sm[i] = makeClient();
 		}
@@ -76,7 +76,7 @@ public class ClientApplication {
 	protected ISharedObjectContainer makeClient() throws Exception {
 		// Make identity instance for the new container
 		ID newContainerID = IDFactory.makeGUID();
-		ISharedObjectContainer result =  SharedObjectContainerFactory.makeSharedObjectContainer(contd,null,new Object[] { newContainerID, new Integer(DEFAULT_TIMEOUT)});
+		ISharedObjectContainer result =  SharedObjectContainerFactory.getDefault().makeSharedObjectContainer(contd,null,new Object[] { newContainerID, new Integer(DEFAULT_TIMEOUT)});
 		return result;
 	}
 	

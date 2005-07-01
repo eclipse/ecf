@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.eclipse.ecf.core.SharedObjectContainerDescription;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
 import org.eclipse.jface.wizard.WizardPage;
@@ -114,7 +115,7 @@ public class JoinGroupWizardPage extends WizardPage {
         }
     }
     protected void fillCombo() {
-        List rawDescriptions = SharedObjectContainerFactory.getDescriptions();
+        List rawDescriptions = SharedObjectContainerFactory.getDefault().getDescriptions();
         int index = 0;
         int def = 0;
         Map defProps = null;
@@ -166,8 +167,6 @@ public class JoinGroupWizardPage extends WizardPage {
         final GridData gridData_1 = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
         combo.setLayoutData(gridData_1);
 
-        final Label label_2 = new Label(container, SWT.NONE);
-
         example_label = new Label(container, SWT.NONE);
         example_label.setText(template_url);
 
@@ -199,7 +198,6 @@ public class JoinGroupWizardPage extends WizardPage {
         nickname_text.setText(System.getProperty(USER_NAME_SYSTEM_PROPERTY));
         nickname_text.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
-                String t = nickname_text.getText();
                     nickname_text.selectAll();
             }
 

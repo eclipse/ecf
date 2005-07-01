@@ -10,13 +10,12 @@
 package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IJoinContext;
 
 /**
  * Core interface that must be implemented by all ECF container instances.
  * Instances are typically created via {@link SharedObjectContainerFactory}
  */
-public interface ISharedObjectContainer {
+public interface ISharedObjectContainer extends IContainer {
 
 	/**
 	 * Return the ISharedObjectContainerConfig for this ISharedObjectContainer.
@@ -47,42 +46,6 @@ public interface ISharedObjectContainer {
 	public void removeListener(ISharedObjectContainerListener l);
 
 	/**
-	 * Dispose this ISharedObjectContainer instance. The container instance will
-	 * be made inactive after the completion of this method and will be
-	 * unavailable for subsequent usage
-	 * 
-	 * @param waittime
-	 */
-	public void dispose(long waittime);
-
-	/**
-	 * Join a container group. The group to join is identified by the first
-	 * parameter (groupID) using any required authentication provided via the
-	 * second parameter (joinContext). This method provides an implementation
-	 * independent way for container implementations to connect, authenticate,
-	 * and communicate with a remote service or group of services. Providers are
-	 * responsible for implementing this operation in a way appropriate to the
-	 * given remote service and expected protocol.
-	 * 
-	 * @param groupID
-	 *            the ID of the remote service to join
-	 * @param joinContext
-	 *            any required context to allow this container to authenticate
-	 *            on join with remote containers
-	 * @exception SharedObjectContainerJoinException
-	 *                thrown if communication cannot be established with remote
-	 *                service
-	 */
-	public void joinGroup(ID groupID, IJoinContext joinContext)
-			throws SharedObjectContainerJoinException;
-
-	/**
-	 * Leave a container group. This operation will disconnect the local
-	 * container instance from any previously joined group.
-	 */
-	public void leaveGroup();
-
-	/**
 	 * Get the group id that this container has joined. Return null if no group
 	 * has previously been joined.
 	 * 
@@ -110,16 +73,5 @@ public interface ISharedObjectContainer {
 	 * @return ISharedObjectManager for this container instance
 	 */
 	public ISharedObjectManager getSharedObjectManager();
-
-	/**
-	 * Returns an object which is an instance of the given class associated with
-	 * this object.
-	 * 
-	 * @param adapter
-	 *            the adapter class to lookup
-	 * @return Object a object castable to the given class, or null if this
-	 *         object does not have an adapter for the given class
-	 */
-	public Object getAdapter(Class adapter);
 
 }

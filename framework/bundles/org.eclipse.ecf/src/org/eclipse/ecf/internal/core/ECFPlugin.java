@@ -216,12 +216,13 @@ public class ECFPlugin extends Plugin {
                         description, defaults.getTypes(), defaults
                                 .getDefaults(), defaults.getNames(), properties);
                 debug("setupContainerExtensionPoint:created description:" + scd);
-                if (SharedObjectContainerFactory.containsDescription(scd)) {
+                SharedObjectContainerFactory factory = SharedObjectContainerFactory.getDefault();
+                if (factory.containsDescription(scd)) {
                     throw new CoreException(getStatusForContException(
                             extension, bundleName, name));
                 }
                 // Now add the description and we're ready to go.
-                SharedObjectContainerFactory.addDescription(scd);
+                factory.addDescription(scd);
                 debug("setupContainerExtensionPoint:added description to factory:"
                         + scd);
             } catch (CoreException e) {

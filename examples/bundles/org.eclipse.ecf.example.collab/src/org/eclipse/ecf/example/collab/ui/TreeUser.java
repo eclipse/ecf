@@ -14,11 +14,9 @@ package org.eclipse.ecf.example.collab.ui;
 import org.eclipse.ecf.example.collab.share.User;
 
 class TreeUser extends TreeParent {
-    private LineChatClientView view;
     User ud;
     TreeUser(LineChatClientView view, User ud) {
         super(view, ud.getNickname());
-        this.view = view;
         this.ud = ud;
     }
     User getUser() {

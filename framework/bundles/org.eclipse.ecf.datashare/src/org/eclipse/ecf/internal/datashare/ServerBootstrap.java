@@ -62,11 +62,11 @@ public class ServerBootstrap implements IBootstrap {
 		if (config.getContext().isGroupServer()) // TODO how about isGroupManager()?
 			agent.doBootstrap(containerID);
 	}
-
+	/*
 	private void handleError(Throwable t) {
 		t.printStackTrace();
 	}
-
+	*/
 	/*
 	 * (non-Javadoc)
 	 * 

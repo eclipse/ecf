@@ -68,7 +68,7 @@ public class DiscoveryStartup {
 		if (discovery == null && ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_REGISTER_SERVER)) {
 			try {
 				socontainer = SharedObjectContainerFactory
-						.makeSharedObjectContainer(DISCOVERY_CONTAINER);
+						.getDefault().makeSharedObjectContainer(DISCOVERY_CONTAINER);
 				discovery = (IDiscoveryContainer) socontainer
 						.getAdapter(IDiscoveryContainer.class);
 				if (discovery != null) {

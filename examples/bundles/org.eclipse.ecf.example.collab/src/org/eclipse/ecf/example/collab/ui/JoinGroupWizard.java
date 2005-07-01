@@ -26,12 +26,10 @@ import org.eclipse.ui.IWorkbench;
 public class JoinGroupWizard extends Wizard {
     JoinGroupWizardPage mainPage;
     private IResource project;
-    private IWorkbench workbench;
 
     public JoinGroupWizard(IResource project, IWorkbench workbench) {
         super();
         this.project = project;
-        this.workbench = workbench;
     }
 
     protected ISchedulingRule getSchedulingRule() {

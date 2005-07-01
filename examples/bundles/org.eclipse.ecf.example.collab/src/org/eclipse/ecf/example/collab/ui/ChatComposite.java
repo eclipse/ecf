@@ -31,7 +31,6 @@ import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -387,7 +386,7 @@ public class ChatComposite extends Composite {
 		manager.add(new Separator());
 		manager.add(closeGroup);
 	}
-	
+	/*
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(outputCopy);
 		manager.add(outputPaste);
@@ -401,14 +400,13 @@ public class ChatComposite extends Composite {
 		manager.add(appShare);
 		manager.add(new Separator());
 		manager.add(sendMessage);
-		/*
-		 * manager.add(new Separator()); manager.add(sendComponent);
-		 * manager.add(sendComponentToServer);
-		 * manager.add(sendEclipseComponent);
-		 */
+		//manager.add(new Separator()); manager.add(sendComponent);
+		//manager.add(sendComponentToServer);
+		//manager.add(sendEclipseComponent);
 		manager.add(new Separator());
 		manager.add(closeGroup);
 	}
+	*/
 	
 	private void fillTreeContextMenu(IMenuManager manager) {
 		User ud = treeView.getSelectionUser();
@@ -832,7 +830,6 @@ public class ChatComposite extends Composite {
 		}
 	}
 	protected void sendShowViewRequest(User touser) {
-		String viewid = null;
 		IWorkbenchWindow ww = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		IWorkbenchPage page = ww.getActivePage();

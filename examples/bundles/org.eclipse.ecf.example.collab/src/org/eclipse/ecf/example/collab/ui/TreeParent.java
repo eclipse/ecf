@@ -18,12 +18,10 @@ import java.util.List;
 import org.eclipse.ecf.example.collab.share.TreeItem;
 
 class TreeParent extends TreeObject {
-    private LineChatClientView view;
     private List children;
     private TreeItem treeItem;
     public TreeParent(LineChatClientView view, String name) {
         super(name);
-        this.view = view;
         children = Collections.synchronizedList(new ArrayList());
     }
     public TreeParent(LineChatClientView view, TreeItem item) {

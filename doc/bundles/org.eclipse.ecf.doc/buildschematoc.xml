@@ -1,4 +1,4 @@
-<project default="toc">
+<project default="toc" basedir=".">
 	
 	<target name="init">
 		<property name="dest.path" location="${basedir}/html/reference/extension-points"/>
@@ -12,7 +12,7 @@
 <toc label="Extension Points">
 ]]></echo>
 		<java classname="BuildExtPointTOC" classpath="." output="tocextpoint.xml" append="true">
-			<arg line="${dest.path}"/>
+			<arg value="${dest.path}"/>
 		</java>
 		<echo file="tocextpoint.xml" append="true"><![CDATA[
 </toc>

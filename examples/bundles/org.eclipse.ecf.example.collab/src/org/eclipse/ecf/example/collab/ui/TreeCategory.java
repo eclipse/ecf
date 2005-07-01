@@ -12,10 +12,8 @@
 package org.eclipse.ecf.example.collab.ui;
 
 class TreeCategory extends TreeParent {
-    private LineChatClientView view;
 
     TreeCategory(LineChatClientView view, String name) {
         super(view, name);
-        this.view = view;
     }
 }

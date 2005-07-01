@@ -1,4 +1,4 @@
-<project default="toc">
+<project default="toc" basedir=".">
 
 	<target name="init">
 		<property name="package-list.path" location="${basedir}/html/reference/api/package-list"/>
@@ -10,7 +10,7 @@
 <toc label="JavaDoc">
 ]]></echo>
 		<java classname="BuildAPITOC" classpath="." output="tocapi.xml" append="true">
-			<arg line="${package-list.path}"/>
+			<arg value="${package-list.path}"/>
 		</java>
 		<echo file="tocapi.xml" append="true"><![CDATA[
 </toc>
@@ -22,6 +22,7 @@
 import java.io.*;
 public class BuildAPITOC {
 	public static void main(String[] args) throws Exception {
+	    System.out.println("args[0] is "+args[0]);
 		BufferedReader r = new BufferedReader(new FileReader(args[0]));
 		String line;
 		try {

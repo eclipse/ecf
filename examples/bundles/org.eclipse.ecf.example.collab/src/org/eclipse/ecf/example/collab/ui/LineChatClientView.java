@@ -532,13 +532,12 @@ public class LineChatClientView implements FileSenderUI {
 		if (user == null || item == null)
 			return false;
 		TreeParent root = getPresenceRoot();
-		boolean res = false;
 		for (Iterator childs = root.children().iterator(); childs.hasNext();) {
 			TreeUser ut = (TreeUser) childs.next();
 			User a = ut.getUser();
 			if (a != null && (user.equals(a.getUserID()))) {
 				// Found user...now find tree item
-				res = updateUserTree(ut, item);
+				updateUserTree(ut, item);
 				refreshTreeView();
 				return true;
 			}
