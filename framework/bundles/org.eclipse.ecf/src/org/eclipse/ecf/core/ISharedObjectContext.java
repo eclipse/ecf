@@ -11,6 +11,7 @@ package org.eclipse.ecf.core;
 
 import java.io.IOException;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IJoinContext;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
@@ -28,7 +29,7 @@ import org.eclipse.ecf.core.util.IQueueEnqueue;
  * @see ISharedObject#init
  * @see ISharedObjectConfig#getContext()
  */
-public interface ISharedObjectContext {
+public interface ISharedObjectContext extends IAdaptable {
 
 	/**
 	 * Get the local container instance's ID
@@ -175,17 +176,6 @@ public interface ISharedObjectContext {
 	 *             cannot be serialized
 	 */
 	public void sendMessage(ID toContainerID, Object data) throws IOException;
-
-	/**
-	 * Returns an object which is an instance of the given class associated with
-	 * this object.
-	 * 
-	 * @param clazz
-	 *            the adapter class to lookup
-	 * @return Object a object castable to the given class, or null if this
-	 *         object does not have an adapter for the given class
-	 */
-	public Object getAdapter(Class clazz);
 
 	/**
 	 * Get a reference to a proxy instance that allows the registration and

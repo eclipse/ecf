@@ -9,14 +9,15 @@
 
 package org.eclipse.ecf.core;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.core.util.IEventHandler;
 
 /**
  * Core interface for implementing components that exist within {@link ISharedObjectContainer}
  *
  */
-public interface ISharedObject {
+public interface ISharedObject extends IAdaptable, IEventHandler {
 
     /**
      * Initialize this ISharedObject. The ISharedObjectContainer for this
@@ -41,26 +42,6 @@ public interface ISharedObject {
             throws SharedObjectInitException;
 
     /**
-     * Handle Event passed to this ISharedObject. The ISharedObjectContainer
-     * will pass events to all SharedObjects via this method and the
-     * handleEvents method.
-     * 
-     * @param event
-     *            the Event for the ISharedObject to process
-     */
-    public void handleEvent(Event event);
-
-    /**
-     * Handle Events passed to this ISharedObject. The ISharedObjectContainer
-     * will pass events to all SharedObjects via this method and the
-     * handleEvents method.
-     * 
-     * @param events
-     *            the Events [] for the ISharedObject to process
-     */
-    public void handleEvents(Event[] events);
-
-    /**
      * Method called by the ISharedObjectContainer upon ISharedObject
      * destruction. Once this method is called, no more Events will be passed to
      * a ISharedObject until the init method is called again.
@@ -70,15 +51,4 @@ public interface ISharedObject {
      */
     public void dispose(ID containerID);
 
-    /**
-     * Provide access to an adapter object. This method guarantees that any
-     * non-null object instance provided is an instance of the class provided as
-     * the first parameter.
-     * 
-     * @param clazz
-     *            the Class of the adapter. The returned Object instance must
-     *            implement the given clazz
-     * @return Object the adaptor object
-     */
-    public Object getAdapter(Class clazz);
 }
