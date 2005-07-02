@@ -28,7 +28,7 @@ import org.eclipse.ecf.internal.core.Trace;
  * <br><br>
  * <code>
  * 	    ISharedObjectContainer container = <br>
- * 			SharedObjectContainerFactory.makeSharedObjectContainer('standalone');
+ * 			SharedObjectContainerFactory.getDefault().makeSharedObjectContainer('standalone');
  *      <br><br>
  *      ...further use of container variable here...
  * </code>

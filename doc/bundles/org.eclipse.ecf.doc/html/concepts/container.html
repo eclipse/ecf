@@ -29,7 +29,7 @@ creating ISharedObjectContainer instances called <a
 The lifecycle of a ISharedObjectContainer is typically as follows:
 <ol>
   <li>An ISharedObjectContainer instance is created via
-SharedObjectContainerFactory.makeSharedObjectContainer() </li>
+SharedObjectContainerFactory.getDefault().makeSharedObjectContainer() </li>
   <li>ISharedObjects are created and added to the
 ISharedObjectContainer </li>
   <li>The ISharedObjectContainer 'joins/connects' with a remote

@@ -4,6 +4,9 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IJoinContext;
 
+/**
+ * Distributed container contract
+ */
 public interface IContainer extends IAdaptable {
 
 	/**

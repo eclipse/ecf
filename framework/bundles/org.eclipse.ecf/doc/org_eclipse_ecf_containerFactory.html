@@ -138,7 +138,7 @@ In this example, the given class implements the <b>ISharedObjectContainerInstant
 Clients that wish to use the 'foo' container implementation can do so simply by making the following call to create an <b>ISharedObjectContainer</b>:
 
 <pre>
-ISharedObjectContainer newContainer = SharedObjectContainerFactory.makeSharedObjectContainer(&apos;foo&apos;); 
+ISharedObjectContainer newContainer = SharedObjectContainerFactory.getDefault().makeSharedObjectContainer(&apos;foo&apos;); 
 // Further use of newContainer instance here
 
 </pre>

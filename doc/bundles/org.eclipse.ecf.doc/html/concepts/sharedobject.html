@@ -77,7 +77,7 @@ ISharedObject.dispose() method.
 <h4>Example Creation Code</h4>
 Here is a code snippet that creates a container and adds a single
 shared object to that container:
-<pre>ISharedObjectContainer container = SharedObjectContainerFactory.makeSharedObjectContainer('standalone');<br>ID newID = IDFactory.makeStringID('foo');<br>SharedObjectDescription sd = new SharedObjectDescription(newID,TestSharedObject.class);<br>container.getSharedObjectManager().createSharedObject(sd,null);<br></pre>
+<pre>ISharedObjectContainer container = SharedObjectContainerFactory.getDefault().makeSharedObjectContainer('standalone');<br>ID newID = IDFactory.makeStringID('foo');<br>SharedObjectDescription sd = new SharedObjectDescription(newID,TestSharedObject.class);<br>container.getSharedObjectManager().createSharedObject(sd,null);<br></pre>
 Note this creates and adds to the container a ISharedObject instance of
 class "TestSharedObject". The TestSharedObject
 null constructor is called, followed by a call to

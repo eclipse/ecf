@@ -33,7 +33,7 @@
         ISharedObjectContainer container = null;
         try {
             // Create container instance via ECF container factory
-            container = SharedObjectContainerFactory.makeSharedObjectContainer(DEFAULT_CONTAINER_TYPE);
+            container = SharedObjectContainerFactory.getDefault().makeSharedObjectContainer(DEFAULT_CONTAINER_TYPE);
             // Create ID for shared object
             ID sharedObjectID = IDFactory.makeStringID(SHARED_OBJECT_ID);
             // Create actual shared object
