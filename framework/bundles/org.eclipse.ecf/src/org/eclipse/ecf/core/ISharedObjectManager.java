@@ -75,6 +75,7 @@ public interface ISharedObjectManager {
     public ID createSharedObject(SharedObjectDescription sd,
             ISharedObjectContainerTransaction trans)
             throws SharedObjectCreateException;
+            
     /**
      * Destroy an ISharedObjectConnector instance.
      * 
