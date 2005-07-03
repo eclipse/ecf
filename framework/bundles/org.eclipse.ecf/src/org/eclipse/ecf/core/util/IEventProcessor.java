@@ -10,9 +10,11 @@
 package org.eclipse.ecf.core.util;
 
 public interface IEventProcessor {
+
+    public boolean acceptEvent(Event event);
     /**
      * Process given Event
      * @param e the Event to process
      */
-    public void process(Event e);
+    public Event processEvent(Event e);
 }
