@@ -11,7 +11,10 @@
 
 package org.eclipse.ecf.provider.generic.sobject;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.ISharedObject;
@@ -20,6 +23,7 @@ import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.provider.Trace;
 
 /**
@@ -31,6 +35,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	Trace trace = Trace.create("basesharedobject");
 	
 	ISharedObjectConfig config = null;
+	List eventProcessors = new Vector();
 	
 	protected void trace(String msg) {
 		if (Trace.ON && trace != null) {
@@ -40,6 +45,32 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	protected void traceStack(String msg, Throwable t) {
 		if (Trace.ON && trace != null) {
 			trace.dumpStack(t,msg);
+		}
+	}
+	protected void addProcessor(IEventProcessor proc) {
+		eventProcessors.add(proc);
+	}
+	protected boolean removeProcessor(IEventProcessor proc) {
+		return eventProcessors.remove(proc);
+	}
+	protected void fireEventProcessors(Event event) {
+		if (event == null) return;
+		Event evt = event;
+		trace("fireEventProcessors("+event+")");
+		if (eventProcessors.size()==0) {
+			handleUnhandledEvent(event);
+			return;
+		}
+		for(Iterator i=eventProcessors.iterator(); i.hasNext(); ) {
+			IEventProcessor ep = (IEventProcessor) i.next();
+			if (ep != null) {
+				if (evt != null) {
+					if (ep.acceptEvent(evt)) {
+						trace(getID()+":eventProcessor="+ep+":event="+evt);
+						evt = ep.processEvent(evt);
+					}
+				}
+			}
 		}
 	}
 	/* (non-Javadoc)
@@ -75,7 +106,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
 	 */
 	public void handleEvent(Event event) {
-		handleUnhandledEvent(event);
+		fireEventProcessors(event);
 	}
 	protected void handleUnhandledEvent(Event event) {
 		trace("Unhandled event:"+event);
