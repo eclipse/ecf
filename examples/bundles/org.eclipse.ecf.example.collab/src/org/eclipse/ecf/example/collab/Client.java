@@ -253,7 +253,6 @@ public class Client {
                 (username == null) ? USERNAME : username, proj);
         makeAndAddSharedObject(client, project, user, getSharedFileDirectoryForProject(project));
     }
-
     public synchronized ClientEntry isConnected(IResource project, String type) {
         if (type == null) type = GENERIC_CONTAINER_CLIENT_NAME;
         ClientEntry entry = getClientEntry(project,type);

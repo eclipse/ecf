@@ -20,25 +20,23 @@ import org.eclipse.ecf.core.SharedObjectAddAbortException;
 public class ReplicateSharedObjectTransaction implements
 		ISharedObjectContainerTransaction {
 
-	BaseSharedObject sharedObject = null;
+	TransactionEventProcessor eventProcessor = null;
 	
 	public ReplicateSharedObjectTransaction(BaseSharedObject so) {
-		sharedObject = so;
+		eventProcessor = new TransactionEventProcessor(so);
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerTransaction#waitToCommit()
 	 */
 	public void waitToCommit() throws SharedObjectAddAbortException {
-		// TODO Auto-generated method stub
-
+		eventProcessor.waitToCommit();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerTransaction#getTransactionState()
 	 */
 	public byte getTransactionState() {
-		// TODO Auto-generated method stub
-		return 0;
+		return eventProcessor.getTransactionState();
 	}
 
 }

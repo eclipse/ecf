@@ -9,12 +9,15 @@
 
 package org.eclipse.ecf.core;
 
+import java.util.Map;
+
 public class SharedObjectAddAbortException extends SharedObjectAddException {
 
 	private static final long serialVersionUID = 4120851079287223088L;
 
 	protected long timeout = -1L;
-
+	protected Map causes;
+	
     public SharedObjectAddAbortException() {
         super();
     }
@@ -29,6 +32,10 @@ public class SharedObjectAddAbortException extends SharedObjectAddException {
         super(msg, cause);
         this.timeout = timeout;
     }
+    public SharedObjectAddAbortException(String msg, Map causes, int timeout) {
+    	super(msg);
+    	this.causes = causes;
+    }
     public SharedObjectAddAbortException(Throwable cause) {
         super(cause);
     }
@@ -36,5 +43,7 @@ public class SharedObjectAddAbortException extends SharedObjectAddException {
     public long getTimeout() {
         return timeout;
     }
-
+    public Map getCauses() {
+    	return causes;
+    }
 }

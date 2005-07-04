@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.provider.generic.sobject;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
+import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
@@ -47,10 +49,10 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 			trace.dumpStack(t,msg);
 		}
 	}
-	protected void addProcessor(IEventProcessor proc) {
+	protected void addEventProcessor(IEventProcessor proc) {
 		eventProcessors.add(proc);
 	}
-	protected boolean removeProcessor(IEventProcessor proc) {
+	protected boolean removeEventProcessor(IEventProcessor proc) {
 		return eventProcessors.remove(proc);
 	}
 	protected void fireEventProcessors(Event event) {
@@ -141,5 +143,40 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	public ID getID() {
 		return getConfig().getSharedObjectID();
 	}
+    public void destroySelf() {
+        if (isPrimary()) {
+            try {
+                // Send destroy message to all known remotes
+                destroyRemote(null);
+            } catch (IOException e) {
+                traceStack("Exception sending destroy message to remotes", e);
+            }
+        }
+        destroySelfLocal();
+    }
+
+    public void destroySelfLocal() {
+        try {
+            ISharedObjectConfig soconfig = getConfig();
+            if (soconfig != null) {
+                ID myID = soconfig.getSharedObjectID();
+                ISharedObjectContext context = getContext();
+                if (context != null) {
+                    ISharedObjectManager manager = context.getSharedObjectManager();
+                    if (manager != null) {
+                        manager.removeSharedObject(myID);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            traceStack("Exception in destroySelfLocal()",e);
+        }
+    }
+    public void destroyRemote(ID remoteID) throws IOException {
+        ISharedObjectContext context = getContext();
+        if (context != null) {
+            context.sendDispose(remoteID);
+        }
+    }
 
 }

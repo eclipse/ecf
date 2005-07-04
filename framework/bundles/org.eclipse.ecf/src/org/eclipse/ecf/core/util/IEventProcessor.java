@@ -16,5 +16,5 @@ public interface IEventProcessor {
      * Process given Event
      * @param e the Event to process
      */
-    public Event processEvent(Event e);
+    public Event processEvent(Event event);
 }

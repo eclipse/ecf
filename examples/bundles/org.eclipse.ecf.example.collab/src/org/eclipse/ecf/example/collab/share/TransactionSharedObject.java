@@ -31,7 +31,7 @@ public class TransactionSharedObject extends GenericSharedObject implements ISha
     // Dummy inner class to provide lock
     static final class Lock {}
 
-    // Timeout value associated with this object's replication within a RepSpace
+    // Timeout value associated with this object's replication 
     protected int timeout;
     // Replication state this object is currently in.
     protected byte state;
@@ -279,7 +279,7 @@ public class TransactionSharedObject extends GenericSharedObject implements ISha
             Exception e = (Exception) failedParticipants.get(remoteID);
             trace("failed participant "+remoteID+" causing abort");
             // Abort!
-            throw new SharedObjectAddAbortException("Abort received from RepSpace "+remoteID, e);
+            throw new SharedObjectAddAbortException("Abort received "+remoteID, e);
             // If no problems, and the number of participants to here from is 0, then we're done
         } else if (state == ISharedObjectContainerTransaction.VOTING && participantIDs.size() == 0) {
             // Success!

@@ -179,8 +179,6 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 			// In this case, we're going to go ahead and continue anyway
 			return true;
 			// Abort!
-			// throw new AbortException("Abort received from RepSpace
-			// "+remoteID, e);
 			// If no problems, and the number of participants to here from is 0,
 			// then we're done
 		} else if (state == ISharedObjectContainerTransaction.VOTING
