@@ -22,6 +22,7 @@ import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
+import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
@@ -34,11 +35,16 @@ import org.eclipse.ecf.provider.Trace;
  */
 public class BaseSharedObject implements ISharedObject, IIdentifiable {
 
+	private static long identifier = 0L;
+	
 	Trace trace = Trace.create("basesharedobject");
 	
 	ISharedObjectConfig config = null;
 	List eventProcessors = new Vector();
 	
+	protected static long getIdentifier() {
+		return identifier++;
+	}
 	protected void trace(String msg) {
 		if (Trace.ON && trace != null) {
 			trace.msg(msg);
@@ -178,5 +184,34 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
             context.sendDispose(remoteID);
         }
     }
+
+    protected void replicate(ID remote) {
+        trace("replicate(" + remote + ")");
+        try {
+            // Get current group membership
+            ISharedObjectContext context = getContext();
+            if (context == null) return;
+            ID[] group = context.getGroupMemberIDs();
+            if (group == null || group.length < 1) {
+                // we're done
+                return;
+            }
+            SharedObjectDescription createInfo = getReplicaDescription(remote);
+            if (createInfo != null) {
+                context.sendCreate(remote, createInfo);
+            } else {
+                return;
+            }
+        } catch (IOException e) {
+            traceStack("Exception in replicate("+remote+")", e);
+            return;
+        }
+    }
+    protected SharedObjectDescription getReplicaDescription(ID receiver) {
+        return new SharedObjectDescription(getID(), getClass().getName(),
+            		getConfig().getProperties(), getIdentifier());
+    }
+
+
 
 }
