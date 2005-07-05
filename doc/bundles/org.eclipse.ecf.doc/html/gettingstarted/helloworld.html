@@ -39,7 +39,7 @@
             // Create actual shared object
             ISharedObject sharedObject = new HelloSharedObject();
             // Add shared object to container
-            container.getSharedObjectManager().addSharedObject(sharedObjectID,sharedObject,new HashMap(),null);
+            container.getSharedObjectManager().addSharedObject(sharedObjectID,sharedObject,new HashMap());
             // Join group identified by groupID
             container.joinGroup(groupID,null);
         } catch (Exception e) {
