@@ -72,6 +72,7 @@ public interface ISharedObjectManager {
      * @throws SharedObjectCreateException
      *             if the SharedObject cannot be created
      */
+    
     public ID createSharedObject(SharedObjectDescription sd,
             ISharedObjectContainerTransaction trans)
             throws SharedObjectCreateException;
