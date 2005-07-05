@@ -191,6 +191,9 @@ public class GenericSharedObject implements ISharedObject {
      * @see org.eclipse.ecf.core.ISharedObject#getAdapter(java.lang.Class)
      */
     public Object getAdapter(Class clazz) {
+    	if (clazz.equals(ISharedObjectContainerTransaction.class) && (this instanceof ISharedObjectContainerTransaction)) {
+    		return this;
+    	}
         return null;
     }
 
@@ -484,13 +487,13 @@ public void handleEvent(Event event) {
                             throw new InstantiationException("Exception creating instance of class: "+className+".  Does not implement ISharedObject");
                         }
                         if (inst instanceof ISharedObjectContainerTransaction) {
-                            crs.getSharedObjectManager().addSharedObject(newID,(ISharedObject) inst,map,(ISharedObjectContainerTransaction)inst);
+                            crs.getSharedObjectManager().addSharedObject(newID,(ISharedObject) inst,map);
                         } else {
                         SharedObjectDescription sd = new SharedObjectDescription(newID
                                 ,
                                 className, map);
                         crs.getSharedObjectManager()
-                                .createSharedObject(sd, null);
+                                .createSharedObject(sd);
                         }
                     } catch (Exception e) {
                         traceDump("Exception creating replicated object.", e);

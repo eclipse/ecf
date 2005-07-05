@@ -35,7 +35,7 @@ public class DataGraphSharingManager implements IDataGraphSharingManager {
         DataGraphSharing result = (DataGraphSharing) mgr.getSharedObject(id);
         if (result == null) {
             result = new DataGraphSharing();
-            mgr.addSharedObject(id, result, null, null);
+            mgr.addSharedObject(id, result, null);
         }
 
         return result;

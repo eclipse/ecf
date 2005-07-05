@@ -187,7 +187,7 @@ public class EditorPlugin extends AbstractUIPlugin {
         if (tracker == null) {
             tracker = new PublishedGraphTracker();
             container.getSharedObjectManager().addSharedObject(id, tracker,
-                    null, null);
+                    null);
         }
 
         return tracker;

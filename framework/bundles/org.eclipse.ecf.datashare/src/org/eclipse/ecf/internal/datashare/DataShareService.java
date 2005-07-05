@@ -54,8 +54,7 @@ public class DataShareService implements IDataShareService {
 		IBootstrap bootstrap = getBootstrap();
 		AbstractMulticaster sender = getSender();
 		agent = new Agent(dataGraph, bootstrap, sender, provider, callback);
-		container.getSharedObjectManager().addSharedObject(id, agent, null,
-				null);
+		container.getSharedObjectManager().addSharedObject(id, agent, null);
 	}
 
 	/*

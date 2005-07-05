@@ -58,7 +58,7 @@ public class DataGraphSharing implements
         ISharedObjectManager mgr = config.getContext().getSharedObjectManager();
         SharedDataGraph sdg = new SharedDataGraph(dataGraph, provider,
                 consumer, callback, null);
-        mgr.addSharedObject(id, sdg, null, null);
+        mgr.addSharedObject(id, sdg, null);
         return sdg;
     }
 
@@ -81,7 +81,7 @@ public class DataGraphSharing implements
         ISharedObjectManager mgr = config.getContext().getSharedObjectManager();
         SharedDataGraph sdg = new SharedDataGraph(null, provider, consumer,
                 null, callback);
-        mgr.addSharedObject(id, sdg, null, null);
+        mgr.addSharedObject(id, sdg, null);
         return sdg;
     }
 

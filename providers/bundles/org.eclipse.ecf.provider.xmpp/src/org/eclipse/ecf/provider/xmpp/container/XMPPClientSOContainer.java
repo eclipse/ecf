@@ -101,7 +101,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	protected void addSharedObjectToContainer(ID remote)
 			throws SharedObjectAddException {
 		getSharedObjectManager().addSharedObject(sharedObjectID, sharedObject,
-				new HashMap(), null);
+				new HashMap());
 	}
 
 	protected void cleanUpConnectFail() {

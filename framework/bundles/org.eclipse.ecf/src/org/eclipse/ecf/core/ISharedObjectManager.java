@@ -30,15 +30,12 @@ public interface ISharedObjectManager {
      *            the ISharedObject instance to add
      * @param properties
      *            the Map associated with the added ISharedObject
-     * @param trans
-     *            the transaction governing the creation of the shared object.
-     *            If null, creation will not be transactional
      * @return ID the sharedObjectID of the added ISharedObject
      * @throws SharedObjectAddException
      *             if the add cannot be accomplished for any reason
      */
     public ID addSharedObject(ID sharedObjectID, ISharedObject sharedObject,
-            Map properties, ISharedObjectContainerTransaction trans)
+            Map properties)
             throws SharedObjectAddException;
     /**
      * Create an ISharedObjectConnector instance for sending messages from a
@@ -65,16 +62,12 @@ public interface ISharedObjectManager {
      * @param sd
      *            the SharedObjectDescription that describes the SharedObject to
      *            be created
-     * @param trans
-     *            the transaction governing the creation of the shared object.
-     *            If null, creation will not be transactional
      * @return ID the sharedObjectID of the added ISharedObject
      * @throws SharedObjectCreateException
      *             if the SharedObject cannot be created
      */
     
-    public ID createSharedObject(SharedObjectDescription sd,
-            ISharedObjectContainerTransaction trans)
+    public ID createSharedObject(SharedObjectDescription sd)
             throws SharedObjectCreateException;
             
     /**

@@ -103,7 +103,7 @@ public class ClientApplication {
 				for(int i=0; i < sharedObjectClassNames.length; i++) {
 					System.out.println("Creating sharedObject: "+sharedObjectClassNames[i]+" for client "+scg.getConfig().getID().getName());
 					SharedObjectDescription sd = new SharedObjectDescription(IDFactory.makeStringID(String.valueOf(aRan.nextInt())),sharedObjectClassNames[i]);
-					scg.getSharedObjectManager().createSharedObject(sd,null);
+					scg.getSharedObjectManager().createSharedObject(sd);
 					System.out.println("Created sharedObject for client "+scg.getConfig().getID().getName());
 				}
 			}

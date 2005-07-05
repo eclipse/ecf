@@ -20,6 +20,7 @@ import java.util.Vector;
 import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectDescription;
@@ -139,6 +140,9 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * @see org.eclipse.ecf.core.ISharedObject#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class clazz) {
+		if (clazz.equals(ISharedObjectContainerTransaction.class)) {
+			return new TwoPhaseCommit(this);
+		}
 		return null;
 	}
 

@@ -45,13 +45,12 @@ import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.provider.Trace;
 
 /**
- *  
+ * 
  */
 public class SOManager implements ISharedObjectManager {
 	static Trace debug = Trace.create("sharedobjectmanager");
 
 	SOContainer container = null;
-
 	Vector connectors = null;
 
 	public SOManager(SOContainer cont) {
@@ -112,9 +111,8 @@ public class SOManager implements ISharedObjectManager {
 		if (newSharedObject instanceof ISharedObject)
 			return (ISharedObject) newSharedObject;
 		else
-			throw new ClassCastException("shared object "
-					+ newSharedObject.toString() + " does not implement "
-					+ ISharedObject.class.getName());
+			throw new ClassCastException("Object " + newSharedObject.toString()
+					+ " does not implement " + ISharedObject.class.getName());
 	}
 
 	protected ISharedObject loadSharedObject(SharedObjectDescription sd)
@@ -146,10 +144,9 @@ public class SOManager implements ISharedObjectManager {
 	 * @see org.eclipse.ecf.core.ISharedObjectManager#createSharedObject(org.eclipse.ecf.core.SharedObjectDescription,
 	 *      org.eclipse.ecf.core.ISharedObjectContainerTransaction)
 	 */
-	public ID createSharedObject(SharedObjectDescription sd,
-			ISharedObjectContainerTransaction trans)
+	public ID createSharedObject(SharedObjectDescription sd)
 			throws SharedObjectCreateException {
-		debug("createSharedObject(" + sd + "," + trans + ")");
+		debug("createSharedObject(" + sd + ")");
 		// notify listeners
 		if (sd == null)
 			throw new SharedObjectCreateException(
@@ -165,7 +162,7 @@ public class SOManager implements ISharedObjectManager {
 		try {
 			newObject = loadSharedObject(sd);
 			result = addSharedObject(sharedObjectID, newObject, sd
-					.getProperties(), trans);
+					.getProperties());
 		} catch (Exception e) {
 			dumpStack("Exception in createSharedObject", e);
 			SharedObjectCreateException newExcept = new SharedObjectCreateException(
@@ -187,10 +184,9 @@ public class SOManager implements ISharedObjectManager {
 	 *      org.eclipse.ecf.core.ISharedObjectContainerTransaction)
 	 */
 	public ID addSharedObject(ID sharedObjectID, ISharedObject sharedObject,
-			Map properties, ISharedObjectContainerTransaction trans)
-			throws SharedObjectAddException {
+			Map properties) throws SharedObjectAddException {
 		debug("addSharedObject(" + sharedObjectID + "," + sharedObject + ","
-				+ properties + "," + trans + ")");
+				+ properties + ")");
 		// notify listeners
 		container.fireContainerEvent(new SharedObjectManagerAddEvent(container
 				.getID(), sharedObjectID, sharedObject, properties));
@@ -201,7 +197,9 @@ public class SOManager implements ISharedObjectManager {
 					sharedObject.getClass().getClassLoader(), sharedObjectID,
 					container.getID(), sharedObject.getClass().getName(),
 					properties, 0);
-			container.addSharedObjectAndWait(sd, so, trans);
+			ISharedObjectContainerTransaction transaction = (ISharedObjectContainerTransaction) so
+					.getAdapter(ISharedObjectContainerTransaction.class);
+			container.addSharedObjectAndWait(sd, so, transaction);
 		} catch (Exception e) {
 			dumpStack("Exception in addSharedObject", e);
 			SharedObjectAddException newExcept = new SharedObjectAddException(

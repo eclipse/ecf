@@ -241,7 +241,7 @@ public class Client {
         });
         ID newID = IDFactory.makeStringID(COLLAB_SHARED_OBJECT_ID);
         client.getContainer().getSharedObjectManager().addSharedObject(newID, sharedObject,
-                new HashMap(), null);
+                new HashMap());
         client.setObject(sharedObject);
     }
 
