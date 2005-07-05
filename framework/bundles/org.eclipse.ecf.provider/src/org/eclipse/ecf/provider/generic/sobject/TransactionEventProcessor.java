@@ -20,10 +20,11 @@ import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectAddAbortException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectCommitEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent;
-import org.eclipse.ecf.core.events.RemoteSharedObjectEvent;
+import org.eclipse.ecf.core.events.SharedObjectCommitEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
@@ -36,7 +37,6 @@ import org.eclipse.ecf.provider.Trace;
 public class TransactionEventProcessor implements IEventProcessor {
 
 	public static final Trace trace = Trace.create("transactioneventprocessor");
-
 	public static final int DEFAULT_TIMEOUT = 30000;
 
 	BaseSharedObject sharedObject = null;
@@ -47,14 +47,6 @@ public class TransactionEventProcessor implements IEventProcessor {
 	Map failed = new HashMap();
 	int timeout = DEFAULT_TIMEOUT;
 	int minFailedToAbort = 0;
-
-	class CommitEvent extends RemoteSharedObjectEvent {
-		private static final long serialVersionUID = 6208586597348619413L;
-
-		public CommitEvent(ID senderObj, ID remoteCont) {
-			super(senderObj, remoteCont, null);
-		}
-	}
 
 	public TransactionEventProcessor(BaseSharedObject bse, int timeout) {
 		sharedObject = bse;
@@ -165,7 +157,7 @@ public class TransactionEventProcessor implements IEventProcessor {
 			trace("handleDeparted(" + event + ")");
 			handleDeparted((ISharedObjectContainerDepartedEvent) event);
 			return event;
-		} else if (event instanceof CommitEvent) {
+		} else if (event instanceof ISharedObjectCommitEvent) {
 			trace("localCommitted(" + event + ")");
 			localCommitted();
 			return event;
@@ -189,7 +181,7 @@ public class TransactionEventProcessor implements IEventProcessor {
 	}
 
 	protected void handlePrimaryActivated(ISharedObjectActivatedEvent event) {
-		getSharedObject().replicate(null);
+		getSharedObject().replicateToRemote(null);
 		addParticipants(getContext().getGroupMemberIDs());
 		setTransactionState(ISharedObjectContainerTransaction.VOTING);
 	}
@@ -216,7 +208,7 @@ public class TransactionEventProcessor implements IEventProcessor {
 			// replicate message
 			synchronized (lock) {
 				ID newMember = event.getJoinedContainerID();
-				getSharedObject().replicate(newMember);
+				getSharedObject().replicateToRemote(newMember);
 				if (getTransactionState() == ISharedObjectContainerTransaction.VOTING)
 					addParticipants(new ID[] { newMember });
 			}
@@ -270,8 +262,7 @@ public class TransactionEventProcessor implements IEventProcessor {
 			try {
 				getSharedObject().getContext().sendMessage(
 						fromID,
-						new CommitEvent(getSharedObject().getID(),
-								getSharedObject().getLocalID()));
+						new SharedObjectCommitEvent(getSharedObject().getID()));
 			} catch (Exception e2) {
 				traceStack("Exception in sendCommit to " + fromID, e2);
 			}
@@ -292,8 +283,7 @@ public class TransactionEventProcessor implements IEventProcessor {
 		try {
 			getContext().sendMessage(
 					null,
-					new CommitEvent(getSharedObject().getID(),
-							getSharedObject().getLocalID()));
+					new SharedObjectCommitEvent(getSharedObject().getID()));
 		} catch (Exception e2) {
 			doTMAbort(new SharedObjectAddAbortException(
 					"Exception sending commit message", e2, getTimeout()));

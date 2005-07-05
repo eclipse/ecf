@@ -36,7 +36,6 @@ import org.eclipse.ecf.provider.Trace;
 public class BaseSharedObject implements ISharedObject, IIdentifiable {
 
 	private static long identifier = 0L;
-	
 	Trace trace = Trace.create("basesharedobject");
 	
 	ISharedObjectConfig config = null;
@@ -45,14 +44,14 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	protected static long getIdentifier() {
 		return identifier++;
 	}
-	protected void trace(String msg) {
+	private void trace(String msg) {
 		if (Trace.ON && trace != null) {
-			trace.msg(msg);
+			trace.msg(getID()+":"+msg);
 		}
 	}
-	protected void traceStack(String msg, Throwable t) {
+	private void traceStack(String msg, Throwable t) {
 		if (Trace.ON && trace != null) {
-			trace.dumpStack(t,msg);
+			trace.dumpStack(t,getID()+":"+msg);
 		}
 	}
 	protected void addEventProcessor(IEventProcessor proc) {
@@ -74,7 +73,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 			if (ep != null) {
 				if (evt != null) {
 					if (ep.acceptEvent(evt)) {
-						trace(getID()+":eventProcessor="+ep+":event="+evt);
+						trace("eventProcessor="+ep+":event="+evt);
 						evt = ep.processEvent(evt);
 					}
 				}
@@ -117,7 +116,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		fireEventProcessors(event);
 	}
 	protected void handleUnhandledEvent(Event event) {
-		trace("Unhandled event:"+event);
+		trace("handleUnhandledEvent("+event+")");
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.ISharedObject#handleEvents(org.eclipse.ecf.core.util.Event[])
@@ -185,8 +184,8 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
         }
     }
 
-    protected void replicate(ID remote) {
-        trace("replicate(" + remote + ")");
+    protected void replicateToRemote(ID remote) {
+        trace("replicateToRemote(" + remote + ")");
         try {
             // Get current group membership
             ISharedObjectContext context = getContext();
