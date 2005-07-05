@@ -17,12 +17,12 @@ import org.eclipse.ecf.core.SharedObjectAddAbortException;
  * @author slewis
  *
  */
-public class ReplicateSharedObjectTransaction implements
+public class TwoPhaseCommit implements
 		ISharedObjectContainerTransaction {
 
 	TransactionEventProcessor eventProcessor = null;
 	
-	public ReplicateSharedObjectTransaction(BaseSharedObject so) {
+	public TwoPhaseCommit(BaseSharedObject so) {
 		eventProcessor = new TransactionEventProcessor(so);
 	}
 	/* (non-Javadoc)
