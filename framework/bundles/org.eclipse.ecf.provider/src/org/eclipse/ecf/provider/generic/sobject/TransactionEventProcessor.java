@@ -42,15 +42,10 @@ public class TransactionEventProcessor implements IEventProcessor {
 	BaseSharedObject sharedObject = null;
 
 	byte transactionState = ISharedObjectContainerTransaction.ACTIVE;
-
 	Object lock = new Object();
-
 	List participants = new Vector();
-
 	Map failed = new HashMap();
-
 	int timeout = DEFAULT_TIMEOUT;
-
 	int minFailedToAbort = 0;
 
 	class CommitEvent extends RemoteSharedObjectEvent {
@@ -224,8 +219,6 @@ public class TransactionEventProcessor implements IEventProcessor {
 				getSharedObject().replicate(newMember);
 				if (getTransactionState() == ISharedObjectContainerTransaction.VOTING)
 					addParticipants(new ID[] { newMember });
-				else
-					getSharedObject().replicate(newMember);
 			}
 		} else {
 			// we don't care
