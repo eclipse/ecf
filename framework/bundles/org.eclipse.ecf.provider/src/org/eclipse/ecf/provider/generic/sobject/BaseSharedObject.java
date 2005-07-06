@@ -36,11 +36,13 @@ import org.eclipse.ecf.provider.Trace;
  */
 public class BaseSharedObject implements ISharedObject, IIdentifiable {
 
+	protected static final String TRANSACTIONAL_SUFFIX = ".transactional";
 	private static long identifier = 0L;
 	Trace trace = Trace.create("basesharedobject");
 	
 	ISharedObjectConfig config = null;
 	List eventProcessors = new Vector();
+	Boolean transactional = null;
 	
 	protected static long getIdentifier() {
 		return identifier++;
@@ -86,29 +88,57 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	public void init(ISharedObjectConfig initData)
 			throws SharedObjectInitException {
-		trace("init("+initData+")");
 		this.config = initData;
+		trace("init("+initData+")");
+		Map props = config.getProperties();
+		Object o = props.get(this.getClass().getName()+TRANSACTIONAL_SUFFIX);
+		if (o instanceof Boolean) {
+			Boolean b = (Boolean) o;
+			if (b != null && b.booleanValue()) {
+				// transactional...
+				new TwoPhaseCommit(this);
+			}
+		}
+		
 	}
 	protected ISharedObjectConfig getConfig() {
 		return config;
 	}
 	protected ISharedObjectContext getContext() {
-		return getConfig().getContext();
+		ISharedObjectConfig c = getConfig();
+		if (c == null) {
+			return null;
+		} else return config.getContext();
 	}
 	protected ID getHomeID() {
-		return getConfig().getHomeContainerID();
+		ISharedObjectConfig conf = getConfig();
+		if (conf == null) return null;
+		else return conf.getHomeContainerID();
 	}
 	protected ID getLocalID() {
-		return getContext().getLocalContainerID();
+		ISharedObjectContext context = getContext();
+		if (context == null) {
+			return null;
+		} else return context.getLocalContainerID();
 	}
 	protected ID getGroupID() {
-		return getContext().getGroupID();
+		ISharedObjectContext context = getContext();
+		if (context == null) {
+			return null;
+		} else return context.getGroupID();
 	}
 	protected boolean isPrimary() {
-		return (getLocalID().equals(getHomeID()));
+		ID local = getLocalID();
+		ID home = getHomeID();
+		if (local == null || home == null) {
+			return false;
+		} else return (local.equals(home));
 	}
 	protected Map getProperties() {
-		return getConfig().getProperties();
+		ISharedObjectConfig config = getConfig();
+		if (config == null) {
+			return null;
+		} else return config.getProperties();
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
@@ -141,6 +171,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(ISharedObjectContainerTransaction.class)) {
+			transactional = new Boolean(true);
 			return new TwoPhaseCommit(this);
 		}
 		return null;
@@ -150,7 +181,10 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * @see org.eclipse.ecf.core.IIdentifiable#getID()
 	 */
 	public ID getID() {
-		return getConfig().getSharedObjectID();
+		ISharedObjectConfig conf = getConfig();
+		if (conf == null) {
+			return null;
+		} else return conf.getSharedObjectID();
 	}
     public void destroySelf() {
         if (isPrimary()) {
@@ -211,8 +245,10 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
         }
     }
     protected SharedObjectDescription getReplicaDescription(ID receiver) {
+    	Map props = getConfig().getProperties();
+    	props.put(this.getClass().getName()+TRANSACTIONAL_SUFFIX,transactional);
         return new SharedObjectDescription(getID(), getClass().getName(),
-            		getConfig().getProperties(), getIdentifier());
+            		props, getIdentifier());
     }
 
 

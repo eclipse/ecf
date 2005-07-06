@@ -24,6 +24,7 @@ import org.eclipse.ecf.core.events.ISharedObjectCommitEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerJoinedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent;
+import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.events.SharedObjectCommitEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
@@ -61,7 +62,7 @@ public class TransactionEventProcessor implements IEventProcessor {
 	protected void trace(String msg) {
 		if (Trace.ON && trace != null) {
 			trace.msg(getSharedObject().getID() + ":"
-					+ (getSharedObject().isPrimary() ? "primary" : "replica")
+					+ (getSharedObject().isPrimary() ? "primary:" : "replica:")
 					+ msg);
 		}
 	}
@@ -157,10 +158,14 @@ public class TransactionEventProcessor implements IEventProcessor {
 			trace("handleDeparted(" + event + ")");
 			handleDeparted((ISharedObjectContainerDepartedEvent) event);
 			return event;
-		} else if (event instanceof ISharedObjectCommitEvent) {
-			trace("localCommitted(" + event + ")");
-			localCommitted();
-			return event;
+		} else if (event instanceof ISharedObjectMessageEvent) {
+			ISharedObjectMessageEvent some = (ISharedObjectMessageEvent) event;
+			Object data = some.getData();
+			if (data instanceof ISharedObjectCommitEvent) {
+				trace("localCommitted(" + event + ")");
+				localCommitted();
+				return event;
+			}
 		}
 		return event;
 	}
