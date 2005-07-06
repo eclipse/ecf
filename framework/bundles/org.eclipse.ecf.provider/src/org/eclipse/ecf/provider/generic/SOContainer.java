@@ -784,13 +784,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainer#isGroupServer()
-	 */
-	public abstract boolean isGroupServer();
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#joinGroup(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IJoinContext)
 	 */

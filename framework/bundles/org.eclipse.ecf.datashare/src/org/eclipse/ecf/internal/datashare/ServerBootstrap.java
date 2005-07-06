@@ -59,7 +59,7 @@ public class ServerBootstrap implements IBootstrap {
 	}
 
 	private void handleJoined(ID containerID) {
-		if (config.getContext().isGroupServer()) // TODO how about isGroupManager()?
+		if (config.getContext().isGroupManager()) 
 			agent.doBootstrap(containerID);
 	}
 	/*

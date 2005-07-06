@@ -96,7 +96,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
     	debug("activated()");
         try {
             // Only try to open output file if this is not the host instance
-            if (!isHost() && !getContext().isGroupServer()) {
+            if (!isHost() && !getContext().isGroupManager()) {
                 // Then notify listener about starting the receive
                 if (progressListener != null) {
                     progressListener.receiveStart(this, transferParams.getRemoteFile(), transferParams.getLength(), transferParams.getRate());
@@ -147,7 +147,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
         if (aFile == null) throw new IOException("File is null");
         // If this is a server, and we shouldn't create a copy of ourselves on a server
         // then we skip the file creation totally
-        if (getContext().isGroupServer() && !transferParams.getIncludeServer()) {
+        if (getContext().isGroupManager() && !transferParams.getIncludeServer()) {
             // Set myFile to null and outputStream to null
             debug("File "+aFile+" not created on server.");
             setOutputStream(null);

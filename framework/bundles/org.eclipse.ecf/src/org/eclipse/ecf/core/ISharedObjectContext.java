@@ -89,13 +89,6 @@ public interface ISharedObjectContext extends IAdaptable {
 	/**
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainer#isGroupServer()
-	 */
-	public boolean isGroupServer();
-
-	/**
-	 * (non-Javadoc)
-	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#getGroupMemberIDs()
 	 */
 	public ID[] getGroupMemberIDs();

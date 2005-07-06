@@ -128,7 +128,7 @@ public class ExecProg extends GenericSharedObject
     {
         debug("activated()");
         try {
-            if (!getContext().isGroupServer() || includeServer.equals(Boolean.TRUE)) {
+            if (!getContext().isGroupManager() || includeServer.equals(Boolean.TRUE)) {
                 startup();
             } else {
             	debug("Not executing commands because is server");

@@ -263,7 +263,7 @@ public class PublishedGraphTracker implements ISharedObject {
 					getContext().getLocalContainerID()))
 				// this container joined
 				handleJoined();
-			else if (getContext().isGroupServer())
+			else if (getContext().isGroupManager())
 				// some other container joined and we're the server
 				handleJoined(e.getJoinedContainerID());
 		} else if (event instanceof ISharedObjectContainerDepartedEvent) {

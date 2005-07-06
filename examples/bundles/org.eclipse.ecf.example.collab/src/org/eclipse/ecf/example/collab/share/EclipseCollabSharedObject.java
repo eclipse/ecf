@@ -96,7 +96,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		super.activated(others);
 		if (localGUI == null) {
 			try {
-				if (!getContext().isGroupServer())
+				if (!getContext().isGroupManager())
 					destroySelfLocal();
 			} catch (Exception e) {
 				debugdump(e, "Unable to check whether we are server instance");

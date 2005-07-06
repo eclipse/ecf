@@ -361,7 +361,7 @@ public void handleEvent(Event event) {
     public boolean isServer() {
         ISharedObjectContext context = getContext();
         if (context != null) {
-            return getContext().isGroupServer();
+            return getContext().isGroupManager();
         } else return false;
     }
 

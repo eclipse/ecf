@@ -226,7 +226,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 			}
 
 			try {
-				isServer = getContext().isGroupServer();
+				isServer = getContext().isGroupManager();
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
