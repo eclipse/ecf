@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.provider.generic.sobject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import java.util.Vector;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectAddAbortException;
+import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectCommitEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
@@ -35,12 +37,12 @@ import org.eclipse.ecf.provider.Trace;
  * @author slewis
  * 
  */
-public class TransactionEventProcessor implements IEventProcessor {
+public class TPCommitEventProcessor implements IEventProcessor {
 
 	public static final Trace trace = Trace.create("transactioneventprocessor");
 	public static final int DEFAULT_TIMEOUT = 30000;
 
-	BaseSharedObject sharedObject = null;
+	ISharedObjectInternal sharedObject = null;
 
 	byte transactionState = ISharedObjectContainerTransaction.ACTIVE;
 	Object lock = new Object();
@@ -48,14 +50,14 @@ public class TransactionEventProcessor implements IEventProcessor {
 	Map failed = new HashMap();
 	int timeout = DEFAULT_TIMEOUT;
 	int minFailedToAbort = 0;
-
-	public TransactionEventProcessor(BaseSharedObject bse, int timeout) {
-		sharedObject = bse;
-		sharedObject.addEventProcessor(this);
+	long identifier = 0;
+	
+	public TPCommitEventProcessor(ISharedObjectInternal bse, int timeout) {
+		this.sharedObject = bse;
 		this.timeout = timeout;
 	}
 
-	public TransactionEventProcessor(BaseSharedObject bse) {
+	public TPCommitEventProcessor(ISharedObjectInternal bse) {
 		this(bse, DEFAULT_TIMEOUT);
 	}
 
@@ -87,7 +89,7 @@ public class TransactionEventProcessor implements IEventProcessor {
 		return getSharedObject().isPrimary();
 	}
 
-	protected BaseSharedObject getSharedObject() {
+	protected ISharedObjectInternal getSharedObject() {
 		return sharedObject;
 	}
 
@@ -184,9 +186,30 @@ public class TransactionEventProcessor implements IEventProcessor {
 		}
 
 	}
+    protected void replicateTo(ID remote) {
+        try {
+            // Get current group membership
+            ISharedObjectContext context = getSharedObject().getContext();
+            if (context == null) return;
+            ID[] group = context.getGroupMemberIDs();
+            if (group == null || group.length < 1) {
+                // we're done
+                return;
+            }
+            SharedObjectDescription createInfo = getSharedObject().getReplicaDescription(remote);
+            if (createInfo != null) {
+                context.sendCreate(remote, createInfo);
+            } else {
+                return;
+            }
+        } catch (IOException e) {
+            traceStack("Exception in replicate("+remote+")", e);
+            return;
+        }
+    }
 
 	protected void handlePrimaryActivated(ISharedObjectActivatedEvent event) {
-		getSharedObject().replicateToRemote(null);
+		replicateTo(null);
 		addParticipants(getContext().getGroupMemberIDs());
 		setTransactionState(ISharedObjectContainerTransaction.VOTING);
 	}
@@ -195,7 +218,7 @@ public class TransactionEventProcessor implements IEventProcessor {
 		try {
 			// Try to respond with create success message back to host
 			getContext().sendCreateResponse(getHomeID(), null,
-					BaseSharedObject.getIdentifier());
+					BaseSharedObject.getNextIdentifier());
 			// If above succeeds, we're now in prepared state
 			setTransactionState(ISharedObjectContainerTransaction.PREPARED);
 		} catch (Exception except) {
@@ -213,12 +236,12 @@ public class TransactionEventProcessor implements IEventProcessor {
 			// replicate message
 			synchronized (lock) {
 				ID newMember = event.getJoinedContainerID();
-				getSharedObject().replicateToRemote(newMember);
+				replicateTo(newMember);
 				if (getTransactionState() == ISharedObjectContainerTransaction.VOTING)
 					addParticipants(new ID[] { newMember });
 			}
 		} else {
-			// we don't care
+			// we don't care as we are note transaction monitor
 		}
 	}
 
@@ -241,7 +264,7 @@ public class TransactionEventProcessor implements IEventProcessor {
 				lock.notifyAll();
 			}
 		} else {
-			// We don't care
+			// we don't care as we are note transaction monitor
 		}
 	}
 
@@ -256,7 +279,7 @@ public class TransactionEventProcessor implements IEventProcessor {
 				lock.notifyAll();
 			}
 		} else {
-			// we don't care
+			// we don't care as we are note transaction monitor
 		}
 	}
 
@@ -318,7 +341,7 @@ public class TransactionEventProcessor implements IEventProcessor {
 					trace("waitForFinish waiting " + wait + "ms on "
 							+ getSharedObject().getID());
 					if (wait <= 0L)
-						throw new SharedObjectAddAbortException("Timeout",
+						throw new SharedObjectAddAbortException("Timeout adding "+getSharedObject().getID()+" to "+getHomeID(),
 								(Throwable) null, getTimeout());
 					// Wait right here
 					lock.wait(wait);
@@ -335,12 +358,11 @@ public class TransactionEventProcessor implements IEventProcessor {
 	protected void doTMAbort(Throwable except)
 			throws SharedObjectAddAbortException {
 		trace("ABORTED:" + except);
-		// Send destroy message here so all remotes get destroyed, and we remove
-		// ourselves from local space as well.
-		getSharedObject().removeEventProcessor(this);
-		getSharedObject().destroySelf();
 		// Set our own state variable to ABORTED
 		setTransactionState(ISharedObjectContainerTransaction.ABORTED);
+		// Send destroy message here so all remotes get destroyed, and we remove
+		// ourselves from local space as well.
+		getSharedObject().destroySelf();
 		// throw so caller gets exception and can deal with it
 		if (except instanceof SharedObjectAddAbortException)
 			throw (SharedObjectAddAbortException) except;

@@ -23,9 +23,9 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConnector;
-import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.SharedObjectConnectException;
@@ -197,9 +197,7 @@ public class SOManager implements ISharedObjectManager {
 					sharedObject.getClass().getClassLoader(), sharedObjectID,
 					container.getID(), sharedObject.getClass().getName(),
 					properties, 0);
-			ISharedObjectContainerTransaction transaction = (ISharedObjectContainerTransaction) so
-					.getAdapter(ISharedObjectContainerTransaction.class);
-			container.addSharedObjectAndWait(sd, so, transaction);
+			container.addSharedObjectAndWait(sd, so);
 		} catch (Exception e) {
 			dumpStack("Exception in addSharedObject", e);
 			SharedObjectAddException newExcept = new SharedObjectAddException(

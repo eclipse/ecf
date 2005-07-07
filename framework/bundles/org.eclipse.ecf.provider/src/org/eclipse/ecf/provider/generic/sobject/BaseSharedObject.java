@@ -34,17 +34,20 @@ import org.eclipse.ecf.provider.Trace;
  * @author slewis
  *
  */
-public class BaseSharedObject implements ISharedObject, IIdentifiable {
+public class BaseSharedObject implements ISharedObject, IIdentifiable, ISharedObjectInternal {
 
-	protected static final String TRANSACTIONAL_SUFFIX = ".transactional";
 	private static long identifier = 0L;
+	public static final String TRANSACTION_PROPERTY_NAME = ISharedObjectContainerTransaction.class.getName();
+	
 	Trace trace = Trace.create("basesharedobject");
 	
 	ISharedObjectConfig config = null;
 	List eventProcessors = new Vector();
-	Boolean transactional = null;
 	
-	protected static long getIdentifier() {
+	Integer transactionTimeout = new Integer(-1);
+	ISharedObjectContainerTransaction transaction = null;
+	
+	protected static long getNextIdentifier() {
 		return identifier++;
 	}
 	private void trace(String msg) {
@@ -57,11 +60,14 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 			trace.dumpStack(t,getID()+":"+msg);
 		}
 	}
-	protected void addEventProcessor(IEventProcessor proc) {
+	public void addEventProcessor(IEventProcessor proc) {
 		eventProcessors.add(proc);
 	}
-	protected boolean removeEventProcessor(IEventProcessor proc) {
+	public boolean removeEventProcessor(IEventProcessor proc) {
 		return eventProcessors.remove(proc);
+	}
+	public void clearEventProcessors() {
+		eventProcessors.clear();
 	}
 	protected void fireEventProcessors(Event event) {
 		if (event == null) return;
@@ -90,27 +96,31 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 			throws SharedObjectInitException {
 		this.config = initData;
 		trace("init("+initData+")");
+		initTransaction();
+	}
+	protected void initTransaction() {
 		Map props = config.getProperties();
-		Object o = props.get(this.getClass().getName()+TRANSACTIONAL_SUFFIX);
-		if (o instanceof Boolean) {
-			Boolean b = (Boolean) o;
-			if (b != null && b.booleanValue()) {
+		// If transaction property is set, get Integer value and use for transaction timeout
+		Object o = props.get(TRANSACTION_PROPERTY_NAME);
+		if (o instanceof Integer) {
+			Integer trans = (Integer) o;
+			if (trans != null && trans.intValue() != -1) {
 				// transactional...
-				new TwoPhaseCommit(this);
+				transactionTimeout = trans;
+				transaction = new SharedObjectReplication(this,transactionTimeout.intValue());
 			}
 		}
-		
 	}
 	protected ISharedObjectConfig getConfig() {
 		return config;
 	}
-	protected ISharedObjectContext getContext() {
+	public ISharedObjectContext getContext() {
 		ISharedObjectConfig c = getConfig();
 		if (c == null) {
 			return null;
 		} else return config.getContext();
 	}
-	protected ID getHomeID() {
+	public ID getHomeID() {
 		ISharedObjectConfig conf = getConfig();
 		if (conf == null) return null;
 		else return conf.getHomeContainerID();
@@ -127,7 +137,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 			return null;
 		} else return context.getGroupID();
 	}
-	protected boolean isPrimary() {
+	public boolean isPrimary() {
 		ID local = getLocalID();
 		ID home = getHomeID();
 		if (local == null || home == null) {
@@ -171,8 +181,9 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(ISharedObjectContainerTransaction.class)) {
-			transactional = new Boolean(true);
-			return new TwoPhaseCommit(this);
+			if (transactionTimeout == null || transactionTimeout.intValue() == -1) {
+				return null;
+			} else return transaction;
 		}
 		return null;
 	}
@@ -222,35 +233,9 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
         }
     }
 
-    protected void replicateToRemote(ID remote) {
-        trace("replicateToRemote(" + remote + ")");
-        try {
-            // Get current group membership
-            ISharedObjectContext context = getContext();
-            if (context == null) return;
-            ID[] group = context.getGroupMemberIDs();
-            if (group == null || group.length < 1) {
-                // we're done
-                return;
-            }
-            SharedObjectDescription createInfo = getReplicaDescription(remote);
-            if (createInfo != null) {
-                context.sendCreate(remote, createInfo);
-            } else {
-                return;
-            }
-        } catch (IOException e) {
-            traceStack("Exception in replicate("+remote+")", e);
-            return;
-        }
-    }
-    protected SharedObjectDescription getReplicaDescription(ID receiver) {
-    	Map props = getConfig().getProperties();
-    	props.put(this.getClass().getName()+TRANSACTIONAL_SUFFIX,transactional);
+    public SharedObjectDescription getReplicaDescription(ID receiver) {
         return new SharedObjectDescription(getID(), getClass().getName(),
-            		props, getIdentifier());
+        		getConfig().getProperties(), getNextIdentifier());
     }
-
-
 
 }
