@@ -162,20 +162,24 @@ public class JoinGroupWizardPage extends WizardPage {
 
         final Label label_4 = new Label(container, SWT.NONE);
         label_4.setText("Provider:");
-
+        final GridData gridData_0 = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+        label_4.setLayoutData(gridData_0);
+        
         combo = new Combo(container, SWT.READ_ONLY);
         final GridData gridData_1 = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
         combo.setLayoutData(gridData_1);
 
+        Label l5 = new Label(container, SWT.NONE);
+        l5.setText("");
         example_label = new Label(container, SWT.NONE);
         example_label.setText(template_url);
-
+        
         groupIDLabel = new Label(container, SWT.NONE);
         groupIDLabel.setText(JOINGROUP_FIELDNAME);
 
         joingroup_text = new Text(container, SWT.BORDER);
         joingroup_text.setText(default_url);
-        final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+        final GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
         gridData.widthHint = 140;
         joingroup_text.setLayoutData(gridData);
         joingroup_text.addFocusListener(new FocusListener() {
