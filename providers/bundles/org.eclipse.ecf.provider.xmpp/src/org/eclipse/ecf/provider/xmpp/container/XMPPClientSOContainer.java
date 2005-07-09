@@ -71,13 +71,13 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	}
 
 	public XMPPClientSOContainer(int ka) throws Exception {
-		super(new SOContainerConfig(IDFactory.makeGUID()));
+		super(new SOContainerConfig(IDFactory.getDefault().makeGUID()));
 		keepAlive = ka;
 		initializeSharedObject();
 	}
 
 	public XMPPClientSOContainer(String userhost, int ka) throws Exception {
-		super(new SOContainerConfig(IDFactory.makeStringID(userhost)));
+		super(new SOContainerConfig(IDFactory.getDefault().makeStringID(userhost)));
 		keepAlive = ka;
 		initializeSharedObject();
 	}
@@ -214,7 +214,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	}
 
 	protected void initializeSharedObject() throws Exception {
-		sharedObjectID = IDFactory.makeStringID(XMPP_SHARED_OBJECT_ID);
+		sharedObjectID = IDFactory.getDefault().makeStringID(XMPP_SHARED_OBJECT_ID);
 		sharedObject = new XMPPPresenceSharedObject();
 	}
 

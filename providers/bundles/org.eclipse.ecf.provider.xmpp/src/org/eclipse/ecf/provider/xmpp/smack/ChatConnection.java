@@ -174,7 +174,7 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 		if (!isConnected())
 			return null;
 		try {
-			return IDFactory.makeID(XMPPID.PROTOCOL, new Object[] { connection
+			return IDFactory.getDefault().makeID(XMPPID.PROTOCOL, new Object[] { connection
 					.getConnectionID() });
 		} catch (Exception e) {
 			logException("Exception in getLocalID", e);

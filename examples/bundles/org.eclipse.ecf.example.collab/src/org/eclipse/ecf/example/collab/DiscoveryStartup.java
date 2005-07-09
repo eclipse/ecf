@@ -110,7 +110,7 @@ public class DiscoveryStartup {
 		String targetString = null;
         try {
     		targetString = svcInfo.getServiceURI().toString();
-            targetID = IDFactory.makeStringID(targetString);
+            targetID = IDFactory.getDefault().makeStringID(targetString);
         } catch (Exception e) {
         	ClientPlugin.log("cannot create target id for "+targetString,e);
         }

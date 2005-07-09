@@ -63,8 +63,8 @@ public class JoinGroupWizard extends Wizard {
         try {
 			ID groupID = null;
 			if (namespace != null) {
-				groupID = IDFactory.makeID(namespace,new Object[] { groupName });
-			} else groupID = IDFactory.makeStringID(groupName);
+				groupID = IDFactory.getDefault().makeID(namespace,new Object[] { groupName });
+			} else groupID = IDFactory.getDefault().makeStringID(groupName);
             client = new ClientConnectAction();
             client.setProject(project);
             client.setUsername(nickName);

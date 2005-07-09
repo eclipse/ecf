@@ -123,7 +123,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
     }
 
     protected void initializeSharedObject() throws Exception {
-        sharedObjectID = IDFactory.makeStringID(XMPP_GROUP_CHAT_SHARED_OBJECT_ID);
+        sharedObjectID = IDFactory.getDefault().makeStringID(XMPP_GROUP_CHAT_SHARED_OBJECT_ID);
         sharedObject = new XMPPGroupChatSharedObject();
     }
 

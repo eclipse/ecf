@@ -44,10 +44,10 @@ public class TCPClientSOContainer extends ClientSOContainer {
 
     public static final void main(String[] args) throws Exception {
         ISharedObjectContainerConfig config = new SOContainerConfig(IDFactory
-                .makeGUID());
+                .getDefault().makeGUID());
         TCPClientSOContainer container = new TCPClientSOContainer(config);
         // now join group
-        ID serverID = IDFactory.makeStringID(TCPServerSOContainer
+        ID serverID = IDFactory.getDefault().makeStringID(TCPServerSOContainer
                 .getDefaultServerURL());
         container.joinGroup(serverID, null);
         Thread.sleep(200000);

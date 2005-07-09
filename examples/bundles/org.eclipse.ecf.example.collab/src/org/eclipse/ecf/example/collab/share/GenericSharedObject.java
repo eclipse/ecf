@@ -472,7 +472,7 @@ public void handleEvent(Event event) {
 
     public ID makeObject(ID target, String className, Map map) throws Exception {
         ISharedObjectContext crs = getContext();
-        ID newID = IDFactory.makeStringID(getNewUniqueIDString());
+        ID newID = IDFactory.getDefault().makeStringID(getNewUniqueIDString());
         if (crs == null) {
             throw new InstantiationException(
                     "Cannot make object.  Have no local creation capability because context is null");

@@ -117,7 +117,7 @@ public class EditorPlugin extends AbstractUIPlugin {
                 .getWorkspace().getRoot().getProject(p.segment(0)));
         PublishedGraphTracker tracker = getTracker(container);
 
-        ID id = IDFactory.makeStringID(path);
+        ID id = IDFactory.getDefault().makeStringID(path);
         WaitableSubscriptionCallback mutex = new WaitableSubscriptionCallback();
         ISharedDataGraph result = DataGraphSharingFactory.getDataGraphSharing(
                 container, "default").subscribe(id, new EMFUpdateProvider(),
@@ -143,7 +143,7 @@ public class EditorPlugin extends AbstractUIPlugin {
                 .getWorkspace().getRoot().getProject(p.segment(0)));
         PublishedGraphTracker tracker = getTracker(container);
 
-        ID id = IDFactory.makeStringID(path);
+        ID id = IDFactory.getDefault().makeStringID(path);
         WaitablePublicationCallback mutex = new WaitablePublicationCallback();
         ISharedDataGraph result = DataGraphSharingFactory.getDataGraphSharing(
                 container, "default").publish(dataGraph, id,
@@ -164,7 +164,7 @@ public class EditorPlugin extends AbstractUIPlugin {
         ISharedObjectContainer container = getContainer(ResourcesPlugin
                 .getWorkspace().getRoot().getProject(p.segment(0)));
         PublishedGraphTracker tracker = getTracker(container);
-        return tracker.isPublished(IDFactory.makeStringID(path));
+        return tracker.isPublished(IDFactory.getDefault().makeStringID(path));
     }
 
     public synchronized void checkConnected(IProject project)
@@ -181,7 +181,7 @@ public class EditorPlugin extends AbstractUIPlugin {
 
     private PublishedGraphTracker getTracker(ISharedObjectContainer container)
             throws ECFException {
-        ID id = IDFactory.makeStringID(PublishedGraphTracker.class.getName());
+        ID id = IDFactory.getDefault().makeStringID(PublishedGraphTracker.class.getName());
         PublishedGraphTracker tracker = (PublishedGraphTracker) container
                 .getSharedObjectManager().getSharedObject(id);
         if (tracker == null) {

@@ -176,7 +176,7 @@ public class Client {
         }
     }
     public Client() throws Exception {
-        defaultGroupID = IDFactory.makeStringID(DEFAULT_SERVER_ID);
+        defaultGroupID = IDFactory.getDefault().makeStringID(DEFAULT_SERVER_ID);
     }
 
     protected User getUserData(String containerType, ID clientID, String usernick, IResource project) {
@@ -239,7 +239,7 @@ public class Client {
                 removeClientEntry(proj,client.getType());
             }
         });
-        ID newID = IDFactory.makeStringID(COLLAB_SHARED_OBJECT_ID);
+        ID newID = IDFactory.getDefault().makeStringID(COLLAB_SHARED_OBJECT_ID);
         client.getContainer().getSharedObjectManager().addSharedObject(newID, sharedObject,
                 new HashMap());
         client.setObject(sharedObject);

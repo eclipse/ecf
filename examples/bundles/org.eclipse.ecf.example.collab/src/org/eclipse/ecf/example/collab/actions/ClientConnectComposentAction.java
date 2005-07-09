@@ -21,7 +21,7 @@ public class ClientConnectComposentAction extends ClientConnectAction {
 	public ClientConnectComposentAction() {
         super();
         try {
-            targetID = IDFactory.makeStringID(COMPOSENT_TARGET);
+            targetID = IDFactory.getDefault().makeStringID(COMPOSENT_TARGET);
         } catch (Exception e) {
             throw new RuntimeException("Exception in ClientConnectAction()",e);
         }

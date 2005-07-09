@@ -57,7 +57,7 @@ public class ClientConnectAction implements IWorkbenchWindowActionDelegate {
     
 	public ClientConnectAction() {
         try {
-            targetID = IDFactory.makeStringID(DEFAULT_SERVER_ID);
+            targetID = IDFactory.getDefault().makeStringID(DEFAULT_SERVER_ID);
             client = new Client();
         } catch (Exception e) {
             throw new RuntimeException("Exception in ClientConnectAction()",e);

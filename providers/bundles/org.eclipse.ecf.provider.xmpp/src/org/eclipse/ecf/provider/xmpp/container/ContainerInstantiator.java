@@ -28,13 +28,13 @@ public class ContainerInstantiator implements ISharedObjectContainerInstantiator
         if (arg instanceof String) {
             String val = (String) arg;
             if (val == null || val.equals("")) {
-                return IDFactory.makeGUID();
+                return IDFactory.getDefault().makeGUID();
             } else
-                return IDFactory.makeStringID((String) arg);
+                return IDFactory.getDefault().makeStringID((String) arg);
         } else if (arg instanceof Integer) {
-            return IDFactory.makeGUID(((Integer) arg).intValue());
+            return IDFactory.getDefault().makeGUID(((Integer) arg).intValue());
         } else
-            return IDFactory.makeGUID();
+            return IDFactory.getDefault().makeGUID();
     }
 
     protected Integer getIntegerFromArg(Class type, Object arg)

@@ -184,7 +184,7 @@ public final class Client implements ISynchAsynchConnection {
             return null;
         ID retID = null;
         try {
-            retID = IDFactory.makeStringID(PROTOCOL + "://"
+            retID = IDFactory.getDefault().makeStringID(PROTOCOL + "://"
                     + socket.getLocalAddress().getHostName() + ":" + socket.getLocalPort());
         } catch (Exception e) {
             return null;

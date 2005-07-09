@@ -75,7 +75,7 @@ public class ClientApplication {
 	
 	protected ISharedObjectContainer makeClient() throws Exception {
 		// Make identity instance for the new container
-		ID newContainerID = IDFactory.makeGUID();
+		ID newContainerID = IDFactory.getDefault().makeGUID();
 		ISharedObjectContainer result =  SharedObjectContainerFactory.getDefault().makeSharedObjectContainer(contd,null,new Object[] { newContainerID, new Integer(DEFAULT_TIMEOUT)});
 		return result;
 	}
@@ -102,7 +102,7 @@ public class ClientApplication {
 				ISharedObjectContainer scg = sm[j];
 				for(int i=0; i < sharedObjectClassNames.length; i++) {
 					System.out.println("Creating sharedObject: "+sharedObjectClassNames[i]+" for client "+scg.getConfig().getID().getName());
-					SharedObjectDescription sd = new SharedObjectDescription(IDFactory.makeStringID(String.valueOf(aRan.nextInt())),sharedObjectClassNames[i]);
+					SharedObjectDescription sd = new SharedObjectDescription(IDFactory.getDefault().makeStringID(String.valueOf(aRan.nextInt())),sharedObjectClassNames[i]);
 					scg.getSharedObjectManager().createSharedObject(sd);
 					System.out.println("Created sharedObject for client "+scg.getConfig().getID().getName());
 				}
@@ -123,7 +123,7 @@ public class ClientApplication {
 		ClientApplication st = new ClientApplication();
 		st.init(args);
 		// Get server id to join
-		ID serverID = IDFactory.makeStringID(st.serverName);
+		ID serverID = IDFactory.getDefault().makeStringID(st.serverName);
 		st.joinGroup(serverID);
 		st.createStages();
 		System.out.println("Waiting "+DEFAULT_WAITTIME+" ms...");

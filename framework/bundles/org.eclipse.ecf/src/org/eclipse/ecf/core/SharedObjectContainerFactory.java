@@ -39,14 +39,14 @@ public class SharedObjectContainerFactory implements ISharedObjectContainerFacto
     private static Trace debug = Trace.create("containerfactory");
     
     private static Hashtable containerdescriptions = new Hashtable();
-    protected static SharedObjectContainerFactory instance = null;
+    protected static ISharedObjectContainerFactory instance = null;
     
     static {
     	instance = new SharedObjectContainerFactory();
     }
     protected SharedObjectContainerFactory() {
     }
-    public static SharedObjectContainerFactory getDefault() {
+    public static ISharedObjectContainerFactory getDefault() {
     	return instance;
     }
     private static void trace(String msg) {

@@ -24,7 +24,7 @@ import org.eclipse.ecf.internal.core.Trace;
  * manufacture ID instances.
  * 
  */
-public class IDFactory {
+public class IDFactory implements IIDFactory {
 
     private static final Trace debug = Trace.create("idfactory");
     
@@ -34,7 +34,10 @@ public class IDFactory {
     private static Hashtable namespaces = new Hashtable();
     private static boolean securityEnabled = false;
 
+    protected static IIDFactory instance = null;
+    
     static {
+    	instance = new IDFactory();
         addNamespace0(new Namespace(IDFactory.class.getClassLoader(),
                 StringID.STRINGID_NAME, StringID.STRINGID_INSTANTIATOR_CLASS,
                 null));
@@ -48,19 +51,16 @@ public class IDFactory {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Add the given Namespace to our table of available Namespaces
-     * 
-     * @param n
-     *            the Namespace to add
-     * @return Namespace the namespace already in table (null if Namespace not
-     *         previously in table)
-     * @exception SecurityException
-     *                thrown if caller does not have appropriate
-     *                NamespacePermission for given namespace
-     */
-    public final static Namespace addNamespace(Namespace n)
+    protected IDFactory() {
+    	
+    }
+    public static IIDFactory getDefault() {
+    	return instance;
+    }
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#addNamespace(org.eclipse.ecf.core.identity.Namespace)
+	 */
+    public Namespace addNamespace(Namespace n)
             throws SecurityException {
         if (n == null)
             return null;
@@ -80,17 +80,10 @@ public class IDFactory {
         if (securityEnabled)
             AccessController.checkPermission(p);
     }
-    /**
-     * Check whether table contains given Namespace instance
-     * 
-     * @param n
-     *            the Namespace to look for
-     * @return true if table does contain given Namespace, false otherwise
-     * @exception SecurityException
-     *                thrown if caller does not have appropriate
-     *                NamespacePermission for given namespace
-     */
-    public final static boolean containsNamespace(Namespace n)
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#containsNamespace(org.eclipse.ecf.core.identity.Namespace)
+	 */
+    public boolean containsNamespace(Namespace n)
             throws SecurityException {
         debug("containsNamespace("+n+")");
         if (n == null)
@@ -99,7 +92,10 @@ public class IDFactory {
                 NamespacePermission.CONTAINS_NAMESPACE));
         return containsNamespace0(n);
     }
-    public final static List getNamespaces() {
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#getNamespaces()
+	 */
+    public List getNamespaces() {
         debug("getNamespaces()");
         return new ArrayList(namespaces.values());
     }
@@ -119,17 +115,10 @@ public class IDFactory {
             return false;
         return namespaces.containsKey(n.getName());
     }
-    /**
-     * Get the given Namespace instance from table
-     * 
-     * @param n
-     *            the Namespace to look for
-     * @return Namespace
-     * @exception SecurityException
-     *                thrown if caller does not have appropriate
-     *                NamespacePermission for given namespace
-     */
-    public final static Namespace getNamespace(Namespace n)
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#getNamespace(org.eclipse.ecf.core.identity.Namespace)
+	 */
+    public Namespace getNamespace(Namespace n)
             throws SecurityException {
         debug("getNamespace("+n+")");
         if (n == null)
@@ -139,7 +128,10 @@ public class IDFactory {
         return getNamespace0(n);
     }
 
-    public final static Namespace getNamespaceByName(String name)
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#getNamespaceByName(java.lang.String)
+	 */
+    public Namespace getNamespaceByName(String name)
             throws SecurityException {
         debug("getNamespaceByName("+name+")");
         Namespace ns = new Namespace(null, name, name, null);
@@ -152,11 +144,17 @@ public class IDFactory {
         return (Namespace) namespaces.get(n.getName());
     }
 
-    public static final ID makeGUID() throws IDInstantiationException {
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeGUID()
+	 */
+    public ID makeGUID() throws IDInstantiationException {
         return makeGUID(GUID.DEFAULT_BYTE_LENGTH);
     }
 
-    public static final ID makeGUID(int length) throws IDInstantiationException {
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeGUID(int)
+	 */
+    public ID makeGUID(int length) throws IDInstantiationException {
         debug("makeGUID("+length+")");
         Namespace n = new Namespace(GUID.class.getClassLoader(),
                 GUID.GUID_NAME, GUID.GUID_INSTANTIATOR_CLASS, null);
@@ -190,23 +188,10 @@ public class IDFactory {
         logException(s, null);
         throw e;
     }
-    /**
-     * Make a new identity. Given a Namespace instance, constructor argument
-     * types, and an array of arguments, return a new instance of an ID
-     * belonging to the given Namespace
-     * 
-     * @param n
-     *            the Namespace to which the ID belongs
-     * @param argTypes
-     *            a String [] of the arg types for the ID instance constructor
-     * @param args
-     *            an Object [] of the args for the ID instance constructor
-     * @exception IDInstantiationException
-     *                thrown if class for instantiator or instance can't be
-     *                loaded, if something goes wrong during instance
-     *                construction 
-     */
-    public static final ID makeID(Namespace n, String[] argTypes, Object[] args)
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeID(org.eclipse.ecf.core.identity.Namespace, java.lang.String[], java.lang.Object[])
+	 */
+    public ID makeID(Namespace n, String[] argTypes, Object[] args)
             throws IDInstantiationException {
         debug("makeID("+n+","+Trace.convertStringAToString(argTypes)+","+Trace.convertObjectAToString(args)+")");
         // Verify namespace is non-null
@@ -240,82 +225,35 @@ public class IDFactory {
         // Ask instantiator to actually create instance
         return instantiator.makeInstance(ns, clazzes, args);
     }
-    /**
-     * Make a new identity. Given a Namespace name, constructor argument
-     * types, and an array of arguments, return a new instance of an ID
-     * belonging to the given Namespace
-     * 
-     * @param namespacename
-     *            the name of the Namespace to which the ID belongs
-     * @param argTypes
-     *            a String [] of the arg types for the ID instance constructor
-     * @param args
-     *            an Object [] of the args for the ID instance constructor
-     * @exception IDInstantiationException
-     *                thrown if class for instantiator or instance can't be
-     *                loaded, if something goes wrong during instance
-     *                construction 
-     */
-    public static final ID makeID(String namespacename, String[] argTypes,
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeID(java.lang.String, java.lang.String[], java.lang.Object[])
+	 */
+    public ID makeID(String namespacename, String[] argTypes,
             Object[] args) throws IDInstantiationException {
     	Namespace n = getNamespaceByName(namespacename);
     	if (n == null) throw new IDInstantiationException("Namespace named "+namespacename+" not found");
         return makeID(n, argTypes, args);
     }
-    /**
-     * Make a new identity. Given a Namespace, and an array of instance
-     * constructor arguments, return a new instance of an ID belonging to the
-     * given Namespace
-     * 
-     * @param n
-     *            the Namespace to which the ID will belong
-     * @param args
-     *            an Object [] of the args for the ID instance constructor
-     * @exception Exception
-     *                thrown if class for instantiator or instance can't be
-     *                loaded, if something goes wrong during instance
-     *                construction 
-     */
-    public static final ID makeID(Namespace n, Object[] args)
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeID(org.eclipse.ecf.core.identity.Namespace, java.lang.Object[])
+	 */
+    public ID makeID(Namespace n, Object[] args)
             throws IDInstantiationException {
         return makeID(n, null, args);
     }
-    /**
-     * Make a new identity. Given a Namespace name, and an array of instance
-     * constructor arguments, return a new instance of an ID belonging to the
-     * given Namespace
-     * 
-     * @param n
-     *            the name of the Namespace to which the ID will belong
-     * @param args
-     *            an Object [] of the args for the ID instance constructor
-     * @exception Exception
-     *                thrown if class for instantiator or instance can't be
-     *                loaded, if something goes wrong during instance
-     *                construction 
-     */
-    public static final ID makeID(String namespacename, Object[] args)
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeID(java.lang.String, java.lang.Object[])
+	 */
+    public ID makeID(String namespacename, Object[] args)
             throws IDInstantiationException {
     	Namespace n = getNamespaceByName(namespacename);
     	if (n == null) throw new IDInstantiationException("Namespace "+namespacename+" not found");
         return makeID(n, args);
     }
-    /**
-     * Make a new identity instance from a URI. Returns a new instance of an 
-     * ID belonging to the Namespace associated with the URI <b>scheme</b>. The URI scheme (e.g. http) 
-     * is used to lookup the Namespace instance, and the entire URI is then passed to the 
-     * IDInstantiator as a single item Object [].
-     * 
-     * @param uri
-     *            the URI to use to make ID.
-     * @param args
-     *            an Object [] of the args for the ID instance constructor
-     * @exception Exception
-     *                thrown if class for instantiator or iD instance can't be
-     *                loaded, if something goes wrong during instance
-     *                construction 
-     */
-    public static final ID makeID(URI uri) throws IDInstantiationException {
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeID(java.net.URI)
+	 */
+    public ID makeID(URI uri) throws IDInstantiationException {
     	if (uri == null) throw new IDInstantiationException("Null uri not allowed");
     	String scheme = uri.getScheme();
     	Namespace n = getNamespaceByName(scheme);
@@ -324,7 +262,10 @@ public class IDFactory {
     }
     
     
-    public static final ID makeStringID(String idstring)
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeStringID(java.lang.String)
+	 */
+    public ID makeStringID(String idstring)
             throws IDInstantiationException {
         if (idstring == null) throw new IDInstantiationException("String cannot be null");
         Namespace n = new Namespace(StringID.class.getClassLoader(),
@@ -333,31 +274,29 @@ public class IDFactory {
         return makeID(n, new String[] { String.class.getName() },
                 new Object[] { idstring });
     }
-    public static final ID makeLongID(Long l) throws IDInstantiationException {
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeLongID(java.lang.Long)
+	 */
+    public ID makeLongID(Long l) throws IDInstantiationException {
         if (l == null) throw new IDInstantiationException("Long cannot be null");
         Namespace n = new Namespace(LongID.class.getClassLoader(),
                 LongID.LONGID_NAME, LongID.LONGID_INSTANTIATOR_CLASS, null);
         return makeID(n, new String[] { String.class.getName() },
                 new Object[] { l });
     }
-    public static final ID makeLongID(long l) throws IDInstantiationException {
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeLongID(long)
+	 */
+    public ID makeLongID(long l) throws IDInstantiationException {
         Namespace n = new Namespace(LongID.class.getClassLoader(),
                 LongID.LONGID_NAME, LongID.LONGID_INSTANTIATOR_CLASS, null);
         return makeID(n, new String[] { String.class.getName() },
                 new Object[] { new Long(l) });
     }
-    /**
-     * Remove the given Namespace from our table of available Namespaces
-     * 
-     * @param n
-     *            the Namespace to remove
-     * @return Namespace the namespace already in table (null if Namespace not
-     *         previously in table)
-     * @exception SecurityException
-     *                thrown if caller does not have appropriate
-     *                NamespacePermission for given namespace
-     */
-    public final static Namespace removeNamespace(Namespace n)
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#removeNamespace(org.eclipse.ecf.core.identity.Namespace)
+	 */
+    public Namespace removeNamespace(Namespace n)
             throws SecurityException {
         debug("removeNamespace("+n+")");
         if (n == null)

@@ -106,7 +106,7 @@ public class ServerStartup {
 	protected TCPServerSOContainer makeServerContainer(String id,
 			TCPServerSOContainerGroup group, String path, int keepAlive)
 			throws IDInstantiationException {
-		ID newServerID = IDFactory.makeStringID(id);
+		ID newServerID = IDFactory.getDefault().makeStringID(id);
 		SOContainerConfig config = new SOContainerConfig(newServerID);
 		return new TCPServerSOContainer(config, group, path, keepAlive);
 	}

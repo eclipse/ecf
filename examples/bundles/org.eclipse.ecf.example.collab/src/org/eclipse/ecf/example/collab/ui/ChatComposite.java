@@ -1093,7 +1093,7 @@ public class ChatComposite extends Composite {
 			String fileName, Date startDate, ID target, final boolean launch) {
 		try {
 			ID eclipseStageID = IDFactory
-					.makeStringID(org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject.ECLIPSEOBJECTNAME);
+					.getDefault().makeStringID(org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject.ECLIPSEOBJECTNAME);
 			java.io.BufferedInputStream ins = new java.io.BufferedInputStream(
 					local);
 			java.io.File remoteFile = new File((new File(fileName)).getName());

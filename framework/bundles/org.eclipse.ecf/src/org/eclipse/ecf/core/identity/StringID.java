@@ -99,7 +99,7 @@ public class StringID extends BaseID {
     }
     protected synchronized void setEmptyNamespace() {
         if (namespace == null) {
-            namespace = IDFactory.getNamespaceByName(StringID.class.getName());
+            namespace = IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
         }
     }
 }

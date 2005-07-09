@@ -331,7 +331,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     protected ID makeIDFromName(String name) {
         ID result = null;
         try {
-            result = IDFactory.makeID(XMPPID.PROTOCOL, new Object[] { name });
+            result = IDFactory.getDefault().makeID(XMPPID.PROTOCOL, new Object[] { name });
             return result;
         } catch (Exception e) {
             dumpStack("Exception in makeIDFromName", e);

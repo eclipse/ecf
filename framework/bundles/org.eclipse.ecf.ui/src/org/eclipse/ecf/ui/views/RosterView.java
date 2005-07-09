@@ -765,7 +765,7 @@ public class RosterView extends ViewPart implements IPresenceListener,
 	protected void addPendingEntry(String user, String nickname, String group) {
 		ID newID = null;
 		try {
-			newID = IDFactory.makeStringID(user);
+			newID = IDFactory.getDefault().makeStringID(user);
 		} catch (Exception e) {
 		}
 		IRosterEntry newEntry = new RosterEntry(newID, nickname);
@@ -807,7 +807,7 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			if (strres != null && !strres.equals("")) {
 				ID target = null;
 				try {
-					target = IDFactory.makeStringID(strres);
+					target = IDFactory.getDefault().makeStringID(strres);
 				} catch (Exception e) {
 					MessageDialog.openError(getSite().getShell(), "Error",
 							"Error in IM target");

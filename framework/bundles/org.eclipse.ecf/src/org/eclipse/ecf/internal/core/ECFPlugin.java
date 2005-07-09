@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.ISharedObjectContainerFactory;
 import org.eclipse.ecf.core.SharedObjectContainerDescription;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
 import org.eclipse.ecf.core.comm.ConnectionDescription;
@@ -216,7 +217,7 @@ public class ECFPlugin extends Plugin {
                         description, defaults.getTypes(), defaults
                                 .getDefaults(), defaults.getNames(), properties);
                 debug("setupContainerExtensionPoint:created description:" + scd);
-                SharedObjectContainerFactory factory = SharedObjectContainerFactory.getDefault();
+                ISharedObjectContainerFactory factory = SharedObjectContainerFactory.getDefault();
                 if (factory.containsDescription(scd)) {
                     throw new CoreException(getStatusForContException(
                             extension, bundleName, name));
@@ -297,12 +298,12 @@ public class ECFPlugin extends Plugin {
                     throw new CoreException(s);
                 }
                 debug("setupIdentityExtensionPoint:created namespace:" + ns);
-                if (IDFactory.containsNamespace(ns)) {
+                if (IDFactory.getDefault().containsNamespace(ns)) {
                     throw new CoreException(getStatusForIDException(extension,
                             bundleName, nsName));
                 }
                 // Now add to known namespaces
-                IDFactory.addNamespace(ns);
+                IDFactory.getDefault().addNamespace(ns);
                 debug("setupIdentityExtensionPoint:added namespace to factory:"
                         + ns);
             } catch (CoreException e) {
