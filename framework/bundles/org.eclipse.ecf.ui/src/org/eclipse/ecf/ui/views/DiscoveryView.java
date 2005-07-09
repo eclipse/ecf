@@ -535,17 +535,22 @@ public class DiscoveryView extends ViewPart {
 				ServiceID svcID = tp.getID();
 				if (svcID != null) {
 					IServiceInfo svcInfo = tp.getServiceInfo();
-					if (svcInfo != null && svcInfo.isResolved() && isSupportedServiceType(svcID.getServiceType())) {
-						try {
-							URI uri = svcInfo.getServiceURI();
-							if (uri != null) {
-								connectToAction.setText("Connect to service '"+svcID.getServiceName()+"'");
-								manager.add(connectToAction);
-							}
-						} catch (URISyntaxException e) {}
-					} else {
-						requestServiceInfoAction.setText("Request info about '"+svcID.getServiceName()+"'");
-						manager.add(requestServiceInfoAction);
+					connectToAction.setText("Connect to '"+svcID.getServiceName()+"' service");
+					manager.add(connectToAction);
+					manager.add(new Separator());
+					connectToAction.setEnabled(false);
+					requestServiceInfoAction.setText("Request info about '"+svcID.getServiceName()+"'");
+					manager.add(requestServiceInfoAction);	
+					requestServiceInfoAction.setEnabled(true);
+					if (svcInfo != null) {
+						if (svcInfo.isResolved() && isSupportedServiceType(svcID.getServiceType())) {
+							try {
+								URI uri = svcInfo.getServiceURI();
+								if (uri != null) {
+									connectToAction.setEnabled(true);
+								}
+							} catch (URISyntaxException e) {}
+						}
 					}
 				}
 			}
