@@ -34,7 +34,7 @@ import org.eclipse.ecf.internal.core.Trace;
  * </code>
  * 
  */
-public class SharedObjectContainerFactory {
+public class SharedObjectContainerFactory implements ISharedObjectContainerFactory {
 
     private static Trace debug = Trace.create("containerfactory");
     
@@ -68,19 +68,17 @@ public class SharedObjectContainerFactory {
      * @return SharedObjectContainerDescription the old description of the same
      * name, null if none found
      */
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#addDescription(org.eclipse.ecf.core.SharedObjectContainerDescription)
+	 */
     public SharedObjectContainerDescription addDescription(
             SharedObjectContainerDescription scd) {
         trace("addDescription("+scd+")");
         return addDescription0(scd);
     }
-    /**
-     * Get a collection of the SharedObjectContainerDescriptions currently known to
-     * this factory.  This allows clients to query the factory to determine what if
-     * any other SharedObjectContainerDescriptions are currently registered with
-     * the factory, and if so, what they are.
-     * 
-     * @return List of SharedObjectContainerDescription instances
-     */
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#getDescriptions()
+	 */
     public List getDescriptions() {
         return getDescriptions0();
     }
@@ -94,14 +92,9 @@ public class SharedObjectContainerFactory {
         return (SharedObjectContainerDescription) containerdescriptions.put(n
                 .getName(), n);
     }
-    /**
-     * Check to see if a given named description is already contained by this
-     * factory
-     * 
-     * @param scd
-     *            the SharedObjectContainerDescription to look for
-     * @return true if description is already known to factory, false otherwise
-     */
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#containsDescription(org.eclipse.ecf.core.SharedObjectContainerDescription)
+	 */
     public boolean containsDescription(
             SharedObjectContainerDescription scd) {
         return containsDescription0(scd);
@@ -125,13 +118,9 @@ public class SharedObjectContainerFactory {
             return null;
         return (SharedObjectContainerDescription) containerdescriptions.get(name);
     }
-    /**
-     * Get the known SharedObjectContainerDescription given it's name.
-     * 
-     * @param name
-     * @return SharedObjectContainerDescription found
-     * @throws SharedObjectContainerInstantiationException
-     */
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#getDescriptionByName(java.lang.String)
+	 */
     public SharedObjectContainerDescription getDescriptionByName(
             String name) throws SharedObjectContainerInstantiationException {
         trace("getDescriptionByName("+name+")");
@@ -143,31 +132,9 @@ public class SharedObjectContainerFactory {
         }
         return res;
     }
-    /**
-     * Make ISharedObjectContainer instance. Given a
-     * SharedObjectContainerDescription object, a String [] of argument types,
-     * and an Object [] of parameters, this method will
-     * <p>
-     * <ul>
-     * <li>lookup the known SharedObjectContainerDescriptions to find one of
-     * matching name</li>
-     * <li>if found, will retrieve or create an
-     * ISharedObjectContainerInstantiator for that description</li>
-     * <li>Call the ISharedObjectContainerInstantiator.makeInstance method to
-     * return an instance of ISharedObjectContainer</li>
-     * </ul>
-     * 
-     * @param desc
-     *            the SharedObjectContainerDescription to use to create the
-     *            instance
-     * @param argTypes
-     *            a String [] defining the types of the args parameter
-     * @param args
-     *            an Object [] of arguments passed to the makeInstance method of
-     *            the ISharedObjectContainerInstantiator
-     * @return a valid instance of ISharedObjectContainer
-     * @throws SharedObjectContainerInstantiationException
-     */
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#makeSharedObjectContainer(org.eclipse.ecf.core.SharedObjectContainerDescription, java.lang.String[], java.lang.Object[])
+	 */
     public ISharedObjectContainer makeSharedObjectContainer(
             SharedObjectContainerDescription desc, String[] argTypes,
             Object[] args) throws SharedObjectContainerInstantiationException {
@@ -201,94 +168,36 @@ public class SharedObjectContainerFactory {
         return (ISharedObjectContainer) instantiator
                 .makeInstance(desc,clazzes, args);
     }
-    /**
-     * Make ISharedObjectContainer instance. Given a
-     * SharedObjectContainerDescription name, this method will
-     * <p>
-     * <ul>
-     * <li>lookup the known SharedObjectContainerDescriptions to find one of
-     * matching name</li>
-     * <li>if found, will retrieve or create an
-     * ISharedObjectContainerInstantiator for that description</li>
-     * <li>Call the ISharedObjectContainerInstantiator.makeInstance method to
-     * return an instance of ISharedObjectContainer</li>
-     * </ul>
-     * 
-     * @param descriptionName
-     *            the SharedObjectContainerDescription name to lookup
-     * @return a valid instance of ISharedObjectContainer
-     * @throws SharedObjectContainerInstantiationException
-     */
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#makeSharedObjectContainer(java.lang.String)
+	 */
     public ISharedObjectContainer makeSharedObjectContainer(
             String descriptionName)
             throws SharedObjectContainerInstantiationException {
         return makeSharedObjectContainer(
                 getDescriptionByName(descriptionName), null, null);
     }
-    /**
-     * Make ISharedObjectContainer instance. Given a
-     * SharedObjectContainerDescription name, this method will
-     * <p>
-     * <ul>
-     * <li>lookup the known SharedObjectContainerDescriptions to find one of
-     * matching name</li>
-     * <li>if found, will retrieve or create an
-     * ISharedObjectContainerInstantiator for that description</li>
-     * <li>Call the ISharedObjectContainerInstantiator.makeInstance method to
-     * return an instance of ISharedObjectContainer</li>
-     * </ul>
-     * 
-     * @param descriptionName
-     *            the SharedObjectContainerDescription name to lookup
-     * @param args
-     *            the Object [] of arguments passed to the
-     *            ISharedObjectContainerInstantiator.makeInstance method
-     * @return a valid instance of ISharedObjectContainer
-     * @throws SharedObjectContainerInstantiationException
-     */
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#makeSharedObjectContainer(java.lang.String, java.lang.Object[])
+	 */
     public ISharedObjectContainer makeSharedObjectContainer(
             String descriptionName, Object[] args)
             throws SharedObjectContainerInstantiationException {
         return makeSharedObjectContainer(
                 getDescriptionByName(descriptionName), null, args);
     }
-    /**
-     * Make ISharedObjectContainer instance. Given a
-     * SharedObjectContainerDescription name, this method will
-     * <p>
-     * <ul>
-     * <li>lookup the known SharedObjectContainerDescriptions to find one of
-     * matching name</li>
-     * <li>if found, will retrieve or create an
-     * ISharedObjectContainerInstantiator for that description</li>
-     * <li>Call the ISharedObjectContainerInstantiator.makeInstance method to
-     * return an instance of ISharedObjectContainer</li>
-     * </ul>
-     * 
-     * @param descriptionName
-     *            the SharedObjectContainerDescription name to lookup
-     * @param argsTypes
-     *            the String [] of argument types of the following args
-     * @param args
-     *            the Object [] of arguments passed to the
-     *            ISharedObjectContainerInstantiator.makeInstance method
-     * @return a valid instance of ISharedObjectContainer
-     * @throws SharedObjectContainerInstantiationException
-     */
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#makeSharedObjectContainer(java.lang.String, java.lang.String[], java.lang.Object[])
+	 */
     public ISharedObjectContainer makeSharedObjectContainer(
             String descriptionName, String[] argsTypes, Object[] args)
             throws SharedObjectContainerInstantiationException {
         return makeSharedObjectContainer(
                 getDescriptionByName(descriptionName), argsTypes, args);
     }
-    /**
-     * Remove given description from set known to this factory.
-     * 
-     * @param scd
-     *            the SharedObjectContainerDescription to remove
-     * @return the removed SharedObjectContainerDescription, null if nothing
-     *         removed
-     */
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#removeDescription(org.eclipse.ecf.core.SharedObjectContainerDescription)
+	 */
     public SharedObjectContainerDescription removeDescription(
             SharedObjectContainerDescription scd) {
         trace("removeDescription("+scd+")");
