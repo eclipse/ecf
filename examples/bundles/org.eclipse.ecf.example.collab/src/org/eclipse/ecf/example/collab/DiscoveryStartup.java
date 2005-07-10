@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
+import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.ServiceID;
@@ -31,6 +32,7 @@ import org.eclipse.ui.PlatformUI;
 
 public class DiscoveryStartup {
 
+	protected static final String DISCOVERYVIEW_ID = "org.eclipse.ecf.ui.view.discoveryview";
 	public static final String DISCOVERY_CONTAINER = "org.eclipse.ecf.provider.jmdns.container.JmDNS";
 	public static final String TCPSERVER_DISCOVERY_TYPE = "_ecftcp._tcp.local.";
 	public static final String PROP_PROTOCOL_NAME = "protocol";
@@ -52,7 +54,7 @@ public class DiscoveryStartup {
     static String serviceTypes[] = new String[] {
             TCPSERVER_DISCOVERY_TYPE
         };
-	public DiscoveryStartup() {
+	public DiscoveryStartup() throws Exception {
 		setupDiscovery();
 	}
 	
@@ -63,35 +65,38 @@ public class DiscoveryStartup {
 		}
 		discovery = null;
 	}
-	
-	protected void setupDiscovery() {
-		if (discovery == null && ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_REGISTER_SERVER)) {
-			try {
-				socontainer = SharedObjectContainerFactory
-						.getDefault().makeSharedObjectContainer(DISCOVERY_CONTAINER);
-				discovery = (IDiscoveryContainer) socontainer
-						.getAdapter(IDiscoveryContainer.class);
-				if (discovery != null) {
-					setupDiscoveryContainer(discovery);
-					socontainer.joinGroup(null,null);
-					//registerServiceTypes();
-				}
-				else {
-					if (socontainer != null) {
-						socontainer.dispose(1000);
-						socontainer = null;
-					}
-					discovery = null;
-					ClientPlugin.log("No discovery container available");
-				}
-			} catch (Exception e) {
+	protected boolean isActive() {
+		return discovery != null;
+	}
+	protected void setupDiscovery() throws Exception {
+		try {
+			socontainer = SharedObjectContainerFactory
+					.getDefault().makeSharedObjectContainer(DISCOVERY_CONTAINER);
+			discovery = (IDiscoveryContainer) socontainer
+					.getAdapter(IDiscoveryContainer.class);
+			if (discovery != null) {
+				setupDiscoveryContainer(discovery);
+				socontainer.joinGroup(null,null);
+			}
+			else {
 				if (socontainer != null) {
 					socontainer.dispose(1000);
 					socontainer = null;
 				}
 				discovery = null;
-				ClientPlugin.log("Exception creating discovery container",e);
+				ClientPlugin.log("No discovery container available");
 			}
+		} catch (SharedObjectContainerInstantiationException e1) {
+			socontainer = null;
+			discovery = null;
+			return;
+		} catch (Exception e) {
+			if (socontainer != null) {
+				socontainer.dispose(1000);
+				socontainer = null;
+			}
+			discovery = null;
+			throw e;
 		}
 	}
 
@@ -127,7 +132,7 @@ public class DiscoveryStartup {
                     IWorkbenchWindow ww = PlatformUI.getWorkbench()
                             .getActiveWorkbenchWindow();
                     IWorkbenchPage wp = ww.getActivePage();
-                    IViewPart view = wp.showView("org.eclipse.ecf.ui.view.discoveryview");
+                    IViewPart view = wp.showView(DISCOVERYVIEW_ID);
                     discoveryView = (DiscoveryView) view;
                     discoveryView.setShowTypeDetails(false);
                     discoveryView.setDiscoveryController(new IDiscoveryController() {
@@ -136,13 +141,11 @@ public class DiscoveryStartup {
 						}
 
 						public void setupDiscoveryContainer(DiscoveryView dview) {
-							System.out.println("setupDiscoveryContainer");	
-							ClientPlugin.getDefault().initDiscovery();
+							//ClientPlugin.getDefault().initDiscovery();
 						}
 
 						public void disposeDiscoveryContainer(DiscoveryView dview) {
-							System.out.println("disposeDiscoveryContainer");						
-							ClientPlugin.getDefault().disposeDiscovery();
+							//ClientPlugin.getDefault().disposeDiscovery();
 						}
 
 						public IDiscoveryContainer getDiscoveryContainer() {
@@ -183,6 +186,7 @@ public class DiscoveryStartup {
 				}});
         }
 	}
+    
 	public static void unregisterServerType() {
 		if (discovery != null) {
 			discovery.unregisterAllServices();

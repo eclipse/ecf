@@ -24,40 +24,31 @@ public class ServerStartup {
 
 	static List servers = new ArrayList();
 	
-	public ServerStartup() {
-		if (ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_START_SERVER)) {
-			try {
-				InputStream ins = this.getClass().getResourceAsStream(SERVER_FILE_NAME);
-				if (ins != null) {
-					createServers(ins);
-				}
-			} catch (Exception e) {
-				ClientPlugin.log("Exception in ServerStartup initialization",e);
-			}
+	public ServerStartup() throws Exception {
+		InputStream ins = this.getClass().getResourceAsStream(SERVER_FILE_NAME);
+		if (ins != null) {
+			createServers(ins);
 		}
 	}
-	
+	protected boolean isActive() {
+		return (servers.size() > 0);
+	}
 	public void dispose() {
 		destroyServers();
 	}
 	protected synchronized void destroyServers() {
-		if (servers != null) {
-			for (Iterator i = servers.iterator(); i.hasNext();) {
-				TCPServerSOContainer s = (TCPServerSOContainer) i.next();
-				DiscoveryStartup.unregisterServer(s);
-				if (s != null) {
-					try {
-						s.dispose(5000);
-					} catch (Exception e) {
-						ClientPlugin.log("Exception destroying server "
-								+ s.getConfig().getID());
-					}
+		for (Iterator i = servers.iterator(); i.hasNext();) {
+			TCPServerSOContainer s = (TCPServerSOContainer) i.next();
+			DiscoveryStartup.unregisterServer(s);
+			if (s != null) {
+				try {
+					s.dispose(5000);
+				} catch (Exception e) {
+					ClientPlugin.log("Exception destroying server " + s.getConfig().getID());
 				}
 			}
-			servers.clear();
-			servers = null;
 		}
-
+		servers.clear();
 		if (serverGroups != null) {
 			for (int i = 0; i < serverGroups.length; i++) {
 				serverGroups[i].takeOffTheAir();
@@ -84,7 +75,9 @@ public class ServerStartup {
 							.getIDForGroup(), serverGroups[j], group.getName(),
 							connect.getTimeout());
 					servers.add(cont);
-					registerServer(cont);
+					if (ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_REGISTER_SERVER)) {
+						registerServer(cont);
+					}
 					ClientPlugin.log("ECF group server created: "+cont.getConfig().getID().getName());
 				}
 				serverGroups[j].putOnTheAir();

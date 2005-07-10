@@ -15,8 +15,10 @@ import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.widgets.Shell;
@@ -79,8 +81,28 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		//this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, true);
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_REMOTE_VIEW, true);
 		
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_SERVER,false);
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,false);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_SERVER,true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_DISCOVERY,true);
+	}
+	
+	class ClientStartupJob extends Job {
+
+		public ClientStartupJob(String name) {
+			super(name);
+		}
+
+		protected IStatus run(IProgressMonitor monitor) {
+			try {
+				initDiscovery();
+				initServer();
+			} catch (Exception e) {
+				log("Exception on initialization",e);
+			}
+			return new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, "Discovery complete", null);
+		}
+		
+		
 	}
 	/**
 	 * This method is called upon plug-in activation
@@ -88,33 +110,37 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		setPreferenceDefaults();
-		initDiscovery();
-		initServer();
+		ClientStartupJob job = new ClientStartupJob("Setting up Dynamic Service Discovery");
+		job.schedule();
 	}
 
-	protected void initDiscovery() {
-		if (discoveryStartup == null) {
+	protected synchronized void initDiscovery() throws Exception {
+		if (discoveryStartup == null && getPreferenceStore().getBoolean(PREF_START_DISCOVERY)) {
 			discoveryStartup = new DiscoveryStartup();
 		}
 	}
 	
-	protected void initServer() {
-		if (serverStartup == null) {
+	protected synchronized void initServer() throws Exception {
+		if (serverStartup == null && getPreferenceStore().getBoolean(PREF_START_SERVER)) {
 			serverStartup = new ServerStartup();
 		}
 	}
 	
-	protected boolean isDiscoveryActive() {
+	protected synchronized boolean isDiscoveryActive() {
 		if (discoveryStartup == null) return false;
-		else return true;
+		else return discoveryStartup.isActive();
 	}
-	protected void disposeDiscovery() {
+	protected synchronized boolean isServerActive() {
+		if (serverStartup == null) return false;
+		else return serverStartup.isActive();
+	}
+	protected synchronized void disposeDiscovery() {
 		if (discoveryStartup != null) {
 			discoveryStartup.dispose();
 			discoveryStartup = null;
 		}
 	}
-	protected void disposeServer() {
+	protected synchronized void disposeServer() {
 		if (serverStartup != null) {
 			serverStartup.dispose();
 			serverStartup = null;

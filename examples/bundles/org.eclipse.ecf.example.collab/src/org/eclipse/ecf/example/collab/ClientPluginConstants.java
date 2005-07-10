@@ -33,7 +33,7 @@ public interface ClientPluginConstants {
 	
 	public static final String PREF_START_SERVER = "startServerOnStartup";
 	public static final String PREF_REGISTER_SERVER = "registerServerOnStartup";
-	
+	public static final String PREF_START_DISCOVERY = "startDiscoveryOnStartup";
 	/*
 	 * Contstants used to describe decoration images.
 	 */

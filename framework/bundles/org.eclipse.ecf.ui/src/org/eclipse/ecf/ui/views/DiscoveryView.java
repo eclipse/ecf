@@ -48,14 +48,15 @@ import org.eclipse.ui.part.ViewPart;
 
 
 public class DiscoveryView extends ViewPart {
-    protected static final int TREE_EXPANSION_LEVELS = 3;
+    protected static final int SERVICE_INFO_TIMEOUT = 3000;
+	protected static final int TREE_EXPANSION_LEVELS = 3;
 	private TreeViewer viewer;
 	private Action requestServiceInfoAction;
 	private Action registerServiceTypeAction;
 	private Action connectToAction;
 	private Action disconnectContainerAction;
 	private Action connectContainerAction;
-	
+
 	IDiscoveryContainer dcontainer = null;
 	ISharedObjectContainer socontainer = null;
 	IDiscoveryController controller = null;
@@ -446,7 +447,16 @@ public class DiscoveryView extends ViewPart {
     protected void expandAll() {
         viewer.expandToLevel(TREE_EXPANSION_LEVELS);
     }
+    /*
+	private void hookDoubleClickAction() {
+		viewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				selectedDoubleClickAction.run();
+			}
+		});
+	}
 
+*/
 	private void makeActions() {
 		requestServiceInfoAction = new Action() {
             public void run() {
@@ -455,7 +465,7 @@ public class DiscoveryView extends ViewPart {
                 	TreeParent p = (TreeParent) treeObject;
                     final ServiceID targetID = p.getID();
                     if (dcontainer != null) {
-                    	dcontainer.requestServiceInfo(targetID,3000);
+                    	dcontainer.requestServiceInfo(targetID,SERVICE_INFO_TIMEOUT);
                     }
                 }
             }
@@ -523,7 +533,9 @@ public class DiscoveryView extends ViewPart {
 		connectContainerAction.setText("Start discovery");
 		connectContainerAction.setToolTipText("Start discovery");
 		connectContainerAction.setEnabled(true);
+		
 	}
+	
 	private void fillContextMenu(IMenuManager manager) {
 		final TreeObject treeObject = getSelectedTreeObject();
 		if (treeObject != null && treeObject instanceof TreeParent) {
@@ -605,12 +617,10 @@ public class DiscoveryView extends ViewPart {
 					TreeParent tp = (TreeParent) treeObject;
 					if (tp.getID() != null) {
 						IServiceInfo info = tp.getServiceInfo();
-						if (info != null) {
-							if (!info.isResolved()) {
-								requestServiceInfoAction.run();
-							} else {
-								connectToAction.run();
-							}
+						if (info != null && info.isResolved()) {
+							connectToAction.run();
+						} else {
+							requestServiceInfoAction.run();							
 						}
 					}
 				}

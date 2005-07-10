@@ -57,9 +57,9 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		addField(new ColorFieldEditor(ClientPlugin.PREF_OTHER_TEXT_COLOR, "Chat Text Color For Other:", getFieldEditorParent()));
 		addField(new ColorFieldEditor(ClientPlugin.PREF_SYSTEM_TEXT_COLOR, "Chat Text Color For System:", getFieldEditorParent()));
 		
-		addField(new BooleanFieldEditor(ClientPlugin.PREF_START_SERVER,"Start ECF Group Server on Startup",getFieldEditorParent()));
-		addField(new BooleanFieldEditor(ClientPlugin.PREF_REGISTER_SERVER,"Register ECF Group Server on Startup",getFieldEditorParent()));
-		
+		addField(new BooleanFieldEditor(ClientPlugin.PREF_START_DISCOVERY,"Activate ECF Discovery on Startup",getFieldEditorParent()));
+		addField(new BooleanFieldEditor(ClientPlugin.PREF_START_SERVER,"Activate ECF Server on Startup",getFieldEditorParent()));
+		addField(new BooleanFieldEditor(ClientPlugin.PREF_REGISTER_SERVER,"Publish Local Server for Discovery",getFieldEditorParent()));
 		/*IntegerFieldEditor rate = new IntegerFieldEditor(ClientPlugin.PREF_FILE_TRANSFER_RATE,
 				"Maximum transfer rate for file transfers.", getFieldEditorParent());*/
 		/*rate.setTextLimit(5);
