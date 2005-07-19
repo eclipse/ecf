@@ -52,8 +52,8 @@
                menubarPath="org.eclipse.ecf.example.collab.menu1/group1"
                id="org.eclipse.ecf.client.joingroupwizardaction"/>
          <action
-               label="Join Test Collaboration (Composent)"
-               class="org.eclipse.ecf.example.collab.actions.ProjectPopupComposentAction"
+               label="Join Test Collaboration (OSU OSL)"
+               class="org.eclipse.ecf.example.collab.actions.ProjectPopupOSLAction"
                menubarPath="org.eclipse.ecf.example.collab.menu1/group2"
                id="org.eclipse.ecf.example.collab.newAction"/>
          <action
