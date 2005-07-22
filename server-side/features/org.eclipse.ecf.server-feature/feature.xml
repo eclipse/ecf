@@ -45,7 +45,7 @@ still apply to any source code in the Content.
    <requires>
       <import feature="org.eclipse.ecf.collab" version="0.3.3"/>
       <import feature="org.eclipse.ecf.core" version="0.3.3"/>
-      <import feature="org.eclipse.ecf.datashare_feature" version="0.3.3"/>
+      <import feature="org.eclipse.ecf.datashare" version="0.3.3"/>
       <import feature="org.eclipse.ecf.graphshare" version="0.3.3"/>
       <import feature="org.eclipse.ecf.xmpp" version="0.3.3"/>
    </requires>
