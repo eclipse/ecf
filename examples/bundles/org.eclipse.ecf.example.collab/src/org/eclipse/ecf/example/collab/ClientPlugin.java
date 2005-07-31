@@ -228,7 +228,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		try {
 			if (resourceBundle == null)
 				resourceBundle = ResourceBundle
-						.getBundle("org.eclipse.ecf.example.collab.ClientPluginResources");
+						.getBundle("org.eclipse.ecf.example.collab.ClientPlugin");
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}
