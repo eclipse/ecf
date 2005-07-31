@@ -139,6 +139,21 @@ public interface IIDFactory {
 	 */
 	public ID makeID(URI uri) throws IDInstantiationException;
 
+	/**
+	 * Make a new identity instance from a namespace name and URI. 
+	 * 
+	 * @param namespacename the name of the namespace to use to make the ID
+	 * @param uri
+	 *            the URI to use to make ID.
+	 * @param args
+	 *            an Object [] of the args for the ID instance constructor
+	 * @exception Exception
+	 *                thrown if class for instantiator or iD instance can't be
+	 *                loaded, if something goes wrong during instance
+	 *                construction 
+	 */
+	public ID makeID(String namespacename, URI uri) throws IDInstantiationException;
+
 	public ID makeStringID(String idstring) throws IDInstantiationException;
 
 	public ID makeLongID(Long l) throws IDInstantiationException;
