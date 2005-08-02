@@ -23,12 +23,20 @@ public interface IContainer extends IAdaptable {
 	 * @param joinContext
 	 *            any required context to allow this container to authenticate
 	 *            on join with remote containers
-	 * @exception SharedObjectContainerJoinException
+	 * @exception ContainerJoinException
 	 *                thrown if communication cannot be established with remote
 	 *                service
 	 */
 	public void joinGroup(ID groupID, IJoinContext joinContext)
-			throws SharedObjectContainerJoinException;
+			throws ContainerJoinException;
+
+	/**
+	 * Get the group id that this container has joined. Return null if no group
+	 * has previously been joined.
+	 * 
+	 * @return ID of the group previously joined
+	 */
+	public ID getGroupID();
 
 	/**
 	 * Leave a container group. This operation will disconnect the local

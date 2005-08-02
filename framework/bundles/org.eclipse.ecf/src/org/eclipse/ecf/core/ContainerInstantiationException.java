@@ -11,33 +11,24 @@ package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.util.ECFException;
 
-public class SharedObjectContainerJoinException extends ECFException {
+public class ContainerInstantiationException extends ECFException {
 
-	private static final long serialVersionUID = 3834874676269561909L;
+	private static final long serialVersionUID = -6979687717421003065L;
 
-	public SharedObjectContainerJoinException() {
+	public ContainerInstantiationException() {
         super();
     }
 
-    /**
-     * @param message
-     */
-    public SharedObjectContainerJoinException(String message) {
+    public ContainerInstantiationException(String message) {
         super(message);
     }
 
-    /**
-     * @param cause
-     */
-    public SharedObjectContainerJoinException(Throwable cause) {
+    public ContainerInstantiationException(Throwable cause) {
         super(cause);
     }
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public SharedObjectContainerJoinException(String message, Throwable cause) {
+    public ContainerInstantiationException(String message,
+            Throwable cause) {
         super(message, cause);
     }
 

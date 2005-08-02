@@ -4,4 +4,5 @@
    <extension-point id="containerFactory" name="ECF Container Factory" schema="schema/containerFactory.exsd"/>
    <extension-point id="namespace" name="ECF Namespace" schema="schema/namespace.exsd"/>
    <extension-point id="connectionFactory" name="connectionFactory" schema="schema/connectionFactory.exsd"/>
+   <extension-point id="simpleContainer" name="ECF Simple Container Factory" schema="schema/simpleContainerFactory.exsd"/>
 </plugin>

@@ -14,8 +14,8 @@ import java.util.Map;
 
 import javax.security.auth.callback.Callback;
 
+import org.eclipse.ecf.core.ContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectAddException;
-import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
@@ -219,16 +219,16 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	}
 
 	public void joinGroup(ID remote, IJoinContext joinContext)
-			throws SharedObjectContainerJoinException {
+			throws ContainerJoinException {
 		try {
 			addSharedObjectToContainer(remote);
 			super.joinGroup(remote, joinContext);
-		} catch (SharedObjectContainerJoinException e) {
+		} catch (ContainerJoinException e) {
 			cleanUpConnectFail();
 			throw e;
 		} catch (SharedObjectAddException e1) {
 			cleanUpConnectFail();
-			throw new SharedObjectContainerJoinException(
+			throw new ContainerJoinException(
 					"Exception adding shared object " + sharedObjectID, e1);
 		}
 	}

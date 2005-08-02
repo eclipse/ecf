@@ -63,7 +63,7 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#joinGroup()
 	 */
 	public void joinGroup(ID groupID, IJoinContext joinContext)
-			throws SharedObjectContainerJoinException;
+			throws ContainerJoinException;
 
 	/**
 	 * (non-Javadoc)

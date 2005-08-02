@@ -17,8 +17,8 @@ import java.net.ConnectException;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 
+import org.eclipse.ecf.core.ContainerJoinException;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
-import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
@@ -102,7 +102,7 @@ public abstract class ClientSOContainer extends SOContainer {
 	}
 
 	public void joinGroup(ID remote, IJoinContext joinContext)
-			throws SharedObjectContainerJoinException {
+			throws ContainerJoinException {
 		// first notify synchonously
 		fireContainerEvent(new SharedObjectContainerJoinGroupEvent(
 				this.getID(), remote, joinContext));
@@ -192,7 +192,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			}
 		} catch (Exception e) {
 			dumpStack("Exception in joinGroup", e);
-			SharedObjectContainerJoinException except = new SharedObjectContainerJoinException(
+			ContainerJoinException except = new ContainerJoinException(
 					"joinGroup exception in container " + getID() + " joining "
 							+ remote + ": " + e.getClass().getName() + ": "
 							+ e.getMessage());

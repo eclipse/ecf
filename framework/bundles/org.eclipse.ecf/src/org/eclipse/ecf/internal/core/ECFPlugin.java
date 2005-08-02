@@ -23,6 +23,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.ISharedObjectContainerFactory;
 import org.eclipse.ecf.core.SharedObjectContainerDescription;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
@@ -32,6 +35,7 @@ import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.provider.IDInstantiator;
+import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
 import org.osgi.framework.BundleContext;
 
@@ -46,6 +50,7 @@ public class ECFPlugin extends Plugin {
     public static final String INSTANTIATOR_DATA_ATTRIBUTE = "description";
     public static final String NAMESPACE_DEFAULT_CLASS = "org.eclipse.ecf.core.identity.Namespace";
     public static final String CONTAINER_FACTORY_EPOINT = "org.eclipse.ecf.containerFactory";
+    public static final String SIMPLE_CONTAINER_FACTORY_EPOINT = "org.eclipse.ecf.simpleContainerFactory";
     public static final String CONTAINER_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
     public static final String CONTAINER_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
     public static final String CONTAINER_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
@@ -218,6 +223,71 @@ public class ECFPlugin extends Plugin {
                                 .getDefaults(), defaults.getNames(), properties);
                 debug("setupContainerExtensionPoint:created description:" + scd);
                 ISharedObjectContainerFactory factory = SharedObjectContainerFactory.getDefault();
+                if (factory.containsDescription(scd)) {
+                    throw new CoreException(getStatusForContException(
+                            extension, bundleName, name));
+                }
+                // Now add the description and we're ready to go.
+                factory.addDescription(scd);
+                debug("setupContainerExtensionPoint:added description to factory:"
+                        + scd);
+            } catch (CoreException e) {
+                log(e.getStatus());
+                dumpStack("CoreException in setupContainerExtensionPoint", e);
+            } catch (Exception e) {
+                log(getStatusForContException(extension, bundleName, name));
+                dumpStack("Exception in setupContainerExtensionPoint", e);
+            }
+        }
+    }
+
+    protected void setupSimpleContainerExtensionPoint(BundleContext bc) {
+        String bundleName = getDefault().getBundle().getSymbolicName();
+        IExtensionRegistry reg = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = reg
+                .getExtensionPoint(SIMPLE_CONTAINER_FACTORY_EPOINT);
+        if (extensionPoint == null) {
+            return;
+        }
+        IConfigurationElement[] members = extensionPoint
+                .getConfigurationElements();
+        // For each configuration element
+        for (int m = 0; m < members.length; m++) {
+            IConfigurationElement member = members[m];
+            // Get the label of the extender plugin and the ID of the extension.
+            IExtension extension = member.getDeclaringExtension();
+            Object exten = null;
+            String name = null;
+            try {
+                // The only required attribute is "class"
+                exten = member
+                        .createExecutableExtension(CONTAINER_FACTORY_EPOINT_CLASS_ATTRIBUTE);
+                String clazz = exten.getClass().getName();
+                // Get name and get version, if available
+                name = member
+                        .getAttribute(CONTAINER_FACTORY_EPOINT_NAME_ATTRIBUTE);
+                if (name == null) {
+                    name = clazz;
+                }
+                // Get description, if present
+                String description = member
+                        .getAttribute(CONTAINER_FACTORY_EPOINT_DESC_ATTRIBUTE);
+                if (description == null) {
+                    description = "";
+                }
+                // Get any arguments
+                DefaultArgs defaults = getDefaultArgs(member
+                        .getChildren(ARG_ELEMENT_NAME));
+                // Get any property elements
+                Map properties = getProperties(member
+                        .getChildren(PROPERTY_ELEMENT_NAME));
+                // Now make description instance
+                ContainerDescription scd = new ContainerDescription(
+                        name, (IContainerInstantiator) exten,
+                        description, defaults.getTypes(), defaults
+                                .getDefaults(), defaults.getNames(), properties);
+                debug("setupContainerExtensionPoint:created description:" + scd);
+                IContainerFactory factory = ContainerFactory.getDefault();
                 if (factory.containsDescription(scd)) {
                     throw new CoreException(getStatusForContException(
                             extension, bundleName, name));

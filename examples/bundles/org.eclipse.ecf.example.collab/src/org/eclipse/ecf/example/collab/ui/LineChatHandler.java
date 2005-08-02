@@ -13,7 +13,7 @@ package org.eclipse.ecf.example.collab.ui;
 
 import java.util.Map;
 
-import org.eclipse.ecf.core.SharedObjectContainerJoinException;
+import org.eclipse.ecf.core.ContainerJoinException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IJoinContext;
 import org.eclipse.ecf.example.collab.share.User;
@@ -38,7 +38,7 @@ public interface LineChatHandler {
     public Object getObject(ID target);
 
     public void joinGroup(ID remote, IJoinContext joinContext)
-        throws SharedObjectContainerJoinException;
+        throws ContainerJoinException;
         
     public void leaveGroup();
     

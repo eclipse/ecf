@@ -18,9 +18,9 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketAddress;
 
+import org.eclipse.ecf.core.ContainerJoinException;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.ISharedObjectContainerGroupManager;
-import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.comm.ISynchConnection;
@@ -264,8 +264,8 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
         super.dispose(timeout);
     }
 
-	public void joinGroup(ID groupID, IJoinContext joinContext) throws SharedObjectContainerJoinException {
-        SharedObjectContainerJoinException e = new SharedObjectContainerJoinException(
+	public void joinGroup(ID groupID, IJoinContext joinContext) throws ContainerJoinException {
+        ContainerJoinException e = new ContainerJoinException(
                 "ServerApplication cannot join group " + groupID.getName());
         throw e;
 	}

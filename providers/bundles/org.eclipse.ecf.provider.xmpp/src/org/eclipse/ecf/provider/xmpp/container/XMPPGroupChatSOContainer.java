@@ -10,8 +10,9 @@ package org.eclipse.ecf.provider.xmpp.container;
 
 import java.io.IOException;
 import java.util.HashMap;
+
+import org.eclipse.ecf.core.ContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectAddException;
-import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
@@ -141,7 +142,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
     }
 
     public void joinGroup(ID remote, Object data)
-            throws SharedObjectContainerJoinException {
+            throws ContainerJoinException {
         String nickname = "";
         String password = "";
         try {
@@ -152,12 +153,12 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
             multiuserchat.join(nickname,password);
         } catch (XMPPException e) {
             cleanUpConnectFail();
-            SharedObjectContainerJoinException ce = new SharedObjectContainerJoinException("Exception joining with nickname "+nickname);
+            ContainerJoinException ce = new ContainerJoinException("Exception joining with nickname "+nickname);
             ce.setStackTrace(e.getStackTrace());
             throw ce;
         } catch (SharedObjectAddException e1) {
             cleanUpConnectFail();
-            SharedObjectContainerJoinException ce = new SharedObjectContainerJoinException("Exception adding shared object " + sharedObjectID);
+            ContainerJoinException ce = new ContainerJoinException("Exception adding shared object " + sharedObjectID);
             ce.setStackTrace(e1.getStackTrace());
             throw ce;
         }

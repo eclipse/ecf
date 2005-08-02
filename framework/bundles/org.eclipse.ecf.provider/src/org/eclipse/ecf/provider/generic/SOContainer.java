@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.ecf.core.ContainerJoinException;
 import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
@@ -31,7 +32,6 @@ import org.eclipse.ecf.core.ISharedObjectContainerListener;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectAddException;
-import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
@@ -810,7 +810,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 *      org.eclipse.ecf.core.security.IJoinContext)
 	 */
 	public abstract void joinGroup(ID groupID, IJoinContext joinContext)
-			throws SharedObjectContainerJoinException;
+			throws ContainerJoinException;
 
 	protected void killConnection(IConnection conn) {
 		debug("killconnection");

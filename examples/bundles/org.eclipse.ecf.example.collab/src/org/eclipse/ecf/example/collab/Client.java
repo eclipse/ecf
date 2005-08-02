@@ -33,10 +33,10 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.ContainerJoinException;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.ISharedObjectContainerListener;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
-import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -325,7 +325,7 @@ public class Client {
 
         try {
             client.joinGroup(groupID, getJoinContext(username,data));
-        } catch (SharedObjectContainerJoinException e) {
+        } catch (ContainerJoinException e) {
             try {
                 EclipseCollabSharedObject so = newClient.getObject();
                 if (so != null) {

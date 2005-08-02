@@ -9,13 +9,11 @@
 
 package org.eclipse.ecf.core;
 
-import org.eclipse.ecf.core.identity.ID;
-
 /**
  * Core interface that must be implemented by all ECF container instances.
  * Instances are typically created via {@link SharedObjectContainerFactory}
  */
-public interface ISharedObjectContainer extends IContainer {
+public interface ISharedObjectContainer extends IReliableContainer {
 
 	/**
 	 * Return the ISharedObjectContainerConfig for this ISharedObjectContainer.
@@ -44,28 +42,6 @@ public interface ISharedObjectContainer extends IContainer {
 	 *            the ISharedObjectContainerListener to remove
 	 */
 	public void removeListener(ISharedObjectContainerListener l);
-
-	/**
-	 * Get the group id that this container has joined. Return null if no group
-	 * has previously been joined.
-	 * 
-	 * @return ID of the group previously joined
-	 */
-	public ID getGroupID();
-
-	/**
-	 * Get the current membership of the joined group. This method will
-	 * accurately report the current group membership of the connected group.
-	 * 
-	 * @return ID[] the IDs of the current group membership
-	 */
-	public ID[] getGroupMemberIDs();
-
-	/**
-	 * @return true if this ISharedObjectContainer instance is in the 'manager'
-	 *         role for the group, false otherwise
-	 */
-	public boolean isGroupManager();
 
 	/**
 	 * Get SharedObjectManager for this container

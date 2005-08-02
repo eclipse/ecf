@@ -16,11 +16,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Date;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ecf.core.ContainerJoinException;
 import org.eclipse.ecf.core.ISharedObjectContext;
-import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IJoinContext;
@@ -439,10 +440,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	}
 
 	public void joinGroup(ID remote, IJoinContext data)
-			throws SharedObjectContainerJoinException {
+			throws ContainerJoinException {
 		ISharedObjectContext crs = getContext();
 		if (crs == null) {
-			throw new SharedObjectContainerJoinException(
+			throw new ContainerJoinException(
 					"Cannot join remote space " + remote
 							+ ".  Have no local space access capability.");
 		} else {
@@ -461,7 +462,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				}
 				// Success
 			} else {
-				throw new SharedObjectContainerJoinException(
+				throw new ContainerJoinException(
 						"Invalid remote space ID " + remote);
 			}
 		}

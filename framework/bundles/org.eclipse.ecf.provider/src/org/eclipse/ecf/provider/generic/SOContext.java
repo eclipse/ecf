@@ -17,10 +17,11 @@ package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
 import java.util.Map;
+
+import org.eclipse.ecf.core.ContainerJoinException;
 import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.SharedObjectContainerJoinException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IJoinContext;
@@ -112,7 +113,7 @@ public class SOContext implements ISharedObjectContext {
      *      org.eclipse.ecf.core.security.IJoinContext)
      */
 	public synchronized void joinGroup(ID groupID, IJoinContext joinContext)
-	throws SharedObjectContainerJoinException {
+	throws ContainerJoinException {
         if (isInactive()) {
             trace("joinGroup("+groupID+") CONTEXT INACTIVE");
             return;
