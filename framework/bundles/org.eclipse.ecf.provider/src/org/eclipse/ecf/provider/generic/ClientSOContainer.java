@@ -83,10 +83,6 @@ public abstract class ClientSOContainer extends SOContainer {
 		super.dispose(wait);
 	}
 
-	public final boolean isGroupServer() {
-		return false;
-	}
-
 	public final boolean isGroupManager() {
 		return false;
 	}

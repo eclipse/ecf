@@ -6,8 +6,8 @@
          <meta.schema plugin="org.eclipse.ecf" id="containerFactory" name="ECF Container Factory"/>
       </appInfo>
       <documentation>
-         This extension allows plugins to register themselves as &apos;providers&apos; of ECF shared object containers.  Once registered via this extension point, plugins can then provide there own implementations of  ISharedObjectContainer in response to client request of the ECF container factory (&lt;b&gt;org.eclipse.ecf.core.SharedObjectContainerFactory&lt;/b&gt;).
-&lt;p&gt;Plugins using this extension point can define a new implementation of any desired communications protocol, and expose that protocol as an instance of an &lt;b&gt;ISharedObjectContainer&lt;/b&gt;.  When client requests are made to ECF SharedObjectContainerFactory to create &lt;b&gt;ISharedObjectContainer&lt;/b&gt; instances, those requests will be re-directed to the given ISharedObjectContainer implementer.
+         This extension allows plugins to register themselves as &apos;providers&apos; of ECF containers.  Once registered via this extension point, plugins can then provide there own implementations of  IContainer in response to client request of the ECF container factory (&lt;b&gt;org.eclipse.ecf.core.ContainerFactory&lt;/b&gt;).
+&lt;p&gt;Plugins using this extension point can define a new implementation of any desired communications protocol, and expose that protocol as an instance of an &lt;b&gt;IContainer&lt;/b&gt;.  When client requests are made to ECF ContainerFactory to create &lt;b&gt;IContainer&lt;/b&gt; instances, those requests will be re-directed to the given IContainer implementer.
       </documentation>
    </annotation>
 
@@ -54,21 +54,21 @@
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  The class implementing the containerFactory extension point.  The given class must implement the &lt;b&gt;org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator&lt;/b&gt; interface
+                  The class implementing the containerFactory extension point.  The given class must implement the &lt;b&gt;org.eclipse.ecf.core.provider.IContainerInstantiator&lt;/b&gt; interface
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  An optional name for the extension.  If no name is explicitly provided by the extension, the containerFactory class name is used as the name.  Note that this name must &lt;b&gt;not&lt;/b&gt; conflict with any other name in the ECF SharedObjectContainerFactory in order to be successfully registered.  Care should therefore be taken in selection of a name such that it does not conflict with other pre-existing names for this factory implementations
+                  An optional name for the extension.  If no name is explicitly provided by the extension, the containerFactory class name is used as the name.  Note that this name must &lt;b&gt;not&lt;/b&gt; conflict with any other name in the ECF SharedFactory in order to be successfully registered.  Care should therefore be taken in selection of a name such that it does not conflict with other pre-existing names for this factory implementations
                </documentation>
             </annotation>
          </attribute>
          <attribute name="description" type="string">
             <annotation>
                <documentation>
-                  An optional description of the implementation of this extension point
+                  
                </documentation>
             </annotation>
          </attribute>
@@ -78,7 +78,7 @@
    <element name="defaultargument">
       <annotation>
          <documentation>
-            Default argument to be passed to &lt;b&gt;org.eclipse.ecf.core.provider.makeInstance()&lt;/b&gt; method.  Value of this element (if any) is used to indicate a default value for the given argument
+            Default argument to be passed to &lt;b&gt;org.eclipse.ecf.core.provider.IContainerInstantiator.makeInstance()&lt;/b&gt; method.  Value of this element (if any) is used to indicate a default value for the given argument
          </documentation>
       </annotation>
       <complexType>
@@ -109,7 +109,7 @@
    <element name="property">
       <annotation>
          <documentation>
-            Property (name,value) associated with SharedObjectContainerDescription
+            Property (name,value) associated with SharedDescription
          </documentation>
       </annotation>
       <complexType>
@@ -144,11 +144,11 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         Here&apos;s an extension that associates a class org.eclipse.ecf.test.FooContainerFactory with name &apos;foo&apos; in the ECF &lt;b&gt;SharedObjectContainerFactory&lt;/b&gt;:
+         Here&apos;s an extension that associates a class org.eclipse.ecf.test.FooContainerFactory with name &apos;foo&apos; in the ECF &lt;b&gt;ContainerFactory&lt;/b&gt;:
 
 &lt;pre&gt;
 &lt;extension point=&quot;org.eclipse.ecf.containerFactory&quot;&gt;
-    &lt;containerFactory name=&quot;foo&quot; class=&quot;org.eclipse.ecf.test.FooContainerFactory&quot; description=&quot;My container factory&quot;/&gt;
+    &lt;containerFactory name=&quot;foo&quot; class=&quot;org.eclipse.ecf.test.FooInstantiator&quot; description=&quot;My container factory&quot;/&gt;
     &lt;defaultargument type=&quot;java.lang.String&quot; value=&quot;defaultvalue&quot; name=&quot;variablename&quot;/&gt;
 &lt;/extension&gt;
 &lt;/pre&gt;
@@ -158,33 +158,33 @@ Here is some example code to implement this class:
 &lt;pre&gt;
 package org.eclipse.ecf.test;
 
-import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
-import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.provider.IContainerInstantiator;
 
-public class FooContainerFactory implements ISharedObjectContainerInstantiator {
+public class FooInstantiator implements IContainerInstantiator {
 
-    public FooContainerFactory() {
+    public FooInstantiator() {
         super();
     }
-    public ISharedObjectContainer makeInstance(SharedObjectContainterDescription description, Class[] argTypes, Object[] args)
-            throws SharedObjectContainerInstantiationException {
-        // Create/return instance of FooSharedObjectContainer
-        // Note that FooSharedObjectContainer class must
-        // implement ISharedObjectContainer
-        return new FooSharedObjectContainer();
+    public IContainer makeInstance(ContainerDescription description, Class[] argTypes, Object[] args)
+            throws ContainerInstantiationException {
+        // Create/return instance of FooContainer
+        // Note that FooContainer class must
+        // implement IContainer
+        return new FooContainer();
     }
 }
 &lt;/pre&gt;
 
-In this example, the given class implements the &lt;b&gt;ISharedObjectContainerInstantiator&lt;/b&gt;.makeInstance method by creating and returning a new instance of FooSharedObjectContainer, a class also defined in the extension plugin.  As noted in the code, this class must implement &lt;b&gt;ISharedObjectContainer&lt;/b&gt;, so that it can successfully be returned from makeInstance.
+In this example, the given class implements the &lt;b&gt;IContainerInstantiator&lt;/b&gt;.makeInstance method by creating and returning a new instance of FooInstantiator, a class also defined in the extension plugin.  As noted in the code, this class must implement &lt;b&gt;IContainer&lt;/b&gt;, so that it can successfully be returned from makeInstance.
 
 &lt;h3&gt;Example Usage of Container by Clients&lt;/h3&gt;
 
-Clients that wish to use the &apos;foo&apos; container implementation can do so simply by making the following call to create an &lt;b&gt;ISharedObjectContainer&lt;/b&gt;:
+Clients that wish to use the &apos;foo&apos; container implementation can do so simply by making the following call to create an &lt;b&gt;IContainer&lt;/b&gt;:
 
 &lt;pre&gt;
-ISharedObjectContainer newContainer = SharedObjectContainerFactory.makeSharedObjectContainer(&apos;foo&apos;); 
+IContainer newContainer = ContainerFactory.getDefault().makeContainer(&apos;foo&apos;); 
 // Further use of newContainer instance here
 
 &lt;/pre&gt;
@@ -196,7 +196,7 @@ ISharedObjectContainer newContainer = SharedObjectContainerFactory.makeSharedObj
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.SharedObjectContainerFactory&lt;/b&gt; static methods.  Specifically, the &apos;makeSharedObjectContainer&apos; static methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;SharedObjectContainerFactory.addDescription(SharedObjectContainerDescription)&lt;/b&gt; method.
+         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.ContainerFactory&lt;/b&gt; static methods.  Specifically, the &apos;makeContainer&apos; methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;ContainerFactory.addDescription(ContainerDescription)&lt;/b&gt; method.
       </documentation>
    </annotation>
 

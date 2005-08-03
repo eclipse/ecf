@@ -8,16 +8,16 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.xmpp.container;
 
-import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.SharedObjectContainerDescription;
-import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
-import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
+import org.eclipse.ecf.core.provider.IContainerInstantiator;
 
 
-public class ContainerInstantiator implements ISharedObjectContainerInstantiator {
+public class ContainerInstantiator implements IContainerInstantiator {
     public ContainerInstantiator() {
         
     }
@@ -50,13 +50,13 @@ public class ContainerInstantiator implements ISharedObjectContainerInstantiator
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator#makeInstance(org.eclipse.ecf.core.SharedObjectContainerDescription,
+     * @see org.eclipse.ecf.core.provider.IContainerInstantiator#makeInstance(.ContainerDescription,
      *      java.lang.Class[], java.lang.Object[])
      */
-    public ISharedObjectContainer makeInstance(
-            SharedObjectContainerDescription description, Class[] argTypes,
+    public IContainer makeInstance(
+            ContainerDescription description, Class[] argTypes,
             Object[] args)
-            throws SharedObjectContainerInstantiationException {
+            throws ContainerInstantiationException {
         try {
             Integer ka = new Integer(XMPPClientSOContainer.DEFAULT_KEEPALIVE);
             String name = null;
@@ -81,7 +81,7 @@ public class ContainerInstantiator implements ISharedObjectContainerInstantiator
                 return new XMPPClientSOContainer(name,ka.intValue());                
             }
         } catch (Exception e) {
-            throw new SharedObjectContainerInstantiationException(
+            throw new ContainerInstantiationException(
                     "Exception creating generic container", e);
         }
     }

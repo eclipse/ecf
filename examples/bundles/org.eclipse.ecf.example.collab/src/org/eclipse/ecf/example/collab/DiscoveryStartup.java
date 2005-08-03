@@ -9,9 +9,10 @@ import java.util.Properties;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.SharedObjectContainerFactory;
-import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.ServiceID;
@@ -47,7 +48,7 @@ public class DiscoveryStartup {
 	public static final int SVC_DEF_PRIORITY = 0;
 	
 	static IDiscoveryContainer discovery = null;
-	static ISharedObjectContainer socontainer = null;
+	static IContainer socontainer = null;
 	
     protected DiscoveryView discoveryView = null;
     
@@ -70,8 +71,8 @@ public class DiscoveryStartup {
 	}
 	protected void setupDiscovery() throws Exception {
 		try {
-			socontainer = SharedObjectContainerFactory
-					.getDefault().makeSharedObjectContainer(DISCOVERY_CONTAINER);
+			socontainer = ContainerFactory
+					.getDefault().makeContainer(DISCOVERY_CONTAINER);
 			discovery = (IDiscoveryContainer) socontainer
 					.getAdapter(IDiscoveryContainer.class);
 			if (discovery != null) {
@@ -86,9 +87,10 @@ public class DiscoveryStartup {
 				discovery = null;
 				ClientPlugin.log("No discovery container available");
 			}
-		} catch (SharedObjectContainerInstantiationException e1) {
+		} catch (ContainerInstantiationException e1) {
 			socontainer = null;
 			discovery = null;
+			ClientPlugin.log("No discovery container available",e1);
 			return;
 		} catch (Exception e) {
 			if (socontainer != null) {
@@ -152,7 +154,7 @@ public class DiscoveryStartup {
 							return discovery;
 						}
 
-						public ISharedObjectContainer getSharedObjectContainer() {
+						public IContainer getContainer() {
 							return socontainer;
 						}
 

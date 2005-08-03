@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceInfo;
@@ -58,7 +58,7 @@ public class DiscoveryView extends ViewPart {
 	private Action connectContainerAction;
 
 	IDiscoveryContainer dcontainer = null;
-	ISharedObjectContainer socontainer = null;
+	IContainer socontainer = null;
 	IDiscoveryController controller = null;
 	String [] controllerServiceTypes = null;
 	
@@ -82,7 +82,7 @@ public class DiscoveryView extends ViewPart {
             public void run() {
         		DiscoveryView.this.controller = controller;
         		if (controller != null) {
-        			setContainers(controller.getDiscoveryContainer(),controller.getSharedObjectContainer(),controller.getServiceTypes());
+        			setContainers(controller.getDiscoveryContainer(),controller.getContainer(),controller.getServiceTypes());
         		} else {
         			setContainers(null,null,null);
         		}
@@ -90,7 +90,7 @@ public class DiscoveryView extends ViewPart {
         });
 	}
 	
-	protected void setContainers(IDiscoveryContainer dcontainer, ISharedObjectContainer socont, String [] svcTypes) {
+	protected void setContainers(IDiscoveryContainer dcontainer, IContainer socont, String [] svcTypes) {
 		this.dcontainer = dcontainer;
 		this.socontainer = socont;
 		this.controllerServiceTypes = svcTypes;

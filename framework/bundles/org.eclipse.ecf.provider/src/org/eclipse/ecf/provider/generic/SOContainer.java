@@ -455,7 +455,8 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
-		return null;
+		if (adapter.equals(ISharedObjectContainer.class)) return this;
+		else return null;
 	}
 
 	/**

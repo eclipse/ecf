@@ -15,8 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.ecf.core.SharedObjectContainerDescription;
-import org.eclipse.ecf.core.SharedObjectContainerFactory;
+import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -115,12 +115,12 @@ public class JoinGroupWizardPage extends WizardPage {
         }
     }
     protected void fillCombo() {
-        List rawDescriptions = SharedObjectContainerFactory.getDefault().getDescriptions();
+        List rawDescriptions = ContainerFactory.getDefault().getDescriptions();
         int index = 0;
         int def = 0;
         Map defProps = null;
         for(Iterator i=rawDescriptions.iterator(); i.hasNext(); ) {
-            final SharedObjectContainerDescription desc = (SharedObjectContainerDescription) i.next();
+            final ContainerDescription desc = (ContainerDescription) i.next();
             String name = desc.getName();
             String description = desc.getDescription();
             Map props = desc.getProperties();
@@ -138,7 +138,7 @@ public class JoinGroupWizardPage extends WizardPage {
         }
         combo.addSelectionListener(new SelectionListener() {
             public void widgetSelected(SelectionEvent e) {
-                SharedObjectContainerDescription desc = (SharedObjectContainerDescription) combo.getData(combo.getSelectionIndex()+"");
+                ContainerDescription desc = (ContainerDescription) combo.getData(combo.getSelectionIndex()+"");
                 Map props = desc.getProperties();
                 modifyUI(props);
             }
@@ -252,7 +252,7 @@ public class JoinGroupWizardPage extends WizardPage {
         int index = combo.getSelectionIndex();
         if (index == -1) return null;
         else {
-            SharedObjectContainerDescription desc = (SharedObjectContainerDescription) containerDescriptions.get(index);
+            ContainerDescription desc = (ContainerDescription) containerDescriptions.get(index);
             return desc.getName();
         }
     }

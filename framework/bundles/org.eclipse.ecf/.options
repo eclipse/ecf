@@ -2,6 +2,7 @@ org.eclipse.ecf/debug = true
 org.eclipse.ecf/debug/filter = *
 org.eclipse.ecf/debug/flag = true
 org.eclipse.ecf/debug/containerfactory = true
+ort.eclipse.ecf/debug/sharedobjectcontainerfactory = true
 org.eclipse.ecf/debug/idfactory = true
 org.eclipse.ecf/debug/connectionfactory = true
 org.eclipse.ecf/debug/factoryinit = true

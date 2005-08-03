@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.security.auth.callback.Callback;
 
 import org.eclipse.ecf.core.ContainerJoinException;
+import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
@@ -322,6 +323,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	}
 
     public Object getAdapter(Class clazz) {
+    	if (clazz.equals(ISharedObjectContainer.class)) return this;
         if (clazz.equals(IPresenceContainer.class)) {
             return new IPresenceContainer() {
 

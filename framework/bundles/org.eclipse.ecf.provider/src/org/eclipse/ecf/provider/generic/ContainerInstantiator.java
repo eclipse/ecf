@@ -8,17 +8,17 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic;
 
-import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.SharedObjectContainerDescription;
-import org.eclipse.ecf.core.SharedObjectContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
-import org.eclipse.ecf.core.provider.ISharedObjectContainerInstantiator;
+import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.provider.Trace;
 
 public class ContainerInstantiator implements
-        ISharedObjectContainerInstantiator {
+        IContainerInstantiator {
     public static final String TCPCLIENT_NAME = "org.eclipse.ecf.provider.generic.Client";
     public static final String TCPSERVER_NAME = "org.eclipse.ecf.provider.generic.Server";
 
@@ -59,9 +59,9 @@ public class ContainerInstantiator implements
         } else return new Integer(-1);
     }
 
-    public ISharedObjectContainer makeInstance(
-            SharedObjectContainerDescription description, Class[] argTypes,
-            Object[] args) throws SharedObjectContainerInstantiationException {
+    public IContainer makeInstance(
+            ContainerDescription description, Class[] argTypes,
+            Object[] args) throws ContainerInstantiationException {
         boolean isClient = true;
         if (description.getName().equals(TCPSERVER_NAME)) {
             debug("creating server");
@@ -86,7 +86,7 @@ public class ContainerInstantiator implements
             debug("id="+newID+";keepAlive="+ka);
             // new ID must not be null
             if (newID == null)
-                throw new SharedObjectContainerInstantiationException(
+                throw new ContainerInstantiationException(
                         "id must be provided");
             if (isClient) {
                 return new TCPClientSOContainer(new SOContainerConfig(newID),
@@ -97,11 +97,11 @@ public class ContainerInstantiator implements
             }
         } catch (ClassCastException e) {
             dumpStack("ClassCastException",e);
-            throw new SharedObjectContainerInstantiationException(
+            throw new ContainerInstantiationException(
                     "Parameter type problem creating container", e);
         } catch (Exception e) {
             dumpStack("Exception",e);
-            throw new SharedObjectContainerInstantiationException(
+            throw new ContainerInstantiationException(
                     "Exception creating generic container", e);
         }
     }

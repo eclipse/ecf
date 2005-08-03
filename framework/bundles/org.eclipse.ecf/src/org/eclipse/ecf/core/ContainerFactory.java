@@ -36,7 +36,7 @@ import org.eclipse.ecf.internal.core.Trace;
  */
 public class ContainerFactory implements IContainerFactory {
 
-    private static Trace debug = Trace.create("simplecontainerfactory");
+    private static Trace debug = Trace.create("containerfactory");
     
     private static Hashtable containerdescriptions = new Hashtable();
     protected static IContainerFactory instance = null;
