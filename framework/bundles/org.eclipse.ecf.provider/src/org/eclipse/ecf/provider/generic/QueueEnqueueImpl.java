@@ -15,8 +15,8 @@
  */
 package org.eclipse.ecf.provider.generic;
 
-import org.eclipse.ecf.core.util.IEnqueuePredicate;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.core.util.IEnqueuePredicate;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.QueueException;
 import org.eclipse.ecf.core.util.SimpleQueueImpl;

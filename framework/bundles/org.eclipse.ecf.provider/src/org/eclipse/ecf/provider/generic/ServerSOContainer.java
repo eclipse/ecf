@@ -97,6 +97,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                         } catch (IOException e) {
                             logException("Exception in forwardExcluding from "
                                     + from + " with oldID " + oldID, e);
+                            e.printStackTrace();
                         }
                     }
                 }

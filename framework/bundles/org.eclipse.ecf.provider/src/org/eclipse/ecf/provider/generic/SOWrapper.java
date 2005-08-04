@@ -14,6 +14,7 @@ package org.eclipse.ecf.provider.generic;
 import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.RemoteSharedObjectCreateResponseEvent;

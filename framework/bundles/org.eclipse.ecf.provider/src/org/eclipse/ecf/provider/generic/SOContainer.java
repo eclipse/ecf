@@ -775,7 +775,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 												.getData()));
 					} catch (ClassNotFoundException e) {
 						dumpStack(
-								"Classnotfoundexception in handleSharedObjectMessage",
+								"ClassNotFoundException in handleSharedObjectMessage",
 								e);
 						e.printStackTrace(System.err);
 					}
@@ -942,14 +942,18 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		try {
 			Object obj = e.getData();
 			if (obj == null) {
+				System.out.println("NULL DATA IN EVENT: "+e);
 				debug("Ignoring null data in event " + e);
 				return;
 			}
 			if (!(obj instanceof byte[])) {
 				debug("Ignoring event without valid data " + e);
+				System.out.println("NOT BYTE [] DATA IN EVENT: "+e);
+				return;
 			}
 			ContainerMessage mess = validateContainerMessage(deserializeContainerMessage((byte[]) obj));
 			if (mess == null) {
+				System.out.println("EVENT NOT VALIDATED: "+e);
 				return;
 			}
 			Serializable submess = mess.getData();

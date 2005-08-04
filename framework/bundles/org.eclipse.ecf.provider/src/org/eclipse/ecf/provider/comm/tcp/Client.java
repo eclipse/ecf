@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Vector;
+
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionDescription;
 import org.eclipse.ecf.core.comm.ConnectionEvent;
@@ -104,6 +105,8 @@ public final class Client implements ISynchAsynchConnection {
     protected Map properties;
     
     protected ID containerID = null;
+    
+    protected Object pingLock = new Object();
     
     public Map getProperties() {
         return properties;
@@ -187,6 +190,7 @@ public final class Client implements ISynchAsynchConnection {
             retID = IDFactory.getDefault().makeStringID(PROTOCOL + "://"
                     + socket.getLocalAddress().getHostName() + ":" + socket.getLocalPort());
         } catch (Exception e) {
+        	dumpStack("Exception in getLocalID()",e);
             return null;
         }
         return retID;
@@ -241,7 +245,9 @@ public final class Client implements ISynchAsynchConnection {
         try {
             anURI = remote.toURI();
         } catch (URISyntaxException e) {
-            throw new IOException("Invalid URL");
+            IOException except = new IOException("Invalid URI for remote "+remote);
+            except.setStackTrace(e.getStackTrace());
+            throw except;
         }
         // Get socket factory and create/connect socket
         SocketFactory fact = SocketFactory.getSocketFactory();
@@ -292,29 +298,27 @@ public final class Client implements ISynchAsynchConnection {
             public void run() {
                 int msgCount = 0;
                 Thread me = Thread.currentThread();
-                // Loop until done sending messages
+                // Loop until done sending messages (thread explicitly interrupted or queue.peekQueue() returns null
                 for (;;) {
                     if (me.isInterrupted())
                         break;
+                    // sender should wait here until something appears in queue or queue is stopped (returns null)
                     Serializable aMsg = (Serializable) queue.peekQueue();
                     if (me.isInterrupted() || aMsg == null)
                         break;
                     try {
                         // Actually send message
-                        trace("send:" + aMsg);
                         sendIt(aMsg);
                         // Successful...remove message from queue
                         queue.removeHead();
                         if (msgCount > maxMsg) {
-                            synchronized (outputStream) {
-                                outputStream.reset();
-                            }
+                            outputStream.reset();
                             msgCount = 0;
                         } else
                             msgCount++;
+                            
                     } catch (IOException e) {
                         if (isClosing) {
-                            //isClosing = false;
                             dumpStack("SENDER CLOSING",e);
                             synchronized (Client.this) {
                                 Client.this.notifyAll();
@@ -353,19 +357,16 @@ public final class Client implements ISynchAsynchConnection {
     private void sendIt(Serializable snd) throws IOException {
         // Write object to output stream
     	trace("sendIt("+snd+")");
-        synchronized (outputStream) {
-            outputStream.writeObject(snd);
-            outputStream.flush();
-            nextPingTime = System.currentTimeMillis() + (keepAlive/2);
-        }
+        nextPingTime = System.currentTimeMillis() + (keepAlive/2);
+        outputStream.writeObject(snd);
+        outputStream.flush();
     }
 
     private void receiveResp() {
-        synchronized (outputStream) {
-            waitForPing = false;
-            nextPingTime = System.currentTimeMillis() + (keepAlive/2);
-            outputStream.notifyAll();
-        }
+    	synchronized (pingLock) {
+    		waitForPing = false;
+    		nextPingTime = System.currentTimeMillis() + (keepAlive/2);
+    	}
     }
 
     public void setCloseTimeout(long t) {
@@ -421,6 +422,8 @@ public final class Client implements ISynchAsynchConnection {
         return aThread;
     }
 
+    //private int rcvCount = 0;
+    
     private void handleRcv(Serializable rcv) throws IOException {
         try {
             // We've received some data, so the connection is alive
@@ -487,7 +490,7 @@ public final class Client implements ISynchAsynchConnection {
                             break;
                         // Check to see how long it has been since our last
                         // send.
-                        synchronized (outputStream) {
+                        synchronized (pingLock) {
                             if (System.currentTimeMillis() >= nextPingTime) {
                                 // If it's been longer than our timeout
                                 // interval, then ping
@@ -498,8 +501,10 @@ public final class Client implements ISynchAsynchConnection {
                                     try {
                                         // Wait for keepAliveInterval for
                                         // pingresp
-                                        outputStream.wait(keepAlive / 2);
+                                        pingLock.wait(keepAlive / 2);
                                     } catch (InterruptedException e) {
+                                    	dumpStack("PING INTERRUPTED",e);
+                                    	return;
                                     }
                                 }
                                 if (waitForPing) {
@@ -561,6 +566,7 @@ public final class Client implements ISynchAsynchConnection {
         queueObject(recipient, (Serializable) obj);
     }
 
+    // private int serverQueueCount = 0;
     public synchronized void queueObject(ID recipient, Serializable obj)
             throws IOException {
         if (queue.isStopped() || isClosing)
@@ -594,9 +600,11 @@ public final class Client implements ISynchAsynchConnection {
             ret = (Serializable) inputStream.readObject();
         } catch (ClassNotFoundException e) {
             dumpStack("readObject;classnotfoundexception", e);
-            throw new IOException(
+            IOException except = new IOException(
                     "Protocol violation due to class load failure.  "
                             + e.getMessage());
+            except.setStackTrace(e.getStackTrace());
+            throw except;
         }
         return ret;
     }
