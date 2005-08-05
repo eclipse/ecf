@@ -12,6 +12,7 @@
 package org.eclipse.ecf.provider.generic.sobject;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,10 +52,15 @@ public class TPCommitEventProcessor implements IEventProcessor {
 	int timeout = DEFAULT_TIMEOUT;
 	int minFailedToAbort = 0;
 	long identifier = 0;
+	ID [] exceptions;
 	
-	public TPCommitEventProcessor(ISharedObjectInternal bse, int timeout) {
-		this.sharedObject = bse;
+	public TPCommitEventProcessor(ISharedObjectInternal bse, int timeout, ID [] except) {
+		this.sharedObject= bse;
 		this.timeout = timeout;
+		this.exceptions = except;
+	}
+	public TPCommitEventProcessor(ISharedObjectInternal bse, int timeout) {
+		this(bse,timeout,null);
 	}
 
 	public TPCommitEventProcessor(ISharedObjectInternal bse) {
@@ -97,6 +103,14 @@ public class TPCommitEventProcessor implements IEventProcessor {
 		return getSharedObject().getHomeID();
 	}
 
+	protected ID [] filter(ID [] ids) {
+		if (exceptions == null) return ids;
+		List aList = Arrays.asList(ids);
+		for(int i=0; i < exceptions.length; i++) {
+			aList.remove(exceptions[i]);
+		}
+		return (ID []) aList.toArray(new ID[] {});
+	}
 	protected void addParticipants(ID[] ids) {
 		if (ids != null) {
 			for (int i = 0; i < ids.length; i++) {
@@ -186,7 +200,7 @@ public class TPCommitEventProcessor implements IEventProcessor {
 		}
 
 	}
-    protected void replicateTo(ID remote) {
+    protected void replicateTo(ID [] remotes) {
         try {
             // Get current group membership
             ISharedObjectContext context = getSharedObject().getContext();
@@ -196,21 +210,34 @@ public class TPCommitEventProcessor implements IEventProcessor {
                 // we're done
                 return;
             }
-            SharedObjectDescription createInfo = getSharedObject().getReplicaDescription(remote);
-            if (createInfo != null) {
-                context.sendCreate(remote, createInfo);
-            } else {
-                return;
+            SharedObjectDescription[] createInfos = getSharedObject().getReplicaDescriptions(remotes);
+            if (createInfos != null) {
+            	if (createInfos.length == 1) {
+            		context.sendCreate((remotes==null)?null:remotes[0],createInfos[0]);
+            	} else {
+            		for(int i=0; i < remotes.length; i++) {
+            			context.sendCreate(remotes[i],createInfos[i]);
+            		}
+            	}
             }
         } catch (IOException e) {
-            traceStack("Exception in replicate("+remote+")", e);
+            traceStack("Exception in replicateTo("+Arrays.asList(remotes)+")", e);
             return;
         }
     }
 
 	protected void handlePrimaryActivated(ISharedObjectActivatedEvent event) {
-		replicateTo(null);
-		addParticipants(getContext().getGroupMemberIDs());
+		// if we don't have any exceptions replicate to all remotes
+		ID [] groupMembers = getContext().getGroupMemberIDs();
+		ID [] replicaContainers = groupMembers;
+		if (exceptions == null) {
+			replicateTo(null);
+		} else {
+			// We do have some exceptions, so filter these out
+			replicaContainers = filter(groupMembers);
+			replicateTo(replicaContainers);
+		}
+		addParticipants(replicaContainers);
 		setTransactionState(ISharedObjectContainerTransaction.VOTING);
 	}
 
@@ -236,7 +263,7 @@ public class TPCommitEventProcessor implements IEventProcessor {
 			// replicate message
 			synchronized (lock) {
 				ID newMember = event.getJoinedContainerID();
-				replicateTo(newMember);
+				replicateTo(new ID[] { newMember });
 				if (getTransactionState() == ISharedObjectContainerTransaction.VOTING)
 					addParticipants(new ID[] { newMember });
 			}

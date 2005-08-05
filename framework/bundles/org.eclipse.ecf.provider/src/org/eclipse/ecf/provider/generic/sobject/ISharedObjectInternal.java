@@ -13,6 +13,6 @@ public interface ISharedObjectInternal extends IIdentifiable {
 	public ISharedObjectContext getContext();
 	public boolean isPrimary();
 	public ID getHomeID();
-	public SharedObjectDescription getReplicaDescription(ID remote);
+	public SharedObjectDescription[] getReplicaDescriptions(ID [] remotes);
 	public void destroySelf();
 }

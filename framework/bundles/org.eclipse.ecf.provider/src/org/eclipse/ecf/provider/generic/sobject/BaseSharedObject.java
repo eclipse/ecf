@@ -20,6 +20,7 @@ import java.util.Vector;
 import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
@@ -37,16 +38,30 @@ import org.eclipse.ecf.provider.Trace;
 public class BaseSharedObject implements ISharedObject, IIdentifiable, ISharedObjectInternal {
 
 	private static long identifier = 0L;
+	
 	public static final String TRANSACTION_PROPERTY_NAME = ISharedObjectContainerTransaction.class.getName();
+	public static final int TRANSACTION_TIMEOUT_DEFAULT = -1;
 	
 	Trace trace = Trace.create("basesharedobject");
 	
 	ISharedObjectConfig config = null;
 	List eventProcessors = new Vector();
 	
-	Integer transactionTimeout = new Integer(-1);
+	int transactionTimeout = TRANSACTION_TIMEOUT_DEFAULT;
 	ISharedObjectContainerTransaction transaction = null;
+	ID [] excludedContainerIDs;
 	
+	public BaseSharedObject(int transactionTimeout, ID [] excludedContainers) {
+		super();
+		this.transactionTimeout = transactionTimeout;
+		this.excludedContainerIDs = excludedContainers;
+	}
+	public BaseSharedObject(int transactionTimeout) {
+		this(transactionTimeout,null);
+	}
+	public BaseSharedObject() {
+		this(TRANSACTION_TIMEOUT_DEFAULT,null);
+	}
 	protected static long getNextIdentifier() {
 		return identifier++;
 	}
@@ -104,11 +119,13 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable, ISharedOb
 		Object o = props.get(TRANSACTION_PROPERTY_NAME);
 		if (o instanceof Integer) {
 			Integer trans = (Integer) o;
-			if (trans != null && trans.intValue() != -1) {
+			if (trans != null) {
 				// transactional...
-				transactionTimeout = trans;
-				transaction = new SharedObjectReplication(this,transactionTimeout.intValue());
+				transactionTimeout = trans.intValue();
 			}
+		}
+		if (transactionTimeout != TRANSACTION_TIMEOUT_DEFAULT) {
+			transaction = new SharedObjectReplication(this,transactionTimeout,excludedContainerIDs);
 		}
 	}
 	protected ISharedObjectConfig getConfig() {
@@ -180,10 +197,13 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable, ISharedOb
 	 * @see org.eclipse.ecf.core.ISharedObject#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class clazz) {
+		if (clazz.equals(ISharedObjectContainer.class)) {
+			return this;
+		}
 		if (clazz.equals(ISharedObjectContainerTransaction.class)) {
-			if (transactionTimeout == null || transactionTimeout.intValue() == -1) {
-				return null;
-			} else return transaction;
+			if (transactionTimeout != TRANSACTION_TIMEOUT_DEFAULT) {
+				return transaction;
+			} 
 		}
 		return null;
 	}
@@ -234,8 +254,21 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable, ISharedOb
     }
 
     public SharedObjectDescription getReplicaDescription(ID receiver) {
-        return new SharedObjectDescription(getID(), getClass().getName(),
+    	return new SharedObjectDescription(getID(), getClass().getName(),
         		getConfig().getProperties(), getNextIdentifier());
+    }
+    public SharedObjectDescription[] getReplicaDescriptions(ID [] receivers) {
+    	SharedObjectDescription [] descriptions = null;
+    	if (receivers == null || receivers.length == 1) {
+    		descriptions = new SharedObjectDescription[1];
+    		descriptions[0] = getReplicaDescription((receivers==null)?null:receivers[0]);
+    	} else {
+    		descriptions = new SharedObjectDescription[receivers.length];
+    		for(int i=0; i < receivers.length; i++) {
+    			descriptions[i] = getReplicaDescription(receivers[i]);
+    		}
+    	}
+    	return descriptions;
     }
 
 }

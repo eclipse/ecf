@@ -12,6 +12,7 @@ package org.eclipse.ecf.provider.generic.sobject;
 
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.SharedObjectAddAbortException;
+import org.eclipse.ecf.core.identity.ID;
 
 /**
  * @author slewis
@@ -21,7 +22,10 @@ public class SharedObjectReplication implements
 		ISharedObjectContainerTransaction {
 
 	TPCommitEventProcessor eventProcessor = null;
-	
+	public SharedObjectReplication(ISharedObjectInternal so, int transactionTimeout, ID [] exceptions) {
+		eventProcessor = new TPCommitEventProcessor(so,transactionTimeout,exceptions);
+		so.addEventProcessor(eventProcessor);
+	}
 	public SharedObjectReplication(ISharedObjectInternal so,int transactionTimeout) {
 		eventProcessor = new TPCommitEventProcessor(so,transactionTimeout);
 		so.addEventProcessor(eventProcessor);
