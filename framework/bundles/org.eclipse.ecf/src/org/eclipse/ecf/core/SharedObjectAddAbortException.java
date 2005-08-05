@@ -9,6 +9,7 @@
 
 package org.eclipse.ecf.core;
 
+import java.util.List;
 import java.util.Map;
 
 public class SharedObjectAddAbortException extends SharedObjectAddException {
@@ -17,6 +18,7 @@ public class SharedObjectAddAbortException extends SharedObjectAddException {
 
 	protected long timeout = -1L;
 	protected Map causes;
+	protected List participants;
 	
     public SharedObjectAddAbortException() {
         super();
@@ -33,7 +35,12 @@ public class SharedObjectAddAbortException extends SharedObjectAddException {
         this.timeout = timeout;
     }
     public SharedObjectAddAbortException(String msg, Map causes, int timeout) {
+    	this(msg,null,causes,timeout);
+    }
+    
+    public SharedObjectAddAbortException(String msg, List participants, Map causes, int timeout) {
     	super(msg);
+    	this.participants = participants;
     	this.causes = causes;
     }
     public SharedObjectAddAbortException(Throwable cause) {

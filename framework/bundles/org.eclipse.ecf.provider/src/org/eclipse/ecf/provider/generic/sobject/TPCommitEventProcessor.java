@@ -423,7 +423,7 @@ public class TPCommitEventProcessor implements IEventProcessor {
 			// Abort!
 			trace("isVotingCompleted() aborting: failed > "
 					+ getMinFailedToAbort() + ":failed=" + failed);
-			throw new SharedObjectAddAbortException("Abort received", failed,
+			throw new SharedObjectAddAbortException("Abort received", participants, failed,
 					getTimeout());
 			// If no problems, and the number of participants to here from is 0,
 			// then we're done
