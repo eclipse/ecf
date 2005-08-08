@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.ecf.serverfeature"
+      id="org.eclipse.ecf.server"
       label="ECF Server"
       version="0.3.3"
       provider-name="Eclipse.org">
