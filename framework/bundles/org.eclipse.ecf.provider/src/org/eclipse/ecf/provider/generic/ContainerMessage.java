@@ -81,40 +81,40 @@ public class ContainerMessage implements Serializable {
         this.toContainerID = toContainerID;
     }
 
-    static ContainerMessage makeViewChangeMessage(ID from, ID to, long seq,
+    public static ContainerMessage makeViewChangeMessage(ID from, ID to, long seq,
             ID ids[], boolean add, Serializable data) {
         return new ContainerMessage(from, to, seq, new ViewChangeMessage(ids,
                 add, data));
     }
 
-    static ContainerMessage makeJoinGroupMessage(ID from, ID to, long seq,
+    public static ContainerMessage makeJoinGroupMessage(ID from, ID to, long seq,
             Serializable data) {
         return new ContainerMessage(from, to, seq, new JoinGroupMessage(data));
     }
 
-    static ContainerMessage makeLeaveGroupMessage(ID from, ID to, long seq,
+    public static ContainerMessage makeLeaveGroupMessage(ID from, ID to, long seq,
             Serializable data) {
         return new ContainerMessage(from, to, seq, new LeaveGroupMessage(data));
     }
 
-    static ContainerMessage makeSharedObjectCreateMessage(ID from, ID to,
+    public static ContainerMessage makeSharedObjectCreateMessage(ID from, ID to,
             long seq, Serializable data) {
         return new ContainerMessage(from, to, seq, new CreateMessage(data));
     }
 
-    static ContainerMessage makeSharedObjectCreateResponseMessage(ID from,
+    public static ContainerMessage makeSharedObjectCreateResponseMessage(ID from,
             ID to, long contSeq, ID soID, Throwable e, long sequence) {
         return new ContainerMessage(from, to, contSeq,
                 new CreateResponseMessage(soID, e, sequence));
     }
 
-    static ContainerMessage makeSharedObjectMessage(ID from, ID to, long seq,
+    public static ContainerMessage makeSharedObjectMessage(ID from, ID to, long seq,
             ID fromSharedObject, Serializable data) {
         return new ContainerMessage(from, to, seq, new SharedObjectMessage(
                 fromSharedObject, data));
     }
 
-    static ContainerMessage makeSharedObjectDisposeMessage(ID from, ID to,
+    public static ContainerMessage makeSharedObjectDisposeMessage(ID from, ID to,
             long seq, ID sharedObjectID) {
         return new ContainerMessage(from, to, seq,
                 new SharedObjectDisposeMessage(sharedObjectID));
