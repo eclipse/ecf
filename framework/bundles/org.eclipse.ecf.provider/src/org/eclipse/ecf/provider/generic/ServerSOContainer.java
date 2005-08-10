@@ -40,9 +40,6 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
         super(config);
     }
 
-    public boolean isGroupServer() {
-        return true;
-    }
     public Object getAdapter(Class clazz) {
         if (clazz.equals(ISharedObjectContainerGroupManager.class)) {
             return this;
