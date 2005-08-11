@@ -203,6 +203,7 @@ public abstract class ClientSOContainer extends SOContainer {
 	}
 
 	protected void handleLeaveGroupMessage(ContainerMessage mess) {
+		if (!isConnected()) return;
 		ContainerMessage.LeaveGroupMessage lgm = (ContainerMessage.LeaveGroupMessage) mess
 				.getData();
 		ID fromID = mess.getFromContainerID();
@@ -221,6 +222,7 @@ public abstract class ClientSOContainer extends SOContainer {
 
 	protected void handleViewChangeMessage(ContainerMessage mess)
 			throws IOException {
+		if (!isConnected()) return;
 		debug("handleViewChangeMessage(" + mess + ")");
 		ContainerMessage.ViewChangeMessage vc = (ContainerMessage.ViewChangeMessage) mess
 				.getData();
@@ -237,9 +239,16 @@ public abstract class ClientSOContainer extends SOContainer {
 		} else {
 			for (int i = 0; i < changeIDs.length; i++) {
 				if (vc.isAdd()) {
-					groupManager.addMember(new Member(changeIDs[i]));
-					// Notify listeners
-					fireContainerEvent(new SharedObjectContainerJoinedEvent(
+					boolean wasAdded = false;
+					synchronized (getGroupMembershipLock()) {
+						// check to make sure this member id is not already known
+						if (groupManager.getMemberForID(changeIDs[i]) == null) {
+							wasAdded = true;
+							groupManager.addMember(new Member(changeIDs[i]));
+						}
+					}
+					// Notify listeners only if the add was actually accomplished
+					if (wasAdded) fireContainerEvent(new SharedObjectContainerJoinedEvent(
 							getID(), changeIDs[i]));
 				} else {
 					if (changeIDs[i].equals(getID())) {
@@ -252,7 +261,9 @@ public abstract class ClientSOContainer extends SOContainer {
 						fireContainerEvent(new SharedObjectContainerEjectedEvent(
 								getID(), serverID, vc.getData()));
 					} else {
-						groupManager.removeMember(changeIDs[i]);
+						synchronized (getGroupMembershipLock()) {
+							groupManager.removeMember(changeIDs[i]);
+						}
 						// Notify listeners that another remote has gone away
 						fireContainerEvent(new SharedObjectContainerDepartedEvent(
 								getID(), changeIDs[i]));
