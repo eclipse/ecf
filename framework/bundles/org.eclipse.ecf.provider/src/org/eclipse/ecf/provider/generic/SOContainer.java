@@ -814,7 +814,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			throws ContainerJoinException;
 
 	protected void killConnection(IConnection conn) {
-		debug("killconnection");
+		debug("killconnection("+conn+")");
 		try {
 			if (conn != null)
 				conn.disconnect();
@@ -887,7 +887,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	}
 
 	protected void memberLeave(ID target, IConnection conn) {
-		debug("memberLeave:" + target + ":" + conn);
+		debug("memberLeave(" + target + "," + conn +")");
 		if (target == null)
 			return;
 		if (groupManager.removeMember(target)) {
@@ -939,16 +939,17 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	}
 
 	protected void processAsynch(AsynchConnectionEvent e) {
+		debug("processAsynch("+e+")");
 		try {
 			Object obj = e.getData();
 			if (obj == null) {
-				System.out.println("NULL DATA IN EVENT: "+e);
+				System.out.println("CONTAINER="+getID()+":NULL DATA IN EVENT="+e);
 				debug("Ignoring null data in event " + e);
 				return;
 			}
 			if (!(obj instanceof byte[])) {
 				debug("Ignoring event without valid data " + e);
-				System.out.println("NOT BYTE [] DATA IN EVENT: "+e);
+				System.out.println("CONTAINER"+getID()+":NOT BYTE[] DATA IN EVENT="+e+":DATA="+obj);
 				return;
 			}
 			ContainerMessage mess = validateContainerMessage(deserializeContainerMessage((byte[]) obj));

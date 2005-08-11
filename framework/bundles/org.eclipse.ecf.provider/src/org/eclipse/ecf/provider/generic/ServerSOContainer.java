@@ -105,6 +105,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
     protected void handleViewChangeMessage(ContainerMessage mess)
             throws IOException {
         // ServerApplication should never receive change messages
+    	debug("handleViewChangeMessage("+mess+")");
     }
 
     public void leaveGroup() {
