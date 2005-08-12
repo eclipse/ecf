@@ -761,7 +761,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		ID toID = mess.getToContainerID();
 		ContainerMessage.SharedObjectMessage resp = (ContainerMessage.SharedObjectMessage) mess
 				.getData();
-
 		synchronized (getGroupMembershipLock()) {
 			if (toID == null || toID.equals(getID())) {
 				SOWrapper sow = getSharedObjectWrapper(resp
