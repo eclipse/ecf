@@ -43,7 +43,7 @@
 <mapEntry key="org.eclipse.team.cvs.core/threading" value="false"/>
 <mapEntry key="org.eclipse.osgi/eclipseadaptor/debug/platformadmin/resolver" value="false"/>
 <mapEntry key="org.eclipse.ecf.example.collab/debug/filter" value="*"/>
-<mapEntry key="org.eclipse.ecf.provider/debug/transactioneventprocessor" value="true"/>
+<mapEntry key="org.eclipse.ecf.provider/debug/transactioneventprocessor" value="false"/>
 <mapEntry key="org.eclipse.ui/perf/perspective.switch" value="800"/>
 <mapEntry key="org.eclipse.ui/debug/declaredImages" value="false"/>
 <mapEntry key="org.eclipse.ui/perf/contentTypes" value="200"/>
@@ -92,7 +92,7 @@
 <mapEntry key="org.eclipse.team.ftp/requests" value="true"/>
 <mapEntry key="org.eclipse.osgi/resolver/requires" value="false"/>
 <mapEntry key="org.eclipse.ecf.provider/debug/sharedobjectcontext" value="false"/>
-<mapEntry key="org.eclipse.ecf.provider/debug/container" value="false"/>
+<mapEntry key="org.eclipse.ecf.provider/debug/container" value="true"/>
 <mapEntry key="org.eclipse.jdt.ui/perf/search/participants" value="300"/>
 <mapEntry key="org.eclipse.core.resources/build/needbuild" value="false"/>
 <mapEntry key="org.eclipse.core.runtime/jobs/timing" value="false"/>
@@ -123,7 +123,7 @@
 <mapEntry key="org.eclipse.jdt.core/debug/builder" value="false"/>
 <mapEntry key="org.eclipse.core.runtime/preferences/set" value="false"/>
 <mapEntry key="org.eclipse.jdt.ui/debug/allTypesCache" value="false"/>
-<mapEntry key="org.eclipse.ecf.provider/debug/connection" value="true"/>
+<mapEntry key="org.eclipse.ecf.provider/debug/connection" value="false"/>
 <mapEntry key="org.eclipse.core.resources/restore/metainfo" value="false"/>
 <mapEntry key="org.eclipse.team.cvs.ssh/ssh_protocol" value="false"/>
 <mapEntry key="org.eclipse.jdt.core/perf/reconcile" value="1000"/>
@@ -186,7 +186,7 @@
 <mapEntry key="org.eclipse.ecf.ui/debug/textchatcomposite" value="true"/>
 <mapEntry key="org.eclipse.jdt.core/debug/hierarchy" value="false"/>
 <mapEntry key="org.eclipse.ecf.discovery/debug/filter" value="*"/>
-<mapEntry key="org.eclipse.ecf.provider/debug/gmm" value="false"/>
+<mapEntry key="org.eclipse.ecf.provider/debug/gmm" value="true"/>
 <mapEntry key="org.eclipse.core.resources/refresh" value="false"/>
 <mapEntry key="org.eclipse.core.runtime/jobs/locks" value="false"/>
 <mapEntry key="org.eclipse.ecf.example.collab/debug/genericsharedobject" value="true"/>
@@ -208,8 +208,9 @@
 <mapEntry key="org.eclipse.help/debug/context" value="false"/>
 <mapEntry key="org.eclipse.jdt.ui/debug/checkCoreBindingIsEqualTo" value="false"/>
 <mapEntry key="org.eclipse.update.core/debug/configuration" value="false"/>
+<mapEntry key="org.eclipse.ecf.provider.jms/debug/clientcontainer" value="true"/>
 <mapEntry key="org.eclipse.osgi/debug/packageadmin" value="false"/>
-<mapEntry key="org.eclipse.ecf/debug/factoryinit" value="true"/>
+<mapEntry key="org.eclipse.ecf/debug/factoryinit" value="false"/>
 <mapEntry key="org.eclipse.ecf.provider/debug/sharedobjectmanager" value="false"/>
 <mapEntry key="org.eclipse.jdt.core/debug/completion" value="false"/>
 <mapEntry key="org.eclipse.pde.build/debug" value="false"/>
@@ -223,6 +224,7 @@
 <mapEntry key="org.eclipse.help.ui/debug/infopop" value="false"/>
 <mapEntry key="org.eclipse.osgi/trace/filename" value="runtime.traces"/>
 <mapEntry key="org.eclipse.core.runtime/jobs" value="false"/>
+<mapEntry key="org.eclipse.ecf.provider.jms/debug/servercontainer" value="true"/>
 <mapEntry key="org.eclipse.ui/trace/handlers.verbose" value="false"/>
 <mapEntry key="org.eclipse.core.runtime/timing/startup" value="false"/>
 <mapEntry key="org.eclipse.ecf.sdo/DataGraphSharingFactory" value="true"/>
@@ -269,7 +271,9 @@
 <mapEntry key="org.eclipse.ui/trace/operations" value="false"/>
 <mapEntry key="org.eclipse.core.runtime/registry/debug/dump" value=""/>
 <mapEntry key="org.eclipse.help/debug/protocols" value="false"/>
+<mapEntry key="org.eclipse.ecf.provider.jms/debug/channel" value="true"/>
 <mapEntry key="org.eclipse.ui/listeners/IWorkbenchPage.IPartListener2" value="false"/>
+<mapEntry key="org.eclipse.ecf.provider.jms/debug/brokercontainer" value="true"/>
 <mapEntry key="org.eclipse.osgi/debug/loader" value="false"/>
 <mapEntry key="org.eclipse.jdt.ui/debug/ASTProvider" value="false"/>
 <mapEntry key="org.eclipse.core.resources/preferences" value="false"/>
@@ -288,7 +292,7 @@
 <mapEntry key="org.eclipse.ecf.provider/debug/flag" value="true"/>
 <mapEntry key="org.eclipse.ui/perf/perspective.create" value="800"/>
 <mapEntry key="org.eclipse.core.runtime/preferences/general" value="false"/>
-<mapEntry key="org.eclipse.ecf/debug/containerfactory" value="true"/>
+<mapEntry key="org.eclipse.ecf/debug/containerfactory" value="false"/>
 <mapEntry key="org.eclipse.core.runtime/loader/debug/activateplugin" value="false"/>
 <mapEntry key="org.eclipse.core.runtime/url/debug" value="false"/>
 <mapEntry key="org.eclipse.team.cvs.ssh/debug" value="false"/>
@@ -304,9 +308,9 @@
 <mapEntry key="org.eclipse.ecf.provider/debug/basesharedobject" value="false"/>
 <mapEntry key="org.eclipse.core.resources/perf/save.participants" value="500"/>
 </mapAttribute>
-<stringAttribute key="selectedPlugin" value="org.eclipse.ecf"/>
+<stringAttribute key="selectedPlugin" value="org.eclipse.ecf.provider.jms"/>
 <booleanAttribute key="automaticAdd" value="false"/>
-<stringAttribute key="checked" value="org.eclipse.ecf"/>
+<stringAttribute key="checked" value="org.eclipse.ecf.provider,org.eclipse.ecf.provider.jms"/>
 <booleanAttribute key="includeFragments" value="false"/>
 <stringAttribute key="configLocation" value=""/>
 <booleanAttribute key="clearws" value="false"/>

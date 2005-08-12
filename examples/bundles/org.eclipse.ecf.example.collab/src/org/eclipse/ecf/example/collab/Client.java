@@ -70,6 +70,7 @@ import org.eclipse.ui.PlatformUI;
 
 public class Client {
     public static final String JOIN_TIME_FORMAT = "hh:mm:ss a z";
+    public static final String JMS_CONTAINER_CLIENT_NAME = "org.eclipse.ecf.provider.jms.TCPClient";
     public static final String GENERIC_CONTAINER_CLIENT_NAME = "org.eclipse.ecf.provider.generic.Client";
     public static final String GENERIC_CONTAINER_SERVER_NAME = "org.eclipse.ecf.provider.generic.Server";
     public static final String DEFAULT_SERVER_ID = "ecftcp://localhost:3282/server";
@@ -301,7 +302,7 @@ public class Client {
         final ClientEntry newClient = new ClientEntry(containerType,client);
         final ID groupID = (gID==null)?defaultGroupID:gID;
         
-        if (containerType.equals(GENERIC_CONTAINER_CLIENT_NAME)) {
+        if (containerType.equals(GENERIC_CONTAINER_CLIENT_NAME) || containerType.equals(JMS_CONTAINER_CLIENT_NAME)) {
             addObjectToClient(newClient, username, proj);
         } else {
             client.addListener(new ISharedObjectContainerListener() {
