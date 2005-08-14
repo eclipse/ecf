@@ -9,10 +9,14 @@
 
 package org.eclipse.ecf.core;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.internal.core.Trace;
@@ -186,6 +190,21 @@ public class ContainerFactory implements IContainerFactory {
             throws ContainerInstantiationException {
         return makeContainer(
                 getDescriptionByName(descriptionName), argsTypes, args);
+    }
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#makeContainer(java.net.URI)
+	 */
+    public IContainer makeContainer(URI uri) throws ContainerInstantiationException {
+    	String protocol = uri.getScheme();
+    	ID newID = null;
+    	try {
+    		newID = IDFactory.getDefault().makeID(uri);
+    	} catch (IDInstantiationException e) {
+    		ContainerInstantiationException ce = new ContainerInstantiationException("Exception creating id for "+uri,e);
+    		ce.setStackTrace(e.getStackTrace());
+    		throw ce;
+    	}
+    	return makeContainer(protocol,new String [] { ID.class.getName() }, new Object[] { newID });
     }
     /* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.IContainerFactory#removeDescription(org.eclipse.ecf.core.ContainerDescription)

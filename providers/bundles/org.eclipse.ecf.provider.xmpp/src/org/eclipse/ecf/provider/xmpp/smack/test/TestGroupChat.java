@@ -24,10 +24,10 @@ public class TestGroupChat {
         conn.login(args[1],args[2]);
         System.out.println("logged in user "+args[1]);
         System.out.println("checking whether service is enabled...");
-        boolean supports = MultiUserChat.isServiceEnabled(conn, args[1]+"@"+args[0]+"/Smack");
+        boolean supports = MultiUserChat.isServiceEnabled(conn, "slewis@ecf1.osuosl.org");
         System.out.println("supports is "+supports);
-        MultiUserChat muc = new MultiUserChat(conn,"myroom@conference.cerf.composent.com");
-        muc.create("testbot");
+        MultiUserChat muc = new MultiUserChat(conn,"myroom@ecf1.osuosl.org");
+        muc.create("slewis");
         muc.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
         System.out.println("created multiuser chat");
         

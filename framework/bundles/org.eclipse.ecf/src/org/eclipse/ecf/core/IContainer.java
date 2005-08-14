@@ -7,7 +7,7 @@ import org.eclipse.ecf.core.security.IJoinContext;
 /**
  * Distributed container contract
  */
-public interface IContainer extends IAdaptable {
+public interface IContainer extends IAdaptable, IIdentifiable {
 
 	/**
 	 * Join a container group. The group to join is identified by the first

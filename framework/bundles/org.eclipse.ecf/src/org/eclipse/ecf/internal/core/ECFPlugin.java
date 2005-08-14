@@ -257,11 +257,13 @@ public class ECFPlugin extends Plugin {
             IExtension extension = member.getDeclaringExtension();
             String nsName = null;
             try {
+            	
                 String nsInstantiatorClass = member
                         .getAttribute(INSTANTIATOR_CLASS_ATTRIBUTE);
                 if (nsInstantiatorClass == null) {
                     throw new CoreException(null);
                 }
+                
                 nsName = member.getAttribute(INSTANTIATOR_NAME_ATTRIBUTE);
                 if (nsName == null) {
                     nsName = nsInstantiatorClass;

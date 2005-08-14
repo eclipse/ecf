@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.provider.generic.ContainerInstantiator"
+            class="org.eclipse.ecf.provider.generic.ContainerInstantiator:foo:bar"
             description="ECF Generic Client"
             name="org.eclipse.ecf.provider.generic.Client">
          <defaultargument
