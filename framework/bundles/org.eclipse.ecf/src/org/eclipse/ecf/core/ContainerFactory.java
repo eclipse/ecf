@@ -192,10 +192,9 @@ public class ContainerFactory implements IContainerFactory {
                 getDescriptionByName(descriptionName), argsTypes, args);
     }
     /* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.IContainerFactory#makeContainer(java.net.URI)
+	 * @see org.eclipse.ecf.core.IContainerFactory#makeContainer(java.lang.String , java.net.URI)
 	 */
-    public IContainer makeContainer(URI uri) throws ContainerInstantiationException {
-    	String protocol = uri.getScheme();
+	public IContainer makeContainer(String descriptionName, URI uri) throws ContainerInstantiationException {
     	ID newID = null;
     	try {
     		newID = IDFactory.getDefault().makeID(uri);
@@ -204,7 +203,13 @@ public class ContainerFactory implements IContainerFactory {
     		ce.setStackTrace(e.getStackTrace());
     		throw ce;
     	}
-    	return makeContainer(protocol,new String [] { ID.class.getName() }, new Object[] { newID });
+    	return makeContainer(descriptionName,new String [] { ID.class.getName() }, new Object[] { newID });
+	}
+    /* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#makeContainer(java.net.URI)
+	 */
+    public IContainer makeContainer(URI uri) throws ContainerInstantiationException {
+    	return makeContainer(uri.getScheme(),uri);
     }
     /* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.IContainerFactory#removeDescription(org.eclipse.ecf.core.ContainerDescription)

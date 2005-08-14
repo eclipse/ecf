@@ -150,7 +150,18 @@ public interface IContainerFactory {
 			throws ContainerInstantiationException;
 
 	/**
-	 * Make container given URI.  The given URI provides a scheme that is used
+	 * Make a container given a description name and a uri.  The description name is used to lookup
+	 * the container, and if found an ID instance is created.
+	 * 
+	 * @param descriptionName the ContainerDescription name to lookup
+	 * @param uri the URI to use as the new container's ID
+	 * @return a valid instance of IContainer
+	 * @throws ContainerInstantiationException
+	 */
+	public IContainer makeContainer(String descriptionName, URI uri) throws ContainerInstantiationException;
+	
+	/**
+	 * Make container given a URI.  The given URI provides a scheme that is used
 	 * to lookup both the Namespace for the new ID instance, and the name of the 
 	 * container factory extension.  For example, the following URI:  
 	 * 
