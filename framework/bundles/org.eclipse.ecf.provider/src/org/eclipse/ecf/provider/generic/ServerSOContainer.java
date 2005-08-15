@@ -258,10 +258,10 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
         }
     }
 
-    public void dispose(long timeout) {
+    public void dispose() {
         // For servers, we'll eject all members
         ejectAllGroupMembers(null);
-        super.dispose(timeout);
+        super.dispose();
     }
 
 	public void joinGroup(ID groupID, IJoinContext joinContext) throws ContainerJoinException {

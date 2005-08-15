@@ -77,7 +77,7 @@ public class TCPServerSOContainer extends ServerSOContainer implements
         this.group.add(path, this);
     }
 
-    public void dispose(long timeout) {
+    public void dispose() {
         URI aURI = null;
         try {
             aURI = new URI(getID().getName());
@@ -90,7 +90,7 @@ public class TCPServerSOContainer extends ServerSOContainer implements
             group.takeOffTheAir();
         }
         group = null;
-        super.dispose(timeout);
+        super.dispose();
     }
 
     public TCPServerSOContainer(ISharedObjectContainerConfig config)

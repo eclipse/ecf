@@ -113,7 +113,7 @@ public class Client {
         }
         public void dispose() {
             if (obj != null) obj.destroySelf();
-            client.dispose(0);
+            client.dispose();
         }
     }
     

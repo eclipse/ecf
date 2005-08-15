@@ -109,11 +109,11 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		if (sharedObject != null) {
 			getSharedObjectManager().removeSharedObject(sharedObjectID);
 		}
-		dispose(0);
+		dispose();
 	}
 
-	public void dispose(long time) {
-		super.dispose(time);
+	public void dispose() {
+		super.dispose();
 		sharedObjectID = null;
 		sharedObject = null;
 		messageSender = null;

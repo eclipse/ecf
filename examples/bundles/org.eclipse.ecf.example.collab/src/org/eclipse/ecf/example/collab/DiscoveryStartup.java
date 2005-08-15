@@ -61,7 +61,7 @@ public class DiscoveryStartup {
 	
 	public void dispose() {
 		if (socontainer != null) {
-			socontainer.dispose(1000);
+			socontainer.dispose();
 			socontainer = null;
 		}
 		discovery = null;
@@ -81,7 +81,7 @@ public class DiscoveryStartup {
 			}
 			else {
 				if (socontainer != null) {
-					socontainer.dispose(1000);
+					socontainer.dispose();
 					socontainer = null;
 				}
 				discovery = null;
@@ -94,7 +94,7 @@ public class DiscoveryStartup {
 			return;
 		} catch (Exception e) {
 			if (socontainer != null) {
-				socontainer.dispose(1000);
+				socontainer.dispose();
 				socontainer = null;
 			}
 			discovery = null;

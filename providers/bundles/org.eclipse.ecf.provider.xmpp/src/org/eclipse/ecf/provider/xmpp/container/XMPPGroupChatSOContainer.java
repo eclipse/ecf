@@ -64,8 +64,8 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
         multiuserchat = new MultiUserChat(connection,getGroupChatConfig().getRoomName());
         multiuserchat.create(getGroupChatConfig().getOwnerName());
     }
-    public void dispose(long time) {
-        super.dispose(time);
+    public void dispose() {
+        super.dispose();
         connection = null;
     }
 
@@ -138,7 +138,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
         if (sharedObject != null) {
             getSharedObjectManager().removeSharedObject(sharedObjectID);
         }
-        dispose(0);
+        dispose();
     }
 
     public void joinGroup(ID remote, Object data)

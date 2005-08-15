@@ -70,7 +70,7 @@ public abstract class ClientSOContainer extends SOContainer {
 		connectLock = new Lock();
 	}
 
-	public void dispose(long wait) {
+	public void dispose() {
 		synchronized (connectLock) {
 			isClosing = true;
 			if (isConnected()) {
@@ -80,7 +80,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			}
 			remoteServerID = null;
 		}
-		super.dispose(wait);
+		super.dispose();
 	}
 
 	public final boolean isGroupManager() {

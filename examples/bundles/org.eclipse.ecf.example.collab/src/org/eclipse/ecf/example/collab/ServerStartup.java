@@ -42,7 +42,7 @@ public class ServerStartup {
 			DiscoveryStartup.unregisterServer(s);
 			if (s != null) {
 				try {
-					s.dispose(5000);
+					s.dispose();
 				} catch (Exception e) {
 					ClientPlugin.log("Exception destroying server " + s.getConfig().getID());
 				}

@@ -49,9 +49,8 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * be made inactive after the completion of this method and will be
 	 * unavailable for subsequent usage
 	 * 
-	 * @param waittime
 	 */
-	public void dispose(long waittime);
+	public void dispose();
 
 
 }

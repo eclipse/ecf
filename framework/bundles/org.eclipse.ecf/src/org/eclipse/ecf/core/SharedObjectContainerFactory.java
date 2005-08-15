@@ -61,7 +61,7 @@ public class SharedObjectContainerFactory implements ISharedObjectContainerFacto
         IContainer newContainer = ContainerFactory.getDefault().makeContainer(desc,argTypes,args);
         ISharedObjectContainer soContainer = (ISharedObjectContainer) newContainer.getAdapter(ISharedObjectContainer.class);
         if (soContainer == null) {
-        	newContainer.dispose(-1L);
+        	newContainer.dispose();
         	throw new ContainerInstantiationException("new container is not a shared object container");
         }
         return soContainer;

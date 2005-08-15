@@ -395,8 +395,8 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#dispose(long)
 	 */
-	public void dispose(long waittime) {
-		debug("dispose(" + waittime + ")");
+	public void dispose() {
+		debug("dispose()");
 		isClosing = true;
 		// notify listeners
 		fireContainerEvent(new SharedObjectContainerDisposeEvent(getID()));
