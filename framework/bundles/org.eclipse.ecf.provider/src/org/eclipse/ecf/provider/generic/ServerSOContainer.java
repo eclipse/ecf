@@ -114,6 +114,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 
     protected ContainerMessage acceptNewClient(Socket socket, String target,
             Serializable data, ISynchAsynchConnection conn) {
+    	debug("acceptNewClient("+socket+","+target+","+data+","+conn+")");
         try {
             ContainerMessage mess = (ContainerMessage) data;
             if (mess == null)
@@ -135,6 +136,13 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                 // Now check to see if this request is going to be allowed
                 checkJoin(socket.getRemoteSocketAddress(),remoteID,target,jgm.getData());
                 
+                // Here we check to see if the given remoteID is already connected,
+                // if it is, then we close the old connection and cleanup
+                ISynchConnection oldConn = getSynchConnectionForID(remoteID);
+                if (oldConn != null) {
+                	memberLeave(remoteID,oldConn);
+                }
+                // Now we add the new connection
                 if (addNewRemoteMember(remoteID, conn)) {
                     // Notify existing remotes about new member
                     try {
