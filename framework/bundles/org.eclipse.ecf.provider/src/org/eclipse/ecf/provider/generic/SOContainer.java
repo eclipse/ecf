@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ContainerJoinException;
 import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.ISharedObject;
@@ -455,8 +456,11 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
-		if (adapter.equals(ISharedObjectContainer.class)) return this;
-		else return null;
+		if (adapter.isInstance(this)) {
+			return this;
+		} else {
+			return Platform.getAdapterManager().getAdapter(this, adapter);
+		}
 	}
 
 	/**
