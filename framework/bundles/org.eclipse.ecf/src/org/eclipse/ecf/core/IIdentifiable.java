@@ -19,8 +19,9 @@ import org.eclipse.ecf.core.identity.ID;
 public interface IIdentifiable {
 
     /**
-     * Get the ID for this 'identifiable' object
-     * @return ID the ID for this identifiable object
+     * Return the ID for this 'identifiable' object. The returned ID should be
+     * unique within its namespace.
+     * @return the ID for this identifiable object
      */
     public ID getID();
 }
