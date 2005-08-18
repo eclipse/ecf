@@ -6,29 +6,26 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.identity;
 
 import org.eclipse.ecf.core.util.ECFException;
 
 public class IDInstantiationException extends ECFException {
-
 	private static final long serialVersionUID = 3258416140119323960L;
 
 	public IDInstantiationException() {
-        super();
-    }
+		super();
+	}
 
-    public IDInstantiationException(String message) {
-        super(message);
-    }
+	public IDInstantiationException(String message) {
+		super(message);
+	}
 
-    public IDInstantiationException(Throwable cause) {
-        super(cause);
-    }
+	public IDInstantiationException(Throwable cause) {
+		super(cause);
+	}
 
-    public IDInstantiationException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
+	public IDInstantiationException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

@@ -6,29 +6,26 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.util.ECFException;
 
 public class SharedObjectNotFoundException extends ECFException {
-
 	private static final long serialVersionUID = 3256725086957285689L;
 
 	public SharedObjectNotFoundException() {
-        super();
-    }
+		super();
+	}
 
-    public SharedObjectNotFoundException(String arg0) {
-        super(arg0);
-    }
+	public SharedObjectNotFoundException(String arg0) {
+		super(arg0);
+	}
 
-    public SharedObjectNotFoundException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
+	public SharedObjectNotFoundException(String msg, Throwable cause) {
+		super(msg, cause);
+	}
 
-    public SharedObjectNotFoundException(Throwable cause) {
-        super(cause);
-    }
-
+	public SharedObjectNotFoundException(Throwable cause) {
+		super(cause);
+	}
 }

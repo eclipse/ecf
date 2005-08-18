@@ -6,9 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.util;
 
 public interface IQueue extends IQueueDequeue, IQueueEnqueue {
-
 }

@@ -8,47 +8,50 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.events;
 
-import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectContainerEjectedEvent implements
-		ISharedObjectContainerEjectedEvent {
-	private static final long serialVersionUID = 3257567299946033970L;
-	private final ID localContainerID;
-	private final ID groupID;
-	private final Serializable reason;
+public class SharedObjectContainerConnectingEvent implements
+		ISharedObjectContainerConnectingEvent {
+	private static final long serialVersionUID = 3544952173248263729L;
+	ID localContainerID;
+	ID groupID;
+	Object data;
 
-	public SharedObjectContainerEjectedEvent(ID containerID, ID groupID,
-			Serializable reason) {
-		super();
-		this.localContainerID = containerID;
+	public SharedObjectContainerConnectingEvent(ID localContainerID,
+			ID groupID, Object data) {
+		this.localContainerID = localContainerID;
 		this.groupID = groupID;
-		this.reason = reason;
+		this.data = data;
 	}
 
-	public ID getGroupID() {
+	public ID getTargetID() {
 		return groupID;
-	}
-
-	public ID getLocalContainerID() {
-		return localContainerID;
-	}
-
-	public Serializable getReason() {
-		return reason;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see java.lang.Object#toString()
+	 * @see org.eclipse.ecf.core.events.ISharedObjectContainerConnectingEvent#getData()
 	 */
+	public Object getData() {
+		return data;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.events.IContainerEvent#getLocalContainerID()
+	 */
+	public ID getLocalContainerID() {
+		return localContainerID;
+	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer(
-				"SharedObjectContainerEjectedEvent[");
+				"SharedObjectContainerConnectingEvent[");
 		buf.append(getLocalContainerID()).append(";");
-		buf.append(getGroupID()).append(";");
-		buf.append(getReason()).append("]");
+		buf.append(getTargetID()).append(";");
+		buf.append(getData()).append("]");
 		return buf.toString();
 	}
 }

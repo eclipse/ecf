@@ -6,30 +6,26 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.util.ECFException;
 
 public class ContainerInstantiationException extends ECFException {
-
 	private static final long serialVersionUID = -6979687717421003065L;
 
 	public ContainerInstantiationException() {
-        super();
-    }
+		super();
+	}
 
-    public ContainerInstantiationException(String message) {
-        super(message);
-    }
+	public ContainerInstantiationException(String message) {
+		super(message);
+	}
 
-    public ContainerInstantiationException(Throwable cause) {
-        super(cause);
-    }
+	public ContainerInstantiationException(Throwable cause) {
+		super(cause);
+	}
 
-    public ContainerInstantiationException(String message,
-            Throwable cause) {
-        super(message, cause);
-    }
-
+	public ContainerInstantiationException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

@@ -6,7 +6,6 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.events.ISharedObjectEvent;
@@ -21,11 +20,15 @@ import org.eclipse.ecf.core.util.QueueException;
  * @see ISharedObjectManager#connectSharedObjects(ID, ID[])
  */
 public interface ISharedObjectConnector {
+	public ID getSender();
 
-    public ID getSender();
-    public ID[] getReceivers();
-    public void enqueue(ISharedObjectEvent event) throws QueueException;
-    public void enqueue(ISharedObjectEvent[] events) throws QueueException;
-    public AsynchResult[] callAsynch(ISharedObjectEvent arg) throws Exception;
-    public void dispose();
+	public ID[] getReceivers();
+
+	public void enqueue(ISharedObjectEvent event) throws QueueException;
+
+	public void enqueue(ISharedObjectEvent[] events) throws QueueException;
+
+	public AsynchResult[] callAsynch(ISharedObjectEvent arg) throws Exception;
+
+	public void dispose();
 }

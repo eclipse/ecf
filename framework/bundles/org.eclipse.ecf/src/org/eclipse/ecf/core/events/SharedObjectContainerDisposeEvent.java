@@ -11,28 +11,28 @@ package org.eclipse.ecf.core.events;
 import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectContainerDisposeEvent implements
-        ISharedObjectContainerDisposeEvent {
+		ISharedObjectContainerDisposeEvent {
 	private static final long serialVersionUID = 3618138961349062706L;
 	private final ID localContainerID;
 
-    public SharedObjectContainerDisposeEvent(ID container) {
-        super();
-        this.localContainerID = container;
-    }
+	public SharedObjectContainerDisposeEvent(ID container) {
+		super();
+		this.localContainerID = container;
+	}
 
-    public ID getLocalContainerID() {
-        return localContainerID;
-    }
+	public ID getLocalContainerID() {
+		return localContainerID;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        StringBuffer buf = new StringBuffer(
-                "SharedObjectContainerDisposeEvent[");
-        buf.append(getLocalContainerID()).append("]");
-        return buf.toString();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer buf = new StringBuffer(
+				"SharedObjectContainerDisposeEvent[");
+		buf.append(getLocalContainerID()).append("]");
+		return buf.toString();
+	}
 }

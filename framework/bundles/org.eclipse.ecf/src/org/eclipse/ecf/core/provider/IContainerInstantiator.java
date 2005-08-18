@@ -6,7 +6,6 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.provider;
 
 import org.eclipse.ecf.core.ContainerDescription;
@@ -14,7 +13,7 @@ import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.IContainer;
 
 public interface IContainerInstantiator {
-
-    public IContainer makeInstance(ContainerDescription description, Class[] argTypes, Object[] args)
-            throws ContainerInstantiationException;
+	public IContainer makeInstance(ContainerDescription description,
+			Class[] argTypes, Object[] args)
+			throws ContainerInstantiationException;
 }

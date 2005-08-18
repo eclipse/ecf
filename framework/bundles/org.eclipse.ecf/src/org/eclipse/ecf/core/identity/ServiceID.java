@@ -6,16 +6,13 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.identity;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class ServiceID extends BaseID {
-
 	private static final long serialVersionUID = 1L;
-
 	protected String type;
 	protected String name;
 
@@ -26,10 +23,12 @@ public class ServiceID extends BaseID {
 		this.type = type;
 		this.name = name;
 	}
+
 	public ServiceID(String type, String name) {
 		this.name = name;
 		this.type = type;
 	}
+
 	protected String getFullyQualifiedName() {
 		if (name == null)
 			return type;
@@ -76,9 +75,11 @@ public class ServiceID extends BaseID {
 	public String getServiceType() {
 		return type;
 	}
+
 	public String getServiceName() {
 		return name;
 	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ServiceID[");
 		buf.append("type=").append(type).append(";name=").append(name).append(

@@ -11,5 +11,5 @@ package org.eclipse.ecf.core.events;
 import org.eclipse.ecf.core.identity.ID;
 
 public interface ISharedObjectDeactivatedEvent extends IContainerEvent {
-    public ID getDeactivatedID();
+	public ID getDeactivatedID();
 }

@@ -33,15 +33,15 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.ContainerJoinException;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.ISharedObjectContainerListener;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
 import org.eclipse.ecf.core.events.IContainerEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.security.IJoinContext;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.SharedObjectEventListener;
@@ -228,7 +228,7 @@ public class Client {
                 user, fileDir);
         sharedObject.setListener(new SharedObjectEventListener() {
             public void memberRemoved(ID member) {
-                ID groupID = client.getContainer().getGroupID();
+                ID groupID = client.getContainer().getConnectedID();
                 if (member.equals(groupID)) {
                     disposeClient(proj, client);
                 }
@@ -250,7 +250,7 @@ public class Client {
             String username, IResource proj) throws Exception {
         IResource project = (proj == null) ? getWorkspace()
                 : proj;
-        User user = getUserData(client.getClass().getName(),client.getContainer().getConfig().getID(),
+        User user = getUserData(client.getClass().getName(),client.getContainer().getID(),
                 (username == null) ? USERNAME : username, proj);
         makeAndAddSharedObject(client, project, user, getSharedFileDirectoryForProject(project));
     }
@@ -266,8 +266,8 @@ public class Client {
         if (name.equals(type)) return true;
         else return false;
     }
-	protected IJoinContext getJoinContext(final String username, final Object password) {
-		return new IJoinContext() {
+	protected IConnectContext getJoinContext(final String username, final Object password) {
+		return new IConnectContext() {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {
 					public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
@@ -307,9 +307,9 @@ public class Client {
         } else {
             client.addListener(new ISharedObjectContainerListener() {
                 public void handleEvent(IContainerEvent evt) {
-                    if (evt instanceof ISharedObjectContainerDepartedEvent) {
-                        ISharedObjectContainerDepartedEvent cd = (ISharedObjectContainerDepartedEvent) evt;
-                        final ID departedContainerID = cd.getDepartedContainerID();
+                    if (evt instanceof ISharedObjectContainerDisconnectedEvent) {
+                        ISharedObjectContainerDisconnectedEvent cd = (ISharedObjectContainerDisconnectedEvent) evt;
+                        final ID departedContainerID = cd.getTargetID();
                         if (groupID.equals(departedContainerID)) {
                             // This container is done
                             disposeClient(proj,newClient);                        
@@ -325,8 +325,8 @@ public class Client {
         if (pc != null) setupPresenceContainer(client,pc,groupID,username);
 
         try {
-            client.joinGroup(groupID, getJoinContext(username,data));
-        } catch (ContainerJoinException e) {
+            client.connect(groupID, getJoinContext(username,data));
+        } catch (ContainerConnectException e) {
             try {
                 EclipseCollabSharedObject so = newClient.getObject();
                 if (so != null) {
@@ -376,7 +376,7 @@ public class Client {
                         }
 
                         public void disconnect() {
-                            container.leaveGroup();
+                            container.disconnect();
                         }
 
 						public void updatePresence(ID userID, IPresence presence) {

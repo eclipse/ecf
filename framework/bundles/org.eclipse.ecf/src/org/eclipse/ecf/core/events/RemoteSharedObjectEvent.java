@@ -13,45 +13,45 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 
 public class RemoteSharedObjectEvent implements ISharedObjectMessageEvent,
-        Serializable {
+		Serializable {
 	private static final long serialVersionUID = 3257572797621680182L;
 	private final ID senderSharedObjectID;
-    private final ID remoteContainerID;
-    private final Object data;
+	private final ID remoteContainerID;
+	private final Object data;
 
-    public RemoteSharedObjectEvent(ID senderObj, ID remoteCont, Object data) {
-        super();
-        this.senderSharedObjectID = senderObj;
-        this.remoteContainerID = remoteCont;
-        this.data = data;
-    }
+	public RemoteSharedObjectEvent(ID senderObj, ID remoteCont, Object data) {
+		super();
+		this.senderSharedObjectID = senderObj;
+		this.remoteContainerID = remoteCont;
+		this.data = data;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.api.events.ISharedObjectEvent#getSenderSharedObject()
-     */
-    public ID getSenderSharedObjectID() {
-        return senderSharedObjectID;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.api.events.ISharedObjectEvent#getSenderSharedObject()
+	 */
+	public ID getSenderSharedObjectID() {
+		return senderSharedObjectID;
+	}
 
-    public ID getRemoteContainerID() {
-        return remoteContainerID;
-    }
+	public ID getRemoteContainerID() {
+		return remoteContainerID;
+	}
 
-    public Event getEvent() {
-        return this;
-    }
+	public Event getEvent() {
+		return this;
+	}
 
-    public Object getData() {
-        return data;
-    }
+	public Object getData() {
+		return data;
+	}
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer("RemoteSharedObjectEvent[");
-        sb.append(getSenderSharedObjectID()).append(";");
-        sb.append(getRemoteContainerID()).append(";");
-        sb.append(getData()).append("]");
-        return sb.toString();
-    }
+	public String toString() {
+		StringBuffer sb = new StringBuffer("RemoteSharedObjectEvent[");
+		sb.append(getSenderSharedObjectID()).append(";");
+		sb.append(getRemoteContainerID()).append(";");
+		sb.append(getData()).append("]");
+		return sb.toString();
+	}
 }

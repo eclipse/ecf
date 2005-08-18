@@ -88,7 +88,7 @@ public class ServerStartup {
 	}
 
 	protected void registerServer(ISharedObjectContainer cont) throws URISyntaxException {
-		DiscoveryStartup.registerService(cont.getConfig().getID().toURI());
+		DiscoveryStartup.registerService(cont.getID().toURI());
 	}
 	protected TCPServerSOContainerGroup makeServerGroup(String name, int port) {
 		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,

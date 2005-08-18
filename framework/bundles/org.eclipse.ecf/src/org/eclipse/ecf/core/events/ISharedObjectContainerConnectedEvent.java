@@ -6,15 +6,10 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
-package org.eclipse.ecf.core.identity.provider;
+package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
-import org.eclipse.ecf.core.identity.Namespace;
 
-public interface IDInstantiator {
-
-    public ID makeInstance(Namespace ns, Class[] argTypes, Object[] args)
-            throws IDInstantiationException;
+public interface ISharedObjectContainerConnectedEvent extends IContainerEvent {
+	public ID getTargetID();
 }

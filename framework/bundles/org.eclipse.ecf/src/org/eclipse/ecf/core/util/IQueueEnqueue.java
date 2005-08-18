@@ -6,24 +6,24 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.util;
 
 public interface IQueueEnqueue {
-    void enqueue(Event element) throws QueueException;
-    void enqueue(Event[] elements) throws QueueException;
+	void enqueue(Event element) throws QueueException;
 
-    Object enqueue_prepare(Event[] elements) throws QueueException;
+	void enqueue(Event[] elements) throws QueueException;
 
-    void enqueue_commit(Object enqueue_key);
-    void enqueue_abort(Object enqueue_key);
+	Object enqueue_prepare(Event[] elements) throws QueueException;
 
-    boolean enqueue_lossy(Event element);
+	void enqueue_commit(Object enqueue_key);
 
-    void setEnqueuePredicate(IEnqueuePredicate pred);
+	void enqueue_abort(Object enqueue_key);
 
-    IEnqueuePredicate getEnqueuePredicate();
+	boolean enqueue_lossy(Event element);
 
-    int size();
+	void setEnqueuePredicate(IEnqueuePredicate pred);
 
+	IEnqueuePredicate getEnqueuePredicate();
+
+	int size();
 }

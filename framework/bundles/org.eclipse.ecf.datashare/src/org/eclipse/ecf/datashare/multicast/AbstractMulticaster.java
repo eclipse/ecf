@@ -20,10 +20,11 @@ import java.util.Map;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
+import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -252,8 +253,8 @@ public abstract class AbstractMulticaster implements ISharedObject {
 			handleActivated((ISharedObjectActivatedEvent) event);
 		else if (event instanceof ISharedObjectDeactivatedEvent)
 			handleDeactivated((ISharedObjectDeactivatedEvent) event);
-		else if (event instanceof ISharedObjectContainerDepartedEvent)
-			handleDeparted((ISharedObjectContainerDepartedEvent) event);
+		else if (event instanceof ISharedObjectContainerDisconnectedEvent)
+			handleDeparted((ISharedObjectContainerDisconnectedEvent) event);
 		else if (event instanceof ISharedObjectMessageEvent) {
 			ISharedObjectMessageEvent e = (ISharedObjectMessageEvent) event;
 			if (e.getData() instanceof Message)
@@ -271,7 +272,7 @@ public abstract class AbstractMulticaster implements ISharedObject {
 		if (event.getActivatedID().equals(sharedObjectID)) {
 			context = config.getContext();
 			localContainerID = context.getLocalContainerID();
-			groupID = context.getGroupID();
+			groupID = context.getConnectedID();
 			if (groupID == null)
 				try {
 					context.sendDispose(localContainerID);
@@ -305,12 +306,15 @@ public abstract class AbstractMulticaster implements ISharedObject {
 		}
 	}
 
-	protected void handleDeparted(ISharedObjectContainerDepartedEvent event) {
-		if (event.getDepartedContainerID().equals(localContainerID))
-			context.getSharedObjectManager().removeSharedObject(sharedObjectID);
-		else {
+	protected void handleDeparted(ISharedObjectContainerDisconnectedEvent event) {
+		if (event.getTargetID().equals(localContainerID)) {
+			ISharedObjectManager manager = context.getSharedObjectManager();
+			if (manager != null) {
+				manager.removeSharedObject(sharedObjectID);
+			}
+		} else {
 			synchronized (this) {
-				groupMembers.remove(event.getDepartedContainerID());
+				groupMembers.remove(event.getTargetID());
 			}
 		}
 	}

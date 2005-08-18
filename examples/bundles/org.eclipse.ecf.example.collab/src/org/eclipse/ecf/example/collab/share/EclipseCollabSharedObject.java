@@ -20,11 +20,11 @@ import java.util.Date;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ecf.core.ContainerJoinException;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IJoinContext;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer;
 import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
@@ -439,11 +439,11 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		return super.isHost();
 	}
 
-	public void joinGroup(ID remote, IJoinContext data)
-			throws ContainerJoinException {
+	public void joinGroup(ID remote, IConnectContext data)
+			throws ContainerConnectException {
 		ISharedObjectContext crs = getContext();
 		if (crs == null) {
-			throw new ContainerJoinException(
+			throw new ContainerConnectException(
 					"Cannot join remote space " + remote
 							+ ".  Have no local space access capability.");
 		} else {
@@ -455,14 +455,14 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 					line.setText("Connecting to " + remote.getName());
 					localGUI.showLine(line);
 				}
-				crs.joinGroup(remote, data);
+				crs.connect(remote, data);
 				if (localGUI != null) {
 					line.setText("Connected to " + remote.getName());
 					localGUI.showLine(line);
 				}
 				// Success
 			} else {
-				throw new ContainerJoinException(
+				throw new ContainerConnectException(
 						"Invalid remote space ID " + remote);
 			}
 		}
@@ -473,7 +473,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		if (crs == null) {
 		} else {
 			// Do it.
-			crs.leaveGroup();
+			crs.disconnect();
 		}
 	}
 

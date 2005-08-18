@@ -6,17 +6,17 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.events.IContainerEvent;
 
 /**
- * Listener for objects that wish to receive events from an ISharedObjectContainer
- * instance.
+ * Listener for objects that wish to receive events from an
+ * ISharedObjectContainer instance.
  * 
- * @see ISharedObjectContainer#addListener(ISharedObjectContainerListener, String)
+ * @see ISharedObjectContainer#addListener(ISharedObjectContainerListener,
+ *      String)
  */
 public interface ISharedObjectContainerListener {
-    public void handleEvent(IContainerEvent evt);
+	public void handleEvent(IContainerEvent evt);
 }

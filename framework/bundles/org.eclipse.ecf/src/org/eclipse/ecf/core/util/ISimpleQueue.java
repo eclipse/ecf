@@ -6,14 +6,16 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.util;
 
 public interface ISimpleQueue {
+	public boolean enqueue(Object obj);
 
-    public boolean enqueue(Object obj);
-    public Object dequeue();
-    public Object peekQueue();
-    public Object removeHead();
-    public void close();
+	public Object dequeue();
+
+	public Object peekQueue();
+
+	public Object removeHead();
+
+	public void close();
 }

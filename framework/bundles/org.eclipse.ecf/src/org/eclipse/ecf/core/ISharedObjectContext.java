@@ -6,14 +6,12 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 import java.io.IOException;
-
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IJoinContext;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 
 /**
@@ -30,6 +28,7 @@ import org.eclipse.ecf.core.util.IQueueEnqueue;
  * @see ISharedObjectConfig#getContext()
  */
 public interface ISharedObjectContext extends IAdaptable {
+	public boolean isActive();
 
 	/**
 	 * Get the local container instance's ID
@@ -60,24 +59,24 @@ public interface ISharedObjectContext extends IAdaptable {
 	/**
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainer#joinGroup()
+	 * @see org.eclipse.ecf.core.IContainer#connect()
 	 */
-	public void joinGroup(ID groupID, IJoinContext joinContext)
-			throws ContainerJoinException;
+	public void connect(ID groupID, IConnectContext connectContext)
+			throws ContainerConnectException;
 
 	/**
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainer#leaveGroup()
+	 * @see org.eclipse.ecf.core.IContainer#disconnect()
 	 */
-	public void leaveGroup();
+	public void disconnect();
 
 	/**
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainer#getGroupID()
+	 * @see org.eclipse.ecf.core.IContainer#getConnectedID()
 	 */
-	public ID getGroupID();
+	public ID getConnectedID();
 
 	/**
 	 * (non-Javadoc)
@@ -163,7 +162,9 @@ public interface ISharedObjectContext extends IAdaptable {
 	 *            containers currently in the given group (excepting the local
 	 *            container).
 	 * @param data
-	 *            arbitrary message object. Must be serializable.
+	 *            arbitrary message object. The allowable types of this
+	 *            parameter are dependent upon the type of the underlying
+	 *            implementing container
 	 * @throws IOException
 	 *             thrown if message cannot be sent by container, or if data
 	 *             cannot be serialized

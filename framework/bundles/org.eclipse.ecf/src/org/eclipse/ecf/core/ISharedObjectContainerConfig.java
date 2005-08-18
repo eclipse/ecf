@@ -6,33 +6,31 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 import java.util.Map;
 
 /**
  * Configuration information associated with ISharedObjectContainer.
- *
+ * 
  * @see ISharedObjectContainer#getConfig()
  */
 public interface ISharedObjectContainerConfig extends IIdentifiable {
+	/**
+	 * The properties associated with the owner ISharedObjectContainer
+	 * 
+	 * @return Map the properties associated with owner ISharedObjectContainer
+	 */
+	public Map getProperties();
 
-    /**
-     * The properties associated with the owner ISharedObjectContainer
-     * 
-     * @return Map the properties associated with owner
-     *         ISharedObjectContainer
-     */
-    public Map getProperties();
-    /**
-     * Returns an object which is an instance of the given class associated with
-     * this object.
-     * 
-     * @param clazz
-     *            the adapter class to lookup
-     * @return Object a object castable to the given class, or null if this
-     *         object does not have an adapter for the given class
-     */
-    public Object getAdapter(Class clazz);
+	/**
+	 * Returns an object which is an instance of the given class associated with
+	 * this object.
+	 * 
+	 * @param clazz
+	 *            the adapter class to lookup
+	 * @return Object a object castable to the given class, or null if this
+	 *         object does not have an adapter for the given class
+	 */
+	public Object getAdapter(Class clazz);
 }

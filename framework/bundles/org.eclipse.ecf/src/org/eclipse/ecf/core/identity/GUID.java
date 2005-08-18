@@ -6,14 +6,11 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.identity;
 
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Set;
-
-import org.eclipse.ecf.core.identity.provider.IDInstantiator;
 import org.eclipse.ecf.core.util.Base64;
 
 /**
@@ -23,30 +20,25 @@ import org.eclipse.ecf.core.util.Base64;
  * used for creating a SecureRandom instance is SHA1PRNG.
  */
 public class GUID extends StringID {
-
 	private static final long serialVersionUID = 3545794369039972407L;
+	public static class GUIDNamespace extends Namespace {
+		private static final long serialVersionUID = -8546568877571886386L;
 
-	public static class Creator implements IDInstantiator {
-		public ID makeInstance(Namespace ns, Class[] argTypes, Object[] args)
+		public GUIDNamespace() {
+			super(GUID.class.getName(), "GUID Namespace");
+		}
+
+		public ID makeInstance(Class[] argTypes, Object[] args)
 				throws IDInstantiationException {
 			if (args.length == 1)
-				return new GUID(ns, ((Integer) args[0]).intValue());
+				return new GUID(this, ((Integer) args[0]).intValue());
 			else
-				return new GUID(ns);
+				return new GUID(this);
 		}
 	}
-
 	public static final String SR_DEFAULT_ALGO = null;
-
 	public static final String SR_DEFAULT_PROVIDER = null;
-
 	public static final int DEFAULT_BYTE_LENGTH = 20;
-
-	public static final String GUID_NAME = GUID.class.getName();
-
-	public static final String GUID_INSTANTIATOR_CLASS = GUID.Creator.class
-			.getName();
-
 	// Class specific SecureRandom instance
 	protected static transient SecureRandom random;
 
@@ -120,7 +112,6 @@ public class GUID extends StringID {
 				else
 					algo = "SHA1PRNG";
 			}
-
 			random = SecureRandom.getInstance(algo);
 		} else {
 			random = SecureRandom.getInstance(algo, provider);

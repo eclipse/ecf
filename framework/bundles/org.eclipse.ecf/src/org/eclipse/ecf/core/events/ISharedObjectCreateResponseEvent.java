@@ -9,8 +9,8 @@
 package org.eclipse.ecf.core.events;
 
 public interface ISharedObjectCreateResponseEvent extends
-        ISharedObjectMessageEvent {
-    public long getSequence();
+		ISharedObjectMessageEvent {
+	public long getSequence();
 
-    public Throwable getException();
+	public Throwable getException();
 }

@@ -13,7 +13,7 @@ package org.eclipse.ecf.internal.datashare;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
-import org.eclipse.ecf.core.events.ISharedObjectContainerJoinedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerConnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 
@@ -51,10 +51,10 @@ public class ServerBootstrap implements IBootstrap {
 	 * @see org.eclipse.ecf.internal.datashare.IBootstrap#handleEvent(org.eclipse.ecf.core.util.Event)
 	 */
 	public void handleEvent(Event event) {
-		if (event instanceof ISharedObjectContainerJoinedEvent) {
-			ISharedObjectContainerJoinedEvent e = (ISharedObjectContainerJoinedEvent) event;
-			if (!e.getJoinedContainerID().equals(e.getLocalContainerID()))
-				handleJoined(e.getJoinedContainerID());
+		if (event instanceof ISharedObjectContainerConnectedEvent) {
+			ISharedObjectContainerConnectedEvent e = (ISharedObjectContainerConnectedEvent) event;
+			if (!e.getTargetID().equals(e.getLocalContainerID()))
+				handleJoined(e.getTargetID());
 		}
 	}
 

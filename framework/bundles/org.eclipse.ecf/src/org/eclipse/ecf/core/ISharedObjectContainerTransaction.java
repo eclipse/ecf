@@ -6,36 +6,36 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 /**
- * Implementers represent a transaction associated with the creation of a SharedObject
- * within the scope of a given SharedObjectContainer
- *
+ * Implementers represent a transaction associated with the creation of a
+ * SharedObject within the scope of a given SharedObjectContainer
+ * 
  * @see ISharedObjectContainer#getSharedObjectManager()
- * @see ISharedObjectManager#createSharedObject(SharedObjectDescription, ISharedObjectContainerTransaction)
+ * @see ISharedObjectManager#createSharedObject(SharedObjectDescription,
+ *      ISharedObjectContainerTransaction)
  */
 public interface ISharedObjectContainerTransaction {
+	public static final byte ACTIVE = 0;
+	public static final byte VOTING = 1;
+	public static final byte PREPARED = 2;
+	public static final byte COMMITTED = 3;
+	public static final byte ABORTED = 4;
 
-    public static final byte ACTIVE = 0;
-    public static final byte VOTING = 1;
-    public static final byte PREPARED = 2;
-    public static final byte COMMITTED = 3;
-    public static final byte ABORTED = 4;
+	/**
+	 * Method called to wait for a transaction to complete.
+	 * 
+	 * @throws SharedObjectAddAbortException
+	 */
+	public void waitToCommit() throws SharedObjectAddAbortException;
 
-    /**
-     * Method called to wait for a transaction to complete.
-     * 
-     * @throws SharedObjectAddAbortException
-     */
-    public void waitToCommit() throws SharedObjectAddAbortException;
-    /**
-     * Get state of transaction. Returns one of 'ACTIVE', 'VOTING', 'PREPARED',
-     * 'COMMITTED', or 'ABORTED'.
-     * 
-     * @return byte code. Returns one of 'ACTIVE', 'VOTING', 'PREPARED',
-     *         'COMMITTED', or 'ABORTED'.
-     */
-    public byte getTransactionState();
+	/**
+	 * Get state of transaction. Returns one of 'ACTIVE', 'VOTING', 'PREPARED',
+	 * 'COMMITTED', or 'ABORTED'.
+	 * 
+	 * @return byte code. Returns one of 'ACTIVE', 'VOTING', 'PREPARED',
+	 *         'COMMITTED', or 'ABORTED'.
+	 */
+	public byte getTransactionState();
 }

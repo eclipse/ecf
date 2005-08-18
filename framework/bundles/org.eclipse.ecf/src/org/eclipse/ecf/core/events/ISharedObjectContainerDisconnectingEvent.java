@@ -6,19 +6,11 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
+package org.eclipse.ecf.core.events;
 
-package org.eclipse.ecf.core.security;
+import org.eclipse.ecf.core.identity.ID;
 
-import javax.security.auth.callback.CallbackHandler;
-
-public interface IJoinContext {
-	/**
-	 * Get the callbackhandler instance used by the provider to
-	 * callback into application code.  The provider will typically use the
-	 * callback handler to provide a set of callbacks for getting/retrieving
-	 * authorization info
-	 * 
-	 * @return CallbackHandler
-	 */
-	public CallbackHandler getCallbackHandler();
+public interface ISharedObjectContainerDisconnectingEvent extends
+		IContainerEvent {
+	public ID getTargetID();
 }

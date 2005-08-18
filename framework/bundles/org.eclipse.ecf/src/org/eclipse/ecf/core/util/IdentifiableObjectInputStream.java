@@ -24,30 +24,30 @@ import java.io.ObjectStreamClass;
  * @author slewis
  */
 public class IdentifiableObjectInputStream extends ObjectInputStream {
+	IClassLoaderMapper mapper;
 
-    IClassLoaderMapper mapper;
-    
-    public IdentifiableObjectInputStream(IClassLoaderMapper map, InputStream ins) throws IOException {
-        super(ins);
-        this.mapper = map;
-    }
-    
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.io.ObjectInputStream#resolveClass(java.io.ObjectStreamClass)
-     */
-    protected Class resolveClass(ObjectStreamClass desc) throws IOException,
-            ClassNotFoundException {
-        String name = readUTF();
-        if (name == null || mapper == null) {
-            return super.resolveClass(desc);
-        } else {
-            ClassLoader cl = mapper.mapNameToClassLoader(name);
-            if (cl == null) return super.resolveClass(desc);
-            Class ret = cl.loadClass(desc.getName());
-            return ret;
-        }
-    }
+	public IdentifiableObjectInputStream(IClassLoaderMapper map, InputStream ins)
+			throws IOException {
+		super(ins);
+		this.mapper = map;
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.io.ObjectInputStream#resolveClass(java.io.ObjectStreamClass)
+	 */
+	protected Class resolveClass(ObjectStreamClass desc) throws IOException,
+			ClassNotFoundException {
+		String name = readUTF();
+		if (name == null || mapper == null) {
+			return super.resolveClass(desc);
+		} else {
+			ClassLoader cl = mapper.mapNameToClassLoader(name);
+			if (cl == null)
+				return super.resolveClass(desc);
+			Class ret = cl.loadClass(desc.getName());
+			return ret;
+		}
+	}
 }

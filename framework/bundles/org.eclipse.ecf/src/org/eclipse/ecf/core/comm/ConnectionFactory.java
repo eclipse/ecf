@@ -11,14 +11,12 @@ package org.eclipse.ecf.core.comm;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.internal.core.Trace;
 
 public class ConnectionFactory {
 	private static Hashtable connectiontypes = new Hashtable();
-
 	private static Trace debug = Trace.create("connectionfactory");
 
 	public final static ConnectionDescription addDescription(

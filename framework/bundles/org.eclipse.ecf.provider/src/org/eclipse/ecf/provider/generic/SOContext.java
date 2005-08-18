@@ -18,13 +18,13 @@ package org.eclipse.ecf.provider.generic;
 import java.io.IOException;
 import java.util.Map;
 
-import org.eclipse.ecf.core.ContainerJoinException;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IJoinContext;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.provider.Trace;
 
@@ -45,8 +45,12 @@ public class SOContext implements ISharedObjectContext {
         this.container = cont;
         this.properties = props;
         this.queue = queue;
+        isActive = true;
     }
 
+    public boolean isActive() {
+    	return isActive;
+    }
     protected void trace(String msg) {
         if (Trace.ON && debug != null) {
             debug.msg(msg);
@@ -61,13 +65,11 @@ public class SOContext implements ISharedObjectContext {
 
 
     protected synchronized void makeInactive() {
-        container = null;
-        properties = null;
-        queue = null;
+    	isActive = false;
     }
 
     protected synchronized boolean isInactive() {
-        return (container == null);
+        return !isActive;
     }
 
     /*
@@ -76,10 +78,7 @@ public class SOContext implements ISharedObjectContext {
      * @see org.eclipse.ecf.core.ISharedObjectContext#getContainerID()
      */
     public synchronized ID getLocalContainerID() {
-        if (isInactive()) {
-            return null;
-        }
-        return container.getConfig().getID();
+        return container.getID();
     }
 
     /*
@@ -88,9 +87,6 @@ public class SOContext implements ISharedObjectContext {
      * @see org.eclipse.ecf.core.ISharedObjectContext#getSharedObjectManager()
      */
     public synchronized ISharedObjectManager getSharedObjectManager() {
-        if (isInactive()) {
-            return null;
-        }
         return container.getSharedObjectManager();
     }
 
@@ -100,54 +96,49 @@ public class SOContext implements ISharedObjectContext {
      * @see org.eclipse.ecf.core.ISharedObjectContext#getQueue()
      */
     public synchronized IQueueEnqueue getQueue() {
-        if (isInactive()) {
-            return null;
-        }
         return queue;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.ISharedObjectContext#joinGroup(org.eclipse.ecf.core.identity.ID,
-     *      org.eclipse.ecf.core.security.IJoinContext)
+     * @see org.eclipse.ecf.core.ISharedObjectContext#connect(org.eclipse.ecf.core.identity.ID,
+     *      org.eclipse.ecf.core.security.IConnectContext)
      */
-	public synchronized void joinGroup(ID groupID, IJoinContext joinContext)
-	throws ContainerJoinException {
+	public synchronized void connect(ID groupID, IConnectContext joinContext)
+	throws ContainerConnectException {
         if (isInactive()) {
-            trace("joinGroup("+groupID+") CONTEXT INACTIVE");
-            return;
+        	return;
         } else {
-            trace("joinGroup("+groupID+")");
-            container.joinGroup(groupID, joinContext);
+            container.connect(groupID, joinContext);
         }
 	}
 
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.ISharedObjectContext#leaveGroup()
+     * @see org.eclipse.ecf.core.ISharedObjectContext#disconnect()
      */
-    public synchronized void leaveGroup() {
+    public synchronized void disconnect() {
         if (isInactive()) {
             trace("leaveGroup() CONTEXT INACTIVE");
             return;
         } else {
             trace("leaveGroup()");
-            container.leaveGroup();
+            container.disconnect();
         }
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.ISharedObjectContext#getGroupID()
+     * @see org.eclipse.ecf.core.ISharedObjectContext#getConnectedID()
      */
-    public synchronized ID getGroupID() {
+    public synchronized ID getConnectedID() {
         if (isInactive()) {
             return null;
         } else
-            return container.getGroupID();
+            return container.getConnectedID();
     }
 
     /*
@@ -181,7 +172,7 @@ public class SOContext implements ISharedObjectContext {
      */
     public synchronized ID[] getGroupMemberIDs() {
         if (isInactive()) {
-            return null;
+            return new ID[0];
         } else
             return container.getGroupMemberIDs();
     }

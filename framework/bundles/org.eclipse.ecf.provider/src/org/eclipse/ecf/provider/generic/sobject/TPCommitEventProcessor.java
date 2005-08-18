@@ -24,8 +24,8 @@ import org.eclipse.ecf.core.SharedObjectAddAbortException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectCommitEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerJoinedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.events.SharedObjectCommitEvent;
@@ -162,17 +162,17 @@ public class TPCommitEventProcessor implements IEventProcessor {
 			trace("handleActivated(" + event + ")");
 			handleActivated((ISharedObjectActivatedEvent) event);
 			return event;
-		} else if (event instanceof ISharedObjectContainerJoinedEvent) {
+		} else if (event instanceof ISharedObjectContainerConnectedEvent) {
 			trace("handleJoined(" + event + ")");
-			handleJoined((ISharedObjectContainerJoinedEvent) event);
+			handleJoined((ISharedObjectContainerConnectedEvent) event);
 			return event;
 		} else if (event instanceof ISharedObjectCreateResponseEvent) {
 			trace("handleCreateResponse(" + event + ")");
 			handleCreateResponse((ISharedObjectCreateResponseEvent) event);
 			return event;
-		} else if (event instanceof ISharedObjectContainerDepartedEvent) {
+		} else if (event instanceof ISharedObjectContainerDisconnectedEvent) {
 			trace("handleDeparted(" + event + ")");
-			handleDeparted((ISharedObjectContainerDepartedEvent) event);
+			handleDeparted((ISharedObjectContainerDisconnectedEvent) event);
 			return event;
 		} else if (event instanceof ISharedObjectMessageEvent) {
 			ISharedObjectMessageEvent some = (ISharedObjectMessageEvent) event;
@@ -255,14 +255,14 @@ public class TPCommitEventProcessor implements IEventProcessor {
 		}
 	}
 
-	protected void handleJoined(ISharedObjectContainerJoinedEvent event) {
+	protected void handleJoined(ISharedObjectContainerConnectedEvent event) {
 		if (isPrimary()) {
 			// If we are currently in VOTING state, then add the new member to
 			// list of participants
 			// and send replicate message. If not in voting state, just send
 			// replicate message
 			synchronized (lock) {
-				ID newMember = event.getJoinedContainerID();
+				ID newMember = event.getTargetID();
 				replicateTo(new ID[] { newMember });
 				if (getTransactionState() == ISharedObjectContainerTransaction.VOTING)
 					addParticipants(new ID[] { newMember });
@@ -295,9 +295,9 @@ public class TPCommitEventProcessor implements IEventProcessor {
 		}
 	}
 
-	protected void handleDeparted(ISharedObjectContainerDepartedEvent event) {
+	protected void handleDeparted(ISharedObjectContainerDisconnectedEvent event) {
 		if (isPrimary()) {
-			ID remoteID = event.getDepartedContainerID();
+			ID remoteID = event.getTargetID();
 			synchronized (lock) {
 				if (getTransactionState() == ISharedObjectContainerTransaction.VOTING) {
 					addFailed(remoteID, new Exception("Container " + remoteID

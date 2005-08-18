@@ -8,47 +8,38 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.events;
 
-import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectContainerEjectedEvent implements
-		ISharedObjectContainerEjectedEvent {
-	private static final long serialVersionUID = 3257567299946033970L;
-	private final ID localContainerID;
-	private final ID groupID;
-	private final Serializable reason;
+public class SharedObjectContainerDisconnectingEvent implements
+		ISharedObjectContainerDisconnectingEvent {
+	private static final long serialVersionUID = 3257570607204742200L;
+	ID localContainerID;
+	ID groupID;
 
-	public SharedObjectContainerEjectedEvent(ID containerID, ID groupID,
-			Serializable reason) {
-		super();
-		this.localContainerID = containerID;
+	public SharedObjectContainerDisconnectingEvent(ID localContainerID,
+			ID groupID) {
+		this.localContainerID = localContainerID;
 		this.groupID = groupID;
-		this.reason = reason;
-	}
-
-	public ID getGroupID() {
-		return groupID;
-	}
-
-	public ID getLocalContainerID() {
-		return localContainerID;
-	}
-
-	public Serializable getReason() {
-		return reason;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see java.lang.Object#toString()
+	 * @see org.eclipse.ecf.core.events.IContainerEvent#getLocalContainerID()
 	 */
+	public ID getLocalContainerID() {
+		return localContainerID;
+	}
+
+	public ID getTargetID() {
+		return groupID;
+	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer(
-				"SharedObjectContainerEjectedEvent[");
+				"SharedObjectContainerDisconnectingEvent[");
 		buf.append(getLocalContainerID()).append(";");
-		buf.append(getGroupID()).append(";");
-		buf.append(getReason()).append("]");
+		buf.append(getTargetID()).append("]");
 		return buf.toString();
 	}
 }

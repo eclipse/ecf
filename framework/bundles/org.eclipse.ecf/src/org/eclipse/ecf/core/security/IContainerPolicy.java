@@ -6,13 +6,12 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.security;
 
 public interface IContainerPolicy {
 	/**
 	 * Refresh the policy
-	 *
+	 * 
 	 */
 	public void refresh();
 }

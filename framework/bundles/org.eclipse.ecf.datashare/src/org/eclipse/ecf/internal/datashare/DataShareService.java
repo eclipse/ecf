@@ -71,7 +71,7 @@ public class DataShareService implements IDataShareService {
 			return null; // TODO should we throw?
 
 		if (callback != null)
-			callback.dataSubscribed(agent, container.getConfig().getID());
+			callback.dataSubscribed(agent, container.getID());
 
 		return agent;
 	}

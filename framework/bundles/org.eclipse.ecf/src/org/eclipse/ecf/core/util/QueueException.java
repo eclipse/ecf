@@ -6,31 +6,33 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.util;
 
 public class QueueException extends ECFException {
-
 	private static final long serialVersionUID = 3691039863709118774L;
 	IQueue theQueue = null;
 
-    public QueueException() {
-        super();
-    }
+	public QueueException() {
+		super();
+	}
 
-    public QueueException(IQueue queue) {
-        theQueue = queue;
-    }
-    public QueueException(String message) {
-        super(message);
-    }
-    public QueueException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    public QueueException(Throwable cause) {
-        super(cause);
-    }
-    public IQueue getQueue() {
-        return theQueue;
-    }
+	public QueueException(IQueue queue) {
+		theQueue = queue;
+	}
+
+	public QueueException(String message) {
+		super(message);
+	}
+
+	public QueueException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public QueueException(Throwable cause) {
+		super(cause);
+	}
+
+	public IQueue getQueue() {
+		return theQueue;
+	}
 }

@@ -11,7 +11,7 @@ package org.eclipse.ecf.core.events;
 import org.eclipse.ecf.core.identity.ID;
 
 public interface ISharedObjectMessageEvent extends ISharedObjectEvent {
-    public ID getRemoteContainerID();
+	public ID getRemoteContainerID();
 
-    public Object getData();
+	public Object getData();
 }

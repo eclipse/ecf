@@ -6,18 +6,18 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.util;
 
 public class TimeoutException extends InterruptedException {
-
 	private static final long serialVersionUID = 3256439218179158322L;
 	public final long duration;
-    public TimeoutException(long time) {
-        duration = time;
-    }
-    public TimeoutException(long time, String message) {
-        super(message);
-        duration = time;
-    }
+
+	public TimeoutException(long time) {
+		duration = time;
+	}
+
+	public TimeoutException(long time, String message) {
+		super(message);
+		duration = time;
+	}
 }

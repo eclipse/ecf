@@ -18,23 +18,23 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketAddress;
 
-import org.eclipse.ecf.core.ContainerJoinException;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.ISharedObjectContainerGroupManager;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.comm.ISynchConnection;
-import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerEjectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerConnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IJoinContext;
-import org.eclipse.ecf.core.security.IJoinPolicy;
+import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.security.IConnectPolicy;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public class ServerSOContainer extends SOContainer implements ISharedObjectContainerGroupManager {
 	
-	protected IJoinPolicy joinpolicy;
+	protected IConnectPolicy joinpolicy;
 	
     public ServerSOContainer(ISharedObjectContainerConfig config) {
         super(config);
@@ -44,7 +44,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
         return true;
     }
 
-    public ID getGroupID() {
+    public ID getConnectedID() {
         return getID();
     }
 
@@ -103,7 +103,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
     	debug("handleViewChangeMessage("+mess+")");
     }
 
-    public void leaveGroup() {
+    public void disconnect() {
         ejectAllGroupMembers(null);
     }
 
@@ -159,7 +159,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                 }
             }
             // notify listeners
-            fireContainerEvent(new SharedObjectContainerJoinedEvent(this.getID(),remoteID));
+            fireContainerEvent(new SharedObjectContainerConnectedEvent(this.getID(),remoteID));
             
             return ContainerMessage.makeViewChangeMessage(getID(), remoteID,
                     getNextSequenceNumber(), memberIDs, true, null);
@@ -173,7 +173,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
     protected Object checkJoin(SocketAddress saddr, ID fromID, String target, Serializable data)
             throws Exception {
     	if (this.joinpolicy != null) {
-    		return this.joinpolicy.checkJoin(saddr,fromID,getID(),target,data);
+    		return this.joinpolicy.checkConnect(saddr,fromID,getID(),target,data);
     	}
         return null;
     }
@@ -187,7 +187,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
             memberLeave(fromID,conn);
         }
         // Notify listeners
-        fireContainerEvent(new SharedObjectContainerDepartedEvent(getID(),fromID));
+        fireContainerEvent(new SharedObjectContainerDisconnectedEvent(getID(),fromID));
     }
 
     public void ejectGroupMember(ID memberID, Serializable reason) {
@@ -267,13 +267,13 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
         super.dispose();
     }
 
-	public void joinGroup(ID groupID, IJoinContext joinContext) throws ContainerJoinException {
-        ContainerJoinException e = new ContainerJoinException(
+	public void connect(ID groupID, IConnectContext joinContext) throws ContainerConnectException {
+        ContainerConnectException e = new ContainerConnectException(
                 "ServerApplication cannot join group " + groupID.getName());
         throw e;
 	}
 
-	public void setJoinPolicy(IJoinPolicy policy) {
+	public void setConnectPolicy(IConnectPolicy policy) {
 		synchronized (getGroupMembershipLock()) {
 			this.joinpolicy = policy;
 		}

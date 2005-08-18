@@ -15,28 +15,28 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 /**
- * Stores Java objects in the underlying stream in an manner that allows corresponding
- * input stream to use ID to lookup appropriate associated classloader (via IClassLoaderMapper).
+ * Stores Java objects in the underlying stream in an manner that allows
+ * corresponding input stream to use ID to lookup appropriate associated
+ * classloader (via IClassLoaderMapper).
  * 
  * @author pnehrer
  * @author slewis
  */
 public class IdentifiableObjectOutputStream extends ObjectOutputStream {
+	String name = null;
 
-    String name = null;
-    
-    public IdentifiableObjectOutputStream(String name, OutputStream outs) throws IOException {
-        super(outs);
-        this.name = name;
-    }
-    
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.io.ObjectOutputStream#annotateClass(java.lang.Class)
-     */
-    protected void annotateClass(Class cl) throws IOException {
-        writeUTF(name);
-    }
+	public IdentifiableObjectOutputStream(String name, OutputStream outs)
+			throws IOException {
+		super(outs);
+		this.name = name;
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.io.ObjectOutputStream#annotateClass(java.lang.Class)
+	 */
+	protected void annotateClass(Class cl) throws IOException {
+		writeUTF(name);
+	}
 }

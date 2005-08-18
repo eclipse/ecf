@@ -1,19 +1,17 @@
 package org.eclipse.ecf.provider.app;
 
 import java.io.FileInputStream;
-import java.net.SocketAddress;
 import java.security.PermissionCollection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.eclipse.ecf.core.ISharedObjectContainerGroupManager;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
-import org.eclipse.ecf.core.security.IJoinPolicy;
+import org.eclipse.ecf.core.security.IConnectPolicy;
 import org.eclipse.ecf.core.security.ISharedObjectPolicy;
 import org.eclipse.ecf.provider.generic.SOContainerConfig;
 import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
@@ -37,8 +35,8 @@ public class ServerApplication {
     static TCPServerSOContainerGroup serverGroups[] = null;
     static List servers = new ArrayList();
 
-    static class JoinListener implements IJoinPolicy {
-		public PermissionCollection checkJoin(SocketAddress addr, ID fromID, ID targetID, String targetGroup, Object joinData) throws SecurityException {
+    static class JoinListener implements IConnectPolicy {
+		public PermissionCollection checkConnect(Object addr, ID fromID, ID targetID, String targetGroup, Object joinData) throws SecurityException {
 			System.out.println("JOIN Addr="+addr+";From="+fromID+";Group="+targetGroup+";Data="+joinData);
 			return null;
 		}
@@ -115,7 +113,7 @@ public class ServerApplication {
 	        TCPServerSOContainer server = new TCPServerSOContainer(config, serverGroups[0], name,
 	                TCPServerSOContainer.DEFAULT_KEEPALIVE);
 	        // Setup join policy
-	        ((ISharedObjectContainerGroupManager)server).setJoinPolicy(new JoinListener());
+	        ((ISharedObjectContainerGroupManager)server).setConnectPolicy(new JoinListener());
 	        // Setup add shared object policy
 	        ISharedObjectManager manager = server.getSharedObjectManager();
 	        manager.setRemoteAddPolicy(new SharedObjectAddListener());

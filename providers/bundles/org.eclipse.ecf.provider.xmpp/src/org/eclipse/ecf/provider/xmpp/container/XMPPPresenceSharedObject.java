@@ -19,8 +19,8 @@ import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerJoinedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -111,7 +111,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     protected void disconnect() {
         ISharedObjectContext context = getContext();
         if (context != null) {
-            context.leaveGroup();
+            context.disconnect();
         }
     }
 
@@ -217,8 +217,8 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     }
 
     protected void handleContainerDepartedEvent(
-            ISharedObjectContainerDepartedEvent event) {
-        ID departedID = event.getDepartedContainerID();
+            ISharedObjectContainerDisconnectedEvent event) {
+        ID departedID = event.getTargetID();
         if (departedID != null) {
             fireContainerDeparted(departedID);
         }
@@ -236,8 +236,8 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     public void handleEvent(Event event) {
         debug("handleEvent(" + event + ")");
         if (event instanceof ISharedObjectActivatedEvent) {
-        } else if (event instanceof ISharedObjectContainerJoinedEvent) {
-            handleJoin((ISharedObjectContainerJoinedEvent) event);
+        } else if (event instanceof ISharedObjectContainerConnectedEvent) {
+            handleJoin((ISharedObjectContainerConnectedEvent) event);
         } else if (event instanceof IQEvent) {
             handleIQEvent((IQEvent) event);
         } else if (event instanceof MessageEvent) {
@@ -246,8 +246,8 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
             handlePresenceEvent((PresenceEvent) event);
         } else if (event instanceof ISharedObjectDeactivatedEvent) {
             handleDeactivatedEvent((ISharedObjectDeactivatedEvent) event);
-        } else if (event instanceof ISharedObjectContainerDepartedEvent) {
-            handleContainerDepartedEvent((ISharedObjectContainerDepartedEvent) event);
+        } else if (event instanceof ISharedObjectContainerDisconnectedEvent) {
+            handleContainerDepartedEvent((ISharedObjectContainerDisconnectedEvent) event);
         } else if (event instanceof ISharedObjectMessageEvent) {
             fireSharedObjectMessage((ISharedObjectMessageEvent) event);
         } else {
@@ -283,8 +283,8 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         }
     }
 
-    protected void handleJoin(ISharedObjectContainerJoinedEvent event) {
-        fireContainerJoined(event.getJoinedContainerID());
+    protected void handleJoin(ISharedObjectContainerConnectedEvent event) {
+        fireContainerJoined(event.getTargetID());
     }
 
     protected void handleMessageEvent(MessageEvent evt) {

@@ -6,11 +6,9 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.security;
 
 import java.security.PermissionCollection;
-
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 

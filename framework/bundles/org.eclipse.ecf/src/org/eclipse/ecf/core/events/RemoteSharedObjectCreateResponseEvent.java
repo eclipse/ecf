@@ -11,41 +11,41 @@ package org.eclipse.ecf.core.events;
 import org.eclipse.ecf.core.identity.ID;
 
 public class RemoteSharedObjectCreateResponseEvent extends
-        RemoteSharedObjectEvent implements ISharedObjectCreateResponseEvent {
+		RemoteSharedObjectEvent implements ISharedObjectCreateResponseEvent {
 	private static final long serialVersionUID = 3618421544527738673L;
 	long sequence = 0;
 
-    public RemoteSharedObjectCreateResponseEvent(ID senderObj, ID remoteCont,
-            long seq, Throwable exception) {
-        super(senderObj, remoteCont, exception);
-        this.sequence = seq;
-    }
+	public RemoteSharedObjectCreateResponseEvent(ID senderObj, ID remoteCont,
+			long seq, Throwable exception) {
+		super(senderObj, remoteCont, exception);
+		this.sequence = seq;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent#getSequence()
-     */
-    public long getSequence() {
-        return sequence;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent#getSequence()
+	 */
+	public long getSequence() {
+		return sequence;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent#getException()
-     */
-    public Throwable getException() {
-        return (Throwable) getData();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent#getException()
+	 */
+	public Throwable getException() {
+		return (Throwable) getData();
+	}
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer(
-                "RemoteSharedObjectCreateResponseEvent[");
-        sb.append(getSenderSharedObjectID()).append(";");
-        sb.append(getRemoteContainerID()).append(";");
-        sb.append(getSequence()).append(";");
-        sb.append(getException()).append("]");
-        return sb.toString();
-    }
+	public String toString() {
+		StringBuffer sb = new StringBuffer(
+				"RemoteSharedObjectCreateResponseEvent[");
+		sb.append(getSenderSharedObjectID()).append(";");
+		sb.append(getRemoteContainerID()).append(";");
+		sb.append(getSequence()).append(";");
+		sb.append(getException()).append("]");
+		return sb.toString();
+	}
 }

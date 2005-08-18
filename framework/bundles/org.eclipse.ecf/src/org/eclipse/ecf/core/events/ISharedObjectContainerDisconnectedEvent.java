@@ -10,8 +10,7 @@ package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public interface ISharedObjectContainerJoinGroupEvent extends IContainerEvent {
-    public ID getGroupID();
-
-    public Object getData();
+public interface ISharedObjectContainerDisconnectedEvent extends
+		IContainerEvent {
+	public ID getTargetID();
 }

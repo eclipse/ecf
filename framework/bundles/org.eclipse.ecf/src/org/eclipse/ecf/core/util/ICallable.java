@@ -6,10 +6,9 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.util;
 
 public interface ICallable {
-    /** Perform some action that returns a result or throws an exception * */
-    Object call() throws Throwable;
+	/** Perform some action that returns a result or throws an exception * */
+	Object call() throws Throwable;
 }

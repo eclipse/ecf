@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 
 public interface IIDFactory {
-
 	/**
 	 * Add the given Namespace to our table of available Namespaces
 	 * 
@@ -64,15 +63,15 @@ public interface IIDFactory {
 	 * @exception IDInstantiationException
 	 *                thrown if class for instantiator or instance can't be
 	 *                loaded, if something goes wrong during instance
-	 *                construction 
+	 *                construction
 	 */
 	public ID makeID(Namespace n, String[] argTypes, Object[] args)
 			throws IDInstantiationException;
 
 	/**
-	 * Make a new identity. Given a Namespace name, constructor argument
-	 * types, and an array of arguments, return a new instance of an ID
-	 * belonging to the given Namespace
+	 * Make a new identity. Given a Namespace name, constructor argument types,
+	 * and an array of arguments, return a new instance of an ID belonging to
+	 * the given Namespace
 	 * 
 	 * @param namespacename
 	 *            the name of the Namespace to which the ID belongs
@@ -83,7 +82,7 @@ public interface IIDFactory {
 	 * @exception IDInstantiationException
 	 *                thrown if class for instantiator or instance can't be
 	 *                loaded, if something goes wrong during instance
-	 *                construction 
+	 *                construction
 	 */
 	public ID makeID(String namespacename, String[] argTypes, Object[] args)
 			throws IDInstantiationException;
@@ -100,7 +99,7 @@ public interface IIDFactory {
 	 * @exception Exception
 	 *                thrown if class for instantiator or instance can't be
 	 *                loaded, if something goes wrong during instance
-	 *                construction 
+	 *                construction
 	 */
 	public ID makeID(Namespace n, Object[] args)
 			throws IDInstantiationException;
@@ -117,16 +116,17 @@ public interface IIDFactory {
 	 * @exception Exception
 	 *                thrown if class for instantiator or instance can't be
 	 *                loaded, if something goes wrong during instance
-	 *                construction 
+	 *                construction
 	 */
 	public ID makeID(String namespacename, Object[] args)
 			throws IDInstantiationException;
 
 	/**
-	 * Make a new identity instance from a URI. Returns a new instance of an 
-	 * ID belonging to the Namespace associated with the URI <b>scheme</b>. The URI scheme (e.g. http) 
-	 * is used to lookup the Namespace instance, and the entire URI is then passed to the 
-	 * IDInstantiator as a single item Object [].
+	 * Make a new identity instance from a URI. Returns a new instance of an ID
+	 * belonging to the Namespace associated with the URI <b>scheme</b>. The
+	 * URI scheme (e.g. http) is used to lookup the Namespace instance, and the
+	 * entire URI is then passed to the IDInstantiator as a single item Object
+	 * [].
 	 * 
 	 * @param uri
 	 *            the URI to use to make ID.
@@ -135,14 +135,15 @@ public interface IIDFactory {
 	 * @exception Exception
 	 *                thrown if class for instantiator or iD instance can't be
 	 *                loaded, if something goes wrong during instance
-	 *                construction 
+	 *                construction
 	 */
 	public ID makeID(URI uri) throws IDInstantiationException;
 
 	/**
-	 * Make a new identity instance from a namespace name and URI. 
+	 * Make a new identity instance from a namespace name and URI.
 	 * 
-	 * @param namespacename the name of the namespace to use to make the ID
+	 * @param namespacename
+	 *            the name of the namespace to use to make the ID
 	 * @param uri
 	 *            the URI to use to make ID.
 	 * @param args
@@ -150,9 +151,10 @@ public interface IIDFactory {
 	 * @exception Exception
 	 *                thrown if class for instantiator or iD instance can't be
 	 *                loaded, if something goes wrong during instance
-	 *                construction 
+	 *                construction
 	 */
-	public ID makeID(String namespacename, URI uri) throws IDInstantiationException;
+	public ID makeID(String namespacename, URI uri)
+			throws IDInstantiationException;
 
 	public ID makeStringID(String idstring) throws IDInstantiationException;
 
@@ -172,5 +174,4 @@ public interface IIDFactory {
 	 *                NamespacePermission for given namespace
 	 */
 	public Namespace removeNamespace(Namespace n) throws SecurityException;
-
 }

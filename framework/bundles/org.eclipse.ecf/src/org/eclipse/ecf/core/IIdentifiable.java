@@ -6,22 +6,20 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Defines implementing classes as being identifiable with
- * an ECF identity.  
- *
+ * Defines implementing classes as being identifiable with an ECF identity.
+ * 
  */
 public interface IIdentifiable {
-
-    /**
-     * Return the ID for this 'identifiable' object. The returned ID should be
-     * unique within its namespace.
-     * @return the ID for this identifiable object
-     */
-    public ID getID();
+	/**
+	 * Return the ID for this 'identifiable' object. The returned ID should be
+	 * unique within its namespace.
+	 * 
+	 * @return the ID for this identifiable object
+	 */
+	public ID getID();
 }

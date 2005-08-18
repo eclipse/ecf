@@ -6,7 +6,6 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.identity;
 
 import java.net.URI;
@@ -31,32 +30,31 @@ import java.net.URISyntaxException;
  * implement this interface.
  * 
  */
-
 public interface ID extends java.io.Serializable, java.lang.Comparable,
-        java.security.Principal {
+		java.security.Principal {
+	public boolean equals(Object obj);
 
-    public boolean equals(Object obj);
+	/**
+	 * Get the unique name of this identity.
+	 * 
+	 * @return String unique name for this identity
+	 */
+	public String getName();
 
-    /**
-     * Get the unique name of this identity.
-     * 
-     * @return String unique name for this identity
-     */
-    public String getName();
+	/**
+	 * Get the Namespace instance associated with this identity
+	 * 
+	 * @return Namespace the Namespace corresponding to this identity
+	 */
+	public Namespace getNamespace();
 
-    /**
-     * Get the Namespace instance associated with this identity
-     * 
-     * @return Namespace the Namespace corresponding to this identity
-     */
-    public Namespace getNamespace();
+	public int hashCode();
 
-    public int hashCode();
-    /**
-     * If available, return this identity in URI form. If not available, throw
-     * URISyntaxException
-     * 
-     * @return URI the URI representation of this identity
-     */
-    public URI toURI() throws URISyntaxException;
+	/**
+	 * If available, return this identity in URI form. If not available, throw
+	 * URISyntaxException
+	 * 
+	 * @return URI the URI representation of this identity
+	 */
+	public URI toURI() throws URISyntaxException;
 }

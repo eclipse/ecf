@@ -6,32 +6,31 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.security;
 
-import java.net.SocketAddress;
 import java.security.PermissionCollection;
-
 import org.eclipse.ecf.core.identity.ID;
 
-public interface IJoinPolicy extends IContainerPolicy {
+public interface IConnectPolicy extends IContainerPolicy {
 	/**
-	 * Check join request
+	 * Check connect request
 	 * 
-	 * @param socketaddress the SocketAddress for the remote client
+	 * @param address
+	 *            the address for the remote client
 	 * @param fromID
-	 *            the ID of the container making the join request
+	 *            the ID of the container making the connect request
 	 * @param targetID
-	 *            the ID of the container responding to that join request
+	 *            the ID of the container responding to that connect request
 	 * @param targetGroup
-	 *            the target name of the group that is being joined
-	 * @param joinData
+	 *            the target name of the group that is being connected to
+	 * @param connectData
 	 *            arbitrary data associated with the join request
 	 * @return PermissionCollection a collection of permissions associated with
 	 *         a successful acceptance of join request
 	 * @throws SecurityException
 	 *             if join is to be refused
 	 */
-	public PermissionCollection checkJoin(SocketAddress socketaddress, ID fromID, ID targetID,
-			String targetGroup, Object joinData) throws SecurityException;
+	public PermissionCollection checkConnect(Object address, ID fromID,
+			ID targetID, String targetGroup, Object connectData)
+			throws SecurityException;
 }

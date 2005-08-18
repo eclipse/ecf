@@ -48,31 +48,24 @@ Plugins implementing this extension point must define an instantiatorClass that 
          </documentation>
       </annotation>
       <complexType>
-         <attribute name="instantiatorClass" type="string" use="required">
-            <annotation>
-               <documentation>
-                  Required class name.  &lt;b&gt;Must&lt;/b&gt; implement &lt;b&gt;org.eclipse.identity.provider.IDInstantiator&lt;/b&gt;
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  Optional name for new namespace.  If not provided, the name will be assumed to be the fully qualified name of the instantiatorClass.  Note that this name must &lt;b&gt;not&lt;/b&gt; conflict with any other namespace name in the ECF IDFactory in order to be successfully registered.  Care should therefore be taken in selection of a name such that it does not conflict with other implementations.
+                  Optional name for new namespace.  If not provided, the name will be assumed to be the value provided by the required &apos;class&apos; attribute for this extension point.  Note that this name must &lt;b&gt;not&lt;/b&gt; conflict with any other namespace name in the ECF IDFactory in order to be successfully registered.  Care should therefore be taken in selection of a namespace name such that it does not conflict with other implementations.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="namespaceClass" type="string">
+         <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  Optional class name of the Namespace class.  Defaults to &lt;b&gt;org.eclipse.ecf.core.identity.Namespace&lt;/b&gt;.  Implementers may choose to create a subclass of the Namespace class, and can provide that class name here to use that class as the Namespace implementation.  Note that the class, if provided, &lt;b&gt;must&lt;/b&gt; extend &lt;b&gt;org.eclipse.ecf.core.identity.Namespace&lt;/b&gt; and also must implement the two public constructors defined in the Namespace superclass.
+                  Required class for namespace.  Note that the given class &lt;b&gt;must&lt;/b&gt; extend &lt;b&gt;org.eclipse.ecf.core.identity.Namespace&lt;/b&gt;.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="description" type="string">
             <annotation>
                <documentation>
-                  An optional description for the implementation of this extension point
+                  An optional description for the namespace
                </documentation>
             </annotation>
          </attribute>

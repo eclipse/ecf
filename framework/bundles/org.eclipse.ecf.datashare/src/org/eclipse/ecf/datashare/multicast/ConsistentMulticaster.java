@@ -19,7 +19,7 @@ import java.util.Timer;
 
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.SharedObjectInitException;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
@@ -173,12 +173,12 @@ public class ConsistentMulticaster extends AbstractMulticaster implements
 		}
 	}
 
-	protected void handleDeparted(ISharedObjectContainerDepartedEvent event) {
+	protected void handleDeparted(ISharedObjectContainerDisconnectedEvent event) {
 		super.handleDeparted(event);
-		if (!event.getDepartedContainerID().equals(localContainerID)) {
+		if (!event.getTargetID().equals(localContainerID)) {
 			synchronized (this) {
 				if (state == SEND) {
-					requests.remove(event.getDepartedContainerID());
+					requests.remove(event.getTargetID());
 					if (requests.isEmpty())
 						notify();
 				} else if (state == RECEIVE) {
@@ -186,7 +186,7 @@ public class ConsistentMulticaster extends AbstractMulticaster implements
 							new Timeout[timeouts.size()]);
 					for (int i = 0; i < t.length; ++i) {
 						if (t[i].getVersion().getSenderID().equals(
-								event.getDepartedContainerID())
+								event.getTargetID())
 								&& t[i].cancel())
 							timeouts.remove(t[i].getVersion());
 					}
@@ -194,7 +194,7 @@ public class ConsistentMulticaster extends AbstractMulticaster implements
 					for (Iterator i = commits.keySet().iterator(); i.hasNext();) {
 						Version version = (Version) i.next();
 						if (version.getSenderID().equals(
-								event.getDepartedContainerID()))
+								event.getTargetID()))
 							i.remove();
 					}
 

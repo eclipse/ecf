@@ -49,7 +49,7 @@ public class TCPClientSOContainer extends ClientSOContainer {
         // now join group
         ID serverID = IDFactory.getDefault().makeStringID(TCPServerSOContainer
                 .getDefaultServerURL());
-        container.joinGroup(serverID, null);
+        container.connect(serverID, null);
         Thread.sleep(200000);
     }
 

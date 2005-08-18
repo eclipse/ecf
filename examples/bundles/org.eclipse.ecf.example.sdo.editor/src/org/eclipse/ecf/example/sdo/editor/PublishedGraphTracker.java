@@ -23,8 +23,8 @@ import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerJoinedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -257,21 +257,21 @@ public class PublishedGraphTracker implements ISharedObject {
 				handleLeave(e.getRemoteContainerID());
 				break;
 			}
-		} else if (event instanceof ISharedObjectContainerJoinedEvent) {
-			ISharedObjectContainerJoinedEvent e = (ISharedObjectContainerJoinedEvent) event;
-			if (e.getJoinedContainerID().equals(
+		} else if (event instanceof ISharedObjectContainerConnectedEvent) {
+			ISharedObjectContainerConnectedEvent e = (ISharedObjectContainerConnectedEvent) event;
+			if (e.getTargetID().equals(
 					getContext().getLocalContainerID()))
 				// this container joined
 				handleJoined();
 			else if (getContext().isGroupManager())
 				// some other container joined and we're the server
-				handleJoined(e.getJoinedContainerID());
-		} else if (event instanceof ISharedObjectContainerDepartedEvent) {
-			ISharedObjectContainerDepartedEvent e = (ISharedObjectContainerDepartedEvent) event;
+				handleJoined(e.getTargetID());
+		} else if (event instanceof ISharedObjectContainerDisconnectedEvent) {
+			ISharedObjectContainerDisconnectedEvent e = (ISharedObjectContainerDisconnectedEvent) event;
 			// some other container departed -- same as peer deactivation
-			if (!e.getDepartedContainerID().equals(
+			if (!e.getTargetID().equals(
 					getContext().getLocalContainerID()))
-				handleLeave(e.getDepartedContainerID());
+				handleLeave(e.getTargetID());
 		} else if (event instanceof ISharedObjectActivatedEvent) {
 			ISharedObjectActivatedEvent e = (ISharedObjectActivatedEvent) event;
 			if (e.getActivatedID().equals(config.getSharedObjectID()))

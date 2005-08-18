@@ -11,13 +11,13 @@ package org.eclipse.ecf.provider.xmpp.container;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.eclipse.ecf.core.ContainerJoinException;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerLeaveGroupEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
@@ -142,7 +142,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
     }
 
     public void joinGroup(ID remote, Object data)
-            throws ContainerJoinException {
+            throws ContainerConnectException {
         String nickname = "";
         String password = "";
         try {
@@ -153,20 +153,20 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
             multiuserchat.join(nickname,password);
         } catch (XMPPException e) {
             cleanUpConnectFail();
-            ContainerJoinException ce = new ContainerJoinException("Exception joining with nickname "+nickname);
+            ContainerConnectException ce = new ContainerConnectException("Exception joining with nickname "+nickname);
             ce.setStackTrace(e.getStackTrace());
             throw ce;
         } catch (SharedObjectAddException e1) {
             cleanUpConnectFail();
-            ContainerJoinException ce = new ContainerJoinException("Exception adding shared object " + sharedObjectID);
+            ContainerConnectException ce = new ContainerConnectException("Exception adding shared object " + sharedObjectID);
             ce.setStackTrace(e1.getStackTrace());
             throw ce;
         }
     }
 
-    public void leaveGroup() {
-        ID groupID = getGroupID();
-        fireContainerEvent(new SharedObjectContainerLeaveGroupEvent(this
+    public void disconnect() {
+        ID groupID = getConnectedID();
+        fireContainerEvent(new SharedObjectContainerDisconnectingEvent(this
                 .getID(), groupID));
         synchronized (getConnectLock()) {
             // If we are currently connected
@@ -188,7 +188,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
             remoteServerID = null;
         }
         // notify listeners
-        fireContainerEvent(new SharedObjectContainerDepartedEvent(this.getID(),
+        fireContainerEvent(new SharedObjectContainerDisconnectedEvent(this.getID(),
                 groupID));
     }
 

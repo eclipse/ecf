@@ -4,23 +4,20 @@ import java.net.URI;
 import java.util.List;
 
 public interface IContainerFactory {
-
 	/*
-	 * Add a ContainerDescription to the set of known
-	 * SharedObjectContainerDescriptions.
+	 * Add a ContainerDescription to the set of known ContainerDescriptions.
 	 * 
-	 * @param scd the ContainerDescription to add to this factory
-	 * @return ContainerDescription the old description of the same
-	 * name, null if none found
+	 * @param scd the ContainerDescription to add to this factory @return
+	 * ContainerDescription the old description of the same name, null if none
+	 * found
 	 */
-	public ContainerDescription addDescription(
-			ContainerDescription scd);
+	public ContainerDescription addDescription(ContainerDescription scd);
 
 	/**
-	 * Get a collection of the ContainerDescriptions currently known to
-	 * this factory.  This allows clients to query the factory to determine what if
-	 * any other ContainerDescriptions are currently registered with
-	 * the factory, and if so, what they are.
+	 * Get a collection of the ContainerDescriptions currently known to this
+	 * factory. This allows clients to query the factory to determine what if
+	 * any other ContainerDescriptions are currently registered with the
+	 * factory, and if so, what they are.
 	 * 
 	 * @return List of ContainerDescription instances
 	 */
@@ -47,22 +44,19 @@ public interface IContainerFactory {
 			throws ContainerInstantiationException;
 
 	/**
-	 * Make IContainer instance. Given a
-	 * ContainerDescription object, a String [] of argument types,
-	 * and an Object [] of parameters, this method will
+	 * Make IContainer instance. Given a ContainerDescription object, a String []
+	 * of argument types, and an Object [] of parameters, this method will
 	 * <p>
 	 * <ul>
-	 * <li>lookup the known ContainerDescriptions to find one of
-	 * matching name</li>
-	 * <li>if found, will retrieve or create an
-	 * IContainerInstantiator for that description</li>
-	 * <li>Call the IContainerInstantiator.makeInstance method to
-	 * return an instance of IContainer</li>
+	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
+	 * <li>if found, will retrieve or create an IContainerInstantiator for that
+	 * description</li>
+	 * <li>Call the IContainerInstantiator.makeInstance method to return an
+	 * instance of IContainer</li>
 	 * </ul>
 	 * 
 	 * @param desc
-	 *            the ContainerDescription to use to create the
-	 *            instance
+	 *            the ContainerDescription to use to create the instance
 	 * @param argTypes
 	 *            a String [] defining the types of the args parameter
 	 * @param args
@@ -71,21 +65,20 @@ public interface IContainerFactory {
 	 * @return a valid instance of IContainer
 	 * @throws ContainerInstantiationException
 	 */
-	public IContainer makeContainer(
-			ContainerDescription desc, String[] argTypes,
-			Object[] args) throws ContainerInstantiationException;
+	public IContainer makeContainer(ContainerDescription desc,
+			String[] argTypes, Object[] args)
+			throws ContainerInstantiationException;
 
 	/**
-	 * Make IContainer instance. Given a
-	 * ContainerDescription name, this method will
+	 * Make IContainer instance. Given a ContainerDescription name, this method
+	 * will
 	 * <p>
 	 * <ul>
-	 * <li>lookup the known ContainerDescriptions to find one of
-	 * matching name</li>
-	 * <li>if found, will retrieve or create an
-	 * IContainerInstantiator for that description</li>
-	 * <li>Call the IContainerInstantiator.makeInstance method to
-	 * return an instance of IContainer</li>
+	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
+	 * <li>if found, will retrieve or create an IContainerInstantiator for that
+	 * description</li>
+	 * <li>Call the IContainerInstantiator.makeInstance method to return an
+	 * instance of IContainer</li>
 	 * </ul>
 	 * 
 	 * @param descriptionName
@@ -93,21 +86,19 @@ public interface IContainerFactory {
 	 * @return a valid instance of IContainer
 	 * @throws ContainerInstantiationException
 	 */
-	public IContainer makeContainer(
-			String descriptionName)
+	public IContainer makeContainer(String descriptionName)
 			throws ContainerInstantiationException;
 
 	/**
-	 * Make IContainer instance. Given a
-	 * ContainerDescription name, this method will
+	 * Make IContainer instance. Given a ContainerDescription name, this method
+	 * will
 	 * <p>
 	 * <ul>
-	 * <li>lookup the known ContainerDescriptions to find one of
-	 * matching name</li>
-	 * <li>if found, will retrieve or create an
-	 * IContainerInstantiator for that description</li>
-	 * <li>Call the IContainerInstantiator.makeInstance method to
-	 * return an instance of IContainer</li>
+	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
+	 * <li>if found, will retrieve or create an IContainerInstantiator for that
+	 * description</li>
+	 * <li>Call the IContainerInstantiator.makeInstance method to return an
+	 * instance of IContainer</li>
 	 * </ul>
 	 * 
 	 * @param descriptionName
@@ -118,21 +109,19 @@ public interface IContainerFactory {
 	 * @return a valid instance of IContainer
 	 * @throws ContainerInstantiationException
 	 */
-	public IContainer makeContainer(
-			String descriptionName, Object[] args)
+	public IContainer makeContainer(String descriptionName, Object[] args)
 			throws ContainerInstantiationException;
 
 	/**
-	 * Make IContainer instance. Given a
-	 * ContainerDescription name, this method will
+	 * Make IContainer instance. Given a ContainerDescription name, this method
+	 * will
 	 * <p>
 	 * <ul>
-	 * <li>lookup the known ContainerDescriptions to find one of
-	 * matching name</li>
-	 * <li>if found, will retrieve or create an
-	 * IContainerInstantiator for that description</li>
-	 * <li>Call the IContainerInstantiator.makeInstance method to
-	 * return an instance of IContainer</li>
+	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
+	 * <li>if found, will retrieve or create an IContainerInstantiator for that
+	 * description</li>
+	 * <li>Call the IContainerInstantiator.makeInstance method to return an
+	 * instance of IContainer</li>
 	 * </ul>
 	 * 
 	 * @param descriptionName
@@ -145,42 +134,42 @@ public interface IContainerFactory {
 	 * @return a valid instance of IContainer
 	 * @throws ContainerInstantiationException
 	 */
-	public IContainer makeContainer(
-			String descriptionName, String[] argsTypes, Object[] args)
-			throws ContainerInstantiationException;
+	public IContainer makeContainer(String descriptionName, String[] argsTypes,
+			Object[] args) throws ContainerInstantiationException;
 
 	/**
-	 * Make a container given a description name and a uri.  The description name is used to lookup
-	 * the container, and if found an ID instance is created.
+	 * Make a container given a description name and a uri. The description name
+	 * is used to lookup the container, and if found an ID instance is created.
 	 * 
-	 * @param descriptionName the ContainerDescription name to lookup
-	 * @param uri the URI to use as the new container's ID
+	 * @param descriptionName
+	 *            the ContainerDescription name to lookup
+	 * @param uri
+	 *            the URI to use as the new container's ID
 	 * @return a valid instance of IContainer
 	 * @throws ContainerInstantiationException
 	 */
-	public IContainer makeContainer(String descriptionName, URI uri) throws ContainerInstantiationException;
-	
+	public IContainer makeContainer(String descriptionName, URI uri)
+			throws ContainerInstantiationException;
+
 	/**
-	 * Make container given a URI.  The given URI provides a scheme that is used
-	 * to lookup both the Namespace for the new ID instance, and the name of the 
-	 * container factory extension.  For example, the following URI:  
+	 * Make container given a URI. The given URI provides a scheme that is used
+	 * to lookup both the Namespace for the new ID instance, and the name of the
+	 * container factory extension. For example, the following URI:
 	 * 
 	 * protocol.name.foo:bar.com:3222/path
 	 * 
-	 * Would result in a namespace lookup with identifier 'protocol.name.foo', a container
-	 * instantiator lookup with 'protocol.name.foo'
+	 * Would result in a namespace lookup with identifier 'protocol.name.foo', a
+	 * container instantiator lookup with 'protocol.name.foo'
 	 */
-	public IContainer makeContainer(URI aURI) throws ContainerInstantiationException;
-	
+	public IContainer makeContainer(URI aURI)
+			throws ContainerInstantiationException;
+
 	/**
 	 * Remove given description from set known to this factory.
 	 * 
 	 * @param scd
 	 *            the ContainerDescription to remove
-	 * @return the removed ContainerDescription, null if nothing
-	 *         removed
+	 * @return the removed ContainerDescription, null if nothing removed
 	 */
-	public ContainerDescription removeDescription(
-			ContainerDescription scd);
-
+	public ContainerDescription removeDescription(ContainerDescription scd);
 }

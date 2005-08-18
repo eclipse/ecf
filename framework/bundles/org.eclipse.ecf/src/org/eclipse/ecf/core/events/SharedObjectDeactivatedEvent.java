@@ -11,29 +11,29 @@ package org.eclipse.ecf.core.events;
 import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectDeactivatedEvent implements
-        ISharedObjectDeactivatedEvent {
+		ISharedObjectDeactivatedEvent {
 	private static final long serialVersionUID = 3257291344119476786L;
 	private final ID deactivatedID;
-    private final ID localContainerID;
+	private final ID localContainerID;
 
-    public SharedObjectDeactivatedEvent(ID container, ID deact) {
-        super();
-        this.localContainerID = container;
-        this.deactivatedID = deact;
-    }
+	public SharedObjectDeactivatedEvent(ID container, ID deact) {
+		super();
+		this.localContainerID = container;
+		this.deactivatedID = deact;
+	}
 
-    public ID getDeactivatedID() {
-        return deactivatedID;
-    }
+	public ID getDeactivatedID() {
+		return deactivatedID;
+	}
 
-    public ID getLocalContainerID() {
-        return localContainerID;
-    }
+	public ID getLocalContainerID() {
+		return localContainerID;
+	}
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer("SharedObjectDeactivatedEvent[");
-        sb.append(getLocalContainerID()).append(";");
-        sb.append(getDeactivatedID()).append("]");
-        return sb.toString();
-    }
+	public String toString() {
+		StringBuffer sb = new StringBuffer("SharedObjectDeactivatedEvent[");
+		sb.append(getLocalContainerID()).append(";");
+		sb.append(getDeactivatedID()).append("]");
+		return sb.toString();
+	}
 }

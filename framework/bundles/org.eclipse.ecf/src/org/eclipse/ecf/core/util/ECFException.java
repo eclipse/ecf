@@ -6,37 +6,34 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.util;
 
 public class ECFException extends Exception {
-
 	private static final long serialVersionUID = 3256440309134406707L;
 
 	public ECFException() {
-        super();
-    }
+		super();
+	}
 
-    /**
-     * @param message
-     */
-    public ECFException(String message) {
-        super(message);
-    }
+	/**
+	 * @param message
+	 */
+	public ECFException(String message) {
+		super(message);
+	}
 
-    /**
-     * @param cause
-     */
-    public ECFException(Throwable cause) {
-        super(cause);
-    }
+	/**
+	 * @param cause
+	 */
+	public ECFException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public ECFException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public ECFException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

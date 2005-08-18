@@ -12,32 +12,36 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * @author slewis
- *
+ * 
  */
 public class SharedObjectManagerRemoveEvent implements
-        ISharedObjectManagerEvent {
-    
+		ISharedObjectManagerEvent {
 	private static final long serialVersionUID = 3256728389754106931L;
 	ID sharedObjectID = null;
-    ID localContainerID = null;
-    
-    public SharedObjectManagerRemoveEvent(ID localContainerID, ID sharedObjectID) {
-        this.localContainerID = localContainerID;
-        this.sharedObjectID = sharedObjectID;
-    }
-    /* (non-Javadoc)
-     * @see org.eclipse.ecf.core.events.IContainerEvent#getLocalContainerID()
-     */
-    public ID getLocalContainerID() {
-        return localContainerID;
-    }
-    public ID getSharedObjectID() {
-        return sharedObjectID;
-    }
-    public String toString() {
-        StringBuffer buf = new StringBuffer("SharedObjectManagerRemoveEvent[");
-        buf.append(getLocalContainerID()).append(";");
-        buf.append(getSharedObjectID()).append("]");
-        return buf.toString();
-    }
+	ID localContainerID = null;
+
+	public SharedObjectManagerRemoveEvent(ID localContainerID, ID sharedObjectID) {
+		this.localContainerID = localContainerID;
+		this.sharedObjectID = sharedObjectID;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.events.IContainerEvent#getLocalContainerID()
+	 */
+	public ID getLocalContainerID() {
+		return localContainerID;
+	}
+
+	public ID getSharedObjectID() {
+		return sharedObjectID;
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("SharedObjectManagerRemoveEvent[");
+		buf.append(getLocalContainerID()).append(";");
+		buf.append(getSharedObjectID()).append("]");
+		return buf.toString();
+	}
 }

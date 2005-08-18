@@ -10,7 +10,7 @@ package org.eclipse.ecf.core.events;
 
 /**
  * @author slewis
- *
+ * 
  */
 public interface ISharedObjectContainerDisposeEvent extends IContainerEvent {
 }

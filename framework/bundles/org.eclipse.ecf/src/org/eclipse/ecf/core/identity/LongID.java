@@ -6,65 +6,63 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.identity;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.eclipse.ecf.core.identity.provider.IDInstantiator;
-
 public class LongID extends BaseID {
-
 	private static final long serialVersionUID = 4049072748317914423L;
-
 	Long value = null;
+	public static class LongNamespace extends Namespace {
+		private static final long serialVersionUID = -1580533392719331665L;
 
-    public static class Creator implements IDInstantiator {
-        public ID makeInstance(Namespace ns, Class[] argTypes, Object[] args)
-                throws IDInstantiationException {
-            return new LongID(ns, (Long) args[0]);
-        }
-    }
-    public static final String LONGID_INSTANTIATOR_CLASS = LongID.Creator.class
-            .getName();
+		public LongNamespace() {
+			super(LongID.class.getName(), "Long Namespace");
+		}
 
-    public static final String LONGID_NAME = LongID.class.getName();
+		public ID makeInstance(Class[] argTypes, Object[] args)
+				throws IDInstantiationException {
+			return new LongID(this, (Long) args[0]);
+		}
+	}
 
-    protected LongID(Namespace n, Long v) {
-        super(n);
-        value = v;
-    }
-    protected LongID(Namespace n, long v) {
-        super(n);
-        value = new Long(v);
-    }
-    protected int namespaceCompareTo(BaseID o) {
-        Long ovalue = ((LongID) o).value;
-        return value.compareTo(ovalue);
-    }
+	protected LongID(Namespace n, Long v) {
+		super(n);
+		value = v;
+	}
 
-    protected boolean namespaceEquals(BaseID o) {
-        if (!(o instanceof LongID))
-            return false;
-        LongID obj = (LongID) o;
-        return value.equals(obj.value);
-    }
+	protected LongID(Namespace n, long v) {
+		super(n);
+		value = new Long(v);
+	}
 
-    protected String namespaceGetName() {
-        return value.toString();
-    }
+	protected int namespaceCompareTo(BaseID o) {
+		Long ovalue = ((LongID) o).value;
+		return value.compareTo(ovalue);
+	}
 
-    protected int namespaceHashCode() {
-        return value.hashCode();
-    }
+	protected boolean namespaceEquals(BaseID o) {
+		if (!(o instanceof LongID))
+			return false;
+		LongID obj = (LongID) o;
+		return value.equals(obj.value);
+	}
 
-    protected URI namespaceToURI() throws URISyntaxException {
-        throw new URISyntaxException(value.toString(),
-                "LongID instances cannot create URL values");
-    }
+	protected String namespaceGetName() {
+		return value.toString();
+	}
 
-    public long longValue() {
-        return value.longValue();
-    }
+	protected int namespaceHashCode() {
+		return value.hashCode();
+	}
+
+	protected URI namespaceToURI() throws URISyntaxException {
+		throw new URISyntaxException(value.toString(),
+				"LongID instances cannot create URL values");
+	}
+
+	public long longValue() {
+		return value.longValue();
+	}
 }

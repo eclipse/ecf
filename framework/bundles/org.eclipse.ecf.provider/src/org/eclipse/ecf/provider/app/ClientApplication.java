@@ -84,16 +84,16 @@ public class ClientApplication {
 	
 	public void joinGroup(ID server) throws Exception {
 		for(int i = 0; i < clientCount; i++) {
-			System.out.print("ClientApplication "+sm[i].getConfig().getID().getName()+" joining "+server.getName()+"...");
-			sm[i].joinGroup(server,null);
+			System.out.print("ClientApplication "+sm[i].getID().getName()+" joining "+server.getName()+"...");
+			sm[i].connect(server,null);
 			System.out.println("completed.");
 		}
 	}
 
 	public void leaveGroup() {
 		for(int i = 0; i < clientCount; i++) {
-			System.out.print("ClientApplication "+sm[i].getConfig().getID().getName()+" leaving...");
-			sm[i].leaveGroup();
+			System.out.print("ClientApplication "+sm[i].getID().getName()+" leaving...");
+			sm[i].disconnect();
 			System.out.println("completed.");
 		}
 	}
@@ -103,10 +103,10 @@ public class ClientApplication {
 			for(int j=0; j < clientCount; j++) {
 				ISharedObjectContainer scg = sm[j];
 				for(int i=0; i < sharedObjectClassNames.length; i++) {
-					System.out.println("Creating sharedObject: "+sharedObjectClassNames[i]+" for client "+scg.getConfig().getID().getName());
+					System.out.println("Creating sharedObject: "+sharedObjectClassNames[i]+" for client "+scg.getID().getName());
 					SharedObjectDescription sd = new SharedObjectDescription(IDFactory.getDefault().makeStringID(String.valueOf(aRan.nextInt())),sharedObjectClassNames[i]);
 					scg.getSharedObjectManager().createSharedObject(sd);
-					System.out.println("Created sharedObject for client "+scg.getConfig().getID().getName());
+					System.out.println("Created sharedObject for client "+scg.getID().getName());
 				}
 			}
 		}
@@ -116,7 +116,7 @@ public class ClientApplication {
 		if (sharedObjects == null) return;
 		for(int j=0; j < clientCount; j++) {
 			for(int i=0; i < sharedObjects.length; i++) {
-				System.out.println("Removing stage: "+sharedObjects[i].getName()+" for client "+sm[j].getConfig().getID().getName());
+				System.out.println("Removing stage: "+sharedObjects[i].getName()+" for client "+sm[j].getID().getName());
 				sm[j].getSharedObjectManager().removeSharedObject(sharedObjects[i]);
 			}
 		}

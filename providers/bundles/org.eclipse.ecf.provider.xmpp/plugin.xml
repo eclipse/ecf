@@ -24,16 +24,15 @@
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.groupIDLabel"/>
          <property
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.namespace"
-               value="xmpp"/>
+               value="xmpp.jive"/>
       </containerFactory>
    </extension>
    <extension
          point="org.eclipse.ecf.namespace">
       <namespace
-            description="XMPP ID Namespace"
-            instantiatorClass="org.eclipse.ecf.provider.xmpp.identity.XMPPIDInstantiator"
-            name="xmpp"
-            namespaceClass="org.eclipse.ecf.provider.xmpp.identity.XMPPNamespace"/>
+            class="org.eclipse.ecf.provider.xmpp.identity.XMPPNamespace"
+            description="XMPP Namespace"
+            name="xmpp.jive"/>
    </extension>
 
 </plugin>

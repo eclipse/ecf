@@ -6,39 +6,36 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.util.ECFException;
 
-public class ContainerJoinException extends ECFException {
-
+public class ContainerConnectException extends ECFException {
 	private static final long serialVersionUID = 4078658849424746859L;
 
-	public ContainerJoinException() {
-        super();
-    }
+	public ContainerConnectException() {
+		super();
+	}
 
-    /**
-     * @param message
-     */
-    public ContainerJoinException(String message) {
-        super(message);
-    }
+	/**
+	 * @param message
+	 */
+	public ContainerConnectException(String message) {
+		super(message);
+	}
 
-    /**
-     * @param cause
-     */
-    public ContainerJoinException(Throwable cause) {
-        super(cause);
-    }
+	/**
+	 * @param cause
+	 */
+	public ContainerConnectException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public ContainerJoinException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public ContainerConnectException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

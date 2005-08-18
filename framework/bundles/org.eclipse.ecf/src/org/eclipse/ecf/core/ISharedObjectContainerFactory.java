@@ -1,14 +1,11 @@
 package org.eclipse.ecf.core;
 
-
 public interface ISharedObjectContainerFactory {
-
 	/**
-	 * Make ISharedObjectContainer instance. 
+	 * Make ISharedObjectContainer instance.
 	 * 
 	 * @param desc
-	 *            the ContainerDescription to use to create the
-	 *            instance
+	 *            the ContainerDescription to use to create the instance
 	 * @param argTypes
 	 *            a String [] defining the types of the args parameter
 	 * @param args
@@ -18,11 +15,11 @@ public interface ISharedObjectContainerFactory {
 	 * @throws ContainerInstantiationException
 	 */
 	public ISharedObjectContainer makeSharedObjectContainer(
-			ContainerDescription desc, String[] argTypes,
-			Object[] args) throws ContainerInstantiationException;
+			ContainerDescription desc, String[] argTypes, Object[] args)
+			throws ContainerInstantiationException;
 
 	/**
-	 * Make ISharedObjectContainer instance. 
+	 * Make ISharedObjectContainer instance.
 	 * 
 	 * @param descriptionName
 	 *            the ContainerDescription name to lookup
@@ -30,11 +27,10 @@ public interface ISharedObjectContainerFactory {
 	 * @throws ContainerInstantiationException
 	 */
 	public ISharedObjectContainer makeSharedObjectContainer(
-			String descriptionName)
-			throws ContainerInstantiationException;
+			String descriptionName) throws ContainerInstantiationException;
 
 	/**
-	 * Make ISharedObjectContainer instance. 
+	 * Make ISharedObjectContainer instance.
 	 * 
 	 * @param descriptionName
 	 *            the ContainerDescription name to lookup
@@ -49,8 +45,8 @@ public interface ISharedObjectContainerFactory {
 			throws ContainerInstantiationException;
 
 	/**
-	 * Make ISharedObjectContainer instance. 
-	 * 	 * 
+	 * Make ISharedObjectContainer instance. *
+	 * 
 	 * @param descriptionName
 	 *            the ContainerDescription name to lookup
 	 * @param argsTypes
@@ -64,5 +60,4 @@ public interface ISharedObjectContainerFactory {
 	public ISharedObjectContainer makeSharedObjectContainer(
 			String descriptionName, String[] argsTypes, Object[] args)
 			throws ContainerInstantiationException;
-
 }

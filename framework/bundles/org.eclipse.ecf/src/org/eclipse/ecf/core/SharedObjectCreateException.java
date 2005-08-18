@@ -6,26 +6,26 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.util.ECFException;
 
 public class SharedObjectCreateException extends ECFException {
-
 	private static final long serialVersionUID = 3546919195137815606L;
 
 	public SharedObjectCreateException() {
-        super();
-    }
-    public SharedObjectCreateException(String arg0) {
-        super(arg0);
-    }
-    public SharedObjectCreateException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
+		super();
+	}
 
-    public SharedObjectCreateException(Throwable cause) {
-        super(cause);
-    }
+	public SharedObjectCreateException(String arg0) {
+		super(arg0);
+	}
+
+	public SharedObjectCreateException(String msg, Throwable cause) {
+		super(msg, cause);
+	}
+
+	public SharedObjectCreateException(Throwable cause) {
+		super(cause);
+	}
 }

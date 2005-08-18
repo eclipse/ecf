@@ -11,7 +11,7 @@ public class XMPPID extends BaseID {
 	private static final long serialVersionUID = 3257289140701049140L;
 	
     public static final String ADDRESS_SEPARATOR = "@";
-    public static final String PROTOCOL = "xmpp";
+    public static final String PROTOCOL = "xmpp.jive";
     
 	URI uri;
 	
@@ -23,7 +23,7 @@ public class XMPPID extends BaseID {
 	protected XMPPID(Namespace namespace, String username, String host, String query) throws URISyntaxException {
 		super(namespace);
 		username = fixEscape(username);
-		uri = new URI(PROTOCOL+":"+username+ADDRESS_SEPARATOR+host+((query==null)?"":("?"+query)));
+		uri = new URI(namespace.getName()+":"+username+ADDRESS_SEPARATOR+host+((query==null)?"":("?"+query)));
 	}
 	protected XMPPID(Namespace namespace, String username, String host) throws URISyntaxException {
 		this(namespace,username,host,null);
@@ -31,7 +31,7 @@ public class XMPPID extends BaseID {
 	protected XMPPID(Namespace namespace, String unamehost) throws URISyntaxException {
 		super(namespace);
 		unamehost = fixEscape(unamehost);
-		uri = new URI(PROTOCOL+":"+unamehost);
+		uri = new URI(namespace.getName()+":"+unamehost);
 	}
 	protected int namespaceCompareTo(BaseID o) {
         return getName().compareTo(o.getName());

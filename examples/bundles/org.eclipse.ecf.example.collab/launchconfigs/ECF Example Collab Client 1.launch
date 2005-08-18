@@ -210,7 +210,7 @@
 <mapEntry key="org.eclipse.update.core/debug/configuration" value="false"/>
 <mapEntry key="org.eclipse.ecf.provider.jms/debug/clientcontainer" value="true"/>
 <mapEntry key="org.eclipse.osgi/debug/packageadmin" value="false"/>
-<mapEntry key="org.eclipse.ecf/debug/factoryinit" value="false"/>
+<mapEntry key="org.eclipse.ecf/debug/factoryinit" value="true"/>
 <mapEntry key="org.eclipse.ecf.provider/debug/sharedobjectmanager" value="false"/>
 <mapEntry key="org.eclipse.jdt.core/debug/completion" value="false"/>
 <mapEntry key="org.eclipse.pde.build/debug" value="false"/>
@@ -232,7 +232,7 @@
 <mapEntry key="org.eclipse.jface.text/debug/AnnotationPainter" value="false"/>
 <mapEntry key="org.eclipse.core.runtime/debug/pluginstopper" value="false"/>
 <mapEntry key="org.eclipse.ui/trace/handlers.verbose.commandId" value=""/>
-<mapEntry key="org.eclipse.ecf/debug/idfactory" value="false"/>
+<mapEntry key="org.eclipse.ecf/debug/idfactory" value="true"/>
 <mapEntry key="org.eclipse.ui.intro/trace/printHTML" value="false"/>
 <mapEntry key="org.eclipse.ecf.provider.jms/debug" value="true"/>
 <mapEntry key="org.eclipse.ui/listeners/IWorkbenchPage.IPropertyChangeListener" value="false"/>
@@ -308,22 +308,22 @@
 <mapEntry key="org.eclipse.ecf.provider/debug/basesharedobject" value="false"/>
 <mapEntry key="org.eclipse.core.resources/perf/save.participants" value="500"/>
 </mapAttribute>
-<stringAttribute key="selectedPlugin" value="org.eclipse.ecf.provider.jms"/>
+<stringAttribute key="selectedPlugin" value="org.eclipse.ecf"/>
 <booleanAttribute key="automaticAdd" value="false"/>
-<stringAttribute key="checked" value="org.eclipse.ecf.provider,org.eclipse.ecf.provider.jms"/>
+<stringAttribute key="checked" value="org.eclipse.ecf,org.eclipse.ecf.provider,org.eclipse.ecf.provider.jms"/>
 <booleanAttribute key="includeFragments" value="false"/>
 <stringAttribute key="configLocation" value=""/>
 <booleanAttribute key="clearws" value="false"/>
 <stringAttribute key="location1" value="C:\eclipse3.1m4\eclipse\runtime-workspace"/>
 <stringAttribute key="templateConfig" value=""/>
-<booleanAttribute key="default" value="true"/>
 <stringAttribute key="vmargs" value=""/>
+<booleanAttribute key="default" value="true"/>
 <booleanAttribute key="clearConfig" value="true"/>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
-<booleanAttribute key="useDefaultConfigArea" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-<stringAttribute key="progargs" value=""/>
+<booleanAttribute key="useDefaultConfigArea" value="true"/>
 <booleanAttribute key="useDefaultConfig" value="true"/>
+<stringAttribute key="progargs" value=""/>
 <booleanAttribute key="askclear" value="false"/>
 <booleanAttribute key="includeOptional" value="true"/>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">

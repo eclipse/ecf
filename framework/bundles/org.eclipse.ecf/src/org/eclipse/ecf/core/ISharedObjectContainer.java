@@ -6,7 +6,6 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 /**
@@ -14,16 +13,6 @@ package org.eclipse.ecf.core;
  * Instances are typically created via {@link SharedObjectContainerFactory}
  */
 public interface ISharedObjectContainer extends IReliableContainer {
-
-	/**
-	 * Return the ISharedObjectContainerConfig for this ISharedObjectContainer.
-	 * The returned value must always be non-null.
-	 * 
-	 * @return ISharedObjectContainerConfig for the given ISharedObjectContainer
-	 *         instance
-	 */
-	public ISharedObjectContainerConfig getConfig();
-
 	/**
 	 * Add listener to ISharedObjectContainer. Listener will be notified when
 	 * container events occur
@@ -49,5 +38,4 @@ public interface ISharedObjectContainer extends IReliableContainer {
 	 * @return ISharedObjectManager for this container instance
 	 */
 	public ISharedObjectManager getSharedObjectManager();
-
 }

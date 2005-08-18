@@ -77,7 +77,7 @@ public class DiscoveryStartup {
 					.getAdapter(IDiscoveryContainer.class);
 			if (discovery != null) {
 				setupDiscoveryContainer(discovery);
-				socontainer.joinGroup(null,null);
+				socontainer.connect(null,null);
 			}
 			else {
 				if (socontainer != null) {

@@ -12,6 +12,7 @@ import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 
 public interface ISharedObjectContainerEjectedEvent extends IContainerEvent {
-    public ID getGroupID();
-    public Serializable getReason();
+	public ID getGroupID();
+
+	public Serializable getReason();
 }

@@ -152,7 +152,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable, ISharedOb
 		ISharedObjectContext context = getContext();
 		if (context == null) {
 			return null;
-		} else return context.getGroupID();
+		} else return context.getConnectedID();
 	}
 	public boolean isPrimary() {
 		ID local = getLocalID();

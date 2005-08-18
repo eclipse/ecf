@@ -6,15 +6,16 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.util;
 
 public interface IEventProcessor {
+	public boolean acceptEvent(Event event);
 
-    public boolean acceptEvent(Event event);
-    /**
-     * Process given Event
-     * @param e the Event to process
-     */
-    public Event processEvent(Event event);
+	/**
+	 * Process given Event
+	 * 
+	 * @param e
+	 *            the Event to process
+	 */
+	public Event processEvent(Event event);
 }

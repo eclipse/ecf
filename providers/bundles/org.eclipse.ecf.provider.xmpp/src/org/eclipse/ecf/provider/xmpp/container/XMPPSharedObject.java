@@ -12,7 +12,7 @@ import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectInitException;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
@@ -58,7 +58,7 @@ public class XMPPSharedObject implements ISharedObject {
 	protected void disconnect() {
 		ISharedObjectContext context = getContext();
 		if (context != null) {
-			context.leaveGroup();
+			context.disconnect();
 		}
 	}
 
@@ -148,7 +148,7 @@ public class XMPPSharedObject implements ISharedObject {
 	}
 */
 	protected void handleContainerDepartedEvent(
-			ISharedObjectContainerDepartedEvent event) {
+			ISharedObjectContainerDisconnectedEvent event) {
 		debug("Got container departed event: " + event);
         /*
 		ID departedID = event.getDepartedContainerID();
@@ -184,8 +184,8 @@ public class XMPPSharedObject implements ISharedObject {
 					}
 				}
 			}
-		} else if (event instanceof ISharedObjectContainerJoinedEvent) {
-			handleJoin((ISharedObjectContainerJoinedEvent) event);
+		} else if (event instanceof ISharedObjectContainerConnectedEvent) {
+			handleJoin((ISharedObjectContainerConnectedEvent) event);
 		} else if (event instanceof IQEvent) {
 			handleIQEvent((IQEvent) event);
 		} else if (event instanceof MessageEvent) {
@@ -194,8 +194,8 @@ public class XMPPSharedObject implements ISharedObject {
 			handlePresenceEvent((PresenceEvent) event);
 		} else if (event instanceof ISharedObjectDeactivatedEvent) {
 			handleDeactivatedEvent((ISharedObjectDeactivatedEvent) event);
-		} else if (event instanceof ISharedObjectContainerDepartedEvent) {
-			handleContainerDepartedEvent((ISharedObjectContainerDepartedEvent) event);
+		} else if (event instanceof ISharedObjectContainerDisconnectedEvent) {
+			handleContainerDepartedEvent((ISharedObjectContainerDisconnectedEvent) event);
 		} else if (event instanceof ISharedObjectMessageEvent) {
 			handleSharedObjectMessageEvent((ISharedObjectMessageEvent)event);
 		} else {
@@ -231,7 +231,7 @@ public class XMPPSharedObject implements ISharedObject {
 		}
 	}
 
-	protected void handleJoin(ISharedObjectContainerJoinedEvent event) {
+	protected void handleJoin(ISharedObjectContainerConnectedEvent event) {
 		// show user interface
 		showView();
 	}

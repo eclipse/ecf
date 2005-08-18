@@ -6,11 +6,10 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.util;
 
 import java.io.Serializable;
 
 public interface Event extends Serializable {
-    // No methods. This is a 'tag' interface
+	// No methods. This is a 'tag' interface
 }

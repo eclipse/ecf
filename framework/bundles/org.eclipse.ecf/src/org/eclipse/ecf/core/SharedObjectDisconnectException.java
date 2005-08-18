@@ -6,29 +6,26 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.util.ECFException;
 
 public class SharedObjectDisconnectException extends ECFException {
-
 	private static final long serialVersionUID = 3258689922876586289L;
 
 	public SharedObjectDisconnectException() {
-        super();
-    }
+		super();
+	}
 
-    public SharedObjectDisconnectException(String arg0) {
-        super(arg0);
-    }
+	public SharedObjectDisconnectException(String arg0) {
+		super(arg0);
+	}
 
-    public SharedObjectDisconnectException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
+	public SharedObjectDisconnectException(String msg, Throwable cause) {
+		super(msg, cause);
+	}
 
-    public SharedObjectDisconnectException(Throwable cause) {
-        super(cause);
-    }
-
+	public SharedObjectDisconnectException(Throwable cause) {
+		super(cause);
+	}
 }

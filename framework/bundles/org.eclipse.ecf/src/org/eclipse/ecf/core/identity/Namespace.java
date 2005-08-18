@@ -6,14 +6,11 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.ecf.core.identity;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import org.eclipse.ecf.core.identity.provider.IDInstantiator;
 
 /**
  * Namespace class. This class defines the properties associated with an
@@ -26,136 +23,94 @@ import org.eclipse.ecf.core.identity.provider.IDInstantiator;
  * identity functionality desired.
  * 
  */
-public class Namespace implements Serializable {
-
+public abstract class Namespace implements Serializable {
 	private static final long serialVersionUID = 3976740272094720312L;
-	
 	private String name;
-    private String instantiatorClass;
-    private String description;
+	private String description;
+	private int hashCode;
+	private boolean isInitialized = false;
 
-    private int hashCode = 0;
-    private transient ClassLoader classLoader = null;
+	public Namespace() {
+	}
 
-    private transient IDInstantiator instantiator = null;
+	public final boolean initialize(String name, String desc) {
+		if (name == null)
+			throw new RuntimeException(new InstantiationException(
+					"Namespace<init> name cannot be null"));
+		if (!isInitialized) {
+			this.name = name;
+			this.description = desc;
+			this.hashCode = name.hashCode();
+			return true;
+		} else
+			return false;
+	}
 
-    public Namespace(ClassLoader cl, String name, String instantiatorClass,
-            String desc) {
-        this.classLoader = cl;
-        if (name == null)
-            throw new RuntimeException(new InstantiationException(
-                    "Namespace<init> name cannot be null"));
-        this.name = name;
-        if (instantiatorClass == null)
-            throw new RuntimeException(new InstantiationException(
-                    "Namespace<init> instantiatorClass cannot be null"));
-        this.instantiatorClass = instantiatorClass;
-        this.description = desc;
-        this.hashCode = name.hashCode();
-    }
-    public Namespace(String name, IDInstantiator inst, String desc) {
-        if (name == null)
-            throw new RuntimeException(new InstantiationException(
-                    "Namespace<init> name cannot be null"));
-        if (inst == null)
-            throw new RuntimeException(new InstantiationException(
-                    "Namespace<init> instantiator instance cannot be null"));
-        this.instantiator = inst;
-        this.instantiatorClass = this.instantiator.getClass().getName();
-        this.classLoader = this.instantiator.getClass().getClassLoader();
-        this.name = name;
-        this.description = desc;
-        this.hashCode = name.hashCode();
-    }
-    /**
-     * Override of Object.equals. This equals method returns true if the
-     * provided Object is also a Namespace instance, and the names of the two
-     * instances match.
-     * 
-     * @param other
-     *            the Object to test for equality
-     */
-    public boolean equals(Object other) {
-        if (!(other instanceof Namespace))
-            return false;
-        return ((Namespace) other).name.equals(name);
-    }
+	public Namespace(String name, String desc) {
+		initialize(name, desc);
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	/**
+	 * Override of Object.equals. This equals method returns true if the
+	 * provided Object is also a Namespace instance, and the names of the two
+	 * instances match.
+	 * 
+	 * @param other
+	 *            the Object to test for equality
+	 */
+	public boolean equals(Object other) {
+		if (!(other instanceof Namespace))
+			return false;
+		return ((Namespace) other).name.equals(name);
+	}
 
-    /**
-     * Get an ISharedObjectContainerInstantiator using the classloader used to
-     * load the Namespace class
-     * 
-     * @return ISharedObjectContainerInstantiator associated with this Namespace
-     *         instance
-     * @exception Exception
-     *                thrown if instantiator class cannot be loaded, or if it
-     *                cannot be cast to ISharedObjectContainerInstantiator
-     *                interface
-     */
-    protected IDInstantiator getInstantiator() throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException {
-        synchronized (this) {
-            if (instantiator == null)
-                initializeInstantiator(classLoader);
-            return instantiator;
-        }
-    }
+	public int hashCode() {
+		return hashCode;
+	}
 
-    protected boolean testIDEquals(BaseID first, BaseID second) {
-        // First check that namespaces are the same and non-null
-        Namespace sn = second.getNamespace();
-        if (sn == null || !this.equals(sn))
-            return false;
-        return first.namespaceEquals(second);
-    }
-    protected String getNameForID(BaseID id) {
-        return id.namespaceGetName();
-    }
-    protected URI getURIForID(BaseID id) throws URISyntaxException {
-        return id.namespaceToURI();
-    }
-    protected int getCompareToForObject(BaseID first, BaseID second) {
-        return first.namespaceCompareTo(second);
-    }
-    protected int getHashCodeForID(BaseID id) {
-        return id.namespaceHashCode();
-    }
+	protected boolean testIDEquals(BaseID first, BaseID second) {
+		// First check that namespaces are the same and non-null
+		Namespace sn = second.getNamespace();
+		if (sn == null || !this.equals(sn))
+			return false;
+		return first.namespaceEquals(second);
+	}
 
-    /**
-     * @return String name of Namespace instance
-     * 
-     */
-    public String getName() {
-        return name;
-    }
+	protected String getNameForID(BaseID id) {
+		return id.namespaceGetName();
+	}
 
-    protected String getPermissionName() {
-        return toString();
-    }
+	protected URI getURIForID(BaseID id) throws URISyntaxException {
+		return id.namespaceToURI();
+	}
 
-    public int hashCode() {
-        return hashCode;
-    }
-    protected void initializeInstantiator(ClassLoader cl)
-            throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException {
-        if (cl == null)
-            classLoader = this.getClass().getClassLoader();
-        // Load instantiator class
-        Class clazz = Class.forName(instantiatorClass, true, classLoader);
-        // Make new instance
-        instantiator = (IDInstantiator) clazz.newInstance();
-    }
+	protected int getCompareToForObject(BaseID first, BaseID second) {
+		return first.namespaceCompareTo(second);
+	}
 
-    public String toString() {
-        StringBuffer b = new StringBuffer("Namespace[");
-        b.append(name).append(";");
-        b.append(instantiatorClass).append(";");
-        b.append(description).append("]");
-        return b.toString();
-    }
+	protected int getHashCodeForID(BaseID id) {
+		return id.namespaceHashCode();
+	}
+
+	/**
+	 * @return String name of Namespace instance
+	 * 
+	 */
+	public String getName() {
+		return name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public abstract ID makeInstance(Class[] argTypes, Object[] args)
+			throws IDInstantiationException;
+
+	public String toString() {
+		StringBuffer b = new StringBuffer("Namespace[");
+		b.append(name).append(";");
+		b.append(description).append("]");
+		return b.toString();
+	}
 }

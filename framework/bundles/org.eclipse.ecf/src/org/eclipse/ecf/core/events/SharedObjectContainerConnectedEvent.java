@@ -8,34 +8,26 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.events;
 
-import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectContainerEjectedEvent implements
-		ISharedObjectContainerEjectedEvent {
-	private static final long serialVersionUID = 3257567299946033970L;
+public class SharedObjectContainerConnectedEvent implements
+		ISharedObjectContainerConnectedEvent {
+	private static final long serialVersionUID = 3833467322827617078L;
+	private final ID joinedContainerID;
 	private final ID localContainerID;
-	private final ID groupID;
-	private final Serializable reason;
 
-	public SharedObjectContainerEjectedEvent(ID containerID, ID groupID,
-			Serializable reason) {
+	public SharedObjectContainerConnectedEvent(ID local, ID joinContainerID) {
 		super();
-		this.localContainerID = containerID;
-		this.groupID = groupID;
-		this.reason = reason;
+		this.localContainerID = local;
+		this.joinedContainerID = joinContainerID;
 	}
 
-	public ID getGroupID() {
-		return groupID;
+	public ID getTargetID() {
+		return joinedContainerID;
 	}
 
 	public ID getLocalContainerID() {
 		return localContainerID;
-	}
-
-	public Serializable getReason() {
-		return reason;
 	}
 
 	/*
@@ -45,10 +37,9 @@ public class SharedObjectContainerEjectedEvent implements
 	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer(
-				"SharedObjectContainerEjectedEvent[");
-		buf.append(getLocalContainerID()).append(";");
-		buf.append(getGroupID()).append(";");
-		buf.append(getReason()).append("]");
+				"SharedObjectContainerConnectedEvent[");
+		buf.append(getTargetID()).append(";");
+		buf.append(getLocalContainerID()).append("]");
 		return buf.toString();
 	}
 }

@@ -23,8 +23,8 @@ import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDepartedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerJoinedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
@@ -83,14 +83,14 @@ public class EagerElectionBootstrap implements IBootstrap {
 			ISharedObjectActivatedEvent e = (ISharedObjectActivatedEvent) event;
 			if (e.getActivatedID().equals(config.getSharedObjectID()))
 				handleActivated();
-		} else if (event instanceof ISharedObjectContainerJoinedEvent) {
-			ISharedObjectContainerJoinedEvent e = (ISharedObjectContainerJoinedEvent) event;
-			if (!e.getJoinedContainerID().equals(e.getLocalContainerID()))
-				handleJoined(e.getJoinedContainerID());
-		} else if (event instanceof ISharedObjectContainerDepartedEvent) {
-			ISharedObjectContainerDepartedEvent e = (ISharedObjectContainerDepartedEvent) event;
-			if (!e.getDepartedContainerID().equals(e.getLocalContainerID()))
-				handleDeparted(e.getDepartedContainerID());
+		} else if (event instanceof ISharedObjectContainerConnectedEvent) {
+			ISharedObjectContainerConnectedEvent e = (ISharedObjectContainerConnectedEvent) event;
+			if (!e.getTargetID().equals(e.getLocalContainerID()))
+				handleJoined(e.getTargetID());
+		} else if (event instanceof ISharedObjectContainerDisconnectedEvent) {
+			ISharedObjectContainerDisconnectedEvent e = (ISharedObjectContainerDisconnectedEvent) event;
+			if (!e.getTargetID().equals(e.getLocalContainerID()))
+				handleDeparted(e.getTargetID());
 		} else if (event instanceof ISharedObjectMessageEvent) {
 			ISharedObjectMessageEvent e = (ISharedObjectMessageEvent) event;
 			if (e.getData() instanceof Vote)
