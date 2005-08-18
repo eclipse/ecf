@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ecf.core.ContainerJoinException;
 import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
@@ -43,10 +43,10 @@ import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnectionEventHandler;
 import org.eclipse.ecf.core.comm.SynchConnectionEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IJoinContext;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IClassLoaderMapper;
@@ -546,7 +546,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#getGroupID()
 	 */
-	public abstract ID getGroupID();
+	public abstract ID getConnectedID();
 
 	/*
 	 * (non-Javadoc)
@@ -811,10 +811,10 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#joinGroup(org.eclipse.ecf.core.identity.ID,
-	 *      org.eclipse.ecf.core.security.IJoinContext)
+	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public abstract void joinGroup(ID groupID, IJoinContext joinContext)
-			throws ContainerJoinException;
+	public abstract void connect(ID groupID, IConnectContext joinContext)
+			throws ContainerConnectException;
 
 	protected void killConnection(IConnection conn) {
 		debug("killconnection("+conn+")");
@@ -831,7 +831,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#leaveGroup()
 	 */
-	public abstract void leaveGroup();
+	public abstract void disconnect();
 
 	protected ISharedObject load(SharedObjectDescription sd) throws Exception {
 		return sharedObjectManager.loadSharedObject(sd);
@@ -998,7 +998,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 				memberLeave(fromID, conn);
 			}
 			if (fromID != null)
-				fireContainerEvent(new SharedObjectContainerDepartedEvent(
+				fireContainerEvent(new SharedObjectContainerDisconnectedEvent(
 						getID(), fromID));
 		} catch (Exception except) {
 			logException("Exception in processDisconnect ", except);

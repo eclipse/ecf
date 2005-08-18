@@ -11,20 +11,18 @@ package org.eclipse.ecf.provider.xmpp.container;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.security.auth.callback.Callback;
-
-import org.eclipse.ecf.core.ContainerJoinException;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.core.events.SharedObjectContainerDepartedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerJoinedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerLeaveGroupEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerConnectedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.security.IJoinContext;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
@@ -87,7 +85,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		if (originalTarget != null && !originalTarget.equals(getID())) {
 			addNewRemoteMember(originalTarget, null);
 			// notify listeners
-			fireContainerEvent(new SharedObjectContainerJoinedEvent(this
+			fireContainerEvent(new SharedObjectContainerConnectedEvent(this
 					.getID(), originalTarget));
 		}
 		// If we've got the connection then pass it onto shared object also
@@ -218,24 +216,24 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		sharedObject = new XMPPPresenceSharedObject();
 	}
 
-	public void joinGroup(ID remote, IJoinContext joinContext)
-			throws ContainerJoinException {
+	public void connect(ID remote, IConnectContext joinContext)
+			throws ContainerConnectException {
 		try {
 			addSharedObjectToContainer(remote);
-			super.joinGroup(remote, joinContext);
-		} catch (ContainerJoinException e) {
+			super.connect(remote, joinContext);
+		} catch (ContainerConnectException e) {
 			cleanUpConnectFail();
 			throw e;
 		} catch (SharedObjectAddException e1) {
 			cleanUpConnectFail();
-			throw new ContainerJoinException(
+			throw new ContainerConnectException(
 					"Exception adding shared object " + sharedObjectID, e1);
 		}
 	}
 
-	public void leaveGroup() {
-		ID groupID = getGroupID();
-		fireContainerEvent(new SharedObjectContainerLeaveGroupEvent(this
+	public void disconnect() {
+		ID groupID = getConnectedID();
+		fireContainerEvent(new SharedObjectContainerDisconnectingEvent(this
 				.getID(), groupID));
 		synchronized (getConnectLock()) {
 			// If we are currently connected
@@ -257,7 +255,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			remoteServerID = null;
 		}
 		// notify listeners
-		fireContainerEvent(new SharedObjectContainerDepartedEvent(this.getID(),
+		fireContainerEvent(new SharedObjectContainerDisconnectedEvent(this.getID(),
 				groupID));
 	}
 
