@@ -28,6 +28,9 @@ import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerEjectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerConnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.IConnectPolicy;
 import org.eclipse.ecf.provider.generic.gmm.Member;
@@ -278,4 +281,5 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 			this.joinpolicy = policy;
 		}
 	}
+
 }

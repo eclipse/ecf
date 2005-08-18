@@ -46,6 +46,9 @@ import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.util.Event;
@@ -1182,5 +1185,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
 	protected void setMaxGroupMembers(int max) {
 		groupManager.setMaxMembers(max);
+	}
+	public Namespace getConnectNamespace() {
+		// We expect StringIDs for the generic server
+		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
 	}
 }

@@ -2,6 +2,7 @@ package org.eclipse.ecf.core;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 
 /**
@@ -38,6 +39,11 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 */
 	public ID getConnectedID();
 
+	/**
+	 * Get the Namespace instance that defines the ID type expected by the remote target container 
+	 * @return Namespace the namespace by the target for a call to connect()
+	 */
+	public Namespace getConnectNamespace();
 	/**
 	 * Disconnect. This operation will disconnect the local container instance
 	 * from any previously joined group.
