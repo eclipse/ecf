@@ -36,6 +36,7 @@ public class GUID extends StringID {
 				return new GUID(this);
 		}
 	}
+
 	public static final String SR_DEFAULT_ALGO = null;
 	public static final String SR_DEFAULT_PROVIDER = null;
 	public static final int DEFAULT_BYTE_LENGTH = 20;
