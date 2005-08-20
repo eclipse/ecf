@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.ecf">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.ecf" id="comm" name="ECF Connection Factory"/>
+         <meta.schema plugin="org.eclipse.ecf" id="connectionFactory" name="ECF Connection Factory"/>
       </appInfo>
       <documentation>
          This extension allows plugins to register themselves as &apos;providers&apos; of ECF connection factories.  Once registered via this extension point, plugins can provide implementations of custom ISynchAsynchConnection instances via the ECF connection factory (&lt;b&gt;org.eclipse.ecf.core.comm.ConnectionFactory&lt;/b&gt;).
