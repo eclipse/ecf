@@ -273,6 +273,9 @@ public class IDFactory implements IIDFactory {
 		return makeID(n, args);
 	}
 
+	public ID makeID(Namespace namespace, URI uri) throws IDInstantiationException {
+		return makeID(namespace,new Object[] { uri });
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -289,18 +292,12 @@ public class IDFactory implements IIDFactory {
 		return makeID(n, new Object[] { uri });
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeID(java.net.URI)
-	 */
-	public ID makeID(URI uri) throws IDInstantiationException {
-		if (uri == null)
-			throw new IDInstantiationException("Null uri not allowed");
-		String scheme = uri.getScheme();
-		return makeID(scheme, uri);
+	public ID makeID(Namespace namespace, String uri) throws IDInstantiationException {
+		return makeID(namespace,new Object[] { uri });
 	}
-
+	public ID makeID(String namespace, String uri) throws IDInstantiationException {
+		return makeID(namespace,new Object[] { uri });		
+	}
 	/*
 	 * (non-Javadoc)
 	 * 

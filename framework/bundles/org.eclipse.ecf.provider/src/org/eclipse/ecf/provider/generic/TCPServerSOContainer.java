@@ -52,15 +52,15 @@ public class TCPServerSOContainer extends ServerSOContainer implements
         super(config);
         this.keepAlive = keepAlive;
         // Make sure URI syntax is followed.
-        URI aURI = new URI(config.getID().getName());
-        int urlPort = aURI.getPort();
+        URI actualURI = new URI(getID().getName());
+        int urlPort = actualURI.getPort();
         if (group == null) {
             isSingle = true;
             this.group = new TCPServerSOContainerGroup(urlPort);
             this.group.putOnTheAir();
         } else
             this.group = grp;
-        String path = aURI.getPath();
+        String path = actualURI.getPath();
         group.add(path, this);
     }
 

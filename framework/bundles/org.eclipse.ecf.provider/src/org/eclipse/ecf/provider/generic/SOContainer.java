@@ -56,6 +56,7 @@ import org.eclipse.ecf.core.util.IClassLoaderMapper;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.IdentifiableObjectInputStream;
 import org.eclipse.ecf.core.util.IdentifiableObjectOutputStream;
+import org.eclipse.ecf.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.Trace;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
@@ -1188,6 +1189,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	}
 	public Namespace getConnectNamespace() {
 		// We expect StringIDs for the generic server
-		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
+		return IDFactory.getDefault().getNamespaceByName(ProviderPlugin.getDefault().getNamespaceIdentifier());
 	}
 }

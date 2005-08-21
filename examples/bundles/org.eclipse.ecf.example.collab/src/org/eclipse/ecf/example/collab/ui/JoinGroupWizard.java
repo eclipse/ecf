@@ -10,16 +10,15 @@
 *****************************************************************************/
 package org.eclipse.ecf.example.collab.ui;
 
+import java.net.URI;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.example.collab.ClientPlugin;
-import org.eclipse.ecf.example.collab.actions.ClientConnectAction;
+import org.eclipse.ecf.example.collab.actions.URIClientConnectAction;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 
@@ -54,13 +53,14 @@ public class JoinGroupWizard extends Wizard {
     protected void finishPage(final IProgressMonitor monitor)
             throws InterruptedException, CoreException {
         
-        ClientConnectAction client = null;
+    	URIClientConnectAction client = null;
         String groupName = mainPage.getJoinGroupText();
         String nickName = mainPage.getNicknameText();
         String containerType = mainPage.getContainerType();
         String password = mainPage.getPasswordText();
-		String namespace = mainPage.getNamespace();
+		//String namespace = mainPage.getNamespace();
         try {
+        	/*
 			ID groupID = null;
 			if (namespace != null) {
 				groupID = IDFactory.getDefault().makeID(namespace,new Object[] { groupName });
@@ -72,6 +72,11 @@ public class JoinGroupWizard extends Wizard {
             client.setContainerType(containerType);
             client.setData(password);
             client.run(null);
+            */
+        	//URI uri = new URI(groupName);
+        	//URI fullURI = new URI(namespace+":"+groupName);
+        	client = new URIClientConnectAction(containerType,groupName,nickName,password,project);
+        	client.run(null);
         } catch (Exception e) {
             String id = ClientPlugin.PLUGIN_ID;
             throw new CoreException(new Status(Status.ERROR, id, 100, "Could not connect to "+groupName, e));

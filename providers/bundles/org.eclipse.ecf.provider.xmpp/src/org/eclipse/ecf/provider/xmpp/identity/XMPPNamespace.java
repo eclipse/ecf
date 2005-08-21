@@ -8,6 +8,8 @@ public class XMPPNamespace extends Namespace {
 
 	private static final long serialVersionUID = 3257569499003041590L;
 
+	private static final String XMPP_PROTOCOL = "xmpp";
+	
 	public ID makeInstance(Class[] argTypes, Object[] args)
 			throws IDInstantiationException {
 		try {
@@ -24,5 +26,9 @@ public class XMPPNamespace extends Namespace {
 		} catch (Exception e) {
 			throw new IDInstantiationException("XMPP ID creation exception", e);
 		}
+	}
+
+	public String getScheme() {
+		return XMPP_PROTOCOL;
 	}
 }

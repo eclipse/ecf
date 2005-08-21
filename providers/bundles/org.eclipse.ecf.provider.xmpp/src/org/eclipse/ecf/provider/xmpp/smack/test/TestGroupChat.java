@@ -24,16 +24,24 @@ public class TestGroupChat {
         conn.login(args[1],args[2]);
         System.out.println("logged in user "+args[1]);
         System.out.println("checking whether service is enabled...");
-        boolean supports = MultiUserChat.isServiceEnabled(conn, "slewis@ecf1.osuosl.org");
+        //GroupChat newGroupChat = conn.createGroupChat("test@ecf1.osuosl.org");
+        //newGroupChat.join("slewis");
+        //      Send a message to all the other people in the chat room.
+        //newGroupChat.sendMessage("Howdy!");
+        
+        boolean supports = MultiUserChat.isServiceEnabled(conn, "slewis@ecf1");
         System.out.println("supports is "+supports);
-        MultiUserChat muc = new MultiUserChat(conn,"myroom@ecf1.osuosl.org");
+        MultiUserChat muc = new MultiUserChat(conn,"myroom3@conference.ecf1");
         muc.create("slewis");
         muc.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
         System.out.println("created multiuser chat");
         
         
+        
         muc.join(args[1]);
-        muc.sendMessage("hello there");
+        for(int i=0; i < 10; i++) {
+        	muc.sendMessage("hello there: "+i);
+        }
         Thread.sleep(200000);
     }
 }

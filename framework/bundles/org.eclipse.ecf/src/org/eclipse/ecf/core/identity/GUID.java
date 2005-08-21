@@ -35,6 +35,10 @@ public class GUID extends StringID {
 			else
 				return new GUID(this);
 		}
+
+		public String getScheme() {
+			return GUID.class.getName();
+		}
 	}
 
 	public static final String SR_DEFAULT_ALGO = null;
@@ -123,18 +127,5 @@ public class GUID extends StringID {
 		StringBuffer sb = new StringBuffer("GUID[");
 		sb.append(value).append("]");
 		return sb.toString();
-	}
-
-	// Test code
-	public static final void main(String[] args) throws Exception {
-		System.out.println("Testing creation of GUID instance");
-		System.out.println("Calling initializeRandom() for the first time...");
-		initializeRandom(SR_DEFAULT_ALGO, SR_DEFAULT_PROVIDER);
-		System.out
-				.println("This will take a long time because of the SecureRandom seed process");
-		GUID myGUID = new GUID(null, 24);
-		System.out.println("Created GUID: " + myGUID);
-		GUID myGUID2 = new GUID(null);
-		System.out.println("Created second GUID: " + myGUID2);
 	}
 }

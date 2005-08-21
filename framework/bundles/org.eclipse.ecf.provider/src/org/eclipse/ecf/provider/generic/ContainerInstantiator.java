@@ -69,9 +69,10 @@ public class ContainerInstantiator implements
         } else {
             debug("creating client");
         }
+        ID newID = null;
         try {
             String [] argDefaults = description.getArgDefaults();
-            ID newID = (argDefaults==null||argDefaults.length==0)?null:getIDFromArg(String.class,
+            newID = (argDefaults==null||argDefaults.length==0)?null:getIDFromArg(String.class,
                     description.getArgDefaults()[0]);
             Integer ka = (argDefaults==null||argDefaults.length < 2)?null:getIntegerFromArg(String.class, description
                     .getArgDefaults()[1]);
@@ -102,7 +103,7 @@ public class ContainerInstantiator implements
         } catch (Exception e) {
             dumpStack("Exception",e);
             throw new ContainerInstantiationException(
-                    "Exception creating generic container", e);
+                    "Exception creating generic container with id "+newID, e);
         }
     }
 }

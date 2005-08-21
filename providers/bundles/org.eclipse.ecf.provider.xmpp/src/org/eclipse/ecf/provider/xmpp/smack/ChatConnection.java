@@ -17,6 +17,7 @@ import org.eclipse.ecf.core.comm.IConnectionEventHandler;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.provider.xmpp.Trace;
 import org.eclipse.ecf.provider.xmpp.container.IIMMessageSender;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
@@ -50,7 +51,8 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 	protected int serverPort = -1;
 	protected Map properties = null;
 	protected boolean isConnected = false;
-
+	protected Namespace namespace = null;
+	
 	protected void debug(String msg) {
 		if (Trace.ON && trace != null) {
 			trace.msg(msg);
@@ -81,8 +83,9 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 	public XMPPConnection getXMPPConnection() {
 		return connection;
 	}
-	public ChatConnection(IAsynchConnectionEventHandler h) {
+	public ChatConnection(Namespace ns, IAsynchConnectionEventHandler h) {
 		this.handler = h;
+		this.namespace = ns;
 		if (smack != null) {
 			XMPPConnection.DEBUG_ENABLED = true;
 		}
@@ -174,7 +177,7 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 		if (!isConnected())
 			return null;
 		try {
-			return IDFactory.getDefault().makeID(XMPPID.PROTOCOL, new Object[] { connection
+			return IDFactory.getDefault().makeID(namespace.getName(), new Object[] { connection
 					.getConnectionID() });
 		} catch (Exception e) {
 			logException("Exception in getLocalID", e);
@@ -231,8 +234,13 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 					throw new IOException(
 							"receiver cannot be null for normal xmpp instant messaging");
 				} else {
+					if (!(receiver instanceof XMPPID)) {
+						throw new IOException("receiver must be of type XMPPID");
+					}
+					XMPPID rcvr = (XMPPID) receiver;
 					msg.setType(Message.Type.CHAT);
-					Chat localChat = connection.createChat(receiver.getName());
+					String userAtHost = rcvr.getUsernameAtHost();
+					Chat localChat = connection.createChat(userAtHost);
 					localChat.sendMessage(msg);
 				}
 			} catch (XMPPException e) {

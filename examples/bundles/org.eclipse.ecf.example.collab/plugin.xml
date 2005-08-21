@@ -51,16 +51,6 @@
                class="org.eclipse.ecf.example.collab.ui.JoinGroupWizardAction"
                menubarPath="org.eclipse.ecf.example.collab.menu1/group1"
                id="org.eclipse.ecf.client.joingroupwizardaction"/>
-         <action
-               label="Join Test Collaboration (OSU OSL)"
-               class="org.eclipse.ecf.example.collab.actions.ProjectPopupOSLAction"
-               menubarPath="org.eclipse.ecf.example.collab.menu1/group2"
-               id="org.eclipse.ecf.example.collab.newAction"/>
-         <action
-               label="Join Test Collaboration (Localhost)"
-               class="org.eclipse.ecf.example.collab.actions.ProjectPopupLocalhostAction"
-               menubarPath="org.eclipse.ecf.example.collab.menu1/group2"
-               id="org.eclipse.ecf.example.collab.newAction1"/>
       </objectContribution>
    </extension>
    <extension

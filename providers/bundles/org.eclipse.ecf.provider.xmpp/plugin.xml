@@ -6,7 +6,7 @@
       <containerFactory
             class="org.eclipse.ecf.provider.xmpp.container.ContainerInstantiator"
             description="Jabber/XMPP Client"
-            name="org.eclipse.ecf.provider.xmpp.Client">
+            name="xmpp.jive">
          <property
                value="true"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>

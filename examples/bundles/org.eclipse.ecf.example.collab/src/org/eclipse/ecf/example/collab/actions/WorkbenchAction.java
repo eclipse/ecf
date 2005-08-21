@@ -28,7 +28,7 @@ public class WorkbenchAction extends ActionDelegate implements IWorkbenchWindowA
     
     public void run() {
         IResource resource = ResourcesPlugin.getWorkspace().getRoot();
-        ClientConnectAction action = new ClientConnectAction();
+        URIClientConnectAction action = new URIClientConnectAction();
         action.setProject(resource);
     }
 

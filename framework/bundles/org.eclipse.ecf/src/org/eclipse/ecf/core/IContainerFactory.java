@@ -1,6 +1,5 @@
 package org.eclipse.ecf.core;
 
-import java.net.URI;
 import java.util.List;
 
 public interface IContainerFactory {
@@ -136,33 +135,6 @@ public interface IContainerFactory {
 	 */
 	public IContainer makeContainer(String descriptionName, String[] argsTypes,
 			Object[] args) throws ContainerInstantiationException;
-
-	/**
-	 * Make a container given a description name and a uri. The description name
-	 * is used to lookup the container, and if found an ID instance is created.
-	 * 
-	 * @param descriptionName
-	 *            the ContainerDescription name to lookup
-	 * @param uri
-	 *            the URI to use as the new container's ID
-	 * @return a valid instance of IContainer
-	 * @throws ContainerInstantiationException
-	 */
-	public IContainer makeContainer(String descriptionName, URI uri)
-			throws ContainerInstantiationException;
-
-	/**
-	 * Make container given a URI. The given URI provides a scheme that is used
-	 * to lookup both the Namespace for the new ID instance, and the name of the
-	 * container factory extension. For example, the following URI:
-	 * 
-	 * protocol.name.foo:bar.com:3222/path
-	 * 
-	 * Would result in a namespace lookup with identifier 'protocol.name.foo', a
-	 * container instantiator lookup with 'protocol.name.foo'
-	 */
-	public IContainer makeContainer(URI aURI)
-			throws ContainerInstantiationException;
 
 	/**
 	 * Remove given description from set known to this factory.

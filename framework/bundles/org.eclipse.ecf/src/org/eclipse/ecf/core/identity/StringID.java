@@ -33,6 +33,10 @@ public class StringID extends BaseID {
 				throws IDInstantiationException {
 			return new StringID(this, (String) args[0]);
 		}
+
+		public String getScheme() {
+			return StringID.class.getName();
+		}
 	}
 	protected String value;
 

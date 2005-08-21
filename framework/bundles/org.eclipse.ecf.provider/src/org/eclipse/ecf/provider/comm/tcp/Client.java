@@ -243,7 +243,7 @@ public final class Client implements ISynchAsynchConnection {
         // parse URI
         URI anURI = null;
         try {
-            anURI = remote.toURI();
+            anURI = new URI(remote.getName());
         } catch (URISyntaxException e) {
             IOException except = new IOException("Invalid URI for remote "+remote);
             except.setStackTrace(e.getStackTrace());

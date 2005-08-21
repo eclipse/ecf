@@ -25,6 +25,7 @@ public class ProviderPlugin extends Plugin {
     //Resource bundle.
     private ResourceBundle resourceBundle;
 
+    public static final String NAMESPACE_IDENTIFIER = org.eclipse.ecf.core.identity.StringID.class.getName();
     /**
      * The constructor.
      */
@@ -78,5 +79,9 @@ public class ProviderPlugin extends Plugin {
      */
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
+    }
+    
+    public String getNamespaceIdentifier() {
+    	return NAMESPACE_IDENTIFIER;
     }
 }

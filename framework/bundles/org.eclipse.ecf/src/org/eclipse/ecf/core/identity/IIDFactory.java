@@ -29,7 +29,15 @@ public interface IIDFactory {
 	 */
 	public boolean containsNamespace(Namespace n) throws SecurityException;
 
-	public List getNamespaces();
+	/**
+	 * Get a list of the current Namespace instances exposed by this factory.
+	 * 
+	 * @return List<Namespace> of Namespace instances
+	 * @exception SecurityException
+	 *                thrown if caller does not have appropriate
+	 *                NamespacePermission for given namespace
+	 */
+	public List getNamespaces() throws SecurityException;
 
 	/**
 	 * Get the given Namespace instance from table
@@ -43,10 +51,34 @@ public interface IIDFactory {
 	 */
 	public Namespace getNamespace(Namespace n) throws SecurityException;
 
+	/**
+	 * Get a Namespace instance by its string name.  
+	 * 
+	 * @param name the name to use for lookup
+	 * @return Namespace instance.  Null if not found.
+	 * @exception SecurityException
+	 *                thrown if caller does not have appropriate
+	 *                NamespacePermission for given namespace
+	 */
 	public Namespace getNamespaceByName(String name) throws SecurityException;
 
+	/**
+	 * Make a GUID using SHA-1 hash algorithm and a default of 16bits of data length. The
+	 * value is Base64 encoded to allow for easy display. 
+	 * 
+	 * @return new ID instance
+	 * @throws IDInstantiationException if ID cannot be constructed
+	 */
 	public ID makeGUID() throws IDInstantiationException;
 
+	/**
+	 * Make a GUID using SHA-1 hash algorithm and a default of 16bits of data length.  The
+	 * value is Base64 encoded to allow for easy display. 
+	 * 
+	 * @param length the byte-length of data used to create a GUID
+	 * @return new ID instance
+	 * @throws IDInstantiationException if ID cannot be constructed
+	 */
 	public ID makeGUID(int length) throws IDInstantiationException;
 
 	/**
@@ -96,7 +128,7 @@ public interface IIDFactory {
 	 *            the Namespace to which the ID will belong
 	 * @param args
 	 *            an Object [] of the args for the ID instance constructor
-	 * @exception Exception
+	 * @exception IDInstantiationException
 	 *                thrown if class for instantiator or instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
@@ -113,8 +145,8 @@ public interface IIDFactory {
 	 *            the name of the Namespace to which the ID will belong
 	 * @param args
 	 *            an Object [] of the args for the ID instance constructor
-	 * @exception Exception
-	 *                thrown if class for instantiator or instance can't be
+	 * @exception IDInstantiationException
+	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
@@ -122,22 +154,51 @@ public interface IIDFactory {
 			throws IDInstantiationException;
 
 	/**
-	 * Make a new identity instance from a URI. Returns a new instance of an ID
-	 * belonging to the Namespace associated with the URI <b>scheme</b>. The
-	 * URI scheme (e.g. http) is used to lookup the Namespace instance, and the
-	 * entire URI is then passed to the IDInstantiator as a single item Object
-	 * [].
+	 * Make a new identity instance from a namespace and String.
 	 * 
+	 * @param namespace
+	 *            the namespace to use to make the ID
 	 * @param uri
-	 *            the URI to use to make ID.
-	 * @param args
-	 *            an Object [] of the args for the ID instance constructor
-	 * @exception Exception
-	 *                thrown if class for instantiator or iD instance can't be
+	 *            the String uri to use to make the ID
+	 * @exception IDInstantiationException
+	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID makeID(URI uri) throws IDInstantiationException;
+	public ID makeID(Namespace namespace, String uri)
+			throws IDInstantiationException;
+
+	/**
+	 * Make a new identity instance from a namespacename and URI.  The namespacename
+	 * is first used to lookup the namespace with getNamespaceByName(), and then
+	 * the result is passed into makeID(Namespace,String).
+	 * 
+	 * @param namespacename
+	 *            the namespacename to use to make the ID
+	 * @param uri
+	 *            the String uri to use to make the ID
+	 * @exception IDInstantiationException
+	 *                thrown if class for instantiator or ID instance can't be
+	 *                loaded, if something goes wrong during instance
+	 *                construction
+	 */
+	public ID makeID(String namespace, String uri)
+			throws IDInstantiationException;
+
+	/**
+	 * Make a new identity instance from a namespace and URI.
+	 * 
+	 * @param namespace
+	 *            the namespace to use to make the ID
+	 * @param uri
+	 *            the URI to use to make ID.
+	 * @exception IDInstantiationException
+	 *                thrown if class for instantiator or ID instance can't be
+	 *                loaded, if something goes wrong during instance
+	 *                construction
+	 */
+	public ID makeID(Namespace namespace, URI uri)
+			throws IDInstantiationException;
 
 	/**
 	 * Make a new identity instance from a namespace name and URI.
@@ -146,20 +207,54 @@ public interface IIDFactory {
 	 *            the name of the namespace to use to make the ID
 	 * @param uri
 	 *            the URI to use to make ID.
-	 * @param args
-	 *            an Object [] of the args for the ID instance constructor
-	 * @exception Exception
-	 *                thrown if class for instantiator or iD instance can't be
+	 * @exception IDInstantiationException
+	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
 	public ID makeID(String namespacename, URI uri)
 			throws IDInstantiationException;
 
+	/**
+	 * Make a an ID from a String
+	 * @param idstring the String to use as this ID's unique value.  Note:  It is incumbent upon
+	 * the caller of this method to be sure that the given string allows the resulting ID to
+	 * satisfy the ID contract for global uniqueness within the associated Namespace.
+	 * 
+	 * @return valid ID instance
+	 * @throws IDInstantiationException
+	 *                thrown if class for instantiator or ID instance can't be
+	 *                loaded, if something goes wrong during instance
+	 *                construction
+	 */
 	public ID makeStringID(String idstring) throws IDInstantiationException;
 
+	/**
+	 * Make a an ID from a Long
+	 * @param l the Long to use as this ID's unique value.  Note:  It is incumbent upon
+	 * the caller of this method to be sure that the given Long allows the resulting ID to
+	 * satisfy the ID contract for global uniqueness within the associated Namespace.
+	 * 
+	 * @return valid ID instance
+	 * @throws IDInstantiationException
+	 *                thrown if class for instantiator or ID instance can't be
+	 *                loaded, if something goes wrong during instance
+	 *                construction
+	 */
 	public ID makeLongID(Long l) throws IDInstantiationException;
 
+	/**
+	 * Make a an ID from a long
+	 * @param l the long to use as this ID's unique value.  Note:  It is incumbent upon
+	 * the caller of this method to be sure that the given long allows the resulting ID to
+	 * satisfy the ID contract for global uniqueness within the associated Namespace.
+	 * 
+	 * @return valid ID instance
+	 * @throws IDInstantiationException
+	 *                thrown if class for instantiator or ID instance can't be
+	 *                loaded, if something goes wrong during instance
+	 *                construction
+	 */
 	public ID makeLongID(long l) throws IDInstantiationException;
 
 	/**

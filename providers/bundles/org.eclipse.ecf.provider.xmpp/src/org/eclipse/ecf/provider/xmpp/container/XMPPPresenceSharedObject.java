@@ -13,18 +13,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerConnectedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.presence.IAccountManager;
@@ -67,6 +67,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     Vector presenceListeners = new Vector();
     Vector sharedObjectMessageListeners = new Vector();
     Vector subscribeListeners = new Vector();
+	Namespace namespace = null;
 	
     protected void addPresenceListener(IPresenceListener listener) {
         presenceListeners.add(listener);
@@ -326,12 +327,13 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     public void init(ISharedObjectConfig initData)
             throws SharedObjectInitException {
         this.config = initData;
+        this.namespace = getContext().getConnectNamespace();
     }
 
     protected ID makeIDFromName(String name) {
         ID result = null;
         try {
-            result = IDFactory.getDefault().makeID(XMPPID.PROTOCOL, new Object[] { name });
+            result = IDFactory.getDefault().makeID(namespace.getName(), new Object[] { name });
             return result;
         } catch (Exception e) {
             dumpStack("Exception in makeIDFromName", e);

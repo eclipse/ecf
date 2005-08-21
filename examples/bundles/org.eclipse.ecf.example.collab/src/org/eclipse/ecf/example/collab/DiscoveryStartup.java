@@ -5,16 +5,13 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.util.Map;
 import java.util.Properties;
-
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceEvent;
@@ -22,7 +19,7 @@ import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
-import org.eclipse.ecf.example.collab.actions.ClientConnectAction;
+import org.eclipse.ecf.example.collab.actions.URIClientConnectAction;
 import org.eclipse.ecf.ui.views.DiscoveryView;
 import org.eclipse.ecf.ui.views.IDiscoveryController;
 import org.eclipse.swt.widgets.Display;
@@ -38,7 +35,7 @@ public class DiscoveryStartup {
 	public static final String TCPSERVER_DISCOVERY_TYPE = "_ecftcp._tcp.local.";
 	public static final String PROP_PROTOCOL_NAME = "protocol";
 	public static final String PROP_CONTAINER_TYPE_NAME = "containertype";
-	public static final String PROP_CONTAINER_TYPE_VALUE = Client.GENERIC_CONTAINER_CLIENT_NAME;
+	public static final String PROP_CONTAINER_TYPE_VALUE = CollabClient.GENERIC_CONTAINER_CLIENT_NAME;
 	public static final String PROP_PW_REQ_NAME = "pwrequired";
 	public static final String PROP_PW_REQ_VALUE = "false";
 	public static final String PROP_DEF_USER_NAME = "defaultuser";
@@ -103,26 +100,25 @@ public class DiscoveryStartup {
 	}
 
 	protected void connectToServiceFromInfo(IServiceInfo svcInfo) {
-		ClientConnectAction action = new ClientConnectAction();
 		Map props = svcInfo.getProperties();
 		String type = (String) props.get(PROP_CONTAINER_TYPE_NAME);
 		if (type == null || type.equals("")) {
-			action.setContainerType(Client.GENERIC_CONTAINER_CLIENT_NAME);
-		} else {
-			action.setContainerType(type);
-		}
+			//action.setContainerType(CollabClient.GENERIC_CONTAINER_CLIENT_NAME);
+			type = CollabClient.GENERIC_CONTAINER_CLIENT_NAME;
+		} 
 		String username = System.getProperty("user.name");
-		action.setUsername(username);
-		ID targetID = null;
 		String targetString = null;
-        try {
-    		targetString = svcInfo.getServiceURI().toString();
-            targetID = IDFactory.getDefault().makeStringID(targetString);
-        } catch (Exception e) {
-        	ClientPlugin.log("cannot create target id for "+targetString,e);
-        }
-		action.setTargetID(targetID);
-		action.setProject(ResourcesPlugin.getWorkspace().getRoot());
+		IResource workspace = null;
+		try {
+			targetString = svcInfo.getServiceURI().toString();
+			workspace = CollabClient.getWorkspace();
+		} catch (Exception e) {
+			ClientPlugin.log("Exception connecting to service with info "+svcInfo,e);
+			return;
+		}
+		//action.setTargetID(targetID);
+		//action.setProject(ResourcesPlugin.getWorkspace().getRoot());
+		URIClientConnectAction action = new URIClientConnectAction(type,targetString,username,null,workspace);
 		// do it
 		action.run(null);
 	}

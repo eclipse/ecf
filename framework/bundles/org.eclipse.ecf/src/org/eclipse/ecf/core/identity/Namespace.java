@@ -15,12 +15,7 @@ import java.net.URISyntaxException;
 /**
  * Namespace class. This class defines the properties associated with an
  * identity Namespace. Namespaces are defined by a unique 'name' (e.g. 'email',
- * 'icq', 'aolim'), and an 'instantiatorClass'. The instantiator class defines a
- * class that implements the org.eclipse.ecf.identity.provider.IDInstantiator
- * interface and is responsible for creating instances of the given namespace.
- * The instances created by the instantiatorClass <b>must </b> implement the
- * org.eclipse.ecf.identity.ID interface, but otherwise can provide any other
- * identity functionality desired.
+ * 'icq', 'aolim').
  * 
  */
 public abstract class Namespace implements Serializable {
@@ -93,24 +88,52 @@ public abstract class Namespace implements Serializable {
 	}
 
 	/**
+	 * Get the name of this namespace.  May not return null.
+	 * 
 	 * @return String name of Namespace instance
 	 * 
 	 */
 	public String getName() {
 		return name;
 	}
-
+	/**
+	 * Get the description, associated with this Namespace.  The returned value may be null.
+	 * @return
+	 */
 	public String getDescription() {
 		return description;
 	}
-
+	/**
+	 * Make an instance of this namespace.  Namespace subclasses, provided by plugins
+	 * must implement this method to construct ID instances for the given namespace.
+	 * 
+	 * @param argTypes a Class[] of classes defining the types of the args.  May be null if
+	 * no arguments given.  The arity and classes provided must correspond to the types of 
+	 * the associated arguments
+	 * @param args an Object[] of arguments for creating ID instances.  May be null if no
+	 * arguments provided
+	 * @return a non-null ID instance.  The class used may extend BaseID or may implement
+	 * the ID interface directly
+	 * @throws IDInstantiationException if construction fails
+	 */
 	public abstract ID makeInstance(Class[] argTypes, Object[] args)
 			throws IDInstantiationException;
 
+	/*
+	 * Get the URI scheme associated with this namespace instance.  For example,
+	 * a namespace with name "ecf.http" would have an associated scheme identifier of "http".
+	 * Subclasses must provide an implementation that returns a valid non-null scheme 
+	 * identifier.
+	 * 
+	 * @return a String scheme identifier
+	 */
+	public abstract String getScheme();
+	
 	public String toString() {
 		StringBuffer b = new StringBuffer("Namespace[");
-		b.append(name).append(";");
-		b.append(description).append("]");
+		b.append("name=").append(name).append(";");
+		b.append("scheme=").append(getScheme()).append(";");
+		b.append("description=").append("]");
 		return b.toString();
 	}
 }

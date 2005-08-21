@@ -25,6 +25,10 @@ public class LongID extends BaseID {
 				throws IDInstantiationException {
 			return new LongID(this, (Long) args[0]);
 		}
+
+		public String getScheme() {
+			return LongID.class.toString();
+		}
 	}
 
 	protected LongID(Namespace n, Long v) {

@@ -11,6 +11,7 @@ package org.eclipse.ecf.core;
 import java.io.IOException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 
@@ -181,4 +182,9 @@ public interface ISharedObjectContext extends IAdaptable {
 	 *         such services
 	 */
 	public IOSGIService getServiceAccess();
+	/**
+	 * Get the Namespace instance that defines the ID type expected by the remote target container 
+	 * @return Namespace the namespace by the target for a call to connect()
+	 */
+	public Namespace getConnectNamespace();
 }

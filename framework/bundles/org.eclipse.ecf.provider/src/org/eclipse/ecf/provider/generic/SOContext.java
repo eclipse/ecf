@@ -24,6 +24,7 @@ import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.provider.Trace;
@@ -261,5 +262,9 @@ public class SOContext implements ISharedObjectContext {
             return container.getOSGIServiceInterface();
         }
     }
+
+	public Namespace getConnectNamespace() {
+		return container.getConnectNamespace();
+	}
 
 }

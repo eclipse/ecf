@@ -9,10 +9,8 @@ import org.eclipse.ecf.core.identity.Namespace;
 public class XMPPID extends BaseID {
 
 	private static final long serialVersionUID = 3257289140701049140L;
+	public static final char USER_HOST_DELIMITER = '@';
 	
-    public static final String ADDRESS_SEPARATOR = "@";
-    public static final String PROTOCOL = "xmpp.jive";
-    
 	URI uri;
 	
 	protected static String fixEscape(String src) {
@@ -23,7 +21,7 @@ public class XMPPID extends BaseID {
 	protected XMPPID(Namespace namespace, String username, String host, String query) throws URISyntaxException {
 		super(namespace);
 		username = fixEscape(username);
-		uri = new URI(namespace.getName()+":"+username+ADDRESS_SEPARATOR+host+((query==null)?"":("?"+query)));
+		uri = new URI(namespace.getScheme(),username,host,-1,"",query,null);
 	}
 	protected XMPPID(Namespace namespace, String username, String host) throws URISyntaxException {
 		this(namespace,username,host,null);
@@ -31,8 +29,14 @@ public class XMPPID extends BaseID {
 	protected XMPPID(Namespace namespace, String unamehost) throws URISyntaxException {
 		super(namespace);
 		unamehost = fixEscape(unamehost);
-		uri = new URI(namespace.getName()+":"+unamehost);
+		if (unamehost == null) throw new URISyntaxException(unamehost,"username/host string cannot be null");
+		int atIndex = unamehost.indexOf(USER_HOST_DELIMITER);
+		if (atIndex == -1) throw new URISyntaxException(unamehost,"username/host string not valid.  Must be of form <username>@<hostname>");
+		String username = unamehost.substring(0,atIndex);
+		String host = unamehost.substring(atIndex+1);
+		uri = new URI(namespace.getScheme(),username,host,-1,null,null,null);
 	}
+	
 	protected int namespaceCompareTo(BaseID o) {
         return getName().compareTo(o.getName());
 	}
@@ -46,7 +50,7 @@ public class XMPPID extends BaseID {
 	}
 
 	protected String namespaceGetName() {
-		return uri.getSchemeSpecificPart();
+		return getUsernameAtHost();
 	}
 
 	protected int namespaceHashCode() {
@@ -58,17 +62,15 @@ public class XMPPID extends BaseID {
 	}
 	
 	public String getUsername() {
-		String name = getName();
-		if (name == null) return null;
-		return name.substring(0,name.indexOf(ADDRESS_SEPARATOR));
+		return uri.getUserInfo();
 	}
 	
 	public String getHostname() {
-		String name = getName();
-		if (name == null) return null;
-		return name.substring(name.indexOf(ADDRESS_SEPARATOR)+1,name.length());
+		return uri.getHost();
 	}
-	
+	public String getUsernameAtHost() {
+		return getUsername()+"@"+getHostname();
+	}
 	public String toString() {
 		StringBuffer sb = new StringBuffer("XMPPID[");
 		sb.append(uri.toString()).append("]");

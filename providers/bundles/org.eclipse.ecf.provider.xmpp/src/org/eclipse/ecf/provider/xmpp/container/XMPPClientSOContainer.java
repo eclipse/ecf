@@ -22,6 +22,7 @@ import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
@@ -41,6 +42,7 @@ import org.eclipse.ecf.provider.generic.SOConfig;
 import org.eclipse.ecf.provider.generic.SOContainerConfig;
 import org.eclipse.ecf.provider.generic.SOContext;
 import org.eclipse.ecf.provider.generic.SOWrapper;
+import org.eclipse.ecf.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
@@ -56,6 +58,8 @@ import org.jivesoftware.smack.packet.Presence;
 public class XMPPClientSOContainer extends ClientSOContainer {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
+	public static final String NAMESPACE_IDENTIFIER = XmppPlugin.getDefault().getNamespaceIdentifier();
+	
 	public static final String XMPP_SHARED_OBJECT_ID = XMPPClientSOContainer.class
 			.getName()
 			+ ".xmpphandler";
@@ -119,7 +123,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	protected ISynchAsynchConnection makeConnection(ID remoteSpace,
 			Object data) throws ConnectionInstantiationException {
 		ISynchAsynchConnection conn = null;
-		conn = new ChatConnection(receiver);
+		conn = new ChatConnection(getConnectNamespace(),receiver);
 		Object res = conn.getAdapter(IIMMessageSender.class);
 		if (res != null) {
 			// got it
@@ -156,7 +160,9 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		} else
 			return null;
 	}
-
+	public Namespace getConnectNamespace() {
+		return IDFactory.getDefault().getNamespaceByName("xmpp.jive");
+	}
 	protected void handleChatMessage(Message mess) throws IOException {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
 		if (wrap != null) {

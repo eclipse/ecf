@@ -12,7 +12,6 @@ package org.eclipse.ecf.example.sdo.editor;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -22,7 +21,7 @@ import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.example.collab.Client;
+import org.eclipse.ecf.example.collab.CollabClient;
 import org.eclipse.ecf.sdo.DataGraphSharingFactory;
 import org.eclipse.ecf.sdo.ISharedDataGraph;
 import org.eclipse.ecf.sdo.IUpdateConsumer;
@@ -31,7 +30,6 @@ import org.eclipse.ecf.sdo.WaitableSubscriptionCallback;
 import org.eclipse.ecf.sdo.emf.EMFUpdateProvider;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-
 import commonj.sdo.DataGraph;
 
 /**
@@ -176,7 +174,7 @@ public class EditorPlugin extends AbstractUIPlugin {
 
     private ISharedObjectContainer getContainer(IProject project)
             throws ECFException {
-        return Client.getContainer(project);
+        return CollabClient.getContainer(project);
     }
 
     private PublishedGraphTracker getTracker(ISharedObjectContainer container)
