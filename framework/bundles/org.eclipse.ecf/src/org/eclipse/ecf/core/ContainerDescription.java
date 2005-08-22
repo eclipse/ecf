@@ -16,8 +16,6 @@ import org.eclipse.ecf.core.provider.IContainerInstantiator;
 /**
  * Description of an ISharedObjectContainer factory implementation.
  * 
- * @see SharedObjectContainerFactory#addDescription(ContainerDescription)
- * 
  */
 public class ContainerDescription {
 	protected String name;

@@ -3,6 +3,10 @@ package org.eclipse.ecf.core.identity;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * Contract for {@link IDFactory}
+ *
+ */
 public interface IIDFactory {
 	/**
 	 * Add the given Namespace to our table of available Namespaces
@@ -141,7 +145,7 @@ public interface IIDFactory {
 	 * constructor arguments, return a new instance of an ID belonging to the
 	 * given Namespace
 	 * 
-	 * @param n
+	 * @param namespacename
 	 *            the name of the Namespace to which the ID will belong
 	 * @param args
 	 *            an Object [] of the args for the ID instance constructor
@@ -182,7 +186,7 @@ public interface IIDFactory {
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID makeID(String namespace, String uri)
+	public ID makeID(String namespacename, String uri)
 			throws IDInstantiationException;
 
 	/**

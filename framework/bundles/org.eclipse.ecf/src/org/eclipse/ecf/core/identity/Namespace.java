@@ -13,7 +13,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * Namespace class. This class defines the properties associated with an
+ * Namespace base class
+ * 
+ * All implementers of the 'namespace' extension point must
+ * implement a subclass of this Namespace class
+ * 
+ * This class defines the properties associated with an
  * identity Namespace. Namespaces are defined by a unique 'name' (e.g. 'email',
  * 'icq', 'aolim').
  * 
@@ -98,7 +103,7 @@ public abstract class Namespace implements Serializable {
 	}
 	/**
 	 * Get the description, associated with this Namespace.  The returned value may be null.
-	 * @return
+	 * @return the description associated with this Namespace
 	 */
 	public String getDescription() {
 		return description;
@@ -119,7 +124,7 @@ public abstract class Namespace implements Serializable {
 	public abstract ID makeInstance(Class[] argTypes, Object[] args)
 			throws IDInstantiationException;
 
-	/*
+	/**
 	 * Get the URI scheme associated with this namespace instance.  For example,
 	 * a namespace with name "ecf.http" would have an associated scheme identifier of "http".
 	 * Subclasses must provide an implementation that returns a valid non-null scheme 

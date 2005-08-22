@@ -13,7 +13,6 @@ import java.util.Map;
 /**
  * Configuration information associated with ISharedObjectContainer.
  * 
- * @see ISharedObjectContainer#getConfig()
  */
 public interface ISharedObjectContainerConfig extends IIdentifiable {
 	/**

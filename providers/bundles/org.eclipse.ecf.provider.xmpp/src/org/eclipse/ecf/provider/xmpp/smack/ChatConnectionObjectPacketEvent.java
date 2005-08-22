@@ -16,10 +16,6 @@ public class ChatConnectionObjectPacketEvent extends AsynchConnectionEvent {
 
 	private static final long serialVersionUID = -1618091206033717358L;
 	Object value;
-	/**
-	 * @param source
-	 * @param param
-	 */
 	public ChatConnectionObjectPacketEvent(IAsynchConnection source, Packet p, Object obj) {
 		super(source,p);
 		this.value = obj;

@@ -12,7 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * Contract for ECF identity.
+ * Contract for ECF identity
  * <p>
  * The contract defined by this interface is similar-to, but stronger than that
  * implied by Object.equals() and Object.hashCode.

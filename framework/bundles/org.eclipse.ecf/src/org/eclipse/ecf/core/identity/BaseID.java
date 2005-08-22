@@ -11,6 +11,14 @@ package org.eclipse.ecf.core.identity;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/**
+ * Base class for ID implementation classes
+ * 
+ * Plugin providers wishing to provide new Namespaces and ID implementations are
+ * recommended (but not required) to use this class as a super class for their
+ * ID implementation class
+ * 
+ */
 public abstract class BaseID implements ID {
 	Namespace namespace;
 

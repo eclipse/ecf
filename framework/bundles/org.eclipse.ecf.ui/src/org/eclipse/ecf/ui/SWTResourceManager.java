@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.*;
  * <p>
  * Copyright (c) 2003 - 2005, Instantiations, Inc. <br>All Rights Reserved
  * 
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author scheglov_ke
  * @author Dan Rubel
  */
@@ -298,7 +298,7 @@ public class SWTResourceManager {
      * Returns a font based on its name, height and style. 
      * Windows-specific strikeout and underline flags are also supported.
      * @param name String The name of the font
-     * @param height int The height of the font
+     * @param size int The size of the font
      * @param style int The style of the font
      * @param strikeout boolean The strikeout flag (warning: Windows only)
      * @param underline boolean The underline flag (warning: Windows only)

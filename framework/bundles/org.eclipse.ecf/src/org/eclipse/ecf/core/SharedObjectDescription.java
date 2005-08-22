@@ -16,8 +16,6 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Description of an ISharedObject instance.
  * 
- * @see org.eclipse.ecf.core.ISharedObjectManager#createSharedObject(SharedObjectDescription,
- *      ISharedObjectContainerTransaction)
  */
 public class SharedObjectDescription implements Serializable {
 	private static final long serialVersionUID = 3257848783613146929L;

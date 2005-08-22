@@ -2,6 +2,9 @@ package org.eclipse.ecf.core;
 
 import java.util.List;
 
+/**
+ * Container factory contract {@link ContainerFactory} for default implementation.
+ */
 public interface IContainerFactory {
 	/*
 	 * Add a ContainerDescription to the set of known ContainerDescriptions.

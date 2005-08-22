@@ -60,7 +60,7 @@ public interface ISharedObjectContext extends IAdaptable {
 	/**
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.IContainer#connect()
+	 * @see org.eclipse.ecf.core.IContainer#connect(ID,IConnectContext)
 	 */
 	public void connect(ID groupID, IConnectContext connectContext)
 			throws ContainerConnectException;

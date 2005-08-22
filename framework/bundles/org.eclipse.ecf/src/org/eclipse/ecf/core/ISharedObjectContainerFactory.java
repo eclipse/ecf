@@ -1,5 +1,8 @@
 package org.eclipse.ecf.core;
 
+/**
+ * Factory contract for {@link SharedObjectContainerFactory}
+ */
 public interface ISharedObjectContainerFactory {
 	/**
 	 * Make ISharedObjectContainer instance.

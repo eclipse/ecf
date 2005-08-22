@@ -362,8 +362,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 * @param toID
 	 *            the ID (or null) of the container intended to receive this
 	 *            request
-	 * @param seq
-	 *            the sequence number associated with the container message
 	 * @param desc
 	 *            the SharedObjectDescription that describes the shared object
 	 *            to be created

@@ -40,17 +40,17 @@ public interface IPresenceContainer {
 
 	/**
 	 * Get interface for sending presence updates
-	 * @return
+	 * @return IPresenceSender.  Null if no presence sender available
 	 */
     public IPresenceSender getPresenceSender();
 	/**
 	 * Get interface for sending messages
-	 * @return
+	 * @return IMessageSender.  Null if no message sender available
 	 */
     public IMessageSender getMessageSender();
 	/**
 	 * Get interface for managing account
-	 * @return
+	 * @return IAccountManger.  Null if no account manager available
 	 */
 	public IAccountManager getAccountManager();
 	

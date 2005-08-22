@@ -2,6 +2,9 @@ package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Contract for reliable container
+ */
 public interface IReliableContainer extends IContainer {
 	/**
 	 * Get the current membership of the joined group. This method will

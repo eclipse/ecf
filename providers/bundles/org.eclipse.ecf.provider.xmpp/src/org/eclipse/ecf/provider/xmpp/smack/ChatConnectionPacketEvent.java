@@ -16,10 +16,6 @@ public class ChatConnectionPacketEvent extends AsynchConnectionEvent {
 
 	private static final long serialVersionUID = 7000820721266245824L;
 
-	/**
-	 * @param source
-	 * @param param
-	 */
 	public ChatConnectionPacketEvent(IAsynchConnection source, Packet p) {
 		super(source,p);
 	}

@@ -13,8 +13,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectPolicy;
 
 /**
- * @author slewis
- * 
+ * Contract for shared object container group manager (e.g. servers)
  */
 public interface ISharedObjectContainerGroupManager {
 	/**
