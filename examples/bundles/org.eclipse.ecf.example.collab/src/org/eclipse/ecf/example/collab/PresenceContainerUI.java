@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
@@ -42,7 +42,7 @@ public class PresenceContainerUI {
 		this.accountManager = pc.getAccountManager();		
 	}
 	
-    protected void setup(final ISharedObjectContainer container, final ID localUser, final String nick) {
+    protected void setup(final IContainer container, final ID localUser, final String nick) {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
                 try {

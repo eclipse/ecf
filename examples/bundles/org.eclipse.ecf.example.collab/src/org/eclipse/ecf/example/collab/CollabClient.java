@@ -13,8 +13,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.SharedObjectContainerFactory;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -43,8 +44,8 @@ public class CollabClient {
 			String nickname, final Object connectData, final IResource resource)
 			throws Exception {
 		// Here we create the container instance
-		final ISharedObjectContainer newClient = SharedObjectContainerFactory
-				.getDefault().makeSharedObjectContainer(containerType);
+		final IContainer newClient = ContainerFactory
+				.getDefault().makeContainer(containerType);
 		// Create a new client entry to hold onto container once created
 		final ClientEntry newClientEntry = new ClientEntry(containerType,
 				newClient);
@@ -68,7 +69,7 @@ public class CollabClient {
 			ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient
 					.getAdapter(ISharedObjectContainer.class);
 			if (sharedObjectContainer != null) {
-				new SharedObjectContainerUI(this,sharedObjectContainer).setup(
+				new SharedObjectContainerUI(this,sharedObjectContainer).setup(sharedObjectContainer,
 						newClientEntry, resource, username);
 			}
 		}
@@ -209,7 +210,11 @@ public class CollabClient {
         if (entry == null) {
             entry = getClientEntry(ResourcesPlugin.getWorkspace().getRoot(),GENERIC_CONTAINER_CLIENT_NAME);
         }
-        if (entry != null) return entry.getContainer();
+        if (entry != null) {
+        	IContainer cont = entry.getContainer();
+        	if (cont != null) return (ISharedObjectContainer) cont.getAdapter(ISharedObjectContainer.class);
+        	else return null;
+        }
         else return null;
     }
 	public static CollabClient getDefault() {

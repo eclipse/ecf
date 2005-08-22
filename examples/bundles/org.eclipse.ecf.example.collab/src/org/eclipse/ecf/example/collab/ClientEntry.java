@@ -3,22 +3,22 @@
  */
 package org.eclipse.ecf.example.collab;
 
-import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 
 public class ClientEntry {
-	ISharedObjectContainer client;
+	IContainer client;
 	EclipseCollabSharedObject obj;
 	String containerType;
 	boolean isDisposed = false;
 	
-	public ClientEntry(String type, ISharedObjectContainer cont) {
+	public ClientEntry(String type, IContainer cont) {
 		this.containerType = type;
 		this.client = cont;
 	}
 
-	public ISharedObjectContainer getContainer() {
+	public IContainer getContainer() {
 		return client;
 	}
 
