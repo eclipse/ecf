@@ -14,7 +14,6 @@ package org.eclipse.ecf.example.collab;
 import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

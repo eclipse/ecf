@@ -19,6 +19,7 @@ import org.osgi.framework.BundleContext;
 public class XmppPlugin extends Plugin {
     public static final String XMPPPLUGIN_NAME = "org.eclipse.ecf.provider.xmpp";
     public static final String NAMESPACE_IDENTIFIER = "xmpp.jive";
+    public static final String ROOM_NAMESPACE_IDENTIFIER = "xmpp.room.jive";
 
 	//The shared instance.
 	private static XmppPlugin plugin;
@@ -81,5 +82,7 @@ public class XmppPlugin extends Plugin {
     public String getNamespaceIdentifier() {
     	return NAMESPACE_IDENTIFIER;
     }
-
+    public String getRoomNamespaceIdentifier() {
+    	return ROOM_NAMESPACE_IDENTIFIER;
+    }
 }

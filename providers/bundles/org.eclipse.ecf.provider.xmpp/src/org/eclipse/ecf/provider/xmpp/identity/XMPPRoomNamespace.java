@@ -7,7 +7,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 public class XMPPRoomNamespace extends Namespace {
 
 	private static final long serialVersionUID = 4348545761410397583L;
-	private static final String XMPP_PROTOCOL = "xmpp";
+	private static final String XMPP_ROOM_PROTOCOL = "xmpp.room";
 	
 	public ID makeInstance(Class[] argTypes, Object[] args)
 			throws IDInstantiationException {
@@ -24,6 +24,6 @@ public class XMPPRoomNamespace extends Namespace {
 	}
 
 	public String getScheme() {
-		return XMPP_PROTOCOL;
+		return XMPP_ROOM_PROTOCOL;
 	}
 }

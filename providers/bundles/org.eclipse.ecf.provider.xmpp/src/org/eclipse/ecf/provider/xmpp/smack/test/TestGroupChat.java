@@ -4,7 +4,10 @@
  */
 package org.eclipse.ecf.provider.xmpp.smack.test;
 
+import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
@@ -36,7 +39,16 @@ public class TestGroupChat {
         muc.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
         System.out.println("created multiuser chat");
         
-        
+        muc.addMessageListener(new PacketListener() {
+
+			public void processPacket(Packet arg0) {
+				if (arg0 instanceof Message) {
+					Message mess = (Message) arg0;
+					System.out.println("From="+mess.getFrom()+",To="+mess.getTo()+",Subject="+mess.getSubject()+",Thread="+mess.getThread()+",Type="+mess.getType()+",Body="+mess.getBody());
+				}
+			}
+        	
+        });
         
         muc.join(args[1]);
         for(int i=0; i < 10; i++) {

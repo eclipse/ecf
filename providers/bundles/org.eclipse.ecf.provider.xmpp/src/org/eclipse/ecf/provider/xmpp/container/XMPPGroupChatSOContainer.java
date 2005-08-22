@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
@@ -20,23 +21,28 @@ import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
 import org.eclipse.ecf.provider.generic.ContainerMessage;
 import org.eclipse.ecf.provider.generic.SOConfig;
 import org.eclipse.ecf.provider.generic.SOContext;
 import org.eclipse.ecf.provider.generic.SOWrapper;
+import org.eclipse.ecf.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
+import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.eclipse.ecf.provider.xmpp.smack.ChatConnectionObjectPacketEvent;
 import org.eclipse.ecf.provider.xmpp.smack.ChatConnectionPacketEvent;
+import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 
 public class XMPPGroupChatSOContainer extends ClientSOContainer {
@@ -47,22 +53,17 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
     ID sharedObjectID;
     XMPPGroupChatSharedObject sharedObject;
     MultiUserChat multiuserchat;
-    IGroupChatContainerConfig gcconfig;
-
-    public XMPPGroupChatSOContainer(IGroupChatContainerConfig config,
+    ISharedObjectContainerConfig config;
+    
+    public XMPPGroupChatSOContainer(ISharedObjectContainerConfig config,
             XMPPConnection conn) throws Exception {
         super(config);
         this.connection = conn;
-        this.gcconfig = config;
-        initializeSharedObject();
-        initializeGroupChat();
-    }
-    protected IGroupChatContainerConfig getGroupChatConfig() {
-        return gcconfig;
+        this.config = config;
     }
     protected void initializeGroupChat() throws XMPPException {
-        multiuserchat = new MultiUserChat(connection,getGroupChatConfig().getRoomName());
-        multiuserchat.create(getGroupChatConfig().getOwnerName());
+        //multiuserchat = new MultiUserChat(connection,getGroupChatConfig().getRoomName());
+        //multiuserchat.create(getGroupChatConfig().getOwnerName());
     }
     public void dispose() {
         super.dispose();
@@ -141,19 +142,35 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer {
         dispose();
     }
 
+    public Namespace getConnectNamespace() {
+    	return IDFactory.getDefault().getNamespaceByName(XmppPlugin.getDefault().getRoomNamespaceIdentifier());
+    }
     public void joinGroup(ID remote, Object data)
             throws ContainerConnectException {
-        String nickname = "";
-        String password = "";
+    	if (!(remote instanceof XMPPRoomID)) {
+    		throw new ContainerConnectException("remote "+remote+" is not of room id type");
+    	}
+    	XMPPRoomID roomID = (XMPPRoomID) remote;
         try {
             addSharedObjectToContainer(remote);
-            IGroupChatContainerConfig soconfig = getGroupChatConfig();
-            nickname = soconfig.getNickname();
-            password = soconfig.getPassword();
-            multiuserchat.join(nickname,password);
+            String mucInit = roomID.getMucString();
+            multiuserchat = new MultiUserChat(connection,mucInit);
+            String nickname = roomID.getNickname();
+            multiuserchat.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
+            multiuserchat.addMessageListener(new PacketListener() {
+    			public void processPacket(Packet arg0) {
+    				try {
+    					handleXMPPMessage(arg0);
+    				} catch (IOException e) {
+    					logException("Exception in handleXMPPMessage",e);
+    				}
+    			}
+            	
+            });
+            multiuserchat.join(nickname);
         } catch (XMPPException e) {
             cleanUpConnectFail();
-            ContainerConnectException ce = new ContainerConnectException("Exception joining with nickname "+nickname);
+            ContainerConnectException ce = new ContainerConnectException("Exception joining "+roomID);
             ce.setStackTrace(e.getStackTrace());
             throw ce;
         } catch (SharedObjectAddException e1) {

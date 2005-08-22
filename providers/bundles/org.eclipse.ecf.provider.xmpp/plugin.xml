@@ -34,5 +34,12 @@
             description="XMPP Namespace"
             name="xmpp.jive"/>
    </extension>
+   <extension
+         point="org.eclipse.ecf.namespace">
+      <namespace
+            class="org.eclipse.ecf.provider.xmpp.identity.XMPPRoomNamespace"
+            description="XMPP Room Namespace"
+            name="xmpp.room.jive"/>
+   </extension>
 
 </plugin>
