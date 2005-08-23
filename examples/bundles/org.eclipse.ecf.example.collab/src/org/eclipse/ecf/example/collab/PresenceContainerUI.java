@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IAccountManager;
+import org.eclipse.ecf.presence.IChatRoomContainer;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresence;
@@ -110,15 +111,6 @@ public class PresenceContainerUI {
                         rosterView.setGroup(joinedContainer);
                     }
                 });
-				// XXX TESTING OF ACCOUNT CREATION
-				/*
-				try {
-					accountManager.createAccount("foo1","foo1",null);
-				} catch (ECFException e) {
-					e.printStackTrace();
-				}
-				*/
-				
             }
 
             public void handleRosterEntry(final IRosterEntry entry) {
@@ -226,5 +218,21 @@ public class PresenceContainerUI {
 				//System.out.println("unsubscribed from "+fromID);			
 			}
 		});
+    }
+
+    protected void createChatRoom(String roomName) {
+    	try {
+    		IChatRoomContainer chatRoom = pc.makeChatRoomContainer();
+    		chatRoom.addMessageListener(new IMessageListener() {
+
+				public void handleMessage(ID fromID, ID toID, Type type, String subject, String messageBody) {
+					System.out.println("Room message from="+fromID+",to="+toID+",type="+type+",sub="+subject+",body="+messageBody);
+				}
+    			
+    		});
+    		chatRoom.connect(roomName);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
     }
 }

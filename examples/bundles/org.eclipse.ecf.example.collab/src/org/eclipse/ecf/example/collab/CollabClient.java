@@ -30,6 +30,8 @@ public class CollabClient {
 	static Hashtable clients = new Hashtable();
 	static CollabClient collabClient = new CollabClient();
 
+	PresenceContainerUI presenceContainerUI = null;
+	
 	/**
 	 * Create a new container instance, and connect to a remote server or group.
 	 * 
@@ -43,27 +45,27 @@ public class CollabClient {
 	public void createAndConnectClient(final String containerType, String uri,
 			String nickname, final Object connectData, final IResource resource)
 			throws Exception {
-		// Here we create the container instance
+		// First create the new container instance
 		final IContainer newClient = ContainerFactory
 				.getDefault().makeContainer(containerType);
-		// Create a new client entry to hold onto container once created
-		final ClientEntry newClientEntry = new ClientEntry(containerType,
-				newClient);
 		
-		// Then we get the target namespace, so we can create a target ID
+		// Get the target namespace, so we can create a target ID of appropriate type
 		Namespace targetNamespace = newClient.getConnectNamespace();
 		// Create the targetID instance
 		ID targetID = IDFactory.getDefault().makeID(targetNamespace, uri);
 		
 		// Setup username
 		String username = setupUsername(targetID,nickname);
-		
+		// Create a new client entry to hold onto container once created
+		final ClientEntry newClientEntry = new ClientEntry(containerType,
+				newClient);
 		// Check for IPresenceContainer....if it is, setup presence UI, if not setup shared object container
 		IPresenceContainer pc = (IPresenceContainer) newClient
 				.getAdapter(IPresenceContainer.class);
 		if (pc != null) {
 			// Setup presence UI
-			new PresenceContainerUI(pc).setup(newClient, targetID, username);
+			presenceContainerUI = new PresenceContainerUI(pc);
+			presenceContainerUI.setup(newClient, targetID, username);
 		} else {
 			// Setup sharedobject container if the new instance supports this
 			ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient
@@ -73,19 +75,21 @@ public class CollabClient {
 						newClientEntry, resource, username);
 			}
 		}
+		
 		// Now connect
 		try {
 			newClient.connect(targetID, getJoinContext(username, connectData));
 		} catch (ContainerConnectException e) {
-			try {
-				EclipseCollabSharedObject so = newClientEntry.getObject();
-				if (so != null) {
-					so.destroySelf();
-				}
-			} catch (Exception e1) {
-			}
+			// If we have a connect exception then we remove any previously added shared object
+			EclipseCollabSharedObject so = newClientEntry.getObject();
+			if (so != null) so.destroySelf();
 			throw e;
 		}
+		
+		// XXX testing
+		//if (presenceContainerUI != null) {
+		//	presenceContainerUI.createChatRoom("room1");
+		//}
 		// only add client if the connect was successful
 		addClientForResource(newClientEntry, resource);
 	}

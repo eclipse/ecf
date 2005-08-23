@@ -105,7 +105,7 @@ public abstract class ClientSOContainer extends SOContainer {
 		try {
 			if (isClosing)
 				throw new IllegalStateException("container is closing");
-			debug("joingroup:" + remote + ":" + joinContext);
+			debug("connect:" + remote + ":" + joinContext);
 			ISynchAsynchConnection aConnection = makeConnection(remote,
 					joinContext);
 			if (aConnection == null)

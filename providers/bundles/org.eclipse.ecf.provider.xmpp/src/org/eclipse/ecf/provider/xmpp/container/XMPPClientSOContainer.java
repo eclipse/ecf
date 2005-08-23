@@ -11,8 +11,10 @@ package org.eclipse.ecf.provider.xmpp.container;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 import javax.security.auth.callback.Callback;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
@@ -22,12 +24,14 @@ import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.presence.IAccountManager;
+import org.eclipse.ecf.presence.IChatRoomContainer;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresence;
@@ -67,7 +71,8 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	protected IIMMessageSender messageSender = null;
 	protected XMPPPresenceSharedObject sharedObject = null;
 	protected ID sharedObjectID = null;
-
+	Vector chats = new Vector();
+	
 	public XMPPClientSOContainer() throws Exception {
 		this(DEFAULT_KEEPALIVE);
 	}
@@ -416,6 +421,18 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 				}
 				public void addSubscribeListener(ISubscribeListener listener) {
 					sharedObject.addSubscribeListener(listener);
+				}
+
+				public IChatRoomContainer makeChatRoomContainer() throws ContainerInstantiationException {
+					IChatRoomContainer chatContainer = null;
+					try {
+						chatContainer = new XMPPGroupChatSOContainer(sharedObject.getConnection(),getConnectNamespace());
+					} catch (IDInstantiationException e) {
+						ContainerInstantiationException newExcept = new ContainerInstantiationException("Exception creating chat container for presence container "+getID(),e);
+						newExcept.setStackTrace(e.getStackTrace());
+						throw newExcept;
+					}
+					return chatContainer;
 				}
                 
             };

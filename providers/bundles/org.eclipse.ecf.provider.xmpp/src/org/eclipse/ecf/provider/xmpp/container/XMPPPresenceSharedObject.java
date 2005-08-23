@@ -287,7 +287,16 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     protected void handleJoin(ISharedObjectContainerConnectedEvent event) {
         fireContainerJoined(event.getTargetID());
     }
-
+    
+    protected Message.Type [] ALLOWED_MESSAGES = { Message.Type.CHAT, Message.Type.ERROR, Message.Type.HEADLINE, Message.Type.NORMAL };
+    protected Message filterMessageType(Message msg) {
+    	for(int i=0; i < ALLOWED_MESSAGES.length; i++) {
+    		if (ALLOWED_MESSAGES[i].equals(msg.getType())) {
+    			return msg;
+    		}
+    	}
+    	return null;
+    }
     protected void handleMessageEvent(MessageEvent evt) {
         Message msg = evt.getMessage();
         String from = msg.getFrom();
@@ -296,7 +305,8 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         String subject = msg.getSubject();
         ID fromID = makeIDFromName(canonicalizePresenceFrom(from));
         ID toID = makeIDFromName(canonicalizePresenceFrom(to));
-        fireMessage(fromID, toID, makeMessageType(msg.getType()), subject, body);
+        msg = filterMessageType(msg);
+        if (msg != null) fireMessage(fromID, toID, makeMessageType(msg.getType()), subject, body);
     }
 
     protected void handlePresenceEvent(PresenceEvent evt) {
@@ -333,7 +343,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     protected ID makeIDFromName(String name) {
         ID result = null;
         try {
-            result = IDFactory.getDefault().makeID(namespace.getName(), new Object[] { name });
+            result = IDFactory.getDefault().makeID(namespace, new Object[] { name });
             return result;
         } catch (Exception e) {
             dumpStack("Exception in makeIDFromName", e);

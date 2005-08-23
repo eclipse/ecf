@@ -10,6 +10,8 @@
 *****************************************************************************/
 package org.eclipse.ecf.presence;
 
+import org.eclipse.ecf.core.ContainerInstantiationException;
+
 
 /**
  * Top-level container interface for setting up listeners for presence messages,
@@ -53,5 +55,12 @@ public interface IPresenceContainer {
 	 * @return IAccountManger.  Null if no account manager available
 	 */
 	public IAccountManager getAccountManager();
+	
+	/**
+	 * Make a chat group from this presence container.
+	 * @return IChatRoomContainer instance
+	 * @throws ContainerInstantiationException
+	 */
+	public IChatRoomContainer makeChatRoomContainer() throws ContainerInstantiationException;
 	
 }

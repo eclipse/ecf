@@ -21,9 +21,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
-
-import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
@@ -48,7 +47,6 @@ import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.util.Event;
