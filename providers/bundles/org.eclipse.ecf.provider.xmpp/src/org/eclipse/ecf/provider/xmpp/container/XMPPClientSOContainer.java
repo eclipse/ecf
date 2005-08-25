@@ -10,6 +10,7 @@ package org.eclipse.ecf.provider.xmpp.container;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 import javax.security.auth.callback.Callback;
@@ -168,10 +169,25 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	public Namespace getConnectNamespace() {
 		return IDFactory.getDefault().getNamespaceByName("xmpp.jive");
 	}
+	protected void handleChatMessageWithExtension(Message mess) throws IOException {
+		// XXX Log this properly or handle with new semantics for handling extensions
+        Iterator i = mess.getExtensions();
+        if (i.hasNext()) {
+	        for(; i.hasNext(); ) {
+	        	Object extension = i.next();
+	        	System.out.println("XMPPClientSOContainer.handleChatMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
+	        }
+	        
+        }
+	}
 	protected void handleChatMessage(Message mess) throws IOException {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
-		if (wrap != null) {
-			wrap.deliverEvent(new MessageEvent(mess));
+		if (mess.getExtensions().hasNext()) {
+			handleChatMessageWithExtension(mess);
+		} else {
+			if (wrap != null) {
+				wrap.deliverEvent(new MessageEvent(mess));
+			}
 		}
 	}
 
@@ -195,17 +211,47 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		}
 	}
 
+	protected void handleIQMessageWithExtension(IQ mess) throws IOException {
+		// XXX Log this properly or handle with new semantics for handling extensions
+        Iterator i = mess.getExtensions();
+        if (i.hasNext()) {
+	        for(; i.hasNext(); ) {
+	        	Object extension = i.next();
+	        	System.out.println("XMPPClientSOContainer.handleIQMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
+	        }
+	        
+        }
+	}
 	protected void handleIQMessage(IQ mess) throws IOException {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
-		if (wrap != null) {
-			wrap.deliverEvent(new IQEvent(mess));
+		if (mess.getExtensions().hasNext()) {
+			handleIQMessageWithExtension(mess);
+		} else {
+			if (wrap != null) {
+				wrap.deliverEvent(new IQEvent(mess));
+			}
 		}
 	}
 
+	protected void handlePresenceMessageWithExtension(Presence mess) throws IOException {
+		// XXX Log this properly or handle with new semantics for handling extensions
+        Iterator i = mess.getExtensions();
+        if (i.hasNext()) {
+	        for(; i.hasNext(); ) {
+	        	Object extension = i.next();
+	        	System.out.println("XMPPClientSOContainer.handlePresenceMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
+	        }
+	        
+        }
+	}
 	protected void handlePresenceMessage(Presence mess) throws IOException {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
-		if (wrap != null) {
-			wrap.deliverEvent(new PresenceEvent(mess));
+		if (mess.getExtensions().hasNext()) {
+			handlePresenceMessageWithExtension(mess);
+		} else {
+			if (wrap != null) {
+				wrap.deliverEvent(new PresenceEvent(mess));
+			}
 		}
 	}
 

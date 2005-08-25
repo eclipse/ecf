@@ -52,7 +52,6 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smack.packet.Presence.Mode;
 import org.jivesoftware.smack.packet.Presence.Type;
-import org.jivesoftware.smackx.packet.MUCUser;
 
 /**
  * @author slewis
@@ -312,19 +311,6 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 
     protected void handlePresenceEvent(PresenceEvent evt) {
         Presence xmppPresence = evt.getPresence();
-        Iterator i = xmppPresence.getExtensions();
-        if (i.hasNext()) {
-	        for(; i.hasNext(); ) {
-	        	Object extension = i.next();
-	        	System.out.println("presence extension: "+extension);
-	        	if (extension instanceof MUCUser) {
-	        		MUCUser user = (MUCUser) extension;
-	        		System.out.println("user extension: "+user);
-	        		return;
-	        	}
-	        }
-	        
-        }
         String from = canonicalizePresenceFrom(xmppPresence.getFrom());
         IPresence newPresence = makeIPresence(xmppPresence);
         ID fromID = makeIDFromName(from);
