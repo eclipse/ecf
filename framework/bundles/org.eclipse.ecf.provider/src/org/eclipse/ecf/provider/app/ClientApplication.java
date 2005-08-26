@@ -82,7 +82,7 @@ public class ClientApplication {
 		return result;
 	}
 	
-	public void joinGroup(ID server) throws Exception {
+	public void connect(ID server) throws Exception {
 		for(int i = 0; i < clientCount; i++) {
 			System.out.print("ClientApplication "+sm[i].getID().getName()+" joining "+server.getName()+"...");
 			sm[i].connect(server,null);
@@ -90,7 +90,7 @@ public class ClientApplication {
 		}
 	}
 
-	public void leaveGroup() {
+	public void disconnect() {
 		for(int i = 0; i < clientCount; i++) {
 			System.out.print("ClientApplication "+sm[i].getID().getName()+" leaving...");
 			sm[i].disconnect();
@@ -126,12 +126,12 @@ public class ClientApplication {
 		st.init(args);
 		// Get server id to join
 		ID serverID = IDFactory.getDefault().makeStringID(st.serverName);
-		st.joinGroup(serverID);
+		st.connect(serverID);
 		st.createStages();
 		System.out.println("Waiting "+DEFAULT_WAITTIME+" ms...");
 		Thread.sleep(DEFAULT_WAITTIME);
 		st.removeStages();
-		st.leaveGroup();
+		st.disconnect();
 		System.out.println("Exiting.");
 	}
 

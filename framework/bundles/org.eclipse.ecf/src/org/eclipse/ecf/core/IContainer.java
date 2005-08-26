@@ -12,7 +12,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	/**
 	 * Connect to a target remote container or container group. The target
 	 * identified by the first parameter (targetID) is connected to using any
-	 * required authentication provided via the second parameter (joinContext).
+	 * required authentication provided via the second parameter (connectContext).
 	 * This method provides an implementation independent way for container
 	 * implementations to connect, authenticate, and communicate with a remote
 	 * service or group of services. Providers are responsible for implementing

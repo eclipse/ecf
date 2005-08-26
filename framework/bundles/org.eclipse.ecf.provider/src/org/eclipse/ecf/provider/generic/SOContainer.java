@@ -810,10 +810,10 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainer#joinGroup(org.eclipse.ecf.core.identity.ID,
+	 * @see org.eclipse.ecf.core.ISharedObjectContainer#connect(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public abstract void connect(ID groupID, IConnectContext joinContext)
+	public abstract void connect(ID groupID, IConnectContext connectContext)
 			throws ContainerConnectException;
 
 	protected void killConnection(IConnection conn) {

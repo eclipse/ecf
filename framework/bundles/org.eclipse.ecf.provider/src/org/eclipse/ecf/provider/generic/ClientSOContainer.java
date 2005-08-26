@@ -187,9 +187,9 @@ public abstract class ClientSOContainer extends SOContainer {
 				}
 			}
 		} catch (Exception e) {
-			dumpStack("Exception in joinGroup", e);
+			dumpStack("Exception in connect", e);
 			ContainerConnectException except = new ContainerConnectException(
-					"joinGroup exception in container " + getID() + " joining "
+					"exception for container " + getID() + " connecting to "
 							+ remote + ": " + e.getClass().getName() + ": "
 							+ e.getMessage());
 
