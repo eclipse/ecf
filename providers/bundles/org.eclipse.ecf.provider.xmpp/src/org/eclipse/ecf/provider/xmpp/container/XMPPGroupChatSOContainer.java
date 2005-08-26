@@ -41,8 +41,8 @@ import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
-import org.eclipse.ecf.provider.xmpp.smack.ChatConnectionObjectPacketEvent;
-import org.eclipse.ecf.provider.xmpp.smack.ChatConnectionPacketEvent;
+import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
+import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionPacketEvent;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -76,6 +76,10 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
     }
     public void dispose() {
         disconnect();
+        getSharedObjectManager().removeSharedObject(sharedObjectID);
+        if (sharedObject != null) {
+        	sharedObject.dispose(getID());
+        }
         super.dispose();
     }
 
@@ -225,13 +229,13 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 
     protected void processAsynch(AsynchConnectionEvent e) {
         try {
-            if (e instanceof ChatConnectionPacketEvent) {
+            if (e instanceof ECFConnectionPacketEvent) {
                 // It's a regular message...just print for now
                 Packet chatMess = (Packet) e.getData();
                 handleXMPPMessage(chatMess);
                 return;
-            } else if (e instanceof ChatConnectionObjectPacketEvent) {
-                ChatConnectionObjectPacketEvent evt = (ChatConnectionObjectPacketEvent) e;
+            } else if (e instanceof ECFConnectionObjectPacketEvent) {
+                ECFConnectionObjectPacketEvent evt = (ECFConnectionObjectPacketEvent) e;
                 Object obj = evt.getObjectValue();
                 // this should be a ContainerMessage
                 Object cm = deserializeContainerMessage((byte[]) obj);

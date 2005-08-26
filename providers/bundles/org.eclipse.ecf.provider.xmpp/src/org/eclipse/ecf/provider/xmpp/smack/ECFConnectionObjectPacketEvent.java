@@ -12,11 +12,11 @@ import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.jivesoftware.smack.packet.Packet;
 
-public class ChatConnectionObjectPacketEvent extends AsynchConnectionEvent {
+public class ECFConnectionObjectPacketEvent extends AsynchConnectionEvent {
 
 	private static final long serialVersionUID = -1618091206033717358L;
 	Object value;
-	public ChatConnectionObjectPacketEvent(IAsynchConnection source, Packet p, Object obj) {
+	public ECFConnectionObjectPacketEvent(IAsynchConnection source, Packet p, Object obj) {
 		super(source,p);
 		this.value = obj;
 	}
@@ -25,7 +25,7 @@ public class ChatConnectionObjectPacketEvent extends AsynchConnectionEvent {
 	    return value;
 	}
 	public String toString() {
-	    StringBuffer sb = new StringBuffer("ChatConnectionPacketEvent[");
+	    StringBuffer sb = new StringBuffer("ECFConnectionPacketEvent[");
 	    sb.append(getData()).append(";");
 	    sb.append(getConnection()).append(";");
 	    sb.append(getObjectValue()).append("]");

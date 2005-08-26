@@ -12,16 +12,16 @@ import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.jivesoftware.smack.packet.Packet;
 
-public class ChatConnectionPacketEvent extends AsynchConnectionEvent {
+public class ECFConnectionPacketEvent extends AsynchConnectionEvent {
 
 	private static final long serialVersionUID = 7000820721266245824L;
 
-	public ChatConnectionPacketEvent(IAsynchConnection source, Packet p) {
+	public ECFConnectionPacketEvent(IAsynchConnection source, Packet p) {
 		super(source,p);
 	}
 	
 	public String toString() {
-	    StringBuffer sb = new StringBuffer("ChatConnectionPacketEvent[");
+	    StringBuffer sb = new StringBuffer("ECFConnectionPacketEvent[");
 	    sb.append(getData()).append(";");
 	    sb.append(getConnection()).append("]");
 	    return sb.toString();

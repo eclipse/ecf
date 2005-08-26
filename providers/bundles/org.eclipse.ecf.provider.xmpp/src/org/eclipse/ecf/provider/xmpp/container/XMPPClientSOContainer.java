@@ -51,9 +51,9 @@ import org.eclipse.ecf.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
-import org.eclipse.ecf.provider.xmpp.smack.ChatConnection;
-import org.eclipse.ecf.provider.xmpp.smack.ChatConnectionObjectPacketEvent;
-import org.eclipse.ecf.provider.xmpp.smack.ChatConnectionPacketEvent;
+import org.eclipse.ecf.provider.xmpp.smack.ECFConnection;
+import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
+import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionPacketEvent;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
@@ -99,7 +99,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 					.getID(), originalTarget));
 		}
 		// If we've got the connection then pass it onto shared object also
-		ChatConnection conn = (ChatConnection) getConnection();
+		ECFConnection conn = (ECFConnection) getConnection();
 		if (conn != null && sharedObject != null) {
 			sharedObject.setConnection(conn.getXMPPConnection());
 		}
@@ -113,14 +113,14 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	}
 
 	protected void cleanUpConnectFail() {
-		if (sharedObject != null) {
-			getSharedObjectManager().removeSharedObject(sharedObjectID);
-		}
 		dispose();
 	}
 
 	public void dispose() {
 		super.dispose();
+		if (sharedObject != null) {
+			getSharedObjectManager().removeSharedObject(sharedObjectID);
+		}
 		sharedObjectID = null;
 		sharedObject = null;
 		messageSender = null;
@@ -129,7 +129,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	protected ISynchAsynchConnection makeConnection(ID remoteSpace,
 			Object data) throws ConnectionInstantiationException {
 		ISynchAsynchConnection conn = null;
-		conn = new ChatConnection(getConnectNamespace(),receiver);
+		conn = new ECFConnection(getConnectNamespace(),receiver);
 		Object res = conn.getAdapter(IIMMessageSender.class);
 		if (res != null) {
 			// got it
@@ -324,13 +324,13 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 
 	protected void processAsynch(AsynchConnectionEvent e) {
 		try {
-			if (e instanceof ChatConnectionPacketEvent) {
+			if (e instanceof ECFConnectionPacketEvent) {
 				// It's a regular message...just print for now
 				Packet chatMess = (Packet) e.getData();
 				handleXMPPMessage(chatMess);
 				return;
-			} else if (e instanceof ChatConnectionObjectPacketEvent) {
-				ChatConnectionObjectPacketEvent evt = (ChatConnectionObjectPacketEvent) e;
+			} else if (e instanceof ECFConnectionObjectPacketEvent) {
+				ECFConnectionObjectPacketEvent evt = (ECFConnectionObjectPacketEvent) e;
 				Object obj = evt.getObjectValue();
 				// this should be a ContainerMessage
 				Object cm = deserializeContainerMessage((byte[]) obj);

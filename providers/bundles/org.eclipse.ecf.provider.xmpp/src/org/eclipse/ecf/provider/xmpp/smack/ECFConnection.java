@@ -33,13 +33,13 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 
-public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender {
+public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 
 	public static final String CLIENT_TYPE = "ECF_XMPP";
 	public static final Trace trace = Trace.create("smackconnection");
 	public static final Trace smack = Trace.create("smackdebug");
 	protected static final String STRING_ENCODING = "UTF-8";
-	public static final String OBJECT_PROPERTY_NAME = ChatConnection.class
+	public static final String OBJECT_PROPERTY_NAME = ECFConnection.class
 			.getName()
 			+ ".object";
 	protected static final int XMPP_NORMAL_PORT = 5222;
@@ -83,7 +83,7 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 	public XMPPConnection getXMPPConnection() {
 		return connection;
 	}
-	public ChatConnection(Namespace ns, IAsynchConnectionEventHandler h) {
+	public ECFConnection(Namespace ns, IAsynchConnectionEventHandler h) {
 		this.handler = h;
 		this.namespace = ns;
 		if (smack != null) {
@@ -209,10 +209,10 @@ public class ChatConnection implements ISynchAsynchConnection, IIMMessageSender 
 		try {
 			Object val = arg0.getProperty(OBJECT_PROPERTY_NAME);
 			if (val != null) {
-				handler.handleAsynchEvent(new ChatConnectionObjectPacketEvent(
+				handler.handleAsynchEvent(new ECFConnectionObjectPacketEvent(
 						this, arg0, val));
 			} else {
-				handler.handleAsynchEvent(new ChatConnectionPacketEvent(this,
+				handler.handleAsynchEvent(new ECFConnectionPacketEvent(this,
 						arg0));
 			}
 		} catch (IOException e) {
