@@ -9,6 +9,7 @@
 package org.eclipse.ecf.provider.xmpp.container;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -32,7 +33,6 @@ import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.presence.IAccountManager;
-import org.eclipse.ecf.presence.IChatRoomContainer;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresence;
@@ -41,6 +41,7 @@ import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.IMessageListener.Type;
+import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
 import org.eclipse.ecf.provider.generic.ContainerMessage;
 import org.eclipse.ecf.provider.generic.SOConfig;
@@ -55,10 +56,14 @@ import org.eclipse.ecf.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionPacketEvent;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.muc.HostedRoom;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.RoomInfo;
 
 public class XMPPClientSOContainer extends ClientSOContainer {
 
@@ -473,6 +478,33 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 					IChatRoomContainer chatContainer = null;
 					try {
 						chatContainer = new XMPPGroupChatSOContainer(sharedObject.getConnection(),getConnectNamespace());
+						// XXX TESTING
+						try {
+							Collection coll = MultiUserChat.getServiceNames(sharedObject.getConnection());
+							for(Iterator i=coll.iterator(); i.hasNext(); ) {
+								Object item = i.next();
+								System.out.println("MUC service name: "+item);
+								String room = "room1"+"@"+item;
+								Collection rooms = MultiUserChat.getHostedRooms(sharedObject.getConnection(),(String) item);
+								for(Iterator j=rooms.iterator(); j.hasNext(); ) {
+									HostedRoom o = (HostedRoom) j.next();
+									System.out.println("room "+o.getJid()+" for service "+item);
+									System.out.println("room "+o.getName()+" for service "+item);
+								}
+								
+								RoomInfo info = MultiUserChat.getRoomInfo(sharedObject.getConnection(),room);
+								System.out.println("room info for "+room+" is "+info);
+								System.out.println(info.getDescription());
+								System.out.println(info.getOccupantsCount());
+								System.out.println(info.getRoom());
+								System.out.println(info.getSubject());
+								info = MultiUserChat.getRoomInfo(sharedObject.getConnection(),"room2");
+								System.out.println("room info for room2 is "+info);
+								
+							}
+						} catch (XMPPException e1) {
+							e1.printStackTrace();
+						}
 					} catch (IDInstantiationException e) {
 						ContainerInstantiationException newExcept = new ContainerInstantiationException("Exception creating chat container for presence container "+getID(),e);
 						newExcept.setStackTrace(e.getStackTrace());

@@ -15,10 +15,8 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Listener for receiving and processing presence update events
  * 
- * @author slewis
- *
  */
-public interface IPresenceListener {
+public interface IPresenceListener extends IParticipantListener {
     
 	/**
 	 * Notification that a new group member (i.e. the server) has
@@ -36,12 +34,6 @@ public interface IPresenceListener {
 	 * @param entry
 	 */
 	public void handleSetRosterEntry(IRosterEntry entry);
-	/**
-	 * Notification that a presence update has been received
-	 * @param fromID
-	 * @param presence
-	 */
-    public void handlePresence(ID fromID, IPresence presence);
 	/**
 	 * Notification that a remote container (i.e. the server) has
 	 * disconnected/left group

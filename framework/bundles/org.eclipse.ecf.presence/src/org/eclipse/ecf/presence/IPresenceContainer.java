@@ -11,6 +11,7 @@
 package org.eclipse.ecf.presence;
 
 import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 
 
 /**
@@ -56,6 +57,8 @@ public interface IPresenceContainer {
 	 */
 	public IAccountManager getAccountManager();
 	
+	
+	//public IChatRoomManager getChatRoomManager();
 	/**
 	 * Make a chat group from this presence container.
 	 * @return IChatRoomContainer instance
