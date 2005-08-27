@@ -17,9 +17,9 @@ COLLAB=${RP}/org.eclipse.ecf.example.collab_0.3.3/client.jar
 
 CP="../lib/core.jar:../lib/runtime.jar:../lib/osgi.jar:${ECF}:${UI}:${SDO}:${PROVIDER}:${PRESENCE}:${GED}:${ED}:${LIBRARY}:${DS}:${HELLO}:${DISCOVERY}:${COLLAB}:."
 
-TRACE="-Dorg.eclipse.ecf.Trace=true -Dorg.eclipse.ecf.provider.Trace=true"
+TRACE="-Dorg.eclipse.ecf.Trace=true -Dorg.eclipse.ecf.provider.Trace=true" 
 
-OPTIONS=${TRACE}
+OPTIONS=
 
 MAINCLASS=org.eclipse.ecf.provider.app.ServerApplication
 ARGS="-c ../conf/server.xml $*"
@@ -27,3 +27,4 @@ ARGS="-c ../conf/server.xml $*"
 # Start server
 echo "Starting server with options: ${OPTIONS} and args: ${ARGS}"
 java -cp ${CP} ${OPTIONS} ${MAINCLASS} ${ARGS} 
+
