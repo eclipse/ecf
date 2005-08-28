@@ -56,6 +56,7 @@ import org.eclipse.ecf.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
+import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
@@ -79,6 +80,8 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	public static final String XMPP_SHARED_OBJECT_ID = XMPPClientSOContainer.class
 			.getName()
 			+ ".xmpphandler";
+	private static final String GOOGLE_SERVICENAME = "gmail.com";
+	
 	int keepAlive = 0;
 	protected IIMMessageSender messageSender = null;
 	protected XMPPPresenceSharedObject sharedObject = null;
@@ -140,7 +143,15 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	protected ISynchAsynchConnection makeConnection(ID remoteSpace,
 			Object data) throws ConnectionInstantiationException {
 		ISynchAsynchConnection conn = null;
-		conn = new ECFConnection(getConnectNamespace(),receiver);
+		boolean google = false;
+		if (remoteSpace instanceof XMPPID) {
+			XMPPID theID = (XMPPID) remoteSpace;
+			String host = theID.getHostname();
+			if (host.equals(GOOGLE_SERVICENAME)) {
+				google = true;
+			}
+		}
+		conn = new ECFConnection(google,getConnectNamespace(),receiver);
 		Object res = conn.getAdapter(IIMMessageSender.class);
 		if (res != null) {
 			// got it
