@@ -7,8 +7,10 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IAccountManager;
+import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
+import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.IPresenceListener;
@@ -16,6 +18,8 @@ import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
+import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.ecf.presence.impl.Presence;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
@@ -222,14 +226,23 @@ public class PresenceContainerUI {
 
     protected void createChatRoom(String roomName) {
     	try {
-    		IChatRoomContainer chatRoom = pc.makeChatRoomContainer();
+    		IChatRoomManager crmanager = pc.getChatRoomManager();
+    		IRoomInfo [] roomInfos = crmanager.getChatRoomsInfo();
+    		System.out.println("room ids: "+Arrays.toString(roomInfos));
+    		IChatRoomContainer chatRoom = crmanager.makeChatRoomContainer();
     		chatRoom.addMessageListener(new IMessageListener() {
-
 				public void handleMessage(ID fromID, ID toID, Type type, String subject, String messageBody) {
 					System.out.println("Room message from="+fromID+",to="+toID+",type="+type+",sub="+subject+",body="+messageBody);
 				}
-    			
     		});
+    		chatRoom.addParticipantListener(new IParticipantListener() {
+				public void handlePresence(ID fromID, IPresence presence) {
+					System.out.println("chat presence from="+fromID+",presence="+presence);
+				}});
+    		chatRoom.addInvitationListener(new IInvitationListener() {
+				public void handleInvitationReceived(ID roomID, ID from, ID toID, String subject, String body) {
+					System.out.println("invitation room="+roomID+",from="+from+",to="+toID+",subject="+subject+",body="+body);
+				}});
     		chatRoom.connect(roomName);
     	} catch (Exception e) {
     		e.printStackTrace();

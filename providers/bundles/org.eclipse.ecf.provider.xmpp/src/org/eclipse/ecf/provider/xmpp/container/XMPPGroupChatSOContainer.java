@@ -26,8 +26,10 @@ import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
+import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IMessageListener.Type;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
@@ -38,6 +40,7 @@ import org.eclipse.ecf.provider.generic.SOContext;
 import org.eclipse.ecf.provider.generic.SOWrapper;
 import org.eclipse.ecf.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
+import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
@@ -50,7 +53,10 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.muc.InvitationListener;
+import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.ParticipantStatusListener;
 
 public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChatRoomContainer {
     public static final String XMPP_GROUP_CHAT_SHARED_OBJECT_ID = XMPPClientSOContainer.class
@@ -124,22 +130,31 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
         }
     }
 
-    protected void handleXMPPMessage(Packet aPacket) throws IOException {
-        if (aPacket instanceof IQ) {
-            handleIQMessage((IQ) aPacket);
-        } else if (aPacket instanceof Message) {
-            handleChatMessage((Message) aPacket);
-        } else if (aPacket instanceof Presence) {
-            handlePresenceMessage((Presence) aPacket);
-        } else {
-            // unexpected message
-            debug("got unexpected packet " + aPacket);
+    protected void handleXMPPMessage(Packet aPacket) {
+    	try {
+			if (aPacket instanceof IQ) {
+				handleIQMessage((IQ) aPacket);
+			} else if (aPacket instanceof Message) {
+				handleChatMessage((Message) aPacket);
+			} else if (aPacket instanceof Presence) {
+				handlePresenceMessage((Presence) aPacket);
+			} else {
+				// unexpected message
+				debug("got unexpected packet " + aPacket);
+			}
+		} catch (IOException e) {
+			logException("Exception in handleXMPPMessage", e);
+		}
+    }
+    protected void handleInvitationMessage(XMPPConnection arg0, String arg1, String arg2, String arg3, String arg4, Message arg5) {
+        SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
+        if (wrap != null) {
+            wrap.deliverEvent(new InvitationReceivedEvent(arg0,arg1,arg2,arg3,arg4,arg5));
         }
     }
-
     protected void initializeSharedObject() throws IDInstantiationException {
         sharedObjectID = IDFactory.getDefault().makeStringID(XMPP_GROUP_CHAT_SHARED_OBJECT_ID);
-        sharedObject = new XMPPGroupChatSharedObject(usernamespace);
+        sharedObject = new XMPPGroupChatSharedObject(usernamespace,connection);
     }
 
     protected void addSharedObjectToContainer(ID remote)
@@ -181,14 +196,111 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 	            //multiuserchat.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
 	            multiuserchat.addMessageListener(new PacketListener() {
 	    			public void processPacket(Packet arg0) {
-						try {
-	    					handleXMPPMessage(arg0);
-	    				} catch (IOException e) {
-	    					logException("Exception in handleXMPPMessage",e);
-	    				}
+    					handleXMPPMessage(arg0);
 	    			}
 	            	
 	            });
+	            multiuserchat.addParticipantListener(new PacketListener() {
+
+					public void processPacket(Packet arg0) {
+    					handleXMPPMessage(arg0);
+					}});
+	            multiuserchat.addParticipantStatusListener(new ParticipantStatusListener() {
+
+					public void joined(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("joined("+arg0+")");
+					}
+
+					public void left(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("left("+arg0+")");
+						
+					}
+
+					public void kicked(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("kicked("+arg0+")");
+					}
+
+					public void voiceGranted(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("voiceGranted("+arg0+")");
+						
+					}
+
+					public void voiceRevoked(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("voiceRevoked("+arg0+")");
+						
+					}
+
+					public void banned(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("banned("+arg0+")");
+						
+					}
+
+					public void membershipGranted(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("membershipGranted("+arg0+")");
+						
+					}
+
+					public void membershipRevoked(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("membershipRevoked("+arg0+")");
+					}
+
+					public void moderatorGranted(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("moderatorGranted("+arg0+")");
+					}
+
+					public void moderatorRevoked(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("moderatorRevoked("+arg0+")");
+					}
+
+					public void ownershipGranted(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("ownershipGranted("+arg0+")");
+					}
+
+					public void ownershipRevoked(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("ownershipRevoked("+arg0+")");
+					}
+
+					public void adminGranted(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("adminGranted("+arg0+")");
+						
+					}
+
+					public void adminRevoked(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("adminRevoked("+arg0+")");
+						
+					}
+
+					public void nicknameChanged(String arg0) {
+						// TODO Auto-generated method stub
+						System.out.println("nicknameChanged("+arg0+")");
+						
+					}});
+	            multiuserchat.addInvitationRejectionListener(new InvitationRejectionListener() {
+
+					public void invitationDeclined(String arg0, String arg1) {
+						// TODO Auto-generated method stub
+						System.out.println("invitationDeclined("+arg0+","+arg1+")");
+					}});
+	            MultiUserChat.addInvitationListener(connection,new InvitationListener() {
+
+					public void invitationReceived(XMPPConnection arg0, String arg1, String arg2, String arg3, String arg4, Message arg5) {
+						handleInvitationMessage(arg0,arg1,arg2,arg3,arg4,arg5);
+					}});
+	            
 	            multiuserchat.join(nickname);
 	    		connectionState = CONNECTED;
 	    		remoteServerID = roomID;
@@ -279,7 +391,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 					try {
 						multiuserchat.sendMessage(messageBody);
 					} catch (XMPPException e) {
-						// TODO log
+						// XXX log
 						e.printStackTrace();
 					}
 				}
@@ -296,5 +408,15 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 			throw newExcept;
 		}
 		this.connect(targetID,null);
+	}
+	public void addParticipantListener(IParticipantListener participantListener) {
+		if (sharedObject != null) {
+			sharedObject.addParticipantListener(participantListener);
+		}
+	}
+	public void addInvitationListener(IInvitationListener invitationListener) {
+		if (sharedObject != null) {
+			sharedObject.addInvitationListener(invitationListener);
+		}
 	}
 }

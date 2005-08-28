@@ -4,6 +4,7 @@
  */
 package org.eclipse.ecf.provider.xmpp.container;
 
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Vector;
 import org.eclipse.ecf.core.ISharedObject;
@@ -14,10 +15,20 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IParticipantListener;
+import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.provider.xmpp.Trace;
+import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
+import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
+import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Presence.Mode;
+import org.jivesoftware.smack.packet.Presence.Type;
 
 public class XMPPGroupChatSharedObject implements ISharedObject {
 
@@ -27,7 +38,10 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
     
     Vector messageListeners = new Vector();
 	Namespace usernamespace = null;
-
+	XMPPConnection connection = null;
+    Vector participantListeners = new Vector();
+    Vector invitationListeners = new Vector();
+    
     protected void debug(String msg) {
         if (Trace.ON && trace != null) {
             trace.msg(config.getSharedObjectID() + ":" + msg);
@@ -39,6 +53,18 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         }
     }
 
+    protected void addParticipantListener(IParticipantListener listener) {
+        participantListeners.add(listener);
+    }
+    protected void removeParticipantListener(IParticipantListener listener) {
+        participantListeners.remove(listener);
+    }
+    protected void addInvitationListener(IInvitationListener listener) {
+        invitationListeners.add(listener);
+    }
+    protected void removeInvitationListener(IInvitationListener listener) {
+    	invitationListeners.remove(listener);
+    }
     protected void addMessageListener(IMessageListener listener) {
         messageListeners.add(listener);
     }
@@ -46,10 +72,12 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         messageListeners.add(listener);
     }
 
-    public XMPPGroupChatSharedObject(Namespace usernamespace) {
+    public XMPPGroupChatSharedObject(Namespace usernamespace, XMPPConnection conn) {
         super();
         this.usernamespace = usernamespace;
+        this.connection = conn;
     }
+    
     protected ISharedObjectContext getContext() {
         return config.getContext();
     }
@@ -133,7 +161,14 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
             return to;
     }
 
-
+    protected ID makeRoomIDFromName(String from) {
+    	try {
+    		return new XMPPRoomID(usernamespace,connection,from);
+    	} catch (URISyntaxException e) {
+            dumpStack("Exception in makeRoomIDFromName", e);
+            return null;
+    	}
+    }
 
     protected void handleMessageEvent(MessageEvent evt) {
         Message msg = evt.getMessage();
@@ -147,6 +182,77 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         if (msg != null) fireMessage(fromID, toID, makeMessageType(msg.getType()), subject, body);
     }
 
+    protected IPresence.Type makeIPresenceType(Presence xmppPresence) {
+        if (xmppPresence == null)
+            return IPresence.Type.AVAILABLE;
+        Type type = xmppPresence.getType();
+        if (type == Presence.Type.AVAILABLE) {
+            return IPresence.Type.AVAILABLE;
+        } else if (type == Presence.Type.ERROR) {
+            return IPresence.Type.ERROR;
+        } else if (type == Presence.Type.SUBSCRIBE) {
+            return IPresence.Type.SUBSCRIBE;
+        } else if (type == Presence.Type.SUBSCRIBED) {
+            return IPresence.Type.SUBSCRIBED;
+        } else if (type == Presence.Type.UNSUBSCRIBE) {
+            return IPresence.Type.UNSUBSCRIBE;
+        } else if (type == Presence.Type.UNSUBSCRIBED) {
+            return IPresence.Type.UNSUBSCRIBED;
+        } else if (type == Presence.Type.UNAVAILABLE) {
+            return IPresence.Type.UNAVAILABLE;
+        }
+        return IPresence.Type.AVAILABLE;
+    }
+
+    protected IPresence.Mode makeIPresenceMode(Presence xmppPresence) {
+        if (xmppPresence == null)
+            return IPresence.Mode.AVAILABLE;
+        Mode mode = xmppPresence.getMode();
+        if (mode == Presence.Mode.AVAILABLE) {
+            return IPresence.Mode.AVAILABLE;
+        } else if (mode == Presence.Mode.AWAY) {
+            return IPresence.Mode.AWAY;
+        } else if (mode == Presence.Mode.CHAT) {
+            return IPresence.Mode.CHAT;
+        } else if (mode == Presence.Mode.DO_NOT_DISTURB) {
+            return IPresence.Mode.DND;
+        } else if (mode == Presence.Mode.EXTENDED_AWAY) {
+            return IPresence.Mode.EXTENDED_AWAY;
+        } else if (mode == Presence.Mode.INVISIBLE) {
+            return IPresence.Mode.INVISIBLE;
+        }
+        return IPresence.Mode.AVAILABLE;
+    }
+    protected IPresence makeIPresence(Presence xmppPresence) {
+        int priority = xmppPresence.getPriority();
+        String status = xmppPresence.getStatus();
+        IPresence newPresence = new org.eclipse.ecf.presence.impl.Presence(
+                makeIPresenceType(xmppPresence), priority, status,
+                makeIPresenceMode(xmppPresence));
+        return newPresence;
+    }
+
+    protected void handlePresenceEvent(PresenceEvent evt) {
+        Presence xmppPresence = evt.getPresence();
+        String from = canonicalizeRoomFrom(xmppPresence.getFrom());
+        IPresence newPresence = makeIPresence(xmppPresence);
+        ID fromID = makeUserIDFromName(from);
+		fireParticipant(fromID, newPresence);
+    }
+
+    protected void fireParticipant(ID fromID, IPresence presence) {
+        for (Iterator i = participantListeners.iterator(); i.hasNext();) {
+            IParticipantListener l = (IParticipantListener) i.next();
+            l.handlePresence(fromID, presence);
+        }
+    }
+
+    protected void fireInvitationReceived(ID roomID, ID fromID, ID toID, String subject, String body) {
+        for (Iterator i = invitationListeners.iterator(); i.hasNext();) {
+            IInvitationListener l = (IInvitationListener) i.next();
+            l.handleInvitationReceived(roomID,fromID,toID,subject,body);
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
@@ -155,11 +261,29 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         debug("handleEvent(" + event + ")");
         if (event instanceof MessageEvent) {
             handleMessageEvent((MessageEvent) event);
+        } else if (event instanceof PresenceEvent) {
+        	handlePresenceEvent((PresenceEvent) event);
+        } else if (event instanceof InvitationReceivedEvent) {
+        	handleInvitationEvent((InvitationReceivedEvent) event);
         } else {
-            debug("unrecognized event " + event);
+        	debug("unrecognized event " + event);
         }
     }
 
+    protected void handleInvitationEvent(InvitationReceivedEvent event) {
+    	XMPPConnection conn = event.getConnection();
+    	if (conn == connection) {
+	    	ID roomID = makeRoomIDFromName(event.getRoom());
+	    	ID fromID = makeUserIDFromName(event.getInviter());
+	    	Message mess = event.getMessage();
+	    	ID toID = makeUserIDFromName(mess.getTo());
+	    	String subject = mess.getSubject();
+	    	String body = event.getReason();
+	    	fireInvitationReceived(roomID,fromID,toID,subject,body);
+    	} else {
+    		debug("got invitation event for other connection "+event);
+    	}
+    }
     /* (non-Javadoc)
      * @see org.eclipse.ecf.core.ISharedObject#handleEvents(org.eclipse.ecf.core.util.Event[])
      */

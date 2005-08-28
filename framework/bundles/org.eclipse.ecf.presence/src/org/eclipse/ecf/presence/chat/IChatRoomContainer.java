@@ -40,12 +40,12 @@ public interface IChatRoomContainer extends IContainer {
      * invitiations are received or invitation rejections are received
      * @param invitationListener
      */
-    //public void addInvitationListener(IInvitationListener invitationListener);
+    public void addInvitationListener(IInvitationListener invitationListener);
     
     /**
      * Add participant listener.  The given listener will be notified if/when
      * participants are added or removed from given room
      * @param participantListener
      */
-    //public void addParticipantListener(IParticipantListener participantListener);
+    public void addParticipantListener(IParticipantListener participantListener);
 }

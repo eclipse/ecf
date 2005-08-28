@@ -13,10 +13,4 @@ public interface IInvitationListener {
 	 * @param body a message body for the invitation
 	 */
 	public void handleInvitationReceived(ID roomID, ID from, ID to, String subject, String body);
-	/**
-	 * Handle notification of a invitation that has been declined
-	 * @param fromID the id of the user declining the invitation
-	 * @param reason a reason for the decline
-	 */
-	public void handleInvitationDeclined(ID fromID, String reason);
 }

@@ -10,8 +10,7 @@
 *****************************************************************************/
 package org.eclipse.ecf.presence;
 
-import org.eclipse.ecf.core.ContainerInstantiationException;
-import org.eclipse.ecf.presence.chat.IChatRoomContainer;
+import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
 
 /**
@@ -57,13 +56,10 @@ public interface IPresenceContainer {
 	 */
 	public IAccountManager getAccountManager();
 	
-	
-	//public IChatRoomManager getChatRoomManager();
 	/**
-	 * Make a chat group from this presence container.
-	 * @return IChatRoomContainer instance
-	 * @throws ContainerInstantiationException
+	 * Get chat room manager for this presence container.  If returns null, no chat room facilities are available
+	 * @return a chat room manager instance if chat room facilities are available for this presence container
+	 * If no such facilities are available, returns null
 	 */
-	public IChatRoomContainer makeChatRoomContainer() throws ContainerInstantiationException;
-	
+	public IChatRoomManager getChatRoomManager();
 }
