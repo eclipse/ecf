@@ -275,7 +275,7 @@ public class RosterView extends ViewPart {
 		public void setPresence(IPresence p) {
 			this.presence = p;
 		}
-		public ID getSvcID() {
+		public ID getServiceID() {
 			return svcID;
 		}
 		public boolean isActive() {
@@ -333,7 +333,7 @@ public class RosterView extends ViewPart {
 			obj.removeChildren();
 			obj
 					.addChild(new TreeObject("Account: "
-							+ obj.getUserID().getName()));
+							+ obj.getServiceID().getName()));
 			TreeObject type = new TreeObject("Status: "
 					+ presence.getType().toString());
 			obj.addChild(type);
@@ -371,7 +371,7 @@ public class RosterView extends ViewPart {
 				fillPresence(newBuddy, presence);
 			else if (oldBuddy == null)
 				newBuddy.addChild(new TreeObject("Account: "
-						+ newBuddy.getUserID().getName()));
+						+ newBuddy.getServiceID().getName()));
 			return newBuddy;
 		}
 
@@ -557,9 +557,33 @@ public class RosterView extends ViewPart {
 				refreshView();
 			}
 		}
-
-		public void removeAllEntries() {
-			root = null;
+		protected void removeChildren(TreeParent parent, ID svcID) {
+			TreeObject [] childs = parent.getChildren();
+			for(int i=0; i < childs.length; i++) {
+				if (childs[i] instanceof TreeParent) {
+					removeChildren((TreeParent) childs[i],svcID);
+				}
+				if (childs[i] instanceof TreeBuddy) {
+					TreeBuddy tb = (TreeBuddy) childs[i];
+					ID id = tb.getServiceID();
+					if (id.equals(svcID)) {
+						parent.removeChild(tb);
+					}
+				} else if (childs[i] instanceof TreeGroup) {
+					TreeGroup tg = (TreeGroup) childs[i];
+					ID id = tg.getServiceID();
+					if (id.equals(svcID)) {
+						parent.removeChild(tg);
+					}
+				}
+			}
+		}
+		public void removeAllEntriesForAccount(UserAccount account) {
+			if (account == null) {
+				root = null;
+			} else {
+				removeChildren(root, account.getServiceID());
+			}
 		}
 
 		private void initialize() {
@@ -690,6 +714,7 @@ public class RosterView extends ViewPart {
 					tg = (TreeGroup) parent;
 				}
 				final TreeGroup treeGroup = tg;
+				/*
 				Action requestAuthUserAction = new Action() {
 					public void run() {
 						requestAuthFrom(tb, treeGroup);
@@ -698,6 +723,7 @@ public class RosterView extends ViewPart {
 				requestAuthUserAction.setText("Re-Request authorization from "
 						+ treeObject.getName());
 				manager.add(requestAuthUserAction);
+				*/
 				Action removeUserAction = new Action() {
 					public void run() {
 						removeUserFromGroup(tb, treeGroup);
@@ -705,7 +731,7 @@ public class RosterView extends ViewPart {
 				};
 				if (treeGroup != null) {
 					removeUserAction.setText("Remove " + treeObject.getName()
-							+ " from " + treeGroup.getName());
+							+ " from " + treeGroup.getName()+" group");
 				} else {
 					removeUserAction.setText("Remove " + treeObject.getName());
 				}
@@ -721,7 +747,7 @@ public class RosterView extends ViewPart {
 						addUserToGroup(treeGroup.getServiceID(),groupName);
 					}
 				};
-				addUserAction.setText("Add buddy to " + treeObject.getName());
+				addUserAction.setText("Add buddy to " + treeObject.getName() + " for account "+treeGroup.getServiceID().getName());
 				addUserAction.setImageDescriptor(ImageDescriptor
 						.createFromURL(UiPlugin.getDefault().find(
 								new Path(ADDBUDDY_ICON))));
@@ -731,7 +757,8 @@ public class RosterView extends ViewPart {
 						removeGroup(groupName);
 					}
 				};
-				removeGroupAction.setText("Remove " + treeObject.getName());
+				String accountName = treeGroup.getServiceID().getName();
+				removeGroupAction.setText("Remove " + treeObject.getName() + " for account "+accountName);
 				removeGroupAction.setEnabled(treeGroup.getTotalCount() == 0);
 				removeGroupAction.setImageDescriptor(PlatformUI.getWorkbench()
 						.getSharedImages().getImageDescriptor(
@@ -775,7 +802,7 @@ public class RosterView extends ViewPart {
 		ID buddyID = buddy.getUserID();
 		String name = buddyID.getName();
 		String groupName = (tg == null) ? null : tg.getName();
-		openDialogAndSendRequest(buddy.getSvcID(),name, groupName);
+		openDialogAndSendRequest(buddy.getServiceID(),name, groupName);
 	}
 
 	protected void addUserToGroup(ID serviceID, String groupName) {
@@ -783,7 +810,7 @@ public class RosterView extends ViewPart {
 	}
 
 	protected void removeUserFromGroup(TreeBuddy buddy, TreeGroup group) {
-		UserAccount account = getAccount(buddy.getSvcID());
+		UserAccount account = getAccount(buddy.getServiceID());
 		if (account != null) {
 			ILocalInputHandler handler = account.getInputHandler();
 			handler.sendRosterRemove(buddy.getUserID());
@@ -998,7 +1025,7 @@ public class RosterView extends ViewPart {
 		if (vcp == null) return null;
 		TreeBuddy buddy = vcp.findBuddyWithUserID(userID);
 		if (buddy == null) return null;
-		UserAccount account = getAccount(buddy.getSvcID());
+		UserAccount account = getAccount(buddy.getServiceID());
 		return account;
 	}
 	
@@ -1095,30 +1122,34 @@ public class RosterView extends ViewPart {
 		//addBuddyAction.setEnabled(enabled);
 	}
 
-	public void accountDeparted(ID member) {
-		UserAccount account = getAccount(member);
+	public void accountDeparted(ID serviceID) {
+		UserAccount account = getAccount(serviceID);
 		if (account != null) {
 			handleAccountDeparted(account);
 		}
 	}
 
 	protected void disposeAllChatWindowsForAccount(UserAccount account, String status) {
-		// XXX remove only ones from given account
 		synchronized (chatThreads) {
 			for (Iterator i = chatThreads.values().iterator(); i.hasNext();) {
 				ChatWindow window = (ChatWindow) i.next();
-				window.setDisposed(status);
+				ID userID = window.getLocalUser().getID();
+				UserAccount userAccount = getAccountForUser(userID);
+				if (userAccount != null) {
+					if (userAccount.getServiceID().equals(account.getServiceID())) {
+						window.setDisposed(status);
+						i.remove();
+					}
+				}
 			}
-			chatThreads.clear();
 		}
 	}
 
 	protected void removeAllRosterEntriesForAccount(UserAccount account) {
-		// XXX make this so it doesn't remove all entries, but rather only ones associated with this account
 		ViewContentProvider vcp = (ViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null) {
-			vcp.removeAllEntries();
+			vcp.removeAllEntriesForAccount(account);
 			refreshView();
 		}
 	}
@@ -1173,7 +1204,8 @@ public class RosterView extends ViewPart {
 	protected void handleAccountDeparted(UserAccount account) {
 		removeAllRosterEntriesForAccount(account);
 		disposeAllChatWindowsForAccount(account,"Disconnected from server.  Chat is inactive");
-		setToolbarEnabled(false);
+		accounts.remove(account.getServiceID());
+		if (accounts.size() == 0) setToolbarEnabled(false);
 	}
 
 	public void handleSetRosterEntry(ID groupID, IRosterEntry entry) {
