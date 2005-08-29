@@ -27,25 +27,27 @@ public class RosterEntry implements IRosterEntry {
     protected IPresence presenceState;
     protected InterestType interestType;
     protected List groups;
+    protected ID serviceID;
     
-    public RosterEntry(ID userID, String name, IPresence presenceState, InterestType interestType, Collection grps) {
+    public RosterEntry(ID svcID, ID userID, String name, IPresence presenceState, InterestType interestType, Collection grps) {
         this.userID = userID;
         this.name = name;
         this.presenceState = presenceState;
         this.interestType = interestType;
         this.groups = new ArrayList();
+        this.serviceID = svcID;
         if (grps != null) this.groups.addAll(groups);
     }
     
-    public RosterEntry(ID userID, String name) {
-        this(userID,name,null,InterestType.BOTH,null);
+    public RosterEntry(ID svcID, ID userID, String name) {
+        this(svcID,userID,name,null,InterestType.BOTH,null);
     }
 
-    public RosterEntry(ID userID, String name, IPresence presenceState) {
-        this(userID,name,presenceState,InterestType.BOTH,null);
+    public RosterEntry(ID svcID, ID userID, String name, IPresence presenceState) {
+        this(svcID,userID,name,presenceState,InterestType.BOTH,null);
     }
-    public RosterEntry(ID userID, String name, InterestType interestType) {
-        this(userID,name,null,interestType,null);
+    public RosterEntry(ID svcID, ID userID, String name, InterestType interestType) {
+        this(svcID,userID,name,null,interestType,null);
     }
     
     /* (non-Javadoc)
@@ -115,6 +117,9 @@ public class RosterEntry implements IRosterEntry {
         groups.remove(group);
     }
     
+    public ID getServiceID() {
+    	return serviceID;
+    }
     public String toString() {
         StringBuffer sb = new StringBuffer("RosterEntry[");
         sb.append("userID=").append(userID).append(";");

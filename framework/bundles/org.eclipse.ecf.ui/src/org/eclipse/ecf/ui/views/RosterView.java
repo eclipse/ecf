@@ -8,7 +8,6 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-
 package org.eclipse.ecf.ui.views;
 
 import java.text.SimpleDateFormat;
@@ -19,7 +18,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.identity.ID;
@@ -32,7 +30,6 @@ import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
 import org.eclipse.ecf.presence.impl.RosterEntry;
-import org.eclipse.ecf.presence.impl.RosterGroup;
 import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.ecf.ui.UiPluginConstants;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
@@ -42,7 +39,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -69,32 +65,58 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-public class RosterView extends ViewPart implements IPresenceListener,
-		IMessageListener {
+public class RosterView extends ViewPart {
 	public static final String DISCONNECT_ICON_DISABLED = "icons/disabled/terminate_co.gif";
 	public static final String DISCONNECT_ICON_ENABLED = "icons/enabled/terminate_co.gif";
 	public static final String INSTANT_MESSAGE_ICON = "icons/enabled/message.gif";
 	public static final String ADDGROUP_ICON = "icons/enabled/addgroup.gif";
 	public static final String ADDBUDDY_ICON = "icons/enabled/addbuddy.gif";
-	public static final String UNFILED_GROUP_NAME = "Unfiled";
+	public static final String UNFILED_GROUP_NAME = "Buddies";
 	protected static final int TREE_EXPANSION_LEVELS = 2;
-
 	private TreeViewer viewer;
-	private Action chatAction;
+	//private Action chatAction;
 	private Action selectedChatAction;
 	private Action selectedDoubleClickAction;
 	private Action disconnectAction;
-	private Action addGroupAction;
-	private Action addBuddyAction;
-	protected IUser localUser;
-	protected ILocalInputHandler inputHandler;
+	//private Action addGroupAction;
+	//private Action addBuddyAction;
 	protected Hashtable chatThreads = new Hashtable();
-	protected ID groupID;
 
-	protected IUser getLocalUser() {
-		return localUser;
+	protected Hashtable accounts = new Hashtable();
+	
+	protected void addAccount(UserAccount account) {
+		if (account == null) return;
+		accounts.put(account.getServiceID(),account);
 	}
-
+	protected UserAccount getAccount(ID serviceID) {
+		return (UserAccount) accounts.get(serviceID);
+	}
+	protected void removeAccount(ID serviceID) {
+		accounts.remove(serviceID);
+	}
+	
+	class UserAccount {
+		ID serviceID;
+		IUser user;
+		ILocalInputHandler inputHandler;
+		
+		public UserAccount(ID serviceID, IUser user, ILocalInputHandler handler) {
+			this.serviceID = serviceID;
+			this.user = user;
+			this.inputHandler = handler;
+		}
+		
+		public ID getServiceID() {
+			return serviceID;
+		}
+		public IUser getUser() {
+			return user;
+		}
+		public ILocalInputHandler getInputHandler() {
+			return inputHandler;
+		}
+	}
+	
 	protected String getUserNameFromID(ID userID) {
 		if (userID == null)
 			return "";
@@ -111,18 +133,23 @@ public class RosterView extends ViewPart implements IPresenceListener,
 	}
 
 	public void dispose() {
-		if (inputHandler != null) {
-			inputHandler.disconnect();
-			inputHandler = null;
+		for(Iterator i=accounts.keySet().iterator(); i.hasNext(); ) {
+			ID serviceID = (ID) i.next();
+			UserAccount account = getAccount(serviceID);
+			if (account != null) {
+				ILocalInputHandler handler = account.getInputHandler();
+				if (handler != null) {
+					handler.disconnect();
+				}
+			}
 		}
+		accounts.clear();
 		super.dispose();
 	}
-
+	
 	class TreeObject implements IAdaptable {
 		private String name;
-
 		private TreeParent parent;
-
 		private ID userID;
 
 		public TreeObject(String name, ID userID) {
@@ -162,7 +189,6 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			return null;
 		}
 	}
-
 	class TreeParent extends TreeObject {
 		private ArrayList children;
 
@@ -202,13 +228,13 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		public boolean hasChildren() {
 			return children.size() > 0;
 		}
-
 	}
-
 	class TreeGroup extends TreeParent {
-
-		public TreeGroup(String name) {
+		ID svcID;
+		
+		public TreeGroup(ID svcID, String name) {
 			super(name);
+			this.svcID = svcID;
 		}
 
 		public int getActiveCount() {
@@ -228,13 +254,17 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		public int getTotalCount() {
 			return getChildren().length;
 		}
+		public ID getServiceID() {
+			return svcID;
+		}
 	}
-
 	class TreeBuddy extends TreeParent {
 		IPresence presence = null;
-
-		public TreeBuddy(String name, ID id, IPresence p) {
+		ID svcID = null;
+		
+		public TreeBuddy(ID svcID, String name, ID id, IPresence p) {
 			super(name, id);
+			this.svcID = svcID;
 			this.presence = p;
 		}
 
@@ -245,7 +275,9 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		public void setPresence(IPresence p) {
 			this.presence = p;
 		}
-
+		public ID getSvcID() {
+			return svcID;
+		}
 		public boolean isActive() {
 			IPresence p = getPresence();
 			if (p == null)
@@ -253,11 +285,10 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			return presence.getType().equals(IPresence.Type.AVAILABLE);
 		}
 	}
-
+	
 	class ViewContentProvider implements IStructuredContentProvider,
 			ITreeContentProvider {
 		private TreeParent invisibleRoot;
-
 		private TreeParent root;
 
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -265,7 +296,9 @@ public class RosterView extends ViewPart implements IPresenceListener,
 
 		public void dispose() {
 		}
-
+		public TreeBuddy findBuddyWithUserID(ID userID) {
+			return findBuddy(root,userID);
+		}
 		public Object[] getElements(Object parent) {
 			if (parent.equals(getViewSite())) {
 				if (root == null)
@@ -328,7 +361,7 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			IPresence presence = entry.getPresenceState();
 			TreeBuddy newBuddy = null;
 			if (oldBuddy == null)
-				newBuddy = new TreeBuddy(name, entry.getUserID(), presence);
+				newBuddy = new TreeBuddy(entry.getServiceID(),name, entry.getUserID(), presence);
 			else {
 				newBuddy = oldBuddy;
 				if (entry.getName() != null)
@@ -394,7 +427,6 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		}
 
 		public void addEntry(TreeParent parent, IRosterEntry entry) {
-
 			TreeBuddy tb = findBuddy(parent, entry);
 			TreeBuddy newBuddy = createBuddy(tb, entry);
 			// If buddy found already, then remove old and add new
@@ -403,9 +435,7 @@ public class RosterView extends ViewPart implements IPresenceListener,
 				tbparent.removeChild(tb);
 				tbparent.addChild(newBuddy);
 			}
-
 			TreeParent buddyParent = newBuddy.getParent();
-
 			if (buddyParent == null) {
 				// Existing group not found, so see if entry has a group
 				// associated with it
@@ -418,14 +448,14 @@ public class RosterView extends ViewPart implements IPresenceListener,
 					if (oldgrp != null) {
 						oldgrp.addChild(newBuddy);
 					} else {
-						TreeGroup newgrp = new TreeGroup(groupName);
+						TreeGroup newgrp = new TreeGroup(entry.getServiceID(),groupName);
 						newgrp.addChild(newBuddy);
 						parent.addChild(newgrp);
 					}
 				} else {
 					TreeGroup tg = findGroup(parent, UNFILED_GROUP_NAME);
 					if (tg == null)
-						tg = new TreeGroup(UNFILED_GROUP_NAME);
+						tg = new TreeGroup(entry.getServiceID(),UNFILED_GROUP_NAME);
 					tg.addChild(newBuddy);
 					parent.addChild(tg);
 				}
@@ -433,7 +463,6 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		}
 
 		public void replaceEntry(TreeParent parent, IRosterEntry entry) {
-
 			TreeBuddy tb = findBuddy(parent, entry);
 			// If entry already in tree, remove it from current position
 			if (tb != null) {
@@ -450,7 +479,6 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			}
 			// Create new buddy
 			TreeBuddy newBuddy = createBuddy(tb, entry);
-
 			Iterator groups = entry.getGroups();
 			if (groups.hasNext()) {
 				// There's a group associated with entry...so add with group
@@ -460,33 +488,34 @@ public class RosterView extends ViewPart implements IPresenceListener,
 				if (oldgrp != null) {
 					oldgrp.addChild(newBuddy);
 				} else {
-					TreeGroup newgrp = new TreeGroup(groupName);
+					TreeGroup newgrp = new TreeGroup(entry.getServiceID(),groupName);
 					newgrp.addChild(newBuddy);
 					parent.addChild(newgrp);
 				}
 			} else {
 				TreeGroup tg = findGroup(parent, UNFILED_GROUP_NAME);
 				if (tg == null)
-					tg = new TreeGroup(UNFILED_GROUP_NAME);
+					tg = new TreeGroup(entry.getServiceID(),UNFILED_GROUP_NAME);
 				tg.addChild(newBuddy);
 				parent.addChild(tg);
 			}
 		}
 
-		public void addGroup(String name) {
+		public void addGroup(ID svcID, String name) {
 			if (name == null)
 				return;
-			addGroup(root, name);
+			addGroup(svcID,root, name);
 		}
+		
 
-		public void addGroup(TreeParent parent, String name) {
+		public void addGroup(ID svcID, TreeParent parent, String name) {
 			TreeGroup oldgrp = findGroup(parent, name);
 			if (oldgrp != null) {
 				// If the name is already there, then skip
 				return;
 			}
 			// Group not there...add it
-			TreeGroup newgrp = new TreeGroup(name);
+			TreeGroup newgrp = new TreeGroup(svcID,name);
 			parent.addChild(newgrp);
 		}
 
@@ -539,7 +568,6 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			invisibleRoot.addChild(root);
 		}
 	}
-
 	class ViewLabelProvider extends LabelProvider {
 		public String getText(Object obj) {
 			String label = null;
@@ -554,8 +582,8 @@ public class RosterView extends ViewPart implements IPresenceListener,
 
 		public Image getImage(Object obj) {
 			Image image = null; // By default, no image exists for obj, but if
-								// found to be a specific instance, load from
-								// plugin repository.
+			// found to be a specific instance, load from
+			// plugin repository.
 			if (obj instanceof TreeBuddy) {
 				ImageRegistry registry = UiPlugin.getDefault()
 						.getImageRegistry();
@@ -575,7 +603,6 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			return image;
 		}
 	}
-
 	class NameSorter extends ViewerSorter {
 	}
 
@@ -631,12 +658,12 @@ public class RosterView extends ViewPart implements IPresenceListener,
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(addBuddyAction);
-		manager.add(new Separator());
-		manager.add(addGroupAction);
-		manager.add(new Separator());
-		manager.add(chatAction);
-		manager.add(new Separator());
+		//manager.add(addBuddyAction);
+		//manager.add(new Separator());
+		//manager.add(addGroupAction);
+		//manager.add(new Separator());
+		//manager.add(chatAction);
+		//manager.add(new Separator());
 		manager.add(disconnectAction);
 	}
 
@@ -657,14 +684,12 @@ public class RosterView extends ViewPart implements IPresenceListener,
 						.createFromURL(UiPlugin.getDefault().find(
 								new Path(INSTANT_MESSAGE_ICON))));
 				manager.add(selectedChatAction);
-
 				TreeObject parent = treeObject.getParent();
 				TreeGroup tg = null;
 				if (parent != null && parent instanceof TreeGroup) {
 					tg = (TreeGroup) parent;
 				}
 				final TreeGroup treeGroup = tg;
-
 				Action requestAuthUserAction = new Action() {
 					public void run() {
 						requestAuthFrom(tb, treeGroup);
@@ -673,7 +698,6 @@ public class RosterView extends ViewPart implements IPresenceListener,
 				requestAuthUserAction.setText("Re-Request authorization from "
 						+ treeObject.getName());
 				manager.add(requestAuthUserAction);
-
 				Action removeUserAction = new Action() {
 					public void run() {
 						removeUserFromGroup(tb, treeGroup);
@@ -689,21 +713,19 @@ public class RosterView extends ViewPart implements IPresenceListener,
 						.getSharedImages().getImageDescriptor(
 								ISharedImages.IMG_TOOL_DELETE));
 				manager.add(removeUserAction);
-
 			} else if (treeObject instanceof TreeGroup) {
 				final TreeGroup treeGroup = (TreeGroup) treeObject;
 				final String groupName = treeGroup.getName();
 				Action addUserAction = new Action() {
 					public void run() {
-						addUserToGroup(groupName);
+						addUserToGroup(treeGroup.getServiceID(),groupName);
 					}
 				};
 				addUserAction.setText("Add buddy to " + treeObject.getName());
 				addUserAction.setImageDescriptor(ImageDescriptor
 						.createFromURL(UiPlugin.getDefault().find(
-								new Path(ADDGROUP_ICON))));
+								new Path(ADDBUDDY_ICON))));
 				manager.add(addUserAction);
-
 				Action removeGroupAction = new Action() {
 					public void run() {
 						removeGroup(groupName);
@@ -716,16 +738,14 @@ public class RosterView extends ViewPart implements IPresenceListener,
 								ISharedImages.IMG_TOOL_DELETE));
 				if (removeGroupAction.isEnabled())
 					manager.add(removeGroupAction);
-
 			}
 		}
-
 		manager.add(new Separator());
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
-	protected void openDialogAndSendRequest(String name, String groupName) {
+	protected void openDialogAndSendRequest(ID svcID, String name, String groupName) {
 		String[] groupNames = this.getGroupNames();
 		List g = Arrays.asList(groupNames);
 		int selected = (groupName == null) ? -1 : g.indexOf(groupName);
@@ -739,10 +759,12 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			sg.close();
 			if (!Arrays.asList(groupNames).contains(group)) {
 				// create group with name
-				this.addGroup(group);
+				this.addGroup(svcID,group);
 			}
 			String[] sendGroups = new String[] { group };
 			// Finally, send the information and request subscription
+			UserAccount account = getAccount(svcID);
+			ILocalInputHandler inputHandler = account.getInputHandler();
 			inputHandler.sendRosterAdd(user, nickname, sendGroups);
 		}
 	}
@@ -753,29 +775,18 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		ID buddyID = buddy.getUserID();
 		String name = buddyID.getName();
 		String groupName = (tg == null) ? null : tg.getName();
-		if (inputHandler != null) {
-			openDialogAndSendRequest(name, groupName);
-		}
+		openDialogAndSendRequest(buddy.getSvcID(),name, groupName);
 	}
 
-	protected void addUserToGroup(String groupName) {
-		openDialogAndSendRequest(null, groupName);
-	}
-
-	protected void addPendingEntry(String user, String nickname, String group) {
-		ID newID = null;
-		try {
-			newID = IDFactory.getDefault().makeStringID(user);
-		} catch (Exception e) {
-		}
-		IRosterEntry newEntry = new RosterEntry(newID, nickname);
-		newEntry.add(new RosterGroup(group));
-		handleRosterEntry(newEntry);
+	protected void addUserToGroup(ID serviceID, String groupName) {
+		openDialogAndSendRequest(serviceID, null, groupName);
 	}
 
 	protected void removeUserFromGroup(TreeBuddy buddy, TreeGroup group) {
-		if (inputHandler != null) {
-			inputHandler.sendRosterRemove(buddy.getUserID());
+		UserAccount account = getAccount(buddy.getSvcID());
+		if (account != null) {
+			ILocalInputHandler handler = account.getInputHandler();
+			handler.sendRosterRemove(buddy.getUserID());
 		}
 	}
 
@@ -787,12 +798,12 @@ public class RosterView extends ViewPart implements IPresenceListener,
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(addBuddyAction);
-		manager.add(new Separator());
-		manager.add(addGroupAction);
-		manager.add(new Separator());
-		manager.add(chatAction);
-		manager.add(new Separator());
+		//manager.add(addBuddyAction);
+		//manager.add(new Separator());
+		//manager.add(addGroupAction);
+		//manager.add(new Separator());
+		//manager.add(chatAction);
+		//manager.add(new Separator());
 		manager.add(disconnectAction);
 	}
 
@@ -820,6 +831,7 @@ public class RosterView extends ViewPart implements IPresenceListener,
 	}
 
 	private void makeActions() {
+		/*
 		chatAction = new Action() {
 			public void run() {
 				ID targetID = inputIMTarget();
@@ -832,6 +844,7 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		chatAction.setImageDescriptor(ImageDescriptor.createFromURL(UiPlugin
 				.getDefault().find(new Path(INSTANT_MESSAGE_ICON))));
 		chatAction.setEnabled(false);
+		*/
 		selectedDoubleClickAction = new Action() {
 			public void run() {
 				TreeObject treeObject = getSelectedTreeObject();
@@ -840,17 +853,21 @@ public class RosterView extends ViewPart implements IPresenceListener,
 					openChatWindowForTarget(targetID);
 			}
 		};
+		
 		disconnectAction = new Action() {
 			public void run() {
-				if (inputHandler != null) {
-					inputHandler.disconnect();
-					setToolbarEnabled(false);
-					this.setEnabled(false);
+				// Disconnect all accounts
+				for(Iterator i=accounts.entrySet().iterator(); i.hasNext(); ) {
+					Map.Entry entry = (Map.Entry) i.next();
+					UserAccount account = (UserAccount) entry.getValue();
+					account.getInputHandler().disconnect();
 				}
+				setToolbarEnabled(false);
+				this.setEnabled(false);
 			}
 		};
 		disconnectAction.setText("Disconnect");
-		disconnectAction.setToolTipText("Disconnect from server");
+		disconnectAction.setToolTipText("Disconnect from servers");
 		disconnectAction.setEnabled(false);
 		disconnectAction.setImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
@@ -858,7 +875,7 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		disconnectAction.setDisabledImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
 						new Path(DISCONNECT_ICON_DISABLED))));
-
+		/*
 		addGroupAction = new Action() {
 			public void run() {
 				// handle add group operation here
@@ -867,7 +884,6 @@ public class RosterView extends ViewPart implements IPresenceListener,
 						.getShell(), "Add Group",
 						"Please enter the name of the group to be added",
 						defaultNewGroupName, new IInputValidator() {
-
 							public String isValid(String newText) {
 								if (newText == null || newText.length() == 0) {
 									return "New group name cannot be empty";
@@ -883,12 +899,11 @@ public class RosterView extends ViewPart implements IPresenceListener,
 								}
 								return null;
 							}
-
 						});
 				input.open();
 				String result = input.getValue();
 				// Now add the group
-				addGroup(result);
+				// XXX addGroup(result);
 			}
 		};
 		addGroupAction.setText("Add Group...");
@@ -897,10 +912,11 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		addGroupAction.setImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
 						new Path(ADDGROUP_ICON))));
-
+	    */
+		/*
 		addBuddyAction = new Action() {
 			public void run() {
-				addUserToGroup(null);
+				// XXX addUserToGroup(null);
 			}
 		};
 		addBuddyAction.setText("Add Buddy...");
@@ -909,6 +925,7 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		addBuddyAction.setImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
 						new Path(ADDBUDDY_ICON))));
+						*/
 	}
 
 	protected ChatWindow openChatWindowForTarget(ID targetID) {
@@ -919,20 +936,22 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			window = (ChatWindow) chatThreads.get(targetID);
 			if (window == null) {
 				window = makeChatWindowForTarget(targetID);
-				window.open();
+				if (window != null) window.open();
 			} else {
 				if (!window.hasFocus()) {
 					window.openAndFlash();
 				}
 			}
-			window.setStatus("chat with " + targetID.getName());
+			if (window != null) window.setStatus("chat with " + targetID.getName());
 		}
 		return window;
 	}
 
 	protected ChatWindow makeChatWindowForTarget(ID targetID) {
+		UserAccount account = getAccountForUser(targetID);
+		if (account == null) return null;
 		ChatWindow window = new ChatWindow(RosterView.this, targetID.getName(),
-				getWindowInitText(targetID), getLocalUser(), new User(targetID));
+				getWindowInitText(targetID), account.getUser(), new User(targetID));
 		window.create();
 		chatThreads.put(targetID, window);
 		return window;
@@ -953,7 +972,7 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		viewer.getControl().setFocus();
 	}
 
-	public void handleRosterEntry(IRosterEntry entry) {
+	public void handleRosterEntry(ID groupID, IRosterEntry entry) {
 		if (entry == null)
 			return;
 		ViewContentProvider vcp = (ViewContentProvider) viewer
@@ -968,26 +987,32 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		}
 	}
 
-	public void handlePresence(ID userID, IPresence presence) {
-		IRosterEntry entry = new RosterEntry(userID, null, presence);
-		handleRosterEntry(entry);
-		refreshView();
+	public void handlePresence(ID groupID, ID userID, IPresence presence) {
+		IRosterEntry entry = new RosterEntry(groupID, userID, null, presence);
+		handleRosterEntry(groupID, entry);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.ui.views.IConfigViewer#setUser(org.eclipse.ecf.core.user.IUser)
-	 */
-	public void setLocalUser(IUser user, ILocalInputHandler textInputHandler) {
-		this.localUser = user;
-		this.inputHandler = textInputHandler;
+	protected UserAccount getAccountForUser(ID userID) {
+		ViewContentProvider vcp = (ViewContentProvider) viewer
+		.getContentProvider();
+		if (vcp == null) return null;
+		TreeBuddy buddy = vcp.findBuddyWithUserID(userID);
+		if (buddy == null) return null;
+		UserAccount account = getAccount(buddy.getSvcID());
+		return account;
+	}
+	
+	protected ILocalInputHandler getHandlerForUser(ID userID) {
+		UserAccount account = getAccountForUser(userID);
+		if (account == null) return null;
+		else return account.getInputHandler();
 	}
 
 	public Object getAdapter(Class clazz) {
 		if (clazz != null && clazz.equals(ILocalInputHandler.class)) {
 			return new ILocalInputHandler() {
 				public void inputText(ID userID, String text) {
+					ILocalInputHandler inputHandler = getHandlerForUser(userID);
 					if (inputHandler != null) {
 						inputHandler.inputText(userID, text);
 					} else
@@ -995,6 +1020,7 @@ public class RosterView extends ViewPart implements IPresenceListener,
 				}
 
 				public void startTyping(ID userID) {
+					ILocalInputHandler inputHandler = getHandlerForUser(userID);
 					if (inputHandler != null) {
 						inputHandler.startTyping(userID);
 					} else
@@ -1002,28 +1028,23 @@ public class RosterView extends ViewPart implements IPresenceListener,
 				}
 
 				public void disconnect() {
-					if (inputHandler != null) {
-						inputHandler.disconnect();
-					} else
-						System.out.println("disconnect()");
+					disconnect();
 				}
 
 				public void updatePresence(ID userID, IPresence presence) {
+					ILocalInputHandler inputHandler = getHandlerForUser(userID);
 					if (inputHandler != null) {
 						inputHandler.updatePresence(userID, presence);
 					} else
-						System.out.println("disconnect()");
+						System.out.println("updatePresence("+userID+","+presence+")");
 				}
 
 				public void sendRosterAdd(String user, String name,
 						String[] groups) {
-					if (inputHandler != null) {
-						inputHandler.sendRosterAdd(user, name, groups);
-					} else
-						System.out.println("sendRosterAdd()");
 				}
 
 				public void sendRosterRemove(ID userID) {
+					ILocalInputHandler inputHandler = getHandlerForUser(userID);
 					if (inputHandler != null) {
 						inputHandler.sendRosterRemove(userID);
 					} else
@@ -1049,8 +1070,8 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		return sdf.format(new Date());
 	}
 
-	public void handleMessage(ID fromID, ID toID, Type type, String subject,
-			String message) {
+	public void handleMessage(ID groupID, ID fromID, ID toID,
+			IMessageListener.Type type, String subject, String message) {
 		ChatWindow window = openChatWindowForTarget(fromID);
 		// finally, show message
 		if (window != null) {
@@ -1060,42 +1081,29 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.ui.views.IConfigViewer#setGroup(org.eclipse.ecf.core.identity.ID)
-	 */
-	public void setGroup(ID groupManager) {
-		if (groupManager != null) {
-			groupID = groupManager;
+	public void addAccount(ID account, IUser user, ILocalInputHandler handler) {
+		if (account != null) {
+			addAccount(new UserAccount(account,user,handler));
 			setToolbarEnabled(true);
 		}
 	}
 
 	protected void setToolbarEnabled(boolean enabled) {
 		disconnectAction.setEnabled(enabled);
-		chatAction.setEnabled(enabled);
-		addGroupAction.setEnabled(enabled);
-		addBuddyAction.setEnabled(enabled);
+		//chatAction.setEnabled(enabled);
+		//addGroupAction.setEnabled(enabled);
+		//addBuddyAction.setEnabled(enabled);
 	}
 
-	public void memberDeparted(ID member) {
-		if (groupID != null) {
-			if (groupID.equals(member)) {
-				handleGroupManagerDeparted();
-			}
+	public void accountDeparted(ID member) {
+		UserAccount account = getAccount(member);
+		if (account != null) {
+			handleAccountDeparted(account);
 		}
 	}
 
-	public void handleContainerJoined(ID containerID) {
-		// do nothing on this notification for now
-	}
-
-	public void handleContainerDeparted(ID containerID) {
-		handleGroupManagerDeparted();
-	}
-
-	protected void disposeAllChatWindows(String status) {
+	protected void disposeAllChatWindowsForAccount(UserAccount account, String status) {
+		// XXX remove only ones from given account
 		synchronized (chatThreads) {
 			for (Iterator i = chatThreads.values().iterator(); i.hasNext();) {
 				ChatWindow window = (ChatWindow) i.next();
@@ -1105,7 +1113,8 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		}
 	}
 
-	protected void removeAllRosterEntries() {
+	protected void removeAllRosterEntriesForAccount(UserAccount account) {
+		// XXX make this so it doesn't remove all entries, but rather only ones associated with this account
 		ViewContentProvider vcp = (ViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null) {
@@ -1134,11 +1143,11 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		return null;
 	}
 
-	public void addGroup(String name) {
+	public void addGroup(ID svcID, String name) {
 		ViewContentProvider vcp = (ViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null) {
-			vcp.addGroup(name);
+			vcp.addGroup(svcID,name);
 			refreshView();
 		}
 	}
@@ -1161,13 +1170,13 @@ public class RosterView extends ViewPart implements IPresenceListener,
 		}
 	}
 
-	protected void handleGroupManagerDeparted() {
-		removeAllRosterEntries();
-		disposeAllChatWindows("Disconnected from server.  Chat is inactive");
+	protected void handleAccountDeparted(UserAccount account) {
+		removeAllRosterEntriesForAccount(account);
+		disposeAllChatWindowsForAccount(account,"Disconnected from server.  Chat is inactive");
 		setToolbarEnabled(false);
 	}
 
-	public void handleSetRosterEntry(IRosterEntry entry) {
+	public void handleSetRosterEntry(ID groupID, IRosterEntry entry) {
 		if (entry == null)
 			return;
 		ViewContentProvider vcp = (ViewContentProvider) viewer
@@ -1181,5 +1190,4 @@ public class RosterView extends ViewPart implements IPresenceListener,
 			refreshView();
 		}
 	}
-
 }

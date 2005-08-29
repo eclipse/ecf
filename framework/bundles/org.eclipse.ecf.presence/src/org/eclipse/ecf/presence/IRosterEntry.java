@@ -25,6 +25,7 @@ public interface IRosterEntry {
     public InterestType getInterestType();
     public IPresence getPresenceState();
     public void setPresenceState(IPresence presence);
+    public ID getServiceID();
     
     public static class InterestType {
         

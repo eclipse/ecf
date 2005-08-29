@@ -40,6 +40,9 @@ public class PresenceContainerUI {
 	protected IAccountManager accountManager = null;
 	protected IPresenceContainer pc = null;
 	
+	protected org.eclipse.ecf.core.user.User localUser = null;
+	protected ID groupID = null;
+	
 	public PresenceContainerUI(IPresenceContainer pc) {
 		this.pc = pc;
         this.messageSender = pc.getMessageSender();
@@ -63,34 +66,7 @@ public class PresenceContainerUI {
                         String name = localUser.getName();
                         nickname = name.substring(0,name.indexOf("@"));
                     }
-                    rosterView.setLocalUser(new org.eclipse.ecf.core.user.User(localUser,nickname),new ILocalInputHandler() {
-
-                        public void inputText(ID userID, String text) {
-                            messageSender.sendMessage(localUser,userID,null,null,text);
-                        }
-
-                        public void startTyping(ID userID) {
-                            //System.out.println("handleStartTyping("+userID+")");
-                        }
-
-                        public void disconnect() {
-                            container.disconnect();
-                        }
-
-						public void updatePresence(ID userID, IPresence presence) {
-							presenceSender.sendPresenceUpdate(localUser,userID,presence);
-						}
-
-						public void sendRosterAdd(String user, String name, String[] groups) {
-							// Send roster add
-							presenceSender.sendRosterAdd(localUser, user,name,groups);
-						}
-						
-						public void sendRosterRemove(ID userID) {
-							presenceSender.sendRosterRemove(localUser, userID);
-						}
-                        
-                    });
+                    PresenceContainerUI.this.localUser = new org.eclipse.ecf.core.user.User(localUser,nickname);
                 } catch (Exception e) {
                     IStatus status = new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Exception showing presence view",e);
                     ClientPlugin.getDefault().getLog().log(status);
@@ -102,7 +78,7 @@ public class PresenceContainerUI {
             public void handleMessage(final ID fromID, final ID toID, final Type type, final String subject, final String message) {
                 Display.getDefault().syncExec(new Runnable() {
                     public void run() {
-                        rosterView.handleMessage(fromID,toID,type,subject,message);
+                        rosterView.handleMessage(PresenceContainerUI.this.groupID,fromID,toID,type,subject,message);
                     }
                 });
             }                
@@ -112,7 +88,30 @@ public class PresenceContainerUI {
             public void handleContainerJoined(final ID joinedContainer) {
                 Display.getDefault().syncExec(new Runnable() {
                     public void run() {
-                        rosterView.setGroup(joinedContainer);
+                        ILocalInputHandler handler = new ILocalInputHandler() {
+                            public void inputText(ID userID, String text) {
+                                messageSender.sendMessage(localUser,userID,null,null,text);
+                            }
+                            public void startTyping(ID userID) {
+                                //System.out.println("handleStartTyping("+userID+")");
+                            }
+                            public void disconnect() {
+                                container.disconnect();
+                                PresenceContainerUI.this.groupID = null;
+                            }
+    						public void updatePresence(ID userID, IPresence presence) {
+    							presenceSender.sendPresenceUpdate(localUser,userID,presence);
+    						}
+    						public void sendRosterAdd(String user, String name, String[] groups) {
+    							// Send roster add
+    							presenceSender.sendRosterAdd(localUser, user,name,groups);
+    						}
+    						public void sendRosterRemove(ID userID) {
+    							presenceSender.sendRosterRemove(localUser, userID);
+    						}
+                        };
+                        PresenceContainerUI.this.groupID = joinedContainer;
+                        rosterView.addAccount(joinedContainer,PresenceContainerUI.this.localUser,handler);
                     }
                 });
             }
@@ -120,7 +119,7 @@ public class PresenceContainerUI {
             public void handleRosterEntry(final IRosterEntry entry) {
                 Display.getDefault().syncExec(new Runnable() {
                     public void run() {
-                        rosterView.handleRosterEntry(entry);
+                        rosterView.handleRosterEntry(PresenceContainerUI.this.groupID,entry);
                     }
                 });
             }
@@ -128,7 +127,7 @@ public class PresenceContainerUI {
             public void handlePresence(final ID fromID, final IPresence presence) {
                 Display.getDefault().syncExec(new Runnable() {
                     public void run() {
-                        rosterView.handlePresence(fromID,presence);
+                        rosterView.handlePresence(PresenceContainerUI.this.groupID,fromID,presence);
                     }
                 });
             }
@@ -137,7 +136,7 @@ public class PresenceContainerUI {
                 Display.getDefault().syncExec(new Runnable() {
                     public void run() {
 						if (rosterView != null) {
-							rosterView.memberDeparted(departedContainer);
+							rosterView.accountDeparted(departedContainer);
 						}
                     }
                 });
@@ -148,7 +147,7 @@ public class PresenceContainerUI {
 			public void handleSetRosterEntry(final IRosterEntry entry) {
                 Display.getDefault().syncExec(new Runnable() {
                     public void run() {
-                        rosterView.handleSetRosterEntry(entry);
+                        rosterView.handleSetRosterEntry(PresenceContainerUI.this.groupID,entry);
                     }
                 });
 			}
@@ -184,7 +183,7 @@ public class PresenceContainerUI {
 											sg.close();
 											if (!g.contains(group)) {
 												// create group with name
-												rosterView.addGroup(group);
+												rosterView.addGroup(groupID,group);
 											}
 											// Finally, send the information and request subscription
 											presenceSender.sendRosterAdd(localUser, user,nickname,new String[] { group } );

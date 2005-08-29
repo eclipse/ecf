@@ -492,7 +492,8 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
             String name = entry.getName();
             RosterPacket.ItemType itemType = entry.getType();
             IRosterEntry.InterestType iType = makeInterestType(itemType);
-            IRosterEntry newEntry = new org.eclipse.ecf.presence.impl.RosterEntry(
+            ID svcID = getContext().getConnectedID();
+            IRosterEntry newEntry = new org.eclipse.ecf.presence.impl.RosterEntry(svcID,
                     userID, name, iType);
             Iterator grps = entry.getGroups();
             for (; grps.hasNext();) {
@@ -513,7 +514,8 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
             String name = entry.getName();
             RosterPacket.ItemType itemType = entry.getItemType();
             IRosterEntry.InterestType iType = makeInterestType(itemType);
-            IRosterEntry newEntry = new org.eclipse.ecf.presence.impl.RosterEntry(
+            ID svcID = getContext().getConnectedID();
+            IRosterEntry newEntry = new org.eclipse.ecf.presence.impl.RosterEntry(svcID,
                     userID, name, iType);
             Iterator grps = entry.getGroupNames();
             for (; grps.hasNext();) {
