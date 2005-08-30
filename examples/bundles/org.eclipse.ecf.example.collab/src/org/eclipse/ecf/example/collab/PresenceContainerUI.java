@@ -63,7 +63,6 @@ public class PresenceContainerUI {
                     IWorkbenchPage wp = ww.getActivePage();
                     IViewPart view = wp.showView("org.eclipse.ecf.ui.view.rosterview");
                     rosterView = (RosterView) view;
-                    rosterView.setPresenceContainer(pc);
                     String nickname = null;
                     if (nick != null) {
                         nickname = nick;
@@ -116,7 +115,7 @@ public class PresenceContainerUI {
     						}
                         };
                         PresenceContainerUI.this.groupID = joinedContainer;
-                        rosterView.addAccount(joinedContainer,PresenceContainerUI.this.localUser,handler);
+                        rosterView.addAccount(joinedContainer,PresenceContainerUI.this.localUser,handler,pc);
                     }
                 });
             }

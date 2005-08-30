@@ -43,4 +43,9 @@ public interface IRoomInfo {
 	 * @return true if room is moderated, false otherwise
 	 */
 	public boolean isModerated();
+	/**
+	 * 
+	 * @return ID of service we are currently connected to
+	 */
+	public ID getConnectedID();
 }

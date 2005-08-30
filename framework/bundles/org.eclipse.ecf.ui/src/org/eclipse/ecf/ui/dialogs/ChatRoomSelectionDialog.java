@@ -1,8 +1,8 @@
 package org.eclipse.ecf.ui.dialogs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.jface.dialogs.Dialog;
@@ -25,11 +25,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 public class ChatRoomSelectionDialog extends TitleAreaDialog {
-	IChatRoomManager manager = null;
+	IChatRoomManager [] managers = null;
 
-	public ChatRoomSelectionDialog(Shell parentShell, IChatRoomManager manager) {
+	public ChatRoomSelectionDialog(Shell parentShell, IChatRoomManager [] managers) {
 		super(parentShell);
-		this.manager = manager;
+		this.managers = managers;
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -45,7 +45,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		TableColumn tc = new TableColumn(table, SWT.NONE);
-		tc.setText("Name");
+		tc.setText("Room Name");
 		tc.pack();
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Subject");
@@ -62,6 +62,9 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Persistent");		
 		tc.pack();
+		tc = new TableColumn(table,  SWT.NONE);
+		tc.setText("Account");
+		tc.pack();
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -75,20 +78,15 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		viewer.setContentProvider(new ChatRoomContentProvider());
 		viewer.setLabelProvider(new ChatRoomLabelProvider());
 		
-		ID[] rooms = manager.getChatRooms();
-
-		if (rooms != null && rooms.length > 0) {
-			List roomInfo = new ArrayList();
-
-			for (int i = 0; i < rooms.length; ++i) {
-				roomInfo.add(manager.getChatRoomInfo(rooms[i]));
-			}
-
-			viewer.setInput(roomInfo.toArray(new IRoomInfo[rooms.length]));
+		List all = new ArrayList();
+		for(int i=0; i < managers.length; i++) {
+			IRoomInfo [] infos = managers[i].getChatRoomsInfo();
+			if (infos != null) all.addAll(Arrays.asList(infos));
 		}
-
+		viewer.setInput(all.toArray(new IRoomInfo[] {}));
+		
 		this.setTitle("Chatroom Selection");
-		this.setMessage("Select a chatroom to enter.");
+		this.setMessage("Select a chatroom to enter");
 
 		return parent;
 	}
@@ -131,6 +129,8 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 				return String.valueOf(info.isModerated());
 			case 5:
 				return String.valueOf(info.isPersistent());
+			case 6:
+				return info.getConnectedID().getName();
 			default:
 				return "";
 

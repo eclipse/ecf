@@ -564,9 +564,11 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 
     	RoomInfo info;
     	XMPPRoomID roomID;
-    	public ECFRoomInfo(XMPPRoomID roomID, RoomInfo info) {
+    	ID connectedID;
+    	public ECFRoomInfo(XMPPRoomID roomID, RoomInfo info, ID connectedID) {
     		this.roomID = roomID;
     		this.info = info;
+    		this.connectedID = connectedID;
     	}
 		public String getDescription() {
 			return info.getDescription();
@@ -592,9 +594,13 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		public boolean isModerated() {
 			return info.isModerated();
 		}
+		public ID getConnectedID() {
+			return connectedID;
+		}
     	public String toString() {
     		StringBuffer buf = new StringBuffer("ECFRoomInfo[");
     		buf.append("id=").append(getID()).append(";name="+getName());
+    		buf.append(";service="+getConnectedID());
     		buf.append(";count="+getParticipantsCount());
     		buf.append(";subject="+getSubject()).append(";desc="+getDescription());
     		buf.append(";pers="+isPersistent()).append(";pw="+requiresPassword());
@@ -608,7 +614,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
     	try {
     		RoomInfo info = MultiUserChat.getRoomInfo(sharedObject.getConnection(),cRoomID.getMucString());
     		if (info != null) {
-    			return new ECFRoomInfo(cRoomID,info);
+    			return new ECFRoomInfo(cRoomID,info,getConnectedID());
     		}
     	} catch (XMPPException e) {
     		dumpStack("Exception in getChatRoomInfo("+roomID+")",e);

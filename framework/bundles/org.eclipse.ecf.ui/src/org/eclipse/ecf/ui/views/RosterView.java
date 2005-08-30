@@ -82,7 +82,6 @@ public class RosterView extends ViewPart {
 	private Action selectedDoubleClickAction;
 	private Action disconnectAction;
 	private Action openChatRoomAction;
-	private IPresenceContainer presenceContainer;
 	// private Action addGroupAction;
 	// private Action addBuddyAction;
 	protected Hashtable chatThreads = new Hashtable();
@@ -102,10 +101,12 @@ public class RosterView extends ViewPart {
 		ID serviceID;
 		IUser user;
 		ILocalInputHandler inputHandler;
-		public UserAccount(ID serviceID, IUser user, ILocalInputHandler handler) {
+		IPresenceContainer container;
+		public UserAccount(ID serviceID, IUser user, ILocalInputHandler handler, IPresenceContainer container) {
 			this.serviceID = serviceID;
 			this.user = user;
 			this.inputHandler = handler;
+			this.container = container;
 		}
 		public ID getServiceID() {
 			return serviceID;
@@ -115,6 +116,9 @@ public class RosterView extends ViewPart {
 		}
 		public ILocalInputHandler getInputHandler() {
 			return inputHandler;
+		}
+		public IPresenceContainer getContainer() {
+			return container;
 		}
 	}
 	protected String getUserNameFromID(ID userID) {
@@ -691,22 +695,26 @@ public class RosterView extends ViewPart {
 			} else if (treeObject instanceof TreeGroup) {
 				final TreeGroup treeGroup = (TreeGroup) treeObject;
 				final String groupName = treeGroup.getName();
+				/*
 				Action addUserAction = new Action() {
 					public void run() {
 						addUserToGroup(treeGroup.getServiceID(), groupName);
 					}
 				};
+				
 				addUserAction.setText("Add buddy to " + treeObject.getName()
 						+ " for account " + treeGroup.getServiceID().getName());
 				addUserAction.setImageDescriptor(ImageDescriptor
 						.createFromURL(UiPlugin.getDefault().find(
 								new Path(ADDBUDDY_ICON))));
 				manager.add(addUserAction);
+				*/
 				Action removeGroupAction = new Action() {
 					public void run() {
 						removeGroup(groupName);
 					}
 				};
+				
 				String accountName = treeGroup.getServiceID().getName();
 				removeGroupAction.setText("Remove " + treeObject.getName()
 						+ " for account " + accountName);
@@ -844,19 +852,20 @@ public class RosterView extends ViewPart {
 						new Path(DISCONNECT_ICON_DISABLED))));
 		openChatRoomAction = new Action() {
 			public void run() {
-				if (presenceContainer != null) {
-					IChatRoomManager m = presenceContainer.getChatRoomManager();
-					if (m != null) {
-						ChatRoomSelectionDialog dialog = new ChatRoomSelectionDialog(
-								RosterView.this.getViewSite().getShell(), m);
+				IChatRoomManager managers[] = new IChatRoomManager[accounts.size()];
+				int j = 0;
+				for(Iterator i=accounts.values().iterator(); i.hasNext(); ) {
+					UserAccount ua = (UserAccount) i.next();
+					managers[j++] = ua.getContainer().getChatRoomManager();
+				}
+				ChatRoomSelectionDialog dialog = new ChatRoomSelectionDialog(
+								RosterView.this.getViewSite().getShell(), managers);
 						dialog.setBlockOnOpen(true);
 						dialog.open();
-					}
-				}
 			}
 		};
-		openChatRoomAction.setText("Enter Chatroom.");
-		openChatRoomAction.setToolTipText("Enter a chatroom.");
+		openChatRoomAction.setText("Enter Chatroom");
+		openChatRoomAction.setToolTipText("Enter a chatroom");
 		openChatRoomAction.setImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
 						new Path(ADDGROUP_ICON))));
@@ -1036,9 +1045,9 @@ public class RosterView extends ViewPart {
 					+ (new SimpleDateFormat("hh:mm:ss").format(new Date())));
 		}
 	}
-	public void addAccount(ID account, IUser user, ILocalInputHandler handler) {
+	public void addAccount(ID account, IUser user, ILocalInputHandler handler, IPresenceContainer container) {
 		if (account != null) {
-			addAccount(new UserAccount(account, user, handler));
+			addAccount(new UserAccount(account, user, handler, container));
 			setToolbarEnabled(true);
 		}
 	}
@@ -1144,10 +1153,14 @@ public class RosterView extends ViewPart {
 			refreshView();
 		}
 	}
+	/*
 	public IPresenceContainer getPresenceContainer() {
 		return presenceContainer;
 	}
+	*/
+	/*
 	public void setPresenceContainer(IPresenceContainer presenceContainer) {
 		this.presenceContainer = presenceContainer;
 	}
+	*/
 }
