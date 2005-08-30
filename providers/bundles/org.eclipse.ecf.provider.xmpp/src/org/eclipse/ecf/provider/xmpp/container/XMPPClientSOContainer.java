@@ -275,7 +275,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	        for(; i.hasNext(); ) {
 	        	Object extension = i.next();
 	        	trace("XMPPClientSOContainer.handlePresenceMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
-	        	System.out.println("XMPPClientSOContainer.handlePresenceMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
 	        }
 	        
         }
