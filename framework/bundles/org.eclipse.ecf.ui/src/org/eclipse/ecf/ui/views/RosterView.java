@@ -427,6 +427,11 @@ public class RosterView extends ViewPart {
 		}
 
 		public void addEntry(TreeParent parent, IRosterEntry entry) {
+			System.out.println("addEntry("+parent+","+entry+")");
+			//Exception e = new Exception();
+			//e.setStackTrace(Thread.currentThread().getStackTrace());
+			//e.printStackTrace();
+			
 			TreeBuddy tb = findBuddy(parent, entry);
 			TreeBuddy newBuddy = createBuddy(tb, entry);
 			// If buddy found already, then remove old and add new
@@ -454,15 +459,23 @@ public class RosterView extends ViewPart {
 					}
 				} else {
 					TreeGroup tg = findGroup(parent, UNFILED_GROUP_NAME);
-					if (tg == null)
+					if (tg == null) {
 						tg = new TreeGroup(entry.getServiceID(),UNFILED_GROUP_NAME);
-					tg.addChild(newBuddy);
-					parent.addChild(tg);
+						tg.addChild(newBuddy);
+						parent.addChild(tg);
+					} else {
+						tg.addChild(newBuddy);
+					}
 				}
 			}
 		}
 
 		public void replaceEntry(TreeParent parent, IRosterEntry entry) {
+			System.out.println("replaceEntry("+parent+","+entry+")");
+			//Exception e = new Exception();
+			//e.setStackTrace(Thread.currentThread().getStackTrace());
+			//e.printStackTrace();
+
 			TreeBuddy tb = findBuddy(parent, entry);
 			// If entry already in tree, remove it from current position
 			if (tb != null) {
@@ -494,10 +507,13 @@ public class RosterView extends ViewPart {
 				}
 			} else {
 				TreeGroup tg = findGroup(parent, UNFILED_GROUP_NAME);
-				if (tg == null)
+				if (tg == null) {
 					tg = new TreeGroup(entry.getServiceID(),UNFILED_GROUP_NAME);
-				tg.addChild(newBuddy);
-				parent.addChild(tg);
+					tg.addChild(newBuddy);
+					parent.addChild(tg);
+				} else {
+					tg.addChild(newBuddy);
+				}
 			}
 		}
 
@@ -1000,6 +1016,7 @@ public class RosterView extends ViewPart {
 	}
 
 	public void handleRosterEntry(ID groupID, IRosterEntry entry) {
+		System.out.println("handleRosterEntry("+groupID+","+entry+")");
 		if (entry == null)
 			return;
 		ViewContentProvider vcp = (ViewContentProvider) viewer
@@ -1015,6 +1032,7 @@ public class RosterView extends ViewPart {
 	}
 
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
+		System.out.println("handlePresence("+groupID+","+userID+","+presence+")");
 		IRosterEntry entry = new RosterEntry(groupID, userID, null, presence);
 		handleRosterEntry(groupID, entry);
 	}
