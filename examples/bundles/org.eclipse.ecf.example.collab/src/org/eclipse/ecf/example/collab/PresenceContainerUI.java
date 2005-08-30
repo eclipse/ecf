@@ -4,8 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
@@ -42,6 +44,7 @@ public class PresenceContainerUI {
 	
 	protected org.eclipse.ecf.core.user.User localUser = null;
 	protected ID groupID = null;
+	protected IContainer container;
 	
 	public PresenceContainerUI(IPresenceContainer pc) {
 		this.pc = pc;
@@ -51,6 +54,7 @@ public class PresenceContainerUI {
 	}
 	
     protected void setup(final IContainer container, final ID localUser, final String nick) {
+    	this.container = container;
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
                 try {
@@ -223,28 +227,39 @@ public class PresenceContainerUI {
 		});
     }
 
-    protected void createChatRoom(String roomName) {
-    	try {
-    		IChatRoomManager crmanager = pc.getChatRoomManager();
-    		IRoomInfo [] roomInfos = crmanager.getChatRoomsInfo();
-    		System.out.println("room ids: "+Arrays.toString(roomInfos));
-    		IChatRoomContainer chatRoom = crmanager.makeChatRoomContainer();
-    		chatRoom.addMessageListener(new IMessageListener() {
-				public void handleMessage(ID fromID, ID toID, Type type, String subject, String messageBody) {
-					System.out.println("Room message from="+fromID+",to="+toID+",type="+type+",sub="+subject+",body="+messageBody);
-				}
-    		});
-    		chatRoom.addParticipantListener(new IParticipantListener() {
-				public void handlePresence(ID fromID, IPresence presence) {
-					System.out.println("chat presence from="+fromID+",presence="+presence);
-				}});
-    		chatRoom.addInvitationListener(new IInvitationListener() {
-				public void handleInvitationReceived(ID roomID, ID from, ID toID, String subject, String body) {
-					System.out.println("invitation room="+roomID+",from="+from+",to="+toID+",subject="+subject+",body="+body);
-				}});
-    		chatRoom.connect(roomName);
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
-    }
+    protected void connectToFirstChatRoom() throws ECFException {
+    	// Get chat room manager for presence container
+		IChatRoomManager crmanager = pc.getChatRoomManager();
+		// Get info from manager for chat rooms
+		IRoomInfo [] roomInfos = crmanager.getChatRoomsInfo();
+		// If no chat rooms available we throw
+		if (roomInfos == null || roomInfos.length == 0) {
+			throw new ContainerConnectException("No chat rooms available for "+container.getConnectedID().getName());
+		}
+		// Otherwise print out some info about rooms
+		System.out.println(" chat rooms available: "+Arrays.toString(roomInfos));
+		
+		// XXX arbitrarily join first chat room
+		ID targetID = roomInfos[0].getRoomID();
+		
+		// Make chat room container
+		IChatRoomContainer chatRoom = crmanager.makeChatRoomContainer();
+		// Add listeners/UI handlers for appropriate events
+		chatRoom.addMessageListener(new IMessageListener() {
+			public void handleMessage(ID fromID, ID toID, Type type, String subject, String messageBody) {
+				System.out.println("Room message from="+fromID+",to="+toID+",type="+type+",sub="+subject+",body="+messageBody);
+			}
+		});
+		chatRoom.addParticipantListener(new IParticipantListener() {
+			public void handlePresence(ID fromID, IPresence presence) {
+				System.out.println("chat presence from="+fromID+",presence="+presence);
+			}});
+		chatRoom.addInvitationListener(new IInvitationListener() {
+			public void handleInvitationReceived(ID roomID, ID from, ID toID, String subject, String body) {
+				System.out.println("invitation room="+roomID+",from="+from+",to="+toID+",subject="+subject+",body="+body);
+			}});
+		
+		// Now connect to room ID
+		chatRoom.connect(targetID,null);
+	}
 }

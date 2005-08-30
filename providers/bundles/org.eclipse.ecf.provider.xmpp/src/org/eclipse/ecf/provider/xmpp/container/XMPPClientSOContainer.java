@@ -52,6 +52,7 @@ import org.eclipse.ecf.provider.generic.SOConfig;
 import org.eclipse.ecf.provider.generic.SOContainerConfig;
 import org.eclipse.ecf.provider.generic.SOContext;
 import org.eclipse.ecf.provider.generic.SOWrapper;
+import org.eclipse.ecf.provider.xmpp.Trace;
 import org.eclipse.ecf.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
@@ -75,11 +76,14 @@ import org.jivesoftware.smackx.muc.RoomInfo;
 public class XMPPClientSOContainer extends ClientSOContainer {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
+	Trace trace = Trace.create("XMPPClientSOContainer");
+	
 	public static final String NAMESPACE_IDENTIFIER = XmppPlugin.getDefault().getNamespaceIdentifier();
 	
 	public static final String XMPP_SHARED_OBJECT_ID = XMPPClientSOContainer.class
 			.getName()
 			+ ".xmpphandler";
+	
 	private static final String GOOGLE_SERVICENAME = "gmail.com";
 	
 	int keepAlive = 0;
@@ -88,6 +92,16 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	protected ID sharedObjectID = null;
 	Vector chats = new Vector();
 	
+	protected void trace(String msg) {
+		if (trace != null) {
+			trace.msg(msg);
+		}
+	}
+	protected void dumpStack(Throwable t, String msg) {
+		if (trace != null) {
+			trace.dumpStack(t,msg);
+		}
+	}
 	public XMPPClientSOContainer() throws Exception {
 		this(DEFAULT_KEEPALIVE);
 	}
@@ -147,7 +161,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		if (remoteSpace instanceof XMPPID) {
 			XMPPID theID = (XMPPID) remoteSpace;
 			String host = theID.getHostname();
-			if (host.equals(GOOGLE_SERVICENAME)) {
+			if (host.toLowerCase().equals(GOOGLE_SERVICENAME)) {
 				google = true;
 			}
 		}
@@ -197,7 +211,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
         if (i.hasNext()) {
 	        for(; i.hasNext(); ) {
 	        	Object extension = i.next();
-	        	System.out.println("XMPPClientSOContainer.handleChatMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
+	        	trace("XMPPClientSOContainer.handleChatMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
 	        }
 	        
         }
@@ -239,9 +253,8 @@ public class XMPPClientSOContainer extends ClientSOContainer {
         if (i.hasNext()) {
 	        for(; i.hasNext(); ) {
 	        	Object extension = i.next();
-	        	System.out.println("XMPPClientSOContainer.handleIQMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
+	        	trace("XMPPClientSOContainer.handleIQMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
 	        }
-	        
         }
 	}
 	protected void handleIQMessage(IQ mess) throws IOException {
@@ -256,15 +269,17 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	}
 
 	protected void handlePresenceMessageWithExtension(Presence mess) throws IOException {
-		// XXX Log this properly or handle with new semantics for handling extensions
+		// XXX Log this properly or handle with new semantics for handling extensions		
         Iterator i = mess.getExtensions();
         if (i.hasNext()) {
 	        for(; i.hasNext(); ) {
 	        	Object extension = i.next();
+	        	trace("XMPPClientSOContainer.handlePresenceMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
 	        	System.out.println("XMPPClientSOContainer.handlePresenceMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
 	        }
 	        
         }
+        
 	}
 	protected void handlePresenceMessage(Presence mess) throws IOException {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
@@ -391,7 +406,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			messageSender.sendRosterAdd(user,name,groups);
 		}
 	}
-
 	protected void sendRosterRemove(String user) throws IOException {
 		if (messageSender != null) {
 			messageSender.sendRosterRemove(user);
@@ -401,7 +415,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
     public Object getAdapter(Class clazz) {
 		if (clazz.equals(IPresenceContainer.class)) {
             return new IPresenceContainer() {
-
                 public void addPresenceListener(IPresenceListener listener) {
                     sharedObject.addPresenceListener(listener);
                 }
@@ -409,7 +422,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
                 public void addMessageListener(IMessageListener listener) {
                     sharedObject.addMessageListener(listener);
                 }
-
                 public IMessageSender getMessageSender() {
                     return new IMessageSender() {
 
@@ -434,7 +446,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
                                 dumpStack("Exception in sendPresenceUpdate to "+toID+" with presence "+presence,e);
                             }
 						}
-
 						public void sendRosterAdd(ID fromID, String user, String name, String[] groups) {
                             try {
                                 XMPPClientSOContainer.this.sendRosterAdd(user,name,groups);
@@ -442,7 +453,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
                                 dumpStack("Exception in sendRosterAdd",e);
                             }
 						}
-
 						public void sendRosterRemove(ID fromID, ID userID) {
                             try {
 								if (userID == null) return;
@@ -457,31 +467,24 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 				
 				public IAccountManager getAccountManager() {
 					return new IAccountManager() {
-
 						public void changePassword(String newpassword) throws ECFException {
 							sharedObject.changePassword(newpassword);
 						}
-
 						public void createAccount(String username, String password, Map attributes) throws ECFException {
 							sharedObject.createAccount(username,password,attributes);
 						}
-
 						public void deleteAccount() throws ECFException {
 							sharedObject.deleteAccount();
 						}
-
 						public String getAccountInstructions() {
 							return sharedObject.getAccountInstructions();
 						}
-
 						public String[] getAccountAttributeNames() {
 							return sharedObject.getAccountAttributeNames();
 						}
-
 						public Object getAccountAttribute(String name) {
 							return sharedObject.getAccountAttribute(name);
 						}
-						
 						public boolean supportsCreation() {
 							return sharedObject.supportsCreation();
 						}
@@ -492,15 +495,12 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 				}
 				public IChatRoomManager getChatRoomManager() {
 					return new IChatRoomManager() {
-
 						public ID[] getChatRooms() {
 							return XMPPClientSOContainer.this.getChatRooms();
 						}
-
 						public IRoomInfo getChatRoomInfo(ID roomID) {
 							return XMPPClientSOContainer.this.getChatRoomInfo(roomID);
 						}
-
 						public IChatRoomContainer makeChatRoomContainer() throws ContainerInstantiationException {
 							IChatRoomContainer chatContainer = null;
 							try {
@@ -512,7 +512,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 							}
 							return chatContainer;
 						}
-
 						public IRoomInfo[] getChatRoomsInfo() {
 							ID [] chatRooms = getChatRooms();
 							if (chatRooms == null) return null;
@@ -536,7 +535,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
     		return new XMPPRoomID(getConnectNamespace(),sharedObject.getConnection(),room.getJid(),room.getName());
     	} catch (URISyntaxException e) {
     		// debug output
-    		e.printStackTrace();
+    		dumpStack("Exception in makeIDFromHostedRoom("+room+")",e);
     		return null;
     	}
     }
@@ -557,8 +556,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
     			}
     		}
     	} catch (XMPPException e) {
-    		// XXX more debug output here
-    		e.printStackTrace();
+    		dumpStack("Exception in getChatRooms()",e);
     		return null;
     	}
     	return (ID []) result.toArray(new ID[] {});
@@ -567,40 +565,31 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 
     	RoomInfo info;
     	XMPPRoomID roomID;
-    	
     	public ECFRoomInfo(XMPPRoomID roomID, RoomInfo info) {
     		this.roomID = roomID;
     		this.info = info;
     	}
-    	
 		public String getDescription() {
 			return info.getDescription();
 		}
-
 		public String getSubject() {
 			return info.getSubject();
 		}
-
 		public ID getRoomID() {
 			return roomID;
 		}
-
 		public int getParticipantsCount() {
 			return info.getOccupantsCount();
 		}
-
 		public String getName() {
 			return roomID.getLongName();
 		}
-
 		public boolean isPersistent() {
 			return info.isPersistent();
 		}
-
 		public boolean requiresPassword() {
 			return info.isPasswordProtected();
 		}
-
 		public boolean isModerated() {
 			return info.isModerated();
 		}
@@ -623,8 +612,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
     			return new ECFRoomInfo(cRoomID,info);
     		}
     	} catch (XMPPException e) {
-    		// XXX more debug output here
-    		e.printStackTrace();
+    		dumpStack("Exception in getChatRoomInfo("+roomID+")",e);
     		return null;
     	}
     	return null;

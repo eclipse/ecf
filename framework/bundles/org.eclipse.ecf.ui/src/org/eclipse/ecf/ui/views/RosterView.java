@@ -427,10 +427,6 @@ public class RosterView extends ViewPart {
 		}
 
 		public void addEntry(TreeParent parent, IRosterEntry entry) {
-			System.out.println("addEntry("+parent+","+entry+")");
-			//Exception e = new Exception();
-			//e.setStackTrace(Thread.currentThread().getStackTrace());
-			//e.printStackTrace();
 			
 			TreeBuddy tb = findBuddy(parent, entry);
 			TreeBuddy newBuddy = createBuddy(tb, entry);
@@ -471,10 +467,6 @@ public class RosterView extends ViewPart {
 		}
 
 		public void replaceEntry(TreeParent parent, IRosterEntry entry) {
-			System.out.println("replaceEntry("+parent+","+entry+")");
-			//Exception e = new Exception();
-			//e.setStackTrace(Thread.currentThread().getStackTrace());
-			//e.printStackTrace();
 
 			TreeBuddy tb = findBuddy(parent, entry);
 			// If entry already in tree, remove it from current position
@@ -1016,7 +1008,6 @@ public class RosterView extends ViewPart {
 	}
 
 	public void handleRosterEntry(ID groupID, IRosterEntry entry) {
-		System.out.println("handleRosterEntry("+groupID+","+entry+")");
 		if (entry == null)
 			return;
 		ViewContentProvider vcp = (ViewContentProvider) viewer
@@ -1032,7 +1023,6 @@ public class RosterView extends ViewPart {
 	}
 
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
-		System.out.println("handlePresence("+groupID+","+userID+","+presence+")");
 		IRosterEntry entry = new RosterEntry(groupID, userID, null, presence);
 		handleRosterEntry(groupID, entry);
 	}
@@ -1061,7 +1051,7 @@ public class RosterView extends ViewPart {
 					if (inputHandler != null) {
 						inputHandler.inputText(userID, text);
 					} else
-						System.out.println("handleTextLine(" + text + ")");
+						System.err.println("handleTextLine(" + text + ")");
 				}
 
 				public void startTyping(ID userID) {
@@ -1069,7 +1059,7 @@ public class RosterView extends ViewPart {
 					if (inputHandler != null) {
 						inputHandler.startTyping(userID);
 					} else
-						System.out.println("handleStartTyping()");
+						System.err.println("handleStartTyping()");
 				}
 
 				public void disconnect() {
@@ -1081,7 +1071,7 @@ public class RosterView extends ViewPart {
 					if (inputHandler != null) {
 						inputHandler.updatePresence(userID, presence);
 					} else
-						System.out.println("updatePresence("+userID+","+presence+")");
+						System.err.println("updatePresence("+userID+","+presence+")");
 				}
 
 				public void sendRosterAdd(String user, String name,
@@ -1093,7 +1083,7 @@ public class RosterView extends ViewPart {
 					if (inputHandler != null) {
 						inputHandler.sendRosterRemove(userID);
 					} else
-						System.out.println("sendRosterRemove()");
+						System.err.println("sendRosterRemove()");
 				}
 			};
 		} else if (clazz.equals(IPresenceListener.class)) {

@@ -10,7 +10,6 @@
 *****************************************************************************/
 package org.eclipse.ecf.presence.chat;
 
-import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
@@ -22,7 +21,6 @@ import org.eclipse.ecf.presence.IParticipantListener;
  */
 public interface IChatRoomContainer extends IContainer {
 	
-	public void connect(String groupName) throws ContainerConnectException;
     /**
      * Setup listener for handling IM messages
      * @param listener
