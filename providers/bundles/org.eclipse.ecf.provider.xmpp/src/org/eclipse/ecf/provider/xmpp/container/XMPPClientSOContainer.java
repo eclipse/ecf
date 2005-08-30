@@ -145,13 +145,13 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	}
 
 	public void dispose() {
-		super.dispose();
 		if (sharedObject != null) {
 			getSharedObjectManager().removeSharedObject(sharedObjectID);
 		}
 		sharedObjectID = null;
 		sharedObject = null;
 		messageSender = null;
+		super.dispose();
 	}
 
 	protected ISynchAsynchConnection makeConnection(ID remoteSpace,

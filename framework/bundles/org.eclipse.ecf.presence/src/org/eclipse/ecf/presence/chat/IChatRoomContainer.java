@@ -39,7 +39,6 @@ public interface IChatRoomContainer extends IContainer {
      * @param invitationListener
      */
     public void addInvitationListener(IInvitationListener invitationListener);
-    
     /**
      * Add participant listener.  The given listener will be notified if/when
      * participants are added or removed from given room

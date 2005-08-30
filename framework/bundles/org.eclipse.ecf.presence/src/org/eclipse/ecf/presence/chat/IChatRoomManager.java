@@ -31,7 +31,7 @@ public interface IChatRoomManager {
 	 * @return IRoomInfo an array of instances that provide info for all chat rooms
 	 */
 	public IRoomInfo[] getChatRoomsInfo();
-	/**
+   	/**
 	 * Make a new IChatRoomContainer instance
 	 * @return non-null IChatRoomContainer implementer
 	 * @throws ContainerInstantiationException if chat room container cannot be made

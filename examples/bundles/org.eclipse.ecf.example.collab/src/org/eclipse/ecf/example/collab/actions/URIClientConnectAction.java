@@ -56,9 +56,9 @@ public class URIClientConnectAction implements IWorkbenchWindowActionDelegate {
         public IStatus run(IProgressMonitor pm) {
             try {
                 client.createAndConnectClient(containerType, uri,nickname, data,project);
-                return new Status(IStatus.OK,ClientPlugin.PLUGIN_ID,IStatus.OK,"Connected",null);
+                return Status.OK_STATUS;
             } catch (Exception e) {
-                return new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Could not connect to "+uri.toString()+"\n\n"+e.getMessage(),e);
+                return new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,100,"Could not connect to "+uri.toString()+"\n\nSee Error Log for details",e);
             }
         }        
     }

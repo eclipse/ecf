@@ -211,79 +211,65 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 						// TODO Auto-generated method stub
 						System.out.println("joined("+arg0+")");
 					}
-
 					public void left(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("left("+arg0+")");
 						
 					}
-
 					public void kicked(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("kicked("+arg0+")");
 					}
-
 					public void voiceGranted(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("voiceGranted("+arg0+")");
 						
 					}
-
 					public void voiceRevoked(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("voiceRevoked("+arg0+")");
 						
 					}
-
 					public void banned(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("banned("+arg0+")");
 						
 					}
-
 					public void membershipGranted(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("membershipGranted("+arg0+")");
 						
 					}
-
 					public void membershipRevoked(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("membershipRevoked("+arg0+")");
 					}
-
 					public void moderatorGranted(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("moderatorGranted("+arg0+")");
 					}
-
 					public void moderatorRevoked(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("moderatorRevoked("+arg0+")");
 					}
-
 					public void ownershipGranted(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("ownershipGranted("+arg0+")");
 					}
-
 					public void ownershipRevoked(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("ownershipRevoked("+arg0+")");
 					}
-
 					public void adminGranted(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("adminGranted("+arg0+")");
 						
 					}
-
 					public void adminRevoked(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("adminRevoked("+arg0+")");
 						
 					}
-
 					public void nicknameChanged(String arg0) {
 						// TODO Auto-generated method stub
 						System.out.println("nicknameChanged("+arg0+")");

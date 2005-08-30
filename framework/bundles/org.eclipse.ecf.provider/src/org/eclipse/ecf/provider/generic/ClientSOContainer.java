@@ -108,10 +108,6 @@ public abstract class ClientSOContainer extends SOContainer {
 			debug("connect:" + remote + ":" + joinContext);
 			ISynchAsynchConnection aConnection = makeConnection(remote,
 					joinContext);
-			if (aConnection == null)
-				throw new ConnectException("join failed to" + ":"
-						+ remote.getName()
-						+ " because makeConnection returned null");
 			Object response = null;
 			synchronized (connectLock) {
 				// Throw if already connected
@@ -189,11 +185,9 @@ public abstract class ClientSOContainer extends SOContainer {
 		} catch (Exception e) {
 			dumpStack("Exception in connect", e);
 			ContainerConnectException except = new ContainerConnectException(
-					"exception for container " + getID() + " connecting to "
-							+ remote + ": " + e.getClass().getName() + ": "
-							+ e.getMessage());
+					"exception connecting to "
+							+ remote.getName(),e);
 
-			except.setStackTrace(e.getStackTrace());
 			throw except;
 		}
 	}
