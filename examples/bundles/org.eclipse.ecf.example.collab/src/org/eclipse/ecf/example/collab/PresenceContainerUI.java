@@ -63,6 +63,7 @@ public class PresenceContainerUI {
                     IWorkbenchPage wp = ww.getActivePage();
                     IViewPart view = wp.showView("org.eclipse.ecf.ui.view.rosterview");
                     rosterView = (RosterView) view;
+                    rosterView.setPresenceContainer(pc);
                     String nickname = null;
                     if (nick != null) {
                         nickname = nick;
@@ -237,7 +238,7 @@ public class PresenceContainerUI {
 			throw new ContainerConnectException("No chat rooms available for "+container.getConnectedID().getName());
 		}
 		// Otherwise print out some info about rooms
-		System.out.println(" chat rooms available: "+Arrays.toString(roomInfos));
+		//System.out.println(" chat rooms available: "+Arrays.toString(roomInfos));
 		
 		// XXX arbitrarily join first chat room
 		ID targetID = roomInfos[0].getRoomID();

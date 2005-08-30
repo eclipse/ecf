@@ -26,13 +26,17 @@ import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
+import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
+import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.ecf.presence.impl.RosterEntry;
 import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.ecf.ui.UiPluginConstants;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
+import org.eclipse.ecf.ui.dialogs.ChatRoomSelectionDialog;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -67,56 +71,78 @@ import org.eclipse.ui.part.ViewPart;
 
 public class RosterView extends ViewPart {
 	public static final String DISCONNECT_ICON_DISABLED = "icons/disabled/terminate_co.gif";
+
 	public static final String DISCONNECT_ICON_ENABLED = "icons/enabled/terminate_co.gif";
+
 	public static final String INSTANT_MESSAGE_ICON = "icons/enabled/message.gif";
+
 	public static final String ADDGROUP_ICON = "icons/enabled/addgroup.gif";
+
 	public static final String ADDBUDDY_ICON = "icons/enabled/addbuddy.gif";
+
 	public static final String UNFILED_GROUP_NAME = "Buddies";
+
 	protected static final int TREE_EXPANSION_LEVELS = 2;
+
 	private TreeViewer viewer;
-	//private Action chatAction;
+
+	// private Action chatAction;
 	private Action selectedChatAction;
+
 	private Action selectedDoubleClickAction;
+
 	private Action disconnectAction;
-	//private Action addGroupAction;
-	//private Action addBuddyAction;
+
+	private Action openChatRoomAction;
+
+	private IPresenceContainer presenceContainer;
+
+	// private Action addGroupAction;
+	// private Action addBuddyAction;
 	protected Hashtable chatThreads = new Hashtable();
 
 	protected Hashtable accounts = new Hashtable();
-	
+
 	protected void addAccount(UserAccount account) {
-		if (account == null) return;
-		accounts.put(account.getServiceID(),account);
+		if (account == null)
+			return;
+		accounts.put(account.getServiceID(), account);
 	}
+
 	protected UserAccount getAccount(ID serviceID) {
 		return (UserAccount) accounts.get(serviceID);
 	}
+
 	protected void removeAccount(ID serviceID) {
 		accounts.remove(serviceID);
 	}
-	
+
 	class UserAccount {
 		ID serviceID;
+
 		IUser user;
+
 		ILocalInputHandler inputHandler;
-		
+
 		public UserAccount(ID serviceID, IUser user, ILocalInputHandler handler) {
 			this.serviceID = serviceID;
 			this.user = user;
 			this.inputHandler = handler;
 		}
-		
+
 		public ID getServiceID() {
 			return serviceID;
 		}
+
 		public IUser getUser() {
 			return user;
 		}
+
 		public ILocalInputHandler getInputHandler() {
 			return inputHandler;
 		}
 	}
-	
+
 	protected String getUserNameFromID(ID userID) {
 		if (userID == null)
 			return "";
@@ -133,7 +159,7 @@ public class RosterView extends ViewPart {
 	}
 
 	public void dispose() {
-		for(Iterator i=accounts.keySet().iterator(); i.hasNext(); ) {
+		for (Iterator i = accounts.keySet().iterator(); i.hasNext();) {
 			ID serviceID = (ID) i.next();
 			UserAccount account = getAccount(serviceID);
 			if (account != null) {
@@ -146,10 +172,12 @@ public class RosterView extends ViewPart {
 		accounts.clear();
 		super.dispose();
 	}
-	
+
 	class TreeObject implements IAdaptable {
 		private String name;
+
 		private TreeParent parent;
+
 		private ID userID;
 
 		public TreeObject(String name, ID userID) {
@@ -189,6 +217,7 @@ public class RosterView extends ViewPart {
 			return null;
 		}
 	}
+
 	class TreeParent extends TreeObject {
 		private ArrayList children;
 
@@ -229,9 +258,10 @@ public class RosterView extends ViewPart {
 			return children.size() > 0;
 		}
 	}
+
 	class TreeGroup extends TreeParent {
 		ID svcID;
-		
+
 		public TreeGroup(ID svcID, String name) {
 			super(name);
 			this.svcID = svcID;
@@ -254,14 +284,17 @@ public class RosterView extends ViewPart {
 		public int getTotalCount() {
 			return getChildren().length;
 		}
+
 		public ID getServiceID() {
 			return svcID;
 		}
 	}
+
 	class TreeBuddy extends TreeParent {
 		IPresence presence = null;
+
 		ID svcID = null;
-		
+
 		public TreeBuddy(ID svcID, String name, ID id, IPresence p) {
 			super(name, id);
 			this.svcID = svcID;
@@ -275,9 +308,11 @@ public class RosterView extends ViewPart {
 		public void setPresence(IPresence p) {
 			this.presence = p;
 		}
+
 		public ID getServiceID() {
 			return svcID;
 		}
+
 		public boolean isActive() {
 			IPresence p = getPresence();
 			if (p == null)
@@ -285,10 +320,11 @@ public class RosterView extends ViewPart {
 			return presence.getType().equals(IPresence.Type.AVAILABLE);
 		}
 	}
-	
+
 	class ViewContentProvider implements IStructuredContentProvider,
 			ITreeContentProvider {
 		private TreeParent invisibleRoot;
+
 		private TreeParent root;
 
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -296,9 +332,11 @@ public class RosterView extends ViewPart {
 
 		public void dispose() {
 		}
+
 		public TreeBuddy findBuddyWithUserID(ID userID) {
-			return findBuddy(root,userID);
+			return findBuddy(root, userID);
 		}
+
 		public Object[] getElements(Object parent) {
 			if (parent.equals(getViewSite())) {
 				if (root == null)
@@ -331,9 +369,8 @@ public class RosterView extends ViewPart {
 		public TreeBuddy fillPresence(TreeBuddy obj, IPresence presence) {
 			obj.setPresence(presence);
 			obj.removeChildren();
-			obj
-					.addChild(new TreeObject("Account: "
-							+ obj.getServiceID().getName()));
+			obj.addChild(new TreeObject("Account: "
+					+ obj.getServiceID().getName()));
 			TreeObject type = new TreeObject("Status: "
 					+ presence.getType().toString());
 			obj.addChild(type);
@@ -361,7 +398,8 @@ public class RosterView extends ViewPart {
 			IPresence presence = entry.getPresenceState();
 			TreeBuddy newBuddy = null;
 			if (oldBuddy == null)
-				newBuddy = new TreeBuddy(entry.getServiceID(),name, entry.getUserID(), presence);
+				newBuddy = new TreeBuddy(entry.getServiceID(), name, entry
+						.getUserID(), presence);
 			else {
 				newBuddy = oldBuddy;
 				if (entry.getName() != null)
@@ -449,14 +487,16 @@ public class RosterView extends ViewPart {
 					if (oldgrp != null) {
 						oldgrp.addChild(newBuddy);
 					} else {
-						TreeGroup newgrp = new TreeGroup(entry.getServiceID(),groupName);
+						TreeGroup newgrp = new TreeGroup(entry.getServiceID(),
+								groupName);
 						newgrp.addChild(newBuddy);
 						parent.addChild(newgrp);
 					}
 				} else {
 					TreeGroup tg = findGroup(parent, UNFILED_GROUP_NAME);
 					if (tg == null) {
-						tg = new TreeGroup(entry.getServiceID(),UNFILED_GROUP_NAME);
+						tg = new TreeGroup(entry.getServiceID(),
+								UNFILED_GROUP_NAME);
 						tg.addChild(newBuddy);
 						parent.addChild(tg);
 					} else {
@@ -466,6 +506,7 @@ public class RosterView extends ViewPart {
 			}
 		}
 
+			
 		public void replaceEntry(TreeParent parent, IRosterEntry entry) {
 
 			TreeBuddy tb = findBuddy(parent, entry);
@@ -493,14 +534,15 @@ public class RosterView extends ViewPart {
 				if (oldgrp != null) {
 					oldgrp.addChild(newBuddy);
 				} else {
-					TreeGroup newgrp = new TreeGroup(entry.getServiceID(),groupName);
+					TreeGroup newgrp = new TreeGroup(entry.getServiceID(),
+							groupName);
 					newgrp.addChild(newBuddy);
 					parent.addChild(newgrp);
 				}
 			} else {
 				TreeGroup tg = findGroup(parent, UNFILED_GROUP_NAME);
 				if (tg == null) {
-					tg = new TreeGroup(entry.getServiceID(),UNFILED_GROUP_NAME);
+					tg = new TreeGroup(entry.getServiceID(), UNFILED_GROUP_NAME);
 					tg.addChild(newBuddy);
 					parent.addChild(tg);
 				} else {
@@ -512,9 +554,8 @@ public class RosterView extends ViewPart {
 		public void addGroup(ID svcID, String name) {
 			if (name == null)
 				return;
-			addGroup(svcID,root, name);
+			addGroup(svcID, root, name);
 		}
-		
 
 		public void addGroup(ID svcID, TreeParent parent, String name) {
 			TreeGroup oldgrp = findGroup(parent, name);
@@ -523,7 +564,7 @@ public class RosterView extends ViewPart {
 				return;
 			}
 			// Group not there...add it
-			TreeGroup newgrp = new TreeGroup(svcID,name);
+			TreeGroup newgrp = new TreeGroup(svcID, name);
 			parent.addChild(newgrp);
 		}
 
@@ -565,11 +606,12 @@ public class RosterView extends ViewPart {
 				refreshView();
 			}
 		}
+
 		protected void removeChildren(TreeParent parent, ID svcID) {
-			TreeObject [] childs = parent.getChildren();
-			for(int i=0; i < childs.length; i++) {
+			TreeObject[] childs = parent.getChildren();
+			for (int i = 0; i < childs.length; i++) {
 				if (childs[i] instanceof TreeParent) {
-					removeChildren((TreeParent) childs[i],svcID);
+					removeChildren((TreeParent) childs[i], svcID);
 				}
 				if (childs[i] instanceof TreeBuddy) {
 					TreeBuddy tb = (TreeBuddy) childs[i];
@@ -586,6 +628,7 @@ public class RosterView extends ViewPart {
 				}
 			}
 		}
+
 		public void removeAllEntriesForAccount(UserAccount account) {
 			if (account == null) {
 				root = null;
@@ -600,6 +643,7 @@ public class RosterView extends ViewPart {
 			invisibleRoot.addChild(root);
 		}
 	}
+
 	class ViewLabelProvider extends LabelProvider {
 		public String getText(Object obj) {
 			String label = null;
@@ -635,6 +679,7 @@ public class RosterView extends ViewPart {
 			return image;
 		}
 	}
+
 	class NameSorter extends ViewerSorter {
 	}
 
@@ -690,13 +735,14 @@ public class RosterView extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		//manager.add(addBuddyAction);
-		//manager.add(new Separator());
-		//manager.add(addGroupAction);
-		//manager.add(new Separator());
-		//manager.add(chatAction);
-		//manager.add(new Separator());
+		// manager.add(addBuddyAction);
+		// manager.add(new Separator());
+		// manager.add(addGroupAction);
+		// manager.add(new Separator());
+		// manager.add(chatAction);
+		// manager.add(new Separator());
 		manager.add(disconnectAction);
+		manager.add(openChatRoomAction);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
@@ -723,15 +769,11 @@ public class RosterView extends ViewPart {
 				}
 				final TreeGroup treeGroup = tg;
 				/*
-				Action requestAuthUserAction = new Action() {
-					public void run() {
-						requestAuthFrom(tb, treeGroup);
-					}
-				};
-				requestAuthUserAction.setText("Re-Request authorization from "
-						+ treeObject.getName());
-				manager.add(requestAuthUserAction);
-				*/
+				 * Action requestAuthUserAction = new Action() { public void
+				 * run() { requestAuthFrom(tb, treeGroup); } };
+				 * requestAuthUserAction.setText("Re-Request authorization from " +
+				 * treeObject.getName()); manager.add(requestAuthUserAction);
+				 */
 				Action removeUserAction = new Action() {
 					public void run() {
 						removeUserFromGroup(tb, treeGroup);
@@ -739,7 +781,7 @@ public class RosterView extends ViewPart {
 				};
 				if (treeGroup != null) {
 					removeUserAction.setText("Remove " + treeObject.getName()
-							+ " from " + treeGroup.getName()+" group");
+							+ " from " + treeGroup.getName() + " group");
 				} else {
 					removeUserAction.setText("Remove " + treeObject.getName());
 				}
@@ -752,10 +794,11 @@ public class RosterView extends ViewPart {
 				final String groupName = treeGroup.getName();
 				Action addUserAction = new Action() {
 					public void run() {
-						addUserToGroup(treeGroup.getServiceID(),groupName);
+						addUserToGroup(treeGroup.getServiceID(), groupName);
 					}
 				};
-				addUserAction.setText("Add buddy to " + treeObject.getName() + " for account "+treeGroup.getServiceID().getName());
+				addUserAction.setText("Add buddy to " + treeObject.getName()
+						+ " for account " + treeGroup.getServiceID().getName());
 				addUserAction.setImageDescriptor(ImageDescriptor
 						.createFromURL(UiPlugin.getDefault().find(
 								new Path(ADDBUDDY_ICON))));
@@ -766,7 +809,8 @@ public class RosterView extends ViewPart {
 					}
 				};
 				String accountName = treeGroup.getServiceID().getName();
-				removeGroupAction.setText("Remove " + treeObject.getName() + " for account "+accountName);
+				removeGroupAction.setText("Remove " + treeObject.getName()
+						+ " for account " + accountName);
 				removeGroupAction.setEnabled(treeGroup.getTotalCount() == 0);
 				removeGroupAction.setImageDescriptor(PlatformUI.getWorkbench()
 						.getSharedImages().getImageDescriptor(
@@ -780,7 +824,8 @@ public class RosterView extends ViewPart {
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
-	protected void openDialogAndSendRequest(ID svcID, String name, String groupName) {
+	protected void openDialogAndSendRequest(ID svcID, String name,
+			String groupName) {
 		String[] groupNames = this.getGroupNames();
 		List g = Arrays.asList(groupNames);
 		int selected = (groupName == null) ? -1 : g.indexOf(groupName);
@@ -794,7 +839,7 @@ public class RosterView extends ViewPart {
 			sg.close();
 			if (!Arrays.asList(groupNames).contains(group)) {
 				// create group with name
-				this.addGroup(svcID,group);
+				this.addGroup(svcID, group);
 			}
 			String[] sendGroups = new String[] { group };
 			// Finally, send the information and request subscription
@@ -810,7 +855,7 @@ public class RosterView extends ViewPart {
 		ID buddyID = buddy.getUserID();
 		String name = buddyID.getName();
 		String groupName = (tg == null) ? null : tg.getName();
-		openDialogAndSendRequest(buddy.getServiceID(),name, groupName);
+		openDialogAndSendRequest(buddy.getServiceID(), name, groupName);
 	}
 
 	protected void addUserToGroup(ID serviceID, String groupName) {
@@ -833,13 +878,14 @@ public class RosterView extends ViewPart {
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-		//manager.add(addBuddyAction);
-		//manager.add(new Separator());
-		//manager.add(addGroupAction);
-		//manager.add(new Separator());
-		//manager.add(chatAction);
-		//manager.add(new Separator());
+		// manager.add(addBuddyAction);
+		// manager.add(new Separator());
+		// manager.add(addGroupAction);
+		// manager.add(new Separator());
+		// manager.add(chatAction);
+		// manager.add(new Separator());
 		manager.add(disconnectAction);
+		manager.add(openChatRoomAction);
 	}
 
 	protected ID inputIMTarget() {
@@ -867,19 +913,15 @@ public class RosterView extends ViewPart {
 
 	private void makeActions() {
 		/*
-		chatAction = new Action() {
-			public void run() {
-				ID targetID = inputIMTarget();
-				if (targetID != null)
-					openChatWindowForTarget(targetID);
-			}
-		};
-		chatAction.setText("Send Instant Message...");
-		chatAction.setToolTipText("Send instant message");
-		chatAction.setImageDescriptor(ImageDescriptor.createFromURL(UiPlugin
-				.getDefault().find(new Path(INSTANT_MESSAGE_ICON))));
-		chatAction.setEnabled(false);
-		*/
+		 * chatAction = new Action() { public void run() { ID targetID =
+		 * inputIMTarget(); if (targetID != null)
+		 * openChatWindowForTarget(targetID); } }; chatAction.setText("Send
+		 * Instant Message..."); chatAction.setToolTipText("Send instant
+		 * message");
+		 * chatAction.setImageDescriptor(ImageDescriptor.createFromURL(UiPlugin
+		 * .getDefault().find(new Path(INSTANT_MESSAGE_ICON))));
+		 * chatAction.setEnabled(false);
+		 */
 		selectedDoubleClickAction = new Action() {
 			public void run() {
 				TreeObject treeObject = getSelectedTreeObject();
@@ -888,11 +930,11 @@ public class RosterView extends ViewPart {
 					openChatWindowForTarget(targetID);
 			}
 		};
-		
+
 		disconnectAction = new Action() {
 			public void run() {
 				// Disconnect all accounts
-				for(Iterator i=accounts.entrySet().iterator(); i.hasNext(); ) {
+				for (Iterator i = accounts.entrySet().iterator(); i.hasNext();) {
 					Map.Entry entry = (Map.Entry) i.next();
 					UserAccount account = (UserAccount) entry.getValue();
 					account.getInputHandler().disconnect();
@@ -902,7 +944,7 @@ public class RosterView extends ViewPart {
 			}
 		};
 		disconnectAction.setText("Disconnect");
-		disconnectAction.setToolTipText("Disconnect from servers");
+		disconnectAction.setToolTipText("Disconnect from servers.");
 		disconnectAction.setEnabled(false);
 		disconnectAction.setImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
@@ -910,57 +952,57 @@ public class RosterView extends ViewPart {
 		disconnectAction.setDisabledImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
 						new Path(DISCONNECT_ICON_DISABLED))));
-		/*
-		addGroupAction = new Action() {
+
+		openChatRoomAction = new Action() {
 			public void run() {
-				// handle add group operation here
-				String defaultNewGroupName = "New Group";
-				InputDialog input = new InputDialog(viewer.getControl()
-						.getShell(), "Add Group",
-						"Please enter the name of the group to be added",
-						defaultNewGroupName, new IInputValidator() {
-							public String isValid(String newText) {
-								if (newText == null || newText.length() == 0) {
-									return "New group name cannot be empty";
-								} else {
-									String[] groupNames = getGroupNames();
-									for (int i = 0; i < groupNames.length; i++) {
-										if (groupNames[i].equals(newText)) {
-											return "A group named '"
-													+ newText
-													+ "' already exists.  Please choose another name";
-										}
-									}
-								}
-								return null;
-							}
-						});
-				input.open();
-				String result = input.getValue();
-				// Now add the group
-				// XXX addGroup(result);
+				if (presenceContainer != null) {
+					IChatRoomManager m = presenceContainer.getChatRoomManager();
+
+					if (m != null) {
+						ChatRoomSelectionDialog dialog = new ChatRoomSelectionDialog(
+								RosterView.this.getViewSite().getShell(), m);
+						dialog.setBlockOnOpen(true);
+	
+						dialog.open();
+					}
+				}				
 			}
 		};
-		addGroupAction.setText("Add Group...");
-		addGroupAction.setToolTipText("Add group");
-		addGroupAction.setEnabled(false);
-		addGroupAction.setImageDescriptor(ImageDescriptor
+		openChatRoomAction.setText("Enter Chatroom.");
+		openChatRoomAction.setToolTipText("Enter a chatroom.");
+		openChatRoomAction.setImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
 						new Path(ADDGROUP_ICON))));
-	    */
+		openChatRoomAction.setEnabled(false);
 		/*
-		addBuddyAction = new Action() {
-			public void run() {
-				// XXX addUserToGroup(null);
-			}
-		};
-		addBuddyAction.setText("Add Buddy...");
-		addBuddyAction.setToolTipText("Add buddy");
-		addBuddyAction.setEnabled(false);
-		addBuddyAction.setImageDescriptor(ImageDescriptor
-				.createFromURL(UiPlugin.getDefault().find(
-						new Path(ADDBUDDY_ICON))));
-						*/
+		 * addGroupAction = new Action() { public void run() { // handle add
+		 * group operation here String defaultNewGroupName = "New Group";
+		 * InputDialog input = new InputDialog(viewer.getControl() .getShell(),
+		 * "Add Group", "Please enter the name of the group to be added",
+		 * defaultNewGroupName, new IInputValidator() { public String
+		 * isValid(String newText) { if (newText == null || newText.length() ==
+		 * 0) { return "New group name cannot be empty"; } else { String[]
+		 * groupNames = getGroupNames(); for (int i = 0; i < groupNames.length;
+		 * i++) { if (groupNames[i].equals(newText)) { return "A group named '" +
+		 * newText + "' already exists. Please choose another name"; } } }
+		 * return null; } }); input.open(); String result = input.getValue(); //
+		 * Now add the group // XXX addGroup(result); } };
+		 * addGroupAction.setText("Add Group...");
+		 * addGroupAction.setToolTipText("Add group");
+		 * addGroupAction.setEnabled(false);
+		 * addGroupAction.setImageDescriptor(ImageDescriptor
+		 * .createFromURL(UiPlugin.getDefault().find( new
+		 * Path(ADDGROUP_ICON))));
+		 */
+		/*
+		 * addBuddyAction = new Action() { public void run() { // XXX
+		 * addUserToGroup(null); } }; addBuddyAction.setText("Add Buddy...");
+		 * addBuddyAction.setToolTipText("Add buddy");
+		 * addBuddyAction.setEnabled(false);
+		 * addBuddyAction.setImageDescriptor(ImageDescriptor
+		 * .createFromURL(UiPlugin.getDefault().find( new
+		 * Path(ADDBUDDY_ICON))));
+		 */
 	}
 
 	protected ChatWindow openChatWindowForTarget(ID targetID) {
@@ -971,22 +1013,26 @@ public class RosterView extends ViewPart {
 			window = (ChatWindow) chatThreads.get(targetID);
 			if (window == null) {
 				window = makeChatWindowForTarget(targetID);
-				if (window != null) window.open();
+				if (window != null)
+					window.open();
 			} else {
 				if (!window.hasFocus()) {
 					window.openAndFlash();
 				}
 			}
-			if (window != null) window.setStatus("chat with " + targetID.getName());
+			if (window != null)
+				window.setStatus("chat with " + targetID.getName());
 		}
 		return window;
 	}
 
 	protected ChatWindow makeChatWindowForTarget(ID targetID) {
 		UserAccount account = getAccountForUser(targetID);
-		if (account == null) return null;
+		if (account == null)
+			return null;
 		ChatWindow window = new ChatWindow(RosterView.this, targetID.getName(),
-				getWindowInitText(targetID), account.getUser(), new User(targetID));
+				getWindowInitText(targetID), account.getUser(), new User(
+						targetID));
 		window.create();
 		chatThreads.put(targetID, window);
 		return window;
@@ -1021,7 +1067,7 @@ public class RosterView extends ViewPart {
 			refreshView();
 		}
 	}
-
+	
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
 		IRosterEntry entry = new RosterEntry(groupID, userID, null, presence);
 		handleRosterEntry(groupID, entry);
@@ -1029,18 +1075,22 @@ public class RosterView extends ViewPart {
 
 	protected UserAccount getAccountForUser(ID userID) {
 		ViewContentProvider vcp = (ViewContentProvider) viewer
-		.getContentProvider();
-		if (vcp == null) return null;
+				.getContentProvider();
+		if (vcp == null)
+			return null;
 		TreeBuddy buddy = vcp.findBuddyWithUserID(userID);
-		if (buddy == null) return null;
+		if (buddy == null)
+			return null;
 		UserAccount account = getAccount(buddy.getServiceID());
 		return account;
 	}
-	
+
 	protected ILocalInputHandler getHandlerForUser(ID userID) {
 		UserAccount account = getAccountForUser(userID);
-		if (account == null) return null;
-		else return account.getInputHandler();
+		if (account == null)
+			return null;
+		else
+			return account.getInputHandler();
 	}
 
 	public Object getAdapter(Class clazz) {
@@ -1069,7 +1119,7 @@ public class RosterView extends ViewPart {
 				public void updatePresence(ID userID, IPresence presence) {
 					ILocalInputHandler inputHandler = getHandlerForUser(userID);
 					if (inputHandler != null) {
-						inputHandler.updatePresence(userID, presence);
+						inputHandler.updatePresence(userID, presence);					
 					} else
 						System.err.println("updatePresence("+userID+","+presence+")");
 				}
@@ -1118,16 +1168,17 @@ public class RosterView extends ViewPart {
 
 	public void addAccount(ID account, IUser user, ILocalInputHandler handler) {
 		if (account != null) {
-			addAccount(new UserAccount(account,user,handler));
+			addAccount(new UserAccount(account, user, handler));
 			setToolbarEnabled(true);
 		}
 	}
 
 	protected void setToolbarEnabled(boolean enabled) {
 		disconnectAction.setEnabled(enabled);
-		//chatAction.setEnabled(enabled);
-		//addGroupAction.setEnabled(enabled);
-		//addBuddyAction.setEnabled(enabled);
+		openChatRoomAction.setEnabled(enabled);
+		// chatAction.setEnabled(enabled);
+		// addGroupAction.setEnabled(enabled);
+		// addBuddyAction.setEnabled(enabled);
 	}
 
 	public void accountDeparted(ID serviceID) {
@@ -1137,14 +1188,16 @@ public class RosterView extends ViewPart {
 		}
 	}
 
-	protected void disposeAllChatWindowsForAccount(UserAccount account, String status) {
+	protected void disposeAllChatWindowsForAccount(UserAccount account,
+			String status) {
 		synchronized (chatThreads) {
 			for (Iterator i = chatThreads.values().iterator(); i.hasNext();) {
 				ChatWindow window = (ChatWindow) i.next();
 				ID userID = window.getLocalUser().getID();
 				UserAccount userAccount = getAccountForUser(userID);
 				if (userAccount != null) {
-					if (userAccount.getServiceID().equals(account.getServiceID())) {
+					if (userAccount.getServiceID().equals(
+							account.getServiceID())) {
 						window.setDisposed(status);
 						i.remove();
 					}
@@ -1186,7 +1239,7 @@ public class RosterView extends ViewPart {
 		ViewContentProvider vcp = (ViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null) {
-			vcp.addGroup(svcID,name);
+			vcp.addGroup(svcID, name);
 			refreshView();
 		}
 	}
@@ -1211,9 +1264,11 @@ public class RosterView extends ViewPart {
 
 	protected void handleAccountDeparted(UserAccount account) {
 		removeAllRosterEntriesForAccount(account);
-		disposeAllChatWindowsForAccount(account,"Disconnected from server.  Chat is inactive");
+		disposeAllChatWindowsForAccount(account,
+				"Disconnected from server.  Chat is inactive");
 		accounts.remove(account.getServiceID());
-		if (accounts.size() == 0) setToolbarEnabled(false);
+		if (accounts.size() == 0)
+			setToolbarEnabled(false);
 	}
 
 	public void handleSetRosterEntry(ID groupID, IRosterEntry entry) {
@@ -1229,5 +1284,13 @@ public class RosterView extends ViewPart {
 				vcp.replaceEntry(entry);
 			refreshView();
 		}
+	}
+
+	public IPresenceContainer getPresenceContainer() {
+		return presenceContainer;
+	}
+
+	public void setPresenceContainer(IPresenceContainer presenceContainer) {
+		this.presenceContainer = presenceContainer;
 	}
 }
