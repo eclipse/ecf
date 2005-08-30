@@ -74,6 +74,8 @@ public class RosterView extends ViewPart {
 	public static final String INSTANT_MESSAGE_ICON = "icons/enabled/message.gif";
 	public static final String ADDGROUP_ICON = "icons/enabled/addgroup.gif";
 	public static final String ADDBUDDY_ICON = "icons/enabled/addbuddy.gif";
+	public static final String ADDCHAT_ICON = "icons/enabled/addchat.gif";
+	
 	public static final String UNFILED_GROUP_NAME = "Buddies";
 	protected static final int TREE_EXPANSION_LEVELS = 2;
 	private TreeViewer viewer;
@@ -868,7 +870,7 @@ public class RosterView extends ViewPart {
 		openChatRoomAction.setToolTipText("Enter a chatroom");
 		openChatRoomAction.setImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
-						new Path(ADDGROUP_ICON))));
+						new Path(ADDCHAT_ICON))));
 		openChatRoomAction.setEnabled(false);
 		/*
 		 * addGroupAction = new Action() { public void run() { // handle add
