@@ -12,7 +12,6 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.provider,
- org.junit,
  org.eclipse.ecf.ui,
  org.eclipse.ecf.presence
 Eclipse-AutoStart: true

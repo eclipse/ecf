@@ -42,21 +42,15 @@ still apply to any source code in the Content.
    </license>
 
    <requires>
-      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.help"/>
       <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.osgi"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.help"/>
    </requires>
 
    <plugin
          id="org.eclipse.ecf.doc"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.example.hello"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
@@ -81,12 +75,6 @@ still apply to any source code in the Content.
 
    <plugin
          id="org.eclipse.ecf.provider"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.ecf.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
