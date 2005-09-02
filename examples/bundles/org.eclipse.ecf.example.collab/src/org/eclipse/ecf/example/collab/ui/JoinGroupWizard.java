@@ -10,7 +10,6 @@
 *****************************************************************************/
 package org.eclipse.ecf.example.collab.ui;
 
-import java.net.URI;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;

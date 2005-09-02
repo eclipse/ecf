@@ -7,8 +7,8 @@ Bundle-ClassPath: datashare.jar
 Bundle-Activator: org.eclipse.ecf.internal.datashare.DataSharePlugin$EclipsePlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
- org.eclipse.ecf;visibility:=reexport
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf
 Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.datashare,
  org.eclipse.ecf.datashare.multicast,

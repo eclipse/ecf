@@ -7,8 +7,8 @@ Bundle-Activator: org.eclipse.ecf.sdo.SDOPlugin$EclipsePlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.emf.ecore.sdo;reprovide=true,
- org.eclipse.ecf;reprovide=true
+ org.eclipse.emf.ecore.sdo,
+ org.eclipse.ecf
 Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.sdo,
  org.eclipse.ecf.internal.sdo,

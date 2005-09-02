@@ -9,12 +9,9 @@ Bundle-ClassPath: xmpp.jar,
 Bundle-Activator: org.eclipse.ecf.provider.xmpp.XmppPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.ecf.provider,
+ org.eclipse.core.runtime,
  org.eclipse.ecf,
- org.eclipse.ecf.provider,
- org.eclipse.ecf.ui,
  org.eclipse.ecf.presence
 Eclipse-AutoStart: true
-Export-Package: org.eclipse.ecf.provider.xmpp.container, org.eclipse.ecf.provider.xmpp.identity
-Provide-Package: org.eclipse.ecf.provider.xmpp, org.eclipse.ecf.provider.xmpp.container, org.eclipse.ecf.provider.xmpp.smack, org.eclipse.ecf.provider.xmpp.identity
-DynamicImport-Package: *
+Export-Package: org.eclipse.ecf.provider.xmpp.container

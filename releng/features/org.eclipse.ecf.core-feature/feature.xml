@@ -45,8 +45,6 @@ still apply to any source code in the Content.
       <import plugin="org.eclipse.help"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.jface.text"/>
    </requires>
 
    <plugin
@@ -77,6 +75,7 @@ still apply to any source code in the Content.
          id="org.eclipse.ecf.provider"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
