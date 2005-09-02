@@ -7,11 +7,14 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -26,6 +29,8 @@ import org.eclipse.swt.widgets.TableColumn;
 
 public class ChatRoomSelectionDialog extends TitleAreaDialog {
 	IChatRoomManager [] managers = null;
+	
+	private IRoomInfo selectedRoom = null;
 
 	public ChatRoomSelectionDialog(Shell parentShell, IChatRoomManager [] managers) {
 		super(parentShell);
@@ -87,6 +92,26 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		
 		this.setTitle("Chatroom Selection");
 		this.setMessage("Select a chatroom to enter");
+		
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				StructuredSelection s = (StructuredSelection) event.getSelection();
+				if (s.getFirstElement() instanceof IRoomInfo) {
+					selectedRoom = (IRoomInfo) s.getFirstElement();
+				}
+			}
+			
+		});
+		
+		viewer.addDoubleClickListener(new IDoubleClickListener() {
+
+			public void doubleClick(DoubleClickEvent event) {
+				if (selectedRoom != null) {
+					ChatRoomSelectionDialog.this.okPressed();
+				}
+			}
+			
+		});
 
 		return parent;
 	}
@@ -166,5 +191,9 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		this.getButton(Dialog.OK).setText("Enter");
 		this.getButton(Dialog.OK).setEnabled(false);
 		return bar;
+	}
+
+	public IRoomInfo getSelectedRoom() {
+		return selectedRoom;
 	}
 }
