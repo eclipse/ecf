@@ -20,17 +20,24 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
+import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IMessageSender;
+import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
+import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.ecf.presence.impl.RosterEntry;
 import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.ecf.ui.UiPluginConstants;
@@ -973,18 +980,58 @@ public class RosterView extends ViewPart {
 				dialog.setBlockOnOpen(true);
 				dialog.open();
 
+				if (dialog.getReturnCode() != Window.OK) {
+					return;
+				}
+				
+				ChatRoomSelectionDialog.Room room = dialog.getSelectedRoom();
+				IChatRoomManager selectedManager = room.getManager();
+				IRoomInfo selectedInfo = room.getRoomInfo();
+				
+				if (room == null || selectedManager == null ||  selectedInfo == null) {
+					MessageDialog.openInformation(RosterView.this.getViewSite().getShell(),"No room selected","Cannot connect to null room");
+					return;
+				}
+				// Now, create chat room instance
+				IChatRoomContainer chatRoom = null;
+				try {
+					chatRoom = selectedManager.makeChatRoomContainer();
+				} catch (ContainerInstantiationException e1) {
+					MessageDialog.openError(RosterView.this.getViewSite().getShell(),"Could not create chat room","Could not create chat room for account");
+				}
+				IMessageSender sender = chatRoom.getMessageSender();
 				IWorkbenchWindow ww = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow();
 				IWorkbenchPage wp = ww.getActivePage();
 				try {
 					IViewPart view = wp
 							.showView("org.eclipse.ecf.ui.views.ChatRoomView");
+					final ChatRoomView chatroomview = (ChatRoomView) view;
+					chatroomview.initialize(chatRoom,selectedInfo,sender);
+					chatRoom.addMessageListener(new IMessageListener() {
+						public void handleMessage(ID fromID, ID toID, Type type, String subject, String messageBody) {
+							chatroomview.handleMessage(fromID,toID,type,subject,messageBody);
+						}
+					});
+					chatRoom.addParticipantListener(new IParticipantListener() {
+						public void handlePresence(ID fromID, IPresence presence) {
+							chatroomview.handlePresence(fromID,presence);
+						}});
+					chatRoom.addInvitationListener(new IInvitationListener() {
+						public void handleInvitationReceived(ID roomID, ID from, ID toID, String subject, String body) {
+							chatroomview.handleInvitationReceived(roomID,from,toID,subject,body);
+						}});
 					
-					((ChatRoomView)view).setRoomInfo(dialog.getSelectedRoom());
-					((ChatRoomView)view).initialize();
 				} catch (PartInitException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				}
+				// Now connect
+				try {
+					chatRoom.connect(selectedInfo.getRoomID(),null);
+				} catch (ContainerConnectException e1) {
+					MessageDialog.openError(RosterView.this.getViewSite().getShell(),"Could not connect","Cannot connect to chat room "+selectedInfo.getName());
+					return;
 				}
 			}
 		};

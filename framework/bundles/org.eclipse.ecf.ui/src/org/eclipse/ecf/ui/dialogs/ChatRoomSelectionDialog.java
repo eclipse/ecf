@@ -1,7 +1,6 @@
 package org.eclipse.ecf.ui.dialogs;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
@@ -30,8 +29,23 @@ import org.eclipse.swt.widgets.TableColumn;
 public class ChatRoomSelectionDialog extends TitleAreaDialog {
 	IChatRoomManager [] managers = null;
 	
-	private IRoomInfo selectedRoom = null;
+	private Room selectedRoom = null;
 
+	public class Room {
+		IRoomInfo info;
+		IChatRoomManager manager;
+		
+		public Room(IRoomInfo info, IChatRoomManager man) {
+			this.info = info;
+			this.manager = man;
+		}
+		public IRoomInfo getRoomInfo() {
+			return info;
+		}
+		public IChatRoomManager getManager() {
+			return manager;
+		}
+	}
 	public ChatRoomSelectionDialog(Shell parentShell, IChatRoomManager [] managers) {
 		super(parentShell);
 		this.managers = managers;
@@ -86,9 +100,14 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		List all = new ArrayList();
 		for(int i=0; i < managers.length; i++) {
 			IRoomInfo [] infos = managers[i].getChatRoomsInfo();
-			if (infos != null) all.addAll(Arrays.asList(infos));
+			if (infos != null) {
+				for(int j=0; j < infos.length; j++) {
+					all.add(new Room(infos[j],managers[i]));
+				}
+			}
 		}
-		viewer.setInput(all.toArray(new IRoomInfo[] {}));
+		Room [] rooms = (Room []) all.toArray(new Room[] {});
+		viewer.setInput(rooms);
 		
 		this.setTitle("Chatroom Selection");
 		this.setMessage("Select a chatroom to enter");
@@ -96,8 +115,8 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				StructuredSelection s = (StructuredSelection) event.getSelection();
-				if (s.getFirstElement() instanceof IRoomInfo) {
-					selectedRoom = (IRoomInfo) s.getFirstElement();
+				if (s.getFirstElement() instanceof Room) {
+					selectedRoom = (Room) s.getFirstElement();
 				}
 			}
 			
@@ -120,7 +139,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 
 		public Object[] getElements(Object inputElement) {
 
-			return (IRoomInfo[]) inputElement;
+			return (Room[]) inputElement;
 		}
 
 		public void dispose() {
@@ -139,8 +158,9 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		}
 
 		public String getColumnText(Object element, int columnIndex) {
-			IRoomInfo info = (IRoomInfo) element;
+			Room room = (Room) element;
 
+			IRoomInfo info = room.getRoomInfo();
 			switch (columnIndex) {
 			case 0:
 				return info.getName();
@@ -193,7 +213,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		return bar;
 	}
 
-	public IRoomInfo getSelectedRoom() {
+	public Room getSelectedRoom() {
 		return selectedRoom;
 	}
 }

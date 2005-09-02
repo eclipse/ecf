@@ -4,24 +4,18 @@ import java.util.Arrays;
 import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IAccountManager;
-import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
-import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.ISubscribeListener;
-import org.eclipse.ecf.presence.chat.IChatRoomContainer;
-import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.ecf.presence.impl.Presence;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
@@ -229,6 +223,7 @@ public class PresenceContainerUI {
 
     protected void connectToFirstChatRoom() throws ECFException {
     	// Get chat room manager for presence container
+    	/*
 		IChatRoomManager crmanager = pc.getChatRoomManager();
 		// Get info from manager for chat rooms
 		IRoomInfo [] roomInfos = crmanager.getChatRoomsInfo();
@@ -261,5 +256,6 @@ public class PresenceContainerUI {
 		
 		// Now connect to room ID
 		chatRoom.connect(targetID,null);
+		*/
 	}
 }
