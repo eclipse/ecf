@@ -38,7 +38,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		Composite memberComp = new Composite(form,SWT.NONE);
 		memberComp.setLayout(new FillLayout());
 		memberViewer = new ListViewer(memberComp, SWT.BORDER);
-		
+
 		Composite rightComp = new Composite(form, SWT.NONE);
 		rightComp.setLayout(new FillLayout());
 		
@@ -86,8 +86,45 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
         });
 	}
 
-	public void handlePresence(ID fromID, IPresence presence) {
+	class Participant {
+		String name;
+		ID id;
+		
+		public Participant(ID id) {
+			this.id = id;
+		}
+		
+		public ID getID() {
+			return id;
+		}
+		public String getName() {
+			return id.getName();
+		}
+		public boolean equals(Object other) {
+			if (!(other instanceof Participant)) return false;
+			Participant o = (Participant) other;
+			if (id.equals(o.id)) return true;
+			return false;
+		}
+		public int hashCode() {
+			return id.hashCode();
+		}
+		public String toString() {
+			return getName();
+		}
+	}
+	public void handlePresence(final ID fromID, final IPresence presence) {
 		System.out.println("chat presence from="+fromID+",presence="+presence);
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+            	boolean isAdd = presence.getType().equals(IPresence.Type.AVAILABLE);
+            	if (isAdd) {
+            		memberViewer.add(new Participant(fromID));
+            	} else {
+            		memberViewer.remove(new Participant(fromID));
+            	}
+            }
+        });
 	}
 
 	public void handleInvitationReceived(ID roomID, ID from, ID toID, String subject, String body) {
