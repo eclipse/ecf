@@ -110,7 +110,12 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 			return id.hashCode();
 		}
 		public String toString() {
-			return getName();
+			String fullName = getName();
+			int atIndex = fullName.indexOf('@');
+			if (atIndex != -1) {
+				fullName = fullName.substring(0,atIndex);
+			}
+			return fullName;
 		}
 	}
 	public void handlePresence(final ID fromID, final IPresence presence) {
