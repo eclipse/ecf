@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.ecf.server"
+      id="org.eclipse.ecf.serverfeature"
       label="ECF Server"
       version="0.4.0"
       provider-name="Eclipse.org">
@@ -47,7 +47,7 @@ still apply to any source code in the Content.
       <import feature="org.eclipse.ecf.core" version="0.3.3"/>
       <import feature="org.eclipse.ecf.graphshare" version="0.3.3"/>
       <import feature="org.eclipse.ecf.xmpp" version="0.3.3"/>
-      <import feature="org.eclipse.ecf.datashare" version="0.4.0"/>
+      <import feature="org.eclipse.ecf.datashare_feature" version="0.4.0"/>
    </requires>
 
 </feature>
