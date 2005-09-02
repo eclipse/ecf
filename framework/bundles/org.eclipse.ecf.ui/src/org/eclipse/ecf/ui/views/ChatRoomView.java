@@ -22,6 +22,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	private IRoomInfo roomInfo = null;
 	private Text writeText = null;
 	private Text readText = null;
+	private ListViewer memberViewer = null;
 	
 	IMessageSender messageSender = null;
 	IChatRoomContainer chatRoomContainer = null;
@@ -36,7 +37,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 				
 		Composite memberComp = new Composite(form,SWT.NONE);
 		memberComp.setLayout(new FillLayout());
-		ListViewer memberViewer = new ListViewer(memberComp, SWT.BORDER);
+		memberViewer = new ListViewer(memberComp, SWT.BORDER);
 		
 		Composite rightComp = new Composite(form, SWT.NONE);
 		rightComp.setLayout(new FillLayout());
