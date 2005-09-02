@@ -1,7 +1,12 @@
 # ECF Server Start Script
 #
-# Relative path for accessing plugins
 RP=../../../plugins
+PN=${RP}/org.eclipse.ecf.provider_0.4.0
+mkdir ${RP}
+cp ${PN}.jar ${PN}
+cd ${PN}
+jar xvf org.eclipse.ecf.provider_0.4.0.jar
+# Relative path for accessing plugins
 ECF=${RP}/org.eclipse.ecf_0.4.0/ecf.jar
 UI=${RP}/org.eclipse.ecf.ui_0.4.0/ui.jar
 SDO=${RP}/org.eclipse.ecf.sdo_0.4.0/ecf.sdo.jar
