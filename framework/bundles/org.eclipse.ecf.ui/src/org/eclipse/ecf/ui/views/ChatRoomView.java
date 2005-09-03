@@ -24,13 +24,19 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 public class ChatRoomView extends ViewPart implements IMessageListener, IParticipantListener, IInvitationListener {
-    protected static final String DEFAULT_ME_COLOR = "0,255,0";
+    private static final int RATIO_WRITE_PANE = 12;
+	private static final int RATIO_READ_PANE = 88;
+	private static final int RATIO_READ_WRITE_PANE = 85;
+	private static final int RATIO_PRESENCE_PANE = 15;
+	protected static final String DEFAULT_ME_COLOR = "0,255,0";
     protected static final String DEFAULT_OTHER_COLOR = "0,0,0";
     protected static final String DEFAULT_SYSTEM_COLOR = "0,0,255";
 	
@@ -87,14 +93,17 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		SashForm rightSash = new SashForm(rightComp, SWT.VERTICAL);
 		rightSash.setLayout(new FillLayout());
 		
-		
-		Composite readComp = new Composite(rightSash, SWT.NONE);
-		readComp.setLayout(new FillLayout());
-		//readComp.setLayout(cl);
-		readText = new TextViewer(readComp, SWT.V_SCROLL | SWT.H_SCROLL
-				| SWT.WRAP | SWT.BORDER);
+		Composite readComp = new Composite(rightSash, SWT.BORDER);
+		readComp.setLayout(new FillLayout());				
+		Composite readInlayComp = new Composite(readComp, SWT.NONE);
+		readInlayComp.setLayout(new GridLayout());
+		readInlayComp.setLayoutData(new GridData(GridData.FILL_BOTH));
+		readInlayComp.setBackground(memberViewer.getList().getBackground());
+		readText = new TextViewer(readInlayComp, SWT.V_SCROLL | SWT.H_SCROLL
+				| SWT.WRAP);
 		readText.setDocument(new Document());
 		readText.setEditable(false);
+		readText.getTextWidget().setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		Composite writeComp = new Composite(rightSash, SWT.NONE);
 		writeComp.setLayout(new FillLayout());
@@ -109,8 +118,8 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 			}
 		});
 		
-		form.setWeights(new int[] {15, 85});
-		rightSash.setWeights(new int[] {88, 12});
+		form.setWeights(new int[] {RATIO_PRESENCE_PANE, RATIO_READ_WRITE_PANE});
+		rightSash.setWeights(new int[] {RATIO_READ_PANE, RATIO_WRITE_PANE});
 	}
 	protected void clearInput() {
 		writeText.setText("");
