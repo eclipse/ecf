@@ -17,9 +17,10 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
+import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.provider.xmpp.Trace;
+import org.eclipse.ecf.provider.xmpp.events.ChatMembershipEvent;
 import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
@@ -53,10 +54,10 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         }
     }
 
-    protected void addParticipantListener(IParticipantListener listener) {
+    protected void addChatParticipantListener(IChatParticipantListener listener) {
         participantListeners.add(listener);
     }
-    protected void removeParticipantListener(IParticipantListener listener) {
+    protected void removeChatParticipantListener(IChatParticipantListener listener) {
         participantListeners.remove(listener);
     }
     protected void addInvitationListener(IInvitationListener listener) {
@@ -240,13 +241,27 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
 		fireParticipant(fromID, newPresence);
     }
 
+    protected void handleChatMembershipEvent(ChatMembershipEvent evt) {
+    	String from = canonicalizeRoomFrom(evt.getFrom());
+        ID fromID = makeUserIDFromName(from);
+        fireChatParticipant(fromID,evt.isAdd());
+    }
     protected void fireParticipant(ID fromID, IPresence presence) {
         for (Iterator i = participantListeners.iterator(); i.hasNext();) {
-            IParticipantListener l = (IParticipantListener) i.next();
+            IChatParticipantListener l = (IChatParticipantListener) i.next();
             l.handlePresence(fromID, presence);
         }
     }
-
+    protected void fireChatParticipant(ID fromID, boolean join) {
+        for (Iterator i = participantListeners.iterator(); i.hasNext();) {
+            IChatParticipantListener l = (IChatParticipantListener) i.next();
+            if (join) {
+            	l.joined(fromID);
+            } else {
+            	l.left(fromID);
+            }
+        }
+    }
     protected void fireInvitationReceived(ID roomID, ID fromID, ID toID, String subject, String body) {
         for (Iterator i = invitationListeners.iterator(); i.hasNext();) {
             IInvitationListener l = (IInvitationListener) i.next();
@@ -265,7 +280,9 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         	handlePresenceEvent((PresenceEvent) event);
         } else if (event instanceof InvitationReceivedEvent) {
         	handleInvitationEvent((InvitationReceivedEvent) event);
-        } else {
+        } else if (event instanceof ChatMembershipEvent) {
+        	handleChatMembershipEvent((ChatMembershipEvent) event);
+        } else {	
         	debug("unrecognized event " + event);
         }
     }

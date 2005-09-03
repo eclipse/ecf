@@ -28,9 +28,8 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.presence.IMessageSender;
-import org.eclipse.ecf.presence.IParticipantListener;
-import org.eclipse.ecf.presence.IMessageListener.Type;
+import org.eclipse.ecf.presence.chat.IChatMessageSender;
+import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
 import org.eclipse.ecf.provider.generic.ContainerMessage;
@@ -39,6 +38,7 @@ import org.eclipse.ecf.provider.generic.SOContainerConfig;
 import org.eclipse.ecf.provider.generic.SOContext;
 import org.eclipse.ecf.provider.generic.SOWrapper;
 import org.eclipse.ecf.provider.xmpp.XmppPlugin;
+import org.eclipse.ecf.provider.xmpp.events.ChatMembershipEvent;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
@@ -129,7 +129,12 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
             wrap.deliverEvent(new PresenceEvent(mess));
         }
     }
-
+    protected void handleChatMembershipEvent(String from, boolean add) {
+        SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
+        if (wrap != null) {
+            wrap.deliverEvent(new ChatMembershipEvent(from,add));
+        }    	
+    }
     protected void handleXMPPMessage(Packet aPacket) {
     	try {
 			if (aPacket instanceof IQ) {
@@ -208,13 +213,10 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 	            multiuserchat.addParticipantStatusListener(new ParticipantStatusListener() {
 
 					public void joined(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("joined("+arg0+")");
+						handleChatMembershipEvent(arg0,true);
 					}
 					public void left(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("left("+arg0+")");
-						
+						handleChatMembershipEvent(arg0,false);						
 					}
 					public void kicked(String arg0) {
 						// TODO Auto-generated method stub
@@ -370,15 +372,17 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 			sharedObject.addMessageListener(listener);
 		}
 	}
-	public IMessageSender getMessageSender() {
-		return new IMessageSender() {
-			public void sendMessage(ID fromID, ID toID, Type type, String subject, String messageBody) {
+	public IChatMessageSender getChatMessageSender() {
+		return new IChatMessageSender() {
+			public void sendMessage(String messageBody) throws IOException {
 				if (multiuserchat != null) {
 					try {
 						multiuserchat.sendMessage(messageBody);
 					} catch (XMPPException e) {
 						// XXX log
-						e.printStackTrace();
+						IOException except = new IOException("Send message exception");
+					    except.setStackTrace(e.getStackTrace());
+					    throw except;
 					}
 				}
 			}
@@ -395,9 +399,9 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 		}
 		this.connect(targetID,null);
 	}
-	public void addParticipantListener(IParticipantListener participantListener) {
+	public void addChatParticipantListener(IChatParticipantListener participantListener) {
 		if (sharedObject != null) {
-			sharedObject.addParticipantListener(participantListener);
+			sharedObject.addChatParticipantListener(participantListener);
 		}
 	}
 	public void addInvitationListener(IInvitationListener invitationListener) {

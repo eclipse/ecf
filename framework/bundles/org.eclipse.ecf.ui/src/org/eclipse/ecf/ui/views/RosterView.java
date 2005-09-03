@@ -28,13 +28,13 @@ import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.presence.IMessageSender;
-import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
+import org.eclipse.ecf.presence.chat.IChatMessageSender;
+import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
@@ -999,7 +999,7 @@ public class RosterView extends ViewPart {
 				} catch (ContainerInstantiationException e1) {
 					MessageDialog.openError(RosterView.this.getViewSite().getShell(),"Could not create chat room","Could not create chat room for account");
 				}
-				IMessageSender sender = chatRoom.getMessageSender();
+				IChatMessageSender sender = chatRoom.getChatMessageSender();
 				IWorkbenchWindow ww = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow();
 				IWorkbenchPage wp = ww.getActivePage();
@@ -1013,9 +1013,17 @@ public class RosterView extends ViewPart {
 							chatroomview.handleMessage(fromID,toID,type,subject,messageBody);
 						}
 					});
-					chatRoom.addParticipantListener(new IParticipantListener() {
+					chatRoom.addChatParticipantListener(new IChatParticipantListener() {
 						public void handlePresence(ID fromID, IPresence presence) {
 							chatroomview.handlePresence(fromID,presence);
+						}
+
+						public void joined(ID user) {
+							chatroomview.handleJoin(user);
+						}
+
+						public void left(ID user) {
+							chatroomview.handleLeave(user);
 						}});
 					chatRoom.addInvitationListener(new IInvitationListener() {
 						public void handleInvitationReceived(ID roomID, ID from, ID toID, String subject, String body) {

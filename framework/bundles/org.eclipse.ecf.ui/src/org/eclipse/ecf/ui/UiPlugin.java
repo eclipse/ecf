@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.ui;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -34,6 +36,17 @@ public class UiPlugin extends AbstractUIPlugin {
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
 	
+	public static void log(String message) {
+		getDefault().getLog().log(
+				new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
+	}
+
+	public static void log(String message, Throwable e) {
+		getDefault().getLog().log(
+				new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK,
+						"Caught exception", e));
+	}
+
 	/**
 	 * The constructor.
 	 */

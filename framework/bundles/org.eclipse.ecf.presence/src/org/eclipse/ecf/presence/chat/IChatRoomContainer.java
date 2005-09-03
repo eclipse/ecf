@@ -13,8 +13,6 @@ package org.eclipse.ecf.presence.chat;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.presence.IMessageSender;
-import org.eclipse.ecf.presence.IParticipantListener;
 
 /**
  * Chat container
@@ -29,9 +27,9 @@ public interface IChatRoomContainer extends IContainer {
 
 	/**
 	 * Get interface for sending messages
-	 * @return IMessageSender.  Null if no message sender available
+	 * @return IChatMessageSender.  Null if no message sender available
 	 */
-    public IMessageSender getMessageSender();
+    public IChatMessageSender getChatMessageSender();
 
     /**
      * Add invitation listener.  The given listener will be notified if/when
@@ -44,5 +42,5 @@ public interface IChatRoomContainer extends IContainer {
      * participants are added or removed from given room
      * @param participantListener
      */
-    public void addParticipantListener(IParticipantListener participantListener);
+    public void addChatParticipantListener(IChatParticipantListener participantListener);
 }

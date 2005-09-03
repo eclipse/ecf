@@ -1,16 +1,28 @@
 package org.eclipse.ecf.ui.views;
 
+import java.io.IOException;
+import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
+import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.ui.UiPlugin;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -18,23 +30,53 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 public class ChatRoomView extends ViewPart implements IMessageListener, IParticipantListener, IInvitationListener {
+    protected static final String DEFAULT_ME_COLOR = "0,255,0";
+    protected static final String DEFAULT_OTHER_COLOR = "0,0,0";
+    protected static final String DEFAULT_SYSTEM_COLOR = "0,0,255";
+	
+	protected static final int DEFAULT_INPUT_HEIGHT = 25;
+    protected static final int DEFAULT_INPUT_SEPARATOR = 5;
 	private Composite mainComp = null;
 	private IRoomInfo roomInfo = null;
 	private Text writeText = null;
-	private Text readText = null;
+	private TextViewer readText = null;
 	private ListViewer memberViewer = null;
 	
-	IMessageSender messageSender = null;
+	IChatMessageSender messageSender = null;
 	IChatRoomContainer chatRoomContainer = null;
 	
+	private Color meColor = null;
+	private Color otherColor = null;
+	private Color systemColor = null;
+
+	private IUser localUser = null;
+	
+	private Color colorFromRGBString(String rgb) {
+		Color color = null;
+		if (rgb == null || rgb.equals("")) {
+			color = new Color(getViewSite().getShell().getDisplay(), 0, 0, 0);
+			return color;
+		}
+		if (color != null) {
+			color.dispose();
+		}
+		String[] vals = rgb.split(",");
+		color = new Color(getViewSite().getShell().getDisplay(), Integer.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer.parseInt(vals[2]));
+		return color;
+	}
+	
 	public void createPartControl(Composite parent) {
+
+		meColor = colorFromRGBString(DEFAULT_ME_COLOR);
+		otherColor = colorFromRGBString(DEFAULT_OTHER_COLOR);
+		systemColor = colorFromRGBString(DEFAULT_SYSTEM_COLOR);
+
 		mainComp = new Composite(parent, SWT.NONE);
 		mainComp.setLayout(new FillLayout());
 		
 		SashForm form = new SashForm(mainComp,SWT.HORIZONTAL);
 		form.setLayout(new FillLayout());
 		
-				
 		Composite memberComp = new Composite(form,SWT.NONE);
 		memberComp.setLayout(new FillLayout());
 		memberViewer = new ListViewer(memberComp, SWT.BORDER);
@@ -48,16 +90,57 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		
 		Composite readComp = new Composite(rightSash, SWT.NONE);
 		readComp.setLayout(new FillLayout());
-		readText = new Text(readComp, SWT.BORDER);
+		//readComp.setLayout(cl);
+		readText = new TextViewer(readComp, SWT.V_SCROLL | SWT.H_SCROLL
+				| SWT.WRAP | SWT.BORDER);
+		readText.setDocument(new Document());
 		readText.setEditable(false);
 		
 		Composite writeComp = new Composite(rightSash, SWT.NONE);
 		writeComp.setLayout(new FillLayout());
-		writeText = new Text(writeComp, SWT.BORDER | SWT.MULTI);
+		writeText = new Text(writeComp, SWT.BORDER | SWT.SINGLE);
+		writeText.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent evt) {
+				handleKeyPressed(evt);
+			}
+
+			public void keyReleased(KeyEvent evt) {
+				handleKeyReleased(evt);
+			}
+		});
 		
-		form.setWeights(new int[] {30, 70});
-		rightSash.setWeights(new int[] {70, 30});
+		form.setWeights(new int[] {15, 85});
+		rightSash.setWeights(new int[] {88, 12});
 	}
+	protected void clearInput() {
+		writeText.setText("");
+	}
+	protected void handleTextInput(String text) {
+		try {
+			messageSender.sendMessage(text);
+		} catch (IOException e) {
+			UiPlugin.log("Error sending message",e);
+			// XXX shutdown chat here
+		}
+	}
+
+	protected void handleEnter() {
+		if (writeText.getText().trim().length() > 0)
+			handleTextInput(writeText.getText());
+		
+		clearInput();
+	}
+
+
+	protected void handleKeyPressed(KeyEvent evt) {
+		if (evt.character == SWT.CR) {
+			handleEnter();
+		}
+	}
+
+	protected void handleKeyReleased(KeyEvent evt) {
+	}
+
 
 	public void setFocus() {
 		writeText.setFocus();
@@ -67,26 +150,26 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		return roomInfo;
 	}
 
-	public void initialize(IChatRoomContainer container, IRoomInfo info, IMessageSender sender) {
+	public void initialize(IChatRoomContainer container, IRoomInfo info, IChatMessageSender sender) {
 		this.chatRoomContainer = container;
 		this.messageSender = sender;
 		this.roomInfo = info;
-		this.setPartName(roomInfo.getName());
+		this.setPartName(roomInfo.getName()+": "+roomInfo.getDescription());
 	}
 
 	protected String getMessageString(ID fromID, String text) {
 		return fromID.getName() + ": "+text+"\n";
 	}
 	public void handleMessage(final ID fromID, final ID toID, final Type type, final String subject, final String messageBody) {
-		System.out.println("Room message from="+fromID+",to="+toID+",type="+type+",sub="+subject+",body="+messageBody);
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
-            	readText.append(getMessageString(fromID,messageBody));
+            	appendText(new ChatLine(messageBody,new Participant(fromID)));
             }
         });
 	}
 
-	class Participant {
+	class Participant implements IUser {
+		private static final long serialVersionUID = 2008114088656711572L;
 		String name;
 		ID id;
 		
@@ -98,7 +181,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 			return id;
 		}
 		public String getName() {
-			return id.getName();
+			return toString();
 		}
 		public boolean equals(Object other) {
 			if (!(other instanceof Participant)) return false;
@@ -110,13 +193,27 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 			return id.hashCode();
 		}
 		public String toString() {
-			String fullName = getName();
+			String fullName = id.getName();
 			int atIndex = fullName.indexOf('@');
 			if (atIndex != -1) {
 				fullName = fullName.substring(0,atIndex);
 			}
 			return fullName;
 		}
+
+		public Map getProperties() {
+			return null;
+		}
+
+		public Object getAdapter(Class adapter) {
+			return null;
+		}
+	}
+	
+	protected void addParticipant(IUser p) {
+		ChatLine cl = new ChatLine(p.getID().getName()+ " arrived",null);
+		appendText(cl);
+		memberViewer.add(p);
 	}
 	public void handlePresence(final ID fromID, final IPresence presence) {
 		System.out.println("chat presence from="+fromID+",presence="+presence);
@@ -124,9 +221,15 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
             public void run() {
             	boolean isAdd = presence.getType().equals(IPresence.Type.AVAILABLE);
             	if (isAdd) {
-            		memberViewer.add(new Participant(fromID));
+            		if (localUser == null) {
+            			localUser = new Participant(fromID);
+            			addParticipant(localUser);
+            		} else {
+            			addParticipant(new Participant(fromID));
+            		}
             	} else {
-            		memberViewer.remove(new Participant(fromID));
+            		Participant p = new Participant(fromID);
+            		memberViewer.remove(p);
             	}
             }
         });
@@ -135,5 +238,82 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	public void handleInvitationReceived(ID roomID, ID from, ID toID, String subject, String body) {
 		System.out.println("invitation room="+roomID+",from="+from+",to="+toID+",subject="+subject+",body="+body);
 	}
+
+	protected void appendText(ChatLine text) {
+		StyledText st = readText.getTextWidget();
+		
+		if (text == null || readText == null || st == null)
+			return;
+
+		int startRange = st.getText().length();
+		StringBuffer sb = new StringBuffer();
+		
+		if (text.getOriginator() != null) {
+			sb.append(text.getOriginator().getName() + ": ");
+			StyleRange sr = new StyleRange();
+			sr.start = startRange;
+			sr.length = sb.length();
+			if (localUser.getID().equals(text.getOriginator().getID())) { 
+				sr.foreground = meColor;
+			} else {
+				sr.foreground = otherColor;
+			}
+			st.append(sb.toString());
+			st.setStyleRange(sr);
+		}
+		
+		int beforeMessageIndex = st.getText().length();
+		
+		st.append(text.getText());
+		
+		if (text.getOriginator() == null) {
+			StyleRange sr = new StyleRange();
+			sr.start = beforeMessageIndex;
+			sr.length = text.getText().length();
+			sr.foreground = systemColor;
+			st.setStyleRange(sr);
+		}
+		
+		if (!text.isNoCRLF()) {
+			st.append("\n");
+		}
+		
+		String t = st.getText();
+		if (t == null)
+			return;
+		st.setSelection(t.length());
+	}
+
+	protected void outputClear() {
+		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
+				"Are you sure you want to clear output?"))
+			readText.getTextWidget().setText("");
+	}
+
+	protected void outputCopy() {
+		String t = readText.getTextWidget().getSelectionText();
+		if (t == null || t.length() == 0) {
+			readText.getTextWidget().selectAll();
+		}
+		readText.getTextWidget().copy();
+		readText.getTextWidget().setSelection(
+				readText.getTextWidget().getText().length());
+	}
+
+	protected void outputPaste() {
+		writeText.paste();
+	}
+
+	public void handleJoin(ID user) {
+		// TODO Auto-generated method stub
+		System.out.println("handleJoin("+user+")");
+	}
+
+	public void handleLeave(ID user) {
+		// TODO Auto-generated method stub
+		System.out.println("handleLeave("+user+")");
+		
+	}
+
 
 }

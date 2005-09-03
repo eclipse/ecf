@@ -8,16 +8,12 @@
 * Contributors:
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
-package org.eclipse.ecf.presence;
+package org.eclipse.ecf.presence.chat;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.presence.IParticipantListener;
 
-public interface IParticipantListener {
-	
-	/**
-	 * Notification that a presence update has been received
-	 * @param fromID
-	 * @param presence
-	 */
-    public void handlePresence(ID fromID, IPresence presence);
+public interface IChatParticipantListener extends IParticipantListener {
+	public void joined(ID user);
+	public void left(ID user);
 }
