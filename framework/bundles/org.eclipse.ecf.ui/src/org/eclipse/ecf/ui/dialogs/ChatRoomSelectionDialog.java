@@ -73,6 +73,8 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Subject");
 		tc.pack();
+		width = tc.getWidth();
+		tc.setWidth(width+(width/4));
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Description");
 		tc.pack();

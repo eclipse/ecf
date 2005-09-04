@@ -68,8 +68,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	private Color dateColor = null;
 	
 	private IUser localUser = null;
-	
-	private List users = Collections.synchronizedList(new ArrayList());
+	private List otherUsers = Collections.synchronizedList(new ArrayList());
 	
 	private Color colorFromRGBString(String rgb) {
 		Color color = null;
@@ -84,7 +83,6 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		color = new Color(getViewSite().getShell().getDisplay(), Integer.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer.parseInt(vals[2]));
 		return color;
 	}
-	
 	public void createPartControl(Composite parent) {
 
 		meColor = colorFromRGBString(DEFAULT_ME_COLOR);
@@ -101,7 +99,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		Composite memberComp = new Composite(form,SWT.NONE);
 		memberComp.setLayout(new FillLayout());
 		memberViewer = new ListViewer(memberComp, SWT.BORDER);
-
+		
 		Composite rightComp = new Composite(form, SWT.NONE);
 		rightComp.setLayout(new FillLayout());
 		
@@ -138,7 +136,6 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		setEnabled(false);
 	}
 	protected void setEnabled(boolean enabled) {
-		mainComp.setEnabled(enabled);
 		writeText.setEnabled(enabled);
 	}
 	protected void clearInput() {
@@ -153,7 +150,6 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 				messageSender.sendMessage(text);
 			} catch (IOException e) {
 				UiPlugin.log("Error sending message",e);
-				// XXX shutdown chat here
 			}
 		}
 	}
@@ -193,8 +189,8 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
             	ChatRoomView.this.messageSender = sender;
             	ChatRoomView.this.roomInfo = info;
             	ID roomID = info.getRoomID();
-            	ChatRoomView.this.setPartName(VIEW_PREFIX+roomID.getName()+"-"+roomInfo.getName());
-            	ChatRoomView.this.setTitleToolTip(roomInfo.getDescription());
+            	ChatRoomView.this.setPartName(VIEW_PREFIX+roomInfo.getName());
+            	ChatRoomView.this.setTitleToolTip("Room ID: "+roomID.getName()+", Description: "+roomInfo.getDescription());
             	setEnabled(true);
             }
         });
@@ -279,14 +275,20 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		appendText(cl);
 		memberViewer.remove(p);
 	}
-
+	protected void removeAllParticipants() {
+		org.eclipse.swt.widgets.List l = memberViewer.getList();
+		for(int i=0; i < l.getItemCount(); i++) {
+			Object o = memberViewer.getElementAt(i);
+			if (o != null) memberViewer.remove(o);
+		}
+	}
 	public void handlePresence(final ID fromID, final IPresence presence) {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
             	boolean isAdd = presence.getType().equals(IPresence.Type.AVAILABLE);
         		Participant p = new Participant(fromID);
             	if (isAdd) {
-            		if (localUser == null && !users.contains(fromID)) {
+            		if (localUser == null && !otherUsers.contains(fromID)) {
                 			localUser = p;
             		}
             		addParticipant(p);
@@ -295,6 +297,9 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
         			if (localUser != null && localUser.getID().equals(fromID)) {
         				// It's us that's gone away... so we're outta here
         				setEnabled(false);
+        				String title = getPartName();
+        				setPartName("("+title+")");
+        				removeAllParticipants();
         				dispose();
         			}
             	}
@@ -384,11 +389,11 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	}
 
 	public void handleJoin(ID user) {
-		users.add(user);
+		otherUsers.add(user);
 	}
 
 	public void handleLeave(ID user) {
-		users.remove(user);
+		otherUsers.remove(user);
 	}
 
 
