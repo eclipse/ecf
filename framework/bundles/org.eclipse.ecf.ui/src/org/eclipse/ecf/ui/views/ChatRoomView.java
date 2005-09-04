@@ -17,6 +17,11 @@ import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.ecf.ui.UiPlugin;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.TextViewer;
@@ -33,7 +38,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class ChatRoomView extends ViewPart implements IMessageListener, IParticipantListener, IInvitationListener {
@@ -70,6 +78,11 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	private IUser localUser = null;
 	private List otherUsers = Collections.synchronizedList(new ArrayList());
 	
+	Action outputClear = null;
+	Action outputCopy = null;
+	Action outputPaste = null;
+	Action outputSelectAll = null;
+
 	private Color colorFromRGBString(String rgb) {
 		Color color = null;
 		if (rgb == null || rgb.equals("")) {
@@ -134,6 +147,8 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		form.setWeights(new int[] {RATIO_PRESENCE_PANE, RATIO_READ_WRITE_PANE});
 		rightSash.setWeights(new int[] {RATIO_READ_PANE, RATIO_WRITE_PANE});
 		setEnabled(false);
+		makeActions();
+		hookContextMenu();
 	}
 	protected void setEnabled(boolean enabled) {
 		writeText.setEnabled(enabled);
@@ -396,5 +411,74 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		otherUsers.remove(user);
 	}
 
+	protected void outputSelectAll() {
+		readText.getTextWidget().selectAll();
+	}
+
+	protected void makeActions() {
+		outputSelectAll = new Action() {
+			public void run() {
+				outputSelectAll();
+			}
+		};
+		outputSelectAll.setText("Select All");
+		outputSelectAll
+				.setToolTipText("Select All");
+		outputSelectAll.setAccelerator(SWT.CTRL | 'A');
+		outputCopy = new Action() {
+			public void run() {
+				outputCopy();
+			}
+		};
+		outputCopy.setText("Copy");
+		outputCopy.setToolTipText("Copy Selected");
+		outputCopy.setAccelerator(SWT.CTRL | 'C');
+		outputCopy.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(
+						ISharedImages.IMG_TOOL_COPY));
+
+		outputClear = new Action() {
+			public void run() {
+				outputClear();
+			}
+		};
+		outputClear.setText("Clear");
+		outputClear.setToolTipText("Clear output window");
+
+		outputPaste = new Action() {
+			public void run() {
+				outputPaste();
+			}
+		};
+		outputPaste.setText("Paste");
+		outputPaste.setToolTipText("Paste");
+		outputCopy.setAccelerator(SWT.CTRL | 'V');
+		outputPaste.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(
+						ISharedImages.IMG_TOOL_PASTE));
+
+	}
+
+	private void fillContextMenu(IMenuManager manager) {
+		manager.add(outputCopy);
+		manager.add(outputPaste);
+		manager.add(outputClear);
+		manager.add(new Separator());
+		manager.add(outputSelectAll);
+	}
+
+	private void hookContextMenu() {
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager manager) {
+				fillContextMenu(manager);
+			}
+		});
+		Menu menu = menuMgr.createContextMenu(readText.getControl());
+		readText.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, readText);
+
+	}
 
 }
