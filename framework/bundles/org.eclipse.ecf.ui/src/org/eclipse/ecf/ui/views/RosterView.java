@@ -826,7 +826,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			URI aURI = roomID.toURI();
 			String auth = aURI.getAuthority();
 			String path = aURI.getPath();
-			return auth + "/" + path;
+			return auth + path;
 		} catch (URISyntaxException e) {
 			return null;
 		}
