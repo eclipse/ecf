@@ -10,6 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.ui.views;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -820,6 +821,16 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			return secondaryID;
 		}
 	}
+	private String getChatRoomSecondaryID(ID roomID) {
+		try {
+			URI aURI = roomID.toURI();
+			String auth = aURI.getAuthority();
+			String path = aURI.getPath();
+			return auth + "/" + path;
+		} catch (URISyntaxException e) {
+			return null;
+		}
+	}
 	private void makeActions() {
 		selectedDoubleClickAction = new Action() {
 			public void run() {
@@ -852,6 +863,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 						new Path(DISCONNECT_ICON_DISABLED))));
 		openChatRoomAction = new Action() {
 			public void run() {
+				// Get managers for all accounts currently connected to
 				IChatRoomManager managers[] = new IChatRoomManager[accounts
 						.size()];
 				int j = 0;
@@ -859,16 +871,20 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 					UserAccount ua = (UserAccount) i.next();
 					managers[j++] = ua.getContainer().getChatRoomManager();
 				}
+				// Create chat room selection dialog with managers, open
 				ChatRoomSelectionDialog dialog = new ChatRoomSelectionDialog(
 						RosterView.this.getViewSite().getShell(), managers);
 				dialog.setBlockOnOpen(true);
 				dialog.open();
+				// If selection cancelled then simply return
 				if (dialog.getReturnCode() != Window.OK) {
 					return;
 				}
+				// Get selected room, selected manager, and selected IRoomInfo
 				ChatRoomSelectionDialog.Room room = dialog.getSelectedRoom();
 				IChatRoomManager selectedManager = room.getManager();
 				IRoomInfo selectedInfo = room.getRoomInfo();
+				// If they are null then we can't proceed
 				if (room == null || selectedManager == null
 						|| selectedInfo == null) {
 					MessageDialog.openInformation(RosterView.this.getViewSite()
@@ -876,27 +892,44 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 							"Cannot connect to null room");
 					return;
 				}
-				// Now, create chat room instance
-				IChatRoomContainer chatRoom = null;
-				String secondaryID = null;
-				try {
-					chatRoom = selectedManager.makeChatRoomContainer();
-					secondaryID = selectedInfo.getRoomID().toURI()
-							.getSchemeSpecificPart();
-				} catch (ContainerInstantiationException e1) {
-					MessageDialog.openError(RosterView.this.getViewSite()
-							.getShell(), "Could not create chat room",
-							"Could not create chat room for account");
-				} catch (URISyntaxException e2) {
+				// Now get the secondary ID from the selected room id
+				String secondaryID = getChatRoomSecondaryID(selectedInfo
+						.getRoomID());
+				if (secondaryID == null) {
 					MessageDialog.openError(RosterView.this.getViewSite()
 							.getShell(), "Could not get identifier for room",
 							"Could not get proper identifier for chat room "
 									+ selectedInfo.getRoomID());
+					return;
 				}
-				IChatMessageSender sender = chatRoom.getChatMessageSender();
+				// Check to make sure that we are not already connected to the
+				// selected room.
+				// If we are simply activate the existing view for the room and
+				// done
 				IWorkbenchWindow ww = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow();
 				IWorkbenchPage wp = ww.getActivePage();
+				RoomWithAView roomView = getRoomView(secondaryID);
+				if (roomView != null) {
+					// We've already connected to this room
+					// So just show it.
+					ChatRoomView view = roomView.getView();
+					wp.activate(view);
+					return;
+				}
+				// If we don't already have a connection/view to this room then
+				// now, create chat room instance
+				IChatRoomContainer chatRoom = null;
+				try {
+					chatRoom = selectedManager.makeChatRoomContainer();
+				} catch (ContainerInstantiationException e1) {
+					MessageDialog.openError(RosterView.this.getViewSite()
+							.getShell(), "Could not create chat room",
+							"Could not create chat room for account");
+				}
+				// Get the chat message sender callback so that we can send
+				// messages to chat room
+				IChatMessageSender sender = chatRoom.getChatMessageSender();
 				IViewPart view = null;
 				try {
 					IViewReference ref = wp.findViewReference(
@@ -908,8 +941,12 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 						view = ref.getView(true);
 					}
 					final ChatRoomView chatroomview = (ChatRoomView) view;
+					// initialize the chatroomview with the necessary
+					// information
 					chatroomview.initialize(RosterView.this, secondaryID,
 							chatRoom, selectedInfo, sender);
+					// Add listeners so that the new chat room gets
+					// asynch notifications of various relevant chat room events
 					chatRoom.addMessageListener(new IMessageListener() {
 						public void handleMessage(ID fromID, ID toID,
 								Type type, String subject, String messageBody) {
@@ -939,28 +976,33 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 						}
 					});
 				} catch (PartInitException e) {
-					UiPlugin.log("Exception in chat room action", e);
-					MessageDialog
-							.openError(getViewSite().getShell(),
-									"Can't join chat room",
-									"Unexpected error in joining chat room.  Please see Error Log for details");
+					UiPlugin.log(
+							"Exception in chat room view initialization for chat room "
+									+ selectedInfo.getRoomID(), e);
+					MessageDialog.openError(getViewSite().getShell(),
+							"Can't initialize chat room view",
+							"Unexpected error initializing for chat room: "
+									+ selectedInfo.getName()
+									+ ".  Please see Error Log for details");
 					return;
 				}
-				// Now connect
+				// Now actually connect to chatroom
 				try {
 					chatRoom.connect(selectedInfo.getRoomID(), null);
 				} catch (ContainerConnectException e1) {
+					UiPlugin.log("Exception connecting to chat room "
+							+ selectedInfo.getRoomID(), e1);
 					MessageDialog.openError(RosterView.this.getViewSite()
 							.getShell(), "Could not connect",
-							"Cannot connect to chat room: " + e1.getMessage()
-									+ selectedInfo.getName());
+							"Cannot connect to chat room "
+									+ selectedInfo.getName() + ", message: "
+									+ e1.getMessage());
 					return;
 				}
 				// If connect successful...we create a room with a view and add
 				// it to our known set
-				RoomWithAView roomView = new RoomWithAView(selectedManager,
-						chatRoom, (ChatRoomView) view, secondaryID);
-				addRoomView(roomView);
+				addRoomView(new RoomWithAView(selectedManager, chatRoom,
+						(ChatRoomView) view, secondaryID));
 			}
 		};
 		openChatRoomAction.setText("Enter Chatroom");
@@ -975,6 +1017,9 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	}
 	protected void removeRoomView(RoomWithAView roomView) {
 		chatRooms.remove(roomView);
+	}
+	protected RoomWithAView getRoomView(String id) {
+		return (RoomWithAView) chatRooms.get(id);
 	}
 	protected ChatWindow openChatWindowForTarget(ID targetID) {
 		if (targetID == null)
