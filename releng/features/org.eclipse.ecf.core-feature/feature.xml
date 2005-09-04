@@ -41,12 +41,6 @@ otherwise indicated below, the terms and conditions of the EPL
 still apply to any source code in the Content.
    </license>
 
-   <requires>
-      <import plugin="org.eclipse.help"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.osgi"/>
-   </requires>
-
    <plugin
          id="org.eclipse.ecf.doc"
          download-size="0"

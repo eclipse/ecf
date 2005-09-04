@@ -6,7 +6,7 @@
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides a ECF reference server
+      This feature provides a ECF reference server implementation
    </description>
 
    <copyright url="http://www.eclipse.org/ecf">
@@ -41,13 +41,5 @@ If no such license exists, contact the Redistributor.  Unless
 otherwise indicated below, the terms and conditions of the EPL
 still apply to any source code in the Content.
    </license>
-
-   <requires>
-      <import feature="org.eclipse.ecf.collab" version="0.3.3"/>
-      <import feature="org.eclipse.ecf.core" version="0.3.3"/>
-      <import feature="org.eclipse.ecf.graphshare" version="0.3.3"/>
-      <import feature="org.eclipse.ecf.xmpp" version="0.3.3"/>
-      <import feature="org.eclipse.ecf.datashare_feature" version="0.4.0"/>
-   </requires>
 
 </feature>
