@@ -1,6 +1,11 @@
 package org.eclipse.ecf.ui.views;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
@@ -39,6 +44,10 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	protected static final String DEFAULT_ME_COLOR = "0,255,0";
     protected static final String DEFAULT_OTHER_COLOR = "0,0,0";
     protected static final String DEFAULT_SYSTEM_COLOR = "0,0,255";
+    protected static final String DEFAULT_DATE_COLOR = "0,0,0";
+    protected static final String VIEW_PREFIX = "ECF Chat: ";
+    protected static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+    protected static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 	
 	protected static final int DEFAULT_INPUT_HEIGHT = 25;
     protected static final int DEFAULT_INPUT_SEPARATOR = 5;
@@ -48,14 +57,19 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	private TextViewer readText = null;
 	private ListViewer memberViewer = null;
 	
+	IChatRoomViewCloseListener closeListener = null;
 	IChatMessageSender messageSender = null;
 	IChatRoomContainer chatRoomContainer = null;
+	String viewID = null;
 	
 	private Color meColor = null;
 	private Color otherColor = null;
 	private Color systemColor = null;
-
+	private Color dateColor = null;
+	
 	private IUser localUser = null;
+	
+	private List users = Collections.synchronizedList(new ArrayList());
 	
 	private Color colorFromRGBString(String rgb) {
 		Color color = null;
@@ -76,7 +90,8 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		meColor = colorFromRGBString(DEFAULT_ME_COLOR);
 		otherColor = colorFromRGBString(DEFAULT_OTHER_COLOR);
 		systemColor = colorFromRGBString(DEFAULT_SYSTEM_COLOR);
-
+		dateColor = colorFromRGBString(DEFAULT_DATE_COLOR);
+		
 		mainComp = new Composite(parent, SWT.NONE);
 		mainComp.setLayout(new FillLayout());
 		
@@ -120,16 +135,26 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		
 		form.setWeights(new int[] {RATIO_PRESENCE_PANE, RATIO_READ_WRITE_PANE});
 		rightSash.setWeights(new int[] {RATIO_READ_PANE, RATIO_WRITE_PANE});
+		setEnabled(false);
+	}
+	protected void setEnabled(boolean enabled) {
+		mainComp.setEnabled(enabled);
+		writeText.setEnabled(enabled);
 	}
 	protected void clearInput() {
 		writeText.setText("");
 	}
 	protected void handleTextInput(String text) {
-		try {
-			messageSender.sendMessage(text);
-		} catch (IOException e) {
-			UiPlugin.log("Error sending message",e);
-			// XXX shutdown chat here
+		if (messageSender == null) {
+			MessageDialog.openError(getViewSite().getShell(),"Not connect","Not connected to chat room");
+			return;
+		} else {
+			try {
+				messageSender.sendMessage(text);
+			} catch (IOException e) {
+				UiPlugin.log("Error sending message",e);
+				// XXX shutdown chat here
+			}
 		}
 	}
 
@@ -159,13 +184,29 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		return roomInfo;
 	}
 
-	public void initialize(IChatRoomContainer container, IRoomInfo info, IChatMessageSender sender) {
-		this.chatRoomContainer = container;
-		this.messageSender = sender;
-		this.roomInfo = info;
-		this.setPartName(roomInfo.getName()+": "+roomInfo.getDescription());
+	public void initialize(final IChatRoomViewCloseListener parent, final String secondaryID, final IChatRoomContainer container, final IRoomInfo info, final IChatMessageSender sender) {
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+            	ChatRoomView.this.viewID = secondaryID;
+            	ChatRoomView.this.closeListener = parent;
+            	ChatRoomView.this.chatRoomContainer = container;
+            	ChatRoomView.this.messageSender = sender;
+            	ChatRoomView.this.roomInfo = info;
+            	ID roomID = info.getRoomID();
+            	ChatRoomView.this.setPartName(VIEW_PREFIX+roomID.getName()+"-"+roomInfo.getName());
+            	ChatRoomView.this.setTitleToolTip(roomInfo.getDescription());
+            	setEnabled(true);
+            }
+        });
 	}
-
+	public void dispose() {
+		if (closeListener != null) {
+			closeListener.chatRoomViewClosing(viewID);
+			closeListener = null;
+			viewID = null;
+		}
+		super.dispose();
+	}
 	protected String getMessageString(ID fromID, String text) {
 		return fromID.getName() + ": "+text+"\n";
 	}
@@ -218,27 +259,44 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 			return null;
 		}
 	}
-	
+	protected String getCurrentDate(String format) {
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		String res = sdf.format(new Date());
+		return res;
+	}
+	protected String getDateTime() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(getCurrentDate(DEFAULT_DATE_FORMAT)).append(" ").append(getCurrentDate(DEFAULT_TIME_FORMAT));
+		return buf.toString();
+	}
 	protected void addParticipant(IUser p) {
-		ChatLine cl = new ChatLine(p.getID().getName()+ " arrived",null);
+		ChatLine cl = new ChatLine("("+getDateTime()+") "+p.getID().getName()+ " entered the room.",null);
 		appendText(cl);
 		memberViewer.add(p);
 	}
+	protected void removeParticipant(IUser p) {
+		ChatLine cl = new ChatLine("("+getDateTime()+") "+p.getID().getName()+ " left the room.",null);
+		appendText(cl);
+		memberViewer.remove(p);
+	}
+
 	public void handlePresence(final ID fromID, final IPresence presence) {
-		System.out.println("chat presence from="+fromID+",presence="+presence);
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
             	boolean isAdd = presence.getType().equals(IPresence.Type.AVAILABLE);
+        		Participant p = new Participant(fromID);
             	if (isAdd) {
-            		if (localUser == null) {
-            			localUser = new Participant(fromID);
-            			addParticipant(localUser);
-            		} else {
-            			addParticipant(new Participant(fromID));
+            		if (localUser == null && !users.contains(fromID)) {
+                			localUser = p;
             		}
+            		addParticipant(p);
             	} else {
-            		Participant p = new Participant(fromID);
-            		memberViewer.remove(p);
+            		removeParticipant(p);
+        			if (localUser != null && localUser.getID().equals(fromID)) {
+        				// It's us that's gone away... so we're outta here
+        				setEnabled(false);
+        				dispose();
+        			}
             	}
             }
         });
@@ -258,11 +316,22 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		StringBuffer sb = new StringBuffer();
 		
 		if (text.getOriginator() != null) {
-			sb.append(text.getOriginator().getName() + ": ");
+			sb.append("(").append(getCurrentDate(DEFAULT_TIME_FORMAT)).append(") ");
+			StyleRange dateStyle = new StyleRange();
+			dateStyle.start = startRange;
+			dateStyle.length = sb.length();
+			dateStyle.foreground = dateColor;
+			dateStyle.fontStyle = SWT.NORMAL;
+			st.append(sb.toString());
+			st.setStyleRange(dateStyle);
+			sb = new StringBuffer();
+			sb.append(text.getOriginator().getName()).append(": ");
 			StyleRange sr = new StyleRange();
-			sr.start = startRange;
+			sr.start = startRange + dateStyle.length;
 			sr.length = sb.length();
-			if (localUser.getID().equals(text.getOriginator().getID())) { 
+			sr.fontStyle = SWT.BOLD;
+			
+			if (localUser != null && localUser.getID().equals(text.getOriginator().getID())) { 
 				sr.foreground = meColor;
 			} else {
 				sr.foreground = otherColor;
@@ -280,6 +349,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 			sr.start = beforeMessageIndex;
 			sr.length = text.getText().length();
 			sr.foreground = systemColor;
+			sr.fontStyle = SWT.BOLD;
 			st.setStyleRange(sr);
 		}
 		
@@ -314,14 +384,11 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	}
 
 	public void handleJoin(ID user) {
-		// TODO Auto-generated method stub
-		System.out.println("handleJoin("+user+")");
+		users.add(user);
 	}
 
 	public void handleLeave(ID user) {
-		// TODO Auto-generated method stub
-		System.out.println("handleLeave("+user+")");
-		
+		users.remove(user);
 	}
 
 

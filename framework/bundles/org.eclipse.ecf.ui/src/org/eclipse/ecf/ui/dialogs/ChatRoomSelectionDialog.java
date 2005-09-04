@@ -61,17 +61,23 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+		GridData tableGridData = new GridData(GridData.FILL_BOTH);
+		tableGridData.grabExcessHorizontalSpace = true;
 		
+		table.setLayoutData(tableGridData);
 		TableColumn tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Room Name");
 		tc.pack();
+		int width = tc.getWidth();
+		tc.setWidth(width+(width/4));
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Subject");
 		tc.pack();
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Description");
 		tc.pack();
+		width = tc.getWidth();
+		tc.setWidth(width+(width/3));
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Members");
 		tc.pack();
@@ -84,6 +90,9 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		tc = new TableColumn(table,  SWT.NONE);
 		tc.setText("Account");
 		tc.pack();
+		width = tc.getWidth();
+		tc.setWidth(width*3);
+		
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -109,8 +118,8 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		Room [] rooms = (Room []) all.toArray(new Room[] {});
 		viewer.setInput(rooms);
 		
-		this.setTitle("Chatroom Selection");
-		this.setMessage("Select a chatroom to enter");
+		this.setTitle("Chat Room Selection");
+		this.setMessage("Select a Chat Room to Enter");
 		
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -153,7 +162,6 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 	private class ChatRoomLabelProvider implements ITableLabelProvider {
 
 		public Image getColumnImage(Object element, int columnIndex) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -184,23 +192,16 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		}
 
 		public void addListener(ILabelProviderListener listener) {
-			// TODO Auto-generated method stub
-
 		}
 
 		public void dispose() {
-			// TODO Auto-generated method stub
-
 		}
 
 		public boolean isLabelProperty(Object element, String property) {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		public void removeListener(ILabelProviderListener listener) {
-			// TODO Auto-generated method stub
-
 		}
 
 	}
@@ -208,7 +209,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 	protected Control createButtonBar(Composite parent) {
 
 		Control bar = super.createButtonBar(parent);
-		this.getButton(Dialog.OK).setText("Enter");
+		this.getButton(Dialog.OK).setText("Enter Chat");
 		this.getButton(Dialog.OK).setEnabled(false);
 		return bar;
 	}
