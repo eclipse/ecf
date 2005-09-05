@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
@@ -221,41 +220,4 @@ public class PresenceContainerUI {
 		});
     }
 
-    protected void connectToFirstChatRoom() throws ECFException {
-    	// Get chat room manager for presence container
-    	/*
-		IChatRoomManager crmanager = pc.getChatRoomManager();
-		// Get info from manager for chat rooms
-		IRoomInfo [] roomInfos = crmanager.getChatRoomsInfo();
-		// If no chat rooms available we throw
-		if (roomInfos == null || roomInfos.length == 0) {
-			throw new ContainerConnectException("No chat rooms available for "+container.getConnectedID().getName());
-		}
-		// Otherwise print out some info about rooms
-		//System.out.println(" chat rooms available: "+Arrays.toString(roomInfos));
-		
-		// XXX arbitrarily join first chat room
-		ID targetID = roomInfos[0].getRoomID();
-		
-		// Make chat room container
-		IChatRoomContainer chatRoom = crmanager.makeChatRoomContainer();
-		// Add listeners/UI handlers for appropriate events
-		chatRoom.addMessageListener(new IMessageListener() {
-			public void handleMessage(ID fromID, ID toID, Type type, String subject, String messageBody) {
-				System.out.println("Room message from="+fromID+",to="+toID+",type="+type+",sub="+subject+",body="+messageBody);
-			}
-		});
-		chatRoom.addParticipantListener(new IParticipantListener() {
-			public void handlePresence(ID fromID, IPresence presence) {
-				System.out.println("chat presence from="+fromID+",presence="+presence);
-			}});
-		chatRoom.addInvitationListener(new IInvitationListener() {
-			public void handleInvitationReceived(ID roomID, ID from, ID toID, String subject, String body) {
-				System.out.println("invitation room="+roomID+",from="+from+",to="+toID+",subject="+subject+",body="+body);
-			}});
-		
-		// Now connect to room ID
-		chatRoom.connect(targetID,null);
-		*/
-	}
 }

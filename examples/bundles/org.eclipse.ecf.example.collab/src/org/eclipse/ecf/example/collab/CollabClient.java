@@ -21,7 +21,6 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.presence.IPresenceContainer;
 
@@ -87,15 +86,6 @@ public class CollabClient {
 			throw e;
 		}
 		
-		//XXX testing
-		if (presenceContainerUI != null) {
-			try {
-				presenceContainerUI.connectToFirstChatRoom();
-			} catch (ECFException e1) {
-				System.err.println("Exception connecting to first chat room");
-				e1.printStackTrace(System.err);
-			}
-		}
 		// only add client if the connect was successful
 		addClientForResource(newClientEntry, resource);
 	}

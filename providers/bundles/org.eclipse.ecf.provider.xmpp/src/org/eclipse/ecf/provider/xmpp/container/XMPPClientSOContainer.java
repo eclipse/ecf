@@ -218,13 +218,17 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	}
 	protected void handleChatMessage(Message mess) throws IOException {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
+		/*  XXX 
 		if (mess.getExtensions().hasNext()) {
 			handleChatMessageWithExtension(mess);
 		} else {
+		*/
 			if (wrap != null) {
 				wrap.deliverEvent(new MessageEvent(mess));
 			}
+			/*
 		}
+		*/
 	}
 
 	protected void handleContainerMessage(ContainerMessage mess)
