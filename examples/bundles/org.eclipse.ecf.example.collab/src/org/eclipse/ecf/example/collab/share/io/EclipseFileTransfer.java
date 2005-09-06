@@ -172,9 +172,6 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 	}
 
 	protected boolean votingCompleted() throws SharedObjectAddAbortException {
-		// The test here is is we've received any indication of failed
-		// participants in
-		// the transaction. If so, we throw.
 		if (failedParticipants != null && failedParticipants.size() > 0) {
 			// In this case, we're going to go ahead and continue anyway
 			return true;

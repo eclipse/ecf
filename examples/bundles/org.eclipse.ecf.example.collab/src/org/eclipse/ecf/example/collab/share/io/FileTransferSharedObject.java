@@ -68,6 +68,20 @@ public class FileTransferSharedObject extends TransactionSharedObject
         inputStream = src;
     }
 
+    protected void addRemoteParticipants(ID ids[])
+    {
+        if (ids != null && participantIDs != null) {
+            for(int i=0; i < ids.length; i++) {
+            	if (targetReceiver == null) {
+            		if (!getHomeContainerID().equals(ids[i])) participantIDs.addElement(ids[i]);
+            	} else {
+            		if (targetReceiver.equals(ids[i])) participantIDs.addElement(ids[i]);
+            	}
+            }
+        }
+
+    }
+
     protected void setOutputStream(OutputStream src)
     {
         outputStream = src;
