@@ -16,11 +16,8 @@ public class XMPPRoomID extends BaseID {
 	String longName = null;
 	
 	protected String fixHostname(String host, String domain) {
-		String subHost = host;
-		int dotIndex = host.indexOf('.');
-		if (dotIndex > 0) subHost = host.substring(0,dotIndex);
 		if (domain == null) domain = DOMAIN_DEFAULT;
-		return domain+"."+subHost;
+		return domain+"."+host;
 	}
 	
 	protected String fixUsername(String connUsername) {

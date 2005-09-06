@@ -519,10 +519,18 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 							ID [] chatRooms = getChatRooms();
 							if (chatRooms == null) return null;
 							IRoomInfo [] res = new IRoomInfo[chatRooms.length];
+							int count = 0;
 							for(int i=0; i < chatRooms.length; i++) {
-								res[i] = getChatRoomInfo(chatRooms[i]);
+								IRoomInfo infoResult = getChatRoomInfo(chatRooms[i]);
+								if (infoResult != null) {
+									res[count++] = infoResult;
+								}
 							}
-							return res;
+							IRoomInfo [] results = new IRoomInfo[count];
+							for(int i=0; i < count; i++) {
+								results[i] = res[i];
+							}
+							return results;
 						}};
 				}
             };

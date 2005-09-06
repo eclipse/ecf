@@ -53,7 +53,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
     protected static final String DEFAULT_OTHER_COLOR = "0,0,0";
     protected static final String DEFAULT_SYSTEM_COLOR = "0,0,255";
     protected static final String DEFAULT_DATE_COLOR = "0,0,0";
-    protected static final String VIEW_PREFIX = "ECF Chat: ";
+    protected static final String VIEW_PREFIX = "Chat: ";
     protected static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
     protected static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 	
