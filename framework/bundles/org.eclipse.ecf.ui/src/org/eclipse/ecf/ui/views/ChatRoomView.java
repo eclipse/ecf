@@ -474,6 +474,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		manager.add(outputClear);
 		manager.add(new Separator());
 		manager.add(outputSelectAll);
+		manager.add(new Separator("Additions"));
 	}
 
 	private void hookContextMenu() {
