@@ -10,7 +10,9 @@ package org.eclipse.ecf.provider.xmpp;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.Status;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -20,12 +22,24 @@ public class XmppPlugin extends Plugin {
     public static final String XMPPPLUGIN_NAME = "org.eclipse.ecf.provider.xmpp";
     public static final String NAMESPACE_IDENTIFIER = "xmpp.jive";
     public static final String ROOM_NAMESPACE_IDENTIFIER = "xmpp.room.jive";
-
+    public static final String PLUGIN_ID = XMPPPLUGIN_NAME;
+    
 	//The shared instance.
 	private static XmppPlugin plugin;
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
 	
+	public static void log(String message) {
+		getDefault().getLog().log(
+				new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
+	}
+
+	public static void log(String message, Throwable e) {
+		getDefault().getLog().log(
+				new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK,
+						"Caught exception", e));
+	}
+
 	/**
 	 * The constructor.
 	 */

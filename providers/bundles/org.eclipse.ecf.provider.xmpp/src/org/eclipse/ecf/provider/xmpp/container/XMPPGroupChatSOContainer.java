@@ -48,7 +48,6 @@ import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionPacketEvent;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
@@ -310,7 +309,11 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
         synchronized (getConnectLock()) {
             // If we are currently connected
             if (isConnected()) {
-            	multiuserchat.leave();
+            	try {
+            		multiuserchat.leave();
+            	} catch (Exception e) {
+            		dumpStack("Exception in multi user chat.leave",e);
+            	}
             }
             connectionState = UNCONNECTED;
             this.connection = null;
@@ -378,8 +381,8 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 				if (multiuserchat != null) {
 					try {
 						multiuserchat.sendMessage(messageBody);
-					} catch (XMPPException e) {
-						// XXX log
+					} catch (Exception e) {
+						XmppPlugin.log("Exception in multiuserchat.sendMessage",e);
 						IOException except = new IOException("Send message exception");
 					    except.setStackTrace(e.getStackTrace());
 					    throw except;
