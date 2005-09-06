@@ -80,9 +80,9 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		//this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, true);
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_REMOTE_VIEW, true);
 		
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_SERVER,true);
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,true);
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_DISCOVERY,true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_SERVER,false);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,false);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_DISCOVERY,false);
 	}
 	
 	class ClientStartupJob extends Job {
