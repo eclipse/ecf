@@ -83,6 +83,8 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	Action outputPaste = null;
 	Action outputSelectAll = null;
 
+	boolean disposed = false;
+	
 	private Color colorFromRGBString(String rgb) {
 		Color color = null;
 		if (rgb == null || rgb.equals("")) {
@@ -216,6 +218,9 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 			closeListener = null;
 			viewID = null;
 		}
+		otherUsers.clear();
+		localUser = null;
+		disposed = true;
 		super.dispose();
 	}
 	protected String getMessageString(ID fromID, String text) {
@@ -224,6 +229,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	public void handleMessage(final ID fromID, final ID toID, final Type type, final String subject, final String messageBody) {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
+            	if (disposed) return;
             	appendText(new ChatLine(messageBody,new Participant(fromID)));
             }
         });
@@ -300,6 +306,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	public void handlePresence(final ID fromID, final IPresence presence) {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
+            	if (disposed) return;
             	boolean isAdd = presence.getType().equals(IPresence.Type.AVAILABLE);
         		Participant p = new Participant(fromID);
             	if (isAdd) {
@@ -404,10 +411,12 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	}
 
 	public void handleJoin(ID user) {
+		if (disposed) return;
 		otherUsers.add(user);
 	}
 
 	public void handleLeave(ID user) {
+		if (disposed) return;
 		otherUsers.remove(user);
 	}
 
