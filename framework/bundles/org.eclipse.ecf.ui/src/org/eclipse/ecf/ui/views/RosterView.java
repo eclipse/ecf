@@ -1016,7 +1016,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		chatRooms.put(roomView.getID(), roomView);
 	}
 	protected void removeRoomView(RoomWithAView roomView) {
-		chatRooms.remove(roomView);
+		chatRooms.remove(roomView.getID());
 	}
 	protected RoomWithAView getRoomView(String id) {
 		return (RoomWithAView) chatRooms.get(id);
