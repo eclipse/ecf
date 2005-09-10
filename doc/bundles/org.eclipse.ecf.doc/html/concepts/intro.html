@@ -3,35 +3,72 @@
 <head>
 </head>
 <body>
-<h2>Introduction: ECF Communication via Shared Object Containers</h2>
-<p> The two fundamental concepts in ECF are the <b>SharedObjectContainer</b>
-and the <b>SharedObject</b>. SharedObjectContainers provide a specific
-<b><i>communications context</i></b> for contained SharedObject
-instances. The context provided by ECF SharedObjectContainers allows
-contained SharedObjects to communicate with a group of remote processes
-using protocols provided by the container. <br>
-<br>
-In the ECF model, SharedObjects represent communications components or
-whole communications applications. Components use container-provided
-messaging to implement their necessary communications, but are
-completely free to implement whatever other functionality is required.
-All a given ECF component must do is implement a single interface
-(org.eclipse.ecf.core.ISharedObject), and add itself/be added to some
-instance of a container. <br>
-<br>
-ECF itself defines the basic required interfaces for
-SharedObjectContainers and SharedObjects. ECF also provides
-implementations of various common communications protocols, in the form
-of specific type of containers, and various sorts of application-level
-communications (e.g conferencing or chat) via communications components
-implemented as SharedObjects. <br>
-<br>
-In some respects, the ECF container/shared object design resembles the
-design of other container architectures such a Servlet container. The
-difference, however, is that the ECF container model is based upon a
-group model of communication rather than client/server, where a given
-shared object can communicate with one or many remote processes either
-asynchronously and/or synchronously with a single primitive. </p>
-<br>
+	<h3>ECF Containers</h3>
+       ECF introduces the concept of a communications <b>container</b>.  ECF containers represent access to 
+       a protocol-specific communications context. For connection-oriented communications, an ECF container loosely 
+       corresponds to the traditional notion of a communications <b>session</b>, but the more general container concept is also
+       useful for capturing context even if the communications are non connection-oriented.
+       <p></p>
+       ECF containers can represent both point-to-point communications (e.g. client/server) or 
+       publish-and-subscribe (group) communications.  Container instances can provide access to synchronous
+       communications only, asynchronous communications only, or both together.  This flexibility allows
+       many communications applications to be constructed out of one or more containers...each of which
+       provides access to some specific communications context and some protocol for communicating within
+       that context.
+       <h3><a name="Instance Creation"></a>Instance Creation</h3>       
+       Container instance creation is done via ECF-provided factory APIs.  For example, here's code to create 
+       and IContainer instance:
+       <pre>
+       IContainer container = ContainerFactory.getDefault().makeContainer("containertype");
+       </pre>
+       Once constructed, <a href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/IContainer.html">IContainer</a> instances may be used in the manner appropriate for the given application.  When
+       no longer required the <a href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/IContainer.html#dispose()">IContainer.dispose()</a> method should be called to release any resources associated with
+       the container instance upon construction.
+       <h3><a name="Container Connection"></a>Container Connection/Disconnection</h3>
+       The IContainer interface exposes two key methods:  <a href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/IContainer.html#connect(org.eclipse.ecf.core.identity.ID,%20org.eclipse.ecf.core.security.IConnectContext)">connect(ID targetID, IConnectContect connectContext)</a> and disconnect().  
+       As is obvious, these two methods allow
+       container implementations to initiate communication with remote services, 
+       either server-based or group-based communications.
+       <p></p>
+       Notice the first parameter to the connect method...<b>targetID</b>.  TargetID is of 
+       type <a href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/identity/ID.html">ID</a>.  The <b>targetID</b> parameter 
+       <b>identifies the target server or group</b> for the connect operation.  It is of type <a href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/identity/ID.html">ID</a> so that the
+       to allow the target communications service to be of many kinds...e.g. client-server or peer-to-peer.  For example, for http communication the targetID would consist of
+       the URL specifying a particular file at a particular path on a particular server...e.g: <b>http://www.eclipse.org/ecf</b>.  For some
+       other communications protocol the ID provided would be different...e.g:  <b>sip:someone@example.com;transport=tcp</b>.  All such targets for
+       connect may be represented via an instance of the ID interface.
+       <h3><a name="Example Connection Code"></a>Example Container Creation and Connection Code</h3>
+       Here's an example code snippet that shows the creation and connection of an ECF container:
+       <pre>
+       // make container instance
+       IContainer cont = ContainerFactory.getDefault().makeContainer("org.eclipse.ecf.provider.generic.Client");
+       // make targetID
+       ID targetID = IDFactory.getDefault().makeID(cont.getConnectNamespace(),"ecftcp://ecf1.osuosl.org:3282/server");
+       // then connect to targetID
+       cont.connect(targetID,null);
+       </pre>       
+       <h3><a name="Extensibility"></a>Container Extensibility through Adapters</h3>
+       In order to support run-time extensibility, the IContainer interface inherits from org.eclipse.core.runtime.IAdaptable.  This 
+       interface exposes the 'getAdapter(Class intf)' method.  In the case of IContainer instances,
+       this allows clients to query the container at runtime about it's exposed interfaces, and get
+       access to those interfaces if available.  So, for example, perhaps we're interested in creating an 
+       instant messaging application and wish to use the capabilities exposed by the 
+       <a href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/IPresenceContainer.html">IPresenceContainer</a> interface.
+       To do this, we simply query the IContainer instance at runtime to see if it provides access
+       to IPresenceContainer capabilities:
+       <pre>
+       IPresenceContainer pc = (IPresenceContainer) cont.getAdapter(IPresenceContainer.class);
+       if (pc != null) {
+           // The container DOES exposed IPresenceContainer capabilities, so we can use them!
+       } else {
+           // The container does not expose IPresenceContainer capabilities...we're out of luck
+       }
+       </pre>
+       Among other positive characteristics, this adapter mechanism provides a consistent-yet-simple way for
+       a wide variety of container types to be defined and used without the need to update the ECF
+       IContainer abstractions.
+       <p></p>
+       UNDER CONSTRUCTION - 9/9/05
+       <p></p>
 </body>
 </html>
