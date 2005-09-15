@@ -14,6 +14,7 @@ package org.eclipse.ecf.example.collab.actions;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.example.collab.ClientPlugin;
@@ -49,21 +50,47 @@ public class URIClientConnectAction implements IWorkbenchWindowActionDelegate {
         this.project = project;
         projectName = CollabClient.getNameForResource(project);
     }
+    public class ClientMultiStatus extends MultiStatus {
+
+		public ClientMultiStatus(String pluginId, int code, IStatus[] newChildren, String message, Throwable exception) {
+			super(pluginId, code, newChildren, message, exception);
+		}
+		public ClientMultiStatus(String pluginId, int code, String message, Throwable exception) {
+			super(pluginId, code, message, exception);
+		}
+    }
+    protected void showExceptionInMultiStatus(int code, MultiStatus status, Throwable t) {
+    	String msg = t.getMessage();
+    	status.add(new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,code++,msg,null));
+    	StackTraceElement [] stack = t.getStackTrace();
+    	for(int i=0; i < stack.length; i++) {
+    		status.add(new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,code++,"     "+stack[i],null));
+    	}
+    	Throwable cause = t.getCause();
+    	if (cause != null) {
+    		status.add(new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,code++,"Caused By: ",null));
+    		showExceptionInMultiStatus(code,status,cause);
+    	}
+    }
 	public class ClientConnectJob extends Job {
         public ClientConnectJob(String name) {
             super(name);
         }
         public IStatus run(IProgressMonitor pm) {
+        	String failMsg = "Connect to "+uri+" failed";
+        	ClientMultiStatus status = new ClientMultiStatus(ClientPlugin.PLUGIN_ID, 0,
+                    failMsg, null);
             try {
                 client.createAndConnectClient(containerType, uri,nickname, data,project);
-                return Status.OK_STATUS;
+                return status;
             } catch (Exception e) {
-                return new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,100,"Could not connect to "+uri.toString()+"\n\nSee Error Log for details",e);
+            	showExceptionInMultiStatus(15555,status,e);
+                return status;
             }
         }        
     }
 	public void run(IAction action) {
-        ClientConnectJob clientConnect = new ClientConnectJob("Join group for "+projectName);
+        ClientConnectJob clientConnect = new ClientConnectJob("Connect for "+projectName);
         clientConnect.schedule();
 	}
 
