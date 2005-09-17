@@ -227,7 +227,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		return fromID.getName() + ": "+text+"\n";
 	}
 	public void handleMessage(final ID fromID, final ID toID, final Type type, final String subject, final String messageBody) {
-        Display.getDefault().syncExec(new Runnable() {
+        Display.getDefault().asyncExec(new Runnable() {
             public void run() {
             	if (disposed) return;
             	appendText(new ChatLine(messageBody,new Participant(fromID)));
