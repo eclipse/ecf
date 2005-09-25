@@ -8,11 +8,14 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 
 public class ContainerConnectException extends ECFException {
 	private static final long serialVersionUID = 4078658849424746859L;
 
+	ID targetID = null;
+	
 	public ContainerConnectException() {
 		super();
 	}
@@ -37,5 +40,18 @@ public class ContainerConnectException extends ECFException {
 	 */
 	public ContainerConnectException(String message, Throwable cause) {
 		super(message, cause);
+	}
+	/**
+	 * 
+	 * @param targetID
+	 * @param message
+	 * @param cause
+	 */
+	public ContainerConnectException(ID targetID, String message, Throwable cause) {
+		super(message, cause);
+		this.targetID = targetID;
+	}
+	public ID getTargetID() {
+		return targetID;
 	}
 }
