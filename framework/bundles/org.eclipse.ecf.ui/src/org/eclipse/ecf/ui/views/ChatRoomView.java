@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IInvitationListener;
@@ -43,6 +44,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class ChatRoomView extends ViewPart implements IMessageListener, IParticipantListener, IInvitationListener {
     private static final int RATIO_WRITE_PANE = 12;
@@ -388,6 +390,10 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		if (t == null)
 			return;
 		st.setSelection(t.length());
+
+		//Bold title if view is not visible.
+		IWorkbenchSiteProgressService pservice = (IWorkbenchSiteProgressService) this.getSite().getAdapter(IWorkbenchSiteProgressService.class);
+		pservice.warnOfContentChange();		
 	}
 
 	protected void outputClear() {
