@@ -8,13 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IConnectContext;
-
 public class ContainerAuthorizationException extends ContainerConnectException {
 	private static final long serialVersionUID = 7038962779623213444L;
-	IConnectContext connectContext = null;
-	
 	public ContainerAuthorizationException() {
 		super();
 	}
@@ -38,16 +33,4 @@ public class ContainerAuthorizationException extends ContainerConnectException {
 		super(message, cause);
 	}
 	
-	public ContainerAuthorizationException(ID targetID, String message, Throwable cause) {
-		super(targetID, message, cause);
-	}
-	
-	public ContainerAuthorizationException(ID targetID, IConnectContext context, String message, Throwable cause) {
-		super(targetID, message, cause);
-		this.connectContext = context;
-	}
-	
-	public IConnectContext getConnectContext() {
-		return this.connectContext;
-	}
 }
