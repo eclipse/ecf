@@ -13,6 +13,7 @@ package org.eclipse.ecf.ui.views;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.ui.Trace;
@@ -28,6 +29,7 @@ import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
@@ -41,6 +43,8 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
@@ -66,9 +70,8 @@ public class TextChatComposite extends Composite {
     protected TextViewer textoutput;
     protected Text textinput;
 
-    protected int [] sashWeights = new int[] { 90, 10 };
+    protected int [] sashWeights = new int[] { 7, 2 };
     
-    protected ChatLayout cl = null;
     protected boolean isTyping;
     protected String initText;
     protected ILocalInputHandler inputHandler;
@@ -105,12 +108,12 @@ public class TextChatComposite extends Composite {
             
         });
         
-        // Setup layout
-        cl = new ChatLayout(DEFAULT_INPUT_HEIGHT, DEFAULT_INPUT_SEPARATOR);
-        setLayout(cl);
+        setLayout(new GridLayout());
+        SashForm sash = new SashForm(this, SWT.VERTICAL | SWT.SMOOTH);
+        sash.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         // Setup text output
-        textoutput = new TextViewer(this, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP);
+        textoutput = new TextViewer(sash, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP);
         styledText = textoutput.getTextWidget();
         styledText.setEditable(false);
         textoutput.setDocument(new Document(this.initText));
@@ -118,9 +121,7 @@ public class TextChatComposite extends Composite {
         textoutput.setEditable(false);
         
         // Setup text input
-        textinput = new Text(this, SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL);
-        cl.setInputTextHeight(textinput.getFont().getFontData()[0]
-                .getHeight() + 2);
+        textinput = new Text(sash, SWT.WRAP | SWT.BORDER | SWT.V_SCROLL);
         textinput.setText(TEXT_INPUT_INIT);
         
         textinput.selectAll();
@@ -167,6 +168,8 @@ public class TextChatComposite extends Composite {
                 }
             }
         });
+
+        sash.setWeights(sashWeights);
 
         makeActions();
         hookContextMenu();
@@ -344,6 +347,7 @@ public class TextChatComposite extends Composite {
     protected void handleKeyPressed(KeyEvent evt) {
         if (evt.character == SWT.CR) {
             handleEnter();
+            evt.doit = false;
         } 
     }
 

@@ -18,6 +18,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Layout;
 
 
+/**
+ * @deprecated not used anywhere
+ */
 class ChatLayout extends Layout {
     protected static final int TEXT_HEIGHT_FUDGE = 8;
     Point iExtent, tExtent;

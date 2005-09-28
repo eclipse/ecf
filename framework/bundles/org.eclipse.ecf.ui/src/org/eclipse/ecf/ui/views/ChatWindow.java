@@ -11,7 +11,10 @@
 
 package org.eclipse.ecf.ui.views;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IMessageListener;
@@ -26,6 +29,7 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -33,6 +37,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.UIJob;
 
 /**
  * @author pnehrer
@@ -47,7 +52,6 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 	private TextChatComposite chat;
 	private Image image;
 	private Image blank;
-	private boolean flashing;
     
     private String titleBarText;
     
@@ -56,7 +60,6 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
     protected IUser remoteUser;
     
     protected boolean disposed = false;
-    protected Thread flashThread = null;
     
     protected IUser getLocalUser() {
         return localUser;
@@ -65,55 +68,8 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
     protected IUser getRemoteUser() {
         return remoteUser;
     }
-	private final Runnable flipImage = new Runnable() {
-		public void run() {
-			Shell shell = getShell();
-			if (!shell.isDisposed()) 
-				if (blank == shell.getImage()) {
-					if (image != null && !image.isDisposed())
-						shell.setImage(image);
-				} else {
-					if (blank != null && !blank.isDisposed())
-						shell.setImage(blank);
-				}
-		}
-	};
-
-	private Flash flash;
-
-	private class Flash implements Runnable  {
-		
-		private final Display display;
-		
-		public Flash(Display display) {
-			this.display = display;
-		}
-		
-		public void run() {
-			while (true) {
-				synchronized (this) {
-					try {
-						while (!flashing)
-							wait();
-					} catch (InterruptedException e) {
-						break;
-					}
-				}
-				
-				if (display.isDisposed())
-					break;
-
-				display.syncExec(flipImage);
-				synchronized (this) {
-					try {
-						wait(FLASH_INTERVAL);
-					} catch (InterruptedException e) {
-						break;
-					}
-				}
-			}
-		}
-	};
+	
+	private UIJob flasher;
 
 	public ChatWindow(ViewPart view, String titleBarText, String initOutputText, IUser localUser, IUser remoteUser) {
 		super(null);
@@ -159,13 +115,29 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 		data.transparentPixel = 0;
 		blank = new Image(newShell.getDisplay(), data);
 
-		flash = new Flash(newShell.getDisplay());
-        flashThread = new Thread(flash);
-        flashThread.start();
+		flasher = new UIJob("Chat View Icon Flasher") {
+			
+			public IStatus runInUIThread(IProgressMonitor monitor) {
+				Shell shell = getShell();
+				if (shell.getImage() == image)
+					shell.setImage(blank);
+				else
+					shell.setImage(image);
+				
+				schedule(FLASH_INTERVAL);
+				return Status.OK_STATUS;
+			}
+			
+			public boolean shouldRun() {
+				return !getShell().isDisposed();
+			}
+		};
+		
+		flasher.setSystem(true);
 		
 		newShell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
-				flash();
+				flasher.cancel();
 				if (image != null)
 					image.dispose();
 				
@@ -181,6 +153,10 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 					chat.textinput.setFocus();
 			}
 		});
+	}
+	
+	protected Point getInitialSize() {
+		return new Point(320, 240);
 	}
 
 	/*
@@ -264,33 +240,19 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 	}
 
 	public void flash() {
-		synchronized (flash) {
-			if (!flashing) {
-				flashing = true;
-				flash.notify();
-			}
-		}
+		flasher.schedule();
 	}
 
 	private void stopFlashing() {
-		synchronized (flash) {
-			if (flashing) {
-				flashing = false;
-				if (!getShell().isDisposed() && image != null && !image.isDisposed())
-					getShell().setImage(image);
-                flash.notify();
-			}
-		}
+		flasher.cancel();
+		if (getShell().getImage() != image)
+			getShell().setImage(image);
 	}
 
     public void setDisposed(final String message) {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
                 disposed = true;
-                if (flashThread != null) {
-                    flashThread.interrupt();
-                    flashThread = null;
-                }
                 if (chat != null) {
                     chat.setDisposed();
                 }
