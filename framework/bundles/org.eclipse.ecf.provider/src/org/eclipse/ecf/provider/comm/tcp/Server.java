@@ -17,6 +17,9 @@ import java.net.Socket;
 import org.eclipse.ecf.provider.Trace;
 
 public class Server extends ServerSocket {
+	
+	public static final int DEFAULT_BACKLOG = 50;
+	
     public static Trace debug = Trace.create("connection");
     ISocketAcceptHandler acceptHandler;
     Thread listenerThread;
@@ -36,7 +39,7 @@ public class Server extends ServerSocket {
 
     public Server(ThreadGroup group, int port, ISocketAcceptHandler handler)
             throws IOException {
-        super(port);
+        super(port,DEFAULT_BACKLOG);
         if (handler == null)
             throw new InstantiationError("Listener cannot be null");
         acceptHandler = handler;
