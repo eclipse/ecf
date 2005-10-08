@@ -15,8 +15,8 @@
                type="java.lang.Integer"
                name="keepAlive"/>
          <property
-               value="ecftcp://&lt;server&gt;:&lt;port&gt;/&lt;servicename&gt;"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"/>
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"
+               value="ecftcp://&lt;server&gt;:&lt;port&gt;/&lt;groupname&gt;"/>
          <property
                value="ecftcp://localhost:3282/server"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"/>
