@@ -18,8 +18,6 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
  * text messages, subscription requests, and for getting interfaces for message sending (IMessageSender)
  * presence updates (IPresenceSender) and account management (IAccountManager)
  * 
- * @author slewis
- *
  */
 public interface IPresenceContainer {
     
