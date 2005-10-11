@@ -18,16 +18,27 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.ecf.example.collab.actions.URIClientConnectAction;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 
 public class JoinGroupWizard extends Wizard {
+	
+	private static final String DIALOG_SETTINGS = JoinGroupWizard.class.getName();
+	
     JoinGroupWizardPage mainPage;
     private IResource project;
 
     public JoinGroupWizard(IResource project, IWorkbench workbench) {
         super();
         this.project = project;
+        setWindowTitle("Join Group");
+        IDialogSettings dialogSettings = ClientPlugin.getDefault().getDialogSettings();
+        IDialogSettings wizardSettings = dialogSettings.getSection(DIALOG_SETTINGS);
+        if (wizardSettings == null)
+        	wizardSettings = dialogSettings.addNewSection(DIALOG_SETTINGS);
+        
+        setDialogSettings(wizardSettings);
     }
 
     protected ISchedulingRule getSchedulingRule() {
@@ -52,6 +63,7 @@ public class JoinGroupWizard extends Wizard {
     protected void finishPage(final IProgressMonitor monitor)
             throws InterruptedException, CoreException {
         
+    	mainPage.saveDialogSettings();
     	URIClientConnectAction client = null;
         String groupName = mainPage.getJoinGroupText();
         String nickName = mainPage.getNicknameText();

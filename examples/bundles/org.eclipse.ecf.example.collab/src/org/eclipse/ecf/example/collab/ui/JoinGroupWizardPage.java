@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.ContainerDescription;
 import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -54,6 +55,8 @@ public class JoinGroupWizardPage extends WizardPage {
     
     protected static final String DEFAULT_CLIENT = "org.eclipse.ecf.provider.generic.Client";
     
+    private static final String DIALOG_SETTINGS = CLASSNAME;
+    
     public JoinGroupWizardPage() {
         super("wizardPage");
         setTitle(PAGE_TITLE);
@@ -77,7 +80,7 @@ public class JoinGroupWizardPage extends WizardPage {
     protected Label groupIDLabel;
 	
 	protected String namespace = null;
-    
+	
     protected void modifyUI(Map props) {
         if (props != null) {
             String usePassword = (String) props.get(USEPASSWORD_PROP_NAME);
@@ -159,7 +162,7 @@ public class JoinGroupWizardPage extends WizardPage {
         container.setLayout(gridLayout);
         //
         setControl(container);
-
+        
         final Label label_4 = new Label(container, SWT.NONE);
         label_4.setText("Provider:");
         final GridData gridData_0 = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
@@ -178,7 +181,7 @@ public class JoinGroupWizardPage extends WizardPage {
         groupIDLabel.setText(JOINGROUP_FIELDNAME);
 
         joingroup_text = new Text(container, SWT.BORDER);
-        joingroup_text.setText(default_url);
+    	joingroup_text.setText(default_url);
         final GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
         gridData.widthHint = 140;
         joingroup_text.setLayoutData(gridData);
@@ -199,7 +202,7 @@ public class JoinGroupWizardPage extends WizardPage {
         nickname_text = new Text(container, SWT.BORDER);
         final GridData nickname = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
         nickname_text.setLayoutData(nickname);
-        nickname_text.setText(System.getProperty(USER_NAME_SYSTEM_PROPERTY));
+    	nickname_text.setText(System.getProperty(USER_NAME_SYSTEM_PROPERTY));
         nickname_text.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
                     nickname_text.selectAll();
@@ -224,6 +227,51 @@ public class JoinGroupWizardPage extends WizardPage {
             password_label.setVisible(false);
         }
         fillCombo();
+        restoreDialogSettings();
+    }
+    
+    private void restoreDialogSettings() {
+        IDialogSettings dialogSettings = getDialogSettings();
+        if (dialogSettings != null) {
+        	IDialogSettings pageSettings = dialogSettings.getSection(DIALOG_SETTINGS);
+        	if (pageSettings != null) {
+            	String strVal = pageSettings.get("provider");
+            	if (strVal != null) {
+            		String[] items = combo.getItems();
+            		for (int i = 0; i < items.length; ++i)
+            			if (strVal.equals(items[i])) {
+							combo.select(i);
+							ContainerDescription desc = (ContainerDescription) combo
+									.getData(String.valueOf(i));
+							modifyUI(desc.getProperties());
+							break;
+						}
+            	}
+
+            	strVal = pageSettings.get("url");
+        		if (strVal != null)
+        	    	joingroup_text.setText(strVal);
+
+        		strVal = pageSettings.get("nickname");
+        		if (strVal != null)
+        			nickname_text.setText(strVal);
+        	}
+        }
+    }
+    
+    public void saveDialogSettings() {
+        IDialogSettings dialogSettings = getDialogSettings();
+        if (dialogSettings != null) {
+        	IDialogSettings pageSettings = dialogSettings.getSection(DIALOG_SETTINGS);
+        	if (pageSettings == null)
+        		pageSettings = dialogSettings.addNewSection(DIALOG_SETTINGS);
+        	
+        	pageSettings.put("url", joingroup_text.getText());
+        	pageSettings.put("nickname", nickname_text.getText());
+        	int i = combo.getSelectionIndex();
+        	if (i >= 0)
+        		pageSettings.put("provider", combo.getItem(i));
+        }
     }
     
     public String getJoinGroupText() {
