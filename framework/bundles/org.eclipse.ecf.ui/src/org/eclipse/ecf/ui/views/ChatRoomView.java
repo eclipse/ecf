@@ -47,8 +47,8 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class ChatRoomView extends ViewPart implements IMessageListener, IParticipantListener, IInvitationListener {
-    private static final int RATIO_WRITE_PANE = 12;
-	private static final int RATIO_READ_PANE = 88;
+    private static final int RATIO_WRITE_PANE = 2;
+	private static final int RATIO_READ_PANE = 7;
 	private static final int RATIO_READ_WRITE_PANE = 85;
 	private static final int RATIO_PRESENCE_PANE = 15;
 	protected static final String DEFAULT_ME_COLOR = "0,255,0";
@@ -137,7 +137,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		
 		Composite writeComp = new Composite(rightSash, SWT.NONE);
 		writeComp.setLayout(new FillLayout());
-		writeText = new Text(writeComp, SWT.BORDER | SWT.SINGLE);
+		writeText = new Text(writeComp, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		writeText.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent evt) {
 				handleKeyPressed(evt);
@@ -184,6 +184,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	protected void handleKeyPressed(KeyEvent evt) {
 		if (evt.character == SWT.CR) {
 			handleEnter();
+			evt.doit = false;
 		}
 	}
 
