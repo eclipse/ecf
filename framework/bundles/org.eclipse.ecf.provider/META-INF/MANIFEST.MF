@@ -3,7 +3,7 @@ Bundle-SymbolicName: org.eclipse.ecf.provider;singleton=true
 Bundle-Version: 0.4.0
 Bundle-Name: ECF Provider API
 Bundle-Vendor: Eclipse.org
-Bundle-Classpath: provider.jar
+Bundle-ClassPath: provider.jar
 Bundle-Activator: org.eclipse.ecf.provider.ProviderPlugin
 Bundle-Localization: plugin
 Eclipse-AutoStart: true
