@@ -290,9 +290,14 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		return buf.toString();
 	}
 	protected void addParticipant(IUser p) {
-		ChatLine cl = new ChatLine("("+getDateTime()+") "+p.getID().getName()+ " entered the room.",null);
-		appendText(cl);
-		memberViewer.add(p);
+		if (p != null) {
+			ID id = p.getID();
+			if (id != null) {
+				ChatLine cl = new ChatLine("("+getDateTime()+") "+id.getName()+ " entered the room.",null);
+				appendText(cl);
+				memberViewer.add(p);
+			}
+		}
 	}
 	protected void removeParticipant(IUser p) {
 		if (p != null) {
