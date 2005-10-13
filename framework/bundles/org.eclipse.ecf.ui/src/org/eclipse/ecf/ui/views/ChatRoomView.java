@@ -115,7 +115,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		
 		Composite memberComp = new Composite(form,SWT.NONE);
 		memberComp.setLayout(new FillLayout());
-		memberViewer = new ListViewer(memberComp, SWT.BORDER);
+		memberViewer = new ListViewer(memberComp, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		
 		Composite rightComp = new Composite(form, SWT.NONE);
 		rightComp.setLayout(new FillLayout());
@@ -295,9 +295,14 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		memberViewer.add(p);
 	}
 	protected void removeParticipant(IUser p) {
-		ChatLine cl = new ChatLine("("+getDateTime()+") "+p.getID().getName()+ " left the room.",null);
-		appendText(cl);
-		memberViewer.remove(p);
+		if (p != null) {
+			ID id = p.getID();
+			if (id != null) {
+				ChatLine cl = new ChatLine("("+getDateTime()+") "+id.getName()+ " left the room.",null);
+				appendText(cl);
+				memberViewer.remove(p);
+			}
+		}
 	}
 	protected void removeAllParticipants() {
 		org.eclipse.swt.widgets.List l = memberViewer.getList();

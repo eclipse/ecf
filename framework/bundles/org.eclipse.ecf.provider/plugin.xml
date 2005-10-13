@@ -5,7 +5,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.generic.ContainerInstantiator:foo:bar"
-            description="ECF Generic Client"
+            description="ECF Generic"
             name="org.eclipse.ecf.provider.generic.Client">
          <defaultargument
                type="org.eclipse.ecf.core.identity.ID"

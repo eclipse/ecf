@@ -5,7 +5,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.xmpp.container.ContainerInstantiator"
-            description="Jabber/XMPP Client"
+            description="Jabber/XMPP"
             name="xmpp.jive">
          <property
                value="true"
