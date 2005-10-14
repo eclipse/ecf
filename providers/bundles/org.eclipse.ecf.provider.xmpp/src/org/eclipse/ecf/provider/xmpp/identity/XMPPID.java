@@ -12,29 +12,22 @@ public class XMPPID extends BaseID {
 	public static final char USER_HOST_DELIMITER = '@';
 	
 	URI uri;
+	String username;
+	String hostname;
 	
 	protected static String fixEscape(String src) {
 		if (src == null) return null;
 		return src.replaceAll("%","%25");
 	}
-	
-	protected XMPPID(Namespace namespace, String username, String host, String query) throws URISyntaxException {
-		super(namespace);
-		username = fixEscape(username);
-		uri = new URI(namespace.getScheme(),username,host,-1,"",query,null);
-	}
-	protected XMPPID(Namespace namespace, String username, String host) throws URISyntaxException {
-		this(namespace,username,host,null);
-	}
-	protected XMPPID(Namespace namespace, String unamehost) throws URISyntaxException {
+	public XMPPID(Namespace namespace, String unamehost) throws URISyntaxException {
 		super(namespace);
 		unamehost = fixEscape(unamehost);
 		if (unamehost == null) throw new URISyntaxException(unamehost,"username/host string cannot be null");
-		int atIndex = unamehost.indexOf(USER_HOST_DELIMITER);
+		int atIndex = unamehost.lastIndexOf(USER_HOST_DELIMITER);
 		if (atIndex == -1) throw new URISyntaxException(unamehost,"username/host string not valid.  Must be of form <username>@<hostname>");
-		String username = unamehost.substring(0,atIndex);
-		String host = unamehost.substring(atIndex+1);
-		uri = new URI(namespace.getScheme(),username,host,-1,null,null,null);
+		username = unamehost.substring(0,atIndex);
+		hostname = unamehost.substring(atIndex+1);
+		uri = new URI(namespace.getScheme(),username,hostname,-1,null,null,null);
 	}
 	
 	protected int namespaceCompareTo(BaseID o) {
@@ -62,11 +55,11 @@ public class XMPPID extends BaseID {
 	}
 	
 	public String getUsername() {
-		return uri.getUserInfo();
+		return username;
 	}
 	
 	public String getHostname() {
-		return uri.getHost();
+		return hostname;
 	}
 	public String getUsernameAtHost() {
 		return getUsername()+"@"+getHostname();

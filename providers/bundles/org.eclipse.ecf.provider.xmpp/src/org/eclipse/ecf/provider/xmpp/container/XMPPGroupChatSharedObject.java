@@ -12,7 +12,6 @@ import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.presence.IInvitationListener;
@@ -24,6 +23,7 @@ import org.eclipse.ecf.provider.xmpp.events.ChatMembershipEvent;
 import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
+import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Message;
@@ -94,7 +94,7 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
     protected ID makeUserIDFromName(String name) {
         ID result = null;
         try {
-            result = IDFactory.getDefault().makeID(usernamespace, new Object[] { name });
+            result = new XMPPID(usernamespace,name);
             return result;
         } catch (Exception e) {
             dumpStack("Exception in makeIDFromName", e);
@@ -120,10 +120,6 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         int index = from.indexOf("/");
         if (atIndex > 0 && index > 0) {
         	hostname = from.substring(atIndex+1,index);
-        	int dotIndex = hostname.lastIndexOf('.');
-        	if (dotIndex > 0) {
-        		hostname = hostname.substring(dotIndex+1);
-        	}
             username = from.substring(index+1);
             return username+"@"+hostname;
         }

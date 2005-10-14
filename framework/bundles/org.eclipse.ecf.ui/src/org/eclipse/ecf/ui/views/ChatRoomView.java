@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IInvitationListener;
@@ -47,6 +46,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class ChatRoomView extends ViewPart implements IMessageListener, IParticipantListener, IInvitationListener {
+	private static final String USERNAME_HOST_DELIMETER = "@";
     private static final int RATIO_WRITE_PANE = 2;
 	private static final int RATIO_READ_PANE = 7;
 	private static final int RATIO_READ_WRITE_PANE = 85;
@@ -237,7 +237,14 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
             }
         });
 	}
-
+	private String trimUserID(ID userID) {
+		String userathost = userID.getName();
+		int atIndex = userathost.lastIndexOf(USERNAME_HOST_DELIMETER);
+		if (atIndex != -1) {
+			userathost = userathost.substring(0,atIndex);
+		}
+		return userathost;
+	}
 	class Participant implements IUser {
 		private static final long serialVersionUID = 2008114088656711572L;
 		String name;
@@ -246,7 +253,6 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		public Participant(ID id) {
 			this.id = id;
 		}
-		
 		public ID getID() {
 			return id;
 		}
@@ -263,18 +269,11 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 			return id.hashCode();
 		}
 		public String toString() {
-			String fullName = id.getName();
-			int atIndex = fullName.indexOf('@');
-			if (atIndex != -1) {
-				fullName = fullName.substring(0,atIndex);
-			}
-			return fullName;
+			return trimUserID(id);
 		}
-
 		public Map getProperties() {
 			return null;
 		}
-
 		public Object getAdapter(Class adapter) {
 			return null;
 		}
@@ -293,19 +292,32 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		if (p != null) {
 			ID id = p.getID();
 			if (id != null) {
-				ChatLine cl = new ChatLine("("+getDateTime()+") "+id.getName()+ " entered the room.",null);
-				appendText(cl);
+				appendText(new ChatLine("("+getDateTime()+") "+trimUserID(id)+ " entered",null));
 				memberViewer.add(p);
 			}
 		}
+	}
+	protected boolean isLocalUser(ID id) {
+		if (localUser == null) return false;
+		else if (localUser.getID().equals(id)) {
+			return true;
+		} else return false;
+	}
+	protected void removeLocalUser() {
+		// It's us that's gone away... so we're outta here
+		setEnabled(false);
+		String title = getPartName();
+		setPartName("("+title+")");
+		removeAllParticipants();
+		dispose();
 	}
 	protected void removeParticipant(IUser p) {
 		if (p != null) {
 			ID id = p.getID();
 			if (id != null) {
-				ChatLine cl = new ChatLine("("+getDateTime()+") "+id.getName()+ " left the room.",null);
-				appendText(cl);
+				appendText(new ChatLine("("+getDateTime()+") "+trimUserID(id)+ " left",null));
 				memberViewer.remove(p);
+				if (isLocalUser(id)) removeLocalUser();
 			}
 		}
 	}
@@ -329,14 +341,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
             		addParticipant(p);
             	} else {
             		removeParticipant(p);
-        			if (localUser != null && localUser.getID().equals(fromID)) {
-        				// It's us that's gone away... so we're outta here
-        				setEnabled(false);
-        				String title = getPartName();
-        				setPartName("("+title+")");
-        				removeAllParticipants();
-        				dispose();
-        			}
+            		if (isLocalUser(fromID)) removeLocalUser();
             	}
             }
         });

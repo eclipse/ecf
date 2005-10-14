@@ -10,6 +10,9 @@ package org.eclipse.ecf.provider.xmpp.container;
 
 import java.io.IOException;
 import java.util.HashMap;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.SharedObjectAddException;
@@ -180,14 +183,14 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
     public Namespace getConnectNamespace() {
     	return IDFactory.getDefault().getNamespaceByName(XmppPlugin.getDefault().getRoomNamespaceIdentifier());
     }
-	public void connect(ID remote, IConnectContext joinContext)
+	public void connect(ID remote, IConnectContext connectContext)
 	throws ContainerConnectException {
     	if (!(remote instanceof XMPPRoomID)) {
     		throw new ContainerConnectException("remote "+remote+" is not of room id type");
     	}
     	XMPPRoomID roomID = (XMPPRoomID) remote;
 		fireContainerEvent(new SharedObjectContainerConnectingEvent(
-				this.getID(), remote, joinContext));
+				this.getID(), remote, connectContext));
 		synchronized (getConnectLock()) {
 	        try {
 	    		connectionState = CONNECTING;
@@ -195,7 +198,29 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 	    		
 	            addSharedObjectToContainer(remote);
 	            multiuserchat = new MultiUserChat(connection,roomID.getMucString());
-	            String nickname = roomID.getNickname();
+	            
+	            // Get nickname from join context
+	    		String nick = null;
+	    		try {
+	    			Callback[] callbacks = new Callback[1];
+	    			callbacks[0] = new NameCallback("Nickname",roomID.getNickname());
+	    			if (connectContext != null) {
+	    				CallbackHandler handler = connectContext.getCallbackHandler();
+	    				if (handler != null) {
+	    					handler.handle(callbacks);
+	    				}
+	    			}
+	    			if (callbacks[0] instanceof NameCallback) {
+	    				NameCallback cb = (NameCallback) callbacks[0];
+	    				nick = cb.getName();
+	    			}
+	    		} catch (Exception e) {
+	    			throw new ContainerConnectException("Exception in CallbackHandler.handle(<callbacks>)",e);
+	    		}
+	    		String nickname = null;
+	    		if (nick == null || nick.equals("")) nickname = roomID.getNickname();
+	    		else nickname = nick;
+	    		
 	            //multiuserchat.create(nickname);
 	            //multiuserchat.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
 	            multiuserchat.addMessageListener(new PacketListener() {
@@ -396,9 +421,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 		try {
 			targetID = makeChatRoomID(groupName);
 		} catch (IDInstantiationException e) {
-			ContainerConnectException newExcept = new ContainerConnectException("Exception creating chat room id",e);
-			newExcept.setStackTrace(e.getStackTrace());
-			throw newExcept;
+			throw new ContainerConnectException("Exception creating chat room id",e);
 		}
 		this.connect(targetID,null);
 	}

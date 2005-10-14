@@ -203,7 +203,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			return null;
 	}
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName("xmpp.jive");
+		return IDFactory.getDefault().getNamespaceByName(XmppPlugin.NAMESPACE_IDENTIFIER);
 	}
 	protected void handleChatMessageWithExtension(Message mess) throws IOException {
 		// XXX Log this properly or handle with new semantics for handling extensions

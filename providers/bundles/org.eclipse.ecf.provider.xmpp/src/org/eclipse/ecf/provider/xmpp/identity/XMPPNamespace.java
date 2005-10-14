@@ -13,16 +13,7 @@ public class XMPPNamespace extends Namespace {
 	public ID makeInstance(Class[] argTypes, Object[] args)
 			throws IDInstantiationException {
 		try {
-			if (args.length == 3) {
-				return new XMPPID(this, (String) args[0], (String) args[1],
-						(String) args[2]);
-			} else if (args.length == 2) {
-				return new XMPPID(this, (String) args[0], (String) args[1]);
-			} else if (args.length == 1) {
-				return new XMPPID(this, (String) args[0]);
-			}
-			throw new IllegalArgumentException(
-					"XMPP ID constructor arguments invalid");
+			return new XMPPID(this, (String) args[0]);
 		} catch (Exception e) {
 			throw new IDInstantiationException("XMPP ID creation exception", e);
 		}

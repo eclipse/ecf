@@ -10,6 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.ui.views;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -20,12 +21,17 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.presence.IInvitationListener;
@@ -831,6 +837,33 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			return null;
 		}
 	}
+	protected IConnectContext getChatJoinContext(final String windowText) {
+		return new IConnectContext() {
+			public CallbackHandler getCallbackHandler() {
+				return new CallbackHandler() {
+					public void handle(Callback[] callbacks)
+							throws IOException, UnsupportedCallbackException {
+						if (callbacks == null)
+							return;
+						for (int i = 0; i < callbacks.length; i++) {
+							if (callbacks[i] instanceof NameCallback) {
+								NameCallback ncb = (NameCallback) callbacks[i];
+								InputDialog id = new InputDialog(RosterView.this.getViewSite().getShell(),windowText,ncb.getPrompt(),ncb.getDefaultName(),null);
+								id.setBlockOnOpen(true);
+								id.open();
+								if (id.getReturnCode() != Window.OK) {
+									// If user cancels, stop here
+									throw new IOException("User cancelled");
+								}
+								ncb.setName(id.getValue());
+							}
+						}
+					}
+				};
+			}
+		};
+	}
+
 	private void makeActions() {
 		selectedDoubleClickAction = new Action() {
 			public void run() {
@@ -892,6 +925,8 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 							"Cannot connect to null room");
 					return;
 				}
+				// ask about nickname right here
+
 				// Now get the secondary ID from the selected room id
 				String secondaryID = getChatRoomSecondaryID(selectedInfo
 						.getRoomID());
@@ -987,8 +1022,9 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 					return;
 				}
 				// Now actually connect to chatroom
+				
 				try {
-					chatRoom.connect(selectedInfo.getRoomID(), null);
+					chatRoom.connect(selectedInfo.getRoomID(), getChatJoinContext("Nickname for "+selectedInfo.getName()));
 				} catch (ContainerConnectException e1) {
 					UiPlugin.log("Exception connecting to chat room "
 							+ selectedInfo.getRoomID(), e1);
