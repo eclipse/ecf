@@ -16,7 +16,6 @@ import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
-import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -155,7 +154,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		hookContextMenu();
 	}
 	protected void setEnabled(boolean enabled) {
-		writeText.setEnabled(enabled);
+		if (!writeText.isDisposed()) writeText.setEnabled(enabled);
 	}
 	protected void clearInput() {
 		writeText.setText("");
@@ -168,7 +167,8 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 			try {
 				messageSender.sendMessage(text);
 			} catch (IOException e) {
-				UiPlugin.log("Error sending message",e);
+				// And cut ourselves off
+				removeLocalUser();
 			}
 		}
 	}
@@ -203,6 +203,9 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	public void initialize(final IChatRoomViewCloseListener parent, final String secondaryID, final IChatRoomContainer container, final IRoomInfo info, final IChatMessageSender sender) {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
+            	removeAllParticipants();
+            	otherUsers.clear();
+            	localUser = null;
             	ChatRoomView.this.viewID = secondaryID;
             	ChatRoomView.this.closeListener = parent;
             	ChatRoomView.this.chatRoomContainer = container;
@@ -216,14 +219,8 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
         });
 	}
 	public void dispose() {
-		if (closeListener != null) {
-			closeListener.chatRoomViewClosing(viewID);
-			closeListener = null;
-			viewID = null;
-		}
-		otherUsers.clear();
-		localUser = null;
 		disposed = true;
+		cleanUp();
 		super.dispose();
 	}
 	protected String getMessageString(ID fromID, String text) {
@@ -303,13 +300,25 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 			return true;
 		} else return false;
 	}
+	protected void cleanUp() {
+		if (closeListener != null) {
+			closeListener.chatRoomViewClosing(viewID);
+			closeListener = null;
+			viewID = null;
+			chatRoomContainer = null;
+			messageSender = null;
+			roomInfo = null;
+		}
+		otherUsers.clear();
+		localUser = null;
+	}
 	protected void removeLocalUser() {
 		// It's us that's gone away... so we're outta here
-		setEnabled(false);
 		String title = getPartName();
 		setPartName("("+title+")");
 		removeAllParticipants();
-		dispose();
+		cleanUp();
+		setEnabled(false);
 	}
 	protected void removeParticipant(IUser p) {
 		if (p != null) {

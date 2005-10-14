@@ -311,7 +311,11 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
      */
     public void dispose(ID containerID) {
         messageListeners.clear();
+        participantListeners.clear();
+        invitationListeners.clear();
         this.config = null;
+        this.connection = null;
+        this.usernamespace = null;
     }
 
     /* (non-Javadoc)

@@ -117,7 +117,13 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		keepAlive = ka;
 		initializeSharedObject();
 	}
-
+	protected void disposeChats() {
+		for(Iterator i=chats.iterator(); i.hasNext(); ) {
+			IChatRoomContainer cc = (IChatRoomContainer) i.next();
+			cc.dispose();
+		}
+		chats.clear();
+	}
 	protected ID handleConnectResponse(ID originalTarget, Object serverData)
 			throws Exception {
 		if (originalTarget != null && !originalTarget.equals(getID())) {
@@ -151,6 +157,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		sharedObjectID = null;
 		sharedObject = null;
 		messageSender = null;
+		disposeChats();
 		super.dispose();
 	}
 
@@ -354,6 +361,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		// notify listeners
 		fireContainerEvent(new SharedObjectContainerDisconnectedEvent(this.getID(),
 				groupID));
+		dispose();
 	}
 
 	protected SOContext makeSharedObjectContext(SOConfig soconfig,
@@ -513,6 +521,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 								newExcept.setStackTrace(e.getStackTrace());
 								throw newExcept;
 							}
+							chats.add(chatContainer);
 							return chatContainer;
 						}
 						public IRoomInfo[] getChatRoomsInfo() {

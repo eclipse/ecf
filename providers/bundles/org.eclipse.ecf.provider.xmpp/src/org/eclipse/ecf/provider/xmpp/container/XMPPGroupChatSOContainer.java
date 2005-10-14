@@ -49,6 +49,7 @@ import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionPacketEvent;
+import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.IQ;
@@ -84,9 +85,13 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
     }
     public void dispose() {
         disconnect();
-        getSharedObjectManager().removeSharedObject(sharedObjectID);
+        if (sharedObjectID != null) {
+        	getSharedObjectManager().removeSharedObject(sharedObjectID);
+        	sharedObjectID = null;
+        }
         if (sharedObject != null) {
         	sharedObject.dispose(getID());
+        	sharedObject = null;
         }
         super.dispose();
     }
@@ -183,149 +188,179 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
     public Namespace getConnectNamespace() {
     	return IDFactory.getDefault().getNamespaceByName(XmppPlugin.getDefault().getRoomNamespaceIdentifier());
     }
+    
+    protected void handleConnectionClosed(Exception e) {
+    	
+    }
+    
 	public void connect(ID remote, IConnectContext connectContext)
-	throws ContainerConnectException {
-    	if (!(remote instanceof XMPPRoomID)) {
-    		throw new ContainerConnectException("remote "+remote+" is not of room id type");
-    	}
-    	XMPPRoomID roomID = (XMPPRoomID) remote;
-		fireContainerEvent(new SharedObjectContainerConnectingEvent(
-				this.getID(), remote, connectContext));
+			throws ContainerConnectException {
+		if (!(remote instanceof XMPPRoomID)) {
+			throw new ContainerConnectException("remote " + remote
+					+ " is not of room id type");
+		}
+		XMPPRoomID roomID = (XMPPRoomID) remote;
+		fireContainerEvent(new SharedObjectContainerConnectingEvent(this
+				.getID(), remote, connectContext));
 		synchronized (getConnectLock()) {
-	        try {
-	    		connectionState = CONNECTING;
-	    		remoteServerID = null;
-	    		
-	            addSharedObjectToContainer(remote);
-	            multiuserchat = new MultiUserChat(connection,roomID.getMucString());
-	            
-	            // Get nickname from join context
-	    		String nick = null;
-	    		try {
-	    			Callback[] callbacks = new Callback[1];
-	    			callbacks[0] = new NameCallback("Nickname",roomID.getNickname());
-	    			if (connectContext != null) {
-	    				CallbackHandler handler = connectContext.getCallbackHandler();
-	    				if (handler != null) {
-	    					handler.handle(callbacks);
-	    				}
-	    			}
-	    			if (callbacks[0] instanceof NameCallback) {
-	    				NameCallback cb = (NameCallback) callbacks[0];
-	    				nick = cb.getName();
-	    			}
-	    		} catch (Exception e) {
-	    			throw new ContainerConnectException("Exception in CallbackHandler.handle(<callbacks>)",e);
-	    		}
-	    		String nickname = null;
-	    		if (nick == null || nick.equals("")) nickname = roomID.getNickname();
-	    		else nickname = nick;
-	    		
-	            //multiuserchat.create(nickname);
-	            //multiuserchat.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
-	            multiuserchat.addMessageListener(new PacketListener() {
-	    			public void processPacket(Packet arg0) {
-    					handleXMPPMessage(arg0);
-	    			}
-	            	
-	            });
-	            multiuserchat.addParticipantListener(new PacketListener() {
-
+			try {
+				connectionState = CONNECTING;
+				remoteServerID = null;
+				addSharedObjectToContainer(remote);
+				connection.addConnectionListener(new ConnectionListener() {
+					public void connectionClosed() {
+						handleConnectionClosed(null);
+					}
+					public void connectionClosedOnError(Exception arg0) {
+						handleConnectionClosed(arg0);
+					}
+				});
+				multiuserchat = new MultiUserChat(connection, roomID
+						.getMucString());
+				// Get nickname from join context
+				String nick = null;
+				try {
+					Callback[] callbacks = new Callback[1];
+					callbacks[0] = new NameCallback("Nickname", roomID
+							.getNickname());
+					if (connectContext != null) {
+						CallbackHandler handler = connectContext
+								.getCallbackHandler();
+						if (handler != null) {
+							handler.handle(callbacks);
+						}
+					}
+					if (callbacks[0] instanceof NameCallback) {
+						NameCallback cb = (NameCallback) callbacks[0];
+						nick = cb.getName();
+					}
+				} catch (Exception e) {
+					throw new ContainerConnectException(
+							"Exception in CallbackHandler.handle(<callbacks>)",
+							e);
+				}
+				String nickname = null;
+				if (nick == null || nick.equals(""))
+					nickname = roomID.getNickname();
+				else
+					nickname = nick;
+				// multiuserchat.create(nickname);
+				// multiuserchat.sendConfigurationForm(new
+				// Form(Form.TYPE_SUBMIT));
+				multiuserchat.addMessageListener(new PacketListener() {
 					public void processPacket(Packet arg0) {
-    					handleXMPPMessage(arg0);
-					}});
-	            multiuserchat.addParticipantStatusListener(new ParticipantStatusListener() {
-
-					public void joined(String arg0) {
-						handleChatMembershipEvent(arg0,true);
+						handleXMPPMessage(arg0);
 					}
-					public void left(String arg0) {
-						handleChatMembershipEvent(arg0,false);						
+				});
+				multiuserchat.addParticipantListener(new PacketListener() {
+					public void processPacket(Packet arg0) {
+						handleXMPPMessage(arg0);
 					}
-					public void kicked(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("kicked("+arg0+")");
-					}
-					public void voiceGranted(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("voiceGranted("+arg0+")");
-						
-					}
-					public void voiceRevoked(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("voiceRevoked("+arg0+")");
-						
-					}
-					public void banned(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("banned("+arg0+")");
-						
-					}
-					public void membershipGranted(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("membershipGranted("+arg0+")");
-						
-					}
-					public void membershipRevoked(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("membershipRevoked("+arg0+")");
-					}
-					public void moderatorGranted(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("moderatorGranted("+arg0+")");
-					}
-					public void moderatorRevoked(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("moderatorRevoked("+arg0+")");
-					}
-					public void ownershipGranted(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("ownershipGranted("+arg0+")");
-					}
-					public void ownershipRevoked(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("ownershipRevoked("+arg0+")");
-					}
-					public void adminGranted(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("adminGranted("+arg0+")");
-						
-					}
-					public void adminRevoked(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("adminRevoked("+arg0+")");
-						
-					}
-					public void nicknameChanged(String arg0) {
-						// TODO Auto-generated method stub
-						System.out.println("nicknameChanged("+arg0+")");
-						
-					}});
-	            multiuserchat.addInvitationRejectionListener(new InvitationRejectionListener() {
-
-					public void invitationDeclined(String arg0, String arg1) {
-						// TODO Auto-generated method stub
-						System.out.println("invitationDeclined("+arg0+","+arg1+")");
-					}});
-	            MultiUserChat.addInvitationListener(connection,new InvitationListener() {
-
-					public void invitationReceived(XMPPConnection arg0, String arg1, String arg2, String arg3, String arg4, Message arg5) {
-						handleInvitationMessage(arg0,arg1,arg2,arg3,arg4,arg5);
-					}});
-	            
-	            multiuserchat.join(nickname);
-	    		connectionState = CONNECTED;
-	    		remoteServerID = roomID;
+				});
+				multiuserchat
+						.addParticipantStatusListener(new ParticipantStatusListener() {
+							public void joined(String arg0) {
+								handleChatMembershipEvent(arg0, true);
+							}
+							public void left(String arg0) {
+								handleChatMembershipEvent(arg0, false);
+							}
+							public void kicked(String arg0) {
+								// TODO Auto-generated method stub
+								System.out.println("kicked(" + arg0 + ")");
+							}
+							public void voiceGranted(String arg0) {
+								// TODO Auto-generated method stub
+								System.out
+										.println("voiceGranted(" + arg0 + ")");
+							}
+							public void voiceRevoked(String arg0) {
+								// TODO Auto-generated method stub
+								System.out
+										.println("voiceRevoked(" + arg0 + ")");
+							}
+							public void banned(String arg0) {
+								// TODO Auto-generated method stub
+								System.out.println("banned(" + arg0 + ")");
+							}
+							public void membershipGranted(String arg0) {
+								// TODO Auto-generated method stub
+								System.out.println("membershipGranted(" + arg0
+										+ ")");
+							}
+							public void membershipRevoked(String arg0) {
+								// TODO Auto-generated method stub
+								System.out.println("membershipRevoked(" + arg0
+										+ ")");
+							}
+							public void moderatorGranted(String arg0) {
+								// TODO Auto-generated method stub
+								System.out.println("moderatorGranted(" + arg0
+										+ ")");
+							}
+							public void moderatorRevoked(String arg0) {
+								// TODO Auto-generated method stub
+								System.out.println("moderatorRevoked(" + arg0
+										+ ")");
+							}
+							public void ownershipGranted(String arg0) {
+								// TODO Auto-generated method stub
+								System.out.println("ownershipGranted(" + arg0
+										+ ")");
+							}
+							public void ownershipRevoked(String arg0) {
+								// TODO Auto-generated method stub
+								System.out.println("ownershipRevoked(" + arg0
+										+ ")");
+							}
+							public void adminGranted(String arg0) {
+								// TODO Auto-generated method stub
+								System.out
+										.println("adminGranted(" + arg0 + ")");
+							}
+							public void adminRevoked(String arg0) {
+								// TODO Auto-generated method stub
+								System.out
+										.println("adminRevoked(" + arg0 + ")");
+							}
+							public void nicknameChanged(String arg0) {
+								// TODO Auto-generated method stub
+								System.out.println("nicknameChanged(" + arg0
+										+ ")");
+							}
+						});
+				multiuserchat
+						.addInvitationRejectionListener(new InvitationRejectionListener() {
+							public void invitationDeclined(String arg0,
+									String arg1) {
+								// TODO Auto-generated method stub
+								System.out.println("invitationDeclined(" + arg0
+										+ "," + arg1 + ")");
+							}
+						});
+				MultiUserChat.addInvitationListener(connection,
+						new InvitationListener() {
+							public void invitationReceived(XMPPConnection arg0,
+									String arg1, String arg2, String arg3,
+									String arg4, Message arg5) {
+								handleInvitationMessage(arg0, arg1, arg2, arg3,
+										arg4, arg5);
+							}
+						});
+				multiuserchat.join(nickname);
+				connectionState = CONNECTED;
+				remoteServerID = roomID;
 				fireContainerEvent(new SharedObjectContainerConnectedEvent(this
 						.getID(), roomID));
-	        } catch (Exception e) {
-	            cleanUpConnectFail();
-	            ContainerConnectException ce = new ContainerConnectException("Exception joining "+roomID);
-	            ce.setStackTrace(e.getStackTrace());
-	            throw ce;
-	        } 
-	    }
-    }
+			} catch (Exception e) {
+				cleanUpConnectFail();
+				ContainerConnectException ce = new ContainerConnectException(
+						"Exception joining " + roomID);
+				ce.setStackTrace(e.getStackTrace());
+				throw ce;
+			}
+		}
+	}
 
     public void disconnect() {
         ID groupID = getConnectedID();
@@ -407,7 +442,6 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 					try {
 						multiuserchat.sendMessage(messageBody);
 					} catch (Exception e) {
-						XmppPlugin.log("Exception in multiuserchat.sendMessage",e);
 						IOException except = new IOException("Send message exception");
 					    except.setStackTrace(e.getStackTrace());
 					    throw except;

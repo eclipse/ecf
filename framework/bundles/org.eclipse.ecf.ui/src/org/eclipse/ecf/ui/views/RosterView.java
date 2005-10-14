@@ -925,8 +925,6 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 							"Cannot connect to null room");
 					return;
 				}
-				// ask about nickname right here
-
 				// Now get the secondary ID from the selected room id
 				String secondaryID = getChatRoomSecondaryID(selectedInfo
 						.getRoomID());
