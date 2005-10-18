@@ -118,7 +118,7 @@ public class CollabClient {
 					return null;
 				}
 			};
-			ISharedFile sf = fsc.storeSharedFile(sfs);
+			ISharedFile sf = fsc.store(sfs);
 			try {
 				sf.start();
 			} catch (SharedFileStartException e) {
