@@ -113,7 +113,9 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 			IRoomInfo [] infos = managers[i].getChatRoomsInfo();
 			if (infos != null) {
 				for(int j=0; j < infos.length; j++) {
-					all.add(new Room(infos[j],managers[i]));
+					if (infos[j] != null && managers[i] != null) {
+						all.add(new Room(infos[j],managers[i]));
+					}
 				}
 			}
 		}
