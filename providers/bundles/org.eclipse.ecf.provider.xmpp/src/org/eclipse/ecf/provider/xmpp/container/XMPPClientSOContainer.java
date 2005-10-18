@@ -84,7 +84,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			.getName()
 			+ ".xmpphandler";
 	
-	private static final String GOOGLE_SERVICENAME = "gmail.com";
+	protected static final String GOOGLE_SERVICENAME = "gmail.com";
 	
 	int keepAlive = 0;
 	protected IIMMessageSender messageSender = null;
@@ -210,7 +210,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			return null;
 	}
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(XmppPlugin.NAMESPACE_IDENTIFIER);
+		return IDFactory.getDefault().getNamespaceByName(XmppPlugin.getDefault().getNamespaceIdentifier());
 	}
 	protected void handleChatMessageWithExtension(Message mess) throws IOException {
 		// XXX Log this properly or handle with new semantics for handling extensions

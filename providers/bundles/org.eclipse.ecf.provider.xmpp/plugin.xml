@@ -5,7 +5,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.xmpp.container.ContainerInstantiator"
-            description="Jabber/XMPP"
+            description="XMPP (Jabber)"
             name="xmpp.jive">
          <property
                value="true"
@@ -28,11 +28,44 @@
       </containerFactory>
    </extension>
    <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.xmpp.container.SecureContainerInstantiator"
+            description="XMPP SSL (Jabber)"
+            name="xmpps.jive">
+         <property
+               value="true"
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>
+         <property
+               value="&lt;user&gt;@&lt;jabberserver&gt;"
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"/>
+         <property
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"
+               value=""/>
+         <property
+               value="xmpp:"
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.urlprefix"/>
+         <property
+               value="Account:"
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.groupIDLabel"/>
+         <property
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.namespace"
+               value="xmpps.jive"/>
+      </containerFactory>
+   </extension>
+   <extension
          point="org.eclipse.ecf.namespace">
       <namespace
             class="org.eclipse.ecf.provider.xmpp.identity.XMPPNamespace"
             description="XMPP Namespace"
             name="xmpp.jive"/>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.namespace">
+      <namespace
+            class="org.eclipse.ecf.provider.xmpp.identity.XMPPSNamespace"
+            description="XMPP SSL Namespace"
+            name="xmpps.jive"/>
    </extension>
    <extension
          point="org.eclipse.ecf.namespace">

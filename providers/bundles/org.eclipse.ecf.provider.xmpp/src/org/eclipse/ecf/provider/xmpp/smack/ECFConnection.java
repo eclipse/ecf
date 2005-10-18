@@ -27,6 +27,7 @@ import org.jivesoftware.smack.GoogleTalkConnection;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.SSLXMPPConnection;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -55,6 +56,8 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 	protected Namespace namespace = null;
 	
 	protected boolean google = false;
+	
+	protected boolean secure = false;
 	
 	protected void debug(String msg) {
 		if (Trace.ON && trace != null) {
@@ -86,13 +89,17 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 	public XMPPConnection getXMPPConnection() {
 		return connection;
 	}
-	public ECFConnection(boolean google, Namespace ns, IAsynchConnectionEventHandler h) {
+	public ECFConnection(boolean google, Namespace ns, IAsynchConnectionEventHandler h, boolean secure) {
 		this.handler = h;
 		this.namespace = ns;
 		this.google = google;
+		this.secure = secure;
 		if (smack != null) {
 			XMPPConnection.DEBUG_ENABLED = true;
 		}
+	}
+	public ECFConnection(boolean google, Namespace ns, IAsynchConnectionEventHandler h) {
+		this(google,ns,h,false);
 	}
 	protected String getPasswordForObject(Object data) {
 		String password = null;
@@ -130,9 +137,17 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 			if (google) {
 				connection = new GoogleTalkConnection();
 			} else if (serverPort == -1) {
-				connection = new XMPPConnection(serverName);
+				if (secure) {
+					connection = new SSLXMPPConnection(serverName);
+				} else {
+					connection = new XMPPConnection(serverName);
+				}
 			} else {
-				connection = new XMPPConnection(serverName, serverPort);
+				if (secure) {
+					connection = new SSLXMPPConnection(serverName, serverPort);
+				} else {
+					connection = new XMPPConnection(serverName, serverPort);
+				}
 			}
 			connection.addPacketListener(new PacketListener() {
 				public void processPacket(Packet arg0) {
