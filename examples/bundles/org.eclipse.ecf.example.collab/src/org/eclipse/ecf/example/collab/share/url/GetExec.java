@@ -16,7 +16,9 @@ import java.io.File;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.help.browser.IBrowser;
 import org.eclipse.help.internal.browser.BrowserManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class GetExec {
 	private static String DEFAULT_UNIX_BROWSER = "mozilla";
@@ -30,14 +32,20 @@ public class GetExec {
 	private static final String WIN_ID = "Windows";
 	// The default system browser under windows.
 	private static final String WIN_PATH = "rundll32";
+	
 	protected static void displayURL(String url, boolean external) {
-
-		IBrowser browser = BrowserManager.getInstance()
-		.createBrowser(external);
 		try {
+			IBrowser browser = BrowserManager.getInstance().createBrowser(
+					external);
 			browser.displayURL(url);
 		} catch (Exception e) {
-			ClientPlugin.log("Exception in displayURL for URL: "+url,e);
+			try {
+				Shell [] shells = Display.getCurrent().getShells();
+				if (shells != null && shells.length > 0) {
+					MessageDialog.openError(shells[0], "Error in Browser", "Cannot launch browser or display URL.  Something is wrong with config for using browser");
+				}
+			} catch (Exception e1) {}
+			ClientPlugin.log("Cannot display URL: " + url, e);
 		}
 	}
 	public static String getBrowserExec(String unixBrowser, String url) {
@@ -77,8 +85,7 @@ public class GetExec {
 	public static void setDefaultUnixBrowser(String unixBrowser) {
 		DEFAULT_UNIX_BROWSER = unixBrowser;
 	}
-	public static void showURL(
-		final String url,
+	public static void showURL(final String url,
 		final boolean considerInternal) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
