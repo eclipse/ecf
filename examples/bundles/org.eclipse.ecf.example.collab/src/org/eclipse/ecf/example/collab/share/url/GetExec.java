@@ -11,94 +11,49 @@
 
 package org.eclipse.ecf.example.collab.share.url;
 
-import java.io.File;
-
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.help.browser.IBrowser;
 import org.eclipse.help.internal.browser.BrowserManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWTError;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class GetExec {
-	private static String DEFAULT_UNIX_BROWSER = "mozilla";
 
-	// The flag to display a url.
-	private static final String UNIX_FLAG = "";
-	// The flag to display a url.
-	private static final String WIN_FLAG = "url.dll,FileProtocolHandler";
-
-	// Used to identify the windows platform.
-	private static final String WIN_ID = "Windows";
-	// The default system browser under windows.
-	private static final String WIN_PATH = "rundll32";
-	
 	protected static void displayURL(String url, boolean external) {
+		IBrowser browser = null;
+		Shell [] shells = Display.getCurrent().getShells();
 		try {
-			IBrowser browser = BrowserManager.getInstance().createBrowser(
+			browser = BrowserManager.getInstance().createBrowser(
 					external);
+		} catch (SWTError swterror) {
+			try {
+				if (shells != null && shells.length > 0) {
+					MessageDialog.openError(shells[0], "Error in Browser Creation", "Cannot launch browser.  Something is wrong with config for using external browser");
+				}
+			} catch (Exception e1) {}
+			ClientPlugin.log("Cannot create browser for URL: " + url, swterror);
+			return;
+		}
+		try {
 			browser.displayURL(url);
 		} catch (Exception e) {
 			try {
-				Shell [] shells = Display.getCurrent().getShells();
 				if (shells != null && shells.length > 0) {
-					MessageDialog.openError(shells[0], "Error in Browser", "Cannot launch browser or display URL.  Something is wrong with config for using browser");
+					MessageDialog.openError(shells[0], "Error in URL", "Cannot display URL");
 				}
 			} catch (Exception e1) {}
 			ClientPlugin.log("Cannot display URL: " + url, e);
+		} catch (SWTError swterror) {
+			
 		}
-	}
-	public static String getBrowserExec(String unixBrowser, String url) {
-		boolean windows = isWindowsPlatform();
-		if (windows)
-			return WIN_PATH + " " + WIN_FLAG + " " + url;
-		else {
-			String browser = unixBrowser;
-			if (browser == null)
-				browser = DEFAULT_UNIX_BROWSER;
-			return browser + " " + UNIX_FLAG + url;
-		}
-	}
-
-	public static String getFileExec(String fileName) {
-		if (isWindowsPlatform())
-			return WIN_PATH + " " + WIN_FLAG + " " + fileName;
-		else
-			return fileName;
-	}
-	public static boolean isWindowsPlatform() {
-		String os = System.getProperty("os.name");
-		if (os != null && os.startsWith(WIN_ID))
-			return true;
-		else
-			return false;
-	}
-
-	public static String mangleFileName(String fileName) {
-		if (fileName == null)
-			return null;
-		if (isWindowsPlatform())
-			return fileName.replace('/', File.separatorChar).replace('|', ':');
-		else
-			return fileName.replace('\\', File.separatorChar);
-	}
-	public static void setDefaultUnixBrowser(String unixBrowser) {
-		DEFAULT_UNIX_BROWSER = unixBrowser;
 	}
 	public static void showURL(final String url,
 		final boolean considerInternal) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				try {
-					displayURL(url, considerInternal);
-				} catch (Exception e) {
-					try {
-						Runtime.getRuntime().exec(getBrowserExec(null, url));
-					} catch (Exception e1) {
-						// give up
-						return;
-					}
-				}
+				displayURL(url, considerInternal);
 			}
 		});
 	}
