@@ -9,6 +9,7 @@
 package org.eclipse.ecf.core;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
@@ -30,6 +31,17 @@ public class ContainerDescription {
 	protected static final String[] EMPTY = new String[0];
 	protected Map properties;
 
+	public ContainerDescription(String name) {
+		this(name,null);
+	}
+	public ContainerDescription(String name, String description) {
+		this(name,description,new HashMap());
+	}
+	public ContainerDescription(String name, String description, Map properties) {
+		this.name = name;
+		this.description = description;
+		this.properties = properties;
+	}
 	public ContainerDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc) {
 		this(loader, name, instantiatorClass, desc, EMPTY, EMPTY, EMPTY);

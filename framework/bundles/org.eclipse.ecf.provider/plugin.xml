@@ -2,30 +2,6 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension
-         point="org.eclipse.ecf.containerFactory">
-      <containerFactory
-            class="org.eclipse.ecf.provider.generic.ContainerInstantiator:foo:bar"
-            description="ECF Generic"
-            name="org.eclipse.ecf.provider.generic.Client">
-         <defaultargument
-               type="org.eclipse.ecf.core.identity.ID"
-               name="id"/>
-         <defaultargument
-               value="30000"
-               type="java.lang.Integer"
-               name="keepAlive"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"
-               value="ecftcp://&lt;server&gt;:&lt;port&gt;/&lt;groupname&gt;"/>
-         <property
-               value="ecftcp://localhost:3282/server"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"/>
-         <property
-               value="true"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usenickname"/>
-      </containerFactory>
-   </extension>
-   <extension
          point="org.eclipse.ecf.connectionFactory">
       <connectionFactory
             class="org.eclipse.ecf.provider.comm.tcp.Client$Creator"
@@ -36,24 +12,5 @@
                type="java.lang.Integer"
                name="keepAlive"/>
       </connectionFactory>
-   </extension>
-   <extension
-         point="org.eclipse.ecf.containerFactory">
-      <containerFactory
-            class="org.eclipse.ecf.provider.generic.ContainerInstantiator"
-            description="Generic Server Container Instantiator"
-            name="org.eclipse.ecf.provider.generic.Server">
-         <defaultargument
-               value="ecftcp://localhost:3282/server"
-               type="org.eclipse.ecf.core.identity.ID"
-               name="id"/>
-         <defaultargument
-               value="30000"
-               type="java.lang.Integer"
-               name="keepAlive"/>
-         <property
-               value="true"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.isServer"/>
-      </containerFactory>
    </extension>
 </plugin>
