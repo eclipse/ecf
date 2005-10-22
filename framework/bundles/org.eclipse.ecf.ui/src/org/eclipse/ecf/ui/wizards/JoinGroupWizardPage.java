@@ -140,6 +140,7 @@ public class JoinGroupWizardPage extends WizardPage {
             String name = desc.getName();
             String description = desc.getDescription();
             Map props = desc.getProperties();
+            defProps = props;
             String isServer = (String) props.get(ISSERVER_PROP_NAME);
             if (isServer == null || !isServer.equalsIgnoreCase("true")) {
                 if (DEFAULT_CLIENT.equals(name)) {
