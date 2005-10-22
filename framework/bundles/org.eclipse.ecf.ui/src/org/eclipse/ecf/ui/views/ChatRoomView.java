@@ -1,6 +1,8 @@
 package org.eclipse.ecf.ui.views;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -235,12 +237,24 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
         });
 	}
 	private String trimUserID(ID userID) {
-		String userathost = userID.getName();
-		int atIndex = userathost.lastIndexOf(USERNAME_HOST_DELIMETER);
-		if (atIndex != -1) {
-			userathost = userathost.substring(0,atIndex);
+		URI aURI = null;
+		try {
+			aURI = userID.toURI();
+		} catch (URISyntaxException e) {
+			aURI = null;
 		}
-		return userathost;
+		if (aURI != null) {
+			String user = aURI.getUserInfo();
+			if (user != null) return user;
+			else return userID.getName();
+		} else {
+			String userathost = userID.getName();
+			int atIndex = userathost.lastIndexOf(USERNAME_HOST_DELIMETER);
+			if (atIndex != -1) {
+				userathost = userathost.substring(0,atIndex);
+			}
+			return userathost;
+		}
 	}
 	class Participant implements IUser {
 		private static final long serialVersionUID = 2008114088656711572L;

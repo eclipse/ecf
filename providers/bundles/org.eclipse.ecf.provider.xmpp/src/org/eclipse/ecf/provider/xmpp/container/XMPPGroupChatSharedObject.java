@@ -33,7 +33,9 @@ import org.jivesoftware.smack.packet.Presence.Type;
 
 public class XMPPGroupChatSharedObject implements ISharedObject {
 
-    public static Trace trace = Trace.create("xmppgroupchatsharedobject");
+    private static final String USERNAME_HOST_DELIMETER = "@";
+
+	public static Trace trace = Trace.create("xmppgroupchatsharedobject");
 
     ISharedObjectConfig config = null;
     
