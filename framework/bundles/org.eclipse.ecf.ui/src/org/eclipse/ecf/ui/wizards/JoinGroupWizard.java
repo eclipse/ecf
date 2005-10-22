@@ -23,8 +23,8 @@ public class JoinGroupWizard extends Wizard {
 	
 	private static final String DIALOG_SETTINGS = JoinGroupWizard.class.getName();
 	
-    JoinGroupWizardPage mainPage;
-    ContainerDescription [] descriptions = null;
+    protected JoinGroupWizardPage mainPage;
+    protected ContainerDescription [] descriptions = null;
     
     public JoinGroupWizard(IWorkbench workbench, String title, ContainerDescription [] descriptions) {
         super();
@@ -44,7 +44,7 @@ public class JoinGroupWizard extends Wizard {
     }
     public void addPages() {
         super.addPages();
-        mainPage = new JoinGroupWizardPage();
+        mainPage = new JoinGroupWizardPage(descriptions);
         addPage(mainPage);
     }
 
@@ -61,40 +61,5 @@ public class JoinGroupWizard extends Wizard {
     protected void finishPage(final IProgressMonitor monitor)
             throws InterruptedException, CoreException {
         
-    	mainPage.saveDialogSettings();
-    	/*
-    	URIClientConnectAction client = null;
-        String groupName = mainPage.getJoinGroupText();
-        String nickName = mainPage.getNicknameText();
-        String containerType = mainPage.getContainerType();
-        String password = mainPage.getPasswordText();
-        */
-		//String namespace = mainPage.getNamespace();
-        try {
-        	/*
-			ID groupID = null;
-			if (namespace != null) {
-				groupID = IDFactory.getDefault().makeID(namespace,new Object[] { groupName });
-			} else groupID = IDFactory.getDefault().makeStringID(groupName);
-            client = new ClientConnectAction();
-            client.setProject(project);
-            client.setUsername(nickName);
-            client.setTargetID(groupID);
-            client.setContainerType(containerType);
-            client.setData(password);
-            client.run(null);
-            */
-        	//URI uri = new URI(groupName);
-        	//URI fullURI = new URI(namespace+":"+groupName);
-        	/*
-        	client = new URIClientConnectAction(containerType,groupName,nickName,password,project);
-        	client.run(null);
-        	*/
-        } catch (Exception e) {
-        	/*
-            String id = ClientPlugin.PLUGIN_ID;
-            throw new CoreException(new Status(Status.ERROR, id, 100, "Could not connect to "+groupName, e));
-        	*/
-        }
     }
 }

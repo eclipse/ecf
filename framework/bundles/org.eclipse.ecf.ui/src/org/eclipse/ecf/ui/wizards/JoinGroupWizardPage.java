@@ -62,6 +62,7 @@ public class JoinGroupWizardPage extends WizardPage {
         super("wizardPage");
         setTitle(PAGE_TITLE);
         setDescription(PAGE_DESCRIPTION);
+        this.descriptions = descriptions;
     }
 
     public JoinGroupWizardPage() {
