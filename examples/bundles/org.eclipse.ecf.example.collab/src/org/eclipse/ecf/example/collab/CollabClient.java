@@ -22,7 +22,6 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
-import org.eclipse.ecf.fileshare.IFileShareContainer;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
@@ -64,9 +63,9 @@ public class CollabClient {
 				newClient);
 		
 		// Setup user interfaces for various container adapter types
-		IFileShareContainer fsc = (IFileShareContainer) newClient.getAdapter(IFileShareContainer.class);
+		// IFileShareContainer fsc = (IFileShareContainer) newClient.getAdapter(IFileShareContainer.class);
 		
-		if (fsc == null) {
+		// if (fsc == null) {
 			IChatRoomManager man = (IChatRoomManager) newClient.getAdapter(IChatRoomManager.class);
 			if (man != null) {
 				chatRoomManagerUI = new ChatRoomManagerUI(man);
@@ -89,7 +88,7 @@ public class CollabClient {
 					}
 				}
 			}
-		}
+		//}
 		
 		// Now connect
 		try {

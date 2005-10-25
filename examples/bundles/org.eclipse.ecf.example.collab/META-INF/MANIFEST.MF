@@ -16,8 +16,7 @@ Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.ui,
  org.eclipse.ecf.discovery,
- org.eclipse.ecf.provider,
- org.eclipse.ecf.fileshare
+ org.eclipse.ecf.provider
 Export-Package: org.eclipse.ecf.example.collab, org.eclipse.ecf.example.collab.share, org.eclipse.ecf.example.collab.share.url, org.eclipse.ecf.example.collab.share.io
 Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.example.collab
