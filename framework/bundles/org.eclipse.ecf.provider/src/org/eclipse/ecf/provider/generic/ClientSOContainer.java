@@ -297,9 +297,7 @@ public abstract class ClientSOContainer extends SOContainer {
 												groupID,
 												getNextSequenceNumber(),
 												getLeaveData(groupID))));
-					} catch (Exception e) {
-						dumpStack("Exception in leaveGroup.sendSynch()", e);
-					}
+					} catch (Exception e) {}
 					synchronized (getGroupMembershipLock()) {
 						memberLeave(groupID, connection);
 					}
