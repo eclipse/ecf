@@ -890,9 +890,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	}
 
 	protected void memberLeave(ID target, IConnection conn) {
-		debug("memberLeave(" + target + "," + conn +")");
 		if (target == null)
 			return;
+		debug("memberLeave(" + target + "," + conn +")");
 		if (groupManager.removeMember(target)) {
 			try {
 				forwardExcluding(getID(), target, ContainerMessage
@@ -985,13 +985,13 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
 	protected abstract ID getIDForConnection(IAsynchConnection connection);
 
-	protected void fulldebug(String db) {
-		debug("Thread:"+Thread.currentThread().getName());
-		dumpStack(db,new Exception());
-	}
 	protected void processDisconnect(DisconnectConnectionEvent e) {
-		debug("processDisconnect:" + e);
-		fulldebug("processDisconnect("+e+")");
+		Throwable t = e.getException();
+		if (t == null) {
+			debug("processDisconnect[" +Thread.currentThread().getName()+"]");
+		} else {
+			dumpStack("processDisconnect[" +Thread.currentThread().getName()+"]",t);
+		}
 		try {
 			// Get connection responsible for disconnect event
 			IAsynchConnection conn = (IAsynchConnection) e.getConnection();
