@@ -985,8 +985,13 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
 	protected abstract ID getIDForConnection(IAsynchConnection connection);
 
+	protected void fulldebug(String db) {
+		debug("Thread:"+Thread.currentThread().getName());
+		dumpStack(db,new Exception());
+	}
 	protected void processDisconnect(DisconnectConnectionEvent e) {
 		debug("processDisconnect:" + e);
+		fulldebug("processDisconnect("+e+")");
 		try {
 			// Get connection responsible for disconnect event
 			IAsynchConnection conn = (IAsynchConnection) e.getConnection();

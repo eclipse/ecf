@@ -317,7 +317,7 @@ public final class Client implements ISynchAsynchConnection {
                         } else
                             msgCount++;
                             
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         if (isClosing) {
                             dumpStack("SENDER CLOSING",e);
                             synchronized (Client.this) {
@@ -350,7 +350,7 @@ public final class Client implements ISynchAsynchConnection {
                 setSocket(null);
             }
         } catch (IOException e) {
-        	dumpStack("socket close",e);
+        	dumpStack("closeSocket Exception",e);
         }
     }
 
@@ -396,7 +396,7 @@ public final class Client implements ISynchAsynchConnection {
                         break;
                     try {
                         handleRcv(readObject());
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         if (isClosing) {
                             dumpStack("RCVR CLOSING",e);
                             synchronized (Client.this) {
