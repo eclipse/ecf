@@ -210,7 +210,7 @@ class SOContainerGMM implements Observer {
     }
 
     synchronized void notifyOthersDeactivated(ID id) {
-        debug("notifyOthersActivated(" + id + ")");
+        debug("notifyOthersDeactivated(" + id + ")");
         notifyOtherChanged(id, active, false);
     }
 
