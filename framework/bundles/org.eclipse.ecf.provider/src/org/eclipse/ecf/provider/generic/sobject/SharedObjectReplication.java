@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.identity.ID;
 public class SharedObjectReplication implements
 		ISharedObjectContainerTransaction {
 
-	TPCommitEventProcessor eventProcessor = null;
+	private TPCommitEventProcessor eventProcessor = null;
 	public SharedObjectReplication(ISharedObjectInternal so, int transactionTimeout, ID [] exceptions) {
 		eventProcessor = new TPCommitEventProcessor(so,transactionTimeout,exceptions);
 		so.addEventProcessor(eventProcessor);
