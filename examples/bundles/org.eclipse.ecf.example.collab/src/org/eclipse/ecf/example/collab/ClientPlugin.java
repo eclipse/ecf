@@ -113,33 +113,33 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		job.schedule();
 	}
 
-	protected synchronized void initDiscovery() throws Exception {
+	public synchronized void initDiscovery() throws Exception {
 		if (discoveryStartup == null && getPreferenceStore().getBoolean(PREF_START_DISCOVERY)) {
 			discoveryStartup = new DiscoveryStartup();
 		}
 	}
 	
-	protected synchronized void initServer() throws Exception {
+	public synchronized void initServer() throws Exception {
 		if (serverStartup == null && getPreferenceStore().getBoolean(PREF_START_SERVER)) {
 			serverStartup = new ServerStartup();
 		}
 	}
 	
-	protected synchronized boolean isDiscoveryActive() {
+	public synchronized boolean isDiscoveryActive() {
 		if (discoveryStartup == null) return false;
 		else return discoveryStartup.isActive();
 	}
-	protected synchronized boolean isServerActive() {
+	public synchronized boolean isServerActive() {
 		if (serverStartup == null) return false;
 		else return serverStartup.isActive();
 	}
-	protected synchronized void disposeDiscovery() {
+	public synchronized void disposeDiscovery() {
 		if (discoveryStartup != null) {
 			discoveryStartup.dispose();
 			discoveryStartup = null;
 		}
 	}
-	protected synchronized void disposeServer() {
+	public synchronized void disposeServer() {
 		if (serverStartup != null) {
 			serverStartup.dispose();
 			serverStartup = null;
