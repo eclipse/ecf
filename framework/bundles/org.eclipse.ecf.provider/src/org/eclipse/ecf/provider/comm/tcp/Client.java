@@ -153,6 +153,7 @@ public final class Client implements ISynchAsynchConnection {
             ObjectOutputStream oStream,
             ISynchAsynchConnectionEventHandler handler, int keepAlive,
             int maxmsgs) throws IOException {
+    	if (handler == null) throw new NullPointerException("event handler cannot be null");
         setSocket(aSocket);
         inputStream = iStream;
         outputStream = oStream;
@@ -174,6 +175,7 @@ public final class Client implements ISynchAsynchConnection {
 
     public Client(ISynchAsynchConnectionEventHandler handler, int keepAlive,
             int maxmsgs) {
+    	if (handler == null) throw new NullPointerException("event handler cannot be null");
         this.handler = handler;
         containerID = handler.getEventHandlerID();
         this.keepAlive = keepAlive;
@@ -318,23 +320,12 @@ public final class Client implements ISynchAsynchConnection {
                             msgCount++;
                             
                     } catch (Exception e) {
-                        if (isClosing) {
-                            dumpStack("SENDER CLOSING",e);
-                            synchronized (Client.this) {
-                                Client.this.notifyAll();
-                            }
-                        } else {
-                            dumpStack("SENDER EXCEPTION",e);
-                            if (!handler.handleSuspectEvent(new ConnectionEvent(
-                                    Client.this, e))) {
-                                handler
-                                        .handleDisconnectEvent(new DisconnectConnectionEvent(
-                                                Client.this, e, queue));
-                            }
-                        }
+                        dumpStack("SENDER EXCEPTION",e);
+                        handleException(e);
                         break;
                     }
                 }
+                handleException(null);
                 trace("SENDER TERMINATING");
             }
         }, getLocalID() + ":sndr:" + getAddressPort());
@@ -343,6 +334,26 @@ public final class Client implements ISynchAsynchConnection {
         return aThread;
     }
 
+    private boolean disconnectHandled = false;
+    private Object disconnectLock = new Object();
+    
+    private void handleException(Throwable e) {
+		synchronized (disconnectLock) {
+			if (!disconnectHandled) {
+				disconnectHandled = true;
+				if (!handler.handleSuspectEvent(new ConnectionEvent(this, e))) {
+					// Then call
+					handler
+							.handleDisconnectEvent(new DisconnectConnectionEvent(
+									this, e, queue));
+				}
+			}
+		}
+        synchronized (Client.this) {
+            Client.this.notifyAll();
+        }
+	}
+    
     private void closeSocket() {
         try {
             if (socket != null) {
@@ -397,23 +408,12 @@ public final class Client implements ISynchAsynchConnection {
                     try {
                         handleRcv(readObject());
                     } catch (Exception e) {
-                        if (isClosing) {
-                            dumpStack("RCVR CLOSING",e);
-                            synchronized (Client.this) {
-                                Client.this.notifyAll();
-                            }
-                        } else {
-                            dumpStack("RCVR EXCEPTION",e);
-                            if (!handler.handleSuspectEvent(new ConnectionEvent(
-                                    Client.this, e))) {
-                                handler
-                                        .handleDisconnectEvent(new DisconnectConnectionEvent(
-                                                Client.this, e, queue));
-                            }
-                        }
+                        dumpStack("RCVR EXCEPTION",e);
+                        handleException(e);
                         break;
                     }
                 }
+                handleException(null);
                 trace("RCVR TERMINATING");
             }
         }, getLocalID() + ":rcvr:" + getAddressPort());
@@ -498,14 +498,9 @@ public final class Client implements ISynchAsynchConnection {
                                 // Actually send ping instance
                                 sendIt(ping);
                                 if (waitForPing) {
-                                    try {
                                         // Wait for keepAliveInterval for
                                         // pingresp
                                         pingLock.wait(keepAlive / 2);
-                                    } catch (InterruptedException e) {
-                                    	dumpStack("PING INTERRUPTED",e);
-                                    	return;
-                                    }
                                 }
                                 if (waitForPing) {
                                     throw new IOException(getAddressPort()+ " not reachable");
@@ -513,23 +508,12 @@ public final class Client implements ISynchAsynchConnection {
                             }
                         }
                     } catch (Exception e) {
-                        if (isClosing) {
-                            dumpStack("PING CLOSING",e);
-                            synchronized (Client.this) {
-                                Client.this.notifyAll();
-                            }
-                        } else {
-                            dumpStack("PING EXCEPTION",e);
-                            if (!handler.handleSuspectEvent(new ConnectionEvent(
-                                    Client.this, e))) {
-                                handler
-                                        .handleDisconnectEvent(new DisconnectConnectionEvent(
-                                                Client.this, e, queue));
-                            }
-                        }
+                        dumpStack("PING EXCEPTION",e);
+                        handleException(e);
                         break;
                     }
                 }
+                handleException(null);
                 trace("PING TERMINATING");
             }
         }, getLocalID()+":ping:"+getAddressPort());
@@ -566,7 +550,6 @@ public final class Client implements ISynchAsynchConnection {
         queueObject(recipient, (Serializable) obj);
     }
 
-    // private int serverQueueCount = 0;
     public synchronized void queueObject(ID recipient, Serializable obj)
             throws IOException {
         if (queue.isStopped() || isClosing)

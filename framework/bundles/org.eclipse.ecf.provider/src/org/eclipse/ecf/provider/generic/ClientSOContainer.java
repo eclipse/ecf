@@ -283,7 +283,7 @@ public abstract class ClientSOContainer extends SOContainer {
 
 	public void disconnect() {
 		ID groupID = getConnectedID();
-		debug("leaveGroup:" + groupID);
+		debug("disconnect(" + groupID+")");
 		fireContainerEvent(new SharedObjectContainerDisconnectingEvent(this
 				.getID(), groupID));
 		synchronized (connectLock) {

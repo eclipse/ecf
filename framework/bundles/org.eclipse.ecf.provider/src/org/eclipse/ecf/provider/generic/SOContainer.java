@@ -817,10 +817,11 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			throws ContainerConnectException;
 
 	protected void killConnection(IConnection conn) {
-		debug("killconnection("+conn+")");
 		try {
-			if (conn != null)
+			if (conn != null && conn.isConnected()) {
+				debug("killconnection("+conn+")");
 				conn.disconnect();
+			}
 		} catch (IOException e) {
 			logException("Exception in killConnection", e);
 		}
@@ -892,7 +893,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	protected void memberLeave(ID target, IConnection conn) {
 		if (target == null)
 			return;
-		debug("memberLeave(" + target + "," + conn +")");
 		if (groupManager.removeMember(target)) {
 			try {
 				forwardExcluding(getID(), target, ContainerMessage
@@ -986,12 +986,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	protected abstract ID getIDForConnection(IAsynchConnection connection);
 
 	protected void processDisconnect(DisconnectConnectionEvent e) {
-		Throwable t = e.getException();
-		if (t == null) {
-			debug("processDisconnect[" +Thread.currentThread().getName()+"]");
-		} else {
-			dumpStack("processDisconnect[" +Thread.currentThread().getName()+"]",t);
-		}
+		debug("processDisconnect[" +Thread.currentThread().getName()+"]");
 		try {
 			// Get connection responsible for disconnect event
 			IAsynchConnection conn = (IAsynchConnection) e.getConnection();
