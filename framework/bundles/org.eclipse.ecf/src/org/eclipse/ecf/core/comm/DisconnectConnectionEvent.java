@@ -23,4 +23,11 @@ public class DisconnectConnectionEvent extends ConnectionEvent {
 	public Throwable getException() {
 		return exception;
 	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer("DisconnectConnectionEvent[");
+		buf.append("conn=").append(getConnection()).append(";").append("e=").append(getException());
+		buf.append("data=").append(getData()).append("]");
+		return buf.toString();
+	}
 }
