@@ -138,12 +138,16 @@ public class DiscoveryStartup {
 							connectToServiceFromInfo(service);
 						}
 
-						public void setupDiscoveryContainer(DiscoveryView dview) {
-							//ClientPlugin.getDefault().initDiscovery();
+						public void startDiscovery() {
+							try {
+								ClientPlugin.getDefault().initDiscovery();
+							} catch (Exception e) {
+								ClientPlugin.log("Exception initializing discovery",e);
+							}
 						}
 
-						public void disposeDiscoveryContainer(DiscoveryView dview) {
-							//ClientPlugin.getDefault().disposeDiscovery();
+						public void stopDiscovery() {
+							ClientPlugin.getDefault().disposeDiscovery();
 						}
 
 						public IDiscoveryContainer getDiscoveryContainer() {
@@ -156,6 +160,10 @@ public class DiscoveryStartup {
 
 						public String[] getServiceTypes() {
 							return serviceTypes;
+						}
+
+						public boolean isDiscoveryStarted() {
+							return ClientPlugin.getDefault().isDiscoveryActive();
 						}
                     });
                 } catch (Exception e) {
