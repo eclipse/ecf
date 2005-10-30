@@ -16,12 +16,6 @@
             name="ECF Buddy List"
             id="org.eclipse.ecf.ui.view.rosterview"/>
       <view
-            category="org.eclipse.ecf.ui.viewcategory"
-            class="org.eclipse.ecf.ui.views.DiscoveryView"
-            icon="icons/person.gif"
-            id="org.eclipse.ecf.ui.view.discoveryview"
-            name="ECF Service Discovery"/>
-      <view
             allowMultiple="true"
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.ui.views.ChatRoomView"

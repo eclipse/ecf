@@ -57,7 +57,10 @@ public class DiscoveryView extends ViewPart {
 	public static final String DISCONNECT_ICON_ENABLED = "icons/enabled/terminate_co.gif";
 	public static final String CONNECT_ICON_ENABLED = "icons/enabled/add.gif";
 
+	protected static final String DISCOVERED_SERVICES = "Discovered Network Services";
+	
 	protected static final int SERVICE_INFO_TIMEOUT = 3000;
+	
 	protected static final int TREE_EXPANSION_LEVELS = 3;
 	private TreeViewer viewer;
 	private Action requestServiceInfoAction;
@@ -66,8 +69,6 @@ public class DiscoveryView extends ViewPart {
 	private Action disconnectContainerAction;
 	private Action connectContainerAction;
 
-	IDiscoveryContainer dcontainer = null;
-	IContainer socontainer = null;
 	IDiscoveryController controller = null;
 	String [] controllerServiceTypes = null;
 	
@@ -88,28 +89,38 @@ public class DiscoveryView extends ViewPart {
 	}
 	public void setDiscoveryController(final IDiscoveryController controller) {
 		this.controller = controller;
-		if (controller != null) {
-			setContainers(controller.getDiscoveryContainer(),controller.getContainer(),controller.getServiceTypes());
-			setConnectMenus(true);
-		} else {
-			setContainers(null,null,null);
-			setConnectMenus(false);
-		}
 	}
 	
 	protected void setConnectMenus(boolean connected) {
 		disconnectContainerAction.setEnabled(connected);
 		connectContainerAction.setEnabled(!connected);
 	}
-	protected void setContainers(IDiscoveryContainer dcontainer, IContainer socont, String [] svcTypes) {
-		this.dcontainer = dcontainer;
-		this.socontainer = socont;
-		this.controllerServiceTypes = svcTypes;
-	}
 	protected boolean isConnected() {
-		if (socontainer == null) return false;
+		IDiscoveryController c = getController();
+		if (c == null) return false;
 		else {
-			return true;
+			IContainer container = c.getContainer();
+			if (container == null) return false;
+			else {
+				return true;
+			}
+		}
+	}
+	protected IDiscoveryController getController() {
+		return controller;
+	}
+	protected IContainer getIContainer() {
+		IDiscoveryController c = getController();
+		if (c == null) return null;
+		else {
+			return c.getContainer();
+		}
+	}
+	protected IDiscoveryContainer getDiscoveryContainer() {
+		IDiscoveryController c = getController();
+		if (c == null) return null;
+		else {
+			return c.getDiscoveryContainer();
 		}
 	}
 	class TreeObject implements IAdaptable {
@@ -172,7 +183,6 @@ public class DiscoveryView extends ViewPart {
 
 	class ViewContentProvider implements IStructuredContentProvider, 
 										   ITreeContentProvider {
-		protected static final String DISCOVERED_SERVICES = "Discovered Services";
 		private TreeParent invisibleRoot;
 		protected TreeParent root;
 		
@@ -283,12 +293,10 @@ public class DiscoveryView extends ViewPart {
 			newEntry.addChild(typeo);
 			TreeObject porto = new TreeObject("Port: " + serviceInfo.getPort());
 			newEntry.addChild(porto);
-			/*
 			TreeObject prioo = new TreeObject("Priority: " + serviceInfo.getPriority());
 			newEntry.addChild(prioo);
 			TreeObject weighto = new TreeObject("Weight: " + serviceInfo.getWeight());
 			newEntry.addChild(weighto);
-			*/
 			TreeObject urio = new TreeObject("URI: "+uri);
 			newEntry.addChild(urio);
 			Map props = serviceInfo.getProperties();
@@ -476,6 +484,7 @@ public class DiscoveryView extends ViewPart {
                 if (treeObject instanceof TreeParent) {
                 	TreeParent p = (TreeParent) treeObject;
                     final ServiceID targetID = p.getID();
+                    IDiscoveryContainer dcontainer = getDiscoveryContainer();
                     if (dcontainer != null) {
                     	dcontainer.requestServiceInfo(targetID,SERVICE_INFO_TIMEOUT);
                     }
@@ -491,6 +500,7 @@ public class DiscoveryView extends ViewPart {
                 TreeObject treeObject = getSelectedTreeObject();
                 if (treeObject instanceof TreeParent) {
                 	TreeParent p = (TreeParent) treeObject;
+                    IDiscoveryContainer dcontainer = getDiscoveryContainer();
                     if (dcontainer != null) {
                     	dcontainer.registerServiceType(p.getName());
                     }
@@ -517,45 +527,50 @@ public class DiscoveryView extends ViewPart {
 		disconnectContainerAction = new Action() {
 			public void run() {
 				if (MessageDialog.openConfirm(DiscoveryView.this.getViewSite()
-						.getShell(), "Stop discovery", "Stop service discovery?")) {
+						.getShell(), "Stop discovery", "Stop network service discovery?")) {
 					ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
 					if (vcp != null) {
 						if (isConnected()) {
-							controller.stopDiscovery();
-							setContainers(null,null,null);
+							IDiscoveryController dc = getController();
+							dc.stopDiscovery();
 							clearAllServices();
-							setConnectMenus(controller.isDiscoveryStarted());
+							setConnectMenus(dc.isDiscoveryStarted());
 						}
 					}
 				}
 			}
 		};
 		disconnectContainerAction.setText("Stop discovery");
-		disconnectContainerAction.setToolTipText("Stop discovery");
+		disconnectContainerAction.setToolTipText("Stop network service discovery");
 		disconnectContainerAction.setImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
 						new Path(DISCONNECT_ICON_ENABLED))));
 		disconnectContainerAction.setDisabledImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
 						new Path(DISCONNECT_ICON_DISABLED))));
-		disconnectContainerAction.setEnabled((isConnected() && controller.isDiscoveryStarted()));
+		IDiscoveryController c = getController();
+		if (c == null) disconnectContainerAction.setEnabled(false);
+		else disconnectContainerAction.setEnabled((isConnected() && c.isDiscoveryStarted()));
 		
 		connectContainerAction = new Action() {
 			public void run() {
 				ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
 				if (vcp != null) {
 					if (!isConnected()) {
-						if (controller != null) {
-							controller.startDiscovery();
-							setConnectMenus(controller.isDiscoveryStarted());
+						IDiscoveryController c = getController();
+						if (c != null) {
+							c.startDiscovery();
+							setDiscoveryController(c);
+							setConnectMenus(c.isDiscoveryStarted());
 						}
 					}
 				}
 			}
 		};
 		connectContainerAction.setText("Start discovery");
-		connectContainerAction.setToolTipText("Start service discovery");
-		connectContainerAction.setEnabled(isConnected() && !controller.isDiscoveryStarted());
+		connectContainerAction.setToolTipText("Start network service discovery");
+		if (c == null) connectContainerAction.setEnabled(false);
+		connectContainerAction.setEnabled(!c.isDiscoveryStarted());
 		connectContainerAction.setImageDescriptor(ImageDescriptor
 				.createFromURL(UiPlugin.getDefault().find(
 						new Path(CONNECT_ICON_ENABLED))));
