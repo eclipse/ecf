@@ -8,16 +8,17 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-
 package org.eclipse.ecf.example.collab;
 
 import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.discovery.IDiscoveryContainer;
+import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.ui.views.IDiscoveryController;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.widgets.Shell;
@@ -31,36 +32,30 @@ import org.osgi.framework.BundleContext;
  */
 public class ClientPlugin extends AbstractUIPlugin implements
 		ClientPluginConstants {
-
 	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab";
-	
 	// The shared instance.
 	private static ClientPlugin plugin;
-
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
 	private static URL pluginLocation;
 	private ImageRegistry registry = null;
 	private FontRegistry fontRegistry = null;
-
 	private ServerStartup serverStartup = null;
 	private DiscoveryStartup discoveryStartup = null;
-	
+	public static final String TCPSERVER_DISCOVERY_TYPE = "_ecftcp._tcp.local.";
+	protected static String serviceTypes[] = new String[] { TCPSERVER_DISCOVERY_TYPE };
 	public static URL getPluginTopLocation() {
 		return pluginLocation;
 	}
-
 	public static void log(String message) {
 		getDefault().getLog().log(
 				new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
 	}
-
 	public static void log(String message, Throwable e) {
 		getDefault().getLog().log(
 				new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK,
 						"Caught exception", e));
 	}
-
 	/**
 	 * The constructor.
 	 */
@@ -69,39 +64,64 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		plugin = this;
 		this.fontRegistry = new FontRegistry();
 	}
-
-	protected void setPreferenceDefaults() {
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_USE_CHAT_WINDOW, false);
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_DISPLAY_TIMESTAMP, true);
-		
-		//this.getPreferenceStore().setDefault(ClientPlugin.PREF_CHAT_FONT, "");
-
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_SEND, true);
-		//this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, true);
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_REMOTE_VIEW, true);
-		
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_SERVER,false);
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,false);
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_DISCOVERY,false);
-	}
-	
-	class ClientStartupJob extends Job {
-
-		public ClientStartupJob(String name) {
-			super(name);
-		}
-
-		protected IStatus run(IProgressMonitor monitor) {
-			try {
-				initDiscovery();
-				initServer();
-			} catch (Exception e) {
-				log("Exception on initialization",e);
+	protected IDiscoveryController getDiscoveryController() {
+		return new IDiscoveryController() {
+			public void connectToService(IServiceInfo service) {
+				synchronized (ClientPlugin.this) {
+					if (discoveryStartup == null)
+						return;
+					discoveryStartup.connectToServiceFromInfo(service);
+				}
 			}
-			return new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, "Discovery complete", null);
-		}
-		
-		
+			public void startDiscovery() {
+				try {
+					getDefault().initDiscovery();
+				} catch (Exception e) {
+					ClientPlugin.log("Exception initializing discovery", e);
+				}
+			}
+			public void stopDiscovery() {
+				getDefault().disposeDiscovery();
+			}
+			public IDiscoveryContainer getDiscoveryContainer() {
+				synchronized (ClientPlugin.this) {
+					if (discoveryStartup == null)
+						return null;
+					return discoveryStartup.getDiscoveryContainer();
+				}
+			}
+			public IContainer getContainer() {
+				synchronized (ClientPlugin.this) {
+					if (discoveryStartup == null)
+						return null;
+					return discoveryStartup.getContainer();
+				}
+			}
+			public String[] getServiceTypes() {
+				return serviceTypes;
+			}
+			public boolean isDiscoveryStarted() {
+				return getDefault().isDiscoveryActive();
+			}
+		};
+	}
+	protected void setPreferenceDefaults() {
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_USE_CHAT_WINDOW,
+				false);
+		this.getPreferenceStore().setDefault(
+				ClientPlugin.PREF_DISPLAY_TIMESTAMP, true);
+		// this.getPreferenceStore().setDefault(ClientPlugin.PREF_CHAT_FONT,
+		// "");
+		this.getPreferenceStore().setDefault(
+				ClientPlugin.PREF_CONFIRM_FILE_SEND, true);
+		// this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE,
+		// true);
+		this.getPreferenceStore().setDefault(
+				ClientPlugin.PREF_CONFIRM_REMOTE_VIEW, true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_SERVER,
+				false);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,
+				false);
 	}
 	/**
 	 * This method is called upon plug-in activation
@@ -109,29 +129,33 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		setPreferenceDefaults();
-		ClientStartupJob job = new ClientStartupJob("Setting up Dynamic Service Discovery");
-		job.schedule();
 	}
-
 	public synchronized void initDiscovery() throws Exception {
-		if (discoveryStartup == null && getPreferenceStore().getBoolean(PREF_START_DISCOVERY)) {
+		if (discoveryStartup == null) {
 			discoveryStartup = new DiscoveryStartup();
 		}
 	}
-	
 	public synchronized void initServer() throws Exception {
-		if (serverStartup == null && getPreferenceStore().getBoolean(PREF_START_SERVER)) {
+		if (serverStartup == null) {
 			serverStartup = new ServerStartup();
 		}
 	}
-	
+	public synchronized void registerServers() {
+		if (discoveryStartup != null && serverStartup != null) {
+			serverStartup.registerServers();
+		}
+	}
 	public synchronized boolean isDiscoveryActive() {
-		if (discoveryStartup == null) return false;
-		else return discoveryStartup.isActive();
+		if (discoveryStartup == null)
+			return false;
+		else
+			return discoveryStartup.isActive();
 	}
 	public synchronized boolean isServerActive() {
-		if (serverStartup == null) return false;
-		else return serverStartup.isActive();
+		if (serverStartup == null)
+			return false;
+		else
+			return serverStartup.isActive();
 	}
 	public synchronized void disposeDiscovery() {
 		if (discoveryStartup != null) {
@@ -155,15 +179,12 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		disposeServer();
 		disposeDiscovery();
 	}
-
 	public FontRegistry getFontRegistry() {
 		return this.fontRegistry;
 	}
-
 	public Shell getActiveShell() {
 		return this.getWorkbench().getDisplay().getActiveShell();
 	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -171,7 +192,6 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	 */
 	protected ImageRegistry createImageRegistry() {
 		registry = super.createImageRegistry();
-
 		registry.put(ClientPluginConstants.DECORATION_PROJECT, PlatformUI
 				.getWorkbench().getSharedImages().getImage(
 						ISharedImages.IMG_OBJ_FOLDER));
@@ -184,7 +204,6 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		registry.put(ClientPluginConstants.DECORATION_TASK, PlatformUI
 				.getWorkbench().getSharedImages().getImage(
 						ISharedImages.IMG_OBJ_ELEMENT));
-
 		registry.put(ClientPluginConstants.DECORATION_SEND, PlatformUI
 				.getWorkbench().getSharedImages().getImage(
 						ISharedImages.IMG_TOOL_UNDO));
@@ -199,14 +218,12 @@ public class ClientPlugin extends AbstractUIPlugin implements
 						ISharedImages.IMG_OBJS_INFO_TSK));
 		return registry;
 	}
-
 	/**
 	 * Returns the shared instance.
 	 */
 	public static ClientPlugin getDefault() {
 		return plugin;
 	}
-
 	/**
 	 * Returns the string from the plugin's resource bundle, or 'key' if not
 	 * found.
@@ -219,7 +236,6 @@ public class ClientPlugin extends AbstractUIPlugin implements
 			return key;
 		}
 	}
-
 	/**
 	 * Returns the plugin's resource bundle,
 	 */
@@ -233,5 +249,4 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		}
 		return resourceBundle;
 	}
-
 }

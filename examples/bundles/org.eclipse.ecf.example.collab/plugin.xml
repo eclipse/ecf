@@ -10,6 +10,12 @@
             category="org.eclipse.ecf.ui.viewcategory"
             name="ECF Collaboration"
             id="org.eclipse.ecf.example.collab.ui.LineChatView"/>
+      <view
+            category="org.eclipse.ecf.ui.viewcategory"
+            class="org.eclipse.ecf.example.collab.CollabDiscoveryView"
+            icon="icons/person.gif"
+            id="org.eclipse.ecf.example.collab.discoveryview"
+            name="ECF Dynamic Service Discovery"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">

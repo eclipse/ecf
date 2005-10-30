@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -18,12 +17,9 @@ import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
 import org.eclipse.ecf.provider.generic.TCPServerSOContainerGroup;
 
 public class ServerStartup {
-
 	static TCPServerSOContainerGroup serverGroups[] = null;
 	static final String SERVER_FILE_NAME = "ServerStartup.xml";
-
 	static List servers = new ArrayList();
-	
 	public ServerStartup() throws Exception {
 		InputStream ins = this.getClass().getResourceAsStream(SERVER_FILE_NAME);
 		if (ins != null) {
@@ -44,7 +40,8 @@ public class ServerStartup {
 				try {
 					s.dispose();
 				} catch (Exception e) {
-					ClientPlugin.log("Exception destroying server " + s.getConfig().getID());
+					ClientPlugin.log("Exception destroying server "
+							+ s.getConfig().getID());
 				}
 			}
 		}
@@ -56,7 +53,6 @@ public class ServerStartup {
 			serverGroups = null;
 		}
 	}
-
 	protected synchronized void createServers(InputStream ins) throws Exception {
 		ServerConfigParser scp = new ServerConfigParser();
 		List connectors = scp.load(ins);
@@ -68,26 +64,33 @@ public class ServerStartup {
 				serverGroups[j] = makeServerGroup(connect.getHostname(),
 						connect.getPort());
 				List groups = connect.getGroups();
-
 				for (Iterator g = groups.iterator(); g.hasNext();) {
 					NamedGroup group = (NamedGroup) g.next();
 					TCPServerSOContainer cont = makeServerContainer(group
 							.getIDForGroup(), serverGroups[j], group.getName(),
 							connect.getTimeout());
 					servers.add(cont);
-					if (ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_REGISTER_SERVER)) {
-						registerServer(cont);
-					}
-					ClientPlugin.log("ECF group server created: "+cont.getConfig().getID().getName());
+					ClientPlugin.log("ECF group server created: "
+							+ cont.getConfig().getID().getName());
 				}
 				serverGroups[j].putOnTheAir();
 				j++;
 			}
 		}
-
 	}
-
-	protected void registerServer(ISharedObjectContainer cont) throws URISyntaxException {
+	protected void registerServers() {
+		for (Iterator i = servers.iterator(); i.hasNext();) {
+			ISharedObjectContainer cont = (ISharedObjectContainer) i.next();
+			try {
+				registerServer(cont);
+			} catch (Exception e) {
+				ClientPlugin.log("Exception registering server "
+						+ cont.getID().getName() + " for discovery", e);
+			}
+		}
+	}
+	protected void registerServer(ISharedObjectContainer cont)
+			throws URISyntaxException {
 		DiscoveryStartup.registerService(cont.getID().toURI());
 	}
 	protected TCPServerSOContainerGroup makeServerGroup(String name, int port) {
@@ -95,7 +98,6 @@ public class ServerStartup {
 				port);
 		return group;
 	}
-
 	protected TCPServerSOContainer makeServerContainer(String id,
 			TCPServerSOContainerGroup group, String path, int keepAlive)
 			throws IDInstantiationException {
@@ -103,5 +105,4 @@ public class ServerStartup {
 		SOContainerConfig config = new SOContainerConfig(newServerID);
 		return new TCPServerSOContainer(config, group, path, keepAlive);
 	}
-
 }
