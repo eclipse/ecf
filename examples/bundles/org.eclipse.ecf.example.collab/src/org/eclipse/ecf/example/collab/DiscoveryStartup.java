@@ -103,7 +103,6 @@ public class DiscoveryStartup {
 		Map props = svcInfo.getProperties();
 		String type = (String) props.get(PROP_CONTAINER_TYPE_NAME);
 		if (type == null || type.equals("")) {
-			//action.setContainerType(CollabClient.GENERIC_CONTAINER_CLIENT_NAME);
 			type = CollabClient.GENERIC_CONTAINER_CLIENT_NAME;
 		} 
 		String username = System.getProperty("user.name");
@@ -116,8 +115,6 @@ public class DiscoveryStartup {
 			ClientPlugin.log("Exception connecting to service with info "+svcInfo,e);
 			return;
 		}
-		//action.setTargetID(targetID);
-		//action.setProject(ResourcesPlugin.getWorkspace().getRoot());
 		URIClientConnectAction action = new URIClientConnectAction(type,targetString,username,null,workspace);
 		// do it
 		action.run(null);

@@ -16,17 +16,21 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -41,6 +45,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
@@ -48,7 +53,11 @@ import org.eclipse.ui.part.ViewPart;
 
 
 public class DiscoveryView extends ViewPart {
-    protected static final int SERVICE_INFO_TIMEOUT = 3000;
+	public static final String DISCONNECT_ICON_DISABLED = "icons/disabled/terminate_co.gif";
+	public static final String DISCONNECT_ICON_ENABLED = "icons/enabled/terminate_co.gif";
+	public static final String CONNECT_ICON_ENABLED = "icons/enabled/add.gif";
+
+	protected static final int SERVICE_INFO_TIMEOUT = 3000;
 	protected static final int TREE_EXPANSION_LEVELS = 3;
 	private TreeViewer viewer;
 	private Action requestServiceInfoAction;
@@ -78,18 +87,20 @@ public class DiscoveryView extends ViewPart {
 		return false;
 	}
 	public void setDiscoveryController(final IDiscoveryController controller) {
-        Display.getDefault().syncExec(new Runnable() {
-            public void run() {
-        		DiscoveryView.this.controller = controller;
-        		if (controller != null) {
-        			setContainers(controller.getDiscoveryContainer(),controller.getContainer(),controller.getServiceTypes());
-        		} else {
-        			setContainers(null,null,null);
-        		}
-            }
-        });
+		this.controller = controller;
+		if (controller != null) {
+			setContainers(controller.getDiscoveryContainer(),controller.getContainer(),controller.getServiceTypes());
+			setConnectMenus(true);
+		} else {
+			setContainers(null,null,null);
+			setConnectMenus(false);
+		}
 	}
 	
+	protected void setConnectMenus(boolean connected) {
+		disconnectContainerAction.setEnabled(connected);
+		connectContainerAction.setEnabled(!connected);
+	}
 	protected void setContainers(IDiscoveryContainer dcontainer, IContainer socont, String [] svcTypes) {
 		this.dcontainer = dcontainer;
 		this.socontainer = socont;
@@ -161,6 +172,7 @@ public class DiscoveryView extends ViewPart {
 
 	class ViewContentProvider implements IStructuredContentProvider, 
 										   ITreeContentProvider {
+		protected static final String DISCOVERED_SERVICES = "Discovered Services";
 		private TreeParent invisibleRoot;
 		protected TreeParent root;
 		
@@ -194,7 +206,7 @@ public class DiscoveryView extends ViewPart {
 		}
 		private void initialize() {
 			invisibleRoot = new TreeParent(null,"",null);
-			root = new TreeParent(null,"Network Services",null);
+			root = new TreeParent(null,DISCOVERED_SERVICES,null);
 			invisibleRoot.addChild(root);
 		}
 		public void clear() {
@@ -504,13 +516,15 @@ public class DiscoveryView extends ViewPart {
 		
 		disconnectContainerAction = new Action() {
 			public void run() {
-				ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
-				if (vcp != null) {
-					if (isConnected()) {
-						if (controller != null) {
-							controller.disposeDiscoveryContainer(DiscoveryView.this);
+				if (MessageDialog.openConfirm(DiscoveryView.this.getViewSite()
+						.getShell(), "Stop discovery", "Stop service discovery?")) {
+					ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
+					if (vcp != null) {
+						if (isConnected()) {
+							controller.stopDiscovery();
 							setContainers(null,null,null);
 							clearAllServices();
+							setConnectMenus(controller.isDiscoveryStarted());
 						}
 					}
 				}
@@ -518,22 +532,33 @@ public class DiscoveryView extends ViewPart {
 		};
 		disconnectContainerAction.setText("Stop discovery");
 		disconnectContainerAction.setToolTipText("Stop discovery");
-		disconnectContainerAction.setEnabled(true);
+		disconnectContainerAction.setImageDescriptor(ImageDescriptor
+				.createFromURL(UiPlugin.getDefault().find(
+						new Path(DISCONNECT_ICON_ENABLED))));
+		disconnectContainerAction.setDisabledImageDescriptor(ImageDescriptor
+				.createFromURL(UiPlugin.getDefault().find(
+						new Path(DISCONNECT_ICON_DISABLED))));
+		disconnectContainerAction.setEnabled((isConnected() && controller.isDiscoveryStarted()));
 		
 		connectContainerAction = new Action() {
 			public void run() {
 				ViewContentProvider vcp = (ViewContentProvider) viewer.getContentProvider();
 				if (vcp != null) {
 					if (!isConnected()) {
-						if (controller != null) controller.setupDiscoveryContainer(DiscoveryView.this);
+						if (controller != null) {
+							controller.startDiscovery();
+							setConnectMenus(controller.isDiscoveryStarted());
+						}
 					}
 				}
 			}
 		};
 		connectContainerAction.setText("Start discovery");
-		connectContainerAction.setToolTipText("Start discovery");
-		connectContainerAction.setEnabled(true);
-		
+		connectContainerAction.setToolTipText("Start service discovery");
+		connectContainerAction.setEnabled(isConnected() && !controller.isDiscoveryStarted());
+		connectContainerAction.setImageDescriptor(ImageDescriptor
+				.createFromURL(UiPlugin.getDefault().find(
+						new Path(CONNECT_ICON_ENABLED))));
 	}
 	
 	private void fillContextMenu(IMenuManager manager) {
@@ -592,6 +617,23 @@ public class DiscoveryView extends ViewPart {
 		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
+		contributeToActionBars();
+	}
+
+	private void contributeToActionBars() {
+		IActionBars bars = getViewSite().getActionBars();
+		fillLocalPullDown(bars.getMenuManager());
+		fillLocalToolBar(bars.getToolBarManager());
+	}
+	private void fillLocalPullDown(IMenuManager manager) {
+		manager.add(connectContainerAction);
+		manager.add(new Separator());
+		manager.add(disconnectContainerAction);
+	}
+	private void fillLocalToolBar(IToolBarManager manager) {
+		manager.add(connectContainerAction);
+		manager.add(new Separator());
+		manager.add(disconnectContainerAction);
 	}
 
 	private void hookContextMenu() {

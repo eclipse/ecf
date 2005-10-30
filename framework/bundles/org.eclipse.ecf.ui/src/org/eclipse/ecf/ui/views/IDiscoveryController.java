@@ -9,6 +9,7 @@ public interface IDiscoveryController {
 	public IContainer getContainer();
 	public String [] getServiceTypes();
 	public void connectToService(IServiceInfo service);
-	public void setupDiscoveryContainer(DiscoveryView view);
-	public void disposeDiscoveryContainer(DiscoveryView view);
+	public void startDiscovery();
+	public boolean isDiscoveryStarted();
+	public void stopDiscovery();
 }
