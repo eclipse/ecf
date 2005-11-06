@@ -1,0 +1,161 @@
+package org.eclipse.ecf.core.sharedobject;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import org.eclipse.ecf.core.IIdentifiable;
+import org.eclipse.ecf.core.ISharedObject;
+import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.ISharedObjectContext;
+import org.eclipse.ecf.core.ISharedObjectManager;
+import org.eclipse.ecf.core.SharedObjectDescription;
+import org.eclipse.ecf.core.SharedObjectInitException;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.core.util.IEventProcessor;
+import org.eclipse.ecf.internal.core.Trace;
+
+/**
+ * Abstract base class for shared object implementation classes.
+ *
+ */
+public abstract class AbstractSharedObject implements ISharedObject,
+		IIdentifiable {
+	
+	private static final Trace trace = Trace.create("abstractsharedobject");
+	
+	private ISharedObjectConfig config = null;
+	private List eventProcessors = new Vector();
+	
+	public AbstractSharedObject() {
+		super();
+	}
+	public void init(ISharedObjectConfig initData)
+			throws SharedObjectInitException {
+		this.config = initData;
+		trace("init("+initData+")");
+		initialize();
+	}
+	protected void initialize() {
+		
+	}
+    protected SharedObjectDescription[] getReplicaDescriptions(ID [] receivers) {
+    	return null;
+    }
+	public void dispose(ID containerID) {
+		trace("disposed("+containerID+")");
+		config = null;
+	}
+	public Object getAdapter(Class adapter) {
+		return null;
+	}
+	public void handleEvent(Event event) {
+		trace("handleEvent("+event+")");
+		fireEventProcessors(event);
+	}
+	protected boolean addEventProcessor(IEventProcessor proc) {
+		return eventProcessors.add(proc);
+	}
+	protected boolean removeEventProcessor(IEventProcessor proc) {
+		return eventProcessors.remove(proc);
+	}
+	protected void clearEventProcessors() {
+		eventProcessors.clear();
+	}
+	protected void handleUnhandledEvent(Event event) {
+		trace("handleUnhandledEvent("+event+")");
+	}
+	protected void fireEventProcessors(Event event) {
+		if (event == null) return;
+		Event evt = event;
+		trace("fireEventProcessors("+event+")");
+		if (eventProcessors == null || eventProcessors.size()==0) {
+			handleUnhandledEvent(event);
+			return;
+		}
+		for(Iterator i=eventProcessors.iterator(); i.hasNext(); ) {
+			IEventProcessor ep = (IEventProcessor) i.next();
+			if (ep.acceptEvent(evt)) {
+				trace("eventProcessor="+ep+":event="+evt);
+				evt = ep.processEvent(evt);
+			} else {
+				trace("eventProcessor="+ep+" refused event="+evt);
+			}
+		}
+	}
+	public void handleEvents(Event[] events) {
+		trace("handleEvents("+Arrays.asList(events)+")");
+		if (events == null) return;
+		for(int i=0; i < events.length; i++) {
+			handleEvent(events[i]);
+		}
+	}
+	public ID getID() {
+		return getConfig().getSharedObjectID();
+	}
+	protected ISharedObjectConfig getConfig() {
+		return config;
+	}
+	protected ISharedObjectContext getContext() {
+		return getConfig().getContext();
+	}
+	protected ID getHomeID() {
+		return getConfig().getHomeContainerID();
+	}
+	protected ID getLocalID() {
+		return getContext().getLocalContainerID();
+	}
+	protected ID getGroupID() {
+		return getContext().getConnectedID();
+	}
+	protected boolean isPrimary() {
+		ID local = getLocalID();
+		ID home = getHomeID();
+		if (local == null || home == null) {
+			return false;
+		} else return (local.equals(home));
+	}
+	protected Map getProperties() {
+		return getConfig().getProperties();
+	}
+    protected void destroySelf() {
+    	trace("destroySelf()");
+        if (isPrimary()) {
+            try {
+                // Send destroy message to all known remotes
+                destroyRemote(null);
+            } catch (IOException e) {
+                traceStack("Exception sending destroy message to remotes", e);
+            }
+        }
+        destroySelfLocal();
+    }
+    protected void destroySelfLocal() {
+    	trace("destroySelfLocal()");
+        try {
+            ISharedObjectManager manager = getContext().getSharedObjectManager();
+            if (manager != null) {
+                manager.removeSharedObject(getID());
+            }
+        } catch (Exception e) {
+            traceStack("Exception in destroySelfLocal()",e);
+        }
+    }
+    protected void destroyRemote(ID remoteID) throws IOException {
+        trace("destroyRemote("+remoteID+")");
+    	getContext().sendDispose(remoteID);
+    }
+	private void trace(String msg) {
+		if (Trace.ON && trace != null) {
+			trace.msg(getID()+":"+msg);
+		}
+	}
+	private void traceStack(String msg, Throwable t) {
+		if (Trace.ON && trace != null) {
+			trace.dumpStack(t,getID()+":"+msg);
+		}
+	}
+}
