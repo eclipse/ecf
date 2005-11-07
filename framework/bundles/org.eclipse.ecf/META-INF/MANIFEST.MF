@@ -16,5 +16,6 @@ Provide-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.identity,
  org.eclipse.ecf.core.provider,
  org.eclipse.ecf.core.security,
+ org.eclipse.ecf.core.sharedobject,
  org.eclipse.ecf.core.user,
  org.eclipse.ecf.core.util
