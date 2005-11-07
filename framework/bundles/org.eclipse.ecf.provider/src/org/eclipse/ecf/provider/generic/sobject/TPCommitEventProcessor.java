@@ -141,7 +141,7 @@ public class TPCommitEventProcessor implements IEventProcessor {
 
 	/*
 	 * Implementation of IEventProcessor. These methods are entry point methods
-	 * for BaseSharedObject method dispatch to call
+	 * for AbstractSharedObject method dispatch to call
 	 */
 	/*
 	 * (non-Javadoc)
