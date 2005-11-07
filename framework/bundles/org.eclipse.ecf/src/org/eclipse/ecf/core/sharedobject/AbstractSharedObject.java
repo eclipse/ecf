@@ -66,7 +66,8 @@ public abstract class AbstractSharedObject implements ISharedObject,
     	trace("creationCompleted()");
     }
 	public void dispose(ID containerID) {
-		trace("disposed("+containerID+")");
+		trace("dispose("+containerID+")");
+		eventProcessors.clear();
 		config = null;
 	}
 	public Object getAdapter(Class adapter) {
