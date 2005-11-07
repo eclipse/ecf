@@ -32,9 +32,13 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.internal.core.Trace;
 
+/**
+ * Implementation of two-phase commit for transactional replication of shared objects.
+ *
+ */
 public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		ISharedObjectContainerTransaction {
-	public static final Trace trace = Trace.create("transactioneventprocessor");
+	public static final Trace trace = Trace.create("twophasecommiteventprocessor");
 	AbstractSharedObject sharedObject = null;
 	byte transactionState = ISharedObjectContainerTransaction.ACTIVE;
 	Object lock = new Object();

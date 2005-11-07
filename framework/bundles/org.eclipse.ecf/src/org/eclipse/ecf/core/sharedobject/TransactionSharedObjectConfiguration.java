@@ -1,5 +1,9 @@
 package org.eclipse.ecf.core.sharedobject;
 
+/**
+ * Configuration parameters for transaction shared object creation and replication. 
+ *
+ */
 public class TransactionSharedObjectConfiguration implements ITransactionSharedObjectConfiguration {
 	
 	protected int timeout = DEFAULT_TIMEOUT;

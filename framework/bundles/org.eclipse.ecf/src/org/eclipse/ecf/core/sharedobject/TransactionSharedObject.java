@@ -5,7 +5,7 @@ import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Transaction shared object.  Provides a shared object that replicates itself via two phase commit
+ * Shared object superclass that replicates transactionally.  Provides a shared object that replicates itself via two phase commit
  * protocol.
  *
  */

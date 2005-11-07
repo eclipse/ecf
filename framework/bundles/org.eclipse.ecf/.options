@@ -6,3 +6,5 @@ org.eclipse.ecf/debug/sharedobjectcontainerfactory = true
 org.eclipse.ecf/debug/idfactory = true
 org.eclipse.ecf/debug/connectionfactory = true
 org.eclipse.ecf/debug/factoryinit = true
+org.eclipse.ecf/debug/abstractsharedobject = true
+org.eclipse.ecf/debug/twophasecommiteventprocessor = true
