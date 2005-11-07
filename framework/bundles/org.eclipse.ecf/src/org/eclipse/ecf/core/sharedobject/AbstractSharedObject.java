@@ -39,11 +39,31 @@ public abstract class AbstractSharedObject implements ISharedObject,
 		trace("init("+initData+")");
 		initialize();
 	}
-	protected void initialize() {
-		
-	}
+	/**
+	 * Initialize this shared object.  Subclasses may override as appropriate.
+	 *
+	 */
+	protected void initialize() {}
+	/**
+	 * Called by replication strategy code (e.g. two phase commit) to associate SharedObjectDescription with a target receiver. 
+	 * This implementation returns null, indicating that no replicas will be created.  Subclasses may override as appropriate.
+	 * 
+	 * @param receivers an ID array of the target containers to receive replicas of this shared object
+	 * @return an array of SharedObjectDescriptions.  The returned SharedObjectDescriptions must be of same 
+	 * length as receivers array, or if receivers is null (meaning all in group) then of length 1.  Returning null means
+	 * no replicas are to be sent.
+	 */
     protected SharedObjectDescription[] getReplicaDescriptions(ID [] receivers) {
     	return null;
+    }
+    /**
+     * Called by replication strategy code (e.g. two phase commit) when creation is completed (i.e. when transactional 
+     * replication completed successfully).  Subclasses that need to be notified when creation is completed should 
+     * override this method.
+     *
+     */
+    protected void creationCompleted() {
+    	trace("creationCompleted()");
     }
 	public void dispose(ID containerID) {
 		trace("disposed("+containerID+")");

@@ -4,21 +4,27 @@ import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Transaction shared object.  Provides a shared object that replicates itself via two phase commit
+ * protocol.
+ *
+ */
 public class TransactionSharedObject extends AbstractSharedObject {
 	
-	protected TwoPhaseCommitEventProcessor transaction = null;
-	protected int timeout = -1;
+	protected ISharedObjectContainerTransaction transaction = null;
+	protected TransactionSharedObjectConfiguration configuration = null;
 	
 	public TransactionSharedObject() {
 		super();
 	}
 	public TransactionSharedObject(int timeout) {
 		this();
-		this.timeout = timeout;
+		configuration = new TransactionSharedObjectConfiguration(timeout);
 	}
 	protected void initialize() {
-		transaction = new TwoPhaseCommitEventProcessor(this,timeout);
-		addEventProcessor(transaction);
+		TwoPhaseCommitEventProcessor trans = new TwoPhaseCommitEventProcessor(this,configuration);
+		addEventProcessor(trans);
+		transaction = trans;
 	}
     public SharedObjectDescription getReplicaDescription(ID receiver) {
     	return new SharedObjectDescription(getID(), getClass().getName(),
@@ -37,7 +43,7 @@ public class TransactionSharedObject extends AbstractSharedObject {
     	}
     	return descriptions;
 	}
-	
+    
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(ISharedObjectContainerTransaction.class)) {
 			return transaction;
