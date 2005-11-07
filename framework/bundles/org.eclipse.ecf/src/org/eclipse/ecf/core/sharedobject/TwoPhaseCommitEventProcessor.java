@@ -207,7 +207,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		}
 	}
 	protected void handlePrimaryActivated(ISharedObjectActivatedEvent event) {
-		trace("hanldePrimaryActivated("+event+")");
+		trace("handlePrimaryActivated("+event+")");
 		// if we don't have any exceptions replicate to all remotes
 		ID[] groupMembers = getContext().getGroupMemberIDs();
 		ID[] replicaContainers = groupMembers;
@@ -259,7 +259,6 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		trace("handleCreateResponse(" + event + ")");
 		if (isPrimary()) {
 			synchronized (lock) {
-				trace("handleCreateResponse(" + event + ")");
 				Throwable except = event.getException();
 				ID remoteID = event.getRemoteContainerID();
 				long ident = event.getSequence();
@@ -279,7 +278,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		}
 	}
 	protected void handleDeparted(ISharedObjectContainerDisconnectedEvent event) {
-		trace("handleCreateResponse(" + event + ")");
+		trace("handleDeparted(" + event + ")");
 		if (isPrimary()) {
 			ID remoteID = event.getTargetID();
 			synchronized (lock) {
@@ -316,7 +315,6 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 				+ ")");
 	}
 	protected void sendCommit() throws SharedObjectAddAbortException {
-		trace("sendCommit()");
 		try {
 			getContext().sendMessage(null,
 					new SharedObjectCommitEvent(getSharedObject().getID()));
