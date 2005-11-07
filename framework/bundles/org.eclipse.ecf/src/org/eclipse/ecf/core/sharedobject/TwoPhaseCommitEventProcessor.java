@@ -173,7 +173,11 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		}
 	}
 	protected void replicateTo(ID[] remotes) {
-		trace("replicateTo("+Arrays.asList(remotes)+")");
+		if (remotes == null) {
+			trace("replicateTo(null)");
+		} else {
+			trace("replicateTo("+Arrays.asList(remotes)+")");
+		}
 		try {
 			// Get current group membership
 			ISharedObjectContext context = getSharedObject().getContext();
