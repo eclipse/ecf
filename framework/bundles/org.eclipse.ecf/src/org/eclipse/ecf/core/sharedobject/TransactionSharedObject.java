@@ -12,14 +12,19 @@ import org.eclipse.ecf.core.identity.ID;
 public class TransactionSharedObject extends AbstractSharedObject {
 	
 	protected ISharedObjectContainerTransaction transaction = null;
-	protected TransactionSharedObjectConfiguration configuration = null;
+	protected ITransactionSharedObjectConfiguration configuration = null;
 	
 	public TransactionSharedObject() {
 		super();
+		configuration = new TransactionSharedObjectConfiguration();
 	}
 	public TransactionSharedObject(int timeout) {
-		this();
+		super();
 		configuration = new TransactionSharedObjectConfiguration(timeout);
+	}
+	public TransactionSharedObject(ITransactionSharedObjectConfiguration config) {
+		super();
+		configuration = config;
 	}
 	protected void initialize() {
 		TwoPhaseCommitEventProcessor trans = new TwoPhaseCommitEventProcessor(this,configuration);

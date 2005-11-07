@@ -40,7 +40,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	Object lock = new Object();
 	List participants = new Vector();
 	Map failed = new HashMap();
-	int timeout = TransactionSharedObjectConfiguration.DEFAULT_TIMEOUT;
+	int timeout = ITransactionSharedObjectConfiguration.DEFAULT_TIMEOUT;
 	int minFailedToAbort = 0;
 	long identifier = 0;
 	ID[] exceptions;
@@ -51,7 +51,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		this.timeout = timeout;
 		this.exceptions = except;
 	}
-	public TwoPhaseCommitEventProcessor(AbstractSharedObject bse, TransactionSharedObjectConfiguration config) {
+	public TwoPhaseCommitEventProcessor(AbstractSharedObject bse, ITransactionSharedObjectConfiguration config) {
 		this.sharedObject = bse;
 		if (config == null) {
 			config = new TransactionSharedObjectConfiguration();

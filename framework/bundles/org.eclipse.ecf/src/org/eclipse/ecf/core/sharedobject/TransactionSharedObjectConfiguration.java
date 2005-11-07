@@ -1,9 +1,6 @@
 package org.eclipse.ecf.core.sharedobject;
 
-public class TransactionSharedObjectConfiguration {
-	
-	public static final int DEFAULT_TIMEOUT = 30000;
-	public static final int DEFAULT_MIN_FAILED_TO_ABORT = 0;
+public class TransactionSharedObjectConfiguration implements ITransactionSharedObjectConfiguration {
 	
 	protected int timeout = DEFAULT_TIMEOUT;
 	protected int minFailedToAbort = DEFAULT_MIN_FAILED_TO_ABORT;
@@ -18,9 +15,15 @@ public class TransactionSharedObjectConfiguration {
 		this.timeout = timeout;
 		this.minFailedToAbort = minFailedToAbort;
 	}
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.ITransactionSharedObjectConfiguration#getTimeout()
+	 */
 	public int getTimeout() {
 		return timeout;
 	}
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.ITransactionSharedObjectConfiguration#getMinFailedToAbort()
+	 */
 	public int getMinFailedToAbort() {
 		return minFailedToAbort;
 	}
