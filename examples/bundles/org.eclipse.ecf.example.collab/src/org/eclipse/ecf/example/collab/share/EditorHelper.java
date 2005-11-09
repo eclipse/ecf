@@ -11,6 +11,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 public class EditorHelper {
 
@@ -27,6 +28,16 @@ public class EditorHelper {
 	    return part;
 	}
 	
+	protected ITextEditor openTextEditorForFile(IFile file) throws PartInitException {
+		IEditorPart editor = openEditorForFile(file);
+		if (editor != null && (editor instanceof ITextEditor)) {
+			return (ITextEditor) editor;
+		} else return null;
+	}
+	
+	protected void setTextEditorSelection(ITextEditor textEditor, int offset, int length) {
+		textEditor.selectAndReveal(offset, length);
+	}
 	protected String getEditorIdForFile(IFile file) {
 		IWorkbench wb = getWorkbenchWindow().getWorkbench();
 		IEditorRegistry er = wb.getEditorRegistry();

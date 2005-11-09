@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.discovery,
  org.eclipse.ecf.provider,
  org.eclipse.ui.editors,
- org.eclipse.ui.ide
+ org.eclipse.ui.ide,
+ org.eclipse.ui.workbench.texteditor
 Export-Package: org.eclipse.ecf.example.collab, org.eclipse.ecf.example.collab.share, org.eclipse.ecf.example.collab.share.url, org.eclipse.ecf.example.collab.share.io
 Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.example.collab
