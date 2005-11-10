@@ -21,11 +21,19 @@ public class EditorHelper {
 		return window;
 	}
 	protected IEditorPart openEditorForFile(IFile file) throws PartInitException {
+		IWorkbenchPage page = getWorkbenchWindow().getActivePage();
 		IEditorInput input = new FileEditorInput(file);
-		String editorId = getEditorIdForFile(file);
-	    IWorkbenchPage page = getWorkbenchWindow().getActivePage();
-    	IEditorPart part = page.openEditor(input, editorId);
-	    return part;
+		// try to find an open editor with this input
+		IEditorPart part = page.findEditor(input);
+		if (part != null) {
+			// found one, activate it
+			page.activate(part);
+		} else {
+			// no editor found, open a new one
+			String editorId = getEditorIdForFile(file);
+			part = page.openEditor(input, editorId);
+		}
+		return part;
 	}
 	
 	protected ITextEditor openTextEditorForFile(IFile file) throws PartInitException {
