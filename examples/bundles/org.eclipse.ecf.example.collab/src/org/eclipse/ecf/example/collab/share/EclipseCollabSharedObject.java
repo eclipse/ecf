@@ -17,6 +17,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Date;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -37,6 +38,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -863,6 +865,43 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 	}
 
+	public void sendLaunchEditorForFile(User touser, String resourceName) {
+		ID receiver = null;
+		if (touser != null) {
+			receiver = touser.getUserID();
+		}
+		try {
+			SharedObjectMsg m = SharedObjectMsg.makeMsg(null, "handleLaunchEditorForFile",
+					getUser(), resourceName);
+			forwardMsgTo(receiver, m);
+			if (receiver == null) {
+				sendSelf(m);
+			}
+		} catch (Exception e) {
+			debugdump(e, "Exception on sendLaunchEditorForFile to "
+					+ touser);
+		}
+	}
+	protected IEditorPart showEditorForFile(IFile file) throws PartInitException {
+		IWorkbenchWindow ww = PlatformUI.getWorkbench()
+		.getActiveWorkbenchWindow();
+		EditorHelper eh = new EditorHelper(ww);
+		try {
+			return eh.openEditorForFile(file);
+		} catch (PartInitException e) {
+			// TODO: handle exception
+			e.printStackTrace(System.err);
+			return null;
+		}
+	}
+
+	protected void handleLaunchEditorForFile(final User touser, final String resourceName) {
+		// XXX TODO
+	}
+	
+	
+	
+	
 	public void sendShowViewWithID(User touser, String id, String secID,
 			Integer mode) {
 		ID receiver = null;

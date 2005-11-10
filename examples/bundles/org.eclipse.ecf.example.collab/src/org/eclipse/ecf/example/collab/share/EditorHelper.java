@@ -17,6 +17,9 @@ public class EditorHelper {
 
 	IWorkbenchWindow window = null;
 	
+	public EditorHelper(IWorkbenchWindow window) {
+		this.window = window;
+	}
 	protected IWorkbenchWindow getWorkbenchWindow() {
 		return window;
 	}
