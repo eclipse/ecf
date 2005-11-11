@@ -58,6 +58,23 @@
                menubarPath="org.eclipse.ecf.example.collab.menu1/group1"
                id="org.eclipse.ecf.client.joingroupwizardaction"/>
       </objectContribution>
+      <objectContribution
+            adaptable="true"
+            id="org.eclipse.ecf.example.collab.contribution2"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               id="org.eclipse.ecf.example.collab.menu1"
+               label="ECF"
+               path="additions">
+            <separator name="group1"/>
+            <separator name="group2"/>
+         </menu>
+         <action
+               class="org.eclipse.ecf.example.collab.ui.OpenSharedEditorAction"
+               id="org.eclipse.ecf.client.editfileaction"
+               label="Open Shared Editor"
+               menubarPath="org.eclipse.ecf.example.collab.menu1/group1"/>
+      </objectContribution>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
