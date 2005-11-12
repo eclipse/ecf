@@ -37,6 +37,44 @@ public class OpenSharedEditorAction extends ActionDelegate implements
 	public OpenSharedEditorAction() {
 		super();
 	}
+	public void selectionChanged(IAction action, ISelection selection) {
+		setFileForSelection(action,selection);
+	}
+	protected IProject getProjectForResource(IResource res) {
+		IProject proj = res.getProject();
+		return proj;
+	}
+	protected void setFileForSelection(IAction action, ISelection s) {
+		if (s instanceof IStructuredSelection) {
+			IStructuredSelection ss = (IStructuredSelection) s;
+			Object obj = ss.getFirstElement();
+			if (obj instanceof IResource) {
+				IResource res = (IResource) obj;
+				IProject proj = getProjectForResource(res);
+				ClientEntry entry = isConnected(proj);
+				if (entry == null) {
+					action.setEnabled(false);
+					return;
+				} else {
+					action.setEnabled(true);
+					if (obj instanceof IFile) {
+						file = (IFile) obj;
+					} else if (obj instanceof IJavaElement) {
+						IJavaElement je = (IJavaElement) obj;
+						IResource r = null;
+						try {
+							r = je.getCorrespondingResource();
+						} catch (JavaModelException e) {
+							r = null;;
+						}
+						if (r != null && r.getType() == IResource.FILE) {
+							file = (IFile) r;
+						}
+					}
+				}
+			}
+		}
+	}
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 		file = null;
 		Object o = targetPart.getAdapter(IShowInSource.class);
@@ -44,24 +82,7 @@ public class OpenSharedEditorAction extends ActionDelegate implements
 			IShowInSource sis = (IShowInSource) o;
 			ShowInContext sc = sis.getShowInContext();
 			ISelection s = sc.getSelection();
-			if (s instanceof IStructuredSelection) {
-				IStructuredSelection ss = (IStructuredSelection) s;
-				Object obj = ss.getFirstElement();
-				if (obj instanceof IFile) {
-					file = (IFile) obj;
-				} else if (obj instanceof IJavaElement) {
-					IJavaElement je = (IJavaElement) obj;
-					IResource res = null;
-					try {
-						res = je.getCorrespondingResource();
-					} catch (JavaModelException e) {
-						res = null;;
-					}
-					if (res != null && res.getType() == IResource.FILE) {
-						file = (IFile) res;
-					}
-				}
-			}
+			setFileForSelection(action, s);
 		}
 	}
 	protected IWorkbench getWorkbench() {
@@ -69,24 +90,26 @@ public class OpenSharedEditorAction extends ActionDelegate implements
 	}
 	
 	protected ClientEntry isConnected(IResource res) {
+		if (res == null) return null;
 		CollabClient client = CollabClient.getDefault();
 		ClientEntry entry = client.isConnected(res,
 				CollabClient.GENERIC_CONTAINER_CLIENT_NAME);
 		return entry;
 	}
+	
 	public void run(IAction action) {
 		if (file == null)
 			return;
-		IProject project = file.getProject();
+		IProject project = getProjectForResource(file);
 		ClientEntry entry = isConnected(project);
 		if (entry == null) {
 			MessageDialog
 					.openInformation(
 							getWorkbench().getDisplay().getActiveShell(),
-							"Not Connected",
-							"Not currently connected for project '"
+							"Project Not Connected to Collaboration Group",
+							"Project '"
 									+ project.getName()
-									+ "'.  To connect, open context menu for project and choose ECF->Join ECF Collaboration...");
+									+ "' not connected to any collaboration group.  To connect, open context menu for project and choose ECF->Join ECF Collaboration...");
 			return;
 		}
 		EclipseCollabSharedObject collabsharedobject = entry.getObject();
