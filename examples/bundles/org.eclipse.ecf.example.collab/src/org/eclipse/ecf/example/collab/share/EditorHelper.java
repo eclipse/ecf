@@ -45,7 +45,11 @@ public class EditorHelper {
 			return (ITextEditor) editor;
 		} else return null;
 	}
-	
+	protected void openAndSelectForFile(IFile file, int offset, int length) throws PartInitException {
+		ITextEditor textEditor = openTextEditorForFile(file);
+		if (textEditor == null) return;
+		setTextEditorSelection(textEditor,offset,length);
+	}
 	protected void setTextEditorSelection(ITextEditor textEditor, int offset, int length) {
 		textEditor.selectAndReveal(offset, length);
 	}

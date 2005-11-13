@@ -12,6 +12,7 @@ package org.eclipse.ecf.example.collab.share;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Date;
@@ -125,6 +126,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 	}
 	public void debugdump(Exception e, String aString) {
+		ClientPlugin.log(aString,e);
 	}
 	public void debugmsg(String aString) {
 		// ClientPlugin.log(aString);
@@ -133,12 +135,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		// Make sure we disconnect
 		try {
 			if (isHost()) {
-				try {
-					// try to disconnect
-					leaveGroup();
-				} catch (Exception e) {
-					debugdump(e, "Exception leaving space");
-				}
+				leaveGroup();
 			}
 		} catch (Exception e) {
 			debugdump(e, "Exception in destroySelf");
@@ -637,10 +634,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			// return CVSWorkspaceRoot.isSharedWithCVS(getProject());
 			return false;
 		} catch (Exception e) {
-			ClientPlugin
-					.log(
-							"CVS Exception calling isSharedWithCVS in TeamUpdateAction",
-							e);
+			debugdump(e,"CVS Exception calling isSharedWithCVS in TeamUpdateAction");
 			return false;
 		}
 	}
@@ -774,6 +768,50 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			debugdump(e, "Exception showing view");
 		}
 	}
+	public static class SharedMarker implements Serializable {
+		private static final long serialVersionUID = 7419507867486828728L;
+		String message = null;
+		Integer offset = null;
+		Integer length = null;
+		
+		public SharedMarker(String message, Integer offset, Integer length) {
+			this.message = message;
+			this.offset = offset;
+			this.length = length;
+		}
+		public String getMessage() {
+			return message;
+		}
+		public Integer getOffset() {
+			return offset;
+		}
+		public Integer getLength() {
+			return length;
+		}
+		public String toString() {
+			StringBuffer buf = new StringBuffer("SharedMarker[");
+			buf.append("message=").append(message).append(";");
+			buf.append("offset=").append(offset).append(";");
+			buf.append("length=").append(length).append("]");
+			return buf.toString();
+		}
+	}
+	public void sendAddMarkerForFile(User touser, String resourceName, int offset, int length) {
+		ID receiver = null;
+		if (touser != null) {
+			receiver = touser.getUserID();
+		}
+		try {
+			SharedObjectMsg m = SharedObjectMsg.makeMsg(null,
+					"handleAddMarkerForFile", getUser(), resourceName, new SharedMarker("shared marker",new Integer(offset), new Integer(length)));
+			forwardMsgTo(receiver, m);
+			if (receiver == null) {
+				sendSelf(m);
+			}
+		} catch (Exception e) {
+			debugdump(e, "Exception on sendAddMarkerForFile to " + touser);
+		}
+	}
 	public void sendLaunchEditorForFile(User touser, String resourceName) {
 		ID receiver = null;
 		if (touser != null) {
@@ -803,11 +841,35 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				try {
 					eh.openEditorForFile(file);
 				} catch (PartInitException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					debugdump(e,"Exception in showEditorForFile");
 				}
 			}
 		});
+	}
+	protected void addMarkerForFile(final IFile file, final SharedMarker marker) {
+		trace("addMarkerForFile("+file+")");
+		if (file == null) {
+			return;
+		}
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				IWorkbench wb = PlatformUI.getWorkbench();
+				IWorkbenchWindow ww = wb.getActiveWorkbenchWindow();
+				EditorHelper eh = new EditorHelper(ww);
+				Integer offset = marker.getOffset();
+			    Integer length = marker.getLength();
+				try {
+					eh.openAndSelectForFile(file, (offset==null)?0:offset.intValue(), (length==null)?0:length.intValue());
+				} catch (PartInitException e) {
+					debugdump(e,"Exception in addMarkerForFile");
+				}
+			}
+		});
+	}
+	protected void handleAddMarkerForFile(final User touser,
+			final String resourceName, SharedMarker marker) {
+		trace("handleAddMarkerForFile(" + touser + "," + resourceName + ","+marker+")");
+		addMarkerForFile(getLocalFileForRemote(resourceName),marker);
 	}
 	protected void handleLaunchEditorForFile(final User touser,
 			final String resourceName) {

@@ -70,7 +70,7 @@
             <separator name="group2"/>
          </menu>
          <action
-               class="org.eclipse.ecf.example.collab.ui.OpenSharedEditorAction"
+               class="org.eclipse.ecf.example.collab.actions.OpenSharedEditorAction"
                id="org.eclipse.ecf.client.editfileaction"
                label="Open Shared Editor"
                menubarPath="org.eclipse.ecf.example.collab.menu1/group1"/>
@@ -128,6 +128,42 @@
                value="true"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.isServer"/>
       </containerFactory>
+   </extension>
+
+   <extension id="org.eclipse.ecf.example.collab.marker" point="org.eclipse.core.resources.markers" name="ECF Marker">
+	   <persistent value="false"/>
+	   <super type="org.eclipse.core.resources.textmarker"/>
+	   <attribute name="owner"/>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            targetID="#TextRulerContext"
+            id="org.eclipse.ecf.texteditor.ruler.context.actions">
+         <action
+               label="Share Selection"
+               class="org.eclipse.ecf.example.collab.actions.SetSharedEditorSelectionAction"
+               tooltip="Share Selection to ECF Remotes"
+               menubarPath="additions"
+               id="org.eclipse.ecf.example.collab.ui.text.SetSharedEditorSelectionAction">
+         </action>
+      </viewerContribution>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            targetID="#CompilationUnitRulerContext"
+            id="org.eclipse.ecf.javaeditor.ruler.context.actions">
+         <action
+               label="Share Selection"
+               tooltip="Share Selection to ECF Remotes"
+               class="org.eclipse.ecf.example.collab.actions.SetSharedEditorSelectionAction"
+               menubarPath="add"
+               id="org.eclipse.ecf.example.collab.ui.java.SetSharedEditorSelectionAction">
+         </action>
+       </viewerContribution>
    </extension>
 
 </plugin>

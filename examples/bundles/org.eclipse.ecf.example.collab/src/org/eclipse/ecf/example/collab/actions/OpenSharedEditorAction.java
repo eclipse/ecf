@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.example.collab.ui;
+package org.eclipse.ecf.example.collab.actions;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -23,6 +23,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
@@ -32,57 +33,53 @@ import org.eclipse.ui.part.ShowInContext;
 
 public class OpenSharedEditorAction extends ActionDelegate implements
 		IObjectActionDelegate {
+	
 	IFile file;
-
+	
 	public OpenSharedEditorAction() {
 		super();
-	}
-	public void selectionChanged(IAction action, ISelection selection) {
-		setFileForSelection(action,selection);
 	}
 	protected IProject getProjectForResource(IResource res) {
 		IProject proj = res.getProject();
 		return proj;
 	}
 	protected void setFileForSelection(IAction action, ISelection s) {
+		action.setEnabled(false);
+		file = null;
 		if (s instanceof IStructuredSelection) {
 			IStructuredSelection ss = (IStructuredSelection) s;
 			Object obj = ss.getFirstElement();
 			if (obj instanceof IResource) {
-				IResource res = (IResource) obj;
-				IProject proj = getProjectForResource(res);
-				ClientEntry entry = isConnected(proj);
-				if (entry == null) {
-					action.setEnabled(false);
-					return;
-				} else {
-					action.setEnabled(true);
-					if (obj instanceof IFile) {
-						file = (IFile) obj;
-					} else if (obj instanceof IJavaElement) {
-						IJavaElement je = (IJavaElement) obj;
-						IResource r = null;
-						try {
-							r = je.getCorrespondingResource();
-						} catch (JavaModelException e) {
-							r = null;;
-						}
-						if (r != null && r.getType() == IResource.FILE) {
-							file = (IFile) r;
-						}
+				action.setEnabled(true);
+				// Then try to set relevant file
+				if (obj instanceof IFile) {
+					file = (IFile) obj;
+				} else if (obj instanceof IJavaElement) {
+					IJavaElement je = (IJavaElement) obj;
+					IResource r = null;
+					try {
+						r = je.getCorrespondingResource();
+					} catch (JavaModelException e) {
+						r = null;;
+					}
+					if (r != null && r.getType() == IResource.FILE) {
+						file = (IFile) r;
 					}
 				}
 			}
-		}
+		} 
 	}
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+		action.setEnabled(false);
 		file = null;
-		Object o = targetPart.getAdapter(IShowInSource.class);
-		if (o != null) {
-			IShowInSource sis = (IShowInSource) o;
-			ShowInContext sc = sis.getShowInContext();
-			ISelection s = sc.getSelection();
-			setFileForSelection(action, s);
+		if (targetPart instanceof IViewPart) {
+			Object o = targetPart.getAdapter(IShowInSource.class);
+			if (o != null) {
+				IShowInSource sis = (IShowInSource) o;
+				ShowInContext sc = sis.getShowInContext();
+				ISelection s = sc.getSelection();
+				setFileForSelection(action, s);
+			}
 		}
 	}
 	protected IWorkbench getWorkbench() {
@@ -98,8 +95,9 @@ public class OpenSharedEditorAction extends ActionDelegate implements
 	}
 	
 	public void run(IAction action) {
-		if (file == null)
-			return;
+		if (file == null) {
+			return;			
+		}
 		IProject project = getProjectForResource(file);
 		ClientEntry entry = isConnected(project);
 		if (entry == null) {
