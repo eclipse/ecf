@@ -130,8 +130,9 @@
       </containerFactory>
    </extension>
 
-   <extension id="org.eclipse.ecf.example.collab.marker" point="org.eclipse.core.resources.markers" name="ECF Marker">
-	   <persistent value="false"/>
+   <extension id="org.eclipse.ecf.example.collab.sharedmarker" point="org.eclipse.core.resources.markers" name="ECF Marker">
+	   <persistent value="true"/>
+       <super type="org.eclipse.core.resources.problemmarker"/>
 	   <super type="org.eclipse.core.resources.textmarker"/>
 	   <attribute name="owner"/>
    </extension>

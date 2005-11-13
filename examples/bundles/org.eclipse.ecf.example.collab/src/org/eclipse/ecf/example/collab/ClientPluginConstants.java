@@ -12,6 +12,8 @@
 package org.eclipse.ecf.example.collab;
 
 public interface ClientPluginConstants {
+	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab";
+
 	public static final String DEFAULT_WIN32_APPSHARE_NAME = "appsharewin32display";
     public static final String DEFAULT_FILE_TRANSFER_CHUNKTIME_NAME = "filetransferchunksize";
     public static final String DEFAULT_FILE_TRANSFER_DELAY_NAME= "filetransferdelay";
@@ -45,4 +47,6 @@ public interface ClientPluginConstants {
 	public static final String DECORATION_PRIVATE = "private";
 	public static final String DECORATION_SYSTEM_MESSAGE = "system message";
 	
+	public static final String SHARED_MARKER_TYPE = "org.eclipse.ecf.example.collab.sharedmarker";
+	public static final String SHARED_MARKER_KEY = "owner";
 }

@@ -91,9 +91,12 @@ public class SetSharedEditorSelectionAction implements IEditorActionDelegate {
 		}
 		EclipseCollabSharedObject collabsharedobject = entry.getObject();
 		if (collabsharedobject != null) {
-			collabsharedobject.sendAddMarkerForFile(null, file
+			collabsharedobject.sendOpenAndSelectForFile(null, file
 					.getProjectRelativePath().toString(), textSelection
 					.getOffset(), textSelection.getLength());
+//			collabsharedobject.sendAddMarkerForFile(null, file
+//					.getProjectRelativePath().toString(), textSelection
+//					.getOffset(), textSelection.getLength());
 		}
 	}
 	public void selectionChanged(IAction action, ISelection selection) {

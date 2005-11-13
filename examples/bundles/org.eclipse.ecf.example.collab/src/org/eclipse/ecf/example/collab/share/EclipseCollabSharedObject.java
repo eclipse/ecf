@@ -51,6 +51,10 @@ import org.eclipse.ui.part.ViewPart;
 
 public class EclipseCollabSharedObject extends GenericSharedObject implements
 		LineChatHandler, EclipseProject {
+	
+	protected static final String SHARED_MARKER_TYPE = ClientPlugin.SHARED_MARKER_TYPE;
+	protected static final String SHARED_MARKER_KEY = ClientPlugin.SHARED_MARKER_KEY;
+	
 	protected static final String CHAT_VIEW_ID = LineChatView.class.getName();
 	protected static String DEFAULTTREETOPLABEL = "Presence";
 	public static final String ECLIPSEOBJECTNAME = "chat";
@@ -803,7 +807,23 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 		try {
 			SharedObjectMsg m = SharedObjectMsg.makeMsg(null,
-					"handleAddMarkerForFile", getUser(), resourceName, new SharedMarker("shared marker",new Integer(offset), new Integer(length)));
+					"handleAddMarkerForFile", getUser(), resourceName, new SharedMarker("ECF marker",new Integer(offset), new Integer(length)));
+			forwardMsgTo(receiver, m);
+			if (receiver == null) {
+				sendSelf(m);
+			}
+		} catch (Exception e) {
+			debugdump(e, "Exception on sendAddMarkerForFile to " + touser);
+		}
+	}
+	public void sendOpenAndSelectForFile(User touser, String resourceName, int offset, int length) {
+		ID receiver = null;
+		if (touser != null) {
+			receiver = touser.getUserID();
+		}
+		try {
+			SharedObjectMsg m = SharedObjectMsg.makeMsg(null,
+					"handleOpenAndSelectForFile", getUser(), resourceName, new SharedMarker("ECF marker",new Integer(offset), new Integer(length)));
 			forwardMsgTo(receiver, m);
 			if (receiver == null) {
 				sendSelf(m);
@@ -846,8 +866,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			}
 		});
 	}
-	protected void addMarkerForFile(final IFile file, final SharedMarker marker) {
-		trace("addMarkerForFile("+file+")");
+	protected void openAndSelectForFile(final IFile file, final SharedMarker marker) {
+		trace("openAndSelectForFile("+file+")");
 		if (file == null) {
 			return;
 		}
@@ -860,7 +880,25 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			    Integer length = marker.getLength();
 				try {
 					eh.openAndSelectForFile(file, (offset==null)?0:offset.intValue(), (length==null)?0:length.intValue());
-				} catch (PartInitException e) {
+				} catch (Exception e) {
+					debugdump(e,"Exception in addMarkerForFile");
+				}
+			}
+		});
+	}
+	protected void addMarkerForFile(final IFile file, final SharedMarker marker) {
+		trace("addMarkerForFile("+file+")");
+		if (file == null) {
+			return;
+		}
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				IWorkbench wb = PlatformUI.getWorkbench();
+				IWorkbenchWindow ww = wb.getActiveWorkbenchWindow();
+				EditorHelper eh = new EditorHelper(ww);
+				try {
+					eh.openAndAddMarkerForFile(file, marker);
+				} catch (Exception e) {
 					debugdump(e,"Exception in addMarkerForFile");
 				}
 			}
@@ -870,6 +908,11 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			final String resourceName, SharedMarker marker) {
 		trace("handleAddMarkerForFile(" + touser + "," + resourceName + ","+marker+")");
 		addMarkerForFile(getLocalFileForRemote(resourceName),marker);
+	}
+	protected void handleOpenAndSelectForFile(final User touser,
+			final String resourceName, SharedMarker marker) {
+		trace("handleOpenAndSelectForFile(" + touser + "," + resourceName + ","+marker+")");
+		openAndSelectForFile(getLocalFileForRemote(resourceName),marker);
 	}
 	protected void handleLaunchEditorForFile(final User touser,
 			final String resourceName) {
