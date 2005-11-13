@@ -166,5 +166,15 @@
          </action>
        </viewerContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.eclipse.ecf.example.collab.ui.SharedEditor"
+            default="false"
+            extensions="xml,txt,java"
+            icon="icons/person.gif"
+            id="org.eclipse.ecf.example.collab.SharedEditor"
+            name="Shared Editor"/>
+   </extension>
 
 </plugin>
