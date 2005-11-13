@@ -25,7 +25,7 @@
             id="org.eclipse.ecf.example.collab.actionSet">
          <action
                toolbarPath="org.eclipse.ecf.example.collab.topseparator"
-               label="Join Group..."
+               label="Connect..."
                class="org.eclipse.ecf.example.collab.actions.WorkbenchAction"
                tooltip="Connect to ECF Communications Group"
                icon="icons/person.gif"
@@ -166,6 +166,7 @@
          </action>
        </viewerContribution>
    </extension>
+   <!--
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -176,5 +177,5 @@
             id="org.eclipse.ecf.example.collab.SharedEditor"
             name="Shared Editor"/>
    </extension>
-
+  -->
 </plugin>
