@@ -47,12 +47,12 @@ public class JoinGroupWizardPage extends WizardPage {
     protected static final String GROUPIDLABEL_PROP_NAME = CLASSNAME+".groupIDLabel";
 	protected static final String NAMESPACE_PROP_NAME = CLASSNAME+".namespace";
     
-    protected static final String PAGE_DESCRIPTION = "Join ECF Communication Group.  Select provider from combo box and login";
+    protected static final String PAGE_DESCRIPTION = "Select provider from combo box, provide and login";
     protected static final String JOINGROUP_FIELDNAME = "Group ID:";
     protected static final String NICKNAME_FIELDNAME = "Nickname:";
     protected static final String ECF_DEFAULT_URL = "ecftcp://localhost:3282/server";
     protected static final String ECF_TEMPLATE_URL = "<protocol>://<machinename>:<port>/<servicename>";
-    protected static final String PAGE_TITLE = "Join ECF Group";
+    protected static final String PAGE_TITLE = "Connect to ECF Communication";
     
     protected static final String DEFAULT_CLIENT = "org.eclipse.ecf.provider.generic.Client";
     

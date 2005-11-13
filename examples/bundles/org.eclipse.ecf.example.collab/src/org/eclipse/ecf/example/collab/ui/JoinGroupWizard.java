@@ -24,6 +24,8 @@ import org.eclipse.ui.IWorkbench;
 
 public class JoinGroupWizard extends Wizard {
 	
+	protected static final String PAGE_TITLE = "ECF Connect";
+
 	private static final String DIALOG_SETTINGS = JoinGroupWizard.class.getName();
 	
     JoinGroupWizardPage mainPage;
@@ -32,7 +34,7 @@ public class JoinGroupWizard extends Wizard {
     public JoinGroupWizard(IResource project, IWorkbench workbench) {
         super();
         this.project = project;
-        setWindowTitle("Join Group");
+        setWindowTitle(PAGE_TITLE);
         IDialogSettings dialogSettings = ClientPlugin.getDefault().getDialogSettings();
         IDialogSettings wizardSettings = dialogSettings.getSection(DIALOG_SETTINGS);
         if (wizardSettings == null)
