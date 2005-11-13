@@ -22,9 +22,23 @@ public class SetSharedEditorSelectionAction implements IEditorActionDelegate {
 	ITextEditor editor = null;
 
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
+		action.setEnabled(false);
 		if (targetEditor instanceof ITextEditor) {
 			// Got one
 			editor = (ITextEditor) targetEditor;
+			setEnabled(action);
+		}
+	}
+	
+	protected void setEnabled(IAction action) {
+		action.setEnabled(false);
+		if (editor == null) return;
+		IFile file = getFileForPart(editor);
+		if (file != null) {
+			ClientEntry client = isConnected(file.getProject());
+			if (client != null) {
+				action.setEnabled(true);
+			}
 		}
 	}
 	protected IFile getFileForPart(ITextEditor editor) {
@@ -83,5 +97,6 @@ public class SetSharedEditorSelectionAction implements IEditorActionDelegate {
 		}
 	}
 	public void selectionChanged(IAction action, ISelection selection) {
+		setEnabled(action);
 	}
 }
