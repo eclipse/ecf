@@ -44,24 +44,18 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	Object lock = new Object();
 	List participants = new Vector();
 	Map failed = new HashMap();
-	int timeout = ITransactionSharedObjectConfiguration.DEFAULT_TIMEOUT;
+	int timeout = ITransactionConfiguration.DEFAULT_TIMEOUT;
 	int minFailedToAbort = 0;
 	long identifier = 0;
-	ID[] exceptions;
+	ITransactionParticipantsFilter participantsFilter = null;
 	
-	public TwoPhaseCommitEventProcessor(AbstractSharedObject bse, int timeout,
-			ID[] except) {
-		this.sharedObject = bse;
-		this.timeout = timeout;
-		this.exceptions = except;
-	}
-	public TwoPhaseCommitEventProcessor(AbstractSharedObject bse, ITransactionSharedObjectConfiguration config) {
+	public TwoPhaseCommitEventProcessor(AbstractSharedObject bse, ITransactionConfiguration config) {
 		this.sharedObject = bse;
 		if (config == null) {
 			config = new TransactionSharedObjectConfiguration();
 		}
 		this.timeout = config.getTimeout();
-		this.minFailedToAbort = config.getMinFailedToAbort();
+		this.participantsFilter = config.getParticipantsFilter();
 	}
 	protected void trace(String msg) {
 		if (Trace.ON && trace != null) {
@@ -91,15 +85,6 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	}
 	protected ID getHomeID() {
 		return getSharedObject().getHomeID();
-	}
-	protected ID[] filter(ID[] ids) {
-		if (exceptions == null)
-			return ids;
-		List aList = Arrays.asList(ids);
-		for (int i = 0; i < exceptions.length; i++) {
-			aList.remove(exceptions[i]);
-		}
-		return (ID[]) aList.toArray(new ID[] {});
 	}
 	protected void addParticipants(ID[] ids) {
 		if (ids != null) {
@@ -210,15 +195,13 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		trace("handlePrimaryActivated("+event+")");
 		// if we don't have any exceptions replicate to all remotes
 		ID[] groupMembers = getContext().getGroupMemberIDs();
-		ID[] replicaContainers = groupMembers;
-		if (exceptions == null) {
-			replicateTo(null);
-		} else {
-			// We do have some exceptions, so filter these out
-			replicaContainers = filter(groupMembers);
-			replicateTo(replicaContainers);
+		ID[] participants = null;
+		if (participantsFilter != null) {
+			participants = participantsFilter.filterParticipants(groupMembers);
 		}
-		addParticipants(replicaContainers);
+		// Now replicate
+		replicateTo(participants);
+		addParticipants(participants);
 		setTransactionState(ISharedObjectContainerTransaction.VOTING);
 	}
 	private long getNextIdentifier() {
