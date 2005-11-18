@@ -224,18 +224,16 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	protected void handleJoined(ISharedObjectContainerConnectedEvent event) {
 		trace("handleJoined(" + event + ")");
 		if (isPrimary()) {
-			// If we are currently in VOTING state, then add the new member to
-			// list of participants
-			// and send replicate message. If not in voting state, just send
-			// replicate message
 			synchronized (lock) {
+				// First send replicate message *no matter what state we are in*
 				ID newMember = event.getTargetID();
 				replicateTo(new ID[] { newMember });
+				// Then if in voting state add participants to transaction
 				if (getTransactionState() == ISharedObjectContainerTransaction.VOTING)
 					addParticipants(new ID[] { newMember });
 			}
 		} else {
-			// we don't care as we are note transaction monitor
+			// we don't care as we are not transaction monitor
 		}
 	}
 	protected void handleCreateResponse(ISharedObjectCreateResponseEvent event) {
