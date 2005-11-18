@@ -8,9 +8,13 @@
 * Contributors:
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
-package org.eclipse.ecf.example.collab.ui;
+package org.eclipse.ecf.example.collab.actions;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.ecf.example.collab.ClientEntry;
+import org.eclipse.ecf.example.collab.CollabClient;
+import org.eclipse.ecf.example.collab.ui.JoinGroupWizard;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -27,12 +31,29 @@ import org.eclipse.ui.part.ShowInContext;
 public class JoinGroupWizardAction extends ActionDelegate implements
         IObjectActionDelegate {
     
-    IProject project;
+	IProject project;
+    boolean connected = false;
     
     public JoinGroupWizardAction() {
         super();
     }
 
+	protected ClientEntry isConnected(IResource res) {
+		if (res == null) return null;
+		CollabClient client = CollabClient.getDefault();
+		ClientEntry entry = client.isConnected(res,
+				CollabClient.GENERIC_CONTAINER_CLIENT_NAME);
+		return entry;
+	}
+	protected void setAction(IAction action, IResource res) {
+		if (isConnected(res) != null) {
+			action.setEnabled(false);
+			connected = true;
+		} else {
+			action.setEnabled(true);
+			connected = false;
+		}
+	}
     public void setActivePart(IAction action, IWorkbenchPart targetPart) {
         project = null;
         Object o = targetPart.getAdapter(IShowInSource.class);
@@ -46,9 +67,11 @@ public class JoinGroupWizardAction extends ActionDelegate implements
                 if (obj instanceof IJavaProject) {
                     IJavaProject ij = (IJavaProject) obj;
                     project = ij.getProject();
+                    setAction(action,project);
                 }
                 if (obj instanceof IProject) {
                     project = (IProject) obj;
+                    setAction(action,project);
                 }
             }
         }
@@ -58,11 +81,13 @@ public class JoinGroupWizardAction extends ActionDelegate implements
     }
     
     public void run(IAction action) {
-        JoinGroupWizard wizard = new JoinGroupWizard(project,getWorkbench());
-        // Create the wizard dialog
-        WizardDialog dialog = new WizardDialog
-         (getWorkbench().getActiveWorkbenchWindow().getShell(),wizard);
-        // Open the wizard dialog
-        dialog.open();
+    	if (!connected) {
+	        JoinGroupWizard wizard = new JoinGroupWizard(project,getWorkbench());
+	        // Create the wizard dialog
+	        WizardDialog dialog = new WizardDialog
+	         (getWorkbench().getActiveWorkbenchWindow().getShell(),wizard);
+	        // Open the wizard dialog
+	        dialog.open();
+    	}
     }
 }

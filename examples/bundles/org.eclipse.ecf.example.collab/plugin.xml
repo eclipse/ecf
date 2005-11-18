@@ -54,7 +54,7 @@
          </menu>
          <action
                label="Connect..."
-               class="org.eclipse.ecf.example.collab.ui.JoinGroupWizardAction"
+               class="org.eclipse.ecf.example.collab.actions.JoinGroupWizardAction"
                menubarPath="org.eclipse.ecf.example.collab.menu1/group1"
                id="org.eclipse.ecf.client.joingroupwizardaction"/>
       </objectContribution>

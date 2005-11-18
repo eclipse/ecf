@@ -49,22 +49,21 @@ public class OpenSharedEditorAction extends ActionDelegate implements
 		if (s instanceof IStructuredSelection) {
 			IStructuredSelection ss = (IStructuredSelection) s;
 			Object obj = ss.getFirstElement();
-			if (obj instanceof IResource) {
+			// Then try to set relevant file
+			if (obj instanceof IFile) {
 				action.setEnabled(true);
-				// Then try to set relevant file
-				if (obj instanceof IFile) {
-					file = (IFile) obj;
-				} else if (obj instanceof IJavaElement) {
-					IJavaElement je = (IJavaElement) obj;
-					IResource r = null;
-					try {
-						r = je.getCorrespondingResource();
-					} catch (JavaModelException e) {
-						r = null;;
-					}
-					if (r != null && r.getType() == IResource.FILE) {
-						file = (IFile) r;
-					}
+				file = (IFile) obj;
+			} else if (obj instanceof IJavaElement) {
+				IJavaElement je = (IJavaElement) obj;
+				IResource r = null;
+				try {
+					r = je.getCorrespondingResource();
+				} catch (JavaModelException e) {
+					r = null;;
+				}
+				if (r != null && r.getType() == IResource.FILE) {
+					action.setEnabled(true);
+					file = (IFile) r;
 				}
 			}
 		} 

@@ -47,7 +47,6 @@ public class WorkbenchAction extends ActionDelegate implements IWorkbenchWindowA
      */
     public void init(IWorkbenchWindow window) {
     }
-
     /* (non-Javadoc)
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
