@@ -3,7 +3,6 @@ package org.eclipse.ecf.example.collab.share;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject.SharedMarker;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
