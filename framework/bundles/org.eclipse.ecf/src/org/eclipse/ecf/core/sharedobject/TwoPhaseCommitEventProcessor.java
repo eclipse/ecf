@@ -193,15 +193,28 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	}
 	protected void handlePrimaryActivated(ISharedObjectActivatedEvent event) {
 		trace("handlePrimaryActivated("+event+")");
-		// if we don't have any exceptions replicate to all remotes
+		// First get current group membership
 		ID[] groupMembers = getContext().getGroupMemberIDs();
-		ID[] participants = null;
+		// Now get participants
+		ID[] transactionParticipants = null;
+		// If there is a participants filter specified then use it and ask it to return an ID [] of participants (given
+		// the current group membership
 		if (participantsFilter != null) {
-			participants = participantsFilter.filterParticipants(groupMembers);
+			transactionParticipants = participantsFilter.filterParticipants(groupMembers);
 		}
-		// Now replicate
-		replicateTo(participants);
-		addParticipants(participants);
+		// replicate
+		if (transactionParticipants == null) {
+			// This means that all current group members should be included as participants
+			replicateTo(null);
+			transactionParticipants = groupMembers;
+		} else {
+			// This means the participants filter provided us with an ID [] and so we replicate only to that ID []
+			replicateTo(transactionParticipants);
+		}
+		
+		// Add participants to the collection
+		addParticipants(transactionParticipants);
+		// Now set transaction state to VOTING
 		setTransactionState(ISharedObjectContainerTransaction.VOTING);
 	}
 	private long getNextIdentifier() {
