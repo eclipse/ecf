@@ -25,9 +25,9 @@
             id="org.eclipse.ecf.example.collab.actionSet">
          <action
                toolbarPath="org.eclipse.ecf.example.collab.topseparator"
-               label="Connect..."
+               label="Connect Workspace..."
                class="org.eclipse.ecf.example.collab.actions.WorkbenchAction"
-               tooltip="Connect to ECF Communications Group"
+               tooltip="Connect Workspace to ECF Group"
                icon="icons/person.gif"
                style="push"
                menubarPath="org.eclipse.ecf.example.collab.topmenu/org.eclipse.ecf.example.collab.topseparator"
@@ -53,7 +53,7 @@
             <separator name="group2"/>
          </menu>
          <action
-               label="Connect..."
+               label="Connect Project..."
                class="org.eclipse.ecf.example.collab.actions.JoinGroupWizardAction"
                menubarPath="org.eclipse.ecf.example.collab.menu1/group1"
                id="org.eclipse.ecf.client.joingroupwizardaction"/>

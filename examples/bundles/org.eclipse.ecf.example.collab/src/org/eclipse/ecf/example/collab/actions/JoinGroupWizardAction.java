@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.ecf.example.collab.ClientEntry;
 import org.eclipse.ecf.example.collab.CollabClient;
+import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.ui.JoinGroupWizard;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
@@ -31,6 +32,8 @@ import org.eclipse.ui.part.ShowInContext;
 public class JoinGroupWizardAction extends ActionDelegate implements
         IObjectActionDelegate {
     
+	private static final String CONNECT_PROJECT_MENU_TEXT = "Connect Project...";
+	private static final String DISCONNECT_PROJECT_MENU_TEXT = "Disconnect Project";
 	IProject project;
     boolean connected = false;
     
@@ -47,10 +50,10 @@ public class JoinGroupWizardAction extends ActionDelegate implements
 	}
 	protected void setAction(IAction action, IResource res) {
 		if (isConnected(res) != null) {
-			action.setEnabled(false);
+			action.setText(DISCONNECT_PROJECT_MENU_TEXT);
 			connected = true;
 		} else {
-			action.setEnabled(true);
+			action.setText(CONNECT_PROJECT_MENU_TEXT);
 			connected = false;
 		}
 	}
@@ -88,6 +91,17 @@ public class JoinGroupWizardAction extends ActionDelegate implements
 	         (getWorkbench().getActiveWorkbenchWindow().getShell(),wizard);
 	        // Open the wizard dialog
 	        dialog.open();
+    	} else {
+    		ClientEntry client = isConnected(project);
+    		if (client == null) {
+    			connected = false;
+    			action.setText(CONNECT_PROJECT_MENU_TEXT);
+    		} else {
+    			EclipseCollabSharedObject collab = client.getObject();
+    			if (collab != null) {
+    				collab.chatGUIDestroy();
+    			}
+    		}
     	}
     }
 }
