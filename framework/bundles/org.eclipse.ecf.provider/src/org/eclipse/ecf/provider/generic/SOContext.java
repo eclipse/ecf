@@ -65,11 +65,11 @@ public class SOContext implements ISharedObjectContext {
     }
 
 
-    protected synchronized void makeInactive() {
+    protected void makeInactive() {
     	isActive = false;
     }
 
-    protected synchronized boolean isInactive() {
+    protected boolean isInactive() {
         return !isActive;
     }
 
@@ -78,7 +78,7 @@ public class SOContext implements ISharedObjectContext {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#getContainerID()
      */
-    public synchronized ID getLocalContainerID() {
+    public ID getLocalContainerID() {
         return container.getID();
     }
 
@@ -87,8 +87,10 @@ public class SOContext implements ISharedObjectContext {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#getSharedObjectManager()
      */
-    public synchronized ISharedObjectManager getSharedObjectManager() {
-        return container.getSharedObjectManager();
+    public ISharedObjectManager getSharedObjectManager() {
+    	if (isInactive()) {
+    		return null;
+    	} else return container.getSharedObjectManager();
     }
 
     /*
@@ -96,8 +98,10 @@ public class SOContext implements ISharedObjectContext {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#getQueue()
      */
-    public synchronized IQueueEnqueue getQueue() {
-        return queue;
+    public IQueueEnqueue getQueue() {
+    	if (isInactive()) {
+    		return null;
+    	} else return queue;
     }
 
     /*
@@ -106,7 +110,7 @@ public class SOContext implements ISharedObjectContext {
      * @see org.eclipse.ecf.core.ISharedObjectContext#connect(org.eclipse.ecf.core.identity.ID,
      *      org.eclipse.ecf.core.security.IConnectContext)
      */
-	public synchronized void connect(ID groupID, IConnectContext joinContext)
+	public void connect(ID groupID, IConnectContext joinContext)
 	throws ContainerConnectException {
         if (isInactive()) {
         	return;
@@ -120,7 +124,7 @@ public class SOContext implements ISharedObjectContext {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#disconnect()
      */
-    public synchronized void disconnect() {
+    public void disconnect() {
         if (isInactive()) {
             trace("leaveGroup() CONTEXT INACTIVE");
             return;
@@ -135,7 +139,7 @@ public class SOContext implements ISharedObjectContext {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#getConnectedID()
      */
-    public synchronized ID getConnectedID() {
+    public ID getConnectedID() {
         if (isInactive()) {
             return null;
         } else
@@ -147,7 +151,7 @@ public class SOContext implements ISharedObjectContext {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#isGroupManager()
      */
-    public synchronized boolean isGroupManager() {
+    public boolean isGroupManager() {
         if (isInactive()) {
             return false;
         } else
@@ -159,7 +163,7 @@ public class SOContext implements ISharedObjectContext {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#isGroupServer()
      */
-    public synchronized boolean isGroupServer() {
+    public boolean isGroupServer() {
         if (isInactive()) {
             return false;
         } else
@@ -171,7 +175,7 @@ public class SOContext implements ISharedObjectContext {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#getGroupMembership()
      */
-    public synchronized ID[] getGroupMemberIDs() {
+    public ID[] getGroupMemberIDs() {
         if (isInactive()) {
             return new ID[0];
         } else
@@ -184,7 +188,7 @@ public class SOContext implements ISharedObjectContext {
      * @see org.eclipse.ecf.core.ISharedObjectContext#sendCreate(org.eclipse.ecf.core.identity.ID,
      *      org.eclipse.ecf.core.SharedObjectDescription)
      */
-    public synchronized void sendCreate(ID toContainerID,
+    public void sendCreate(ID toContainerID,
             SharedObjectDescription sd) throws IOException {
         if (isInactive()) {
             trace("sendCreate("+toContainerID+","+sd+") CONTEXT INACTIVE");
@@ -198,7 +202,7 @@ public class SOContext implements ISharedObjectContext {
     /* (non-Javadoc)
      * @see org.eclipse.ecf.core.ISharedObjectContext#sendCreateResponse(org.eclipse.ecf.core.identity.ID, java.lang.Throwable, long)
      */
-    public synchronized void sendCreateResponse(ID toContainerID, Throwable throwable, long identifier) throws IOException {
+    public void sendCreateResponse(ID toContainerID, Throwable throwable, long identifier) throws IOException {
         if (isInactive()) {
             trace("sendCreateResponse("+toContainerID+","+throwable+","+identifier+") CONTEXT INACTIVE");
             return;
@@ -213,7 +217,7 @@ public class SOContext implements ISharedObjectContext {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#sendDispose(org.eclipse.ecf.core.identity.ID)
      */
-    public synchronized void sendDispose(ID toContainerID) throws IOException {
+    public void sendDispose(ID toContainerID) throws IOException {
         if (isInactive()) {
             trace("sendDispose("+toContainerID+") CONTEXT INACTIVE");
             return;
@@ -229,7 +233,7 @@ public class SOContext implements ISharedObjectContext {
      * @see org.eclipse.ecf.core.ISharedObjectContext#sendMessage(org.eclipse.ecf.core.identity.ID,
      *      java.lang.Object)
      */
-    public synchronized void sendMessage(ID toContainerID, Object data) throws IOException {
+    public void sendMessage(ID toContainerID, Object data) throws IOException {
         if (isInactive()) {
             trace("sendMessage("+toContainerID+","+data+") CONTEXT INACTIVE");
             return;
@@ -264,7 +268,9 @@ public class SOContext implements ISharedObjectContext {
     }
 
 	public Namespace getConnectNamespace() {
-		return container.getConnectNamespace();
+		if (isInactive()) {
+			return null;
+		} else return container.getConnectNamespace();
 	}
 
 }
