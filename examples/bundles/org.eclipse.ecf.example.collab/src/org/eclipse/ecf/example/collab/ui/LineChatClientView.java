@@ -453,7 +453,7 @@ public class LineChatClientView implements FileSenderUI {
 				TreeUser tn = (TreeUser) e.next();
 				User ud = (User) tn.getUser();
 				if (id.equals(ud.getUserID())) {
-					top.removeChild(tn);
+					e.remove();
 					refreshTreeView();
 				}
 			}
