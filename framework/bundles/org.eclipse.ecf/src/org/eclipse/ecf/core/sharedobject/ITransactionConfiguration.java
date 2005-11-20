@@ -12,7 +12,7 @@ package org.eclipse.ecf.core.sharedobject;
 
 /**
  * Transaction configuration information
- *
+ * 
  */
 public interface ITransactionConfiguration {
 	public static final int DEFAULT_TIMEOUT = 30000;
@@ -21,9 +21,13 @@ public interface ITransactionConfiguration {
 	 */
 	int getTimeout();
 	/**
-	 * Called by transaction implementation to specify filter for determining transaction participants
-	 * @return {@link ITransactionParticipantsFilter}.  If this method returns a non-null instance, that instance's
-	 * {@link ITransactionParticipantsFilter.filterParticipants} method will be called
+	 * Called by transaction implementation to specify filter for determining
+	 * transaction participants
+	 * 
+	 * @return {@link ITransactionParticipantsFilter}. If this method returns a
+	 *         non-null instance, that instance's
+	 *         {@link ITransactionParticipantsFilter#filterParticipants(org.eclipse.ecf.core.identity.ID[]) }
+	 *         method will be called
 	 */
 	ITransactionParticipantsFilter getParticipantsFilter();
 }
