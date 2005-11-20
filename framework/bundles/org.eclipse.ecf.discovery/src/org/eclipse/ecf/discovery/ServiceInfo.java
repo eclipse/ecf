@@ -17,6 +17,9 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ServiceID;
 
+/**
+ * Information provided by discovery protocol about a remote service
+ */
 public class ServiceInfo implements IServiceInfo, Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -84,6 +87,6 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	}
 	
 	public URI getServiceURI() throws URISyntaxException {
-		throw new URISyntaxException("","");
+		throw new URISyntaxException(this.toString(),"ServiceInfo doesn't support URI syntax");
 	}
 }

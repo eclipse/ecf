@@ -9,6 +9,9 @@
 
 package org.eclipse.ecf.discovery;
 
+/**
+ * Listener for service type notifications
+ */
 public interface IServiceTypeListener {
 	/**
 	 * Notification that a service type has been added

@@ -10,10 +10,8 @@
 package org.eclipse.ecf.discovery;
 
 /**
- * Listener for receiving service events.
+ * Listener for receiving service events
  * 
- * @author slewis
- *
  */
 public interface IServiceListener {
 	/**

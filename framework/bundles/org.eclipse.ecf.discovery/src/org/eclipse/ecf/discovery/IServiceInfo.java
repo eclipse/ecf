@@ -16,11 +16,9 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ServiceID;
 /**
- * Service information.  Defines the information associated
- * with a service
+ * Service information contrace.  Defines the information associated
+ * with a remotely discoverable service
  * 
- * @author slewis
- *
  */
 public interface IServiceInfo {
 	/**

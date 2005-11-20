@@ -11,12 +11,13 @@ package org.eclipse.ecf.discovery;
 
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Event implementation of IServiceEvent interface
+ */
 public class ServiceContainerEvent implements IServiceEvent {
 
 	private static final long serialVersionUID = 1L;
-
 	protected IServiceInfo info;
-
 	protected ID containerID;
 
 	public ServiceContainerEvent(IServiceInfo info, ID containerID) {

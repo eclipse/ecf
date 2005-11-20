@@ -11,6 +11,9 @@ package org.eclipse.ecf.discovery;
 
 import org.eclipse.ecf.core.events.IContainerEvent;
 
+/**
+ * Service discovery event that provides access to IServiceInfo instance
+ */
 public interface IServiceEvent extends IContainerEvent {
 	/**
 	 * Get the service info associated with this event

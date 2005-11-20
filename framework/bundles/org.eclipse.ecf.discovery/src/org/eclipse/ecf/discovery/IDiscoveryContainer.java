@@ -26,8 +26,6 @@ import org.eclipse.ecf.core.identity.ServiceID;
  * Clients can then proceed to use this interface to interact with the given
  * discovery implementation.
  * 
- * @author slewis
- *
  */
 public interface IDiscoveryContainer {
 	/**
