@@ -14,13 +14,16 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Filter for determining transaction participants
- *
+ * 
  */
 public interface ITransactionParticipantsFilter {
 	/**
-	 * Return ID[] of participants to participate in transacton.  
-	 * @param currentGroup the current set of container group members
-	 * @return intended participants in transaction
+	 * Return ID[] of participants to participate in transacton.
+	 * 
+	 * @param currentGroup
+	 *            the current set of container group members
+	 * @return intended participants in transaction. If null is returned, all
+	 *         group members will be included in transaction.
 	 */
-	ID [] filterParticipants(ID [] currentGroup);
+	ID[] filterParticipants(ID[] currentGroup);
 }

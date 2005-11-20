@@ -22,7 +22,8 @@ public interface ITransactionConfiguration {
 	int getTimeout();
 	/**
 	 * Called by transaction implementation to specify filter for determining transaction participants
-	 * @return
+	 * @return {@link ITransactionParticipantsFilter}.  If this method returns a non-null instance, that instance's
+	 * {@link ITransactionParticipantsFilter.filterParticipants} method will be called
 	 */
 	ITransactionParticipantsFilter getParticipantsFilter();
 }
