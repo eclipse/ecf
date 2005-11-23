@@ -141,6 +141,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			Object data = some.getData();
 			if (data instanceof ISharedObjectCommitEvent) localCommitted();
 		}
+		// Let other event processors have a shot at this event
 		return event;
 	}
 	protected void handleActivated(ISharedObjectActivatedEvent event) {

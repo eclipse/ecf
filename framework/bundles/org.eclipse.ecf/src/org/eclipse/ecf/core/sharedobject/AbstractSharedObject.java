@@ -85,7 +85,9 @@ public abstract class AbstractSharedObject implements ISharedObject,
 	}
 	public void handleEvent(Event event) {
 		trace("handleEvent("+event+")");
-		fireEventProcessors(event);
+		synchronized (eventProcessors) {
+			fireEventProcessors(event);
+		}
 	}
 	protected boolean addEventProcessor(IEventProcessor proc) {
 		return eventProcessors.add(proc);
@@ -103,15 +105,20 @@ public abstract class AbstractSharedObject implements ISharedObject,
 		if (event == null) return;
 		Event evt = event;
 		trace("fireEventProcessors("+event+")");
-		if (eventProcessors == null || eventProcessors.size()==0) {
+		if (eventProcessors.size()==0) {
 			handleUnhandledEvent(event);
 			return;
 		}
 		for(Iterator i=eventProcessors.iterator(); i.hasNext(); ) {
 			IEventProcessor ep = (IEventProcessor) i.next();
 			if (ep.acceptEvent(evt)) {
-				trace("eventProcessor="+ep+":event="+evt);
-				evt = ep.processEvent(evt);
+				trace("calling eventProcessor="+ep+" for event="+evt);
+				Event res = ep.processEvent(evt);
+				trace("eventProcessor="+ep+" returned event "+res);
+				if (res == null) {
+					trace("discontinuing processing of event "+evt);
+					return;
+				}
 			} else {
 				trace("eventProcessor="+ep+" refused event="+evt);
 			}
