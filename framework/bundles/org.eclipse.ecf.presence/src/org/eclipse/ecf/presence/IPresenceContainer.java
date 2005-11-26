@@ -10,6 +10,7 @@
 *****************************************************************************/
 package org.eclipse.ecf.presence;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
 
@@ -19,7 +20,7 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
  * presence updates (IPresenceSender) and account management (IAccountManager)
  * 
  */
-public interface IPresenceContainer {
+public interface IPresenceContainer extends IAdaptable {
     
 	/**
 	 * Setup listener for handling subscription requests

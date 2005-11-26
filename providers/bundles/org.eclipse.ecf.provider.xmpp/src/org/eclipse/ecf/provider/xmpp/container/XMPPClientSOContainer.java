@@ -426,6 +426,10 @@ public class XMPPClientSOContainer extends ClientSOContainer {
     public Object getAdapter(Class clazz) {
 		if (clazz.equals(IPresenceContainer.class)) {
             return new IPresenceContainer() {
+            	
+            	public Object getAdapter(Class clazz) {
+            		return null;
+            	}
                 public void addPresenceListener(IPresenceListener listener) {
                     sharedObject.addPresenceListener(listener);
                 }
