@@ -3,7 +3,6 @@ package org.eclipse.ecf.example.collab;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
-import java.util.Map;
 import java.util.Properties;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.ecf.core.ContainerFactory;
@@ -13,7 +12,9 @@ import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
+import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.example.collab.actions.URIClientConnectAction;
 import org.eclipse.ecf.ui.views.DiscoveryView;
 
@@ -75,8 +76,8 @@ public class DiscoveryStartup {
 		}
 	}
 	protected void connectToServiceFromInfo(IServiceInfo svcInfo) {
-		Map props = svcInfo.getProperties();
-		String type = (String) props.get(PROP_CONTAINER_TYPE_NAME);
+		IServiceProperties props = svcInfo.getServiceProperties();
+		String type = (String) props.getPropertyString(PROP_CONTAINER_TYPE_NAME);
 		if (type == null || type.equals("")) {
 			type = CollabClient.GENERIC_CONTAINER_CLIENT_NAME;
 		}
@@ -119,7 +120,7 @@ public class DiscoveryStartup {
 						+ protocol;
 				ServiceInfo svcInfo = new ServiceInfo(host, new ServiceID(
 						ClientPlugin.TCPSERVER_DISCOVERY_TYPE, svcName), port,
-						SVC_DEF_PRIORITY, SVC_DEF_WEIGHT, props);
+						SVC_DEF_PRIORITY, SVC_DEF_WEIGHT, new ServiceProperties(props));
 				discovery.registerService(svcInfo);
 			} catch (IOException e) {
 				ClientPlugin.log("Exception registering service " + uri);

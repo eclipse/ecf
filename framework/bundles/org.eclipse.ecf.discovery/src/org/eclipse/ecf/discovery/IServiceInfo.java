@@ -12,8 +12,6 @@ package org.eclipse.ecf.discovery;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
-
 import org.eclipse.ecf.core.identity.ServiceID;
 /**
  * Service information contrace.  Defines the information associated
@@ -57,7 +55,7 @@ public interface IServiceInfo {
 	 *
 	 * @return Map the properties associated with this service
 	 */
-	public Map getProperties();
+	public IServiceProperties getServiceProperties();
 	/**
 	 * Returns true if this service info has been resolved by the service
 	 * publisher, false if not.

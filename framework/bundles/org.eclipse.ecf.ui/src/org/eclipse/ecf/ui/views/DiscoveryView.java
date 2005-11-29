@@ -14,14 +14,14 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Enumeration;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -299,14 +299,14 @@ public class DiscoveryView extends ViewPart {
 			newEntry.addChild(weighto);
 			TreeObject urio = new TreeObject("URI: "+uri);
 			newEntry.addChild(urio);
-			Map props = serviceInfo.getProperties();
+			IServiceProperties props = serviceInfo.getServiceProperties();
 			if (props != null) {
-				for(Iterator i=props.keySet().iterator(); i.hasNext(); ) {
-					Object key = i.next();
+				for(Enumeration e=props.getPropertyNames(); e.hasMoreElements(); ) {
+					Object key = e.nextElement();
 					if (key instanceof String) {
 						String keys = (String) key;
-						Object val = props.get(key);
-						if (val instanceof String) {
+						String val = props.getPropertyString(keys);
+						if (val != null) {
 							TreeObject prop = new TreeObject(keys+"="+(String)val);
 							newEntry.addChild(prop);
 						}

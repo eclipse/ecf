@@ -28,9 +28,9 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	int port;
 	int priority;
 	int weight;
-	Map properties;
+	IServiceProperties properties;
 
-	public ServiceInfo(InetAddress address, String type, int port, int priority, int weight, Map props) {
+	public ServiceInfo(InetAddress address, String type, int port, int priority, int weight, IServiceProperties props) {
 		this.addr = address;
 		this.serviceID = new ServiceID(type,null);
 		this.port = port;
@@ -38,7 +38,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		this.properties = props;
 	}
 	public ServiceInfo(InetAddress address, ServiceID id, int port,
-			int priority, int weight, Map props) {
+			int priority, int weight, IServiceProperties props) {
 		this.addr = address;
 		this.serviceID = id;
 		this.port = port;
@@ -71,7 +71,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		return weight;
 	}
 
-	public Map getProperties() {
+	public IServiceProperties getServiceProperties() {
 		return properties;
 	}
 	public boolean isResolved() {
