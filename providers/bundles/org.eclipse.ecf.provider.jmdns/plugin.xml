@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.jmdns.container.ContainerInstantiator"
+            description="Discovery Container"
+            name="org.eclipse.ecf.provider.jmdns.container.JmDNS">
+         <property
+               value="&lt;rendevous service type&gt;"
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"/>
+         <property
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"
+               value="_http._tcp.local."/>
+         <property
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.namespace"
+               value="jmdns"/>
+         <property
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.isServer"
+               value="true"/>
+       </containerFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.namespace">
+      <namespace
+            class="org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace"
+            description="JMDNS Namespace"
+            name="zeroconf.jmdns"/>
+   </extension>
+
+</plugin>

@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF Zeroconf Discovery Provider
+Bundle-SymbolicName: org.eclipse.ecf.provider.jmdns;singleton:=true
+Bundle-Version: 0.5.2
+Bundle-Activator: org.eclipse.ecf.provider.jmdns.JmdnsPlugin
+Bundle-Vendor: Eclipse.org
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ecf.discovery
+Eclipse-AutoStart: true
+Bundle-ClassPath: jmdns.jar,
+ lib/jmdns-1.0.1.jar
