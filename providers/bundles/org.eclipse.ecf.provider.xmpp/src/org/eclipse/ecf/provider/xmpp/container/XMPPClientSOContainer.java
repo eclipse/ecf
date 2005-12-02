@@ -92,6 +92,12 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	protected ID sharedObjectID = null;
 	Vector chats = new Vector();
 	
+	protected void addChat(IChatRoomContainer container) {
+		chats.add(container);
+	}
+	protected void removeChat(IChatRoomContainer container) {
+		chats.remove(container);
+	}
 	protected void trace(String msg) {
 		if (trace != null) {
 			trace.msg(msg);
@@ -123,6 +129,27 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			cc.dispose();
 		}
 		chats.clear();
+	}
+	protected IChatRoomContainer findChat(ID toID) {
+		if (toID == null) return null;
+		XMPPRoomID roomID = null;
+		if (toID instanceof XMPPRoomID) {
+			roomID = (XMPPRoomID) toID;
+		}
+		String mucname = roomID.getMucString();
+		for(Iterator i=chats.iterator(); i.hasNext(); ) {
+			IChatRoomContainer cont = (IChatRoomContainer) i.next();
+			if (cont == null) continue;
+			ID tid = cont.getConnectedID();
+			if (tid != null && tid instanceof XMPPRoomID) {
+				XMPPRoomID targetID = (XMPPRoomID) tid;
+				String tmuc = targetID.getMucString();
+				if (tmuc.equals(mucname)) {
+					return cont;
+				}
+			}
+		}
+		return null;
 	}
 	protected ID handleConnectResponse(ID originalTarget, Object serverData)
 			throws Exception {
@@ -242,6 +269,12 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			throws IOException {
 		if (mess == null) {
 			debug("got null container message...ignoring");
+			return;
+		}
+		IChatRoomContainer chat = findChat(mess.getToContainerID());
+		if (chat != null && chat instanceof XMPPGroupChatSOContainer) {
+			XMPPGroupChatSOContainer cont = (XMPPGroupChatSOContainer) chat;
+			cont.handleContainerMessage(mess);
 			return;
 		}
 		Object data = mess.getData();
