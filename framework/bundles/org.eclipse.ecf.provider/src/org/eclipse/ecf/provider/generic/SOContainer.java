@@ -758,6 +758,12 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		}
 	}
 
+	protected boolean verifyToIDForSharedObjectMessage(ID toID) {
+		if (toID == null || toID.equals(getID())) {
+			return true;
+		}
+		return false;
+	}
 	protected void handleSharedObjectMessage(ContainerMessage mess)
 			throws IOException {
 		debug("handleSharedObjectMessage:" + mess);
@@ -766,7 +772,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		ContainerMessage.SharedObjectMessage resp = (ContainerMessage.SharedObjectMessage) mess
 				.getData();
 		synchronized (getGroupMembershipLock()) {
-			if (toID == null || toID.equals(getID())) {
+			if (verifyToIDForSharedObjectMessage(toID)) {
 				SOWrapper sow = getSharedObjectWrapper(resp
 						.getFromSharedObjectID());
 				if (sow != null) {
