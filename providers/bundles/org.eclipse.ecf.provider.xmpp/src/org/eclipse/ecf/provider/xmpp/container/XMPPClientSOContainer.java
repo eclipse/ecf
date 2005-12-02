@@ -519,7 +519,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 						public IChatRoomContainer makeChatRoomContainer() throws ContainerInstantiationException {
 							IChatRoomContainer chatContainer = null;
 							try {
-								chatContainer = new XMPPGroupChatSOContainer(sharedObject.getConnection(),getConnectNamespace());
+								chatContainer = new XMPPGroupChatSOContainer(XMPPClientSOContainer.this.getConnection(),sharedObject.getConnection(),getConnectNamespace());
 							} catch (IDInstantiationException e) {
 								ContainerInstantiationException newExcept = new ContainerInstantiationException("Exception creating chat container for presence container "+getID(),e);
 								newExcept.setStackTrace(e.getStackTrace());

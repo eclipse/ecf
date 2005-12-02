@@ -10,7 +10,6 @@ package org.eclipse.ecf.provider.xmpp.smack;
 
 import java.io.IOException;
 import java.util.Map;
-
 import org.eclipse.ecf.core.comm.DisconnectConnectionEvent;
 import org.eclipse.ecf.core.comm.IAsynchConnectionEventHandler;
 import org.eclipse.ecf.core.comm.IConnectionEventHandler;
@@ -21,6 +20,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.provider.xmpp.Trace;
 import org.eclipse.ecf.provider.xmpp.container.IIMMessageSender;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
+import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.GoogleTalkConnection;
@@ -246,24 +246,36 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 		}
 	}
 
-	protected void sendMessage(ID receiver, Message msg) throws IOException {
+	public synchronized void sendAsynch(ID receiver, byte[] data)
+			throws IOException {
+		if (data == null)
+			throw new IOException("no data");
+		debug("sendAsynch(" + receiver + "," + data + ")");
+		Message aMsg = new Message();
+		aMsg.setProperty(OBJECT_PROPERTY_NAME, data);
+		sendMessage(receiver,aMsg);
+	}
+	
+	protected void sendMessage(ID receiver, Message aMsg) throws IOException {
 		synchronized (this) {
 			if (!isConnected())
 				throw new IOException("not connected");
 			try {
-				if (receiver == null) {
-					throw new IOException(
-							"receiver cannot be null for normal xmpp instant messaging");
-				} else {
-					if (!(receiver instanceof XMPPID)) {
-						throw new IOException("receiver must be of type XMPPID");
-					}
-					XMPPID rcvr = (XMPPID) receiver;
-					msg.setType(Message.Type.CHAT);
-					String userAtHost = rcvr.getUsernameAtHost();
-					Chat localChat = connection.createChat(userAtHost);
-					localChat.sendMessage(msg);
-				}
+				if (receiver == null) throw new IOException(
+							"receiver cannot be null for xmpp instant messaging");
+				else if (receiver instanceof XMPPID) {
+						XMPPID rcvr = (XMPPID) receiver;
+						aMsg.setType(Message.Type.CHAT);
+						String userAtHost = rcvr.getUsernameAtHost();
+						Chat localChat = connection.createChat(userAtHost);
+						localChat.sendMessage(aMsg);
+					} else if (receiver instanceof XMPPRoomID) {
+						XMPPRoomID roomID = (XMPPRoomID) receiver;
+						aMsg.setType(Message.Type.GROUP_CHAT);
+						String to = roomID.getMucString();
+						aMsg.setTo(to);
+						connection.sendPacket(aMsg);
+					} else throw new IOException("receiver must be of type XMPPID or XMPPRoomID");
 			} catch (XMPPException e) {
 				IOException result = new IOException(
 						"XMPPException in sendMessage: " + e.getMessage());
@@ -272,17 +284,6 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 			}
 		}
 	}
-	
-	public synchronized void sendAsynch(ID receiver, byte[] data)
-			throws IOException {
-		if (data == null)
-			throw new IOException("no data");
-		debug("sendAsynch(" + receiver + "," + data + ")");
-		Message aMsg = new Message();
-		aMsg.setProperty(OBJECT_PROPERTY_NAME, data);
-		sendMessage(receiver, aMsg);
-	}
-
 	public synchronized Object sendSynch(ID receiver, byte[] data)
 			throws IOException {
 		if (data == null)

@@ -65,23 +65,25 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
     public static final String XMPP_GROUP_CHAT_SHARED_OBJECT_ID = XMPPClientSOContainer.class
             .getName()
             + ".xmppgroupchathandler";
-    XMPPConnection connection;
+    XMPPConnection xmppconnection;
     ID sharedObjectID;
     XMPPGroupChatSharedObject sharedObject;
     MultiUserChat multiuserchat;
     ISharedObjectContainerConfig config;
     Namespace usernamespace = null;
+    XMPPRoomID roomID = null;
     
-    public XMPPGroupChatSOContainer(ISharedObjectContainerConfig config,
-            XMPPConnection conn, Namespace usernamespace) throws IDInstantiationException {
+    public XMPPGroupChatSOContainer(ISharedObjectContainerConfig config, ISynchAsynchConnection conn,
+            XMPPConnection xmppconn, Namespace usernamespace) throws IDInstantiationException {
         super(config);
         this.connection = conn;
+        this.xmppconnection = xmppconn;
         this.config = config;
         this.usernamespace = usernamespace;
 		initializeSharedObject();
     }
-    public XMPPGroupChatSOContainer(XMPPConnection conn, Namespace usernamespace) throws IDInstantiationException {
-    	this(new SOContainerConfig(IDFactory.getDefault().makeGUID()),conn,usernamespace);
+    public XMPPGroupChatSOContainer(ISynchAsynchConnection conn, XMPPConnection xmppconn, Namespace usernamespace) throws IDInstantiationException {
+    	this(new SOContainerConfig(IDFactory.getDefault().makeGUID()),conn, xmppconn,usernamespace);
     }
     public void dispose() {
         disconnect();
@@ -96,6 +98,15 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
         super.dispose();
     }
 
+	protected void sendMessage(ContainerMessage data) throws IOException {
+		synchronized (getConnectLock()) {
+			ID toID = data.getToContainerID();
+			if (toID == null) {
+				data.setToContainerID(remoteServerID);
+			}
+			super.sendMessage(data);
+		}
+	}
     protected void handleChatMessage(Message mess) throws IOException {
         SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
         if (wrap != null) {
@@ -166,7 +177,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
     }
     protected void initializeSharedObject() throws IDInstantiationException {
         sharedObjectID = IDFactory.getDefault().makeStringID(XMPP_GROUP_CHAT_SHARED_OBJECT_ID);
-        sharedObject = new XMPPGroupChatSharedObject(usernamespace,connection);
+        sharedObject = new XMPPGroupChatSharedObject(usernamespace,xmppconnection);
     }
 
     protected void addSharedObjectToContainer(ID remote)
@@ -207,7 +218,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 				connectionState = CONNECTING;
 				remoteServerID = null;
 				addSharedObjectToContainer(remote);
-				connection.addConnectionListener(new ConnectionListener() {
+				xmppconnection.addConnectionListener(new ConnectionListener() {
 					public void connectionClosed() {
 						handleConnectionClosed(null);
 					}
@@ -215,7 +226,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 						handleConnectionClosed(arg0);
 					}
 				});
-				multiuserchat = new MultiUserChat(connection, roomID
+				multiuserchat = new MultiUserChat(xmppconnection, roomID
 						.getMucString());
 				// Get nickname from join context
 				String nick = null;
@@ -338,7 +349,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
 										+ "," + arg1 + ")");
 							}
 						});
-				MultiUserChat.addInvitationListener(connection,
+				MultiUserChat.addInvitationListener(xmppconnection,
 						new InvitationListener() {
 							public void invitationReceived(XMPPConnection arg0,
 									String arg1, String arg2, String arg3,
@@ -376,7 +387,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
             	}
             }
             connectionState = UNCONNECTED;
-            this.connection = null;
+            this.xmppconnection = null;
             remoteServerID = null;
         }
         // notify listeners
@@ -418,10 +429,10 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements IChat
     }
 
 	protected ID makeChatRoomID(String groupName) throws IDInstantiationException {
-		String username = connection.getUser();
+		String username = xmppconnection.getUser();
 		int atIndex = username.indexOf('@');
 		if (atIndex > 0) username = username.substring(0,atIndex);
-		String host = connection.getHost();
+		String host = xmppconnection.getHost();
 		Namespace ns = getConnectNamespace();
 		ID targetID = IDFactory.getDefault().makeID(ns,new Object[] { username, host, null, groupName, username });
 		return targetID;
