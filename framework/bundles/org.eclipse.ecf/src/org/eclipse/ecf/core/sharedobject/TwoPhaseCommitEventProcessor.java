@@ -187,7 +187,8 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 				}
 			}
 		} catch (IOException e) {
-			traceStack("Exception in replicateTo(" + Arrays.asList(remotes)
+			if (remotes == null) traceStack("Exception in replicateTo(null)",e);
+			else traceStack("Exception in replicateTo(" + Arrays.asList(remotes)
 					+ ")", e);
 			return;
 		}
