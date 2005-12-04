@@ -80,7 +80,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		this.shellWindow = shell;
 		this.localUser = user;
 		this.downloaddir = downloaddir;
-		localGUI = getOutputWindow();
+		localGUI = createOutputView();
 		if (localGUI == null)
 			throw new NullPointerException(
 					"Local GUI cannot be created...exiting");
@@ -181,7 +181,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public ID getObjectID() {
 		return getID();
 	}
-	protected LineChatClientView getOutputWindow() {
+	protected LineChatClientView createOutputView() {
 		final String pn = (localProject == null || localProject.getName()
 				.trim().equals("")) ? "<workspace>" : localProject.getName();
 		final String init = INIT_TEXT + pn + "\n\n";
