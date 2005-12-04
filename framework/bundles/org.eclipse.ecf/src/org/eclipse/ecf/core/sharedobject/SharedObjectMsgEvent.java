@@ -25,7 +25,7 @@ public class SharedObjectMsgEvent extends RemoteSharedObjectEvent {
 	/**
      * @param senderObj
      * @param remoteCont
-     * @param data
+     * @param msg
      */
     public SharedObjectMsgEvent(ID senderObj, ID remoteCont, SharedObjectMsg msg) {
         super(senderObj, remoteCont, msg);
