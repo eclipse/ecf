@@ -84,7 +84,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		return sharedObject;
 	}
 	protected ID getHomeID() {
-		return getSharedObject().getHomeID();
+		return getSharedObject().getPrimaryContainerID();
 	}
 	protected void addParticipants(ID[] ids) {
 		if (ids != null) {

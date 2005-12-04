@@ -26,6 +26,8 @@ import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
+import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.core.util.QueueException;
 import org.eclipse.ecf.internal.core.Trace;
 
 /**
@@ -140,7 +142,7 @@ public abstract class AbstractSharedObject implements ISharedObject,
 	protected ISharedObjectContext getContext() {
 		return getConfig().getContext();
 	}
-	protected ID getHomeID() {
+	protected ID getPrimaryContainerID() {
 		return getConfig().getHomeContainerID();
 	}
 	protected ID getLocalID() {
@@ -151,7 +153,7 @@ public abstract class AbstractSharedObject implements ISharedObject,
 	}
 	protected boolean isPrimary() {
 		ID local = getLocalID();
-		ID home = getHomeID();
+		ID home = getPrimaryContainerID();
 		if (local == null || home == null) {
 			return false;
 		} else return (local.equals(home));
@@ -196,4 +198,27 @@ public abstract class AbstractSharedObject implements ISharedObject,
 			trace.dumpStack(t,getID()+":"+msg);
 		}
 	}
+    protected void sendSharedObjectMsgTo(ID toID, SharedObjectMsg msg)
+			throws IOException {
+		getContext().sendMessage(toID,
+				new SharedObjectMsgEvent(getID(), toID, msg));
+	}
+
+    protected void sendSharedObjectMsgToPrimary(SharedObjectMsg msg) throws IOException {
+    	sendSharedObjectMsgTo(getPrimaryContainerID(), msg);
+    }
+    protected void sendSharedObjectMsgToSelf(SharedObjectMsg msg) {
+		ISharedObjectContext context = getContext();
+		if (context == null)
+			return;
+		IQueueEnqueue queue = context.getQueue();
+		try {
+			queue.enqueue(new SharedObjectMsgEvent(getID(), getContext()
+					.getLocalContainerID(), msg));
+		} catch (QueueException e) {
+			traceStack("QueueException enqueing message to self", e);
+			return;
+		}
+	}
+
 }
