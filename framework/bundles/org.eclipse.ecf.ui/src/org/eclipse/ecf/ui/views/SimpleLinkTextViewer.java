@@ -11,9 +11,9 @@
 package org.eclipse.ecf.ui.views;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -39,11 +39,15 @@ import org.eclipse.swt.widgets.Text;
  */
 public class SimpleLinkTextViewer {
 
-	private static Color hyperlinkColor = null;
+	private Color hyperlinkColor = null;
 
-	private static Color getHyperlinkColor() {
+	private Color getHyperlinkColor() {
 		if (hyperlinkColor == null) {
-			hyperlinkColor = new Color(Display.getDefault(), 0, 0, 255);
+			hyperlinkColor = JFaceColors.getActiveHyperlinkText(Display
+					.getDefault());
+			if (hyperlinkColor == null) {
+				hyperlinkColor = new Color(Display.getDefault(), 0, 0, 255);
+			}
 		}
 		return hyperlinkColor;
 	}
@@ -64,7 +68,13 @@ public class SimpleLinkTextViewer {
 				| SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
 		styledText.addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {
-				LinkInfo linkInfo = findLinkInfo(e);
+				LinkInfo linkInfo = null;
+				synchronized (SimpleLinkTextViewer.this) {
+					if (styledText.isDisposed()) {
+						return;
+					}
+					linkInfo = findLinkInfo(e);
+				}
 				if (linkInfo != null) {
 					linkInfo.runnable.run();
 				}
@@ -72,11 +82,16 @@ public class SimpleLinkTextViewer {
 		});
 		styledText.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
-				LinkInfo linkInfo = findLinkInfo(e);
-				if (linkInfo != null) {
-					setHandCursor();
-				} else {
-					resetCursor();
+				synchronized (SimpleLinkTextViewer.this) {
+					if (styledText.isDisposed()) {
+						return;
+					}
+					LinkInfo linkInfo = findLinkInfo(e);
+					if (linkInfo != null) {
+						setHandCursor();
+					} else {
+						resetCursor();
+					}
 				}
 			}
 		});
@@ -87,7 +102,10 @@ public class SimpleLinkTextViewer {
 	 * 
 	 * @param text
 	 */
-	public void append(String text) {
+	public synchronized void append(String text) {
+		if (styledText.isDisposed()) {
+			return;
+		}
 		styledText.append(text);
 	}
 
@@ -97,7 +115,10 @@ public class SimpleLinkTextViewer {
 	 * 
 	 * @param text
 	 */
-	public void appendLink(String text, Runnable onClick) {
+	public synchronized void appendLink(String text, Runnable onClick) {
+		if (styledText.isDisposed()) {
+			return;
+		}
 		int start = styledText.getCharCount();
 		styledText.replaceTextRange(start, 0, text);
 		StyleRange styleRange = new StyleRange();
@@ -106,21 +127,27 @@ public class SimpleLinkTextViewer {
 		styleRange.foreground = getHyperlinkColor();
 		styleRange.underline = true;
 		styledText.setStyleRange(styleRange);
-		addLink(start, text.length(), onClick);
+		links.add(new LinkInfo(start, text.length(), onClick));
 	}
 
-	private void addLink(int start, int length, Runnable onClick) {
-		links.add(new LinkInfo(start, length, onClick));
-	}
-
-	private LinkInfo findLinkInfo(int offset) {
-		// TODO replace with binary search
-		for (Iterator it = links.iterator(); it.hasNext();) {
-			LinkInfo linkInfo = (LinkInfo) it.next();
-			if (linkInfo.start <= offset
-					&& offset <= linkInfo.start + linkInfo.length) {
-				return linkInfo;
+	private LinkInfo findLinkInfoFromOffset(int offset) {
+		int low = -1;
+		int high = links.size();
+		while (high - low > 1) {
+			int index = (high + low) / 2;
+			LinkInfo linkInfo = (LinkInfo) links.get(index);
+			if (offset < linkInfo.start) {
+				high = index;
+			} else {
+				low = index;
 			}
+		}
+		if (low == -1) {
+			return null;
+		}
+		LinkInfo result = (LinkInfo) links.get(low);
+		if(result.start <= offset && offset < result.start + result.length) {
+			return result;
 		}
 		return null;
 	}
@@ -132,7 +159,7 @@ public class SimpleLinkTextViewer {
 				&& styledText.getCharCount() > 0) {
 			try {
 				int offset = styledText.getOffsetAtLocation(point);
-				linkInfo = findLinkInfo(offset);
+				linkInfo = findLinkInfoFromOffset(offset);
 			} catch (IllegalArgumentException ex) {
 				// ignore - event was not over character
 			}
