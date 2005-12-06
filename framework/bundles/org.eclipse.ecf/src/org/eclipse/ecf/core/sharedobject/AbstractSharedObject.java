@@ -52,10 +52,19 @@ public abstract class AbstractSharedObject implements ISharedObject,
 		initialize();
 	}
 	/**
-	 * Initialize this shared object.  Subclasses may override as appropriate.
+	 * Initialize this shared object.  This initializes the object by adding a
+	 * single SharedObjectMsgEventProcessors to the set of event processors
+	 * owned by this shared object.  This SharedObjectMsgEventProcessor will
+	 * call the {@link #handleSharedObjectMsgEvent(SharedObjectMsgEvent) }
+	 * method to process received SharedObjectMsgEvent.
+	 * Subclasses may override as appropriate.  If they wish to retain the
+	 * SharedObjectMessageEventProcessor behavior described above, however,
+	 * they should call this method;
 	 *
 	 */
-	protected void initialize() {}
+	protected void initialize() {
+		addEventProcessor(new SharedObjectMsgEventProcessor(this));
+	}
 	/**
 	 * Called by replication strategy code (e.g. two phase commit) to associate SharedObjectDescription with a target receiver. 
 	 * This implementation returns null, indicating that no replicas will be created.  Subclasses may override as appropriate.
@@ -198,16 +207,39 @@ public abstract class AbstractSharedObject implements ISharedObject,
 			trace.dumpStack(t,getID()+":"+msg);
 		}
 	}
+	/**
+	 * Send SharedObjectMessage to container with given ID.  The toID 
+	 * parameter may be null, and if null the message will be delivered to 
+	 * <b>all</b> containers in group.  The second parameter may not be null.
+	 * 
+	 * @param toID the target container ID for the SharedObjectMsg.  If null, the 
+	 * given message is sent to all other containers currently in group
+	 * @param msg the message instance to send
+	 * @throws IOException thrown if the local container is not connected or unable
+	 * to send for other reason
+	 */
     protected void sendSharedObjectMsgTo(ID toID, SharedObjectMsg msg)
 			throws IOException {
+    	if (msg == null) throw new NullPointerException("msg cannot be null");
 		getContext().sendMessage(toID,
 				new SharedObjectMsgEvent(getID(), toID, msg));
 	}
-
+    /**
+     * Send SharedObjectMsg to this shared object's primary instance.
+     * @param msg the message instance to send
+     * @throws IOException throws if the local container is not connect or unable 
+     * to send for other reason
+     */
     protected void sendSharedObjectMsgToPrimary(SharedObjectMsg msg) throws IOException {
     	sendSharedObjectMsgTo(getPrimaryContainerID(), msg);
     }
+    /**
+     * Send SharedObjectMsg to local shared object.  This places the given message at
+     * the end of this shared object's message queue for processing.
+     * @param msg the message instance to send.
+     */
     protected void sendSharedObjectMsgToSelf(SharedObjectMsg msg) {
+    	if (msg == null) throw new NullPointerException("msg cannot be null");
 		ISharedObjectContext context = getContext();
 		if (context == null)
 			return;
@@ -220,5 +252,18 @@ public abstract class AbstractSharedObject implements ISharedObject,
 			return;
 		}
 	}
-
+    /**
+     * Handle a SharedObjectMessageEvent.  This method will be automatically called by 
+     * the SharedObjectMsgEventProcessor when a SharedObjectMessageEvent is received.
+     * The SharedObjectMsgEventProcessor is associated with this object via the initialize()
+     * method
+     * @param event the event to handle
+     * @return Event the Event for subsequent processing.  If null, the provided event
+     * will receive no further processing.  If non-null the provided Event will be 
+     * passed to subsequent event processors.
+     */
+    protected Event handleSharedObjectMsgEvent(SharedObjectMsgEvent event) {
+    	trace("handleSharedObjectMsgEvent("+event+")");
+    	return event;
+    }
 }
