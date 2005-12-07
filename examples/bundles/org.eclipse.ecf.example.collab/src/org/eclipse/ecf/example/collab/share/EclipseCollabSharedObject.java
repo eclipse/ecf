@@ -937,7 +937,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				projectName = projectName + "/";
 			}
 			// XXX construct string for output
-			final StringBuffer se = new StringBuffer("Share my selection on ");
+			final StringBuffer se = new StringBuffer("Shared selection on ");
 			se.append(projectName).append(resourceName);
 			if (marker != null) {
 				se.append(" (");

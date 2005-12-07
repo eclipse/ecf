@@ -27,19 +27,32 @@ public class ChatLine {
 	private boolean isPrivate = false;
 	private boolean isRaw = false;
 	private boolean noCRLF = false;
+	private Runnable onClick = null;
 	
 	public ChatLine() {
-		
+		this(null);
 	}
 	
 	public ChatLine(String text) {
-		this.text = text;
-	
+		this(text, null);
 	}
 	
 	public ChatLine(String text, User user) {
+		this(text, user, null);
+	}
+
+	/**
+	 * Creates a chat line. If a non-null <code>onClick</code> runnable is given,
+	 * this chat line has an associated handler that should be called when the
+	 * user clicks on the chat line.
+	 * @param text
+	 * @param user
+	 * @param onClick
+	 */
+	public ChatLine(String text, User user, Runnable onClick) {
 		this.text = text;
 		this.originator = user;
+		this.onClick = onClick;
 	}
 	/**
 	 * @return Returns the originator.
@@ -100,5 +113,21 @@ public class ChatLine {
 	 */
 	public void setNoCRLF(boolean noCRLF) {
 		this.noCRLF = noCRLF;
+	}
+
+	/**
+	 * 
+	 * @return the runnable
+	 */
+	public Runnable getOnClick() {
+		return onClick;
+	}
+
+	/**
+	 * 
+	 * @param onClick
+	 */
+	public void setOnClick(Runnable onClick) {
+		this.onClick = onClick;
 	}
 }

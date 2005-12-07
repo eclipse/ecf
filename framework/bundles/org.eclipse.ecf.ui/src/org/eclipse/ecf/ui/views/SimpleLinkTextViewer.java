@@ -230,4 +230,8 @@ public class SimpleLinkTextViewer {
 		}
 	}
 
+	public StyledText getTextWidget() {
+		return styledText;
+	}
+
 }
