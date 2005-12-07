@@ -65,7 +65,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	private Composite mainComp = null;
 	private IRoomInfo roomInfo = null;
 	private Text writeText = null;
-	private TextViewer readText = null;
+	private SimpleLinkTextViewer readText = null;
 	private ListViewer memberViewer = null;
 	
 	IChatRoomViewCloseListener closeListener = null;
@@ -130,10 +130,10 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		readInlayComp.setLayout(new GridLayout());
 		readInlayComp.setLayoutData(new GridData(GridData.FILL_BOTH));
 		readInlayComp.setBackground(memberViewer.getList().getBackground());
-		readText = new TextViewer(readInlayComp, SWT.V_SCROLL | SWT.H_SCROLL
+		readText = new SimpleLinkTextViewer(readInlayComp, SWT.V_SCROLL | SWT.H_SCROLL
 				| SWT.WRAP);
-		readText.setDocument(new Document());
-		readText.setEditable(false);
+		
+		readText.getTextWidget().setEditable(false);
 		readText.getTextWidget().setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		Composite writeComp = new Composite(rightSash, SWT.NONE);
