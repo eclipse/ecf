@@ -14,6 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.resource.JFaceColors;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -25,6 +30,7 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -37,7 +43,7 @@ import org.eclipse.swt.widgets.Text;
  * @since 0.5.4
  * 
  */
-public class SimpleLinkTextViewer {
+public class SimpleLinkTextViewer implements ISelectionProvider {
 
 	private Color hyperlinkColor = null;
 
@@ -57,15 +63,16 @@ public class SimpleLinkTextViewer {
 	private List links = new ArrayList();
 
 	private StyledText styledText;
+	
+	private List listeners = new ArrayList();
 
 	/**
 	 * Creates a new chat text viewer in the given composite.
 	 * 
 	 * @param composite
 	 */
-	public SimpleLinkTextViewer(Composite composite) {
-		styledText = new StyledText(composite, SWT.V_SCROLL | SWT.H_SCROLL
-				| SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
+	public SimpleLinkTextViewer(Composite composite, int style) {
+		styledText = new StyledText(composite, style);
 		styledText.addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {
 				LinkInfo linkInfo = null;
@@ -193,7 +200,8 @@ public class SimpleLinkTextViewer {
 		Shell shell = new Shell(display);
 		shell.setText(SimpleLinkTextViewer.class.getName());
 		shell.setLayout(new FillLayout());
-		SimpleLinkTextViewer chatTextViewer = new SimpleLinkTextViewer(shell);
+		SimpleLinkTextViewer chatTextViewer = new SimpleLinkTextViewer(shell, SWT.V_SCROLL | SWT.H_SCROLL
+				| SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
 		chatTextViewer.append("Hello world\n");
 		chatTextViewer.append("Hello ");
 		chatTextViewer.appendLink("linked", new Runnable() {
@@ -231,7 +239,37 @@ public class SimpleLinkTextViewer {
 	}
 
 	public StyledText getTextWidget() {
+		
 		return styledText;
+	}
+	
+	public Control getControl() {
+		return getTextWidget();
+	}
+
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+		if (!listeners.contains(listener)) {
+			listeners.add(listener);
+		}
+	}
+
+	public ISelection getSelection() {
+		ISelection selection = new TextSelection(styledText.getSelectionRange().x, styledText.getSelectionRange().y);
+		
+		return selection;
+	}
+
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		if (listeners.contains(listener)) {
+			listeners.remove(listener);
+		}
+	}
+
+	public void setSelection(ISelection selection) {
+		if (selection instanceof ITextSelection) {
+			ITextSelection textSelection = (ITextSelection) selection;
+			styledText.setSelection(textSelection.getOffset(), textSelection.getOffset() + textSelection.getLength());
+		}
 	}
 
 }
