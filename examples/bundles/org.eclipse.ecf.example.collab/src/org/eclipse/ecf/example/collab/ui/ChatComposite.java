@@ -165,7 +165,8 @@ public class ChatComposite extends Composite {
 		cl = new ChatLayout(DEFAULT_INPUT_HEIGHT, DEFAULT_INPUT_SEPARATOR);
 		setLayout(cl);
 		treeView = tree;
-		textoutput = new SimpleLinkTextViewer(this);
+		textoutput = new SimpleLinkTextViewer(this, SWT.V_SCROLL | SWT.H_SCROLL
+				| SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
 		String fontName = ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_CHAT_FONT);
 		if (!(fontName == null) && !(fontName.equals(""))) {
 			FontRegistry fr = ClientPlugin.getDefault().getFontRegistry();
@@ -262,6 +263,7 @@ public class ChatComposite extends Composite {
 //			}
 //			st.append(sb.toString());
 //			st.setStyleRange(sr);
+
 			textoutput.append(sb.toString());
 		}
 		
