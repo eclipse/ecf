@@ -4,13 +4,8 @@ Bundle-Name: ECF DataShare
 Bundle-SymbolicName: org.eclipse.ecf.datashare;singleton:=true
 Bundle-Version: 0.5.3
 Bundle-ClassPath: datashare.jar
-Bundle-Activator: org.eclipse.ecf.internal.datashare.DataSharePlugin$EclipsePlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ecf
+Require-Bundle: org.eclipse.ecf;visibility:=reexport
 Eclipse-AutoStart: true
-Export-Package: org.eclipse.ecf.datashare,
- org.eclipse.ecf.datashare.multicast,
- org.eclipse.ecf.datashare.util,
- org.eclipse.ecf.internal.datashare
+Export-Package: org.eclipse.ecf.datashare

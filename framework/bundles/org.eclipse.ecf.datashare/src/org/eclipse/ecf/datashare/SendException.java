@@ -8,27 +8,30 @@
  * Contributors:
  *     Peter Nehrer - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ecf.datashare.multicast;
+package org.eclipse.ecf.datashare;
 
-import java.io.Serializable;
+public class SendException extends Exception {
 
-public class Abort implements Serializable {
+	private static final long serialVersionUID = -4255877134637196156L;
 
-	private static final long serialVersionUID = 3258410616858294325L;
-
-	final Version version;
-
-	public Abort(Version version) {
-		this.version = version;
+	public SendException() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
-	public Version getVersion() {
-		return version;
+	public SendException(String arg0) {
+		super(arg0);
+		// TODO Auto-generated constructor stub
 	}
 
-	public String toString() {
-		StringBuffer buf = new StringBuffer("Abort[version=");
-		buf.append(version).append(']');
-		return buf.toString();
+	public SendException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
+		// TODO Auto-generated constructor stub
 	}
+
+	public SendException(Throwable arg0) {
+		super(arg0);
+		// TODO Auto-generated constructor stub
+	}
+
 }

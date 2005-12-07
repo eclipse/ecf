@@ -10,14 +10,28 @@
  *******************************************************************************/
 package org.eclipse.ecf.datashare;
 
-import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.util.ECFException;
+public class JoinException extends Exception {
 
-/**
- * @author pnehrer
- */
-public interface IDataShareServiceManager {
+	private static final long serialVersionUID = 2848924367904661732L;
 
-	IDataShareService getInstance(ISharedObjectContainer container)
-			throws ECFException;
+	public JoinException() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public JoinException(String arg0) {
+		super(arg0);
+		// TODO Auto-generated constructor stub
+	}
+
+	public JoinException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
+		// TODO Auto-generated constructor stub
+	}
+
+	public JoinException(Throwable arg0) {
+		super(arg0);
+		// TODO Auto-generated constructor stub
+	}
+
 }
