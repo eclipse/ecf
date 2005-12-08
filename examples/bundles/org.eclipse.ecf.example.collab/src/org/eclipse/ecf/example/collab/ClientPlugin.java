@@ -121,6 +121,9 @@ public class ClientPlugin extends AbstractUIPlugin implements
 				false);
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,
 				false);
+		
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY,true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER,true);
 	}
 	/**
 	 * This method is called upon plug-in activation

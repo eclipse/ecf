@@ -35,6 +35,9 @@ public interface ClientPluginConstants {
 	
 	public static final String PREF_START_SERVER = "startServerOnStartup";
 	public static final String PREF_REGISTER_SERVER = "registerServerOnStartup";
+	
+	public static final String PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY = "sharedEditorShowEvents";
+	public static final String PREF_SHAREDEDITOR_ASK_RECEIVER = "sharedEditorAskReceiver";
 	/*
 	 * Contstants used to describe decoration images.
 	 */
@@ -49,4 +52,5 @@ public interface ClientPluginConstants {
 	
 	public static final String SHARED_MARKER_TYPE = "org.eclipse.ecf.example.collab.sharedmarker";
 	public static final String SHARED_MARKER_KEY = "owner";
+
 }

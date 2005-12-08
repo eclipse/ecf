@@ -39,6 +39,8 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_SERVER,false);
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,false);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY,true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER,true);
 	}
 	public ClientPreferencePage() {
 		super(GRID);
@@ -53,10 +55,15 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 				"Show time for each chat entry", getFieldEditorParent()));
 		addField(new FontFieldEditor(ClientPlugin.PREF_CHAT_FONT, "Chat window font:", getFieldEditorParent()));
 		//addField(new BooleanFieldEditor(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE, "Confirm before receiving file.", getFieldEditorParent()));
+		//addField(new SpacerFieldEditor(
+		// 		getFieldEditorParent()));
 		addField(new ColorFieldEditor(ClientPlugin.PREF_ME_TEXT_COLOR, "Chat Text Color For Me:", getFieldEditorParent()));
 		addField(new ColorFieldEditor(ClientPlugin.PREF_OTHER_TEXT_COLOR, "Chat Text Color For Other:", getFieldEditorParent()));
 		addField(new ColorFieldEditor(ClientPlugin.PREF_SYSTEM_TEXT_COLOR, "Chat Text Color For System:", getFieldEditorParent()));
-		
+		addField(new SpacerFieldEditor(
+		 		getFieldEditorParent()));
+		addField(new BooleanFieldEditor(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY,"Play shared editor events immediately",getFieldEditorParent()));
+		addField(new BooleanFieldEditor(ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER,"Ask receiver for permission to display shared editor events",getFieldEditorParent()));
 		//addField(new BooleanFieldEditor(ClientPlugin.PREF_START_SERVER,"Activate Localhost ECF Server on Startup",getFieldEditorParent()));
 		//addField(new BooleanFieldEditor(ClientPlugin.PREF_REGISTER_SERVER,"Register Localhost Server for Dynamic Discovery",getFieldEditorParent()));
 		/*IntegerFieldEditor rate = new IntegerFieldEditor(ClientPlugin.PREF_FILE_TRANSFER_RATE,

@@ -51,10 +51,8 @@ import org.eclipse.ui.part.ViewPart;
 
 public class EclipseCollabSharedObject extends GenericSharedObject implements
 		LineChatHandler, EclipseProject {
-	
 	protected static final String SHARED_MARKER_TYPE = ClientPlugin.SHARED_MARKER_TYPE;
 	protected static final String SHARED_MARKER_KEY = ClientPlugin.SHARED_MARKER_KEY;
-	
 	protected static final String CHAT_VIEW_ID = LineChatView.class.getName();
 	protected static String DEFAULTTREETOPLABEL = "Presence";
 	public static final String ECLIPSEOBJECTNAME = "chat";
@@ -71,7 +69,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	String treeTopLabel;
 	String windowtitle = "Chat";
 	URL[] projectCodebase = null;
-
 	public EclipseCollabSharedObject() {
 	}
 	public EclipseCollabSharedObject(IResource proj, IWorkbenchWindow shell,
@@ -130,7 +127,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 	}
 	public void debugdump(Exception e, String aString) {
-		ClientPlugin.log(aString,e);
+		ClientPlugin.log(aString, e);
 	}
 	public void debugmsg(String aString) {
 		// ClientPlugin.log(aString);
@@ -638,7 +635,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			// return CVSWorkspaceRoot.isSharedWithCVS(getProject());
 			return false;
 		} catch (Exception e) {
-			debugdump(e,"CVS Exception calling isSharedWithCVS in TeamUpdateAction");
+			debugdump(e,
+					"CVS Exception calling isSharedWithCVS in TeamUpdateAction");
 			return false;
 		}
 	}
@@ -662,7 +660,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		doCVSUpdateOperation(proj, fromUser);
 	}
 	public void sendRingMessageToUser(User user, String msg) {
-		 ID receiver = null;
+		ID receiver = null;
 		if (user != null) {
 			receiver = user.getUserID();
 		}
@@ -749,7 +747,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			}
 		});
 	}
-	public void showRawLine(final ID sender, final String line, final Runnable onClick) {
+	public void showRawLine(final ID sender, final String line,
+			final Runnable onClick) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
@@ -777,7 +776,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		String message = null;
 		Integer offset = null;
 		Integer length = null;
-		
 		public SharedMarker(String message, Integer offset, Integer length) {
 			this.message = message;
 			this.offset = offset;
@@ -800,14 +798,17 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			return buf.toString();
 		}
 	}
-	public void sendAddMarkerForFile(User touser, String resourceName, int offset, int length) {
+	public void sendAddMarkerForFile(User touser, String resourceName,
+			int offset, int length) {
 		ID receiver = null;
 		if (touser != null) {
 			receiver = touser.getUserID();
 		}
 		try {
 			SharedObjectMsg m = SharedObjectMsg.makeMsg(null,
-					"handleAddMarkerForFile", getUser(), resourceName, new SharedMarker("ECF marker",new Integer(offset), new Integer(length)));
+					"handleAddMarkerForFile", getUser(), resourceName,
+					new SharedMarker("ECF marker", new Integer(offset),
+							new Integer(length)));
 			forwardMsgTo(receiver, m);
 			if (receiver == null) {
 				sendSelf(m);
@@ -816,14 +817,17 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			debugdump(e, "Exception on sendAddMarkerForFile to " + touser);
 		}
 	}
-	public void sendOpenAndSelectForFile(User touser, String resourceName, int offset, int length) {
+	public void sendOpenAndSelectForFile(User touser, String resourceName,
+			int offset, int length) {
 		ID receiver = null;
 		if (touser != null) {
 			receiver = touser.getUserID();
 		}
 		try {
 			SharedObjectMsg m = SharedObjectMsg.makeMsg(null,
-					"handleOpenAndSelectForFile", getUser(), resourceName, new SharedMarker("ECF marker",new Integer(offset), new Integer(length)));
+					"handleOpenAndSelectForFile", getUser(), resourceName,
+					new SharedMarker("ECF marker", new Integer(offset),
+							new Integer(length)));
 			forwardMsgTo(receiver, m);
 			if (receiver == null) {
 				sendSelf(m);
@@ -848,48 +852,58 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			debugdump(e, "Exception on sendLaunchEditorForFile to " + touser);
 		}
 	}
-	protected void openEditorForFile(final IFile file) {
-		trace("openEditorForFile("+file+")");
-		if (file == null) {
-			return;
-		}
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				IWorkbench wb = PlatformUI.getWorkbench();
-				IWorkbenchWindow ww = wb.getActiveWorkbenchWindow();
-				EditorHelper eh = new EditorHelper(ww);
-				try {
-					eh.openEditorForFile(file);
-				} catch (PartInitException e) {
-					debugdump(e,"Exception in showEditorForFile");
-				}
-			}
-		});
-	}
-	protected Runnable createOpenEditorAndSelectForFileRunnable(final String resourceName, final SharedMarker marker) {
-		trace("openEditorAndSelectForFile("+resourceName+")");
+	protected Runnable createOpenEditorAndSelectForFileRunnable(
+			final String resourceName, final SharedMarker marker) {
+		trace("openEditorAndSelectForFile(" + resourceName + ")");
 		final Integer offset = marker.getOffset();
 		final Integer length = marker.getLength();
 		return new Runnable() {
 			public void run() {
 				IWorkbench wb = PlatformUI.getWorkbench();
 				IWorkbenchWindow ww = wb.getActiveWorkbenchWindow();
-				IFile file = getLocalFileForRemote(resourceName);
-				if(file==null) {
-					MessageDialog.openInformation(ww.getShell(), "Cannot open file", "The file was not found in your workspace.");
-					return;
+				IFile file = getIFileForResource(ww, resourceName);
+				if (file != null) {
+					EditorHelper eh = new EditorHelper(ww);
+					try {
+						eh.openAndSelectForFile(file, (offset == null) ? 0
+								: offset.intValue(), (length == null) ? 0
+								: length.intValue());
+					} catch (Exception e) {
+						debugdump(e, "Exception in openEditorAndSelectForFile");
+					}
 				}
-				EditorHelper eh = new EditorHelper(ww);
-				try {
-					eh.openAndSelectForFile(file, (offset==null)?0:offset.intValue(), (length==null)?0:length.intValue());
-				} catch (Exception e) {
-					debugdump(e,"Exception in addMarkerForFile");
+			}
+		};
+	}
+	protected IFile getIFileForResource(IWorkbenchWindow ww, String resourceName) {
+		IFile file = getLocalFileForRemote(resourceName);
+		if (file == null || !file.exists()) {
+			MessageDialog.openInformation(ww.getShell(), "Cannot open editor",
+					"'" + resourceName + "' was not found in your workspace.");
+			return null;
+		}
+		return file;
+	}
+	protected Runnable createOpenEditorForFileRunnable(final String resourceName) {
+		trace("openEditorAndSelectForFile(" + resourceName + ")");
+		return new Runnable() {
+			public void run() {
+				IWorkbench wb = PlatformUI.getWorkbench();
+				IWorkbenchWindow ww = wb.getActiveWorkbenchWindow();
+				IFile file = getIFileForResource(ww, resourceName);
+				if (file != null) {
+					EditorHelper eh = new EditorHelper(ww);
+					try {
+						eh.openEditorForFile(file);
+					} catch (Exception e) {
+						debugdump(e, "Exception in openEditorAndSelectForFile");
+					}
 				}
 			}
 		};
 	}
 	protected void addMarkerForFile(final IFile file, final SharedMarker marker) {
-		trace("addMarkerForFile("+file+")");
+		trace("addMarkerForFile(" + file + ")");
 		if (file == null) {
 			return;
 		}
@@ -901,52 +915,105 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				try {
 					eh.openAndAddMarkerForFile(file, marker);
 				} catch (Exception e) {
-					debugdump(e,"Exception in addMarkerForFile");
+					debugdump(e, "Exception in addMarkerForFile");
 				}
 			}
 		});
 	}
 	protected void handleAddMarkerForFile(final User fromuser,
 			final String resourceName, SharedMarker marker) {
-		trace("handleAddMarkerForFile(" + fromuser + "," + resourceName + ","+marker+")");
-		addMarkerForFile(getLocalFileForRemote(resourceName),marker);
+		trace("handleAddMarkerForFile(" + fromuser + "," + resourceName + ","
+				+ marker + ")");
+		addMarkerForFile(getLocalFileForRemote(resourceName), marker);
 	}
 	protected void handleOpenAndSelectForFile(final User fromuser,
 			final String resourceName, SharedMarker marker) {
-		trace("handleOpenAndSelectForFile(" + fromuser + "," + resourceName + ","+marker+")");
-		Runnable runnable = createOpenEditorAndSelectForFileRunnable(resourceName, marker);
-		showEventInChatOutput(fromuser,resourceName,marker, runnable);
-		Display.getDefault().asyncExec(runnable);
+		trace("handleOpenAndSelectForFile(" + fromuser + "," + resourceName
+				+ "," + marker + ")");
+		User local = getUserForID(fromuser.getUserID());
+		if (local != null) {
+			Runnable runnable = createOpenEditorAndSelectForFileRunnable(
+					resourceName, marker);
+			showEventInChatOutput(fromuser, resourceName, marker, runnable);
+			verifyAndOpenEditorLocally(fromuser, resourceName, runnable);
+		}
+	}
+	protected boolean isLocalUser(User fromuser) {
+		if (fromuser != null
+				&& fromuser.getUserID().equals(getUser().getUserID()))
+			return true;
+		return false;
+	}
+	protected void verifyAndOpenEditorLocally(final User fromuser,
+			final String resourceName, final Runnable runnable) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				if (isLocalUser(fromuser)) {
+					runnable.run();
+				} else {
+					if (showSharedEditorEventsImmediately()) {
+						if (!askUserToDisplaySharedEditorEvents()
+								|| MessageDialog.openQuestion(null,
+										"Open Shared Editor?",
+										"Open shared editor for '"
+												+ resourceName + "' from "
+												+ fromuser.getNickname()+"?")) {
+							runnable.run();
+						}
+					}
+				}
+			}
+		});
 	}
 	protected void handleLaunchEditorForFile(final User fromuser,
 			final String resourceName) {
-		trace("handleLaunchEditorForFile(" + fromuser + "," + resourceName + ")");
-		showEventInChatOutput(fromuser, resourceName, null, null);
-		openEditorForFile(getLocalFileForRemote(resourceName));
-	}
-	protected void showEventInChatOutput(User fromuser, String resourceName, SharedMarker marker, Runnable runnable) {
-		if (localGUI != null) {
-			IResource localRes = getResource();
-			String projectName = "";
-			if (localRes != null) {
-				projectName = localRes.getName();
-			}
-			if (projectName.equals("")) {
-				projectName = "<workspace>/";
-			} else {
-				projectName = projectName + "/";
-			}
-			// XXX construct string for output
-			final StringBuffer se = new StringBuffer("Shared selection on ");
-			se.append(projectName).append(resourceName);
-			if (marker != null) {
-				se.append(" (");
-				se.append(marker.getOffset()).append("-").append(marker.getOffset().intValue()+marker.getLength().intValue());
-			}
-			se.append(")");
-			// XXX
-			showRawLine(fromuser.getUserID(),se.toString(), runnable);
+		trace("handleLaunchEditorForFile(" + fromuser + "," + resourceName
+				+ ")");
+		final User local = getUserForID(fromuser.getUserID());
+		if (local != null) {
+			final Runnable runnable = createOpenEditorForFileRunnable(resourceName);
+			showEventInChatOutput(fromuser, resourceName, null, runnable);
+			verifyAndOpenEditorLocally(fromuser, resourceName, runnable);
 		}
+	}
+	protected boolean showSharedEditorEventsImmediately() {
+		return ClientPlugin.getDefault().getPreferenceStore().getBoolean(
+				ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY);
+	}
+	protected boolean askUserToDisplaySharedEditorEvents() {
+		return ClientPlugin.getDefault().getPreferenceStore().getBoolean(
+				ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER);
+	}
+	protected void showEventInChatOutput(User fromuser, String resourceName,
+			SharedMarker marker, Runnable runnable) {
+		if (localGUI != null) {
+			showRawLine(fromuser.getUserID(), createDisplayStringForEditorOpen(
+					resourceName, marker), runnable);
+		}
+	}
+	protected String createDisplayStringForEditorOpen(String resourceName,
+			SharedMarker marker) {
+		IResource localRes = getResource();
+		String projectName = "";
+		if (localRes != null) {
+			projectName = localRes.getName();
+		}
+		if (projectName.equals("")) {
+			projectName = "<workspace>/";
+		} else {
+			projectName = projectName + "/";
+		}
+		final StringBuffer se = new StringBuffer(
+				(marker == null) ? "open editor on " : "share selection on ");
+		se.append(projectName).append(resourceName);
+		if (marker != null) {
+			se.append(" (");
+			se.append(marker.getOffset()).append("-").append(
+					marker.getOffset().intValue()
+							+ marker.getLength().intValue());
+			se.append(")");
+		}
+		return se.toString();
 	}
 	protected IFile getLocalFileForRemote(String file) {
 		IResource res = getResource();
@@ -955,7 +1022,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		if (proj == null) {
 			// workspace
 			IWorkspaceRoot myWorkspaceRoot = ResourcesPlugin.getWorkspace()
-			.getRoot();
+					.getRoot();
 			aFile = myWorkspaceRoot.getFile(new Path(file));
 		} else {
 			aFile = proj.getFile(file);
@@ -1090,7 +1157,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 					nick = user.getNickname();
 				}
 				showRawLine(from, "\t'" + aFile.getName() + "' received from "
-						+ nick + ".  Stored in: " + getLocalFullDownloadPath(), null);
+						+ nick + ".  Stored in: " + getLocalFullDownloadPath(),
+						null);
 				refreshProject();
 			}
 		};
