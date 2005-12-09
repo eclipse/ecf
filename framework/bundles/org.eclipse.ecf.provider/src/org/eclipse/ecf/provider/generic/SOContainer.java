@@ -376,7 +376,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			SharedObjectDescription desc) throws Exception {
 		debug("checkRemoteCreate(" + fromID + "," + toID + "," + desc + ")");
 		if (policy != null) {
-			policy.checkAddSharedObject(fromID, toID, getID(), desc);
+			return policy.checkAddSharedObject(fromID, toID, getID(), desc);
 		}
 		return desc;
 	}
