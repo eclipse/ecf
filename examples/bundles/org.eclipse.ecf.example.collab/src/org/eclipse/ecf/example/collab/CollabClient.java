@@ -1,14 +1,9 @@
 package org.eclipse.ecf.example.collab;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -19,8 +14,7 @@ import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.security.ObjectCallback;
+import org.eclipse.ecf.core.security.ConnectContext;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
@@ -92,7 +86,7 @@ public class CollabClient {
 		
 		// Now connect
 		try {
-			newClient.connect(targetID, getJoinContext(username, connectData));
+			newClient.connect(targetID, ConnectContext.makeUsernamePasswordConnectContext(username, connectData));
 		} catch (ContainerConnectException e) {
 			// If we have a connect exception then we remove any previously added shared object
 			EclipseCollabSharedObject so = newClientEntry.getObject();
@@ -264,29 +258,6 @@ public class CollabClient {
 		removeClientForResource(proj, entry.getConnectedID());
 	}
 
-	protected IConnectContext getJoinContext(final String username,
-			final Object password) {
-		return new IConnectContext() {
-			public CallbackHandler getCallbackHandler() {
-				return new CallbackHandler() {
-					public void handle(Callback[] callbacks)
-							throws IOException, UnsupportedCallbackException {
-						if (callbacks == null)
-							return;
-						for (int i = 0; i < callbacks.length; i++) {
-							if (callbacks[i] instanceof NameCallback) {
-								NameCallback ncb = (NameCallback) callbacks[i];
-								ncb.setName(username);
-							} else if (callbacks[i] instanceof ObjectCallback) {
-								ObjectCallback ocb = (ObjectCallback) callbacks[i];
-								ocb.setObject(password);
-							}
-						}
-					}
-				};
-			}
-		};
-	}
 	protected String setupUsername(ID targetID, String nickname) throws URISyntaxException {
 		String username = null;
 		if (nickname != null) {
