@@ -371,8 +371,7 @@ public abstract class ClientSOContainer extends SOContainer {
 		}
 	}
 
-	protected void processAsynchPacket(AsynchConnectionEvent evt)
-			throws IOException {
+	protected void processAsynch(AsynchConnectionEvent evt) throws IOException {
 		// Get connect lock, then call super version
 		synchronized (connectLock) {
 			checkConnected();
