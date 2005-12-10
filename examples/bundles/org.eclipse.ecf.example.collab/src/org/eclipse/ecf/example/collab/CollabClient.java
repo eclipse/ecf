@@ -14,7 +14,7 @@ import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.security.ConnectContext;
+import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
@@ -86,7 +86,7 @@ public class CollabClient {
 		
 		// Now connect
 		try {
-			newClient.connect(targetID, ConnectContext.makeUsernamePasswordConnectContext(username, connectData));
+			newClient.connect(targetID, ConnectContextFactory.makeUsernamePasswordConnectContext(username, connectData));
 		} catch (ContainerConnectException e) {
 			// If we have a connect exception then we remove any previously added shared object
 			EclipseCollabSharedObject so = newClientEntry.getObject();

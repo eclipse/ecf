@@ -10,8 +10,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  * Helper class for creating instances of IConnectContext
  *
  */
-public class ConnectContext {
-	private ConnectContext() {
+public class ConnectContextFactory {
+	private ConnectContextFactory() {
 		super();
 	}
 	public static IConnectContext makeUsernamePasswordConnectContext(final String username, final Object password) {

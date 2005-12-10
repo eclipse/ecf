@@ -6,7 +6,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.security.ConnectContext;
+import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
@@ -48,7 +48,7 @@ public class XMPPClient {
 			}
 		});
 		// Now connect
-		container.connect(targetID,ConnectContext.makePasswordConnectContext(password));
+		container.connect(targetID,ConnectContextFactory.makePasswordConnectContext(password));
 		userID = getID(account);
 	}
 	private ID getID(String name) {
