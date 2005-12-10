@@ -11,4 +11,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.discovery
 Eclipse-AutoStart: true
 Bundle-ClassPath: jmdns.jar,
- lib/jmdns-1.0.1.jar
+ lib/jmdns-1.0.2.jar
