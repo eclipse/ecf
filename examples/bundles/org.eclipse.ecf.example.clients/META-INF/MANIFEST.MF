@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Example Clients
-Bundle-SymbolicName: org.eclipse.ecf.example.clients
+Bundle-SymbolicName: org.eclipse.ecf.example.clients;singleton:=true
 Bundle-Version: 0.5.4
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
