@@ -16,6 +16,8 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FontFieldEditor;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -47,6 +49,10 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		setPreferenceStore(ClientPlugin.getDefault().getPreferenceStore());
 	}
 
+	BooleanFieldEditor playImmediate = null;
+	BooleanFieldEditor ask = null;
+	Composite askParent = null;
+	
 	public void createFieldEditors() {
 		addField(new BooleanFieldEditor(ClientPlugin.PREF_USE_CHAT_WINDOW,
 				"Display ECF Collaboration outside of the workbench",
@@ -62,8 +68,15 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		addField(new ColorFieldEditor(ClientPlugin.PREF_SYSTEM_TEXT_COLOR, "Chat Text Color For System:", getFieldEditorParent()));
 		addField(new SpacerFieldEditor(
 		 		getFieldEditorParent()));
-		addField(new BooleanFieldEditor(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY,"Play shared editor events immediately",getFieldEditorParent()));
-		addField(new BooleanFieldEditor(ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER,"Ask receiver for permission to display shared editor events",getFieldEditorParent()));
+		
+		playImmediate = new BooleanFieldEditor(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY,"Play shared editor events immediately",getFieldEditorParent());
+		addField(playImmediate);
+		askParent = getFieldEditorParent();
+		ask = new BooleanFieldEditor(ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER,"Ask receiver for permission to display shared editor events",askParent);
+		addField(ask);
+		
+		boolean val = getPreferenceStore().getBoolean(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY);
+		ask.setEnabled(val, askParent);
 		//addField(new BooleanFieldEditor(ClientPlugin.PREF_START_SERVER,"Activate Localhost ECF Server on Startup",getFieldEditorParent()));
 		//addField(new BooleanFieldEditor(ClientPlugin.PREF_REGISTER_SERVER,"Register Localhost Server for Dynamic Discovery",getFieldEditorParent()));
 		/*IntegerFieldEditor rate = new IntegerFieldEditor(ClientPlugin.PREF_FILE_TRANSFER_RATE,
@@ -77,6 +90,15 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		addField(new StringFieldEditor(ClientPlugin.PREF_FILE_SEND_PATH, "Local location of files sent by others.", getFieldEditorParent()));*/
 	}
 
+    public void propertyChange(PropertyChangeEvent event) {
+    	Object field = event.getSource();
+    	if (field.equals(playImmediate)) {
+    		Boolean oldValue = (Boolean) event.getNewValue();
+   			ask.setEnabled(oldValue.booleanValue(), askParent);
+    	} else {
+    		super.propertyChange(event);
+    	}
+    }
 	public void init(IWorkbench workbench) {
 	}
 }
