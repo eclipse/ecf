@@ -22,15 +22,15 @@
 			<param name="manifest.path" value="${org.eclipse.ecf.ui.manifest}"/>
 		</antcall>
 	</target>
-
+<!--
 	<target name="org.eclipse.ecf.sdo">
 		<eclipse.convertPath property="org.eclipse.ecf.sdo.manifest" resourcePath="/org.eclipse.ecf.sdo/plugin.xml"/>
 		<antcall target="_plugin">
 			<param name="manifest.path" value="${org.eclipse.ecf.sdo.manifest}"/>
 		</antcall>
 	</target>
-
-	<target name="schema" depends="org.eclipse.ecf,org.eclipse.ecf.provider,org.eclipse.ecf.ui,org.eclipse.ecf.sdo">
+-->
+	<target name="schema" depends="org.eclipse.ecf,org.eclipse.ecf.provider,org.eclipse.ecf.ui">
 		<!-- unfortunately, the task generates local filesystem references... fix them! -->
 		<property name="cssurl" value="${osgi.install.area}plugins/org.eclipse.platform.doc.isv_3.1.0"/>
 		<replace dir="${dest.path}" token="${cssurl}" value="../../../../org.eclipse.platform.doc.isv" includes="*.html"/>

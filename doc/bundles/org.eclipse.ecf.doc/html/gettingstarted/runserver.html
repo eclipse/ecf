@@ -5,7 +5,7 @@
 <body>
 <h2>Running a Collaboration Server on Localhost</h2>
 <ol>
-  <li> Download ECF projects from CVS as described <a
+  <li> Download ECF projects from CVS into your workspace as described <a
  href="http://www.eclipse.org/ecf/downloads.html">here</a>. </li>
   <li> Choose Run... or Debug... from the Eclipse Run Menu. </li>
   <li> Under 'Java Application' choose 'ECF Collab Server'. </li>
@@ -14,6 +14,13 @@
 ECF URL: ecftcp://localhost:3282/server. You can then connect to this
 server with an Eclipse client as described in Connecting an ECF
 Collaboration Client to an Existing Server above.</li>
+</ol>
+<ol>
+  <li> Install the ECF 'Server Feature' as described <a href="http://www.eclipse.org/ecf/downloads.html#updates">here</a></li>
+  <li> From operating system shell, go to <eclipseinstalllocation>/features/org.eclipse.ecf.serverfeature_<version>/bin</li>
+  <li> Depending upon operating system, use 'startserver.cmd' (windows) or 'startserver.sh' (Unix) to 
+  start a localhost server.  See the file ../conf/server.xml to setup configuration
+  information for the localhost server</li>
 </ol>
 <br>
 </body>
