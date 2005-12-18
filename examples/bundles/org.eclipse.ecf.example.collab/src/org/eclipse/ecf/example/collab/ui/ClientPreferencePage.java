@@ -77,17 +77,6 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		
 		boolean val = getPreferenceStore().getBoolean(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY);
 		ask.setEnabled(val, askParent);
-		//addField(new BooleanFieldEditor(ClientPlugin.PREF_START_SERVER,"Activate Localhost ECF Server on Startup",getFieldEditorParent()));
-		//addField(new BooleanFieldEditor(ClientPlugin.PREF_REGISTER_SERVER,"Register Localhost Server for Dynamic Discovery",getFieldEditorParent()));
-		/*IntegerFieldEditor rate = new IntegerFieldEditor(ClientPlugin.PREF_FILE_TRANSFER_RATE,
-				"Maximum transfer rate for file transfers.", getFieldEditorParent());*/
-		/*rate.setTextLimit(5);
-		rate.setEmptyStringAllowed(false);
-		rate.setValidRange(1, 1000);
-		addField(rate);*/
-		/*addField(new BooleanFieldEditor(ClientPlugin.PREF_CONFIRM_FILE_SEND, "Confirm on file send.", getFieldEditorParent()));
-		addField(new BooleanFieldEditor(ClientPlugin.PREF_CONFIRM_REMOTE_VIEW, "Confirm on remote view.", getFieldEditorParent()));
-		addField(new StringFieldEditor(ClientPlugin.PREF_FILE_SEND_PATH, "Local location of files sent by others.", getFieldEditorParent()));*/
 	}
 
     public void propertyChange(PropertyChangeEvent event) {
