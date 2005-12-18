@@ -218,6 +218,9 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		registry.put(ClientPluginConstants.DECORATION_SYSTEM_MESSAGE,
 				PlatformUI.getWorkbench().getSharedImages().getImage(
 						ISharedImages.IMG_OBJS_INFO_TSK));
+		registry.put(ClientPluginConstants.DECORATION_DEFAULT_PROVIDER, 
+				AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.ecf.example.collab",
+				"icons/default_provider_image.gif").createImage());
 		return registry;
 	}
 	/**
