@@ -11,6 +11,10 @@
 
 package org.eclipse.ecf.example.collab.share.url;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.help.browser.IBrowser;
 import org.eclipse.help.internal.browser.BrowserManager;
@@ -18,6 +22,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 public class GetExec {
 
@@ -57,5 +64,23 @@ public class GetExec {
 			}
 		});
 	}
-
+	public static void openURL(final URL anURL,final boolean internal) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
+				try {
+					if (internal)
+						support.createBrowser(IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.NAVIGATION_BAR,
+								anURL.toExternalForm(), null, null).openURL(anURL);
+					else {
+						displayURL(anURL.toExternalForm(),false);
+					}
+				}
+				catch (PartInitException e) {
+					MessageDialog.openError(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+							"Error in URL", e.getLocalizedMessage());
+				}
+			}
+		});
+	}
 }

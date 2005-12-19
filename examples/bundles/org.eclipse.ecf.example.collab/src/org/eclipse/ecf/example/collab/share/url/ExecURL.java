@@ -12,6 +12,7 @@
 package org.eclipse.ecf.example.collab.share.url;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,7 +104,7 @@ public class ExecURL extends GenericSharedObject {
 		debug("activated()");
 		try {
 			if (!getContext().isGroupManager()) {
-				GetExec.showURL(url,true);
+				GetExec.openURL(new URL(url), true);
 			} else {
 				debug("Not executing commands because is server");
 			}
