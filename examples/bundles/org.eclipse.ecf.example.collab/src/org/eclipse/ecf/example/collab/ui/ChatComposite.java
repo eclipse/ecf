@@ -40,8 +40,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -49,7 +47,6 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -449,7 +446,7 @@ public class ChatComposite extends Composite {
 					sendFileToUser(user,true);
 				}
 			};
-			sendFileToUserAndLaunch.setText("Send File to " + user.getNickname()+" and Launch...");
+			sendFileToUserAndLaunch.setText("Send File to " + user.getNickname()+" and launch...");
 			sendFileToUserAndLaunch.setImageDescriptor(PlatformUI.getWorkbench()
 					.getSharedImages().getImageDescriptor(
 							ISharedImages.IMG_OBJ_FILE));
@@ -476,9 +473,9 @@ public class ChatComposite extends Composite {
 					sendAppShare(user.getUserID());
 				}
 			};
-			startAppShareToUser.setText("Start Application Share with "
-					+ user.getNickname() + "...");
-			man.add(startAppShareToUser);
+			//startAppShareToUser.setText("Start Application Share with "
+			//		+ user.getNickname() + "...");
+			//man.add(startAppShareToUser);
 			//startAppShareToUser.setEnabled(Platform.getOS().equalsIgnoreCase(Platform.OS_WIN32)&& !LineChatView.appShareActive());
 
 			man.add(new Separator());
@@ -503,8 +500,8 @@ public class ChatComposite extends Composite {
 			        sendCVSUpdateRequest(user);
 			    }
 			};
-			sendCVSUpdateRequest.setText("Send CVS Update Request to "+user.getNickname()+"...");
-			man.add(sendCVSUpdateRequest);
+			//sendCVSUpdateRequest.setText("Send CVS Update Request to "+user.getNickname()+"...");
+			//man.add(sendCVSUpdateRequest);
 
 			Action sendShowViewRequest = new Action() {
 			    public void run() {

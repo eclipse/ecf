@@ -17,7 +17,7 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
 public class XMPPChatClient {
 	
-	protected static String CONTAINER_TYPE = "xmpp.jive";
+	protected static String CONTAINER_TYPE = "ecf.xmpp";
 	
 	Namespace namespace = null;
 	IContainer container = null;

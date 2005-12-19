@@ -6,7 +6,7 @@
       <containerFactory
             class="org.eclipse.ecf.provider.xmpp.container.ContainerInstantiator"
             description="XMPP (Jabber)"
-            name="xmpp.jive">
+            name="ecf.xmpp">
          <property
                value="true"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>
@@ -24,7 +24,7 @@
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.groupIDLabel"/>
          <property
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.namespace"
-               value="xmpp.jive"/>
+               value="ecf.xmpp"/>
       </containerFactory>
    </extension>
    <extension
@@ -32,7 +32,7 @@
       <containerFactory
             class="org.eclipse.ecf.provider.xmpp.container.SecureContainerInstantiator"
             description="XMPP SSL (Jabber)"
-            name="xmpps.jive">
+            name="ecf.xmpps">
          <property
                value="true"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>
@@ -50,7 +50,7 @@
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.groupIDLabel"/>
          <property
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.namespace"
-               value="xmpps.jive"/>
+               value="ecf.xmpps"/>
       </containerFactory>
    </extension>
    <extension
@@ -58,14 +58,14 @@
       <namespace
             class="org.eclipse.ecf.provider.xmpp.identity.XMPPNamespace"
             description="XMPP Namespace"
-            name="xmpp.jive"/>
+            name="ecf.xmpp"/>
    </extension>
    <extension
          point="org.eclipse.ecf.namespace">
       <namespace
             class="org.eclipse.ecf.provider.xmpp.identity.XMPPSNamespace"
             description="XMPP SSL Namespace"
-            name="xmpps.jive"/>
+            name="ecf.xmpps"/>
    </extension>
    <extension
          point="org.eclipse.ecf.namespace">

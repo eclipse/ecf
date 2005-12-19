@@ -36,11 +36,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 
 public class LineChatClientView implements FileSenderUI {
-	/*
-	 * public static final String[] APPSHAREARGTYPES = { ID.class.getName(),
-	 * VNCParams.class.getName() }; public static final String APPSHARECLASSNAME =
-	 * EclipseAppShareServer.class .getName();
-	 */
 	public static final String CLIENT_PREFIX = " says";
 	protected static final String DEFAULT_ECLIPSE_COMPONENT_CLASS = org.eclipse.ecf.example.collab.share.TestEclipseSessionComponent.class
 			.getName();

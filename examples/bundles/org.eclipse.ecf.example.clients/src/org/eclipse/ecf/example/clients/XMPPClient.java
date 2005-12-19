@@ -14,7 +14,7 @@ import org.eclipse.ecf.presence.IPresenceContainer;
 
 public class XMPPClient {
 	
-	protected static String CONTAINER_TYPE = "xmpp.jive";
+	protected static String CONTAINER_TYPE = "ecf.xmpp";
 	
 	Namespace namespace = null;
 	IContainer container = null;

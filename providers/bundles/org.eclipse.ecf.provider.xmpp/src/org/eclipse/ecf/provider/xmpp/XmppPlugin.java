@@ -20,8 +20,8 @@ import org.osgi.framework.BundleContext;
  */
 public class XmppPlugin extends Plugin {
     public static final String XMPPPLUGIN_NAME = "org.eclipse.ecf.provider.xmpp";
-    protected static final String NAMESPACE_IDENTIFIER = "xmpp.jive";
-    protected static final String SECURE_NAMESPACE_IDENTIFIER = "xmpps.jive";
+    protected static final String NAMESPACE_IDENTIFIER = "ecf.xmpp";
+    protected static final String SECURE_NAMESPACE_IDENTIFIER = "ecf.xmpps";
     protected static final String ROOM_NAMESPACE_IDENTIFIER = "xmpp.room.jive";
     public static final String PLUGIN_ID = XMPPPLUGIN_NAME;
     
