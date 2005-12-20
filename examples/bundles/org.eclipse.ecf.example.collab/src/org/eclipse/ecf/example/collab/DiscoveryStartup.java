@@ -20,7 +20,7 @@ import org.eclipse.ecf.ui.views.DiscoveryView;
 
 public class DiscoveryStartup {
 	protected static final String DISCOVERYVIEW_ID = "org.eclipse.ecf.example.collab.discoveryview";
-	public static final String DISCOVERY_CONTAINER = "org.eclipse.ecf.provider.jmdns.container.JmDNS";
+	public static final String DISCOVERY_CONTAINER = "ecf.discovery.jmdns";
 	public static final String PROP_PROTOCOL_NAME = "protocol";
 	public static final String PROP_CONTAINER_TYPE_NAME = "containertype";
 	public static final String PROP_CONTAINER_TYPE_VALUE = CollabClient.GENERIC_CONTAINER_CLIENT_NAME;

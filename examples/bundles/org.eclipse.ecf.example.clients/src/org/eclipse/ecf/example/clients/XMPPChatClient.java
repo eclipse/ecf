@@ -17,7 +17,7 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
 public class XMPPChatClient {
 	
-	protected static String CONTAINER_TYPE = "ecf.xmpp";
+	protected static String CONTAINER_TYPE = "ecf.xmpp.smack";
 	
 	Namespace namespace = null;
 	IContainer container = null;

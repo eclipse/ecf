@@ -21,7 +21,7 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
 public class CollabClient {
 	public static final String WORKSPACE_NAME = "<workspace>";
-    public static final String GENERIC_CONTAINER_CLIENT_NAME = "org.eclipse.ecf.provider.generic.Client";
+    public static final String GENERIC_CONTAINER_CLIENT_NAME = "ecf.generic.client";
 	static Hashtable clients = new Hashtable();
 	static CollabClient collabClient = new CollabClient();
 

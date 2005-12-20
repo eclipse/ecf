@@ -89,7 +89,7 @@
       <containerFactory
             class="org.eclipse.ecf.provider.generic.ContainerInstantiator:foo:bar"
             description="ECF Generic"
-            name="org.eclipse.ecf.provider.generic.Client">
+            name="ecf.generic.client">
          <defaultargument
                type="org.eclipse.ecf.core.identity.ID"
                name="id"/>
@@ -115,7 +115,7 @@
       <containerFactory
             class="org.eclipse.ecf.provider.generic.ContainerInstantiator"
             description="Generic Server Container Instantiator"
-            name="org.eclipse.ecf.provider.generic.Server">
+            name="ecf.generic.server">
          <defaultargument
                value="ecftcp://localhost:3282/server"
                type="org.eclipse.ecf.core.identity.ID"

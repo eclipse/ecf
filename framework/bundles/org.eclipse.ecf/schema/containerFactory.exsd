@@ -211,7 +211,7 @@ IContainer newContainer = ContainerFactory.getDefault().makeContainer(&apos;foo&
          The supplied implementations of this extension point are:
 
 org.eclipse.ecf.provider.generic.ContainerInstantiator
-&lt;b&gt;TEST&lt;/b&gt;:  org.eclipse.ecf.test.TestContainer
+&lt;b&gt;TEST&lt;/b&gt;:  ecf.test.provider
       </documentation>
    </annotation>
 

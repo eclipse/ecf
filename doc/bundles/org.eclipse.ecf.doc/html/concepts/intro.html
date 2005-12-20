@@ -41,7 +41,7 @@
        Here's an example code snippet that shows the creation and connection of an ECF container:
        <pre>
        // make container instance
-       IContainer cont = ContainerFactory.getDefault().makeContainer("org.eclipse.ecf.provider.generic.Client");
+       IContainer cont = ContainerFactory.getDefault().makeContainer("ecf.generic.client");
        // make targetID
        ID targetID = IDFactory.getDefault().makeID(cont.getConnectNamespace(),"ecftcp://ecf1.osuosl.org:3282/server");
        // then connect to targetID

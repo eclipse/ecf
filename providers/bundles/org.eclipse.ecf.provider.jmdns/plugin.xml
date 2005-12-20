@@ -6,7 +6,7 @@
       <containerFactory
             class="org.eclipse.ecf.provider.jmdns.container.ContainerInstantiator"
             description="Discovery Container"
-            name="org.eclipse.ecf.provider.jmdns.container.JmDNS">
+            name="ecf.discovery.jmdns">
          <property
                value="&lt;rendevous service type&gt;"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"/>

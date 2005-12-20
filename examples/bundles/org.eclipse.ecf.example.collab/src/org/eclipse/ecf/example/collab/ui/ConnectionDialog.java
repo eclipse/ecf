@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.TableColumn;
 public class ConnectionDialog extends TitleAreaDialog {
 	protected static final String CLASSNAME = JoinGroupWizardPage.class.getName();
 	protected static final String ISSERVER_PROP_NAME = CLASSNAME+".isServer";
-	protected static final String DEFAULT_CLIENT = "org.eclipse.ecf.provider.generic.Client";
+	protected static final String DEFAULT_CLIENT = "ecf.generic.client";
 	
 	public ConnectionDialog(Shell parentShell) {
 		super(parentShell);

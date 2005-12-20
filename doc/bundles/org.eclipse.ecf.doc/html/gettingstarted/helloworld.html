@@ -22,7 +22,7 @@
 <h3>The ECF Perspective</h3>
 <p>When we create our client class, HelloClient, from our action, we will provide the class with some setup information it needs to connect to an ECF server:<br><pre>public class HelloClient {
     
-    public static final String DEFAULT_CONTAINER_TYPE = "org.eclipse.ecf.provider.generic.Client";
+    public static final String DEFAULT_CONTAINER_TYPE = "ecf.generic.client";
     public static final String SHARED_OBJECT_ID = "myobject";
     
     public HelloClient() {
@@ -61,8 +61,8 @@
 				If we wanted to create another application that used the same container, but required a seperate event queue, we would define a new Shared Object ID.</li><li>For example,
 				If we wanted to create a Japanese version of Hello World, using an ID seperate from the English version would ensure that no English-only reading clients would be
 				 burdened with figuring out what "Konichiwa Minasan" means.</li></ul></li>
-			<li>A classname that defines in what ways the instances of our shared objects will be able to communicate.<pre>public static final String DEFAULT_CONTAINER_TYPE = "org.eclipse.ecf.provider.generic.Client";</pre>
-				<li>For our example, we will use the org.eclipse.ecf.provider.generic.Client class.  You can see an example of this class in the <code>org.eclipse.ecf.provider.comm.tcp.Client</code> class in the <code>org.eclipse.ecf.provider</code> plugin.</li></li>
+			<li>A classname that defines in what ways the instances of our shared objects will be able to communicate.<pre>public static final String DEFAULT_CONTAINER_TYPE = "ecf.generic.client";</pre>
+				<li>For our example, we will use the ecf.generic.client class.  You can see an example of this class in the <code>org.eclipse.ecf.provider.comm.tcp.Client</code> class in the <code>org.eclipse.ecf.provider</code> plugin.</li></li>
 				 </ol>
 			With this information, a SharedContainer is created.  From there, we simply create an instance of a SharedObject, in this case the HelloSharedObject class, and join it to the group.  
 			From there, all instances in the container will be able to communicate in this code block:<br><pre>    public void handleEvent(Event event) {

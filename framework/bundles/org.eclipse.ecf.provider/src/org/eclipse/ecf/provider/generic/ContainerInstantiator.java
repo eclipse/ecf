@@ -19,8 +19,8 @@ import org.eclipse.ecf.provider.Trace;
 
 public class ContainerInstantiator implements
         IContainerInstantiator {
-    public static final String TCPCLIENT_NAME = "org.eclipse.ecf.provider.generic.Client";
-    public static final String TCPSERVER_NAME = "org.eclipse.ecf.provider.generic.Server";
+    public static final String TCPCLIENT_NAME = "ecf.generic.client";
+    public static final String TCPSERVER_NAME = "ecf.generic.server";
 
     public static final Trace debug = Trace.create("containerfactory");
     public ContainerInstantiator() {
