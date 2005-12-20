@@ -13,7 +13,6 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ServiceID;
 

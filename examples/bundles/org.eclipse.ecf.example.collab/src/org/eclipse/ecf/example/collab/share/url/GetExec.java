@@ -11,10 +11,8 @@
 
 package org.eclipse.ecf.example.collab.share.url;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.help.browser.IBrowser;
 import org.eclipse.help.internal.browser.BrowserManager;

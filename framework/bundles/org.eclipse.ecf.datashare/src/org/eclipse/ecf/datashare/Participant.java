@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.datashare;
 
-import org.eclipse.ecf.core.identity.ID;
-
 /**
  * <p>
  * Interface for clients that wish to participate in data sharing sessions. The
