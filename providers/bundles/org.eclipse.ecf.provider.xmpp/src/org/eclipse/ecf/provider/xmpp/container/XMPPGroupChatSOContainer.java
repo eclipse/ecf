@@ -319,10 +319,23 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 								System.out
 										.println("adminRevoked(" + arg0 + ")");
 							}
-							public void nicknameChanged(String arg0) {
+							public void kicked(String arg0, String arg1, String arg2) {
 								// TODO Auto-generated method stub
-								System.out.println("nicknameChanged(" + arg0
-										+ ")");
+								System.out.println("kicked(" + arg0
+										+ ","+ arg1+","+arg2+")");
+								
+							}
+							public void banned(String arg0, String arg1, String arg2) {
+								// TODO Auto-generated method stub
+								System.out.println("kicked(" + arg0
+										+ ","+ arg1+","+arg2+")");
+								
+							}
+							public void nicknameChanged(String arg0, String arg1) {
+								// TODO Auto-generated method stub
+								System.out.println("kicked(" + arg0
+										+ ","+ arg1+")");
+								
 							}
 						});
 				multiuserchat
