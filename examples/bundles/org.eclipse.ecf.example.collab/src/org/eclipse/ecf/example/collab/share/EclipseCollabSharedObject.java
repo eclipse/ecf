@@ -186,10 +186,11 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			public void run() {
 				try {
 					if (LineChatView.isDisposed())
-						showView();
+					showView();
 					localGUI = LineChatView.makeClientView(
 							EclipseCollabSharedObject.this, pn, init,
 							getLocalFullDownloadPath());
+					show(true);
 				} catch (Exception e) {
 					debugdump(e,
 							"Exception creating output window in getOutputWindow");
@@ -301,6 +302,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 						line.setOriginator(remote);
 						line.setPrivate(true);
 						localGUI.showLine(line);
+						show(true);
 					}
 				} catch (Exception e) {
 					debugdump(e, "Exception in showLineOnGUI");
@@ -734,6 +736,20 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			});
 		}
 	}
+	
+	protected void activateView() {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				if (localGUI != null) {
+					IWorkbenchWindow ww = PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow();
+					IWorkbenchPage wp = ww.getActivePage();
+					wp.activate(localGUI.getView());
+					localGUI.toFront();
+				}
+			}
+		});
+	}
 	public void showLineOnGUI(final ID remote, final String line) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -741,6 +757,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 					if (localGUI != null)
 						localGUI.showLine(new ChatLine(line,
 								getUserForID(remote)));
+					activateView();
 				} catch (Exception e) {
 					debugdump(e, "Exception in showLineOnGUI");
 				}
@@ -757,6 +774,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 								getUserForID(sender), onClick);
 						rawLine.setRaw(true);
 						localGUI.showLine(rawLine);
+						activateView();
 					}
 				} catch (Exception e) {
 					debugdump(e, "Exception in showLineOnGUI");
