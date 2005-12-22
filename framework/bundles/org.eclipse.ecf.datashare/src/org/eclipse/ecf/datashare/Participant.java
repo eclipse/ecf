@@ -54,7 +54,11 @@ public interface Participant {
 	 * @param data
 	 *            message (e.g., a shared data update) from another participant
 	 */
-	void receive(Object data);
+	void receive(Object data) throws ReceiveException;
+	
+	void accept();
+	
+	void discard();
 
 	/**
 	 * Notifies this participant that another participant is joining the
