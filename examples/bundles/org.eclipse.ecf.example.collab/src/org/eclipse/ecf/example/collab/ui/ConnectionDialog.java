@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 
 public class ConnectionDialog extends TitleAreaDialog {
 	protected static final String CLASSNAME = JoinGroupWizardPage.class.getName();

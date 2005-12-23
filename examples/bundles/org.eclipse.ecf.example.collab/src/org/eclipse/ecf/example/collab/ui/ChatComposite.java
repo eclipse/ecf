@@ -468,11 +468,13 @@ public class ChatComposite extends Composite {
 			 */
 			man.add(new Separator());
 
+			/*
 			Action startAppShareToUser = new Action() {
 				public void run() {
 					sendAppShare(user.getUserID());
 				}
 			};
+			*/
 			//startAppShareToUser.setText("Start Application Share with "
 			//		+ user.getNickname() + "...");
 			//man.add(startAppShareToUser);
@@ -495,11 +497,13 @@ public class ChatComposite extends Composite {
 					+ user.getNickname() + "...");
 			man.add(sendMessageToUser);
 			
+			/*
 			Action sendCVSUpdateRequest = new Action() {
 			    public void run() {
 			        sendCVSUpdateRequest(user);
 			    }
 			};
+			*/
 			//sendCVSUpdateRequest.setText("Send CVS Update Request to "+user.getNickname()+"...");
 			//man.add(sendCVSUpdateRequest);
 
