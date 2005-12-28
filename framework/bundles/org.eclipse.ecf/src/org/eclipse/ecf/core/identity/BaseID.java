@@ -72,4 +72,8 @@ public abstract class BaseID implements ID {
 	public URI toURI() throws URISyntaxException {
 		return namespace.getURIForID(this);
 	}
+	
+	public Object getAdapter(Class clazz) {
+		return null;
+	}
 }

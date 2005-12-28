@@ -11,6 +11,8 @@ package org.eclipse.ecf.core.identity;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.eclipse.core.runtime.IAdaptable;
+
 /**
  * Contract for ECF identity
  * <p>
@@ -31,8 +33,10 @@ import java.net.URISyntaxException;
  * 
  */
 public interface ID extends java.io.Serializable, java.lang.Comparable,
-		java.security.Principal {
+		java.security.Principal, IAdaptable {
+	
 	public boolean equals(Object obj);
+	public int hashCode();
 
 	/**
 	 * Get the unique name of this identity.
@@ -47,8 +51,6 @@ public interface ID extends java.io.Serializable, java.lang.Comparable,
 	 * @return Namespace the Namespace corresponding to this identity
 	 */
 	public Namespace getNamespace();
-
-	public int hashCode();
 
 	/**
 	 * If available, return this identity in URI form. If not available, throw
