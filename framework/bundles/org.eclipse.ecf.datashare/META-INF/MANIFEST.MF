@@ -6,6 +6,7 @@ Bundle-Version: 0.5.5
 Bundle-ClassPath: datashare.jar
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.ecf;visibility:=reexport
+Require-Bundle: org.eclipse.ecf;visibility:=reexport,
+ org.eclipse.core.runtime
 Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.datashare
