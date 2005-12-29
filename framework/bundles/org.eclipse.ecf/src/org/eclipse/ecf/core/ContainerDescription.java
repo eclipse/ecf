@@ -15,7 +15,7 @@ import java.util.Properties;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 
 /**
- * Description of an ISharedObjectContainer factory implementation.
+ * Description of an IContainer implementation.
  * 
  */
 public class ContainerDescription {
