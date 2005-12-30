@@ -31,6 +31,14 @@ public class TransactionSharedObject extends AbstractSharedObject {
 		super();
 		configuration = new TransactionSharedObjectConfiguration(timeout);
 	}
+	/**
+	 * Construct instance.  The config parameter, if given, is used to 
+	 * configure the transactional replication of instance (or subclass instances).
+	 * If the config parameter is null, no transactional replication messaging will occur (i.e.
+	 * replicas will be requested, but no waiting for acknowledgement will occur).
+	 * 
+	 * @param config
+	 */
 	public TransactionSharedObject(ITransactionConfiguration config) {
 		super();
 		configuration = config;
