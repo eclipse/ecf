@@ -5,15 +5,16 @@ import java.io.Serializable;
 import org.eclipse.ecf.core.events.ISharedObjectContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.AbstractSharedObject;
+import org.eclipse.ecf.core.sharedobject.ITransactionConfiguration;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsgEvent;
+import org.eclipse.ecf.core.sharedobject.TransactionSharedObject;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.ds.IChannel;
 import org.eclipse.ecf.ds.IChannelListener;
 
-public class ChannelImpl extends AbstractSharedObject implements IChannel {
+public class ChannelImpl extends TransactionSharedObject implements IChannel {
 
 	class ChannelMsg implements Serializable {
 		private static final long serialVersionUID = -6752722047308362941L;
@@ -31,9 +32,14 @@ public class ChannelImpl extends AbstractSharedObject implements IChannel {
 	IChannelListener listener;
 	
 	public ChannelImpl(IChannelListener listener) {
+		super();
 		this.listener = listener;
 	}
-	
+	public ChannelImpl(IChannelListener listener, ITransactionConfiguration config) {
+		super(config);
+		this.listener = listener;
+	}
+
 	protected void initialize() {
 		super.initialize();
 		addEventProcessor(new IEventProcessor() {
