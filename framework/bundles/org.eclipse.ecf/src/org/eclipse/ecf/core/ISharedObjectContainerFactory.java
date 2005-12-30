@@ -48,7 +48,7 @@ public interface ISharedObjectContainerFactory {
 			throws ContainerInstantiationException;
 
 	/**
-	 * Make ISharedObjectContainer instance. *
+	 * Make ISharedObjectContainer instance. 
 	 * 
 	 * @param descriptionName
 	 *            the ContainerDescription name to lookup
