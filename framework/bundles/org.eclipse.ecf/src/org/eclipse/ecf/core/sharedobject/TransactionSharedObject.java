@@ -36,9 +36,11 @@ public class TransactionSharedObject extends AbstractSharedObject {
 		configuration = config;
 	}
 	protected void initialize() {
-		TwoPhaseCommitEventProcessor trans = new TwoPhaseCommitEventProcessor(this,configuration);
-		addEventProcessor(trans);
-		transaction = trans;
+		if (configuration != null) {
+			TwoPhaseCommitEventProcessor trans = new TwoPhaseCommitEventProcessor(this,configuration);
+			addEventProcessor(trans);
+			transaction = trans;
+		}
 	}
 	/**
 	 * Get a SharedObjectDescription for a replica to be created on a given receiver.
