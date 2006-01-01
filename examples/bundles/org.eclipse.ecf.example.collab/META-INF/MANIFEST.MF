@@ -23,4 +23,3 @@ Require-Bundle: org.eclipse.ecf,
 Export-Package: org.eclipse.ecf.example.collab, org.eclipse.ecf.example.collab.share, org.eclipse.ecf.example.collab.share.url, org.eclipse.ecf.example.collab.share.io
 Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.example.collab
-DynamicImport-Package: org.eclipse.ecf.presence, org.eclipse.ecf.presence.impl

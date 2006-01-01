@@ -19,5 +19,4 @@ Provide-Package: org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.views,
  org.eclipse.ecf.ui.wizards
 Export-Package:  org.eclipse.ecf.ui.views, org.eclipse.ecf.ui.dialogs
-DynamicImport-Package: org.eclipse.ecf.presence, org.eclipse.ecf.presence.impl
 

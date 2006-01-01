@@ -22,6 +22,8 @@ public class Trace {
     protected static boolean isEclipse = false;
     protected static String pluginName = "";
     protected static String debugPrefix = "/debug/";
+    protected static Trace errTrace = new Trace("org.eclipse.ecf.provider.Trace.err");
+    
     static {
         try {
             ON = Platform.inDebugMode();
@@ -83,12 +85,17 @@ public class Trace {
         e.printStackTrace(System.err);
     }
 
+    public static void errDumpStack(Throwable e, String msg) {
+    	errTrace.dumpStack(e,msg);
+    }
     public void msg(String msg) {
         StringBuffer sb = new StringBuffer(name);
         sb.append(getTimeString()).append(msg);
         System.out.println(sb.toString());
     }
-
+    public static void errMsg(String msg) {
+    	errTrace.msg(msg);
+    }
     protected static String getTimeString() {
         Date d = new Date();
         SimpleDateFormat df = new SimpleDateFormat("[MM/dd/yy;HH:mm:ss:SSS]");

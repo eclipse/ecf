@@ -9,6 +9,7 @@ Bundle-Localization: plugin
 Eclipse-AutoStart: true
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.core.runtime
+Eclipse-BuddyPolicy: registered
 Provide-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.comm,
  org.eclipse.ecf.core.comm.provider,
@@ -19,3 +20,6 @@ Provide-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.sharedobject,
  org.eclipse.ecf.core.user,
  org.eclipse.ecf.core.util
+ 
+ 
+  

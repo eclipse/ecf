@@ -21,6 +21,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IOSGIService;
@@ -118,14 +119,14 @@ public abstract class SOContainer implements ISharedObjectContainer {
 						// object is done
 						SOContainer.this.moveFromLoadingToActive(wrap);
 					} catch (Exception e) {
-						dumpStack("Exception loading object ", e);
+						dumpStack("Exception loading:"+description, e);
 						SOContainer.this.removeFromLoading(getID());
 						try {
 							sendCreateResponse(getHomeID(), getID(), e,
 									description.getIdentifier());
 						} catch (Exception e1) {
 							dumpStack(
-									"Exception sending create response from LoadingSharedObject.run",
+									"Exception sending create response from LoadingSharedObject.run:"+description,
 									e1);
 						}
 					}
@@ -375,8 +376,11 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		}
 	}
 	protected void dumpStack(String msg, Throwable e) {
+		String fullMsg = config.getID() + ":" + this.getClass().getName()+":"+ msg;
 		if (Trace.ON && debug != null) {
-			debug.dumpStack(e, msg + ":" + config.getID());
+			debug.dumpStack(e, fullMsg);
+		} else {
+			Trace.errDumpStack(e, fullMsg);
 		}
 	}
 	protected void fireContainerEvent(IContainerEvent event) {
@@ -458,7 +462,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return bos.toByteArray();
 	}
 	protected ClassLoader getClassLoaderForContainer() {
-		return this.getClass().getClassLoader();
+		// Use classloader for org.eclipse.ecf.core.ISharedObjectContainer class
+		// This uses the ECF core classloader
+		return ISharedObjectContainer.class.getClassLoader();
 	}
 	/**
 	 * @param sd
@@ -527,15 +533,13 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		try {
 			obj = ois.readObject();
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace(System.err);
 			dumpStack("class not found for message", e);
 			return null;
 		}
 		if (obj instanceof ContainerMessage) {
 			return (ContainerMessage) obj;
 		} else {
-			System.out.println("message is not a containermessage " + obj);
-			debug("message received is not containermessage:" + obj);
+			dumpStack("not a containermessage",new Exception());
 			return null;
 		}
 	}
@@ -600,7 +604,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			SharedObjectAddException addException = new SharedObjectAddException(
 					"shared object " + sharedObjectID
 							+ " rejected by container " + getID(), e);
-			dumpStack("Exception in checkRemoteCreate", addException);
+			dumpStack("Exception in checkRemoteCreate:"+desc, addException);
 			try {
 				sendCreateResponse(fromID, sharedObjectID, addException, desc
 						.getIdentifier());
@@ -705,9 +709,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 												.getData()));
 					} catch (ClassNotFoundException e) {
 						dumpStack(
-								"ClassNotFoundException in handleSharedObjectMessage",
-								e);
-						e.printStackTrace(System.err);
+								"Exception in handleSharedObjectMessage:"+resp,e);
 					}
 				}
 			}
