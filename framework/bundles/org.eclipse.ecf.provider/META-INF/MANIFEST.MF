@@ -9,6 +9,6 @@ Bundle-Localization: plugin
 Eclipse-AutoStart: true
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
-Provide-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.sobject, org.eclipse.ecf.provider.generic.gmm
-Export-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.sobject, org.eclipse.ecf.provider.generic.gmm
+Provide-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.gmm
+Export-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.gmm
 Eclipse-RegisterBuddy: org.eclipse.ecf
