@@ -29,7 +29,7 @@ import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
-import org.eclipse.ecf.core.ISharedObjectContainerListener;
+import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectAddException;
@@ -247,10 +247,10 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainer#addListener(org.eclipse.ecf.core.ISharedObjectContainerListener,
+	 * @see org.eclipse.ecf.core.ISharedObjectContainer#addListener(org.eclipse.ecf.core.IContainerListener,
 	 *      java.lang.String)
 	 */
-	public void addListener(ISharedObjectContainerListener l, String filter) {
+	public void addListener(IContainerListener l, String filter) {
 		synchronized (listeners) {
 			listeners.add(new ContainerListener(l, filter));
 		}
@@ -925,9 +925,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainer#removeListener(org.eclipse.ecf.core.ISharedObjectContainerListener)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainer#removeListener(org.eclipse.ecf.core.IContainerListener)
 	 */
-	public void removeListener(ISharedObjectContainerListener l) {
+	public void removeListener(IContainerListener l) {
 		synchronized (listeners) {
 			for (Enumeration e = listeners.elements(); e.hasMoreElements();) {
 				ContainerListener list = (ContainerListener) e.nextElement();

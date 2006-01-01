@@ -7,7 +7,7 @@ import java.util.Vector;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.ISharedObjectContainerListener;
+import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -88,7 +88,7 @@ public class SharedObjectContainerUI {
 	public void setup(final ISharedObjectContainer soContainer, final ClientEntry newClientEntry,
 			final IResource resource, String username) throws Exception {
 		addObjectToClient(soContainer, newClientEntry, username, resource);
-		soc.addListener(new ISharedObjectContainerListener() {
+		soc.addListener(new IContainerListener() {
 			public void handleEvent(IContainerEvent evt) {
 				if (evt instanceof ISharedObjectContainerDisconnectedEvent) {
 					ISharedObjectContainerDisconnectedEvent cd = (ISharedObjectContainerDisconnectedEvent) evt;

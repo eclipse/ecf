@@ -18,19 +18,19 @@ public interface ISharedObjectContainer extends IReliableContainer {
 	 * container events occur
 	 * 
 	 * @param l
-	 *            the ISharedObjectContainerListener to add
+	 *            the IContainerListener to add
 	 * @param filter
 	 *            the filter to define types of container events to receive
 	 */
-	public void addListener(ISharedObjectContainerListener l, String filter);
+	public void addListener(IContainerListener l, String filter);
 
 	/**
 	 * Remove listener from ISharedObjectContainer.
 	 * 
 	 * @param l
-	 *            the ISharedObjectContainerListener to remove
+	 *            the IContainerListener to remove
 	 */
-	public void removeListener(ISharedObjectContainerListener l);
+	public void removeListener(IContainerListener l);
 
 	/**
 	 * Get SharedObjectManager for this container

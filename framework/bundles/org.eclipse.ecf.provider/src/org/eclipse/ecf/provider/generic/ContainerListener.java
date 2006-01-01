@@ -8,15 +8,15 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic;
 
-import org.eclipse.ecf.core.ISharedObjectContainerListener;
+import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerEvent;
 
 
 class ContainerListener {
-    ISharedObjectContainerListener listener;
+    IContainerListener listener;
     String filter;
     
-    ContainerListener(ISharedObjectContainerListener l, String filter) {
+    ContainerListener(IContainerListener l, String filter) {
         this.listener = l;
         this.filter = filter;
     }
@@ -29,7 +29,7 @@ class ContainerListener {
             listener.handleEvent(event);
         }
     }
-    protected boolean isListener(ISharedObjectContainerListener l) {
+    protected boolean isListener(IContainerListener l) {
         if (listener == null) return false;
         if (l == null) return false;
         if (listener.equals(l)) return true;

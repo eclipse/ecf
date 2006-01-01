@@ -95,4 +95,5 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * 
 	 */
 	public void dispose();
+	
 }

@@ -31,15 +31,15 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 
 	IChannelListener listener;
 	
-	public ChannelImpl(IChannelListener listener) {
-		super();
-		this.listener = listener;
+	public ChannelImpl() {
+		this(null);
 	}
-	public ChannelImpl(IChannelListener listener, ITransactionConfiguration config) {
+	public ChannelImpl(ITransactionConfiguration config) {
 		super(config);
+	}
+	public void addChannelListener(IChannelListener listener) {
 		this.listener = listener;
 	}
-
 	protected void initialize() {
 		super.initialize();
 		addEventProcessor(new IEventProcessor() {
@@ -85,14 +85,6 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 			getContext().sendMessage(receiver, new ChannelMsg(message));
 		} catch (Exception e) {
 			throw new ECFException("send message exception",e);
-		}
-	}
-
-	public ID[] getCurrentMembership() {
-		try {
-			return getContext().getGroupMemberIDs();
-		} catch (Exception e) {
-			return new ID[0];
 		}
 	}
 
