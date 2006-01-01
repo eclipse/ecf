@@ -20,8 +20,8 @@ import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.RemoteSharedObjectCreateResponseEvent;
 import org.eclipse.ecf.core.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.events.SharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerConnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
@@ -119,10 +119,10 @@ public class SOWrapper {
         debug("memberChanged(" + m + "," + add);
         if (thread != null) {
             if (add) {
-                send(new SharedObjectContainerConnectedEvent(containerID, m
+                send(new ContainerConnectedEvent(containerID, m
                         .getID()));
             } else {
-                send(new SharedObjectContainerDisconnectedEvent(containerID, m
+                send(new ContainerDisconnectedEvent(containerID, m
                         .getID()));
             }
         }

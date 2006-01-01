@@ -18,10 +18,10 @@ import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.core.events.SharedObjectContainerConnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerConnectingEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectingEvent;
+import org.eclipse.ecf.core.events.ContainerConnectedEvent;
+import org.eclipse.ecf.core.events.ContainerConnectingEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
@@ -207,7 +207,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 					+ " is not of room id type");
 		}
 		XMPPRoomID roomID = (XMPPRoomID) remote;
-		fireContainerEvent(new SharedObjectContainerConnectingEvent(this
+		fireContainerEvent(new ContainerConnectingEvent(this
 				.getID(), remote, connectContext));
 		synchronized (getConnectLock()) {
 			try {
@@ -359,7 +359,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 				multiuserchat.join(nickname);
 				connectionState = CONNECTED;
 				remoteServerID = roomID;
-				fireContainerEvent(new SharedObjectContainerConnectedEvent(this
+				fireContainerEvent(new ContainerConnectedEvent(this
 						.getID(), roomID));
 			} catch (Exception e) {
 				cleanUpConnectFail();
@@ -372,7 +372,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 	}
 	public void disconnect() {
 		ID groupID = getConnectedID();
-		fireContainerEvent(new SharedObjectContainerDisconnectingEvent(this
+		fireContainerEvent(new ContainerDisconnectingEvent(this
 				.getID(), groupID));
 		synchronized (getConnectLock()) {
 			// If we are currently connected
@@ -388,7 +388,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 			remoteServerID = null;
 		}
 		// notify listeners
-		fireContainerEvent(new SharedObjectContainerDisconnectedEvent(this
+		fireContainerEvent(new ContainerDisconnectedEvent(this
 				.getID(), groupID));
 	}
 	protected SOContext makeSharedObjectContext(SOConfig soconfig,

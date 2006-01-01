@@ -23,8 +23,8 @@ import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerConnectedEvent;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -257,8 +257,8 @@ public class PublishedGraphTracker implements ISharedObject {
 				handleLeave(e.getRemoteContainerID());
 				break;
 			}
-		} else if (event instanceof ISharedObjectContainerConnectedEvent) {
-			ISharedObjectContainerConnectedEvent e = (ISharedObjectContainerConnectedEvent) event;
+		} else if (event instanceof IContainerConnectedEvent) {
+			IContainerConnectedEvent e = (IContainerConnectedEvent) event;
 			if (e.getTargetID().equals(
 					getContext().getLocalContainerID()))
 				// this container joined
@@ -266,8 +266,8 @@ public class PublishedGraphTracker implements ISharedObject {
 			else if (getContext().isGroupManager())
 				// some other container joined and we're the server
 				handleJoined(e.getTargetID());
-		} else if (event instanceof ISharedObjectContainerDisconnectedEvent) {
-			ISharedObjectContainerDisconnectedEvent e = (ISharedObjectContainerDisconnectedEvent) event;
+		} else if (event instanceof IContainerDisconnectedEvent) {
+			IContainerDisconnectedEvent e = (IContainerDisconnectedEvent) event;
 			// some other container departed -- same as peer deactivation
 			if (!e.getTargetID().equals(
 					getContext().getLocalContainerID()))

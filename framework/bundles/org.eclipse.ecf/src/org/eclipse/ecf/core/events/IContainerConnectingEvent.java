@@ -8,10 +8,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.events;
 
-import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 
-public interface ISharedObjectContainerEjectedEvent extends IContainerEvent {
-	public ID getGroupID();
-	public Serializable getReason();
+public interface IContainerConnectingEvent extends IContainerEvent {
+	public ID getTargetID();
+
+	public Object getData();
 }

@@ -27,11 +27,11 @@ import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.comm.SynchConnectionEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerEjectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerConnectingEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerConnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectingEvent;
+import org.eclipse.ecf.core.events.ContainerConnectingEvent;
+import org.eclipse.ecf.core.events.ContainerConnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.provider.generic.gmm.Member;
@@ -95,7 +95,7 @@ public abstract class ClientSOContainer extends SOContainer {
 	public void connect(ID remote, IConnectContext joinContext)
 			throws ContainerConnectException {
 		// first notify synchonously
-		fireContainerEvent(new SharedObjectContainerConnectingEvent(this
+		fireContainerEvent(new ContainerConnectingEvent(this
 				.getID(), remote, joinContext));
 		try {
 			if (isClosing)
@@ -241,7 +241,7 @@ public abstract class ClientSOContainer extends SOContainer {
 					// Notify listeners only if the add was actually
 					// accomplished
 					if (wasAdded)
-						fireContainerEvent(new SharedObjectContainerConnectedEvent(
+						fireContainerEvent(new ContainerConnectedEvent(
 								getID(), changeIDs[i]));
 				} else {
 					if (changeIDs[i].equals(getID())) {
@@ -258,7 +258,7 @@ public abstract class ClientSOContainer extends SOContainer {
 							groupManager.removeMember(changeIDs[i]);
 						}
 						// Notify listeners that another remote has gone away
-						fireContainerEvent(new SharedObjectContainerDisconnectedEvent(
+						fireContainerEvent(new ContainerDisconnectedEvent(
 								getID(), changeIDs[i]));
 					}
 				}
@@ -283,7 +283,7 @@ public abstract class ClientSOContainer extends SOContainer {
 	public void disconnect() {
 		ID groupID = getConnectedID();
 		debug("disconnect(" + groupID + ")");
-		fireContainerEvent(new SharedObjectContainerDisconnectingEvent(this
+		fireContainerEvent(new ContainerDisconnectingEvent(this
 				.getID(), groupID));
 		synchronized (connectLock) {
 			// If we are currently connected
@@ -308,7 +308,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			remoteServerID = null;
 		}
 		// notify listeners
-		fireContainerEvent(new SharedObjectContainerDisconnectedEvent(this
+		fireContainerEvent(new ContainerDisconnectedEvent(this
 				.getID(), groupID));
 	}
 
@@ -418,7 +418,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			if (id != null && !id.equals(getID())) {
 				addNewRemoteMember(id, null);
 				// notify listeners
-				fireContainerEvent(new SharedObjectContainerConnectedEvent(this
+				fireContainerEvent(new ContainerConnectedEvent(this
 						.getID(), id));
 			}
 		}

@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
@@ -90,8 +90,8 @@ public class SharedObjectContainerUI {
 		addObjectToClient(soContainer, newClientEntry, username, resource);
 		soc.addListener(new IContainerListener() {
 			public void handleEvent(IContainerEvent evt) {
-				if (evt instanceof ISharedObjectContainerDisconnectedEvent) {
-					ISharedObjectContainerDisconnectedEvent cd = (ISharedObjectContainerDisconnectedEvent) evt;
+				if (evt instanceof IContainerDisconnectedEvent) {
+					IContainerDisconnectedEvent cd = (IContainerDisconnectedEvent) evt;
 					final ID departedContainerID = cd.getTargetID();
 					ID connectedID = newClientEntry.getConnectedID();
 					if (connectedID == null

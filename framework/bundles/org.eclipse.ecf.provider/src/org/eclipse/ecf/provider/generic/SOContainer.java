@@ -43,8 +43,8 @@ import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnectionEventHandler;
 import org.eclipse.ecf.core.comm.SynchConnectionEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -356,7 +356,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		debug("dispose()");
 		isClosing = true;
 		// notify listeners
-		fireContainerEvent(new SharedObjectContainerDisposeEvent(getID()));
+		fireContainerEvent(new ContainerDisposeEvent(getID()));
 		// Clear group manager
 		if (groupManager != null) {
 			groupManager.removeAllMembers();
@@ -899,8 +899,8 @@ public abstract class SOContainer implements ISharedObjectContainer {
 				memberLeave(fromID, conn);
 			}
 			if (fromID != null)
-				fireContainerEvent(new SharedObjectContainerDisconnectedEvent(
-						getID(), fromID));
+				fireContainerEvent(new ContainerDisconnectedEvent(
+						getID(), fromID,e.getException()));
 		} catch (Exception except) {
 			logException("Exception in processDisconnect ", except);
 		}

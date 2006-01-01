@@ -2,8 +2,8 @@ package org.eclipse.ecf.ds.impl;
 
 import java.io.Serializable;
 
-import org.eclipse.ecf.core.events.ISharedObjectContainerConnectedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.IContainerConnectedEvent;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ITransactionConfiguration;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsgEvent;
@@ -44,18 +44,18 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 		super.initialize();
 		addEventProcessor(new IEventProcessor() {
 			public boolean acceptEvent(Event event) {
-				if (event instanceof ISharedObjectContainerConnectedEvent) {
+				if (event instanceof IContainerConnectedEvent) {
 					return true;
-				} else if (event instanceof ISharedObjectContainerDisconnectedEvent) {
+				} else if (event instanceof IContainerDisconnectedEvent) {
 					return true;
 				}
 				return false;
 			}
 			public Event processEvent(Event event) {
-				if (event instanceof ISharedObjectContainerConnectedEvent) {
-					ChannelImpl.this.listener.handleMemberJoined(getID(), ((ISharedObjectContainerConnectedEvent)event).getTargetID());
-				} else if (event instanceof ISharedObjectContainerDisconnectedEvent) {
-					ChannelImpl.this.listener.handleMemberDeparted(getID(), ((ISharedObjectContainerDisconnectedEvent)event).getTargetID());
+				if (event instanceof IContainerConnectedEvent) {
+					ChannelImpl.this.listener.handleMemberJoined(getID(), ((IContainerConnectedEvent)event).getTargetID());
+				} else if (event instanceof IContainerDisconnectedEvent) {
+					ChannelImpl.this.listener.handleMemberDeparted(getID(), ((IContainerDisconnectedEvent)event).getTargetID());
 				}
 				return event;
 			}

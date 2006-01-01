@@ -25,8 +25,8 @@ import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerConnectedEvent;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
@@ -265,10 +265,10 @@ public void handleEvent(Event event) {
             } else {
                 otherDeactivated(ae.getDeactivatedID());
             }
-        } else if (event instanceof ISharedObjectContainerConnectedEvent) {
-            memberAdded(((ISharedObjectContainerConnectedEvent)event).getTargetID());
-        } else if (event instanceof ISharedObjectContainerDisconnectedEvent) {
-            memberRemoved(((ISharedObjectContainerDisconnectedEvent)event).getTargetID());
+        } else if (event instanceof IContainerConnectedEvent) {
+            memberAdded(((IContainerConnectedEvent)event).getTargetID());
+        } else if (event instanceof IContainerDisconnectedEvent) {
+            memberRemoved(((IContainerDisconnectedEvent)event).getTargetID());
         } else if (event instanceof ISharedObjectMessageEvent) {
             handleSharedObjectMessageEvent(((ISharedObjectMessageEvent)event));
         } else {

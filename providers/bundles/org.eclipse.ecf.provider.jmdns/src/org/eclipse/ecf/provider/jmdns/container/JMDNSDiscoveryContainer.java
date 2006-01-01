@@ -22,13 +22,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
-import org.eclipse.ecf.core.ISharedObjectContainerConfig;
+import org.eclipse.ecf.core.events.ContainerConnectedEvent;
+import org.eclipse.ecf.core.events.ContainerConnectingEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
+import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerConnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerConnectingEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectingEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
@@ -60,7 +59,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		}
 	}
 
-	ISharedObjectContainerConfig config = null;
+	ContainerConfig config = null;
 	InetAddress intf = null;
 	JmDNS jmdns = null;
 	Object lock = new Object();
@@ -112,7 +111,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		}
 	}
 	public void dispose() {
-		fireContainerEvent(new SharedObjectContainerDisposeEvent(getID()));
+		fireContainerEvent(new ContainerDisposeEvent(getID()));
 		disconnect();
 	}
 
@@ -215,7 +214,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 
 	public void connect(ID groupID, IConnectContext joinContext)
 			throws ContainerConnectException {
-		fireContainerEvent(new SharedObjectContainerConnectingEvent(this
+		fireContainerEvent(new ContainerConnectingEvent(this
 				.getID(), groupID, joinContext));
 		synchronized (lock) {
 			try {
@@ -241,12 +240,12 @@ public class JMDNSDiscoveryContainer implements IContainer,
 				throw soe;
 			}
 		}
-		fireContainerEvent(new SharedObjectContainerConnectedEvent(this
+		fireContainerEvent(new ContainerConnectedEvent(this
 				.getID(), groupID));
 	}
 
 	public void disconnect() {
-		fireContainerEvent(new SharedObjectContainerDisconnectingEvent(this
+		fireContainerEvent(new ContainerDisconnectingEvent(this
 				.getID(), getConnectedID()));
 		synchronized (lock) {
 			if (this.jmdns != null) {
@@ -254,7 +253,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 				jmdns = null;
 			}
 		}
-		fireContainerEvent(new SharedObjectContainerDisconnectedEvent(this
+		fireContainerEvent(new ContainerDisconnectedEvent(this
 				.getID(), getConnectedID()));
 	}
 

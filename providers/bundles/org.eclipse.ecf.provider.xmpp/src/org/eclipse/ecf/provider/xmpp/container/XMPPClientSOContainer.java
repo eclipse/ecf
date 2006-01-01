@@ -25,9 +25,9 @@ import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.core.events.SharedObjectContainerConnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectingEvent;
+import org.eclipse.ecf.core.events.ContainerConnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
@@ -158,7 +158,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		if (originalTarget != null && !originalTarget.equals(getID())) {
 			addNewRemoteMember(originalTarget, null);
 			// notify listeners
-			fireContainerEvent(new SharedObjectContainerConnectedEvent(this
+			fireContainerEvent(new ContainerConnectedEvent(this
 					.getID(), originalTarget));
 		}
 		// If we've got the connection then pass it onto shared object also
@@ -372,7 +372,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 
 	public void disconnect() {
 		ID groupID = getConnectedID();
-		fireContainerEvent(new SharedObjectContainerDisconnectingEvent(this
+		fireContainerEvent(new ContainerDisconnectingEvent(this
 				.getID(), groupID));
 		synchronized (getConnectLock()) {
 			// If we are currently connected
@@ -394,7 +394,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			remoteServerID = null;
 		}
 		// notify listeners
-		fireContainerEvent(new SharedObjectContainerDisconnectedEvent(this.getID(),
+		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(),
 				groupID));
 		dispose();
 	}

@@ -10,16 +10,31 @@ package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectContainerDisconnectingEvent implements
-		ISharedObjectContainerDisconnectingEvent {
-	private static final long serialVersionUID = 3257570607204742200L;
+public class ContainerConnectingEvent implements
+		IContainerConnectingEvent {
+	private static final long serialVersionUID = 3544952173248263729L;
 	ID localContainerID;
 	ID groupID;
+	Object data;
 
-	public SharedObjectContainerDisconnectingEvent(ID localContainerID,
-			ID groupID) {
+	public ContainerConnectingEvent(ID localContainerID,
+			ID groupID, Object data) {
 		this.localContainerID = localContainerID;
 		this.groupID = groupID;
+		this.data = data;
+	}
+
+	public ID getTargetID() {
+		return groupID;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.events.IContainerConnectingEvent#getData()
+	 */
+	public Object getData() {
+		return data;
 	}
 
 	/*
@@ -31,15 +46,12 @@ public class SharedObjectContainerDisconnectingEvent implements
 		return localContainerID;
 	}
 
-	public ID getTargetID() {
-		return groupID;
-	}
-
 	public String toString() {
 		StringBuffer buf = new StringBuffer(
-				"SharedObjectContainerDisconnectingEvent[");
+				"ContainerConnectingEvent[");
 		buf.append(getLocalContainerID()).append(";");
-		buf.append(getTargetID()).append("]");
+		buf.append(getTargetID()).append(";");
+		buf.append(getData()).append("]");
 		return buf.toString();
 	}
 }

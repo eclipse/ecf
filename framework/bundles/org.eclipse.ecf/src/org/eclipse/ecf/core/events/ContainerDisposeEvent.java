@@ -10,7 +10,29 @@ package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public interface ISharedObjectContainerDisconnectedEvent extends
-		IContainerEvent {
-	public ID getTargetID();
+public class ContainerDisposeEvent implements
+		IContainerDisposeEvent {
+	private static final long serialVersionUID = 3618138961349062706L;
+	private final ID localContainerID;
+
+	public ContainerDisposeEvent(ID container) {
+		super();
+		this.localContainerID = container;
+	}
+
+	public ID getLocalContainerID() {
+		return localContainerID;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer buf = new StringBuffer(
+				"ContainerDisposeEvent[");
+		buf.append(getLocalContainerID()).append("]");
+		return buf.toString();
+	}
 }

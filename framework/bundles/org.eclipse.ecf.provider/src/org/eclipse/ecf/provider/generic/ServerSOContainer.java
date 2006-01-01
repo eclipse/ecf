@@ -23,8 +23,8 @@ import org.eclipse.ecf.core.ISharedObjectContainerGroupManager;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.comm.ISynchConnection;
-import org.eclipse.ecf.core.events.SharedObjectContainerConnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ContainerConnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.SharedObjectContainerEjectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -158,7 +158,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                 }
             }
             // notify listeners
-            fireContainerEvent(new SharedObjectContainerConnectedEvent(this.getID(),remoteID));
+            fireContainerEvent(new ContainerConnectedEvent(this.getID(),remoteID));
             
             return ContainerMessage.makeViewChangeMessage(getID(), remoteID,
                     getNextSequenceNumber(), memberIDs, true, null);
@@ -186,7 +186,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
             memberLeave(fromID,conn);
         }
         // Notify listeners
-        fireContainerEvent(new SharedObjectContainerDisconnectedEvent(getID(),fromID));
+        fireContainerEvent(new ContainerDisconnectedEvent(getID(),fromID));
     }
 
     public void ejectGroupMember(ID memberID, Serializable reason) {

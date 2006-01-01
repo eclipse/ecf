@@ -22,8 +22,8 @@ import org.eclipse.ecf.core.SharedObjectAddAbortException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectCommitEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectContainerConnectedEvent;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.events.SharedObjectCommitEvent;
@@ -130,12 +130,12 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	public Event processEvent(Event event) {
 		if (event instanceof ISharedObjectActivatedEvent) {
 			handleActivated((ISharedObjectActivatedEvent) event);
-		} else if (event instanceof ISharedObjectContainerConnectedEvent) {
-			handleJoined((ISharedObjectContainerConnectedEvent) event);
+		} else if (event instanceof IContainerConnectedEvent) {
+			handleJoined((IContainerConnectedEvent) event);
 		} else if (event instanceof ISharedObjectCreateResponseEvent) {
 			handleCreateResponse((ISharedObjectCreateResponseEvent) event);
-		} else if (event instanceof ISharedObjectContainerDisconnectedEvent) {
-			handleDeparted((ISharedObjectContainerDisconnectedEvent) event);
+		} else if (event instanceof IContainerDisconnectedEvent) {
+			handleDeparted((IContainerDisconnectedEvent) event);
 		} else if (event instanceof ISharedObjectMessageEvent) {
 			ISharedObjectMessageEvent some = (ISharedObjectMessageEvent) event;
 			Object data = some.getData();
@@ -236,7 +236,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			setTransactionState(ISharedObjectContainerTransaction.ABORTED);
 		}
 	}
-	protected void handleJoined(ISharedObjectContainerConnectedEvent event) {
+	protected void handleJoined(IContainerConnectedEvent event) {
 		trace("handleJoined(" + event + ")");
 		if (isPrimary()) {
 			synchronized (lock) {
@@ -273,7 +273,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			// we don't care as we are note transaction monitor
 		}
 	}
-	protected void handleDeparted(ISharedObjectContainerDisconnectedEvent event) {
+	protected void handleDeparted(IContainerDisconnectedEvent event) {
 		trace("handleDeparted(" + event + ")");
 		if (isPrimary()) {
 			ID remoteID = event.getTargetID();

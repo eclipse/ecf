@@ -8,9 +8,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.events;
 
-import org.eclipse.ecf.core.identity.ID;
-
-public interface ISharedObjectContainerDisconnectingEvent extends
-		IContainerEvent {
-	public ID getTargetID();
+/**
+ * @author slewis
+ * 
+ */
+public interface IContainerDisposeEvent extends IContainerEvent {
 }

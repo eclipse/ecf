@@ -10,20 +10,20 @@ package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class SharedObjectContainerDisconnectedEvent implements
-		ISharedObjectContainerDisconnectedEvent {
-	private static final long serialVersionUID = 3256437002059527733L;
-	private final ID departedContainerID;
+public class ContainerConnectedEvent implements
+		IContainerConnectedEvent {
+	private static final long serialVersionUID = 3833467322827617078L;
+	private final ID joinedContainerID;
 	private final ID localContainerID;
 
-	public SharedObjectContainerDisconnectedEvent(ID container, ID o) {
+	public ContainerConnectedEvent(ID local, ID joinContainerID) {
 		super();
-		this.localContainerID = container;
-		this.departedContainerID = o;
+		this.localContainerID = local;
+		this.joinedContainerID = joinContainerID;
 	}
 
 	public ID getTargetID() {
-		return departedContainerID;
+		return joinedContainerID;
 	}
 
 	public ID getLocalContainerID() {
@@ -37,7 +37,7 @@ public class SharedObjectContainerDisconnectedEvent implements
 	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer(
-				"SharedObjectContainerDisconnectedEvent[");
+				"ContainerConnectedEvent[");
 		buf.append(getTargetID()).append(";");
 		buf.append(getLocalContainerID()).append("]");
 		return buf.toString();
