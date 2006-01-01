@@ -28,7 +28,7 @@ import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.comm.SynchConnectionEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerEjectedEvent;
+import org.eclipse.ecf.core.events.ContainerEjectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
@@ -205,7 +205,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			memberLeave(fromID, connection);
 		}
 		// Now notify that we've been ejected
-		fireContainerEvent(new SharedObjectContainerEjectedEvent(fromID,
+		fireContainerEvent(new ContainerEjectedEvent(fromID,
 				getID(), lgm.getData()));
 	}
 
@@ -251,7 +251,7 @@ public abstract class ClientSOContainer extends SOContainer {
 							memberLeave(remoteServerID, connection);
 						}
 						// Notify listeners that we've been ejected
-						fireContainerEvent(new SharedObjectContainerEjectedEvent(
+						fireContainerEvent(new ContainerEjectedEvent(
 								getID(), serverID, vc.getData()));
 					} else {
 						synchronized (getGroupMembershipLock()) {

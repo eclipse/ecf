@@ -9,9 +9,8 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.provider.generic.events;
+package org.eclipse.ecf.core.events;
 
-import org.eclipse.ecf.core.events.ISharedObjectCallEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.AsynchResult;
 import org.eclipse.ecf.core.util.Event;

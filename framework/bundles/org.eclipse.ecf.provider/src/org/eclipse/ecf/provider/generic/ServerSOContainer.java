@@ -25,7 +25,7 @@ import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.comm.ISynchConnection;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.SharedObjectContainerEjectedEvent;
+import org.eclipse.ecf.core.events.ContainerEjectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.IConnectPolicy;
@@ -206,7 +206,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
             memberLeave(memberID, conn);
         }
         // Notify listeners
-        fireContainerEvent(new SharedObjectContainerEjectedEvent(memberID,getID(),reason));        
+        fireContainerEvent(new ContainerEjectedEvent(memberID,getID(),reason));        
     }
 
     public void ejectAllGroupMembers(Serializable reason) {

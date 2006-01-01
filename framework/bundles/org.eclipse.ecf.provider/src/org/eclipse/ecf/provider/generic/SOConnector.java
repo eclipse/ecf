@@ -19,11 +19,11 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import org.eclipse.ecf.core.ISharedObjectConnector;
 import org.eclipse.ecf.core.events.ISharedObjectEvent;
+import org.eclipse.ecf.core.events.SharedObjectCallEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.AsynchResult;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.QueueException;
-import org.eclipse.ecf.provider.generic.events.SharedObjectCallEvent;
 
 public class SOConnector implements ISharedObjectConnector {
     ID sender;
