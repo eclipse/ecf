@@ -11,15 +11,24 @@ import java.util.Vector;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.ServiceTypeListener;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
+import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerConnectedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerConnectingEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDisconnectingEvent;
+import org.eclipse.ecf.core.events.SharedObjectContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
@@ -58,6 +67,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
 	Map serviceListeners = new HashMap();
 	Vector serviceTypeListeners = new Vector();
+	private Vector listeners = null;
 
 	public JMDNSDiscoveryContainer() throws IOException,
 			IDInstantiationException {
@@ -93,7 +103,16 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		serviceTypeListeners.add(listener);
 	}
 
+	protected void fireContainerEvent(IContainerEvent event) {
+		synchronized (listeners) {
+			for (Iterator i = listeners.iterator(); i.hasNext();) {
+				IContainerListener l = (IContainerListener) i.next();
+				l.handleEvent(event);
+			}
+		}
+	}
 	public void dispose() {
+		fireContainerEvent(new SharedObjectContainerDisposeEvent(getID()));
 		disconnect();
 	}
 
@@ -196,6 +215,8 @@ public class JMDNSDiscoveryContainer implements IContainer,
 
 	public void connect(ID groupID, IConnectContext joinContext)
 			throws ContainerConnectException {
+		fireContainerEvent(new SharedObjectContainerConnectingEvent(this
+				.getID(), groupID, joinContext));
 		synchronized (lock) {
 			try {
 				if (this.jmdns == null) {
@@ -220,15 +241,21 @@ public class JMDNSDiscoveryContainer implements IContainer,
 				throw soe;
 			}
 		}
+		fireContainerEvent(new SharedObjectContainerConnectedEvent(this
+				.getID(), groupID));
 	}
 
 	public void disconnect() {
+		fireContainerEvent(new SharedObjectContainerDisconnectingEvent(this
+				.getID(), getConnectedID()));
 		synchronized (lock) {
 			if (this.jmdns != null) {
 				jmdns.close();
 				jmdns = null;
 			}
 		}
+		fireContainerEvent(new SharedObjectContainerDisconnectedEvent(this
+				.getID(), getConnectedID()));
 	}
 
 	protected IServiceInfo makeIServiceInfoFromServiceEvent(ServiceEvent event) {
@@ -460,6 +487,16 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	}
 	public Namespace getConnectNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(JMDNS_NAMESPACE_ID);
+	}
+	public void addListener(IContainerListener l, String filter) {
+		synchronized (listeners) {
+			listeners.add(l);
+		}
+	}
+	public void removeListener(IContainerListener l) {
+		synchronized (listeners) {
+			listeners.remove(l);
+		}
 	}
 
 }

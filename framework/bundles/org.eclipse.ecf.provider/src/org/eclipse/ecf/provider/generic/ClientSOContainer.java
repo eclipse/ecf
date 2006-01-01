@@ -39,15 +39,10 @@ import org.eclipse.ecf.provider.generic.gmm.Member;
 public abstract class ClientSOContainer extends SOContainer {
 
 	protected ISynchAsynchConnection connection;
-
 	protected ID remoteServerID;
-
 	protected byte connectionState;
-
 	public static final byte UNCONNECTED = 0;
-
 	public static final byte CONNECTING = 1;
-
 	public static final byte CONNECTED = 2;
 
 	static final class Lock {
@@ -100,8 +95,8 @@ public abstract class ClientSOContainer extends SOContainer {
 	public void connect(ID remote, IConnectContext joinContext)
 			throws ContainerConnectException {
 		// first notify synchonously
-		fireContainerEvent(new SharedObjectContainerConnectingEvent(
-				this.getID(), remote, joinContext));
+		fireContainerEvent(new SharedObjectContainerConnectingEvent(this
+				.getID(), remote, joinContext));
 		try {
 			if (isClosing)
 				throw new IllegalStateException("container is closing");
@@ -185,8 +180,7 @@ public abstract class ClientSOContainer extends SOContainer {
 		} catch (Exception e) {
 			dumpStack("Exception in connect", e);
 			ContainerConnectException except = new ContainerConnectException(
-					"exception connecting to "
-							+ remote.getName(),e);
+					"exception connecting to " + remote.getName(), e);
 
 			throw except;
 		}
@@ -197,7 +191,8 @@ public abstract class ClientSOContainer extends SOContainer {
 	}
 
 	protected void handleLeaveGroupMessage(ContainerMessage mess) {
-		if (!isConnected()) return;
+		if (!isConnected())
+			return;
 		ContainerMessage.LeaveGroupMessage lgm = (ContainerMessage.LeaveGroupMessage) mess
 				.getData();
 		ID fromID = mess.getFromContainerID();
@@ -216,7 +211,8 @@ public abstract class ClientSOContainer extends SOContainer {
 
 	protected void handleViewChangeMessage(ContainerMessage mess)
 			throws IOException {
-		if (!isConnected()) return;
+		if (!isConnected())
+			return;
 		debug("handleViewChangeMessage(" + mess + ")");
 		ContainerMessage.ViewChangeMessage vc = (ContainerMessage.ViewChangeMessage) mess
 				.getData();
@@ -235,15 +231,18 @@ public abstract class ClientSOContainer extends SOContainer {
 				if (vc.isAdd()) {
 					boolean wasAdded = false;
 					synchronized (getGroupMembershipLock()) {
-						// check to make sure this member id is not already known
+						// check to make sure this member id is not already
+						// known
 						if (groupManager.getMemberForID(changeIDs[i]) == null) {
 							wasAdded = true;
 							groupManager.addMember(new Member(changeIDs[i]));
 						}
 					}
-					// Notify listeners only if the add was actually accomplished
-					if (wasAdded) fireContainerEvent(new SharedObjectContainerConnectedEvent(
-							getID(), changeIDs[i]));
+					// Notify listeners only if the add was actually
+					// accomplished
+					if (wasAdded)
+						fireContainerEvent(new SharedObjectContainerConnectedEvent(
+								getID(), changeIDs[i]));
 				} else {
 					if (changeIDs[i].equals(getID())) {
 						// We've been ejected.
@@ -283,7 +282,7 @@ public abstract class ClientSOContainer extends SOContainer {
 
 	public void disconnect() {
 		ID groupID = getConnectedID();
-		debug("disconnect(" + groupID+")");
+		debug("disconnect(" + groupID + ")");
 		fireContainerEvent(new SharedObjectContainerDisconnectingEvent(this
 				.getID(), groupID));
 		synchronized (connectLock) {
@@ -297,7 +296,8 @@ public abstract class ClientSOContainer extends SOContainer {
 												groupID,
 												getNextSequenceNumber(),
 												getLeaveData(groupID))));
-					} catch (Exception e) {}
+					} catch (Exception e) {
+					}
 					synchronized (getGroupMembershipLock()) {
 						memberLeave(groupID, connection);
 					}
@@ -308,8 +308,8 @@ public abstract class ClientSOContainer extends SOContainer {
 			remoteServerID = null;
 		}
 		// notify listeners
-		fireContainerEvent(new SharedObjectContainerDisconnectedEvent(this.getID(),
-				groupID));
+		fireContainerEvent(new SharedObjectContainerDisconnectedEvent(this
+				.getID(), groupID));
 	}
 
 	protected abstract ISynchAsynchConnection makeConnection(ID remoteSpace,

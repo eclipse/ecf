@@ -14,25 +14,6 @@ package org.eclipse.ecf.core;
  */
 public interface ISharedObjectContainer extends IReliableContainer {
 	/**
-	 * Add listener to ISharedObjectContainer. Listener will be notified when
-	 * container events occur
-	 * 
-	 * @param l
-	 *            the IContainerListener to add
-	 * @param filter
-	 *            the filter to define types of container events to receive
-	 */
-	public void addListener(IContainerListener l, String filter);
-
-	/**
-	 * Remove listener from ISharedObjectContainer.
-	 * 
-	 * @param l
-	 *            the IContainerListener to remove
-	 */
-	public void removeListener(IContainerListener l);
-
-	/**
 	 * Get SharedObjectManager for this container
 	 * 
 	 * @return ISharedObjectManager for this container instance
