@@ -66,7 +66,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
 	Map serviceListeners = new HashMap();
 	Vector serviceTypeListeners = new Vector();
-	private Vector listeners = null;
+	private Vector listeners = new Vector();
 
 	public JMDNSDiscoveryContainer() throws IOException,
 			IDInstantiationException {
