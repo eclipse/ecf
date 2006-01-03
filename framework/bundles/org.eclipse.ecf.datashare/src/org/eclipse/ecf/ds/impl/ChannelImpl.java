@@ -76,9 +76,6 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 			public ID getChannelID() {
 				return getID();
 			}
-			public ID getLocalContainerID() {
-				return getContext().getLocalContainerID();
-			}		
 		};
 	}
     protected Event handleSharedObjectMsgEvent(final SharedObjectMsgEvent event) {
@@ -98,9 +95,6 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 				}
 				public ID getChannelID() {
 					return getID();
-				}
-				public ID getLocalContainerID() {
-					return getContext().getLocalContainerID();
 				}});
     		// Discontinue processing of this event...we are it
     		return null;
