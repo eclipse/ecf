@@ -12,7 +12,9 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.ds.IChannel;
+import org.eclipse.ecf.ds.IChannelChangeEvent;
 import org.eclipse.ecf.ds.IChannelListener;
+import org.eclipse.ecf.ds.IChannelMessageEvent;
 
 public class ChannelImpl extends TransactionSharedObject implements IChannel {
 
@@ -53,23 +55,53 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 			}
 			public Event processEvent(Event event) {
 				if (event instanceof IContainerConnectedEvent) {
-					ChannelImpl.this.listener.handleMemberJoined(getID(), ((IContainerConnectedEvent)event).getTargetID());
+					ChannelImpl.this.listener.handleChannelEvent(createChannelChangeEvent(true,((IContainerConnectedEvent)event).getTargetID()));
 				} else if (event instanceof IContainerDisconnectedEvent) {
-					ChannelImpl.this.listener.handleMemberDeparted(getID(), ((IContainerDisconnectedEvent)event).getTargetID());
+					ChannelImpl.this.listener.handleChannelEvent(createChannelChangeEvent(true,((IContainerDisconnectedEvent)event).getTargetID()));
 				}
 				return event;
 			}
 		});
 	}
 	
-    protected Event handleSharedObjectMsgEvent(SharedObjectMsgEvent event) {
+	protected IChannelChangeEvent createChannelChangeEvent(final boolean hasJoined,final ID targetID) {
+		return new IChannelChangeEvent() {
+			private static final long serialVersionUID = -1085237280463725283L;
+			public boolean hasJoined() {
+				return hasJoined;
+			}
+			public ID getTargetID() {
+				return targetID;
+			}
+			public ID getChannelID() {
+				return getID();
+			}
+			public ID getLocalContainerID() {
+				return getContext().getLocalContainerID();
+			}		
+		};
+	}
+    protected Event handleSharedObjectMsgEvent(final SharedObjectMsgEvent event) {
     	Object data = event.getData();
     	ChannelMsg channelData = null;
     	if (data instanceof ChannelMsg) {
     		channelData = (ChannelMsg) data;
     	}
     	if (channelData != null) {
-    		listener.handleMessage(getID(),channelData.getData());
+    		listener.handleChannelEvent(new IChannelMessageEvent() {
+				private static final long serialVersionUID = -2270885918818160970L;
+				public ID getFromID() {
+					return event.getSenderSharedObjectID();
+				}
+				public byte[] getData() {
+					return (byte []) event.getData();
+				}
+				public ID getChannelID() {
+					return getID();
+				}
+				public ID getLocalContainerID() {
+					return getContext().getLocalContainerID();
+				}});
     		// Discontinue processing of this event...we are it
     		return null;
     	}

@@ -7,5 +7,5 @@ import org.eclipse.ecf.core.util.ECFException;
 public interface IChannelContainer extends IReliableContainer {
 	public IChannel createChannel(ID channelID) throws ECFException;
 	public IChannel getChannel(ID channelID);
-	public void removeChannel(ID channelID);
+	public boolean disposeChannel(ID channelID);
 }
