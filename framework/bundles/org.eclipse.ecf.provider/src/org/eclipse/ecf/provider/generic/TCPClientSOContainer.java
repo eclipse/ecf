@@ -34,7 +34,7 @@ public class TCPClientSOContainer extends ClientSOContainer {
 
     protected ISynchAsynchConnection createConnection(ID remoteSpace,
             Object data) throws ConnectionInstantiationException {
-        debug("getClientConnection:" + remoteSpace + ":" + data);
+        debug("createClientConnection:" + remoteSpace + ":" + data);
         Object[] args = { new Integer(keepAlive) };
         ISynchAsynchConnection conn = null;
         conn = ConnectionFactory.createSynchAsynchConnection(receiver,
