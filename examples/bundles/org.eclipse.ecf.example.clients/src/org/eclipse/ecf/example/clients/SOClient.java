@@ -12,7 +12,7 @@ public class SOClient {
 	ID targetID = null;
 	
 	protected void setupContainer(String type) throws Exception {
-		container = ContainerFactory.getDefault().makeContainer(type);
+		container = ContainerFactory.getDefault().createContainer(type);
 		socontainer = (ISharedObjectContainer) container.getAdapter(ISharedObjectContainer.class);
 	}
 }

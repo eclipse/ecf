@@ -115,13 +115,13 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	}
 
 	public XMPPClientSOContainer(int ka) throws Exception {
-		super(new SOContainerConfig(IDFactory.getDefault().makeGUID()));
+		super(new SOContainerConfig(IDFactory.getDefault().createGUID()));
 		keepAlive = ka;
 		initializeSharedObject();
 	}
 
 	public XMPPClientSOContainer(String userhost, int ka) throws Exception {
-		super(new SOContainerConfig(IDFactory.getDefault().makeStringID(userhost)));
+		super(new SOContainerConfig(IDFactory.getDefault().createStringID(userhost)));
 		keepAlive = ka;
 		initializeSharedObject();
 	}
@@ -190,7 +190,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		super.dispose();
 	}
 
-	protected ISynchAsynchConnection makeConnection(ID remoteSpace,
+	protected ISynchAsynchConnection createConnection(ID remoteSpace,
 			Object data) throws ConnectionInstantiationException {
 		ISynchAsynchConnection conn = null;
 		boolean google = false;
@@ -210,7 +210,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		return conn;
 	}
 
-	protected Object makeConnectData(ID target, Callback [] cbs, Object data) {
+	protected Object createConnectData(ID target, Callback [] cbs, Object data) {
 		// first one is password callback
 		if (cbs.length > 0) {
 			if (cbs[0] instanceof ObjectCallback) {
@@ -221,7 +221,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		return data;
 	}
 
-	protected Callback[] makeAuthorizationCallbacks() {
+	protected Callback[] createAuthorizationCallbacks() {
 		Callback [] cbs = new Callback[1];
 		cbs[0] = new ObjectCallback();
 		return cbs;
@@ -351,7 +351,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	}
 
 	protected void initializeSharedObject() throws Exception {
-		sharedObjectID = IDFactory.getDefault().makeStringID(XMPP_SHARED_OBJECT_ID);
+		sharedObjectID = IDFactory.getDefault().createStringID(XMPP_SHARED_OBJECT_ID);
 		sharedObject = new XMPPPresenceSharedObject();
 	}
 
@@ -399,7 +399,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		dispose();
 	}
 
-	protected SOContext makeSharedObjectContext(SOConfig soconfig,
+	protected SOContext createSharedObjectContext(SOConfig soconfig,
 			IQueueEnqueue queue) {
 		return new XMPPContainerContext(soconfig.getSharedObjectID(), soconfig
 				.getHomeContainerID(), this, soconfig.getProperties(), queue);
@@ -437,8 +437,8 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		}
 	}
     
-	protected Presence makePresenceFromIPresence(IPresence presence) {
-		return sharedObject.makePresence(presence);
+	protected Presence createPresenceFromIPresence(IPresence presence) {
+		return sharedObject.createPresence(presence);
 	}
 	protected void sendPresenceUpdate(ID target, Presence presence) throws IOException {
 		if (messageSender != null) {
@@ -490,7 +490,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 					return new IPresenceSender() {
 						public void sendPresenceUpdate(ID fromID, ID toID, IPresence presence) {
                             try {
-								Presence newPresence = makePresenceFromIPresence(presence);
+								Presence newPresence = createPresenceFromIPresence(presence);
                                 XMPPClientSOContainer.this.sendPresenceUpdate(toID,newPresence);
                             } catch (IOException e) {
                                 dumpStack("Exception in sendPresenceUpdate to "+toID+" with presence "+presence,e);
@@ -551,7 +551,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 						public IRoomInfo getChatRoomInfo(ID roomID) {
 							return XMPPClientSOContainer.this.getChatRoomInfo(roomID);
 						}
-						public IChatRoomContainer makeChatRoomContainer() throws ContainerInstantiationException {
+						public IChatRoomContainer createChatRoomContainer() throws ContainerInstantiationException {
 							IChatRoomContainer chatContainer = null;
 							try {
 								chatContainer = new XMPPGroupChatSOContainer(XMPPClientSOContainer.this.getConnection(),sharedObject.getConnection(),getConnectNamespace());
@@ -589,12 +589,12 @@ public class XMPPClientSOContainer extends ClientSOContainer {
     protected Collection getHostedRoomForService(String svc) throws XMPPException {
 		return MultiUserChat.getHostedRooms(sharedObject.getConnection(),svc);
     }
-    protected ID makeIDFromHostedRoom(HostedRoom room) {
+    protected ID createIDFromHostedRoom(HostedRoom room) {
     	try {
     		return new XMPPRoomID(getConnectNamespace(),sharedObject.getConnection(),room.getJid(),room.getName());
     	} catch (URISyntaxException e) {
     		// debug output
-    		dumpStack("Exception in makeIDFromHostedRoom("+room+")",e);
+    		dumpStack("Exception in createIDFromHostedRoom("+room+")",e);
     		return null;
     	}
     }
@@ -610,7 +610,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
     			Collection rooms = getHostedRoomForService(svc);
     			for(Iterator roomsi = rooms.iterator(); roomsi.hasNext(); ) {
     				HostedRoom room = (HostedRoom) roomsi.next();
-    				ID roomID = makeIDFromHostedRoom(room);
+    				ID roomID = createIDFromHostedRoom(room);
     				if (roomID != null) result.add(roomID);
     			}
     		}

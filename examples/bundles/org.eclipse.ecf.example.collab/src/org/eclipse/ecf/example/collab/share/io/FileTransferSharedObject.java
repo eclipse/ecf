@@ -222,7 +222,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
     protected boolean sendData(ID rcvr, FileData data) throws IOException
     {
         // Send it.  This does all data delivery.
-        forwardMsgTo(rcvr, SharedObjectMsg.makeMsg(recvMethodName, data));
+        forwardMsgTo(rcvr, SharedObjectMsg.createMsg(recvMethodName, data));
         return data.isDone();
     }
 
@@ -278,7 +278,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
             // Report failure back to host if we're not disconnected
             try {
                 // Send it.  This does the done msg delivery.
-                forwardMsgHome(SharedObjectMsg.makeMsg(doneMethodName, e));
+                forwardMsgHome(SharedObjectMsg.createMsg(doneMethodName, e));
                 // Make sure everything is cleaned up
                 hardClose();
             } catch (Exception e1) {
@@ -306,7 +306,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
             // object
             if (progressListener != null) progressListener.receiveDone(this, except);
             try {
-                forwardMsgHome(SharedObjectMsg.makeMsg(doneMethodName, except));
+                forwardMsgHome(SharedObjectMsg.createMsg(doneMethodName, except));
             } catch (Exception e) {
             	debug(e,"Exception sending done message home");
             }
@@ -390,7 +390,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
                         wait(DEFAULT_START_WAIT_INTERVAL);
                     }
                     // Asynchronous tail recursion.
-                    sendSelf(SharedObjectMsg.makeMsg("start"));
+                    sendSelf(SharedObjectMsg.createMsg("start"));
                 } catch (Exception e) {}
             } else {
                 preStartSending();
@@ -421,7 +421,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
                 }
                 // If all data not sent, send message to self.  This results
                 // in this method iterating until entire file is sent.
-                sendSelf(SharedObjectMsg.makeMsg(startMethodName));
+                sendSelf(SharedObjectMsg.createMsg(startMethodName));
             } else {
                 // Close input stream.
                 hardClose();

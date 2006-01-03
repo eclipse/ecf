@@ -31,7 +31,7 @@ public class DataGraphSharingManager implements IDataGraphSharingManager {
     public synchronized IDataGraphSharing getInstance(
             ISharedObjectContainer container) throws ECFException {
         ISharedObjectManager mgr = container.getSharedObjectManager();
-        ID id = IDFactory.getDefault().makeStringID(DataGraphSharing.DATA_GRAPH_SHARING_ID);
+        ID id = IDFactory.getDefault().createStringID(DataGraphSharing.DATA_GRAPH_SHARING_ID);
         DataGraphSharing result = (DataGraphSharing) mgr.getSharedObject(id);
         if (result == null) {
             result = new DataGraphSharing();

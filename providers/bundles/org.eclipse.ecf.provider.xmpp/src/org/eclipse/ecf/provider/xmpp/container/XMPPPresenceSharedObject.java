@@ -274,7 +274,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
             RosterPacket rosterPacket = (RosterPacket) iq;
 			if (rosterPacket.getType() == IQ.Type.SET || rosterPacket.getType() == IQ.Type.RESULT) {
             for (Iterator i = rosterPacket.getRosterItems(); i.hasNext();) {
-                IRosterEntry entry = makeRosterEntry((RosterPacket.Item) i
+                IRosterEntry entry = createRosterEntry((RosterPacket.Item) i
                         .next());
                 fireSetRosterEntry(entry);
             }
@@ -303,17 +303,17 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         String to = msg.getTo();
         String body = msg.getBody();
         String subject = msg.getSubject();
-        ID fromID = makeIDFromName(canonicalizePresenceFrom(from));
-        ID toID = makeIDFromName(canonicalizePresenceFrom(to));
+        ID fromID = createIDFromName(canonicalizePresenceFrom(from));
+        ID toID = createIDFromName(canonicalizePresenceFrom(to));
         msg = filterMessageType(msg);
-        if (msg != null) fireMessage(fromID, toID, makeMessageType(msg.getType()), subject, body);
+        if (msg != null) fireMessage(fromID, toID, createMessageType(msg.getType()), subject, body);
     }
 
     protected void handlePresenceEvent(PresenceEvent evt) {
         Presence xmppPresence = evt.getPresence();
         String from = canonicalizePresenceFrom(xmppPresence.getFrom());
-        IPresence newPresence = makeIPresence(xmppPresence);
-        ID fromID = makeIDFromName(from);
+        IPresence newPresence = createIPresence(xmppPresence);
+        ID fromID = createIDFromName(from);
 		if (newPresence.getType().equals(IPresence.Type.SUBSCRIBE) || 
 				newPresence.getType().equals(IPresence.Type.UNSUBSCRIBE) ||
 				newPresence.getType().equals(IPresence.Type.SUBSCRIBED) ||
@@ -324,7 +324,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 
     protected void handleRoster(Roster roster) {
         for (Iterator i = roster.getEntries(); i.hasNext();) {
-            IRosterEntry entry = makeRosterEntry((RosterEntry) i.next());
+            IRosterEntry entry = createRosterEntry((RosterEntry) i.next());
             fireRosterEntry(entry);
         }
     }
@@ -340,18 +340,18 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         this.namespace = getContext().getConnectNamespace();
     }
 
-    protected ID makeIDFromName(String name) {
+    protected ID createIDFromName(String name) {
         ID result = null;
         try {
-            result = IDFactory.getDefault().makeID(namespace, new Object[] { name });
+            result = IDFactory.getDefault().createID(namespace, new Object[] { name });
             return result;
         } catch (Exception e) {
-            dumpStack("Exception in makeIDFromName", e);
+            dumpStack("Exception in createIDFromName", e);
             return null;
         }
     }
 
-    protected IRosterEntry.InterestType makeInterestType(
+    protected IRosterEntry.InterestType createInterestType(
             RosterPacket.ItemType itemType) {
         if (itemType == RosterPacket.ItemType.BOTH) {
             return IRosterEntry.InterestType.BOTH;
@@ -367,7 +367,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
             return IRosterEntry.InterestType.BOTH;
     }
 
-    protected IMessageListener.Type makeMessageType(Message.Type type) {
+    protected IMessageListener.Type createMessageType(Message.Type type) {
         if (type == null)
             return IMessageListener.Type.NORMAL;
         if (type == Message.Type.CHAT) {
@@ -384,25 +384,25 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
             return IMessageListener.Type.NORMAL;
     }
 
-    protected IPresence makeIPresence(Presence xmppPresence) {
+    protected IPresence createIPresence(Presence xmppPresence) {
         int priority = xmppPresence.getPriority();
         String status = xmppPresence.getStatus();
         IPresence newPresence = new org.eclipse.ecf.presence.impl.Presence(
-                makeIPresenceType(xmppPresence), priority, status,
-                makeIPresenceMode(xmppPresence));
+                createIPresenceType(xmppPresence), priority, status,
+                createIPresenceMode(xmppPresence));
         return newPresence;
     }
 
-    protected Presence makePresence(IPresence ipresence) {
+    protected Presence createPresence(IPresence ipresence) {
         int priority = ipresence.getPriority();
         String status = ipresence.getStatus();
         Presence newPresence = new Presence(
-                makePresenceType(ipresence), status, priority,
-                makePresenceMode(ipresence));
+                createPresenceType(ipresence), status, priority,
+                createPresenceMode(ipresence));
         return newPresence;
     }
 
-    protected IPresence.Mode makeIPresenceMode(Presence xmppPresence) {
+    protected IPresence.Mode createIPresenceMode(Presence xmppPresence) {
         if (xmppPresence == null)
             return IPresence.Mode.AVAILABLE;
         Mode mode = xmppPresence.getMode();
@@ -422,7 +422,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         return IPresence.Mode.AVAILABLE;
     }
 
-    protected Presence.Mode makePresenceMode(IPresence ipresence) {
+    protected Presence.Mode createPresenceMode(IPresence ipresence) {
         if (ipresence == null)
             return Presence.Mode.AVAILABLE;
         IPresence.Mode mode = ipresence.getMode();
@@ -442,7 +442,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         return Presence.Mode.AVAILABLE;
     }
 
-    protected IPresence.Type makeIPresenceType(Presence xmppPresence) {
+    protected IPresence.Type createIPresenceType(Presence xmppPresence) {
         if (xmppPresence == null)
             return IPresence.Type.AVAILABLE;
         Type type = xmppPresence.getType();
@@ -464,7 +464,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         return IPresence.Type.AVAILABLE;
     }
 
-    protected Presence.Type makePresenceType(IPresence ipresence) {
+    protected Presence.Type createPresenceType(IPresence ipresence) {
         if (ipresence == null)
             return Presence.Type.AVAILABLE;
         IPresence.Type type = ipresence.getType();
@@ -486,55 +486,55 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         return Presence.Type.AVAILABLE;
     }
 
-    protected IRosterEntry makeRosterEntry(RosterEntry entry) {
+    protected IRosterEntry createRosterEntry(RosterEntry entry) {
         try {
-            ID userID = makeIDFromName(entry.getUser());
+            ID userID = createIDFromName(entry.getUser());
             String name = entry.getName();
             RosterPacket.ItemType itemType = entry.getType();
-            IRosterEntry.InterestType iType = makeInterestType(itemType);
+            IRosterEntry.InterestType iType = createInterestType(itemType);
             ID svcID = getContext().getConnectedID();
             IRosterEntry newEntry = new org.eclipse.ecf.presence.impl.RosterEntry(svcID,
                     userID, name, iType);
             Iterator grps = entry.getGroups();
             for (; grps.hasNext();) {
                 RosterGroup grp = (RosterGroup) grps.next();
-                IRosterGroup localGrp = makeRosterGroup(grp);
+                IRosterGroup localGrp = createRosterGroup(grp);
                 newEntry.add(localGrp);
             }
             return newEntry;
         } catch (Exception e) {
-            dumpStack("Exception in makeRosterEntry", e);
+            dumpStack("Exception in createRosterEntry", e);
         }
         return null;
     }
 
-    protected IRosterEntry makeRosterEntry(RosterPacket.Item entry) {
+    protected IRosterEntry createRosterEntry(RosterPacket.Item entry) {
         try {
-            ID userID = makeIDFromName(entry.getUser());
+            ID userID = createIDFromName(entry.getUser());
             String name = entry.getName();
             RosterPacket.ItemType itemType = entry.getItemType();
-            IRosterEntry.InterestType iType = makeInterestType(itemType);
+            IRosterEntry.InterestType iType = createInterestType(itemType);
             ID svcID = getContext().getConnectedID();
             IRosterEntry newEntry = new org.eclipse.ecf.presence.impl.RosterEntry(svcID,
                     userID, name, iType);
             Iterator grps = entry.getGroupNames();
             for (; grps.hasNext();) {
                 String grp = (String) grps.next();
-                IRosterGroup localGrp = makeRosterGroup(grp);
+                IRosterGroup localGrp = createRosterGroup(grp);
                 newEntry.add(localGrp);
             }
             return newEntry;
         } catch (Exception e) {
-            dumpStack("Exception in makeRosterEntry", e);
+            dumpStack("Exception in createRosterEntry", e);
         }
         return null;
     }
 
-    protected IRosterGroup makeRosterGroup(RosterGroup grp) {
+    protected IRosterGroup createRosterGroup(RosterGroup grp) {
         return new org.eclipse.ecf.presence.impl.RosterGroup(grp.getName());
     }
 
-    protected IRosterGroup makeRosterGroup(String grp) {
+    protected IRosterGroup createRosterGroup(String grp) {
         return new org.eclipse.ecf.presence.impl.RosterGroup(grp);
     }
 

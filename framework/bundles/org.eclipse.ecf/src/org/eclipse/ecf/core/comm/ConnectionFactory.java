@@ -84,20 +84,20 @@ public class ConnectionFactory {
 		return new ArrayList(connectiontypes.values());
 	}
 
-	public static ISynchAsynchConnection makeSynchAsynchConnection(
+	public static ISynchAsynchConnection createSynchAsynchConnection(
 			ISynchAsynchConnectionEventHandler handler,
 			ConnectionDescription desc, Object[] args)
 			throws ConnectionInstantiationException {
 		if (handler == null)
 			throw new ConnectionInstantiationException("handler cannot be null");
-		return makeSynchAsynchConnection(handler, desc, null, args);
+		return createSynchAsynchConnection(handler, desc, null, args);
 	}
 
-	public static ISynchAsynchConnection makeSynchAsynchConnection(
+	public static ISynchAsynchConnection createSynchAsynchConnection(
 			ISynchAsynchConnectionEventHandler handler,
 			ConnectionDescription desc, String[] argTypes, Object[] args)
 			throws ConnectionInstantiationException {
-		debug("makeSynchAsynchConnection(" + handler + "," + desc + ","
+		debug("createSynchAsynchConnection(" + handler + "," + desc + ","
 				+ Trace.convertStringAToString(argTypes) + ","
 				+ Trace.convertObjectAToString(args) + ")");
 		if (handler == null)
@@ -123,18 +123,18 @@ public class ConnectionFactory {
 								+ cd.getName() + " is null");
 		} catch (Exception e) {
 			ConnectionInstantiationException newexcept = new ConnectionInstantiationException(
-					"makeSynchAsynchConnection exception with description: "
+					"createSynchAsynchConnection exception with description: "
 							+ desc + ": " + e.getClass().getName() + ": "
 							+ e.getMessage());
 			newexcept.setStackTrace(e.getStackTrace());
-			dumpStack("Exception in makeSynchAsynchConnection", newexcept);
+			dumpStack("Exception in createSynchAsynchConnection", newexcept);
 			throw newexcept;
 		}
 		// Ask instantiator to actually create instance
-		return instantiator.makeInstance(desc, handler, clazzes, args);
+		return instantiator.createInstance(desc, handler, clazzes, args);
 	}
 
-	public static ISynchAsynchConnection makeSynchAsynchConnection(
+	public static ISynchAsynchConnection createSynchAsynchConnection(
 			ISynchAsynchConnectionEventHandler handler, String descriptionName)
 			throws ConnectionInstantiationException {
 		if (handler == null)
@@ -144,10 +144,10 @@ public class ConnectionFactory {
 		if (desc == null)
 			throw new ConnectionInstantiationException(
 					"Connection type named '" + descriptionName + "' not found");
-		return makeSynchAsynchConnection(handler, desc, null, null);
+		return createSynchAsynchConnection(handler, desc, null, null);
 	}
 
-	public static ISynchAsynchConnection makeSynchAsynchConnection(
+	public static ISynchAsynchConnection createSynchAsynchConnection(
 			ISynchAsynchConnectionEventHandler handler, String descriptionName,
 			Object[] args) throws ConnectionInstantiationException {
 		if (handler == null)
@@ -157,10 +157,10 @@ public class ConnectionFactory {
 		if (desc == null)
 			throw new ConnectionInstantiationException(
 					"Connection type named '" + descriptionName + "' not found");
-		return makeSynchAsynchConnection(handler, desc, args);
+		return createSynchAsynchConnection(handler, desc, args);
 	}
 
-	public static ISynchAsynchConnection makeSynchAsynchConnection(
+	public static ISynchAsynchConnection createSynchAsynchConnection(
 			ISynchAsynchConnectionEventHandler handler, String descriptionName,
 			String[] argTypes, Object[] args)
 			throws ConnectionInstantiationException {
@@ -171,7 +171,7 @@ public class ConnectionFactory {
 		if (desc == null)
 			throw new ConnectionInstantiationException(
 					"Connection type named '" + descriptionName + "' not found");
-		return makeSynchAsynchConnection(handler, desc, argTypes, args);
+		return createSynchAsynchConnection(handler, desc, argTypes, args);
 	}
 
 	public final static ConnectionDescription removeDescription(

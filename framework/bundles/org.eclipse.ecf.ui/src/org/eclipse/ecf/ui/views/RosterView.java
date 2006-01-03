@@ -877,7 +877,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			if (strres != null && !strres.equals("")) {
 				ID target = null;
 				try {
-					target = IDFactory.getDefault().makeStringID(strres);
+					target = IDFactory.getDefault().createStringID(strres);
 				} catch (Exception e) {
 					MessageDialog.openError(getSite().getShell(), "Error",
 							"Error in IM target");
@@ -1008,7 +1008,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		// now, create chat room instance
 		IChatRoomContainer chatRoom = null;
 		try {
-			chatRoom = selectedManager.makeChatRoomContainer();
+			chatRoom = selectedManager.createChatRoomContainer();
 		} catch (ContainerInstantiationException e1) {
 			MessageDialog.openError(RosterView.this.getViewSite()
 					.getShell(), "Could not create chat room",
@@ -1164,7 +1164,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		synchronized (chatThreads) {
 			window = (ChatWindow) chatThreads.get(targetID);
 			if (window == null) {
-				window = makeChatWindowForTarget(targetID);
+				window = createChatWindowForTarget(targetID);
 				if (window != null)
 					window.open();
 			} else {
@@ -1177,7 +1177,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		}
 		return window;
 	}
-	protected ChatWindow makeChatWindowForTarget(ID targetID) {
+	protected ChatWindow createChatWindowForTarget(ID targetID) {
 		UserAccount account = getAccountForUser(targetID);
 		if (account == null)
 			return null;

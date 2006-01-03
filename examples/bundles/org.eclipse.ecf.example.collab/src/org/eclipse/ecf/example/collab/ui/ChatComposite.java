@@ -1100,7 +1100,7 @@ public class ChatComposite extends Composite {
 			String fileName, Date startDate, ID target, final boolean launch) {
 		try {
 			ID eclipseStageID = IDFactory
-					.getDefault().makeStringID(org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject.ECLIPSEOBJECTNAME);
+					.getDefault().createStringID(org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject.ECLIPSEOBJECTNAME);
 			java.io.BufferedInputStream ins = new java.io.BufferedInputStream(
 					local);
 			java.io.File remoteFile = new File((new File(fileName)).getName());
@@ -1113,7 +1113,7 @@ public class ChatComposite extends Composite {
 			new Thread(new Runnable() {
 				public void run() {
 				    if (launch) {
-						ChatComposite.this.view.makeObject(
+						ChatComposite.this.view.createObject(
 								null,
 								org.eclipse.ecf.example.collab.share.io.EclipseFileTransferAndLaunch.class
 										.getName(), new String[] {
@@ -1123,7 +1123,7 @@ public class ChatComposite extends Composite {
 										FileTransferParams.class.getName(),
 										ID.class.getName() }, args);
 				    } else {
-						ChatComposite.this.view.makeObject(
+						ChatComposite.this.view.createObject(
 								null,
 								org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer.class
 										.getName(), new String[] {
@@ -1185,7 +1185,7 @@ public class ChatComposite extends Composite {
 				HashMap map = new HashMap();
 				map.put("args",args);
 				map.put("types",LineChatClientView.APPSHAREARGTYPES);
-				ID serverID = this.view.lch.makeObject(null, LineChatClientView.APPSHARECLASSNAME, map);
+				ID serverID = this.view.lch.createObject(null, LineChatClientView.APPSHARECLASSNAME, map);
 				EclipseAppShareServer server = (EclipseAppShareServer) this.view.lch.getObject(serverID);
 				if (server != null) {
 					LineChatView.setAppShareID(serverID,server);
@@ -1219,7 +1219,7 @@ public class ChatComposite extends Composite {
 		if (res != null) {
 			Object[] args = { userID, res };
 			// Do it
-			this.view.makeObject(null, LineChatClientView.SHOWURLCLASSNAME, LineChatClientView.SHOWURLARGTYPES,
+			this.view.createObject(null, LineChatClientView.SHOWURLCLASSNAME, LineChatClientView.SHOWURLARGTYPES,
 					args);
 		}
 	}
@@ -1238,7 +1238,7 @@ public class ChatComposite extends Composite {
 					initStr);
 		}
 		if (res != null)
-			this.view.makeProxyObject(userID, res);
+			this.view.createProxyObject(userID, res);
 	}
 
 	protected void sendFile(String pathName, final String fileName,
@@ -1310,7 +1310,7 @@ public class ChatComposite extends Composite {
 				"");
 		if (res != null & !res.equals("")) {
 			String[] args = { res, this.view.userdata.getNickname() };
-			this.view.makeObject(null, LineChatClientView.MESSAGECLASSNAME, args);
+			this.view.createObject(null, LineChatClientView.MESSAGECLASSNAME, args);
 		}
 	}
 
@@ -1329,7 +1329,7 @@ public class ChatComposite extends Composite {
 				"Replicated Object Class and Args (separated by whitespace):",
 				"");
 		if (result != null && !result.equals("")) {
-			this.view.makeObject(null, getCommand(result), getArgs(result));
+			this.view.createObject(null, getCommand(result), getArgs(result));
 		}
 	}
 

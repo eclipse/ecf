@@ -53,7 +53,7 @@ public interface IContainerFactory {
 	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
 	 * <li>if found, will retrieve or create an IContainerInstantiator for that
 	 * description</li>
-	 * <li>Call the IContainerInstantiator.makeInstance method to return an
+	 * <li>Call the IContainerInstantiator.createInstance method to return an
 	 * instance of IContainer</li>
 	 * </ul>
 	 * 
@@ -62,12 +62,12 @@ public interface IContainerFactory {
 	 * @param argTypes
 	 *            a String [] defining the types of the args parameter
 	 * @param args
-	 *            an Object [] of arguments passed to the makeInstance method of
+	 *            an Object [] of arguments passed to the createInstance method of
 	 *            the IContainerInstantiator
 	 * @return a valid instance of IContainer
 	 * @throws ContainerInstantiationException
 	 */
-	public IContainer makeContainer(ContainerDescription desc,
+	public IContainer createContainer(ContainerDescription desc,
 			String[] argTypes, Object[] args)
 			throws ContainerInstantiationException;
 
@@ -79,7 +79,7 @@ public interface IContainerFactory {
 	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
 	 * <li>if found, will retrieve or create an IContainerInstantiator for that
 	 * description</li>
-	 * <li>Call the IContainerInstantiator.makeInstance method to return an
+	 * <li>Call the IContainerInstantiator.createInstance method to return an
 	 * instance of IContainer</li>
 	 * </ul>
 	 * 
@@ -88,7 +88,7 @@ public interface IContainerFactory {
 	 * @return a valid instance of IContainer
 	 * @throws ContainerInstantiationException
 	 */
-	public IContainer makeContainer(String descriptionName)
+	public IContainer createContainer(String descriptionName)
 			throws ContainerInstantiationException;
 
 	/**
@@ -99,7 +99,7 @@ public interface IContainerFactory {
 	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
 	 * <li>if found, will retrieve or create an IContainerInstantiator for that
 	 * description</li>
-	 * <li>Call the IContainerInstantiator.makeInstance method to return an
+	 * <li>Call the IContainerInstantiator.createInstance method to return an
 	 * instance of IContainer</li>
 	 * </ul>
 	 * 
@@ -107,11 +107,11 @@ public interface IContainerFactory {
 	 *            the ContainerDescription name to lookup
 	 * @param args
 	 *            the Object [] of arguments passed to the
-	 *            IContainerInstantiator.makeInstance method
+	 *            IContainerInstantiator.createInstance method
 	 * @return a valid instance of IContainer
 	 * @throws ContainerInstantiationException
 	 */
-	public IContainer makeContainer(String descriptionName, Object[] args)
+	public IContainer createContainer(String descriptionName, Object[] args)
 			throws ContainerInstantiationException;
 
 	/**
@@ -122,7 +122,7 @@ public interface IContainerFactory {
 	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
 	 * <li>if found, will retrieve or create an IContainerInstantiator for that
 	 * description</li>
-	 * <li>Call the IContainerInstantiator.makeInstance method to return an
+	 * <li>Call the IContainerInstantiator.createInstance method to return an
 	 * instance of IContainer</li>
 	 * </ul>
 	 * 
@@ -132,11 +132,11 @@ public interface IContainerFactory {
 	 *            the String [] of argument types of the following args
 	 * @param args
 	 *            the Object [] of arguments passed to the
-	 *            IContainerInstantiator.makeInstance method
+	 *            IContainerInstantiator.createInstance method
 	 * @return a valid instance of IContainer
 	 * @throws ContainerInstantiationException
 	 */
-	public IContainer makeContainer(String descriptionName, String[] argsTypes,
+	public IContainer createContainer(String descriptionName, String[] argsTypes,
 			Object[] args) throws ContainerInstantiationException;
 
 	/**

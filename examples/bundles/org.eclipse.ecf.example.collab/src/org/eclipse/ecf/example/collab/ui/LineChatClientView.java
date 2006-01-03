@@ -126,7 +126,7 @@ public class LineChatClientView implements FileSenderUI {
 			return false;
 		} else {
 			myNames.put(userID, username);
-			final String str = makeChatLine(username + " " + ENTER_STRING);
+			final String str = createChatLine(username + " " + ENTER_STRING);
 			addUserToTree(ud);
 			showText(new ChatLine(str));
 			return true;
@@ -139,7 +139,7 @@ public class LineChatClientView implements FileSenderUI {
 	 * @param line Input text
 	 * @return User-defined output of chat text.
 	 */
-	private String makeChatLine(String line) {
+	private String createChatLine(String line) {
 		if (showTimestamp) {
 			return dateTime() + line;
 		}
@@ -153,7 +153,7 @@ public class LineChatClientView implements FileSenderUI {
 		TreeParent root = getPresenceRoot();
 		if (root == null)
 			return;
-		TreeUser top = makeUserNode(ud);
+		TreeUser top = createUserNode(ud);
 		if (top == null)
 			return;
 		root.addChild(top);
@@ -233,13 +233,13 @@ public class LineChatClientView implements FileSenderUI {
 	protected String getPrefix(ID objID) {
 		String prefix = "";
 		if (userdata.getUserID().equals(objID)) {
-			prefix += makeChatLine(" " + HOST_PREFIX + ":  ");
+			prefix += createChatLine(" " + HOST_PREFIX + ":  ");
 		} else {
 			String tmp = getUserData(objID);
 			if (tmp == null) {
 				tmp = objID.toString();
 			}
-			prefix += makeChatLine(" " + tmp + CLIENT_PREFIX + ":  ");
+			prefix += createChatLine(" " + tmp + CLIENT_PREFIX + ":  ");
 		}
 		return prefix;
 	}
@@ -258,13 +258,13 @@ public class LineChatClientView implements FileSenderUI {
 	protected String getPrivatePrefix(ID objID) {
 		String prefix = "";
 		if (userdata.getUserID().equals(objID)) {
-			prefix += makeChatLine(" " + HOST_PREFIX + " (private):  ");
+			prefix += createChatLine(" " + HOST_PREFIX + " (private):  ");
 		} else {
 			String tmp = getUserData(objID);
 			if (tmp == null) {
 				tmp = objID.toString();
 			}
-			prefix += makeChatLine(" " + tmp + CLIENT_PREFIX + " (private):  ");
+			prefix += createChatLine(" " + tmp + CLIENT_PREFIX + " (private):  ");
 		}
 		return prefix;
 	}
@@ -308,18 +308,18 @@ public class LineChatClientView implements FileSenderUI {
 			lch.inputText(text);
 	}
 
-	protected void makeObject(ID target, String className, String[] args) {
-		makeObject(target, className, null, args);
+	protected void createObject(ID target, String className, String[] args) {
+		createObject(target, className, null, args);
 	}
 
-	protected void makeObject(ID target, final String className,
+	protected void createObject(ID target, final String className,
 			String[] argTypes, Object[] args) {
 		if (lch != null) {
 			HashMap map = new HashMap();
 			map.put("args", args);
 			map.put("types", argTypes);
 			try {
-				lch.makeObject(target, className, map);
+				lch.createObject(target, className, map);
 			} catch (final Exception e) {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
@@ -330,18 +330,18 @@ public class LineChatClientView implements FileSenderUI {
 					}
 				});
 				e.printStackTrace();
-				lch.chatException(e, "makeObject(" + className + ")");
+				lch.chatException(e, "createObject(" + className + ")");
 			}
 		}
 	}
 
-	protected void makeProxyObject(ID target, final String className) {
+	protected void createProxyObject(ID target, final String className) {
 		if (lch != null) {
 			try {
 				// With this interface, we'll simply supply the class name
 				// as the instance name. Eventually, the user interface should
 				// allow the creation of some other instance name
-				lch.makeProxyObject(target, className, className);
+				lch.createProxyObject(target, className, className);
 				proxyObjects.add(className);
 				teamChat.enableProxyMessage(true);
 			} catch (final Exception e) {
@@ -354,12 +354,12 @@ public class LineChatClientView implements FileSenderUI {
 					}
 				});
 				e.printStackTrace();
-				lch.chatException(e, "makeProxyObject(" + className + ")");
+				lch.chatException(e, "createProxyObject(" + className + ")");
 			}
 		}
 	}
 
-	protected TreeParent makeUserNode(TreeParent node, Vector ht) {
+	protected TreeParent createUserNode(TreeParent node, Vector ht) {
 		if (node == null || ht == null)
 			return null;
 		for (Enumeration e = ht.elements(); e.hasMoreElements();) {
@@ -368,7 +368,7 @@ public class LineChatClientView implements FileSenderUI {
 			final TreeParent tn = new TreeParent(this, ti);
 			if (val instanceof Vector) {
 				// Create new tree node
-				makeUserNode(tn, (Vector) val);
+				createUserNode(tn, (Vector) val);
 			}
 			node.addChild(tn);
 		}
@@ -376,11 +376,11 @@ public class LineChatClientView implements FileSenderUI {
 		return node;
 	}
 
-	protected TreeUser makeUserNode(User ud) {
+	protected TreeUser createUserNode(User ud) {
 		if (ud == null)
 			return null;
 		TreeUser tu = new TreeUser(this, ud);
-		return (TreeUser) makeUserNode(tu, ud.getUserFields());
+		return (TreeUser) createUserNode(tu, ud.getUserFields());
 	}
 
 	protected void messageProxyObject(ID target, String classname, String meth,
@@ -432,7 +432,7 @@ public class LineChatClientView implements FileSenderUI {
 	public void removeUser(ID id) {
 		String name = getUserData(id);
 		if (name != null) {
-			final String str = makeChatLine(name + " " + LEFT_STRING);
+			final String str = createChatLine(name + " " + LEFT_STRING);
 			showText(new ChatLine(str));
 		}
 		myNames.remove(id);
@@ -460,7 +460,7 @@ public class LineChatClientView implements FileSenderUI {
 		Object[] args = { receiver, cmds, env, new Boolean(receiver == null),
 				new Boolean(false) };
 		// Do it
-		makeObject(null, EXECPROGCLASSNAME, EXECPROGARGTYPES, args);
+		createObject(null, EXECPROGCLASSNAME, EXECPROGARGTYPES, args);
 	}
 
 	public void sendData(File aFile, long dataLength) {
@@ -518,7 +518,7 @@ public class LineChatClientView implements FileSenderUI {
 		TreeParent newRoot = new TreeParent(this, item);
 		Object val = item.getValue();
 		if (val instanceof Vector) {
-			return makeUserNode(newRoot, (Vector) val);
+			return createUserNode(newRoot, (Vector) val);
 		} else
 			return newRoot;
 	}

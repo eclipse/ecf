@@ -28,7 +28,7 @@ public class GUID extends StringID {
 			super(GUID.class.getName(), "GUID Namespace");
 		}
 
-		public ID makeInstance(Class[] argTypes, Object[] args)
+		public ID createInstance(Class[] argTypes, Object[] args)
 				throws IDInstantiationException {
 			if (args.length == 1)
 				return new GUID(this, ((Integer) args[0]).intValue());

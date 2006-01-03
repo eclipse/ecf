@@ -147,7 +147,7 @@ public class GenericSharedObject implements ISharedObject {
             trace(" proxy msg=" + methName);
             trace(" o=" + o);
             if (methName != null) {
-                msg = SharedObjectMsg.makeMsg(msg.getClassName(), methName, msg
+                msg = SharedObjectMsg.createMsg(msg.getClassName(), methName, msg
                         .getArgs());
             }
             if (currentMsgFromObjID == null)
@@ -470,12 +470,12 @@ public void handleEvent(Event event) {
         }
     }
 
-    public ID makeObject(ID target, String className, Map map) throws Exception {
+    public ID createObject(ID target, String className, Map map) throws Exception {
         ISharedObjectContext crs = getContext();
-        ID newID = IDFactory.getDefault().makeStringID(getNewUniqueIDString());
+        ID newID = IDFactory.getDefault().createStringID(getNewUniqueIDString());
         if (crs == null) {
             throw new InstantiationException(
-                    "Cannot make object.  Have no local creation capability because context is null");
+                    "Cannot create object.  Have no local creation capability because context is null");
         } else {
             if (className != null && !className.equals("")) {
                 trace("Creating new replicated object with class: " + className);
@@ -507,7 +507,7 @@ public void handleEvent(Event event) {
                 return newID;
             } else {
                 trace("Invalid classname '" + className
-                        + "'.  Cannot make object.");
+                        + "'.  Cannot create object.");
                 throw new InstantiationException("Invalid classname '"
                         + className);
             }

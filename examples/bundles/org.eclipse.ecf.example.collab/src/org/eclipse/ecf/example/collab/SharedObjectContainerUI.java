@@ -81,7 +81,7 @@ public class SharedObjectContainerUI {
 		IResource project = (proj == null) ? CollabClient.getWorkspace() : proj;
 		User user = getUserData(client.getClass().getName(), client
 				.getContainer().getID(), username, proj);
-		makeAndAddSharedObject(soContainer, client, project, user,
+		createAndAddSharedObject(soContainer, client, project, user,
 				getSharedFileDirectoryForProject(project));
 	}
 
@@ -106,7 +106,7 @@ public class SharedObjectContainerUI {
 		}, "");
 	}
 
-	protected void makeAndAddSharedObject(final ISharedObjectContainer soContainer, final ClientEntry client,
+	protected void createAndAddSharedObject(final ISharedObjectContainer soContainer, final ClientEntry client,
 			final IResource proj, User user, String fileDir) throws Exception {
 		IWorkbenchWindow ww = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
@@ -136,7 +136,7 @@ public class SharedObjectContainerUI {
 				CollabClient.removeClientForResource(proj, groupID);
 			}
 		});
-		ID newID = IDFactory.getDefault().makeStringID(COLLAB_SHARED_OBJECT_ID);
+		ID newID = IDFactory.getDefault().createStringID(COLLAB_SHARED_OBJECT_ID);
 		soContainer.getSharedObjectManager().addSharedObject(newID,
 				sharedObject, new HashMap());
 			client.setObject(sharedObject);

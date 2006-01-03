@@ -52,7 +52,7 @@ public class EditorHelper {
 		if (textEditor == null) return;
 		setTextEditorSelection(textEditor,offset,length);
 	}
-	protected IMarker makeMarkerForFile(IFile file, EclipseCollabSharedObject.SharedMarker marker) throws CoreException {
+	protected IMarker createMarkerForFile(IFile file, EclipseCollabSharedObject.SharedMarker marker) throws CoreException {
 		IMarker m = file.createMarker(EclipseCollabSharedObject.SHARED_MARKER_TYPE);
 		m.setAttribute(EclipseCollabSharedObject.SHARED_MARKER_KEY, "slewis");
 		//m.setAttribute(IMarker.MESSAGE, marker.getMessage());
@@ -79,7 +79,7 @@ public class EditorHelper {
 			String editorId = getEditorIdForFile(file);
 			part = page.openEditor(input, editorId);
 		}
-		makeMarkerForFile(file,marker);	    
+		createMarkerForFile(file,marker);	    
 	}
 	protected void setTextEditorSelection(ITextEditor textEditor, int offset, int length) {
 		textEditor.selectAndReveal(offset, length);

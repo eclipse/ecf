@@ -88,7 +88,7 @@ public abstract class ClientSOContainer extends SOContainer {
 		}
 	}
 
-	protected Callback[] makeAuthorizationCallbacks() {
+	protected Callback[] createAuthorizationCallbacks() {
 		return null;
 	}
 
@@ -101,7 +101,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			if (isClosing)
 				throw new IllegalStateException("container is closing");
 			debug("connect:" + remote + ":" + joinContext);
-			ISynchAsynchConnection aConnection = makeConnection(remote,
+			ISynchAsynchConnection aConnection = createConnection(remote,
 					joinContext);
 			Object response = null;
 			synchronized (connectLock) {
@@ -123,7 +123,7 @@ public abstract class ClientSOContainer extends SOContainer {
 				connection = aConnection;
 			}
 			// Now call join callback handler, if it exists
-			Callback[] callbacks = makeAuthorizationCallbacks();
+			Callback[] callbacks = createAuthorizationCallbacks();
 			if (joinContext != null) {
 				CallbackHandler handler = joinContext.getCallbackHandler();
 				if (handler != null) {
@@ -133,7 +133,7 @@ public abstract class ClientSOContainer extends SOContainer {
 
 			synchronized (aConnection) {
 				try {
-					Object connectData = makeConnectData(remote, callbacks,
+					Object connectData = createConnectData(remote, callbacks,
 							null);
 					// Make connect call
 					response = aConnection.connect(remote, connectData,
@@ -271,8 +271,8 @@ public abstract class ClientSOContainer extends SOContainer {
 		// NOP
 	}
 
-	protected Object makeConnectData(ID target, Callback[] cbs, Object data) {
-		return ContainerMessage.makeJoinGroupMessage(getID(), target,
+	protected Object createConnectData(ID target, Callback[] cbs, Object data) {
+		return ContainerMessage.createJoinGroupMessage(getID(), target,
 				getNextSequenceNumber(), (Serializable) data);
 	}
 
@@ -292,7 +292,7 @@ public abstract class ClientSOContainer extends SOContainer {
 					try {
 						connection.sendSynch(groupID,
 								serializeObject(ContainerMessage
-										.makeLeaveGroupMessage(getID(),
+										.createLeaveGroupMessage(getID(),
 												groupID,
 												getNextSequenceNumber(),
 												getLeaveData(groupID))));
@@ -312,7 +312,7 @@ public abstract class ClientSOContainer extends SOContainer {
 				.getID(), groupID));
 	}
 
-	protected abstract ISynchAsynchConnection makeConnection(ID remoteSpace,
+	protected abstract ISynchAsynchConnection createConnection(ID remoteSpace,
 			Object data) throws ConnectionInstantiationException;
 
 	protected void queueContainerMessage(ContainerMessage message)

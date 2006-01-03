@@ -75,12 +75,12 @@ public class ServerApplication {
 			int j=0;
 			for(Iterator i=connectors.iterator(); i.hasNext(); ) {
 				Connector connect = (Connector) i.next();
-				serverGroups[j] = makeServerGroup(connect.getHostname(),connect.getPort());
+				serverGroups[j] = createServerGroup(connect.getHostname(),connect.getPort());
 				List groups = connect.getGroups();
 				
 				for(Iterator g=groups.iterator(); g.hasNext(); ) {
 					NamedGroup group = (NamedGroup) g.next();
-					TCPServerSOContainer cont = makeServerContainer(group.getIDForGroup(),serverGroups[j],group.getName(),connect.getTimeout());
+					TCPServerSOContainer cont = createServerContainer(group.getIDForGroup(),serverGroups[j],group.getName(),connect.getTimeout());
 					servers.add(cont);
 				}
 				System.out.println("Putting server "+connect.getHostname()+" on the air");
@@ -105,7 +105,7 @@ public class ServerApplication {
 	        // Setup server group
 	        serverGroups[0] = new TCPServerSOContainerGroup(anURL.getPort());
 	        // Create identity for server
-	        ID id = IDFactory.getDefault().makeStringID(serverName);
+	        ID id = IDFactory.getDefault().createStringID(serverName);
 	        // Create server config object with identity and default timeout
 	        SOContainerConfig config = new SOContainerConfig(id);
 	        // Make server instance
@@ -127,14 +127,14 @@ public class ServerApplication {
 		}
     }
 	
-	protected static TCPServerSOContainerGroup makeServerGroup(String name, int port) {
+	protected static TCPServerSOContainerGroup createServerGroup(String name, int port) {
 		System.out.println("Creating server group named "+name+" to listen on port "+port);
 		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,port);
 		return group;
 	}
-	protected static TCPServerSOContainer makeServerContainer(String id, TCPServerSOContainerGroup group, String path, int keepAlive) throws IDInstantiationException {
+	protected static TCPServerSOContainer createServerContainer(String id, TCPServerSOContainerGroup group, String path, int keepAlive) throws IDInstantiationException {
 		System.out.println("  Creating container with id="+id+", group="+path+" keepAlive="+keepAlive);
-		ID newServerID = IDFactory.getDefault().makeStringID(id);
+		ID newServerID = IDFactory.getDefault().createStringID(id);
 		SOContainerConfig config = new SOContainerConfig(newServerID);
 		return new TCPServerSOContainer(config,group,path,keepAlive);
 	}

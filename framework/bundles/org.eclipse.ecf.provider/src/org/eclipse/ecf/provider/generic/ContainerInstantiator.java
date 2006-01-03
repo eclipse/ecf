@@ -42,12 +42,12 @@ public class ContainerInstantiator implements
         if (arg instanceof String) {
             String val = (String) arg;
             if (val == null || val.equals("")) {
-                return IDFactory.getDefault().makeGUID();
-            } else return IDFactory.getDefault().makeStringID((String) arg);
+                return IDFactory.getDefault().createGUID();
+            } else return IDFactory.getDefault().createStringID((String) arg);
         } else if (arg instanceof Integer) {
-            return IDFactory.getDefault().makeGUID(((Integer) arg).intValue());
+            return IDFactory.getDefault().createGUID(((Integer) arg).intValue());
         } else
-            return IDFactory.getDefault().makeGUID();
+            return IDFactory.getDefault().createGUID();
     }
 
     protected Integer getIntegerFromArg(Class type, Object arg)
@@ -59,7 +59,7 @@ public class ContainerInstantiator implements
         } else return new Integer(-1);
     }
 
-    public IContainer makeInstance(
+    public IContainer createInstance(
             ContainerDescription description, Class[] argTypes,
             Object[] args) throws ContainerInstantiationException {
         boolean isClient = true;

@@ -154,21 +154,21 @@ public class IDFactory implements IIDFactory {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeGUID()
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#createGUID()
 	 */
-	public ID makeGUID() throws IDInstantiationException {
-		return makeGUID(GUID.DEFAULT_BYTE_LENGTH);
+	public ID createGUID() throws IDInstantiationException {
+		return createGUID(GUID.DEFAULT_BYTE_LENGTH);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeGUID(int)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#createGUID(int)
 	 */
-	public ID makeGUID(int length) throws IDInstantiationException {
-		debug("makeGUID(" + length + ")");
+	public ID createGUID(int length) throws IDInstantiationException {
+		debug("createGUID(" + length + ")");
 		Namespace n = new GUID.GUIDNamespace();
-		return makeID(n, new String[] { Namespace.class.getName(),
+		return createID(n, new String[] { Namespace.class.getName(),
 				Integer.class.getName() }, new Object[] { n,
 				new Integer(length) });
 	}
@@ -204,12 +204,12 @@ public class IDFactory implements IIDFactory {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeID(org.eclipse.ecf.core.identity.Namespace,
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(org.eclipse.ecf.core.identity.Namespace,
 	 *      java.lang.String[], java.lang.Object[])
 	 */
-	public ID makeID(Namespace n, String[] argTypes, Object[] args)
+	public ID createID(Namespace n, String[] argTypes, Object[] args)
 			throws IDInstantiationException {
-		debug("makeID(" + n + "," + Trace.convertStringAToString(argTypes)
+		debug("createID(" + n + "," + Trace.convertStringAToString(argTypes)
 				+ "," + Trace.convertObjectAToString(args) + ")");
 		// Verify namespace is non-null
 		if (n == null)
@@ -229,109 +229,109 @@ public class IDFactory implements IIDFactory {
 			logAndThrow("Exception in getClassesForTypes", e);
 		}
 		// Ask instantiator to actually create instance
-		return ns.makeInstance(clazzes, args);
+		return ns.createInstance(clazzes, args);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeID(java.lang.String,
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(java.lang.String,
 	 *      java.lang.String[], java.lang.Object[])
 	 */
-	public ID makeID(String namespacename, String[] argTypes, Object[] args)
+	public ID createID(String namespacename, String[] argTypes, Object[] args)
 			throws IDInstantiationException {
 		Namespace n = getNamespaceByName(namespacename);
 		if (n == null)
 			throw new IDInstantiationException("Namespace named "
 					+ namespacename + " not found");
-		return makeID(n, argTypes, args);
+		return createID(n, argTypes, args);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeID(org.eclipse.ecf.core.identity.Namespace,
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(org.eclipse.ecf.core.identity.Namespace,
 	 *      java.lang.Object[])
 	 */
-	public ID makeID(Namespace n, Object[] args)
+	public ID createID(Namespace n, Object[] args)
 			throws IDInstantiationException {
-		return makeID(n, null, args);
+		return createID(n, null, args);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeID(java.lang.String,
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(java.lang.String,
 	 *      java.lang.Object[])
 	 */
-	public ID makeID(String namespacename, Object[] args)
+	public ID createID(String namespacename, Object[] args)
 			throws IDInstantiationException {
 		Namespace n = getNamespaceByName(namespacename);
 		if (n == null)
 			throw new IDInstantiationException("Namespace " + namespacename
 					+ " not found");
-		return makeID(n, args);
+		return createID(n, args);
 	}
 
-	public ID makeID(Namespace namespace, URI uri) throws IDInstantiationException {
-		return makeID(namespace,new Object[] { uri });
+	public ID createID(Namespace namespace, URI uri) throws IDInstantiationException {
+		return createID(namespace,new Object[] { uri });
 	}
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeID(java.lang.String,
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(java.lang.String,
 	 *      java.net.URI)
 	 */
-	public ID makeID(String namespacename, URI uri)
+	public ID createID(String namespacename, URI uri)
 			throws IDInstantiationException {
 		if (uri == null)
 			throw new IDInstantiationException("Null uri not allowed");
 		Namespace n = getNamespaceByName(namespacename);
 		if (n == null)
 			throw new IDInstantiationException("Namespace " + n + " not found");
-		return makeID(n, new Object[] { uri });
+		return createID(n, new Object[] { uri });
 	}
 
-	public ID makeID(Namespace namespace, String uri) throws IDInstantiationException {
-		return makeID(namespace,new Object[] { uri });
+	public ID createID(Namespace namespace, String uri) throws IDInstantiationException {
+		return createID(namespace,new Object[] { uri });
 	}
-	public ID makeID(String namespace, String uri) throws IDInstantiationException {
-		return makeID(namespace,new Object[] { uri });		
+	public ID createID(String namespace, String uri) throws IDInstantiationException {
+		return createID(namespace,new Object[] { uri });		
 	}
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeStringID(java.lang.String)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#createStringID(java.lang.String)
 	 */
-	public ID makeStringID(String idstring) throws IDInstantiationException {
+	public ID createStringID(String idstring) throws IDInstantiationException {
 		if (idstring == null)
 			throw new IDInstantiationException("String cannot be null");
 		Namespace n = new StringID.StringIDNamespace();
-		return makeID(n, new String[] { String.class.getName() },
+		return createID(n, new String[] { String.class.getName() },
 				new Object[] { idstring });
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeLongID(java.lang.Long)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#createLongID(java.lang.Long)
 	 */
-	public ID makeLongID(Long l) throws IDInstantiationException {
+	public ID createLongID(Long l) throws IDInstantiationException {
 		if (l == null)
 			throw new IDInstantiationException("Long cannot be null");
 		Namespace n = new LongID.LongNamespace();
-		return makeID(n, new String[] { String.class.getName() },
+		return createID(n, new String[] { String.class.getName() },
 				new Object[] { l });
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#makeLongID(long)
+	 * @see org.eclipse.ecf.core.identity.IIDFactory#createLongID(long)
 	 */
-	public ID makeLongID(long l) throws IDInstantiationException {
+	public ID createLongID(long l) throws IDInstantiationException {
 		Namespace n = new LongID.LongNamespace();
-		return makeID(n, new String[] { String.class.getName() },
+		return createID(n, new String[] { String.class.getName() },
 				new Object[] { new Long(l) });
 	}
 

@@ -141,7 +141,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                     // Notify existing remotes about new member
                     try {
                         forwardExcluding(getID(), remoteID, ContainerMessage
-                                .makeViewChangeMessage(getID(), remoteID,
+                                .createViewChangeMessage(getID(), remoteID,
                                         getNextSequenceNumber(),
                                         new ID[] { remoteID }, true, null));
                     } catch (IOException e) {
@@ -160,7 +160,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
             // notify listeners
             fireContainerEvent(new ContainerConnectedEvent(this.getID(),remoteID));
             
-            return ContainerMessage.makeViewChangeMessage(getID(), remoteID,
+            return ContainerMessage.createViewChangeMessage(getID(), remoteID,
                     getNextSequenceNumber(), memberIDs, true, null);
         } catch (Exception e) {
             logException("Exception in acceptNewClient(" + socket + ","
@@ -198,7 +198,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                 return;
             try {
                 conn.sendSynch(memberID, serializeObject(ContainerMessage
-                        .makeLeaveGroupMessage(getID(), memberID,
+                        .createLeaveGroupMessage(getID(), memberID,
                                 getNextSequenceNumber(), reason)));
             } catch (Exception e) {
                 logException("Exception in ejectGroupMember.sendAsynch()",e);

@@ -34,7 +34,7 @@ public class XMPPSClientSOContainer extends XMPPClientSOContainer {
 	public Namespace getConnectNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(XmppPlugin.getDefault().getSecureNamespaceIdentifier());
 	}
-	protected ISynchAsynchConnection makeConnection(ID remoteSpace,
+	protected ISynchAsynchConnection createConnection(ID remoteSpace,
 			Object data) throws ConnectionInstantiationException {
 		ISynchAsynchConnection conn = null;
 		boolean google = false;

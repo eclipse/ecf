@@ -10,9 +10,11 @@ package org.eclipse.ecf.provider.xmpp.container;
 
 import java.io.IOException;
 import java.util.HashMap;
+
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
+
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.SharedObjectAddException;
@@ -82,7 +84,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 	public XMPPGroupChatSOContainer(ISynchAsynchConnection conn,
 			XMPPConnection xmppconn, Namespace usernamespace)
 			throws IDInstantiationException {
-		this(new SOContainerConfig(IDFactory.getDefault().makeGUID()), conn,
+		this(new SOContainerConfig(IDFactory.getDefault().createGUID()), conn,
 				xmppconn, usernamespace);
 	}
 	public void dispose() {
@@ -177,7 +179,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 		}
 	}
 	protected void initializeSharedObject() throws IDInstantiationException {
-		sharedObjectID = IDFactory.getDefault().makeStringID(
+		sharedObjectID = IDFactory.getDefault().createStringID(
 				XMPP_GROUP_CHAT_SHARED_OBJECT_ID);
 		sharedObject = new XMPPGroupChatSharedObject(usernamespace,
 				xmppconnection);
@@ -261,10 +263,6 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 							public void left(String arg0) {
 								handleChatMembershipEvent(arg0, false);
 							}
-							public void kicked(String arg0) {
-								// TODO Auto-generated method stub
-								System.out.println("kicked(" + arg0 + ")");
-							}
 							public void voiceGranted(String arg0) {
 								// TODO Auto-generated method stub
 								System.out
@@ -274,10 +272,6 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 								// TODO Auto-generated method stub
 								System.out
 										.println("voiceRevoked(" + arg0 + ")");
-							}
-							public void banned(String arg0) {
-								// TODO Auto-generated method stub
-								System.out.println("banned(" + arg0 + ")");
 							}
 							public void membershipGranted(String arg0) {
 								// TODO Auto-generated method stub
@@ -391,12 +385,12 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 		fireContainerEvent(new ContainerDisconnectedEvent(this
 				.getID(), groupID));
 	}
-	protected SOContext makeSharedObjectContext(SOConfig soconfig,
+	protected SOContext createSharedObjectContext(SOConfig soconfig,
 			IQueueEnqueue queue) {
 		return new XMPPContainerContext(soconfig.getSharedObjectID(), soconfig
 				.getHomeContainerID(), this, soconfig.getProperties(), queue);
 	}
-	protected ID makeChatRoomID(String groupName)
+	protected ID createChatRoomID(String groupName)
 			throws IDInstantiationException {
 		String username = xmppconnection.getUser();
 		int atIndex = username.indexOf('@');
@@ -404,11 +398,11 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 			username = username.substring(0, atIndex);
 		String host = xmppconnection.getHost();
 		Namespace ns = getConnectNamespace();
-		ID targetID = IDFactory.getDefault().makeID(ns,
+		ID targetID = IDFactory.getDefault().createID(ns,
 				new Object[] { username, host, null, groupName, username });
 		return targetID;
 	}
-	protected ISynchAsynchConnection makeConnection(ID remoteSpace, Object data)
+	protected ISynchAsynchConnection createConnection(ID remoteSpace, Object data)
 			throws ConnectionInstantiationException {
 		return null;
 	}
@@ -436,7 +430,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 	public void connect(String groupName) throws ContainerConnectException {
 		ID targetID = null;
 		try {
-			targetID = makeChatRoomID(groupName);
+			targetID = createChatRoomID(groupName);
 		} catch (IDInstantiationException e) {
 			throw new ContainerConnectException(
 					"Exception creating chat room id", e);

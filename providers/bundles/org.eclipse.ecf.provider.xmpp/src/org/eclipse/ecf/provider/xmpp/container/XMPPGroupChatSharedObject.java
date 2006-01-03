@@ -91,13 +91,13 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         this.config = initData;
     }
 
-    protected ID makeUserIDFromName(String name) {
+    protected ID createUserIDFromName(String name) {
         ID result = null;
         try {
             result = new XMPPID(usernamespace,name);
             return result;
         } catch (Exception e) {
-            dumpStack("Exception in makeIDFromName", e);
+            dumpStack("Exception in createIDFromName", e);
             return null;
         }
     }
@@ -125,7 +125,7 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         }
         return from;
     }
-    protected IMessageListener.Type makeMessageType(Message.Type type) {
+    protected IMessageListener.Type createMessageType(Message.Type type) {
         if (type == null)
             return IMessageListener.Type.NORMAL;
         if (type == Message.Type.CHAT) {
@@ -158,11 +158,11 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
             return to;
     }
 
-    protected ID makeRoomIDFromName(String from) {
+    protected ID createRoomIDFromName(String from) {
     	try {
     		return new XMPPRoomID(usernamespace,connection,from);
     	} catch (URISyntaxException e) {
-            dumpStack("Exception in makeRoomIDFromName", e);
+            dumpStack("Exception in createRoomIDFromName", e);
             return null;
     	}
     }
@@ -173,13 +173,13 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         String to = msg.getTo();
         String body = msg.getBody();
         String subject = msg.getSubject();
-        ID fromID = makeUserIDFromName(canonicalizeRoomFrom(from));
-        ID toID = makeUserIDFromName(canonicalizeRoomTo(to));
+        ID fromID = createUserIDFromName(canonicalizeRoomFrom(from));
+        ID toID = createUserIDFromName(canonicalizeRoomTo(to));
         msg = filterMessageType(msg);
-        if (msg != null) fireMessage(fromID, toID, makeMessageType(msg.getType()), subject, body);
+        if (msg != null) fireMessage(fromID, toID, createMessageType(msg.getType()), subject, body);
     }
 
-    protected IPresence.Type makeIPresenceType(Presence xmppPresence) {
+    protected IPresence.Type createIPresenceType(Presence xmppPresence) {
         if (xmppPresence == null)
             return IPresence.Type.AVAILABLE;
         Type type = xmppPresence.getType();
@@ -201,7 +201,7 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         return IPresence.Type.AVAILABLE;
     }
 
-    protected IPresence.Mode makeIPresenceMode(Presence xmppPresence) {
+    protected IPresence.Mode createIPresenceMode(Presence xmppPresence) {
         if (xmppPresence == null)
             return IPresence.Mode.AVAILABLE;
         Mode mode = xmppPresence.getMode();
@@ -220,26 +220,26 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         }
         return IPresence.Mode.AVAILABLE;
     }
-    protected IPresence makeIPresence(Presence xmppPresence) {
+    protected IPresence createIPresence(Presence xmppPresence) {
         int priority = xmppPresence.getPriority();
         String status = xmppPresence.getStatus();
         IPresence newPresence = new org.eclipse.ecf.presence.impl.Presence(
-                makeIPresenceType(xmppPresence), priority, status,
-                makeIPresenceMode(xmppPresence));
+                createIPresenceType(xmppPresence), priority, status,
+                createIPresenceMode(xmppPresence));
         return newPresence;
     }
 
     protected void handlePresenceEvent(PresenceEvent evt) {
         Presence xmppPresence = evt.getPresence();
         String from = canonicalizeRoomFrom(xmppPresence.getFrom());
-        IPresence newPresence = makeIPresence(xmppPresence);
-        ID fromID = makeUserIDFromName(from);
+        IPresence newPresence = createIPresence(xmppPresence);
+        ID fromID = createUserIDFromName(from);
 		fireParticipant(fromID, newPresence);
     }
 
     protected void handleChatMembershipEvent(ChatMembershipEvent evt) {
     	String from = canonicalizeRoomFrom(evt.getFrom());
-        ID fromID = makeUserIDFromName(from);
+        ID fromID = createUserIDFromName(from);
         fireChatParticipant(fromID,evt.isAdd());
     }
     protected void fireParticipant(ID fromID, IPresence presence) {
@@ -292,10 +292,10 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
     protected void handleInvitationEvent(InvitationReceivedEvent event) {
     	XMPPConnection conn = event.getConnection();
     	if (conn == connection) {
-	    	ID roomID = makeRoomIDFromName(event.getRoom());
-	    	ID fromID = makeUserIDFromName(event.getInviter());
+	    	ID roomID = createRoomIDFromName(event.getRoom());
+	    	ID fromID = createUserIDFromName(event.getInviter());
 	    	Message mess = event.getMessage();
-	    	ID toID = makeUserIDFromName(mess.getTo());
+	    	ID toID = createUserIDFromName(mess.getTo());
 	    	String subject = mess.getSubject();
 	    	String body = event.getReason();
 	    	fireInvitationReceived(roomID,fromID,toID,subject,body);

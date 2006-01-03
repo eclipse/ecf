@@ -152,7 +152,7 @@ public class TransactionSharedObject extends GenericSharedObject implements ISha
         if (e == null) {
             // send commit message right back.
             try {
-                forwardMsgTo(fromID, SharedObjectMsg.makeMsg((String) null,REPLICA_COMMIT_METHOD));
+                forwardMsgTo(fromID, SharedObjectMsg.createMsg((String) null,REPLICA_COMMIT_METHOD));
             } catch (Exception except) {
                 traceDump("Exception sending commit message to "+fromID,except);
             }
@@ -223,7 +223,7 @@ public class TransactionSharedObject extends GenericSharedObject implements ISha
         if (participantIDs != null && others > 0) {
             // Send replicaCommit message to all remote clients
             try {
-                forwardMsgTo(null, SharedObjectMsg.makeMsg((String) null,REPLICA_COMMIT_METHOD));
+                forwardMsgTo(null, SharedObjectMsg.createMsg((String) null,REPLICA_COMMIT_METHOD));
             } catch (Exception e2) {
                 doAbort(new SharedObjectAddAbortException("Exception sending commit message", e2));
             }

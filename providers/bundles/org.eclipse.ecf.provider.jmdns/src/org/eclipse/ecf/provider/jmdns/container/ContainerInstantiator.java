@@ -15,7 +15,7 @@ public class ContainerInstantiator implements
 		super();
 	}
 
-	public IContainer makeInstance(
+	public IContainer createInstance(
 			ContainerDescription description, Class[] argTypes,
 			Object[] args) throws ContainerInstantiationException {
 			try {

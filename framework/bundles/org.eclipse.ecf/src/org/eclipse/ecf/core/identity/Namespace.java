@@ -121,7 +121,7 @@ public abstract class Namespace implements Serializable {
 	 * the ID interface directly
 	 * @throws IDInstantiationException if construction fails
 	 */
-	public abstract ID makeInstance(Class[] argTypes, Object[] args)
+	public abstract ID createInstance(Class[] argTypes, Object[] args)
 			throws IDInstantiationException;
 
 	/**

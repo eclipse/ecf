@@ -118,7 +118,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 		}
 	}
 
-	protected File makePath(EclipseCollabSharedObject stage, boolean server,
+	protected File createPath(EclipseCollabSharedObject stage, boolean server,
 			File file, long length, float rate) {
 
 		String downloadpath = null;
@@ -231,7 +231,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 			if (receiverStage != null) {
 				receiverUI = receiverStage.getFileReceiverUI(EclipseFileTransfer.this, transferParams);
 			}
-			localFile = makePath(receiverStage, isServer, aFile, length, rate);
+			localFile = createPath(receiverStage, isServer, aFile, length, rate);
 			// Our superclass depends upon the transferParams.getRemoteFile() call
 			// to give a valid file.
 			// We modify this to the new local file we've decided upon

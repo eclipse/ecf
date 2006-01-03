@@ -19,7 +19,7 @@
        Container instance creation is done via ECF-provided factory APIs.  For example, here's code to create 
        and IContainer instance:
        <pre>
-       IContainer container = ContainerFactory.getDefault().makeContainer("containertype");
+       IContainer container = ContainerFactory.getDefault().createContainer("containertype");
        </pre>
        Once constructed, <a href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/IContainer.html">IContainer</a> instances may be used in the manner appropriate for the given application.  When
        no longer required the <a href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/IContainer.html#dispose()">IContainer.dispose()</a> method should be called to release any resources associated with
@@ -41,9 +41,9 @@
        Here's an example code snippet that shows the creation and connection of an ECF container:
        <pre>
        // make container instance
-       IContainer cont = ContainerFactory.getDefault().makeContainer("ecf.generic.client");
+       IContainer cont = ContainerFactory.getDefault().createContainer("ecf.generic.client");
        // make targetID
-       ID targetID = IDFactory.getDefault().makeID(cont.getConnectNamespace(),"ecftcp://ecf1.osuosl.org:3282/server");
+       ID targetID = IDFactory.getDefault().createID(cont.getConnectNamespace(),"ecftcp://ecf1.osuosl.org:3282/server");
        // then connect to targetID
        cont.connect(targetID,null);
        </pre>       

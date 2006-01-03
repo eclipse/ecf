@@ -13,7 +13,7 @@
 	that will trigger the instantiation of our Hello World client class:<br><pre>public void run(IAction action) {
         HelloClient client = new HelloClient();
         try {
-            client.createAndConnect(IDFactory.makeStringID("ecftcp://localhost:3282/server"));
+            client.createAndConnect(IDFactory.createStringID("ecftcp://localhost:3282/server"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -33,9 +33,9 @@
         ISharedObjectContainer container = null;
         try {
             // Create container instance via ECF container factory
-            container = SharedObjectContainerFactory.getDefault().makeSharedObjectContainer(DEFAULT_CONTAINER_TYPE);
+            container = SharedObjectContainerFactory.getDefault().createSharedObjectContainer(DEFAULT_CONTAINER_TYPE);
             // Create ID for shared object
-            ID sharedObjectID = IDFactory.makeStringID(SHARED_OBJECT_ID);
+            ID sharedObjectID = IDFactory.createStringID(SHARED_OBJECT_ID);
             // Create actual shared object
             ISharedObject sharedObject = new HelloSharedObject();
             // Add shared object to container
@@ -51,7 +51,7 @@
 	World example to be able to join a shared container, an instance of <code>org.eclipse.ecf.provider.app.ServerApplication</code> in the 
 		<code>org.eclipse.ecf.example.collab</code> needs to be running on the same machine.  The configuration information we are passing to the HelloClient is the following:
 		<ol>
-			<li>An ID to represent the group of contained object.<pre>client.createAndConnect(IDFactory.makeStringID("ecftcp://localhost:3282/server"));</pre>
+			<li>An ID to represent the group of contained object.<pre>client.createAndConnect(IDFactory.createStringID("ecftcp://localhost:3282/server"));</pre>
 				<ul><li>This ID is passed into HelloClient.createAndConnect().  
 				This ID is shared among all instances of our application that communicate with each other.</li><li>You may notice a URI-style protocol descriptor in our example.  
 				This tells the shared container what protocol to use when adding instances of SharedObjects to the container.</li></ul>

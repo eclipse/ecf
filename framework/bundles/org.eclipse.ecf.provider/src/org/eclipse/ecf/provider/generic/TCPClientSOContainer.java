@@ -32,22 +32,22 @@ public class TCPClientSOContainer extends ClientSOContainer {
         keepAlive = ka;
     }
 
-    protected ISynchAsynchConnection makeConnection(ID remoteSpace,
+    protected ISynchAsynchConnection createConnection(ID remoteSpace,
             Object data) throws ConnectionInstantiationException {
         debug("getClientConnection:" + remoteSpace + ":" + data);
         Object[] args = { new Integer(keepAlive) };
         ISynchAsynchConnection conn = null;
-        conn = ConnectionFactory.makeSynchAsynchConnection(receiver,
+        conn = ConnectionFactory.createSynchAsynchConnection(receiver,
                 DEFAULT_COMM_NAME, args);
         return conn;
     }
 
     public static final void main(String[] args) throws Exception {
         ISharedObjectContainerConfig config = new SOContainerConfig(IDFactory
-                .getDefault().makeGUID());
+                .getDefault().createGUID());
         TCPClientSOContainer container = new TCPClientSOContainer(config);
         // now join group
-        ID serverID = IDFactory.getDefault().makeStringID(TCPServerSOContainer
+        ID serverID = IDFactory.getDefault().createStringID(TCPServerSOContainer
                 .getDefaultServerURL());
         container.connect(serverID, null);
         Thread.sleep(200000);

@@ -40,7 +40,7 @@ public class ChatRoomManagerUI {
 				try {
 					IChatRoomContainer chatRoom = null;
 					try {
-						chatRoom = manager.makeChatRoomContainer();
+						chatRoom = manager.createChatRoomContainer();
 					} catch (ContainerInstantiationException e1) {
 						// can't happen
 					}

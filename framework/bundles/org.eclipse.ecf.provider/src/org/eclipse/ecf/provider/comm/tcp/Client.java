@@ -46,7 +46,7 @@ import org.eclipse.ecf.provider.Trace;
 
 public final class Client implements ISynchAsynchConnection {
     public static class Creator implements ISynchAsynchConnectionInstantiator {
-        public ISynchAsynchConnection makeInstance(ConnectionDescription description,
+        public ISynchAsynchConnection createInstance(ConnectionDescription description,
                 ISynchAsynchConnectionEventHandler handler, Class[] clazzes,
                 Object[] args) throws ConnectionInstantiationException {
             try {
@@ -189,7 +189,7 @@ public final class Client implements ISynchAsynchConnection {
             return null;
         ID retID = null;
         try {
-            retID = IDFactory.getDefault().makeStringID(PROTOCOL + "://"
+            retID = IDFactory.getDefault().createStringID(PROTOCOL + "://"
                     + socket.getLocalAddress().getHostName() + ":" + socket.getLocalPort());
         } catch (Exception e) {
         	dumpStack("Exception in getLocalID()",e);

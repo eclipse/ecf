@@ -88,7 +88,7 @@ public class SOManager implements ISharedObjectManager {
 		return AbstractFactory.getClassesForTypes(argTypes, args, cl);
 	}
 
-	protected ISharedObject makeSharedObjectInstance(final Class newClass,
+	protected ISharedObject createSharedObjectInstance(final Class newClass,
 			final Class[] argTypes, final Object[] args) throws Exception {
 		Object newObject = null;
 		try {
@@ -126,7 +126,7 @@ public class SOManager implements ISharedObjectManager {
 		Class[] argTypes = getArgTypes(types, args, cl);
 		// Now load top-level class
 		final Class newClass = Class.forName(sd.getClassname(), true, cl);
-		return makeSharedObjectInstance(newClass, argTypes, args);
+		return createSharedObjectInstance(newClass, argTypes, args);
 	}
 
 	/*
@@ -255,7 +255,7 @@ public class SOManager implements ISharedObjectManager {
 			throw new SharedObjectConnectException("receivers cannot be null");
 		ISharedObjectConnector result = null;
 		synchronized (container.getGroupMembershipLock()) {
-			// Get from to make sure it's there
+			// Get from to create sure it's there
 			SOWrapper wrap = container.getSharedObjectWrapper(sharedObjectFrom);
 			if (wrap == null)
 				throw new SharedObjectConnectException("sender object "
@@ -269,7 +269,7 @@ public class SOManager implements ISharedObjectManager {
 							+ sharedObjectsTo[i].getName() + " not found");
 				queues[i] = new QueueEnqueueImpl(w.getQueue());
 			}
-			// OK now we've got ids and wrappers, make a connector
+			// OK now we've got ids and wrappers, create a connector
 			result = new SOConnector(sharedObjectFrom, sharedObjectsTo, queues);
 		}
 		return result;

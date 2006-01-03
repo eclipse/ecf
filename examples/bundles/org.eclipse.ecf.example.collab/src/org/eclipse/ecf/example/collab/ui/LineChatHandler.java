@@ -32,7 +32,7 @@ public interface LineChatHandler {
 	public void sendStartedTyping(); 
     public void inputText(String aString);
     
-    public ID makeObject(ID target, String classname, Map map) 
+    public ID createObject(ID target, String classname, Map map) 
         throws Exception;
 
     public Object getObject(ID target);
@@ -47,7 +47,7 @@ public interface LineChatHandler {
     public void sendRingMessageToUser(User touser,String msg);
 	public void sendPrivateMessageToUser(User touser, String msg);
 	
-	public void makeProxyObject(ID target,String classname,String name);
+	public void createProxyObject(ID target,String classname,String name);
 	public void messageProxyObject(ID target, String name, String meth, Object [] args);
 	public void removeProxyObject(ID target,String name);
 	

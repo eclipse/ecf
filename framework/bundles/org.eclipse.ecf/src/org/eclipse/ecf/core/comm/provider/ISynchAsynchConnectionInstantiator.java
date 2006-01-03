@@ -14,7 +14,7 @@ import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnectionEventHandler;
 
 public interface ISynchAsynchConnectionInstantiator {
-	public ISynchAsynchConnection makeInstance(
+	public ISynchAsynchConnection createInstance(
 			ConnectionDescription description,
 			ISynchAsynchConnectionEventHandler handler, Class[] clazzes,
 			Object[] args) throws ConnectionInstantiationException;

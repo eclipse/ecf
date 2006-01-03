@@ -135,7 +135,7 @@ public class LineChatView extends ViewPart {
 		});
 	}
 	
-	public static LineChatClientView makeClientView(final LineChatHandler lch, final String name,final String initText,String downloaddir) 
+	public static LineChatClientView createClientView(final LineChatHandler lch, final String name,final String initText,String downloaddir) 
 		throws Exception {
 		LineChatClientView newView = null;
 		synchronized (clientViews) {

@@ -198,7 +198,7 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 		if (!isConnected())
 			return null;
 		try {
-			return IDFactory.getDefault().makeID(namespace.getName(), new Object[] { connection
+			return IDFactory.getDefault().createID(namespace.getName(), new Object[] { connection
 					.getConnectionID() });
 		} catch (Exception e) {
 			logException("Exception in getLocalID", e);

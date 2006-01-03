@@ -32,10 +32,10 @@ public interface IChatRoomManager {
 	 */
 	public IRoomInfo[] getChatRoomsInfo();
    	/**
-	 * Make a new IChatRoomContainer instance
+	 * Create a new IChatRoomContainer instance
 	 * @return non-null IChatRoomContainer implementer
 	 * @throws ContainerInstantiationException if chat room container cannot be made
 	 */
-	public IChatRoomContainer makeChatRoomContainer() throws ContainerInstantiationException;
+	public IChatRoomContainer createChatRoomContainer() throws ContainerInstantiationException;
 	
 }

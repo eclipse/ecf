@@ -21,7 +21,7 @@ import org.eclipse.ecf.internal.core.Trace;
  * <br>
  * <code>
  * 	    ISharedObjectContainer container = <br>
- * 			SharedObjectContainerFactory.getDefault().makeSharedObjectContainer('standalone');
+ * 			SharedObjectContainerFactory.getDefault().createSharedObjectContainer('standalone');
  *      <br><br>
  *      ...further use of container variable here...
  * </code>
@@ -51,19 +51,19 @@ public class SharedObjectContainerFactory implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#makeSharedObjectContainer(org.eclipse.ecf.core.SharedObjectContainerDescription,
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObjectContainer(org.eclipse.ecf.core.SharedObjectContainerDescription,
 	 *      java.lang.String[], java.lang.Object[])
 	 */
-	public ISharedObjectContainer makeSharedObjectContainer(
+	public ISharedObjectContainer createSharedObjectContainer(
 			ContainerDescription desc, String[] argTypes, Object[] args)
 			throws ContainerInstantiationException {
-		trace("makeSharedObjectContainer(" + desc + ","
+		trace("createSharedObjectContainer(" + desc + ","
 				+ Trace.convertStringAToString(argTypes) + ","
 				+ Trace.convertObjectAToString(args) + ")");
 		if (desc == null)
 			throw new ContainerInstantiationException(
 					"ContainerDescription cannot be null");
-		IContainer newContainer = ContainerFactory.getDefault().makeContainer(
+		IContainer newContainer = ContainerFactory.getDefault().createContainer(
 				desc, argTypes, args);
 		ISharedObjectContainer soContainer = (ISharedObjectContainer) newContainer
 				.getAdapter(ISharedObjectContainer.class);
@@ -78,37 +78,37 @@ public class SharedObjectContainerFactory implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#makeSharedObjectContainer(java.lang.String)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObjectContainer(java.lang.String)
 	 */
-	public ISharedObjectContainer makeSharedObjectContainer(
+	public ISharedObjectContainer createSharedObjectContainer(
 			String descriptionName) throws ContainerInstantiationException {
-		return makeSharedObjectContainer(ContainerFactory.getDefault()
+		return createSharedObjectContainer(ContainerFactory.getDefault()
 				.getDescriptionByName(descriptionName), null, null);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#makeSharedObjectContainer(java.lang.String,
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObjectContainer(java.lang.String,
 	 *      java.lang.Object[])
 	 */
-	public ISharedObjectContainer makeSharedObjectContainer(
+	public ISharedObjectContainer createSharedObjectContainer(
 			String descriptionName, Object[] args)
 			throws ContainerInstantiationException {
-		return makeSharedObjectContainer(ContainerFactory.getDefault()
+		return createSharedObjectContainer(ContainerFactory.getDefault()
 				.getDescriptionByName(descriptionName), null, args);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#makeSharedObjectContainer(java.lang.String,
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObjectContainer(java.lang.String,
 	 *      java.lang.String[], java.lang.Object[])
 	 */
-	public ISharedObjectContainer makeSharedObjectContainer(
+	public ISharedObjectContainer createSharedObjectContainer(
 			String descriptionName, String[] argsTypes, Object[] args)
 			throws ContainerInstantiationException {
-		return makeSharedObjectContainer(ContainerFactory.getDefault()
+		return createSharedObjectContainer(ContainerFactory.getDefault()
 				.getDescriptionByName(descriptionName), argsTypes, args);
 	}
 }

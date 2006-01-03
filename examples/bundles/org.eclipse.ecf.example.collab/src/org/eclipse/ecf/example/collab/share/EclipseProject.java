@@ -34,7 +34,7 @@ public interface EclipseProject {
 	
 	public ISharedObjectContext getContext();
 
-	public void makeProxyObject(ID target,String classname,String name);
+	public void createProxyObject(ID target,String classname,String name);
 	public void messageProxyObject(ID target, String name, String meth, Object [] args);
 	public void removeProxyObject(ID target,String name);
 

@@ -13,7 +13,7 @@ import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.IContainer;
 
 public interface IContainerInstantiator {
-	public IContainer makeInstance(ContainerDescription description,
+	public IContainer createInstance(ContainerDescription description,
 			Class[] argTypes, Object[] args)
 			throws ContainerInstantiationException;
 }

@@ -8,7 +8,7 @@ public class SecureContainerInstantiator extends ContainerInstantiator {
 	public SecureContainerInstantiator() {
 		super();
 	}
-    public IContainer makeInstance(
+    public IContainer createInstance(
             ContainerDescription description, Class[] argTypes,
             Object[] args)
             throws ContainerInstantiationException {

@@ -55,7 +55,7 @@ public class DiscoveryStartup {
 	}
 	protected void setupDiscovery() throws Exception {
 		try {
-			socontainer = ContainerFactory.getDefault().makeContainer(
+			socontainer = ContainerFactory.getDefault().createContainer(
 					DISCOVERY_CONTAINER);
 			discovery = (IDiscoveryContainer) socontainer
 					.getAdapter(IDiscoveryContainer.class);

@@ -61,12 +61,12 @@ public class ServerStartup {
 			int j = 0;
 			for (Iterator i = connectors.iterator(); i.hasNext();) {
 				Connector connect = (Connector) i.next();
-				serverGroups[j] = makeServerGroup(connect.getHostname(),
+				serverGroups[j] = createServerGroup(connect.getHostname(),
 						connect.getPort());
 				List groups = connect.getGroups();
 				for (Iterator g = groups.iterator(); g.hasNext();) {
 					NamedGroup group = (NamedGroup) g.next();
-					TCPServerSOContainer cont = makeServerContainer(group
+					TCPServerSOContainer cont = createServerContainer(group
 							.getIDForGroup(), serverGroups[j], group.getName(),
 							connect.getTimeout());
 					servers.add(cont);
@@ -93,15 +93,15 @@ public class ServerStartup {
 			throws URISyntaxException {
 		DiscoveryStartup.registerService(cont.getID().toURI());
 	}
-	protected TCPServerSOContainerGroup makeServerGroup(String name, int port) {
+	protected TCPServerSOContainerGroup createServerGroup(String name, int port) {
 		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,
 				port);
 		return group;
 	}
-	protected TCPServerSOContainer makeServerContainer(String id,
+	protected TCPServerSOContainer createServerContainer(String id,
 			TCPServerSOContainerGroup group, String path, int keepAlive)
 			throws IDInstantiationException {
-		ID newServerID = IDFactory.getDefault().makeStringID(id);
+		ID newServerID = IDFactory.getDefault().createStringID(id);
 		SOContainerConfig config = new SOContainerConfig(newServerID);
 		return new TCPServerSOContainer(config, group, path, keepAlive);
 	}

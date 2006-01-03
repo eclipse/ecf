@@ -24,7 +24,7 @@ import org.eclipse.ecf.internal.core.Trace;
  * <br>
  * <code>
  * 	    IContainer container = <br>
- * 			ContainerFactory.getDefault().makeContainer('standalone');
+ * 			ContainerFactory.getDefault().createContainer('standalone');
  *      <br><br>
  *      ...further use of container variable here...
  * </code>
@@ -132,13 +132,13 @@ public class ContainerFactory implements IContainerFactory {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.IContainerFactory#makeContainer(org.eclipse.ecf.core.ContainerDescription,
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerDescription,
 	 *      java.lang.String[], java.lang.Object[])
 	 */
-	public IContainer makeContainer(ContainerDescription desc,
+	public IContainer createContainer(ContainerDescription desc,
 			String[] argTypes, Object[] args)
 			throws ContainerInstantiationException {
-		trace("makeContainer(" + desc + ","
+		trace("createContainer(" + desc + ","
 				+ Trace.convertStringAToString(argTypes) + ","
 				+ Trace.convertObjectAToString(args) + ")");
 		if (desc == null)
@@ -157,10 +157,10 @@ public class ContainerFactory implements IContainerFactory {
 					.getClassLoader());
 		} catch (Exception e) {
 			ContainerInstantiationException newexcept = new ContainerInstantiationException(
-					"makeContainer exception with description: " + desc + ": "
+					"createContainer exception with description: " + desc + ": "
 							+ e.getClass().getName() + ": " + e.getMessage());
 			newexcept.setStackTrace(e.getStackTrace());
-			dumpStack("Exception in makeContainer", newexcept);
+			dumpStack("Exception in createContainer", newexcept);
 			throw newexcept;
 		}
 		if (instantiator == null)
@@ -168,39 +168,39 @@ public class ContainerFactory implements IContainerFactory {
 					"Instantiator for ContainerDescription " + cd.getName()
 							+ " is null");
 		// Ask instantiator to actually create instance
-		return (IContainer) instantiator.makeInstance(desc, clazzes, args);
+		return (IContainer) instantiator.createInstance(desc, clazzes, args);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.IContainerFactory#makeContainer(java.lang.String)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String)
 	 */
-	public IContainer makeContainer(String descriptionName)
+	public IContainer createContainer(String descriptionName)
 			throws ContainerInstantiationException {
-		return makeContainer(getDescriptionByName(descriptionName), null, null);
+		return createContainer(getDescriptionByName(descriptionName), null, null);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.IContainerFactory#makeContainer(java.lang.String,
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String,
 	 *      java.lang.Object[])
 	 */
-	public IContainer makeContainer(String descriptionName, Object[] args)
+	public IContainer createContainer(String descriptionName, Object[] args)
 			throws ContainerInstantiationException {
-		return makeContainer(getDescriptionByName(descriptionName), null, args);
+		return createContainer(getDescriptionByName(descriptionName), null, args);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.IContainerFactory#makeContainer(java.lang.String,
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String,
 	 *      java.lang.String[], java.lang.Object[])
 	 */
-	public IContainer makeContainer(String descriptionName, String[] argsTypes,
+	public IContainer createContainer(String descriptionName, String[] argsTypes,
 			Object[] args) throws ContainerInstantiationException {
-		return makeContainer(getDescriptionByName(descriptionName), argsTypes,
+		return createContainer(getDescriptionByName(descriptionName), argsTypes,
 				args);
 	}
 

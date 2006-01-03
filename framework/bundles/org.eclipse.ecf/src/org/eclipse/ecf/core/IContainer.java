@@ -71,7 +71,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * </p>
 	 * 
 	 * <pre>
-	 * IContainer newContainer = ContainerFactory.makeContainer(type);
+	 * IContainer newContainer = ContainerFactory.createContainer(type);
 	 * ISharedObjectContainer soContainer = (ISharedObjectContainer) newContainer
 	 * 		.getAdapter(ISharedObjectContainer.class);
 	 * if (soContainer == null)

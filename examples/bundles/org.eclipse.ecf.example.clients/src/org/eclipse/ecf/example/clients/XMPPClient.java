@@ -34,9 +34,9 @@ public class XMPPClient {
 		this.receiver = receiver;
 	}
 	public void connect(String account, String password) throws ECFException {
-		container = ContainerFactory.getDefault().makeContainer(CONTAINER_TYPE);
+		container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE);
 		namespace = container.getConnectNamespace();
-		ID targetID = IDFactory.getDefault().makeID(namespace, account);
+		ID targetID = IDFactory.getDefault().createID(namespace, account);
 		presence = (IPresenceContainer) container
 				.getAdapter(IPresenceContainer.class);
 		sender = presence.getMessageSender();
@@ -48,12 +48,12 @@ public class XMPPClient {
 			}
 		});
 		// Now connect
-		container.connect(targetID,ConnectContextFactory.makePasswordConnectContext(password));
+		container.connect(targetID,ConnectContextFactory.createPasswordConnectContext(password));
 		userID = getID(account);
 	}
 	private ID getID(String name) {
 		try {
-			return IDFactory.getDefault().makeID(namespace, name);
+			return IDFactory.getDefault().createID(namespace, name);
 		} catch (IDInstantiationException e) {
 			e.printStackTrace();
 			return null;

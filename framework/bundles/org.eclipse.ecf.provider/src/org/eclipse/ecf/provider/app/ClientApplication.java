@@ -71,14 +71,14 @@ public class ClientApplication {
 		contd = new ContainerDescription(ClientApplication.class.getClassLoader(),CONTAINER_FACTORY_NAME,CONTAINER_FACTORY_CLASS,null);
 		ContainerFactory.getDefault().addDescription(contd);
 		for(int i=0; i < clientCount; i++) {
-			sm[i] = makeClient();
+			sm[i] = createClient();
 		}
 	}
 	
-	protected ISharedObjectContainer makeClient() throws Exception {
+	protected ISharedObjectContainer createClient() throws Exception {
 		// Make identity instance for the new container
-		ID newContainerID = IDFactory.getDefault().makeGUID();
-		ISharedObjectContainer result =  SharedObjectContainerFactory.getDefault().makeSharedObjectContainer(contd,null,new Object[] { newContainerID, new Integer(DEFAULT_TIMEOUT)});
+		ID newContainerID = IDFactory.getDefault().createGUID();
+		ISharedObjectContainer result =  SharedObjectContainerFactory.getDefault().createSharedObjectContainer(contd,null,new Object[] { newContainerID, new Integer(DEFAULT_TIMEOUT)});
 		return result;
 	}
 	
@@ -104,7 +104,7 @@ public class ClientApplication {
 				ISharedObjectContainer scg = sm[j];
 				for(int i=0; i < sharedObjectClassNames.length; i++) {
 					System.out.println("Creating sharedObject: "+sharedObjectClassNames[i]+" for client "+scg.getID().getName());
-					SharedObjectDescription sd = new SharedObjectDescription(IDFactory.getDefault().makeStringID(String.valueOf(aRan.nextInt())),sharedObjectClassNames[i]);
+					SharedObjectDescription sd = new SharedObjectDescription(IDFactory.getDefault().createStringID(String.valueOf(aRan.nextInt())),sharedObjectClassNames[i]);
 					scg.getSharedObjectManager().createSharedObject(sd);
 					System.out.println("Created sharedObject for client "+scg.getID().getName());
 				}
@@ -125,7 +125,7 @@ public class ClientApplication {
 		ClientApplication st = new ClientApplication();
 		st.init(args);
 		// Get server id to join
-		ID serverID = IDFactory.getDefault().makeStringID(st.serverName);
+		ID serverID = IDFactory.getDefault().createStringID(st.serverName);
 		st.connect(serverID);
 		st.createStages();
 		System.out.println("Waiting "+DEFAULT_WAITTIME+" ms...");

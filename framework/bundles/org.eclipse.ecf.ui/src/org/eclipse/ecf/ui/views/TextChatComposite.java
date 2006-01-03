@@ -288,7 +288,7 @@ public class TextChatComposite extends Composite {
         sb.append(df.format(new Date())).append(") ");
         return sb.toString();
     }
-    private String makeLineWithTimestamp(String line) {
+    private String createLineWithTimestamp(String line) {
         if (showTimestamp) {
             return getCurrentDateTime() + line;
         }
@@ -308,7 +308,7 @@ public class TextChatComposite extends Composite {
         StringBuffer sb = new StringBuffer();
         
         if (text.getOriginator() != null) {
-            sb.append(makeLineWithTimestamp(text.getOriginator().getName() + ": "));
+            sb.append(createLineWithTimestamp(text.getOriginator().getName() + ": "));
             StyleRange sr = new StyleRange();
             sr.start = startRange;
             sr.length = sb.length();

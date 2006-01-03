@@ -25,7 +25,7 @@ public class LongID extends BaseID {
 			super(LongID.class.getName(), "Long Namespace");
 		}
 
-		public ID makeInstance(Class[] argTypes, Object[] args)
+		public ID createInstance(Class[] argTypes, Object[] args)
 				throws IDInstantiationException {
 			return new LongID(this, (Long) args[0]);
 		}

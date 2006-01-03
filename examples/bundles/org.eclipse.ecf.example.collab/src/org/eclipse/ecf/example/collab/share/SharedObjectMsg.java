@@ -25,7 +25,7 @@ public class SharedObjectMsg implements Serializable {
     public static final Class[] nullTypes = new Class[0];
 
     // Static factory methods for creating SharedObjectMsg instances
-    public static SharedObjectMsg makeMsg(String className, String methodName,
+    public static SharedObjectMsg createMsg(String className, String methodName,
             Object[] param) {
         if (methodName == null || param == null) {
             throw new NullPointerException(
@@ -34,50 +34,50 @@ public class SharedObjectMsg implements Serializable {
         return new SharedObjectMsg(className, methodName, param);
     }
 
-    public static SharedObjectMsg makeMsg(String methodName, Object[] param) {
-        return makeMsg((String) null, methodName, param);
+    public static SharedObjectMsg createMsg(String methodName, Object[] param) {
+        return createMsg((String) null, methodName, param);
     }
 
-    public static SharedObjectMsg makeMsg(String methodName) {
-        return makeMsg((String) null, methodName, nullArgs);
+    public static SharedObjectMsg createMsg(String methodName) {
+        return createMsg((String) null, methodName, nullArgs);
     }
 
-    public static SharedObjectMsg makeMsg(String className, String methodName) {
-        return makeMsg(className, methodName, nullArgs);
+    public static SharedObjectMsg createMsg(String className, String methodName) {
+        return createMsg(className, methodName, nullArgs);
     }
 
-    public static SharedObjectMsg makeMsg(String className, String methodName,
+    public static SharedObjectMsg createMsg(String className, String methodName,
             Object arg) {
         Object args[] = { arg };
-        return makeMsg(className, methodName, args);
+        return createMsg(className, methodName, args);
     }
 
-    public static SharedObjectMsg makeMsg(String methodName, Object arg) {
-        return makeMsg((String) null, methodName, arg);
+    public static SharedObjectMsg createMsg(String methodName, Object arg) {
+        return createMsg((String) null, methodName, arg);
     }
 
-    public static SharedObjectMsg makeMsg(String className, String methodName,
+    public static SharedObjectMsg createMsg(String className, String methodName,
             Object arg1, Object arg2) {
         Object args[] = { arg1, arg2 };
-        return makeMsg(className, methodName, args);
+        return createMsg(className, methodName, args);
     }
 
-    public static SharedObjectMsg makeMsg(String className, String methodName,
+    public static SharedObjectMsg createMsg(String className, String methodName,
             Object arg1, Object arg2, Object arg3) {
         Object args[] = { arg1, arg2, arg3 };
-        return makeMsg(className, methodName, args);
+        return createMsg(className, methodName, args);
     }
 
-    public static SharedObjectMsg makeMsg(String className, String methodName,
+    public static SharedObjectMsg createMsg(String className, String methodName,
             Object arg1, Object arg2, Object arg3, Object arg4) {
         Object args[] = { arg1, arg2, arg3, arg4 };
-        return makeMsg(className, methodName, args);
+        return createMsg(className, methodName, args);
     }
 
-    public static SharedObjectMsg makeMsg(String className, String methodName,
+    public static SharedObjectMsg createMsg(String className, String methodName,
             Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
         Object args[] = { arg1, arg2, arg3, arg4, arg5 };
-        return makeMsg(className, methodName, args);
+        return createMsg(className, methodName, args);
     }
 
     /**

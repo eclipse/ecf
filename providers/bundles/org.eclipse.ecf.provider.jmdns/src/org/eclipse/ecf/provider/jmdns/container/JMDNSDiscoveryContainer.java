@@ -82,7 +82,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		trace("<init>");
 		intf = (addr == null) ? InetAddress.getLocalHost() : addr;
 		this.config = new ContainerConfig(IDFactory
-				.getDefault().makeStringID(JMDNSDiscoveryContainer.class.getName()));
+				.getDefault().createStringID(JMDNSDiscoveryContainer.class.getName()));
 	}
 
 	public void addServiceListener(ServiceID type, IServiceListener listener) {
@@ -116,8 +116,8 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	}
 
 	protected void fireServiceAdded(ServiceEvent arg0) {
-		IServiceInfo iinfo = makeIServiceInfoFromServiceEvent(arg0);
-		ServiceID svcID = makeServiceID(arg0.getType(), null);
+		IServiceInfo iinfo = createIServiceInfoFromServiceEvent(arg0);
+		ServiceID svcID = createServiceID(arg0.getType(), null);
 		synchronized (serviceListeners) {
 			Vector v = (Vector) serviceListeners.get(svcID);
 			if (v != null) {
@@ -131,8 +131,8 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	}
 
 	protected void fireServiceRemoved(ServiceEvent arg0) {
-		IServiceInfo iinfo = makeIServiceInfoFromServiceEvent(arg0);
-		ServiceID svcID = makeServiceID(arg0.getType(), null);
+		IServiceInfo iinfo = createIServiceInfoFromServiceEvent(arg0);
+		ServiceID svcID = createServiceID(arg0.getType(), null);
 		synchronized (serviceListeners) {
 			Vector v = (Vector) serviceListeners.get(svcID);
 			if (v != null) {
@@ -146,8 +146,8 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	}
 
 	protected void fireServiceResolved(ServiceEvent arg0) {
-		IServiceInfo iinfo = makeIServiceInfoFromServiceEvent(arg0);
-		ServiceID svcID = makeServiceID(arg0.getType(), null);
+		IServiceInfo iinfo = createIServiceInfoFromServiceEvent(arg0);
+		ServiceID svcID = createServiceID(arg0.getType(), null);
 		synchronized (serviceListeners) {
 			Vector v = (Vector) serviceListeners.get(svcID);
 			if (v != null) {
@@ -166,7 +166,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 				IServiceTypeListener l = (IServiceTypeListener) i.next();
 				l
 						.serviceTypeAdded(new ServiceContainerEvent(
-								makeIServiceInfoFromServiceEvent(arg0), config
+								createIServiceInfoFromServiceEvent(arg0), config
 										.getID()));
 			}
 		}
@@ -188,7 +188,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		trace("getServiceInfo(" + service + "," + timeout + ")");
 		synchronized (lock) {
 			if (jmdns != null) {
-				return makeIServiceInfoFromServiceInfo(jmdns.getServiceInfo(
+				return createIServiceInfoFromServiceInfo(jmdns.getServiceInfo(
 						service.getServiceType(), service.getServiceName(),
 						timeout));
 			} else
@@ -204,7 +204,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 				if (svcs != null) {
 					svs = new IServiceInfo[svcs.length];
 					for (int i = 0; i < svcs.length; i++) {
-						svs[i] = makeIServiceInfoFromServiceInfo(svcs[i]);
+						svs[i] = createIServiceInfoFromServiceInfo(svcs[i]);
 					}
 				}
 			}
@@ -257,22 +257,22 @@ public class JMDNSDiscoveryContainer implements IContainer,
 				.getID(), getConnectedID()));
 	}
 
-	protected IServiceInfo makeIServiceInfoFromServiceEvent(ServiceEvent event) {
-		ServiceID sID = makeServiceID(event.getType(), event.getName());
+	protected IServiceInfo createIServiceInfoFromServiceEvent(ServiceEvent event) {
+		ServiceID sID = createServiceID(event.getType(), event.getName());
 		ServiceInfo sinfo = event.getInfo();
 		if (sinfo != null) {
-			return makeIServiceInfoFromServiceInfo(sinfo);
+			return createIServiceInfoFromServiceInfo(sinfo);
 		}
 		IServiceInfo newInfo = new JMDNSServiceInfo(null, sID, -1, -1, -1,
 				new ServiceProperties());
 		return newInfo;
 	}
 
-	protected IServiceInfo makeIServiceInfoFromServiceInfo(
+	protected IServiceInfo createIServiceInfoFromServiceInfo(
 			final ServiceInfo serviceInfo) {
 		if (serviceInfo == null)
 			return null;
-		ServiceID sID = makeServiceID(serviceInfo.getType(), serviceInfo
+		ServiceID sID = createServiceID(serviceInfo.getType(), serviceInfo
 				.getName());
 		InetAddress addr = serviceInfo.getAddress();
 		int port = serviceInfo.getPort();
@@ -297,20 +297,20 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		return newInfo;
 	}
 
-	protected ServiceID makeServiceID(String type, String name) {
+	protected ServiceID createServiceID(String type, String name) {
 		ServiceID id = null;
 		try {
-			id = (ServiceID) IDFactory.getDefault().makeID(JMDNS_NAMESPACE_ID, new Object[] {
+			id = (ServiceID) IDFactory.getDefault().createID(JMDNS_NAMESPACE_ID, new Object[] {
 					type, name });
 		} catch (IDInstantiationException e) {
 			// Should never happen
 			if (trace != null) {
-				trace.dumpStack(e, "JDNSDiscoveryContainer.makeServiceID");
+				trace.dumpStack(e, "JDNSDiscoveryContainer.createServiceID");
 			}
 		}
 		return id;
 	}
-	protected ServiceInfo makeServiceInfoFromIServiceInfo(
+	protected ServiceInfo createServiceInfoFromIServiceInfo(
 			IServiceInfo serviceInfo) {
 		if (serviceInfo == null)
 			return null;
@@ -366,7 +366,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 			if (trace != null) {
 				trace.msg("registering service with jmdns: " + serviceInfo);
 			}
-			jmdns.registerService(makeServiceInfoFromIServiceInfo(serviceInfo));
+			jmdns.registerService(createServiceInfoFromIServiceInfo(serviceInfo));
 		}
 	}
 
@@ -480,7 +480,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 									+ serviceInfo);
 				}
 				jmdns
-						.unregisterService(makeServiceInfoFromIServiceInfo(serviceInfo));
+						.unregisterService(createServiceInfoFromIServiceInfo(serviceInfo));
 			}
 		}
 	}

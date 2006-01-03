@@ -14,7 +14,7 @@ public class ConnectContextFactory {
 	private ConnectContextFactory() {
 		super();
 	}
-	public static IConnectContext makeUsernamePasswordConnectContext(final String username, final Object password) {
+	public static IConnectContext createUsernamePasswordConnectContext(final String username, final Object password) {
 		return new IConnectContext() {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {
@@ -37,7 +37,7 @@ public class ConnectContextFactory {
 		};
 	}
 	
-	public static IConnectContext makePasswordConnectContext(final String password) {
+	public static IConnectContext createPasswordConnectContext(final String password) {
 		return new IConnectContext() {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {

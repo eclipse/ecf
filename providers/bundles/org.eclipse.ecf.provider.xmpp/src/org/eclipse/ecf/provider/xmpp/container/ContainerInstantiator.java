@@ -28,13 +28,13 @@ public class ContainerInstantiator implements IContainerInstantiator {
         if (arg instanceof String) {
             String val = (String) arg;
             if (val == null || val.equals("")) {
-                return IDFactory.getDefault().makeGUID();
+                return IDFactory.getDefault().createGUID();
             } else
-                return IDFactory.getDefault().makeStringID((String) arg);
+                return IDFactory.getDefault().createStringID((String) arg);
         } else if (arg instanceof Integer) {
-            return IDFactory.getDefault().makeGUID(((Integer) arg).intValue());
+            return IDFactory.getDefault().createGUID(((Integer) arg).intValue());
         } else
-            return IDFactory.getDefault().makeGUID();
+            return IDFactory.getDefault().createGUID();
     }
 
     protected Integer getIntegerFromArg(Class type, Object arg)
@@ -50,10 +50,10 @@ public class ContainerInstantiator implements IContainerInstantiator {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.provider.IContainerInstantiator#makeInstance(.ContainerDescription,
+     * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(.ContainerDescription,
      *      java.lang.Class[], java.lang.Object[])
      */
-    public IContainer makeInstance(
+    public IContainer createInstance(
             ContainerDescription description, Class[] argTypes,
             Object[] args)
             throws ContainerInstantiationException {

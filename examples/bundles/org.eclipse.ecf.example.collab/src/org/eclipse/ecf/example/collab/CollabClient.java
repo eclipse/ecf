@@ -43,12 +43,12 @@ public class CollabClient {
 			throws Exception {
 		// First create the new container instance
 		final IContainer newClient = ContainerFactory
-				.getDefault().makeContainer(containerType);
+				.getDefault().createContainer(containerType);
 		
 		// Get the target namespace, so we can create a target ID of appropriate type
 		Namespace targetNamespace = newClient.getConnectNamespace();
 		// Create the targetID instance
-		ID targetID = IDFactory.getDefault().makeID(targetNamespace, uri);
+		ID targetID = IDFactory.getDefault().createID(targetNamespace, uri);
 		
 		// Setup username
 		String username = setupUsername(targetID,nickname);
@@ -86,7 +86,7 @@ public class CollabClient {
 		
 		// Now connect
 		try {
-			newClient.connect(targetID, ConnectContextFactory.makeUsernamePasswordConnectContext(username, connectData));
+			newClient.connect(targetID, ConnectContextFactory.createUsernamePasswordConnectContext(username, connectData));
 		} catch (ContainerConnectException e) {
 			// If we have a connect exception then we remove any previously added shared object
 			EclipseCollabSharedObject so = newClientEntry.getObject();
