@@ -39,9 +39,6 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 	public ChannelImpl(ITransactionConfiguration config) {
 		super(config);
 	}
-	public void addChannelListener(IChannelListener listener) {
-		this.listener = listener;
-	}
 	protected void initialize() {
 		super.initialize();
 		addEventProcessor(new IEventProcessor() {
