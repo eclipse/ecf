@@ -1,4 +1,4 @@
-package org.eclipse.ecf.ds;
+package org.eclipse.ecf.ds.events;
 
 import org.eclipse.ecf.core.identity.ID;
 

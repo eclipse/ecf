@@ -12,9 +12,11 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.ds.IChannel;
-import org.eclipse.ecf.ds.IChannelChangeEvent;
 import org.eclipse.ecf.ds.IChannelListener;
-import org.eclipse.ecf.ds.IChannelMessageEvent;
+import org.eclipse.ecf.ds.events.IChannelGroupDepartEvent;
+import org.eclipse.ecf.ds.events.IChannelGroupJoinEvent;
+import org.eclipse.ecf.ds.events.IChannelInitializeEvent;
+import org.eclipse.ecf.ds.events.IChannelMessageEvent;
 
 public class ChannelImpl extends TransactionSharedObject implements IChannel {
 
@@ -33,11 +35,9 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 
 	IChannelListener listener;
 	
-	public ChannelImpl() {
-		this(null);
-	}
-	public ChannelImpl(ITransactionConfiguration config) {
+	public ChannelImpl(ITransactionConfiguration config, IChannelListener listener) {
 		super(config);
+		this.listener = listener;
 	}
 	protected void initialize() {
 		super.initialize();
@@ -52,21 +52,36 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 			}
 			public Event processEvent(Event event) {
 				if (event instanceof IContainerConnectedEvent) {
-					ChannelImpl.this.listener.handleChannelEvent(createChannelChangeEvent(true,((IContainerConnectedEvent)event).getTargetID()));
+					ChannelImpl.this.listener.handleChannelEvent(createChannelGroupJoinEvent(true,((IContainerConnectedEvent)event).getTargetID()));
 				} else if (event instanceof IContainerDisconnectedEvent) {
-					ChannelImpl.this.listener.handleChannelEvent(createChannelChangeEvent(true,((IContainerDisconnectedEvent)event).getTargetID()));
+					ChannelImpl.this.listener.handleChannelEvent(createChannelGroupDepartEvent(true,((IContainerDisconnectedEvent)event).getTargetID()));
 				}
 				return event;
 			}
 		});
+		listener.handleChannelEvent(new IChannelInitializeEvent() {
+			public ID[] getGroupMembers() {
+				return getContext().getGroupMemberIDs();
+			}
+			public ID getChannelID() {
+				return getID();
+			}});
 	}
 	
-	protected IChannelChangeEvent createChannelChangeEvent(final boolean hasJoined,final ID targetID) {
-		return new IChannelChangeEvent() {
+	protected IChannelGroupJoinEvent createChannelGroupJoinEvent(final boolean hasJoined,final ID targetID) {
+		return new IChannelGroupJoinEvent() {
 			private static final long serialVersionUID = -1085237280463725283L;
-			public boolean hasJoined() {
-				return hasJoined;
+			public ID getTargetID() {
+				return targetID;
 			}
+			public ID getChannelID() {
+				return getID();
+			}
+		};
+	}
+	protected IChannelGroupDepartEvent createChannelGroupDepartEvent(final boolean hasJoined,final ID targetID) {
+		return new IChannelGroupDepartEvent() {
+			private static final long serialVersionUID = -1085237280463725283L;
 			public ID getTargetID() {
 				return targetID;
 			}
