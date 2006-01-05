@@ -8,13 +8,14 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.core.sharedobject;
+package org.eclipse.ecf.core;
+
 
 /**
  * Transaction configuration information
  * 
  */
-public interface ITransactionConfiguration {
+public interface ISharedObjectTransactionConfig {
 	public static final int DEFAULT_TIMEOUT = 30000;
 	/**
 	 * Called by transaction implementation to specify transaction timeout
@@ -24,10 +25,10 @@ public interface ITransactionConfiguration {
 	 * Called by transaction implementation to specify filter for determining
 	 * transaction participants
 	 * 
-	 * @return {@link ITransactionParticipantsFilter}. If this method returns a
+	 * @return {@link ISharedObjectTransactionParticipantsFilter}. If this method returns a
 	 *         non-null instance, that instance's
-	 *         {@link ITransactionParticipantsFilter#filterParticipants(org.eclipse.ecf.core.identity.ID[]) }
+	 *         {@link ISharedObjectTransactionParticipantsFilter#filterParticipants(org.eclipse.ecf.core.identity.ID[]) }
 	 *         method will be called
 	 */
-	ITransactionParticipantsFilter getParticipantsFilter();
+	ISharedObjectTransactionParticipantsFilter getParticipantsFilter();
 }

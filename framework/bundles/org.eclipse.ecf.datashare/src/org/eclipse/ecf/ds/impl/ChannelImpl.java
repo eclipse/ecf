@@ -2,10 +2,10 @@ package org.eclipse.ecf.ds.impl;
 
 import java.io.Serializable;
 
+import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.ITransactionConfiguration;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsgEvent;
 import org.eclipse.ecf.core.sharedobject.TransactionSharedObject;
 import org.eclipse.ecf.core.util.ECFException;
@@ -35,7 +35,7 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 
 	IChannelListener listener;
 	
-	public ChannelImpl(ITransactionConfiguration config, IChannelListener listener) {
+	public ChannelImpl(ISharedObjectTransactionConfig config, IChannelListener listener) {
 		super(config);
 		this.listener = listener;
 	}

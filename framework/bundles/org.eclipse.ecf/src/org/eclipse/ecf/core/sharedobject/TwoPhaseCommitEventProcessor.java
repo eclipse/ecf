@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Vector;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectContext;
+import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
+import org.eclipse.ecf.core.ISharedObjectTransactionParticipantsFilter;
 import org.eclipse.ecf.core.SharedObjectAddAbortException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
@@ -44,12 +46,12 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	Object lock = new Object();
 	List participants = new Vector();
 	Map failed = new HashMap();
-	int timeout = ITransactionConfiguration.DEFAULT_TIMEOUT;
+	int timeout = ISharedObjectTransactionConfig.DEFAULT_TIMEOUT;
 	int minFailedToAbort = 0;
 	long identifier = 0;
-	ITransactionParticipantsFilter participantsFilter = null;
+	ISharedObjectTransactionParticipantsFilter participantsFilter = null;
 	
-	public TwoPhaseCommitEventProcessor(AbstractSharedObject bse, ITransactionConfiguration config) {
+	public TwoPhaseCommitEventProcessor(AbstractSharedObject bse, ISharedObjectTransactionConfig config) {
 		this.sharedObject = bse;
 		if (config == null) {
 			config = new TransactionSharedObjectConfiguration();

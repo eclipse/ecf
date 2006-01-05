@@ -11,6 +11,7 @@
 package org.eclipse.ecf.core.sharedobject;
 
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
+import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 
@@ -21,7 +22,7 @@ import org.eclipse.ecf.core.identity.ID;
 public class TransactionSharedObject extends AbstractSharedObject {
 	
 	protected ISharedObjectContainerTransaction transaction = null;
-	protected ITransactionConfiguration configuration = null;
+	protected ISharedObjectTransactionConfig configuration = null;
 	
 	public TransactionSharedObject() {
 		super();
@@ -39,7 +40,7 @@ public class TransactionSharedObject extends AbstractSharedObject {
 	 * 
 	 * @param config
 	 */
-	public TransactionSharedObject(ITransactionConfiguration config) {
+	public TransactionSharedObject(ISharedObjectTransactionConfig config) {
 		super();
 		configuration = config;
 	}

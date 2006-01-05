@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.core.sharedobject;
+package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.identity.ID;
 
@@ -16,7 +16,7 @@ import org.eclipse.ecf.core.identity.ID;
  * Filter for determining transaction participants
  * 
  */
-public interface ITransactionParticipantsFilter {
+public interface ISharedObjectTransactionParticipantsFilter {
 	/**
 	 * Return ID[] of participants to participate in transacton.
 	 * 
