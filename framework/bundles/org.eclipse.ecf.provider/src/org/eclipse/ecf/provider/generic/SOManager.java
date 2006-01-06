@@ -193,8 +193,7 @@ public class SOManager implements ISharedObjectManager {
 		ID result = sharedObjectID;
 		try {
 			ISharedObject so = sharedObject;
-			SharedObjectDescription sd = new SharedObjectDescription(
-					sharedObject.getClass().getClassLoader(), sharedObjectID,
+			SharedObjectDescription sd = new SharedObjectDescription(sharedObjectID,
 					container.getID(), sharedObject.getClass().getName(),
 					properties, 0);
 			container.addSharedObjectAndWait(sd, so);

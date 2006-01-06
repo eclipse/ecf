@@ -20,7 +20,6 @@ import org.eclipse.ecf.core.identity.ID;
 public class SharedObjectDescription implements Serializable {
 	private static final long serialVersionUID = 3257848783613146929L;
 	protected static long staticID = 0;
-	protected transient ClassLoader classLoader;
 	protected ID id;
 	protected ID homeID;
 	protected String className;
@@ -31,9 +30,8 @@ public class SharedObjectDescription implements Serializable {
 		return staticID++;
 	}
 
-	public SharedObjectDescription(ClassLoader loader, ID objectID, ID homeID,
+	public SharedObjectDescription(ID objectID, ID homeID,
 			String className, Map dict, long ident) {
-		this.classLoader = loader;
 		this.id = objectID;
 		this.homeID = homeID;
 		this.className = className;
@@ -44,30 +42,16 @@ public class SharedObjectDescription implements Serializable {
 		this.identifier = ident;
 	}
 
-	public SharedObjectDescription(ClassLoader loader, ID id, String className,
-			Map dict, long ident) {
-		this(loader, id, null, className, dict, ident);
-	}
-
 	public SharedObjectDescription(ID id, Class clazz, Map dict, long ident) {
-		this(clazz.getClassLoader(), id, clazz.getName(), dict, ident);
-	}
-
-	public SharedObjectDescription(ClassLoader loader, ID id, String className,
-			Map dict) {
-		this(loader, id, null, className, dict, getNextUniqueIdentifier());
-	}
-
-	public SharedObjectDescription(ClassLoader loader, ID id, String className) {
-		this(loader, id, null, className, null, getNextUniqueIdentifier());
+		this(id, clazz.getName(), dict, ident);
 	}
 
 	public SharedObjectDescription(ID id, String className, Map dict, long ident) {
-		this(null, id, null, className, dict, ident);
+		this(id, null, className, dict, ident);
 	}
 
 	public SharedObjectDescription(ID id, String className, Map dict) {
-		this(null, id, null, className, dict, getNextUniqueIdentifier());
+		this(id, null, className, dict, getNextUniqueIdentifier());
 	}
 
 	public SharedObjectDescription(ID id, Class clazz, Map dict) {
@@ -75,7 +59,7 @@ public class SharedObjectDescription implements Serializable {
 	}
 
 	public SharedObjectDescription(ID id, String className, long ident) {
-		this(null, id, null, className, null, ident);
+		this(id, null, className, null, ident);
 	}
 
 	public SharedObjectDescription(ID id, Class clazz, long ident) {
@@ -122,10 +106,6 @@ public class SharedObjectDescription implements Serializable {
 		this.properties = props;
 	}
 
-	public ClassLoader getClassLoader() {
-		return classLoader;
-	}
-
 	public long getIdentifier() {
 		return identifier;
 	}
@@ -136,7 +116,6 @@ public class SharedObjectDescription implements Serializable {
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("SharedObjectDescription[");
-		sb.append("classLoader:").append(classLoader).append(";");
 		sb.append("id:").append(id).append(";");
 		sb.append("homeID:").append(homeID).append(";");
 		sb.append("class:").append(className).append(";");

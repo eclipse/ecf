@@ -472,14 +472,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 */
 	protected ClassLoader getClassLoaderForSharedObject(
 			SharedObjectDescription sd) {
-		if (sd != null) {
-			ClassLoader cl = sd.getClassLoader();
-			if (cl != null)
-				return cl;
-			else
-				return getClassLoaderForContainer();
-		} else
-			return getClassLoaderForContainer();
+		return getClassLoaderForContainer();
 	}
 	/*
 	 * (non-Javadoc)
