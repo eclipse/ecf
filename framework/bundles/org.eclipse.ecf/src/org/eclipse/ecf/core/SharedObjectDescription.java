@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
 
 /**
  * Description of an ISharedObject instance.
@@ -25,16 +26,40 @@ public class SharedObjectDescription implements Serializable {
 	protected String className;
 	protected Map properties;
 	protected long identifier;
-
+	protected String name;
+	protected transient ISharedObjectInstantiator instantiator;
+	
 	public static long getNextUniqueIdentifier() {
 		return staticID++;
 	}
 
+	public ISharedObjectInstantiator getInstantiator() {
+		try {
+			instantiator = (ISharedObjectInstantiator) Class.forName(getClassname()).newInstance();
+		} catch (Exception e) {
+			return null;
+		}
+		return instantiator;
+	}
+	
+	public ClassLoader getClassLoader() {
+		return getInstantiator().getClass().getClassLoader();
+	}
+	
+	public SharedObjectDescription(String name, ID objectID, ID homeID, String className, Map dict, long ident) {
+		this.name = name;
+		this.id = objectID;
+		this.homeID = homeID;
+		this.className = className;
+		this.properties = dict;
+		this.identifier = ident;
+	}
 	public SharedObjectDescription(ID objectID, ID homeID,
 			String className, Map dict, long ident) {
 		this.id = objectID;
 		this.homeID = homeID;
 		this.className = className;
+		this.name = this.className;
 		if (dict != null)
 			this.properties = dict;
 		else
@@ -114,8 +139,12 @@ public class SharedObjectDescription implements Serializable {
 		this.identifier = identifier;
 	}
 
+	public String getName() {
+		return name;
+	}
 	public String toString() {
 		StringBuffer sb = new StringBuffer("SharedObjectDescription[");
+		sb.append("name:").append(name).append(";");
 		sb.append("id:").append(id).append(";");
 		sb.append("homeID:").append(homeID).append(";");
 		sb.append("class:").append(className).append(";");

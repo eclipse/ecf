@@ -25,6 +25,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerDescription;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainerFactory;
+import org.eclipse.ecf.core.ISharedObjectFactory;
+import org.eclipse.ecf.core.SharedObjectDescription;
+import org.eclipse.ecf.core.SharedObjectFactory;
 import org.eclipse.ecf.core.comm.ConnectionDescription;
 import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
@@ -42,10 +45,13 @@ public class ECFPlugin extends Plugin {
 	public static final String NAMESPACE_NAME_ATTRIBUTE = "name";
 	public static final String NAMESPACE_DESCRIPTION_ATTRIBUTE = "description";
 	public static final String CONTAINER_FACTORY_EPOINT = "org.eclipse.ecf.containerFactory";
-	public static final String SIMPLE_CONTAINER_FACTORY_EPOINT = "org.eclipse.ecf.simpleContainerFactory";
 	public static final String CONTAINER_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
 	public static final String CONTAINER_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
 	public static final String CONTAINER_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
+	public static final String SHAREDOBJECT_FACTORY_EPOINT = "org.eclipse.ecf.sharedObjectFactory";
+	public static final String SHAREDOBJECT_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
+	public static final String SHAREDOBJECT_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
+	public static final String SHAREDOBJECT_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
 	public static final String ARG_ELEMENT_NAME = "defaultargument";
 	public static final String ARG_TYPE_ATTRIBUTE = "type";
 	public static final String ARG_VALUE_ATTRIBUTE = "value";
@@ -232,6 +238,69 @@ public class ECFPlugin extends Plugin {
 		}
 	}
 
+	protected void setupSharedObjectExtensionPoint(BundleContext bc) {
+		String bundleName = getDefault().getBundle().getSymbolicName();
+		IExtensionRegistry reg = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = reg
+				.getExtensionPoint(SHAREDOBJECT_FACTORY_EPOINT);
+		if (extensionPoint == null) {
+			return;
+		}
+		IConfigurationElement[] members = extensionPoint
+				.getConfigurationElements();
+		// For each configuration element
+		for (int m = 0; m < members.length; m++) {
+			IConfigurationElement member = members[m];
+			// Get the label of the extender plugin and the ID of the extension.
+			IExtension extension = member.getDeclaringExtension();
+			Object exten = null;
+			String name = null;
+			try {
+				// The only required attribute is "class"
+				exten = member
+						.createExecutableExtension(SHAREDOBJECT_FACTORY_EPOINT_CLASS_ATTRIBUTE);
+				String clazz = exten.getClass().getName();
+				// Get name and get version, if available
+				name = member
+						.getAttribute(SHAREDOBJECT_FACTORY_EPOINT_NAME_ATTRIBUTE);
+				if (name == null) {
+					name = clazz;
+				}
+				// Get description, if present
+				String description = member
+						.getAttribute(SHAREDOBJECT_FACTORY_EPOINT_DESC_ATTRIBUTE);
+				if (description == null) {
+					description = "";
+				}
+				// Get any arguments
+				DefaultArgs defaults = getDefaultArgs(member
+						.getChildren(ARG_ELEMENT_NAME));
+				// Get any property elements
+				Map properties = getProperties(member
+						.getChildren(PROPERTY_ELEMENT_NAME));
+				// Now make description instance
+				// XXX this needs to create a full description
+				SharedObjectDescription scd = new SharedObjectDescription(name,null,null,clazz,properties,0L);
+				debug("setupSharedObjectExtensionPoint:created description:" + scd);
+				ISharedObjectFactory factory = SharedObjectFactory.getDefault();
+				if (factory.containsDescription(scd)) {
+					throw new CoreException(getStatusForContException(
+							extension, bundleName, name));
+				}
+				// Now add the description and we're ready to go.
+				factory.addDescription(scd);
+				debug("setupSharedObjectExtensionPoint:added description to factory:"
+						+ scd);
+			} catch (CoreException e) {
+				log(e.getStatus());
+				dumpStack("CoreException in setupSharedObjectExtensionPoint", e);
+			} catch (Exception e) {
+				log(getStatusForContException(extension, bundleName, name));
+				dumpStack("Exception in setupSharedObjectExtensionPoint", e);
+			}
+		}
+	}
+
 	protected void setupIdentityExtensionPoint(BundleContext context) {
 		String bundleName = getDefault().getBundle().getSymbolicName();
 		// Process extension points
@@ -401,6 +470,7 @@ public class ECFPlugin extends Plugin {
 		setupContainerExtensionPoint(context);
 		setupIdentityExtensionPoint(context);
 		setupCommExtensionPoint(context);
+		setupSharedObjectExtensionPoint(context);
 		this.bundlecontext = context;
 	}
 

@@ -81,7 +81,7 @@
    <element name="defaultargument">
       <annotation>
          <documentation>
-            Default argument to be passed to &lt;b&gt;org.eclipse.ecf.core.provider.IContainerInstantiator.makeInstance()&lt;/b&gt; method.  Value of this element (if any) is used to indicate a default value for the given argument
+            Default argument to be passed to &lt;b&gt;org.eclipse.ecf.core.provider.IContainerInstantiator.createInstance()&lt;/b&gt; method.  Value of this element (if any) is used to indicate a default value for the given argument
          </documentation>
       </annotation>
       <complexType>
@@ -170,7 +170,7 @@ public class FooInstantiator implements IContainerInstantiator {
     public FooInstantiator() {
         super();
     }
-    public IContainer makeInstance(ContainerDescription description, Class[] argTypes, Object[] args)
+    public IContainer createInstance(ContainerDescription description, Class[] argTypes, Object[] args)
             throws ContainerInstantiationException {
         // Create/return instance of FooContainer
         // Note that FooContainer class must
@@ -180,14 +180,14 @@ public class FooInstantiator implements IContainerInstantiator {
 }
 &lt;/pre&gt;
 
-In this example, the given class implements the &lt;b&gt;IContainerInstantiator&lt;/b&gt;.makeInstance method by creating and returning a new instance of FooInstantiator, a class also defined in the extension plugin.  As noted in the code, this class must implement &lt;b&gt;IContainer&lt;/b&gt;, so that it can successfully be returned from makeInstance.
+In this example, the given class implements the &lt;b&gt;IContainerInstantiator&lt;/b&gt;.createInstance method by creating and returning a new instance of FooInstantiator, a class also defined in the extension plugin.  As noted in the code, this class must implement &lt;b&gt;IContainer&lt;/b&gt;, so that it can successfully be returned from createInstance.
 
 &lt;h3&gt;Example Usage of Container by Clients&lt;/h3&gt;
 
 Clients that wish to use the &apos;foo&apos; container implementation can do so simply by making the following call to create an &lt;b&gt;IContainer&lt;/b&gt;:
 
 &lt;pre&gt;
-IContainer newContainer = ContainerFactory.getDefault().makeContainer(&apos;foo&apos;); 
+IContainer newContainer = ContainerFactory.getDefault().createContainer(&apos;foo&apos;); 
 // Further use of newContainer instance here
 
 &lt;/pre&gt;
@@ -199,7 +199,7 @@ IContainer newContainer = ContainerFactory.getDefault().makeContainer(&apos;foo&
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.ContainerFactory&lt;/b&gt; static methods.  Specifically, the &apos;makeContainer&apos; methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;ContainerFactory.addDescription(ContainerDescription)&lt;/b&gt; method.
+         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.ContainerFactory&lt;/b&gt; static methods.  Specifically, the &apos;createContainer&apos; methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;ContainerFactory.addDescription(ContainerDescription)&lt;/b&gt; method.
       </documentation>
    </annotation>
 
