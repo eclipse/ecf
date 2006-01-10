@@ -104,11 +104,6 @@ public interface IDiscoveryContainer {
 	 */
 	public void unregisterService(IServiceInfo serviceInfo);
 	/**
-	 * Unregister all services
-	 *
-	 */
-	public void unregisterAllServices();
-	/**
 	 * Get service info about all known services of given service type
 	 * 
 	 * @param type the ServiceID defining the type of service we are interested in getting

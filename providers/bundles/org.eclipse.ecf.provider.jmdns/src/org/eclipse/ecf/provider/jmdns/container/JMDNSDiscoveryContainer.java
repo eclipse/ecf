@@ -459,18 +459,6 @@ public class JMDNSDiscoveryContainer implements IContainer,
 			}
 		}
 	}
-
-	public void unregisterAllServices() {
-		synchronized (lock) {
-			if (jmdns != null) {
-				if (trace != null) {
-					trace.msg("unregistering all services");
-				}
-				jmdns.unregisterAllServices();
-			}
-		}
-	}
-
 	public void unregisterService(IServiceInfo serviceInfo) {
 		synchronized (lock) {
 			if (jmdns != null) {

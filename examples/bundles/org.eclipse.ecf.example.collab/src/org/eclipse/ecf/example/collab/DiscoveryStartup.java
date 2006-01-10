@@ -97,11 +97,6 @@ public class DiscoveryStartup {
 		// do it
 		action.run(null);
 	}
-	public static void unregisterServerType() {
-		if (discovery != null) {
-			discovery.unregisterAllServices();
-		}
-	}
 	public static void registerService(URI uri) {
 		if (discovery != null) {
 			try {
