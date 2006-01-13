@@ -9,149 +9,58 @@
 package org.eclipse.ecf.core;
 
 import java.io.Serializable;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
 
 /**
- * Description of an ISharedObject instance.
+ * Description of a local ISharedObject instance.
  * 
  */
 public class SharedObjectDescription implements Serializable {
 
-	private static final long serialVersionUID = 3546586028258387692L;
+	private static final long serialVersionUID = -999672007680512082L;
 
-	protected static long staticID = 0;
-	
-	protected ID id;
-	protected ID homeID;
-	protected String className;
 	protected Map properties;
-	protected long identifier;
-	
 	protected String name;
 	protected transient ISharedObjectInstantiator instantiator;
 	protected String description;
 	
-	public static long getNextUniqueIdentifier() {
-		return staticID++;
-	}
-
-	public ISharedObjectInstantiator getInstantiator() {
-		return instantiator;
-	}
-	
-	public SharedObjectDescription(String name, ISharedObjectInstantiator inst, String desc, Map props) {
+	public SharedObjectDescription(String name, ISharedObjectInstantiator inst,
+			String desc, Map props) {
 		this.name = name;
 		this.instantiator = inst;
 		this.description = desc;
-		this.properties = props;
+		if (props == null) {
+			this.properties = new HashMap();
+		} else {
+			this.properties = props;
+		}
 	}
-	public SharedObjectDescription(ID objectID, ID homeID,
-			String className, Map dict, long ident) {
-		this.id = objectID;
-		this.homeID = homeID;
-		this.className = className;
-		this.name = this.className;
-		if (dict != null)
-			this.properties = dict;
-		else
-			this.properties = new Hashtable();
-		this.identifier = ident;
+	public String getDescription() {
+		return description;
 	}
-
-	public SharedObjectDescription(ID id, Class clazz, Map dict, long ident) {
-		this(id, clazz.getName(), dict, ident);
+	public ISharedObjectInstantiator getInstantiator() {
+		return instantiator;
 	}
-
-	public SharedObjectDescription(ID id, String className, Map dict, long ident) {
-		this(id, null, className, dict, ident);
+	public String getName() {
+		return name;
 	}
-
-	public SharedObjectDescription(ID id, String className, Map dict) {
-		this(id, null, className, dict, getNextUniqueIdentifier());
-	}
-
-	public SharedObjectDescription(ID id, Class clazz, Map dict) {
-		this(id, clazz, dict, getNextUniqueIdentifier());
-	}
-
-	public SharedObjectDescription(ID id, String className, long ident) {
-		this(id, null, className, null, ident);
-	}
-
-	public SharedObjectDescription(ID id, Class clazz, long ident) {
-		this(id, clazz, null, ident);
-	}
-
-	public SharedObjectDescription(ID id, String className) {
-		this(id, className, getNextUniqueIdentifier());
-	}
-
-	public SharedObjectDescription(ID id, Class clazz) {
-		this(id, clazz, null);
-	}
-
-	public ID getID() {
-		return id;
-	}
-
-	public void setID(ID theID) {
-		this.id = theID;
-	}
-
-	public ID getHomeID() {
-		return homeID;
-	}
-
-	public void setHomeID(ID theID) {
-		this.homeID = theID;
-	}
-
-	public String getClassname() {
-		return className;
-	}
-
-	public void setClassname(String theName) {
-		this.className = theName;
-	}
-
 	public Map getProperties() {
 		return properties;
 	}
-
+	public void setDescription(String description) {
+		this.description = description;
+	}
 	public void setProperties(Map props) {
 		this.properties = props;
-	}
-
-	public long getIdentifier() {
-		return identifier;
-	}
-
-	public void setIdentifier(long identifier) {
-		this.identifier = identifier;
-	}
-
-	public String getName() {
-		return name;
 	}
 	public String toString() {
 		StringBuffer sb = new StringBuffer("SharedObjectDescription[");
 		sb.append("name:").append(name).append(";");
-		sb.append("id:").append(id).append(";");
-		sb.append("homeID:").append(homeID).append(";");
-		sb.append("class:").append(className).append(";");
+		sb.append("instantiator:").append(";");
+		sb.append("description:").append(";");
 		sb.append("props:").append(properties).append(";");
-		sb.append("ident:").append(identifier).append("]");
 		return sb.toString();
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 }

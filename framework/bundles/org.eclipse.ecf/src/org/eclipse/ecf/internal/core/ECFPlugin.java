@@ -39,30 +39,21 @@ import org.osgi.framework.BundleContext;
 
 public class ECFPlugin extends Plugin {
 	public static final Trace trace = Trace.create("factoryinit");
-	public static final String PLUGIN_RESOURCE_BUNDLE = "org.eclipse.ecf.ECFPluginResources";
+	
 	public static final String NAMESPACE_EPOINT = "org.eclipse.ecf.namespace";
-	public static final String NAMESPACE_CLASS_ATTRIBUTE = "class";
-	public static final String NAMESPACE_NAME_ATTRIBUTE = "name";
-	public static final String NAMESPACE_DESCRIPTION_ATTRIBUTE = "description";
 	public static final String CONTAINER_FACTORY_EPOINT = "org.eclipse.ecf.containerFactory";
-	public static final String CONTAINER_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
-	public static final String CONTAINER_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
-	public static final String CONTAINER_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
 	public static final String SHAREDOBJECT_FACTORY_EPOINT = "org.eclipse.ecf.sharedObjectFactory";
-	public static final String SHAREDOBJECT_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
-	public static final String SHAREDOBJECT_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
-	public static final String SHAREDOBJECT_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
+	public static final String COMM_FACTORY_EPOINT = "org.eclipse.ecf.connectionFactory";
+		
+	public static final String PLUGIN_RESOURCE_BUNDLE = "org.eclipse.ecf.ECFPluginResources";
+	public static final String CLASS_ATTRIBUTE = "class";
+	public static final String NAME_ATTRIBUTE = "name";
+	public static final String DESCRIPTION_ATTRIBUTE = "description";
 	public static final String ARG_ELEMENT_NAME = "defaultargument";
 	public static final String ARG_TYPE_ATTRIBUTE = "type";
-	public static final String ARG_VALUE_ATTRIBUTE = "value";
-	public static final String ARG_NAME_ATTRIBUTE = "name";
+	public static final String VALUE_ATTRIBUTE = "value";
 	public static final String PROPERTY_ELEMENT_NAME = "property";
-	public static final String PROPERTY_NAME_ATTRIBUTE = "name";
-	public static final String PROPERTY_VALUE_ATTRIBUTE = "value";
-	public static final String COMM_FACTORY_EPOINT = "org.eclipse.ecf.connectionFactory";
-	public static final String COMM_FACTORY_EPOINT_CLASS_ATTRIBUTE = "class";
-	public static final String COMM_FACTORY_EPOINT_NAME_ATTRIBUTE = "name";
-	public static final String COMM_FACTORY_EPOINT_DESC_ATTRIBUTE = "description";
+	
 	public static final int FACTORY_DOES_NOT_IMPLEMENT_ERRORCODE = 10;
 	public static final int FACTORY_NAME_COLLISION_ERRORCODE = 20;
 	public static final int INSTANTIATOR_DOES_NOT_IMPLEMENT_ERRORCODE = 30;
@@ -145,9 +136,9 @@ public class ECFPlugin extends Plugin {
 					argTypes[i] = argElements[i]
 							.getAttribute(ARG_TYPE_ATTRIBUTE);
 					argDefaults[i] = argElements[i]
-							.getAttribute(ARG_VALUE_ATTRIBUTE);
+							.getAttribute(VALUE_ATTRIBUTE);
 					argNames[i] = argElements[i]
-							.getAttribute(ARG_NAME_ATTRIBUTE);
+							.getAttribute(NAME_ATTRIBUTE);
 				}
 			}
 		}
@@ -160,9 +151,9 @@ public class ECFPlugin extends Plugin {
 			if (propertyElements.length > 0) {
 				for (int i = 0; i < propertyElements.length; i++) {
 					String name = propertyElements[i]
-							.getAttribute(PROPERTY_NAME_ATTRIBUTE);
+							.getAttribute(NAME_ATTRIBUTE);
 					String value = propertyElements[i]
-							.getAttribute(PROPERTY_VALUE_ATTRIBUTE);
+							.getAttribute(VALUE_ATTRIBUTE);
 					if (name != null && !name.equals("") && value != null
 							&& !value.equals("")) {
 						props.setProperty(name, value);
@@ -193,17 +184,17 @@ public class ECFPlugin extends Plugin {
 			try {
 				// The only required attribute is "class"
 				exten = member
-						.createExecutableExtension(CONTAINER_FACTORY_EPOINT_CLASS_ATTRIBUTE);
+						.createExecutableExtension(CLASS_ATTRIBUTE);
 				String clazz = exten.getClass().getName();
 				// Get name and get version, if available
 				name = member
-						.getAttribute(CONTAINER_FACTORY_EPOINT_NAME_ATTRIBUTE);
+						.getAttribute(NAME_ATTRIBUTE);
 				if (name == null) {
 					name = clazz;
 				}
 				// Get description, if present
 				String description = member
-						.getAttribute(CONTAINER_FACTORY_EPOINT_DESC_ATTRIBUTE);
+						.getAttribute(DESCRIPTION_ATTRIBUTE);
 				if (description == null) {
 					description = "";
 				}
@@ -258,15 +249,15 @@ public class ECFPlugin extends Plugin {
 			try {
 				// The only required attribute is "class"
 				exten = (ISharedObjectInstantiator) member
-						.createExecutableExtension(SHAREDOBJECT_FACTORY_EPOINT_CLASS_ATTRIBUTE);
+						.createExecutableExtension(CLASS_ATTRIBUTE);
 				name = member
-						.getAttribute(SHAREDOBJECT_FACTORY_EPOINT_NAME_ATTRIBUTE);
+						.getAttribute(NAME_ATTRIBUTE);
 				if (name == null) {
-					name = member.getAttribute(SHAREDOBJECT_FACTORY_EPOINT_CLASS_ATTRIBUTE);
+					name = member.getAttribute(CLASS_ATTRIBUTE);
 				}
 				// Get description, if present
 				String description = member
-						.getAttribute(SHAREDOBJECT_FACTORY_EPOINT_DESC_ATTRIBUTE);
+						.getAttribute(DESCRIPTION_ATTRIBUTE);
 				if (description == null) {
 					description = "";
 				}
@@ -316,14 +307,14 @@ public class ECFPlugin extends Plugin {
 			String nsName = null;
 			try {
 				Namespace ns = (Namespace) member
-						.createExecutableExtension(NAMESPACE_CLASS_ATTRIBUTE);
+						.createExecutableExtension(CLASS_ATTRIBUTE);
 				String clazz = ns.getClass().getName();
-				nsName = member.getAttribute(NAMESPACE_NAME_ATTRIBUTE);
+				nsName = member.getAttribute(NAME_ATTRIBUTE);
 				if (nsName == null) {
 					nsName = clazz;
 				}
 				String nsDescription = member
-						.getAttribute(NAMESPACE_DESCRIPTION_ATTRIBUTE);
+						.getAttribute(DESCRIPTION_ATTRIBUTE);
 				ns.initialize(nsName, nsDescription);
 				debug("setupIdentityExtensionPoint:created namespace:" + ns);
 				if (IDFactory.getDefault().containsNamespace(ns)) {
@@ -364,17 +355,17 @@ public class ECFPlugin extends Plugin {
 			try {
 				// The only required attribute is "instantiatorClass"
 				exten = member
-						.createExecutableExtension(COMM_FACTORY_EPOINT_CLASS_ATTRIBUTE);
+						.createExecutableExtension(CLASS_ATTRIBUTE);
 				// Verify that object implements
 				// ISynchAsynchConnectionInstantiator
 				String clazz = exten.getClass().getName();
 				// Get name and get version, if available
-				name = member.getAttribute(COMM_FACTORY_EPOINT_NAME_ATTRIBUTE);
+				name = member.getAttribute(NAME_ATTRIBUTE);
 				if (name == null) {
 					name = clazz;
 				}
 				String description = member
-						.getAttribute(COMM_FACTORY_EPOINT_DESC_ATTRIBUTE);
+						.getAttribute(DESCRIPTION_ATTRIBUTE);
 				if (description == null) {
 					description = "";
 				}

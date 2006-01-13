@@ -27,11 +27,13 @@ import java.util.Vector;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConnector;
 import org.eclipse.ecf.core.ISharedObjectManager;
+import org.eclipse.ecf.core.RemoteSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.SharedObjectConnectException;
 import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectDisconnectException;
+import org.eclipse.ecf.core.SharedObjectFactory;
 import org.eclipse.ecf.core.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerAddEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerConnectEvent;
@@ -117,16 +119,29 @@ public class SOManager implements ISharedObjectManager {
 
 	protected ISharedObject loadSharedObject(SharedObjectDescription sd)
 			throws Exception {
-		// First get classloader
-		ClassLoader cl = container.getClassLoaderForSharedObject(sd);
+		if (sd == null) throw new NullPointerException("SharedObjectDescription cannot be null");
 		// Then get args array from properties
 		Object[] args = container.getArgsFromProperties(sd);
 		// And arg types
 		String[] types = container.getArgTypesFromProperties(sd);
-		Class[] argTypes = getArgTypes(types, args, cl);
-		// Now load top-level class
-		final Class newClass = Class.forName(sd.getClassname(), true, cl);
-		return createSharedObjectInstance(newClass, argTypes, args);
+		ISharedObject res = null;
+		String descName = sd.getName();
+		if (descName == null) {
+			if (sd instanceof RemoteSharedObjectDescription) {
+				RemoteSharedObjectDescription rsd = (RemoteSharedObjectDescription) sd;
+				// First get classloader
+				ClassLoader cl = container.getClassLoaderForSharedObject(sd);
+				final Class newClass = Class.forName(rsd.getClassname(), true, cl);
+				Class [] argTypes = getArgTypes(types, args, cl);
+				res = createSharedObjectInstance(newClass, argTypes, args);
+			} else {
+				throw new NullPointerException("shared object name is null and not RemoteSharedObjectDescription");
+			}
+		} else {
+			// Now load top-level class
+			res = SharedObjectFactory.getDefault().createSharedObject(sd, types, args);
+		}
+		return res;
 	}
 
 	/*
@@ -144,14 +159,14 @@ public class SOManager implements ISharedObjectManager {
 	 * @see org.eclipse.ecf.core.ISharedObjectManager#createSharedObject(org.eclipse.ecf.core.SharedObjectDescription,
 	 *      org.eclipse.ecf.core.ISharedObjectContainerTransaction)
 	 */
-	public ID createSharedObject(SharedObjectDescription sd)
+	public ID createSharedObject(ID id, SharedObjectDescription sd)
 			throws SharedObjectCreateException {
 		debug("createSharedObject(" + sd + ")");
 		// notify listeners
 		if (sd == null)
 			throw new SharedObjectCreateException(
 					"SharedObjectDescription cannot be null");
-		ID sharedObjectID = sd.getID();
+		ID sharedObjectID = id;
 		if (sharedObjectID == null)
 			throw new SharedObjectCreateException(
 					"New object ID cannot be null");
@@ -193,10 +208,7 @@ public class SOManager implements ISharedObjectManager {
 		ID result = sharedObjectID;
 		try {
 			ISharedObject so = sharedObject;
-			SharedObjectDescription sd = new SharedObjectDescription(sharedObjectID,
-					container.getID(), sharedObject.getClass().getName(),
-					properties, 0);
-			container.addSharedObjectAndWait(sd, so);
+			container.addSharedObjectAndWait(sharedObjectID, so, properties);
 		} catch (Exception e) {
 			dumpStack("Exception in addSharedObject", e);
 			SharedObjectAddException newExcept = new SharedObjectAddException(

@@ -22,11 +22,11 @@ import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.SharedObjectDescription;
+import org.eclipse.ecf.core.RemoteSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
-import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
@@ -228,10 +228,10 @@ public class GenericSharedObject implements ISharedObject {
         return localContainerID;
     }
 
-    protected SharedObjectDescription getReplicaDescription(ID receiver) {
+    protected RemoteSharedObjectDescription getReplicaDescription(ID receiver) {
         ISharedObjectConfig soconfig = getConfig();
         if (soconfig != null) {
-            return new SharedObjectDescription(getID(), getClass().getName(),
+            return new RemoteSharedObjectDescription(getID(), getClass().getName(),
             		soconfig.getProperties(), replicateID++);
         } else return null;
     }
@@ -423,7 +423,7 @@ public void handleEvent(Event event) {
                 // we're done
                 return;
             }
-            SharedObjectDescription createInfo = getReplicaDescription(remote);
+            RemoteSharedObjectDescription createInfo = getReplicaDescription(remote);
             if (createInfo != null) {
                 context.sendCreate(remote, createInfo);
             } else {
@@ -486,15 +486,7 @@ public void handleEvent(Event event) {
                         if (!(inst instanceof ISharedObject)) {
                             throw new InstantiationException("Exception creating instance of class: "+className+".  Does not implement ISharedObject");
                         }
-                        if (inst instanceof ISharedObjectContainerTransaction) {
-                            crs.getSharedObjectManager().addSharedObject(newID,(ISharedObject) inst,map);
-                        } else {
-                        SharedObjectDescription sd = new SharedObjectDescription(newID
-                                ,
-                                className, map);
-                        crs.getSharedObjectManager()
-                                .createSharedObject(sd);
-                        }
+                        crs.getSharedObjectManager().addSharedObject(newID, (ISharedObject) inst, map);
                     } catch (Exception e) {
                         traceDump("Exception creating replicated object.", e);
                         throw e;

@@ -59,6 +59,8 @@ public interface ISharedObjectManager {
 	 * Create a new ISharedObject within this container from the given
 	 * SharedObjectDescription.
 	 * 
+	 * @param id 
+	 * 			  the id for the new shared object
 	 * @param sd
 	 *            the SharedObjectDescription that describes the SharedObject to
 	 *            be created
@@ -66,7 +68,7 @@ public interface ISharedObjectManager {
 	 * @throws SharedObjectCreateException
 	 *             if the SharedObject cannot be created
 	 */
-	public ID createSharedObject(SharedObjectDescription sd)
+	public ID createSharedObject(ID id, SharedObjectDescription sd)
 			throws SharedObjectCreateException;
 
 	/**

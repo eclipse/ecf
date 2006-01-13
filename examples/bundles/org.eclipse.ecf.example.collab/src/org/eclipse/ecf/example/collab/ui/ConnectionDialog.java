@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.ecf.core.ContainerDescription;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.example.collab.ClientPlugin;
@@ -15,7 +14,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -151,8 +149,8 @@ public class ConnectionDialog extends TitleAreaDialog {
 	private class ProviderSelector implements ISelectionChangedListener {
 
 		public void selectionChanged(SelectionChangedEvent event) {
-			StructuredSelection selection = (StructuredSelection) event.getSelection();
-			ContainerDescription desc = (ContainerDescription) selection.getFirstElement();
+			//StructuredSelection selection = (StructuredSelection) event.getSelection();
+			//ContainerDescription desc = (ContainerDescription) selection.getFirstElement();
 			
 			//desc.
 		}

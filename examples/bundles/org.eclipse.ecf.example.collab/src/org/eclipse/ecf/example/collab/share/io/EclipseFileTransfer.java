@@ -15,11 +15,10 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
+import org.eclipse.ecf.core.RemoteSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectAddAbortException;
-import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.example.collab.ClientPlugin;
@@ -46,12 +45,12 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 		this.eclipseStageID = receiverID;
 	}
 
-	protected SharedObjectDescription getReplicaDescription(ID remoteMember) {
+	protected RemoteSharedObjectDescription getReplicaDescription(ID remoteMember) {
 		HashMap map = new HashMap();
 		map.put("args", new Object[] { transferParams, eclipseStageID });
 		map.put("types", new String[] { FileTransferParams.class.getName(),
 				ID.class.getName() });
-		return new SharedObjectDescription(getID(), getClass().getName(), map,
+		return new RemoteSharedObjectDescription(getID(), getClass().getName(), map,
 				replicateID++);
 	}
 

@@ -17,7 +17,6 @@ package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
 import java.util.Map;
-
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.ISharedObjectContext;

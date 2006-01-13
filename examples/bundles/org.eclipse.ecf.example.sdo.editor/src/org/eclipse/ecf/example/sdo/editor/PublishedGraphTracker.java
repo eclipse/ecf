@@ -16,15 +16,14 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
-import org.eclipse.ecf.core.SharedObjectDescription;
+import org.eclipse.ecf.core.RemoteSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
-import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -307,7 +306,7 @@ public class PublishedGraphTracker implements ISharedObject {
 			try {
 				getContext().sendCreate(
 						null,
-						new SharedObjectDescription(config.getSharedObjectID(),
+						new RemoteSharedObjectDescription(config.getSharedObjectID(),
 								getClass()));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -322,7 +321,7 @@ public class PublishedGraphTracker implements ISharedObject {
 		try {
 			getContext().sendCreate(
 					containerID,
-					new SharedObjectDescription(config.getSharedObjectID(),
+					new RemoteSharedObjectDescription(config.getSharedObjectID(),
 							getClass(), props));
 		} catch (IOException ex) {
 			// TODO Auto-generated catch block

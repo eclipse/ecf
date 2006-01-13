@@ -32,6 +32,7 @@ import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectManager;
+import org.eclipse.ecf.core.RemoteSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
@@ -62,10 +63,10 @@ import org.eclipse.ecf.provider.generic.gmm.Member;
 public abstract class SOContainer implements ISharedObjectContainer {
 	class LoadingSharedObject implements ISharedObject {
 		Object credentials;
-		SharedObjectDescription description;
+		RemoteSharedObjectDescription description;
 		Thread runner = null;
 		ID fromID = null;
-		LoadingSharedObject(ID fromID, SharedObjectDescription sd,
+		LoadingSharedObject(ID fromID, RemoteSharedObjectDescription sd,
 				Object credentials) {
 			this.fromID = fromID;
 			this.description = sd;
@@ -264,17 +265,15 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		debug("addNewRemoteMember:" + memberID);
 		return groupManager.addMember(new Member(memberID, data));
 	}
-	protected ISharedObjectContainerTransaction addSharedObject0(
-			SharedObjectDescription sd, ISharedObject s) throws Exception {
-		return addSharedObjectWrapper(createSharedObjectWrapper(sd, s));
+	protected ISharedObjectContainerTransaction addSharedObject0(ID id,ISharedObject s,Map props) throws Exception {
+		return addSharedObjectWrapper(createSharedObjectWrapper(id,s,props));
 	}
-	protected void addSharedObjectAndWait(SharedObjectDescription sd,
-			ISharedObject s) throws Exception {
-		if (sd.getID() == null || s == null) {
+	protected void addSharedObjectAndWait(ID id,ISharedObject s,Map properties) throws Exception {
+		if (id == null || s == null) {
 			throw new SharedObjectAddException(
 					"Object id is null, or instance is null");
 		}
-		ISharedObjectContainerTransaction t = addSharedObject0(sd, s);
+		ISharedObjectContainerTransaction t = addSharedObject0(id,s,properties);
 		// Wait right here until committed
 		if (t != null)
 			t.waitToCommit();
@@ -579,7 +578,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		debug("handleCreateMessage:" + mess);
 		ContainerMessage.CreateMessage create = (ContainerMessage.CreateMessage) mess
 				.getData();
-		SharedObjectDescription desc = (SharedObjectDescription) create
+		RemoteSharedObjectDescription desc = (RemoteSharedObjectDescription) create
 				.getData();
 		ID fromID = mess.getFromContainerID();
 		ID toID = mess.getToContainerID();
@@ -760,15 +759,11 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	protected ThreadGroup createLoadingThreadGroup() {
 		return new ThreadGroup(getID() + ":load");
 	}
-	protected SOConfig createSharedObjectConfig(SharedObjectDescription sd,
-			ISharedObject obj) {
-		ID homeID = sd.getHomeID();
-		if (homeID == null)
-			homeID = getID();
-		return new SOConfig(sd.getID(), homeID, this, sd.getProperties());
+	protected SOConfig createSharedObjectConfig(ID id, ISharedObject obj,Map props) {
+		return new SOConfig(id, getID(), this, props);
 	}
 	protected SOConfig createRemoteSharedObjectConfig(ID fromID,
-			SharedObjectDescription sd, ISharedObject obj) {
+			RemoteSharedObjectDescription sd, ISharedObject obj) {
 		ID homeID = sd.getHomeID();
 		if (homeID == null)
 			homeID = fromID;
@@ -784,13 +779,12 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return new SOContext(soconfig.getSharedObjectID(), soconfig
 				.getHomeContainerID(), this, soconfig.getProperties(), queue);
 	}
-	protected SOWrapper createSharedObjectWrapper(SharedObjectDescription sd,
-			ISharedObject s) {
-		SOConfig newConfig = createSharedObjectConfig(sd, s);
+	protected SOWrapper createSharedObjectWrapper(ID id, ISharedObject s,Map props) {
+		SOConfig newConfig = createSharedObjectConfig(id,s,props);
 		return new SOWrapper(newConfig, s, this);
 	}
 	protected SOWrapper createRemoteSharedObjectWrapper(ID fromID,
-			SharedObjectDescription sd, ISharedObject s) {
+			RemoteSharedObjectDescription sd, ISharedObject s) {
 		SOConfig newConfig = createRemoteSharedObjectConfig(fromID, sd, s);
 		return new SOWrapper(newConfig, s, this);
 	}

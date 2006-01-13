@@ -13,7 +13,7 @@ package org.eclipse.ecf.example.collab.share;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.ecf.core.ISharedObjectConfig;
-import org.eclipse.ecf.core.SharedObjectDescription;
+import org.eclipse.ecf.core.RemoteSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.example.collab.Trace;
@@ -66,11 +66,11 @@ public class EclipseMessage extends GenericSharedObject {
         showMessage(message, sender);
     }
 
-    protected SharedObjectDescription getReplicaDescription(ID remoteID) {
+    protected RemoteSharedObjectDescription getReplicaDescription(ID remoteID) {
         Object[] remoteArgs = { message, sender };
         HashMap map = new HashMap();
         map.put("args", remoteArgs);
-        return new SharedObjectDescription(getHomeContainerID(), getClass()
+        return new RemoteSharedObjectDescription(getHomeContainerID(), getClass()
                 .getName(), map, replicateID++);
     }
 

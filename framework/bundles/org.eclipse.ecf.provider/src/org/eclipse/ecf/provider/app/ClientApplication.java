@@ -1,12 +1,12 @@
 package org.eclipse.ecf.provider.app;
 
+import java.util.HashMap;
 import java.util.Random;
-
 import org.eclipse.ecf.core.ContainerDescription;
 import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
-import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.comm.ConnectionDescription;
 import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.identity.ID;
@@ -98,39 +98,49 @@ public class ClientApplication {
 		}
 	}
 	
-	public void createStages() throws Exception {
+	public void createSharedObjects() throws Exception {
 		if (sharedObjectClassNames != null) {
 			for(int j=0; j < clientCount; j++) {
 				ISharedObjectContainer scg = sm[j];
+				sharedObjects = new ID[sharedObjectClassNames.length];
 				for(int i=0; i < sharedObjectClassNames.length; i++) {
 					System.out.println("Creating sharedObject: "+sharedObjectClassNames[i]+" for client "+scg.getID().getName());
-					SharedObjectDescription sd = new SharedObjectDescription(IDFactory.getDefault().createStringID(String.valueOf(aRan.nextInt())),sharedObjectClassNames[i]);
-					scg.getSharedObjectManager().createSharedObject(sd);
+					ISharedObject so = (ISharedObject) Class.forName(sharedObjectClassNames[i]).newInstance();
+					scg.getSharedObjectManager().addSharedObject(sharedObjects[i], so, new HashMap());
 					System.out.println("Created sharedObject for client "+scg.getID().getName());
 				}
 			}
 		}
 
 	}
-	public void removeStages() throws Exception {
+	public void removeSharedObjects() throws Exception {
 		if (sharedObjects == null) return;
 		for(int j=0; j < clientCount; j++) {
 			for(int i=0; i < sharedObjects.length; i++) {
-				System.out.println("Removing stage: "+sharedObjects[i].getName()+" for client "+sm[j].getID().getName());
+				System.out.println("Removing sharedObject: "+sharedObjects[i].getName()+" for client "+sm[j].getID().getName());
 				sm[j].getSharedObjectManager().removeSharedObject(sharedObjects[i]);
 			}
 		}
 	}
+	/**
+	 * An ECF client container implementation that runs as an application.
+	 * <p>
+	 * Usage: java org.eclipse.ecf.provider.app.ClientApplication &lt;serverid&gt
+	 * <p>
+	 * If &lt;serverid&gt; is omitted or "-" is specified,
+	 * ecftcp://localhost:3282/server" is used.  
+	 *  
+	 */
 	public static void main(String[] args) throws Exception {
 		ClientApplication st = new ClientApplication();
 		st.init(args);
 		// Get server id to join
 		ID serverID = IDFactory.getDefault().createStringID(st.serverName);
 		st.connect(serverID);
-		st.createStages();
+		st.createSharedObjects();
 		System.out.println("Waiting "+DEFAULT_WAITTIME+" ms...");
 		Thread.sleep(DEFAULT_WAITTIME);
-		st.removeStages();
+		st.removeSharedObjects();
 		st.disconnect();
 		System.out.println("Exiting.");
 	}
