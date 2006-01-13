@@ -31,18 +31,20 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 	protected Map properties;
 	protected long identifier;
 	
-	public ReplicaSharedObjectDescription(ID id, Class clazz) {
-		this(id, clazz, null);
+	public ReplicaSharedObjectDescription(String name,
+			ISharedObjectInstantiator inst, String desc, Map props) {
+		super(name, inst, desc, props);
 	}
-	public ReplicaSharedObjectDescription(ID id, Class clazz, long ident) {
-		this(id, clazz, null, ident);
-	}
-	public ReplicaSharedObjectDescription(ID id, Class clazz, Map dict) {
-		this(id, clazz, dict, getNextUniqueIdentifier());
-	}
-	public ReplicaSharedObjectDescription(ID id, Class clazz, Map dict,
-			long ident) {
-		this(id, clazz.getName(), dict, ident);
+	public ReplicaSharedObjectDescription(String name, ID objectID, ID homeID, Map dict, long ident) {
+		super(name,null,null,null);
+		this.id = objectID;
+		this.homeID = homeID;
+		if (dict != null) {
+			this.properties = dict;
+		} else {
+			this.properties = new HashMap();
+		}
+		this.identifier = ident;
 	}
 	public ReplicaSharedObjectDescription(ID objectID, ID homeID,
 			String className, Map dict, long ident) {
@@ -69,10 +71,6 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 	public ReplicaSharedObjectDescription(ID id, String className, Map dict,
 			long ident) {
 		this(id, null, className, dict, ident);
-	}
-	public ReplicaSharedObjectDescription(String name,
-			ISharedObjectInstantiator inst, String desc, Map props) {
-		super(name, inst, desc, props);
 	}
 	public String getClassname() {
 		return className;

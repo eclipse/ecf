@@ -307,7 +307,7 @@ public class PublishedGraphTracker implements ISharedObject {
 				getContext().sendCreate(
 						null,
 						new ReplicaSharedObjectDescription(config.getSharedObjectID(),
-								getClass()));
+								getClass().getName()));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -322,7 +322,7 @@ public class PublishedGraphTracker implements ISharedObject {
 			getContext().sendCreate(
 					containerID,
 					new ReplicaSharedObjectDescription(config.getSharedObjectID(),
-							getClass(), props));
+							getClass().getName(), props));
 		} catch (IOException ex) {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();
