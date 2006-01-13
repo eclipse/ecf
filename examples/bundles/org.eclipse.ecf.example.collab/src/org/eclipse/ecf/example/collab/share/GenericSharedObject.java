@@ -22,7 +22,7 @@ import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.RemoteSharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
@@ -228,10 +228,10 @@ public class GenericSharedObject implements ISharedObject {
         return localContainerID;
     }
 
-    protected RemoteSharedObjectDescription getReplicaDescription(ID receiver) {
+    protected ReplicaSharedObjectDescription getReplicaDescription(ID receiver) {
         ISharedObjectConfig soconfig = getConfig();
         if (soconfig != null) {
-            return new RemoteSharedObjectDescription(getID(), getClass().getName(),
+            return new ReplicaSharedObjectDescription(getID(), getClass().getName(),
             		soconfig.getProperties(), replicateID++);
         } else return null;
     }
@@ -423,7 +423,7 @@ public void handleEvent(Event event) {
                 // we're done
                 return;
             }
-            RemoteSharedObjectDescription createInfo = getReplicaDescription(remote);
+            ReplicaSharedObjectDescription createInfo = getReplicaDescription(remote);
             if (createInfo != null) {
                 context.sendCreate(remote, createInfo);
             } else {

@@ -16,7 +16,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.ecf.core.ISharedObjectConfig;
-import org.eclipse.ecf.core.RemoteSharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.example.collab.Trace;
@@ -66,14 +66,14 @@ public class ExecURL extends GenericSharedObject {
 	protected String getURL() {
 		return url;
 	}
-	protected RemoteSharedObjectDescription getReplicaDescription(ID remoteMember)
+	protected ReplicaSharedObjectDescription getReplicaDescription(ID remoteMember)
 	{
 		String types[] = { ID.class.getName(), String.class.getName()}; 
 		Object args[] = { receiver, url };
         HashMap map = new HashMap();
         map.put("args",args);
         map.put("types",types);
-        return new RemoteSharedObjectDescription(getHomeContainerID(),
+        return new ReplicaSharedObjectDescription(getHomeContainerID(),
                                         getClass().getName(),
                                         map,
                                         replicateID++);
@@ -88,7 +88,7 @@ public class ExecURL extends GenericSharedObject {
         // if we're replicating on activation
         else if (remoteMember == null) {
             try {
-            	RemoteSharedObjectDescription createInfo = getReplicaDescription(receiver);
+            	ReplicaSharedObjectDescription createInfo = getReplicaDescription(receiver);
                 if (createInfo != null) {
                      getContext().sendCreate(receiver, createInfo);
                 }

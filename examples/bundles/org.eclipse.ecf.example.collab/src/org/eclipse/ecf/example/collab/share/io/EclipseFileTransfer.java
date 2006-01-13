@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
-import org.eclipse.ecf.core.RemoteSharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectAddAbortException;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
@@ -45,12 +45,12 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 		this.eclipseStageID = receiverID;
 	}
 
-	protected RemoteSharedObjectDescription getReplicaDescription(ID remoteMember) {
+	protected ReplicaSharedObjectDescription getReplicaDescription(ID remoteMember) {
 		HashMap map = new HashMap();
 		map.put("args", new Object[] { transferParams, eclipseStageID });
 		map.put("types", new String[] { FileTransferParams.class.getName(),
 				ID.class.getName() });
-		return new RemoteSharedObjectDescription(getID(), getClass().getName(), map,
+		return new ReplicaSharedObjectDescription(getID(), getClass().getName(), map,
 				replicateID++);
 	}
 

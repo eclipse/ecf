@@ -32,7 +32,7 @@ import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.RemoteSharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
@@ -63,10 +63,10 @@ import org.eclipse.ecf.provider.generic.gmm.Member;
 public abstract class SOContainer implements ISharedObjectContainer {
 	class LoadingSharedObject implements ISharedObject {
 		Object credentials;
-		RemoteSharedObjectDescription description;
+		ReplicaSharedObjectDescription description;
 		Thread runner = null;
 		ID fromID = null;
-		LoadingSharedObject(ID fromID, RemoteSharedObjectDescription sd,
+		LoadingSharedObject(ID fromID, ReplicaSharedObjectDescription sd,
 				Object credentials) {
 			this.fromID = fromID;
 			this.description = sd;
@@ -578,7 +578,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		debug("handleCreateMessage:" + mess);
 		ContainerMessage.CreateMessage create = (ContainerMessage.CreateMessage) mess
 				.getData();
-		RemoteSharedObjectDescription desc = (RemoteSharedObjectDescription) create
+		ReplicaSharedObjectDescription desc = (ReplicaSharedObjectDescription) create
 				.getData();
 		ID fromID = mess.getFromContainerID();
 		ID toID = mess.getToContainerID();
@@ -763,7 +763,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return new SOConfig(id, getID(), this, props);
 	}
 	protected SOConfig createRemoteSharedObjectConfig(ID fromID,
-			RemoteSharedObjectDescription sd, ISharedObject obj) {
+			ReplicaSharedObjectDescription sd, ISharedObject obj) {
 		ID homeID = sd.getHomeID();
 		if (homeID == null)
 			homeID = fromID;
@@ -784,7 +784,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return new SOWrapper(newConfig, s, this);
 	}
 	protected SOWrapper createRemoteSharedObjectWrapper(ID fromID,
-			RemoteSharedObjectDescription sd, ISharedObject s) {
+			ReplicaSharedObjectDescription sd, ISharedObject s) {
 		SOConfig newConfig = createRemoteSharedObjectConfig(fromID, sd, s);
 		return new SOWrapper(newConfig, s, this);
 	}

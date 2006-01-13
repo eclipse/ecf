@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.RemoteSharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
@@ -255,14 +255,14 @@ public class AbstractSharedObject implements ISharedObject,
     	return event;
     }
 	/**
-	 * Get a RemoteSharedObjectDescription for a replica to be created on a given receiver.
+	 * Get a ReplicaSharedObjectDescription for a replica to be created on a given receiver.
 	 * 
-	 * @param receiver the receiver the RemoteSharedObjectDescription is for
-	 * @return RemoteSharedObjectDescription to be associated with given receiver.  A non-null
-	 * RemoteSharedObjectDescription <b>must</b> be returned.
+	 * @param receiver the receiver the ReplicaSharedObjectDescription is for
+	 * @return ReplicaSharedObjectDescription to be associated with given receiver.  A non-null
+	 * ReplicaSharedObjectDescription <b>must</b> be returned.
 	 */
-	protected RemoteSharedObjectDescription getReplicaDescription(ID receiver) {
-		return new RemoteSharedObjectDescription(getID(), getClass().getName(),
+	protected ReplicaSharedObjectDescription getReplicaDescription(ID receiver) {
+		return new ReplicaSharedObjectDescription(getID(), getClass().getName(),
 	    		getConfig().getProperties());
 	}
 	/**
@@ -284,13 +284,13 @@ public class AbstractSharedObject implements ISharedObject,
 	 * be of same length as the receivers parameter.
 	 * 
 	 */
-	protected RemoteSharedObjectDescription[] getReplicaDescriptions(ID[] receivers) {
-		RemoteSharedObjectDescription [] descriptions = null;
+	protected ReplicaSharedObjectDescription[] getReplicaDescriptions(ID[] receivers) {
+		ReplicaSharedObjectDescription [] descriptions = null;
 		if (receivers == null || receivers.length == 1) {
-			descriptions = new RemoteSharedObjectDescription[1];
+			descriptions = new ReplicaSharedObjectDescription[1];
 			descriptions[0] = getReplicaDescription((receivers==null)?null:receivers[0]);
 		} else {
-			descriptions = new RemoteSharedObjectDescription[receivers.length];
+			descriptions = new ReplicaSharedObjectDescription[receivers.length];
 			for(int i=0; i < receivers.length; i++) {
 				descriptions[i] = getReplicaDescription(receivers[i]);
 			}

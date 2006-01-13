@@ -27,7 +27,7 @@ import java.util.Vector;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConnector;
 import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.RemoteSharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.SharedObjectConnectException;
 import org.eclipse.ecf.core.SharedObjectCreateException;
@@ -127,15 +127,15 @@ public class SOManager implements ISharedObjectManager {
 		ISharedObject res = null;
 		String descName = sd.getName();
 		if (descName == null) {
-			if (sd instanceof RemoteSharedObjectDescription) {
-				RemoteSharedObjectDescription rsd = (RemoteSharedObjectDescription) sd;
+			if (sd instanceof ReplicaSharedObjectDescription) {
+				ReplicaSharedObjectDescription rsd = (ReplicaSharedObjectDescription) sd;
 				// First get classloader
 				ClassLoader cl = container.getClassLoaderForSharedObject(sd);
 				final Class newClass = Class.forName(rsd.getClassname(), true, cl);
 				Class [] argTypes = getArgTypes(types, args, cl);
 				res = createSharedObjectInstance(newClass, argTypes, args);
 			} else {
-				throw new NullPointerException("shared object name is null and not RemoteSharedObjectDescription");
+				throw new NullPointerException("shared object name is null and not ReplicaSharedObjectDescription");
 			}
 		} else {
 			// Now load top-level class

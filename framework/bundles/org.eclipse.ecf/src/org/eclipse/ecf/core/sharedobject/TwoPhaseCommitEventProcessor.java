@@ -20,7 +20,7 @@ import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.ISharedObjectTransactionParticipantsFilter;
-import org.eclipse.ecf.core.RemoteSharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectAddAbortException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
@@ -176,7 +176,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 				// we're done
 				return;
 			}
-			RemoteSharedObjectDescription[] createInfos = getSharedObject()
+			ReplicaSharedObjectDescription[] createInfos = getSharedObject()
 					.getReplicaDescriptions(remotes);
 			if (createInfos != null) {
 				if (createInfos.length == 1) {

@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
  * Description of a remote ISharedObject instance.
  * 
  */
-public class RemoteSharedObjectDescription extends SharedObjectDescription
+public class ReplicaSharedObjectDescription extends SharedObjectDescription
 		implements Serializable {
 	private static final long serialVersionUID = 8168017915032875581L;
 	protected static long staticID = 0;
@@ -31,20 +31,20 @@ public class RemoteSharedObjectDescription extends SharedObjectDescription
 	protected Map properties;
 	protected long identifier;
 	
-	public RemoteSharedObjectDescription(ID id, Class clazz) {
+	public ReplicaSharedObjectDescription(ID id, Class clazz) {
 		this(id, clazz, null);
 	}
-	public RemoteSharedObjectDescription(ID id, Class clazz, long ident) {
+	public ReplicaSharedObjectDescription(ID id, Class clazz, long ident) {
 		this(id, clazz, null, ident);
 	}
-	public RemoteSharedObjectDescription(ID id, Class clazz, Map dict) {
+	public ReplicaSharedObjectDescription(ID id, Class clazz, Map dict) {
 		this(id, clazz, dict, getNextUniqueIdentifier());
 	}
-	public RemoteSharedObjectDescription(ID id, Class clazz, Map dict,
+	public ReplicaSharedObjectDescription(ID id, Class clazz, Map dict,
 			long ident) {
 		this(id, clazz.getName(), dict, ident);
 	}
-	public RemoteSharedObjectDescription(ID objectID, ID homeID,
+	public ReplicaSharedObjectDescription(ID objectID, ID homeID,
 			String className, Map dict, long ident) {
 		super(null, null, null, null);
 		this.id = objectID;
@@ -57,20 +57,20 @@ public class RemoteSharedObjectDescription extends SharedObjectDescription
 			this.properties = dict;
 		}
 	}
-	public RemoteSharedObjectDescription(ID id, String className) {
+	public ReplicaSharedObjectDescription(ID id, String className) {
 		this(id, className, getNextUniqueIdentifier());
 	}
-	public RemoteSharedObjectDescription(ID id, String className, long ident) {
+	public ReplicaSharedObjectDescription(ID id, String className, long ident) {
 		this(id, null, className, null, ident);
 	}
-	public RemoteSharedObjectDescription(ID id, String className, Map dict) {
+	public ReplicaSharedObjectDescription(ID id, String className, Map dict) {
 		this(id, null, className, dict, getNextUniqueIdentifier());
 	}
-	public RemoteSharedObjectDescription(ID id, String className, Map dict,
+	public ReplicaSharedObjectDescription(ID id, String className, Map dict,
 			long ident) {
 		this(id, null, className, dict, ident);
 	}
-	public RemoteSharedObjectDescription(String name,
+	public ReplicaSharedObjectDescription(String name,
 			ISharedObjectInstantiator inst, String desc, Map props) {
 		super(name, inst, desc, props);
 	}

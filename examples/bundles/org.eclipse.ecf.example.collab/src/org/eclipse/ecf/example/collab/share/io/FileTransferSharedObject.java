@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.ecf.core.ISharedObjectConfig;
-import org.eclipse.ecf.core.RemoteSharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.example.collab.Trace;
@@ -188,7 +188,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
         // if we're replicating on activation
         else if (remoteMember == null) {
             try {
-            	RemoteSharedObjectDescription createInfo = getReplicaDescription(targetReceiver);
+            	ReplicaSharedObjectDescription createInfo = getReplicaDescription(targetReceiver);
                 if (createInfo != null) {
                 	getContext().sendCreate(targetReceiver, createInfo);
                     return;
@@ -208,12 +208,12 @@ public class FileTransferSharedObject extends TransactionSharedObject
             progressListener = transferParams.getProgressListener();
         }
     }
-    protected RemoteSharedObjectDescription getReplicaDescription(ID remoteMember)
+    protected ReplicaSharedObjectDescription getReplicaDescription(ID remoteMember)
     {
     	HashMap map = new HashMap();
     	map.put("args",new Object [] { transferParams });
     	map.put("types",new String [] { FileTransferParams.class.getName() });
-        return new RemoteSharedObjectDescription(getID(),
+        return new ReplicaSharedObjectDescription(getID(),
                                         getClass().getName(),map,
                                         replicateID++);
     }

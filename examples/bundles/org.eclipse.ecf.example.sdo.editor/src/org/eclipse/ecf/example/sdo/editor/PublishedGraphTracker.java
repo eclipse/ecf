@@ -19,7 +19,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
-import org.eclipse.ecf.core.RemoteSharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
@@ -306,7 +306,7 @@ public class PublishedGraphTracker implements ISharedObject {
 			try {
 				getContext().sendCreate(
 						null,
-						new RemoteSharedObjectDescription(config.getSharedObjectID(),
+						new ReplicaSharedObjectDescription(config.getSharedObjectID(),
 								getClass()));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -321,7 +321,7 @@ public class PublishedGraphTracker implements ISharedObject {
 		try {
 			getContext().sendCreate(
 					containerID,
-					new RemoteSharedObjectDescription(config.getSharedObjectID(),
+					new ReplicaSharedObjectDescription(config.getSharedObjectID(),
 							getClass(), props));
 		} catch (IOException ex) {
 			// TODO Auto-generated catch block

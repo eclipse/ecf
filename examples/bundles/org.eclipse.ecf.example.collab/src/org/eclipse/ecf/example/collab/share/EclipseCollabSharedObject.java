@@ -26,7 +26,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ISharedObjectContext;
-import org.eclipse.ecf.core.RemoteSharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.example.collab.ClientPlugin;
@@ -202,7 +202,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public IResource getResource() {
 		return localProject;
 	}
-	protected RemoteSharedObjectDescription getReplicaDescription(ID remoteID) {
+	protected ReplicaSharedObjectDescription getReplicaDescription(ID remoteID) {
 		// no replication...depend upon clients to create
 		// local instance of their own copy of this object...with local
 		// data.
@@ -244,7 +244,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		return shellWindow;
 	}
 	// SharedObjectMsg handlers
-	protected void handleCreateObject(RemoteSharedObjectDescription cons) {
+	protected void handleCreateObject(ReplicaSharedObjectDescription cons) {
 		try {
 			createObject(cons.getID(), cons.getClassname(), cons.getProperties());
 		} catch (Exception e) {
