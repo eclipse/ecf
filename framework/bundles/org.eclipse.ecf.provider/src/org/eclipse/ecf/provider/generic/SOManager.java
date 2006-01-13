@@ -23,7 +23,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConnector;
 import org.eclipse.ecf.core.ISharedObjectManager;
@@ -41,6 +40,8 @@ import org.eclipse.ecf.core.events.SharedObjectManagerCreateEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerDisconnectEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerRemoveEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
@@ -50,6 +51,8 @@ import org.eclipse.ecf.provider.Trace;
  * 
  */
 public class SOManager implements ISharedObjectManager {
+	private static final int GUID_SIZE = 20;
+
 	static Trace debug = Trace.create("sharedobjectmanager");
 
 	SOContainer container = null;
@@ -127,6 +130,7 @@ public class SOManager implements ISharedObjectManager {
 		ISharedObject res = null;
 		String descName = sd.getName();
 		if (descName == null) {
+			// 'old' style of shared object creation
 			if (sd instanceof ReplicaSharedObjectDescription) {
 				ReplicaSharedObjectDescription rsd = (ReplicaSharedObjectDescription) sd;
 				// First get classloader
@@ -137,8 +141,8 @@ public class SOManager implements ISharedObjectManager {
 			} else {
 				throw new NullPointerException("shared object name is null and not ReplicaSharedObjectDescription");
 			}
+			// 'new style'
 		} else {
-			// Now load top-level class
 			res = SharedObjectFactory.getDefault().createSharedObject(sd, types, args);
 		}
 		return res;
@@ -159,31 +163,28 @@ public class SOManager implements ISharedObjectManager {
 	 * @see org.eclipse.ecf.core.ISharedObjectManager#createSharedObject(org.eclipse.ecf.core.SharedObjectDescription,
 	 *      org.eclipse.ecf.core.ISharedObjectContainerTransaction)
 	 */
-	public ID createSharedObject(ID id, SharedObjectDescription sd)
+	public ID createSharedObject(SharedObjectDescription sd)
 			throws SharedObjectCreateException {
 		debug("createSharedObject(" + sd + ")");
 		// notify listeners
 		if (sd == null)
 			throw new SharedObjectCreateException(
 					"SharedObjectDescription cannot be null");
-		ID sharedObjectID = id;
-		if (sharedObjectID == null)
-			throw new SharedObjectCreateException(
-					"New object ID cannot be null");
 		container.fireContainerEvent(new SharedObjectManagerCreateEvent(
 				container.getID(), sd));
 		ISharedObject newObject = null;
-		ID result = sharedObjectID;
+		ID result = null;
 		try {
 			newObject = loadSharedObject(sd);
-			result = addSharedObject(sharedObjectID, newObject, sd
+			ID newID = createNewSharedObjectID(sd,newObject);
+			result = addSharedObject(newID,newObject, sd
 					.getProperties());
 		} catch (Exception e) {
 			dumpStack("Exception in createSharedObject", e);
 			SharedObjectCreateException newExcept = new SharedObjectCreateException(
 					"Container " + container.getID()
 							+ " had exception creating shared object "
-							+ sharedObjectID + ": " + e.getClass().getName()
+							+ sd.getID() + ": " + e.getClass().getName()
 							+ ": " + e.getMessage());
 			newExcept.setStackTrace(e.getStackTrace());
 			throw newExcept;
@@ -191,11 +192,17 @@ public class SOManager implements ISharedObjectManager {
 		return result;
 	}
 
+	protected ID createNewSharedObjectID(SharedObjectDescription sd, ISharedObject newObject) throws IDInstantiationException {
+		ID descID = sd.getID();
+		if (descID == null) {
+			return IDFactory.getDefault().createGUID(GUID_SIZE);
+		} else return descID;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectManager#addSharedObject(org.eclipse.ecf.core.identity.ID,
-	 *      org.eclipse.ecf.core.ISharedObject, java.util.Map,
+	 * @see org.eclipse.ecf.core.ISharedObjectManager#addSharedObject(org.eclipse.ecf.core.ISharedObject, java.util.Map,
 	 *      org.eclipse.ecf.core.ISharedObjectContainerTransaction)
 	 */
 	public ID addSharedObject(ID sharedObjectID, ISharedObject sharedObject,

@@ -25,10 +25,8 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 	public static long getNextUniqueIdentifier() {
 		return staticID++;
 	}
-	protected ID id;
 	protected ID homeID;
 	protected String className;
-	protected Map properties;
 	protected long identifier;
 	
 	public ReplicaSharedObjectDescription(String name,
@@ -81,9 +79,6 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 	public ID getHomeID() {
 		return homeID;
 	}
-	public ID getID() {
-		return id;
-	}
 	public long getIdentifier() {
 		return identifier;
 	}
@@ -104,9 +99,6 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 	}
 	public void setHomeID(ID theID) {
 		this.homeID = theID;
-	}
-	public void setID(ID theID) {
-		this.id = theID;
 	}
 	public void setIdentifier(long identifier) {
 		this.identifier = identifier;

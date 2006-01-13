@@ -11,6 +11,7 @@ package org.eclipse.ecf.core;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
 
 /**
@@ -21,21 +22,26 @@ public class SharedObjectDescription implements Serializable {
 
 	private static final long serialVersionUID = -999672007680512082L;
 
-	protected Map properties;
 	protected String name;
 	protected transient ISharedObjectInstantiator instantiator;
+	protected ID id;
 	protected String description;
+	protected Map properties;
 	
-	public SharedObjectDescription(String name, ISharedObjectInstantiator inst,
+	public SharedObjectDescription(String name, ISharedObjectInstantiator inst, ID id,
 			String desc, Map props) {
 		this.name = name;
 		this.instantiator = inst;
+		this.id = id;
 		this.description = desc;
 		if (props == null) {
 			this.properties = new HashMap();
 		} else {
 			this.properties = props;
 		}
+	}
+	public SharedObjectDescription(String name, ISharedObjectInstantiator inst, String desc, Map props) {
+		this(name,inst,null,desc,props);
 	}
 	public String getDescription() {
 		return description;
@@ -62,5 +68,11 @@ public class SharedObjectDescription implements Serializable {
 		sb.append("description:").append(";");
 		sb.append("props:").append(properties).append(";");
 		return sb.toString();
+	}
+	public ID getID() {
+		return id;
+	}
+	public void setID(ID theID) {
+		this.id = theID;
 	}
 }
