@@ -19,40 +19,34 @@ import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
  * 
  */
 public class SharedObjectDescription implements Serializable {
-	private static final long serialVersionUID = 3257848783613146929L;
+
+	private static final long serialVersionUID = 3546586028258387692L;
+
 	protected static long staticID = 0;
+	
 	protected ID id;
 	protected ID homeID;
 	protected String className;
 	protected Map properties;
 	protected long identifier;
+	
 	protected String name;
 	protected transient ISharedObjectInstantiator instantiator;
+	protected String description;
 	
 	public static long getNextUniqueIdentifier() {
 		return staticID++;
 	}
 
 	public ISharedObjectInstantiator getInstantiator() {
-		try {
-			instantiator = (ISharedObjectInstantiator) Class.forName(getClassname()).newInstance();
-		} catch (Exception e) {
-			return null;
-		}
 		return instantiator;
 	}
 	
-	public ClassLoader getClassLoader() {
-		return getInstantiator().getClass().getClassLoader();
-	}
-	
-	public SharedObjectDescription(String name, ID objectID, ID homeID, String className, Map dict, long ident) {
+	public SharedObjectDescription(String name, ISharedObjectInstantiator inst, String desc, Map props) {
 		this.name = name;
-		this.id = objectID;
-		this.homeID = homeID;
-		this.className = className;
-		this.properties = dict;
-		this.identifier = ident;
+		this.instantiator = inst;
+		this.description = desc;
+		this.properties = props;
 	}
 	public SharedObjectDescription(ID objectID, ID homeID,
 			String className, Map dict, long ident) {
@@ -151,5 +145,13 @@ public class SharedObjectDescription implements Serializable {
 		sb.append("props:").append(properties).append(";");
 		sb.append("ident:").append(identifier).append("]");
 		return sb.toString();
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

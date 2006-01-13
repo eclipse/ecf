@@ -951,9 +951,9 @@ public class ChatComposite extends Composite {
 			public IStatus validate(Object[] selection) {
 				for (int i = 0; i < selection.length; ++i)
 					if (!(selection[i] instanceof IViewDescriptor))
-						return new Status(Status.ERROR, ClientPlugin.PLUGIN_ID, 0, "", null);
+						return new Status(Status.ERROR, ClientPlugin.getDefault().getBundle().getSymbolicName(), 0, "", null);
 				
-				return new Status(Status.OK, ClientPlugin.PLUGIN_ID, 0, "", null);
+				return new Status(Status.OK, ClientPlugin.getDefault().getBundle().getSymbolicName(), 0, "", null);
 			}
 		});
 		IViewRegistry reg = PlatformUI.getWorkbench().getViewRegistry(); 

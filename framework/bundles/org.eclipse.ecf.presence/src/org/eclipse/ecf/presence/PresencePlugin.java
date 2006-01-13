@@ -9,7 +9,6 @@ import java.util.*;
  */
 public class PresencePlugin extends Plugin {
     
-    public static final String PLUGIN_ID = "org.eclise.ecf.presence";
 	//The shared instance.
 	private static PresencePlugin plugin;
 	//Resource bundle.

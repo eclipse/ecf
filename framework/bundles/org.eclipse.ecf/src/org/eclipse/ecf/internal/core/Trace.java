@@ -23,7 +23,8 @@ public class Trace {
 	static {
 		try {
 			ON = Platform.inDebugMode();
-			String val = System.getProperty(ECFPlugin.PLUGIN_ID + ".Trace");
+			String bundleName = ECFPlugin.getDefault().getBundle().getSymbolicName();
+			String val = System.getProperty(bundleName + ".Trace");
 			if (val != null) {
 				setTrace(true);
 				isEclipse = false;
@@ -32,17 +33,17 @@ public class Trace {
 						.println("WARNING:  Eclipse platform not available for trace...overridden by system property org.eclipse.ecf.Trace");
 			} else {
 				isEclipse = true;
-				pluginName = ECFPlugin.PLUGIN_ID;
+				pluginName = bundleName;
 			}
 		} catch (Exception e) {
 			try {
-				String val = System.getProperty(ECFPlugin.PLUGIN_ID + ".Trace");
+				String val = System.getProperty("org.eclipse.ecf.Trace");
 				if (val != null) {
 					setTrace(true);
 					isEclipse = false;
 					// No eclipse Platform available
 					System.out
-							.println("WARNING:  Eclipse platform not available for trace...using system.out for org.eclipse.ecf");
+							.println("WARNING:  Eclipse platform not available for trace...using system.out for org.eclipse.ecf.Trace");
 				} else {
 					System.out.println(Trace.class.getName() + ": OFF");
 				}

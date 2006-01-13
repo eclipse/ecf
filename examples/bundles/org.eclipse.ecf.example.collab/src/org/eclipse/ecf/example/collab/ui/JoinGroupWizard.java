@@ -91,7 +91,7 @@ public class JoinGroupWizard extends Wizard {
         	client = new URIClientConnectAction(containerType,groupName,nickName,password,project);
         	client.run(null);
         } catch (Exception e) {
-            String id = ClientPlugin.PLUGIN_ID;
+            String id = ClientPlugin.getDefault().getBundle().getSymbolicName();
             throw new CoreException(new Status(Status.ERROR, id, 100, "Could not connect to "+groupName, e));
         }
     }

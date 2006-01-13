@@ -12,7 +12,7 @@
 package org.eclipse.ecf.example.collab;
 
 public interface ClientPluginConstants {
-	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab";
+//	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab";
 
 	public static final String DEFAULT_WIN32_APPSHARE_NAME = "appsharewin32display";
     public static final String DEFAULT_FILE_TRANSFER_CHUNKTIME_NAME = "filetransferchunksize";

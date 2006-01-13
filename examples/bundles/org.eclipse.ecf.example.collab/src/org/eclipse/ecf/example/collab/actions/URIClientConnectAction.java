@@ -61,14 +61,14 @@ public class URIClientConnectAction implements IWorkbenchWindowActionDelegate {
     }
     protected void showExceptionInMultiStatus(int code, MultiStatus status, Throwable t) {
     	String msg = t.getMessage();
-    	status.add(new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,code++,msg,null));
+    	status.add(new Status(IStatus.ERROR,ClientPlugin.getDefault().getBundle().getSymbolicName(),code++,msg,null));
     	StackTraceElement [] stack = t.getStackTrace();
     	for(int i=0; i < stack.length; i++) {
-    		status.add(new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,code++,"     "+stack[i],null));
+    		status.add(new Status(IStatus.ERROR,ClientPlugin.getDefault().getBundle().getSymbolicName(),code++,"     "+stack[i],null));
     	}
     	Throwable cause = t.getCause();
     	if (cause != null) {
-    		status.add(new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,code++,"Caused By: ",null));
+    		status.add(new Status(IStatus.ERROR,ClientPlugin.getDefault().getBundle().getSymbolicName(),code++,"Caused By: ",null));
     		showExceptionInMultiStatus(code,status,cause);
     	}
     }
@@ -78,7 +78,7 @@ public class URIClientConnectAction implements IWorkbenchWindowActionDelegate {
         }
         public IStatus run(IProgressMonitor pm) {
         	String failMsg = "Connect to "+uri+" failed";
-        	ClientMultiStatus status = new ClientMultiStatus(ClientPlugin.PLUGIN_ID, 0,
+        	ClientMultiStatus status = new ClientMultiStatus(ClientPlugin.getDefault().getBundle().getSymbolicName(), 0,
                     failMsg, null);
             try {
                 client.createAndConnectClient(containerType, uri,nickname, data,project);

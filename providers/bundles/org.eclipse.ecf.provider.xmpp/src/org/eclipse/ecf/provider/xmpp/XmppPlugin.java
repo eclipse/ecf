@@ -19,12 +19,9 @@ import org.osgi.framework.BundleContext;
  * The main plugin class to be used in the desktop.
  */
 public class XmppPlugin extends Plugin {
-    public static final String XMPPPLUGIN_NAME = "org.eclipse.ecf.provider.xmpp";
     protected static final String NAMESPACE_IDENTIFIER = "ecf.xmpp";
     protected static final String SECURE_NAMESPACE_IDENTIFIER = "ecf.xmpps";
     protected static final String ROOM_NAMESPACE_IDENTIFIER = "xmpp.room.jive";
-    public static final String PLUGIN_ID = XMPPPLUGIN_NAME;
-    
 	//The shared instance.
 	private static XmppPlugin plugin;
 	//Resource bundle.
@@ -32,12 +29,12 @@ public class XmppPlugin extends Plugin {
 	
 	public static void log(String message) {
 		getDefault().getLog().log(
-				new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
+				new Status(IStatus.OK, XmppPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK, message, null));
 	}
 
 	public static void log(String message, Throwable e) {
 		getDefault().getLog().log(
-				new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK,
+				new Status(IStatus.ERROR, XmppPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK,
 						"Caught exception", e));
 	}
 

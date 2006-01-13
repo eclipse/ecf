@@ -34,10 +34,10 @@ import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
 import org.osgi.framework.BundleContext;
 
 public class ECFPlugin extends Plugin {
-	public static final String PLUGIN_ID = "org.eclipse.ecf";
 	public static final Trace trace = Trace.create("factoryinit");
 	public static final String PLUGIN_RESOURCE_BUNDLE = "org.eclipse.ecf.ECFPluginResources";
 	public static final String NAMESPACE_EPOINT = "org.eclipse.ecf.namespace";
@@ -253,18 +253,16 @@ public class ECFPlugin extends Plugin {
 			IConfigurationElement member = members[m];
 			// Get the label of the extender plugin and the ID of the extension.
 			IExtension extension = member.getDeclaringExtension();
-			Object exten = null;
+			ISharedObjectInstantiator exten = null;
 			String name = null;
 			try {
 				// The only required attribute is "class"
-				exten = member
+				exten = (ISharedObjectInstantiator) member
 						.createExecutableExtension(SHAREDOBJECT_FACTORY_EPOINT_CLASS_ATTRIBUTE);
-				String clazz = exten.getClass().getName();
-				// Get name and get version, if available
 				name = member
 						.getAttribute(SHAREDOBJECT_FACTORY_EPOINT_NAME_ATTRIBUTE);
 				if (name == null) {
-					name = clazz;
+					name = member.getAttribute(SHAREDOBJECT_FACTORY_EPOINT_CLASS_ATTRIBUTE);
 				}
 				// Get description, if present
 				String description = member
@@ -272,15 +270,12 @@ public class ECFPlugin extends Plugin {
 				if (description == null) {
 					description = "";
 				}
-				// Get any arguments
-				DefaultArgs defaults = getDefaultArgs(member
-						.getChildren(ARG_ELEMENT_NAME));
 				// Get any property elements
 				Map properties = getProperties(member
 						.getChildren(PROPERTY_ELEMENT_NAME));
 				// Now make description instance
 				// XXX this needs to create a full description
-				SharedObjectDescription scd = new SharedObjectDescription(name,null,null,clazz,properties,0L);
+				SharedObjectDescription scd = new SharedObjectDescription(name,exten,description,properties);
 				debug("setupSharedObjectExtensionPoint:created description:" + scd);
 				ISharedObjectFactory factory = SharedObjectFactory.getDefault();
 				if (factory.containsDescription(scd)) {

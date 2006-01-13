@@ -22,8 +22,6 @@ public class DiscoveryPlugin extends Plugin {
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
 	
-	public static final String PLUGIN_ID = "org.eclipse.ecf.discovery";
-	
 	/**
 	 * The constructor.
 	 */

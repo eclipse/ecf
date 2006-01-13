@@ -65,7 +65,7 @@ public class PresenceContainerUI {
                     }
                     PresenceContainerUI.this.localUser = new org.eclipse.ecf.core.user.User(localUser,nickname);
                 } catch (Exception e) {
-                    IStatus status = new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Exception showing presence view",e);
+                    IStatus status = new Status(IStatus.ERROR,ClientPlugin.getDefault().getBundle().getSymbolicName(),IStatus.OK,"Exception showing presence view",e);
                     ClientPlugin.getDefault().getLog().log(status);
                 }
             }
@@ -197,7 +197,7 @@ public class PresenceContainerUI {
 								System.out.println("No buttons hit");
 							}
 						} catch (Exception e) {
-		                    IStatus status = new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Exception showing authorization dialog",e);
+		                    IStatus status = new Status(IStatus.ERROR,ClientPlugin.getDefault().getBundle().getSymbolicName(),IStatus.OK,"Exception showing authorization dialog",e);
 		                    ClientPlugin.getDefault().getLog().log(status);
 						}
 		            }

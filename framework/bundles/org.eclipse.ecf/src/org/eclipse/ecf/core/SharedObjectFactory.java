@@ -143,7 +143,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		try {
 			instantiator = (ISharedObjectInstantiator) cd.getInstantiator();
 			clazzes = AbstractFactory.getClassesForTypes(argTypes, args, cd
-					.getClassLoader());
+					.getClass().getClassLoader());
 		} catch (Exception e) {
 			SharedObjectInstantiationException newexcept = new SharedObjectInstantiationException(
 					"createSharedObject exception with description: " + desc + ": "

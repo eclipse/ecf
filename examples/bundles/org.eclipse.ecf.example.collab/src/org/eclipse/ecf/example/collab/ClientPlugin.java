@@ -48,11 +48,11 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	}
 	public static void log(String message) {
 		getDefault().getLog().log(
-				new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
+				new Status(IStatus.OK, ClientPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK, message, null));
 	}
 	public static void log(String message, Throwable e) {
 		getDefault().getLog().log(
-				new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK,
+				new Status(IStatus.ERROR, ClientPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK,
 						"Caught exception", e));
 	}
 	/**

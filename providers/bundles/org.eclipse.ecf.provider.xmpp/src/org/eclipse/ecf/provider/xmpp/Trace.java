@@ -26,10 +26,10 @@ public class Trace {
         try {
             ON = Platform.inDebugMode();
             isEclipse = true;
-            pluginName = XmppPlugin.XMPPPLUGIN_NAME;
+            pluginName = XmppPlugin.getDefault().getBundle().getSymbolicName();
         } catch (Exception e) {
             try {
-                String val = System.getProperty(XmppPlugin.XMPPPLUGIN_NAME+".Trace");
+                String val = System.getProperty("org.eclipse.ecf.provider.xmpp.Trace");
                 if (val != null) {
                     setTrace(true);
                     isEclipse = false;

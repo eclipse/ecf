@@ -25,7 +25,8 @@ public class Trace {
     static {
         try {
             ON = Platform.inDebugMode();
-            String val = System.getProperty(PresencePlugin.PLUGIN_ID+".Trace");
+            String bundleName = PresencePlugin.getDefault().getBundle().getSymbolicName();
+            String val = System.getProperty(bundleName+".Trace");
             if (val != null) {
                 setTrace(true);
                 isEclipse = false;
@@ -33,11 +34,11 @@ public class Trace {
                 System.out.println("WARNING:  Eclipse platform not being use for trace...overridden by system property org.eclipse.ecf.ui.Trace");                    
             } else {
                 isEclipse = true;
-                pluginName = PresencePlugin.PLUGIN_ID;
+                pluginName = bundleName;
             }
         } catch (Exception e) {
             try {
-                String val = System.getProperty(PresencePlugin.PLUGIN_ID+".Trace");
+                String val = System.getProperty("org.eclipse.ecf.presence.Trace");
                 if (val != null) {
                     setTrace(true);
                     isEclipse = false;

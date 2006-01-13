@@ -27,7 +27,8 @@ public class Trace {
     static {
         try {
             ON = Platform.inDebugMode();
-            String val = System.getProperty(ProviderPlugin.PROVIDERPLUGIN_ID+".Trace");
+            String bundleName = ProviderPlugin.getDefault().getBundle().getSymbolicName();
+            String val = System.getProperty(bundleName+".Trace");
             if (val != null) {
                 setTrace(true);
                 isEclipse = false;
@@ -35,11 +36,11 @@ public class Trace {
                 System.out.println("WARNING:  Eclipse platform not being use for trace...overridden by system property org.eclipse.ecf.provider.Trace");                    
             } else {
                 isEclipse = true;
-                pluginName = ProviderPlugin.PROVIDERPLUGIN_ID;
+                pluginName = bundleName;
             }
         } catch (Exception e) {
             try {
-                String val = System.getProperty(ProviderPlugin.PROVIDERPLUGIN_ID+".Trace");
+                String val = System.getProperty("org.eclipse.ecf.provider.Trace");
                 if (val != null) {
                     setTrace(true);
                     isEclipse = false;

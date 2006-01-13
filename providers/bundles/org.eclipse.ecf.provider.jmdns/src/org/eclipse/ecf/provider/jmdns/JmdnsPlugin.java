@@ -13,7 +13,6 @@ public class JmdnsPlugin extends Plugin {
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
 	
-	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.jmdns";
     public static final String NAMESPACE_IDENTIFIER = "zeroconf.jmdns";
 
 	/**
