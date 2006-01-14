@@ -134,7 +134,7 @@ public class ContainerTypeDescription {
 	}
 
 	public String toString() {
-		StringBuffer b = new StringBuffer("SharedObjectContainerDescription[");
+		StringBuffer b = new StringBuffer("ContainerTypeDescription[");
 		b.append("name:").append(name).append(";");
 		if (instantiator == null)
 			b.append("class:").append(instantiatorClass).append(";");
