@@ -34,8 +34,10 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 	private static final long serialVersionUID = -4496151870561737078L;
 
 	FileSenderUI senderUI;
-
 	ID eclipseStageID;
+	protected File localFile = null;
+	protected FileReceiverUI receiverUI = null;
+	protected EclipseCollabSharedObject receiverStage = null;
 
 	public EclipseFileTransfer(FileSenderUI view, ID target, InputStream ins,
 			FileTransferParams params, ID receiverID) {
@@ -44,6 +46,22 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 		progressListener = this;
 		this.eclipseStageID = receiverID;
 	}
+
+    protected void addRemoteParticipants(ID ids[])
+    {
+    	ID groupID = getContext().getConnectedID();
+        if (ids != null && participantIDs != null) {
+            for(int i=0; i < ids.length; i++) {
+            	if (groupID != null && groupID.equals(ids[i])) continue;
+            	if (targetReceiver == null) {
+            		if (!getHomeContainerID().equals(ids[i])) participantIDs.addElement(ids[i]);
+            	} else {
+            		if (targetReceiver.equals(ids[i])) participantIDs.addElement(ids[i]);
+            	}
+            }
+        }
+        trace("addRemoteParticipants(participants="+participantIDs);
+    }
 
 	protected ReplicaSharedObjectDescription getReplicaDescription(ID remoteMember) {
 		HashMap map = new HashMap();
@@ -58,6 +76,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 			throws SharedObjectInitException {
 		super.init(config);
 		Map props = config.getProperties();
+		System.out.println("EclipseFileTransfer.init(id="+getID()+",localcontid="+getLocalContainerID()+",homecontid="+getHomeContainerID()+",props="+props);
 		trace("args is " + props);
 		Object[] args = (Object[]) props.get("args");
 		if (args != null && args.length == 2) {
@@ -135,12 +154,6 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 		File retFile = new File(downloadDir, file.getName());
 		return retFile;
 	}
-
-	protected File localFile = null;
-
-	protected FileReceiverUI receiverUI = null;
-
-	protected EclipseCollabSharedObject receiverStage = null;
 
 	public void receiveStart(FileTransferSharedObject obj, File aFile,
 			long length, float rate) {

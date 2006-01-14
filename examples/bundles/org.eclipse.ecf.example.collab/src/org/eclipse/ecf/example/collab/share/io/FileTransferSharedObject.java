@@ -78,7 +78,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
             	}
             }
         }
-
+        trace("addRemoteParticipants(participants="+participantIDs);
     }
 
     protected void setOutputStream(OutputStream src)
@@ -202,7 +202,6 @@ public class FileTransferSharedObject extends TransactionSharedObject
     public void init(ISharedObjectConfig config) throws SharedObjectInitException {
         super.init(config);
         Map map = config.getProperties();
-    	System.out.println("FileTransferSharedObject.activated:"+getConfig().getSharedObjectID()+":"+getConfig().getHomeContainerID());
         Object [] args = (Object []) map.get("args");
         if (args != null && args.length == 1) {
             transferParams = (FileTransferParams) args[0];

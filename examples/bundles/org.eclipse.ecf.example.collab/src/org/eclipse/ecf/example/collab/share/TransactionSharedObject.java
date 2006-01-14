@@ -112,7 +112,7 @@ public class TransactionSharedObject extends GenericSharedObject implements ISha
                 if (!getHomeContainerID().equals(ids[i])) participantIDs.addElement(ids[i]);
             }
         }
-
+        trace("addRemoteParticipants(participants="+participantIDs+")");
     }
 
     protected void removeRemoteParticipant(ID id)
@@ -121,6 +121,7 @@ public class TransactionSharedObject extends GenericSharedObject implements ISha
             int index = participantIDs.indexOf(id);
             if (index != -1) participantIDs.removeElementAt(index);
         }
+        trace("removeRemoteParticipant("+id+",after removal participants="+participantIDs+")");
     }
 
     protected void addRemoteParticipantFailed(ID remote, Throwable failure)

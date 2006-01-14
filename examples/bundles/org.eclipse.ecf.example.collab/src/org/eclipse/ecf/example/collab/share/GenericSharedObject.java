@@ -471,36 +471,16 @@ public void handleEvent(Event event) {
 
     public ID createObject(ID target, ReplicaSharedObjectDescription desc) throws Exception {
     	if (target == null) {
-	        ISharedObjectContext crs = getContext();
-	        if (desc.getID() == null) {
-	        	desc.setID(IDFactory.getDefault().createStringID(getNewUniqueIDString()));
-	        }
+    		if (desc.getID()==null) {
+    			desc.setID(IDFactory.getDefault().createStringID(getNewUniqueIDString()));
+    		}
             try {
-            	String className = desc.getTypeDescription().getClassName();
-                Class clazz = Class.forName(className);
-                Object inst = clazz.newInstance();
-                if (!(inst instanceof ISharedObject)) {
-                    throw new InstantiationException("Exception creating instance of class: "+className+".  Does not implement ISharedObject");
-                }
-                if (inst instanceof ISharedObjectContainerTransaction) {
-                    crs.getSharedObjectManager().addSharedObject(desc.getID(),(ISharedObject) inst,desc.getProperties());
-                } else {
-                	ReplicaSharedObjectDescription sd = new ReplicaSharedObjectDescription(
-							clazz, desc.getID(), desc.getHomeID(), desc
-									.getProperties());
-					crs.getSharedObjectManager().createSharedObject(sd);
-                }
+            	return getContext().getSharedObjectManager().createSharedObject(desc);
             } catch (Exception e) {
                 traceDump("Exception creating replicated object.", e);
                 throw e;
             }
-	        if (crs == null) {
-	            throw new InstantiationException(
-	                    "Cannot create object.  Have no local creation capability because context is null");
-	        } else {
-	        	return crs.getSharedObjectManager().createSharedObject(desc);
-	        }
-    	} else throw new Exception("cannot send creation requests direct to target");
+    	} else throw new Exception("cannot send object creation request "+desc+" direct to target");
 	}
 
     public String getNewUniqueIDString() {
