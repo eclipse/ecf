@@ -28,7 +28,7 @@ import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.ISharedObjectFactory;
 import org.eclipse.ecf.core.SharedObjectFactory;
 import org.eclipse.ecf.core.SharedObjectTypeDescription;
-import org.eclipse.ecf.core.comm.ConnectionDescription;
+import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -372,7 +372,7 @@ public class ECFPlugin extends Plugin {
 				// Get any arguments
 				DefaultArgs defaults = getDefaultArgs(member
 						.getChildren(ARG_ELEMENT_NAME));
-				ConnectionDescription cd = new ConnectionDescription(name,
+				ConnectionTypeDescription cd = new ConnectionTypeDescription(name,
 						(ISynchAsynchConnectionInstantiator) exten,
 						description, defaults.getTypes(), defaults
 								.getDefaults(), defaults.getNames());

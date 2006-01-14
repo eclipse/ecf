@@ -10,7 +10,7 @@ package org.eclipse.ecf.core.comm;
 
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 
-public class ConnectionDescription {
+public class ConnectionTypeDescription {
 	protected String name;
 	protected String instantiatorClass;
 	protected ISynchAsynchConnectionInstantiator instantiator;
@@ -22,16 +22,16 @@ public class ConnectionDescription {
 	protected String[] argNames;
 	protected static final String[] EMPTY = new String[0];
 
-	public ConnectionDescription(ClassLoader loader, String name,
+	public ConnectionTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc, String[] defTypes,
 			String[] defValues, String[] defNames) {
 		if (name == null)
 			throw new RuntimeException(new InstantiationException(
-					"ConnectionDescription<init> name cannot be null"));
+					"ConnectionTypeDescription<init> name cannot be null"));
 		if (instantiatorClass == null)
 			throw new RuntimeException(
 					new InstantiationException(
-							"ConnectionDescription<init> instantiatorClass cannot be null"));
+							"ConnectionTypeDescription<init> instantiatorClass cannot be null"));
 		this.classLoader = loader;
 		this.name = name;
 		this.instantiatorClass = instantiatorClass;
@@ -41,26 +41,26 @@ public class ConnectionDescription {
 		this.argNames = defNames;
 	}
 
-	public ConnectionDescription(ClassLoader loader, String name,
+	public ConnectionTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc) {
 		this(loader, name, instantiatorClass, desc, EMPTY, EMPTY, EMPTY);
 	}
 
-	public ConnectionDescription(String name, String instantiatorClass,
+	public ConnectionTypeDescription(String name, String instantiatorClass,
 			String desc) {
 		this(null, name, instantiatorClass, desc);
 	}
 
-	public ConnectionDescription(String name,
+	public ConnectionTypeDescription(String name,
 			ISynchAsynchConnectionInstantiator inst, String desc,
 			String[] defTypes, String[] defValues, String[] defNames) {
 		if (name == null)
 			throw new RuntimeException(new InstantiationException(
-					"ConnectionDescription<init> name cannot be null"));
+					"ConnectionTypeDescription<init> name cannot be null"));
 		if (inst == null)
 			throw new RuntimeException(
 					new InstantiationException(
-							"ConnectionDescription<init> instantiator instance cannot be null"));
+							"ConnectionTypeDescription<init> instantiator instance cannot be null"));
 		this.instantiator = inst;
 		this.name = name;
 		this.classLoader = this.instantiator.getClass().getClassLoader();
@@ -72,7 +72,7 @@ public class ConnectionDescription {
 		this.argNames = defNames;
 	}
 
-	public ConnectionDescription(String name,
+	public ConnectionTypeDescription(String name,
 			ISynchAsynchConnectionInstantiator inst, String desc) {
 		this(name, inst, desc, EMPTY, EMPTY, EMPTY);
 	}
@@ -86,9 +86,9 @@ public class ConnectionDescription {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof ConnectionDescription))
+		if (!(other instanceof ConnectionTypeDescription))
 			return false;
-		ConnectionDescription scd = (ConnectionDescription) other;
+		ConnectionTypeDescription scd = (ConnectionTypeDescription) other;
 		return scd.name.equals(name);
 	}
 
@@ -97,7 +97,7 @@ public class ConnectionDescription {
 	}
 
 	public String toString() {
-		StringBuffer b = new StringBuffer("ConnectionDescription[");
+		StringBuffer b = new StringBuffer("ConnectionTypeDescription[");
 		b.append("name:").append(name).append(";");
 		if (instantiator == null)
 			b.append("class:").append(instantiatorClass).append(";");

@@ -7,7 +7,7 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.SharedObjectContainerFactory;
-import org.eclipse.ecf.core.comm.ConnectionDescription;
+import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -66,7 +66,7 @@ public class ClientApplication {
 			}
 		}
 		// Setup factory descriptions since Eclipse does not do this for us
-		ConnectionDescription cd = new ConnectionDescription(ClientApplication.class.getClassLoader(),CONNECTION_NAME,CONNECTION_CLASS,null);
+		ConnectionTypeDescription cd = new ConnectionTypeDescription(ClientApplication.class.getClassLoader(),CONNECTION_NAME,CONNECTION_CLASS,null);
 		ConnectionFactory.addDescription(cd);
 		contd = new ContainerTypeDescription(ClientApplication.class.getClassLoader(),CONTAINER_FACTORY_NAME,CONTAINER_FACTORY_CLASS,null);
 		ContainerFactory.getDefault().addDescription(contd);

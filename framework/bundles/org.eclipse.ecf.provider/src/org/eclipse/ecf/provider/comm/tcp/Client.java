@@ -30,7 +30,7 @@ import java.util.Random;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
-import org.eclipse.ecf.core.comm.ConnectionDescription;
+import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.ConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
 import org.eclipse.ecf.core.comm.DisconnectConnectionEvent;
@@ -46,7 +46,7 @@ import org.eclipse.ecf.provider.Trace;
 
 public final class Client implements ISynchAsynchConnection {
     public static class Creator implements ISynchAsynchConnectionInstantiator {
-        public ISynchAsynchConnection createInstance(ConnectionDescription description,
+        public ISynchAsynchConnection createInstance(ConnectionTypeDescription description,
                 ISynchAsynchConnectionEventHandler handler, Class[] clazzes,
                 Object[] args) throws ConnectionInstantiationException {
             try {

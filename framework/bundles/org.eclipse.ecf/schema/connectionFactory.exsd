@@ -139,7 +139,7 @@
 Here&apos;s an example implementation of this extension point:
 
 &lt;pre&gt;
-    public ISynchAsynchConnection createInstance(ConnectionDescription description,
+    public ISynchAsynchConnection createInstance(ConnectionTypeDescription description,
             ISynchAsynchConnectionEventHandler handler, Class[] clazzes,
             Object[] args) throws ConnectionInstantiationException {
         try {
@@ -174,7 +174,7 @@ Here&apos;s an example implementation of this extension point:
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.comm.ContainerFactory&lt;/b&gt; static methods.  Specifically, the &apos;createSynchAsynchConnection&apos; static methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;ConnectionFactory.addDescription(ConnectionDescription)&lt;/b&gt; method.  The available connection factories can be queried with the &lt;b&gt;ConnectionFactory.getDescriptions()&lt;/b&gt; method.
+         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.comm.ContainerFactory&lt;/b&gt; static methods.  Specifically, the &apos;createSynchAsynchConnection&apos; static methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;ConnectionFactory.addDescription(ConnectionTypeDescription)&lt;/b&gt; method.  The available connection factories can be queried with the &lt;b&gt;ConnectionFactory.getDescriptions()&lt;/b&gt; method.
       </documentation>
    </annotation>
 

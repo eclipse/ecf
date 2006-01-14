@@ -74,7 +74,7 @@
    <element name="property">
       <annotation>
          <documentation>
-            Property (name,value) associated with SharedObjectDescription
+            Property (name,value) associated with SharedObjectTypeDescription
          </documentation>
       </annotation>
       <complexType>
@@ -118,7 +118,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.SharedObjectFactory&lt;/b&gt; static methods.  Specifically, the &apos;createSharedObject&apos; methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;SharedObjectFactory.addDescription(SharedObjectDescription)&lt;/b&gt; method.
+         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.SharedObjectFactory&lt;/b&gt; static methods.  Specifically, the &apos;createSharedObject&apos; methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;SharedObjectFactory.addDescription(SharedObjectTypeDescription)&lt;/b&gt; method.
       </documentation>
    </annotation>
 
