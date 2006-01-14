@@ -106,6 +106,7 @@ public class ClientApplication {
 				for(int i=0; i < sharedObjectClassNames.length; i++) {
 					System.out.println("Creating sharedObject: "+sharedObjectClassNames[i]+" for client "+scg.getID().getName());
 					ISharedObject so = (ISharedObject) Class.forName(sharedObjectClassNames[i]).newInstance();
+					sharedObjects[i] = IDFactory.getDefault().createStringID(sharedObjectClassNames[i] + "_" +  i);
 					scg.getSharedObjectManager().addSharedObject(sharedObjects[i], so, new HashMap());
 					System.out.println("Created sharedObject for client "+scg.getID().getName());
 				}
