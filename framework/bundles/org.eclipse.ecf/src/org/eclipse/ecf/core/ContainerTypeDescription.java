@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.provider.IContainerInstantiator;
  * Description of an IContainer implementation.
  * 
  */
-public class ContainerDescription {
+public class ContainerTypeDescription {
 	protected String name;
 	protected String instantiatorClass;
 	protected ClassLoader classLoader;
@@ -31,35 +31,35 @@ public class ContainerDescription {
 	protected static final String[] EMPTY = new String[0];
 	protected Map properties;
 
-	public ContainerDescription(String name) {
+	public ContainerTypeDescription(String name) {
 		this(name,null);
 	}
-	public ContainerDescription(String name, String description) {
+	public ContainerTypeDescription(String name, String description) {
 		this(name,description,new HashMap());
 	}
-	public ContainerDescription(String name, String description, Map properties) {
+	public ContainerTypeDescription(String name, String description, Map properties) {
 		this.name = name;
 		this.description = description;
 		this.properties = properties;
 	}
-	public ContainerDescription(ClassLoader loader, String name,
+	public ContainerTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc) {
 		this(loader, name, instantiatorClass, desc, EMPTY, EMPTY, EMPTY);
 	}
 
-	public ContainerDescription(String name, String instantiatorClass,
+	public ContainerTypeDescription(String name, String instantiatorClass,
 			String desc) {
 		this(null, name, instantiatorClass, desc);
 	}
 
-	public ContainerDescription(ClassLoader loader, String name,
+	public ContainerTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc, String[] argTypes,
 			String[] argDefaults, String[] argNames) {
 		this(loader, name, instantiatorClass, desc, argTypes, argDefaults,
 				argNames, new Properties());
 	}
 
-	public ContainerDescription(ClassLoader loader, String name,
+	public ContainerTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc, String[] argTypes,
 			String[] argDefaults, String[] argNames, Map props) {
 		this.classLoader = loader;
@@ -81,14 +81,14 @@ public class ContainerDescription {
 		this.properties = props;
 	}
 
-	public ContainerDescription(String name, IContainerInstantiator inst,
+	public ContainerTypeDescription(String name, IContainerInstantiator inst,
 			String desc, String[] argTypes, String[] argDefaults,
 			String[] argNames) {
 		this(name, inst, desc, argTypes, argDefaults, argNames,
 				new Properties());
 	}
 
-	public ContainerDescription(String name, IContainerInstantiator inst,
+	public ContainerTypeDescription(String name, IContainerInstantiator inst,
 			String desc, String[] argTypes, String[] argDefaults,
 			String[] argNames, Map props) {
 		if (name == null)
@@ -109,7 +109,7 @@ public class ContainerDescription {
 		this.properties = props;
 	}
 
-	public ContainerDescription(String name, IContainerInstantiator inst,
+	public ContainerTypeDescription(String name, IContainerInstantiator inst,
 			String desc) {
 		this(name, inst, desc, EMPTY, EMPTY, EMPTY);
 	}
@@ -123,9 +123,9 @@ public class ContainerDescription {
 	}
 
 	public boolean equals(Object other) {
-		if (!(other instanceof ContainerDescription))
+		if (!(other instanceof ContainerTypeDescription))
 			return false;
-		ContainerDescription scd = (ContainerDescription) other;
+		ContainerTypeDescription scd = (ContainerTypeDescription) other;
 		return scd.name.equals(name);
 	}
 

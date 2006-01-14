@@ -2,7 +2,7 @@ package org.eclipse.ecf.provider.app;
 
 import java.util.HashMap;
 import java.util.Random;
-import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectContainer;
@@ -48,7 +48,7 @@ public class ClientApplication {
 	// IDs of sharedObjects created
 	ID [] sharedObjects = null;
 	
-	static ContainerDescription contd = null;
+	static ContainerTypeDescription contd = null;
 	static Random aRan = new Random();
 	public ClientApplication() {
 		super();
@@ -68,7 +68,7 @@ public class ClientApplication {
 		// Setup factory descriptions since Eclipse does not do this for us
 		ConnectionDescription cd = new ConnectionDescription(ClientApplication.class.getClassLoader(),CONNECTION_NAME,CONNECTION_CLASS,null);
 		ConnectionFactory.addDescription(cd);
-		contd = new ContainerDescription(ClientApplication.class.getClassLoader(),CONTAINER_FACTORY_NAME,CONTAINER_FACTORY_CLASS,null);
+		contd = new ContainerTypeDescription(ClientApplication.class.getClassLoader(),CONTAINER_FACTORY_NAME,CONTAINER_FACTORY_CLASS,null);
 		ContainerFactory.getDefault().addDescription(contd);
 		for(int i=0; i < clientCount; i++) {
 			sm[i] = createClient();

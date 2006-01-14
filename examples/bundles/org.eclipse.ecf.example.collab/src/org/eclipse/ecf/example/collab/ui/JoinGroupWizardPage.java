@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
@@ -123,7 +123,7 @@ public class JoinGroupWizardPage extends WizardPage {
         int def = 0;
         Map defProps = null;
         for(Iterator i=rawDescriptions.iterator(); i.hasNext(); ) {
-            final ContainerDescription desc = (ContainerDescription) i.next();
+            final ContainerTypeDescription desc = (ContainerTypeDescription) i.next();
             String name = desc.getName();
             String description = desc.getDescription();
             Map props = desc.getProperties();
@@ -141,7 +141,7 @@ public class JoinGroupWizardPage extends WizardPage {
         }
         combo.addSelectionListener(new SelectionListener() {
             public void widgetSelected(SelectionEvent e) {
-                ContainerDescription desc = (ContainerDescription) combo.getData(combo.getSelectionIndex()+"");
+                ContainerTypeDescription desc = (ContainerTypeDescription) combo.getData(combo.getSelectionIndex()+"");
                 Map props = desc.getProperties();
                 modifyUI(props);
             }
@@ -241,7 +241,7 @@ public class JoinGroupWizardPage extends WizardPage {
             		for (int i = 0; i < items.length; ++i)
             			if (strVal.equals(items[i])) {
 							combo.select(i);
-							ContainerDescription desc = (ContainerDescription) combo
+							ContainerTypeDescription desc = (ContainerTypeDescription) combo
 									.getData(String.valueOf(i));
 							modifyUI(desc.getProperties());
 							break;
@@ -300,7 +300,7 @@ public class JoinGroupWizardPage extends WizardPage {
         int index = combo.getSelectionIndex();
         if (index == -1) return null;
         else {
-            ContainerDescription desc = (ContainerDescription) containerDescriptions.get(index);
+            ContainerTypeDescription desc = (ContainerTypeDescription) containerDescriptions.get(index);
             return desc.getName();
         }
     }

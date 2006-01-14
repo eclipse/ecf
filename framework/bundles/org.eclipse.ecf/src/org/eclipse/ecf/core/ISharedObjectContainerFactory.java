@@ -8,7 +8,7 @@ public interface ISharedObjectContainerFactory {
 	 * Make ISharedObjectContainer instance.
 	 * 
 	 * @param desc
-	 *            the ContainerDescription to use to create the instance
+	 *            the ContainerTypeDescription to use to create the instance
 	 * @param argTypes
 	 *            a String [] defining the types of the args parameter
 	 * @param args
@@ -18,14 +18,14 @@ public interface ISharedObjectContainerFactory {
 	 * @throws ContainerInstantiationException
 	 */
 	public ISharedObjectContainer createSharedObjectContainer(
-			ContainerDescription desc, String[] argTypes, Object[] args)
+			ContainerTypeDescription desc, String[] argTypes, Object[] args)
 			throws ContainerInstantiationException;
 
 	/**
 	 * Make ISharedObjectContainer instance.
 	 * 
 	 * @param descriptionName
-	 *            the ContainerDescription name to lookup
+	 *            the ContainerTypeDescription name to lookup
 	 * @return a valid instance of ISharedObjectContainer
 	 * @throws ContainerInstantiationException
 	 */
@@ -36,7 +36,7 @@ public interface ISharedObjectContainerFactory {
 	 * Make ISharedObjectContainer instance.
 	 * 
 	 * @param descriptionName
-	 *            the ContainerDescription name to lookup
+	 *            the ContainerTypeDescription name to lookup
 	 * @param args
 	 *            the Object [] of arguments passed to the
 	 *            IContainerInstantiator.createInstance method
@@ -51,7 +51,7 @@ public interface ISharedObjectContainerFactory {
 	 * Make ISharedObjectContainer instance. 
 	 * 
 	 * @param descriptionName
-	 *            the ContainerDescription name to lookup
+	 *            the ContainerTypeDescription name to lookup
 	 * @param argsTypes
 	 *            the String [] of argument types of the following args
 	 * @param args

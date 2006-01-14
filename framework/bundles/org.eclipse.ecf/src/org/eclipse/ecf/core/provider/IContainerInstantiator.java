@@ -8,12 +8,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.provider;
 
-import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.IContainer;
 
 public interface IContainerInstantiator {
-	public IContainer createInstance(ContainerDescription description,
+	public IContainer createInstance(ContainerTypeDescription description,
 			Class[] argTypes, Object[] args)
 			throws ContainerInstantiationException;
 }

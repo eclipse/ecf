@@ -8,7 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic;
 
-import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -60,7 +60,7 @@ public class ContainerInstantiator implements
     }
 
     public IContainer createInstance(
-            ContainerDescription description, Class[] argTypes,
+            ContainerTypeDescription description, Class[] argTypes,
             Object[] args) throws ContainerInstantiationException {
         boolean isClient = true;
         if (description.getName().equals(TCPSERVER_NAME)) {

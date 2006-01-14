@@ -55,14 +55,14 @@ public class SharedObjectContainerFactory implements
 	 *      java.lang.String[], java.lang.Object[])
 	 */
 	public ISharedObjectContainer createSharedObjectContainer(
-			ContainerDescription desc, String[] argTypes, Object[] args)
+			ContainerTypeDescription desc, String[] argTypes, Object[] args)
 			throws ContainerInstantiationException {
 		trace("createSharedObjectContainer(" + desc + ","
 				+ Trace.convertStringAToString(argTypes) + ","
 				+ Trace.convertObjectAToString(args) + ")");
 		if (desc == null)
 			throw new ContainerInstantiationException(
-					"ContainerDescription cannot be null");
+					"ContainerTypeDescription cannot be null");
 		IContainer newContainer = ContainerFactory.getDefault().createContainer(
 				desc, argTypes, args);
 		ISharedObjectContainer soContainer = (ISharedObjectContainer) newContainer

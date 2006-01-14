@@ -2,7 +2,7 @@ package org.eclipse.ecf.provider.jmdns.container;
 
 import java.io.IOException;
 
-import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
@@ -16,7 +16,7 @@ public class ContainerInstantiator implements
 	}
 
 	public IContainer createInstance(
-			ContainerDescription description, Class[] argTypes,
+			ContainerTypeDescription description, Class[] argTypes,
 			Object[] args) throws ContainerInstantiationException {
 			try {
 				JMDNSDiscoveryContainer container = new JMDNSDiscoveryContainer();

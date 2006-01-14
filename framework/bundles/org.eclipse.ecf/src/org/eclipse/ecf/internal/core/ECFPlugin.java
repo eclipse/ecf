@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.ISharedObjectFactory;
@@ -205,7 +205,7 @@ public class ECFPlugin extends Plugin {
 				Map properties = getProperties(member
 						.getChildren(PROPERTY_ELEMENT_NAME));
 				// Now make description instance
-				ContainerDescription scd = new ContainerDescription(name,
+				ContainerTypeDescription scd = new ContainerTypeDescription(name,
 						(IContainerInstantiator) exten, description, defaults
 								.getTypes(), defaults.getDefaults(), defaults
 								.getNames(), properties);

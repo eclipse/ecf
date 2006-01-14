@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.ecf.example.collab.ClientPluginConstants;
@@ -90,7 +90,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 			List elements = new ArrayList();
 			
 			for(Iterator i=rawDescriptions.iterator(); i.hasNext(); ) {
-	            final ContainerDescription desc = (ContainerDescription) i.next();
+	            final ContainerTypeDescription desc = (ContainerTypeDescription) i.next();
 	            Map props = desc.getProperties();
 	            String isServer = (String) props.get(ISSERVER_PROP_NAME);
 	            if (isServer == null || !isServer.equalsIgnoreCase("true")) {
@@ -120,7 +120,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 		}
 
 		public String getColumnText(Object element, int columnIndex) {
-			ContainerDescription desc = (ContainerDescription) element;
+			ContainerTypeDescription desc = (ContainerTypeDescription) element;
 			switch(columnIndex) {
 			case 0:
 				return desc.getDescription();
@@ -150,7 +150,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 
 		public void selectionChanged(SelectionChangedEvent event) {
 			//StructuredSelection selection = (StructuredSelection) event.getSelection();
-			//ContainerDescription desc = (ContainerDescription) selection.getFirstElement();
+			//ContainerTypeDescription desc = (ContainerTypeDescription) selection.getFirstElement();
 			
 			//desc.
 		}

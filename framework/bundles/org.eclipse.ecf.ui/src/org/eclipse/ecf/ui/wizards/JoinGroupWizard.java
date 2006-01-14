@@ -13,7 +13,7 @@ package org.eclipse.ecf.ui.wizards;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.Wizard;
@@ -24,9 +24,9 @@ public class JoinGroupWizard extends Wizard {
 	private static final String DIALOG_SETTINGS = JoinGroupWizard.class.getName();
 	
     protected JoinGroupWizardPage mainPage;
-    protected ContainerDescription [] descriptions = null;
+    protected ContainerTypeDescription [] descriptions = null;
     
-    public JoinGroupWizard(IWorkbench workbench, String title, ContainerDescription [] descriptions) {
+    public JoinGroupWizard(IWorkbench workbench, String title, ContainerTypeDescription [] descriptions) {
         super();
         setWindowTitle(title);
         this.descriptions = descriptions;

@@ -8,7 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.xmpp.container;
 
-import org.eclipse.ecf.core.ContainerDescription;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -54,7 +54,7 @@ public class ContainerInstantiator implements IContainerInstantiator {
      *      java.lang.Class[], java.lang.Object[])
      */
     public IContainer createInstance(
-            ContainerDescription description, Class[] argTypes,
+            ContainerTypeDescription description, Class[] argTypes,
             Object[] args)
             throws ContainerInstantiationException {
         try {
