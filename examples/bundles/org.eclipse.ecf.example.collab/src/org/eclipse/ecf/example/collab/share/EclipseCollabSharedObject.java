@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Date;
+import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -28,6 +29,7 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer;
@@ -246,7 +248,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	// SharedObjectMsg handlers
 	protected void handleCreateObject(ReplicaSharedObjectDescription cons) {
 		try {
-			createObject(cons.getID(), cons.getClassname(), cons.getProperties());
+			createObject(null,cons);
 		} catch (Exception e) {
 			debugdump(e, "Exception creating local object " + cons);
 		}
@@ -1210,5 +1212,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		if (localGUI == null)
 			return null;
 		return localGUI.getTextControl();
+	}
+	public ID createObject(ID target, String classname, Map map) throws Exception {
+		return createObject(target,new ReplicaSharedObjectDescription(Class.forName(classname),IDFactory.getDefault().createGUID(),config.getHomeContainerID(),map));
 	}
 }

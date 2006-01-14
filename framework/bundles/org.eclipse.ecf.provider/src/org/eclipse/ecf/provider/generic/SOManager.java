@@ -26,13 +26,13 @@ import java.util.Vector;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConnector;
 import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.SharedObjectConnectException;
 import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectDisconnectException;
 import org.eclipse.ecf.core.SharedObjectFactory;
+import org.eclipse.ecf.core.SharedObjectTypeDescription;
 import org.eclipse.ecf.core.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerAddEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerConnectEvent;
@@ -128,22 +128,17 @@ public class SOManager implements ISharedObjectManager {
 		// And arg types
 		String[] types = container.getArgTypesFromProperties(sd);
 		ISharedObject res = null;
-		String descName = sd.getName();
+		SharedObjectTypeDescription typeDesc = sd.getTypeDescription();
+		String descName = typeDesc.getName();
 		if (descName == null) {
-			// 'old' style of shared object creation
-			if (sd instanceof ReplicaSharedObjectDescription) {
-				ReplicaSharedObjectDescription rsd = (ReplicaSharedObjectDescription) sd;
-				// First get classloader
-				ClassLoader cl = container.getClassLoaderForSharedObject(sd);
-				final Class newClass = Class.forName(rsd.getClassname(), true, cl);
-				Class [] argTypes = getArgTypes(types, args, cl);
-				res = createSharedObjectInstance(newClass, argTypes, args);
-			} else {
-				throw new NullPointerException("shared object name is null and not ReplicaSharedObjectDescription");
-			}
+			// First get classloader
+			ClassLoader cl = container.getClassLoaderForSharedObject(sd);
+			final Class newClass = Class.forName(typeDesc.getClassName(), true, cl);
+			Class [] argTypes = getArgTypes(types, args, cl);
+			res = createSharedObjectInstance(newClass, argTypes, args);
 			// 'new style'
 		} else {
-			res = SharedObjectFactory.getDefault().createSharedObject(sd, types, args);
+			res = SharedObjectFactory.getDefault().createSharedObject(typeDesc, types, args);
 		}
 		return res;
 	}

@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.SharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -185,10 +185,10 @@ public class SOContext implements ISharedObjectContext {
      * (non-Javadoc)
      * 
      * @see org.eclipse.ecf.core.ISharedObjectContext#sendCreate(org.eclipse.ecf.core.identity.ID,
-     *      org.eclipse.ecf.core.SharedObjectDescription)
+     *      org.eclipse.ecf.core.ReplicaSharedObjectDescription)
      */
     public void sendCreate(ID toContainerID,
-            SharedObjectDescription sd) throws IOException {
+    		ReplicaSharedObjectDescription sd) throws IOException {
         if (isInactive()) {
             trace("sendCreate("+toContainerID+","+sd+") CONTEXT INACTIVE");
             return;

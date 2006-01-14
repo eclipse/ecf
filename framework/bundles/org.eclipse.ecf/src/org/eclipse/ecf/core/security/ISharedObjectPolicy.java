@@ -9,7 +9,7 @@
 package org.eclipse.ecf.core.security;
 
 import java.security.PermissionCollection;
-import org.eclipse.ecf.core.SharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 
 public interface ISharedObjectPolicy extends IContainerPolicy {
@@ -24,8 +24,8 @@ public interface ISharedObjectPolicy extends IContainerPolicy {
 	 *            Null if directed to all containers in group.
 	 * @param localID
 	 *            the ID of the local container
-	 * @param newObject
-	 *            the shared object description associated with the shared
+	 * @param newObjectDescription
+	 *            the ReplicaSharedObjectDescription associated with the shared
 	 *            object being added
 	 * @return PermissionCollection the permission collection associated with
 	 *         successful acceptance of the add request. Null if the add should
@@ -35,6 +35,6 @@ public interface ISharedObjectPolicy extends IContainerPolicy {
 	 *             should leave group
 	 */
 	public PermissionCollection checkAddSharedObject(ID fromID, ID toID,
-			ID localID, SharedObjectDescription newObject)
+			ID localID, ReplicaSharedObjectDescription newObjectDescription)
 			throws SecurityException;
 }

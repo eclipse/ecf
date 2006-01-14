@@ -202,10 +202,13 @@ public class FileTransferSharedObject extends TransactionSharedObject
     public void init(ISharedObjectConfig config) throws SharedObjectInitException {
         super.init(config);
         Map map = config.getProperties();
+    	System.out.println("FileTransferSharedObject.activated:"+getConfig().getSharedObjectID()+":"+getConfig().getHomeContainerID());
         Object [] args = (Object []) map.get("args");
         if (args != null && args.length == 1) {
             transferParams = (FileTransferParams) args[0];
+        	System.out.println("FileTransferSharedObject.transferParams="+transferParams);
             progressListener = transferParams.getProgressListener();
+        	System.out.println("FileTransferSharedObject.transferParams="+transferParams);
         }
     }
     protected ReplicaSharedObjectDescription getReplicaDescription(ID remoteMember)
@@ -213,8 +216,8 @@ public class FileTransferSharedObject extends TransactionSharedObject
     	HashMap map = new HashMap();
     	map.put("args",new Object [] { transferParams });
     	map.put("types",new String [] { FileTransferParams.class.getName() });
-        return new ReplicaSharedObjectDescription(getID(),
-                                        getClass().getName(),map,
+        return new ReplicaSharedObjectDescription(getClass(),getID(),
+                                        getConfig().getHomeContainerID(),map,
                                         replicateID++);
     }
 

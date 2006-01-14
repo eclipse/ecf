@@ -306,8 +306,8 @@ public class PublishedGraphTracker implements ISharedObject {
 			try {
 				getContext().sendCreate(
 						null,
-						new ReplicaSharedObjectDescription(config.getSharedObjectID(),
-								getClass().getName()));
+						new ReplicaSharedObjectDescription(getClass(),config.getSharedObjectID(),
+								config.getHomeContainerID()));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -321,8 +321,8 @@ public class PublishedGraphTracker implements ISharedObject {
 		try {
 			getContext().sendCreate(
 					containerID,
-					new ReplicaSharedObjectDescription(config.getSharedObjectID(),
-							getClass().getName(), props));
+					new ReplicaSharedObjectDescription(getClass(),config.getSharedObjectID(),
+							config.getHomeContainerID(), props));
 		} catch (IOException ex) {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();

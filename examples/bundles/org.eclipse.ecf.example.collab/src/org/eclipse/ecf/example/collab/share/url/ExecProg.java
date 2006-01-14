@@ -117,8 +117,7 @@ public class ExecProg extends GenericSharedObject
         HashMap map = new HashMap();
         map.put("args",args);
         map.put("types",types);
-        return new ReplicaSharedObjectDescription(getHomeContainerID(),
-                                        getClass().getName(),
+        return new ReplicaSharedObjectDescription(getClass(),getID(),getHomeContainerID(),
                                         map,
                                         replicateID++);
     }

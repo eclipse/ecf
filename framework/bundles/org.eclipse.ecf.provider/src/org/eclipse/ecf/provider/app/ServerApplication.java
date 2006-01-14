@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.eclipse.ecf.core.ISharedObjectContainerGroupManager;
 import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.SharedObjectDescription;
+import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
@@ -48,8 +48,8 @@ public class ServerApplication {
     }
     static class SharedObjectAddListener implements ISharedObjectPolicy {
 
-		public PermissionCollection checkAddSharedObject(ID fromID, ID toID, ID localID, SharedObjectDescription newObject) throws SecurityException {
-			System.out.println("ADDSHAREDOBJECT From="+fromID+";To="+toID+";SharedObject="+newObject);
+		public PermissionCollection checkAddSharedObject(ID fromID, ID toID, ID localID, ReplicaSharedObjectDescription newObject) throws SecurityException {
+			System.out.println("CHECKADDSHAREDOBJECT From="+fromID+";To="+toID+";SharedObject="+newObject);
 			return null;
 		}
 

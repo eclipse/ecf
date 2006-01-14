@@ -50,7 +50,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 		map.put("args", new Object[] { transferParams, eclipseStageID });
 		map.put("types", new String[] { FileTransferParams.class.getName(),
 				ID.class.getName() });
-		return new ReplicaSharedObjectDescription(getID(), getClass().getName(), map,
+		return new ReplicaSharedObjectDescription(getClass(), getID(),getConfig().getHomeContainerID(),map,
 				replicateID++);
 	}
 

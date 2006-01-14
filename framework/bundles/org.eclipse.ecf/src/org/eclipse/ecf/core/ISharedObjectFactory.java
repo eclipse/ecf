@@ -7,21 +7,21 @@ import java.util.List;
  */
 public interface ISharedObjectFactory {
 	/*
-	 * Add a SharedObjectDescription to the set of known SharedObjectDescription.
+	 * Add a SharedObjectTypeDescription to the set of known SharedObjectTypeDescriptions.
 	 * 
-	 * @param scd the SharedObjectDescription to add to this factory @return
-	 * SharedObjectDescription the old description of the same name, null if none
+	 * @param scd the SharedObjectTypeDescription to add to this factory @return
+	 * SharedObjectTypeDescription the old description of the same name, null if none
 	 * found
 	 */
-	public SharedObjectDescription addDescription(SharedObjectDescription description);
+	public SharedObjectTypeDescription addDescription(SharedObjectTypeDescription description);
 
 	/**
-	 * Get a collection of the SharedObjectDescriptions currently known to this
+	 * Get a collection of the SharedObjectTypeDescriptions currently known to this
 	 * factory. This allows clients to query the factory to determine what if
-	 * any other SharedObjectDescriptions are currently registered with the
+	 * any other SharedObjectTypeDescriptions are currently registered with the
 	 * factory, and if so, what they are.
 	 * 
-	 * @return List of SharedObjectDescription instances
+	 * @return List of SharedObjectTypeDescription instances
 	 */
 	public List getDescriptions();
 
@@ -30,27 +30,27 @@ public interface ISharedObjectFactory {
 	 * factory
 	 * 
 	 * @param description
-	 *            the SharedObjectDescription to look for
+	 *            the SharedObjectTypeDescription to look for
 	 * @return true if description is already known to factory, false otherwise
 	 */
-	public boolean containsDescription(SharedObjectDescription description);
+	public boolean containsDescription(SharedObjectTypeDescription description);
 
 	/**
-	 * Get the known SharedObjectDescription given it's name.
+	 * Get the known SharedObjectTypeDescription given it's name.
 	 * 
 	 * @param name
-	 * @return SharedObjectDescription found
+	 * @return SharedObjectTypeDescription found
 	 * @throws SharedObjectInstantiationException
 	 */
-	public SharedObjectDescription getDescriptionByName(String name)
+	public SharedObjectTypeDescription getDescriptionByName(String name)
 			throws SharedObjectInstantiationException;
 
 	/**
-	 * Create ISharedObject instance. Given a SharedObjectDescription object, a String []
+	 * Create ISharedObject instance. Given a SharedObjectTypeDescription object, a String []
 	 * of argument types, and an Object [] of parameters, this method will
 	 * <p>
 	 * <ul>
-	 * <li>lookup the known SharedObjectDescriptions to find one of matching name</li>
+	 * <li>lookup the known SharedObjectTypeDescriptions to find one of matching name</li>
 	 * <li>if found, will retrieve or create an ISharedObjectInstantiator for that
 	 * description</li>
 	 * <li>Call the ISharedObjectInstantiator.createInstance method to return an
@@ -58,7 +58,7 @@ public interface ISharedObjectFactory {
 	 * </ul>
 	 * 
 	 * @param desc
-	 *            the SharedObjectDescription to use to create the instance
+	 *            the SharedObjectTypeDescription to use to create the instance
 	 * @param argTypes
 	 *            a String [] defining the types of the args parameter
 	 * @param args
@@ -67,16 +67,16 @@ public interface ISharedObjectFactory {
 	 * @return a valid instance of ISharedObject
 	 * @throws SharedObjectInstantiationException
 	 */
-	public ISharedObject createSharedObject(SharedObjectDescription desc,
+	public ISharedObject createSharedObject(SharedObjectTypeDescription typeDescription,
 			String[] argTypes, Object[] args)
 			throws SharedObjectInstantiationException;
 
 	/**
-	 * Create ISharedObject instance. Given a SharedObjectDescription name, this method
+	 * Create ISharedObject instance. Given a SharedObjectTypeDescription name, this method
 	 * will
 	 * <p>
 	 * <ul>
-	 * <li>lookup the known SharedObjectDescriptions to find one of matching name</li>
+	 * <li>lookup the known SharedObjectTypeDescriptions to find one of matching name</li>
 	 * <li>if found, will retrieve or create an ISharedObjectInstantiator for that
 	 * description</li>
 	 * <li>Call the ISharedObjectInstantiator.createInstance method to return an
@@ -84,7 +84,7 @@ public interface ISharedObjectFactory {
 	 * </ul>
 	 * 
 	 * @param descriptionName
-	 *            the SharedObjectDescription name to lookup
+	 *            the SharedObjectTypeDescription name to lookup
 	 * @return a valid instance of ISharedObject
 	 * @throws SharedObjectInstantiationException
 	 */
@@ -92,11 +92,11 @@ public interface ISharedObjectFactory {
 			throws SharedObjectInstantiationException;
 
 	/**
-	 * Create ISharedObject instance. Given a SharedObjectDescription name, this method
+	 * Create ISharedObject instance. Given a SharedObjectTypeDescription name, this method
 	 * will
 	 * <p>
 	 * <ul>
-	 * <li>lookup the known SharedObjectDescriptions to find one of matching name</li>
+	 * <li>lookup the known SharedObjectTypeDescriptions to find one of matching name</li>
 	 * <li>if found, will retrieve or create an ISharedObjectInstantiator for that
 	 * description</li>
 	 * <li>Call the ISharedObjectInstantiator.createInstance method to return an
@@ -104,7 +104,7 @@ public interface ISharedObjectFactory {
 	 * </ul>
 	 * 
 	 * @param descriptionName
-	 *            the SharedObjectDescription name to lookup
+	 *            the SharedObjectTypeDescription name to lookup
 	 * @param args
 	 *            the Object [] of arguments passed to the
 	 *            ISharedObjectInstantiator.createInstance method
@@ -115,11 +115,11 @@ public interface ISharedObjectFactory {
 			throws SharedObjectInstantiationException;
 
 	/**
-	 * Create ISharedObject instance. Given a SharedObjectDescription name, this method
+	 * Create ISharedObject instance. Given a SharedObjectTypeDescription name, this method
 	 * will
 	 * <p>
 	 * <ul>
-	 * <li>lookup the known SharedObjectDescriptions to find one of matching name</li>
+	 * <li>lookup the known SharedObjectTypeDescriptions to find one of matching name</li>
 	 * <li>if found, will retrieve or create an ISharedObjectInstantiator for that
 	 * description</li>
 	 * <li>Call the ISharedObjectInstantiator.createInstance method to return an
@@ -127,7 +127,7 @@ public interface ISharedObjectFactory {
 	 * </ul>
 	 * 
 	 * @param descriptionName
-	 *            the SharedObjectDescription name to lookup
+	 *            the SharedObjectTypeDescription name to lookup
 	 * @param argsTypes
 	 *            the String [] of argument types of the following args
 	 * @param args
@@ -143,8 +143,8 @@ public interface ISharedObjectFactory {
 	 * Remove given description from set known to this factory.
 	 * 
 	 * @param scd
-	 *            the SharedObjectDescription to remove
-	 * @return the removed SharedObjectDescription, null if nothing removed
+	 *            the SharedObjectTypeDescription to remove
+	 * @return the removed SharedObjectTypeDescription, null if nothing removed
 	 */
-	public SharedObjectDescription removeDescription(SharedObjectDescription scd);
+	public SharedObjectTypeDescription removeDescription(SharedObjectTypeDescription scd);
 }

@@ -88,7 +88,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			return null;
 		}
 		ID getHomeID() {
-			return description.getHomeID();
+			ID homeID = description.getHomeID();
+			if (homeID == null) return getID();
+			else return homeID;
 		}
 		ID getID() {
 			return description.getID();
@@ -331,7 +333,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 *             failed
 	 */
 	protected Object checkRemoteCreate(ID fromID, ID toID,
-			SharedObjectDescription desc) throws Exception {
+			ReplicaSharedObjectDescription desc) throws Exception {
 		debug("checkRemoteCreate(" + fromID + "," + toID + "," + desc + ")");
 		if (policy != null) {
 			return policy.checkAddSharedObject(fromID, toID, getID(), desc);
@@ -578,12 +580,15 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		debug("handleCreateMessage:" + mess);
 		ContainerMessage.CreateMessage create = (ContainerMessage.CreateMessage) mess
 				.getData();
+		if (create == null) throw new IOException("handleCreateMessage:bad ContainerMessage");
 		ReplicaSharedObjectDescription desc = (ReplicaSharedObjectDescription) create
 				.getData();
+		if (create == null) throw new IOException("handleCreateMessage:bad ReplicaSharedObjectDescription");
 		ID fromID = mess.getFromContainerID();
 		ID toID = mess.getToContainerID();
 		Object checkCreateResult = null;
 		ID sharedObjectID = desc.getID();
+		if (sharedObjectID == null) throw new IOException("handleCreateMessage:sharedObjectID is null");
 		// Check to make sure that the remote creation is allowed.
 		// If this method throws, a failure (and exception will be sent back to
 		// caller

@@ -70,8 +70,7 @@ public class EclipseMessage extends GenericSharedObject {
         Object[] remoteArgs = { message, sender };
         HashMap map = new HashMap();
         map.put("args", remoteArgs);
-        return new ReplicaSharedObjectDescription(getHomeContainerID(), getClass()
-                .getName(), map, replicateID++);
+        return new ReplicaSharedObjectDescription(getClass(),getID(),getConfig().getHomeContainerID(),map, replicateID++);
     }
 
     protected void showMessage(final String m, final String s) {

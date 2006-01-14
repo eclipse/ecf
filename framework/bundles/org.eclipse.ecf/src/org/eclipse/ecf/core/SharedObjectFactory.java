@@ -21,8 +21,10 @@ import org.eclipse.ecf.internal.core.Trace;
  */
 public class SharedObjectFactory implements ISharedObjectFactory {
 	private static Trace debug = Trace.create("containerfactory");
+	
 	private static Hashtable sharedobjectdescriptions = new Hashtable();
 	protected static ISharedObjectFactory instance = null;
+	
 	static {
 		instance = new SharedObjectFactory();
 	}
@@ -49,9 +51,9 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectFactory#addDescription(org.eclipse.ecf.core.SharedObjectDescription)
+	 * @see org.eclipse.ecf.core.ISharedObjectFactory#addDescription(org.eclipse.ecf.core.SharedObjectTypeDescription)
 	 */
-	public SharedObjectDescription addDescription(SharedObjectDescription description) {
+	public SharedObjectTypeDescription addDescription(SharedObjectTypeDescription description) {
 		trace("addDescription(" + description + ")");
 		return addDescription0(description);
 	}
@@ -69,37 +71,37 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		return new ArrayList(sharedobjectdescriptions.values());
 	}
 
-	protected SharedObjectDescription addDescription0(SharedObjectDescription n) {
+	protected SharedObjectTypeDescription addDescription0(SharedObjectTypeDescription n) {
 		if (n == null)
 			return null;
-		return (SharedObjectDescription) sharedobjectdescriptions.put(n.getName(), n);
+		return (SharedObjectTypeDescription) sharedobjectdescriptions.put(n.getName(), n);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectFactory#containsDescription(org.eclipse.ecf.core.SharedObjectDescription)
+	 * @see org.eclipse.ecf.core.ISharedObjectFactory#containsDescription(org.eclipse.ecf.core.SharedObjectTypeDescription)
 	 */
-	public boolean containsDescription(SharedObjectDescription scd) {
+	public boolean containsDescription(SharedObjectTypeDescription scd) {
 		return containsDescription0(scd);
 	}
 
-	protected boolean containsDescription0(SharedObjectDescription scd) {
+	protected boolean containsDescription0(SharedObjectTypeDescription scd) {
 		if (scd == null)
 			return false;
 		return sharedobjectdescriptions.containsKey(scd.getName());
 	}
 
-	protected SharedObjectDescription getDescription0(SharedObjectDescription scd) {
+	protected SharedObjectTypeDescription getDescription0(SharedObjectTypeDescription scd) {
 		if (scd == null)
 			return null;
-		return (SharedObjectDescription) sharedobjectdescriptions.get(scd.getName());
+		return (SharedObjectTypeDescription) sharedobjectdescriptions.get(scd.getName());
 	}
 
-	protected SharedObjectDescription getDescription0(String name) {
+	protected SharedObjectTypeDescription getDescription0(String name) {
 		if (name == null)
 			return null;
-		return (SharedObjectDescription) sharedobjectdescriptions.get(name);
+		return (SharedObjectTypeDescription) sharedobjectdescriptions.get(name);
 	}
 
 	/*
@@ -107,10 +109,10 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#getDescriptionByName(java.lang.String)
 	 */
-	public SharedObjectDescription getDescriptionByName(String name)
+	public SharedObjectTypeDescription getDescriptionByName(String name)
 			throws SharedObjectInstantiationException {
 		trace("getDescriptionByName(" + name + ")");
-		SharedObjectDescription res = getDescription0(name);
+		SharedObjectTypeDescription res = getDescription0(name);
 		if (res == null) {
 			throw new SharedObjectInstantiationException(
 					"SharedObjectInstantiationException named '" + name + "' not found");
@@ -121,10 +123,10 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObject(org.eclipse.ecf.core.SharedObjectDescription,
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObject(org.eclipse.ecf.core.SharedObjectTypeDescription,
 	 *      java.lang.String[], java.lang.Object[])
 	 */
-	public ISharedObject createSharedObject(SharedObjectDescription desc,
+	public ISharedObject createSharedObject(SharedObjectTypeDescription desc,
 			String[] argTypes, Object[] args)
 			throws SharedObjectInstantiationException {
 		trace("createSharedObject(" + desc + ","
@@ -133,7 +135,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		if (desc == null)
 			throw new SharedObjectInstantiationException(
 					"SharedObjectDescription cannot be null");
-		SharedObjectDescription cd = getDescription0(desc);
+		SharedObjectTypeDescription cd = getDescription0(desc);
 		if (cd == null)
 			throw new SharedObjectInstantiationException(
 					"SharedObjectDescription named '" + desc.getName()
@@ -196,16 +198,16 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#removeDescription(org.eclipse.ecf.core.SharedObjectDescription)
+	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#removeDescription(org.eclipse.ecf.core.SharedObjectTypeDescription)
 	 */
-	public SharedObjectDescription removeDescription(SharedObjectDescription scd) {
+	public SharedObjectTypeDescription removeDescription(SharedObjectTypeDescription scd) {
 		trace("removeDescription(" + scd + ")");
 		return removeDescription0(scd);
 	}
 
-	protected SharedObjectDescription removeDescription0(SharedObjectDescription n) {
+	protected SharedObjectTypeDescription removeDescription0(SharedObjectTypeDescription n) {
 		if (n == null)
 			return null;
-		return (SharedObjectDescription) sharedobjectdescriptions.remove(n.getName());
+		return (SharedObjectTypeDescription) sharedobjectdescriptions.remove(n.getName());
 	}
 }

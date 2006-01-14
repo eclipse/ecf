@@ -98,7 +98,7 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * same ID as this instance. This method allows ISharedObject instances
 	 * (with a reference to a valid ISharedObjectContext) to send messages to
 	 * remote containers asking them to create an instance of a new
-	 * ISharedObject. The given ISharedObjectDescription provides the
+	 * ISharedObject. The given ReplicaSharedObjectDescription provides the
 	 * specification of the new object.
 	 * 
 	 * @param toContainerID
@@ -107,12 +107,12 @@ public interface ISharedObjectContext extends IAdaptable {
 	 *            is assumed to be made of <b>all </b> remote containers
 	 *            currently in the given group (excepting the local container).
 	 * @param sd
-	 *            the SharedObjectDescription describing the class, constructor
+	 *            the ReplicaSharedObjectDescription describing the class, constructor
 	 *            and other properties to be associated with the new instance
 	 * @throws IOException
 	 *             thrown if message cannot be sent by container
 	 */
-	public void sendCreate(ID toContainerID, SharedObjectDescription sd)
+	public void sendCreate(ID toContainerID, ReplicaSharedObjectDescription sd)
 			throws IOException;
 
 	/**

@@ -9,11 +9,11 @@
 package org.eclipse.ecf.core.provider;
 
 import org.eclipse.ecf.core.ISharedObject;
-import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInstantiationException;
+import org.eclipse.ecf.core.SharedObjectTypeDescription;
 
 public interface ISharedObjectInstantiator {
-	public ISharedObject createInstance(SharedObjectDescription description,
+	public ISharedObject createInstance(SharedObjectTypeDescription typeDescription,
 			Class[] argTypes, Object[] args)
 			throws SharedObjectInstantiationException;
 }

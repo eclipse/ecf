@@ -131,6 +131,7 @@ public class TransactionSharedObject extends GenericSharedObject implements ISha
     }
     public void handleCreateResponse(ID fromID, Throwable e, Long identifier)
     {
+    	System.out.println("handleCreateResponse("+fromID+","+e+","+identifier+"on:"+getID());
         // If no exception, remove
         synchronized (lock) {
             if (state == ISharedObjectContainerTransaction.VOTING) {

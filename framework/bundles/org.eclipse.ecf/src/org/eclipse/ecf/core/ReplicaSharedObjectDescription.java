@@ -9,10 +9,8 @@
 package org.eclipse.ecf.core;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
 
 /**
  * Description of a remote ISharedObject instance.
@@ -20,61 +18,45 @@ import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
  */
 public class ReplicaSharedObjectDescription extends SharedObjectDescription
 		implements Serializable {
-	private static final long serialVersionUID = 8168017915032875581L;
+	private static final long serialVersionUID = 2764430278848370713L;
+	
 	protected static long staticID = 0;
 	public static long getNextUniqueIdentifier() {
 		return staticID++;
 	}
+	
 	protected ID homeID;
-	protected String className;
 	protected long identifier;
 	
-	public ReplicaSharedObjectDescription(String name,
-			ISharedObjectInstantiator inst, String desc, Map props) {
-		super(name, inst, desc, props);
-	}
-	public ReplicaSharedObjectDescription(String name, ID objectID, ID homeID, Map dict, long ident) {
-		super(name,null,null,null);
-		this.id = objectID;
+	public ReplicaSharedObjectDescription(SharedObjectTypeDescription type, ID objectID, ID homeID, Map props, long ident) {
+		super(type,objectID,props);
 		this.homeID = homeID;
-		if (dict != null) {
-			this.properties = dict;
-		} else {
-			this.properties = new HashMap();
-		}
 		this.identifier = ident;
 	}
-	public ReplicaSharedObjectDescription(ID objectID, ID homeID,
-			String className, Map dict, long ident) {
-		super(null, null, null, null);
-		this.id = objectID;
+	public ReplicaSharedObjectDescription(String typeName, ID objectID, ID homeID, Map props, long ident) {
+		super(new SharedObjectTypeDescription(typeName, null, null, null), objectID, props);
 		this.homeID = homeID;
-		this.className = className;
 		this.identifier = ident;
-		if (dict == null) {
-			this.properties = new HashMap();
-		} else {
-			this.properties = dict;
-		}
 	}
-	public ReplicaSharedObjectDescription(ID id, String className) {
-		this(id, className, getNextUniqueIdentifier());
+	public ReplicaSharedObjectDescription(String typeName, ID objectID, ID homeID, Map props) {
+		this(typeName,objectID,homeID,props,getNextUniqueIdentifier());
 	}
-	public ReplicaSharedObjectDescription(ID id, String className, long ident) {
-		this(id, null, className, null, ident);
+	public ReplicaSharedObjectDescription(String typeName, ID objectID, ID homeID) {
+		this(typeName,objectID,homeID,null);
 	}
-	public ReplicaSharedObjectDescription(ID id, String className, Map dict) {
-		this(id, null, className, dict, getNextUniqueIdentifier());
+	public ReplicaSharedObjectDescription(Class clazz, ID objectID, ID homeID, Map props, long ident) {
+		super(new SharedObjectTypeDescription(clazz.getName(),null),objectID,props);
+		this.homeID = homeID;
+		this.identifier = ident;
 	}
-	public ReplicaSharedObjectDescription(ID id, String className, Map dict,
-			long ident) {
-		this(id, null, className, dict, ident);
+	public ReplicaSharedObjectDescription(Class clazz, ID objectID, ID homeID, Map props) {
+		this(clazz,objectID,homeID,props,getNextUniqueIdentifier());
 	}
-	public String getClassname() {
-		return className;
+	public ReplicaSharedObjectDescription(Class clazz, ID objectID, ID homeID) {
+		this(clazz,objectID,homeID,null);
 	}
-	public String getDescription() {
-		return description;
+	public ReplicaSharedObjectDescription(Class clazz, ID objectID) {
+		this(clazz,objectID,null,null);
 	}
 	public ID getHomeID() {
 		return homeID;
@@ -82,23 +64,11 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 	public long getIdentifier() {
 		return identifier;
 	}
-	public ISharedObjectInstantiator getInstantiator() {
-		return instantiator;
-	}
-	public String getName() {
-		return name;
-	}
-	public Map getProperties() {
-		return properties;
-	}
-	public void setClassname(String theName) {
-		this.className = theName;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
 	public void setHomeID(ID theID) {
 		this.homeID = theID;
+	}
+	public void setID(ID theID) {
+		this.id = theID;
 	}
 	public void setIdentifier(long identifier) {
 		this.identifier = identifier;
@@ -107,10 +77,10 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 		this.properties = props;
 	}
 	public String toString() {
-		StringBuffer sb = new StringBuffer("SharedObjectDescription[");
+		StringBuffer sb = new StringBuffer("ReplicaSharedObjectDescription[");
+		sb.append("type=").append(typeDescription).append(";");
 		sb.append("id:").append(id).append(";");
 		sb.append("homeID:").append(homeID).append(";");
-		sb.append("class:").append(className).append(";");
 		sb.append("props:").append(properties).append(";");
 		sb.append("ident:").append(identifier).append("]");
 		return sb.toString();

@@ -26,8 +26,8 @@ import org.eclipse.ecf.core.ContainerDescription;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.ISharedObjectFactory;
-import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectFactory;
+import org.eclipse.ecf.core.SharedObjectTypeDescription;
 import org.eclipse.ecf.core.comm.ConnectionDescription;
 import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
@@ -265,8 +265,7 @@ public class ECFPlugin extends Plugin {
 				Map properties = getProperties(member
 						.getChildren(PROPERTY_ELEMENT_NAME));
 				// Now make description instance
-				// XXX this needs to create a full description
-				SharedObjectDescription scd = new SharedObjectDescription(name,exten,description,properties);
+				SharedObjectTypeDescription scd = new SharedObjectTypeDescription(name,exten,description,properties);
 				debug("setupSharedObjectExtensionPoint:created description:" + scd);
 				ISharedObjectFactory factory = SharedObjectFactory.getDefault();
 				if (factory.containsDescription(scd)) {

@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Random;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
@@ -231,7 +230,7 @@ public class GenericSharedObject implements ISharedObject {
     protected ReplicaSharedObjectDescription getReplicaDescription(ID receiver) {
         ISharedObjectConfig soconfig = getConfig();
         if (soconfig != null) {
-            return new ReplicaSharedObjectDescription(getID(), getClass().getName(),
+            return new ReplicaSharedObjectDescription(getClass(),getID(),getHomeContainerID(),
             		soconfig.getProperties(), replicateID++);
         } else return null;
     }
@@ -470,41 +469,39 @@ public void handleEvent(Event event) {
         }
     }
 
-    public ID createObject(ID target, String className, Map map) throws Exception {
-        ISharedObjectContext crs = getContext();
-        ID newID = IDFactory.getDefault().createStringID(getNewUniqueIDString());
-        if (crs == null) {
-            throw new InstantiationException(
-                    "Cannot create object.  Have no local creation capability because context is null");
-        } else {
-            if (className != null && !className.equals("")) {
-                trace("Creating new replicated object with class: " + className);
-                if (target == null) {
-                    try {
-                        Class clazz = Class.forName(className);
-                        Object inst = clazz.newInstance();
-                        if (!(inst instanceof ISharedObject)) {
-                            throw new InstantiationException("Exception creating instance of class: "+className+".  Does not implement ISharedObject");
-                        }
-                        crs.getSharedObjectManager().addSharedObject(newID, (ISharedObject) inst, map);
-                    } catch (Exception e) {
-                        traceDump("Exception creating replicated object.", e);
-                        throw e;
-                    }
-                } else {
-                    throw new Exception(
-                            "Server hasn't given permission for this operation");
+    public ID createObject(ID target, ReplicaSharedObjectDescription desc) throws Exception {
+    	if (target == null) {
+	        ISharedObjectContext crs = getContext();
+	        if (desc.getID() == null) {
+	        	desc.setID(IDFactory.getDefault().createStringID(getNewUniqueIDString()));
+	        }
+            try {
+            	String className = desc.getTypeDescription().getClassName();
+                Class clazz = Class.forName(className);
+                Object inst = clazz.newInstance();
+                if (!(inst instanceof ISharedObject)) {
+                    throw new InstantiationException("Exception creating instance of class: "+className+".  Does not implement ISharedObject");
                 }
-                // Success
-                return newID;
-            } else {
-                trace("Invalid classname '" + className
-                        + "'.  Cannot create object.");
-                throw new InstantiationException("Invalid classname '"
-                        + className);
+                if (inst instanceof ISharedObjectContainerTransaction) {
+                    crs.getSharedObjectManager().addSharedObject(desc.getID(),(ISharedObject) inst,desc.getProperties());
+                } else {
+                	ReplicaSharedObjectDescription sd = new ReplicaSharedObjectDescription(
+							clazz, desc.getID(), desc.getHomeID(), desc
+									.getProperties());
+					crs.getSharedObjectManager().createSharedObject(sd);
+                }
+            } catch (Exception e) {
+                traceDump("Exception creating replicated object.", e);
+                throw e;
             }
-        }
-    }
+	        if (crs == null) {
+	            throw new InstantiationException(
+	                    "Cannot create object.  Have no local creation capability because context is null");
+	        } else {
+	        	return crs.getSharedObjectManager().createSharedObject(desc);
+	        }
+    	} else throw new Exception("cannot send creation requests direct to target");
+	}
 
     public String getNewUniqueIDString() {
         return String.valueOf((new Random()).nextLong());
