@@ -57,7 +57,7 @@ public interface ISharedObjectFactory {
 	 * instance of ISharedObject</li>
 	 * </ul>
 	 * 
-	 * @param desc
+	 * @param typeDescription
 	 *            the SharedObjectTypeDescription to use to create the instance
 	 * @param argTypes
 	 *            a String [] defining the types of the args parameter
