@@ -111,8 +111,8 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		}
 	}
 	public void dispose() {
-		fireContainerEvent(new ContainerDisposeEvent(getID()));
 		disconnect();
+		fireContainerEvent(new ContainerDisposeEvent(getID()));
 	}
 
 	protected void fireServiceAdded(ServiceEvent arg0) {
