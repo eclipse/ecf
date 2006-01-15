@@ -139,18 +139,18 @@ public class AbstractSharedObject implements ISharedObject,
 	protected ISharedObjectContext getContext() {
 		return getConfig().getContext();
 	}
-	protected ID getPrimaryContainerID() {
+	protected ID getHomeContainerID() {
 		return getConfig().getHomeContainerID();
 	}
-	protected ID getLocalID() {
+	protected ID getLocalContainerID() {
 		return getContext().getLocalContainerID();
 	}
 	protected ID getGroupID() {
 		return getContext().getConnectedID();
 	}
 	protected boolean isPrimary() {
-		ID local = getLocalID();
-		ID home = getPrimaryContainerID();
+		ID local = getLocalContainerID();
+		ID home = getHomeContainerID();
 		if (local == null || home == null) {
 			return false;
 		} else return (local.equals(home));
@@ -219,7 +219,7 @@ public class AbstractSharedObject implements ISharedObject,
      * to send for other reason
      */
     protected void sendSharedObjectMsgToPrimary(SharedObjectMsg msg) throws IOException {
-    	sendSharedObjectMsgTo(getPrimaryContainerID(), msg);
+    	sendSharedObjectMsgTo(getHomeContainerID(), msg);
     }
     /**
      * Send SharedObjectMsg to local shared object.  This places the given message at
@@ -266,7 +266,7 @@ public class AbstractSharedObject implements ISharedObject,
 	    		getConfig().getProperties());
 	}
 	/**
-	 * This method is called by an event processor to
+	 * This method is called by replicateToRemoteContainers to
 	 * determine the ReplicaSharedObjectDescriptions associated with the given receivers.  Receivers
 	 * may be null (meaning that all in group are to be receivers), and if so then this method
 	 * should return a ReplicaSharedObjectDescription [] of length 1 with a single ReplicaSharedObjectDescription
@@ -297,5 +297,51 @@ public class AbstractSharedObject implements ISharedObject,
 		}
 		return descriptions;
 	}
-	
+	/**
+	 * Replicate this shared object to a given set of remote containers. This
+	 * method will invoke the method getReplicaDescriptions in order to
+	 * determine the set of ReplicaSharedObjectDescriptions to send to remote
+	 * containers.
+	 * 
+	 * @param remoteContainers
+	 *            the set of remote containers to replicate to. If null, <b>all</b>
+	 *            containers in the current group are sent a message to create a
+	 *            replica of this shared object.
+	 */
+	protected void replicateToRemoteContainers(ID[] remoteContainers) {
+		if (remoteContainers == null)
+			trace("replicateTo(null)");
+		else
+			trace("replicateTo(" + Arrays.asList(remoteContainers) + ")");
+		try {
+			// Get current group membership
+			ISharedObjectContext context = getContext();
+			if (context == null)
+				return;
+			ID[] group = context.getGroupMemberIDs();
+			if (group == null || group.length < 1) {
+				// we're done
+				return;
+			}
+			ReplicaSharedObjectDescription[] createInfos = getReplicaDescriptions(remoteContainers);
+			if (createInfos != null) {
+				if (createInfos.length == 1) {
+					context.sendCreate((remoteContainers == null) ? null
+							: remoteContainers[0], createInfos[0]);
+				} else {
+					for (int i = 0; i < remoteContainers.length; i++) {
+						context.sendCreate(remoteContainers[i], createInfos[i]);
+					}
+				}
+			}
+		} catch (IOException e) {
+			if (remoteContainers == null)
+				traceStack("Exception in replicateTo(null)", e);
+			else
+				traceStack("Exception in replicateTo("
+						+ Arrays.asList(remoteContainers) + ")", e);
+			return;
+		}
+	}
+
 }

@@ -10,8 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.sharedobject;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +18,6 @@ import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.ISharedObjectTransactionParticipantsFilter;
-import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectAddAbortException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
@@ -86,7 +83,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		return sharedObject;
 	}
 	protected ID getHomeID() {
-		return getSharedObject().getPrimaryContainerID();
+		return getSharedObject().getHomeContainerID();
 	}
 	protected void addParticipants(ID[] ids) {
 		if (ids != null) {
@@ -161,39 +158,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		}
 	}
 	protected void replicateTo(ID[] remotes) {
-		if (remotes == null) {
-			trace("replicateTo(null)");
-		} else {
-			trace("replicateTo("+Arrays.asList(remotes)+")");
-		}
-		try {
-			// Get current group membership
-			ISharedObjectContext context = getSharedObject().getContext();
-			if (context == null)
-				return;
-			ID[] group = context.getGroupMemberIDs();
-			if (group == null || group.length < 1) {
-				// we're done
-				return;
-			}
-			ReplicaSharedObjectDescription[] createInfos = getSharedObject()
-					.getReplicaDescriptions(remotes);
-			if (createInfos != null) {
-				if (createInfos.length == 1) {
-					context.sendCreate((remotes == null) ? null : remotes[0],
-							createInfos[0]);
-				} else {
-					for (int i = 0; i < remotes.length; i++) {
-						context.sendCreate(remotes[i], createInfos[i]);
-					}
-				}
-			}
-		} catch (IOException e) {
-			if (remotes == null) traceStack("Exception in replicateTo(null)",e);
-			else traceStack("Exception in replicateTo(" + Arrays.asList(remotes)
-					+ ")", e);
-			return;
-		}
+		getSharedObject().replicateToRemoteContainers(remotes);
 	}
 	protected void handlePrimaryActivated(ISharedObjectActivatedEvent event) {
 		trace("handlePrimaryActivated("+event+")");
