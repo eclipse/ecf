@@ -13,6 +13,7 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.ds.IChannel;
 import org.eclipse.ecf.ds.IChannelListener;
+import org.eclipse.ecf.ds.events.IChannelEvent;
 import org.eclipse.ecf.ds.events.IChannelGroupDepartEvent;
 import org.eclipse.ecf.ds.events.IChannelGroupJoinEvent;
 import org.eclipse.ecf.ds.events.IChannelInitializeEvent;
@@ -33,14 +34,42 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 		}
 	}
 
-	IChannelListener listener;
+	protected IChannelListener listener;
 	
+	protected void setChannelListener(IChannelListener l) {
+		this.listener = l;
+	}
+	/**
+	 * Host implementation of channel class constructor
+	 * @param config the ISharedObjectTransactionConfig associated with this new host instance
+	 * @param listener the listener associated with this channel instance
+	 */
 	public ChannelImpl(ISharedObjectTransactionConfig config, IChannelListener listener) {
 		super(config);
-		this.listener = listener;
+		setChannelListener(listener);
+	}
+	/**
+	 * Replica implementation of channel class constructor
+	 *
+	 */
+	public ChannelImpl() {
+		super();
+	}
+	
+	protected void handleReplicaChannelEvent(IChannelEvent event) {
+		System.out.println("handleReplicaChannelEvent("+getID()+":"+event);
 	}
 	protected void initialize() {
 		super.initialize();
+		
+		// For the replicas, setup a channel listener that calls handleReplicaChannelEvent
+		if (!isPrimary()) {
+			setChannelListener(new IChannelListener() {
+				public void handleChannelEvent(IChannelEvent event) {
+					handleReplicaChannelEvent(event);
+				}
+			});
+		}
 		addEventProcessor(new IEventProcessor() {
 			public boolean acceptEvent(Event event) {
 				if (event instanceof IContainerConnectedEvent) {
