@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.datashare.DatashareContainerInstantiator"
+            description="ECF Channel Container"
+            name="ecf.generic.channel"/>
+   </extension>
+
+</plugin>
