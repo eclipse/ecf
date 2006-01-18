@@ -9,7 +9,4 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ecf;visibility:=reexport,
  org.eclipse.core.runtime
 Eclipse-AutoStart: true
-Export-Package: org.eclipse.ecf.datashare,
- org.eclipse.ecf.ds,
- org.eclipse.ecf.ds.events,
- org.eclipse.ecf.ds.impl
+Export-Package: org.eclipse.ecf.datashare, org.eclipse.ecf.ds,org.eclipse.ecf.ds.events

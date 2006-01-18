@@ -16,7 +16,6 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.ds.IChannel;
 import org.eclipse.ecf.ds.IChannelContainer;
 import org.eclipse.ecf.ds.IChannelListener;
-import org.eclipse.ecf.ds.impl.ChannelImpl;
 import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
 
 public class DatashareContainer extends TCPClientSOContainer implements

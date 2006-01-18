@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.ds.impl;
+package org.eclipse.ecf.provider.datashare;
 
 import java.io.Serializable;
 
