@@ -29,8 +29,8 @@ import org.eclipse.ecf.ds.events.IChannelMessageEvent;
 
 public class ChannelImpl extends TransactionSharedObject implements IChannel {
 
-	class ChannelMsg implements Serializable {
-		private static final long serialVersionUID = -6752722047308362941L;
+	static class ChannelMsg implements Serializable {
+		private static final long serialVersionUID = 9065358269778864152L;
 		byte [] channelData = null;
 		
 		ChannelMsg() {}
