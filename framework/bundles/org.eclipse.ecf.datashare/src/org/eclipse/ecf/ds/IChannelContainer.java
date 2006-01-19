@@ -29,6 +29,13 @@ public interface IChannelContainer {
 	 */
 	public IChannel createChannel(ID channelID, IChannelListener listener, Map properties) throws ECFException;
 	/**
+	 * Create a new channel within this container
+	 * @param newChannelConfig the configuration for the newly created channel.  Must not be null
+	 * @return IChannel the new IChannel instance
+	 * @throws ECFException if some problem creating IChannel instance
+	 */
+	public IChannel createChannel(IChannelConfig newChannelConfig) throws ECFException;
+	/**
 	 * Get IChannel with given channelID.  
 	 * @param channelID the ID of the channel to get
 	 * @return IChannel of channel within container with given ID.  Returns null if channel not found.

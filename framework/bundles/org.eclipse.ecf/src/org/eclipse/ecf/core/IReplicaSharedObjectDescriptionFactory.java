@@ -10,21 +10,15 @@ package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.identity.ID;
 
-/**
- * Contract for reliable container
- */
-public interface IReliableContainer extends IContainer {
+public interface IReplicaSharedObjectDescriptionFactory {
 	/**
-	 * Get the current membership of the joined group. This method will
-	 * accurately report the current group membership of the connected group.
+	 * Create new ReplicaSharedObjectDescription instance for delivery to remote
+	 * container identified by containerID parameter.  The containerID parameter ID
+	 * provided must not be null
 	 * 
-	 * @return ID[] the IDs of the current group membership
+	 * @param containerID
+	 * @return ReplicaSharedObjectDescription.  Must not return null, but rather a valid
+	 * ReplicaSharedObjectDescription instance
 	 */
-	public ID[] getGroupMemberIDs();
-
-	/**
-	 * @return true if this IReliableContainer instance is in the 'manager' role
-	 *         for the group, false otherwise
-	 */
-	public boolean isGroupManager();
+	public ReplicaSharedObjectDescription createDescriptionForContainer(ID containerID);
 }

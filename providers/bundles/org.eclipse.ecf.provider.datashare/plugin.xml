@@ -8,5 +8,11 @@
             description="ECF Channel Container"
             name="ecf.generic.channel"/>
    </extension>
+   <extension
+         point="org.eclipse.ecf.sharedObjectFactory">
+      <sharedObjectFactory
+            class="org.eclipse.ecf.provider.datashare.ChannelFactory"
+            name="ecf.provider.datashare.channelimpl"/>
+   </extension>
 
 </plugin>
