@@ -24,7 +24,7 @@ public interface ISharedObjectInstantiator {
 	 * therefore to the provider implementation implementing this method). For example: 
 	 * <p></p><p><b>   SharedObjectFactory.getDefault().createSharedObject("foosharedobject",new String [] { java.lang.String }, new Object { "hello" });</b></p><p></p>
 	 * 
-	 * @param description the SharedObjectTypeDescription associated with the registered shared object provider
+	 * @param typeDescription the SharedObjectTypeDescription associated with the registered shared object provider
 	 * implementation plugin
 	 * @param argTypes the argument types specified by the caller.  May be null if no
 	 * arguments are passed in by caller to SharedObjectFactory.getDefault().createSharedObject(...)
