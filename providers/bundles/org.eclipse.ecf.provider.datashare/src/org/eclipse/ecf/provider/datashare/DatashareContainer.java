@@ -11,7 +11,6 @@ package org.eclipse.ecf.provider.datashare;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.ecf.core.IReplicaSharedObjectDescriptionFactory;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
@@ -80,7 +79,6 @@ public class DatashareContainer extends TCPClientSOContainer implements
 		try {
 			cons = clazz.getDeclaredConstructor(new Class[] {
 					ISharedObjectTransactionConfig.class,
-					IReplicaSharedObjectDescriptionFactory.class,
 					IChannelListener.class });
 		} catch (NoSuchMethodException e) {
 			throw new SharedObjectCreateException(
