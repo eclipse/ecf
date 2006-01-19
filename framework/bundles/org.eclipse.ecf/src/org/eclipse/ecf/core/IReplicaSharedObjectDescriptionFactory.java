@@ -20,5 +20,5 @@ public interface IReplicaSharedObjectDescriptionFactory {
 	 * @return ReplicaSharedObjectDescription.  Must not return null, but rather a valid
 	 * ReplicaSharedObjectDescription instance
 	 */
-	public ReplicaSharedObjectDescription createDescriptionForContainer(ID containerID);
+	public ReplicaSharedObjectDescription createDescriptionForContainer(ID containerID, ISharedObjectConfig config);
 }

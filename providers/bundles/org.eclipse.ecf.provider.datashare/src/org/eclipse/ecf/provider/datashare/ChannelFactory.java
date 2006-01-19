@@ -3,7 +3,6 @@
  */
 package org.eclipse.ecf.provider.datashare;
 
-import org.eclipse.ecf.core.IReplicaSharedObjectDescriptionFactory;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.SharedObjectInstantiationException;
@@ -25,7 +24,6 @@ public class ChannelFactory implements ISharedObjectInstantiator {
 		if (args != null && args.length == 3) {
 			// do stuff
 			return new ChannelImpl((ISharedObjectTransactionConfig) args[0],
-					(IReplicaSharedObjectDescriptionFactory) args[1],
 					(IChannelListener) args[2]);
 		} else
 			throw new SharedObjectInstantiationException(

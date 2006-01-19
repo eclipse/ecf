@@ -50,9 +50,6 @@ public class DatashareContainer extends TCPClientSOContainer implements
 			public ISharedObjectTransactionConfig getTransactionConfig() {
 				return null;
 			}
-			public IReplicaSharedObjectDescriptionFactory getReplicaDescriptionFactory() {
-				return null;
-			}
 			public Object getAdapter(Class adapter) {
 				return null;
 			}
@@ -70,7 +67,6 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	protected ISharedObject createSharedObject(
 			SharedObjectTypeDescription typeDescription,
 			ISharedObjectTransactionConfig transactionConfig,
-			IReplicaSharedObjectDescriptionFactory factory,
 			IChannelListener listener) throws SharedObjectCreateException {
 		Class clazz;
 		try {
@@ -94,7 +90,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 		ISharedObject so = null;
 		try {
 			so = (ISharedObject) cons.newInstance(new Object[] {
-					transactionConfig, factory, listener });
+					transactionConfig, listener });
 		} catch (Exception e) {
 			throw new SharedObjectCreateException(
 					"Cannot create instance of class "
@@ -111,8 +107,6 @@ public class DatashareContainer extends TCPClientSOContainer implements
 		IChannelListener listener = newChannelConfig.getListener();
 		ISharedObjectTransactionConfig transactionConfig = newChannelConfig
 				.getTransactionConfig();
-		IReplicaSharedObjectDescriptionFactory replicaFactory = newChannelConfig
-				.getReplicaDescriptionFactory();
 		ISharedObject so = null;
 		if (sotypedesc.getDescription() != null) {
 			so = SharedObjectFactory
@@ -122,14 +116,10 @@ public class DatashareContainer extends TCPClientSOContainer implements
 							new String[] {
 									ISharedObjectTransactionConfig.class
 											.getName(),
-									IReplicaSharedObjectDescriptionFactory.class
-											.getName(),
 									IChannelListener.class.getName() },
-							new Object[] { transactionConfig, replicaFactory,
-									listener });
+							new Object[] { transactionConfig, listener });
 		} else {
-			so = createSharedObject(sotypedesc, transactionConfig,
-					replicaFactory, listener);
+			so = createSharedObject(sotypedesc, transactionConfig, listener);
 		}
 		IChannel channel = (IChannel) so.getAdapter(IChannel.class);
 		if (channel == null)

@@ -1,7 +1,6 @@
 package org.eclipse.ecf.ds;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.IReplicaSharedObjectDescriptionFactory;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.SharedObjectDescription;
 
@@ -32,11 +31,4 @@ public interface IChannelConfig extends IAdaptable {
 	 * config parameters appropriate
 	 */
 	public ISharedObjectTransactionConfig getTransactionConfig();
-	/**
-	 * Get the IReplicaSharedObjectDescriptionFactory to use for replicating newly created IChannel
-	 * @return IReplicaSharedObjectDescriptionFactory.  Null if no factory specified.  If null,
-	 * then provider implementers of createChannel are free to specify whatever replication strategy
-	 * is appropriate
-	 */
-	public IReplicaSharedObjectDescriptionFactory getReplicaDescriptionFactory();
 }

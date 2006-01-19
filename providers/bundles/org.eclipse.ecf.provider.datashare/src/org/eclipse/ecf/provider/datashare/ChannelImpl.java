@@ -9,8 +9,6 @@
 package org.eclipse.ecf.provider.datashare;
 
 import java.io.Serializable;
-
-import org.eclipse.ecf.core.IReplicaSharedObjectDescriptionFactory;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
@@ -45,23 +43,17 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 	}
 
 	protected IChannelListener listener;
-	protected IReplicaSharedObjectDescriptionFactory replicaFactory;
 	
 	protected void setChannelListener(IChannelListener l) {
 		this.listener = l;
 	}
-	protected void setReplicaDescriptionFactory(IReplicaSharedObjectDescriptionFactory factory) {
-		this.replicaFactory = factory;
-	}
 	/**
 	 * Host implementation of channel class constructor
-	 * @param factory the IReplicaSharedObjectDescriptionFactory associated with this new host instance
 	 * @param config the ISharedObjectTransactionConfig associated with this new host instance
 	 * @param listener the listener associated with this channel instance
 	 */
-	public ChannelImpl(ISharedObjectTransactionConfig config, IReplicaSharedObjectDescriptionFactory factory, IChannelListener listener) {
+	public ChannelImpl(ISharedObjectTransactionConfig config, IChannelListener listener) {
 		super(config);
-		setReplicaDescriptionFactory(factory);
 		setChannelListener(listener);
 	}
 	/**
@@ -175,12 +167,8 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 	 * Override of AbstractSharedObject.getReplicaDescription
 	 */
 	protected ReplicaSharedObjectDescription getReplicaDescription(ID receiver) {
-		if (replicaFactory != null) {
-			return replicaFactory.createDescriptionForContainer(receiver);
-		} else {
-			return new ReplicaSharedObjectDescription(getClass(),getID(),getConfig().getHomeContainerID(),
-		    		getConfig().getProperties());
-		}
+		return new ReplicaSharedObjectDescription(getClass(),getID(),getConfig().getHomeContainerID(),
+	    		getConfig().getProperties());
 	}
 
 	public Object getAdapter(Class clazz) {
