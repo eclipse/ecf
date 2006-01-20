@@ -13,8 +13,8 @@ import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.SharedObjectMsgEvent;
 import org.eclipse.ecf.core.sharedobject.TransactionSharedObject;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
@@ -32,7 +32,6 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 	static class ChannelMsg implements Serializable {
 		private static final long serialVersionUID = 9065358269778864152L;
 		byte [] channelData = null;
-		
 		ChannelMsg() {}
 		ChannelMsg(byte [] data) {
 			this.channelData = data;
@@ -64,8 +63,9 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 		super();
 	}
 	
-	protected void handleReplicaChannelEvent(IChannelEvent event) {
-		System.out.println("handleReplicaChannelEvent("+getID()+":"+event);
+	protected void replicaHandleChannelEvent(IChannelEvent event) {
+		if (event instanceof IChannelMessageEvent) System.out.println("replica.channelMessage("+getID()+","+getLocalContainerID()+") message="+new String(((IChannelMessageEvent) event).getData()));
+		else System.out.println("replica.handleChannelEvent("+event.getChannelID()+")");
 	}
 	protected void initialize() {
 		super.initialize();
@@ -74,25 +74,21 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 		if (!isPrimary()) {
 			setChannelListener(new IChannelListener() {
 				public void handleChannelEvent(IChannelEvent event) {
-					handleReplicaChannelEvent(event);
+					replicaHandleChannelEvent(event);
 				}
 			});
 		}
 		addEventProcessor(new IEventProcessor() {
 			public boolean acceptEvent(Event event) {
-				if (event instanceof IContainerConnectedEvent) {
-					return true;
-				} else if (event instanceof IContainerDisconnectedEvent) {
-					return true;
-				}
+				if (event instanceof IContainerConnectedEvent) return true;
+				else if (event instanceof IContainerDisconnectedEvent) return true;
+				else if (event instanceof ISharedObjectMessageEvent) return true;
 				return false;
 			}
 			public Event processEvent(Event event) {
-				if (event instanceof IContainerConnectedEvent) {
-					ChannelImpl.this.listener.handleChannelEvent(createChannelGroupJoinEvent(true,((IContainerConnectedEvent)event).getTargetID()));
-				} else if (event instanceof IContainerDisconnectedEvent) {
-					ChannelImpl.this.listener.handleChannelEvent(createChannelGroupDepartEvent(true,((IContainerDisconnectedEvent)event).getTargetID()));
-				}
+				if (event instanceof IContainerConnectedEvent) ChannelImpl.this.listener.handleChannelEvent(createChannelGroupJoinEvent(true,((IContainerConnectedEvent)event).getTargetID()));
+				else if (event instanceof IContainerDisconnectedEvent) ChannelImpl.this.listener.handleChannelEvent(createChannelGroupDepartEvent(true,((IContainerDisconnectedEvent)event).getTargetID()));
+				else if (event instanceof ISharedObjectMessageEvent) ChannelImpl.this.handleMessageEvent((ISharedObjectMessageEvent) event);
 				return event;
 			}
 		});
@@ -127,26 +123,27 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 			}
 		};
 	}
-    protected Event handleSharedObjectMsgEvent(final SharedObjectMsgEvent event) {
-    	Object data = event.getData();
-    	ChannelMsg channelData = null;
-    	if (data instanceof ChannelMsg) {
-    		channelData = (ChannelMsg) data;
-    	}
-    	if (channelData != null) {
-    		listener.handleChannelEvent(new IChannelMessageEvent() {
-				private static final long serialVersionUID = -2270885918818160970L;
-				public ID getFromID() {
-					return event.getSenderSharedObjectID();
-				}
-				public byte[] getData() {
-					return (byte []) event.getData();
-				}
-				public ID getChannelID() {
-					return getID();
-				}});
-    		// Discontinue processing of this event...we are it
-    		return null;
+    protected Event handleMessageEvent(final ISharedObjectMessageEvent event) {
+    	Object eventData = event.getData();
+    	ChannelMsg channelMsg = null;
+    	if (eventData instanceof ChannelMsg) {
+    		channelMsg = (ChannelMsg) eventData;
+        	final byte [] channelData = channelMsg.getData();
+        	if (channelData != null) {
+        		listener.handleChannelEvent(new IChannelMessageEvent() {
+    				private static final long serialVersionUID = -2270885918818160970L;
+    				public ID getFromID() {
+    					return event.getSenderSharedObjectID();
+    				}
+    				public byte[] getData() {
+    					return (byte []) channelData;
+    				}
+    				public ID getChannelID() {
+    					return getID();
+    				}});
+        		// Discontinue processing of this event...we are it
+        		return null;
+        	}
     	}
     	return event;
     }
@@ -174,6 +171,6 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(IChannel.class)) {
 			return this;
-		} else return null;
+		} else return super.getAdapter(clazz);
 	}
 }

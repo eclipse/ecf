@@ -43,6 +43,7 @@ public class TransactionSharedObject extends AbstractSharedObject {
 		configuration = config;
 	}
 	protected void initialize() {
+		super.initialize();
 		if (configuration != null) {
 			TwoPhaseCommitEventProcessor trans = new TwoPhaseCommitEventProcessor(this,configuration);
 			addEventProcessor(trans);

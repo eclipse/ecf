@@ -14,6 +14,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
+import org.eclipse.ecf.core.ISharedObjectTransactionParticipantsFilter;
 import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectFactory;
@@ -31,6 +32,8 @@ import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
 public class DatashareContainer extends TCPClientSOContainer implements
 		IChannelContainer {
 	protected static final int DEFAULT_CONTAINER_KEEP_ALIVE = 30000;
+	protected static final int DEFAULT_TRANSACTION_WAIT = 30000;
+	
 	public DatashareContainer(ISharedObjectContainerConfig config) {
 		super(config, DEFAULT_CONTAINER_KEEP_ALIVE);
 	}
@@ -47,7 +50,13 @@ public class DatashareContainer extends TCPClientSOContainer implements
 				return listener;
 			}
 			public ISharedObjectTransactionConfig getTransactionConfig() {
-				return null;
+				return new ISharedObjectTransactionConfig() {
+					public int getTimeout() {
+						return DEFAULT_TRANSACTION_WAIT;
+					}
+					public ISharedObjectTransactionParticipantsFilter getParticipantsFilter() {
+						return null;
+					}};
 			}
 			public Object getAdapter(Class adapter) {
 				return null;
