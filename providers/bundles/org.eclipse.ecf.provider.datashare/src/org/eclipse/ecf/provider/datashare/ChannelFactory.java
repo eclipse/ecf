@@ -23,7 +23,7 @@ public class ChannelFactory implements ISharedObjectInstantiator {
 			Object[] args) throws SharedObjectInstantiationException {
 		if (args != null && args.length == 3) {
 			// do stuff
-			return new ChannelImpl((ISharedObjectTransactionConfig) args[0],
+			return new BaseChannel((ISharedObjectTransactionConfig) args[0],
 					(IChannelListener) args[2]);
 		} else
 			throw new SharedObjectInstantiationException(

@@ -62,14 +62,14 @@ public class DatashareContainer extends TCPClientSOContainer implements
 				return null;
 			}
 			public SharedObjectDescription getHostDescription() {
-				return new SharedObjectDescription(ChannelImpl.class, newID,
+				return new SharedObjectDescription(BaseChannel.class, newID,
 						properties);
 			}
 		});
 	}
 	protected SharedObjectDescription getDefaultChannelDescription()
 			throws IDInstantiationException {
-		return new SharedObjectDescription(ChannelImpl.class, IDFactory
+		return new SharedObjectDescription(BaseChannel.class, IDFactory
 				.getDefault().createGUID(), new HashMap());
 	}
 	protected ISharedObject createSharedObject(

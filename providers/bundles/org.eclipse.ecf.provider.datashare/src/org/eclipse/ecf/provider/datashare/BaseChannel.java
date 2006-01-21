@@ -27,50 +27,59 @@ import org.eclipse.ecf.ds.events.IChannelGroupJoinEvent;
 import org.eclipse.ecf.ds.events.IChannelInitializeEvent;
 import org.eclipse.ecf.ds.events.IChannelMessageEvent;
 
-public class ChannelImpl extends TransactionSharedObject implements IChannel {
-
+public class BaseChannel extends TransactionSharedObject implements IChannel {
 	static class ChannelMsg implements Serializable {
 		private static final long serialVersionUID = 9065358269778864152L;
-		byte [] channelData = null;
-		ChannelMsg() {}
-		ChannelMsg(byte [] data) {
+		byte[] channelData = null;
+		ChannelMsg() {
+		}
+		ChannelMsg(byte[] data) {
 			this.channelData = data;
 		}
-		byte [] getData() {
+		byte[] getData() {
 			return channelData;
 		}
 	}
-
 	protected IChannelListener listener;
-	
 	protected void setChannelListener(IChannelListener l) {
 		this.listener = l;
 	}
 	/**
 	 * Host implementation of channel class constructor
-	 * @param config the ISharedObjectTransactionConfig associated with this new host instance
-	 * @param listener the listener associated with this channel instance
+	 * 
+	 * @param config
+	 *            the ISharedObjectTransactionConfig associated with this new
+	 *            host instance
+	 * @param listener
+	 *            the listener associated with this channel instance
 	 */
-	public ChannelImpl(ISharedObjectTransactionConfig config, IChannelListener listener) {
+	public BaseChannel(ISharedObjectTransactionConfig config,
+			IChannelListener listener) {
 		super(config);
 		setChannelListener(listener);
 	}
 	/**
 	 * Replica implementation of channel class constructor
-	 *
+	 * 
 	 */
-	public ChannelImpl() {
+	public BaseChannel() {
 		super();
 	}
-	
 	protected void replicaHandleChannelEvent(IChannelEvent event) {
-		if (event instanceof IChannelMessageEvent) System.out.println("replica.channelMessage("+getID()+","+getLocalContainerID()+") message="+new String(((IChannelMessageEvent) event).getData()));
-		else System.out.println("replica.handleChannelEvent("+event.getChannelID()+")");
+		if (event instanceof IChannelMessageEvent)
+			System.out.println("replica.channelMessage(" + getID() + ","
+					+ getLocalContainerID() + ") fromContainerID="
+					+ ((IChannelMessageEvent) event).getFromContainerID()
+					+ " message="
+					+ new String(((IChannelMessageEvent) event).getData()));
+		else
+			System.out.println("replica.handleChannelEvent("
+					+ event.getChannelID() + ")");
 	}
 	protected void initialize() {
 		super.initialize();
-		
-		// For the replicas, setup a channel listener that calls handleReplicaChannelEvent
+		// For the replicas, setup a channel listener that calls
+		// handleReplicaChannelEvent
 		if (!isPrimary()) {
 			setChannelListener(new IChannelListener() {
 				public void handleChannelEvent(IChannelEvent event) {
@@ -80,15 +89,28 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 		}
 		addEventProcessor(new IEventProcessor() {
 			public boolean acceptEvent(Event event) {
-				if (event instanceof IContainerConnectedEvent) return true;
-				else if (event instanceof IContainerDisconnectedEvent) return true;
-				else if (event instanceof ISharedObjectMessageEvent) return true;
+				if (event instanceof IContainerConnectedEvent)
+					return true;
+				else if (event instanceof IContainerDisconnectedEvent)
+					return true;
+				else if (event instanceof ISharedObjectMessageEvent)
+					return true;
 				return false;
 			}
 			public Event processEvent(Event event) {
-				if (event instanceof IContainerConnectedEvent) ChannelImpl.this.listener.handleChannelEvent(createChannelGroupJoinEvent(true,((IContainerConnectedEvent)event).getTargetID()));
-				else if (event instanceof IContainerDisconnectedEvent) ChannelImpl.this.listener.handleChannelEvent(createChannelGroupDepartEvent(true,((IContainerDisconnectedEvent)event).getTargetID()));
-				else if (event instanceof ISharedObjectMessageEvent) ChannelImpl.this.handleMessageEvent((ISharedObjectMessageEvent) event);
+				if (event instanceof IContainerConnectedEvent)
+					BaseChannel.this.listener
+							.handleChannelEvent(createChannelGroupJoinEvent(
+									true, ((IContainerConnectedEvent) event)
+											.getTargetID()));
+				else if (event instanceof IContainerDisconnectedEvent)
+					BaseChannel.this.listener
+							.handleChannelEvent(createChannelGroupDepartEvent(
+									true, ((IContainerDisconnectedEvent) event)
+											.getTargetID()));
+				else if (event instanceof ISharedObjectMessageEvent)
+					BaseChannel.this
+							.handleMessageEvent((ISharedObjectMessageEvent) event);
 				return event;
 			}
 		});
@@ -98,10 +120,11 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 			}
 			public ID getChannelID() {
 				return getID();
-			}});
+			}
+		});
 	}
-	
-	protected IChannelGroupJoinEvent createChannelGroupJoinEvent(final boolean hasJoined,final ID targetID) {
+	protected IChannelGroupJoinEvent createChannelGroupJoinEvent(
+			final boolean hasJoined, final ID targetID) {
 		return new IChannelGroupJoinEvent() {
 			private static final long serialVersionUID = -1085237280463725283L;
 			public ID getTargetID() {
@@ -112,7 +135,8 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 			}
 		};
 	}
-	protected IChannelGroupDepartEvent createChannelGroupDepartEvent(final boolean hasJoined,final ID targetID) {
+	protected IChannelGroupDepartEvent createChannelGroupDepartEvent(
+			final boolean hasJoined, final ID targetID) {
 		return new IChannelGroupDepartEvent() {
 			private static final long serialVersionUID = -1085237280463725283L;
 			public ID getTargetID() {
@@ -123,54 +147,52 @@ public class ChannelImpl extends TransactionSharedObject implements IChannel {
 			}
 		};
 	}
-    protected Event handleMessageEvent(final ISharedObjectMessageEvent event) {
-    	Object eventData = event.getData();
-    	ChannelMsg channelMsg = null;
-    	if (eventData instanceof ChannelMsg) {
-    		channelMsg = (ChannelMsg) eventData;
-        	final byte [] channelData = channelMsg.getData();
-        	if (channelData != null) {
-        		listener.handleChannelEvent(new IChannelMessageEvent() {
-    				private static final long serialVersionUID = -2270885918818160970L;
-    				public ID getFromID() {
-    					return event.getSenderSharedObjectID();
-    				}
-    				public byte[] getData() {
-    					return (byte []) channelData;
-    				}
-    				public ID getChannelID() {
-    					return getID();
-    				}});
-        		// Discontinue processing of this event...we are it
-        		return null;
-        	}
-    	}
-    	return event;
-    }
-	
-	public void sendMessage(byte[] message) throws ECFException {
-		sendMessage(null,message);
+	protected Event handleMessageEvent(final ISharedObjectMessageEvent event) {
+		Object eventData = event.getData();
+		ChannelMsg channelMsg = null;
+		if (eventData instanceof ChannelMsg) {
+			channelMsg = (ChannelMsg) eventData;
+			final byte[] channelData = channelMsg.getData();
+			if (channelData != null) {
+				listener.handleChannelEvent(new IChannelMessageEvent() {
+					private static final long serialVersionUID = -2270885918818160970L;
+					public ID getFromContainerID() {
+						return event.getRemoteContainerID();
+					}
+					public byte[] getData() {
+						return (byte[]) channelData;
+					}
+					public ID getChannelID() {
+						return getID();
+					}
+				});
+				// Discontinue processing of this event...we are it
+				return null;
+			}
+		}
+		return event;
 	}
-
+	public void sendMessage(byte[] message) throws ECFException {
+		sendMessage(null, message);
+	}
 	public void sendMessage(ID receiver, byte[] message) throws ECFException {
 		try {
 			getContext().sendMessage(receiver, new ChannelMsg(message));
 		} catch (Exception e) {
-			throw new ECFException("send message exception",e);
+			throw new ECFException("send message exception", e);
 		}
 	}
-
 	/**
 	 * Override of AbstractSharedObject.getReplicaDescription
 	 */
 	protected ReplicaSharedObjectDescription getReplicaDescription(ID receiver) {
-		return new ReplicaSharedObjectDescription(getClass(),getID(),getConfig().getHomeContainerID(),
-	    		getConfig().getProperties());
+		return new ReplicaSharedObjectDescription(getClass(), getID(),
+				getConfig().getHomeContainerID(), getConfig().getProperties());
 	}
-
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(IChannel.class)) {
 			return this;
-		} else return super.getAdapter(clazz);
+		} else
+			return super.getAdapter(clazz);
 	}
 }
