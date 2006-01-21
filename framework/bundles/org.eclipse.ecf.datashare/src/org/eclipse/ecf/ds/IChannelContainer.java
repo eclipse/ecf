@@ -10,6 +10,7 @@ package org.eclipse.ecf.ds;
 
 import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -19,6 +20,13 @@ import org.eclipse.ecf.core.util.ECFException;
  * 
  */
 public interface IChannelContainer {
+	/**
+	 * Get expected Namespace for channel ID creation
+	 * @return Namespace that can be used to create channel ID instances
+	 * for this channel container
+	 */
+	public Namespace getChannelNamespace();
+	
 	/**
 	 * Create a new channel within this container
 	 * @param channelID the ID of the new channel.  Must not be null

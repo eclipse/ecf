@@ -22,6 +22,8 @@ import org.eclipse.ecf.core.SharedObjectTypeDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.ds.IChannel;
 import org.eclipse.ecf.ds.IChannelConfig;
@@ -159,5 +161,9 @@ public class DatashareContainer extends TCPClientSOContainer implements
 		ISharedObject o = getSharedObjectManager()
 				.removeSharedObject(channelID);
 		return (o != null);
+	}
+	public Namespace getChannelNamespace() {
+		// TODO Auto-generated method stub
+		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
 	}
 }
