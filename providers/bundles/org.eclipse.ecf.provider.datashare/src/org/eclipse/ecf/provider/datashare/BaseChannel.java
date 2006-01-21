@@ -73,7 +73,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 */
 	protected void replicaHandleChannelEvent(IChannelEvent channelEvent) {
 		if (channelEvent instanceof IChannelMessageEvent)
-			System.out.println("replica.channelMessage(" + getID() + ","
+			System.out.println("replica.receiveChannelMessage(" + getID() + ","
 					+ getLocalContainerID() + ") fromContainerID="
 					+ ((IChannelMessageEvent) channelEvent).getFromContainerID()
 					+ " message="
