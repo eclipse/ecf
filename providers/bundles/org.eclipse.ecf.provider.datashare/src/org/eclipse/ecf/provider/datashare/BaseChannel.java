@@ -65,17 +65,30 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	public BaseChannel() {
 		super();
 	}
-	protected void replicaHandleChannelEvent(IChannelEvent event) {
-		if (event instanceof IChannelMessageEvent)
+	/**
+	 * Receive and process channel events.  This method can be overridden
+	 * by subclasses to process channel events in a sub-class specific manner.
+	 * 
+	 * @param event the IChannelEvent to receive and process
+	 */
+	protected void replicaHandleChannelEvent(IChannelEvent channelEvent) {
+		if (channelEvent instanceof IChannelMessageEvent)
 			System.out.println("replica.channelMessage(" + getID() + ","
 					+ getLocalContainerID() + ") fromContainerID="
-					+ ((IChannelMessageEvent) event).getFromContainerID()
+					+ ((IChannelMessageEvent) channelEvent).getFromContainerID()
 					+ " message="
-					+ new String(((IChannelMessageEvent) event).getData()));
+					+ new String(((IChannelMessageEvent) channelEvent).getData()));
 		else
 			System.out.println("replica.handleChannelEvent("
-					+ event.getChannelID() + ")");
+					+ channelEvent.getChannelID() + ")");
 	}
+	/**
+	 * Override of TransasctionSharedObject.initialize().  This method is called on
+	 * both the host and the replicas during initialization.  <b>Subclasses that override
+	 * this method should be certain to call super.initialize() as the first thing 
+	 * in their own initialization so they get the initialization defined by TransactionSharedObject
+	 * and AbstractSharedObject.</b>
+	 */
 	protected void initialize() {
 		super.initialize();
 		// For the replicas, setup a channel listener that calls
@@ -123,7 +136,23 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			}
 		});
 	}
-	protected IChannelGroupJoinEvent createChannelGroupJoinEvent(
+	/**
+	 * Override of AbstractSharedObject.getReplicaDescription
+	 */
+	protected ReplicaSharedObjectDescription getReplicaDescription(ID receiver) {
+		return new ReplicaSharedObjectDescription(getClass(), getID(),
+				getConfig().getHomeContainerID(), getConfig().getProperties());
+	}
+	/**
+	 * Override of TransactionSharedObject.getAdapter()
+	 */
+	public Object getAdapter(Class clazz) {
+		if (clazz.equals(IChannel.class)) {
+			return this;
+		} else
+			return super.getAdapter(clazz);
+	}
+	private IChannelGroupJoinEvent createChannelGroupJoinEvent(
 			final boolean hasJoined, final ID targetID) {
 		return new IChannelGroupJoinEvent() {
 			private static final long serialVersionUID = -1085237280463725283L;
@@ -135,7 +164,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			}
 		};
 	}
-	protected IChannelGroupDepartEvent createChannelGroupDepartEvent(
+	private IChannelGroupDepartEvent createChannelGroupDepartEvent(
 			final boolean hasJoined, final ID targetID) {
 		return new IChannelGroupDepartEvent() {
 			private static final long serialVersionUID = -1085237280463725283L;
@@ -147,7 +176,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			}
 		};
 	}
-	protected Event handleMessageEvent(final ISharedObjectMessageEvent event) {
+	private Event handleMessageEvent(final ISharedObjectMessageEvent event) {
 		Object eventData = event.getData();
 		ChannelMsg channelMsg = null;
 		if (eventData instanceof ChannelMsg) {
@@ -172,27 +201,24 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		}
 		return event;
 	}
+	
+	// Implementation of org.eclipse.ecf.ds.IChannel
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.ecf.ds.IChannel#sendMessage(byte[])
+	 */
 	public void sendMessage(byte[] message) throws ECFException {
 		sendMessage(null, message);
 	}
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.ecf.ds.IChannel#sendMessage(org.eclipse.ecf.core.identity.ID, byte[])
+	 */
 	public void sendMessage(ID receiver, byte[] message) throws ECFException {
 		try {
 			getContext().sendMessage(receiver, new ChannelMsg(message));
 		} catch (Exception e) {
 			throw new ECFException("send message exception", e);
 		}
-	}
-	/**
-	 * Override of AbstractSharedObject.getReplicaDescription
-	 */
-	protected ReplicaSharedObjectDescription getReplicaDescription(ID receiver) {
-		return new ReplicaSharedObjectDescription(getClass(), getID(),
-				getConfig().getHomeContainerID(), getConfig().getProperties());
-	}
-	public Object getAdapter(Class clazz) {
-		if (clazz.equals(IChannel.class)) {
-			return this;
-		} else
-			return super.getAdapter(clazz);
 	}
 }

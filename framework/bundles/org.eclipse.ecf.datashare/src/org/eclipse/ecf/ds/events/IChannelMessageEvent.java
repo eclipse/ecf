@@ -4,6 +4,6 @@ import org.eclipse.ecf.core.identity.ID;
 
 
 public interface IChannelMessageEvent extends IChannelEvent {
-	public ID getFromID();
+	public ID getFromContainerID();
 	public byte [] getData();
 }
