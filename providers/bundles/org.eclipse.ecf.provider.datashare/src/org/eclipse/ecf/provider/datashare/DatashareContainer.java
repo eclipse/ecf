@@ -162,8 +162,11 @@ public class DatashareContainer extends TCPClientSOContainer implements
 				.removeSharedObject(channelID);
 		return (o != null);
 	}
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.ecf.ds.IChannelContainer#getChannelNamespace()
+	 */
 	public Namespace getChannelNamespace() {
-		// TODO Auto-generated method stub
 		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
 	}
 }
