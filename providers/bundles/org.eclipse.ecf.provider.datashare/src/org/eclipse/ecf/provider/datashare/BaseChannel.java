@@ -11,6 +11,7 @@ package org.eclipse.ecf.provider.datashare;
 import java.io.Serializable;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
@@ -88,8 +89,10 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 * this method should be certain to call super.initialize() as the first thing 
 	 * in their own initialization so they get the initialization defined by TransactionSharedObject
 	 * and AbstractSharedObject.</b>
+	 * 
+	 * @throws SharedObjectInitException if initialization should fail
 	 */
-	protected void initialize() {
+	protected void initialize() throws SharedObjectInitException {
 		super.initialize();
 		// For the replicas, setup a channel listener that calls
 		// handleReplicaChannelEvent

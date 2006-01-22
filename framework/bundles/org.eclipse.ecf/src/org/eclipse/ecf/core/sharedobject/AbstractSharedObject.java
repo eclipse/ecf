@@ -45,10 +45,11 @@ public class AbstractSharedObject implements ISharedObject,
 	public AbstractSharedObject() {
 		super();
 	}
-	public void init(ISharedObjectConfig initData)
+	public final void init(ISharedObjectConfig initData)
 			throws SharedObjectInitException {
 		this.config = initData;
 		trace("init("+initData+")");
+		addEventProcessor(new SharedObjectMsgEventProcessor(this));
 		initialize();
 	}
 	/**
@@ -61,10 +62,9 @@ public class AbstractSharedObject implements ISharedObject,
 	 * SharedObjectMessageEventProcessor behavior described above, however,
 	 * they should call this method;
 	 *
+	 * @throws SharedObjectInitException if initialization should throw
 	 */
-	protected void initialize() {
-		addEventProcessor(new SharedObjectMsgEventProcessor(this));
-	}
+	protected void initialize() throws SharedObjectInitException {}
     /**
      * Called by replication strategy code (e.g. two phase commit) when creation is completed (i.e. when transactional 
      * replication completed successfully).  Subclasses that need to be notified when creation is completed should 

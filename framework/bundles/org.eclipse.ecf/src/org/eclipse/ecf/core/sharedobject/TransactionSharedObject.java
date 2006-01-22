@@ -12,6 +12,7 @@ package org.eclipse.ecf.core.sharedobject;
 
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
+import org.eclipse.ecf.core.SharedObjectInitException;
 
 /**
  * Superclass that replicates itself transactionally.  
@@ -42,7 +43,7 @@ public class TransactionSharedObject extends AbstractSharedObject {
 		super();
 		configuration = config;
 	}
-	protected void initialize() {
+	protected void initialize() throws SharedObjectInitException {
 		super.initialize();
 		if (configuration != null) {
 			TwoPhaseCommitEventProcessor trans = new TwoPhaseCommitEventProcessor(this,configuration);
