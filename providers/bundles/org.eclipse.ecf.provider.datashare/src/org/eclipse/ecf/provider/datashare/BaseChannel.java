@@ -71,7 +71,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 * 
 	 * @param event the IChannelEvent to receive and process
 	 */
-	protected void replicaHandleChannelEvent(IChannelEvent channelEvent) {
+	protected void receiveChannelEvent(IChannelEvent channelEvent) {
 		if (channelEvent instanceof IChannelMessageEvent)
 			System.out.println("replica.receiveChannelMessage(" + getID() + ","
 					+ getLocalContainerID() + ") fromContainerID="
@@ -79,8 +79,8 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 					+ " message="
 					+ new String(((IChannelMessageEvent) channelEvent).getData()));
 		else
-			System.out.println("replica.handleChannelEvent("
-					+ channelEvent.getChannelID() + ")");
+			System.out.println("replica.receiveChannelEvent("
+					+ channelEvent.getChannelID() + "," + channelEvent.getClass().getName()+")");
 	}
 	/**
 	 * Override of TransasctionSharedObject.initialize().  This method is called on
@@ -96,7 +96,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		if (!isPrimary()) {
 			setChannelListener(new IChannelListener() {
 				public void handleChannelEvent(IChannelEvent event) {
-					replicaHandleChannelEvent(event);
+					receiveChannelEvent(event);
 				}
 			});
 		}
