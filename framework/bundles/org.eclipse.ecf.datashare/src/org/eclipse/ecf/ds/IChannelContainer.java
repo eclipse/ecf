@@ -50,9 +50,9 @@ public interface IChannelContainer {
 	 */
 	public IChannel getChannel(ID channelID);
 	/**
-	 * Dispose channel with given ID
-	 * @param channelID the ID of the channel to dispose within this container
-	 * @return true if channel found and disposed.  False if channel not found within container.
+	 * Remove channel with given ID
+	 * @param channelID the ID of the channel to Remove within this container
+	 * @return true if channel found and Removed.  False if channel not found within container.
 	 */
-	public boolean disposeChannel(ID channelID);
+	public boolean removeChannel(ID channelID);
 }

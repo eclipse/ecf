@@ -157,7 +157,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	 * 
 	 * @see org.eclipse.ecf.ds.IChannelContainer#disposeChannel(org.eclipse.ecf.core.identity.ID)
 	 */
-	public boolean disposeChannel(ID channelID) {
+	public boolean removeChannel(ID channelID) {
 		ISharedObject o = getSharedObjectManager()
 				.removeSharedObject(channelID);
 		return (o != null);
