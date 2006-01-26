@@ -70,7 +70,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 * Receive and process channel events.  This method can be overridden
 	 * by subclasses to process channel events in a sub-class specific manner.
 	 * 
-	 * @param event the IChannelEvent to receive and process
+	 * @param channelEvent the IChannelEvent to receive and process
 	 */
 	protected void receiveChannelEvent(IChannelEvent channelEvent) {
 		if (channelEvent instanceof IChannelMessageEvent)

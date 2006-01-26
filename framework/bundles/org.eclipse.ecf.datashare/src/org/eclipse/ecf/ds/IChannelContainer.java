@@ -14,9 +14,19 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
- * Channel container interface.  If returned in response
- * to IContainer.getAdapter(IChannelContainer.class), clients
- * may use this interface to setup and use IChannel instances
+ * Channel container entry point interface.  This interface is an adapter to allow
+ * providers to expose channels to clients.  It may be used in the following
+ * way:
+ * <p>
+ * <pre>
+ * IChannelContainer channelcontainer = (IChannelContainer) container.getAdapter(IChannelContainer.class);
+ * if (channelcontainer != null) {
+ *    // use channelcontainer
+ *    ...
+ * } else {
+ *    // container does not support channel container functionality
+ * }
+ * </pre>
  * 
  */
 public interface IChannelContainer {
