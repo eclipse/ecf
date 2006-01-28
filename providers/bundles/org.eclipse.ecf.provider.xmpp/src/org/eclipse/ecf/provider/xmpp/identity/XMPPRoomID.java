@@ -36,6 +36,7 @@ public class XMPPRoomID extends BaseID {
 		return new String [] { room, host, domain };
 	}
 	public XMPPRoomID(Namespace namespace, String username, String host, String domain, String groupname, String nickname) throws URISyntaxException {
+		super(namespace);
 		String hostname = fixHostname(host,domain);
 		String query = NICKNAME+"="+((nickname==null)?username:nickname);
 		uri = new URI(namespace.getScheme(),username,hostname,-1,"/"+groupname,query,null);
