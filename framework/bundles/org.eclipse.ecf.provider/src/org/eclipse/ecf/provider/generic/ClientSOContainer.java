@@ -40,7 +40,8 @@ public abstract class ClientSOContainer extends SOContainer {
 	public static final byte UNCONNECTED = 0;
 	public static final byte CONNECTING = 1;
 	public static final byte CONNECTED = 2;
-	static final class Lock {}
+	static final class Lock {
+	}
 	protected Lock connectLock;
 	protected Lock getConnectLock() {
 		return connectLock;
@@ -100,7 +101,7 @@ public abstract class ClientSOContainer extends SOContainer {
 		try {
 			if (isClosing)
 				throw new IllegalStateException("container is closing");
-			debug("connect(" + remote + "," + joinContext+")");
+			debug("connect(" + remote + "," + joinContext + ")");
 			ISynchAsynchConnection aConnection = createConnection(remote,
 					joinContext);
 			Object response = null;
@@ -118,17 +119,16 @@ public abstract class ClientSOContainer extends SOContainer {
 				}
 				// else we're entering connecting state
 				setStateConnecting(aConnection);
-			}
-			// Now call join callback handler, if it exists
-			Callback[] callbacks = createAuthorizationCallbacks();
-			if (joinContext != null) {
-				CallbackHandler handler = joinContext.getCallbackHandler();
-				if (handler != null) {
-					handler.handle(callbacks);
-				}
-			}
-			synchronized (connectLock) {
 				synchronized (aConnection) {
+					// Now call join callback handler, if it exists
+					Callback[] callbacks = createAuthorizationCallbacks();
+					if (joinContext != null) {
+						CallbackHandler handler = joinContext
+								.getCallbackHandler();
+						if (handler != null) {
+							handler.handle(callbacks);
+						}
+					}
 					try {
 						Object connectData = createConnectData(remote,
 								callbacks, null);
@@ -261,7 +261,8 @@ public abstract class ClientSOContainer extends SOContainer {
 		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(),
 				groupID));
 		synchronized (getConnectLock()) {
-			// If we are currently connected then get connection lock and send disconnect message
+			// If we are currently connected then get connection lock and send
+			// disconnect message
 			if (isConnected()) {
 				synchronized (connection) {
 					try {
