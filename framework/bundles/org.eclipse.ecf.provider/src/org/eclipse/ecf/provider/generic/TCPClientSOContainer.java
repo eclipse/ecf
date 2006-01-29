@@ -20,6 +20,9 @@ import org.eclipse.ecf.core.identity.IDFactory;
 
 public class TCPClientSOContainer extends ClientSOContainer {
     int keepAlive = 0;
+    
+    public static final int DEFAULT_TCP_CONNECT_TIMEOUT = 30000;
+    
     public static final String DEFAULT_COMM_NAME = org.eclipse.ecf.provider.comm.tcp.Client.class
             .getName();
 
@@ -31,7 +34,9 @@ public class TCPClientSOContainer extends ClientSOContainer {
         super(config);
         keepAlive = ka;
     }
-
+	protected int getConnectTimeout() {
+		return DEFAULT_TCP_CONNECT_TIMEOUT;
+	}
     protected ISynchAsynchConnection createConnection(ID remoteSpace,
             Object data) throws ConnectionInstantiationException {
         debug("createClientConnection:" + remoteSpace + ":" + data);
