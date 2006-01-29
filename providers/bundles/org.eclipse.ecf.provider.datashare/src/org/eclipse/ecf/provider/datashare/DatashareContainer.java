@@ -25,10 +25,10 @@ import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.ds.IChannel;
-import org.eclipse.ecf.ds.IChannelConfig;
-import org.eclipse.ecf.ds.IChannelContainer;
-import org.eclipse.ecf.ds.IChannelListener;
+import org.eclipse.ecf.datashare.IChannel;
+import org.eclipse.ecf.datashare.IChannelConfig;
+import org.eclipse.ecf.datashare.IChannelContainer;
+import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
 
 public class DatashareContainer extends TCPClientSOContainer implements
@@ -42,7 +42,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.ds.IChannelContainer#createChannel(org.eclipse.ecf.ds.IChannelConfig)
+	 * @see org.eclipse.ecf.datashare.IChannelContainer#createChannel(org.eclipse.ecf.datashare.IChannelConfig)
 	 */
 	public IChannel createChannel(final ID newID,
 			final IChannelListener listener, final Map properties)
@@ -147,7 +147,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.ds.IChannelContainer#getChannel(org.eclipse.ecf.core.identity.ID)
+	 * @see org.eclipse.ecf.datashare.IChannelContainer#getChannel(org.eclipse.ecf.core.identity.ID)
 	 */
 	public IChannel getChannel(ID channelID) {
 		return (IChannel) getSharedObjectManager().getSharedObject(channelID);
@@ -155,7 +155,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.ds.IChannelContainer#disposeChannel(org.eclipse.ecf.core.identity.ID)
+	 * @see org.eclipse.ecf.datashare.IChannelContainer#disposeChannel(org.eclipse.ecf.core.identity.ID)
 	 */
 	public boolean removeChannel(ID channelID) {
 		ISharedObject o = getSharedObjectManager()
@@ -164,7 +164,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	}
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ecf.ds.IChannelContainer#getChannelNamespace()
+	 * @see org.eclipse.ecf.datashare.IChannelContainer#getChannelNamespace()
 	 */
 	public Namespace getChannelNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());

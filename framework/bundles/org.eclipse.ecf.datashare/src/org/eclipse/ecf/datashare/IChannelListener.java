@@ -6,9 +6,9 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.ds;
+package org.eclipse.ecf.datashare;
 
-import org.eclipse.ecf.ds.events.IChannelEvent;
+import org.eclipse.ecf.datashare.events.IChannelEvent;
 
 /**
  * Listener for receiving messages sent to a given channel

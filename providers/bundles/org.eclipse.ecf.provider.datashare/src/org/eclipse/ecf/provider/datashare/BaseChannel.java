@@ -20,13 +20,13 @@ import org.eclipse.ecf.core.sharedobject.TransactionSharedObject;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
-import org.eclipse.ecf.ds.IChannel;
-import org.eclipse.ecf.ds.IChannelListener;
-import org.eclipse.ecf.ds.events.IChannelEvent;
-import org.eclipse.ecf.ds.events.IChannelGroupDepartEvent;
-import org.eclipse.ecf.ds.events.IChannelGroupJoinEvent;
-import org.eclipse.ecf.ds.events.IChannelInitializeEvent;
-import org.eclipse.ecf.ds.events.IChannelMessageEvent;
+import org.eclipse.ecf.datashare.IChannel;
+import org.eclipse.ecf.datashare.IChannelListener;
+import org.eclipse.ecf.datashare.events.IChannelEvent;
+import org.eclipse.ecf.datashare.events.IChannelGroupDepartEvent;
+import org.eclipse.ecf.datashare.events.IChannelGroupJoinEvent;
+import org.eclipse.ecf.datashare.events.IChannelInitializeEvent;
+import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 
 public class BaseChannel extends TransactionSharedObject implements IChannel {
 	static class ChannelMsg implements Serializable {
@@ -205,17 +205,17 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		return event;
 	}
 	
-	// Implementation of org.eclipse.ecf.ds.IChannel
+	// Implementation of org.eclipse.ecf.datashare.IChannel
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ecf.ds.IChannel#sendMessage(byte[])
+	 * @see org.eclipse.ecf.datashare.IChannel#sendMessage(byte[])
 	 */
 	public void sendMessage(byte[] message) throws ECFException {
 		sendMessage(null, message);
 	}
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ecf.ds.IChannel#sendMessage(org.eclipse.ecf.core.identity.ID, byte[])
+	 * @see org.eclipse.ecf.datashare.IChannel#sendMessage(org.eclipse.ecf.core.identity.ID, byte[])
 	 */
 	public void sendMessage(ID receiver, byte[] message) throws ECFException {
 		try {

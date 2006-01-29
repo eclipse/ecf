@@ -1,4 +1,4 @@
-package org.eclipse.ecf.ds;
+package org.eclipse.ecf.datashare;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;

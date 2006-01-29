@@ -8,7 +8,7 @@ import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.SharedObjectInstantiationException;
 import org.eclipse.ecf.core.SharedObjectTypeDescription;
 import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
-import org.eclipse.ecf.ds.IChannelListener;
+import org.eclipse.ecf.datashare.IChannelListener;
 
 public class ChannelFactory implements ISharedObjectInstantiator {
 	public static final String CHANNEL_FACTORY_NAME = "ecf.provider.datashare.channelimpl";

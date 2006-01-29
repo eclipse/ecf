@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.ds;
+package org.eclipse.ecf.datashare;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.IIdentifiable;
