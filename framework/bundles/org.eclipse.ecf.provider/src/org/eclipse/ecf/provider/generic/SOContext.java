@@ -16,6 +16,7 @@
 package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IOSGIService;
@@ -270,6 +271,11 @@ public class SOContext implements ISharedObjectContext {
 		if (isInactive()) {
 			return null;
 		} else return container.getConnectNamespace();
+	}
+
+	public Map getLocalContainerProperties() {
+		if (isInactive()) return new HashMap();
+		else return container.getContainerPropertiesForSharedObject(sharedObjectID);
 	}
 
 }

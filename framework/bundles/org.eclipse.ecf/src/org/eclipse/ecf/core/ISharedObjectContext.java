@@ -9,6 +9,7 @@
 package org.eclipse.ecf.core;
 
 import java.io.IOException;
+import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -187,4 +188,11 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * @return Namespace the namespace by the target for a call to connect()
 	 */
 	public Namespace getConnectNamespace();
+	
+	/**
+	 * Get local container properties that it wishes to expose to shared object access
+	 * 
+	 * @return Map of properties available to calling shared object
+	 */
+	public Map getLocalContainerProperties();
 }

@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -979,6 +980,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			}
 		}
 		return returnIDs;
+	}
+	protected Map getContainerPropertiesForSharedObject(ID sharedObjectID) {
+		return new HashMap();
 	}
 	protected void sendDispose(ID toContainerID, ID sharedObjectID)
 			throws IOException {
