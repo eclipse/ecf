@@ -192,7 +192,7 @@ public interface ISharedObjectContext extends IAdaptable {
 	/**
 	 * Get local container properties that it wishes to expose to shared object access
 	 * 
-	 * @return Map of properties available to calling shared object
+	 * @return Map of properties available to calling shared object.  Map returned must not be null.
 	 */
 	public Map getLocalContainerProperties();
 }
