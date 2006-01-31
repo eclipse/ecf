@@ -9,6 +9,7 @@
 package org.eclipse.ecf.provider.datashare;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
@@ -130,7 +131,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			public String toString() {
 				StringBuffer buf = new StringBuffer("ChannelInitializeEvent[");
 				buf.append("chid=").append(getChannelID()).append(
-						";groupMembers=").append(getGroupMembers()).append("]");
+						";groupMembers=").append(Arrays.asList(getGroupMembers())).append("]");
 				return buf.toString();
 			}
 		});
