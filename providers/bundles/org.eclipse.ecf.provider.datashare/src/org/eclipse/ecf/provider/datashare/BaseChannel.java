@@ -72,25 +72,15 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		super();
 	}
 	/**
-	 * Receive and process channel events.  This method can be overridden
-	 * by subclasses to process channel events in a sub-class specific manner.
+	 * Override of TransasctionSharedObject.initialize(). This method is called
+	 * on both the host and the replicas during initialization. <b>Subclasses
+	 * that override this method should be certain to call super.initialize() as
+	 * the first thing in their own initialization so they get the
+	 * initialization defined by TransactionSharedObject and
+	 * AbstractSharedObject.</b>
 	 * 
-	 * @param channelEvent the IChannelEvent to receive and process
-	 */
-	protected void receiveChannelEvent(IChannelEvent channelEvent) {
-		if (isPrimary())
-			System.out.println("host."+channelEvent);
-		else
-			System.out.println("replica."+channelEvent);
-	}
-	/**
-	 * Override of TransasctionSharedObject.initialize().  This method is called on
-	 * both the host and the replicas during initialization.  <b>Subclasses that override
-	 * this method should be certain to call super.initialize() as the first thing 
-	 * in their own initialization so they get the initialization defined by TransactionSharedObject
-	 * and AbstractSharedObject.</b>
-	 * 
-	 * @throws SharedObjectInitException if initialization should fail
+	 * @throws SharedObjectInitException
+	 *             if initialization should fail
 	 */
 	protected void initialize() throws SharedObjectInitException {
 		super.initialize();
@@ -139,17 +129,11 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			}
 			public String toString() {
 				StringBuffer buf = new StringBuffer("ChannelInitializeEvent[");
-				buf.append("chid=").append(getChannelID()).append(";groupMembers=").append(getGroupMembers()).append("]");
+				buf.append("chid=").append(getChannelID()).append(
+						";groupMembers=").append(getGroupMembers()).append("]");
 				return buf.toString();
 			}
 		});
-	}
-	/**
-	 * Override of AbstractSharedObject.getReplicaDescription
-	 */
-	protected ReplicaSharedObjectDescription getReplicaDescription(ID receiver) {
-		return new ReplicaSharedObjectDescription(getClass(), getID(),
-				getConfig().getHomeContainerID(), getConfig().getProperties());
 	}
 	/**
 	 * Override of TransactionSharedObject.getAdapter()
@@ -172,7 +156,8 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			}
 			public String toString() {
 				StringBuffer buf = new StringBuffer("ChannelGroupJoinEvent[");
-				buf.append("chid=").append(getChannelID()).append(";targetid=").append(getTargetID()).append("]");
+				buf.append("chid=").append(getChannelID()).append(";targetid=")
+						.append(getTargetID()).append("]");
 				return buf.toString();
 			}
 		};
@@ -188,8 +173,10 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 				return getID();
 			}
 			public String toString() {
-				StringBuffer buf = new StringBuffer("ChannelGroupDepartedEvent[");
-				buf.append("chid=").append(getChannelID()).append(";targetid=").append(getTargetID()).append("]");
+				StringBuffer buf = new StringBuffer(
+						"ChannelGroupDepartedEvent[");
+				buf.append("chid=").append(getChannelID()).append(";targetid=")
+						.append(getTargetID()).append("]");
 				return buf.toString();
 			}
 		};
@@ -213,8 +200,11 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 						return getID();
 					}
 					public String toString() {
-						StringBuffer buf = new StringBuffer("ChannelMessageEvent[");
-						buf.append("chid=").append(getChannelID()).append(";fromid=").append(getFromContainerID()).append(";data=").append(getData()).append("]");
+						StringBuffer buf = new StringBuffer(
+								"ChannelMessageEvent[");
+						buf.append("chid=").append(getChannelID()).append(
+								";fromid=").append(getFromContainerID())
+								.append(";data=").append(getData()).append("]");
 						return buf.toString();
 					}
 				});
@@ -228,6 +218,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	// Implementation of org.eclipse.ecf.datashare.IChannel
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.datashare.IChannel#sendMessage(byte[])
 	 */
 	public void sendMessage(byte[] message) throws ECFException {
@@ -235,7 +226,9 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	}
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ecf.datashare.IChannel#sendMessage(org.eclipse.ecf.core.identity.ID, byte[])
+	 * 
+	 * @see org.eclipse.ecf.datashare.IChannel#sendMessage(org.eclipse.ecf.core.identity.ID,
+	 *      byte[])
 	 */
 	public void sendMessage(ID receiver, byte[] message) throws ECFException {
 		try {
@@ -244,4 +237,35 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			throw new ECFException("send message exception", e);
 		}
 	}
+	
+	// Subclass API
+	/**
+	 * Receive and process channel events. This method can be overridden by
+	 * subclasses to process channel events in a sub-class specific manner.
+	 * 
+	 * @param channelEvent
+	 *            the IChannelEvent to receive and process
+	 */
+	protected void receiveChannelEvent(IChannelEvent channelEvent) {
+		if (isPrimary())
+			System.out.println("host.receiveChannelEvent(" + channelEvent + ")");
+		else
+			System.out.println("replica.receiveChannelEvent(" + channelEvent + ")");
+	}
+	/**
+	 * Override of AbstractSharedObject.getReplicaDescription.  Note this method
+	 * should be overridden by subclasses that wish to specify the type of the 
+	 * replica created.
+	 * 
+	 * @param receiver the ID of the target container for replica creation.  If
+	 * null, the target is <b>all</b> current group members
+	 * @return ReplicaSharedObjectDescripton to be used for creating remote replica
+	 * of this host shared object.  If null, no create message will be sent
+	 * to the target container.
+	 */
+	protected ReplicaSharedObjectDescription getReplicaDescription(ID targetContainer) {
+		return new ReplicaSharedObjectDescription(getClass(), getID(),
+				getConfig().getHomeContainerID(), getConfig().getProperties());
+	}
+
 }
