@@ -258,13 +258,13 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 * should be overridden by subclasses that wish to specify the type of the 
 	 * replica created.
 	 * 
-	 * @param receiver the ID of the target container for replica creation.  If
+	 * @param targetContainerID the ID of the target container for subsequentreplica creation.  If
 	 * null, the target is <b>all</b> current group members
 	 * @return ReplicaSharedObjectDescripton to be used for creating remote replica
 	 * of this host shared object.  If null, no create message will be sent
 	 * to the target container.
 	 */
-	protected ReplicaSharedObjectDescription getReplicaDescription(ID targetContainer) {
+	protected ReplicaSharedObjectDescription getReplicaDescription(ID targetContainerID) {
 		return new ReplicaSharedObjectDescription(getClass(), getID(),
 				getConfig().getHomeContainerID(), getConfig().getProperties());
 	}
