@@ -40,6 +40,11 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		byte[] getData() {
 			return channelData;
 		}
+		public String toString() {
+			StringBuffer buf = new StringBuffer("BaseChannel.ChannelMsg[");
+			buf.append("data=").append(getData()).append("]");
+			return buf.toString();
+		}
 	}
 	protected IChannelListener listener;
 	protected void setChannelListener(IChannelListener l) {
@@ -73,15 +78,10 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 * @param channelEvent the IChannelEvent to receive and process
 	 */
 	protected void receiveChannelEvent(IChannelEvent channelEvent) {
-		if (channelEvent instanceof IChannelMessageEvent)
-			System.out.println("replica.receiveChannelMessage(" + getID() + ","
-					+ getLocalContainerID() + ") fromContainerID="
-					+ ((IChannelMessageEvent) channelEvent).getFromContainerID()
-					+ " message="
-					+ new String(((IChannelMessageEvent) channelEvent).getData()));
+		if (isPrimary())
+			System.out.println("host."+channelEvent);
 		else
-			System.out.println("replica.receiveChannelEvent("
-					+ channelEvent.getChannelID() + "," + channelEvent.getClass().getName()+")");
+			System.out.println("replica."+channelEvent);
 	}
 	/**
 	 * Override of TransasctionSharedObject.initialize().  This method is called on
@@ -137,6 +137,11 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			public ID getChannelID() {
 				return getID();
 			}
+			public String toString() {
+				StringBuffer buf = new StringBuffer("ChannelInitializeEvent[");
+				buf.append("chid=").append(getChannelID()).append(";groupMembers=").append(getGroupMembers()).append("]");
+				return buf.toString();
+			}
 		});
 	}
 	/**
@@ -165,6 +170,11 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			public ID getChannelID() {
 				return getID();
 			}
+			public String toString() {
+				StringBuffer buf = new StringBuffer("ChannelGroupJoinEvent[");
+				buf.append("chid=").append(getChannelID()).append(";targetid=").append(getTargetID()).append("]");
+				return buf.toString();
+			}
 		};
 	}
 	private IChannelGroupDepartEvent createChannelGroupDepartEvent(
@@ -176,6 +186,11 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			}
 			public ID getChannelID() {
 				return getID();
+			}
+			public String toString() {
+				StringBuffer buf = new StringBuffer("ChannelGroupDepartedEvent[");
+				buf.append("chid=").append(getChannelID()).append(";targetid=").append(getTargetID()).append("]");
+				return buf.toString();
 			}
 		};
 	}
@@ -196,6 +211,11 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 					}
 					public ID getChannelID() {
 						return getID();
+					}
+					public String toString() {
+						StringBuffer buf = new StringBuffer("ChannelMessageEvent[");
+						buf.append("chid=").append(getChannelID()).append(";fromid=").append(getFromContainerID()).append(";data=").append(getData()).append("]");
+						return buf.toString();
 					}
 				});
 				// Discontinue processing of this event...we are it

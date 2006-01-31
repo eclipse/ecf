@@ -117,7 +117,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 		ISharedObjectTransactionConfig transactionConfig = newChannelConfig
 				.getTransactionConfig();
 		ISharedObject so = null;
-		if (sotypedesc.getDescription() != null) {
+		if (sotypedesc.getName() != null) {
 			so = SharedObjectFactory
 					.getDefault()
 					.createSharedObject(
