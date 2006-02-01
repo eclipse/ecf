@@ -37,7 +37,7 @@ public abstract class ClientSOContainer extends SOContainer {
 	protected ISynchAsynchConnection connection;
 	protected ID remoteServerID;
 	protected byte connectionState;
-	public static final byte UNCONNECTED = 0;
+	public static final byte DISCONNECTED = 0;
 	public static final byte CONNECTING = 1;
 	public static final byte CONNECTED = 2;
 	static final class Lock {
@@ -52,7 +52,7 @@ public abstract class ClientSOContainer extends SOContainer {
 	public ClientSOContainer(ISharedObjectContainerConfig config) {
 		super(config);
 		connection = null;
-		connectionState = UNCONNECTED;
+		connectionState = DISCONNECTED;
 		connectLock = new Lock();
 	}
 	public void dispose() {
@@ -78,9 +78,9 @@ public abstract class ClientSOContainer extends SOContainer {
 	protected Callback[] createAuthorizationCallbacks() {
 		return null;
 	}
-	private void setStateUnconnected(ISynchAsynchConnection conn) {
+	private void setStateDisconnected(ISynchAsynchConnection conn) {
 		killConnection(conn);
-		connectionState = UNCONNECTED;
+		connectionState = DISCONNECTED;
 		connection = null;
 		remoteServerID = null;
 	}
@@ -95,29 +95,23 @@ public abstract class ClientSOContainer extends SOContainer {
 	}
 	public void connect(ID remote, IConnectContext joinContext)
 			throws ContainerConnectException {
-		// first notify synchonously
-		fireContainerEvent(new ContainerConnectingEvent(this.getID(), remote,
-				joinContext));
 		try {
 			if (isClosing)
 				throw new IllegalStateException("container is closing");
 			debug("connect(" + remote + "," + joinContext + ")");
-			ISynchAsynchConnection aConnection = createConnection(remote,
-					joinContext);
 			Object response = null;
 			synchronized (getConnectLock()) {
 				// Throw if already connected
-				if (isConnected()) {
-					killConnection(aConnection);
-					throw new ConnectException("already connected to "
+				if (isConnected()) throw new ConnectException("already connected to "
 							+ getConnectedID());
-				}
 				// Throw if connecting
-				if (isConnecting()) {
-					killConnection(aConnection);
-					throw new ConnectException("currently connecting");
-				}
+				if (isConnecting()) throw new ConnectException("currently connecting");
 				// else we're entering connecting state
+				// first notify synchonously
+				fireContainerEvent(new ContainerConnectingEvent(this.getID(), remote,
+						joinContext));
+				ISynchAsynchConnection aConnection = createConnection(remote,
+						joinContext);
 				setStateConnecting(aConnection);
 				synchronized (aConnection) {
 					// Now call join callback handler, if it exists
@@ -139,7 +133,7 @@ public abstract class ClientSOContainer extends SOContainer {
 						if (getConnection() != aConnection)
 							killConnection(aConnection);
 						else
-							setStateUnconnected(aConnection);
+							setStateDisconnected(aConnection);
 						throw e;
 					}
 					// If not in correct state, disconnect and return
@@ -152,7 +146,7 @@ public abstract class ClientSOContainer extends SOContainer {
 					try {
 						serverID = handleConnectResponse(remote, response);
 					} catch (Exception e) {
-						setStateUnconnected(aConnection);
+						setStateDisconnected(aConnection);
 						throw new ConnectException(
 								"connect refused locally via acceptNewServer");
 					}
@@ -256,14 +250,14 @@ public abstract class ClientSOContainer extends SOContainer {
 		return null;
 	}
 	public void disconnect() {
-		ID groupID = getConnectedID();
-		debug("disconnect(" + groupID + ")");
-		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(),
-				groupID));
 		synchronized (getConnectLock()) {
 			// If we are currently connected then get connection lock and send
 			// disconnect message
 			if (isConnected()) {
+				ID groupID = getConnectedID();
+				debug("disconnect(" + groupID + ")");
+				fireContainerEvent(new ContainerDisconnectingEvent(this.getID(),
+						groupID));
 				synchronized (connection) {
 					try {
 						connection.sendSynch(groupID,
@@ -278,11 +272,10 @@ public abstract class ClientSOContainer extends SOContainer {
 						memberLeave(groupID, connection);
 					}
 				}
+				// notify listeners
+				fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), groupID));
 			}
-			setStateUnconnected(null);
 		}
-		// notify listeners
-		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), groupID));
 	}
 	protected abstract ISynchAsynchConnection createConnection(ID remoteSpace,
 			Object data) throws ConnectionInstantiationException;
@@ -305,9 +298,7 @@ public abstract class ClientSOContainer extends SOContainer {
 		if (fromID.equals(remoteServerID)) {
 			groupManager.removeNonLocalMembers();
 			super.memberLeave(fromID, conn);
-			connectionState = UNCONNECTED;
-			connection = null;
-			remoteServerID = null;
+			setStateDisconnected(null);
 		} else if (fromID.equals(getID())) {
 			super.memberLeave(fromID, conn);
 		}

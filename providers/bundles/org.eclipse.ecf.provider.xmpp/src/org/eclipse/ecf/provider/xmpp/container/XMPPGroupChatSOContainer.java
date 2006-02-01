@@ -195,7 +195,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 			sharedObject = null;
 			sharedObjectID = null;
 		}
-		connectionState = UNCONNECTED;
+		connectionState = DISCONNECTED;
 		remoteServerID = null;
 	}
 	public Namespace getConnectNamespace() {
@@ -377,7 +377,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 					dumpStack("Exception in multi user chat.leave", e);
 				}
 			}
-			connectionState = UNCONNECTED;
+			connectionState = DISCONNECTED;
 			this.xmppconnection = null;
 			remoteServerID = null;
 		}

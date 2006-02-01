@@ -389,7 +389,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 					}
 				}
 			}
-			connectionState = UNCONNECTED;
+			connectionState = DISCONNECTED;
 			this.connection = null;
 			remoteServerID = null;
 		}
