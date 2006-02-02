@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.SharedObjectInitException;
 
 /**
- * Superclass that replicates itself transactionally.  
+ * Superclass for shared object classes that replicate themselves transactionally.  
  *
  */
 public class TransactionSharedObject extends AbstractSharedObject {
@@ -33,9 +33,9 @@ public class TransactionSharedObject extends AbstractSharedObject {
 	}
 	/**
 	 * Construct instance.  The config parameter, if given, is used to 
-	 * configure the transactional replication of instance (or subclass instances).
-	 * If the config parameter is null, no transactional replication messaging will occur (i.e.
-	 * replicas will be requested, but no waiting for acknowledgement will occur).
+	 * configure the transactional replication of instances or subclass instances.
+	 * If the config parameter is null, no replication messaging will occur and 
+	 * only host instance of object will be created.
 	 * 
 	 * @param config
 	 */
