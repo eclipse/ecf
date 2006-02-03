@@ -18,10 +18,6 @@ import org.eclipse.ecf.provider.generic.SOContext;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.packet.Presence;
 
-/**
- * @author slewis
- *
- */
 public class XMPPContainerContext extends SOContext {
 
     public XMPPContainerContext(ID objID, ID homeID, SOContainer cont, Map props, IQueueEnqueue queue) {
@@ -48,6 +44,6 @@ public class XMPPContainerContext extends SOContext {
 	                ((XMPPClientSOContainer) container).sendRosterRemove(user);
 				}
             };
-        } else return null;
+        } else return super.getAdapter(clazz);
     }
 }

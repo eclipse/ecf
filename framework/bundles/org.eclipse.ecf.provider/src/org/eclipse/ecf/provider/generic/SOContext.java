@@ -249,7 +249,7 @@ public class SOContext implements ISharedObjectContext {
      * @see org.eclipse.ecf.core.ISharedObjectContext#getAdapter(java.lang.Class)
      */
     public Object getAdapter(Class clazz) {
-        return null;
+        return container.getAdapter(clazz);
     }
 
     /*
