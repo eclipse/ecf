@@ -59,13 +59,15 @@ public class XMPPChatClient {
 		userID = getID(account);
 	}
 	
-	protected void connectChatRoom(String chatRoomID) throws Exception {
+	public IChatRoomContainer connectChatRoom(String username, String hostname, String chatRoomID) throws Exception {
 		chatmanager = presence.getChatRoomManager();
 		chatroom = chatmanager.createChatRoomContainer();
 		socontainer = (ISharedObjectContainer) chatroom.getAdapter(ISharedObjectContainer.class);
-		ID targetChatID = IDFactory.getDefault().createID(chatroom.getConnectNamespace(),chatRoomID);
+		ID targetChatID = IDFactory.getDefault().createID(chatroom.getConnectNamespace(), new Object[] {username,hostname,null,chatRoomID,username});
 		chatroom.connect(targetChatID, null);
+		return chatroom;
 	}
+
 	private ID getID(String name) {
 		try {
 			return IDFactory.getDefault().createID(namespace, name);

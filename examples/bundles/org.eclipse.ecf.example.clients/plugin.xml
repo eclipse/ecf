@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
+   <extension
+         id="robot"
+         name="Example Robot"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run class="org.eclipse.ecf.example.clients.RobotApplication"/>
+      </application>
+   </extension>
 
 </plugin>
