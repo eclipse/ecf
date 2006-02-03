@@ -11,6 +11,7 @@ package org.eclipse.ecf.provider.generic;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -529,6 +530,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			obj = ois.readObject();
 		} catch (ClassNotFoundException e) {
 			dumpStack("class not found for message", e);
+			return null;
+		} catch (InvalidClassException e) {
+			dumpStack("invalid class for message", e);
 			return null;
 		}
 		if (obj instanceof ContainerMessage) {
