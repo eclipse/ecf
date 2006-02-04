@@ -15,6 +15,7 @@
  */
 package org.eclipse.ecf.provider.generic;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
@@ -92,6 +93,7 @@ public class SOConfig implements ISharedObjectConfig {
      * @see org.eclipse.ecf.core.ISharedObjectConfig#getProperties()
      */
     public Map getProperties() {
-        return properties;
+    	if (properties == null) return new HashMap();
+    	else return properties;
     }
 }
