@@ -39,4 +39,10 @@ public interface IChannel extends IAdaptable, IIdentifiable {
 	 *             if some problem sending message
 	 */
 	public void sendMessage(ID receiver, byte[] message) throws ECFException;
+	/**
+	 * Get IChannelListener instance for this IChannel
+	 * 
+	 * @return IChannelListener for this IChannel instance.  If null, the channel has no listener
+	 */
+	public IChannelListener getListener();
 }

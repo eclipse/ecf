@@ -63,7 +63,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 			public Object getAdapter(Class adapter) {
 				return null;
 			}
-			public SharedObjectDescription getHostDescription() {
+			public SharedObjectDescription getPrimaryDescription() {
 				return new SharedObjectDescription(BaseChannel.class, newID,
 						properties);
 			}
@@ -109,7 +109,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	}
 	public IChannel createChannel(IChannelConfig newChannelConfig)
 			throws ECFException {
-		SharedObjectDescription sodesc = newChannelConfig.getHostDescription();
+		SharedObjectDescription sodesc = newChannelConfig.getPrimaryDescription();
 		if (sodesc == null)
 			sodesc = getDefaultChannelDescription();
 		SharedObjectTypeDescription sotypedesc = sodesc.getTypeDescription();

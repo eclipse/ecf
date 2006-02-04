@@ -11,10 +11,10 @@ import org.eclipse.ecf.core.SharedObjectDescription;
  */
 public interface IChannelConfig extends IAdaptable {
 	/**
-	 * Get SharedObjectDescription to be used to create host (local) IChannel implementation.
-	 * @return SharedObjectDescription to be used to create host IChannel implementation
+	 * Get SharedObjectDescription to be used to create primary (local) IChannel implementation.
+	 * @return SharedObjectDescription to be used to create primary IChannel implementation
 	 */
-	public SharedObjectDescription getHostDescription();
+	public SharedObjectDescription getPrimaryDescription();
 	/**
 	 * Get listener for channel being created.  Typically, provider will call this
 	 * method during the implementation of createChannel.  If this method returns

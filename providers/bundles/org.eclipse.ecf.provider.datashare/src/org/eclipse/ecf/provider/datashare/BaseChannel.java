@@ -10,6 +10,7 @@ package org.eclipse.ecf.provider.datashare;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Map;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
@@ -22,6 +23,7 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.datashare.IChannel;
+import org.eclipse.ecf.datashare.IChannelContainer;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelGroupDepartEvent;
@@ -30,6 +32,9 @@ import org.eclipse.ecf.datashare.events.IChannelInitializeEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 
 public class BaseChannel extends TransactionSharedObject implements IChannel {
+	
+	public static final String RECEIVER_ID_PROPERTY = BaseChannel.class.getName();
+	
 	static class ChannelMsg implements Serializable {
 		private static final long serialVersionUID = 9065358269778864152L;
 		byte[] channelData = null;
@@ -47,12 +52,11 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			return buf.toString();
 		}
 	}
+	
 	protected IChannelListener listener;
-	protected void setChannelListener(IChannelListener l) {
-		this.listener = l;
-	}
+	
 	/**
-	 * Host implementation of channel class constructor
+	 * Primary copy implementation of channel class constructor
 	 * 
 	 * @param config
 	 *            the ISharedObjectTransactionConfig associated with this new
@@ -72,6 +76,9 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	public BaseChannel() {
 		super();
 	}
+	protected void setChannelListener(IChannelListener l) {
+		this.listener = l;
+	}
 	/**
 	 * Override of TransasctionSharedObject.initialize(). This method is called
 	 * on both the host and the replicas during initialization. <b>Subclasses
@@ -85,15 +92,9 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 */
 	protected void initialize() throws SharedObjectInitException {
 		super.initialize();
-		// For the replicas, setup a channel listener that calls
-		// handleReplicaChannelEvent
-		if (!isPrimary()) {
-			setChannelListener(new IChannelListener() {
-				public void handleChannelEvent(IChannelEvent event) {
-					receiveChannelEvent(event);
-				}
-			});
-		}
+		
+		if (!isPrimary()) initializeReplicaChannel();
+
 		addEventProcessor(new IEventProcessor() {
 			public boolean acceptEvent(Event event) {
 				if (event instanceof IContainerConnectedEvent)
@@ -238,7 +239,13 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			throw new ECFException("send message exception", e);
 		}
 	}
-	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.datashare.IChannel#getListener()
+	 */
+	public IChannelListener getListener() {
+		return listener;
+	}
+
 	// Subclass API
 	/**
 	 * Receive and process channel events. This method can be overridden by
@@ -247,7 +254,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 * @param channelEvent
 	 *            the IChannelEvent to receive and process
 	 */
-	protected void receiveChannelEvent(IChannelEvent channelEvent) {
+	protected void receiveUndeliveredChannelEvent(IChannelEvent channelEvent) {
 		if (isPrimary())
 			System.out.println("host.receiveChannelEvent(" + channelEvent + ")");
 		else
@@ -268,5 +275,48 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		return new ReplicaSharedObjectDescription(getClass(), getID(),
 				getConfig().getHomeContainerID(), getConfig().getProperties());
 	}
-
+    /**
+     * Initialize replicas of this channel.  This method is only called if isPrimary() returns false.  It is called
+     * from within the initialize method, immediately after super.initialize but before the listener for this 
+     * channel is notified of initialization.  If this method throws a SharedObjectInitException, then
+     * initialization of the replica is halted and the remote transaction creating the replica will be 
+     * aborted.
+     * <p>
+     * Note that this implementation checks for the existence of the RECEIVER_ID_PROPERTY on the
+     * replica's properties, and if the property contains a valid ID will 
+     * <ul>
+     * <li>lookup the IChannel on the given container via IChannelContainer.getID(ID)</li>
+     * <li>call IChannel.getListener() to retrieve the listener for the channel returned</li>
+     * <li>set the listener for this object to the value returned from IChannel.getListener()</li>
+     * </ul>
+     * @throws SharedObjectInitException if the replica initialization should fail
+     */
+	protected void initializeReplicaChannel() throws SharedObjectInitException {
+		Map properties = getConfig().getProperties();
+		ID rcvr = null;
+		try {
+			rcvr = (ID) properties.get(RECEIVER_ID_PROPERTY);
+		} catch (ClassCastException e) {
+			throw new SharedObjectInitException("Bad RECEIVER_ID_PROPERTY for replica.  Cannot be cast to org.eclipse.ecf.core.identity.ID type");
+		}
+		IChannelListener l = null;
+		if (rcvr != null) {
+			// Now...get local channel container first...throw if we can't get it
+			IChannelContainer container = (IChannelContainer) getContext().getAdapter(IChannelContainer.class);
+			if (container == null) throw new SharedObjectInitException("channel container is null/not available");
+			// Now get receiver IChannel...throw if we can't get it
+			final IChannel receiver = container.getChannel(rcvr);
+			if (receiver == null) throw new SharedObjectInitException("receiver channel is null/not available");
+			setChannelListener(receiver.getListener());
+		} 
+		if (l == null) {
+			setChannelListener(new IChannelListener() {
+				public void handleChannelEvent(IChannelEvent event) {
+					receiveUndeliveredChannelEvent(event);
+				}
+			});
+		} else {
+			this.listener = l;
+		}
+	}
 }
