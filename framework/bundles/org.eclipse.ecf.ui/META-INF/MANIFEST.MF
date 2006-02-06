@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: ECF UI API
 Bundle-SymbolicName: org.eclipse.ecf.ui;singleton=true
-Bundle-Version: 0.6.2
+Bundle-Version: 0.6.3
 Bundle-ClassPath: ui.jar
 Bundle-Activator: org.eclipse.ecf.ui.UiPlugin
 Bundle-Vendor: Eclipse.org
