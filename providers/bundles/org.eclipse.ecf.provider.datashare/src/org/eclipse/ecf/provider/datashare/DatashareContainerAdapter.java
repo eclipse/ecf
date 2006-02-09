@@ -18,10 +18,11 @@ import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelConfig;
+import org.eclipse.ecf.datashare.IChannelContainer;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.provider.generic.SOContainer;
 
-public class DatashareContainerAdapter {
+public class DatashareContainerAdapter implements IChannelContainer {
 	
 	protected SOContainer container = null;
 	protected static final int DEFAULT_TRANSACTION_WAIT = 30000;
