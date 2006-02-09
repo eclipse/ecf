@@ -14,9 +14,7 @@ import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.ISharedObjectTransactionParticipantsFilter;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelConfig;
@@ -90,6 +88,6 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	 * @see org.eclipse.ecf.datashare.IChannelContainer#getChannelNamespace()
 	 */
 	public Namespace getChannelNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
+		return adapter.getChannelNamespace();
 	}
 }
