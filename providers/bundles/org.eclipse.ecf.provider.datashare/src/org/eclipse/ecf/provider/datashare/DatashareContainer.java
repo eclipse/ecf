@@ -8,20 +8,13 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.datashare;
 
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.ISharedObjectTransactionParticipantsFilter;
-import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
-import org.eclipse.ecf.core.SharedObjectFactory;
-import org.eclipse.ecf.core.SharedObjectTypeDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.util.ECFException;
@@ -36,8 +29,11 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	protected static final int DEFAULT_CONTAINER_KEEP_ALIVE = 30000;
 	protected static final int DEFAULT_TRANSACTION_WAIT = 30000;
 	
+	protected DatashareContainerAdapter adapter = null;
+	
 	public DatashareContainer(ISharedObjectContainerConfig config) {
 		super(config, DEFAULT_CONTAINER_KEEP_ALIVE);
+		adapter = new DatashareContainerAdapter(this);
 	}
 	/*
 	 * (non-Javadoc)
@@ -47,7 +43,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	public IChannel createChannel(final ID newID,
 			final IChannelListener listener, final Map properties)
 			throws ECFException {
-		return createChannel(new IChannelConfig() {
+		return adapter.createChannel(new IChannelConfig() {
 			public IChannelListener getListener() {
 				return listener;
 			}
@@ -69,80 +65,9 @@ public class DatashareContainer extends TCPClientSOContainer implements
 			}
 		});
 	}
-	protected SharedObjectDescription getDefaultChannelDescription()
-			throws IDInstantiationException {
-		return new SharedObjectDescription(BaseChannel.class, IDFactory
-				.getDefault().createGUID(), new HashMap());
-	}
-	protected ISharedObject createSharedObject(
-			SharedObjectTypeDescription typeDescription,
-			ISharedObjectTransactionConfig transactionConfig,
-			IChannelListener listener) throws SharedObjectCreateException {
-		Class clazz;
-		try {
-			clazz = Class.forName(typeDescription.getClassName());
-		} catch (ClassNotFoundException e) {
-			throw new SharedObjectCreateException(
-					"No constructor for shared object of class "
-							+ typeDescription.getClassName(), e);
-		}
-		Constructor cons = null;
-		try {
-			cons = clazz.getDeclaredConstructor(new Class[] {
-					ISharedObjectTransactionConfig.class,
-					IChannelListener.class });
-		} catch (NoSuchMethodException e) {
-			throw new SharedObjectCreateException(
-					"No constructor for shared object of class "
-							+ typeDescription.getClassName(), e);
-		}
-		ISharedObject so = null;
-		try {
-			so = (ISharedObject) cons.newInstance(new Object[] {
-					transactionConfig, listener });
-		} catch (Exception e) {
-			throw new SharedObjectCreateException(
-					"Cannot create instance of class "
-							+ typeDescription.getClassName(), e);
-		}
-		return so;
-	}
 	public IChannel createChannel(IChannelConfig newChannelConfig)
 			throws ECFException {
-		SharedObjectDescription sodesc = newChannelConfig.getPrimaryDescription();
-		if (sodesc == null)
-			sodesc = getDefaultChannelDescription();
-		SharedObjectTypeDescription sotypedesc = sodesc.getTypeDescription();
-		IChannelListener listener = newChannelConfig.getListener();
-		ISharedObjectTransactionConfig transactionConfig = newChannelConfig
-				.getTransactionConfig();
-		ISharedObject so = null;
-		if (sotypedesc.getName() != null) {
-			so = SharedObjectFactory
-					.getDefault()
-					.createSharedObject(
-							sotypedesc,
-							new String[] {
-									ISharedObjectTransactionConfig.class
-											.getName(),
-									IChannelListener.class.getName() },
-							new Object[] { transactionConfig, listener });
-		} else {
-			so = createSharedObject(sotypedesc, transactionConfig, listener);
-		}
-		IChannel channel = (IChannel) so.getAdapter(IChannel.class);
-		if (channel == null)
-			throw new SharedObjectCreateException("Cannot coerce object "
-					+ channel + " to be of type IChannel");
-		ID newID = sodesc.getID();
-		if (newID == null)
-			newID = IDFactory.getDefault().createGUID();
-		Map properties = sodesc.getProperties();
-		if (properties == null)
-			properties = new HashMap();
-		// Now add channel to container...this will block
-		getSharedObjectManager().addSharedObject(newID, so, properties);
-		return channel;
+		return adapter.createChannel(newChannelConfig);
 	}
 	/*
 	 * (non-Javadoc)
@@ -150,7 +75,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	 * @see org.eclipse.ecf.datashare.IChannelContainer#getChannel(org.eclipse.ecf.core.identity.ID)
 	 */
 	public IChannel getChannel(ID channelID) {
-		return (IChannel) getSharedObjectManager().getSharedObject(channelID);
+		return adapter.getChannel(channelID);
 	}
 	/*
 	 * (non-Javadoc)
@@ -158,9 +83,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	 * @see org.eclipse.ecf.datashare.IChannelContainer#disposeChannel(org.eclipse.ecf.core.identity.ID)
 	 */
 	public boolean removeChannel(ID channelID) {
-		ISharedObject o = getSharedObjectManager()
-				.removeSharedObject(channelID);
-		return (o != null);
+		return adapter.removeChannel(channelID);
 	}
 	/*
 	 * (non-Javadoc)
