@@ -452,11 +452,11 @@ public class ECFPlugin extends Plugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		this.bundlecontext = context;
 		setupContainerExtensionPoint(context);
 		setupIdentityExtensionPoint(context);
 		setupCommExtensionPoint(context);
 		setupSharedObjectExtensionPoint(context);
-		this.bundlecontext = context;
 	}
 
 	/**
