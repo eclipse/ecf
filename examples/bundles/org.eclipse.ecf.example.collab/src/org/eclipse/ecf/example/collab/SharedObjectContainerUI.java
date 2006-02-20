@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.IContainerListener;
+import org.eclipse.ecf.core.events.IContainerEjectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -97,6 +98,15 @@ public class SharedObjectContainerUI {
 					if (connectedID == null
 							|| connectedID.equals(departedContainerID)) {
 						// This container is done
+						if (!newClientEntry.isDisposed()) {
+							collabclient.disposeClient(resource, newClientEntry);
+						}
+					}
+				} else if (evt instanceof IContainerEjectedEvent) {
+					IContainerEjectedEvent ce = (IContainerEjectedEvent) evt;
+					final ID departedContainerID = ce.getGroupID();
+					ID connectedID = newClientEntry.getConnectedID();
+					if (connectedID == null || connectedID.equals(departedContainerID)) {
 						if (!newClientEntry.isDisposed()) {
 							collabclient.disposeClient(resource, newClientEntry);
 						}
