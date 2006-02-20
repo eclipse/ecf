@@ -179,7 +179,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			memberLeave(fromID, connection);
 		}
 		// Now notify that we've been ejected
-		fireContainerEvent(new ContainerEjectedEvent(fromID, getID(), lgm
+		fireContainerEvent(new ContainerEjectedEvent(getID(), fromID, lgm
 				.getData()));
 	}
 	protected void handleViewChangeMessage(ContainerMessage mess)

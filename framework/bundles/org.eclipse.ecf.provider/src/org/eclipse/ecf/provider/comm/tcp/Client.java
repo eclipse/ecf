@@ -527,15 +527,12 @@ public final class Client implements ISynchAsynchConnection {
         // Notify sender in case it's waiting for a response
         // Zap keep alive thread
         if (keepAliveThread != null) {
-            keepAliveThread.interrupt();
             keepAliveThread = null;
         }
         if (sendThread != null) {
-            sendThread.interrupt();
             sendThread = null;
         }
         if (rcvThread != null) {
-            rcvThread.interrupt();
             rcvThread = null;
         }
         // Notify any threads waiting to get hold of our lock
