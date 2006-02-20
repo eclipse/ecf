@@ -53,7 +53,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	public static void log(String message, Throwable e) {
 		getDefault().getLog().log(
 				new Status(IStatus.ERROR, ClientPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK,
-						"Caught exception", e));
+						message, e));
 	}
 	/**
 	 * The constructor.
