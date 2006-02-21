@@ -1,5 +1,7 @@
+
 package org.eclipse.ecf.server;
 
+import java.net.URL;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
@@ -27,15 +29,16 @@ public class Activator extends Plugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		startServers();
+		startServers(context.getBundle().getEntry(Config.serverconfigfile));
 	}
 
-	private void startServers() {
+	private void startServers(URL anURL) {
 		if (servers == null) {
 			try {
-				servers = new ECFTCPServerStartup("server.xml");
+				if (anURL != null) servers = new ECFTCPServerStartup(anURL.openStream());
+				else servers = new ECFTCPServerStartup("server.xml"); //$NON-NLS-1$
 			} catch (Exception e) {
-				Activator.log("Exception starting ecf tcp servers",e);
+				Activator.log("Exception starting ecf tcp servers",e); //$NON-NLS-1$
 			}
 		}
 	}
