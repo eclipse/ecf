@@ -9,5 +9,5 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.provider
-Eclipse-AutoStart: true
+Eclipse-LazyStart: true
 Bundle-ClassPath: server.jar
