@@ -9,6 +9,6 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.discovery
-Eclipse-AutoStart: true
+Eclipse-LazyStart: true
 Bundle-ClassPath: jmdns.jar,
  lib/jmdns-1.0.3.jar
