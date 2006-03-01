@@ -25,7 +25,6 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -732,9 +731,9 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 				};
 				selectedChatAction.setText("Send IM to "
 						+ treeObject.getId().getName());
-				selectedChatAction.setImageDescriptor(ImageDescriptor.createFromURL(FileLocator
-						.find(UiPlugin.getDefault().getBundle(), new Path(
-								INSTANT_MESSAGE_ICON), null)));
+				selectedChatAction.setImageDescriptor(ImageDescriptor
+						.createFromURL(UiPlugin.getDefault().find(
+								new Path(INSTANT_MESSAGE_ICON))));
 				manager.add(selectedChatAction);
 				TreeObject parent = treeObject.getParent();
 				TreeGroup tg = null;
@@ -772,9 +771,9 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 					};
 					disconnectAccountAction.setText("Disconnect from account");
 					disconnectAccountAction.setEnabled(true);
-					disconnectAccountAction.setImageDescriptor(ImageDescriptor.createFromURL(FileLocator
-							.find(UiPlugin.getDefault().getBundle(), new Path(
-									DISCONNECT_ICON_ENABLED), null)));
+					disconnectAccountAction.setImageDescriptor(ImageDescriptor
+							.createFromURL(UiPlugin.getDefault().find(
+									new Path(DISCONNECT_ICON_ENABLED))));
 					manager.add(disconnectAccountAction);
 					
 					openChatRoomAccountAction = new Action() {
@@ -784,9 +783,10 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 					};
 					openChatRoomAccountAction.setText("Show chat rooms for account");
 					openChatRoomAccountAction.setEnabled(true);
-					openChatRoomAccountAction.setImageDescriptor(ImageDescriptor.createFromURL(FileLocator
-							.find(UiPlugin.getDefault().getBundle(), new Path(
-									ADDCHAT_ICON), null)));
+					openChatRoomAccountAction.setImageDescriptor(ImageDescriptor
+							.createFromURL(UiPlugin.getDefault().find(
+									new Path(ADDCHAT_ICON))));
+					
 					manager.add(openChatRoomAccountAction);
 				}
 			
@@ -1121,12 +1121,12 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		disconnectAction.setText("Disconnect");
 		disconnectAction.setToolTipText("Disconnect from all accounts");
 		disconnectAction.setEnabled(false);
-		disconnectAction.setImageDescriptor(ImageDescriptor.createFromURL(FileLocator
-				.find(UiPlugin.getDefault().getBundle(), new Path(
-						DISCONNECT_ICON_ENABLED), null)));
-		disconnectAction.setDisabledImageDescriptor(ImageDescriptor.createFromURL(FileLocator
-				.find(UiPlugin.getDefault().getBundle(), new Path(
-						DISCONNECT_ICON_DISABLED), null)));
+		disconnectAction.setImageDescriptor(ImageDescriptor
+				.createFromURL(UiPlugin.getDefault().find(
+						new Path(DISCONNECT_ICON_ENABLED))));
+		disconnectAction.setDisabledImageDescriptor(ImageDescriptor
+				.createFromURL(UiPlugin.getDefault().find(
+						new Path(DISCONNECT_ICON_DISABLED))));
 		openChatRoomAction = new Action() {
 			public void run() {
 				// Get managers for all accounts currently connected to
@@ -1143,9 +1143,9 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		};
 		openChatRoomAction.setText("Enter Chatroom");
 		openChatRoomAction.setToolTipText("Show chat rooms for all accounts");
-		openChatRoomAction.setImageDescriptor(ImageDescriptor.createFromURL(FileLocator
-				.find(UiPlugin.getDefault().getBundle(), new Path(
-						ADDCHAT_ICON), null)));
+		openChatRoomAction.setImageDescriptor(ImageDescriptor
+				.createFromURL(UiPlugin.getDefault().find(
+						new Path(ADDCHAT_ICON))));
 		openChatRoomAction.setEnabled(false);
 	}
 	protected void addRoomView(RoomWithAView roomView) {

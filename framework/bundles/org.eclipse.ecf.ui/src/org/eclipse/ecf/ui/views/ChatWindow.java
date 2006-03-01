@@ -11,7 +11,6 @@
 
 package org.eclipse.ecf.ui.views;
 
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -105,9 +104,9 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
         }
         titleBarText = shellTitlePrefix + titleBarText;
         newShell.setText(titleBarText);
-		image = ImageDescriptor.createFromURL(FileLocator.find(UiPlugin.getDefault().getBundle(),new Path(ICONS_PERSON_GIF),null)).createImage();
-				//UiPlugin.getDefault().find(new Path(ICONS_PERSON_GIF)))
-				//.createImage();
+		image = ImageDescriptor.createFromURL(
+				UiPlugin.getDefault().find(new Path(ICONS_PERSON_GIF)))
+				.createImage();
 		newShell.setImage(image);
 		RGB[] colors = new RGB[2];
 		colors[0] = new RGB(0, 0, 0);
