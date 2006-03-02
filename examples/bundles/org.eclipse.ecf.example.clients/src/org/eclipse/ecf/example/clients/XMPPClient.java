@@ -11,6 +11,7 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresenceContainer;
+import org.eclipse.ecf.presence.IPresenceListener;
 
 public class XMPPClient {
 	
@@ -24,6 +25,7 @@ public class XMPPClient {
 	
 	// Interface for receiving messages
 	IMessageReceiver receiver = null;
+	IPresenceListener presenceListener = null;
 	
 	public XMPPClient() {
 		this(null);
@@ -31,7 +33,17 @@ public class XMPPClient {
 	
 	public XMPPClient(IMessageReceiver receiver) {
 		super();
+		setMessageReceiver(receiver);
+	}
+	public XMPPClient(IMessageReceiver receiver, IPresenceListener presenceListener) {
+		this(receiver);
+		setPresenceListener(presenceListener);
+	}
+	protected void setMessageReceiver(IMessageReceiver receiver) {
 		this.receiver = receiver;
+	}
+	protected void setPresenceListener(IPresenceListener listener) {
+		this.presenceListener = listener;
 	}
 	public void connect(String account, String password) throws ECFException {
 		container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE);
@@ -47,6 +59,9 @@ public class XMPPClient {
 				}
 			}
 		});
+		if (presenceListener != null) {
+			presence.addPresenceListener(presenceListener);
+		}
 		// Now connect
 		container.connect(targetID,ConnectContextFactory.createPasswordConnectContext(password));
 		userID = getID(account);
