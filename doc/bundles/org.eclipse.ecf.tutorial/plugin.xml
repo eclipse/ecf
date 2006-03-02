@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="org.eclipse.ecf.tutorial.actionSet1"
+            label="ECF Tutorial"
+            visible="true">
+         <action
+               class="org.eclipse.ecf.tutorial.actions.StartClientAction"
+               icon="icons/person.gif"
+               id="org.eclipse.ecf.tutorial.action1"
+               label="ECF Client"
+               menubarPath="tutorialMenu/tutorialSeparator"
+               style="push"
+               toolbarPath="tutorialMenu"
+               tooltip="ECF Tutorial Example Client"/>
+         <menu
+               id="tutorialMenu"
+               label="ECF Tutorial">
+            <separator name="tutorialSeparator"/>
+         </menu>
+      </actionSet>
+   </extension>
+
+</plugin>

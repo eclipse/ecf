@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF Tutorial Plug-in
+Bundle-SymbolicName: org.eclipse.ecf.tutorial;singleton:=true
+Bundle-Version: 0.7.2
+Bundle-Activator: org.eclipse.ecf.tutorial.Activator
+Bundle-Vendor: Eclipse.org
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ui,
+ org.eclipse.ecf.example.clients,
+ org.eclipse.ecf.presence
+Eclipse-LazyStart: true
+Bundle-ClassPath: tutorial.jar
