@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: ECF SDO API
 Bundle-SymbolicName: org.eclipse.ecf.sdo;singleton=true
-Bundle-Version: 0.7.2
+Bundle-Version: 0.7.3
 Bundle-ClassPath: ecf.sdo.jar
 Bundle-Activator: org.eclipse.ecf.sdo.SDOPlugin$EclipsePlugin
 Bundle-Vendor: Eclipse.org
