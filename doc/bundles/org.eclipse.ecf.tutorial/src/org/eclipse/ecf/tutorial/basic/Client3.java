@@ -1,4 +1,4 @@
-package org.eclipse.ecf.tutorial;
+package org.eclipse.ecf.tutorial.basic;
 
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.example.clients.IMessageReceiver;
@@ -6,12 +6,12 @@ import org.eclipse.ecf.example.clients.XMPPClient;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-public class ExampleClient3 extends XMPPClient {
+public class Client3 extends XMPPClient {
 	
 	private static final String DEFAULT_PASSWORD = "eclipsecon";
 	private static final String DEFAULT_USERNAME = "eclipsecon@ecf.eclipse.org";
 	
-	public ExampleClient3() {
+	public Client3() {
 		super();
 		setMessageReceiver(new IMessageReceiver() {
 			public void handleMessage(final String from, final String msg) {

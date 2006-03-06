@@ -1,15 +1,15 @@
-package org.eclipse.ecf.tutorial;
+package org.eclipse.ecf.tutorial.basic;
 
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.example.clients.IMessageReceiver;
 import org.eclipse.ecf.example.clients.XMPPClient;
 
-public class ExampleClient2 extends XMPPClient {
+public class Client2 extends XMPPClient {
 	
 	private static final String DEFAULT_PASSWORD = "eclipsecon";
 	private static final String DEFAULT_USERNAME = "eclipsecon@ecf.eclipse.org";
 	
-	public ExampleClient2() {
+	public Client2() {
 		super(new IMessageReceiver() {
 			public void handleMessage(String from, String msg) {
 				System.out.println("from="+from+";msg="+msg);

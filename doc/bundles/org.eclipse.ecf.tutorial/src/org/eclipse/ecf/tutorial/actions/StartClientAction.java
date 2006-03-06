@@ -6,7 +6,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.tutorial.Activator;
-import org.eclipse.ecf.tutorial.ExampleClient4;
+import org.eclipse.ecf.tutorial.basic.Client4;
+import org.eclipse.ecf.tutorial.datashare.DsClient1;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -45,7 +46,16 @@ public class StartClientAction implements IWorkbenchWindowActionDelegate {
 	}
 	
 	protected void createAndConnectClient() throws ECFException {
-		ExampleClient4 client = new ExampleClient4();
+		//Client1 client = new Client1();
+		//client.createAndConnect();
+		//Client2 client = new Client2();
+		//client.createAndConnect();
+		//Client4 client = new Client4();
+		//client.createAndConnect();
+		//Client4 client = new Client4();
+		//client.createAndConnect();
+
+		DsClient1 client = new DsClient1();
 		client.createAndConnect();
 	}
 }

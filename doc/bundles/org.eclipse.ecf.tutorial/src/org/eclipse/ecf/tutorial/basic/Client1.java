@@ -1,4 +1,4 @@
-package org.eclipse.ecf.tutorial;
+package org.eclipse.ecf.tutorial.basic;
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
@@ -6,7 +6,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
 
-public class ExampleClient1 {
+public class Client1 {
 	
 	protected static final String CONTAINER_TYPE = "ecf.generic.client";
 	protected static final String TARGET_SERVER = "ecftcp://localhost:3282/server";
