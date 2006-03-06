@@ -160,31 +160,36 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	protected void replicateTo(ID[] remotes) {
 		getSharedObject().replicateToRemoteContainers(remotes);
 	}
+	
 	protected void handlePrimaryActivated(ISharedObjectActivatedEvent event) {
 		trace("handlePrimaryActivated("+event+")");
 		// First get current group membership
-		ID[] groupMembers = getContext().getGroupMemberIDs();
-		// Now get participants
-		ID[] transactionParticipants = null;
-		// If there is a participants filter specified then use it and ask it to return an ID [] of participants (given
-		// the current group membership
-		if (participantsFilter != null) {
-			transactionParticipants = participantsFilter.filterParticipants(groupMembers);
-		}
-		// replicate
-		if (transactionParticipants == null) {
-			// This means that all current group members should be included as participants
-			replicateTo(null);
-			transactionParticipants = groupMembers;
+		if (getContext().getConnectedID() != null) {
+			ID[] groupMembers = getContext().getGroupMemberIDs();
+			// Now get participants
+			ID[] transactionParticipants = null;
+			// If there is a participants filter specified then use it and ask it to return an ID [] of participants (given
+			// the current group membership
+			if (participantsFilter != null) {
+				transactionParticipants = participantsFilter.filterParticipants(groupMembers);
+			}
+			// replicate
+			if (transactionParticipants == null) {
+				// This means that all current group members should be included as participants
+				replicateTo(null);
+				transactionParticipants = groupMembers;
+			} else {
+				// This means the participants filter provided us with an ID [] and so we replicate only to that ID []
+				replicateTo(transactionParticipants);
+			}
+			
+			// Add participants to the collection
+			addParticipants(transactionParticipants);
+			// Now set transaction state to VOTING
+			setTransactionState(ISharedObjectContainerTransaction.VOTING);
 		} else {
-			// This means the participants filter provided us with an ID [] and so we replicate only to that ID []
-			replicateTo(transactionParticipants);
+			setTransactionState(ISharedObjectContainerTransaction.COMMITTED);
 		}
-		
-		// Add participants to the collection
-		addParticipants(transactionParticipants);
-		// Now set transaction state to VOTING
-		setTransactionState(ISharedObjectContainerTransaction.VOTING);
 	}
 	private long getNextIdentifier() {
 		return identifier++;
@@ -205,17 +210,17 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	}
 	protected void handleJoined(IContainerConnectedEvent event) {
 		trace("handleJoined(" + event + ")");
+		// If we are primary then this event matters to us
 		if (isPrimary()) {
-			synchronized (lock) {
-				// First send replicate message *no matter what state we are in*
-				ID newMember = event.getTargetID();
-				replicateTo(new ID[] { newMember });
-				// Then if in voting state add participants to transaction
-				if (getTransactionState() == ISharedObjectContainerTransaction.VOTING)
-					addParticipants(new ID[] { newMember });
+			// If transactionstate is VOTING then we replicate ourselves to participants
+			if (getTransactionState() == ISharedObjectContainerTransaction.VOTING) {
+				synchronized (lock) {
+					// First send replicate message *no matter what state we are in*
+					ID [] newMember = new ID[] { event.getTargetID() };
+					replicateTo(newMember);
+					addParticipants(newMember);
+				}
 			}
-		} else {
-			// we don't care as we are not transaction monitor
 		}
 	}
 	protected void handleCreateResponse(ISharedObjectCreateResponseEvent event) {
@@ -339,10 +344,8 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	}
 	protected void doTMCommit() throws SharedObjectAddAbortException {
 		trace("doTMCommit");
-		// Only forward commit message if the participantIDs array is not yet
-		// null,
-		// and the current membership is > 0 (we're connected to something)
-		if (getSharedObject().getContext().getGroupMemberIDs().length > 0) {
+		// Make sure we are connected.  If so then send commit message
+		if (getSharedObject().getGroupID() != null) {
 			sendCommit();
 		}
 		// Call local committed message
@@ -357,6 +360,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	protected boolean isVotingCompleted() throws SharedObjectAddAbortException {
 		// The test here is is we've received any indication of failed
 		// participants in the transaction. If so, we throw.
+		if (getTransactionState() == ISharedObjectContainerTransaction.COMMITTED) return true;
 		if (failed.size() > getMinFailedToAbort()) {
 			// Abort!
 			trace("isVotingCompleted:aborting:failed>"
