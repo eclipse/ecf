@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Documentation
 Bundle-SymbolicName: org.eclipse.ecf.doc; singleton:=true
-Bundle-Version: 0.7.3
+Bundle-Version: 0.7.4
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.help
