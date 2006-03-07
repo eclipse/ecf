@@ -23,5 +23,14 @@
          </menu>
       </actionSet>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="org.eclipse.ecf.ui.viewcategory"
+            class="org.eclipse.ecf.tutorial.scribbleshare.ScribbleView"
+            icon="icons/person.gif"
+            id="org.eclipse.ecf.tutorial.paintshare"
+            name="Scribble Share"/>
+   </extension>
 
 </plugin>
