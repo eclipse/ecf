@@ -22,6 +22,7 @@ public class ScribbleView extends ViewPart {
 
 	public void createPartControl(Composite parent) {
 		canvas = new Canvas(parent, SWT.NONE);
+		canvas.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 		Listener listener = new Listener () {
 			int lastX = 0, lastY = 0;
 			public void handleEvent (Event event) {
@@ -29,7 +30,7 @@ public class ScribbleView extends ViewPart {
 				case SWT.MouseMove:
 					if ((event.stateMask & SWT.BUTTON1) == 0) break;
 					GC gc = new GC(canvas);
-					gc.drawLine (lastX, lastY, event.x, event.y);
+					gc.drawLine(lastX, lastY, event.x, event.y);
 					gc.dispose();
 				case SWT.MouseDown:
 					lastX = event.x;
