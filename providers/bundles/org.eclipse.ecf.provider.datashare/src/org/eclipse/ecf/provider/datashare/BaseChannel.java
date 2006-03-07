@@ -309,7 +309,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			if (receiver == null) throw new SharedObjectInitException("receiver channel is null/not available");
 			setChannelListener(receiver.getListener());
 		} 
-		if (l == null) {
+		if (listener == null) {
 			setChannelListener(new IChannelListener() {
 				public void handleChannelEvent(IChannelEvent event) {
 					receiveUndeliveredChannelEvent(event);
