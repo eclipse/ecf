@@ -30,13 +30,16 @@ public class DsClient2 {
 	protected static final String TARGET_SERVER = "ecftcp://localhost:3282/server";
 	IContainer container = null;
 	IChannel channel = null;
+	
 	protected IChannel createChannel(IContainer container) throws ECFException {
+		// Get IChannelContainer adapter
 		IChannelContainer channelContainer = (IChannelContainer) container
 				.getAdapter(IChannelContainer.class);
+		// Check it's valid, throw if not
 		if (channelContainer == null)
 			throw new NullPointerException(
 					"cannot get channel container adapter");
-		// Create channel ID
+		// Create channel ID with fixed name 'channel2'
 		final ID channelID = IDFactory.getDefault().createID(
 				channelContainer.getChannelNamespace(), "channel2");
 		// Setup listener so then when channelmessageevents are received that
@@ -46,9 +49,7 @@ public class DsClient2 {
 				if (event instanceof IChannelMessageEvent) {
 					IChannelMessageEvent msg = (IChannelMessageEvent) event;
 					showMessageInUI(new String(msg.getData()));
-				} else {
-					System.out.println("got channel event " + event);
-				}
+				} else System.out.println("got channel event " + event);
 			}
 		};
 		// Create channel config information
@@ -58,6 +59,7 @@ public class DsClient2 {
 		// Create and return new channel
 		return channelContainer.createChannel(config);
 	}
+	
 	protected void showMessageInUI(final String message) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -73,9 +75,8 @@ public class DsClient2 {
 		// create channel
 		channel = createChannel(container);
 		// create target ID
-		ID targetID = IDFactory.getDefault().createID(
-				container.getConnectNamespace(), TARGET_SERVER);
 		// connect container to target
-		container.connect(targetID, null);
+		container.connect(IDFactory.getDefault().createID(
+				container.getConnectNamespace(), TARGET_SERVER), null);
 	}
 }
