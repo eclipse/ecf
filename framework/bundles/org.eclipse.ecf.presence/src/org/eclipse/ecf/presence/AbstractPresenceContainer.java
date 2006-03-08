@@ -22,8 +22,8 @@ public abstract class AbstractPresenceContainer implements IPresenceContainer {
     private Vector messageListeners = new Vector();
     private Vector presenceListeners = new Vector();
     private Vector subscribeListeners = new Vector();
-	
-    /**
+
+	/**
      * @see org.eclipse.ecf.presence.IPresenceContainer#addSubscribeListener(org.eclipse.ecf.presence.ISubscribeListener)
      */
     public void addSubscribeListener(ISubscribeListener listener) {
@@ -76,6 +76,27 @@ public abstract class AbstractPresenceContainer implements IPresenceContainer {
 	 */
 	public Object getAdapter(Class adapter) {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
+	}
+	
+    /**
+     * @return The list of message listeners
+     */
+    public Vector getMessageListeners() {
+		return messageListeners;
+	}
+
+	/**
+	 * @return The list of presence listeners
+	 */
+	public Vector getPresenceListeners() {
+		return presenceListeners;
+	}
+
+	/**
+	 * @return The list of subscribe listeners
+	 */
+	public Vector getSubscribeListeners() {
+		return subscribeListeners;
 	}
 
 }
