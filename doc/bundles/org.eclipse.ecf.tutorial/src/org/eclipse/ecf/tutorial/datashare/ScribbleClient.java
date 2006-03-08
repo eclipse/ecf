@@ -64,6 +64,7 @@ public class ScribbleClient {
 					IWorkbenchPage wp = ww.getActivePage();
 					IViewPart view = wp
 							.showView("org.eclipse.ecf.tutorial.paintshare");
+					// setup member variable with view
 					scribbleView = (ScribbleView) view;
 				} catch (Exception e) {
 					e.printStackTrace();

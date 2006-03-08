@@ -17,7 +17,7 @@ import org.eclipse.ecf.tutorial.Activator;
 import org.eclipse.ecf.tutorial.basic.Client4;
 import org.eclipse.ecf.tutorial.datashare.DsClient1;
 import org.eclipse.ecf.tutorial.datashare.DsClient2;
-import org.eclipse.ecf.tutorial.datashare.ScribbleClient;
+import org.eclipse.ecf.tutorial.scribbleshare.ScribbleClient;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -54,17 +54,14 @@ public class StartClientAction implements IWorkbenchWindowActionDelegate {
 			}
 		}
 	}
-	
 	protected void createAndConnectClient() throws ECFException {
-		//Client1 client = new Client1();
-		//Client2 client = new Client2();
-		//Client3 client = new Client4();
-		//Client4 client = new Client4();
-
-		//DsClient1 client = new DsClient1();
-		//DsClient2 client = new DsClient2();
-
+		// Client1 client = new Client1();
+		// Client2 client = new Client2();
+		// Client3 client = new Client4();
+		// Client4 client = new Client4();
+		// DsClient1 client = new DsClient1();
+		// DsClient2 client = new DsClient2();
 		ScribbleClient client = new ScribbleClient();
 		client.createAndConnect();
-}
+	}
 }
