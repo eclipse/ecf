@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.tutorial.datashare;
+package org.eclipse.ecf.tutorial.scribbleshare;
 
 import java.util.HashMap;
 import org.eclipse.ecf.core.ContainerFactory;
@@ -19,7 +19,6 @@ import org.eclipse.ecf.datashare.IChannelContainer;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
-import org.eclipse.ecf.tutorial.scribbleshare.ScribbleView;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;

@@ -54,14 +54,17 @@ public class StartClientAction implements IWorkbenchWindowActionDelegate {
 			}
 		}
 	}
+	
 	protected void createAndConnectClient() throws ECFException {
-		// Client1 client = new Client1();
-		// Client2 client = new Client2();
-		// Client3 client = new Client4();
-		// Client4 client = new Client4();
-		// DsClient1 client = new DsClient1();
-		// DsClient2 client = new DsClient2();
+		//Client1 client = new Client1();
+		//Client2 client = new Client2();
+		//Client3 client = new Client4();
+		//Client4 client = new Client4();
+
+		//DsClient1 client = new DsClient1();
+		//DsClient2 client = new DsClient2();
+
 		ScribbleClient client = new ScribbleClient();
 		client.createAndConnect();
-	}
+}
 }
