@@ -28,6 +28,7 @@ import org.eclipse.ui.PlatformUI;
 public class ScribbleClient {
 	protected static final String CONTAINER_TYPE = "ecf.generic.channel";
 	protected static final String TARGET_SERVER = "ecftcp://localhost:3282/server";
+	protected static final String CHANNEL_ID = "scribble";
 	
 	IContainer container = null;
 	ScribbleView scribbleView = null;
@@ -38,7 +39,7 @@ public class ScribbleClient {
 				.getAdapter(IChannelContainer.class);
 		// Create channel ID with fixed name 'channel2'
 		final ID channelID = IDFactory.getDefault().createID(
-				channelContainer.getChannelNamespace(), "scribble");
+				channelContainer.getChannelNamespace(), CHANNEL_ID);
 		// Setup listener so then when channelmessageevents are received that
 		// they present in UI
 		final IChannelListener channelListener = new IChannelListener() {
@@ -49,9 +50,10 @@ public class ScribbleClient {
 				}
 			}
 		};
-		// Create and return new channel
+		// Create new channel
 		IChannel channel = channelContainer.createChannel(channelID,
 				channelListener, new HashMap());
+		// Set the view to use the given channel (for sending)
 		scribbleView.setChannel(channel);
 	}
 	protected void openScribbleView() {
