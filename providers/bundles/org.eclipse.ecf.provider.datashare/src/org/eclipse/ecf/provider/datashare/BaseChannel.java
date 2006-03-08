@@ -106,23 +106,26 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 				return false;
 			}
 			public Event processEvent(Event event) {
-				if (event instanceof IContainerConnectedEvent)
-					BaseChannel.this.listener
-							.handleChannelEvent(createChannelGroupJoinEvent(
-									true, ((IContainerConnectedEvent) event)
-											.getTargetID()));
-				else if (event instanceof IContainerDisconnectedEvent)
-					BaseChannel.this.listener
-							.handleChannelEvent(createChannelGroupDepartEvent(
-									true, ((IContainerDisconnectedEvent) event)
-											.getTargetID()));
-				else if (event instanceof ISharedObjectMessageEvent)
+				IChannelListener l = getListener();
+				if (event instanceof IContainerConnectedEvent) {
+					if (l != null) l.handleChannelEvent(createChannelGroupJoinEvent(
+							true, ((IContainerConnectedEvent) event)
+							.getTargetID()));
+				}
+				else if (event instanceof IContainerDisconnectedEvent) {
+					if (l != null) l.handleChannelEvent(createChannelGroupDepartEvent(
+							true, ((IContainerDisconnectedEvent) event)
+							.getTargetID()));
+				}
+				else if (event instanceof ISharedObjectMessageEvent) {
 					BaseChannel.this
-							.handleMessageEvent((ISharedObjectMessageEvent) event);
+					.handleMessageEvent((ISharedObjectMessageEvent) event);
+				}
 				return event;
 			}
 		});
-		listener.handleChannelEvent(new IChannelInitializeEvent() {
+		IChannelListener l = getListener();
+		IChannelInitializeEvent initEvent = new IChannelInitializeEvent() {
 			public ID[] getGroupMembers() {
 				return getContext().getGroupMemberIDs();
 			}
@@ -135,7 +138,12 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 						";groupMembers=").append(Arrays.asList(getGroupMembers())).append("]");
 				return buf.toString();
 			}
-		});
+		};
+		if (l != null) {
+			l.handleChannelEvent(initEvent);
+		} else {
+			receiveUndeliveredChannelEvent(initEvent);
+		}
 	}
 	/**
 	 * Override of TransactionSharedObject.getAdapter()
@@ -186,10 +194,12 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	private Event handleMessageEvent(final ISharedObjectMessageEvent event) {
 		Object eventData = event.getData();
 		ChannelMsg channelMsg = null;
+		IChannelListener l = getListener();
 		if (eventData instanceof ChannelMsg) {
 			channelMsg = (ChannelMsg) eventData;
 			final byte[] channelData = channelMsg.getData();
 			if (channelData != null) {
+				if (l == null) return event;
 				listener.handleChannelEvent(new IChannelMessageEvent() {
 					private static final long serialVersionUID = -2270885918818160970L;
 					public ID getFromContainerID() {
@@ -299,7 +309,6 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		} catch (ClassCastException e) {
 			throw new SharedObjectInitException("Bad RECEIVER_ID_PROPERTY for replica.  Cannot be cast to org.eclipse.ecf.core.identity.ID type");
 		}
-		IChannelListener l = null;
 		if (rcvr != null) {
 			// Now...get local channel container first...throw if we can't get it
 			IChannelContainer container = (IChannelContainer) getContext().getAdapter(IChannelContainer.class);
@@ -309,14 +318,14 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			if (receiver == null) throw new SharedObjectInitException("receiver channel is null/not available");
 			setChannelListener(receiver.getListener());
 		} 
-		if (listener == null) {
+		IChannelListener l = getListener();
+		// Last ditch...we'll setup a listener to receiveUndeliveredChannelEvents
+		if (l == null) {
 			setChannelListener(new IChannelListener() {
 				public void handleChannelEvent(IChannelEvent event) {
 					receiveUndeliveredChannelEvent(event);
 				}
 			});
-		} else {
-			this.listener = l;
-		}
+		} 
 	}
 }
