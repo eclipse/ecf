@@ -254,11 +254,13 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
             if (join) {
             	l.joined(fromID);
             	// TESTING OF SENDING GROUP CHAT MESSAGE
+            	/*
             	try {
             		getContext().sendMessage(null, "foo");
             	} catch (Exception e) {
             		e.printStackTrace();
             	}
+            	*/
             } else {
             	l.left(fromID);
             }
