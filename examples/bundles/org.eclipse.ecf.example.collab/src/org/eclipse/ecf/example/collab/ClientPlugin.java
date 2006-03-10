@@ -32,6 +32,7 @@ import org.osgi.framework.BundleContext;
  */
 public class ClientPlugin extends AbstractUIPlugin implements
 		ClientPluginConstants {
+	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab.ClientPlugin";
 	// The shared instance.
 	private static ClientPlugin plugin;
 	// Resource bundle.
@@ -248,7 +249,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		try {
 			if (resourceBundle == null)
 				resourceBundle = ResourceBundle
-						.getBundle("org.eclipse.ecf.example.collab.ClientPlugin");
+						.getBundle(PLUGIN_ID);
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}
