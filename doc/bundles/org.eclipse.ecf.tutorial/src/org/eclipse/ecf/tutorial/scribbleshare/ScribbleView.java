@@ -5,13 +5,12 @@
  * available at http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: Chris Aniszczyk <zx@us.ibm.com> - initial API and implementation
+ * 				 Ken Gilmer <kgilmer@gmail.com>
  ******************************************************************************/
 package org.eclipse.ecf.tutorial.scribbleshare;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -36,9 +35,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -84,12 +80,17 @@ public class ScribbleView extends ViewPart {
 		this.channel = channel;
 	}
 
+	/**
+	 * This is called when a remote client calls <code>sendTool</code>.
+	 * @param message
+	 */
 	public void handleDrawLine(byte[] message) {
 		ByteArrayInputStream bins = new ByteArrayInputStream(message);
 		// DataInputStream dins = new DataInputStream(bins);
 		try {
 			ObjectInputStream ois = new ObjectInputStream(bins);
 			AbstractTool tool = (AbstractTool) ois.readObject();
+			//Apply the tool to the local canvas.
 			tool.draw(canvas);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
@@ -104,9 +105,11 @@ public class ScribbleView extends ViewPart {
 		if (channel != null && currentTool != null) {
 			try {
 				ByteArrayOutputStream bouts = new ByteArrayOutputStream();
+				// create a byte array from serialized Tool
 				ObjectOutputStream douts = new ObjectOutputStream(bouts);
 				douts.writeObject(tool);
 
+				// send serialized tool to other clients.
 				channel.sendMessage(bouts.toByteArray());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -148,10 +151,12 @@ public class ScribbleView extends ViewPart {
 		toolbox.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				currentTool = (AbstractTool) ((StructuredSelection) toolbox.getSelection()).getFirstElement();
+				//Apply the drawSettings to the currently selected tool.
 				currentTool.setDrawSettings(drawSettings);
 			}
 		});
 
+		//Create the UI widgets to modify the DrawSettings instance.
 		createSettings(paletteComposite);
 
 		Label separator = new Label(backgroundComposite, SWT.SEPARATOR | SWT.VERTICAL/* SWT.NONE */);
@@ -164,10 +169,13 @@ public class ScribbleView extends ViewPart {
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
 				if (currentTool != null) {
+					//Have the tool interpret the mouse events.
 					currentTool.handleUIEvent(event, canvas);
 
+					//If the tool interaction is complete, send the tool to other clients for rendering.
 					if (currentTool.isComplete()) {
 						sendTool(currentTool);
+						//Only do this once per Tool.
 						currentTool.setComplete(false);
 					}
 				}
@@ -179,11 +187,7 @@ public class ScribbleView extends ViewPart {
 	}
 
 	private void createSettings(Composite paletteComposite) {
-		{
-			Label l = new Label(paletteComposite, SWT.NONE);
-			l.setText("Settings");
-		}
-
+		// Size of Pen (drawWidth) set on the GC.
 		{
 			Label l = new Label(paletteComposite, SWT.NONE);
 			l.setText("Pen Size");
@@ -199,7 +203,7 @@ public class ScribbleView extends ViewPart {
 				
 			});
 		}
-		
+		//Toggles the antialias property on the GC.
 		{
 			final Button b = new Button(paletteComposite, SWT.CHECK);			
 			b.setText("Antialias");
@@ -217,6 +221,10 @@ public class ScribbleView extends ViewPart {
 
 	}
 
+	/**
+	 * Create the list of tools available to be used.  Add new subclasses of AbstractTool here.
+	 * @return
+	 */
 	private List createTools() {
 		List toolList = new ArrayList();
 
