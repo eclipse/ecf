@@ -12,101 +12,224 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.ecf.datashare.IChannel;
+import org.eclipse.ecf.tutorial.scribbleshare.toolbox.AbstractTool;
+import org.eclipse.ecf.tutorial.scribbleshare.toolbox.Box;
+import org.eclipse.ecf.tutorial.scribbleshare.toolbox.DrawSettings;
+import org.eclipse.ecf.tutorial.scribbleshare.toolbox.Line;
+import org.eclipse.ecf.tutorial.scribbleshare.toolbox.ListContentProvider;
+import org.eclipse.ecf.tutorial.scribbleshare.toolbox.Oval;
+import org.eclipse.ecf.tutorial.scribbleshare.toolbox.Pencil;
+import org.eclipse.ecf.tutorial.scribbleshare.toolbox.ToolboxLabelProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
+
 
 public class ScribbleView extends ViewPart {
 
 	private Display display;
+
 	private Canvas canvas;
+
+	private AbstractTool currentTool;
+	
+	private DrawSettings drawSettings = new DrawSettings();
+
 	// Default color is black
 	int red = 0;
+
 	int blue = 0;
+
 	int green = 0;
+
 	// Channel to send data on
 	IChannel channel = null;
+
 	
+
 	public void setUserColor(int red, int green, int blue) {
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
 	}
+
 	public void setChannel(IChannel channel) {
 		this.channel = channel;
 	}
-	public void handleDrawLine(byte [] message) {
+
+	public void handleDrawLine(byte[] message) {
 		ByteArrayInputStream bins = new ByteArrayInputStream(message);
-		DataInputStream dins = new DataInputStream(bins);
+		// DataInputStream dins = new DataInputStream(bins);
 		try {
-			final int red = dins.readInt();
-			final int green = dins.readInt();
-			final int blue = dins.readInt();
-			final int lastX = dins.readInt();
-			final int lastY = dins.readInt();
-			final int x = dins.readInt();
-			final int y = dins.readInt();
-			display.asyncExec(new Runnable() {
-				public void run() {
-					GC gc = new GC(canvas);
-					gc.setForeground(new Color(display,new RGB(red,green,blue)));
-					gc.drawLine(lastX, lastY, x, y);
-					gc.dispose();
-				}});
-		} catch (Exception e) {
+			ObjectInputStream ois = new ObjectInputStream(bins);
+			AbstractTool tool = (AbstractTool) ois.readObject();
+			tool.draw(canvas);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
-	protected void sendDrawLine(int lastX, int lastY, int x, int y) {
-		if (channel != null) {
+
+	protected void sendTool(AbstractTool tool) {
+		if (channel != null && currentTool != null) {
 			try {
 				ByteArrayOutputStream bouts = new ByteArrayOutputStream();
-				DataOutputStream douts = new DataOutputStream(bouts);
-				douts.writeInt(red);douts.writeInt(green);douts.writeInt(blue);
-				douts.writeInt(lastX);douts.writeInt(lastY);douts.writeInt(x);douts.writeInt(y);
+				ObjectOutputStream douts = new ObjectOutputStream(bouts);
+				douts.writeObject(tool);
+
 				channel.sendMessage(bouts.toByteArray());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
+
 	public void createPartControl(Composite parent) {
-		canvas = new Canvas(parent, SWT.NONE);
+		Composite backgroundComposite = new Composite(parent, SWT.NONE);
+		GridLayout backgroundGridLayout = new GridLayout(3, false);
+		backgroundGridLayout.marginHeight = 0;
+		backgroundGridLayout.marginBottom = 0;
+		backgroundGridLayout.marginLeft = 0;
+		backgroundGridLayout.marginRight = 0;
+		backgroundGridLayout.marginWidth = 0;
+		backgroundGridLayout.horizontalSpacing = 0;
+		backgroundComposite.setLayout(backgroundGridLayout);
+		backgroundComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+		Composite paletteComposite = new Composite(backgroundComposite, SWT.NONE);
+		backgroundGridLayout = new GridLayout();
+		backgroundGridLayout.marginHeight = 0;
+		backgroundGridLayout.marginBottom = 0;
+		backgroundGridLayout.marginLeft = 0;
+		backgroundGridLayout.marginRight = 0;
+		backgroundGridLayout.marginWidth = 0;
+		backgroundGridLayout.horizontalSpacing = 0;
+		paletteComposite.setLayout(backgroundGridLayout);
+		GridData toolboxGridData = new GridData(GridData.FILL_VERTICAL);
+		toolboxGridData.widthHint = 60;
+		paletteComposite.setLayoutData(toolboxGridData);
+
+		final TableViewer toolbox = new TableViewer(paletteComposite, SWT.FLAT | SWT.FULL_SELECTION);
+		toolboxGridData = new GridData(GridData.FILL_BOTH);
+		toolbox.getTable().setLayoutData(toolboxGridData);
+		toolbox.setLabelProvider(new ToolboxLabelProvider());
+		toolbox.setContentProvider(new ListContentProvider());
+		toolbox.setInput(createTools());
+		toolbox.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				currentTool = (AbstractTool) ((StructuredSelection) toolbox.getSelection()).getFirstElement();
+				currentTool.setDrawSettings(drawSettings);
+			}
+		});
+
+		createSettings(paletteComposite);
+
+		Label separator = new Label(backgroundComposite, SWT.SEPARATOR | SWT.VERTICAL/* SWT.NONE */);
+		separator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+
+		canvas = new Canvas(backgroundComposite, SWT.NONE);
+		canvas.setLayoutData(new GridData(GridData.FILL_BOTH));
 		display = parent.getDisplay();
 		canvas.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		Listener listener = new Listener () {
-			int lastX = 0, lastY = 0;
-			public void handleEvent (Event event) {
-				switch (event.type) {
-				case SWT.MouseMove:
-					if ((event.stateMask & SWT.BUTTON1) == 0) break;
-					GC gc = new GC(canvas);
-					gc.drawLine(lastX, lastY, event.x, event.y);
-					// Here is where we send the coords to remotes
-					sendDrawLine(lastX, lastY, event.x, event.y);
-					gc.dispose();
-				case SWT.MouseDown:
-					lastX = event.x;
-					lastY = event.y;
-					break;
+		Listener listener = new Listener() {
+			public void handleEvent(Event event) {
+				if (currentTool != null) {
+					currentTool.handleUIEvent(event, canvas);
+
+					if (currentTool.isComplete()) {
+						sendTool(currentTool);
+						currentTool.setComplete(false);
+					}
 				}
 			}
 		};
 		canvas.addListener(SWT.MouseDown, listener);
 		canvas.addListener(SWT.MouseMove, listener);
+		canvas.addListener(SWT.MouseUp, listener);
+	}
+
+	private void createSettings(Composite paletteComposite) {
+		{
+			Label l = new Label(paletteComposite, SWT.NONE);
+			l.setText("Settings");
+		}
+
+		{
+			Label l = new Label(paletteComposite, SWT.NONE);
+			l.setText("Pen Size");
+			final Text t = new Text(paletteComposite, SWT.BORDER);
+			t.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			t.setText("1");
+			t.addModifyListener(new ModifyListener() {
+
+				public void modifyText(ModifyEvent e) {
+					drawSettings.setPenWidth(Integer.parseInt(t.getText()));			
+					currentTool.setDrawSettings(drawSettings);
+				}
+				
+			});
+		}
+		
+		{
+			final Button b = new Button(paletteComposite, SWT.CHECK);			
+			b.setText("Antialias");
+			b.addSelectionListener(new SelectionListener() {
+				public void widgetSelected(SelectionEvent e) {
+					drawSettings.setAntialias(b.getSelection());			
+					currentTool.setDrawSettings(drawSettings);
+				}
+
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+				
+			});
+		}
+
+	}
+
+	private List createTools() {
+		List toolList = new ArrayList();
+
+		toolList.add(new Pencil());
+		toolList.add(new Box());
+		toolList.add(new Line());
+		toolList.add(new Oval());
+
+		return toolList;
 	}
 
 	public void setFocus() {
 		canvas.setFocus();
-	}
-
+	}	
+	
 }
