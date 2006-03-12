@@ -43,6 +43,7 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,false);
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY,true);
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER,true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_STORE_PASSWORD, false);
 	}
 	public ClientPreferencePage() {
 		super(GRID);
@@ -77,6 +78,8 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		
 		boolean val = getPreferenceStore().getBoolean(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY);
 		ask.setEnabled(val, askParent);
+		
+		addField(new BooleanFieldEditor(ClientPlugin.PREF_STORE_PASSWORD, "Store Passwords (Warning: passwords will be stored in plaintext.)", getFieldEditorParent()));
 	}
 
     public void propertyChange(PropertyChangeEvent event) {
