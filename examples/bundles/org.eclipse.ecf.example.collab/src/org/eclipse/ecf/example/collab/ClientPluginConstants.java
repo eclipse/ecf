@@ -38,6 +38,7 @@ public interface ClientPluginConstants {
 	
 	public static final String PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY = "sharedEditorShowEvents";
 	public static final String PREF_SHAREDEDITOR_ASK_RECEIVER = "sharedEditorAskReceiver";
+	public static final String PREF_STORE_PASSWORD = "storePassword";
 	/*
 	 * Contstants used to describe decoration images.
 	 */
