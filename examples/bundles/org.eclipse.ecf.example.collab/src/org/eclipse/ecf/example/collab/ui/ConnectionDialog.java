@@ -106,7 +106,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 	private TableViewer viewer;
 
 	private IDialogSettings dialogSettings;
-	
+
 	private GlobalModifyListener listener = new GlobalModifyListener();
 
 	public ConnectionDialog(Shell parentShell) {
@@ -163,15 +163,20 @@ public class ConnectionDialog extends TitleAreaDialog {
 				.setMessage("Please choose a provider and supply connection parameters.");
 
 		this.getShell().setText("Connect");
-		
-/*		try {
-			restoreDialogSettings();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
 
 		return parent;
+	}
+
+	protected Control createContents(Composite parent) {
+		Control control = super.createContents(parent);
+
+		try {
+			restoreDialogSettings();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return control;
 	}
 
 	protected Point getInitialSize() {
@@ -237,26 +242,37 @@ public class ConnectionDialog extends TitleAreaDialog {
 	private void restoreDialogSettings() throws IOException {
 		IDialogSettings dialogSettings = getDialogSettings();
 		if (dialogSettings != null) {
-			IDialogSettings pageSettings = dialogSettings.getSection(DIALOG_SETTINGS);
-			pageSettings.load(this.getClass().toString());
+			IDialogSettings pageSettings = dialogSettings
+					.getSection(DIALOG_SETTINGS);
 			if (pageSettings != null) {
+
 				int intVal = pageSettings.getInt("provider");
 				viewer.getTable().setSelection(intVal);
-
+				viewer.setSelection(viewer.getSelection());
 				String strVal = pageSettings.get("url");
-				if (strVal != null)
+				if (strVal != null && joingroup_text != null) {
 					joingroup_text.setText(strVal);
+				}
 
 				strVal = pageSettings.get("nickname");
-				if (strVal != null)
+				if (strVal != null && nickname_text != null) {
 					nickname_text.setText(strVal);
-				
+				}
+
+				if (savePassword()) {
+					strVal = pageSettings.get("password");
+					if (strVal != null && password_text != null) {
+						password_text.setText(strVal);
+					}
+				}
+
 				listener.modifyText(null);
 			}
+
 		}
 	}
 
-	private void saveDialogSettings() {		
+	private void saveDialogSettings() {
 		IDialogSettings dialogSettings = this.getDialogSettings();
 		if (dialogSettings != null) {
 			IDialogSettings pageSettings = dialogSettings
@@ -264,19 +280,25 @@ public class ConnectionDialog extends TitleAreaDialog {
 			if (pageSettings == null)
 				pageSettings = dialogSettings.addNewSection(DIALOG_SETTINGS);
 
-			pageSettings.put("url", joinGroup);
-			pageSettings.put("nickname", nickname);
+			pageSettings.put("url", this.getJoinGroupText());
+			pageSettings.put("nickname", this.getNicknameText());
+			pageSettings.put("password", this.getPasswordText());
+			
 			int i = viewer.getTable().getSelectionIndex();
 			if (i >= 0)
-				pageSettings.put("provider", i);	
-			
-			try {
+				pageSettings.put("provider", i);
+
+/*			try {
 				dialogSettings.save(this.getClass().toString());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}			
-		}
+			}
+*/		}
+	}
+	
+	private boolean savePassword() {
+		return ClientPlugin.getDefault().getPluginPreferences().getBoolean(ClientPlugin.PREF_STORE_PASSWORD);
 	}
 
 	protected void okPressed() {
@@ -286,7 +308,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 
 	private IDialogSettings getDialogSettings() {
 		if (dialogSettings == null) {
-			dialogSettings = new DialogSettings(this.getClass().toString());
+			dialogSettings = ClientPlugin.getDefault().getDialogSettings();
 		}
 
 		return dialogSettings;
@@ -428,14 +450,22 @@ public class ConnectionDialog extends TitleAreaDialog {
 			}
 		}
 	}
-	
+
 	private class GlobalModifyListener implements ModifyListener {
 
 		public void modifyText(ModifyEvent e) {
-			password = password_text.getText();
-			nickname = nickname_text.getText();
+			if (password_text != null && !password_text.isDisposed()) {
+				password = password_text.getText();
+			}
+
+			if (nickname_text != null && !nickname_text.isDisposed()) {
+				nickname = nickname_text.getText();
+			}
+
+			if (joingroup_text != null && !joingroup_text.isDisposed()) {
+				joinGroup = joingroup_text.getText();
+			}
 		}
-		
-		
+
 	}
 }
