@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.ecf.datashare.IChannel;
@@ -33,6 +34,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -47,7 +50,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
-
 public class ScribbleView extends ViewPart {
 
 	private Display display;
@@ -55,8 +57,10 @@ public class ScribbleView extends ViewPart {
 	private Canvas canvas;
 
 	private AbstractTool currentTool;
-	
+
 	private DrawSettings drawSettings = new DrawSettings();
+
+	private List tools;
 
 	// Default color is black
 	int red = 0;
@@ -68,7 +72,9 @@ public class ScribbleView extends ViewPart {
 	// Channel to send data on
 	IChannel channel = null;
 
-	
+	public ScribbleView() {
+		tools = new ArrayList();
+	}
 
 	public void setUserColor(int red, int green, int blue) {
 		this.red = red;
@@ -82,6 +88,7 @@ public class ScribbleView extends ViewPart {
 
 	/**
 	 * This is called when a remote client calls <code>sendTool</code>.
+	 * 
 	 * @param message
 	 */
 	public void handleDrawLine(byte[] message) {
@@ -90,8 +97,9 @@ public class ScribbleView extends ViewPart {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(bins);
 			AbstractTool tool = (AbstractTool) ois.readObject();
-			//Apply the tool to the local canvas.
+			// Apply the tool to the local canvas.
 			tool.draw(canvas);
+			tools.add(tool);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -129,7 +137,8 @@ public class ScribbleView extends ViewPart {
 		backgroundComposite.setLayout(backgroundGridLayout);
 		backgroundComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		Composite paletteComposite = new Composite(backgroundComposite, SWT.NONE);
+		Composite paletteComposite = new Composite(backgroundComposite,
+				SWT.NONE);
 		backgroundGridLayout = new GridLayout();
 		backgroundGridLayout.marginHeight = 0;
 		backgroundGridLayout.marginBottom = 0;
@@ -142,7 +151,8 @@ public class ScribbleView extends ViewPart {
 		toolboxGridData.widthHint = 60;
 		paletteComposite.setLayoutData(toolboxGridData);
 
-		final TableViewer toolbox = new TableViewer(paletteComposite, SWT.FLAT | SWT.FULL_SELECTION);
+		final TableViewer toolbox = new TableViewer(paletteComposite, SWT.FLAT
+				| SWT.FULL_SELECTION);
 		toolboxGridData = new GridData(GridData.FILL_BOTH);
 		toolbox.getTable().setLayoutData(toolboxGridData);
 		toolbox.setLabelProvider(new ToolboxLabelProvider());
@@ -150,34 +160,53 @@ public class ScribbleView extends ViewPart {
 		toolbox.setInput(createTools());
 		toolbox.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				currentTool = (AbstractTool) ((StructuredSelection) toolbox.getSelection()).getFirstElement();
-				//Apply the drawSettings to the currently selected tool.
+				currentTool = (AbstractTool) ((StructuredSelection) toolbox
+						.getSelection()).getFirstElement();
+				// Apply the drawSettings to the currently selected tool.
 				currentTool.setDrawSettings(drawSettings);
 			}
 		});
 
-		//Create the UI widgets to modify the DrawSettings instance.
+		// Create the UI widgets to modify the DrawSettings instance.
 		createSettings(paletteComposite);
 
-		Label separator = new Label(backgroundComposite, SWT.SEPARATOR | SWT.VERTICAL/* SWT.NONE */);
+		Label separator = new Label(backgroundComposite, SWT.SEPARATOR
+				| SWT.VERTICAL/* SWT.NONE */);
 		separator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 
 		canvas = new Canvas(backgroundComposite, SWT.NONE);
 		canvas.setLayoutData(new GridData(GridData.FILL_BOTH));
 		display = parent.getDisplay();
 		canvas.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		canvas.addPaintListener(new PaintListener() {
+
+			public void paintControl(PaintEvent e) {
+				for (Iterator i = tools.iterator(); i.hasNext();) {
+					AbstractTool at = (AbstractTool) i.next();
+					at.draw(canvas);
+				}
+			}
+
+		});
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
 				if (currentTool != null) {
-					//Have the tool interpret the mouse events.
+					// Have the tool interpret the mouse events.
 					currentTool.handleUIEvent(event, canvas);
 
-					//If the tool interaction is complete, send the tool to other clients for rendering.
+					// If the tool interaction is complete, send the tool to
+					// other clients for rendering.
 					if (currentTool.isComplete()) {
+						tools.add(currentTool);
+
 						sendTool(currentTool);
-						//Only do this once per Tool.
+						// Only do this once per Tool.
 						currentTool.setComplete(false);
-					}
+					} /*else {
+						if (currentTool instanceof Pencil) {
+							tools.add(currentTool);
+						}
+					}*/
 				}
 			}
 		};
@@ -197,32 +226,34 @@ public class ScribbleView extends ViewPart {
 			t.addModifyListener(new ModifyListener() {
 
 				public void modifyText(ModifyEvent e) {
-					drawSettings.setPenWidth(Integer.parseInt(t.getText()));			
+					drawSettings.setPenWidth(Integer.parseInt(t.getText()));
 					currentTool.setDrawSettings(drawSettings);
 				}
-				
+
 			});
 		}
-		//Toggles the antialias property on the GC.
+		// Toggles the antialias property on the GC.
 		{
-			final Button b = new Button(paletteComposite, SWT.CHECK);			
+			final Button b = new Button(paletteComposite, SWT.CHECK);
 			b.setText("Antialias");
 			b.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent e) {
-					drawSettings.setAntialias(b.getSelection());			
+					drawSettings.setAntialias(b.getSelection());
 					currentTool.setDrawSettings(drawSettings);
 				}
 
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
-				
+
 			});
 		}
 
 	}
 
 	/**
-	 * Create the list of tools available to be used.  Add new subclasses of AbstractTool here.
+	 * Create the list of tools available to be used. Add new subclasses of
+	 * AbstractTool here.
+	 * 
 	 * @return
 	 */
 	private List createTools() {
@@ -238,6 +269,6 @@ public class ScribbleView extends ViewPart {
 
 	public void setFocus() {
 		canvas.setFocus();
-	}	
-	
+	}
+
 }
