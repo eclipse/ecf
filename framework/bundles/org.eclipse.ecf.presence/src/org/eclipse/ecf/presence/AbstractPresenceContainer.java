@@ -13,6 +13,7 @@ package org.eclipse.ecf.presence;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
 /**
  * An abstract presence container implementation
@@ -97,6 +98,22 @@ public abstract class AbstractPresenceContainer implements IPresenceContainer {
 	 */
 	public Vector getSubscribeListeners() {
 		return subscribeListeners;
+	}
+	
+	public IAccountManager getAccountManager() {
+		return null;
+	}
+
+	public IChatRoomManager getChatRoomManager() {
+		return null;
+	}
+	
+	public IPresenceSender getPresenceSender() {
+		return null;
+	}
+	
+	public IMessageSender getMessageSender() {
+		return null;
 	}
 
 }
