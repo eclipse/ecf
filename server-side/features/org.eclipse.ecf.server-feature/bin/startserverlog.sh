@@ -4,21 +4,21 @@ RP=../../../plugins
 CURRENT=`pwd`
 cd ${CURRENT}
 # Relative path for accessing plugins
-ECF=${RP}/org.eclipse.ecf_0.7.4/ecf.jar
-UI=${RP}/org.eclipse.ecf.ui_0.7.4/ui.jar
-SDO=${RP}/org.eclipse.ecf.sdo_0.7.4/ecf.sdo.jar
-DS=${RP}/org.eclipse.ecf.datashare_0.7.4/datashare.jar
-DSP=${RP}/org.eclipse.ecf.provider.datashare_0.7.4/dsprovider.jar
-FS=${RP}/org.eclipse.ecf.fileshare_0.7.4/fileshare.jar
-FSP=${RP}/org.eclipse.ecf.provider.fileshare_0.7.4/fsprovider.jar
-PROVIDER=${RP}/org.eclipse.ecf.provider_0.7.4/provider.jar
-PRESENCE=${RP}/org.eclipse.ecf.presence_0.7.4/presence.jar
-GED=${RP}/org.eclipse.ecf.example.sdo.gefeditor_0.7.4/editor.jar
-ED=${RP}/org.eclipse.ecf.example.sdo.editor_0.7.4/editor.jar
-LIBRARY=${RP}/org.eclipse.ecf.example.sdo.library_0.7.4/runtime/org.eclipse.ecf.example.library.jar
-DISCOVERY=${RP}/org.eclipse.ecf.discovery_0.7.4/discovery.jar
-HELLO=${RP}/org.eclipse.ecf.example.hello_0.7.4/hello.jar
-COLLAB=${RP}/org.eclipse.ecf.example.collab_0.7.4/client.jar
+ECF=${RP}/org.eclipse.ecf_0.7.5/ecf.jar
+UI=${RP}/org.eclipse.ecf.ui_0.7.5/ui.jar
+SDO=${RP}/org.eclipse.ecf.sdo_0.7.5/ecf.sdo.jar
+DS=${RP}/org.eclipse.ecf.datashare_0.7.5/datashare.jar
+DSP=${RP}/org.eclipse.ecf.provider.datashare_0.7.5/dsprovider.jar
+FS=${RP}/org.eclipse.ecf.fileshare_0.7.5/fileshare.jar
+FSP=${RP}/org.eclipse.ecf.provider.fileshare_0.7.5/fsprovider.jar
+PROVIDER=${RP}/org.eclipse.ecf.provider_0.7.5/provider.jar
+PRESENCE=${RP}/org.eclipse.ecf.presence_0.7.5/presence.jar
+GED=${RP}/org.eclipse.ecf.example.sdo.gefeditor_0.7.5/editor.jar
+ED=${RP}/org.eclipse.ecf.example.sdo.editor_0.7.5/editor.jar
+LIBRARY=${RP}/org.eclipse.ecf.example.sdo.library_0.7.5/runtime/org.eclipse.ecf.example.library.jar
+DISCOVERY=${RP}/org.eclipse.ecf.discovery_0.7.5/discovery.jar
+HELLO=${RP}/org.eclipse.ecf.example.hello_0.7.5/hello.jar
+COLLAB=${RP}/org.eclipse.ecf.example.collab_0.7.5/client.jar
 
 CP="../lib/core.jar:../lib/runtime.jar:../lib/osgi.jar:${ECF}:${UI}:${SDO}:${PROVIDER}:${PRESENCE}:${GED}:${ED}:${LIBRARY}:${DS}:${DSP}:${FS}:${FSP}:${HELLO}:${DISCOVERY}:${COLLAB}:."
 
