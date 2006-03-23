@@ -38,7 +38,7 @@ import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
 import org.osgi.framework.BundleContext;
 
 public class ECFPlugin extends Plugin {
-	public static final Trace trace = Trace.create("factoryinit");
+	protected static Trace trace = null;
 	
 	public static final String NAMESPACE_EPOINT = "org.eclipse.ecf.namespace";
 	public static final String CONTAINER_FACTORY_EPOINT = "org.eclipse.ecf.containerFactory";
@@ -79,7 +79,6 @@ public class ECFPlugin extends Plugin {
 
 	public ECFPlugin() {
 		super();
-		debug("ECFPlugin.<init>");
 		plugin = this;
 		try {
 			resourceBundle = ResourceBundle.getBundle(PLUGIN_RESOURCE_BUNDLE);
@@ -453,6 +452,7 @@ public class ECFPlugin extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		this.bundlecontext = context;
+		trace = Trace.create("factoryinit");
 		setupContainerExtensionPoint(context);
 		setupIdentityExtensionPoint(context);
 		setupCommExtensionPoint(context);
