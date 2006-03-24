@@ -9,6 +9,7 @@
 package org.eclipse.ecf.core;
 
 import java.util.Iterator;
+
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Platform;
