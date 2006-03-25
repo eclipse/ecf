@@ -14,15 +14,51 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 
 /**
- * Basic container contract
+ * Contract for ECF communications container<br><br>
+ * IContainer instances are used by clients to define a context for
+ * communications.  
+ * <br>
+ * <br>
+ * The typical lifecycle of an ECF communications container is:
+ * <ol>
+ * <li>Create an IContainer instance via a {@link ContainerFactory}</li>
+ * <li><b>Optional</b>: Setup client-specific protocol adapters for communicating via specific protocols</li>
+ * <li>Connect the container to a remote process or group</li>
+ * <li>Engage in communication via protocol adapaters</li>
+ * <li>Disconnect</li>
+ * </ol>
+ * For example, to create and connect an ECF "generic client":
+ *
+ * <pre>
+ *      // Create container instance via factory
+ * 		IContainer container = ContainerFactory.getDefault().createContainer("ecf.generic.client");
+ * 
+ *      // Get presence protocol adapter
+ * 		IPresenceContainer presence = (IPresenceContainer) container.getAdapter(IPresenceContainer.class);
+ *      // ... setup presence listeners and local input here using presence
+ *      
+ *      // Connect
+ *      container.connect(target,targetConnectContext);
+ *      
+ *      // Engage in appropriate communications here...
+ *      // Manage protocol adapters as needed when finished
+ *      
+ *      // Disconnect
+ *      container.disconnect();
+ * </pre>
+ * 
  */
 public interface IContainer extends IAdaptable, IIdentifiable {
 	/**
-	 * Connect to a target remote container or container group. The target
-	 * identified by the first parameter (targetID) is connected to by the
-	 * associated provider implementation. If the provider requires
-	 * authentication information, the required information is given via via the
-	 * parameter (connectContext).
+	 * Connect to a target remote process or process group. The target
+	 * identified by the first parameter (targetID) is connected the
+	 * implementation class. If authentication information is required, the
+	 * required information is given via via the second parameter
+	 * (connectContext).
+	 * 
+	 * Callers note that depending upon the provider implementation this method
+	 * may block.  It is suggested that callers use a separate thread to call
+	 * this method.
 	 * 
 	 * This method provides an implementation independent way for container
 	 * implementations to connect, authenticate, and communicate with a remote
@@ -42,7 +78,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 			throws ContainerConnectException;
 
 	/**
-	 * Get the target ID that this container instance has previously connected
+	 * Get the target ID that this container instance has connected
 	 * to. Returns null if not connected.
 	 * 
 	 * @return ID of the target we are connected to. Null if currently not
@@ -51,15 +87,15 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	public ID getConnectedID();
 
 	/**
-	 * Get the Namespace expected by the remote target container
+	 * Get the Namespace expected by the remote target container.  Must not return null.
 	 * 
 	 * @return Namespace the namespace by the target for a call to connect()
 	 */
 	public Namespace getConnectNamespace();
 
 	/**
-	 * Disconnect from connect. This operation will disconnect the local
-	 * container instance from any previously joined group. Subsequent calls to
+	 * Disconnect. This operation will disconnect the local container instance
+	 * from any previously joined target or group. Subsequent calls to
 	 * getConnectedID() will return null.
 	 */
 	public void disconnect();
@@ -102,23 +138,49 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	public Object getAdapter(Class serviceType);
 
 	/**
-	 * Dispose this IContainer instance. The container instance will be made
+	 * Dispose this IContainer instance.  The container instance will be made
 	 * inactive after the completion of this method and will be unavailable for
-	 * subsequent usage.
+	 * subsequent usage.  NOTE:  This method is not intended to be called
+	 * by clients.
 	 * 
 	 */
 	public void dispose();
 
 	/**
-	 * Add listener to IContainer. Listener will be notified when container
-	 * events occur
+	 * Add listener to IContainer. Listener's handleEvent method will be
+	 * synchronously called when container methods are called. Minimally, the
+	 * events delivered to the listener are as follows <br>
+	 * <table BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
+	 * <tr>
+	 * <td>container action</td>
+	 * <td>Event</td>
+	 * </tr>
+	 * <tr>
+	 * <td>connect start</td>
+	 * <td>IContainerConnectingEvent</td>
+	 * </tr>
+	 * <tr>
+	 * <td>connect complete</td>
+	 * <td>IContainerConnectedEvent</td>
+	 * </tr>
+	 * <tr>
+	 * <td>disconnect start</td>
+	 * <td>IContainerDiscnnectingEvent</td>
+	 * </tr>
+	 * <tr>
+	 * <td>disconnect complete</td>
+	 * <td>IContainerDisconnectedEvent</td>
+	 * </tr>
+	 * </table>
 	 * 
 	 * @param l
 	 *            the IContainerListener to add
 	 * @param filter
-	 *            the filter to define types of container events to receive
+	 *            the filter to define types of container events to receive.
+	 *            Provider implementations may choose to use a filter to
+	 *            determine a subset of possible events to deliver to listener
 	 */
-	public void addListener(IContainerListener l, String filter);
+	public void addListener(IContainerListener listener, String filter);
 
 	/**
 	 * Remove listener from IContainer.
