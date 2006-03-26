@@ -41,6 +41,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
  *      container.connect(target,targetConnectContext);
  *      
  *      // Engage in appropriate communications here...
+ *      //   or, just bugger off for awhile until you figure out something more useful
  *      // Manage protocol adapters as needed when finished
  *      
  *      // Disconnect
