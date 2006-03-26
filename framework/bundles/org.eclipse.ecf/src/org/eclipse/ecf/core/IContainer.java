@@ -174,7 +174,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * </tr>
 	 * </table>
 	 * 
-	 * @param l
+	 * @param listener
 	 *            the IContainerListener to add
 	 * @param filter
 	 *            the filter to define types of container events to receive.
@@ -186,9 +186,9 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	/**
 	 * Remove listener from IContainer.
 	 * 
-	 * @param l
+	 * @param listener
 	 *            the IContainerListener to remove
 	 */
-	public void removeListener(IContainerListener l);
+	public void removeListener(IContainerListener listener);
 
 }
