@@ -14,14 +14,30 @@ import java.net.URISyntaxException;
 
 /**
  * Namespace base class
+ * <p>
+ * This class and subclasses define a namespace for the creation and management 
+ * of ID instances.  Creation of ID instances is accomplished via the 
+ * {@link #createInstance(Class[], Object[])} method, implemented by subclasses
+ * of this Namespace superclass.
+ * <p>
+ * All Namespace instances must have a unique name passed to the Namespace upon
+ * construction.  
+ * <p>
+ * Typically Namespace instances are created via plugins that define extensions
+ * of the org.eclipse.ecf.namespace extension point.  For example, to define a new 
+ * Namespace subclass XMPPNamespace with name "ecf.xmpp" and add it to the ECF
+ * extension registry:
  * 
- * All implementers of the 'namespace' extension point must
- * implement a subclass of this Namespace class
+ * <pre>
+ *   &lt;extension
+ *        point="org.eclipse.ecf.namespace"&gt;
+ *     &lt;namespace
+ *           class="XMPPNamespace"
+ *           name="ecf.xmpp"/&gt;
+ *   &lt;/extension&gt;
+ * </pre>
  * 
- * This class defines the properties associated with an
- * identity Namespace. Namespaces are defined by a unique 'name' (e.g. 'email',
- * 'icq', 'aolim').
- * 
+ * @see ID
  */
 public abstract class Namespace implements Serializable {
 	private static final long serialVersionUID = 3976740272094720312L;

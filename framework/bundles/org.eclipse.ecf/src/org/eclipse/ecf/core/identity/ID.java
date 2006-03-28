@@ -16,20 +16,17 @@ import org.eclipse.core.runtime.IAdaptable;
 /**
  * Contract for ECF identity
  * <p>
- * The contract defined by this interface is similar-to, but stronger than that
- * implied by Object.equals() and Object.hashCode.
+ * ECF IDs are immutable once constructed, and unique within the 
+ * containing {@link Namespace}.  
  * <p>
- * Any classes implementing this interface must provide instances that are
- * unique within the namespace returned by getNamespace(), rather than unique
- * just within the JVM that currently contains the object instance.
+ * ID instances are created via the Namespace.createInstance(...) method.  This 
+ * method is called by the IDFactory.createID(...) methods for the given Namespace.
+ * So, for example, to create an ID instance with the name "slewis":
+ * <pre>
+ * 		ID id = IDFactory.getDefault().createID(namespace,"slewis");
+ * </pre>
  * <p>
- * So, for example, if there are two instances of an email Namespace, equals
- * should return true if the email addresses are the same, and false if they are
- * not the same.
- * <p>
- * Typically, Namespaces are registered with the IDFactory class (via
- * addNamespace) in order to allow the custom creation of instances that
- * implement this interface.
+ * @see Namespace
  * 
  */
 public interface ID extends java.io.Serializable, java.lang.Comparable,
@@ -41,14 +38,16 @@ public interface ID extends java.io.Serializable, java.lang.Comparable,
 	/**
 	 * Get the unique name of this identity.
 	 * 
-	 * @return String unique name for this identity
+	 * @return String unique name for this identity.  Must not be null, and must
+	 * be a unique String within the Namespace returned by getNamespace()
 	 */
 	public String getName();
 
 	/**
 	 * Get the Namespace instance associated with this identity
 	 * 
-	 * @return Namespace the Namespace corresponding to this identity
+	 * @return Namespace the Namespace corresponding to this identity.  Must
+	 * not return null.
 	 */
 	public Namespace getNamespace();
 
@@ -56,7 +55,8 @@ public interface ID extends java.io.Serializable, java.lang.Comparable,
 	 * If available, return this identity in URI form. If not available, throw
 	 * URISyntaxException
 	 * 
-	 * @return URI the URI representation of this identity
+	 * @return URI the URI representation of this identity.  Must not return null.
+	 * @throws URISyntaxException if this ID cannot be converted to URI form
 	 */
 	public URI toURI() throws URISyntaxException;
 }

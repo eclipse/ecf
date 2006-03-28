@@ -14,7 +14,6 @@ import java.net.URISyntaxException;
 /**
  * A string-based identity
  * 
- * @author Scott B. Lewis, slewis@composent.com
  */
 public class StringID extends BaseID {
 	private static final long serialVersionUID = 3256437019155446068L;
