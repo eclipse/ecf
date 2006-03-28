@@ -31,7 +31,7 @@ public interface IContainerInstantiator {
 	 * @param args arguments specified by the caller.  May be null if no
 	 * arguments are passed in by caller to ContainerFactory.getDefault().createContainer(...)
 	 * @return IContainer instance.  The provider implementation must return a valid object
-	 * implementing IContainer OR throw a ContainerInstantiationException
+	 * implementing IContainer OR throw a ContainerInstantiationException.  Null may not be returned.
 	 * @throws ContainerInstantiationException
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,

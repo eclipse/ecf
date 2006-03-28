@@ -10,9 +10,15 @@ package org.eclipse.ecf.core;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
+import org.eclipse.ecf.internal.core.ECFPlugin;
+import org.eclipse.ecf.internal.core.IDisposable;
 import org.eclipse.ecf.internal.core.Trace;
 
 /**
@@ -24,21 +30,32 @@ import org.eclipse.ecf.internal.core.Trace;
  * <br>
  * <code>
  * 	    IContainer container = <br>
- * 			ContainerFactory.getDefault().createContainer('standalone');
+ * 			ContainerFactory.getDefault().createContainer("ecf.generic.client");
  *      <br><br>
- *      ...further use of container variable here...
+ *      ...further use of container here...
  * </code>
+ * For more details on the creation and lifecycle of IContainer instances created via this 
+ * factory see {@link IContainer}.
  * 
+ * @see IContainer
  */
 public class ContainerFactory implements IContainerFactory {
+	private static final int DISPOSE_ERROR_CODE = 100;
 	private static Trace debug = Trace.create("containerfactory");
 	private static Hashtable containerdescriptions = new Hashtable();
 	protected static IContainerFactory instance = null;
+	
+	protected static Map containers = new WeakHashMap();
+	
 	static {
 		instance = new ContainerFactory();
 	}
 
 	protected ContainerFactory() {
+		ECFPlugin.getDefault().addDisposable(new IDisposable() {
+			public void dispose() {
+				doDispose();
+			}});
 	}
 
 	public static IContainerFactory getDefault() {
@@ -56,7 +73,28 @@ public class ContainerFactory implements IContainerFactory {
 			debug.dumpStack(e, msg);
 		}
 	}
-
+	protected void addContainer(IContainer container) {
+		containers.put(container,null);
+	}
+	protected void removeContainer(IContainer container) {
+		containers.remove(container);
+	}
+	protected void doDispose() {
+		for (Iterator i = containers.keySet().iterator(); i.hasNext();) {
+			IContainer c = (IContainer) i.next();
+			if (c != null) {
+				try {
+					c.dispose();
+				} catch (Exception e) {
+					// Log exception
+					ECFPlugin.log(new Status(Status.ERROR, ECFPlugin
+							.getDefault().getBundle().getSymbolicName(),
+							DISPOSE_ERROR_CODE, "container dispose error", e));
+				}
+			}
+		}
+		containers.clear();
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -168,7 +206,11 @@ public class ContainerFactory implements IContainerFactory {
 					"Instantiator for ContainerTypeDescription " + cd.getName()
 							+ " is null");
 		// Ask instantiator to actually create instance
-		return (IContainer) instantiator.createInstance(desc, clazzes, args);
+		IContainer container = instantiator.createInstance(desc, clazzes, args);
+		if (container == null) throw new ContainerInstantiationException("Container instantiator returned null for createInstance " + cd.getName());
+		// Add to containers map
+		addContainer(container);
+		return container;
 	}
 
 	/*

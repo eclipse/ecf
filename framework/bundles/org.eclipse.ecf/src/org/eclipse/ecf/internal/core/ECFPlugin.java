@@ -8,10 +8,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.core;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.WeakHashMap;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -65,6 +67,8 @@ public class ECFPlugin extends Plugin {
 	private ResourceBundle resourceBundle;
 	BundleContext bundlecontext = null;
 
+	private Map disposables = new WeakHashMap();
+	
 	private static void debug(String msg) {
 		if (Trace.ON && trace != null) {
 			trace.msg(msg);
@@ -87,6 +91,18 @@ public class ECFPlugin extends Plugin {
 		}
 	}
 
+	public void addDisposable(IDisposable disposable) {
+		disposables.put(disposable, null);
+	}
+	public void removeDisposable(IDisposable disposable) {
+		disposables.remove(disposable);
+	}
+	protected void fireDisposables() {
+		for(Iterator i=disposables.keySet().iterator(); i.hasNext(); ) {
+			IDisposable d = (IDisposable) i.next();
+			if (d != null) d.dispose();
+		}
+	}
 	public static void log(IStatus status) {
 		if (status == null)
 			return;
@@ -464,13 +480,10 @@ public class ECFPlugin extends Plugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
+		fireDisposables();
+		disposables = null;
 		this.bundlecontext = null;
 	}
-
-	public BundleContext getBundleContext() {
-		return bundlecontext;
-	}
-
 	/**
 	 * Returns the shared instance.
 	 */
