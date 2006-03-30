@@ -17,21 +17,24 @@ import java.util.WeakHashMap;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionDelta;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IRegistryChangeEvent;
+import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.ISharedObjectFactory;
 import org.eclipse.ecf.core.SharedObjectFactory;
 import org.eclipse.ecf.core.SharedObjectTypeDescription;
-import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.ConnectionFactory;
+import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -66,8 +69,9 @@ public class ECFPlugin extends Plugin {
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
 	BundleContext bundlecontext = null;
-
+	
 	private Map disposables = new WeakHashMap();
+	private IRegistryChangeListener registryManager = null;
 	
 	private static void debug(String msg) {
 		if (Trace.ON && trace != null) {
@@ -467,22 +471,41 @@ public class ECFPlugin extends Plugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		this.bundlecontext = context;
 		trace = Trace.create("factoryinit");
+		this.bundlecontext = context;
+		this.registryManager = new ECFRegistryManager();
+		Platform.getExtensionRegistry().addRegistryChangeListener(registryManager);
 		setupContainerExtensionPoint(context);
 		setupIdentityExtensionPoint(context);
 		setupCommExtensionPoint(context);
 		setupSharedObjectExtensionPoint(context);
 	}
 
+	protected static class ECFRegistryManager implements IRegistryChangeListener {
+		public void registryChanged(IRegistryChangeEvent event) {
+			IExtensionDelta delta[] = event.getExtensionDeltas();
+			for(int i = 0; i < delta.length; i++) {
+				switch (delta[i].getKind()) {
+					case IExtensionDelta.ADDED :
+						//System.out.println("added "+delta[i].getExtension());
+						break;
+					case IExtensionDelta.REMOVED :
+						//System.out.println("removed "+delta[i].getExtension());
+						break;
+				}
+			}
+		}
+	}
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		fireDisposables();
-		disposables = null;
+		this.disposables = null;
 		this.bundlecontext = null;
+		Platform.getExtensionRegistry().removeRegistryChangeListener(registryManager);
+		this.registryManager = null;
 	}
 	/**
 	 * Returns the shared instance.
