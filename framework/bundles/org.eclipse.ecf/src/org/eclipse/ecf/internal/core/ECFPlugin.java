@@ -45,15 +45,16 @@ import org.osgi.framework.BundleContext;
 
 public class ECFPlugin extends Plugin {
 	protected static Trace trace = null;
-	
 	public static final String ECFNAMESPACE = "org.eclipse.ecf";
-	
 	public static final String NAMESPACE_EPOINT = ECFNAMESPACE + ".namespace";
-	public static final String CONTAINER_FACTORY_EPOINT = ECFNAMESPACE + ".containerFactory";
-	public static final String SHAREDOBJECT_FACTORY_EPOINT = ECFNAMESPACE + ".sharedObjectFactory";
-	public static final String COMM_FACTORY_EPOINT = ECFNAMESPACE + ".connectionFactory";
-		
-	public static final String PLUGIN_RESOURCE_BUNDLE = ECFNAMESPACE + ".ECFPluginResources";
+	public static final String CONTAINER_FACTORY_EPOINT = ECFNAMESPACE
+			+ ".containerFactory";
+	public static final String SHAREDOBJECT_FACTORY_EPOINT = ECFNAMESPACE
+			+ ".sharedObjectFactory";
+	public static final String COMM_FACTORY_EPOINT = ECFNAMESPACE
+			+ ".connectionFactory";
+	public static final String PLUGIN_RESOURCE_BUNDLE = ECFNAMESPACE
+			+ ".ECFPluginResources";
 	public static final String CLASS_ATTRIBUTE = "class";
 	public static final String NAME_ATTRIBUTE = "name";
 	public static final String DESCRIPTION_ATTRIBUTE = "description";
@@ -61,7 +62,6 @@ public class ECFPlugin extends Plugin {
 	public static final String ARG_TYPE_ATTRIBUTE = "type";
 	public static final String VALUE_ATTRIBUTE = "value";
 	public static final String PROPERTY_ELEMENT_NAME = "property";
-	
 	public static final int FACTORY_DOES_NOT_IMPLEMENT_ERRORCODE = 10;
 	public static final int FACTORY_NAME_COLLISION_ERRORCODE = 20;
 	public static final int INSTANTIATOR_DOES_NOT_IMPLEMENT_ERRORCODE = 30;
@@ -72,22 +72,18 @@ public class ECFPlugin extends Plugin {
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
 	BundleContext bundlecontext = null;
-	
 	private Map disposables = new WeakHashMap();
 	private IRegistryChangeListener registryManager = null;
-	
 	private static void debug(String msg) {
 		if (Trace.ON && trace != null) {
 			trace.msg(msg);
 		}
 	}
-
 	private static void dumpStack(String msg, Throwable e) {
 		if (Trace.ON && trace != null) {
 			trace.dumpStack(e, msg);
 		}
 	}
-
 	public ECFPlugin() {
 		super();
 		plugin = this;
@@ -97,7 +93,6 @@ public class ECFPlugin extends Plugin {
 			resourceBundle = null;
 		}
 	}
-
 	public void addDisposable(IDisposable disposable) {
 		disposables.put(disposable, null);
 	}
@@ -105,9 +100,10 @@ public class ECFPlugin extends Plugin {
 		disposables.remove(disposable);
 	}
 	protected void fireDisposables() {
-		for(Iterator i=disposables.keySet().iterator(); i.hasNext(); ) {
+		for (Iterator i = disposables.keySet().iterator(); i.hasNext();) {
 			IDisposable d = (IDisposable) i.next();
-			if (d != null) d.dispose();
+			if (d != null)
+				d.dispose();
 		}
 	}
 	public static void log(IStatus status) {
@@ -125,26 +121,21 @@ public class ECFPlugin extends Plugin {
 		String[] types;
 		String[] defaults;
 		String[] names;
-
 		public DefaultArgs(String[] types, String[] defaults, String[] names) {
 			this.types = types;
 			this.defaults = defaults;
 			this.names = names;
 		}
-
 		public String[] getDefaults() {
 			return defaults;
 		}
-
 		public String[] getNames() {
 			return names;
 		}
-
 		public String[] getTypes() {
 			return types;
 		}
 	}
-
 	protected DefaultArgs getDefaultArgs(IConfigurationElement[] argElements) {
 		String[] argTypes = new String[0];
 		String[] argDefaults = new String[0];
@@ -159,14 +150,12 @@ public class ECFPlugin extends Plugin {
 							.getAttribute(ARG_TYPE_ATTRIBUTE);
 					argDefaults[i] = argElements[i]
 							.getAttribute(VALUE_ATTRIBUTE);
-					argNames[i] = argElements[i]
-							.getAttribute(NAME_ATTRIBUTE);
+					argNames[i] = argElements[i].getAttribute(NAME_ATTRIBUTE);
 				}
 			}
 		}
 		return new DefaultArgs(argTypes, argDefaults, argNames);
 	}
-
 	protected Map getProperties(IConfigurationElement[] propertyElements) {
 		Properties props = new Properties();
 		if (propertyElements != null) {
@@ -185,8 +174,14 @@ public class ECFPlugin extends Plugin {
 		}
 		return props;
 	}
-
-	protected void removeContainerFactoryExtensions(IConfigurationElement[] members) {
+	/**
+	 * Remove extensions for container factory extension point
+	 * 
+	 * @param members
+	 *            the members to remove
+	 */
+	protected void removeContainerFactoryExtensions(
+			IConfigurationElement[] members) {
 		String bundleName = getDefault().getBundle().getSymbolicName();
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
@@ -196,13 +191,13 @@ public class ECFPlugin extends Plugin {
 			String name = null;
 			try {
 				// Get name and get version, if available
-				name = member
-						.getAttribute(NAME_ATTRIBUTE);
+				name = member.getAttribute(NAME_ATTRIBUTE);
 				if (name == null) {
 					name = member.getAttribute(CLASS_ATTRIBUTE);
 				}
 				IContainerFactory factory = ContainerFactory.getDefault();
-				ContainerTypeDescription cd = factory.getDescriptionByName(name);
+				ContainerTypeDescription cd = factory
+						.getDescriptionByName(name);
 				if (cd == null || !factory.containsDescription(cd)) {
 					continue;
 				}
@@ -216,6 +211,12 @@ public class ECFPlugin extends Plugin {
 			}
 		}
 	}
+	/**
+	 * Add container factory extension point extensions
+	 * 
+	 * @param members
+	 *            to add
+	 */
 	protected void addContainerFactoryExtensions(IConfigurationElement[] members) {
 		String bundleName = getDefault().getBundle().getSymbolicName();
 		// For each configuration element
@@ -227,18 +228,15 @@ public class ECFPlugin extends Plugin {
 			String name = null;
 			try {
 				// The only required attribute is "class"
-				exten = member
-						.createExecutableExtension(CLASS_ATTRIBUTE);
+				exten = member.createExecutableExtension(CLASS_ATTRIBUTE);
 				String clazz = exten.getClass().getName();
 				// Get name and get version, if available
-				name = member
-						.getAttribute(NAME_ATTRIBUTE);
+				name = member.getAttribute(NAME_ATTRIBUTE);
 				if (name == null) {
 					name = clazz;
 				}
 				// Get description, if present
-				String description = member
-						.getAttribute(DESCRIPTION_ATTRIBUTE);
+				String description = member.getAttribute(DESCRIPTION_ATTRIBUTE);
 				if (description == null) {
 					description = "";
 				}
@@ -249,9 +247,9 @@ public class ECFPlugin extends Plugin {
 				Map properties = getProperties(member
 						.getChildren(PROPERTY_ELEMENT_NAME));
 				// Now make description instance
-				ContainerTypeDescription scd = new ContainerTypeDescription(name,
-						(IContainerInstantiator) exten, description, defaults
-								.getTypes(), defaults.getDefaults(), defaults
+				ContainerTypeDescription scd = new ContainerTypeDescription(
+						name, (IContainerInstantiator) exten, description,
+						defaults.getTypes(), defaults.getDefaults(), defaults
 								.getNames(), properties);
 				debug("addContainerExtensions:created description:" + scd);
 				IContainerFactory factory = ContainerFactory.getDefault();
@@ -272,6 +270,12 @@ public class ECFPlugin extends Plugin {
 			}
 		}
 	}
+	/**
+	 * Setup container factory extension point
+	 * 
+	 * @param context
+	 *            the BundleContext for this bundle
+	 */
 	protected void setupContainerFactoryExtensionPoint(BundleContext bc) {
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = reg
@@ -279,24 +283,30 @@ public class ECFPlugin extends Plugin {
 		if (extensionPoint == null) {
 			return;
 		}
-		addContainerFactoryExtensions(extensionPoint
-				.getConfigurationElements());
+		addContainerFactoryExtensions(extensionPoint.getConfigurationElements());
 	}
-	protected void removeSharedObjectExtensions(IConfigurationElement [] members) {
+	/**
+	 * Remove extensions for shared object extension point
+	 * 
+	 * @param members
+	 *            the members to remove
+	 */
+	protected void removeSharedObjectExtensions(IConfigurationElement[] members) {
 		String bundleName = getDefault().getBundle().getSymbolicName();
 		for (int m = 0; m < members.length; m++) {
 			IConfigurationElement member = members[m];
 			String name = null;
 			IExtension extension = member.getDeclaringExtension();
 			try {
-				name = member
-						.getAttribute(NAME_ATTRIBUTE);
+				name = member.getAttribute(NAME_ATTRIBUTE);
 				if (name == null) {
 					name = member.getAttribute(CLASS_ATTRIBUTE);
 				}
-				if (name == null) continue;
+				if (name == null)
+					continue;
 				ISharedObjectFactory factory = SharedObjectFactory.getDefault();
-				SharedObjectTypeDescription sd = factory.getDescriptionByName(name);
+				SharedObjectTypeDescription sd = factory
+						.getDescriptionByName(name);
 				if (sd == null || !factory.containsDescription(sd)) {
 					continue;
 				}
@@ -310,7 +320,13 @@ public class ECFPlugin extends Plugin {
 			}
 		}
 	}
-	protected void addSharedObjectExtensions(IConfigurationElement [] members) {
+	/**
+	 * Add shared object extension point extensions
+	 * 
+	 * @param members
+	 *            to add
+	 */
+	protected void addSharedObjectExtensions(IConfigurationElement[] members) {
 		String bundleName = getDefault().getBundle().getSymbolicName();
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
@@ -323,14 +339,12 @@ public class ECFPlugin extends Plugin {
 				// The only required attribute is "class"
 				exten = (ISharedObjectInstantiator) member
 						.createExecutableExtension(CLASS_ATTRIBUTE);
-				name = member
-						.getAttribute(NAME_ATTRIBUTE);
+				name = member.getAttribute(NAME_ATTRIBUTE);
 				if (name == null) {
 					name = member.getAttribute(CLASS_ATTRIBUTE);
 				}
 				// Get description, if present
-				String description = member
-						.getAttribute(DESCRIPTION_ATTRIBUTE);
+				String description = member.getAttribute(DESCRIPTION_ATTRIBUTE);
 				if (description == null) {
 					description = "";
 				}
@@ -338,8 +352,10 @@ public class ECFPlugin extends Plugin {
 				Map properties = getProperties(member
 						.getChildren(PROPERTY_ELEMENT_NAME));
 				// Now make description instance
-				SharedObjectTypeDescription scd = new SharedObjectTypeDescription(name,exten,description,properties);
-				debug("setupSharedObjectExtensionPoint:created description:" + scd);
+				SharedObjectTypeDescription scd = new SharedObjectTypeDescription(
+						name, exten, description, properties);
+				debug("setupSharedObjectExtensionPoint:created description:"
+						+ scd);
 				ISharedObjectFactory factory = SharedObjectFactory.getDefault();
 				if (factory.containsDescription(scd)) {
 					throw new CoreException(getStatusForContException(
@@ -358,6 +374,12 @@ public class ECFPlugin extends Plugin {
 			}
 		}
 	}
+	/**
+	 * Setup shared object extension point
+	 * 
+	 * @param context
+	 *            the BundleContext for this bundle
+	 */
 	protected void setupSharedObjectExtensionPoint(BundleContext bc) {
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = reg
@@ -365,23 +387,27 @@ public class ECFPlugin extends Plugin {
 		if (extensionPoint == null) {
 			return;
 		}
-		addSharedObjectExtensions(extensionPoint
-				.getConfigurationElements());
+		addSharedObjectExtensions(extensionPoint.getConfigurationElements());
 	}
-
-	protected void removeNamespaceExtensions(IConfigurationElement [] members) {
+	/**
+	 * Remove extensions for identity namespace extension point
+	 * 
+	 * @param members
+	 *            the members to remove
+	 */
+	protected void removeNamespaceExtensions(IConfigurationElement[] members) {
 		String bundleName = getDefault().getBundle().getSymbolicName();
 		for (int m = 0; m < members.length; m++) {
 			IConfigurationElement member = members[m];
 			String name = null;
 			IExtension extension = member.getDeclaringExtension();
 			try {
-				name = member
-						.getAttribute(NAME_ATTRIBUTE);
+				name = member.getAttribute(NAME_ATTRIBUTE);
 				if (name == null) {
 					name = member.getAttribute(CLASS_ATTRIBUTE);
 				}
-				if (name == null) continue;
+				if (name == null)
+					continue;
 				IIDFactory factory = IDFactory.getDefault();
 				Namespace n = factory.getNamespaceByName(name);
 				if (n == null || !factory.containsNamespace(n)) {
@@ -397,7 +423,13 @@ public class ECFPlugin extends Plugin {
 			}
 		}
 	}
-	protected void addNamespaceExtensions(IConfigurationElement [] members) {
+	/**
+	 * Add identity namespace extension point extensions
+	 * 
+	 * @param members
+	 *            to add
+	 */
+	protected void addNamespaceExtensions(IConfigurationElement[] members) {
 		String bundleName = getDefault().getBundle().getSymbolicName();
 		// For each service:
 		for (int m = 0; m < members.length; m++) {
@@ -424,8 +456,7 @@ public class ECFPlugin extends Plugin {
 				}
 				// Now add to known namespaces
 				IDFactory.getDefault().addNamespace(ns);
-				debug("addNamespaceExtensions:added namespace to factory:"
-						+ ns);
+				debug("addNamespaceExtensions:added namespace to factory:" + ns);
 			} catch (CoreException e) {
 				log(e.getStatus());
 				dumpStack("Exception in setupIdentityExtensionPoint", e);
@@ -435,6 +466,12 @@ public class ECFPlugin extends Plugin {
 			}
 		}
 	}
+	/**
+	 * Setup identity namespace extension point
+	 * 
+	 * @param context
+	 *            the BundleContext for this bundle
+	 */
 	protected void setupNamespaceExtensionPoint(BundleContext context) {
 		// Process extension points
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
@@ -443,24 +480,29 @@ public class ECFPlugin extends Plugin {
 		if (extensionPoint == null) {
 			return;
 		}
-		addNamespaceExtensions(extensionPoint
-				.getConfigurationElements());
+		addNamespaceExtensions(extensionPoint.getConfigurationElements());
 	}
-
-	protected void removeCommExtensions(IConfigurationElement [] members) {
+	/**
+	 * Remove extensions for comm extension point
+	 * 
+	 * @param members
+	 *            the members to remove
+	 */
+	protected void removeCommExtensions(IConfigurationElement[] members) {
 		String bundleName = getDefault().getBundle().getSymbolicName();
 		for (int m = 0; m < members.length; m++) {
 			IConfigurationElement member = members[m];
 			String name = null;
 			IExtension extension = member.getDeclaringExtension();
 			try {
-				name = member
-						.getAttribute(NAME_ATTRIBUTE);
+				name = member.getAttribute(NAME_ATTRIBUTE);
 				if (name == null) {
 					name = member.getAttribute(CLASS_ATTRIBUTE);
 				}
-				if (name == null) continue;
-				ConnectionTypeDescription cd = ConnectionFactory.getDescriptionByName(name);
+				if (name == null)
+					continue;
+				ConnectionTypeDescription cd = ConnectionFactory
+						.getDescriptionByName(name);
 				if (cd == null || !ConnectionFactory.containsDescription(cd)) {
 					continue;
 				}
@@ -474,7 +516,13 @@ public class ECFPlugin extends Plugin {
 			}
 		}
 	}
-	protected void addCommExtensions(IConfigurationElement [] members) {
+	/**
+	 * Add comm extension point extensions
+	 * 
+	 * @param members
+	 *            to add
+	 */
+	protected void addCommExtensions(IConfigurationElement[] members) {
 		String bundleName = getDefault().getBundle().getSymbolicName();
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
@@ -485,8 +533,7 @@ public class ECFPlugin extends Plugin {
 			String name = null;
 			try {
 				// The only required attribute is "instantiatorClass"
-				exten = member
-						.createExecutableExtension(CLASS_ATTRIBUTE);
+				exten = member.createExecutableExtension(CLASS_ATTRIBUTE);
 				// Verify that object implements
 				// ISynchAsynchConnectionInstantiator
 				String clazz = exten.getClass().getName();
@@ -495,8 +542,7 @@ public class ECFPlugin extends Plugin {
 				if (name == null) {
 					name = clazz;
 				}
-				String description = member
-						.getAttribute(DESCRIPTION_ATTRIBUTE);
+				String description = member.getAttribute(DESCRIPTION_ATTRIBUTE);
 				if (description == null) {
 					description = "";
 				}
@@ -504,8 +550,8 @@ public class ECFPlugin extends Plugin {
 				// Get any arguments
 				DefaultArgs defaults = getDefaultArgs(member
 						.getChildren(ARG_ELEMENT_NAME));
-				ConnectionTypeDescription cd = new ConnectionTypeDescription(name,
-						(ISynchAsynchConnectionInstantiator) exten,
+				ConnectionTypeDescription cd = new ConnectionTypeDescription(
+						name, (ISynchAsynchConnectionInstantiator) exten,
 						description, defaults.getTypes(), defaults
 								.getDefaults(), defaults.getNames());
 				debug("setupCommExtensionPoint:created description:" + cd);
@@ -546,10 +592,8 @@ public class ECFPlugin extends Plugin {
 		if (extensionPoint == null) {
 			return;
 		}
-		addCommExtensions(extensionPoint
-				.getConfigurationElements());
+		addCommExtensions(extensionPoint.getConfigurationElements());
 	}
-
 	protected IStatus getStatusForCommException(IExtension ext,
 			String bundleName, String name) {
 		IStatus s = new Status(
@@ -562,7 +606,6 @@ public class ECFPlugin extends Plugin {
 						+ ext.getExtensionPointUniqueIdentifier(), null);
 		return s;
 	}
-
 	protected IStatus getStatusForContException(IExtension ext,
 			String bundleName, String name) {
 		IStatus s = new Status(
@@ -575,7 +618,6 @@ public class ECFPlugin extends Plugin {
 						+ ext.getExtensionPointUniqueIdentifier(), null);
 		return s;
 	}
-
 	protected IStatus getStatusForIDException(IExtension ext,
 			String bundleName, String name) {
 		IStatus s = new Status(
@@ -588,7 +630,6 @@ public class ECFPlugin extends Plugin {
 						+ ext.getExtensionPointUniqueIdentifier(), null);
 		return s;
 	}
-
 	/**
 	 * This method is called upon plug-in activation
 	 */
@@ -597,57 +638,67 @@ public class ECFPlugin extends Plugin {
 		trace = Trace.create("factoryinit");
 		this.bundlecontext = context;
 		this.registryManager = new ECFRegistryManager();
-		Platform.getExtensionRegistry().addRegistryChangeListener(registryManager);
+		Platform.getExtensionRegistry().addRegistryChangeListener(
+				registryManager);
 		setupContainerFactoryExtensionPoint(context);
 		setupNamespaceExtensionPoint(context);
 		setupCommExtensionPoint(context);
 		setupSharedObjectExtensionPoint(context);
 	}
-
 	protected class ECFRegistryManager implements IRegistryChangeListener {
 		public void registryChanged(IRegistryChangeEvent event) {
-			IExtensionDelta delta[] = event.getExtensionDeltas(ECFNAMESPACE,"containerFactory");
-			for(int i = 0; i < delta.length; i++) {
+			IExtensionDelta delta[] = event.getExtensionDeltas(ECFNAMESPACE,
+					"containerFactory");
+			for (int i = 0; i < delta.length; i++) {
 				switch (delta[i].getKind()) {
-					case IExtensionDelta.ADDED :
-						addContainerFactoryExtensions(delta[i].getExtension().getConfigurationElements());
-						break;
-					case IExtensionDelta.REMOVED :
-						removeContainerFactoryExtensions(delta[i].getExtension().getConfigurationElements());
-						break;
+				case IExtensionDelta.ADDED:
+					addContainerFactoryExtensions(delta[i].getExtension()
+							.getConfigurationElements());
+					break;
+				case IExtensionDelta.REMOVED:
+					removeContainerFactoryExtensions(delta[i].getExtension()
+							.getConfigurationElements());
+					break;
 				}
 			}
-			delta = event.getExtensionDeltas(ECFNAMESPACE,"sharedObjectFactory");
-			for(int i = 0; i < delta.length; i++) {
+			delta = event.getExtensionDeltas(ECFNAMESPACE,
+					"sharedObjectFactory");
+			for (int i = 0; i < delta.length; i++) {
 				switch (delta[i].getKind()) {
-					case IExtensionDelta.ADDED :
-						addSharedObjectExtensions(delta[i].getExtension().getConfigurationElements());
-						break;
-					case IExtensionDelta.REMOVED :
-						removeSharedObjectExtensions(delta[i].getExtension().getConfigurationElements());
-						break;
+				case IExtensionDelta.ADDED:
+					addSharedObjectExtensions(delta[i].getExtension()
+							.getConfigurationElements());
+					break;
+				case IExtensionDelta.REMOVED:
+					removeSharedObjectExtensions(delta[i].getExtension()
+							.getConfigurationElements());
+					break;
 				}
 			}
-			delta = event.getExtensionDeltas(ECFNAMESPACE,"namespace");
-			for(int i = 0; i < delta.length; i++) {
+			delta = event.getExtensionDeltas(ECFNAMESPACE, "namespace");
+			for (int i = 0; i < delta.length; i++) {
 				switch (delta[i].getKind()) {
-					case IExtensionDelta.ADDED :
-						addNamespaceExtensions(delta[i].getExtension().getConfigurationElements());
-						break;
-					case IExtensionDelta.REMOVED :
-						removeNamespaceExtensions(delta[i].getExtension().getConfigurationElements());
-						break;
+				case IExtensionDelta.ADDED:
+					addNamespaceExtensions(delta[i].getExtension()
+							.getConfigurationElements());
+					break;
+				case IExtensionDelta.REMOVED:
+					removeNamespaceExtensions(delta[i].getExtension()
+							.getConfigurationElements());
+					break;
 				}
 			}
-			delta = event.getExtensionDeltas(ECFNAMESPACE,"connectionFactory");
-			for(int i = 0; i < delta.length; i++) {
+			delta = event.getExtensionDeltas(ECFNAMESPACE, "connectionFactory");
+			for (int i = 0; i < delta.length; i++) {
 				switch (delta[i].getKind()) {
-					case IExtensionDelta.ADDED :
-						addCommExtensions(delta[i].getExtension().getConfigurationElements());
-						break;
-					case IExtensionDelta.REMOVED :
-						removeCommExtensions(delta[i].getExtension().getConfigurationElements());
-						break;
+				case IExtensionDelta.ADDED:
+					addCommExtensions(delta[i].getExtension()
+							.getConfigurationElements());
+					break;
+				case IExtensionDelta.REMOVED:
+					removeCommExtensions(delta[i].getExtension()
+							.getConfigurationElements());
+					break;
 				}
 			}
 		}
@@ -660,7 +711,8 @@ public class ECFPlugin extends Plugin {
 		fireDisposables();
 		this.disposables = null;
 		this.bundlecontext = null;
-		Platform.getExtensionRegistry().removeRegistryChangeListener(registryManager);
+		Platform.getExtensionRegistry().removeRegistryChangeListener(
+				registryManager);
 		this.registryManager = null;
 	}
 	/**
@@ -669,7 +721,6 @@ public class ECFPlugin extends Plugin {
 	public static ECFPlugin getDefault() {
 		return plugin;
 	}
-
 	/**
 	 * Returns the string from the plugin's resource bundle, or 'key' if not
 	 * found.
@@ -682,7 +733,6 @@ public class ECFPlugin extends Plugin {
 			return "!" + key + "!";
 		}
 	}
-
 	/**
 	 * Returns the plugin's resource bundle,
 	 */
