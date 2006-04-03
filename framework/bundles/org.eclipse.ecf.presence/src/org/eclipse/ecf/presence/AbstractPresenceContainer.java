@@ -10,6 +10,7 @@
 *****************************************************************************/
 package org.eclipse.ecf.presence;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Platform;
@@ -82,21 +83,21 @@ public abstract class AbstractPresenceContainer implements IPresenceContainer {
     /**
      * @return The list of message listeners
      */
-    public Vector getMessageListeners() {
+    public List getMessageListeners() {
 		return messageListeners;
 	}
 
 	/**
 	 * @return The list of presence listeners
 	 */
-	public Vector getPresenceListeners() {
+	public List getPresenceListeners() {
 		return presenceListeners;
 	}
 
 	/**
 	 * @return The list of subscribe listeners
 	 */
-	public Vector getSubscribeListeners() {
+	public List getSubscribeListeners() {
 		return subscribeListeners;
 	}
 	
