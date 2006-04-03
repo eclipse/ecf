@@ -52,10 +52,14 @@ public class ContainerFactory implements IContainerFactory {
 	}
 
 	protected ContainerFactory() {
-		ECFPlugin.getDefault().addDisposable(new IDisposable() {
-			public void dispose() {
-				doDispose();
-			}});
+		try {
+			ECFPlugin.getDefault().addDisposable(new IDisposable() {
+				public void dispose() {
+					doDispose();
+				}});
+		} catch (Exception e) {
+			System.err.println("WARNING:  Exception accessing ECFPlugin within ContainerFactory initialization.  May not be running as OSGI bundle");
+		}
 	}
 
 	public static IContainerFactory getDefault() {
