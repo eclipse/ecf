@@ -39,16 +39,16 @@ import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceContainerEvent;
 import org.eclipse.ecf.discovery.ServiceProperties;
-import org.eclipse.ecf.provider.jmdns.JmdnsPlugin;
+import org.eclipse.ecf.provider.jmdns.Messages;
 import org.eclipse.ecf.provider.jmdns.Trace;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceID;
 
 public class JMDNSDiscoveryContainer implements IContainer,
 		IDiscoveryContainer, ServiceListener, ServiceTypeListener {
 	public static final int DEFAULT_REQUEST_TIMEOUT = 3000;
+	protected static String JMDNS_NAMESPACE_ID = Messages.getString("JmdnsPlugin.namespace.identifier"); //$NON-NLS-1$;
+		
 	static Trace trace = Trace.create("container");
-	public static final String JMDNS_NAMESPACE_ID = JmdnsPlugin.getDefault()
-			.getNamespaceIdentifier();
 	protected static void trace(String msg) {
 		if (trace != null && Trace.ON) {
 			trace.msg(msg);
@@ -74,7 +74,6 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	public JMDNSDiscoveryContainer(InetAddress addr) throws IOException,
 			IDInstantiationException {
 		super();
-		trace("<init>");
 		intf = (addr == null) ? InetAddress.getLocalHost() : addr;
 		this.config = new ContainerConfig(IDFactory.getDefault()
 				.createStringID(JMDNSDiscoveryContainer.class.getName()));

@@ -13,7 +13,7 @@ public class JmdnsPlugin extends Plugin {
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
 	
-    public static final String NAMESPACE_IDENTIFIER = "zeroconf.jmdns";
+    public static final String NAMESPACE_IDENTIFIER = Messages.getString("JmdnsPlugin.namespace.identifier"); //$NON-NLS-1$
 
 	/**
 	 * The constructor.
@@ -65,7 +65,7 @@ public class JmdnsPlugin extends Plugin {
 	public ResourceBundle getResourceBundle() {
 		try {
 			if (resourceBundle == null)
-				resourceBundle = ResourceBundle.getBundle("org.eclipse.ecf.provider.jmdns.JmdnsPluginResources");
+				resourceBundle = ResourceBundle.getBundle("org.eclipse.ecf.provider.jmdns.JmdnsPluginResources"); //$NON-NLS-1$
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}
