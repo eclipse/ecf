@@ -7,6 +7,6 @@ Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Export-Package: org.eclipse.ecf.example.clients
 Bundle-ClassPath: clients.jar
-Require-Bundle: org.eclipse.ecf,
- org.eclipse.ecf.presence,
- org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ecf.presence
