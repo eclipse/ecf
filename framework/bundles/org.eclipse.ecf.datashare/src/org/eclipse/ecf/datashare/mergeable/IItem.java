@@ -26,10 +26,10 @@ public interface IItem extends IIdentifiable {
 	public Integer getVersion();
 	/**
 	 * Get history for this item
-	 * @return List of IHistory instances that describe history for this item.
+	 * @return IHistory instacne that describes history for this item.
 	 * Will not return null, but may return empty List
 	 */
-	public List getHistory();
+	public IItemHistory getHistory();
 	/**
 	 * Get conflicts for this item
 	 * @return List of IConflict instances that describe conflicts for this item.
