@@ -26,6 +26,9 @@
       <toc
             file="tocsamples.xml">
       </toc>
+      <toc 
+            file="toctutorials.xml">
+      </toc>
    </extension>
 
 </plugin>
