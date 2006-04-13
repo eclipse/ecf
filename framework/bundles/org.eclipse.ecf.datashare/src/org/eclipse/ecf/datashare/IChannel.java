@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.datashare;
 
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 
@@ -17,7 +15,7 @@ import org.eclipse.ecf.core.util.ECFException;
  * Channel for sending messages
  * 
  */
-public interface IChannel extends IAdaptable, IIdentifiable {
+public interface IChannel extends IAbstractChannel {
 	/**
 	 * Send message to remote instances of this channel
 	 * 
@@ -39,10 +37,4 @@ public interface IChannel extends IAdaptable, IIdentifiable {
 	 *             if some problem sending message
 	 */
 	public void sendMessage(ID receiver, byte[] message) throws ECFException;
-	/**
-	 * Get IChannelListener instance for this IChannel
-	 * 
-	 * @return IChannelListener for this IChannel instance.  If null, the channel has no listener
-	 */
-	public IChannelListener getListener();
 }
