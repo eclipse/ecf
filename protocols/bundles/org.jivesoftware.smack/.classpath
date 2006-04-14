@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="jars/xmlpull.v1.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/smack.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/smackx.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/smackx-debug.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/executionEnvironments/J2SE-1.4"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -2,16 +2,14 @@ Manifest-Version: 1.0
 Bundle-Name: ECF XMPP Provider
 Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp;singleton=true
 Bundle-Version: 0.7.7
-Bundle-ClassPath: xmpp.jar,
- lib/smackx-debug.jar,
- lib/smack.jar,
- lib/smackx.jar
+Bundle-ClassPath: xmpp.jar
 Bundle-Activator: org.eclipse.ecf.provider.xmpp.XmppPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.provider,
- org.eclipse.ecf.presence
+ org.eclipse.ecf.presence,
+ org.jivesoftware.smack
 Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.provider.xmpp.container, org.eclipse.ecf.provider.xmpp.identity
