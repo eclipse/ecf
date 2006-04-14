@@ -9,17 +9,12 @@
 package org.eclipse.ecf.datashare.mergeable;
 
 import java.util.Date;
-import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.IIdentifiable;
 
 /**
  * Info about when an update was made and by whom.
  */
-public interface IUpdateInfo {
-	/**
-	 * Get ID of endpoint that was responsible for update
-	 * @return ID of endpoint responsible for update.  Will not be null.
-	 */
-	public ID getBy();
+public interface IUpdateInfo extends IIdentifiable {
 	/**
 	 * Get date of when update was applied.
 	 * @return Date the date when applied.  Will not be null.
