@@ -888,8 +888,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		try {
 			// Get connection responsible for disconnect event
 			IAsynchConnection conn = (IAsynchConnection) e.getConnection();
-			if (!conn.isConnected())
-				return;
+			
 			ID fromID = null;
 			synchronized (getGroupMembershipLock()) {
 				fromID = getIDForConnection(conn);
