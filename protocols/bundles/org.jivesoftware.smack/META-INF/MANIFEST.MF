@@ -23,6 +23,4 @@ Export-Package: org.jivesoftware.smack,
  org.xmlpull.v1
 Require-Bundle: org.eclipse.core.runtime
 Bundle-ClassPath: jars/xmlpull.v1.jar,
- jars/smack.jar,
- jars/smackx.jar,
- jars/smackx-debug.jar
+ smack.jar
