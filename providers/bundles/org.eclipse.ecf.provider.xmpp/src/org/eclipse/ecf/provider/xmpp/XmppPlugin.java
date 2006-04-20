@@ -19,6 +19,7 @@ import org.osgi.framework.BundleContext;
  * The main plugin class to be used in the desktop.
  */
 public class XmppPlugin extends Plugin {
+	public static final String ID = "org.eclipse.ecf.provider.xmpp";
     protected static final String NAMESPACE_IDENTIFIER = "ecf.xmpp";
     protected static final String SECURE_NAMESPACE_IDENTIFIER = "ecf.xmpps";
     protected static final String ROOM_NAMESPACE_IDENTIFIER = "xmpp.room.jive";
