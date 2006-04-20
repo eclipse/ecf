@@ -2,21 +2,21 @@ echo off
 setlocal
 cd %~dp0
 set RP=..\..\..\plugins
-set ECF=%RP%\org.eclipse.ecf_0.7.7\ecf.jar
-set UI=%RP%\org.eclipse.ecf.ui_0.7.7\ui.jar
-set SDO=%RP%\org.eclipse.ecf.sdo_0.7.7\ecf.sdo.jar
-set DS=%RP%\org.eclipse.ecf.datashare_0.7.7\datashare.jar
-set DSP=%RP%\org.eclipse.ecf.provider.datashare_0.7.7\dsprovider.jar
-set FS=%RP%\org.eclipse.ecf.fileshare_0.7.7\fileshare.jar
-set FSP=%RP%\org.eclipse.ecf.provider.fileshare_0.7.7\fsprovider.jar
-set PROVIDER=%RP%\org.eclipse.ecf.provider_0.7.7\provider.jar
-set PRESENCE=%RP%\org.eclipse.ecf.presence_0.7.7\presence.jar
-set GED=%RP%\org.eclipse.ecf.example.sdo.gefeditor_0.7.7\editor.jar
-set ED=%RP%\org.eclipse.ecf.example.sdo.editor_0.7.7\editor.jar
-set LIBRARY=%RP%\org.eclipse.ecf.example.sdo.library_0.7.7\runtime\org.eclipse.ecf.example.library.jar
-set DISCOVERY=%RP%\org.eclipse.ecf.discovery_0.7.7\discovery.jar
-set HELLO=%RP%\org.eclipse.ecf.example.hello_0.7.7\hello.jar
-set COLLAB=%RP%\org.eclipse.ecf.example.collab_0.7.7\client.jar
+set ECF=%RP%\org.eclipse.ecf_0.7.8\ecf.jar
+set UI=%RP%\org.eclipse.ecf.ui_0.7.8\ui.jar
+set SDO=%RP%\org.eclipse.ecf.sdo_0.7.8\ecf.sdo.jar
+set DS=%RP%\org.eclipse.ecf.datashare_0.7.8\datashare.jar
+set DSP=%RP%\org.eclipse.ecf.provider.datashare_0.7.8\dsprovider.jar
+set FS=%RP%\org.eclipse.ecf.fileshare_0.7.8\fileshare.jar
+set FSP=%RP%\org.eclipse.ecf.provider.fileshare_0.7.8\fsprovider.jar
+set PROVIDER=%RP%\org.eclipse.ecf.provider_0.7.8\provider.jar
+set PRESENCE=%RP%\org.eclipse.ecf.presence_0.7.8\presence.jar
+set GED=%RP%\org.eclipse.ecf.example.sdo.gefeditor_0.7.8\editor.jar
+set ED=%RP%\org.eclipse.ecf.example.sdo.editor_0.7.8\editor.jar
+set LIBRARY=%RP%\org.eclipse.ecf.example.sdo.library_0.7.8\runtime\org.eclipse.ecf.example.library.jar
+set DISCOVERY=%RP%\org.eclipse.ecf.discovery_0.7.8\discovery.jar
+set HELLO=%RP%\org.eclipse.ecf.example.hello_0.7.8\hello.jar
+set COLLAB=%RP%\org.eclipse.ecf.example.collab_0.7.8\client.jar
 
 set CP="..\lib\core.jar;..\lib\runtime.jar;..\lib\osgi.jar;%ECF%;%UI%;%SDO%;%PROVIDER%;%PRESENCE%;%GED%;%ED%;%LIBRARY%;%HELLO%;%DS%;%DSP%;%FS%;%FsSP%;%DISCOVERY%;%COLLAB%;."
 
