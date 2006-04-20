@@ -23,4 +23,4 @@ Require-Bundle: org.eclipse.ecf,
 Export-Package: org.eclipse.ecf.example.collab, org.eclipse.ecf.example.collab.share, org.eclipse.ecf.example.collab.share.url, org.eclipse.ecf.example.collab.share.io
 Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.example.collab
-Eclipse-RegisterBuddy: org.eclipse.ecf
+Eclipse-RegisterBuddy: org.eclipse.ecf, org.eclipse.ecf.provider
