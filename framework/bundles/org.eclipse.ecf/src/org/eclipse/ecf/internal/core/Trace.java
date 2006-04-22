@@ -10,51 +10,52 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.core;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.eclipse.core.runtime.Platform;
 
 public class Trace {
+    private static final String TRACENAME = "org.eclipse.ecf.Trace";
+
 	public static final String tracePrefix = "(trace)";
 	public static boolean ON = false;
 	protected static boolean isEclipse = false;
 	protected static String pluginName = "";
 	protected static String debugPrefix = "/debug/";
-	static {
-		try {
-			ON = Platform.inDebugMode();
-			String bundleName = ECFPlugin.getDefault().getBundle().getSymbolicName();
-			String val = System.getProperty(bundleName + ".Trace");
-			if (val != null) {
-				setTrace(true);
-				isEclipse = false;
-				// No eclipse Platform available
-				System.out
-						.println("WARNING:  Eclipse platform not available for trace...overridden by system property org.eclipse.ecf.Trace");
-			} else {
-				isEclipse = true;
-				pluginName = bundleName;
-			}
-		} catch (Exception e) {
-			try {
-				String val = System.getProperty("org.eclipse.ecf.Trace");
-				if (val != null) {
-					setTrace(true);
-					isEclipse = false;
-					// No eclipse Platform available
-					System.out
-							.println("WARNING:  Eclipse platform not available for trace...using system.out for org.eclipse.ecf.Trace");
-				} else {
-					System.out.println(Trace.class.getName() + ": OFF");
-				}
-			} catch (Exception except) {
-			}
-		}
-	}
-
-	public static void setTrace(boolean on) {
-		ON = on;
-	}
+	
+    protected static PrintStream getPrintStream(String outputFileName) {
+    	if (outputFileName != null) try {
+    		File f = new File(outputFileName);
+    		PrintStream ps = new PrintStream(new FileOutputStream(f,true));
+        	System.out.println(TRACENAME+" directed to "+f.getCanonicalPath());
+        	return ps;
+    	} catch (Exception e) {
+    		System.err.println("Exception opening output file '"+outputFileName+"' for tracing...using System.out");
+    	}
+    	return System.out;
+    }
+    
+    protected static PrintStream printStream = null;
+    
+    static {
+        String val = System.getProperty(TRACENAME);
+    	printStream = getPrintStream(val);
+        if (val != null) {
+        	ON = true;
+        	isEclipse = false;
+        } else {
+	        try {
+	            ON = Platform.inDebugMode();
+	            pluginName = ECFPlugin.getDefault().getBundle().getSymbolicName();
+	        } catch (Exception e) {
+	        	System.out.println("WARNING: Platform not available for trace");
+	        }
+	        isEclipse = true;
+        }
+    }
 
 	public static Trace create(String key) {
 		if (isEclipse) {
@@ -76,17 +77,18 @@ public class Trace {
 		} else
 			return new Trace(key);
 	}
+	
 	String name;
 
 	public void dumpStack(Throwable e, String msg) {
 		msg(msg);
-		e.printStackTrace(System.err);
+		e.printStackTrace(printStream);
 	}
 
 	public void msg(String msg) {
 		StringBuffer sb = new StringBuffer(name);
 		sb.append(getTimeString()).append(msg);
-		System.out.println(sb.toString());
+		printStream.println(sb.toString());
 	}
 
 	protected static String getTimeString() {
