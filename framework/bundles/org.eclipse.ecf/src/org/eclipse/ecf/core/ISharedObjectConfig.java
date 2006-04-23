@@ -24,7 +24,7 @@ public interface ISharedObjectConfig {
 	 * provides a non-null ID instance in response to this method call.
 	 * 
 	 * @return ID that ISharedObject can use for imlementing its own
-	 *         ISharedObject.getID(). Must not be null.
+	 *         ISharedObject.getID(). Will not be null.
 	 */
 	public ID getSharedObjectID();
 
@@ -33,7 +33,7 @@ public interface ISharedObjectConfig {
 	 * ISharedObject instance.
 	 * 
 	 * @return the ID of the container that is the home of the primary copy of
-	 *         the ISharedObject instance. Must not be null.
+	 *         the ISharedObject instance. Will not be null.
 	 */
 	public ID getHomeContainerID();
 
@@ -44,14 +44,15 @@ public interface ISharedObjectConfig {
 	 * ISharedObject, as well as access to OSGI-platform services.
 	 * 
 	 * @return ISharedObjectContext for the ISharedObject to use to access
-	 *         container and OSGI platform-provided services.
+	 *         container and associated services.  <b>Will</b> return null
+	 *         if context is no longer valid.
 	 */
 	public ISharedObjectContext getContext();
 
 	/**
 	 * Get properties associated with with this ISharedObject
 	 * 
-	 * @return Map with properties associated with this ISharedObject instance
+	 * @return Map with properties associated with this ISharedObject instance.  Will not be null.
 	 */
 	public Map getProperties();
 }

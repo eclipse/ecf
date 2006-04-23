@@ -185,7 +185,8 @@ public interface ISharedObjectContext extends IAdaptable {
 	public IOSGIService getServiceAccess();
 	/**
 	 * Get the Namespace instance that defines the ID type expected by the remote target container 
-	 * @return Namespace the namespace by the target for a call to connect()
+	 * @return Namespace the namespace by the target for a call to connect().  Null if container
+	 * namespace no longer available
 	 */
 	public Namespace getConnectNamespace();
 	
