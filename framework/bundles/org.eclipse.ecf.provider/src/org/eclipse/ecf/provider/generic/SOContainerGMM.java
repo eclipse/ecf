@@ -199,9 +199,10 @@ class SOContainerGMM implements Observer {
     void addSharedObjectToActive(SOWrapper so) {
         if (so != null)
             debug("addSharedObjectToActive(" + so.getObjID() + ")");
-        ID[] ids = getActiveKeys();
+        //ID[] ids = getActiveKeys();
         active.put(so.getObjID(), so);
-        so.activated(ids);
+        //so.activated(ids);
+        so.activated();
     }
 
     synchronized void notifyOthersActivated(ID id) {

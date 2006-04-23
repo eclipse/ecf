@@ -221,9 +221,6 @@ public class SOManager implements ISharedObjectManager {
 			newExcept.setStackTrace(e.getStackTrace());
 			throw newExcept;
 		}
-		// notify listeners
-		container.fireContainerEvent(new SharedObjectActivatedEvent(container
-				.getID(), result, container.getGroupMemberIDs()));
 		return result;
 	}
 

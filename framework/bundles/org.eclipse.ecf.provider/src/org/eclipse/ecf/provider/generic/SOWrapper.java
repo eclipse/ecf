@@ -76,7 +76,7 @@ public class SOWrapper {
     protected SOConfig getConfig() {
         return sharedObjectConfig;
     }
-    protected void activated(ID[] ids) {
+    protected void activated() {
         debug("activated");
         thread = (Thread) AccessController.doPrivileged(new PrivilegedAction() {
             public Object run() {
@@ -86,7 +86,7 @@ public class SOWrapper {
             }
         });
         thread.start();
-        send(new SharedObjectActivatedEvent(containerID, sharedObjectID, ids));
+        send(new SharedObjectActivatedEvent(containerID, sharedObjectID));
         container.notifySharedObjectActivated(sharedObjectID);
     }
 
@@ -109,7 +109,7 @@ public class SOWrapper {
     protected void otherChanged(ID otherID, boolean activated) {
         debug("otherChanged(" + otherID + "," + activated);
         if (activated && thread != null) {
-            send(new SharedObjectActivatedEvent(containerID, otherID, null));
+            send(new SharedObjectActivatedEvent(containerID, otherID));
         } else {
             send(new SharedObjectDeactivatedEvent(containerID, otherID));
         }

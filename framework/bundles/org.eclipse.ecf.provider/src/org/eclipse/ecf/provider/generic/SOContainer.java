@@ -48,6 +48,8 @@ import org.eclipse.ecf.core.comm.SynchConnectionEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisposeEvent;
+import org.eclipse.ecf.core.events.SharedObjectActivatedEvent;
+import org.eclipse.ecf.core.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -818,10 +820,16 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		groupManager.moveSharedObjectFromLoadingToActive(wrap);
 	}
 	protected void notifySharedObjectActivated(ID sharedObjectID) {
-		groupManager.notifyOthersActivated(sharedObjectID);
+		synchronized (getGroupMembershipLock()) {
+			groupManager.notifyOthersActivated(sharedObjectID);
+			fireContainerEvent(new SharedObjectActivatedEvent(getID(),sharedObjectID));
+		}
 	}
 	protected void notifySharedObjectDeactivated(ID sharedObjectID) {
-		groupManager.notifyOthersDeactivated(sharedObjectID);
+		synchronized (getGroupMembershipLock()) {
+			groupManager.notifyOthersDeactivated(sharedObjectID);
+			fireContainerEvent(new SharedObjectDeactivatedEvent(getID(),sharedObjectID));
+		}
 	}
 	protected ContainerMessage validateContainerMessage(Object mess) {
 		// Message must not be null

@@ -12,6 +12,4 @@ import org.eclipse.ecf.core.identity.ID;
 
 public interface ISharedObjectActivatedEvent extends IContainerEvent {
 	public ID getActivatedID();
-
-	public ID[] getGroupMemberIDs();
 }

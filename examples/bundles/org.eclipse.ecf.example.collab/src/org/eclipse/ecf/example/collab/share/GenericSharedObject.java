@@ -251,7 +251,7 @@ public void handleEvent(Event event) {
             ID myID = getID();
             if (myID == null) return;
             if (myID.equals(ae.getActivatedID())) {
-                activated(ae.getGroupMemberIDs());
+                activated(getContext().getSharedObjectManager().getSharedObjectIDs());
             } else {
                 otherActivated(ae.getActivatedID());
             }
