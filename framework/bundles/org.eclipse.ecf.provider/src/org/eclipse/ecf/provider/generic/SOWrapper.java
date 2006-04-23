@@ -166,6 +166,7 @@ public class SOWrapper {
     }
 
     private void send(Event evt) {
+    	debug("queue("+evt+")");
         queue.enqueue(new ProcEvent(evt));
     }
 
