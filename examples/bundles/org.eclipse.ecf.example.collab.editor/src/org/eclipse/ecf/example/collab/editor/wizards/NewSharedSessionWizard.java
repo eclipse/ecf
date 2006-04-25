@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * Copyright (c) 2006 Ken Gilmer. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Ken Gilmer - initial API and implementation
+ ******************************************************************************/
+
 package org.eclipse.ecf.example.collab.editor.wizards;
 
 import org.eclipse.jface.text.IDocument;
@@ -23,41 +32,21 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.DocumentProviderRegistry;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 
-/**
- * This is a sample new wizard. Its role is to create a new file resource in the
- * provided container. If the container resource (a folder or a project) is
- * selected in the workspace when the wizard is opened, it will accept it as the
- * target container. The wizard creates one file with the extension "mpe". If a
- * sample multi-page editor (also available as a template) is registered for the
- * same extension, it will be able to open it.
- */
-
 public class NewSharedSessionWizard extends Wizard implements INewWizard {
 	private NewSharedSessionWizardPage page;
 
 	private ISelection selection;
 
-	/**
-	 * Constructor for SampleNewWizard.
-	 */
 	public NewSharedSessionWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
-
-	/**
-	 * Adding the page to the wizard.
-	 */
 
 	public void addPages() {
 		page = new NewSharedSessionWizardPage(selection);
 		addPage(page);
 	}
 
-	/**
-	 * This method is called when 'Finish' button is pressed in the wizard. We
-	 * will create an operation and run it using wizard as execution context.
-	 */
 	public boolean performFinish() {
 		final String containerName = page.getContainerName();
 		final String fileName = page.getFileName();
@@ -83,12 +72,6 @@ public class NewSharedSessionWizard extends Wizard implements INewWizard {
 		}
 		return true;
 	}
-
-	/**
-	 * The worker method. It will find the container, create the file if missing
-	 * or just replace its contents, and open the editor on the newly created
-	 * file.
-	 */
 
 	private void doFinish(String containerName, String fileName, IProgressMonitor monitor) throws CoreException {
 		// create a sample file
@@ -141,10 +124,6 @@ public class NewSharedSessionWizard extends Wizard implements INewWizard {
 		monitor.worked(1);
 	}
 
-	/**
-	 * We will initialize file contents with a sample text.
-	 */
-
 	private InputStream openContentStream() {
 		String contents = "";
 		return new ByteArrayInputStream(contents.getBytes());
@@ -154,13 +133,6 @@ public class NewSharedSessionWizard extends Wizard implements INewWizard {
 		IStatus status = new Status(IStatus.ERROR, "org.eclipse.ecf.example.collab.editor", IStatus.OK, message, null);
 		throw new CoreException(status);
 	}
-
-	/**
-	 * We will accept the selection in the workbench to see if we can initialize
-	 * from it.
-	 * 
-	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
-	 */
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.selection = selection;
 	}

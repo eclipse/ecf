@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2006 Ken Gilmer All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Ken Gilmer - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.example.collab.editor;
 
 import java.io.ByteArrayInputStream;
@@ -37,7 +45,7 @@ public class EditChannelListener implements IChannelListener {
 		if (event instanceof IChannelMessageEvent) {
 			setEditorEditable(false);
 			Activator.getDefault().setListenerActive(false);
-			System.out.println("Setting events off");
+			
 			IChannelMessageEvent msg = (IChannelMessageEvent) event;
 
 			ByteArrayInputStream bins = new ByteArrayInputStream(msg.getData());
@@ -57,7 +65,6 @@ public class EditChannelListener implements IChannelListener {
 			} finally {
 				setEditorEditable(true);
 				Activator.getDefault().setListenerActive(true);
-				System.out.println("Setting events on");
 			}
 		}
 	}

@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2006 Ken Gilmer. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Ken Gilmer - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.example.collab.editor.actions;
 
 import org.eclipse.core.resources.IFile;
@@ -22,6 +30,12 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.DocumentProviderRegistry;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 
+/**
+ * This action is used to initiate a shared session.  
+ * 
+ * @author kgilmer
+ *
+ */
 public class InitiateSharedSessionAction extends Action implements IObjectActionDelegate, IViewActionDelegate {
 
 	private IFile file;
@@ -48,7 +62,7 @@ public class InitiateSharedSessionAction extends Action implements IObjectAction
 						//Open the default editor for the selected file.
 						IEditorPart editorPart = page.openEditor(new FileEditorInput(file), editorDescriptor.getId());
 
-						//Create ECF infrastructre and begin sharing.
+						//Create ECF container and begin sharing.
 						if (editorPart instanceof AbstractTextEditor) {
 							IDocumentProvider dp = DocumentProviderRegistry.getDefault().getDocumentProvider(editorPart.getEditorInput());
 							AbstractTextEditor textEditor = (AbstractTextEditor) editorPart;
@@ -79,7 +93,6 @@ public class InitiateSharedSessionAction extends Action implements IObjectAction
 	}
 
 	public void init(IViewPart view) {
-		System.out.println("init: " + view.getTitle());
 	}
 
 }

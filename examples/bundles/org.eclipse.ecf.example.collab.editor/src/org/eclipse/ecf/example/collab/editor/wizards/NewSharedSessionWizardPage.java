@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * Copyright (c) 2006 Ken Gilmer. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Ken Gilmer - initial API and implementation
+ ******************************************************************************/
+
 package org.eclipse.ecf.example.collab.editor.wizards;
 
 import java.io.ByteArrayInputStream;
@@ -50,12 +59,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
-/**
- * The "New" wizard page allows setting the container for the new file as well
- * as the file name. The page will only accept file name without the extension
- * OR with the extension that matches the expected one (mpe).
- */
-
 public class NewSharedSessionWizardPage extends WizardPage {
 	private Text containerText;
 
@@ -67,11 +70,6 @@ public class NewSharedSessionWizardPage extends WizardPage {
 
 	private List sessions;
 
-	/**
-	 * Constructor for SampleNewWizardPage.
-	 * 
-	 * @param pageName
-	 */
 	public NewSharedSessionWizardPage(ISelection selection) {
 		super("wizardPage");
 		setTitle("Shared Editor");
@@ -80,19 +78,11 @@ public class NewSharedSessionWizardPage extends WizardPage {
 		sessions = new ArrayList();
 	}
 
-	/**
-	 * @see IDialogPage#createControl(Composite)
-	 */
 	public void createControl(Composite parent) {
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new GridLayout(2, false));
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		/*
-		 * Composite container = new Composite(main, SWT.NULL); GridLayout
-		 * layout = new GridLayout(); container.setLayout(layout);
-		 * layout.numColumns = 3; layout.verticalSpacing = 9;
-		 */
 		Label label = new Label(main, SWT.NULL);
 		label.setText("&Project:");
 
@@ -188,10 +178,6 @@ public class NewSharedSessionWizardPage extends WizardPage {
 
 	}
 
-	/**
-	 * Tests if the current workbench selection is a suitable container to use.
-	 */
-
 	private void initialize() {
 		if (selection != null && selection.isEmpty() == false && selection instanceof IStructuredSelection) {
 			IStructuredSelection ssel = (IStructuredSelection) selection;
@@ -270,11 +256,6 @@ public class NewSharedSessionWizardPage extends WizardPage {
 		return bouts.toByteArray();
 	}
 
-	/**
-	 * Uses the standard container selection dialog to choose the new value for
-	 * the container field.
-	 */
-
 	private void handleBrowse() {
 		ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(), false,
 				"Select new file container");
@@ -285,10 +266,6 @@ public class NewSharedSessionWizardPage extends WizardPage {
 			}
 		}
 	}
-
-	/**
-	 * Ensures that both text fields are set.
-	 */
 
 	private void dialogChanged() {
 		IResource container = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(getContainerName()));
