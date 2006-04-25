@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Sample Action Set"
+            visible="true"
+            id="org.eclipse.ecf.example.collab.editor.actionSet">
+         <menu
+               label="Sample &amp;Menu"
+               id="sampleMenu">
+            <separator
+                  name="sampleGroup">
+            </separator>
+         </menu>
+         <action
+               label="&amp;Sample Action"
+               icon="icons/sample.gif"
+               class="org.eclipse.ecf.example.collab.editor.ShareEditorAction"
+               tooltip="Hello, Eclipse world"
+               menubarPath="sampleMenu/sampleGroup"
+               toolbarPath="sampleGroup"
+               id="org.eclipse.ecf.example.collab.editor.ShareEditorAction">
+         </action>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="false"
+            id="org.eclipse.ecf.example.collab.editor.objectContribution"
+            objectClass="org.eclipse.core.resources.IFile">
+         <action
+               class="org.eclipse.ecf.example.collab.editor.actions.InitiateSharedSessionAction"
+               icon="icons/sample.gif"
+               id="org.eclipse.ecf.example.collab.editor.initiateSharedEditorAction"
+               label="Initiate Shared Editor"
+               menubarPath="team.main/group3"
+               tooltip="Share this file and allow others to make changes."/>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.team.ui.TeamPreferences"
+            class="org.eclipse.ecf.example.collab.editor.preferences.ClientPreferencePage"
+            id="org.eclipse.ecf.example.collab.editor.page"
+            name="ECF Editor Sharing"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.eclipse.ecf.example.collab.editor"
+            name="Collaboration"/>
+      <wizard
+            category="org.eclipse.ecf.example.collab.editor"
+            class="org.eclipse.ecf.example.collab.editor.wizards.NewSharedSessionWizard"
+            hasPages="true"
+            icon="icons/sample.gif"
+            id="org.eclipse.ecf.example.collab.editor.wizards.NewSessionWizard"
+            name="Shared Editor Session"/>
+   </extension>
+
+</plugin>
