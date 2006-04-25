@@ -9,6 +9,8 @@
 package org.eclipse.ecf.example.collab.editor.actions;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.example.collab.editor.Activator;
 import org.eclipse.ecf.example.collab.editor.EditorListener;
 import org.eclipse.jface.action.Action;
@@ -68,15 +70,16 @@ public class InitiateSharedSessionAction extends Action implements IObjectAction
 							AbstractTextEditor textEditor = (AbstractTextEditor) editorPart;
 
 							IDocument document = dp.getDocument(editorPart.getEditorInput());
-
+							
 							if (document != null) {
 								EditorListener listener = new EditorListener(document, textEditor);
 								document.addDocumentListener(listener);
+								
 							}
 						}
 
 					} catch (PartInitException e) {
-						e.printStackTrace();
+						Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 					}
 				}
 

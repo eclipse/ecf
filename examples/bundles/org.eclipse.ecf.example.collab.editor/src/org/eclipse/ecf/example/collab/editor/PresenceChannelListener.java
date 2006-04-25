@@ -14,26 +14,23 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
-import org.eclipse.ecf.example.collab.editor.message.EditorChangeMessage;
 import org.eclipse.ecf.example.collab.editor.message.SharedEditorSessionList;
 import org.eclipse.ecf.example.collab.editor.message.SharedEditorSessionListRequest;
-import org.eclipse.jface.text.DocumentEvent;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.TextSelection;
-import org.eclipse.jface.text.TextViewer;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.editors.text.TextEditor;
-import org.eclipse.ui.texteditor.AbstractTextEditor;
 
+/**
+ * This ECF listener waits for requests for information (such as any editor sessions
+ * that the local client may have open). 
+ * 
+ * @author kg11212
+ *
+ */
 public class PresenceChannelListener implements IChannelListener {
 
 	private IChannel channel;
@@ -61,14 +58,11 @@ public class PresenceChannelListener implements IChannelListener {
 				}
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 			} catch (ECFException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 			} finally {
 				Activator.getDefault().setListenerActive(true);
 				System.out.println("Setting events on");

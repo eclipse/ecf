@@ -11,6 +11,8 @@ package org.eclipse.ecf.example.collab.editor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,6 +25,7 @@ import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelContainer;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.example.collab.editor.message.SharedEditorSessionList;
+import org.eclipse.ecf.example.collab.editor.model.SessionInstance;
 import org.eclipse.ecf.example.collab.editor.preferences.ClientPreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -45,6 +48,8 @@ public class Activator extends AbstractUIPlugin {
 	private IChannel presenceChannel;
 
 	private IContainer presenceContainer = null;
+	
+	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab.editor";
 
 	/**
 	 * The constructor.
@@ -107,8 +112,9 @@ public class Activator extends AbstractUIPlugin {
 	 * public List getSessionNames() { return sessionNames; }
 	 */
 
-	public void addSession(String sessionName) {
-		sessionNames.add(sessionName);
+	public void addSession(String channelID, String sessionName) {
+		
+		sessionNames.add(new SessionInstance(channelID, sessionName, getPreferenceStore().getString(ClientPreferencePage.LOCAL_NAME), Calendar.getInstance().getTime()));
 
 		if (presenceChannel != null) {
 			// Tell everyone there is a new shared editor.
@@ -135,7 +141,7 @@ public class Activator extends AbstractUIPlugin {
 		IChannelContainer channelContainer = (IChannelContainer) presenceContainer.getAdapter(IChannelContainer.class);
 
 		final ID channelID = IDFactory.getDefault().createID(channelContainer.getChannelNamespace(),
-				Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CHANNEL_ID + ".presence"));
+				Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CHANNEL_ID) + ".presence");
 
 		presenceChannel = channelContainer.createChannel(channelID, clistener, new HashMap());
 

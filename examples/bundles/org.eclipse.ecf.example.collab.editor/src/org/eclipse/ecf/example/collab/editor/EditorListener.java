@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -26,10 +28,11 @@ import org.eclipse.ecf.example.collab.editor.preferences.ClientPreferencePage;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
-import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 public class EditorListener implements IDocumentListener {
+	public static final String SESSION_NAME_DELIMITER = "_";
+
 	private IDocument document;
 
 	private AbstractTextEditor editor;
@@ -39,8 +42,6 @@ public class EditorListener implements IDocumentListener {
 	private IContainer container = null;
 
 	private IChannelListener channelListener;
-
-	
 
 	private String sessionID;
 
@@ -55,8 +56,7 @@ public class EditorListener implements IDocumentListener {
 				Activator.getDefault().intializePresenceSession(new PresenceChannelListener());
 			}
 		} catch (ECFException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 		}
 	}
 
@@ -82,11 +82,9 @@ public class EditorListener implements IDocumentListener {
 
 			this.document = newDocument;
 		} catch (ECFException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 		}
 	}
 
@@ -103,9 +101,9 @@ public class EditorListener implements IDocumentListener {
 
 		IChannelContainer channelContainer = (IChannelContainer) container.getAdapter(IChannelContainer.class);
 
-		sessionID = Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CHANNEL_ID) + "_" + editor.getTitle();
+		sessionID = Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CHANNEL_ID) + SESSION_NAME_DELIMITER + editor.getTitle();
 
-		Activator.getDefault().addSession(sessionID);
+		Activator.getDefault().addSession(sessionID, editor.getTitle());
 		
 		final ID channelID = IDFactory.getDefault().createID(channelContainer.getChannelNamespace(), sessionID);
 

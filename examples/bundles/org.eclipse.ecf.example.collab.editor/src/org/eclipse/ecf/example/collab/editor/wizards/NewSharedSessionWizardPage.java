@@ -21,7 +21,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelListener;
@@ -31,8 +30,7 @@ import org.eclipse.ecf.example.collab.editor.Activator;
 import org.eclipse.ecf.example.collab.editor.EditorListener;
 import org.eclipse.ecf.example.collab.editor.message.SharedEditorSessionList;
 import org.eclipse.ecf.example.collab.editor.message.SharedEditorSessionListRequest;
-import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.ecf.example.collab.editor.model.SessionInstance;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -55,6 +53,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
@@ -111,17 +110,30 @@ public class NewSharedSessionWizardPage extends WizardPage {
 		label2.setText("&Shared File:");
 		label2.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 
-		sessionViewer = new TableViewer(main, SWT.BORDER);
+		sessionViewer = new TableViewer(main, SWT.BORDER | SWT.FULL_SELECTION);
 		sessionViewer.setContentProvider(new ListContentProvider());
 		sessionViewer.setLabelProvider(new SessionNameLabelProvider());
 		sessionViewer.setInput(sessions);
 		sessionViewer.getTable().setLayoutData(new GridData(GridData.FILL_BOTH));
+		sessionViewer.getTable().setHeaderVisible(true);
 		sessionViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				dialogChanged();
 			}
 
 		});
+		
+		TableColumn tc = new TableColumn(sessionViewer.getTable(), SWT.NONE);
+		tc.setText("Filename");
+		tc.setWidth(150);
+		
+		tc = new TableColumn(sessionViewer.getTable(), SWT.NONE);
+		tc.setText("Owner");
+		tc.setWidth(150);
+		
+		tc = new TableColumn(sessionViewer.getTable(), SWT.NONE);
+		tc.setText("Shared On");
+		tc.setWidth(150);
 
 		initialize();
 		dialogChanged();
@@ -149,11 +161,24 @@ public class NewSharedSessionWizardPage extends WizardPage {
 		}
 
 		public String getColumnText(Object element, int columnIndex) {
-			String s = (String) element;
-
-			// Assumption that '_' is delimeter character seperating shared
-			// group name from file name.
-			return s.split("_")[1];
+			String text;
+			SessionInstance instance = (SessionInstance) element;
+			
+			switch (columnIndex) {
+				case 0:
+					text = instance.getName();
+					break;
+				case 1:
+					text = instance.getOwner();
+					break;
+				case 2:				
+					text = instance.getCreated().toGMTString();
+					break;
+				default:
+					text = "";
+			}
+			
+			return text;
 		}
 
 		public void addListener(ILabelProviderListener listener) {
@@ -308,7 +333,9 @@ public class NewSharedSessionWizardPage extends WizardPage {
 		if (!sessionViewer.getSelection().isEmpty()) {
 			StructuredSelection s = (StructuredSelection) sessionViewer.getSelection();
 
-			return ((String) s.getFirstElement()).split("_")[1];
+			SessionInstance si = (SessionInstance) s.getFirstElement();
+			
+			return si.getName();
 		}
 
 		return null;
