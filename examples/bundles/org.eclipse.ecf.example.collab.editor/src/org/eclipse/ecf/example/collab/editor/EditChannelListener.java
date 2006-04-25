@@ -45,15 +45,16 @@ public class EditChannelListener implements IChannelListener {
 		if (event instanceof IChannelMessageEvent) {
 			setEditorEditable(false);
 			Activator.getDefault().setListenerActive(false);
-			
+
 			IChannelMessageEvent msg = (IChannelMessageEvent) event;
 
 			ByteArrayInputStream bins = new ByteArrayInputStream(msg.getData());
 			ObjectInputStream ois;
 			try {
 				ois = new ObjectInputStream(bins);
-				EditorChangeMessage message = (EditorChangeMessage) ois.readObject();
-				
+				EditorChangeMessage message = (EditorChangeMessage) ois
+						.readObject();
+
 				// Append text from remote to end of document
 				appendLocallyFromRemote(message);
 			} catch (IOException e) {
@@ -77,7 +78,8 @@ public class EditChannelListener implements IChannelListener {
 					return;
 				}
 
-				ISelection selection = editor.getSelectionProvider().getSelection();
+				ISelection selection = editor.getSelectionProvider()
+						.getSelection();
 				if (selection instanceof TextSelection) {
 					TextSelection textSelection = (TextSelection) selection;
 					document.set(message.getDocument());
@@ -88,10 +90,12 @@ public class EditChannelListener implements IChannelListener {
 	}
 
 	private void setEditorEditable(final boolean editable) {
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				textControl.setEditable(editable);
-			}
-		});
+		if (!textControl.isDisposed()) {
+			Display.getDefault().syncExec(new Runnable() {
+				public void run() {
+					textControl.setEditable(editable);
+				}
+			});
+		}
 	}
 }
