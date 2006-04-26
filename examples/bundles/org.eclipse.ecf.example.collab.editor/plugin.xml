@@ -29,7 +29,7 @@
          point="org.eclipse.ui.newWizards">
       <category
             id="org.eclipse.ecf.example.collab.editor"
-            name="Collaboration"/>
+            name="Team"/>
       <wizard
             category="org.eclipse.ecf.example.collab.editor"
             class="org.eclipse.ecf.example.collab.editor.wizards.NewSharedSessionWizard"
