@@ -10,10 +10,8 @@
 package org.eclipse.ecf.example.collab.editor.wizards;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +25,6 @@ import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 import org.eclipse.ecf.example.collab.editor.Activator;
-import org.eclipse.ecf.example.collab.editor.EditorListener;
 import org.eclipse.ecf.example.collab.editor.message.SharedEditorSessionList;
 import org.eclipse.ecf.example.collab.editor.message.SharedEditorSessionListRequest;
 import org.eclipse.ecf.example.collab.editor.model.SessionInstance;
@@ -222,7 +219,7 @@ public class NewSharedSessionWizardPage extends WizardPage {
 
 		try {
 			IChannel channel = Activator.getDefault().intializePresenceSession(new SessionResponseListener());
-			channel.sendMessage(createMessage(new SharedEditorSessionListRequest()));
+			channel.sendMessage((new SharedEditorSessionListRequest()).toByteArray());
 		} catch (ECFException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -270,15 +267,6 @@ public class NewSharedSessionWizardPage extends WizardPage {
 				}
 			}
 		}
-	}
-
-	private byte[] createMessage(Object obj) throws IOException, ECFException {
-		ByteArrayOutputStream bouts = new ByteArrayOutputStream();
-
-		ObjectOutputStream douts = new ObjectOutputStream(bouts);
-		douts.writeObject(obj);
-
-		return bouts.toByteArray();
 	}
 
 	private void handleBrowse() {

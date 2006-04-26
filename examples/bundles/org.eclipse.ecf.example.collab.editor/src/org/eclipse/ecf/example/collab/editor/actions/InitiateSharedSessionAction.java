@@ -13,13 +13,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.example.collab.editor.Activator;
-import org.eclipse.ecf.example.collab.editor.EditorListener;
+import org.eclipse.ecf.example.collab.editor.listeners.EditorListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -61,8 +60,6 @@ public class InitiateSharedSessionAction extends Action implements IObjectAction
 			final IWorkbenchPage page = workbench.getWorkbenchWindows()[0].getActivePage();
 
 			workbench.getDisplay().asyncExec(new Runnable() {
-				IEditorPart part;
-
 				public void run() {
 					try {
 						//Open the default editor for the selected file.
@@ -77,7 +74,7 @@ public class InitiateSharedSessionAction extends Action implements IObjectAction
 							IDocument document = dp.getDocument(editorPart.getEditorInput());
 							
 							if (document != null) {
-								EditorListener listener = new EditorListener(document, textEditor);
+								EditorListener listener = new EditorListener(document, textEditor, true);
 								document.addDocumentListener(listener);								
 							} else {
 								if (dp instanceof TextFileDocumentProvider) {
@@ -85,7 +82,7 @@ public class InitiateSharedSessionAction extends Action implements IObjectAction
 									document = ((TextFileDocumentProvider) dp).getDocument(editorPart.getEditorInput());
 									
 									if (document != null) {
-										EditorListener listener = new EditorListener(document, textEditor);
+										EditorListener listener = new EditorListener(document, textEditor, true);
 										document.addDocumentListener(listener);	
 										return;
 									} else {
@@ -100,9 +97,7 @@ public class InitiateSharedSessionAction extends Action implements IObjectAction
 					} catch (PartInitException e) {
 						Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 					} catch (CoreException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+						Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));					}
 				}
 
 			});

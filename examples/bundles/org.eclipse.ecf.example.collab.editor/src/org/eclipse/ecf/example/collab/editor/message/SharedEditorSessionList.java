@@ -9,7 +9,6 @@
 
 package org.eclipse.ecf.example.collab.editor.message;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -19,7 +18,7 @@ import java.util.List;
  * @author kgilmer
  *
  */
-public class SharedEditorSessionList implements Serializable {
+public class SharedEditorSessionList extends AbstractMessage {
 	private static final long serialVersionUID = 4337027955521207775L;
 	private List sessionNames;
 	

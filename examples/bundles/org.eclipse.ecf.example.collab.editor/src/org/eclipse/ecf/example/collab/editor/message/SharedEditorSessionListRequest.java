@@ -9,7 +9,6 @@
 
 package org.eclipse.ecf.example.collab.editor.message;
 
-import java.io.Serializable;
 
 /**
  * This message is passed when a peer wishes to "discover" all available
@@ -20,7 +19,7 @@ import java.io.Serializable;
  * @author kgilmer
  *
  */
-public class SharedEditorSessionListRequest implements Serializable {
+public class SharedEditorSessionListRequest extends AbstractMessage {
 	private static final long serialVersionUID = 2096909220585200273L;
 
 	

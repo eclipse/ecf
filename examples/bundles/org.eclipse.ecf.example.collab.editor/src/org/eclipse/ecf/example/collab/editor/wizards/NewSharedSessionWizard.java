@@ -25,7 +25,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.example.collab.editor.Activator;
-import org.eclipse.ecf.example.collab.editor.EditorListener;
+import org.eclipse.ecf.example.collab.editor.listeners.EditorListener;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.text.IDocument;
@@ -124,7 +124,7 @@ public class NewSharedSessionWizard extends Wizard implements INewWizard {
 						IDocument document = dp.getDocument(editorPart.getEditorInput());
 
 						if (document != null) {
-							EditorListener listener = new EditorListener(document, textEditor);
+							EditorListener listener = new EditorListener(document, textEditor, false);
 							document.addDocumentListener(listener);
 						} else {
 							if (dp instanceof TextFileDocumentProvider) {
@@ -132,8 +132,9 @@ public class NewSharedSessionWizard extends Wizard implements INewWizard {
 								document = ((TextFileDocumentProvider) dp).getDocument(editorPart.getEditorInput());
 								
 								if (document != null) {
-									EditorListener listener = new EditorListener(document, textEditor);
+									EditorListener listener = new EditorListener(document, textEditor, false);
 									document.addDocumentListener(listener);	
+									
 									return;
 								} else {
 									Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Unable to get reference to editor's document.  Shared session not created.", null));

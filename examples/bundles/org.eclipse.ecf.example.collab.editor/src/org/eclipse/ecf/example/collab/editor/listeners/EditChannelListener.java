@@ -6,7 +6,7 @@
  * 
  * Contributors: Ken Gilmer - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.example.collab.editor;
+package org.eclipse.ecf.example.collab.editor.listeners;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,7 +17,10 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
+import org.eclipse.ecf.example.collab.editor.Activator;
 import org.eclipse.ecf.example.collab.editor.message.EditorChangeMessage;
+import org.eclipse.ecf.example.collab.editor.message.EditorUpdateRequest;
+import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
@@ -33,18 +36,23 @@ public class EditChannelListener implements IChannelListener {
 	private AbstractTextEditor editor;
 
 	private StyledText textControl;
+	
+	private boolean documentOwner;
+	
+	private EditorListener editorListener;
 
-	public EditChannelListener(IDocument document, AbstractTextEditor editor) {
+	public EditChannelListener(IDocument document, AbstractTextEditor editor, boolean owner, EditorListener editorListener) {
 		this.document = document;
 		this.editor = editor;
+		this.editorListener = editorListener;
 		textControl = (StyledText) editor.getAdapter(Control.class);
+		documentOwner = owner;		
 		
-		System.out.println(textControl.getAlignment());
+		
 	}
 
 	public void handleChannelEvent(IChannelEvent event) {
 		if (event instanceof IChannelMessageEvent) {
-			System.out.println("Receiving");
 			setEditorEditable(false);
 			Activator.getDefault().setListenerActive(false);
 
@@ -54,11 +62,16 @@ public class EditChannelListener implements IChannelListener {
 			ObjectInputStream ois;
 			try {
 				ois = new ObjectInputStream(bins);
-				EditorChangeMessage message = (EditorChangeMessage) ois
-						.readObject();
-
-				// Append text from remote to end of document
-				appendLocallyFromRemote(message);
+				
+				Object message = ois.readObject();
+				
+				if (message instanceof EditorChangeMessage) {
+					// Append text from remote to end of document
+					appendLocallyFromRemote((EditorChangeMessage) message);	
+				} else if (message instanceof EditorUpdateRequest && documentOwner) {
+					//Respond since I'm the document owner;
+					editorListener.sendDocumentUpdateMessage();
+				}
 			} catch (IOException e) {
 				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 			} catch (ClassNotFoundException e) {

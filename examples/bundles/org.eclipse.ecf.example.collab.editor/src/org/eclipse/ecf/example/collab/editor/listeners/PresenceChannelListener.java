@@ -6,13 +6,11 @@
  * 
  * Contributors: Ken Gilmer - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.example.collab.editor;
+package org.eclipse.ecf.example.collab.editor.listeners;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -21,6 +19,7 @@ import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
+import org.eclipse.ecf.example.collab.editor.Activator;
 import org.eclipse.ecf.example.collab.editor.message.SharedEditorSessionList;
 import org.eclipse.ecf.example.collab.editor.message.SharedEditorSessionListRequest;
 
@@ -54,7 +53,7 @@ public class PresenceChannelListener implements IChannelListener {
 				Object o = ois.readObject();
 
 				if (o instanceof SharedEditorSessionListRequest) {
-					channel.sendMessage(createMessage(new SharedEditorSessionList(Activator.getDefault().getSessionNames())));
+					channel.sendMessage((new SharedEditorSessionList(Activator.getDefault().getSessionNames())).toByteArray());
 				}
 
 			} catch (IOException e) {
@@ -68,14 +67,5 @@ public class PresenceChannelListener implements IChannelListener {
 				System.out.println("Setting events on");
 			}
 		}
-	}
-	
-	public static byte[] createMessage(Object obj) throws IOException, ECFException {
-		ByteArrayOutputStream bouts = new ByteArrayOutputStream();
-
-		ObjectOutputStream douts = new ObjectOutputStream(bouts);
-		douts.writeObject(obj);
-
-		return bouts.toByteArray();
 	}
 }

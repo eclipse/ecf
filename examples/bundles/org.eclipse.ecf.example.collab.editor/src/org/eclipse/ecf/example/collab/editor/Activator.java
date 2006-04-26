@@ -12,7 +12,6 @@ package org.eclipse.ecf.example.collab.editor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -104,7 +103,7 @@ public class Activator extends AbstractUIPlugin {
 		return listenerActive;
 	}
 
-	synchronized void setListenerActive(boolean active) {
+	synchronized public void setListenerActive(boolean active) {
 		listenerActive = active;
 	}
 
@@ -119,7 +118,7 @@ public class Activator extends AbstractUIPlugin {
 		if (presenceChannel != null) {
 			// Tell everyone there is a new shared editor.
 			try {
-				presenceChannel.sendMessage(PresenceChannelListener.createMessage(new SharedEditorSessionList(sessionNames)));
+				presenceChannel.sendMessage((new SharedEditorSessionList(sessionNames)).toByteArray());
 			} catch (ECFException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

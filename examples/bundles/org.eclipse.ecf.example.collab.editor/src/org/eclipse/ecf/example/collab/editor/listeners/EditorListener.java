@@ -6,7 +6,7 @@
  * 
  * Contributors: Ken Gilmer - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.example.collab.editor;
+package org.eclipse.ecf.example.collab.editor.listeners;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,7 +23,9 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelContainer;
 import org.eclipse.ecf.datashare.IChannelListener;
+import org.eclipse.ecf.example.collab.editor.Activator;
 import org.eclipse.ecf.example.collab.editor.message.EditorChangeMessage;
+import org.eclipse.ecf.example.collab.editor.message.EditorUpdateRequest;
 import org.eclipse.ecf.example.collab.editor.preferences.ClientPreferencePage;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
@@ -44,11 +46,14 @@ public class EditorListener implements IDocumentListener {
 	private IChannelListener channelListener;
 
 	private String sessionID;
+	
+	private boolean documentOwner;
 
-	public EditorListener(IDocument document, AbstractTextEditor textEditor) {
+	public EditorListener(IDocument document, AbstractTextEditor textEditor, boolean owner) {
 		this.document = document;
 		this.editor = textEditor;
-
+		this.documentOwner = owner;
+		
 		try {
 			intializeEditorSession();
 			
@@ -57,7 +62,8 @@ public class EditorListener implements IDocumentListener {
 			}
 		} catch (ECFException e) {
 			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
-		}
+		} catch (IOException e) {
+			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));		}
 	}
 
 	public void documentAboutToBeChanged(DocumentEvent event) {
@@ -78,12 +84,14 @@ public class EditorListener implements IDocumentListener {
 			return;
 		}
 
+		sendDocumentUpdateMessage();
+	}
+	
+	public void sendDocumentUpdateMessage() {
 		try {
-			System.out.println("sending");
-			IDocument newDocument = event.getDocument();
 			
-			channel.sendMessage(createMessageFromEvent(event));
-			this.document = newDocument;
+			channel.sendMessage(createMessageFromEvent(document));
+
 		} catch (ECFException e) {
 			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 		} catch (IOException e) {
@@ -91,14 +99,14 @@ public class EditorListener implements IDocumentListener {
 		}
 	}
 
-	private byte[] createMessageFromEvent(DocumentEvent event) throws IOException, ECFException {
+	private byte[] createMessageFromEvent(IDocument document) throws IOException, ECFException {
 		ByteArrayOutputStream bouts = new ByteArrayOutputStream();
 		ObjectOutputStream douts = new ObjectOutputStream(bouts);
-		douts.writeObject(new EditorChangeMessage(event.getDocument().get()));
+		douts.writeObject(new EditorChangeMessage(document.get()));
 		return bouts.toByteArray();
 	}
 
-	public void intializeEditorSession() throws ECFException {
+	public void intializeEditorSession() throws ECFException, IOException {
 		container = ContainerFactory.getDefault().createContainer(
 				Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CONTAINER_TYPE));
 
@@ -110,15 +118,26 @@ public class EditorListener implements IDocumentListener {
 		
 		final ID channelID = IDFactory.getDefault().createID(channelContainer.getChannelNamespace(), sessionID);
 
-		channelListener = new EditChannelListener(document, editor);
+		channelListener = new EditChannelListener(document, editor, documentOwner, this);
 
 		channel = channelContainer.createChannel(channelID, channelListener, new HashMap());
 
 		container.connect(IDFactory.getDefault().createID(container.getConnectNamespace(),
 				Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.TARGET_SERVER)), null);
+		
+		//If we don't own the document, request a fresh copy from the owner.
+		if (!documentOwner) {
+			sendEditorUpdateRequest();
+		}
 	}
 
 	
+
+	private void sendEditorUpdateRequest() throws ECFException, IOException {
+		if (channel != null) {
+			channel.sendMessage((new EditorUpdateRequest()).toByteArray());
+		}
+	}
 
 	public String getSessionID() {
 		return sessionID;
