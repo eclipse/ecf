@@ -5,7 +5,7 @@
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
-            adaptable="false"
+            adaptable="true"
             id="org.eclipse.ecf.example.collab.editor.objectContribution"
             objectClass="org.eclipse.core.resources.IFile">
          <action

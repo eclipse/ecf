@@ -9,6 +9,7 @@
 package org.eclipse.ecf.example.collab.editor.actions;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.example.collab.editor.Activator;
@@ -17,8 +18,10 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IViewActionDelegate;
@@ -27,6 +30,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.editors.text.TextFileDocumentProvider;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.DocumentProviderRegistry;
@@ -66,20 +70,38 @@ public class InitiateSharedSessionAction extends Action implements IObjectAction
 
 						//Create ECF container and begin sharing.
 						if (editorPart instanceof AbstractTextEditor) {
-							IDocumentProvider dp = DocumentProviderRegistry.getDefault().getDocumentProvider(editorPart.getEditorInput());
+							IEditorInput editorInput = editorPart.getEditorInput();
+							IDocumentProvider dp = DocumentProviderRegistry.getDefault().getDocumentProvider(editorInput);
 							AbstractTextEditor textEditor = (AbstractTextEditor) editorPart;
 
 							IDocument document = dp.getDocument(editorPart.getEditorInput());
 							
 							if (document != null) {
 								EditorListener listener = new EditorListener(document, textEditor);
-								document.addDocumentListener(listener);
+								document.addDocumentListener(listener);								
+							} else {
+								if (dp instanceof TextFileDocumentProvider) {
+									((TextFileDocumentProvider) dp).connect(editorPart.getEditorInput());
+									document = ((TextFileDocumentProvider) dp).getDocument(editorPart.getEditorInput());
+									
+									if (document != null) {
+										EditorListener listener = new EditorListener(document, textEditor);
+										document.addDocumentListener(listener);	
+										return;
+									} else {
+										Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Unable to get reference to editor's document.  Shared session not created.", null));
+									}
+								}
 								
+								Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Unable to get reference to editor's document.  Shared session not created.", null));
 							}
 						}
 
 					} catch (PartInitException e) {
 						Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
+					} catch (CoreException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 
@@ -88,8 +110,8 @@ public class InitiateSharedSessionAction extends Action implements IObjectAction
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
-		if (selection instanceof TreeSelection) {
-			TreeSelection ts = (TreeSelection) selection;
+		if (selection instanceof StructuredSelection) {
+			StructuredSelection ts = (StructuredSelection) selection;
 
 			file = (IFile) ts.getFirstElement();
 		}

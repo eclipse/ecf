@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.example.collab.editor.Activator;
 import org.eclipse.ecf.example.collab.editor.EditorListener;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -37,6 +38,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.editors.text.TextFileDocumentProvider;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.DocumentProviderRegistry;
@@ -124,11 +126,28 @@ public class NewSharedSessionWizard extends Wizard implements INewWizard {
 						if (document != null) {
 							EditorListener listener = new EditorListener(document, textEditor);
 							document.addDocumentListener(listener);
+						} else {
+							if (dp instanceof TextFileDocumentProvider) {
+								((TextFileDocumentProvider) dp).connect(editorPart.getEditorInput());
+								document = ((TextFileDocumentProvider) dp).getDocument(editorPart.getEditorInput());
+								
+								if (document != null) {
+									EditorListener listener = new EditorListener(document, textEditor);
+									document.addDocumentListener(listener);	
+									return;
+								} else {
+									Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Unable to get reference to editor's document.  Shared session not created.", null));
+								}
+							}
+							
+							Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Unable to get reference to editor's document.  Shared session not created.", null));
 						}
 					}
 					
 				} catch (PartInitException e) {
-				}
+					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
+				} catch (CoreException e) {
+					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));				}
 			}
 		});
 		monitor.worked(1);

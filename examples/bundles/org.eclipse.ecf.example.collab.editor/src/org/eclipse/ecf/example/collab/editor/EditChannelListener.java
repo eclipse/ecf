@@ -38,10 +38,13 @@ public class EditChannelListener implements IChannelListener {
 		this.document = document;
 		this.editor = editor;
 		textControl = (StyledText) editor.getAdapter(Control.class);
+		
+		System.out.println(textControl.getAlignment());
 	}
 
 	public void handleChannelEvent(IChannelEvent event) {
 		if (event instanceof IChannelMessageEvent) {
+			System.out.println("Receiving");
 			setEditorEditable(false);
 			Activator.getDefault().setListenerActive(false);
 

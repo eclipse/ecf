@@ -65,21 +65,24 @@ public class EditorListener implements IDocumentListener {
 	}
 
 	public void documentChanged(DocumentEvent event) {
+		if (channel == null) {
+			// Communication error has occured. Stop listening to
+			// document.
+			document.removeDocumentListener(this);
+			return;
+		}
+		
 		if (!Activator.getDefault().isListenerActive()) {
+			//The local editor is being updated by an remote peer, so we do not
+			//wish to echo this change.
 			return;
 		}
 
 		try {
+			System.out.println("sending");
 			IDocument newDocument = event.getDocument();
-
-			if (channel == null) {
-				// Communication error has occured. Stop listening to
-				// document.
-				document.removeDocumentListener(this);
-			}
-
+			
 			channel.sendMessage(createMessageFromEvent(event));
-
 			this.document = newDocument;
 		} catch (ECFException e) {
 			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
