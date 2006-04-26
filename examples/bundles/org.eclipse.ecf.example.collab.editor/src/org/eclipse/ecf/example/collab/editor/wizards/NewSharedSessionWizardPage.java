@@ -13,12 +13,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelListener;
@@ -44,6 +47,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -76,17 +80,17 @@ public class NewSharedSessionWizardPage extends WizardPage {
 
 	public void createControl(Composite parent) {
 		Composite main = new Composite(parent, SWT.NONE);
-		main.setLayout(new GridLayout(2, false));
+		main.setLayout(new GridLayout(3, false));
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Label label = new Label(main, SWT.NULL);
 		label.setText("&Project:");
 
-		Composite c = new Composite(main, SWT.None);
+/*		Composite c = new Composite(main, SWT.None);
 		c.setLayout(new GridLayout(2, false));
 		c.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-		containerText = new Text(c, SWT.BORDER | SWT.SINGLE);
+*/
+		containerText = new Text(main, SWT.BORDER | SWT.SINGLE);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		containerText.setLayoutData(gd);
 		containerText.addModifyListener(new ModifyListener() {
@@ -95,8 +99,9 @@ public class NewSharedSessionWizardPage extends WizardPage {
 			}
 		});
 
-		Button button = new Button(c, SWT.PUSH);
+		Button button = new Button(main, SWT.PUSH);
 		button.setText("Browse...");
+		button.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				handleBrowse();
@@ -111,7 +116,9 @@ public class NewSharedSessionWizardPage extends WizardPage {
 		sessionViewer.setContentProvider(new ListContentProvider());
 		sessionViewer.setLabelProvider(new SessionNameLabelProvider());
 		sessionViewer.setInput(sessions);
-		sessionViewer.getTable().setLayoutData(new GridData(GridData.FILL_BOTH));
+		GridData gData = new GridData(GridData.FILL_HORIZONTAL);
+		gData.heightHint = 120;
+		sessionViewer.getTable().setLayoutData(gData);
 		sessionViewer.getTable().setHeaderVisible(true);
 		sessionViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -122,16 +129,28 @@ public class NewSharedSessionWizardPage extends WizardPage {
 		
 		TableColumn tc = new TableColumn(sessionViewer.getTable(), SWT.NONE);
 		tc.setText("Filename");
-		tc.setWidth(150);
+		tc.setWidth(140);
 		
 		tc = new TableColumn(sessionViewer.getTable(), SWT.NONE);
 		tc.setText("Owner");
-		tc.setWidth(150);
+		tc.setWidth(120);
 		
 		tc = new TableColumn(sessionViewer.getTable(), SWT.NONE);
 		tc.setText("Shared On");
-		tc.setWidth(150);
+		tc.setWidth(140);
 
+		Button refreshButton = new Button(main, SWT.None);
+		refreshButton.setText("Refresh");
+		refreshButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING));
+		refreshButton.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {			
+			}
+			
+			public void widgetSelected(SelectionEvent e) {
+				sendSessionListRequestMessage();
+			}
+			
+		});
 		initialize();
 		dialogChanged();
 		setControl(main);
@@ -217,16 +236,18 @@ public class NewSharedSessionWizardPage extends WizardPage {
 			}
 		}
 
+		sendSessionListRequestMessage();
+	}
+
+	private void sendSessionListRequestMessage() {
 		try {
 			IChannel channel = Activator.getDefault().intializePresenceSession(new SessionResponseListener());
 			channel.sendMessage((new SharedEditorSessionListRequest()).toByteArray());
 		} catch (ECFException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
+		}		
 	}
 
 	private class SessionResponseListener implements IChannelListener {
@@ -245,7 +266,14 @@ public class NewSharedSessionWizardPage extends WizardPage {
 					if (o instanceof SharedEditorSessionList) {
 						SharedEditorSessionList l = (SharedEditorSessionList) o;
 
-						sessions.addAll(l.getNames());
+						for (Iterator i = l.getNames().iterator(); i.hasNext();) {
+							Object element = i.next();
+							
+							if (!sessions.contains(element)) {
+								sessions.add(element);
+							}
+						}
+						//sessions.addAll(l.getNames());
 						PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 
 							public void run() {
@@ -259,11 +287,9 @@ public class NewSharedSessionWizardPage extends WizardPage {
 					}
 
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 				}
 			}
 		}

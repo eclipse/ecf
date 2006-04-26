@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
@@ -53,15 +54,27 @@ public class InitiateSharedSessionAction extends Action implements IObjectAction
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
 	public void run(IAction action) {
-		IWorkbench workbench = Activator.getDefault().getWorkbench();
-		final IEditorDescriptor editorDescriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
-
+		final IWorkbench workbench = Activator.getDefault().getWorkbench();		
+		
 		if (workbench != null) {
 			final IWorkbenchPage page = workbench.getWorkbenchWindows()[0].getActivePage();
 
 			workbench.getDisplay().asyncExec(new Runnable() {
 				public void run() {
 					try {
+						IEditorDescriptor editorDescriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+
+						//There is no direct file type association.  Use the default.
+						if (editorDescriptor == null) {
+							editorDescriptor = workbench.getEditorRegistry().findEditor("org.eclipse.ui.DefaultTextEditor");
+						}
+						
+						if (editorDescriptor == null) {
+							//Give up, can't get an editor.
+							Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Failed to get editor for file.  Aborting shared editing session.", null));
+							return;
+						}
+						
 						//Open the default editor for the selected file.
 						IEditorPart editorPart = page.openEditor(new FileEditorInput(file), editorDescriptor.getId());
 

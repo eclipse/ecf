@@ -28,6 +28,19 @@ public class SessionInstance implements Serializable {
 		this.created = created;
 	}
 	
+	public boolean equals(Object obj) {
+		if (obj instanceof SessionInstance) {
+			SessionInstance si = (SessionInstance) obj;
+			
+			if (name.equals(si.getName()) && channelID.equals(si.getChannelID()) && owner.equals(si.getOwner())) {
+				return true;
+			}
+			
+			return false;
+		}
+		return super.equals(obj);
+	}
+	
 	public Date getCreated() {
 		return created;
 	}
