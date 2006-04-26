@@ -10,7 +10,7 @@
             objectClass="org.eclipse.core.resources.IFile">
          <action
                class="org.eclipse.ecf.example.collab.editor.actions.InitiateSharedSessionAction"
-               icon="icons/sample.gif"
+               icon="icons/shared_editor.gif"
                id="org.eclipse.ecf.example.collab.editor.initiateSharedEditorAction"
                label="Initiate Shared Editor"
                menubarPath="team.main/group3"
@@ -34,7 +34,7 @@
             category="org.eclipse.ecf.example.collab.editor"
             class="org.eclipse.ecf.example.collab.editor.wizards.NewSharedSessionWizard"
             hasPages="true"
-            icon="icons/sample.gif"
+            icon="icons/shared_editor.gif"
             id="org.eclipse.ecf.example.collab.editor.wizards.NewSessionWizard"
             name="Shared Editor Session"/>
    </extension>
