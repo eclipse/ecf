@@ -18,7 +18,6 @@ import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.example.collab.actions.URIClientConnectAction;
 
 public class DiscoveryStartup {
-	protected static final String DISCOVERYVIEW_ID = "org.eclipse.ecf.example.collab.discoveryview";
 	public static final String DISCOVERY_CONTAINER = "ecf.discovery.jmdns";
 	public static final String PROP_PROTOCOL_NAME = "protocol";
 	public static final String PROP_CONTAINER_TYPE_NAME = "containertype";
@@ -30,8 +29,10 @@ public class DiscoveryStartup {
 	public static final String PROP_PATH_NAME = "path";
 	public static final int SVC_DEF_WEIGHT = 0;
 	public static final int SVC_DEF_PRIORITY = 0;
+	
 	static IDiscoveryContainer discovery = null;
-	static IContainer socontainer = null;
+	static IContainer container = null;
+	
 	public DiscoveryStartup() throws Exception {
 		setupDiscovery();
 	}
@@ -39,12 +40,12 @@ public class DiscoveryStartup {
 		return discovery;
 	}
 	protected IContainer getContainer() {
-		return socontainer;
+		return container;
 	}
 	public void dispose() {
-		if (socontainer != null) {
-			socontainer.dispose();
-			socontainer = null;
+		if (container != null) {
+			container.dispose();
+			container = null;
 		}
 		discovery = null;
 	}
@@ -53,18 +54,18 @@ public class DiscoveryStartup {
 	}
 	protected void setupDiscovery() throws Exception {
 		try {
-			socontainer = ContainerFactory.getDefault().createContainer(
+			container = ContainerFactory.getDefault().createContainer(
 					DISCOVERY_CONTAINER);
-			discovery = (IDiscoveryContainer) socontainer
+			discovery = (IDiscoveryContainer) container
 					.getAdapter(IDiscoveryContainer.class);
 			if (discovery != null) {
-				socontainer.connect(null, null);
+				container.connect(null, null);
 			} else {
 				dispose();
 				ClientPlugin.log("No discovery container available");
 			}
 		} catch (ContainerInstantiationException e1) {
-			socontainer = null;
+			container = null;
 			discovery = null;
 			ClientPlugin.log("No discovery container available", e1);
 			return;
