@@ -123,7 +123,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
     public synchronized void takeOffTheAir() {
         if (listener != null) {
             if (Trace.ON && debug != null) {
-                debug.msg("Taking " + getName() + " on the air.");
+                debug.msg("Taking " + getName() + " off the air.");
             }
             try {
                 listener.close();
