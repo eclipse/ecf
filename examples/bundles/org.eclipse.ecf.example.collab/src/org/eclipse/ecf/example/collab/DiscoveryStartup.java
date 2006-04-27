@@ -33,7 +33,6 @@ public class DiscoveryStartup {
 	public static final int SVC_DEF_PRIORITY = 0;
 	static IDiscoveryContainer discovery = null;
 	static IContainer socontainer = null;
-	protected DiscoveryView discoveryView = null;
 	public DiscoveryStartup() throws Exception {
 		setupDiscovery();
 	}
