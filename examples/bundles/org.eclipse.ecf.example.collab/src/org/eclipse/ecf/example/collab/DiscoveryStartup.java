@@ -16,7 +16,6 @@ import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.example.collab.actions.URIClientConnectAction;
-import org.eclipse.ecf.ui.views.DiscoveryView;
 
 public class DiscoveryStartup {
 	protected static final String DISCOVERYVIEW_ID = "org.eclipse.ecf.example.collab.discoveryview";
