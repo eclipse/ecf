@@ -11,7 +11,6 @@
 
 package org.eclipse.ecf.provider.generic;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
@@ -19,13 +18,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.URI;
-import org.eclipse.ecf.provider.Trace;
 import org.eclipse.ecf.core.comm.ConnectionRequestHandler;
+import org.eclipse.ecf.provider.Trace;
 import org.eclipse.ecf.provider.comm.tcp.Client;
 import org.eclipse.ecf.provider.comm.tcp.ConnectRequestMessage;
 import org.eclipse.ecf.provider.comm.tcp.ConnectResultMessage;
-import org.eclipse.ecf.provider.comm.tcp.ExObjectInputStream;
-import org.eclipse.ecf.provider.comm.tcp.ExObjectOutputStream;
 import org.eclipse.ecf.provider.comm.tcp.ISocketAcceptHandler;
 import org.eclipse.ecf.provider.comm.tcp.Server;
 
@@ -78,11 +75,9 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
     }
 
     public void handleAccept(Socket aSocket) throws Exception {
-        ObjectOutputStream oStream = new ExObjectOutputStream(
-                new BufferedOutputStream(aSocket.getOutputStream()));
+    	ObjectOutputStream oStream = new ObjectOutputStream(aSocket.getOutputStream());
         oStream.flush();
-        ObjectInputStream iStream = new ExObjectInputStream(aSocket
-                .getInputStream());
+        ObjectInputStream iStream = new ObjectInputStream(aSocket.getInputStream());
         ConnectRequestMessage req = (ConnectRequestMessage) iStream
                 .readObject();
         if (Trace.ON && debug != null) {

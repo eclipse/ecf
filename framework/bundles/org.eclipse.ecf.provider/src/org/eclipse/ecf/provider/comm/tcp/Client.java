@@ -11,7 +11,6 @@
 
 package org.eclipse.ecf.provider.comm.tcp;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -28,11 +27,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Vector;
-
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
-import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.ConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
+import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.DisconnectConnectionEvent;
 import org.eclipse.ecf.core.comm.IConnectionEventHandler;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
@@ -245,11 +243,9 @@ public final class Client implements ISynchAsynchConnection {
         Socket s = fact.createSocket(anURI.getHost(), anURI.getPort(), timeout);
         // Now we've got a connection so set our socket
         setSocket(s);
-        outputStream = new ExObjectOutputStream(new BufferedOutputStream(s
-                .getOutputStream()), false);
+        outputStream = new ObjectOutputStream(s.getOutputStream());
         outputStream.flush();
-        inputStream = new ExObjectInputStream(s.getInputStream(),
-                false);
+        inputStream = new ObjectInputStream(s.getInputStream());
         trace("connect;" + anURI);
         // send connect data and get syncronous response
         send(new ConnectRequestMessage(anURI, (Serializable) data));
