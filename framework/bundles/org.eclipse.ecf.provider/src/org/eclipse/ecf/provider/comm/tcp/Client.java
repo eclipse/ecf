@@ -95,7 +95,6 @@ public final class Client implements ISynchAsynchConnection {
     protected SimpleQueueImpl queue = new SimpleQueueImpl();
     
     protected int keepAlive = 0;
-    // Threads
     protected Thread sendThread;
     protected Thread rcvThread;
     protected Thread keepAliveThread;
@@ -114,31 +113,6 @@ public final class Client implements ISynchAsynchConnection {
     private boolean disconnectHandled = false;
     private Object disconnectLock = new Object();
     
-    public Map getProperties() {
-        return properties;
-    }
-    public Object getAdapter(Class clazz) {
-        return null;
-    }
-    private String getAddressPort() {
-    	return addressPort;
-    }
-    protected void trace(String msg) {
-        if (Trace.ON && trace != null) {
-            trace.msg(getLocalID()+":"+getAddressPort()+";"+msg);
-        }
-    }
-
-    protected void dumpStack(String msg, Throwable e) {
-        if (Trace.ON && trace != null) {
-            trace.dumpStack(e, getLocalID()+":"+getAddressPort()+";"+msg);
-        }
-    }
-
-    public void setProperties(Map props) {
-        this.properties = props;
-    }
-
     public Client(Socket aSocket, ObjectInputStream iStream,
             ObjectOutputStream oStream,
             ISynchAsynchConnectionEventHandler handler, int keepAlive)
@@ -396,9 +370,10 @@ public final class Client implements ISynchAsynchConnection {
         trace("sendClose(" + snd + ")");
         send(snd);
         int count = 0;
-        while (!disconnectHandled && count < 10) {
+        int interval = 10;
+        while (!disconnectHandled && count < interval) {
 	        try {
-	            wait(closeTimeout/10);
+	            wait(closeTimeout/interval);
 	            count++;
 	        } catch (InterruptedException e) {
 	        	dumpStack("sendClose wait",e);
@@ -490,25 +465,29 @@ public final class Client implements ISynchAsynchConnection {
                 } catch (InterruptedException e) {
                 	return;
                 }
+                // Setup ping frequency as keepAlive /2
                 int frequency = keepAlive / 2;
                 while (!queue.isStopped()) {
                     try {
+                    	// We give up if thread interrupted or disconnect has occurred
                         if (me.isInterrupted() || disconnectHandled)
                             break;
                         // Sleep for timeout interval divided by two
                         Thread.sleep(frequency);
+                    	// We give up if thread interrupted or disconnect has occurred
                         if (me.isInterrupted()  || disconnectHandled)
                             break;
                         synchronized (pingLock) {
                             waitForPing = true;
                             // Actually send ping instance
                             send(ping);
-                            while (waitForPing) {
-                                pingLock.wait(frequency / 10);
+                            int count = 0;
+                            int interval = 10;
+                            while (waitForPing && count < interval) {
+                                pingLock.wait(frequency / interval);
                             }
-                            if (waitForPing) {
-                                throw new IOException(getAddressPort()+ " not reachable");
-                            }
+                            // If we haven't received a response, then we assume the remote is not reachable and throw
+                            if (waitForPing) throw new IOException(getAddressPort()+ " not reachable with ping");
                         }
                     } catch (Exception e) {
                         dumpStack("PING EXCEPTION",e);
@@ -527,8 +506,6 @@ public final class Client implements ISynchAsynchConnection {
         // Close send queue and socket
         queue.close();
         closeSocket();
-        // Notify sender in case it's waiting for a response
-        // Zap keep alive thread
         if (keepAliveThread != null) {
             keepAliveThread = null;
         }
@@ -591,4 +568,30 @@ public final class Client implements ISynchAsynchConnection {
         }
         return ret;
     }
+    public Map getProperties() {
+        return properties;
+    }
+    public Object getAdapter(Class clazz) {
+        return null;
+    }
+    private String getAddressPort() {
+    	return addressPort;
+    }
+    protected void trace(String msg) {
+        if (Trace.ON && trace != null) {
+            trace.msg(getLocalID()+":"+getAddressPort()+";"+msg);
+        }
+    }
+
+    protected void dumpStack(String msg, Throwable e) {
+        if (Trace.ON && trace != null) {
+            trace.dumpStack(e, getLocalID()+":"+getAddressPort()+";"+msg);
+        }
+    }
+
+    public void setProperties(Map props) {
+        this.properties = props;
+    }
+
+
 }
