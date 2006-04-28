@@ -17,6 +17,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URI;
 import org.eclipse.ecf.core.comm.ConnectionRequestHandler;
 import org.eclipse.ecf.provider.Trace;
@@ -28,6 +29,8 @@ import org.eclipse.ecf.provider.comm.tcp.Server;
 
 public class TCPServerSOContainerGroup extends SOContainerGroup implements
         ISocketAcceptHandler {
+	
+	public static final int DEFAULT_SOCKET_KEEPALIVE = 30000;
     public static final String INVALID_CONNECT = "Invalid connect request.  ";
     public static final Trace debug = Trace.create("connection");
     public static final String DEFAULT_GROUP_NAME = TCPServerSOContainerGroup.class
@@ -36,7 +39,14 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
     Server listener;
     boolean isOnTheAir = false;
     ThreadGroup threadGroup;
-
+    int socketKeepAlive = DEFAULT_SOCKET_KEEPALIVE;
+    
+    public TCPServerSOContainerGroup(String name, ThreadGroup group, int port, int socketKeepAlive) {
+    	super(name);
+    	threadGroup = group;
+    	this.port = port;
+    	this.socketKeepAlive = socketKeepAlive;
+    }
     public TCPServerSOContainerGroup(String name, ThreadGroup group, int port) {
         super(name);
         threadGroup = group;
@@ -74,7 +84,16 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
         return isOnTheAir;
     }
 
+    private void setSocketOptions(Socket aSocket) throws SocketException {
+		aSocket.setTcpNoDelay(true);
+    	if (socketKeepAlive > 0) {
+    		aSocket.setKeepAlive(true);
+    		aSocket.setSoTimeout(socketKeepAlive);
+    	}    	
+    }
     public void handleAccept(Socket aSocket) throws Exception {
+    	// Set socket options
+    	setSocketOptions(aSocket);
     	ObjectOutputStream oStream = new ObjectOutputStream(aSocket.getOutputStream());
         oStream.flush();
         ObjectInputStream iStream = new ObjectInputStream(aSocket.getInputStream());

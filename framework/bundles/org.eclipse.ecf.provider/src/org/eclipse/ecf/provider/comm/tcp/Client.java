@@ -120,14 +120,6 @@ public final class Client implements ISynchAsynchConnection {
     private void setSocket(Socket s) throws SocketException {
     	socket = s;
     	if (s != null) {
-    		// Set socket options
-    		// No delay on
-    		s.setTcpNoDelay(true);
-    		// If we have keepAlive then set socket timeout to keepAlive
-    		if (keepAlive > 0) {
-    			s.setKeepAlive(true);
-    			s.setSoTimeout(keepAlive);
-    		}
     		addressPort = s.getLocalPort()+":"+s.getInetAddress().getHostName()+":"+s.getPort();
     	} else {
     		addressPort = "-1:<no endpoint>:-1";
@@ -220,7 +212,13 @@ public final class Client implements ISynchAsynchConnection {
             h.handleSuspectEvent(new ConnectionEvent(this, e));
         }
     }
-
+    private void setSocketOptions(Socket aSocket) throws SocketException {
+		aSocket.setTcpNoDelay(true);
+    	if (keepAlive > 0) {
+    		aSocket.setKeepAlive(true);
+    		aSocket.setSoTimeout(keepAlive);
+    	}
+    }
     public synchronized Object connect(ID remote, Object data, int timeout)
             throws IOException {
         trace("connect(" + remote + "," + data + "," + timeout + ")");
@@ -241,6 +239,8 @@ public final class Client implements ISynchAsynchConnection {
             fact = SocketFactory.getDefaultSocketFactory();
         }
         Socket s = fact.createSocket(anURI.getHost(), anURI.getPort(), timeout);
+		// Set socket options
+        setSocketOptions(s);
         // Now we've got a connection so set our socket
         setSocket(s);
         outputStream = new ObjectOutputStream(s.getOutputStream());
