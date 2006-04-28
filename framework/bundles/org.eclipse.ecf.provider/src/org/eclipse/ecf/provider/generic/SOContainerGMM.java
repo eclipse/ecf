@@ -79,7 +79,6 @@ class SOContainerGMM implements Observer {
     }
 
     synchronized boolean removeMember(Member m) {
-        debug("removeMember(" + m.getID() + ")");
         boolean res = groupManager.removeMember(m);
         if (res) {
             removeSharedObjects(m);
@@ -130,7 +129,6 @@ class SOContainerGMM implements Observer {
     }
 
     synchronized Member getMemberForID(ID id) {
-        debug("getMemberForID(" + id + ")");
         Member newMem = new Member(id);
         for (Iterator i = iterator(); i.hasNext();) {
             Member oldMem = (Member) i.next();

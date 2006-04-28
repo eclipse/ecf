@@ -76,21 +76,26 @@ public final class Client implements ISynchAsynchConnection {
 
     public static final String PROTOCOL = "ecftcp";
     protected static final Trace trace = Trace.create("connection");
+    
     public static final int SNDR_PRIORITY = Thread.NORM_PRIORITY;
     public static final int RCVR_PRIORITY = Thread.NORM_PRIORITY;
-    // Default close timeout is 1.5 seconds
+    // Default close timeout is 2 seconds
     public static final long CLOSE_TIMEOUT = 2000;
+    // Default maximum cached messages on object stream is 50
     public static final int DEF_MAX_MSG = 50;
 
     protected Socket socket;
     private String addressPort = "-1:<no endpoint>:-1";
-    
+    // Underlying streams
     protected ObjectOutputStream outputStream;
     protected ObjectInputStream inputStream;
-    
+    // Event handler
     protected ISynchAsynchConnectionEventHandler handler;
+    // Our queue
     protected SimpleQueueImpl queue = new SimpleQueueImpl();
+    
     protected int keepAlive = 0;
+    // Threads
     protected Thread sendThread;
     protected Thread rcvThread;
     protected Thread keepAliveThread;
@@ -98,15 +103,16 @@ public final class Client implements ISynchAsynchConnection {
     protected boolean waitForPing = false;
     protected PingMessage ping = new PingMessage();
     protected PingResponseMessage pingResp = new PingResponseMessage();
-    protected long nextPingTime;
     protected int maxMsg = DEF_MAX_MSG;
     protected long closeTimeout = CLOSE_TIMEOUT;
     protected Vector eventNotify = null;
     protected Map properties;
     
     protected ID containerID = null;
-    
     protected Object pingLock = new Object();
+    
+    private boolean disconnectHandled = false;
+    private Object disconnectLock = new Object();
     
     public Map getProperties() {
         return properties;
@@ -143,7 +149,13 @@ public final class Client implements ISynchAsynchConnection {
     	socket = s;
     	if (s != null) {
     		// Set socket options
+    		// No delay on
     		s.setTcpNoDelay(true);
+    		// If we have keepAlive then set socket timeout to keepAlive
+    		if (keepAlive > 0) {
+    			s.setKeepAlive(true);
+    			s.setSoTimeout(keepAlive);
+    		}
     		addressPort = s.getLocalPort()+":"+s.getInetAddress().getHostName()+":"+s.getPort();
     	} else {
     		addressPort = "-1:<no endpoint>:-1";
@@ -154,12 +166,12 @@ public final class Client implements ISynchAsynchConnection {
             ISynchAsynchConnectionEventHandler handler, int keepAlive,
             int maxmsgs) throws IOException {
     	if (handler == null) throw new NullPointerException("event handler cannot be null");
+        this.keepAlive = keepAlive;
         setSocket(aSocket);
         inputStream = iStream;
         outputStream = oStream;
         this.handler = handler;
         containerID = handler.getEventHandlerID();
-        this.keepAlive = keepAlive;
         maxMsg = maxmsgs;
         properties = new Properties();
         setupThreads();
@@ -266,7 +278,7 @@ public final class Client implements ISynchAsynchConnection {
                 false);
         trace("connect;" + anURI);
         // send connect data and get syncronous response
-        sendIt(new ConnectRequestMessage(anURI, (Serializable) data));
+        send(new ConnectRequestMessage(anURI, (Serializable) data));
         ConnectResultMessage res = null;
         res = (ConnectResultMessage) readObject();
         trace("connect;rcv:"+ res);
@@ -310,7 +322,7 @@ public final class Client implements ISynchAsynchConnection {
                         break;
                     try {
                         // Actually send message
-                        sendIt(aMsg);
+                        send(aMsg);
                         // Successful...remove message from queue
                         queue.removeHead();
                         if (msgCount > maxMsg) {
@@ -334,9 +346,6 @@ public final class Client implements ISynchAsynchConnection {
         return aThread;
     }
 
-    private boolean disconnectHandled = false;
-    private Object disconnectLock = new Object();
-    
     private void handleException(Throwable e) {
 		synchronized (disconnectLock) {
 			if (!disconnectHandled) {
@@ -365,18 +374,16 @@ public final class Client implements ISynchAsynchConnection {
         }
     }
 
-    private void sendIt(Serializable snd) throws IOException {
+    private void send(Serializable snd) throws IOException {
         // Write object to output stream
-    	trace("sendIt("+snd+")");
-        nextPingTime = System.currentTimeMillis() + (keepAlive/2);
+    	trace("send("+snd+")");
         outputStream.writeObject(snd);
         outputStream.flush();
     }
 
-    private void receiveResp() {
+    private void receivePingResp() {
     	synchronized (pingLock) {
     		waitForPing = false;
-    		nextPingTime = System.currentTimeMillis() + (keepAlive/2);
     	}
     }
 
@@ -387,13 +394,16 @@ public final class Client implements ISynchAsynchConnection {
     private void sendClose(Serializable snd) throws IOException {
         isClosing = true;
         trace("sendClose(" + snd + ")");
-        sendIt(snd);
-        if (isClosing) {
-            try {
-                wait(closeTimeout);
-            } catch (InterruptedException e) {
-            	dumpStack("sendClose wait",e);
-            }
+        send(snd);
+        int count = 0;
+        while (!disconnectHandled && count < 10) {
+	        try {
+	            wait(closeTimeout/10);
+	            count++;
+	        } catch (InterruptedException e) {
+	        	dumpStack("sendClose wait",e);
+	        	return;
+	        }
         }
     }
 
@@ -426,9 +436,8 @@ public final class Client implements ISynchAsynchConnection {
     
     private void handleRcv(Serializable rcv) throws IOException {
         try {
-            // We've received some data, so the connection is alive
-            receiveResp();
-            trace("recv:" + rcv);
+//          receiveResp();
+            trace("recv(" + rcv + ")");
             // Handle all messages
             if (rcv instanceof SynchMessage) {
                 // Handle synch message. The only valid synch message is
@@ -441,9 +450,10 @@ public final class Client implements ISynchAsynchConnection {
                 handler.handleAsynchEvent(new AsynchConnectionEvent(this, d));
             } else if (rcv instanceof PingMessage) {
                 // Handle ping by sending response back immediately
-                sendIt(pingResp);
+                send(pingResp);
             } else if (rcv instanceof PingResponseMessage) {
-                // Do nothing with ping response
+                // Handle ping response
+            	receivePingResp();
             } else
                 throw new IOException("Invalid message received.");
         } catch (IOException e) {
@@ -458,7 +468,7 @@ public final class Client implements ISynchAsynchConnection {
         if (rcvThread != null)
             rcvThread.start();
         // Setup and start keep alive thread
-        if (keepAlive != 0)
+        if (keepAlive > 0)
             keepAliveThread = setupPing();
         if (keepAliveThread != null)
             keepAliveThread.start();
@@ -480,31 +490,24 @@ public final class Client implements ISynchAsynchConnection {
                 } catch (InterruptedException e) {
                 	return;
                 }
+                int frequency = keepAlive / 2;
                 while (!queue.isStopped()) {
                     try {
-                        if (me.isInterrupted())
+                        if (me.isInterrupted() || disconnectHandled)
                             break;
                         // Sleep for timeout interval divided by two
-                        Thread.sleep(keepAlive / 2);
-                        if (me.isInterrupted())
+                        Thread.sleep(frequency);
+                        if (me.isInterrupted()  || disconnectHandled)
                             break;
-                        // Check to see how long it has been since our last
-                        // send.
                         synchronized (pingLock) {
-                            if (System.currentTimeMillis() >= nextPingTime) {
-                                // If it's been longer than our timeout
-                                // interval, then ping
-                                waitForPing = true;
-                                // Actually send ping instance
-                                sendIt(ping);
-                                if (waitForPing) {
-                                        // Wait for keepAliveInterval for
-                                        // pingresp
-                                        pingLock.wait(keepAlive / 2);
-                                }
-                                if (waitForPing) {
-                                    throw new IOException(getAddressPort()+ " not reachable");
-                                }
+                            waitForPing = true;
+                            // Actually send ping instance
+                            send(ping);
+                            while (waitForPing) {
+                                pingLock.wait(frequency / 10);
+                            }
+                            if (waitForPing) {
+                                throw new IOException(getAddressPort()+ " not reachable");
                             }
                         }
                     } catch (Exception e) {
@@ -559,7 +562,7 @@ public final class Client implements ISynchAsynchConnection {
             throws IOException {
         if (queue.isStopped() || isClosing)
             throw new ConnectException("Not connected");
-        trace("queueObject("+recipient+","+obj+")");
+        trace("sendObject("+recipient+","+obj+")");
         sendClose(new SynchMessage(obj));
         return null;
     }

@@ -179,7 +179,6 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
     protected void handleLeaveGroupMessage(ContainerMessage mess) {
         ID fromID = mess.getFromContainerID();
         if (fromID == null) return;
-        debug("Member "+fromID+"leaving group");
         synchronized (getGroupMembershipLock()) {
             IAsynchConnection conn = getConnectionForID(fromID);
             if (conn == null) return;
