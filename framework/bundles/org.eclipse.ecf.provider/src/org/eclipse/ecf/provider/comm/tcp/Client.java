@@ -485,6 +485,7 @@ public final class Client implements ISynchAsynchConnection {
                             int interval = 10;
                             while (waitForPing && count < interval) {
                                 pingLock.wait(frequency / interval);
+                                count++;
                             }
                             // If we haven't received a response, then we assume the remote is not reachable and throw
                             if (waitForPing) throw new IOException(getAddressPort()+ " not reachable with ping");
