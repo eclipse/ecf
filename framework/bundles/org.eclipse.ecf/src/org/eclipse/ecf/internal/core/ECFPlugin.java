@@ -41,6 +41,8 @@ import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
+import org.eclipse.ecf.core.start.ECFStartJob;
+import org.eclipse.ecf.core.start.IECFStart;
 import org.osgi.framework.BundleContext;
 
 public class ECFPlugin extends Plugin {
@@ -53,6 +55,8 @@ public class ECFPlugin extends Plugin {
 			+ ".sharedObjectFactory";
 	public static final String COMM_FACTORY_EPOINT = ECFNAMESPACE
 			+ ".connectionFactory";
+	public static final String START_EPOINT = ECFNAMESPACE + ".start";
+	
 	public static final String PLUGIN_RESOURCE_BUNDLE = ECFNAMESPACE
 			+ ".ECFPluginResources";
 	public static final String CLASS_ATTRIBUTE = "class";
@@ -67,6 +71,7 @@ public class ECFPlugin extends Plugin {
 	public static final int INSTANTIATOR_DOES_NOT_IMPLEMENT_ERRORCODE = 30;
 	public static final int INSTANTIATOR_NAME_COLLISION_ERRORCODE = 50;
 	public static final int INSTANTIATOR_NAMESPACE_LOAD_ERRORCODE = 60;
+	public static final int START_ERRORCODE = 70;
 	// The shared instance.
 	private static ECFPlugin plugin;
 	// Resource bundle.
@@ -594,6 +599,45 @@ public class ECFPlugin extends Plugin {
 		}
 		addCommExtensions(extensionPoint.getConfigurationElements());
 	}
+	protected void setupStartExtensionPoint(BundleContext bc) {
+		IExtensionRegistry reg = Platform.getExtensionRegistry();
+		IExtensionPoint extensionPoint = reg
+				.getExtensionPoint(START_EPOINT);
+		if (extensionPoint == null) {
+			return;
+		}
+		startStartExtensions(extensionPoint.getConfigurationElements());
+	}
+	protected void startStartExtensions(IConfigurationElement[] configurationElements) {
+		String bundleName = getDefault().getBundle().getSymbolicName();
+		// For each configuration element
+		for (int m = 0; m < configurationElements.length; m++) {
+			IConfigurationElement member = configurationElements[m];
+			// Get the label of the extender plugin and the ID of the extension.
+			IExtension extension = member.getDeclaringExtension();
+			IECFStart exten = null;
+			String name = null;
+			try {
+				// The only required attribute is "class"
+				exten = (IECFStart) member.createExecutableExtension(CLASS_ATTRIBUTE);
+				// Get name and get version, if available
+				name = member.getAttribute(NAME_ATTRIBUTE);
+				if (name == null) name = exten.getClass().getName();
+				startExtension(name,exten);
+			} catch (CoreException e) {
+				log(e.getStatus());
+				dumpStack("CoreException in startStartExtensions", e);
+			} catch (Exception e) {
+				log(getStatusForStartException(extension, bundleName, e));
+				dumpStack("Exception in startStartExtensions", e);
+			}
+		}
+	}
+	private void startExtension(String name, IECFStart exten) {
+		// Create job to do start, and schedule
+		ECFStartJob job = new ECFStartJob(name,exten);
+		job.schedule();
+	}
 	protected IStatus getStatusForCommException(IExtension ext,
 			String bundleName, String name) {
 		IStatus s = new Status(
@@ -604,6 +648,14 @@ public class ECFPlugin extends Plugin {
 						+ name
 						+ getResourceString("ExtPointError.CommNameCollisionSuffix")
 						+ ext.getExtensionPointUniqueIdentifier(), null);
+		return s;
+	}
+	protected IStatus getStatusForStartException(IExtension ext,
+			String bundleName, Exception e) {
+		IStatus s = new Status(
+				Status.ERROR,
+				bundleName,
+				START_ERRORCODE,"Unknown start exception", e);
 		return s;
 	}
 	protected IStatus getStatusForContException(IExtension ext,
@@ -644,6 +696,7 @@ public class ECFPlugin extends Plugin {
 		setupNamespaceExtensionPoint(context);
 		setupCommExtensionPoint(context);
 		setupSharedObjectExtensionPoint(context);
+		setupStartExtensionPoint(context);
 	}
 	protected class ECFRegistryManager implements IRegistryChangeListener {
 		public void registryChanged(IRegistryChangeEvent event) {

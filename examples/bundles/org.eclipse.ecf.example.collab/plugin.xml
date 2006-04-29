@@ -177,6 +177,11 @@
          </action>
        </viewerContribution>
    </extension>
+   <extension
+         point="org.eclipse.ecf.start">
+      <ecfstart
+            class="org.eclipse.ecf.example.collab.start.CollabStart"/>
+   </extension>
    <!--
    <extension
          point="org.eclipse.ui.editors">
