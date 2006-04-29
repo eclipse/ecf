@@ -323,7 +323,7 @@ public final class Client implements ISynchAsynchConnection {
 		outputStream.writeObject(snd);
 		outputStream.flush();
 	}
-	private void receivePingResp() {
+	private void handlePingResp() {
 		synchronized (pingLock) {
 			waitForPing = false;
 		}
@@ -389,7 +389,7 @@ public final class Client implements ISynchAsynchConnection {
 				send(pingResp);
 			} else if (rcv instanceof PingResponseMessage) {
 				// Handle ping response
-				receivePingResp();
+				handlePingResp();
 			} else
 				throw new IOException("Invalid message received.");
 		} catch (IOException e) {

@@ -85,7 +85,7 @@ public class Trace {
 
     public void dumpStack(Throwable e, String msg) {
         msg(msg);
-        e.printStackTrace(printStream);
+        if (e != null) e.printStackTrace(printStream);
     }
 
     public static void errDumpStack(Throwable e, String msg) {
