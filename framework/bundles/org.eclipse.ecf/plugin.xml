@@ -5,5 +5,5 @@
    <extension-point id="namespace" name="ECF Namespace" schema="schema/namespace.exsd"/>
    <extension-point id="connectionFactory" name="ECF Connection Factory" schema="schema/connectionFactory.exsd"/>
    <extension-point id="sharedObjectFactory" name="ECF Shared Object Factory" schema="schema/sharedObjectFactory.exsd"/>
-   <extension-point id="start" name="ECF Start" schema="schema/start.exsd"/>
+   <extension-point id="startup" name="ECF Start Up" schema="schema/startup.exsd"/>
 </plugin>

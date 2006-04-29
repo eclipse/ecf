@@ -22,5 +22,5 @@ public interface IECFStart {
 	 * @return IStatus the status of the start
 	 * @throws ECFStartException if some exception thrown during start
 	 */
-	public IStatus start(IProgressMonitor monitor);
+	public IStatus startup(IProgressMonitor monitor);
 }

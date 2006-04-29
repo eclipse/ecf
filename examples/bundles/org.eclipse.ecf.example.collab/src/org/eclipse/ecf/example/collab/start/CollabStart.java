@@ -9,7 +9,8 @@ public class CollabStart implements IECFStart {
 	
 	Discovery discovery = null;
 	
-	public IStatus start(IProgressMonitor monitor) {
+	public IStatus startup(IProgressMonitor monitor) {
+		System.out.println("CollabSTart.startup");
 		try {
 			//discovery = new Discovery();
 		} catch (Exception e) {}

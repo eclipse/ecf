@@ -55,7 +55,7 @@ public class ECFPlugin extends Plugin {
 			+ ".sharedObjectFactory";
 	public static final String COMM_FACTORY_EPOINT = ECFNAMESPACE
 			+ ".connectionFactory";
-	public static final String START_EPOINT = ECFNAMESPACE + ".start";
+	public static final String START_EPOINT = ECFNAMESPACE + ".startup";
 	
 	public static final String PLUGIN_RESOURCE_BUNDLE = ECFNAMESPACE
 			+ ".ECFPluginResources";

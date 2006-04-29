@@ -5,8 +5,9 @@ import java.net.URISyntaxException;
 
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.presence.IChatID;
 
-public class XMPPID extends BaseID {
+public class XMPPID extends BaseID implements IChatID {
 
 	private static final long serialVersionUID = 3257289140701049140L;
 	public static final char USER_HOST_DELIMITER = '@';
@@ -69,5 +70,9 @@ public class XMPPID extends BaseID {
 		sb.append(uri.toString()).append("]");
 		return sb.toString();
 	}
-
+	public Object getAdapter(Class clazz) {
+		if (clazz.equals(IChatID.class)) {
+			return this;
+		} else return super.getAdapter(clazz);
+	}
 }

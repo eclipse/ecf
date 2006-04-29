@@ -178,7 +178,7 @@
        </viewerContribution>
    </extension>
    <extension
-         point="org.eclipse.ecf.start">
+         point="org.eclipse.ecf.startup">
       <ecfstart
             class="org.eclipse.ecf.example.collab.start.CollabStart"/>
    </extension>

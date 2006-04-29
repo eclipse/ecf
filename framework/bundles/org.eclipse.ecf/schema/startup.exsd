@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.ecf">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.ecf" id="start" name="ECF Start"/>
+         <meta.schema plugin="org.eclipse.ecf" id="startup" name="ECF Start"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]

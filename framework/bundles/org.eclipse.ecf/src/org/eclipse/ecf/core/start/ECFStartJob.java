@@ -18,6 +18,6 @@ public class ECFStartJob extends Job {
 		this.start = start;
 	}
 	protected IStatus run(IProgressMonitor monitor) {
-		return start.start(monitor);
+		return start.startup(monitor);
 	}
 }

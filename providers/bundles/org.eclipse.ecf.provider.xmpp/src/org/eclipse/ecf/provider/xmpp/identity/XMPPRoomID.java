@@ -4,9 +4,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.presence.IChatID;
 import org.jivesoftware.smack.XMPPConnection;
 
-public class XMPPRoomID extends BaseID {
+public class XMPPRoomID extends BaseID implements IChatID {
 	
 	private static final long serialVersionUID = -4843967090539640622L;
 	public static final String DOMAIN_DEFAULT = "conference";
@@ -105,5 +106,14 @@ public class XMPPRoomID extends BaseID {
 		StringBuffer sb = new StringBuffer("XMPPRoomID[");
 		sb.append(uri).append("]");
 		return sb.toString();
+	}
+	public Object getAdapter(Class clazz) {
+		if (clazz.equals(IChatID.class)) {
+			return this;
+		} else return super.getAdapter(clazz);
+	}
+
+	public String getUsername() {
+		return getNickname();
 	}
 }
