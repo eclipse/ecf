@@ -71,8 +71,8 @@ public class XMPPID extends BaseID implements IChatID {
 		return sb.toString();
 	}
 	public Object getAdapter(Class clazz) {
-		if (clazz.equals(IChatID.class)) {
-			return this;
-		} else return super.getAdapter(clazz);
+	    if (clazz.isInstance(this)) {
+	    	return this;
+	    } else return super.getAdapter(clazz);
 	}
 }
