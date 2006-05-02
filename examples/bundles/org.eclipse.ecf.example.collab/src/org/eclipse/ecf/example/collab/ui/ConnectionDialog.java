@@ -111,6 +111,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 
 	public ConnectionDialog(Shell parentShell) {
 		super(parentShell);
+		setShellStyle(SWT.TITLE | SWT.BORDER| SWT.CLOSE | SWT.RESIZE);
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -163,7 +164,6 @@ public class ConnectionDialog extends TitleAreaDialog {
 				.setMessage("Please choose a provider and supply connection parameters.");
 
 		this.getShell().setText("Connect");
-
 		return parent;
 	}
 
