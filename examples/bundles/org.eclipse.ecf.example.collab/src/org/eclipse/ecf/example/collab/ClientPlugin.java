@@ -10,10 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.example.collab;
 
-import java.net.URI;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import org.eclipse.core.runtime.IStatus;
@@ -151,16 +148,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		}
 	}
 	*/
-	/*
-	private void testAccountSave() {
-		AccountStart as = new AccountStart();
-		as.removeConnectionDetails(new ConnectionDetails("type.foo","ecftcp://ecf.eclipse.org:3282/server","nick1","pass1"));
-		as.removeConnectionDetails(new ConnectionDetails("type.bar","xmpp:slewis@ecf.eclipse.org","nick2","pass2"));
-		//as.addConnectionDetails(new ConnectionDetails("type.foo","ecftcp://ecf.eclipse.org:3282/server","nick1","pass1"));
-		//as.addConnectionDetails(new ConnectionDetails("type.bar","xmpp:slewis@ecf.eclipse.org","nick2","pass2"));
-		//as.saveConnectionDetailsToPreferenceStore();
-	}
-	*/
+	
 	public synchronized void initDiscovery() throws Exception {
 		if (discoveryStartup == null) {
 			discoveryStartup = new DiscoveryStartup();
@@ -211,6 +199,16 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		disposeServer();
 		disposeDiscovery();
 	}
+	
+	private void testAccountSave() {
+		AccountStart as = new AccountStart();
+		//as.removeConnectionDetails(new ConnectionDetails("ecf.generic.client","ecftcp://ecf.eclipse.org:3282/server","slewis","foo"));
+		//as.removeConnectionDetails(new ConnectionDetails("type.bar","xmpp:slewis@ecf.eclipse.org","nick2","pass2"));
+		as.addConnectionDetails(new ConnectionDetails("ecf.generic.client","ecftcp://ecf.eclipse.org:3282/server","slewis","foo"));
+		//as.addConnectionDetails(new ConnectionDetails("type.bar","xmpp:slewis@ecf.eclipse.org","nick2","pass2"));
+		as.saveConnectionDetailsToPreferenceStore();
+	}
+	
 	public FontRegistry getFontRegistry() {
 		return this.fontRegistry;
 	}
