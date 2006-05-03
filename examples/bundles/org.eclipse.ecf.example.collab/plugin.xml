@@ -90,9 +90,18 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
+      		category="org.eclipse.team.ui.TeamPreferences"
             class="org.eclipse.ecf.example.collab.ui.ClientPreferencePage"
             name="ECF Collaboration"
             id="org.eclipse.ecf.example.collab.ui.preferences"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.team.ui.TeamPreferences"
+            class="org.eclipse.ecf.example.collab.start.AutoLoginPreferencePage"
+            name="ECF Autologin"
+            id="org.eclipse.ecf.example.collab.ui.autologin"/>
    </extension>
 
    <extension
