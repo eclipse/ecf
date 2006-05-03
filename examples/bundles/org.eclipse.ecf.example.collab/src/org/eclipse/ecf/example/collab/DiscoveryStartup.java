@@ -92,7 +92,7 @@ public class DiscoveryStartup {
 			return;
 		}
 		URIClientConnectAction action = new URIClientConnectAction(type,
-				targetString, username, null, workspace);
+				targetString, username, null, workspace,false);
 		// do it
 		action.run(null);
 	}

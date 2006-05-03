@@ -75,9 +75,10 @@ public class NewWorkbenchAction extends ActionDelegate implements
 			String nickName = dialog.getNicknameText();
 			String containerType = dialog.getContainerType();
 			String password = dialog.getPasswordText();
+			boolean autoLoginFlag = dialog.getAutoLoginFlag();
 			try {
 				client = new URIClientConnectAction(containerType, groupName,
-						nickName, password, resource);
+						nickName, password, resource,autoLoginFlag);
 				client.run(null);
 			} catch (Exception e) {
 				String message = "Could not connect to " + groupName + ".";

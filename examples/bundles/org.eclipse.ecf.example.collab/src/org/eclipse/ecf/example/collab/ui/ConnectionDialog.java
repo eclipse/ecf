@@ -24,15 +24,20 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 public class ConnectionDialog extends TitleAreaDialog {
@@ -108,6 +113,10 @@ public class ConnectionDialog extends TitleAreaDialog {
 	private IDialogSettings dialogSettings;
 
 	private GlobalModifyListener listener = new GlobalModifyListener();
+	
+	private Button autoLogin = null;
+	
+	private boolean autoLoginFlag = false;
 
 	public ConnectionDialog(Shell parentShell) {
 		super(parentShell);
@@ -140,12 +149,12 @@ public class ConnectionDialog extends TitleAreaDialog {
 		gData.widthHint = PROVIDER_TABLE_WIDTH;
 		gData.heightHint = PROVIDER_TABLE_HEIGHT;
 		table.setLayoutData(gData);
-		/*
-		 * table.setHeaderVisible(true); TableColumn tc = new TableColumn(table,
-		 * SWT.NONE); tc.setText("Name"); tc = new TableColumn(table, SWT.NONE);
-		 * tc.setText("Classname");
-		 */
-
+		
+/*		table.setHeaderVisible(true); TableColumn tc = new TableColumn(table,
+		SWT.NONE); tc.setText("Name"); tc = new TableColumn(table, SWT.NONE);
+		tc.setText("Classname");
+		 
+*/
 		viewer.setInput(ContainerFactory.getDefault().getDescriptions());
 
 		paramComp = new Composite(providerComp, SWT.NONE);
@@ -155,10 +164,18 @@ public class ConnectionDialog extends TitleAreaDialog {
 		paramComp.setLayout(glayout);
 		paramComp.setLayoutData(new GridData(GridData.FILL_BOTH));
 
+		autoLogin = new Button(main,SWT.CHECK);
+		autoLogin.setText("Login &automatically at startup");
+		autoLogin.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		autoLogin.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				autoLoginFlag = autoLogin.getSelection();
+			}});
+		
 		new Label(main, SWT.NONE);
 		Label sep = new Label(main, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
+		
 		this.setTitle("ECF Connection");
 		this
 				.setMessage("Please choose a provider and supply connection parameters.");
@@ -180,7 +197,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(450, 300);
+		return new Point(500, 400);
 	}
 
 	private class ECFProviderContentProvider implements
@@ -238,7 +255,9 @@ public class ConnectionDialog extends TitleAreaDialog {
 	public String getNamespace() {
 		return namespace;
 	}
-
+	public boolean getAutoLoginFlag() {
+		return autoLoginFlag;
+	}
 	private void restoreDialogSettings() throws IOException {
 		IDialogSettings dialogSettings = getDialogSettings();
 		if (dialogSettings != null) {
@@ -433,7 +452,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 							GridData.FILL_HORIZONTAL));
 					nickname_text.addModifyListener(listener);
 				}
-
+				autoLogin.setSelection(false);
 				parent.layout();
 			}
 		}

@@ -88,7 +88,7 @@ public class JoinGroupWizard extends Wizard {
             */
         	//URI uri = new URI(groupName);
         	//URI fullURI = new URI(namespace+":"+groupName);
-        	client = new URIClientConnectAction(containerType,groupName,nickName,password,project);
+        	client = new URIClientConnectAction(containerType,groupName,nickName,password,project,false);
         	client.run(null);
         } catch (Exception e) {
             String id = ClientPlugin.getDefault().getBundle().getSymbolicName();

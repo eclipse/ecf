@@ -13,13 +13,12 @@ import org.eclipse.ecf.example.collab.CollabClient;
 public class CollabStart implements IECFStart {
 	Discovery discovery = null;
 	public IStatus startup(IProgressMonitor monitor) {
-		System.out.println("CollabStart.startup");
 		try {
 			AccountStart as = new AccountStart();
 			as.loadConnectionDetailsFromPreferenceStore();
 			Collection c = as.getConnectionDetails();
 			for (Iterator i = c.iterator(); i.hasNext();) {
-				//startConnection((ConnectionDetails) i.next());
+				startConnection((ConnectionDetails) i.next());
 			}
 		} catch (Exception e) {
 			return new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID, 200,
@@ -29,6 +28,7 @@ public class CollabStart implements IECFStart {
 	}
 	private void startConnection(ConnectionDetails details) throws Exception {
 		CollabClient client = new CollabClient();
+		System.out.println("Autostarting ECF containerType="+details.getContainerType()+",uri="+details.getTargetURI()+",nickname="+details.getNickname()+",password="+details.getPassword());
 		client.createAndConnectClient(details.getContainerType(), details
 				.getTargetURI(), details.getNickname(), details.getPassword(),
 				ResourcesPlugin.getWorkspace().getRoot());

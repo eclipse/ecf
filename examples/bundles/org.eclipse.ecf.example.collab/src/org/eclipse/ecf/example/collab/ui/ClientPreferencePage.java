@@ -69,7 +69,7 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 		addField(new ColorFieldEditor(ClientPlugin.PREF_SYSTEM_TEXT_COLOR, "Chat Text Color For System:", getFieldEditorParent()));
 		addField(new SpacerFieldEditor(
 		 		getFieldEditorParent()));
-		
+
 		playImmediate = new BooleanFieldEditor(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY,"Play shared editor events immediately",getFieldEditorParent());
 		addField(playImmediate);
 		askParent = getFieldEditorParent();
