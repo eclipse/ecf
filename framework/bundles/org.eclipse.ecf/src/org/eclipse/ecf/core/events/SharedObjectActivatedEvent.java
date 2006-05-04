@@ -8,7 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.events;
 
-import java.util.Arrays;
 import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectActivatedEvent implements ISharedObjectActivatedEvent {
