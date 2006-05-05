@@ -64,18 +64,20 @@ public class ECFTCPServerStartup {
 				List groups = connect.getGroups();
 				for (Iterator g = groups.iterator(); g.hasNext();) {
 					NamedGroup group = (NamedGroup) g.next();
-					Activator.log("Starting server "+group.getIDForGroup()+" in group "+group.getName());
 					TCPServerSOContainer cont = createServerContainer(group
 							.getIDForGroup(), serverGroups[j], group.getName(),
 							connect.getTimeout());
 					servers.add(cont);
-					Activator.log("ECF group server created: "
+					log("ECF server created: "
 							+ cont.getConfig().getID().getName());
 				}
 				serverGroups[j].putOnTheAir();
 				j++;
 			}
 		}
+	}
+	protected void log(String output) {
+		System.out.println(output);
 	}
 	protected TCPServerSOContainerGroup createServerGroup(String name, int port) {
 		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,
