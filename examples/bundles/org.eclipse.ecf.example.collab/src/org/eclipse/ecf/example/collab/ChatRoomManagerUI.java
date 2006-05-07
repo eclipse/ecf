@@ -88,6 +88,9 @@ public class ChatRoomManagerUI {
 						public ID getConnectedID() {
 							return targetID;
 						}
+						public Object getAdapter(Class clazz) {
+							return null;
+						}
 					}, sender);
 					// Add listeners so that the new chat room gets
 					// asynch notifications of various relevant chat room events

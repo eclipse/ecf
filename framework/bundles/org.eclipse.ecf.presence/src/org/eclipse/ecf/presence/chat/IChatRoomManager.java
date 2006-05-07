@@ -16,6 +16,23 @@ import org.eclipse.ecf.core.identity.ID;
 public interface IChatRoomManager {
 	
 	/**
+	 * Get parent IChatRoomManager.  If this manager is the root, then this method
+	 * returns null.
+	 * @return IChatRoomManager instance if this manager has a parent.  Returns null if this manager is the
+	 * root of the hierarchy 
+	 */
+	public IChatRoomManager getParent();
+	/**
+	 * Get any children managers of this IChatRoomManager.  If this chat room manager
+	 * has children chat room managers, then the returned array will have more than zero elements.
+	 * If this IChatRoomManager has no children, then a zero-length array will be returned.
+	 * 
+	 * @return IChatRoomManager[] of children for this chat room manager.  If no children,
+	 * a zero-length array will be returned.  Null will not be returned.
+	 */
+	public IChatRoomManager[] getChildren();
+	
+	/**
 	 * Get IDs for chat rooms available via this chat room manager
 	 * @return null if no access provided to chat room identities
 	 */

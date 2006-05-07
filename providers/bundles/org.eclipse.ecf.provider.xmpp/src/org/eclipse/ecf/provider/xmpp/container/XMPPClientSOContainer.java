@@ -545,6 +545,12 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 				}
 				public IChatRoomManager getChatRoomManager() {
 					return new IChatRoomManager() {
+						public IChatRoomManager getParent() {
+							return null;
+						}
+						public IChatRoomManager[] getChildren() {
+							return new IChatRoomManager[0];
+						}
 						public ID[] getChatRooms() {
 							return XMPPClientSOContainer.this.getChatRooms();
 						}
@@ -656,6 +662,9 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		}
 		public ID getConnectedID() {
 			return connectedID;
+		}
+		public Object getAdapter(Class clazz) {
+			return null;
 		}
     	public String toString() {
     		StringBuffer buf = new StringBuffer("ECFRoomInfo[");

@@ -10,9 +10,10 @@
 *****************************************************************************/
 package org.eclipse.ecf.presence.chat;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 
-public interface IRoomInfo {
+public interface IRoomInfo extends IAdaptable {
 	/**
 	 * Get a description for this room
 	 * @return String description
