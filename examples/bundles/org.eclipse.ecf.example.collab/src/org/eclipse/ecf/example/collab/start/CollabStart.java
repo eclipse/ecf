@@ -28,7 +28,7 @@ public class CollabStart implements IECFStart {
 	}
 	private void startConnection(ConnectionDetails details) throws Exception {
 		CollabClient client = new CollabClient();
-		System.out.println("Autostarting ECF containerType="+details.getContainerType()+",uri="+details.getTargetURI()+",nickname="+details.getNickname()+",password="+details.getPassword());
+		ClientPlugin.log("ECF: Autostarting containerType="+details.getContainerType()+",uri="+details.getTargetURI()+",nickname="+details.getNickname());
 		client.createAndConnectClient(details.getContainerType(), details
 				.getTargetURI(), details.getNickname(), details.getPassword(),
 				ResourcesPlugin.getWorkspace().getRoot());

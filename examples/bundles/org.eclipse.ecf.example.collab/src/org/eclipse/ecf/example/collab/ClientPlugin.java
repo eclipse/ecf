@@ -18,8 +18,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.example.collab.start.AccountStart;
-import org.eclipse.ecf.example.collab.start.ConnectionDetails;
 import org.eclipse.ecf.ui.views.IDiscoveryController;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -134,20 +132,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		setPreferenceDefaults();
-		//testAccountStart();
 	}
-	/*
-	private void testAccountStart() {
-		AccountStart as = new AccountStart();
-		as.loadConnectionDetailsFromPreferenceStore();
-		Collection c = as.getConnectionDetails();
-		System.out.println("testAccountStart");
-		for(Iterator i = c.iterator(); i.hasNext(); ) {
-			ConnectionDetails cd = (ConnectionDetails) i.next();
-			System.out.println("testAccountStart cd="+cd);
-		}
-	}
-	*/
 	
 	public synchronized void initDiscovery() throws Exception {
 		if (discoveryStartup == null) {
@@ -192,21 +177,11 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
-		//testAccountSave();
 		super.stop(context);
 		plugin = null;
 		resourceBundle = null;
 		disposeServer();
 		disposeDiscovery();
-	}
-	
-	private void testAccountSave() {
-		AccountStart as = new AccountStart();
-		//as.removeConnectionDetails(new ConnectionDetails("ecf.generic.client","ecftcp://ecf.eclipse.org:3282/server","slewis","foo"));
-		//as.removeConnectionDetails(new ConnectionDetails("type.bar","xmpp:slewis@ecf.eclipse.org","nick2","pass2"));
-		as.addConnectionDetails(new ConnectionDetails("ecf.generic.client","ecftcp://ecf.eclipse.org:3282/server","slewis","foo"));
-		//as.addConnectionDetails(new ConnectionDetails("type.bar","xmpp:slewis@ecf.eclipse.org","nick2","pass2"));
-		as.saveConnectionDetailsToPreferenceStore();
 	}
 	
 	public FontRegistry getFontRegistry() {
