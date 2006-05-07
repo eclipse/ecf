@@ -892,16 +892,11 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		IChatRoomContainer container;
 		ChatRoomView view;
 		String secondaryID;
-		IChatRoomManager manager;
-		RoomWithAView(IChatRoomManager manager, IChatRoomContainer container,
+		RoomWithAView(IChatRoomContainer container,
 				ChatRoomView view, String secondaryID) {
-			this.manager = manager;
 			this.container = container;
 			this.view = view;
 			this.secondaryID = secondaryID;
-		}
-		public IChatRoomManager getManager() {
-			return manager;
 		}
 		public IChatRoomContainer getContainer() {
 			return container;
@@ -969,11 +964,9 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		}
 		// Get selected room, selected manager, and selected IRoomInfo
 		ChatRoomSelectionDialog.Room room = dialog.getSelectedRoom();
-		IChatRoomManager selectedManager = room.getManager();
 		IRoomInfo selectedInfo = room.getRoomInfo();
 		// If they are null then we can't proceed
-		if (room == null || selectedManager == null
-				|| selectedInfo == null) {
+		if (room == null || selectedInfo == null) {
 			MessageDialog.openInformation(RosterView.this.getViewSite()
 					.getShell(), "No room selected",
 					"Cannot connect to null room");
@@ -1008,7 +1001,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		// now, create chat room instance
 		IChatRoomContainer chatRoom = null;
 		try {
-			chatRoom = selectedManager.createChatRoomContainer();
+			chatRoom = selectedInfo.createChatRoomContainer();
 		} catch (ContainerInstantiationException e1) {
 			MessageDialog.openError(RosterView.this.getViewSite()
 					.getShell(), "Could not create chat room",
@@ -1090,7 +1083,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		}
 		// If connect successful...we create a room with a view and add
 		// it to our known set
-		addRoomView(new RoomWithAView(selectedManager, chatRoom,
+		addRoomView(new RoomWithAView(chatRoom,
 				(ChatRoomView) view, secondaryID));
 
 	}

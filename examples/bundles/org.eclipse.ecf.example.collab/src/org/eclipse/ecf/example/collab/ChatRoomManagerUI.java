@@ -38,9 +38,10 @@ public class ChatRoomManagerUI {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
 				try {
+					IRoomInfo roomInfo = manager.getChatRoomInfo(targetID);
 					IChatRoomContainer chatRoom = null;
 					try {
-						chatRoom = manager.createChatRoomContainer();
+						chatRoom = roomInfo.createChatRoomContainer();
 					} catch (ContainerInstantiationException e1) {
 						// can't happen
 					}
@@ -56,42 +57,7 @@ public class ChatRoomManagerUI {
 						public void chatRoomViewClosing(String secondaryID) {
 							newClient.dispose();
 						}
-					}, null, chatRoom, new IRoomInfo() {
-						public String getDescription() {
-							return null;
-						}
-						public String getSubject() {
-							return "TODO";
-						}
-						public ID getRoomID() {
-							return targetID;
-						}
-						public int getParticipantsCount() {
-							// TODO Auto-generated method stub
-							return 0;
-						}
-						public String getName() {
-							return targetID.getName();
-						}
-						public boolean isPersistent() {
-							// TODO Auto-generated method stub
-							return false;
-						}
-						public boolean requiresPassword() {
-							// TODO Auto-generated method stub
-							return false;
-						}
-						public boolean isModerated() {
-							// TODO Auto-generated method stub
-							return false;
-						}
-						public ID getConnectedID() {
-							return targetID;
-						}
-						public Object getAdapter(Class clazz) {
-							return null;
-						}
-					}, sender);
+					}, null, chatRoom, roomInfo, sender);
 					// Add listeners so that the new chat room gets
 					// asynch notifications of various relevant chat room events
 					chatRoom.addMessageListener(new IMessageListener() {

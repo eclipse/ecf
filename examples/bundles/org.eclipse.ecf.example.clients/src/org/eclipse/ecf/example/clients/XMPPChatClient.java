@@ -22,6 +22,7 @@ import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresenceContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.chat.IRoomInfo;
 
 public class XMPPChatClient {
 	
@@ -75,11 +76,12 @@ public class XMPPChatClient {
 	public IChatRoomContainer connectChatRoom(String username, String hostname, String chatRoomID) throws Exception {
 		// Get chat room manager
 		chatmanager = presence.getChatRoomManager();
-		// Create chat room container from manager
-		chatroom = chatmanager.createChatRoomContainer();
-		socontainer = (ISharedObjectContainer) chatroom.getAdapter(ISharedObjectContainer.class);
 		// create target room id
 		ID targetChatID = IDFactory.getDefault().createID(chatroom.getConnectNamespace(), new Object[] {username,hostname,null,chatRoomID,username});
+		// Create chat room container from manager
+		IRoomInfo roomInfo = chatmanager.getChatRoomInfo(targetChatID);
+		chatroom = roomInfo.createChatRoomContainer();
+		socontainer = (ISharedObjectContainer) chatroom.getAdapter(ISharedObjectContainer.class);
 		// connect to target
 		chatroom.connect(targetChatID, null);
 		return chatroom;

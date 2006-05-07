@@ -557,18 +557,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 						public IRoomInfo getChatRoomInfo(ID roomID) {
 							return XMPPClientSOContainer.this.getChatRoomInfo(roomID);
 						}
-						public IChatRoomContainer createChatRoomContainer() throws ContainerInstantiationException {
-							IChatRoomContainer chatContainer = null;
-							try {
-								chatContainer = new XMPPGroupChatSOContainer(XMPPClientSOContainer.this.getConnection(),sharedObject.getConnection(),getConnectNamespace());
-							} catch (IDInstantiationException e) {
-								ContainerInstantiationException newExcept = new ContainerInstantiationException("Exception creating chat container for presence container "+getID(),e);
-								newExcept.setStackTrace(e.getStackTrace());
-								throw newExcept;
-							}
-							chats.add(chatContainer);
-							return chatContainer;
-						}
 						public IRoomInfo[] getChatRoomsInfo() {
 							ID [] chatRooms = getChatRooms();
 							if (chatRooms == null) return null;
@@ -665,6 +653,16 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		}
 		public Object getAdapter(Class clazz) {
 			return null;
+		}
+		public IChatRoomContainer createChatRoomContainer() throws ContainerInstantiationException {
+			IChatRoomContainer chatContainer = null;
+			try {
+				chatContainer = new XMPPGroupChatSOContainer(XMPPClientSOContainer.this.getConnection(),sharedObject.getConnection(),getConnectNamespace());
+			} catch (IDInstantiationException e) {
+				throw new ContainerInstantiationException("Exception creating chat container for presence container "+getID(),e);
+			}
+			chats.add(chatContainer);
+			return chatContainer;
 		}
     	public String toString() {
     		StringBuffer buf = new StringBuffer("ECFRoomInfo[");

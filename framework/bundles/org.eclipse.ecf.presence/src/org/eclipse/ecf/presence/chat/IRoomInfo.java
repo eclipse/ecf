@@ -11,6 +11,7 @@
 package org.eclipse.ecf.presence.chat;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.identity.ID;
 
 public interface IRoomInfo extends IAdaptable {
@@ -59,4 +60,11 @@ public interface IRoomInfo extends IAdaptable {
 	 * @return ID of service we are currently connected to
 	 */
 	public ID getConnectedID();
+   	/**
+	 * Create a new IChatRoomContainer instance
+	 * @return non-null IChatRoomContainer instance.  Will not return null.
+	 * @throws ContainerInstantiationException if chat room container cannot be made
+	 */
+	public IChatRoomContainer createChatRoomContainer() throws ContainerInstantiationException;
+
 }

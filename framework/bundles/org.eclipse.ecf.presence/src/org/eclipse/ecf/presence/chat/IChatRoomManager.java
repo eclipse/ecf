@@ -53,6 +53,6 @@ public interface IChatRoomManager {
 	 * @return non-null IChatRoomContainer implementer
 	 * @throws ContainerInstantiationException if chat room container cannot be made
 	 */
-	public IChatRoomContainer createChatRoomContainer() throws ContainerInstantiationException;
+	//public IChatRoomContainer createChatRoomContainer() throws ContainerInstantiationException;
 	
 }
