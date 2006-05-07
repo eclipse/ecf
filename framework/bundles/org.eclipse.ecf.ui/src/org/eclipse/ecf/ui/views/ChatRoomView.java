@@ -257,7 +257,6 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	}
 	class Participant implements IUser {
 		private static final long serialVersionUID = 2008114088656711572L;
-		String name;
 		ID id;
 		
 		public Participant(ID id) {
