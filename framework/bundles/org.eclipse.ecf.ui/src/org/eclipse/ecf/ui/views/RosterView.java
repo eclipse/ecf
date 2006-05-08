@@ -34,6 +34,8 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
+import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
@@ -50,6 +52,7 @@ import org.eclipse.ecf.presence.impl.RosterEntry;
 import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.ecf.ui.UiPluginConstants;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
+import org.eclipse.ecf.ui.dialogs.ChangePasswordDialog;
 import org.eclipse.ecf.ui.dialogs.ChatRoomSelectionDialog;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -789,6 +792,17 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 									new Path(ADDCHAT_ICON))));
 					
 					manager.add(openChatRoomAccountAction);
+					
+					Action changePasswordAction = new Action() {
+						public void run() {
+							changePasswordForAccount(accountID);
+						}
+					};
+					changePasswordAction.setText("Change Password");
+					changePasswordAction.setToolTipText("Change password for account");
+					changePasswordAction.setEnabled(true);
+					manager.add(changePasswordAction);
+					
 					disconnectAccountAction = new Action () {
 						public void run() {
 							if (MessageDialog.openConfirm(RosterView.this.getViewSite()
@@ -829,6 +843,22 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		manager.add(new Separator());
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+	}
+	protected void changePasswordForAccount(ID accountID) {
+		UserAccount account = getAccount(accountID);
+		if (account != null) {
+			IPresenceContainer pc = account.getContainer();
+			IAccountManager am = pc.getAccountManager();
+			ChangePasswordDialog cpd = new ChangePasswordDialog(viewer.getControl().getShell());
+			cpd.open();
+			if (cpd.getResult() == Window.OK) {
+				try {
+					am.changePassword(cpd.getNewPassword());
+				} catch (ECFException e) {
+					MessageDialog.openError(viewer.getControl().getShell(), "Password not changed", "Error changing password");
+				}
+			}
+		}
 	}
 	public void sendRosterAdd(ID svcID, String groupName) {
 		sendRosterAdd(svcID,null,groupName);
