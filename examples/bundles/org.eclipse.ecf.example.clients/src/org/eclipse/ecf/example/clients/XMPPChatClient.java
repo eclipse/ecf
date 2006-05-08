@@ -10,7 +10,6 @@ package org.eclipse.ecf.example.clients;
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
@@ -35,7 +34,6 @@ public class XMPPChatClient {
 	ID userID = null;
 	IChatRoomManager chatmanager = null;
 	IChatRoomContainer chatroom = null;
-	ISharedObjectContainer socontainer = null;
 	
 	// Interface for receiving messages
 	IMessageReceiver receiver = null;
@@ -61,9 +59,7 @@ public class XMPPChatClient {
 		// Setup message listener to handle incoming messages
 		presence.addMessageListener(new IMessageListener() {
 			public void handleMessage(ID fromID, ID toID, Type type, String subject, String messageBody) {
-				if (receiver != null) {
-					receiver.handleMessage(fromID.getName(), messageBody);
-				}
+				receiver.handleMessage(fromID.getName(), messageBody);
 			}
 		});
 		//
@@ -73,17 +69,12 @@ public class XMPPChatClient {
 		userID = getID(account);
 	}
 	
-	public IChatRoomContainer connectChatRoom(String username, String hostname, String chatRoomID) throws Exception {
-		// Get chat room manager
-		chatmanager = presence.getChatRoomManager();
-		// create target room id
-		ID targetChatID = IDFactory.getDefault().createID(chatroom.getConnectNamespace(), new Object[] {username,hostname,null,chatRoomID,username});
+	public IChatRoomContainer connectChatRoom(String chatRoomName) throws Exception {
 		// Create chat room container from manager
-		IRoomInfo roomInfo = chatmanager.getChatRoomInfo(targetChatID);
+		IRoomInfo roomInfo = presence.getChatRoomManager().getChatRoomInfo(chatRoomName);
 		chatroom = roomInfo.createChatRoomContainer();
-		socontainer = (ISharedObjectContainer) chatroom.getAdapter(ISharedObjectContainer.class);
 		// connect to target
-		chatroom.connect(targetChatID, null);
+		chatroom.connect(roomInfo.getRoomID(), null);
 		return chatroom;
 	}
 

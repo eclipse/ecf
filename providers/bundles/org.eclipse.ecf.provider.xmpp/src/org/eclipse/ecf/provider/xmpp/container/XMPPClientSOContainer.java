@@ -554,8 +554,8 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 						public ID[] getChatRooms() {
 							return XMPPClientSOContainer.this.getChatRooms();
 						}
-						public IRoomInfo getChatRoomInfo(ID roomID) {
-							return XMPPClientSOContainer.this.getChatRoomInfo(roomID);
+						public IRoomInfo getChatRoomInfo(String roomname) {
+							return XMPPClientSOContainer.this.getChatRoomInfo(roomname);
 						}
 						public IRoomInfo[] getChatRoomsInfo() {
 							ID [] chatRooms = getChatRooms();
@@ -563,7 +563,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 							IRoomInfo [] res = new IRoomInfo[chatRooms.length];
 							int count = 0;
 							for(int i=0; i < chatRooms.length; i++) {
-								IRoomInfo infoResult = getChatRoomInfo(chatRooms[i]);
+								IRoomInfo infoResult = XMPPClientSOContainer.this.getChatRoomInfo(chatRooms[i]);
 								if (infoResult != null) {
 									res[count++] = infoResult;
 								}
@@ -649,7 +649,7 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			return info.isModerated();
 		}
 		public ID getConnectedID() {
-			return connectedID;
+			return roomID;
 		}
 		public Object getAdapter(Class clazz) {
 			return null;
@@ -689,4 +689,19 @@ public class XMPPClientSOContainer extends ClientSOContainer {
     	}
     	return null;
     }
+    protected IRoomInfo getChatRoomInfo(String roomname) {
+    	try {
+    		RoomInfo info = MultiUserChat.getRoomInfo(sharedObject.getConnection(),roomname);
+    		if (info != null) {
+    			// Create roomid
+    			XMPPRoomID roomID = new XMPPRoomID(getConnectNamespace(),sharedObject.getConnection(),roomname);
+    			return new ECFRoomInfo(roomID,info,getConnectedID());
+    		}
+    	} catch (Exception e) {
+    		dumpStack("Exception in getChatRoomInfo("+roomname+")",e);
+    		return null;
+    	}
+    	return null;
+    }
+
 }

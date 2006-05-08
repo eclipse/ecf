@@ -57,7 +57,7 @@ public interface IRoomInfo extends IAdaptable {
 	public boolean isModerated();
 	/**
 	 * 
-	 * @return ID of service we are currently connected to
+	 * @return ID of connected user
 	 */
 	public ID getConnectedID();
    	/**

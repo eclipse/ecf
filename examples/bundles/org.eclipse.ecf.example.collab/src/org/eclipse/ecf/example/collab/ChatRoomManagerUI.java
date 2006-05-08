@@ -38,7 +38,7 @@ public class ChatRoomManagerUI {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
 				try {
-					IRoomInfo roomInfo = manager.getChatRoomInfo(targetID);
+					IRoomInfo roomInfo = manager.getChatRoomInfo(targetID.getName());
 					IChatRoomContainer chatRoom = null;
 					try {
 						chatRoom = roomInfo.createChatRoomContainer();

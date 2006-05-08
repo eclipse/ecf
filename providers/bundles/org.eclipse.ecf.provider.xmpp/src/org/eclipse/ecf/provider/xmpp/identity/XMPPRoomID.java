@@ -45,7 +45,6 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	public XMPPRoomID(Namespace namespace, XMPPID userid, String domain, String groupname, String nickname) throws URISyntaxException {
 		this(namespace,userid.getUsername(),userid.getHostname(),domain,groupname,nickname);
 	}
-	
 	public XMPPRoomID(Namespace namespace, XMPPConnection conn, String roomid, String longName) throws URISyntaxException {
 		super(namespace);
 		String username = fixUsername(conn.getUser());

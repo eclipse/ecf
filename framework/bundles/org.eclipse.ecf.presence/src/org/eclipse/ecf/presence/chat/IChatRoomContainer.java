@@ -15,7 +15,7 @@ import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 
 /**
- * Chat container
+ * Chat room container
  */
 public interface IChatRoomContainer extends IContainer {
 	

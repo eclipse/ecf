@@ -64,8 +64,7 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 			throws ECFException, Exception, InterruptedException {
 		XMPPChatClient client = new XMPPChatClient(this);
 		client.connect(userName + "@" + hostName, password);
-		IChatRoomContainer room = client.connectChatRoom(userName, hostName,
-				roomName);
+		IChatRoomContainer room = client.connectChatRoom(roomName);
 		System.out.println(room.getConnectedID().getName());
 		room.addMessageListener(this);
 		sender = room.getChatMessageSender();
