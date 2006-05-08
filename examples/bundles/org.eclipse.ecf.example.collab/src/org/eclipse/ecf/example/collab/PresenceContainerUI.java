@@ -1,7 +1,5 @@
 package org.eclipse.ecf.example.collab;
 
-import java.util.Arrays;
-import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
@@ -16,11 +14,9 @@ import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.impl.Presence;
-import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
 import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.ecf.ui.views.RosterView;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -165,39 +161,19 @@ public class PresenceContainerUI {
 							if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_AND_ADD) {								
 								if (presenceSender != null) {
 									presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBED));
-									// Get group info here
-									if (rosterView != null) {
-										String [] groupNames = rosterView.getGroupNames();
-										List g = Arrays.asList(groupNames);
-										String selectedGroup = rosterView.getSelectedGroupName();
-										int selected = (selectedGroup==null)?-1:g.indexOf(selectedGroup);
-										AddBuddyDialog sg = new AddBuddyDialog(ww.getShell(),fromID.getName(),groupNames,selected);
-										sg.open();
-										if (sg.getResult() == Window.OK) {
-											String group = sg.getGroup();
-											String user = sg.getUser();
-											String nickname = sg.getNickname();
-											sg.close();
-											if (!g.contains(group)) {
-												// create group with name
-												rosterView.addGroup(groupID,group);
-											}
-											// Finally, send the information and request subscription
-											presenceSender.sendRosterAdd(localUser, user,nickname,new String[] { group } );
-										}
-									}
+									if (rosterView != null) rosterView.sendRosterAdd(localUser, fromID.getName(), null);
 								} 
 							} else if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_ID) {
 								if (presenceSender != null) {
 									presenceSender.sendPresenceUpdate(localUser,fromID,new Presence(IPresence.Type.SUBSCRIBED));
 								} 
 							} else if (res == ReceiveAuthorizeRequestDialog.REFUSE_ID) {
-								System.out.println("Refuse hit");
+								// do nothing
 							} else {
-								System.out.println("No buttons hit");
+								// do nothing
 							}
 						} catch (Exception e) {
-		                    IStatus status = new Status(IStatus.ERROR,ClientPlugin.getDefault().getBundle().getSymbolicName(),IStatus.OK,"Exception showing authorization dialog",e);
+		                    IStatus status = new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,IStatus.OK,"Exception showing authorization dialog",e);
 		                    ClientPlugin.getDefault().getLog().log(status);
 						}
 		            }

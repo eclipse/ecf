@@ -106,8 +106,6 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	private Action disconnectAccountAction;
 	private Action openChatRoomAction;
 	private Action openChatRoomAccountAction;
-	// private Action addGroupAction;
-	// private Action addBuddyAction;
 	protected Hashtable chatThreads = new Hashtable();
 	protected Hashtable accounts = new Hashtable();
 	protected Hashtable chatRooms = new Hashtable();
@@ -216,7 +214,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		}
 	}
 	class TreeParent extends TreeObject {
-		private ArrayList children;
+		protected ArrayList children;
 		public TreeParent(String name) {
 			super(name);
 			children = new ArrayList();
@@ -259,6 +257,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	class TreeGroup extends TreeParent {
 		public TreeGroup(String name, ID svcID) {
 			super(name, svcID);
+			if (name == null || name.equals("")) setName(UNFILED_GROUP_NAME);
 		}
 		public int getActiveCount() {
 			TreeObject[] childs = getChildren();
@@ -382,6 +381,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			return newBuddy;
 		}
 		public TreeGroup findGroup(TreeParent parent, String name) {
+			if (parent == null) return null;
 			TreeObject[] objs = parent.getChildren();
 			if (objs != null) {
 				for (int i = 0; i < objs.length; i++) {
@@ -393,6 +393,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			return null;
 		}
 		public TreeGroup findGroup(TreeParent parent, ID id) {
+			if (parent == null) return null;
 			TreeObject[] objs = parent.getChildren();
 			if (objs != null) {
 				for (int i = 0; i < objs.length; i++) {
@@ -404,8 +405,10 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			}
 			return null;
 		}
-		public String[] getAllGroupNames() {
-			TreeObject[] objs = root.getChildren();
+		
+		public String[] getAllGroupNamesForAccount(ID accountID) {
+			TreeGroup accountRoot = findAccount(accountID);
+			TreeObject[] objs = accountRoot.getChildren();
 			if (objs != null) {
 				List l = new ArrayList();
 				for (int i = 0; i < objs.length; i++) {
@@ -422,6 +425,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			return findBuddy(parent, entry.getUserID());
 		}
 		public TreeBuddy findBuddy(TreeParent parent, ID entryID) {
+			if (parent == null) return null;
 			TreeObject[] objs = parent.getChildren();
 			if (objs == null)
 				return null;
@@ -758,9 +762,33 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 				manager.add(removeUserAction);
 			} else if (treeObject instanceof TreeAccount) {
 				final TreeAccount treeAccount = (TreeAccount) treeObject;
-				ID accountID = treeAccount.getId();
+				final ID accountID = treeAccount.getId();
 				final UserAccount ua = (UserAccount) getAccount(accountID);
 				if (ua != null) {
+					Action addBuddyToGroupAction = new Action() {
+						public void run() {
+							sendRosterAdd(accountID,null);
+						}
+					};
+					addBuddyToGroupAction.setImageDescriptor(ImageDescriptor
+							.createFromURL(UiPlugin.getDefault().find(
+									new Path(ADDBUDDY_ICON))));
+					addBuddyToGroupAction.setText("Add Buddy");
+					addBuddyToGroupAction.setEnabled(true);
+					
+					manager.add(addBuddyToGroupAction);
+					openChatRoomAccountAction = new Action() {
+						public void run() {
+							showChatRoomsForAccount(ua);
+						}
+					};
+					openChatRoomAccountAction.setText("Show chat rooms for account");
+					openChatRoomAccountAction.setEnabled(true);
+					openChatRoomAccountAction.setImageDescriptor(ImageDescriptor
+							.createFromURL(UiPlugin.getDefault().find(
+									new Path(ADDCHAT_ICON))));
+					
+					manager.add(openChatRoomAccountAction);
 					disconnectAccountAction = new Action () {
 						public void run() {
 							if (MessageDialog.openConfirm(RosterView.this.getViewSite()
@@ -776,18 +804,6 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 									new Path(DISCONNECT_ICON_ENABLED))));
 					manager.add(disconnectAccountAction);
 					
-					openChatRoomAccountAction = new Action() {
-						public void run() {
-							showChatRoomsForAccount(ua);
-						}
-					};
-					openChatRoomAccountAction.setText("Show chat rooms for account");
-					openChatRoomAccountAction.setEnabled(true);
-					openChatRoomAccountAction.setImageDescriptor(ImageDescriptor
-							.createFromURL(UiPlugin.getDefault().find(
-									new Path(ADDCHAT_ICON))));
-					
-					manager.add(openChatRoomAccountAction);
 				}
 			
 			} else if (treeObject instanceof TreeGroup) {
@@ -807,46 +823,35 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 								ISharedImages.IMG_TOOL_DELETE));
 				if (removeGroupAction.isEnabled())
 					manager.add(removeGroupAction);
+				
 			}
 		}
 		manager.add(new Separator());
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
-	protected void openDialogAndSendRequest(ID svcID, String name,
-			String groupName) {
-		String[] groupNames = this.getGroupNames();
+	public void sendRosterAdd(ID svcID, String groupName) {
+		sendRosterAdd(svcID,null,groupName);
+	}
+	public void sendRosterAdd(ID svcID, String username, String groupName) {
+		String[] groupNames = this.getAllGroupNamesForAccount(svcID);
 		List g = Arrays.asList(groupNames);
 		int selected = (groupName == null) ? -1 : g.indexOf(groupName);
-		AddBuddyDialog sg = new AddBuddyDialog(viewer.getControl().getShell(),
-				name, groupNames, selected);
+		AddBuddyDialog sg = new AddBuddyDialog(viewer.getControl().getShell(), username,
+				groupNames, selected);
 		sg.open();
 		if (sg.getResult() == Window.OK) {
 			String group = sg.getGroup();
 			String user = sg.getUser();
 			String nickname = sg.getNickname();
 			sg.close();
-			if (!Arrays.asList(groupNames).contains(group)) {
-				// create group with name
-				this.addGroup(svcID, group);
+			String [] sendGroups = null;
+			if (group != null) {
+				sendGroups = (group==null)?null:new String[] { group };
 			}
-			String[] sendGroups = new String[] { group };
 			// Finally, send the information and request subscription
-			UserAccount account = getAccount(svcID);
-			ILocalInputHandler inputHandler = account.getInputHandler();
-			inputHandler.sendRosterAdd(user, nickname, sendGroups);
+			getAccount(svcID).getInputHandler().sendRosterAdd(user, nickname, sendGroups);
 		}
-	}
-	protected void requestAuthFrom(TreeBuddy buddy, TreeGroup tg) {
-		if (buddy == null)
-			return;
-		ID buddyID = buddy.getId();
-		String name = buddyID.getName();
-		String groupName = (tg == null) ? null : tg.getName();
-		openDialogAndSendRequest(buddy.getServiceID(), name, groupName);
-	}
-	protected void addUserToGroup(ID serviceID, String groupName) {
-		openDialogAndSendRequest(serviceID, null, groupName);
 	}
 	protected void removeUserFromGroup(TreeBuddy buddy, TreeGroup group) {
 		UserAccount account = getAccount(buddy.getServiceID());
@@ -1140,6 +1145,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 				.createFromURL(UiPlugin.getDefault().find(
 						new Path(ADDCHAT_ICON))));
 		openChatRoomAction.setEnabled(false);
+		
 	}
 	protected void addRoomView(RoomWithAView roomView) {
 		chatRooms.put(roomView.getID(), roomView);
@@ -1337,11 +1343,11 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			refreshView();
 		}
 	}
-	public String[] getGroupNames() {
+	public String[] getAllGroupNamesForAccount(ID accountID) {
 		ViewContentProvider vcp = (ViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null) {
-			return vcp.getAllGroupNames();
+			return vcp.getAllGroupNamesForAccount(accountID);
 		} else
 			return new String[0];
 	}

@@ -35,6 +35,9 @@ public class AddBuddyDialog extends Dialog {
 	
 	Button okButton = null;
 	
+	public AddBuddyDialog(Shell parentShell, String [] existingGroups, int selectedGroup) {
+		this(parentShell, null, existingGroups, selectedGroup);
+	}
 	public AddBuddyDialog(Shell parentShell,String username, String [] existingGroups, int selectedGroup) {
 		super(parentShell);
 		this.user = username;
@@ -48,11 +51,12 @@ public class AddBuddyDialog extends Dialog {
 		container.setLayout(gridLayout);
 
 		final Composite composite = new Composite(container, SWT.NONE);
-		composite.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.FILL_VERTICAL));
 		final GridLayout gridLayout_2 = new GridLayout();
 		gridLayout_2.numColumns = 2;
 		composite.setLayout(gridLayout_2);
 
+		final Label l = new Label(composite, SWT.NONE);
+		
 		final Label label_4 = new Label(composite, SWT.NONE);
 		label_4.setText("<user>@<jabberserver>");
 
@@ -63,6 +67,7 @@ public class AddBuddyDialog extends Dialog {
 		usertext.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		if (user != null) {
 			usertext.setText(user);
+			usertext.setEnabled(false);
 		}
 		usertext.addModifyListener(new ModifyListener() {
 
@@ -73,7 +78,7 @@ public class AddBuddyDialog extends Dialog {
 					okButton.setEnabled(false);
 				}
 			}});
-
+		/*
 		final Label label_1 = new Label(composite, SWT.NONE);
 		label_1.setText("Group:");
 
@@ -89,7 +94,7 @@ public class AddBuddyDialog extends Dialog {
 			if (selectedGroup != -1) groups.select(selectedGroup);
 			else groups.select(0);
 		}
-
+		*/
 		final Label label_2 = new Label(composite, SWT.NONE);
 		label_2.setText("Nickname:");
 
@@ -125,13 +130,15 @@ public class AddBuddyDialog extends Dialog {
 		return nicknameresult;
 	}
 	protected Point getInitialSize() {
-		return new Point(302, 197);
+		return new Point(310, 197);
 	}
 	public void buttonPressed(int button) {
 		result = button;
 		userresult = usertext.getText();
 		nicknameresult = nicknametext.getText();
-		groupsresult = groups.getText();
+		if (groups != null) {
+			groupsresult = groups.getText();
+		}
 		close();
 	}
 	public int getResult() {
