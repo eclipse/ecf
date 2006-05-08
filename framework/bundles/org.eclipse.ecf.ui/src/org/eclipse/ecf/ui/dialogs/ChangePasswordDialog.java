@@ -70,7 +70,7 @@ public class ChangePasswordDialog extends Dialog {
 		return pass1;
 	}
 	protected Point getInitialSize() {
-		return new Point(330, 197);
+		return new Point(330, 157);
 	}
 	public void buttonPressed(int button) {
 		result = button;
@@ -80,6 +80,9 @@ public class ChangePasswordDialog extends Dialog {
 			if (!pass1.equals(pass2)) {
 				// message box that passwords do not match
 				MessageDialog.openError(getShell(),"Passwords do not match","Passwords do not match.  Please try again");
+				p1.setText("");
+				p2.setText("");
+				p1.setFocus();
 				return;
 			}
 		}
@@ -90,7 +93,7 @@ public class ChangePasswordDialog extends Dialog {
 	}
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Add Buddy");
+		newShell.setText("Change Password");
 	}
 
 }
