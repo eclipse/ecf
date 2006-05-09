@@ -1,16 +1,17 @@
 Manifest-Version: 1.0
-Bundle-SymbolicName: org.eclipse.ecf.provider;singleton=true
+Bundle-SymbolicName: org.eclipse.ecf.provider;singleton:=true
 Bundle-Version: 0.8.0
 Bundle-Name: ECF Provider API
 Bundle-Vendor: Eclipse.org
 Bundle-ClassPath: provider.jar
 Bundle-Activator: org.eclipse.ecf.provider.ProviderPlugin
 Bundle-Localization: plugin
-Eclipse-AutoStart: true
+Eclipse-LazyStart: true
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
 Provide-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.gmm
 Export-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.gmm
 Eclipse-RegisterBuddy: org.eclipse.ecf
 Eclipse-BuddyPolicy: dependent
+Bundle-ManifestVersion: 2
 
