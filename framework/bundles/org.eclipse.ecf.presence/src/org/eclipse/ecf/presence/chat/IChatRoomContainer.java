@@ -21,7 +21,7 @@ public interface IChatRoomContainer extends IContainer {
 	
     /**
      * Setup listener for handling IM messages
-     * @param listener
+     * @param msgListener the listener to add
      */
 	public void addMessageListener(IMessageListener msgListener);
 
