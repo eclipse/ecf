@@ -19,6 +19,7 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelConfig;
 import org.eclipse.ecf.datashare.IChannelContainer;
+import org.eclipse.ecf.datashare.IChannelContainerListener;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
 
@@ -89,5 +90,11 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	 */
 	public Namespace getChannelNamespace() {
 		return adapter.getChannelNamespace();
+	}
+	public void addChannelContainerListener(IChannelContainerListener listener) {
+		adapter.addChannelContainerListener(listener);
+	}
+	public void removeChannelContainerListener(IChannelContainerListener listener) {
+		adapter.removeChannelContainerListener(listener);
 	}
 }

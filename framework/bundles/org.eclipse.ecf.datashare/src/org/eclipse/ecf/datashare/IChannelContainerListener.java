@@ -8,18 +8,21 @@
  ******************************************************************************/
 package org.eclipse.ecf.datashare;
 
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.IIdentifiable;
+import org.eclipse.ecf.datashare.events.IChannelContainerEvent;
 
 /**
- * Abstract channel
+ * Listener for channel container events.  The following types of events
+ * can be received via this listener:
+ * <p>
+ * IChannelContainerChannelActivatedEvent - delivered when a channel within this container is activated
+ * <p>
+ * IChannelContainerChannelDeactivatedEvent - delivered when a channel within this container is deactivated
  *
  */
-public interface IAbstractChannel extends IAdaptable, IIdentifiable {
+public interface IChannelContainerListener {
 	/**
-	 * Get IChannelListener instance for this IAbstractChannel
-	 * 
-	 * @return IChannelListener for this IAbstractChannel instance.  If null, the channel has no listener
+	 * Handle channel container events.  
+	 * @param event IChannelContainer event
 	 */
-	public IChannelListener getListener();
+	public void handleChannelContainerEvent(IChannelContainerEvent event);
 }

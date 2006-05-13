@@ -8,16 +8,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.datashare.events;
 
-import org.eclipse.ecf.core.identity.ID;
-
 /**
- * Super interface for events delivered to channels
- * 
+ * Event delivered to channel container when channel deactivated
+ *
  */
-public interface IChannelEvent {
-	/**
-	 * Get the id of the channel associated with this event
-	 * @return ID of the channel
-	 */
-	public ID getChannelID();
+public interface IChannelContainerChannelDeactivatedEvent extends IChannelContainerEvent {
 }

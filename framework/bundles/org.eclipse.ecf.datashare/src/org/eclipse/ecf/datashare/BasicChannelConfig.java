@@ -11,6 +11,10 @@ package org.eclipse.ecf.datashare;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.SharedObjectDescription;
 
+/**
+ * Channel configuration
+ *
+ */
 public class BasicChannelConfig implements IChannelConfig {
 	
 	protected SharedObjectDescription description = null;

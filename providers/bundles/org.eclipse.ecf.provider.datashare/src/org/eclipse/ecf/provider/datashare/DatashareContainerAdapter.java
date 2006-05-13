@@ -1,8 +1,13 @@
 package org.eclipse.ecf.provider.datashare;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.ISharedObjectTransactionParticipantsFilter;
@@ -10,6 +15,9 @@ import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectFactory;
 import org.eclipse.ecf.core.SharedObjectTypeDescription;
+import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
@@ -19,7 +27,11 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelConfig;
 import org.eclipse.ecf.datashare.IChannelContainer;
+import org.eclipse.ecf.datashare.IChannelContainerListener;
 import org.eclipse.ecf.datashare.IChannelListener;
+import org.eclipse.ecf.datashare.events.IChannelContainerChannelActivatedEvent;
+import org.eclipse.ecf.datashare.events.IChannelContainerEvent;
+import org.eclipse.ecf.datashare.events.IChannelContainerChannelDeactivatedEvent;
 import org.eclipse.ecf.provider.generic.SOContainer;
 
 public class DatashareContainerAdapter implements IChannelContainer {
@@ -27,8 +39,55 @@ public class DatashareContainerAdapter implements IChannelContainer {
 	protected SOContainer container = null;
 	protected static final int DEFAULT_TRANSACTION_WAIT = 30000;
 	
+	protected List channelContainerListener = Collections.synchronizedList(new ArrayList());
+	
+	protected void fireChannelContainerListeners(IChannelContainerEvent event) {
+		synchronized (channelContainerListener) {
+			for(Iterator i=channelContainerListener.iterator(); i.hasNext(); ) {
+				IChannelContainerListener l = (IChannelContainerListener) i.next();
+				if (l != null) l.handleChannelContainerEvent(event);
+			}
+		}
+	}
 	public DatashareContainerAdapter(SOContainer container) {
 		this.container = container;
+		this.container.addListener(new ContainerListener(), null);
+	}
+	
+	protected class ContainerListener implements IContainerListener {
+		public void handleEvent(final IContainerEvent evt) {
+			if (evt instanceof ISharedObjectActivatedEvent) {
+				final ISharedObjectActivatedEvent soae = (ISharedObjectActivatedEvent) evt;
+				fireChannelContainerListeners(new IChannelContainerChannelActivatedEvent() {
+					public ID getChannelID() {
+						return soae.getActivatedID();
+					}
+					public ID getChannelContainerID() {
+						return soae.getLocalContainerID();
+					}
+					public String toString() {
+						StringBuffer buf = new StringBuffer("ChannelActivatedEvent[");
+						buf.append("channelid=").append(soae.getActivatedID()).append(";");
+						buf.append("containerid=").append(soae.getLocalContainerID()).append("]");
+						return buf.toString();
+					}});
+			} else if (evt instanceof ISharedObjectDeactivatedEvent) {
+				final ISharedObjectDeactivatedEvent sode = (ISharedObjectDeactivatedEvent) evt;
+				fireChannelContainerListeners(new IChannelContainerChannelDeactivatedEvent() {
+					public ID getChannelID() {
+						return sode.getDeactivatedID();
+					}
+					public ID getChannelContainerID() {
+						return sode.getLocalContainerID();
+					}
+					public String toString() {
+						StringBuffer buf = new StringBuffer("ChannelDeactivatedEvent[");
+						buf.append("channelid=").append(sode.getDeactivatedID()).append(";");
+						buf.append("containerid=").append(sode.getLocalContainerID()).append("]");
+						return buf.toString();
+					}});
+			}
+		}
 	}
 	/*
 	 * (non-Javadoc)
@@ -159,5 +218,11 @@ public class DatashareContainerAdapter implements IChannelContainer {
 	 */
 	public Namespace getChannelNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
+	}
+	public void addChannelContainerListener(IChannelContainerListener listener) {
+		channelContainerListener.add(listener);
+	}
+	public void removeChannelContainerListener(IChannelContainerListener listener) {
+		channelContainerListener.add(listener);
 	}
 }

@@ -9,7 +9,6 @@
 package org.eclipse.ecf.provider.datashare;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Map;
 import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
@@ -126,16 +125,12 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		});
 		IChannelListener l = getListener();
 		IChannelInitializeEvent initEvent = new IChannelInitializeEvent() {
-			public ID[] getGroupMembers() {
-				return getContext().getGroupMemberIDs();
-			}
 			public ID getChannelID() {
 				return getID();
 			}
 			public String toString() {
 				StringBuffer buf = new StringBuffer("ChannelInitializeEvent[");
-				buf.append("chid=").append(getChannelID()).append(
-						";groupMembers=").append(Arrays.asList(getGroupMembers())).append("]");
+				buf.append("channelid=").append(getChannelID()).append("]");
 				return buf.toString();
 			}
 		};
@@ -166,7 +161,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			}
 			public String toString() {
 				StringBuffer buf = new StringBuffer("ChannelGroupJoinEvent[");
-				buf.append("chid=").append(getChannelID()).append(";targetid=")
+				buf.append("channelid=").append(getChannelID()).append(";targetid=")
 						.append(getTargetID()).append("]");
 				return buf.toString();
 			}
@@ -185,7 +180,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			public String toString() {
 				StringBuffer buf = new StringBuffer(
 						"ChannelGroupDepartedEvent[");
-				buf.append("chid=").append(getChannelID()).append(";targetid=")
+				buf.append("channelid=").append(getChannelID()).append(";targetid=")
 						.append(getTargetID()).append("]");
 				return buf.toString();
 			}
@@ -214,7 +209,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 					public String toString() {
 						StringBuffer buf = new StringBuffer(
 								"ChannelMessageEvent[");
-						buf.append("chid=").append(getChannelID()).append(
+						buf.append("channelid=").append(getChannelID()).append(
 								";fromid=").append(getFromContainerID())
 								.append(";data=").append(getData()).append("]");
 						return buf.toString();

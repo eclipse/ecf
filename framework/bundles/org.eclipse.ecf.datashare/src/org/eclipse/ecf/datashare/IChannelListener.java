@@ -11,7 +11,17 @@ package org.eclipse.ecf.datashare;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 
 /**
- * Listener for receiving messages sent to a given channel
+ * Listener for receiving messages sent to a given channel. The following types of events
+ * can be received via this listener:
+ * <p>
+ * IChannelInitializeEvent - delivered when channel is first initialized
+ * <p>
+ * IChannelMessageEvent - delivered when channel receives a message
+ * <p>
+ * IChannelGroupJoinEvent - delivered when container channel is in joins
+ * a group
+ * <p>
+ * IChannelGroupDepartEvent - delivered when container channel is in departs
  *
  */
 public interface IChannelListener {
