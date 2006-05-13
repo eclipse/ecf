@@ -80,26 +80,27 @@ public class SOWrapper {
         debug("activated");
         thread = (Thread) AccessController.doPrivileged(new PrivilegedAction() {
             public Object run() {
-                // Get thread instance
                 Thread aThread = getThread();
                 return aThread;
             }
         });
-        thread.start();
-        send(new SharedObjectActivatedEvent(containerID, sharedObjectID));
+        // Notify container and listeners
         container.notifySharedObjectActivated(sharedObjectID);
+        // Start thread
+        thread.start();
+        // Send message
+        send(new SharedObjectActivatedEvent(containerID, sharedObjectID));
     }
 
     protected void deactivated() {
         debug("deactivated()");
-        send(new SharedObjectDeactivatedEvent(containerID, sharedObjectID));
         container.notifySharedObjectDeactivated(sharedObjectID);
+        send(new SharedObjectDeactivatedEvent(containerID, sharedObjectID));
         destroyed();
     }
 
     protected  void destroyed() {
         if (!queue.isStopped()) {
-            sharedObjectConfig.makeInactive();
             if (thread != null)
                 queue.enqueue(new DisposeEvent());
             queue.close();
@@ -196,6 +197,8 @@ public class SOWrapper {
 
     protected void doDestroy() {
         sharedObject.dispose(containerID);
+        // make config inactive
+        sharedObjectConfig.makeInactive();
     }
 
     protected void deliverSharedObjectMessage(ID fromID, Serializable data) {
@@ -237,7 +240,7 @@ public class SOWrapper {
     protected void handleRuntimeException(Throwable except) {
         except.printStackTrace(System.err);
         dumpStack(
-                "runner:unhandledexception(" + sharedObjectID.getName() + ")",
+                "runner:handleRuntimeException(" + sharedObjectID.getName() + ")",
                 except);
     }
 

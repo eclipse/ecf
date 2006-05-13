@@ -33,7 +33,6 @@ import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectDisconnectException;
 import org.eclipse.ecf.core.SharedObjectFactory;
 import org.eclipse.ecf.core.SharedObjectTypeDescription;
-import org.eclipse.ecf.core.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerAddEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerConnectEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerCreateEvent;
@@ -155,8 +154,7 @@ public class SOManager implements ISharedObjectManager {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectManager#createSharedObject(org.eclipse.ecf.core.SharedObjectDescription,
-	 *      org.eclipse.ecf.core.ISharedObjectContainerTransaction)
+	 * @see org.eclipse.ecf.core.ISharedObjectManager#createSharedObject(org.eclipse.ecf.core.SharedObjectDescription)
 	 */
 	public ID createSharedObject(SharedObjectDescription sd)
 			throws SharedObjectCreateException {

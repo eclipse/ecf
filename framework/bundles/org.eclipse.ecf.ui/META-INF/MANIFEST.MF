@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: ECF UI API
-Bundle-SymbolicName: org.eclipse.ecf.ui;singleton:=true
-Bundle-Version: 0.8.0
+Bundle-SymbolicName: org.eclipse.ecf.ui;singleton=true
+Bundle-Version: 0.8.1
 Bundle-ClassPath: ui.jar
 Bundle-Activator: org.eclipse.ecf.ui.UiPlugin
 Bundle-Vendor: Eclipse.org
@@ -13,11 +13,10 @@ Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.discovery,
  org.eclipse.core.resources
-Eclipse-LazyStart: true
+Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.dialogs,
  org.eclipse.ecf.ui.views,
  org.eclipse.ecf.ui.wizards
 Export-Package:  org.eclipse.ecf.ui.views, org.eclipse.ecf.ui.dialogs
-Bundle-ManifestVersion: 2
 
