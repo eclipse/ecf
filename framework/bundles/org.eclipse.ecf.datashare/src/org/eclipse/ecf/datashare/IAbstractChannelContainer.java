@@ -19,7 +19,7 @@ public interface IAbstractChannelContainer {
 	/**
 	 * Add listener for IChannelContainer events.
 	 * 
-	 * @param listener the listener to by synchronously called back by this channel container
+	 * @param listener to be added
 	 */
 	public void addChannelContainerListener(IChannelContainerListener listener);
 	/**
