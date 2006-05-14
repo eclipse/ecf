@@ -1,0 +1,4 @@
+org.eclipse.ecf.provider.datashare/debug = true
+org.eclipse.ecf.provider.datashare/debug/filter = *
+org.eclipse.ecf.provider.datashare/debug/flag = true
+org.eclipse.ecf.provider.datashare/debug/basechannel = true

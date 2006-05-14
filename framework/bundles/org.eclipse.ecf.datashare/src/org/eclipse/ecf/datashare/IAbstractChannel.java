@@ -22,4 +22,11 @@ public interface IAbstractChannel extends IAdaptable, IIdentifiable {
 	 * @return IChannelListener for this IAbstractChannel instance.  If null, the channel has no listener
 	 */
 	public IChannelListener getListener();
+	
+	/**
+	 * Set listener to new IChannelListener instance
+	 * 
+	 * @return IChannelListener that was previously the listener.  If null, then then channel had no previous listener
+	 */
+	public IChannelListener setListener(IChannelListener listener);
 }

@@ -27,10 +27,11 @@ import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelGroupDepartEvent;
 import org.eclipse.ecf.datashare.events.IChannelGroupJoinEvent;
-import org.eclipse.ecf.datashare.events.IChannelInitializeEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 
 public class BaseChannel extends TransactionSharedObject implements IChannel {
+	
+	protected static final Trace trace = Trace.create("basechannel");
 	
 	public static final String RECEIVER_ID_PROPERTY = BaseChannel.class.getName();
 	
@@ -78,6 +79,11 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	protected void setChannelListener(IChannelListener l) {
 		this.listener = l;
 	}
+	protected void trace(String msg) {
+		if (Trace.ON && trace != null) {
+			trace.msg(msg);
+		}
+	}
 	/**
 	 * Override of TransasctionSharedObject.initialize(). This method is called
 	 * on both the host and the replicas during initialization. <b>Subclasses
@@ -105,6 +111,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 				return false;
 			}
 			public Event processEvent(Event event) {
+				trace("processEvent("+event+")");
 				IChannelListener l = getListener();
 				if (event instanceof IContainerConnectedEvent) {
 					if (l != null) l.handleChannelEvent(createChannelGroupJoinEvent(
@@ -123,22 +130,8 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 				return event;
 			}
 		});
-		IChannelListener l = getListener();
-		IChannelInitializeEvent initEvent = new IChannelInitializeEvent() {
-			public ID getChannelID() {
-				return getID();
-			}
-			public String toString() {
-				StringBuffer buf = new StringBuffer("ChannelInitializeEvent[");
-				buf.append("channelid=").append(getChannelID()).append("]");
-				return buf.toString();
-			}
-		};
-		if (l != null) {
-			l.handleChannelEvent(initEvent);
-		} else {
-			receiveUndeliveredChannelEvent(initEvent);
-		}
+		trace("initialize()");
+		
 	}
 	/**
 	 * Override of TransactionSharedObject.getAdapter()
@@ -238,6 +231,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 *      byte[])
 	 */
 	public void sendMessage(ID receiver, byte[] message) throws ECFException {
+		trace("sendMessage("+receiver+","+message+")");
 		try {
 			getContext().sendMessage(receiver, new ChannelMsg(message));
 		} catch (Exception e) {
@@ -245,12 +239,19 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		}
 	}
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.datashare.IChannel#getListener()
+	 * @see org.eclipse.ecf.datashare.IAbstractChannel#getListener()
 	 */
-	public IChannelListener getListener() {
+	public synchronized IChannelListener getListener() {
 		return listener;
 	}
-
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.datashare.IAbstractChannel#setListener(org.eclipse.ecf.datashare.IChannelListener)
+	 */
+	public IChannelListener setListener(IChannelListener listener) {
+		IChannelListener oldListener = getListener();
+		setChannelListener(listener);
+		return oldListener;
+	}
 	// Subclass API
 	/**
 	 * Receive and process channel events. This method can be overridden by
@@ -261,9 +262,9 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 */
 	protected void receiveUndeliveredChannelEvent(IChannelEvent channelEvent) {
 		if (isPrimary())
-			System.out.println("host.receiveChannelEvent(" + channelEvent + ")");
+			trace("host.receiveUndeliveredChannelEvent(" + channelEvent + ";containerid="+getContext().getLocalContainerID()+")");
 		else
-			System.out.println("replica.receiveChannelEvent(" + channelEvent + ")");
+			trace("replica.receiveUndeliveredChannelEvent(" + channelEvent + ";containerid="+getContext().getLocalContainerID()+")");
 	}
 	/**
 	 * Override of AbstractSharedObject.getReplicaDescription.  Note this method
@@ -312,15 +313,6 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			final IChannel receiver = container.getChannel(rcvr);
 			if (receiver == null) throw new SharedObjectInitException("receiver channel is null/not available");
 			setChannelListener(receiver.getListener());
-		} 
-		IChannelListener l = getListener();
-		// Last ditch...we'll setup a listener to receiveUndeliveredChannelEvents
-		if (l == null) {
-			setChannelListener(new IChannelListener() {
-				public void handleChannelEvent(IChannelEvent event) {
-					receiveUndeliveredChannelEvent(event);
-				}
-			});
 		} 
 	}
 }

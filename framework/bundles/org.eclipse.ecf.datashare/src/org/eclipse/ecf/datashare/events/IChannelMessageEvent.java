@@ -10,8 +10,22 @@ package org.eclipse.ecf.datashare.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-
+/**
+ * Channel message event.  This event is received by IChannelListeners when a remote 
+ * sends a message (via IChannel.sendMessage)
+ * 
+ */
 public interface IChannelMessageEvent extends IChannelEvent {
+	/**
+	 * Get ID of sender container
+	 * @return ID of sender's container
+	 */
 	public ID getFromContainerID();
+	/**
+	 * Get data associated with message.  This method returns the data actually included in the
+	 * IChannel.sendMessage(<data>).
+	 * 
+	 * @return byte [] data associated with channel message
+	 */
 	public byte [] getData();
 }
