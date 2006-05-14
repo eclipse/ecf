@@ -11,7 +11,7 @@ package org.eclipse.ecf.datashare.events;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Super interface for events delivered to channels
+ * Super interface for events delivered to IChannel instances
  * 
  */
 public interface IChannelEvent {
