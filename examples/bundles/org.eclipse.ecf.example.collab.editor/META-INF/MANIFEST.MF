@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Shared Editor Plug-in
 Bundle-SymbolicName: org.eclipse.ecf.example.collab.editor; singleton:=true
-Bundle-Version: 0.8.1
+Bundle-Version: 0.8.2
 Bundle-Activator: org.eclipse.ecf.example.collab.editor.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
@@ -22,3 +22,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide
 Eclipse-LazyStart: true
 Bundle-Vendor: Eclipse.org
+Bundle-ClassPath: collabeditor.jar
