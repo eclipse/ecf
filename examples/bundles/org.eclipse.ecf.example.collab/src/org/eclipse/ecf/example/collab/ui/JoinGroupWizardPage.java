@@ -22,10 +22,12 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -81,6 +83,13 @@ public class JoinGroupWizardPage extends WizardPage {
 	
 	protected String namespace = null;
 	
+	private Button autoLogin = null;
+	private boolean autoLoginFlag = false;
+
+
+	public boolean getAutoLoginFlag() {
+		return autoLoginFlag;
+	}
     protected void modifyUI(Map props) {
         if (props != null) {
             String usePassword = (String) props.get(USEPASSWORD_PROP_NAME);
@@ -226,6 +235,15 @@ public class JoinGroupWizardPage extends WizardPage {
             password_text.setVisible(false);
             password_label.setVisible(false);
         }
+		autoLogin = new Button(container,SWT.CHECK);
+		autoLogin.setText("Login &automatically at startup");
+		autoLogin.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		autoLogin.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				autoLoginFlag = autoLogin.getSelection();
+			}});
+		
+
         fillCombo();
         restoreDialogSettings();
     }

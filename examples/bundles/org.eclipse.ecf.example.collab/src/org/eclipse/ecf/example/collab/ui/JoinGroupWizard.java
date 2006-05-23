@@ -71,24 +71,9 @@ public class JoinGroupWizard extends Wizard {
         String nickName = mainPage.getNicknameText();
         String containerType = mainPage.getContainerType();
         String password = mainPage.getPasswordText();
-		//String namespace = mainPage.getNamespace();
+        boolean autoLogin = mainPage.getAutoLoginFlag();
         try {
-        	/*
-			ID groupID = null;
-			if (namespace != null) {
-				groupID = IDFactory.getDefault().createID(namespace,new Object[] { groupName });
-			} else groupID = IDFactory.getDefault().createStringID(groupName);
-            client = new ClientConnectAction();
-            client.setProject(project);
-            client.setUsername(nickName);
-            client.setTargetID(groupID);
-            client.setContainerType(containerType);
-            client.setData(password);
-            client.run(null);
-            */
-        	//URI uri = new URI(groupName);
-        	//URI fullURI = new URI(namespace+":"+groupName);
-        	client = new URIClientConnectAction(containerType,groupName,nickName,password,project,false);
+        	client = new URIClientConnectAction(containerType,groupName,nickName,password,project,autoLogin);
         	client.run(null);
         } catch (Exception e) {
             String id = ClientPlugin.getDefault().getBundle().getSymbolicName();

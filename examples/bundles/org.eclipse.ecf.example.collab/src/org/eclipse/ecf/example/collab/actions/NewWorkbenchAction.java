@@ -23,10 +23,6 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionDelegate;
 
-/**
- * @author slewis
- * 
- */
 public class NewWorkbenchAction extends ActionDelegate implements
 		IWorkbenchWindowActionDelegate {
 

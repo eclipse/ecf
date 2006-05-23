@@ -62,7 +62,6 @@ public class URIClientConnectAction implements IWorkbenchWindowActionDelegate {
             try {
                 client.createAndConnectClient(containerType, uri,nickname, password,project);
                 if (autoLogin) saveAutoLoginInfo();
-                else removeAutoLoginInfo();
                 return new Status(IStatus.OK,ClientPlugin.getDefault().getBundle().getSymbolicName(),15000,"Connected",null);
             } catch (ContainerConnectException e) {
             	removeAutoLoginInfo();
