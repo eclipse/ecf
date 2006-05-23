@@ -334,7 +334,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
      * Handler for done msg.  NOTE:  If this method name is changed,
      * then the static variable 'doneMethodName' should be changed to match.
      *
-     * @param data the FileData involved in the failure
+     * @param e the Exception involved in the failure
      */
     public void handleDone(Exception e)
     {

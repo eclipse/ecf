@@ -114,7 +114,7 @@ public class SharedObjectMsg implements Serializable {
     /**
      * Get array of argument types from array of objects
      * 
-     * @param args[]
+     * @param args
      *            the arguments to get types for
      * @return Class[] of types for objects in given Object array
      */

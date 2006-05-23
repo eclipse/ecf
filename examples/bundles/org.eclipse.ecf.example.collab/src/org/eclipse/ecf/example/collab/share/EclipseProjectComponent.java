@@ -40,9 +40,9 @@ public interface EclipseProjectComponent {
 	 * This method is invoked when a message is sent to the given 
 	 * component
 	 * 
-	 * @param meth
-	 * @param args
-	 * @return
+	 * @param meth the method name to invoke
+	 * @param args array of args to pass to call
+	 * @return Object result of the invocation
 	 */
 	public Object invoke(String meth, Object[] args);
 
@@ -52,7 +52,6 @@ public interface EclipseProjectComponent {
 	 * may override this method in order to cleanup during component shutdown
 	 * 
 	 * @param obj
-	 * @param requestor
 	 * @throws Exception
 	 */
 	public void deregister(EclipseProject obj);
