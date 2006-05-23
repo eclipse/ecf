@@ -23,9 +23,9 @@ CED=${RP}/org.eclipse.ecf.example.collab.editor_0.8.2/collabeditor.jar
 
 CP="../lib/core.jar:../lib/runtime.jar:../lib/osgi.jar:${ECF}:${UI}:${SDO}:${PROVIDER}:${PRESENCE}:${GED}:${ED}:${LIBRARY}:${DS}:${DSP}:${FS}:${FSP}:${HELLO}:${DISCOVERY}:${COLLAB}:${CED}:."
 
-TRACE="-Dorg.eclipse.ecf.Trace=true -Dorg.eclipse.ecf.provider.Trace=true" 
+TRACE="-Dorg.eclipse.ecf.Trace -Dorg.eclipse.ecf.provider.Trace" 
 
-OPTIONS=
+OPTIONS=${TRACE}
 
 MAINCLASS=org.eclipse.ecf.provider.app.ServerApplication
 ARGS="-c ../conf/server.xml $*"

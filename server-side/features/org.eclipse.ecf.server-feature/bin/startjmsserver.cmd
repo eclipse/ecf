@@ -27,7 +27,7 @@ set JMSLIB=%JMSL%\activeio-1.1.jar;%JMSL%\activemq-core-3.1-M5.jar;%JMSL%\common
 set CP="..\lib\core.jar;..\lib\runtime.jar;..\lib\osgi.jar;%JMSLIB%;%ECF%;%PROVIDER%;%PRESENCE%;%JMSP%;%DISCOVERY%;%UI%;%SDO%;%DS%;%DSP%;%FS%;%FSP%;%GED%;%ED%;%LIBRARY%;%HELLO%;%COLLAB%;%CED%;."
 
 rem set TRACE=-Dorg.eclipse.ecf.provider.jms.Trace=true -Dorg.eclipse.ecf.provider.Trace=true
-set TRACE=-Dorg.eclipse.ecf.provider.Trace=true -Dorg.eclipse.ecf.Trace=true -Dorg.eclipse.ecf.provider.jms.Trace=true
+set TRACE=-Dorg.eclipse.ecf.provider.Trace -Dorg.eclipse.ecf.Trace -Dorg.eclipse.ecf.provider.jms.Trace
 
 set OPTIONS=%TRACE%
 

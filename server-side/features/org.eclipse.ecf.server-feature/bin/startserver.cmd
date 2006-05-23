@@ -21,9 +21,9 @@ set CED=%RP%\org.eclipse.ecf.example.collab.editor_0.8.2\collabeditor.jar
 
 set CP="..\lib\core.jar;..\lib\runtime.jar;..\lib\osgi.jar;%ECF%;%UI%;%SDO%;%PROVIDER%;%PRESENCE%;%GED%;%ED%;%LIBRARY%;%HELLO%;%DS%;%DSP%;%FS%;%FsSP%;%DISCOVERY%;%COLLAB%;%CED%;."
 
-set TRACE=-Dorg.eclipse.ecf.Trace=true -Dorg.eclipse.ecf.provider.Trace=true
+set TRACE=-Dorg.eclipse.ecf.Trace -Dorg.eclipse.ecf.provider.Trace
 
-set OPTIONS=
+set OPTIONS=%TRACE%
 
 set MAINCLASS=org.eclipse.ecf.provider.app.ServerApplication
 set ARGS=-c ..\conf\server.xml %*
