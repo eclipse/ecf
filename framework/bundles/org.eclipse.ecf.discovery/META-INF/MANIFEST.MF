@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Discovery API
 Bundle-SymbolicName: org.eclipse.ecf.discovery
-Bundle-Version: 0.8.2
+Bundle-Version: 0.8.3
 Bundle-ClassPath: discovery.jar
 Bundle-Activator: org.eclipse.ecf.discovery.DiscoveryPlugin
 Bundle-Vendor: Eclipse.org
@@ -10,4 +10,5 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
 Eclipse-LazyStart: true
+Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.discovery

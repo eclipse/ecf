@@ -49,8 +49,9 @@ public class XMPPChatClient {
 	public void connect(String account, String password) throws ECFException {
 		// Create container
 		container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE);
+		namespace = container.getConnectNamespace();
 		// create target id
-		ID targetID = IDFactory.getDefault().createID(container.getConnectNamespace(), account);
+		ID targetID = IDFactory.getDefault().createID(namespace, account);
 		// Get presence adapter off of container
 		presence = (IPresenceContainer) container
 				.getAdapter(IPresenceContainer.class);

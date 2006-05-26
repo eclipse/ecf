@@ -691,10 +691,11 @@ public class XMPPClientSOContainer extends ClientSOContainer {
     }
     protected IRoomInfo getChatRoomInfo(String roomname) {
     	try {
-    		RoomInfo info = MultiUserChat.getRoomInfo(sharedObject.getConnection(),roomname);
+			// Create roomid
+			XMPPRoomID roomID = new XMPPRoomID(getConnectNamespace(),sharedObject.getConnection(),roomname);
+			String mucName = roomID.getMucString();
+    		RoomInfo info = MultiUserChat.getRoomInfo(sharedObject.getConnection(),mucName);
     		if (info != null) {
-    			// Create roomid
-    			XMPPRoomID roomID = new XMPPRoomID(getConnectNamespace(),sharedObject.getConnection(),roomname);
     			return new ECFRoomInfo(roomID,info,getConnectedID());
     		}
     	} catch (Exception e) {

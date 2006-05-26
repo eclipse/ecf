@@ -2,11 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Example Clients
 Bundle-SymbolicName: org.eclipse.ecf.example.clients;singleton:=true
-Bundle-Version: 0.8.2
+Bundle-Version: 0.8.3
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Export-Package: org.eclipse.ecf.example.clients
 Bundle-ClassPath: clients.jar
+Eclipse-AutoStart: true
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.presence

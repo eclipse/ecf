@@ -1,12 +1,13 @@
 Manifest-Version: 1.0
 Bundle-Name: ECF Core
-Bundle-SymbolicName: org.eclipse.ecf;singleton=true
-Bundle-Version: 0.8.2
+Bundle-SymbolicName: org.eclipse.ecf;singleton:=true
+Bundle-Version: 0.8.3
 Bundle-ClassPath: ecf.jar
 Bundle-Activator: org.eclipse.ecf.internal.core.ECFPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
+Eclipse-AutoStart: true
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.core.runtime
 Eclipse-BuddyPolicy: registered

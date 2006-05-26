@@ -9,5 +9,13 @@
          <run class="org.eclipse.ecf.example.clients.RobotApplication"/>
       </application>
    </extension>
+   <extension
+         id="sorobot"
+         name="Example SO Robot"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run class="org.eclipse.ecf.example.clients.SORobotApplication"/>
+      </application>
+   </extension>
 
 </plugin>

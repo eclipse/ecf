@@ -8,3 +8,4 @@ org.eclipse.ecf/debug/connectionfactory = true
 org.eclipse.ecf/debug/factoryinit = true
 org.eclipse.ecf/debug/abstractsharedobject = true
 org.eclipse.ecf/debug/twophasecommiteventprocessor = true
+org.eclipse.ecf/debug/optimisticsharedobject = true

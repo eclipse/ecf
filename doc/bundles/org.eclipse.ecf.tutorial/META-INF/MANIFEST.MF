@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Tutorial Plug-in
 Bundle-SymbolicName: org.eclipse.ecf.tutorial;singleton:=true
-Bundle-Version: 0.8.2
+Bundle-Version: 0.8.3
 Bundle-Activator: org.eclipse.ecf.tutorial.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
@@ -14,4 +14,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.datashare,
  org.eclipse.ecf.provider.datashare
 Eclipse-LazyStart: true
+Eclipse-AutoStart: true
 Bundle-ClassPath: tutorial.jar

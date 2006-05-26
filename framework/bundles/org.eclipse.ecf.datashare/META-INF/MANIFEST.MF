@@ -2,10 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF DataShare
 Bundle-SymbolicName: org.eclipse.ecf.datashare;singleton:=true
-Bundle-Version: 0.8.2
+Bundle-Version: 0.8.3
 Bundle-ClassPath: datashare.jar
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
+Eclipse-AutoStart: true
 Require-Bundle: org.eclipse.ecf;visibility:=reexport,
  org.eclipse.core.runtime
 Export-Package: org.eclipse.ecf.datashare,

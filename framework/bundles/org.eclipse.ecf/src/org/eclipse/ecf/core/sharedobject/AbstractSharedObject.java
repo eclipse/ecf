@@ -148,6 +148,9 @@ public class AbstractSharedObject implements ISharedObject,
 	protected ID getGroupID() {
 		return getContext().getConnectedID();
 	}
+	protected boolean isConnected() {
+		return (getContext().getConnectedID() != null);
+	}
 	protected boolean isPrimary() {
 		ID local = getLocalContainerID();
 		ID home = getHomeContainerID();
