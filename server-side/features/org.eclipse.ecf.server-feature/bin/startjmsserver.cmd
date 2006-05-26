@@ -1,24 +1,24 @@
 setlocal
 cd %~dp0
 set RP=..\..\..\plugins
-set JMS=%RP%\org.eclipse.ecf.provider.jms_0.8.2
-set ECF=%RP%\org.eclipse.ecf_0.8.2\ecf.jar
+set JMS=%RP%\org.eclipse.ecf.provider.jms_0.8.3
+set ECF=%RP%\org.eclipse.ecf_0.8.3\ecf.jar
 set JMSP=%JMS%\jmsprovider.jar
-set UI=%RP%\org.eclipse.ecf.ui_0.8.2\ui.jar
-set SDO=%RP%\org.eclipse.ecf.sdo_0.8.2\ecf.sdo.jar
-set DS=%RP%\org.eclipse.ecf.datashare_0.8.2\datashare.jar
-set DSP=%RP%\org.eclipse.ecf.provider.datashare_0.8.2\dsprovider.jar
-set FS=%RP%\org.eclipse.ecf.fileshare_0.8.2\fileshare.jar
-set FSP=%RP%\org.eclipse.ecf.provider.fileshare_0.8.2\fsprovider.jar
-set PROVIDER=%RP%\org.eclipse.ecf.provider_0.8.2\provider.jar
-set PRESENCE=%RP%\org.eclipse.ecf.presence_0.8.2\presence.jar
-set GED=%RP%\org.eclipse.ecf.example.sdo.gefeditor_0.8.2\editor.jar
-set ED=%RP%\org.eclipse.ecf.example.sdo.editor_0.8.2\editor.jar
-set LIBRARY=%RP%\org.eclipse.ecf.example.sdo.library_0.8.2\runtime\org.eclipse.ecf.example.library.jar
-set DISCOVERY=%RP%\org.eclipse.ecf.discovery_0.8.2\discovery.jar
-set HELLO=%RP%\org.eclipse.ecf.example.hello_0.8.2\hello.jar
-set COLLAB=%RP%\org.eclipse.ecf.example.collab_0.8.2\client.jar
-set CED=%RP%\org.eclipse.ecf.example.collab.editor_0.8.2\collabeditor.jar
+set UI=%RP%\org.eclipse.ecf.ui_0.8.3\ui.jar
+set SDO=%RP%\org.eclipse.ecf.sdo_0.8.3\ecf.sdo.jar
+set DS=%RP%\org.eclipse.ecf.datashare_0.8.3\datashare.jar
+set DSP=%RP%\org.eclipse.ecf.provider.datashare_0.8.3\dsprovider.jar
+set FS=%RP%\org.eclipse.ecf.fileshare_0.8.3\fileshare.jar
+set FSP=%RP%\org.eclipse.ecf.provider.fileshare_0.8.3\fsprovider.jar
+set PROVIDER=%RP%\org.eclipse.ecf.provider_0.8.3\provider.jar
+set PRESENCE=%RP%\org.eclipse.ecf.presence_0.8.3\presence.jar
+set GED=%RP%\org.eclipse.ecf.example.sdo.gefeditor_0.8.3\editor.jar
+set ED=%RP%\org.eclipse.ecf.example.sdo.editor_0.8.3\editor.jar
+set LIBRARY=%RP%\org.eclipse.ecf.example.sdo.library_0.8.3\runtime\org.eclipse.ecf.example.library.jar
+set DISCOVERY=%RP%\org.eclipse.ecf.discovery_0.8.3\discovery.jar
+set HELLO=%RP%\org.eclipse.ecf.example.hello_0.8.3\hello.jar
+set COLLAB=%RP%\org.eclipse.ecf.example.collab_0.8.3\client.jar
+set CED=%RP%\org.eclipse.ecf.example.collab.editor_0.8.3\collabeditor.jar
 
 set JMSL=%JMS%\lib\activemq3.1M5
 
