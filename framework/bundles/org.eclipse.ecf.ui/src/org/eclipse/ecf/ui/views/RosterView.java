@@ -1324,6 +1324,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	public void handleMessage(ID groupID, ID fromID, ID toID,
 			IMessageListener.Type type, String subject, String message) {
 		ChatWindow window = openChatWindowForTarget(fromID);
+		System.out.println("handleMessage("+groupID+","+fromID+","+toID+","+type+","+subject+","+message+")");
 		// finally, show message
 		if (window != null) {
 			window.handleMessage(fromID, toID, type, subject, message);

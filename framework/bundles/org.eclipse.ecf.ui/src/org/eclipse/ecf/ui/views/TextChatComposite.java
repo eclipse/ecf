@@ -324,7 +324,7 @@ public class TextChatComposite extends Composite {
         
         int beforeMessageIndex = st.getText().length();
         
-        st.append(text.getText());
+        st.append(text.getText().trim());
         
         if (text.getOriginator() == null) {
             StyleRange sr = new StyleRange();
@@ -353,7 +353,7 @@ public class TextChatComposite extends Composite {
 
     protected void handleEnter() {
         String text = textinput.getText().trim();
-        if(text.length() > 0) sendTextLineInput(text);
+        if(text != null) sendTextLineInput(text);
         
         clearInput();
         isTyping = false;
