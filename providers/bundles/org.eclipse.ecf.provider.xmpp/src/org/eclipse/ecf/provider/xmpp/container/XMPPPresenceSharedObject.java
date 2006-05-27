@@ -53,10 +53,6 @@ import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smack.packet.Presence.Mode;
 import org.jivesoftware.smack.packet.Presence.Type;
 
-/**
- * @author slewis
- * 
- */
 public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager {
     
     public static Trace trace = Trace.create("xmpppresencesharedobject");

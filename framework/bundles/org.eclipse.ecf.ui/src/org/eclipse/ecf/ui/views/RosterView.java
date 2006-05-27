@@ -447,51 +447,12 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			}
 			return null;
 		}
-		public void addEntry(TreeParent parent, IRosterEntry entry) {
-			TreeBuddy tb = findBuddy(parent, entry);
-			TreeBuddy newBuddy = createBuddy(tb, entry);
-			// If buddy found already, then remove old and add new
-			if (tb != null) {
-				TreeParent tbparent = tb.getParent();
-				tbparent.removeChild(tb);
-				tbparent.addChild(newBuddy);
-			}
-			TreeParent buddyParent = newBuddy.getParent();
-			if (buddyParent == null) {
-				// Existing group not found, so see if entry has a group
-				// associated with it
-				Iterator groups = entry.getGroups();
-				if (groups.hasNext()) {
-					// There's a group associated with entry...so add with group
-					// name
-					String groupName = ((IRosterGroup) groups.next()).getName();
-					TreeGroup oldgrp = findGroup(parent, groupName);
-					if (oldgrp != null) {
-						oldgrp.addChild(newBuddy);
-					} else {
-						TreeGroup newgrp = new TreeGroup(groupName, entry
-								.getServiceID());
-						newgrp.addChild(newBuddy);
-						parent.addChild(newgrp);
-					}
-				} else {
-					TreeGroup tg = findGroup(parent, UNFILED_GROUP_NAME);
-					if (tg == null) {
-						tg = new TreeGroup(UNFILED_GROUP_NAME, entry
-								.getServiceID());
-						tg.addChild(newBuddy);
-						parent.addChild(tg);
-					} else {
-						tg.addChild(newBuddy);
-					}
-				}
-			}
-		}
 		public void replaceEntry(TreeParent parent, IRosterEntry entry) {
 			TreeBuddy tb = findBuddy(parent, entry);
+			TreeParent tp = null;
 			// If entry already in tree, remove it from current position
 			if (tb != null) {
-				TreeParent tp = (TreeParent) tb.getParent();
+				tp = (TreeParent) tb.getParent();
 				if (tp != null) {
 					tp.removeChild(tb);
 					if (tp.getName().equals(UNFILED_GROUP_NAME)) {
@@ -504,29 +465,39 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			}
 			// Create new buddy
 			TreeBuddy newBuddy = createBuddy(tb, entry);
-			Iterator groups = entry.getGroups();
-			if (groups.hasNext()) {
-				// There's a group associated with entry...so add with group
-				// name
-				String groupName = ((IRosterGroup) groups.next()).getName();
-				TreeGroup oldgrp = findGroup(parent, groupName);
-				if (oldgrp != null) {
-					oldgrp.addChild(newBuddy);
-				} else {
-					TreeGroup newgrp = new TreeGroup(groupName, entry
-							.getServiceID());
-					newgrp.addChild(newBuddy);
-					parent.addChild(newgrp);
-				}
+			// If it's a replacement for an existing buddy with group (tg), then simply add as child
+			if (tp != null) {
+				tp.addChild(newBuddy);
 			} else {
-				TreeGroup tg = findGroup(parent, UNFILED_GROUP_NAME);
-				if (tg == null) {
-					tg = new TreeGroup(UNFILED_GROUP_NAME, entry.getServiceID());
-					tg.addChild(newBuddy);
-					parent.addChild(tg);
+				// The parent group is not there
+				Iterator groups = entry.getGroups();
+				// If the entry has any group, then take first one
+				if (groups.hasNext()) {
+					// There's a group associated with entry
+					String groupName = ((IRosterGroup) groups.next()).getName();
+					// Check to see if group already there
+					TreeGroup oldgrp = findGroup(parent, groupName);
+					// If so, simply add new buddy structure to existing group
+					if (oldgrp != null) oldgrp.addChild(newBuddy);
+					else {
+						// There is a group name, but check to make sure it's valid
+						if (groupName.equals("")) groupName = UNFILED_GROUP_NAME;
+						addBuddyWithGroupName(parent, entry.getServiceID(), groupName, newBuddy);
+					}
 				} else {
-					tg.addChild(newBuddy);
+					// No group name, so we add under UNFILED_GROUP_NAME
+					addBuddyWithGroupName(parent, entry.getServiceID(), UNFILED_GROUP_NAME, newBuddy);
 				}
+			}
+		}
+		protected void addBuddyWithGroupName(TreeParent parent, ID serviceID, String groupName, TreeBuddy newBuddy) {
+			TreeGroup tg = findGroup(parent, groupName);
+			if (tg == null) {
+				tg = new TreeGroup(groupName, serviceID);
+				tg.addChild(newBuddy);
+				parent.addChild(tg);
+			} else {
+				tg.addChild(newBuddy);
 			}
 		}
 		public void addAccount(ID accountID, String name) {
@@ -572,13 +543,6 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			if (name == null)
 				return;
 			removeGroup(root, name);
-		}
-		public void addEntry(IRosterEntry entry) {
-			if (entry == null)
-				return;
-			ID svcID = entry.getServiceID();
-			TreeGroup tg = findAccount(svcID.getName());
-			addEntry(tg, entry);
 		}
 		public void replaceEntry(IRosterEntry entry) {
 			if (entry == null)
@@ -1240,7 +1204,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 					|| entry.getInterestType() == IRosterEntry.InterestType.NONE) {
 				vcp.removeRosterEntry(entry.getUserID());
 			} else
-				vcp.addEntry(entry);
+				vcp.replaceEntry(entry);
 			refreshView();
 		}
 	}

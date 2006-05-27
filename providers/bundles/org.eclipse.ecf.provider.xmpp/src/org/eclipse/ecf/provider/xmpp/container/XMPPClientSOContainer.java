@@ -35,6 +35,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
@@ -74,6 +75,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.RoomInfo;
+import org.jivesoftware.smackx.packet.MUCUser;
 
 public class XMPPClientSOContainer extends ClientSOContainer {
 
@@ -81,7 +83,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	Trace trace = Trace.create("XMPPClientSOContainer");
 	
 	public static final String NAMESPACE_IDENTIFIER = XmppPlugin.getDefault().getNamespaceIdentifier();
-	
 	public static final String XMPP_SHARED_OBJECT_ID = XMPPClientSOContainer.class
 			.getName()
 			+ ".xmpphandler";
@@ -110,20 +111,21 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			trace.dumpStack(t,msg);
 		}
 	}
+	protected XMPPClientSOContainer(SOContainerConfig config, int keepAlive) throws Exception {
+		super(config);
+		this.keepAlive = keepAlive;
+		this.sharedObjectID = IDFactory.getDefault().createStringID(XMPP_SHARED_OBJECT_ID);
+		sharedObject = new XMPPPresenceSharedObject();
+	}
 	public XMPPClientSOContainer() throws Exception {
 		this(DEFAULT_KEEPALIVE);
 	}
-
 	public XMPPClientSOContainer(int ka) throws Exception {
-		super(new SOContainerConfig(IDFactory.getDefault().createGUID()));
-		keepAlive = ka;
-		initializeSharedObject();
+		this(new SOContainerConfig(IDFactory.getDefault().createGUID()),ka);
 	}
 
 	public XMPPClientSOContainer(String userhost, int ka) throws Exception {
-		super(new SOContainerConfig(IDFactory.getDefault().createStringID(userhost)));
-		keepAlive = ka;
-		initializeSharedObject();
+		this(new SOContainerConfig(IDFactory.getDefault().createStringID(userhost)),ka);
 	}
 	protected void disposeChats() {
 		for(Iterator i=chats.iterator(); i.hasNext(); ) {
@@ -173,10 +175,6 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			throws SharedObjectAddException {
 		getSharedObjectManager().addSharedObject(sharedObjectID, sharedObject,
 				new HashMap());
-	}
-
-	protected void cleanUpConnectFail() {
-		dispose();
 	}
 
 	public void dispose() {
@@ -238,121 +236,44 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		} else
 			return null;
 	}
+	
 	public Namespace getConnectNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(XmppPlugin.getDefault().getNamespaceIdentifier());
 	}
-	protected void handleChatMessageWithExtension(Message mess) throws IOException {
-		// XXX Log this properly or handle with new semantics for handling extensions
-        Iterator i = mess.getExtensions();
-        if (i.hasNext()) {
-	        for(; i.hasNext(); ) {
-	        	Object extension = i.next();
-	        	trace("XMPPClientSOContainer.handleChatMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
-	        }
-	        
-        }
-	}
-	protected void handleChatMessage(Message mess) throws IOException {
+	
+	protected void deliverEvent(Event evt) {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
-		/*  XXX 
-		if (mess.getExtensions().hasNext()) {
-			handleChatMessageWithExtension(mess);
-		} else {
-		*/
-			if (wrap != null) {
-				wrap.deliverEvent(new MessageEvent(mess));
-			}
-			/*
-		}
-		*/
+		if (wrap != null) wrap.deliverEvent(evt);
+		else trace("deliverEvent("+evt+") wrapper object is unavailable");
 	}
-
-	protected void handleContainerMessage(ContainerMessage mess)
-			throws IOException {
-		if (mess == null) {
-			debug("got null container message...ignoring");
-			return;
-		}
-		IChatRoomContainer chat = findChat(mess.getToContainerID());
-		if (chat != null && chat instanceof XMPPGroupChatSOContainer) {
-			XMPPGroupChatSOContainer cont = (XMPPGroupChatSOContainer) chat;
-			cont.handleContainerMessage(mess);
-			return;
-		}
-		Object data = mess.getData();
-		if (data instanceof ContainerMessage.CreateMessage) {
-			handleCreateMessage(mess);
-		} else if (data instanceof ContainerMessage.CreateResponseMessage) {
-			handleCreateResponseMessage(mess);
-		} else if (data instanceof ContainerMessage.SharedObjectMessage) {
-			handleSharedObjectMessage(mess);
-		} else if (data instanceof ContainerMessage.SharedObjectDisposeMessage) {
-			handleSharedObjectDisposeMessage(mess);
-		} else {
-			debug("got unrecognized container message...ignoring: " + mess);
-		}
-	}
-
-	protected void handleIQMessageWithExtension(IQ mess) throws IOException {
-		// XXX Log this properly or handle with new semantics for handling extensions
-        Iterator i = mess.getExtensions();
-        if (i.hasNext()) {
-	        for(; i.hasNext(); ) {
-	        	Object extension = i.next();
-	        	trace("XMPPClientSOContainer.handleIQMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
-	        }
-        }
-	}
-	protected void handleIQMessage(IQ mess) throws IOException {
-		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
-		if (mess.getExtensions().hasNext()) {
-			handleIQMessageWithExtension(mess);
-		} else {
-			if (wrap != null) {
-				wrap.deliverEvent(new IQEvent(mess));
-			}
-		}
-	}
-
-	protected void handlePresenceMessageWithExtension(Presence mess) throws IOException {
-		// XXX Log this properly or handle with new semantics for handling extensions		
-        Iterator i = mess.getExtensions();
-        if (i.hasNext()) {
-	        for(; i.hasNext(); ) {
-	        	Object extension = i.next();
-	        	trace("XMPPClientSOContainer.handlePresenceMessageWithExtension("+mess+") presence extension: "+extension+",from="+mess.getFrom()+",to="+mess.getTo());
-	        }
-	        
-        }
-        
-	}
-	protected void handlePresenceMessage(Presence mess) throws IOException {
-		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
-		if (mess.getExtensions().hasNext()) {
-			handlePresenceMessageWithExtension(mess);
-		} else {
-			if (wrap != null) {
-				wrap.deliverEvent(new PresenceEvent(mess));
-			}
-		}
-	}
-
+	
 	protected void handleXMPPMessage(Packet aPacket) throws IOException {
-		if (aPacket instanceof IQ) {
-			handleIQMessage((IQ) aPacket);
-		} else if (aPacket instanceof Message) {
-			handleChatMessage((Message) aPacket);
-		} else if (aPacket instanceof Presence) {
-			handlePresenceMessage((Presence) aPacket);
-		} else {
-			// unexpected message
-			debug("got unexpected packet " + aPacket);
+		if (!handleAsExtension(aPacket)) {
+			if (aPacket instanceof IQ) {
+				deliverEvent(new IQEvent((IQ) aPacket));
+			} else if (aPacket instanceof Message) {
+				deliverEvent(new MessageEvent((Message) aPacket));
+			} else if (aPacket instanceof Presence) {
+				deliverEvent(new PresenceEvent((Presence) aPacket));
+			} else {
+				// unexpected message
+				debug("got unexpected packet " + aPacket.toXML());
+			}
 		}
 	}
 
-	protected void initializeSharedObject() throws Exception {
-		sharedObjectID = IDFactory.getDefault().createStringID(XMPP_SHARED_OBJECT_ID);
-		sharedObject = new XMPPPresenceSharedObject();
+	protected boolean handleAsExtension(Packet packet) {
+		// XXX this is where extension mechanism needs to be added
+        Iterator i = packet.getExtensions();
+        for(; i.hasNext(); ) {
+        	Object extension = i.next();
+        	trace("XMPPClientSOContainer.handleAsExtension(ext="+extension+",packet="+packet.toXML()+")");
+            if (packet instanceof Presence && extension instanceof MUCUser) {
+            	trace("XMPPClientSOContainer.handleAsExtension: received presence for MUCUser");
+            	return true;
+            }
+        }
+		return false;
 	}
 
 	public void connect(ID remote, IConnectContext joinContext)
@@ -361,10 +282,10 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 			addSharedObjectToContainer(remote);
 			super.connect(remote, joinContext);
 		} catch (ContainerConnectException e) {
-			cleanUpConnectFail();
+			dispose();
 			throw e;
 		} catch (SharedObjectAddException e1) {
-			cleanUpConnectFail();
+			dispose();
 			throw new ContainerConnectException(
 					"Exception adding shared object " + sharedObjectID, e1);
 		}
@@ -408,18 +329,35 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 	protected void processAsynch(AsynchConnectionEvent e) {
 		try {
 			if (e instanceof ECFConnectionPacketEvent) {
-				// It's a regular message...just print for now
-				Packet chatMess = (Packet) e.getData();
-				handleXMPPMessage(chatMess);
+				// It's a regular xmpp message
+				handleXMPPMessage((Packet) e.getData());
 				return;
 			} else if (e instanceof ECFConnectionObjectPacketEvent) {
+				// It's an ECF object message
 				ECFConnectionObjectPacketEvent evt = (ECFConnectionObjectPacketEvent) e;
 				Object obj = evt.getObjectValue();
 				// this should be a ContainerMessage
 				Object cm = deserializeContainerMessage((byte[]) obj);
                 if (cm == null) throw new IOException("deserialized object is null");
 				ContainerMessage contMessage = (ContainerMessage) cm;
-				handleContainerMessage(contMessage);
+				IChatRoomContainer chat = findChat(contMessage.getToContainerID());
+				if (chat != null && chat instanceof XMPPGroupChatSOContainer) {
+					XMPPGroupChatSOContainer cont = (XMPPGroupChatSOContainer) chat;
+					cont.handleContainerMessage(contMessage);
+					return;
+				}
+				Object data = contMessage.getData();
+				if (data instanceof ContainerMessage.CreateMessage) {
+					handleCreateMessage(contMessage);
+				} else if (data instanceof ContainerMessage.CreateResponseMessage) {
+					handleCreateResponseMessage(contMessage);
+				} else if (data instanceof ContainerMessage.SharedObjectMessage) {
+					handleSharedObjectMessage(contMessage);
+				} else if (data instanceof ContainerMessage.SharedObjectDisposeMessage) {
+					handleSharedObjectDisposeMessage(contMessage);
+				} else {
+					debug("got unrecognized container message...ignoring: " + contMessage);
+				}
 			} else {
 				// Unexpected type...
 				debug("got unexpected event: " + e);
