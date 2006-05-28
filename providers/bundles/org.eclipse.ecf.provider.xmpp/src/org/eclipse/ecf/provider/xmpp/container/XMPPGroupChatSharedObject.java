@@ -44,6 +44,7 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
     Vector invitationListeners = new Vector();
     
     protected void debug(String msg) {
+    	if (config == null) return;
         if (Trace.ON && trace != null) {
             trace.msg(config.getSharedObjectID() + ":" + msg);
         }
