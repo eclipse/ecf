@@ -34,6 +34,7 @@ public class XMPPChatClient {
 	ID userID = null;
 	IChatRoomManager chatmanager = null;
 	IChatRoomContainer chatroom = null;
+	IRoomInfo roomInfo = null;
 	
 	// Interface for receiving messages
 	IMessageReceiver receiver = null;
@@ -69,16 +70,15 @@ public class XMPPChatClient {
 		// Get a local ID for user account
 		userID = getID(account);
 	}
-	
-	public IChatRoomContainer connectChatRoom(String chatRoomName) throws Exception {
+	public IChatRoomContainer createChatRoom(String chatRoomName) throws Exception {
 		// Create chat room container from manager
-		IRoomInfo roomInfo = presence.getChatRoomManager().getChatRoomInfo(chatRoomName);
+		roomInfo = presence.getChatRoomManager().getChatRoomInfo(chatRoomName);
 		chatroom = roomInfo.createChatRoomContainer();
-		// connect to target
-		chatroom.connect(roomInfo.getRoomID(), null);
 		return chatroom;
 	}
-
+	public IRoomInfo getChatRoomInfo() {
+		return roomInfo;
+	}
 	private ID getID(String name) {
 		try {
 			return IDFactory.getDefault().createID(namespace, name);
