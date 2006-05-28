@@ -16,15 +16,18 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -949,7 +952,8 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	}
 	protected void showChatRoomsForAccount(UserAccount ua) {
 		IChatRoomManager manager = ua.getContainer().getChatRoomManager();
-		showChatRooms(new IChatRoomManager [] { manager});
+		if (manager != null) showChatRooms(new IChatRoomManager [] { manager});
+		else showChatRooms(new IChatRoomManager [] {});
 	}
 	protected void showChatRooms(IChatRoomManager [] managers) {
 		// Create chat room selection dialog with managers, open
@@ -1122,15 +1126,14 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		openChatRoomAction = new Action() {
 			public void run() {
 				// Get managers for all accounts currently connected to
-				IChatRoomManager managers[] = new IChatRoomManager[accounts
-						.size()];
-				int j = 0;
+				List list = new ArrayList();
 				for (Iterator i = accounts.values().iterator(); i.hasNext();) {
 					UserAccount ua = (UserAccount) i.next();
-					managers[j++] = ua.getContainer().getChatRoomManager();
+					IChatRoomManager man = ua.getContainer().getChatRoomManager();
+					if (man != null) list.add(man);
 				}
 				// get chat rooms, allow user to choose desired one and open it
-				showChatRooms(managers);
+				showChatRooms((IChatRoomManager []) list.toArray(new IChatRoomManager [] {}));
 			}
 		};
 		openChatRoomAction.setText("Enter Chatroom");
