@@ -53,24 +53,42 @@ public class XMPPClient {
 	protected void setPresenceListener(IPresenceListener listener) {
 		this.presenceListener = listener;
 	}
-	public void connect(String account, String password) throws ECFException {
-		container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE);
-		namespace = container.getConnectNamespace();
-		ID targetID = IDFactory.getDefault().createID(namespace, account);
-		presence = (IPresenceContainer) container
-				.getAdapter(IPresenceContainer.class);
-		sender = presence.getMessageSender();
-		presence.addMessageListener(new IMessageListener() {
-			public void handleMessage(ID fromID, ID toID, Type type, String subject, String messageBody) {
-				if (receiver != null) {
-					receiver.handleMessage(fromID.getName(), messageBody);
-				}
-			}
-		});
-		if (presenceListener != null) {
-			presence.addPresenceListener(presenceListener);
+	protected IContainer setupContainer() throws ECFException {
+		if (container == null) {
+			container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE);
+			namespace = container.getConnectNamespace();
 		}
+		return container;
+	}
+	protected IContainer getContainer() {
+		return container;
+	}
+	protected Namespace getConnectNamespace() {
+		return namespace;
+	}
+	protected void setupPresence() throws ECFException {
+		if (presence == null) {
+			presence = (IPresenceContainer) container
+					.getAdapter(IPresenceContainer.class);
+			sender = presence.getMessageSender();
+			presence.addMessageListener(new IMessageListener() {
+				public void handleMessage(ID fromID, ID toID, Type type,
+						String subject, String messageBody) {
+					if (receiver != null) {
+						receiver.handleMessage(fromID.getName(), messageBody);
+					}
+				}
+			});
+			if (presenceListener != null) {
+				presence.addPresenceListener(presenceListener);
+			}
+		}
+	}
+	public void connect(String account, String password) throws ECFException {
+		setupContainer();
+		setupPresence();
 		// Now connect
+		ID targetID = IDFactory.getDefault().createID(namespace, account);
 		container.connect(targetID,ConnectContextFactory.createPasswordConnectContext(password));
 		userID = getID(account);
 	}
