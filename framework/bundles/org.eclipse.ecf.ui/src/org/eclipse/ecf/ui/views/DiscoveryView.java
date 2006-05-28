@@ -329,6 +329,10 @@ public class DiscoveryView extends ViewPart {
 					ServiceID existingID = parent.getID();
 					if (existingID.equals(svcID)) {
 						typenode.removeChild(parent);
+						if (typenode.getChildren().length == 0) {
+							TreeParent grandParent = typenode.getParent();
+							grandParent.removeChild(typenode);
+						}
 					}
 				}
 			}
