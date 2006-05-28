@@ -42,17 +42,23 @@ public class XMPPChatClient {
 	public XMPPChatClient() {
 		this(null);
 	}
-	
 	public XMPPChatClient(IMessageReceiver receiver) {
 		super();
 		this.receiver = receiver;
 	}
-	public void connect(String account, String password) throws ECFException {
+	protected IContainer createContainer() throws ECFException {
 		// Create container
 		container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE);
 		namespace = container.getConnectNamespace();
-		// create target id
-		ID targetID = IDFactory.getDefault().createID(namespace, account);
+		return container;
+	}
+	protected IContainer getContainer() {
+		return container;
+	}
+	protected Namespace getNamespace() {
+		return namespace;
+	}
+	protected void setupPresenceAdapter() {
 		// Get presence adapter off of container
 		presence = (IPresenceContainer) container
 				.getAdapter(IPresenceContainer.class);
@@ -64,9 +70,20 @@ public class XMPPChatClient {
 				receiver.handleMessage(fromID.getName(), messageBody);
 			}
 		});
-		//
+	}
+	protected IPresenceContainer getPresenceContainer() {
+		return presence;
+	}
+	protected IMessageSender getMessageSender() {
+		return sender;
+	}
+	public void connect(String account, String password) throws ECFException {
+		createContainer();
+		setupPresenceAdapter();
+		// create target id
+		ID targetID = IDFactory.getDefault().createID(getNamespace(), account);
 		// Now connect
-		container.connect(targetID,ConnectContextFactory.createPasswordConnectContext(password));
+		getContainer().connect(targetID,ConnectContextFactory.createPasswordConnectContext(password));
 		// Get a local ID for user account
 		userID = getID(account);
 	}
