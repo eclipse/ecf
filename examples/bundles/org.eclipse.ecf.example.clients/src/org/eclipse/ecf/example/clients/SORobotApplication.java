@@ -57,7 +57,7 @@ IMessageListener {
 		addSharedObject((ISharedObjectContainer) room.getAdapter(ISharedObjectContainer.class));
 		// Add this as message listener for room
 		room.addMessageListener(this);
-		// Connect to room
+		// Connect to room with given room ID
 		room.connect(client.getChatRoomInfo().getRoomID(),null);
 	    // Get message sender interface for room
 		sender = room.getChatMessageSender();
@@ -72,7 +72,14 @@ IMessageListener {
 	}
 
 	protected void addSharedObject(ISharedObjectContainer soContainer) throws ECFException {
-		if (soContainer != null) soContainer.getSharedObjectManager().addSharedObject(IDFactory.getDefault().createGUID(), new TrivialSharedObject(), null);
+		if (soContainer != null) {
+			// Create a new GUID for new TrivialSharedObject instance
+			ID newID = IDFactory.getDefault().createGUID();
+			// Create TrivialSharedObject
+			TrivialSharedObject tso = new TrivialSharedObject();
+			// Add shared object to container
+			soContainer.getSharedObjectManager().addSharedObject(newID, tso, null);
+		}
 	}
 	
 	public synchronized void handleMessage(String from, String msg) {
