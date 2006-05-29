@@ -48,16 +48,21 @@ IMessageListener {
 
 	private void runRobot(String hostName, String password, String roomName)
 			throws ECFException, Exception, InterruptedException {
-		// Create client and connect
+		// Create client and connect to host
 		XMPPChatClient client = new XMPPChatClient(this);
 		client.connect(userName + "@" + hostName, password);
-		// Create room and
+		// Create room of given name
 		IChatRoomContainer room = client.createChatRoom(roomName);
+		// Get ISharedObjectContainer adapter and add TrivialSharedObject to container
 		addSharedObject((ISharedObjectContainer) room.getAdapter(ISharedObjectContainer.class));
+		// Add this as message listener for room
 		room.addMessageListener(this);
+		// Connect to room
 		room.connect(client.getChatRoomInfo().getRoomID(),null);
+	    // Get message sender interface for room
 		sender = room.getChatMessageSender();
 		running = true;
+		// Send initial message for room
 		sender
 				.sendMessage("Hi, I'm a robot. To get rid of me, send me a direct message.");
 		
