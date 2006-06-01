@@ -11,7 +11,7 @@
                class="org.eclipse.ecf.tutorial.actions.StartClientAction"
                icon="icons/person.gif"
                id="org.eclipse.ecf.tutorial.action1"
-               label="ECF Client"
+               label="Connect ScribbleShare Client"
                menubarPath="tutorialMenu/tutorialSeparator"
                style="push"
                toolbarPath="tutorialMenu"
