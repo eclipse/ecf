@@ -53,7 +53,7 @@ public class PresenceContainerUI {
                     IWorkbenchWindow ww = PlatformUI.getWorkbench()
                             .getActiveWorkbenchWindow();
                     IWorkbenchPage wp = ww.getActivePage();
-                    IViewPart view = wp.showView("org.eclipse.ecf.ui.view.rosterview");
+                    IViewPart view = wp.showView("org.eclipse.ecf.example.collab.ui.CollabRosterView");
                     rosterView = (RosterView) view;
                     String nickname = null;
                     if (nick != null) {

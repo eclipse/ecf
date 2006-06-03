@@ -26,12 +26,12 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
-import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
@@ -45,9 +45,9 @@ import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnectionEventHandler;
 import org.eclipse.ecf.core.comm.SynchConnectionEvent;
-import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisposeEvent;
+import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -1026,28 +1026,39 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	protected Object deserializeSharedObjectMessage(byte[] bytes)
 			throws IOException, ClassNotFoundException {
 		ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
-		IdentifiableObjectInputStream iins = new IdentifiableObjectInputStream(
-				new IClassLoaderMapper() {
-					public ClassLoader mapNameToClassLoader(String name) {
-						ISharedObjectManager manager = getSharedObjectManager();
-						ID[] ids = manager.getSharedObjectIDs();
-						ID found = null;
-						for (int i = 0; i < ids.length; i++) {
-							ID id = ids[i];
-							if (name.equals(id.getName())) {
-								found = id;
-								break;
+		Object obj = null;
+		try {
+			// First try normal classloading.  In Eclipse environment this will use
+			// buddy classloading
+			ObjectInputStream oins = new ObjectInputStream(bins);
+			obj = oins.readObject();
+		} catch (ClassNotFoundException e) {
+			// If this fails, then try to use the given shared object's classloader
+			dumpStack("ClassNotFoundException in deserializeSharedObjectMessage.  Trying shared object classloader", e);
+			// Now try with shared object classloader
+			IdentifiableObjectInputStream iins = new IdentifiableObjectInputStream(
+					new IClassLoaderMapper() {
+						public ClassLoader mapNameToClassLoader(String name) {
+							ISharedObjectManager manager = getSharedObjectManager();
+							ID[] ids = manager.getSharedObjectIDs();
+							ID found = null;
+							for (int i = 0; i < ids.length; i++) {
+								ID id = ids[i];
+								if (name.equals(id.getName())) {
+									found = id;
+									break;
+								}
 							}
+							if (found == null)
+								return null;
+							ISharedObject obj = manager.getSharedObject(found);
+							if (obj == null)
+								return null;
+							return obj.getClass().getClassLoader();
 						}
-						if (found == null)
-							return null;
-						ISharedObject obj = manager.getSharedObject(found);
-						if (obj == null)
-							return null;
-						return obj.getClass().getClassLoader();
-					}
-				}, bins);
-		Object obj = iins.readObject();
+					}, bins);
+			obj = iins.readObject();
+		}
 		return obj;
 	}
 	protected void sendMessage(ID toContainerID, ID sharedObjectID,

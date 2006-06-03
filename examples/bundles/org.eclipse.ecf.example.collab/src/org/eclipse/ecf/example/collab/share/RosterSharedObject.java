@@ -1,4 +1,4 @@
-package org.eclipse.ecf.ui.views;
+package org.eclipse.ecf.example.collab.share;
 
 import java.io.IOException;
 
@@ -8,12 +8,13 @@ import org.eclipse.ecf.core.sharedobject.AbstractSharedObject;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsgEvent;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.example.collab.ui.CollabRosterView;
 
-public class RosterViewSharedObject extends AbstractSharedObject {
+public class RosterSharedObject extends AbstractSharedObject {
 
-	RosterView view;
+	CollabRosterView view;
 
-	public RosterViewSharedObject(RosterView view) {
+	public RosterSharedObject(CollabRosterView view) {
 		this.view = view;
 	}
 

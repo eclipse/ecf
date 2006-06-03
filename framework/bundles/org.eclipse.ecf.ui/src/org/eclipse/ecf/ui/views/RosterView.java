@@ -16,7 +16,6 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -32,11 +31,10 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
@@ -107,24 +105,26 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	public static final String ADDCHAT_ICON = "icons/enabled/addchat.gif";
 	public static final String UNFILED_GROUP_NAME = "Buddies";
 	protected static final int TREE_EXPANSION_LEVELS = 3;
+	
 	private TreeViewer viewer;
-	// private Action chatAction;
 	private Action selectedChatAction;
 	private Action selectedDoubleClickAction;
 	private Action disconnectAction;
 	private Action disconnectAccountAction;
 	private Action openChatRoomAction;
 	private Action openChatRoomAccountAction;
+	
 	protected Hashtable chatThreads = new Hashtable();
 	protected Hashtable accounts = new Hashtable();
 	protected Hashtable chatRooms = new Hashtable();
-	class UserAccount {
+	
+	protected class UserAccount {
 		ID serviceID;
 		IUser user;
 		ILocalInputHandler inputHandler;
 		IPresenceContainer container;
 		ISharedObjectContainer soContainer;
-		RosterViewSharedObject sharedObject;
+		ISharedObject sharedObject = null;
 		
 		public UserAccount(ID serviceID, IUser user,
 				ILocalInputHandler handler, IPresenceContainer container, ISharedObjectContainer soContainer) {
@@ -133,15 +133,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			this.inputHandler = handler;
 			this.container = container;
 			this.soContainer = soContainer;
-			if (this.soContainer != null) {
-				try {
-					sharedObject = new RosterViewSharedObject(RosterView.this);
-					soContainer.getSharedObjectManager().addSharedObject(IDFactory.getDefault().createStringID(RosterViewSharedObject.class.getName()), sharedObject, null);
-				} catch (Exception e) {
-					sharedObject = null;
-					e.printStackTrace();
-				}
-			}
+			this.sharedObject = createAndAddSharedObjectForAccount(this);
 		}
 		
 		public ID getServiceID() {
@@ -159,16 +151,20 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		public ISharedObjectContainer getSOContainer() {
 			return soContainer;
 		}
-		public RosterViewSharedObject getSharedObject() {
+		public ISharedObject getSharedObject() {
 			return sharedObject;
 		}
 	}
-	
-	protected boolean isSOContainerAccount(ID serviceID) {
-		if (serviceID == null) return false;
-		UserAccount ua = getAccount(serviceID);
-		if (ua != null) return ua.getSharedObject() != null;
-		return false;
+	/**
+	 * Called when an account is added to a RosterView.  By default, this method simply
+	 * returns null, meaning that no shared object is to be associated with the given 
+	 * account.  Subclasses may override if they wish to create and set up a shared object
+	 * for the given account.
+	 * 
+	 * @param account the UserAccount to add the shared object to 
+	 */
+	protected ISharedObject createAndAddSharedObjectForAccount(UserAccount account) {
+		return null;
 	}
 	protected void addAccount(UserAccount account) {
 		ViewContentProvider vcp = (ViewContentProvider) viewer
@@ -216,7 +212,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		accounts.clear();
 		super.dispose();
 	}
-	class TreeObject implements IAdaptable {
+	protected class TreeObject implements IAdaptable {
 		private String name;
 		private TreeParent parent;
 		private ID id;
@@ -249,7 +245,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			return null;
 		}
 	}
-	class TreeParent extends TreeObject {
+	protected class TreeParent extends TreeObject {
 		protected ArrayList children;
 		public TreeParent(String name) {
 			super(name);
@@ -282,7 +278,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			return children.size() > 0;
 		}
 	}
-	class TreeAccount extends TreeGroup {
+	protected class TreeAccount extends TreeGroup {
 		public TreeAccount(String name, ID id) {
 			super(name, id);
 		}
@@ -290,7 +286,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			return getName();
 		}
 	}
-	class TreeGroup extends TreeParent {
+	protected class TreeGroup extends TreeParent {
 		public TreeGroup(String name, ID svcID) {
 			super(name, svcID);
 			if (name == null || name.equals("")) setName(UNFILED_GROUP_NAME);
@@ -316,7 +312,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 					+ ")";
 		}
 	}
-	class TreeBuddy extends TreeParent {
+	protected class TreeBuddy extends TreeParent {
 		IPresence presence = null;
 		ID svcID = null;
 		public TreeBuddy(ID svcID, String name, ID id, IPresence p) {
@@ -340,7 +336,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			return presence.getType().equals(IPresence.Type.AVAILABLE);
 		}
 	}
-	class ViewContentProvider implements IStructuredContentProvider,
+	protected class ViewContentProvider implements IStructuredContentProvider,
 			ITreeContentProvider {
 		private TreeParent invisibleRoot;
 		private TreeParent root;
@@ -722,7 +718,16 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	protected void disconnectAccount(UserAccount acct) {
 		acct.getInputHandler().disconnect();
 	}
-	private void fillContextMenu(IMenuManager manager) {
+	/**
+	 * Called when time to fill the context menu.  First allows super class to fill menu,
+	 * then adds on test action that simply sends shared object message to given buddy.
+	 * Subclasses may override as appropriate to fill in context menu.  Note that 
+	 * super.fillContextMenu(manager) should always be called first to allow the 
+	 * superclass to fill in the context menu.
+	 * 
+	 * @param manager the IMenuManager
+	 */
+	protected void fillContextMenu(IMenuManager manager) {
 		final TreeObject treeObject = getSelectedTreeObject();
 		final ID targetID = treeObject.getId();
 		if (treeObject != null) {
@@ -761,16 +766,6 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 								ISharedImages.IMG_TOOL_DELETE));
 				manager.add(removeUserAction);
 				
-				ID serviceID = tb.getServiceID();
-				final UserAccount ua = getAccount(serviceID);
-				Action sendSOMessageAction = new Action() {
-					public void run() {
-						sendSOMessageToTarget(ua,targetID);
-					}
-				};
-				sendSOMessageAction.setText("Send ECF private message to "+targetID.getName());
-				sendSOMessageAction.setEnabled(isSOContainerAccount(serviceID));
-				manager.add(sendSOMessageAction);
 			} else if (treeObject instanceof TreeAccount) {
 				final TreeAccount treeAccount = (TreeAccount) treeObject;
 				final ID accountID = treeAccount.getId();
@@ -851,12 +846,6 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		manager.add(new Separator());
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	}
-	protected void sendSOMessageToTarget(UserAccount account, ID targetID) {
-		RosterViewSharedObject so = account.getSharedObject();
-		if (so != null) {
-			so.sendMessageTo(targetID, "hello!");
-		}
 	}
 	protected void changePasswordForAccount(ID accountID) {
 		UserAccount account = getAccount(accountID);
@@ -1348,10 +1337,8 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	}
 	public void addAccount(ID account, IUser user, ILocalInputHandler handler,
 			IPresenceContainer container, ISharedObjectContainer soContainer) {
-		if (account != null) {
-			addAccount(new UserAccount(account, user, handler, container, soContainer));
-			setToolbarEnabled(true);
-		}
+		addAccount(new UserAccount(account, user, handler, container, soContainer));
+		setToolbarEnabled(true);
 	}
 	protected void setToolbarEnabled(boolean enabled) {
 		disconnectAction.setEnabled(enabled);

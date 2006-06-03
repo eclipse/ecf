@@ -16,6 +16,12 @@
             icon="icons/person.gif"
             id="org.eclipse.ecf.example.collab.discoveryview"
             name="ECF Dynamic Service Discovery"/>
+      <view
+            category="org.eclipse.ecf.ui.viewcategory"
+            class="org.eclipse.ecf.example.collab.ui.CollabRosterView"
+            icon="icons/person.gif"
+            id="org.eclipse.ecf.example.collab.ui.CollabRosterView"
+            name="ECF Collab Roster View"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
