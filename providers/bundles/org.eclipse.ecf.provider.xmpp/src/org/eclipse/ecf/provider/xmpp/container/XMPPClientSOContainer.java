@@ -139,17 +139,17 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 		XMPPRoomID roomID = null;
 		if (toID instanceof XMPPRoomID) {
 			roomID = (XMPPRoomID) toID;
-		}
-		String mucname = roomID.getMucString();
-		for(Iterator i=chats.iterator(); i.hasNext(); ) {
-			IChatRoomContainer cont = (IChatRoomContainer) i.next();
-			if (cont == null) continue;
-			ID tid = cont.getConnectedID();
-			if (tid != null && tid instanceof XMPPRoomID) {
-				XMPPRoomID targetID = (XMPPRoomID) tid;
-				String tmuc = targetID.getMucString();
-				if (tmuc.equals(mucname)) {
-					return cont;
+			String mucname = roomID.getMucString();
+			for(Iterator i=chats.iterator(); i.hasNext(); ) {
+				IChatRoomContainer cont = (IChatRoomContainer) i.next();
+				if (cont == null) continue;
+				ID tid = cont.getConnectedID();
+				if (tid != null && tid instanceof XMPPRoomID) {
+					XMPPRoomID targetID = (XMPPRoomID) tid;
+					String tmuc = targetID.getMucString();
+					if (tmuc.equals(mucname)) {
+						return cont;
+					}
 				}
 			}
 		}

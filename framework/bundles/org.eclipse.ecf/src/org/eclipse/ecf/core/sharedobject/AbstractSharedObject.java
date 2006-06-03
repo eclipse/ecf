@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
@@ -23,6 +24,7 @@ import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
+import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
@@ -253,7 +255,7 @@ public class AbstractSharedObject implements ISharedObject,
      * will receive no further processing.  If non-null the provided Event will be 
      * passed to subsequent event processors.
      */
-    protected Event handleSharedObjectMsgEvent(SharedObjectMsgEvent event) {
+    protected Event handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
     	trace("handleSharedObjectMsgEvent("+event+")");
     	return event;
     }

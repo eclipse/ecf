@@ -19,4 +19,6 @@ Provide-Package: org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.views,
  org.eclipse.ecf.ui.wizards
 Export-Package:  org.eclipse.ecf.ui.views, org.eclipse.ecf.ui.dialogs
+Eclipse-RegisterBuddy: org.eclipse.ecf
+Eclipse-BuddyPolicy: dependent
 

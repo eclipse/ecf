@@ -32,8 +32,11 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
@@ -120,13 +123,27 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		IUser user;
 		ILocalInputHandler inputHandler;
 		IPresenceContainer container;
+		ISharedObjectContainer soContainer;
+		RosterViewSharedObject sharedObject;
+		
 		public UserAccount(ID serviceID, IUser user,
-				ILocalInputHandler handler, IPresenceContainer container) {
+				ILocalInputHandler handler, IPresenceContainer container, ISharedObjectContainer soContainer) {
 			this.serviceID = serviceID;
 			this.user = user;
 			this.inputHandler = handler;
 			this.container = container;
+			this.soContainer = soContainer;
+			if (this.soContainer != null) {
+				try {
+					sharedObject = new RosterViewSharedObject(RosterView.this);
+					soContainer.getSharedObjectManager().addSharedObject(IDFactory.getDefault().createStringID(RosterViewSharedObject.class.getName()), sharedObject, null);
+				} catch (Exception e) {
+					sharedObject = null;
+					e.printStackTrace();
+				}
+			}
 		}
+		
 		public ID getServiceID() {
 			return serviceID;
 		}
@@ -136,9 +153,22 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		public ILocalInputHandler getInputHandler() {
 			return inputHandler;
 		}
-		public IPresenceContainer getContainer() {
+		public IPresenceContainer getPresenceContainer() {
 			return container;
 		}
+		public ISharedObjectContainer getSOContainer() {
+			return soContainer;
+		}
+		public RosterViewSharedObject getSharedObject() {
+			return sharedObject;
+		}
+	}
+	
+	protected boolean isSOContainerAccount(ID serviceID) {
+		if (serviceID == null) return false;
+		UserAccount ua = getAccount(serviceID);
+		if (ua != null) return ua.getSharedObject() != null;
+		return false;
 	}
 	protected void addAccount(UserAccount account) {
 		ViewContentProvider vcp = (ViewContentProvider) viewer
@@ -730,6 +760,17 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 						.getSharedImages().getImageDescriptor(
 								ISharedImages.IMG_TOOL_DELETE));
 				manager.add(removeUserAction);
+				
+				ID serviceID = tb.getServiceID();
+				final UserAccount ua = getAccount(serviceID);
+				Action sendSOMessageAction = new Action() {
+					public void run() {
+						sendSOMessageToTarget(ua,targetID);
+					}
+				};
+				sendSOMessageAction.setText("Send ECF private message to "+targetID.getName());
+				sendSOMessageAction.setEnabled(isSOContainerAccount(serviceID));
+				manager.add(sendSOMessageAction);
 			} else if (treeObject instanceof TreeAccount) {
 				final TreeAccount treeAccount = (TreeAccount) treeObject;
 				final ID accountID = treeAccount.getId();
@@ -811,10 +852,16 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
+	protected void sendSOMessageToTarget(UserAccount account, ID targetID) {
+		RosterViewSharedObject so = account.getSharedObject();
+		if (so != null) {
+			so.sendMessageTo(targetID, "hello!");
+		}
+	}
 	protected void changePasswordForAccount(ID accountID) {
 		UserAccount account = getAccount(accountID);
 		if (account != null) {
-			IPresenceContainer pc = account.getContainer();
+			IPresenceContainer pc = account.getPresenceContainer();
 			IAccountManager am = pc.getAccountManager();
 			ChangePasswordDialog cpd = new ChangePasswordDialog(viewer.getControl().getShell());
 			cpd.open();
@@ -951,7 +998,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		};
 	}
 	protected void showChatRoomsForAccount(UserAccount ua) {
-		IChatRoomManager manager = ua.getContainer().getChatRoomManager();
+		IChatRoomManager manager = ua.getPresenceContainer().getChatRoomManager();
 		if (manager != null) showChatRooms(new IChatRoomManager [] { manager});
 		else showChatRooms(new IChatRoomManager [] {});
 	}
@@ -1129,7 +1176,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 				List list = new ArrayList();
 				for (Iterator i = accounts.values().iterator(); i.hasNext();) {
 					UserAccount ua = (UserAccount) i.next();
-					IChatRoomManager man = ua.getContainer().getChatRoomManager();
+					IChatRoomManager man = ua.getPresenceContainer().getChatRoomManager();
 					if (man != null) list.add(man);
 				}
 				// get chat rooms, allow user to choose desired one and open it
@@ -1300,9 +1347,9 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		}
 	}
 	public void addAccount(ID account, IUser user, ILocalInputHandler handler,
-			IPresenceContainer container) {
+			IPresenceContainer container, ISharedObjectContainer soContainer) {
 		if (account != null) {
-			addAccount(new UserAccount(account, user, handler, container));
+			addAccount(new UserAccount(account, user, handler, container, soContainer));
 			setToolbarEnabled(true);
 		}
 	}

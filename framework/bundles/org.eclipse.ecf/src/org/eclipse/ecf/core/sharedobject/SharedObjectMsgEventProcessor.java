@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.core.sharedobject;
 
+import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 
@@ -27,15 +28,15 @@ public class SharedObjectMsgEventProcessor implements IEventProcessor {
 		this.sharedObject = sharedObject;
 	}
 	public boolean acceptEvent(Event event) {
-		return (event instanceof SharedObjectMsgEvent);
+		return (event instanceof ISharedObjectMessageEvent);
 	}
 	public Event processEvent(Event event) {
-		if (!(event instanceof SharedObjectMsgEvent)) {
+		if (!(event instanceof ISharedObjectMessageEvent)) {
 			return event;
 		}
-		return processSharedObjectMsgEvent((SharedObjectMsgEvent) event);
+		return processSharedObjectMsgEvent((ISharedObjectMessageEvent) event);
 	}
-	protected Event processSharedObjectMsgEvent(SharedObjectMsgEvent event) {
+	protected Event processSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
 		return sharedObject.handleSharedObjectMsgEvent(event);
 	}
 }
