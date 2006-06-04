@@ -48,6 +48,7 @@ public class XMPPSORobotApplication implements IPlatformRunnable, IMessageReceiv
 		client = new XMPPClient(this);
 		client.setupContainer();
 		client.setupPresence();
+		
 		// Get ISharedObjectContainer adapter
 		ISharedObjectContainer socontainer = (ISharedObjectContainer) client.getContainer().getAdapter(ISharedObjectContainer.class);
 		// Create TrivialSharedObject instance and add to container
