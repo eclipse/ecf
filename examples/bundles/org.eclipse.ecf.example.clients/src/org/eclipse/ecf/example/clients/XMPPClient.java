@@ -87,12 +87,15 @@ public class XMPPClient {
 	public void connect(String account, String password) throws ECFException {
 		setupContainer();
 		setupPresence();
+		doConnect(account,password);
+	}
+	protected void doConnect(String account, String password) throws ECFException  {
 		// Now connect
 		ID targetID = IDFactory.getDefault().createID(namespace, account);
 		container.connect(targetID,ConnectContextFactory.createPasswordConnectContext(password));
 		userID = getID(account);
 	}
-	private ID getID(String name) {
+	public ID getID(String name) {
 		try {
 			return IDFactory.getDefault().createID(namespace, name);
 		} catch (IDInstantiationException e) {

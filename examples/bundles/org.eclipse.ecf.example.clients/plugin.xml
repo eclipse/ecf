@@ -14,7 +14,7 @@
          name="Example SO Robot"
          point="org.eclipse.core.runtime.applications">
       <application>
-         <run class="org.eclipse.ecf.example.clients.SORobotApplication"/>
+         <run class="org.eclipse.ecf.example.clients.XMPPSORobotApplication"/>
       </application>
    </extension>
 

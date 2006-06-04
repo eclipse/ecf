@@ -39,6 +39,6 @@ public class RosterSharedObject extends AbstractSharedObject {
 
 	protected void handleMessage(String message) {
 		// XXX this should call the view back to display the message/do other things, etc
-		System.out.println("GOT MESSAGE: " + message);
+		System.out.println("RosterSharedObject.handleMessage(" + message + ")");
 	}
 }

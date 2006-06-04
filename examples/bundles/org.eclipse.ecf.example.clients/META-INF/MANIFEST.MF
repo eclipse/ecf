@@ -10,4 +10,6 @@ Bundle-ClassPath: clients.jar
 Eclipse-AutoStart: true
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
- org.eclipse.ecf.presence
+ org.eclipse.ecf.presence,
+ org.eclipse.ecf.provider.xmpp
+ 
