@@ -77,14 +77,14 @@ public class XMPPSORobotApplication implements IPlatformRunnable, IMessageReceiv
 		running = true;
 		int count = 0;
 		while (running && count++ < 10) {
-			sendSOMessage(count+" hello there");
+			sendSOMessage();
 			wait(10000);
 		}
 	}
 
-    protected void sendSOMessage(String msg) {
+    protected void sendSOMessage() {
     	if (sharedObject != null) {
-    		sharedObject.sendMessageTo(client.getID(targetIMUser),msg);
+    		sharedObject.sendMessageTo(client.getID(targetIMUser),"hello there");
     	}
     }
 	protected void createTrivialSharedObjectForContainer(ISharedObjectContainer soContainer) throws ECFException {
