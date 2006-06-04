@@ -1,15 +1,44 @@
 package org.eclipse.ecf.example.collab.ui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.ecf.example.collab.share.RosterSharedObject;
+import org.eclipse.ecf.example.collab.share.User;
 import org.eclipse.ecf.ui.views.RosterView;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.dialogs.ISelectionStatusValidator;
+import org.eclipse.ui.views.IViewCategory;
+import org.eclipse.ui.views.IViewDescriptor;
+import org.eclipse.ui.views.IViewRegistry;
 
 public class CollabRosterView extends RosterView {
 
+	RosterSharedObject sharedObject = null;
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -34,6 +63,15 @@ public class CollabRosterView extends RosterView {
 					+ treeObject.getId().getName());
 			sendSOMessageAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendSOMessageAction);
+			Action sendShowViewAction = new Action() {
+				public void run() {
+					sendShowViewRequest(treeObject.getId());
+				}
+			};
+			sendShowViewAction.setText("Open Remote Eclipse View for "
+					+ treeObject.getId().getName());
+			sendShowViewAction.setEnabled(ua.getSharedObject() != null);
+			manager.add(sendShowViewAction);
 		}
 	}
 
@@ -47,7 +85,7 @@ public class CollabRosterView extends RosterView {
 		ISharedObjectContainer container = account.getSOContainer();
 		if (container != null) {
 			try {
-				ISharedObject sharedObject = new RosterSharedObject(this);
+				sharedObject = new RosterSharedObject(this);
 				container.getSharedObjectManager().addSharedObject(
 						IDFactory.getDefault().createStringID(
 								RosterSharedObject.class.getName()),
@@ -59,6 +97,167 @@ public class CollabRosterView extends RosterView {
 			}
 		} else
 			return null;
+	}
+
+	private void sendShowViewRequest(ID userID) {
+		IWorkbenchWindow ww = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		IWorkbenchPage page = ww.getActivePage();
+		if (page == null)
+			return;
+
+		ElementTreeSelectionDialog dlg = new ElementTreeSelectionDialog(
+				this.getViewSite().getShell(), 
+				new LabelProvider() {
+					private HashMap images = new HashMap();
+					public Image getImage(Object element) {
+						ImageDescriptor desc = null;
+						if (element instanceof IViewCategory)
+							desc = PlatformUI.getWorkbench().getSharedImages()
+									.getImageDescriptor(
+											ISharedImages.IMG_OBJ_FOLDER);
+						else if (element instanceof IViewDescriptor)
+							desc = ((IViewDescriptor) element).getImageDescriptor();
+
+						if (desc == null)
+							return null;
+						
+						Image image = (Image) images.get(desc);
+						if (image == null) {
+							image = desc.createImage();
+							images.put(desc, image);
+						}
+						
+						return image;
+					}
+					public String getText(Object element) {
+						String label;
+						if (element instanceof IViewCategory)
+							label = ((IViewCategory) element).getLabel();
+						else if (element instanceof IViewDescriptor)
+							label = ((IViewDescriptor) element).getLabel();
+						else
+							label = super.getText(element);
+						
+						for (
+								int i = label.indexOf('&'); 
+								i >= 0 && i < label.length() - 1; 
+								i = label.indexOf('&', i + 1))
+							if (!Character.isWhitespace(label.charAt(i + 1)))
+								return label.substring(0, i) + label.substring(i + 1);
+						
+						return label;
+					}
+					public void dispose() {
+						for (Iterator i = images.values().iterator(); i.hasNext();)
+							((Image) i.next()).dispose();
+
+						images = null;
+						super.dispose();
+					}
+				}, 
+				new ITreeContentProvider() {
+					private HashMap parents = new HashMap();
+					public Object[] getChildren(Object element) {
+						if (element instanceof IViewRegistry)
+							return ((IViewRegistry) element).getCategories();
+						else if (element instanceof IViewCategory) {
+							IViewDescriptor[] children =
+								((IViewCategory) element).getViews();
+							for (int i = 0; i < children.length; ++i)
+								parents.put(children[i], element);
+							
+							return children; 
+						} else
+							return new Object[0];
+					}
+					public Object getParent(Object element) {
+						if (element instanceof IViewCategory)
+							return PlatformUI.getWorkbench().getViewRegistry();
+						else if (element instanceof IViewDescriptor)
+							return parents.get(element);
+						else
+							return null;
+					}
+					public boolean hasChildren(Object element) {
+						if (element instanceof IViewRegistry
+								|| element instanceof IViewCategory)
+							return true;
+						else
+							return false;
+					}
+					public Object[] getElements(Object inputElement) {
+						return getChildren(inputElement);
+					}
+					public void dispose() {
+						parents = null;
+					}
+					public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+						parents.clear();
+					}
+				});
+		dlg.setTitle(MessageLoader
+				.getString("LineChatClientView.contextmenu.sendShowViewRequest"));
+		dlg.setMessage(MessageLoader
+				.getString("LineChatClientView.contextmenu.sendShowViewRequest.dialog.title"));
+		dlg.addFilter(new ViewerFilter() {
+			public boolean select(Viewer viewer, Object parentElement, Object element) {
+				if (element instanceof IViewDescriptor
+						&& "org.eclipse.ui.internal.introview".equals(
+								((IViewDescriptor) element).getId()))
+					return false;
+				else
+					return true;
+			}});
+		dlg.setSorter(new ViewerSorter());
+		dlg.setValidator(new ISelectionStatusValidator() {
+			public IStatus validate(Object[] selection) {
+				for (int i = 0; i < selection.length; ++i)
+					if (!(selection[i] instanceof IViewDescriptor))
+						return new Status(Status.ERROR, ClientPlugin.getDefault().getBundle().getSymbolicName(), 0, "", null);
+				
+				return new Status(Status.OK, ClientPlugin.getDefault().getBundle().getSymbolicName(), 0, "", null);
+			}
+		});
+		IViewRegistry reg = PlatformUI.getWorkbench().getViewRegistry(); 
+		dlg.setInput(reg);
+		IDialogSettings dlgSettings = ClientPlugin.getDefault().getDialogSettings();
+		final String DIALOG_SETTINGS = "SendShowViewRequestDialog";
+		final String SELECTION_SETTING = "SELECTION";
+		IDialogSettings section = dlgSettings.getSection(DIALOG_SETTINGS);
+		if (section == null)
+			section = dlgSettings.addNewSection(DIALOG_SETTINGS);
+		else {
+			String[] selectedIDs = section.getArray(SELECTION_SETTING);
+			if (selectedIDs != null && selectedIDs.length > 0) {
+				ArrayList list = new ArrayList(selectedIDs.length);
+				for (int i = 0; i < selectedIDs.length; ++i) {
+					IViewDescriptor desc = reg.find(selectedIDs[i]);
+					if (desc != null)
+						list.add(desc);
+				}
+				
+				dlg.setInitialElementSelections(list);
+			}
+		}
+
+		dlg.open();
+		if (dlg.getReturnCode() == Window.CANCEL)
+			return;
+
+		Object[] descs = dlg.getResult();
+		if (descs == null)
+			return;
+		
+		String[] selectedIDs = new String[descs.length];
+		for (int i = 0; i < descs.length; ++i) {
+			selectedIDs[i] = ((IViewDescriptor)descs[i]).getId();
+			if (sharedObject != null) {
+				sharedObject.sendShowView(userID, selectedIDs[i]);
+			}
+		}
+		
+		section.put(SELECTION_SETTING, selectedIDs);
 	}
 
 }
