@@ -32,13 +32,18 @@ public class RosterSharedObject extends AbstractSharedObject {
 	}
 
 	protected Event handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
+		Object data = event.getData();
+		SharedObjectMsg m = null;
 		try {
-			((SharedObjectMsgEvent) event.getData()).getSharedObjectMsg()
-					.invoke(this);
+			if (data instanceof SharedObjectMsg) m = (SharedObjectMsg) data;
+			else m = ((SharedObjectMsgEvent) data).getSharedObjectMsg();
+			m.invoke(this);
+			// We've handled this message, so don't let it go further
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return event;
 		}
-		return event;
 	}
 
 	protected void handleMessage(String message) {
