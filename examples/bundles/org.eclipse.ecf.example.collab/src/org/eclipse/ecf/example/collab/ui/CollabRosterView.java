@@ -12,7 +12,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.ecf.example.collab.share.RosterSharedObject;
-import org.eclipse.ecf.example.collab.share.User;
 import org.eclipse.ecf.ui.views.RosterView;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -55,11 +54,11 @@ public class CollabRosterView extends RosterView {
 					RosterSharedObject so = (RosterSharedObject) ua
 							.getSharedObject();
 					if (so != null) {
-						so.sendMessageTo(treeObject.getId(), "hello!");
+						so.sendMessageTo(treeObject.getId(), "hello via shared object!");
 					}
 				}
 			};
-			sendSOMessageAction.setText("Send shared object hello message to "
+			sendSOMessageAction.setText("Send Shared Object  message to "
 					+ treeObject.getId().getName());
 			sendSOMessageAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendSOMessageAction);
