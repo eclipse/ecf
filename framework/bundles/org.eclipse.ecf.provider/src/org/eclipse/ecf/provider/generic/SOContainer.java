@@ -1033,8 +1033,8 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			ObjectInputStream oins = new ObjectInputStream(bins);
 			obj = oins.readObject();
 		} catch (ClassNotFoundException e) {
-			// If this fails, then try to use the given shared object's classloader
-			dumpStack("ClassNotFoundException in deserializeSharedObjectMessage.  Trying shared object classloader", e);
+			// first reset stream
+			bins.reset();
 			// Now try with shared object classloader
 			IdentifiableObjectInputStream iins = new IdentifiableObjectInputStream(
 					new IClassLoaderMapper() {
