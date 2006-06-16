@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Zeroconf Discovery Provider
 Bundle-SymbolicName: org.eclipse.ecf.provider.jmdns;singleton:=true
-Bundle-Version: 0.8.5
+Bundle-Version: 0.8.6
 Bundle-Activator: org.eclipse.ecf.provider.jmdns.JmdnsPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin

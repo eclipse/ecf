@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: ECF Core
 Bundle-SymbolicName: org.eclipse.ecf;singleton:=true
-Bundle-Version: 0.8.5
+Bundle-Version: 0.8.6
 Bundle-ClassPath: ecf.jar
 Bundle-Activator: org.eclipse.ecf.internal.core.ECFPlugin
 Bundle-Vendor: Eclipse.org
