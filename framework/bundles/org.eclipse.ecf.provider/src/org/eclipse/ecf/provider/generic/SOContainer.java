@@ -467,7 +467,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return bos.toByteArray();
 	}
 	protected ClassLoader getClassLoaderForContainer() {
-		// Use classloader SOContainer class
+		// Use classloader from SOContainer class (and buddy's as specified
+		// by ECF generic provider plugin org.eclipse.ecf.provider's buddy
+		// policy (currently set to 'global').
 		return this.getClass().getClassLoader();
 	}
 	/**
