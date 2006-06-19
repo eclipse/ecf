@@ -5,7 +5,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.datashare.DatashareContainerInstantiator"
-            description="ECF Channel Container"
+            description="ECF Generic Channel"
             name="ecf.generic.channel"/>
    </extension>
    <extension
