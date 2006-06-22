@@ -279,6 +279,7 @@ public class SOManager implements ISharedObjectManager {
 			}
 			// OK now we've got ids and wrappers, create a connector
 			result = new SOConnector(sharedObjectFrom, sharedObjectsTo, queues);
+			addConnector(result);
 		}
 		return result;
 	}
