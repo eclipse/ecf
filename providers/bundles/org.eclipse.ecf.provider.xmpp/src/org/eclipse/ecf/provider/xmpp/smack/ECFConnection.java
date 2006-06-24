@@ -133,6 +133,7 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 		XMPPID jabberURI = getXMPPID(remote);
 		String username = jabberURI.getUsername();
 		serverName = jabberURI.getHostname();
+		serverPort = jabberURI.getPort();
 		try {
 			if (google) {
 				connection = new GoogleTalkConnection();

@@ -11,7 +11,7 @@
                value="true"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>
          <property
-               value="&lt;user&gt;@&lt;jabberserver&gt;"
+               value="&lt;user&gt;@&lt;jabberserver&gt;[:port]"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"/>
          <property
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"
@@ -37,7 +37,7 @@
                value="true"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>
          <property
-               value="&lt;user&gt;@&lt;jabberserver&gt;"
+               value="&lt;user&gt;@&lt;jabberserver&gt;[:port]"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"/>
          <property
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"
