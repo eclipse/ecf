@@ -36,6 +36,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Listener;
+import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -78,7 +82,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 	private Composite mainComp = null;
 	private SimpleLinkTextViewer readText = null;
 	private Text writeText = null;
-	private TabFolder tabFolder = null;
+	private CTabFolder tabFolder = null;
 	
 	private Manager rootChatRoomTabItem = null;
 	
@@ -104,19 +108,19 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 
 	class Manager {
 		SashForm fullChat;
-		TabItem tabItem;
+		CTabItem tabItem;
 		SashForm rightSash;
 		KeyListener keyListener;
 		SimpleLinkTextViewer textOutput;
 		Text textInput;
 		ListViewer listViewer;
 
-		Manager(TabFolder parent, String name) {
+		Manager(CTabFolder parent, String name) {
 			this(true, parent, name, null);
 		}
-		Manager(boolean withParticipantsList, TabFolder parent, String name,
+		Manager(boolean withParticipantsList, CTabFolder parent, String name,
 				KeyListener keyListener) {
-			tabItem = new TabItem(parent, SWT.NULL);
+			tabItem = new CTabItem(parent, SWT.NULL);
 			tabItem.setText(name);
 			if (withParticipantsList) {
 				fullChat = new SashForm(parent, SWT.HORIZONTAL);
@@ -179,7 +183,27 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 		dateColor = colorFromRGBString(DEFAULT_DATE_COLOR);
 		mainComp = new Composite(parent, SWT.NONE);
 		mainComp.setLayout(new FillLayout());
-		tabFolder = new TabFolder(mainComp, SWT.NORMAL);
+		tabFolder = new CTabFolder(mainComp, SWT.NORMAL);
+		// The following will allow tab folder to have close buttons on tab items
+		//tabFolder = new CTabFolder(mainComp, SWT.CLOSE);
+		//tabFolder.setUnselectedCloseVisible(false);
+		tabFolder.setSimple(false);
+		tabFolder.addCTabFolder2Listener(new CTabFolder2Listener() {
+			public void close(CTabFolderEvent event) {
+				System.out.println("close("+event+")");
+			}
+			public void maximize(CTabFolderEvent event) {
+				System.out.println("maximize("+event+")");
+			}
+			public void minimize(CTabFolderEvent event) {
+				System.out.println("minimize("+event+")");
+			}
+			public void restore(CTabFolderEvent event) {
+				System.out.println("restore("+event+")");
+			}
+			public void showList(CTabFolderEvent event) {
+				System.out.println("showList("+event+")");
+			}});
 		rootChatRoomTabItem = new Manager(false, tabFolder, hostName,
 				new KeyListener() {
 					public void keyPressed(KeyEvent evt) {
