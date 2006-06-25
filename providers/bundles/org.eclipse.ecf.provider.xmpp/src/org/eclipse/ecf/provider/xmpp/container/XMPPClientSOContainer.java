@@ -511,6 +511,10 @@ public class XMPPClientSOContainer extends ClientSOContainer {
 								results[i] = res[i];
 							}
 							return results;
+						}
+						public Object getAdapter(Class adapter) {
+							// TODO Auto-generated method stub
+							return null;
 						}};
 				}
             };

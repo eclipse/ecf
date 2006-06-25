@@ -10,7 +10,9 @@
 *****************************************************************************/
 package org.eclipse.ecf.presence.chat;
 
-public interface IChatRoomManager {
+import org.eclipse.core.runtime.IAdaptable;
+
+public interface IChatRoomManager extends IAdaptable {
 	
 	/**
 	 * Get parent IChatRoomManager.  If this manager is the root, then this method
@@ -31,8 +33,11 @@ public interface IChatRoomManager {
 	
 	/**
 	 * Get detailed room info for given room name
-	 * @param roomname the name of the room to get detailed info for
-	 * @return IRoomInfo an instance that provides the given info
+	 * @param roomname the name of the room to get detailed info for.  If null, the room info is assumed
+	 * to be a room associated with the chat room manager instance itself.  For example, for IRC, the
+	 * chat room manager is also a chat room where message can be sent/received
+	 * @return IRoomInfo an instance that provides the given info.  Null if no chat room info associated
+	 * with given name or null
 	 */
 	public IRoomInfo getChatRoomInfo(String roomname);
 	/**

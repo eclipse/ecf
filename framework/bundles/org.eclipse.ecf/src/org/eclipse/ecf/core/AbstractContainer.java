@@ -8,16 +8,21 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-import java.util.Vector;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.security.ObjectCallback;
 
 public abstract class AbstractContainer implements IContainer {
 
-	private Vector containerListeners = new Vector();
+	protected List containerListeners = new ArrayList();
 
 	public void addListener(IContainerListener l, String filter) {
 		containerListeners.add(l);
@@ -34,7 +39,7 @@ public abstract class AbstractContainer implements IContainer {
 	 * 
 	 * @param event
 	 */
-	public void fireContainerEvent(IContainerEvent event) {
+	protected void fireContainerEvent(IContainerEvent event) {
 		for (Iterator i = containerListeners.iterator(); i.hasNext();) {
 			IContainerListener l = (IContainerListener) i.next();
 			l.handleEvent(event);
@@ -45,4 +50,24 @@ public abstract class AbstractContainer implements IContainer {
 		return Platform.getAdapterManager().getAdapter(this, serviceType);
 	}
 	
+	protected String getPasswordFromConnectContext(IConnectContext connectContext) throws ContainerConnectException {
+		String pw = null;
+		try {
+			Callback[] callbacks = new Callback[1];
+			callbacks[0] = new ObjectCallback();
+			if (connectContext != null) {
+				CallbackHandler handler = connectContext.getCallbackHandler();
+				if (handler != null) {
+					handler.handle(callbacks);
+				}
+			}
+			ObjectCallback cb = (ObjectCallback) callbacks[0];
+			pw = (String) cb.getObject();
+		} catch (Exception e) {
+			throw new ContainerConnectException("Exception in CallbackHandler.handle(<callbacks>)",e);
+		}
+		return pw;
+	}
+
+
 }
