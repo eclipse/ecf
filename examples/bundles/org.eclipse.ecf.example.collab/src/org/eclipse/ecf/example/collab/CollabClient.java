@@ -26,7 +26,7 @@ public class CollabClient {
 	static CollabClient collabClient = new CollabClient();
 
 	PresenceContainerUI presenceContainerUI = null;
-	ChatRoomManagerUI chatRoomManagerUI = null;
+	IRCChatRoomManagerUI ircchatRoomManagerUI = null;
 	
 	/**
 	 * Create a new container instance, and connect to a remote server or group.
@@ -56,33 +56,28 @@ public class CollabClient {
 		final ClientEntry newClientEntry = new ClientEntry(containerType,
 				newClient);
 		
-		// Setup user interfaces for various container adapter types
-		// IFileShareContainer fsc = (IFileShareContainer) newClient.getAdapter(IFileShareContainer.class);
-		
-		// if (fsc == null) {
-			IChatRoomManager man = (IChatRoomManager) newClient.getAdapter(IChatRoomManager.class);
-			if (man != null) {
-				chatRoomManagerUI = new ChatRoomManagerUI(man);
-				chatRoomManagerUI = chatRoomManagerUI.setup(newClient, targetID, username);
+		IChatRoomManager man = (IChatRoomManager) newClient.getAdapter(IChatRoomManager.class);
+		if (man != null) {
+			ircchatRoomManagerUI = new IRCChatRoomManagerUI(man);
+			ircchatRoomManagerUI = ircchatRoomManagerUI.setup(newClient, targetID, username);
+		} else {
+		     // Check for IPresenceContainer....if it is, setup presence UI, if not setup shared object container
+			IPresenceContainer pc = (IPresenceContainer) newClient
+					.getAdapter(IPresenceContainer.class);
+			if (pc != null) {
+				// Setup presence UI
+				presenceContainerUI = new PresenceContainerUI(pc);
+				presenceContainerUI.setup(newClient, targetID, username);
 			} else {
-			     // Check for IPresenceContainer....if it is, setup presence UI, if not setup shared object container
-				IPresenceContainer pc = (IPresenceContainer) newClient
-						.getAdapter(IPresenceContainer.class);
-				if (pc != null) {
-					// Setup presence UI
-					presenceContainerUI = new PresenceContainerUI(pc);
-					presenceContainerUI.setup(newClient, targetID, username);
-				} else {
-					// Setup sharedobject container if the new instance supports this
-					ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient
-							.getAdapter(ISharedObjectContainer.class);
-					if (sharedObjectContainer != null) {
-						new SharedObjectContainerUI(this,sharedObjectContainer).setup(sharedObjectContainer,
-								newClientEntry, resource, username);
-					}
+				// Setup sharedobject container if the new instance supports this
+				ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient
+						.getAdapter(ISharedObjectContainer.class);
+				if (sharedObjectContainer != null) {
+					new SharedObjectContainerUI(this,sharedObjectContainer).setup(sharedObjectContainer,
+							newClientEntry, resource, username);
 				}
 			}
-		//}
+		}
 		
 		// Now connect
 		try {
@@ -94,31 +89,6 @@ public class CollabClient {
 			throw e;
 		}
 		
-		/*
-		if (fsc != null) {
-			// XXX Testing
-			IStoreFileDescription sfs = new IStoreFileDescription() {
-				public InputStream getLocalStream() throws IOException {
-					return new FileInputStream("notice.html");
-				}
-				public String getRemoteFileName() {
-					return "rnotice.html";
-				}
-				public ISharedFileEventListener getEventListener() {
-					return null;
-				}
-				public Map getProperties() {
-					return null;
-				}
-			};
-			ISharedFile sf = fsc.store(sfs);
-			try {
-				sf.start();
-			} catch (SharedFileStartException e) {
-				e.printStackTrace();
-			}
-		}
-		*/
 		// only add client if the connect was successful
 		addClientForResource(newClientEntry, resource);
 	}

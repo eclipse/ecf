@@ -22,5 +22,12 @@
             icon="icons/person.gif"
             id="org.eclipse.ecf.ui.views.ChatRoomView"
             name="Chat Room"/>
+      <view
+            allowMultiple="true"
+            category="org.eclipse.ecf.ui.viewcategory"
+            class="org.eclipse.ecf.ui.views.ChatRoomManagerView"
+            icon="icons/person.gif"
+            id="org.eclipse.ecf.ui.views.ChatRoomManagerView"
+            name="Chat Room"/>
    </extension>
 </plugin>
