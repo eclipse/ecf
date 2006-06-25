@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
@@ -33,6 +34,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
@@ -123,6 +125,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 				memberComp.setLayout(new FillLayout());
 				listViewer = new ListViewer(memberComp, SWT.BORDER
 						| SWT.V_SCROLL | SWT.H_SCROLL);
+				listViewer.setSorter(new ViewerSorter());
 				Composite rightComp = new Composite(fullChat, SWT.NONE);
 				rightComp.setLayout(new FillLayout());
 				rightSash = new SashForm(rightComp, SWT.VERTICAL);
