@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
@@ -52,8 +51,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -302,8 +299,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 				// Then we create a new container from the roomInfo
 				chatRoomContainer = roomInfo.createChatRoomContainer();
 				// Setup new user interface (new tab)
-				final ChatRoom chatroomview = new ChatRoom(chatRoomContainer
-						.getChatMessageSender(), new Manager(tabFolder, target));
+				final ChatRoom chatroomview = new ChatRoom(chatRoomContainer,new Manager(tabFolder, target));
 				// setup message listener
 				chatRoomContainer.addMessageListener(new IMessageListener() {
 					public void handleMessage(ID fromID, ID toID, Type type,
@@ -361,6 +357,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 
 	class ChatRoom implements IMessageListener, IInvitationListener,
 			IParticipantListener, KeyListener {
+		IChatRoomContainer container;
 		Manager tabUI;
 		Text inputText;
 		SimpleLinkTextViewer outputText;
@@ -369,8 +366,9 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 		IUser localUser;
 		private ListViewer memberViewer = null;
 
-		ChatRoom(IChatMessageSender messageSender, Manager tabItem) {
-			this.channelMessageSender = messageSender;
+		ChatRoom(IChatRoomContainer container, Manager tabItem) {
+			this.container = container;
+			this.channelMessageSender = container.getChatMessageSender();
 			this.tabUI = tabItem;
 			inputText = this.tabUI.getTextInput();
 			outputText = this.tabUI.getTextOutput();
@@ -414,8 +412,37 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 				MessageDialog.openError(getViewSite().getShell(),
 						"Not connect", "Not connected to channel room");
 				return;
+			} else handleInputLine(text);
+		}
+		protected void handleInputLine(String line) {
+			if ((line != null && line.startsWith(COMMAND_PREFIX))) {
+				StringTokenizer st = new StringTokenizer(line, COMMAND_DELIM);
+				int countTokens = st.countTokens();
+				String toks[] = new String[countTokens];
+				for (int i = 0; i < countTokens; i++) {
+					toks[i] = st.nextToken();
+				}
+				String[] tokens = toks;
+				handleCommands(line, tokens);
 			} else
-				sendMessageLine(text);
+				sendMessageLine(line);
+		}
+		protected void handleCommands(String line, String[] tokens) {
+			// Look at first one and switch
+			String command = tokens[0];
+			while (command.startsWith(COMMAND_PREFIX))
+				command = command.substring(1);
+			String[] args = new String[tokens.length - 1];
+			System.arraycopy(tokens, 1, args, 0, tokens.length - 1);
+			if (command.equalsIgnoreCase("QUIT")) {
+				doQuit();
+			} else if (command.equalsIgnoreCase("PART")) {
+				doPartChannel();
+			} else
+				sendMessageLine(line);
+		}
+		protected void doPartChannel() {
+			if (container != null) container.disconnect();
 		}
 		protected void clearInput() {
 			inputText.setText("");
