@@ -1,0 +1,158 @@
+/**
+ * Copyright (c) 2006 Ecliptical Software Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Ecliptical Software Inc. - initial API and implementation
+ */
+package org.eclipse.ecf.pubsub.model.impl;
+
+import java.util.Map;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.PlatformObject;
+import org.eclipse.ecf.core.IIdentifiable;
+import org.eclipse.ecf.core.ISharedObject;
+import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.SharedObjectInitException;
+import org.eclipse.ecf.core.events.IContainerConnectedEvent;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.pubsub.model.IModelUpdater;
+
+public abstract class AgentBase extends PlatformObject implements ISharedObject, IIdentifiable {
+	
+	public static final Object INITIAL_DATA_KEY = new Integer(0);
+	
+	public static final Object MODEL_UPDATER_KEY = new Integer(1); 
+	
+	protected ISharedObjectConfig config;
+	
+	protected Object data;
+	
+	protected String updaterID;
+	
+	protected IModelUpdater updater;
+
+	public void init(ISharedObjectConfig config) throws SharedObjectInitException {
+		this.config = config;
+		Map props = config.getProperties();
+		data = props.get(INITIAL_DATA_KEY);
+		updaterID = (String) props.get(MODEL_UPDATER_KEY);
+		if (updaterID == null)
+			throw new SharedObjectInitException("Model Updater is required.");
+		
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		if (registry == null)
+			throw new SharedObjectInitException("No Platform Extension Registry.");
+		
+		IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.eclipse.ecf.example.pubsub.modelUpdater");
+		for (int i = 0; i < elements.length; ++i) {
+			if (updaterID.equals(elements[i].getAttribute("id"))) {
+				try {
+					updater = (IModelUpdater) elements[i].createExecutableExtension("class");
+				} catch (CoreException e) {
+					throw new SharedObjectInitException(e);
+				} catch (ClassCastException e) {
+					throw new SharedObjectInitException(e);
+				}
+
+				break;
+			}
+		}
+
+		if (updater == null)
+			throw new SharedObjectInitException("Could not find specified Model Updater.");
+	}
+
+	public void handleEvent(Event event) {
+		if (event instanceof ISharedObjectActivatedEvent) {
+			ISharedObjectActivatedEvent e = (ISharedObjectActivatedEvent) event;
+			if (e.getActivatedID().equals(config.getSharedObjectID()))
+				activated();
+			else
+				activated(e.getActivatedID());
+		} else if (event instanceof ISharedObjectDeactivatedEvent) {
+			ISharedObjectDeactivatedEvent e = (ISharedObjectDeactivatedEvent) event;
+			if (e.getDeactivatedID().equals(config.getSharedObjectID()))
+				deactivated();
+			else
+				deactivated(e.getDeactivatedID());
+		} else if (event instanceof IContainerConnectedEvent) {
+			IContainerConnectedEvent e = (IContainerConnectedEvent) event;
+			if (e.getTargetID().equals(e.getLocalContainerID()))
+				connected();
+			else
+				connected(e.getTargetID());
+		} else if (event instanceof IContainerDisconnectedEvent) {
+			IContainerDisconnectedEvent e = (IContainerDisconnectedEvent) event;
+			if (e.getTargetID().equals(e.getLocalContainerID()))
+				disconnected();
+			else
+				disconnected(e.getTargetID());
+		} else if (event instanceof ISharedObjectMessageEvent) {
+			ISharedObjectMessageEvent e = (ISharedObjectMessageEvent) event;
+			received(e.getRemoteContainerID(), e.getData());
+		}
+	}
+	
+	protected boolean isConnected() {
+		return config.getContext().getConnectedID() != null;
+	}
+	
+	protected void activated(ID sharedObjectID) {
+	}
+	
+	protected void activated() {
+	}
+	
+	protected void deactivated(ID sharedObjectID) {
+	}
+	
+	protected void deactivated() {
+	}
+	
+	protected void connected(ID containerID) {
+	}
+	
+	protected void connected() {
+	}
+	
+	protected void disconnected(ID containerID) {
+	}
+	
+	protected void disconnected() {
+	}
+	
+	protected void received(ID containerID, Object data) { 
+	}
+	
+	protected void apply(Object data) {
+		updater.update(this.data, data);
+	}
+
+	public void handleEvents(Event[] events) {
+		for (int i = 0; i < events.length; ++i)
+			handleEvent(events[i]);
+	}
+	
+	public ID getID() {
+		return config.getSharedObjectID();
+	}
+	
+	public void dispose(ID containerID) {
+		config = null;
+		data = null;
+		updater = null;
+	}
+}
