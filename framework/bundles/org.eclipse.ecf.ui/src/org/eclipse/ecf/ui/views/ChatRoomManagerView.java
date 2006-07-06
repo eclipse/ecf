@@ -79,6 +79,12 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 
 	protected static final String DEFAULT_SYSTEM_COLOR = "0,0,255";
 
+	/**
+	 * The default color used to highlight the string of text when the user's
+	 * name is referred to in the chatroom. The default color is red.
+	 */
+	protected static final String DEFAULT_HIGHLIGHT_COLOR = "255,0,0";
+
 	protected static final String DEFAULT_DATE_COLOR = "0,0,0";
 
 	protected static final String VIEW_PREFIX = "IRC: ";
@@ -114,6 +120,8 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 	private Color systemColor = null;
 
 	private Color dateColor = null;
+
+	private Color highlightColor = null;
 
 	Action outputClear = null;
 
@@ -217,6 +225,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 	public void createPartControl(Composite parent) {
 		otherColor = colorFromRGBString(DEFAULT_OTHER_COLOR);
 		systemColor = colorFromRGBString(DEFAULT_SYSTEM_COLOR);
+		highlightColor = colorFromRGBString(DEFAULT_HIGHLIGHT_COLOR);
 		dateColor = colorFromRGBString(DEFAULT_DATE_COLOR);
 		mainComp = new Composite(parent, SWT.NONE);
 		mainComp.setLayout(new FillLayout());
@@ -834,7 +843,14 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 			return;
 		int startRange = st.getText().length();
 		StringBuffer sb = new StringBuffer();
+		// check to see if the message has the user's name contained within
+		boolean nickContained = text.getText().indexOf(userName) != -1;
 		if (text.getOriginator() != null) {
+			// check to make sure that the person referring to the user's name
+			// is not the user himself, no highlighting is required in this case
+			// as the user is already aware that his name is being referenced
+			nickContained = !text.getOriginator().getName().equals(userName)
+					&& nickContained;
 			sb.append("(").append(getCurrentDate(DEFAULT_TIME_FORMAT)).append(
 					") ");
 			StyleRange dateStyle = new StyleRange();
@@ -850,7 +866,8 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 			sr.start = startRange + dateStyle.length;
 			sr.length = sb.length();
 			sr.fontStyle = SWT.BOLD;
-			sr.foreground = otherColor;
+			// check to see which color should be used
+			sr.foreground = nickContained ? highlightColor : otherColor;
 			st.append(sb.toString());
 			st.setStyleRange(sr);
 		}
@@ -862,6 +879,13 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 			sr.length = text.getText().length();
 			sr.foreground = systemColor;
 			sr.fontStyle = SWT.BOLD;
+			st.setStyleRange(sr);
+		} else if (nickContained) {
+			// highlight the message itself as necessary
+			StyleRange sr = new StyleRange();
+			sr.start = beforeMessageIndex;
+			sr.length = text.getText().length();
+			sr.foreground = highlightColor;
 			st.setStyleRange(sr);
 		}
 		if (!text.isNoCRLF()) {
