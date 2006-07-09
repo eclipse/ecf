@@ -440,6 +440,68 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 
 		private ListViewer memberViewer = null;
 
+		/**
+		 * A list of available nicknames for nickname completion via the 'tab'
+		 * key.
+		 */
+		private ArrayList options;
+
+		/**
+		 * Denotes the number of options that should be available for the user
+		 * to cycle through when pressing the 'tab' key to perform nickname
+		 * completion. The default value is set to 5.
+		 */
+		private int maximumCyclingOptions = 5;
+
+		/**
+		 * The length of a nickname's prefix that has already been typed in by
+		 * the user. This is used to remove the beginning part of the available
+		 * nickname choices.
+		 */
+		private int prefixLength;
+
+		/**
+		 * The index of the next nickname to select from {@link #options}.
+		 */
+		private int choice = 0;
+
+		/**
+		 * The length of the user's nickname that remains resulting from
+		 * subtracting the nickname's length from the prefix that the user has
+		 * keyed in already.
+		 */
+		private int nickRemainder;
+
+		/**
+		 * The caret position of {@link #inputText} when the user first started
+		 * cycling through nickname completion options.
+		 */
+		private int caret;
+
+		/**
+		 * The character to enter after the user's nickname has been
+		 * autocompleted. The default value is a colon (':').
+		 */
+		private char nickCompletionSuffix = ':';
+
+		/**
+		 * Indicates whether the user is currently cycling over the list of
+		 * nicknames for nickname completion.
+		 */
+		private boolean isCycling = false;
+
+		/**
+		 * Check to see whether the user is currently starting the line of text
+		 * with a nickname at the beginning of the message. This determines
+		 * whether {@link #nickCompletionSuffix} should be inserted when
+		 * performing autocompletion. If the user is not at the beginning of the
+		 * message, it is likely that the user is typing another user's name to
+		 * reference that person and not to direct the message to said person,
+		 * as such, the <code>nickCompletionSuffix</code> does not need to be
+		 * appeneded.
+		 */
+		private boolean isAtStart = false;
+
 		ChatRoom(IChatRoomContainer container, Manager tabItem) {
 			this.container = container;
 			this.channelMessageSender = container.getChatMessageSender();
@@ -447,6 +509,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 			inputText = this.tabUI.getTextInput();
 			outputText = this.tabUI.getTextOutput();
 			memberViewer = this.tabUI.getListViewer();
+			options = new ArrayList();
 			this.tabUI.setKeyListener(this);
 		}
 
@@ -482,10 +545,123 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 					handleTextInput(inputText.getText());
 				clearInput();
 				evt.doit = false;
+				isCycling = false;
+			} else if (evt.character == SWT.TAB) {
+				// don't propogate the event upwards and insert a tab character
+				evt.doit = false;
+				int pos = inputText.getCaretPosition();
+				// if the user is at the beginning of the line, do nothing
+				if (pos == 0) {
+					return;
+				}
+				String text = inputText.getText();
+				// check to see if the user is currently cycling through the
+				// available nicknames
+				if (isCycling) {
+					// if everything's been cycled over, start over at zero
+					if (choice == options.size()) {
+						choice = 0;
+					}
+					// cut of the user's nickname based on what's already
+					// entered and at a trailing space
+					String append = ((String) options.get(choice++))
+							.substring(prefixLength)
+							+ (isAtStart ? nickCompletionSuffix + " " : " ");
+					// add what's been typed along with the next nickname option
+					// and the rest of the message
+					inputText.setText(text.substring(0, caret) + append
+							+ text.substring(caret + nickRemainder));
+					nickRemainder = append.length();
+					// set the caret position to be the place where the nickname
+					// completion ended
+					inputText.setSelection(caret + nickRemainder, caret
+							+ nickRemainder);
+				} else {
+					// the user is not cycling, so we need to identify what the
+					// user has typed based on the current caret position
+					int count = pos - 1;
+					// keep looping until the whitespace has been identified or
+					// the beginning of the message has been reached
+					while (count > -1
+							&& !Character.isWhitespace(text.charAt(count))) {
+						count--;
+					}
+					count++;
+					// remove all previous options
+					options.clear();
+					// get the prefix that the user typed
+					String prefix = text.substring(count, pos);
+					isAtStart = count == 0;
+					// if what's found was actually whitespace, do nothing
+					if (prefix.trim().equals("")) {
+						return;
+					}
+					// get all of the users in this room and store them if they
+					// start with the prefix that the user has typed
+					String[] participants = memberViewer.getList().getItems();
+					for (int i = 0; i < participants.length; i++) {
+						if (participants[i].startsWith(prefix)) {
+							options.add(participants[i]);
+						}
+					}
+
+					// simply return if no matches have been found
+					if (options.isEmpty()) {
+						return;
+					}
+
+					prefixLength = prefix.length();
+					if (options.size() == 1) {
+						String nickname = (String) options.get(0);
+						// since only one nickname is available, simply insert
+						// it after truncating the prefix
+						nickname = nickname.substring(prefixLength);
+						inputText
+								.insert(nickname
+										+ (isAtStart ? nickCompletionSuffix
+												+ " " : " "));
+					} else if (options.size() <= maximumCyclingOptions) {
+						// note that the user is currently cycling through
+						// options and also store the current caret position
+						isCycling = true;
+						caret = pos;
+						choice = 0;
+						// insert the nickname after removing the prefix
+						String nickname = options.get(choice++)
+								+ (isAtStart ? nickCompletionSuffix + " " : " ");
+						nickname = nickname.substring(prefixLength);
+						inputText.insert(nickname);
+						// store the length of this truncated nickname so that
+						// it can be removed when the user is cycling
+						nickRemainder = nickname.length();
+					} else {
+						// as there are too many choices for the user to pick
+						// from, simply display all of the available ones on the
+						// chat window so that the user can get a visual
+						// indicator of what's available and narrow down the
+						// choices by typing a few more additional characters
+						StringBuffer choices = new StringBuffer();
+						synchronized (choices) {
+							for (int i = 0; i < options.size(); i++) {
+								choices.append(options.get(i)).append(" ");
+							}
+							choices.delete(choices.length() - 1, choices
+									.length());
+						}
+						appendText(outputText, new ChatLine(choices.toString()));
+					}
+				}
+			} else {
+				// remove the cycling marking for any other key pressed
+				isCycling = false;
 			}
 		}
 
 		protected void handleKeyReleased(KeyEvent evt) {
+			if (evt.character == SWT.TAB) {
+				// don't move to the next widget or try to add tabs
+				evt.doit = false;
+			}
 		}
 
 		protected void handleTextInput(String text) {
