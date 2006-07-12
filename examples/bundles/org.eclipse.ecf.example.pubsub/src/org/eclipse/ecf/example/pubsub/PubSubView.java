@@ -77,7 +77,7 @@ public class PubSubView extends ViewPart {
 	public void init(IViewSite site) throws PartInitException {
 		super.init(site);
 		
-		final Action shareSomethingAction = new Action("Share something...") {
+		final Action shareSomethingAction = new Action("Share something") {
 			public void run() {
 				try {
 					IMasterModel sds = SharedModelFactory.getInstance().createSharedDataSource(container, IDFactory.getDefault().createGUID(), new AppendableList(), ListAppender.ID);
