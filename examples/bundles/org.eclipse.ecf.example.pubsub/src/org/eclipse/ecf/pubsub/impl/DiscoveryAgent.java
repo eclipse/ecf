@@ -17,12 +17,9 @@ import java.util.Map;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
-import org.eclipse.ecf.core.ISharedObjectConnector;
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.SharedObjectConnectException;
-import org.eclipse.ecf.core.SharedObjectDisconnectException;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
@@ -30,18 +27,26 @@ import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.QueueException;
+import org.eclipse.ecf.example.pubsub.SerializationUtil;
 import org.eclipse.ecf.pubsub.IPublishedService;
 import org.eclipse.ecf.pubsub.PublishedServiceDescriptor;
 
 public class DiscoveryAgent extends PlatformObject implements ISharedObject {
+	
+	protected static final Object DIRECTORY_KEY = new Integer(0);
 
 	protected ISharedObjectConfig config;
+	
+	protected PublishedServiceDirectory directory;
 
 	public void init(ISharedObjectConfig config) throws SharedObjectInitException {
+		if (config.getContext().getLocalContainerID().equals(config.getHomeContainerID())) {
+			directory = (PublishedServiceDirectory) config.getProperties().get(DIRECTORY_KEY);
+			if (directory == null)
+				throw new SharedObjectInitException("Directory is required.");
+		}
+		
 		this.config = config;
 	}
 
@@ -93,7 +98,7 @@ public class DiscoveryAgent extends PlatformObject implements ISharedObject {
 			Map props = svc.getProperties();
 			PublishedServiceDescriptor desc = new PublishedServiceDescriptor(ctx.getLocalContainerID(), sharedObjectID, props);
 			try {
-				ctx.sendMessage(config.getHomeContainerID(), new DiscoveryMessage(DiscoveryMessage.ADDED, desc));
+				ctx.sendMessage(config.getHomeContainerID(), SerializationUtil.serialize(new DiscoveryMessage(DiscoveryMessage.ADDED, desc)));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -117,7 +122,7 @@ public class DiscoveryAgent extends PlatformObject implements ISharedObject {
 			Map props = svc.getProperties();
 			PublishedServiceDescriptor desc = new PublishedServiceDescriptor(ctx.getLocalContainerID(), sharedObjectID, props);
 			try {
-				ctx.sendMessage(config.getHomeContainerID(), new DiscoveryMessage(DiscoveryMessage.REMOVED, desc));
+				ctx.sendMessage(config.getHomeContainerID(), SerializationUtil.serialize(new DiscoveryMessage(DiscoveryMessage.REMOVED, desc)));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -174,7 +179,7 @@ public class DiscoveryAgent extends PlatformObject implements ISharedObject {
 			PublishedServiceDescriptor[] descriptors = new PublishedServiceDescriptor[published.size()];
 			published.toArray(descriptors);
 			try {
-				ctx.sendMessage(config.getHomeContainerID(), new DiscoveryMessage(DiscoveryMessage.ADDED, descriptors));
+				ctx.sendMessage(config.getHomeContainerID(), SerializationUtil.serialize(new DiscoveryMessage(DiscoveryMessage.ADDED, descriptors)));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -192,28 +197,26 @@ public class DiscoveryAgent extends PlatformObject implements ISharedObject {
 	}
 	
 	protected void received(ISharedObjectMessageEvent event) {
-		if (!(event.getData() instanceof DiscoveryMessage))
+		Object data = event.getData();
+		if (!(data instanceof byte[]))
 			return;
 		
 		try {
-			ID directoryID = IDFactory.getDefault().createStringID(PublishedServiceDirectory.SHARED_OBJECT_ID);
-			ISharedObjectManager mgr = config.getContext().getSharedObjectManager();
-			ISharedObjectConnector conn = mgr.connectSharedObjects(config.getSharedObjectID(), new ID[] { directoryID });
-			conn.enqueue(event);
-			mgr.disconnectSharedObjects(conn);
-		} catch (IDInstantiationException e) {
+			data = SerializationUtil.deserialize((byte[]) data);
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (SharedObjectConnectException e) {
+			return;
+		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (QueueException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SharedObjectDisconnectException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return;
 		}
+		
+		if (!(data instanceof DiscoveryMessage))
+			return;
+		
+		directory.handleDiscovery(event.getRemoteContainerID(), (DiscoveryMessage) data);
 	}
 
 	public void handleEvents(Event[] events) {
@@ -223,5 +226,6 @@ public class DiscoveryAgent extends PlatformObject implements ISharedObject {
 	
 	public void dispose(ID containerID) {
 		config = null;
+		directory = null;
 	}
 }

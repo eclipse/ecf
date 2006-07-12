@@ -28,7 +28,6 @@ import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
@@ -63,7 +62,7 @@ public class PublishedServiceDirectory extends PlatformObject implements IShared
 			
 			public void handleException(Throwable exception) {
 				// TODO Auto-generated method stub
-				
+				exception.printStackTrace();
 			}
 		});
 	}
@@ -84,9 +83,32 @@ public class PublishedServiceDirectory extends PlatformObject implements IShared
 				
 				public void handleException(Throwable exception) {
 					// TODO Auto-generated method stub
-					
+					exception.printStackTrace();
 				}
 			});
+		}
+	}
+	
+	void handleDiscovery(ID containerID, DiscoveryMessage msg) {
+		PublishedServiceDescriptor[] descriptors = msg.getDescriptors();
+
+		synchronized (this) {
+			Collection values = (Collection) services.get(containerID);
+			if (values == null) {
+				values = new HashSet();
+				services.put(containerID, values);
+			}
+			
+			if (msg.getKind() == DiscoveryMessage.ADDED) {
+				values.addAll(Arrays.asList(descriptors));
+			} else {
+				values.removeAll(Arrays.asList(descriptors));
+				if (values.isEmpty())
+					services.remove(containerID);
+			}
+	
+			int kind = msg.getKind() == DiscoveryMessage.ADDED ? PublishedServiceDirectoryChangeEvent.ADDED : PublishedServiceDirectoryChangeEvent.REMOVED;
+			fireServiceChangedEvent(new PublishedServiceDirectoryChangeEvent(this, kind, descriptors));
 		}
 	}
 
@@ -99,8 +121,6 @@ public class PublishedServiceDirectory extends PlatformObject implements IShared
 			activated(((ISharedObjectActivatedEvent) event).getActivatedID());
 		else if (event instanceof ISharedObjectDeactivatedEvent)
 			deactivated(((ISharedObjectDeactivatedEvent) event).getDeactivatedID());
-		else if (event instanceof ISharedObjectMessageEvent)
-			received((ISharedObjectMessageEvent) event);
 		else if (event instanceof IContainerDisconnectedEvent)
 			disconnected((IContainerDisconnectedEvent) event);
 	}
@@ -111,7 +131,7 @@ public class PublishedServiceDirectory extends PlatformObject implements IShared
 			if (discoveryAgentID == null) {
 				try {
 					discoveryAgentID = IDFactory.getDefault().createGUID();
-					mgr.createSharedObject(new SharedObjectDescription(DiscoveryAgent.class, discoveryAgentID, null));
+					mgr.createSharedObject(createDiscoveryAgentDescription());
 				} catch (ECFException e) {
 					// TODO Log me!
 					e.printStackTrace();
@@ -142,35 +162,6 @@ public class PublishedServiceDirectory extends PlatformObject implements IShared
 			}
 		}
 	}
-	
-	protected void received(ISharedObjectMessageEvent event) {
-		Object data = event.getData();
-		if (!(data instanceof DiscoveryMessage))
-			return;
-
-		DiscoveryMessage msg = (DiscoveryMessage) event.getData();
-		PublishedServiceDescriptor[] descriptors = msg.getDescriptors();
-
-		synchronized (this) {
-			ID containerID = event.getRemoteContainerID();
-			Collection values = (Collection) services.get(containerID);
-			if (values == null) {
-				values = new HashSet();
-				services.put(containerID, values);
-			}
-			
-			if (msg.getKind() == DiscoveryMessage.ADDED) {
-				values.addAll(Arrays.asList(descriptors));
-			} else {
-				values.removeAll(Arrays.asList(descriptors));
-				if (values.isEmpty())
-					services.remove(containerID);
-			}
-	
-			int kind = msg.getKind() == DiscoveryMessage.ADDED ? PublishedServiceDirectoryChangeEvent.ADDED : PublishedServiceDirectoryChangeEvent.REMOVED;
-			fireServiceChangedEvent(new PublishedServiceDirectoryChangeEvent(this, kind, descriptors));
-		}
-	}
 
 	public void handleEvents(Event[] events) {
 		for (int i = 0; i < events.length; ++i)
@@ -185,5 +176,11 @@ public class PublishedServiceDirectory extends PlatformObject implements IShared
 		}
 		
 		config = null;
+	}
+
+	protected SharedObjectDescription createDiscoveryAgentDescription() {
+		HashMap props = new HashMap(1);
+		props.put(DiscoveryAgent.DIRECTORY_KEY, this);
+		return new SharedObjectDescription(DiscoveryAgent.class, discoveryAgentID, props);
 	}
 }

@@ -17,14 +17,24 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.example.pubsub.SerializationUtil;
+import org.eclipse.ecf.pubsub.IPublishedService;
 import org.eclipse.ecf.pubsub.model.IMasterModel;
 
-public class LocalAgent extends AgentBase implements IMasterModel {
+public class LocalAgent extends AgentBase implements IPublishedService, IMasterModel {
+	
+	protected Map subscriptions;
+	
+	private final Object subscriptionMutex = new Object();
+	
+	protected void initializeData(Object data) throws SharedObjectInitException {
+		this.data = data;
+	}
 	
 	public synchronized void update(Object data) throws IOException {
-		apply(data);
-		config.getContext().sendMessage(null, data);
+		config.getContext().sendMessage(null, SerializationUtil.serialize(data));
 	}
 	
 	public Map getProperties() {
@@ -32,6 +42,18 @@ public class LocalAgent extends AgentBase implements IMasterModel {
 	}
 	
 	public void subscribe(ID containerID) {
+		synchronized (subscriptionMutex) {
+			if (subscriptions == null)
+				subscriptions = new HashMap();
+			
+			Integer refCount = (Integer) subscriptions.get(containerID);
+			if (refCount == null)
+				refCount = new Integer(0);
+			
+			refCount = new Integer(refCount.intValue() + 1);
+			subscriptions.put(containerID, refCount);
+		}
+		
 		ISharedObjectContext ctx = config.getContext();
 		try {
 			ctx.sendCreate(containerID, createRemoteAgentDescription());
@@ -42,8 +64,29 @@ public class LocalAgent extends AgentBase implements IMasterModel {
 	}
 	
 	public void unsubscribe(ID containerID) {
-		// TODO Auto-generated method stub
+		boolean disposeReplica = false;
+		synchronized (subscriptionMutex) {
+			if (subscriptions != null) {
+				Integer refCount = (Integer) subscriptions.get(containerID);
+				if (refCount != null) {
+					refCount = new Integer(refCount.intValue() - 1);
+					if (refCount.intValue() <= 0) {
+						subscriptions.remove(containerID);
+						disposeReplica = true;
+					} else {
+						subscriptions.put(containerID, refCount);
+					}
+				}
+			}
+		}
 		
+		if (disposeReplica)
+			try {
+				config.getContext().sendDispose(containerID);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 
 	protected void deactivated() {
@@ -58,7 +101,13 @@ public class LocalAgent extends AgentBase implements IMasterModel {
 
 	protected ReplicaSharedObjectDescription createRemoteAgentDescription() {
 		Map props = new HashMap(2);
-		props.put(INITIAL_DATA_KEY, data);
+		try {
+			props.put(INITIAL_DATA_KEY, SerializationUtil.serialize(data));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		props.put(MODEL_UPDATER_KEY, updaterID);
 		return new ReplicaSharedObjectDescription(RemoteAgent.class, config.getSharedObjectID(), config.getHomeContainerID(), props);
 	}

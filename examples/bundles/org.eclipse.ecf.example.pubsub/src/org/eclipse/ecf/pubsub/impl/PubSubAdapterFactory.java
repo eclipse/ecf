@@ -43,9 +43,7 @@ public class PubSubAdapterFactory implements IAdapterFactory {
 		try {
 			directoryID = IDFactory.getDefault().createStringID(PublishedServiceDirectory.SHARED_OBJECT_ID);
 		} catch (IDInstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException(e);
 		}
 		
 		final ISharedObjectManager mgr = container.getSharedObjectManager();

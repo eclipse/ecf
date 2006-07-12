@@ -46,7 +46,7 @@ public class AppendableList implements Serializable {
 				
 				public void handleException(Throwable exception) {
 					// TODO Auto-generated method stub
-					
+					exception.printStackTrace();
 				}
 			});
 		}
@@ -69,7 +69,7 @@ public class AppendableList implements Serializable {
 		return result;
 	}
 	
-	public String toString() {
+	public synchronized String toString() {
 		return values.toString();
 	}
 }

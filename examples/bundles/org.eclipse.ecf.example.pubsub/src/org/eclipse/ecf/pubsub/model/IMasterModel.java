@@ -12,9 +12,7 @@ package org.eclipse.ecf.pubsub.model;
 
 import java.io.IOException;
 
-import org.eclipse.ecf.pubsub.IPublishedService;
-
-public interface IMasterModel extends IPublishedService {
+public interface IMasterModel {
 	
 	void update(Object data) throws IOException;
 }

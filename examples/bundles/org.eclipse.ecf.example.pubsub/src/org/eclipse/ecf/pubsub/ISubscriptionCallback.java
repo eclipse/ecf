@@ -14,5 +14,5 @@ public interface ISubscriptionCallback {
 
 	void subscribed(ISubscription subscription);
 	
-	void subscriptionFailed(Throwable t);
+	void requestFailed(Throwable t);
 }

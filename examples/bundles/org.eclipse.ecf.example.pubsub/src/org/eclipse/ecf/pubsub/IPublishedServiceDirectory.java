@@ -12,6 +12,8 @@ package org.eclipse.ecf.pubsub;
 
 public interface IPublishedServiceDirectory {
 
+	// TODO initial state currently delivered as an ADD event during listener registration
+	// -- should there be a more explicit initial state delivery?
 	void addReplicatedServiceListener(IPublishedServiceDirectoryListener listener);
 
 	void removeReplicatedServiceListener(IPublishedServiceDirectoryListener listener);

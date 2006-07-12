@@ -51,7 +51,6 @@ public class ServiceRequestor implements IPublishedServiceRequestor {
 		try {
 			id = IDFactory.getDefault().createGUID();
 		} catch (IDInstantiationException e) {
-			// TODO handle this!
 			throw new RuntimeException(e);
 		}
 		

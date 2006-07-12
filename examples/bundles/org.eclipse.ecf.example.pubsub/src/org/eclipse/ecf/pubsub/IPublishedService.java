@@ -21,5 +21,7 @@ public interface IPublishedService extends IIdentifiable {
 	
 	void subscribe(ID containerID);
 	
+	// TODO this is a bit unsafe -- does not prevent duplicate unsubscription
+	// -- perhaps we should create a token (ID) in subscribe() and require it here?
 	void unsubscribe(ID containerID);
 }

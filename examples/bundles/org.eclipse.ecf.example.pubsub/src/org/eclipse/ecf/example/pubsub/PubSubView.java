@@ -13,12 +13,12 @@ package org.eclipse.ecf.example.pubsub;
 import java.io.IOException;
 import java.util.Vector;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.SharedObjectContainerFactory;
 import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
-import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.example.collab.CollabClient;
 import org.eclipse.ecf.pubsub.IPublishedServiceDirectory;
 import org.eclipse.ecf.pubsub.IPublishedServiceDirectoryListener;
 import org.eclipse.ecf.pubsub.IPublishedServiceRequestor;
@@ -28,6 +28,7 @@ import org.eclipse.ecf.pubsub.PublishedServiceDescriptor;
 import org.eclipse.ecf.pubsub.PublishedServiceDirectoryChangeEvent;
 import org.eclipse.ecf.pubsub.model.IMasterModel;
 import org.eclipse.ecf.pubsub.model.SharedModelFactory;
+import org.eclipse.ecf.pubsub.model.impl.LocalAgent;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -90,8 +91,7 @@ public class PubSubView extends ViewPart {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IDInstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
 			}
 		};
@@ -99,19 +99,18 @@ public class PubSubView extends ViewPart {
 		shareSomethingAction.setEnabled(false);
 		
 		IMenuManager mgr = site.getActionBars().getMenuManager();
-		mgr.add(new Action("Connect") {
+		mgr.add(new Action("Start") {
 			public void run() {
-				try {
-					container = SharedObjectContainerFactory.getDefault().createSharedObjectContainer("ecf.generic.client");
-					container.connect(IDFactory.getDefault().createStringID("ecftcp://localhost:3282/server"), null);
-					IPublishedServiceDirectory directory = (IPublishedServiceDirectory) container.getAdapter(IPublishedServiceDirectory.class);
-					viewer.setInput(directory);
-					setEnabled(false);
-					shareSomethingAction.setEnabled(true);
-				} catch (ECFException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				container = CollabClient.getContainer(ResourcesPlugin.getWorkspace().getRoot());
+				if (container == null) {
+					MessageDialog.openError(getSite().getShell(), "Error", "Collaboration environment not found.");
+					return;
 				}
+				
+				IPublishedServiceDirectory directory = (IPublishedServiceDirectory) container.getAdapter(IPublishedServiceDirectory.class);
+				viewer.setInput(directory);
+				setEnabled(false);
+				shareSomethingAction.setEnabled(true);
 			}
 		});
 		
@@ -142,12 +141,15 @@ public class PubSubView extends ViewPart {
 				dlg.open();
 				String value = dlg.getValue();
 				if (value != null) {
-					IMasterModel list = (IMasterModel) getStructuredSelection().getFirstElement();
-					try {
-						list.update(value);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					LocalAgent model = (LocalAgent) getStructuredSelection().getFirstElement();
+					AppendableList list = (AppendableList) model.getData();
+					if (list.add(value)) {
+						try {
+							model.update(value);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -259,7 +261,7 @@ public class PubSubView extends ViewPart {
 			});
 		}
 
-		public void subscriptionFailed(final Throwable t) {
+		public void requestFailed(final Throwable t) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					MessageDialog.openError(getSite().getShell(), "Subscription Error", t.getLocalizedMessage());

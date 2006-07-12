@@ -52,10 +52,9 @@ public class SubscriptionAgent extends PlatformObject implements ISharedObject {
 	protected boolean disposed;
 	
 	public void init(ISharedObjectConfig config) throws SharedObjectInitException {
-		this.config = config;
 		Map props = config.getProperties();
 		
-		if (isPrimary()) { 
+		if (config.getContext().getLocalContainerID().equals(config.getHomeContainerID())) { 
 			containerID = (ID) props.get(CONTAINER_ID_KEY);
 			if (containerID == null)
 				throw new SharedObjectInitException("containerID is required");
@@ -68,6 +67,8 @@ public class SubscriptionAgent extends PlatformObject implements ISharedObject {
 		sharedObjectID = (ID) props.get(SHARED_OBJECT_ID_KEY);
 		if (sharedObjectID == null)
 			throw new SharedObjectInitException("sharedObjectID is required");
+
+		this.config = config;
 	}
 
 	public void handleEvent(Event event) {
@@ -102,7 +103,7 @@ public class SubscriptionAgent extends PlatformObject implements ISharedObject {
 				ctx.sendCreate(containerID, createReplicaDescription());
 				// TODO set timer to time out if no response received within some bound
 			} catch (IOException e) {
-				callback.subscriptionFailed(e);
+				callback.requestFailed(e);
 				ctx.getSharedObjectManager().removeSharedObject(config.getSharedObjectID());
 			}
 
@@ -163,7 +164,7 @@ public class SubscriptionAgent extends PlatformObject implements ISharedObject {
 	
 	protected void received(ISharedObjectCreateResponseEvent e) {
 		if (e.getRemoteContainerID().equals(containerID) && e.getSenderSharedObjectID().equals(config.getSharedObjectID()))
-			callback.subscriptionFailed(e.getException());
+			callback.requestFailed(e.getException());
 	}
 	
 	protected ReplicaSharedObjectDescription createReplicaDescription() {

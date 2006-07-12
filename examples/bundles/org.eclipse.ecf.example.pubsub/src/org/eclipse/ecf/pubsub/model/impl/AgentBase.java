@@ -12,10 +12,6 @@ package org.eclipse.ecf.pubsub.model.impl;
 
 import java.util.Map;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.ISharedObject;
@@ -45,34 +41,23 @@ public abstract class AgentBase extends PlatformObject implements ISharedObject,
 	protected IModelUpdater updater;
 
 	public void init(ISharedObjectConfig config) throws SharedObjectInitException {
-		this.config = config;
 		Map props = config.getProperties();
-		data = props.get(INITIAL_DATA_KEY);
+		initializeData(props.get(INITIAL_DATA_KEY));
 		updaterID = (String) props.get(MODEL_UPDATER_KEY);
 		if (updaterID == null)
 			throw new SharedObjectInitException("Model Updater is required.");
 		
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		if (registry == null)
-			throw new SharedObjectInitException("No Platform Extension Registry.");
-		
-		IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.eclipse.ecf.example.pubsub.modelUpdater");
-		for (int i = 0; i < elements.length; ++i) {
-			if (updaterID.equals(elements[i].getAttribute("id"))) {
-				try {
-					updater = (IModelUpdater) elements[i].createExecutableExtension("class");
-				} catch (CoreException e) {
-					throw new SharedObjectInitException(e);
-				} catch (ClassCastException e) {
-					throw new SharedObjectInitException(e);
-				}
-
-				break;
-			}
-		}
-
-		if (updater == null)
-			throw new SharedObjectInitException("Could not find specified Model Updater.");
+		initializeUpdater();
+		this.config = config;
+	}
+	
+	protected abstract void initializeData(Object data) throws SharedObjectInitException;
+	
+	protected void initializeUpdater() throws SharedObjectInitException {
+	}
+	
+	public Object getData() {
+		return data;
 	}
 
 	public void handleEvent(Event event) {
@@ -135,10 +120,6 @@ public abstract class AgentBase extends PlatformObject implements ISharedObject,
 	}
 	
 	protected void received(ID containerID, Object data) { 
-	}
-	
-	protected void apply(Object data) {
-		updater.update(this.data, data);
 	}
 
 	public void handleEvents(Event[] events) {
