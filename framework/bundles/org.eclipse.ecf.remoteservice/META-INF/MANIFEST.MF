@@ -9,3 +9,5 @@ Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
 Eclipse-LazyStart: true
+Export-Package: org.eclipse.ecf.remoteservice,
+ org.eclipse.ecf.remoteservice.events
