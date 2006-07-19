@@ -15,7 +15,7 @@ public interface IChatRoomContainerOptions {
 	 * Set encoding for chat room manager that supports
 	 * IChatRoomOptions.  Note that enco
 	 * @param encoding
-	 * @returns true if encoding set properly, false if encoding cannot be set/reset
+	 * @return true if encoding set properly, false if encoding cannot be set/reset
 	 */
 	public boolean setEncoding(String encoding);
 }
