@@ -55,14 +55,11 @@ public class AbstractSharedObject implements ISharedObject,
 		initialize();
 	}
 	/**
-	 * Initialize this shared object.  This initializes the object by adding a
-	 * single SharedObjectMsgEventProcessors to the set of event processors
-	 * owned by this shared object.  This SharedObjectMsgEventProcessor will
-	 * call the {@link #handleSharedObjectMsgEvent(SharedObjectMsgEvent) }
-	 * method to process received SharedObjectMsgEvent.
-	 * Subclasses may override as appropriate.  If they wish to retain the
-	 * SharedObjectMessageEventProcessor behavior described above, however,
-	 * they should call this method;
+	 * Initialize this shared object.  Subclasses may override as appropriate
+	 * to define custom initialization behavior.  If initialization should
+	 * fail, then a SharedObjectInitException should be thrown by implementing code.
+	 * Also, subclasses overriding this method should call super.initialize() before
+	 * running their own code.
 	 *
 	 * @throws SharedObjectInitException if initialization should throw
 	 */
