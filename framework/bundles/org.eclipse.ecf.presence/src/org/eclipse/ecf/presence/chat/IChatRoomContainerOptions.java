@@ -13,7 +13,7 @@ package org.eclipse.ecf.presence.chat;
 public interface IChatRoomContainerOptions {
 	/** 
 	 * Set encoding for chat room manager that supports
-	 * IChatRoomOptions.  Note that enco
+	 * IChatRoomOptions
 	 * @param encoding
 	 * @return true if encoding set properly, false if encoding cannot be set/reset
 	 */
