@@ -102,7 +102,6 @@ public class AbstractSharedObject implements ISharedObject,
 	protected void fireEventProcessors(Event event) {
 		if (event == null) return;
 		Event evt = event;
-		trace("fireEventProcessors("+event+")");
 		if (eventProcessors.size()==0) {
 			handleUnhandledEvent(event);
 			return;
@@ -111,14 +110,7 @@ public class AbstractSharedObject implements ISharedObject,
 			IEventProcessor ep = (IEventProcessor) i.next();
 			if (ep.acceptEvent(evt)) {
 				trace("calling eventProcessor="+ep+" for event="+evt);
-				Event res = ep.processEvent(evt);
-				trace("eventProcessor="+ep+" returned event "+res);
-				if (res == null) {
-					trace("discontinuing processing of event "+evt);
-					return;
-				}
-			} else {
-				trace("eventProcessor="+ep+" refused event="+evt);
+				if (ep.processEvent(evt)==null) return;
 			}
 		}
 	}
