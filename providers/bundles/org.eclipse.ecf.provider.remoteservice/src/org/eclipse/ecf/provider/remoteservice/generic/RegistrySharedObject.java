@@ -1,9 +1,11 @@
 package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
@@ -37,6 +39,14 @@ public class RegistrySharedObject extends AbstractSharedObject {
 	private static final int SEND_REGISTRY_ERROR_CODE = 201;
 
 	private static final String SEND_REGISTRY_UPDATE_ERROR_MESSAGE = "exception sending local registry message";
+
+	private static final int MSG_INVOKE_ERROR_CODE = 202;
+
+	private static final String MSG_INVOKE_ERROR_MESSAGE = "Exception in ";
+
+	private static final int HANDLE_REQUEST_ERROR_CODE = 203;
+
+	private static final String HANDLE_REQUEST_ERROR_MESSAGE = "Exception locally invoking remote call";
 
 	protected RemoteServiceRegistryImpl localRegistry;
 
@@ -137,8 +147,8 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		try {
 			localRegistration.callService(call);
 		} catch (Exception e) {
-			// XXX handle properly
-			e.printStackTrace();
+			messageError(HANDLE_REQUEST_ERROR_CODE,
+					HANDLE_REQUEST_ERROR_MESSAGE, e);
 		}
 	}
 
@@ -179,8 +189,8 @@ public class RegistrySharedObject extends AbstractSharedObject {
 				try {
 					some.getSharedObjectMsg().invoke(this);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					messageError(MSG_INVOKE_ERROR_CODE,
+							MSG_INVOKE_ERROR_MESSAGE, e);
 				}
 
 			}
@@ -207,15 +217,37 @@ public class RegistrySharedObject extends AbstractSharedObject {
 
 	IRemoteServiceReference[] getRemoteServiceReferencesForRegistry(
 			RemoteServiceRegistryImpl registry, String clazz, String filter) {
-		// XXX make remote filter
-		IRemoteFilter remoteFilter = null;
-		return registry.lookupServiceReferences(clazz, remoteFilter);
+		return registry.lookupServiceReferences(clazz, createRemoteFilterFromString(filter));
 	}
 
+	IRemoteServiceReference[] getRemoteServiceReferencesForRegistry(
+			RemoteServiceRegistryImpl registry) {
+		return registry.lookupServiceReferences();
+	}
+	private IRemoteFilter createRemoteFilterFromString(String filter) {
+		// XXX make remote filter
+		return null;
+	}
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter,
 			String clazz, String filter) {
-		// TODO Auto-generated method stub
-		return null;
+		IRemoteFilter remoteFilter = createRemoteFilterFromString(filter);
+		List<IRemoteServiceReference> references = new ArrayList<IRemoteServiceReference>();
+		if (idFilter == null) {
+			for (RemoteServiceRegistryImpl r : new ArrayList<RemoteServiceRegistryImpl>(remoteRegistrys.values())) {
+				getReferencesListFromRegistry(clazz, remoteFilter, references, r);
+			}
+		} else {
+			for(int i=0; i < idFilter.length; i++) {
+				RemoteServiceRegistryImpl r = remoteRegistrys.get(idFilter[i]);
+				if (r != null) getReferencesListFromRegistry(clazz, remoteFilter, references, r);
+			}
+		}
+		return (IRemoteServiceReference []) references.toArray(new IRemoteServiceReference[references.size()]);
+	}
+
+	private void getReferencesListFromRegistry(String clazz, IRemoteFilter remoteFilter, List<IRemoteServiceReference> references, RemoteServiceRegistryImpl r) {
+		IRemoteServiceReference[] rs = r.lookupServiceReferences(clazz, remoteFilter);
+		if (rs != null) for(int j=0; j < rs.length; j++) references.add(rs[j]);
 	}
 
 	public IRemoteServiceRegistration registerRemoteService(String[] clazzes,
