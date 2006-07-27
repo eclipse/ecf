@@ -267,17 +267,14 @@ public class AbstractSharedObject implements ISharedObject,
      * The SharedObjectMsgEventProcessor is associated with this object via the initialize()
      * method
      * @param event the event to handle
-     * @return Event the Event for subsequent processing.  If null, the provided event
-     * will receive no further processing.  If non-null the provided Event will be 
+     * @return true if the provided event should receive no further processing.  If false the provided Event should be 
      * passed to subsequent event processors.
      */
-    protected Event handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
+    protected boolean handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
     	trace("handleSharedObjectMsgEvent("+event+")");
     	SharedObjectMsg msg = getSharedObjectMsgFromEvent(event);
-    	boolean msgResult = false;
-    	if (msg != null) msgResult = handleSharedObjectMsg(msg);
-    	if (msgResult) return null;
-    	else return event;
+    	if (msg != null) return handleSharedObjectMsg(msg);
+    	else return false;
     }
     /**
      * SharedObjectMsg handler method.  This method will be called by {@link #handleSharedObjectMsgEvent(ISharedObjectMessageEvent)} when

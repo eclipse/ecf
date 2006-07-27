@@ -175,24 +175,14 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		 */
 	}
 
-	protected Event handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
-		Object data = null;
-		if (event instanceof RemoteSharedObjectEvent) {
-			RemoteSharedObjectEvent rsoe = (RemoteSharedObjectEvent) event;
-			data = rsoe.getData();
-			if (data instanceof SharedObjectMsgEvent) {
-				SharedObjectMsgEvent some = (SharedObjectMsgEvent) data;
-				try {
-					some.getSharedObjectMsg().invoke(this);
-				} catch (Exception e) {
-					messageError(MSG_INVOKE_ERROR_CODE,
-							MSG_INVOKE_ERROR_MESSAGE, e);
-				}
-
-			}
+	protected boolean handleSharedObjectMsg(SharedObjectMsg msg) {
+		try {
+			msg.invoke(this);
+		} catch (Exception e) {
+			messageError(MSG_INVOKE_ERROR_CODE,
+					MSG_INVOKE_ERROR_MESSAGE, e);
 		}
-
-		return event;
+		return false;
 	}
 
 	private void messageError(int code, String message, Throwable exception) {

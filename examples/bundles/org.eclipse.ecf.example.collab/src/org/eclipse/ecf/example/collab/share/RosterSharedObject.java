@@ -2,12 +2,9 @@ package org.eclipse.ecf.example.collab.share;
 
 import java.io.IOException;
 
-import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.AbstractSharedObject;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
-import org.eclipse.ecf.core.sharedobject.SharedObjectMsgEvent;
-import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.example.collab.ui.CollabRosterView;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
@@ -31,19 +28,14 @@ public class RosterSharedObject extends AbstractSharedObject {
 		}
 	}
 
-	protected Event handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
-		Object data = event.getData();
-		SharedObjectMsg m = null;
+	protected boolean handleSharedObjectMsg(SharedObjectMsg msg) {
 		try {
-			if (data instanceof SharedObjectMsg) m = (SharedObjectMsg) data;
-			else m = ((SharedObjectMsgEvent) data).getSharedObjectMsg();
-			m.invoke(this);
-			// We've handled this message, so don't let it go further
-			return null;
+			msg.invoke(this);
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return event;
 		}
+		return false;
 	}
 
 	protected void handleMessage(String message) {

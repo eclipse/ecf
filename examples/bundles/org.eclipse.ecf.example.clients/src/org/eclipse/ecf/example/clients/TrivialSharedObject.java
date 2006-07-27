@@ -3,12 +3,9 @@ package org.eclipse.ecf.example.clients;
 import java.io.IOException;
 
 import org.eclipse.ecf.core.SharedObjectInitException;
-import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.AbstractSharedObject;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
-import org.eclipse.ecf.core.sharedobject.SharedObjectMsgEvent;
-import org.eclipse.ecf.core.util.Event;
 
 public class TrivialSharedObject extends AbstractSharedObject {
 
@@ -27,17 +24,14 @@ public class TrivialSharedObject extends AbstractSharedObject {
 			e.printStackTrace();
 		}
 	}
-
-	protected Event handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
+	protected boolean handleSharedObjectMsg(SharedObjectMsg msg) {
 		try {
-			((SharedObjectMsgEvent) event.getData()).getSharedObjectMsg()
-					.invoke(this);
+			msg.invoke(this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return event;
+		return false;
 	}
-
 	protected void handleMessage(String message) {
 		// XXX this should call the view back to display the message/do other things, etc
 		System.out.println("TrivialSharedObject.handleMessage(" + message + ")");
