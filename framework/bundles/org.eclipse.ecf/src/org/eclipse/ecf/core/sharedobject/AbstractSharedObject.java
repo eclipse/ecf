@@ -233,6 +233,16 @@ public class AbstractSharedObject implements ISharedObject,
 			return;
 		}
 	}
+    /**
+     * Get SharedObjectMsg from ISharedObjectMessageEvent.  ISharedObjectMessageEvents
+     * can come from both local and remote sources.  In the remote case, the SharedObjectMsg
+     * has to be retrieved from the RemoteSharedObjectEvent rather than the
+     * ISharedObjectMessageEvent.getData() directly.  This method will provide a non-null
+     * SharedObjectMsg if it's provided either via remotely or locally.  Returns null
+     * if the given event does not provide a valid SharedObjectMsg.
+     * @param event
+     * @return SharedObjectMsg the SharedObjectMsg delivered by the given event
+     */
 	protected SharedObjectMsg getSharedObjectMsgFromEvent(
 			ISharedObjectMessageEvent event) {
 		Object eventData = event.getData();
@@ -245,8 +255,10 @@ public class AbstractSharedObject implements ISharedObject,
 			Object rsoeData = ((RemoteSharedObjectEvent) event).getData();
 			if (rsoeData != null && rsoeData instanceof SharedObjectMsgEvent)
 				msgData = ((SharedObjectMsgEvent) rsoeData).getData();
-		} else msgData = eventData;
-		if (msgData != null && msgData instanceof SharedObjectMsg) return (SharedObjectMsg) msgData;
+		} else
+			msgData = eventData;
+		if (msgData != null && msgData instanceof SharedObjectMsg)
+			return (SharedObjectMsg) msgData;
 		return null;
 	}
     /**
@@ -262,15 +274,23 @@ public class AbstractSharedObject implements ISharedObject,
     protected Event handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
     	trace("handleSharedObjectMsgEvent("+event+")");
     	SharedObjectMsg msg = getSharedObjectMsgFromEvent(event);
-    	Object msgResult = null;
+    	boolean msgResult = false;
     	if (msg != null) msgResult = handleSharedObjectMsg(msg);
-    	if (msgResult == null) return null;
+    	if (msgResult) return null;
     	else return event;
     }
-    
-    protected Object handleSharedObjectMsg(SharedObjectMsg msg) {
+    /**
+     * SharedObjectMsg handler method.  This method will be called by {@link #handleSharedObjectMsgEvent(ISharedObjectMessageEvent)} when
+     * a SharedObjectMsg is received either from a local source or a remote source. This default implementation 
+     * will simply return false so that other processing of of the given msg can occur.  Subclasses should override this
+     * behavior to define custom logic for handling SharedObjectMsgs.
+     * @param msg the SharedObjectMsg received
+     * @return true if the msg has been completely handled and subsequent processing should stop.  False if processing 
+     * should continue
+     */
+    protected boolean handleSharedObjectMsg(SharedObjectMsg msg) {
     	trace("handleSharedObjectMsg("+msg+")");
-    	return msg;
+    	return false;
     }
 	/**
 	 * Get a ReplicaSharedObjectDescription for a replica to be created on a given receiver.
