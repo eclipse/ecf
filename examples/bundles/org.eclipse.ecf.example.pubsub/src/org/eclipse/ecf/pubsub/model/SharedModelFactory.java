@@ -16,6 +16,7 @@ import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.events.IContainerEvent;
@@ -46,6 +47,7 @@ public class SharedModelFactory {
 		final ISharedObjectManager mgr = container.getSharedObjectManager();
 		final Object[] result = new Object[1];
 		final Object monitor = new Object();
+		
 		IContainerListener listener = new IContainerListener() {
 			public void handleEvent(IContainerEvent event) {
 				if (event instanceof ISharedObjectActivatedEvent) {
@@ -62,17 +64,23 @@ public class SharedModelFactory {
 		
 		try {
 			container.addListener(listener, null);
-			SharedObjectDescription desc = createLocalAgentDescription(id, container.getID(), data, updaterID);
+/*			SharedObjectDescription desc = createLocalAgentDescription(id, container.getID(), data, updaterID);
 			synchronized (monitor) {
 				mgr.createSharedObject(desc);
 				if (result[0] == null)
 					monitor.wait(getCreationTimeout());
+			}
+*/		
+			synchronized (monitor) {
+				addSharedObject(mgr,id,data,updaterID);
+				if (result[0] == null) monitor.wait(getCreationTimeout());
 			}
 		} catch (InterruptedException e) {
 			throw new SharedObjectCreateException(e);
 		} finally {
 			container.removeListener(listener);
 		}
+		
 		
 		return (IMasterModel) result[0];
 	}
@@ -81,6 +89,16 @@ public class SharedModelFactory {
 		return DEFAULT_CREATION_TIMEOUT;
 	}
 
+	protected void addSharedObject(ISharedObjectManager mgr, ID id, Object data, String updaterID) throws SharedObjectCreateException {
+		HashMap props = new HashMap(2);
+		props.put(INITIAL_DATA_KEY, data);
+		props.put(MODEL_UPDATER_KEY, updaterID);
+		try {
+			mgr.addSharedObject(id, new LocalAgent(), props);
+		} catch (SharedObjectAddException e) {
+			throw new SharedObjectCreateException(e);
+		}		
+	}
 	protected SharedObjectDescription createLocalAgentDescription(ID sharedObjectID, ID homeContainerID, Object data, String updaterID) {
 		HashMap props = new HashMap(2);
 		props.put(INITIAL_DATA_KEY, data);

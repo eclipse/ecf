@@ -72,16 +72,12 @@ public class RegistrySharedObject extends AbstractSharedObject {
 	public void initialize() throws SharedObjectInitException {
 		super.initialize();
 		super.addEventProcessor(new IEventProcessor() {
-			public boolean acceptEvent(Event arg0) {
-				return true;
-			}
-
-			public Event processEvent(Event arg0) {
+			public boolean processEvent(Event arg0) {
 				if (arg0 instanceof IContainerConnectedEvent)
 					handleContainerConnectedEvent((IContainerConnectedEvent) arg0);
 				else if (arg0 instanceof IContainerDisconnectedEvent)
 					handleContainerDisconnectedEvent((IContainerDisconnectedEvent) arg0);
-				return null;
+				return false;
 			}
 		});
 		localRegistry = new RemoteServiceRegistryImpl(getHomeContainerID());

@@ -116,17 +116,9 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.util.IEventProcessor#acceptEvent(org.eclipse.ecf.core.util.Event)
-	 */
-	public boolean acceptEvent(Event event) {
-		return true;
-	}
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.eclipse.ecf.core.util.IEventProcessor#processEvent(org.eclipse.ecf.core.util.Event)
 	 */
-	public Event processEvent(Event event) {
+	public boolean processEvent(Event event) {
 		if (event instanceof ISharedObjectActivatedEvent) {
 			handleActivated((ISharedObjectActivatedEvent) event);
 		} else if (event instanceof IContainerConnectedEvent) {
@@ -141,7 +133,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			if (data instanceof ISharedObjectCommitEvent) localCommitted();
 		}
 		// Let other event processors have a shot at this event
-		return event;
+		return false;
 	}
 	protected void handleActivated(ISharedObjectActivatedEvent event) {
 		trace("handleActivated(" + event + ")");

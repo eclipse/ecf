@@ -48,12 +48,8 @@ public class OptimisticSharedObject extends AbstractSharedObject {
 		super.initialize();
 		trace("initialize()");
 		addEventProcessor(new IEventProcessor() {
-			public boolean acceptEvent(Event event) {
-				return true;
-			}
-			public Event processEvent(Event event) {
+			public boolean processEvent(Event event) {
 				if (event instanceof ISharedObjectActivatedEvent) {
-					ISharedObjectActivatedEvent soae = (ISharedObjectActivatedEvent) event;
 					if (isPrimary() && isConnected()) {
 						trace("replicating to all");
 						OptimisticSharedObject.this
@@ -68,7 +64,7 @@ public class OptimisticSharedObject extends AbstractSharedObject {
 								.replicateToRemoteContainers(new ID[] { targetID });
 					}
 				}
-				return event;
+				return false;
 			}
 		});
 	}

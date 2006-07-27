@@ -45,6 +45,8 @@ public class RemoteServiceRegistrationImpl implements
 
 	public static final int UNREGISTERED = 0x02;
 
+	protected transient RemoteServiceReferenceImpl reference = null;
+	
 	public RemoteServiceRegistrationImpl() {
 
 	}
@@ -54,7 +56,7 @@ public class RemoteServiceRegistrationImpl implements
 		this.service = service;
 		this.clazzes = clazzes;
 		this.containerID = registry.getContainerID();
-
+		this.reference = new RemoteServiceReferenceImpl(this);
 		synchronized (registry) {
 			serviceid = registry.getNextServiceId();
 			this.properties = createProperties(properties);
@@ -77,7 +79,12 @@ public class RemoteServiceRegistrationImpl implements
 	}
 
 	public IRemoteServiceReference getReference() {
-		return new RemoteServiceReferenceImpl(this);
+		if (reference == null) {
+			synchronized (this) {
+				reference = new RemoteServiceReferenceImpl(this);
+			}
+		}
+		return reference;
 	}
 
 	public void setProperties(Dictionary properties) {

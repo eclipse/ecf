@@ -101,16 +101,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		if (!isPrimary()) initializeReplicaChannel();
 
 		addEventProcessor(new IEventProcessor() {
-			public boolean acceptEvent(Event event) {
-				if (event instanceof IContainerConnectedEvent)
-					return true;
-				else if (event instanceof IContainerDisconnectedEvent)
-					return true;
-				else if (event instanceof ISharedObjectMessageEvent)
-					return true;
-				return false;
-			}
-			public Event processEvent(Event event) {
+			public boolean processEvent(Event event) {
 				trace("processEvent("+event+")");
 				IChannelListener l = getListener();
 				if (event instanceof IContainerConnectedEvent) {
@@ -127,7 +118,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 					BaseChannel.this
 					.handleMessageEvent((ISharedObjectMessageEvent) event);
 				}
-				return event;
+				return false;
 			}
 		});
 		trace("initialize()");

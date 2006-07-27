@@ -27,14 +27,9 @@ public class SharedObjectMsgEventProcessor implements IEventProcessor {
 		super();
 		this.sharedObject = sharedObject;
 	}
-	public boolean acceptEvent(Event event) {
-		return (event instanceof ISharedObjectMessageEvent);
-	}
-	public Event processEvent(Event event) {
-		if (!(event instanceof ISharedObjectMessageEvent)) {
-			return event;
-		}
-		return processSharedObjectMsgEvent((ISharedObjectMessageEvent) event);
+	public boolean processEvent(Event event) {
+		if (!(event instanceof ISharedObjectMessageEvent)) return false;
+		return (processSharedObjectMsgEvent((ISharedObjectMessageEvent) event)==null);
 	}
 	protected Event processSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
 		return sharedObject.handleSharedObjectMsgEvent(event);

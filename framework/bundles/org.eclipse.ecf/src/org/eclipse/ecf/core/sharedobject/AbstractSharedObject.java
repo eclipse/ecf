@@ -25,6 +25,7 @@ import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
+import org.eclipse.ecf.core.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
@@ -108,10 +109,8 @@ public class AbstractSharedObject implements ISharedObject,
 		}
 		for(Iterator i=eventProcessors.iterator(); i.hasNext(); ) {
 			IEventProcessor ep = (IEventProcessor) i.next();
-			if (ep.acceptEvent(evt)) {
-				trace("calling eventProcessor="+ep+" for event="+evt);
-				if (ep.processEvent(evt)==null) return;
-			}
+			trace("calling eventProcessor="+ep+" for event="+evt);
+			if (ep.processEvent(evt)) break;
 		}
 	}
 	public void handleEvents(Event[] events) {
@@ -234,6 +233,22 @@ public class AbstractSharedObject implements ISharedObject,
 			return;
 		}
 	}
+	protected SharedObjectMsg getSharedObjectMsgFromEvent(
+			ISharedObjectMessageEvent event) {
+		Object eventData = event.getData();
+		Object msgData = null;
+		// If eventData is not null and instanceof RemoteSharedObjectEvent
+		// then its a remote event and we extract the SharedObjectMsgEvent it
+		// contains and get it's data
+		if (eventData != null && eventData instanceof RemoteSharedObjectEvent) {
+			// It's a remote event
+			Object rsoeData = ((RemoteSharedObjectEvent) event).getData();
+			if (rsoeData != null && rsoeData instanceof SharedObjectMsgEvent)
+				msgData = ((SharedObjectMsgEvent) rsoeData).getData();
+		} else msgData = eventData;
+		if (msgData != null && msgData instanceof SharedObjectMsg) return (SharedObjectMsg) msgData;
+		return null;
+	}
     /**
      * Handle a SharedObjectMessageEvent.  This method will be automatically called by 
      * the SharedObjectMsgEventProcessor when a SharedObjectMessageEvent is received.
@@ -246,7 +261,16 @@ public class AbstractSharedObject implements ISharedObject,
      */
     protected Event handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
     	trace("handleSharedObjectMsgEvent("+event+")");
-    	return event;
+    	SharedObjectMsg msg = getSharedObjectMsgFromEvent(event);
+    	Object msgResult = null;
+    	if (msg != null) msgResult = handleSharedObjectMsg(msg);
+    	if (msgResult == null) return null;
+    	else return event;
+    }
+    
+    protected Object handleSharedObjectMsg(SharedObjectMsg msg) {
+    	trace("handleSharedObjectMsg("+msg+")");
+    	return msg;
     }
 	/**
 	 * Get a ReplicaSharedObjectDescription for a replica to be created on a given receiver.

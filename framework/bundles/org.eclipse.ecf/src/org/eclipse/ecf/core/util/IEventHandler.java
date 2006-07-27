@@ -7,7 +7,7 @@ public interface IEventHandler {
 	 * handleEvents method.
 	 * 
 	 * @param event
-	 *            the Event for the ISharedObject to process
+	 *            the Event for the ISharedObject to handle
 	 */
 	public void handleEvent(Event event);
 
@@ -17,7 +17,7 @@ public interface IEventHandler {
 	 * handleEvents method.
 	 * 
 	 * @param events
-	 *            the Events [] for the ISharedObject to process
+	 *            the Events [] for the ISharedObject to handle
 	 */
 	public void handleEvents(Event[] events);
 }
