@@ -47,6 +47,8 @@ public class RegistrySharedObject extends AbstractSharedObject {
 
 	private static final String HANDLE_REQUEST_ERROR_MESSAGE = "Exception locally invoking remote call";
 
+	private static final String HANDLE_RESPONSE = "handleResponse";
+
 	protected RemoteServiceRegistryImpl localRegistry;
 
 	protected Map<ID, RemoteServiceRegistryImpl> remoteRegistrys = Collections
@@ -110,7 +112,7 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		}
 	}
 
-	protected void fireRequest(RemoteServiceRegistrationImpl remoteRegistration,
+	protected Request fireRequest(RemoteServiceRegistrationImpl remoteRegistration,
 			IRemoteCall call) throws IOException {
 		RemoteServiceReferenceImpl refImpl = (RemoteServiceReferenceImpl) remoteRegistration.getReference();
 		RemoteCallImpl remoteCall = RemoteCallImpl.createRemoteCall(refImpl.getRemoteClass(), call.getMethod(),call.getParameters(),call.getTimeout());
@@ -118,6 +120,7 @@ public class RegistrySharedObject extends AbstractSharedObject {
 				remoteRegistration.getServiceId(), remoteCall);
 		sendSharedObjectMsgTo(remoteRegistration.getContainerID(), SharedObjectMsg.createMsg(
 				HANDLE_REQUEST, request));
+		return request;
 	}
 
 	protected void handleRequest(Request request) {
@@ -141,6 +144,16 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		}
 	}
 
+	protected Response fireResponse(Request request, Object response) throws IOException {
+		Response resp = new Response(request.getRequestId(),response);
+		sendSharedObjectMsgTo(request.getRequestContainerID(),SharedObjectMsg.createMsg(HANDLE_RESPONSE,resp));
+		return resp;
+	}
+	
+	protected void handleResponse(Response response) {
+		System.out.println("received remote response");
+		
+	}
 	private void handleNoLocalService() {
 		// TODO Auto-generated method stub
 
