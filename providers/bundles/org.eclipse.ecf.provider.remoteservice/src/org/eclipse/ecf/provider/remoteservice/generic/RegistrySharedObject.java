@@ -13,17 +13,16 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
-import org.eclipse.ecf.core.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.AbstractSharedObject;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
-import org.eclipse.ecf.core.sharedobject.SharedObjectMsgEvent;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
+import org.eclipse.ecf.provider.remoteservice.generic.registry.RemoteServiceReferenceImpl;
 import org.eclipse.ecf.provider.remoteservice.generic.registry.RemoteServiceRegistrationImpl;
 import org.eclipse.ecf.provider.remoteservice.generic.registry.RemoteServiceRegistryImpl;
 import org.eclipse.ecf.remoteservice.Activator;
+import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
@@ -111,19 +110,13 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		}
 	}
 
-	/**
-	 * Send a
-	 * 
-	 * @param targetContainer
-	 * @param request
-	 * @throws IOException
-	 */
-	private void sendRequest(ID targetContainer,
-			RemoteServiceRegistrationImpl remoteRegistration,
-			RemoteCallImpl call) throws IOException {
+	protected void fireRequest(RemoteServiceRegistrationImpl remoteRegistration,
+			IRemoteCall call) throws IOException {
+		RemoteServiceReferenceImpl refImpl = (RemoteServiceReferenceImpl) remoteRegistration.getReference();
+		RemoteCallImpl remoteCall = RemoteCallImpl.createRemoteCall(refImpl.getRemoteClass(), call.getMethod(),call.getParameters(),call.getTimeout());
 		Request request = new Request(this.getLocalContainerID(),
-				remoteRegistration.getServiceId(), call);
-		sendSharedObjectMsgTo(targetContainer, SharedObjectMsg.createMsg(
+				remoteRegistration.getServiceId(), remoteCall);
+		sendSharedObjectMsgTo(remoteRegistration.getContainerID(), SharedObjectMsg.createMsg(
 				HANDLE_REQUEST, request));
 	}
 
@@ -164,15 +157,6 @@ public class RegistrySharedObject extends AbstractSharedObject {
 				+ " received " + registry);
 		addRemoteRegistry(registry);
 
-		// XXX TESTING
-		/*
-		 * RemoteServiceRegistrationImpl reg =
-		 * registry.findRegistrationForServiceId(0); if (reg != null) {
-		 * System.out.println("testing: sending invoke for registration "+reg);
-		 * try { sendCallRequest(reg.getContainerID(), reg, RemoteCallImpl
-		 * .createRemoteCall("java.lang.Runnable", "run")); } catch (Exception
-		 * e) { e.printStackTrace(); // TODO: handle exception } }
-		 */
 	}
 
 	protected boolean handleSharedObjectMsg(SharedObjectMsg msg) {
@@ -197,8 +181,12 @@ public class RegistrySharedObject extends AbstractSharedObject {
 	}
 
 	public IRemoteService getRemoteService(IRemoteServiceReference ref) {
-		// TODO Auto-generated method stub
-		return null;
+		return new RemoteServiceImpl(this,getRemoteServiceRegistrationImpl(ref));
+	}
+
+	private RemoteServiceRegistrationImpl getRemoteServiceRegistrationImpl(IRemoteServiceReference reference) {
+		RemoteServiceReferenceImpl refImpl = (RemoteServiceReferenceImpl) reference;
+		return refImpl.getRegistration();
 	}
 
 	IRemoteServiceReference[] getRemoteServiceReferencesForRegistry(
@@ -273,5 +261,10 @@ public class RegistrySharedObject extends AbstractSharedObject {
 	public boolean ungetRemoteService(IRemoteServiceReference ref) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public Object fireCall(RemoteServiceRegistrationImpl registration, IRemoteCall call) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
