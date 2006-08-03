@@ -9,52 +9,58 @@ public class Request implements Serializable {
 	private static final long serialVersionUID = -6428866228973362178L;
 
 	private static long nextRequestId = 0;
+
 	long requestId;
-	
+
 	ID requestContainerID;
-	
+
 	long serviceId;
-	
+
 	RemoteCallImpl call;
-	
+
 	Response response;
-	
+
 	boolean done = false;
-	
+
 	public Request(ID requestContainerID, long serviceId, RemoteCallImpl call) {
 		this.requestContainerID = requestContainerID;
 		this.serviceId = serviceId;
 		this.call = call;
 		this.requestId = nextRequestId++;
 	}
-	
+
 	public long getRequestId() {
 		return requestId;
 	}
-	
+
 	public ID getRequestContainerID() {
 		return requestContainerID;
 	}
-	
+
 	public long getServiceId() {
 		return serviceId;
 	}
-	
+
 	public RemoteCallImpl getCall() {
 		return call;
 	}
-	public void setResponse(Response response) {
+
+	protected void setResponse(Response response) {
 		this.response = response;
 	}
-	public Response getResponse() {
+
+	protected Response getResponse() {
 		return response;
 	}
-	public boolean isDone() {
+
+	protected boolean isDone() {
 		return done;
 	}
-	public void setDone(boolean val) {
+
+	protected void setDone(boolean val) {
 		this.done = val;
 	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer("Request[");
 		buf.append("requestId=").append(requestId).append(";cont=").append(

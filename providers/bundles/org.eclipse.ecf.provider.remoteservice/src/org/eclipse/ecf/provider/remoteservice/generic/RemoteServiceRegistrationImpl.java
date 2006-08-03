@@ -45,7 +45,7 @@ public class RemoteServiceRegistrationImpl implements
 	public static final int UNREGISTERED = 0x02;
 
 	protected transient RemoteServiceReferenceImpl reference = null;
-	
+
 	public RemoteServiceRegistrationImpl() {
 
 	}

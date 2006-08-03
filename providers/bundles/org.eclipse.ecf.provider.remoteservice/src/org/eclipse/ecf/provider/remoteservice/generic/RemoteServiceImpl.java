@@ -13,16 +13,19 @@ import org.eclipse.ecf.remoteservice.IRemoteService;
 public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
 	protected static final long DEFAULT_TIMEOUT = 30000;
+
 	protected RemoteServiceRegistrationImpl registration = null;
+
 	protected RegistrySharedObject sharedObject = null;
-	
-	public RemoteServiceImpl(RegistrySharedObject sharedObject, RemoteServiceRegistrationImpl registration) {
+
+	public RemoteServiceImpl(RegistrySharedObject sharedObject,
+			RemoteServiceRegistrationImpl registration) {
 		this.sharedObject = sharedObject;
 		this.registration = registration;
 	}
+
 	public void callAsynch(IRemoteCall call, IRemoteCallListener listener) {
 		// TODO Auto-generated method stub
-
 	}
 
 	public Object callSynch(IRemoteCall call) throws ECFException {
@@ -33,9 +36,10 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 		try {
 			sharedObject.sendFireRequest(registration, call);
 		} catch (IOException e) {
-			throw new ECFException("IOException sending remote request",e);
-		}		
+			throw new ECFException("IOException sending remote request", e);
+		}
 	}
+
 	public Object getProxy() throws ECFException {
 		Object proxy;
 		try {
@@ -47,11 +51,14 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 			proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(),
 					new Class[] { loadedClass }, this);
 		} catch (Exception e) {
-			throw new ECFException("Exception creating proxy for remote service",e);
-		}		
+			throw new ECFException(
+					"Exception creating proxy for remote service", e);
+		}
 		return proxy;
 	}
-	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
+
+	public Object invoke(Object proxy, final Method method, final Object[] args)
+			throws Throwable {
 		return this.callSynch(new IRemoteCall() {
 
 			public String getMethod() {
@@ -64,7 +71,8 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
 			public long getTimeout() {
 				return DEFAULT_TIMEOUT;
-			}});
+			}
+		});
 	}
 
 }
