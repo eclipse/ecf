@@ -1,4 +1,4 @@
-package org.eclipse.ecf.provider.remoteservice.generic.registry;
+package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -130,7 +130,7 @@ public class RemoteServiceRegistryImpl implements Serializable {
 			if ((filter == null) || filter.match(reference)) {
 				// Must be RemoteServiceReferenceImpl
 				RemoteServiceReferenceImpl impl = (RemoteServiceReferenceImpl) reference;
-				impl.setClass(clazz);
+				impl.setRemoteClass(clazz);
 				references.add(reference);
 			}
 		}

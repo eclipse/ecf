@@ -6,8 +6,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.provider.remoteservice.generic.registry.RemoteServiceReferenceImpl;
-import org.eclipse.ecf.provider.remoteservice.generic.registry.RemoteServiceRegistrationImpl;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -28,12 +26,12 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	}
 
 	public Object callSynch(IRemoteCall call) throws ECFException {
-		return sharedObject.fireCall(registration, call);
+		return sharedObject.fireCallAndWait(registration, call);
 	}
 
 	public void fireAsynch(IRemoteCall call) throws ECFException {
 		try {
-			sharedObject.fireRequest(registration, call);
+			sharedObject.sendFireRequest(registration, call);
 		} catch (IOException e) {
 			throw new ECFException("IOException sending remote request",e);
 		}		

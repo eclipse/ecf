@@ -17,6 +17,10 @@ public class Request implements Serializable {
 	
 	RemoteCallImpl call;
 	
+	Response response;
+	
+	boolean done = false;
+	
 	public Request(ID requestContainerID, long serviceId, RemoteCallImpl call) {
 		this.requestContainerID = requestContainerID;
 		this.serviceId = serviceId;
@@ -39,11 +43,25 @@ public class Request implements Serializable {
 	public RemoteCallImpl getCall() {
 		return call;
 	}
+	public void setResponse(Response response) {
+		this.response = response;
+	}
+	public Response getResponse() {
+		return response;
+	}
+	public boolean isDone() {
+		return done;
+	}
+	public void setDone(boolean val) {
+		this.done = val;
+	}
 	public String toString() {
-		StringBuffer buf = new StringBuffer("RemoteCallRequest[");
-		buf.append("svcid=").append(serviceId).append(";")
-				.append("from=").append(requestContainerID).append(";").append(call).append(";").append(
-						"requestid=").append(requestId).append("]");
+		StringBuffer buf = new StringBuffer("Request[");
+		buf.append("requestId=").append(requestId).append(";cont=").append(
+				requestContainerID).append(";serviceId=").append(serviceId)
+				.append(";call=").append(call).append(";done=").append(done)
+				.append(";response=").append(response).append("]");
 		return buf.toString();
 	}
+
 }

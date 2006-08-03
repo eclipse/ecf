@@ -1,4 +1,4 @@
-package org.eclipse.ecf.provider.remoteservice.generic.registry;
+package org.eclipse.ecf.provider.remoteservice.generic;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
@@ -24,14 +24,14 @@ public class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 		return registration.getContainerID();
 	}
 
-	public RemoteServiceRegistrationImpl getRegistration() {
+	protected RemoteServiceRegistrationImpl getRegistration() {
 		return registration;
 	}
-	protected void setClass(String clazz) {
+	protected void setRemoteClass(String clazz) {
 		this.clazz = clazz;
 	}
 
-	public String getRemoteClass() {
+	protected String getRemoteClass() {
 		return clazz;
 	}
 }

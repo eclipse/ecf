@@ -1,4 +1,4 @@
-package org.eclipse.ecf.provider.remoteservice.generic.registry;
+package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -8,7 +8,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.provider.remoteservice.generic.RemoteCallImpl;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 
