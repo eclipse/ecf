@@ -12,8 +12,8 @@
 package org.eclipse.ecf.remoteservice;
 
 /**
- * Instances of this interface are used to make a 
- * a remote call via one of the methods on IRemoteService
+ * Instances of this interface are used to invoke a method
+ * call on a remote service
  * 
  * @see IRemoteService
  */
