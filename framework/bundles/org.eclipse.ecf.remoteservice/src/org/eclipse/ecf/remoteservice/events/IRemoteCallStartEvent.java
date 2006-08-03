@@ -11,7 +11,12 @@
 
 package org.eclipse.ecf.remoteservice.events;
 
-public interface IRemoteCallEvent {
+import org.eclipse.ecf.remoteservice.IRemoteCall;
+import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 
-	public long getRequestId();
+public interface IRemoteCallStartEvent extends IRemoteCallEvent {
+
+	public IRemoteServiceReference getReference();
+	public IRemoteCall getCall();
+
 }

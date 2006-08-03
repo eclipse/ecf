@@ -25,7 +25,7 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	}
 
 	public void callAsynch(IRemoteCall call, IRemoteCallListener listener) {
-		// TODO Auto-generated method stub
+		sharedObject.sendCallRequestWithListener(registration, call, listener);
 	}
 
 	public Object callSynch(IRemoteCall call) throws ECFException {

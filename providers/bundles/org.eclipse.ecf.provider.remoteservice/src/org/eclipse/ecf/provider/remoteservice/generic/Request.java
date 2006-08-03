@@ -3,6 +3,7 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 import java.io.Serializable;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 
 public class Request implements Serializable {
 
@@ -22,11 +23,19 @@ public class Request implements Serializable {
 
 	boolean done = false;
 
+	transient IRemoteCallListener listener = null;
+
 	public Request(ID requestContainerID, long serviceId, RemoteCallImpl call) {
+		this(requestContainerID, serviceId, call, null);
+	}
+
+	public Request(ID requestContainerID, long serviceId, RemoteCallImpl call,
+			IRemoteCallListener listener) {
 		this.requestContainerID = requestContainerID;
 		this.serviceId = serviceId;
 		this.call = call;
 		this.requestId = nextRequestId++;
+		this.listener = listener;
 	}
 
 	public long getRequestId() {
@@ -61,12 +70,17 @@ public class Request implements Serializable {
 		this.done = val;
 	}
 
+	protected IRemoteCallListener getListener() {
+		return listener;
+	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer("Request[");
 		buf.append("requestId=").append(requestId).append(";cont=").append(
 				requestContainerID).append(";serviceId=").append(serviceId)
 				.append(";call=").append(call).append(";done=").append(done)
-				.append(";response=").append(response).append("]");
+				.append(";response=").append(response).append(";listener=")
+				.append(listener).append("]");
 		return buf.toString();
 	}
 

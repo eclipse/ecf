@@ -21,11 +21,14 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.remoteservice.Activator;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
+import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
 
 public class RegistrySharedObject extends AbstractSharedObject {
 
@@ -113,35 +116,57 @@ public class RegistrySharedObject extends AbstractSharedObject {
 	}
 
 	private Request createRequest(
-			RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call) {
+			RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call,
+			IRemoteCallListener listener) {
 		RemoteServiceReferenceImpl refImpl = (RemoteServiceReferenceImpl) remoteRegistration
 				.getReference();
 		RemoteCallImpl remoteCall = RemoteCallImpl.createRemoteCall(refImpl
 				.getRemoteClass(), call.getMethod(), call.getParameters(), call
 				.getTimeout());
 		return new Request(this.getLocalContainerID(), remoteRegistration
-				.getServiceId(), remoteCall);
+				.getServiceId(), remoteCall, listener);
 	}
 
 	protected Request sendFireRequest(
 			RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call)
 			throws IOException {
-		Request request = createRequest(remoteRegistration, call);
+		Request request = createRequest(remoteRegistration, call, null);
 		sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
 				SharedObjectMsg.createMsg(HANDLE_FIRE_REQUEST, request));
 		return request;
 	}
 
-	protected Request sendCallRequest(
-			RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call)
-			throws IOException {
-		Request request = createRequest(remoteRegistration, call);
-		synchronized (request) {
+	protected void sendCallRequestWithListener(
+			RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call,
+			IRemoteCallListener listener) {
+		Request request = createRequest(remoteRegistration, call, listener);
+		fireCallStartEvent(listener, request.getRequestId(), remoteRegistration
+				.getReference(), call);
+		try {
+			addRequest(request);
 			sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
 					SharedObjectMsg.createMsg(HANDLE_CALL_REQUEST, request));
-			addRequest(request);
+		} catch (IOException e) {
+			// XXX LOG
+			removeRequest(request);
+			fireCallCompleteEvent(listener, request.getRequestId(), null, true,
+					e);
 		}
-		return request;
+	}
+
+	protected long sendCallRequest(
+			RemoteServiceRegistrationImpl remoteRegistration,
+			final IRemoteCall call) throws IOException {
+		Request request = createRequest(remoteRegistration, call, null);
+		addRequest(request);
+		try {
+			sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
+					SharedObjectMsg.createMsg(HANDLE_CALL_REQUEST, request));
+		} catch (IOException e) {
+			removeRequest(request);
+			throw e;
+		}
+		return request.getRequestId();
 	}
 
 	private RemoteServiceRegistrationImpl getLocalRegistrationForRequest(
@@ -216,11 +241,18 @@ public class RegistrySharedObject extends AbstractSharedObject {
 			trace("request not found for response " + response);
 			return;
 		} else {
-			trace("request " + request + " found for response " + response);
-			synchronized (request) {
-				request.setResponse(response);
-				request.setDone(true);
-				request.notify();
+			IRemoteCallListener listener = request.getListener();
+			if (listener != null) {
+				fireCallCompleteEvent(listener, request.getRequestId(),
+						response.getResponse(), response.hadException(),
+						response.getException());
+				return;
+			} else {
+				synchronized (request) {
+					request.setResponse(response);
+					request.setDone(true);
+					request.notify();
+				}
 			}
 		}
 	}
@@ -386,43 +418,120 @@ public class RegistrySharedObject extends AbstractSharedObject {
 
 	public Object fireCallAndWait(RemoteServiceRegistrationImpl registration,
 			IRemoteCall call) throws ECFException {
-		Request request = null;
+		boolean doneWaiting = false;
+		Response response = null;
 		try {
-			request = sendCallRequest(registration, call);
-		} catch (IOException e) {
-			return new ECFException("Exception sending request", e);
-		}
-		try {
+			// First send request
+			long requestId = sendCallRequest(registration, call);
+			// Then get the specified timeout and calculate when we should
+			// timeout in real time
 			long timeout = call.getTimeout() + System.currentTimeMillis();
-			while ((timeout - System.currentTimeMillis()) > 0) {
-				Request r = findRequestForId(request.getRequestId());
-				if (r == null)
-					throw new ECFException("no request found for id "
-							+ request.getRequestId());
-				trace("checking request " + request + " for done");
-				synchronized (r) {
-					if (r.isDone()) {
+			// Now loop until timeout time has elapsed
+			while ((timeout - System.currentTimeMillis()) > 0 && !doneWaiting) {
+				Request request = findRequestForId(requestId);
+				if (request == null)
+					throw new NullPointerException(
+							"No pending request found id " + requestId);
+				synchronized (request) {
+					if (request.isDone()) {
 						removeRequest(request);
-						trace("request " + request + " done");
-						Response resp = r.getResponse();
-						trace("request " + request + " returning");
-						if (resp.hadException()) {
-							trace("request " + request + " throwing exception ");
-							throw new ECFException("Exception in response ",
-									resp.getException());
-						} else {
-							Object result = resp.getResponse();
-							trace("request " + request + " returning " + result);
-							return result;
-						}
-					} else
-						r.wait(DEFAULT_WAIT_INTERVAL);
+						trace("request/response DONE: " + request);
+						doneWaiting = true;
+						response = request.getResponse();
+						if (response == null)
+							throw new NullPointerException(
+									"Response to request is null");
+					} else {
+						trace("Waiting " + DEFAULT_WAIT_INTERVAL
+								+ " for response to request: " + request);
+						request.wait(DEFAULT_WAIT_INTERVAL);
+					}
 				}
 			}
-			throw new ECFException("Request timed out after "
-					+ call.getTimeout() + " ms");
+			if (!doneWaiting)
+				throw new ECFException("Request timed out after "
+						+ call.getTimeout() + " ms");
+		} catch (IOException e) {
+			// XXX log
+			throw new ECFException("Exception sending request", e);
 		} catch (InterruptedException e) {
+			// XXX log
 			throw new ECFException("Wait for response interrupted", e);
+		} catch (ECFException e) {
+			// XXX log
+			throw e;
 		}
+
+		// Success...now get values and return
+		Object result = null;
+		if (response.hadException())
+			throw new ECFException("Exception in remote call", response
+					.getException());
+		else
+			result = response.getResponse();
+
+		trace("request " + response.getRequestId() + " returning " + result);
+		return result;
+
+	}
+
+	protected void fireCallStartEvent(IRemoteCallListener listener,
+			final long requestId, final IRemoteServiceReference reference,
+			final IRemoteCall call) {
+		if (listener != null) {
+			listener.handleEvent(new IRemoteCallStartEvent() {
+				public long getRequestId() {
+					return requestId;
+				}
+
+				public IRemoteCall getCall() {
+					return call;
+				}
+
+				public IRemoteServiceReference getReference() {
+					return reference;
+				}
+
+				public String toString() {
+					StringBuffer buf = new StringBuffer(
+							"IRemoteCallStartEvent[");
+					buf.append(";reference=").append(reference)
+							.append(";call=").append(call).append("]");
+					return buf.toString();
+				}
+			});
+		}
+	}
+
+	protected void fireCallCompleteEvent(IRemoteCallListener listener,
+			final long requestId, final Object response,
+			final boolean hadException, final Throwable exception) {
+		if (listener != null)
+			listener.handleEvent(new IRemoteCallCompleteEvent() {
+				public long getRequestId() {
+					return requestId;
+				}
+
+				public Throwable getException() {
+					return exception;
+				}
+
+				public Object getResponse() {
+					return response;
+				}
+
+				public boolean hadException() {
+					return hadException;
+				}
+
+				public String toString() {
+					StringBuffer buf = new StringBuffer(
+							"IRemoteCallCompleteEvent[");
+					buf.append(";response=").append(response).append(
+							";hadException=").append(hadException).append(
+							";exception=").append(exception).append("]");
+					return buf.toString();
+				}
+			});
 	}
 }
