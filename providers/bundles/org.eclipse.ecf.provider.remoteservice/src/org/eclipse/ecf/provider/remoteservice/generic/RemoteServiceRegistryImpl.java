@@ -170,7 +170,10 @@ public class RemoteServiceRegistryImpl implements Serializable {
 				.toArray(new RemoteServiceReferenceImpl[references.size()]);
 	}
 
-	public RemoteServiceRegistrationImpl findRegistrationForServiceId(
+	protected RemoteServiceRegistrationImpl [] getRegistrations() {
+		return (RemoteServiceRegistrationImpl []) allPublishedServices.toArray(new RemoteServiceRegistrationImpl[allPublishedServices.size()]);
+	}
+	protected RemoteServiceRegistrationImpl findRegistrationForServiceId(
 			long serviceId) {
 		for (RemoteServiceRegistrationImpl i : allPublishedServices)
 			if (serviceId == i.getServiceId())

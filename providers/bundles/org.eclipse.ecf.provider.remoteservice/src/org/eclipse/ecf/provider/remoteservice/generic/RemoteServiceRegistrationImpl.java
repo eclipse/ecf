@@ -76,6 +76,10 @@ public class RemoteServiceRegistrationImpl implements
 	public ID getContainerID() {
 		return containerID;
 	}
+	
+	protected String [] getClasses() {
+		return clazzes;
+	}
 
 	public IRemoteServiceReference getReference() {
 		if (reference == null) {

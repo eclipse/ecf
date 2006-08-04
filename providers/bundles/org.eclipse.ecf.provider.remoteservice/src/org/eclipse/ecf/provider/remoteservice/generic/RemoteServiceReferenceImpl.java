@@ -20,7 +20,7 @@ public class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 		return registration.getPropertyKeys();
 	}
 
-	public ID getRemoteContainerID() {
+	public ID getContainerID() {
 		return registration.getContainerID();
 	}
 

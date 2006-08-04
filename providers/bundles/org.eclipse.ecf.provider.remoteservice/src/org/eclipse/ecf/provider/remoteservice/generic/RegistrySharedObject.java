@@ -1,7 +1,10 @@
 package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -28,7 +31,10 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisterEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 
 public class RegistrySharedObject extends AbstractSharedObject {
 
@@ -64,7 +70,33 @@ public class RegistrySharedObject extends AbstractSharedObject {
 
 	protected RemoteServiceRegistryImpl addRemoteRegistry(
 			RemoteServiceRegistryImpl registry) {
+		notifyListenersAddRemoteRegistry(registry);
 		return remoteRegistrys.put(registry.getContainerID(), registry);
+	}
+
+	private void notifyListenersAddRemoteRegistry(RemoteServiceRegistryImpl registry) {
+		RemoteServiceRegistrationImpl [] registrations = registry.getRegistrations();
+		for(int i=0; i < registrations.length; i++) fireRemoteServiceListeners(createAddServiceEvent(registrations[i]));
+	}
+
+	private IRemoteServiceEvent createAddServiceEvent(final RemoteServiceRegistrationImpl registration) {
+		return new IRemoteServiceRegisterEvent() {
+
+			public String[] getClazzes() {
+				return registration.getClasses();
+			}
+			public ID getContainerID() {
+				return registration.getContainerID();
+			}
+			public String toString() {
+				StringBuffer buf = new StringBuffer("RemoteServiceRegisterEvent[");
+				buf.append("clazzes=").append(
+						Arrays.asList(registration.getClasses())).append(
+						";containerID=").append(registration.getContainerID())
+						.append("]");
+				return buf.toString();
+			}
+		};
 	}
 
 	protected RemoteServiceRegistryImpl getRemoteRegistry(ID containerID) {
@@ -312,9 +344,26 @@ public class RegistrySharedObject extends AbstractSharedObject {
 						exception));
 	}
 
+	protected List<IRemoteServiceListener> serviceListeners = new ArrayList<IRemoteServiceListener>();
+	
 	public void addRemoteServiceListener(IRemoteServiceListener listener) {
-		// TODO Auto-generated method stub
+		synchronized (serviceListeners) {
+			serviceListeners.add(listener);
+		}
+	}
 
+	public void removeRemoteServiceListener(IRemoteServiceListener listener) {
+		synchronized (serviceListeners) {
+			serviceListeners.remove(listener);
+		}
+	}
+
+	protected void fireRemoteServiceListeners(IRemoteServiceEvent event) {
+		synchronized (serviceListeners) {
+			for (IRemoteServiceListener l : serviceListeners) {
+				l.handleServiceEvent(event);
+			}
+		}
 	}
 
 	public IRemoteService getRemoteService(IRemoteServiceReference ref) {
@@ -383,15 +432,16 @@ public class RegistrySharedObject extends AbstractSharedObject {
 			throw new NullPointerException("service cannot be null");
 		int size = clazzes.length;
 
-		if (size == 0) {
-			throw new IllegalArgumentException("service classes list is empty");
-		}
+		if (size == 0) throw new IllegalArgumentException("service classes list is empty");
 
 		String[] copy = new String[clazzes.length];
 		for (int i = 0; i < clazzes.length; i++) {
 			copy[i] = new String(clazzes[i].getBytes());
 		}
 		clazzes = copy;
+
+		String invalidService = checkServiceClass(clazzes, service);
+		if (invalidService != null) throw new IllegalArgumentException("Service is not valid: "+ invalidService); 
 
 		RemoteServiceRegistrationImpl reg = new RemoteServiceRegistrationImpl();
 		reg.publish(localRegistry, service, clazzes, properties);
@@ -404,11 +454,6 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		synchronized (localRegistry) {
 			sendRegistryUpdateToAll();
 		}
-	}
-
-	public void remoteRemoteServiceListener(IRemoteServiceListener listener) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public boolean ungetRemoteService(IRemoteServiceReference ref) {
@@ -534,4 +579,44 @@ public class RegistrySharedObject extends AbstractSharedObject {
 				}
 			});
 	}
+	
+	static String checkServiceClass(final String[] clazzes,
+			final Object serviceObject) {
+		ClassLoader cl = (ClassLoader) AccessController
+				.doPrivileged(new PrivilegedAction() {
+					public Object run() {
+						return serviceObject.getClass().getClassLoader();
+					}
+				});
+		for (int i = 0; i < clazzes.length; i++) {
+			try {
+				Class serviceClazz = cl == null ? Class.forName(clazzes[i])
+						: cl.loadClass(clazzes[i]);
+				if (!serviceClazz.isInstance(serviceObject))
+					return clazzes[i];
+			} catch (ClassNotFoundException e) {
+				// This check is rarely done
+				if (extensiveCheckServiceClass(clazzes[i], serviceObject
+						.getClass()))
+					return clazzes[i];
+			}
+		}
+		return null;
+	}
+
+	private static boolean extensiveCheckServiceClass(String clazz,
+			Class serviceClazz) {
+		if (clazz.equals(serviceClazz.getName()))
+			return false;
+		Class[] interfaces = serviceClazz.getInterfaces();
+		for (int i = 0; i < interfaces.length; i++)
+			if (!extensiveCheckServiceClass(clazz, interfaces[i]))
+				return false;
+		Class superClazz = serviceClazz.getSuperclass();
+		if (superClazz != null)
+			if (!extensiveCheckServiceClass(clazz, superClazz))
+				return false;
+		return true;
+	}
+
 }

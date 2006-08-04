@@ -68,7 +68,7 @@ public class RemoteServiceContainer extends TCPClientSOContainer
 	}
 
 	public void removeRemoteServiceListener(IRemoteServiceListener listener) {
-		registrySharedObject.remoteRemoteServiceListener(listener);
+		registrySharedObject.removeRemoteServiceListener(listener);
 	}
 
 	public boolean ungetRemoteService(IRemoteServiceReference ref) {

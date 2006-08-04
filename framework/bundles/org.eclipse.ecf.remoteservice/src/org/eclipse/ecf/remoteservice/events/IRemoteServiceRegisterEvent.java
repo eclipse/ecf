@@ -8,13 +8,12 @@
 * Contributors:
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
-
-package org.eclipse.ecf.remoteservice;
+package org.eclipse.ecf.remoteservice.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public interface IRemoteServiceReference {
+public interface IRemoteServiceRegisterEvent extends IRemoteServiceEvent {
+
 	public ID getContainerID();
-	public Object getProperty(String key);
-	public String [] getPropertyKeys();
+	public String [] getClazzes();
 }
