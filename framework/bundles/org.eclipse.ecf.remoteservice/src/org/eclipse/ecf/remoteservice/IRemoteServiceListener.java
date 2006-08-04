@@ -13,7 +13,16 @@ package org.eclipse.ecf.remoteservice;
 
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 
+/**
+ * Listener for remote service changes (register and unregister).  
+ * 
+ */
 public interface IRemoteServiceListener {
-	
+	/**
+	 * Handle remote service events.  The remote service events are
+	 * IRemoteServiceRegisterEvent and IRemoteServiceUnregisterEvent.
+	 * 
+	 * @param event the event
+	 */
 	public void handleServiceEvent(IRemoteServiceEvent event);
 }

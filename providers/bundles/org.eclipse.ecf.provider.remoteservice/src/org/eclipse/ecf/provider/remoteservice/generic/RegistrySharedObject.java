@@ -31,10 +31,9 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
-import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
-import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisterEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisterEvent;
 
 public class RegistrySharedObject extends AbstractSharedObject {
 

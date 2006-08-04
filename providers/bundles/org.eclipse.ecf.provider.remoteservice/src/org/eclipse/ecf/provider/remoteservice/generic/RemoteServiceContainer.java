@@ -7,7 +7,6 @@ import java.util.List;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
@@ -52,18 +51,17 @@ public class RemoteServiceContainer extends TCPClientSOContainer
 
 	}
 
-	public IRemoteService getRemoteService(IRemoteServiceReference ref)
-			throws ECFException {
+	public IRemoteService getRemoteService(IRemoteServiceReference ref) {
 		return registrySharedObject.getRemoteService(ref);
 	}
 
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter,
-			String clazz, String filter) throws ECFException {
+			String clazz, String filter) {
 		return registrySharedObject.getRemoteServiceReferences(idFilter,clazz,filter);
 	}
 
 	public IRemoteServiceRegistration registerRemoteService(String[] clazzes,
-			Object service, Dictionary properties) throws ECFException {
+			Object service, Dictionary properties) {
 		return registrySharedObject.registerRemoteService(clazzes,service,properties);
 	}
 

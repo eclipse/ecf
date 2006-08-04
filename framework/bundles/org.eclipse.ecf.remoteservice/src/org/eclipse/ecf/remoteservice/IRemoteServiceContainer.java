@@ -12,8 +12,8 @@
 package org.eclipse.ecf.remoteservice;
 
 import java.util.Dictionary;
+
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * Container for remote service access.  This is the entry point innterface for accessing 
@@ -46,10 +46,9 @@ public interface IRemoteServiceContainer {
 	 * all of the classes specified by the first parameter
 	 * @param properties to be associated with service
 	 * @return IRemoteServiceRegistration the service registration.  Will not be null
-	 * @throws ECFException thrown if service cannot be registered
 	 */
 	public IRemoteServiceRegistration registerRemoteService(String[] clazzes,
-			Object service, Dictionary properties) throws ECFException;
+			Object service, Dictionary properties);
 	/**
 	 * Get IRemoteServiceReference for desired service
 	 * 
@@ -60,20 +59,17 @@ public interface IRemoteServiceContainer {
 	 * @param clazz the fully qualified name of the interface class that describes the desired service
 	 * @param filter 
 	 * @return IRemoteServiceReference [] the matching IRemoteServiceReferences
-	 * @throws ECFException thrown if problem getting references
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter,
-			String clazz, String filter) throws ECFException;
+			String clazz, String filter);
 
 	/**
 	 * Get remote service for given IRemoteServiceReference.  
 	 * 
 	 * @param ref the IRemoteServiceReference for the desired service
 	 * @return IRemoteService representing the remote service
-	 * @throws ECFException thrown if cannot get IRemoteService for given IRemoteServiceReference
 	 */
-	public IRemoteService getRemoteService(IRemoteServiceReference ref)
-			throws ECFException;
+	public IRemoteService getRemoteService(IRemoteServiceReference ref);
 
 	/**
 	 * Unget IRemoteServiceReference
