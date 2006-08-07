@@ -70,8 +70,8 @@ public class SharedSDOEditor extends SDOEditor {
                                 ((IFileEditorInput) editorInput).getFile()
                                         .getProject());
             } catch (ECFException e) {
-                throw new PartInitException(
-                        "Error while connecting to the group", e);
+                EditorPlugin.getDefault().log(e);
+            	sharedDataGraph = null;
             }
 
         super.init(site, editorInput);
@@ -109,6 +109,7 @@ public class SharedSDOEditor extends SDOEditor {
                 sharedDataGraph.dispose();
                 sharedDataGraph = null;
             }
+            super.createModel();
         }
     }
 
