@@ -24,6 +24,7 @@ import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
+import org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -237,7 +238,9 @@ public class PublishedGraphTracker implements ISharedObject {
 	 * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
 	 */
 	public void handleEvent(Event event) {
-		if (event instanceof ISharedObjectMessageEvent) {
+		if (event instanceof ISharedObjectCreateResponseEvent) {
+			// Ignore
+		} else if (event instanceof ISharedObjectMessageEvent) {
 			// track graph additions/removals and peer departures
 			// (deactivations)
 			ISharedObjectMessageEvent e = (ISharedObjectMessageEvent) event;

@@ -55,27 +55,18 @@ public class SharedSDOEditor extends SDOEditor {
 
     private ISharedDataGraph sharedDataGraph;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.emf.ecore.sdo.presentation.SDOEditor#init(org.eclipse.ui.IEditorSite,
-     *      org.eclipse.ui.IEditorInput)
-     */
-    public void init(IEditorSite site, IEditorInput editorInput)
-            throws PartInitException {
-        if (editorInput instanceof IFileEditorInput)
-            try {
-                EditorPlugin.getDefault()
-                        .checkConnected(
-                                ((IFileEditorInput) editorInput).getFile()
-                                        .getProject());
-            } catch (ECFException e) {
-            	throw new PartInitException("Editor not connected",e);
-            }
-
-        super.init(site, editorInput);
+    protected boolean isConnected(IFileEditorInput editorInput) {
+        try {
+            EditorPlugin.getDefault()
+                    .checkConnected(
+                            ((IFileEditorInput) editorInput).getFile()
+                                    .getProject());
+            return true;
+        } catch (ECFException e) {
+        	return false;
+        }
+   	
     }
-
     /*
      * (non-Javadoc)
      * 
@@ -84,24 +75,26 @@ public class SharedSDOEditor extends SDOEditor {
     public void createModel() {
         try {
             IFileEditorInput modelFile = (IFileEditorInput) getEditorInput();
-            String path = modelFile.getFile().getFullPath().toString();
-            URI uri = URI.createPlatformResourceURI(modelFile.getFile()
-                    .getFullPath().toString());
-            if (EditorPlugin.getDefault().isPublished(path)) {
-                sharedDataGraph = EditorPlugin.getDefault().subscribe(path,
-                        new UpdateConsumer());
-                EDataGraph dataGraph = (EDataGraph) sharedDataGraph
-                        .getDataGraph();
-                dataGraph.getDataGraphResource().setURI(uri);
-                editingDomain.getResourceSet().getResources().addAll(
-                        dataGraph.getResourceSet().getResources());
-                dataGraph.setResourceSet(editingDomain.getResourceSet());
-            } else {
-                Resource resource = editingDomain.loadResource(uri.toString());
-                DataGraph dataGraph = (DataGraph) resource.getContents().get(0);
-                sharedDataGraph = EditorPlugin.getDefault().publish(path,
-                        dataGraph, new UpdateConsumer());
-            }
+            if (isConnected(modelFile)) {
+	            String path = modelFile.getFile().getFullPath().toString();
+	            URI uri = URI.createPlatformResourceURI(modelFile.getFile()
+	                    .getFullPath().toString());
+	            if (EditorPlugin.getDefault().isPublished(path)) {
+	                sharedDataGraph = EditorPlugin.getDefault().subscribe(path,
+	                        new UpdateConsumer());
+	                EDataGraph dataGraph = (EDataGraph) sharedDataGraph
+	                        .getDataGraph();
+	                dataGraph.getDataGraphResource().setURI(uri);
+	                editingDomain.getResourceSet().getResources().addAll(
+	                        dataGraph.getResourceSet().getResources());
+	                dataGraph.setResourceSet(editingDomain.getResourceSet());
+	            } else {
+	                Resource resource = editingDomain.loadResource(uri.toString());
+	                DataGraph dataGraph = (DataGraph) resource.getContents().get(0);
+	                sharedDataGraph = EditorPlugin.getDefault().publish(path,
+	                        dataGraph, new UpdateConsumer());
+	            }
+            } else super.createModel();
         } catch (ECFException e) {
             EditorPlugin.getDefault().log(e);
             if (sharedDataGraph != null) {
