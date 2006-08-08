@@ -199,17 +199,19 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			return username;
 	}
 	public void dispose() {
-		for (Iterator i = accounts.keySet().iterator(); i.hasNext();) {
-			ID serviceID = (ID) i.next();
-			UserAccount account = getAccount(serviceID);
-			if (account != null) {
-				ILocalInputHandler handler = account.getInputHandler();
-				if (handler != null) {
-					handler.disconnect();
+		synchronized (accounts) {
+			for (Iterator i = accounts.keySet().iterator(); i.hasNext();) {
+				ID serviceID = (ID) i.next();
+				UserAccount account = getAccount(serviceID);
+				if (account != null) {
+					ILocalInputHandler handler = account.getInputHandler();
+					if (handler != null) {
+						handler.disconnect();
+					}
 				}
 			}
+			accounts.clear();
 		}
-		accounts.clear();
 		super.dispose();
 	}
 	protected class TreeObject implements IAdaptable {
