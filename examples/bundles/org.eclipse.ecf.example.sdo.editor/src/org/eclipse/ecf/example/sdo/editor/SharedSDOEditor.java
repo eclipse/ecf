@@ -70,8 +70,7 @@ public class SharedSDOEditor extends SDOEditor {
                                 ((IFileEditorInput) editorInput).getFile()
                                         .getProject());
             } catch (ECFException e) {
-                EditorPlugin.getDefault().log(e);
-            	sharedDataGraph = null;
+            	throw new PartInitException("Editor not connected",e);
             }
 
         super.init(site, editorInput);

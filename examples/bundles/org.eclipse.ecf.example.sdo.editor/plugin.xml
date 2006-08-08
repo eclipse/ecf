@@ -10,7 +10,7 @@
             name="Shared Data Graph Editor"
             contributorClass="org.eclipse.emf.ecore.sdo.presentation.SDOActionBarContributor"
             id="org.eclipse.ecf.example.sdo.editor.SharedSDOEditor"
-            extensions="datagraph"/>
+            extensions="ecfdatagraph"/>
    </extension>
 
 </plugin>
