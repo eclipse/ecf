@@ -21,17 +21,18 @@ import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
-import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.pubsub.IPublishedService;
+import org.eclipse.ecf.pubsub.ISubscribedService;
+import org.eclipse.ecf.pubsub.ISubscriber;
 import org.eclipse.ecf.pubsub.ISubscription;
 import org.eclipse.ecf.pubsub.ISubscriptionCallback;
 
-public class SubscriptionAgent extends PlatformObject implements ISharedObject {
+public class SubscriptionAgent extends PlatformObject implements ISharedObject, ISubscriber {
 	
 	protected static final Object CONTAINER_ID_KEY = new Integer(0);
 	
@@ -47,9 +48,17 @@ public class SubscriptionAgent extends PlatformObject implements ISharedObject {
 	
 	protected ISubscriptionCallback callback;
 	
-	protected boolean subscribed;
+	protected ISubscribedService svc;
 	
 	protected boolean disposed;
+	
+	public synchronized void subscribed(ISubscribedService svc) {
+		if (disposed)
+			throw new IllegalStateException("Already disposed.");
+
+		this.svc = svc;
+		callback.subscribed(new Subscription());
+	}
 	
 	public void init(ISharedObjectConfig config) throws SharedObjectInitException {
 		Map props = config.getProperties();
@@ -76,18 +85,10 @@ public class SubscriptionAgent extends PlatformObject implements ISharedObject {
 			ISharedObjectActivatedEvent e = (ISharedObjectActivatedEvent) event;
 			if (e.getActivatedID().equals(config.getSharedObjectID()))
 				activated();
-			else
-				activated(e.getActivatedID());
 		} else if (event instanceof ISharedObjectDeactivatedEvent) {
 			ISharedObjectDeactivatedEvent e = (ISharedObjectDeactivatedEvent) event;
 			if (e.getDeactivatedID().equals(config.getSharedObjectID()))
 				deactivated();
-		} else if (event instanceof IContainerDisconnectedEvent) {
-			IContainerDisconnectedEvent e = (IContainerDisconnectedEvent) event;
-			if (e.getTargetID().equals(e.getLocalContainerID()))
-				disconnected();
-			else
-				disconnected(e.getTargetID());
 		} else if (event instanceof ISharedObjectCreateResponseEvent)
 			received((ISharedObjectCreateResponseEvent) event);
 	}
@@ -101,7 +102,6 @@ public class SubscriptionAgent extends PlatformObject implements ISharedObject {
 		if (isPrimary()) {
 			try {
 				ctx.sendCreate(containerID, createReplicaDescription());
-				// TODO set timer to time out if no response received within some bound
 			} catch (IOException e) {
 				callback.requestFailed(e);
 				ctx.getSharedObjectManager().removeSharedObject(config.getSharedObjectID());
@@ -116,55 +116,33 @@ public class SubscriptionAgent extends PlatformObject implements ISharedObject {
 			ID homeContainerID = config.getHomeContainerID();
 			if (so instanceof IPublishedService) {
 				IPublishedService svc = (IPublishedService) so;
-				svc.subscribe(homeContainerID);
-				subscribed = true;
+				svc.subscribe(homeContainerID, config.getSharedObjectID());
 			} else {
 				ctx.sendCreateResponse(homeContainerID, new IllegalArgumentException("Not an IPublishedService."), -1);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-
+		} finally {
 			ctx.getSharedObjectManager().removeSharedObject(config.getSharedObjectID());
 		}
-	}
-
-	protected void activated(ID sharedObjectID) {
-		if (isPrimary() && sharedObjectID.equals(this.sharedObjectID))
-			callback.subscribed(new Subscription());
 	}
 	
 	protected void deactivated() {
 		if (isPrimary()) {
 			synchronized (this) {
 				disposed = true;
-			}
-
-			return;
-		}
-		
-		if (subscribed) {
-			ISharedObject so = config.getContext().getSharedObjectManager().getSharedObject(sharedObjectID);
-			if (so instanceof IPublishedService) {
-				IPublishedService svc = (IPublishedService) so;
-				svc.unsubscribe(config.getHomeContainerID());
-				subscribed = false;
+				if (svc != null)
+					svc.unsubscribe(config.getSharedObjectID());
 			}
 		}
-	}
-	
-	protected void disconnected() {
-		config.getContext().getSharedObjectManager().removeSharedObject(config.getSharedObjectID());
-	}
-	
-	protected void disconnected(ID containerID) {
-		if (containerID.equals(config.getHomeContainerID()) || containerID.equals(this.containerID))
-			config.getContext().getSharedObjectManager().removeSharedObject(config.getSharedObjectID());
 	}
 	
 	protected void received(ISharedObjectCreateResponseEvent e) {
-		if (e.getRemoteContainerID().equals(containerID) && e.getSenderSharedObjectID().equals(config.getSharedObjectID()))
+		if (e.getRemoteContainerID().equals(containerID) && e.getSenderSharedObjectID().equals(config.getSharedObjectID())) {
 			callback.requestFailed(e.getException());
+			config.getContext().getSharedObjectManager().removeSharedObject(config.getSharedObjectID());
+		}
 	}
 	
 	protected ReplicaSharedObjectDescription createReplicaDescription() {
@@ -180,6 +158,8 @@ public class SubscriptionAgent extends PlatformObject implements ISharedObject {
 	
 	public void dispose(ID containerID) {
 		config = null;
+		callback = null;
+		svc = null;
 	}
 	
 	protected class Subscription implements ISubscription {
@@ -191,24 +171,16 @@ public class SubscriptionAgent extends PlatformObject implements ISharedObject {
 		public ID getHomeContainerID() {
 			return containerID;
 		}
+		
+		public ISubscribedService getSubscribedService() {
+			return svc;
+		}
 
 		public void dispose() {
 			synchronized (SubscriptionAgent.this) {
-				if (disposed)
-					return;
-				
-				disposed = true;
+				if (!disposed)
+					config.getContext().getSharedObjectManager().removeSharedObject(config.getSharedObjectID());
 			}
-			
-			ISharedObjectContext ctx = config.getContext();
-			try {
-				ctx.sendDispose(containerID);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			ctx.getSharedObjectManager().removeSharedObject(config.getSharedObjectID());
 		}
 	}
 }

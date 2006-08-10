@@ -11,8 +11,10 @@
 package org.eclipse.ecf.pubsub.model.impl;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.ecf.core.ISharedObjectContext;
@@ -21,11 +23,13 @@ import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.example.pubsub.SerializationUtil;
 import org.eclipse.ecf.pubsub.IPublishedService;
+import org.eclipse.ecf.pubsub.impl.SubscribeMessage;
+import org.eclipse.ecf.pubsub.impl.UnsubscribeMessage;
 import org.eclipse.ecf.pubsub.model.IMasterModel;
 
 public class LocalAgent extends AgentBase implements IPublishedService, IMasterModel {
 	
-	protected Map subscriptions;
+	protected Collection subscriptions;
 	
 	private final Object subscriptionMutex = new Object();
 	
@@ -41,52 +45,57 @@ public class LocalAgent extends AgentBase implements IPublishedService, IMasterM
 		return Collections.EMPTY_MAP;
 	}
 	
-	public void subscribe(ID containerID) {
+	public void subscribe(ID containerID, ID requestorID) {
 		synchronized (subscriptionMutex) {
 			if (subscriptions == null)
-				subscriptions = new HashMap();
-			
-			Integer refCount = (Integer) subscriptions.get(containerID);
-			if (refCount == null)
-				refCount = new Integer(0);
-			
-			refCount = new Integer(refCount.intValue() + 1);
-			subscriptions.put(containerID, refCount);
-		}
-		
-		ISharedObjectContext ctx = config.getContext();
-		try {
-			ctx.sendCreate(containerID, createRemoteAgentDescription());
-		} catch (IOException e) {
-			// TODO Log me!
-			e.printStackTrace();
+				subscriptions = new HashSet();
+
+			ISharedObjectContext ctx = config.getContext();
+			try {
+				if (subscriptions.add(containerID)) {
+					ctx.sendCreate(containerID, createRemoteAgentDescription(requestorID));
+				} else {
+					SubscribeMessage msg = new SubscribeMessage(requestorID);
+					ctx.sendMessage(containerID, SerializationUtil.serialize(msg));
+				}
+			} catch (IOException e) {
+				// TODO Log me!
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	public void unsubscribe(ID containerID) {
-		boolean disposeReplica = false;
-		synchronized (subscriptionMutex) {
-			if (subscriptions != null) {
-				Integer refCount = (Integer) subscriptions.get(containerID);
-				if (refCount != null) {
-					refCount = new Integer(refCount.intValue() - 1);
-					if (refCount.intValue() <= 0) {
-						subscriptions.remove(containerID);
-						disposeReplica = true;
-					} else {
-						subscriptions.put(containerID, refCount);
-					}
-				}
-			}
+	protected void received(ID containerID, Object data) {
+		if (!(data instanceof byte[]))
+			return;
+		
+		Object msg;
+		try {
+			msg = SerializationUtil.deserialize((byte[]) data);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
 		}
 		
-		if (disposeReplica)
-			try {
-				config.getContext().sendDispose(containerID);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		if (!(msg instanceof UnsubscribeMessage))
+			return;
+		
+		synchronized (subscriptionMutex) {
+			if (subscriptions != null)
+				subscriptions.remove(containerID);
+		}
+	}
+	
+	protected void disconnected(ID containerID) {
+		synchronized (subscriptionMutex) {
+			if (subscriptions != null)
+				subscriptions.remove(containerID);
+		}
 	}
 
 	protected void deactivated() {
@@ -99,8 +108,8 @@ public class LocalAgent extends AgentBase implements IPublishedService, IMasterM
 			}
 	}
 
-	protected ReplicaSharedObjectDescription createRemoteAgentDescription() {
-		Map props = new HashMap(2);
+	protected ReplicaSharedObjectDescription createRemoteAgentDescription(ID requestorID) {
+		Map props = new HashMap(3);
 		try {
 			props.put(INITIAL_DATA_KEY, SerializationUtil.serialize(data));
 		} catch (IOException e) {
@@ -109,6 +118,7 @@ public class LocalAgent extends AgentBase implements IPublishedService, IMasterM
 		}
 		
 		props.put(MODEL_UPDATER_KEY, updaterID);
+		props.put(REQUESTOR_ID, requestorID);
 		return new ReplicaSharedObjectDescription(RemoteAgent.class, config.getSharedObjectID(), config.getHomeContainerID(), props);
 	}
 }

@@ -256,7 +256,7 @@ public class PubSubView extends ViewPart {
 						return;
 					}
 		
-					view.setSubscription(container, subscription);
+					view.setSubscription(subscription);
 				}
 			});
 		}

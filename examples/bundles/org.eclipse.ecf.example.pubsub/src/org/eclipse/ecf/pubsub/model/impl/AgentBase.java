@@ -32,6 +32,8 @@ public abstract class AgentBase extends PlatformObject implements ISharedObject,
 	
 	public static final Object MODEL_UPDATER_KEY = new Integer(1); 
 	
+	protected static final Object REQUESTOR_ID = new Integer(2); 
+	
 	protected ISharedObjectConfig config;
 	
 	protected Object data;

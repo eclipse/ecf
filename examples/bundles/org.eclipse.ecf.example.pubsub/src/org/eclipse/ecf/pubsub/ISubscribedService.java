@@ -13,11 +13,7 @@ package org.eclipse.ecf.pubsub;
 import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.identity.ID;
 
-public interface ISubscription extends IIdentifiable {
+public interface ISubscribedService extends IIdentifiable {
 
-	ID getHomeContainerID();
-	
-	ISubscribedService getSubscribedService();
-	
-	void dispose();
+	void unsubscribe(ID requestorID);
 }

@@ -31,7 +31,7 @@ public class PublishedServiceDirectoryChangeEvent extends EventObject {
 		this.services = services;
 	}
 	
-	public IPublishedServiceDirectory getManager() {
+	public IPublishedServiceDirectory getDirectory() {
 		return (IPublishedServiceDirectory) source;
 	}
 	

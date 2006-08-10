@@ -13,7 +13,6 @@ package org.eclipse.ecf.example.pubsub;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.pubsub.ISubscription;
 import org.eclipse.ecf.pubsub.model.IReplicaModel;
 import org.eclipse.swt.SWT;
@@ -32,10 +31,10 @@ public class SubscriptionView extends ViewPart implements IAppendableListListene
 	
 	protected Text text;
 	
-	public synchronized void setSubscription(ISharedObjectContainer container, ISubscription subscription) {
+	public synchronized void setSubscription(ISubscription subscription) {
 		this.subscription = subscription;
 		setPartName("Subscription: " + subscription.getID());
-		Object object = container.getSharedObjectManager().getSharedObject(subscription.getID());
+		Object object = subscription.getSubscribedService();
 		if (object instanceof IReplicaModel) {
 			Object data = ((IReplicaModel) object).getData();
 			if (data instanceof AppendableList) {

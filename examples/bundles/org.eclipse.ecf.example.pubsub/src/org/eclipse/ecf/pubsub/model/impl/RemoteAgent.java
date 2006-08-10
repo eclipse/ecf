@@ -11,18 +11,58 @@
 package org.eclipse.ecf.pubsub.model.impl;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ecf.core.ISharedObjectConfig;
+import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.example.pubsub.SerializationUtil;
+import org.eclipse.ecf.pubsub.ISubscribedService;
+import org.eclipse.ecf.pubsub.ISubscriber;
+import org.eclipse.ecf.pubsub.impl.SubscribeMessage;
+import org.eclipse.ecf.pubsub.impl.UnsubscribeMessage;
 import org.eclipse.ecf.pubsub.model.IModelUpdater;
 import org.eclipse.ecf.pubsub.model.IReplicaModel;
 
-public class RemoteAgent extends AgentBase implements IReplicaModel {
+public class RemoteAgent extends AgentBase implements IReplicaModel, ISubscribedService {
+	
+	private Collection subscribers;
+	
+	private final Object subscriptionMutex = new Object();
+	
+	public void unsubscribe(ID requestorID) {
+		synchronized (subscriptionMutex) {
+			if (subscribers == null)
+				return;
+			
+			subscribers.remove(requestorID);
+			if (subscribers.isEmpty()) {
+				ISharedObjectContext ctx = config.getContext();
+				try {
+					ctx.sendMessage(config.getHomeContainerID(), new UnsubscribeMessage());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				ctx.getSharedObjectManager().removeSharedObject(config.getSharedObjectID());
+			}
+		}
+	}
+	
+	public void init(ISharedObjectConfig config) throws SharedObjectInitException {
+		super.init(config);
+		subscribers = new HashSet();
+		ID requestorID = (ID) config.getProperties().get(REQUESTOR_ID);
+		if (requestorID != null)
+			subscribers.add(requestorID);
+	}
 	
 	protected void initializeData(Object data) throws SharedObjectInitException {
 		try {
@@ -58,6 +98,15 @@ public class RemoteAgent extends AgentBase implements IReplicaModel {
 			throw new SharedObjectInitException("Could not find specified Model Updater.");
 	}
 	
+	protected void activated() {
+		ID requestorID = (ID) config.getProperties().get(REQUESTOR_ID);
+		if (requestorID != null) {
+			Object svc = config.getContext().getSharedObjectManager().getSharedObject(requestorID);
+			if (svc instanceof ISubscriber)
+				((ISubscriber) svc).subscribed(this);
+		}
+	}
+	
 	protected void disconnected() {
 		config.getContext().getSharedObjectManager().removeSharedObject(config.getSharedObjectID());
 	}
@@ -68,6 +117,18 @@ public class RemoteAgent extends AgentBase implements IReplicaModel {
 	}
 	
 	protected void received(ID containerID, Object data) {
+		if (!(data instanceof byte[]))
+			return;
+		
+		if (data instanceof SubscribeMessage) {
+			SubscribeMessage msg = (SubscribeMessage) data;
+			synchronized (subscriptionMutex) {
+				subscribers.add(msg.getRequestorID());
+			}
+			
+			return;
+		}
+		
 		try {
 			updater.update(this.data, SerializationUtil.deserialize((byte[]) data));
 		} catch (IOException e) {
