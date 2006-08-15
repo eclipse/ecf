@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.irc.container.IRCContainerInstantiator"
+            description="IRC"
+            name="ecf.irc.irclib">
+                     <property
+                           name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"
+                           value="irc://&lt;user&gt;@&lt;ircserver&gt;[/&lt;#channel&gt;]"/>
+         <property
+               value="true"
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>
+         <property
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"
+               value="irc://"/>
+            
+      </containerFactory>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.namespace">
+      <namespace
+            class="org.eclipse.ecf.provider.irc.identity.IRCNamespace"
+            name="ecfircid"/>
+   </extension>
+
+</plugin>
