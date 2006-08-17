@@ -285,7 +285,7 @@ public class AbstractSharedObject implements ISharedObject,
      * when the ISharedObjectMessageEvent is of type ISharedObjectCreateResponseEvent. This default 
      * implementation simply returns true.  Subclasses may override
      * as appropriate.
-     * @param the ISharedObjectCreateResponseEvent
+     * @param createResponseEvent the ISharedObjectCreateResponseEvent received
      * @return true if the provided event should receive no further processing.  If false the provided Event should be
      * passed to further event processors.  
      */
