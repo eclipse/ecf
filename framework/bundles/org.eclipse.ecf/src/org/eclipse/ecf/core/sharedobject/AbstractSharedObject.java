@@ -24,6 +24,7 @@ import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.SharedObjectInitException;
+import org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent;
 import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -262,8 +263,8 @@ public class AbstractSharedObject implements ISharedObject,
 		return null;
 	}
     /**
-     * Handle a SharedObjectMessageEvent.  This method will be automatically called by 
-     * the SharedObjectMsgEventProcessor when a SharedObjectMessageEvent is received.
+     * Handle a ISharedObjectMessageEvent.  This method will be automatically called by 
+     * the SharedObjectMsgEventProcessor when a ISharedObjectMessageEvent is received.
      * The SharedObjectMsgEventProcessor is associated with this object via the initialize()
      * method
      * @param event the event to handle
@@ -272,14 +273,30 @@ public class AbstractSharedObject implements ISharedObject,
      */
     protected boolean handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
     	trace("handleSharedObjectMsgEvent("+event+")");
-    	SharedObjectMsg msg = getSharedObjectMsgFromEvent(event);
-    	if (msg != null) return handleSharedObjectMsg(msg);
-    	else return false;
+    	if (event instanceof ISharedObjectCreateResponseEvent) return handleSharedObjectCreateResponseEvent((ISharedObjectCreateResponseEvent)event);
+    	else {
+	    	SharedObjectMsg msg = getSharedObjectMsgFromEvent(event);
+	    	if (msg != null) return handleSharedObjectMsg(msg);
+	    	else return false;
+    	}
+    }
+    /**
+     * Handle a ISharedObjectCreateResponseEvent.  This handler is called by handleSharedObjectMsgEvent
+     * when the ISharedObjectMessageEvent is of type ISharedObjectCreateResponseEvent. This default 
+     * implementation simply returns true.  Subclasses may override
+     * as appropriate.
+     * @param the ISharedObjectCreateResponseEvent
+     * @return true if the provided event should receive no further processing.  If false the provided Event should be
+     * passed to further event processors.  
+     */
+    protected boolean handleSharedObjectCreateResponseEvent(ISharedObjectCreateResponseEvent createResponseEvent) {
+    	trace("handleSharedObjectCreateResponseEvent("+createResponseEvent+")");
+    	return true;
     }
     /**
      * SharedObjectMsg handler method.  This method will be called by {@link #handleSharedObjectMsgEvent(ISharedObjectMessageEvent)} when
      * a SharedObjectMsg is received either from a local source or a remote source. This default implementation 
-     * will simply return false so that other processing of of the given msg can occur.  Subclasses should override this
+     * simply returns false so that other processing of of the given msg can occur.  Subclasses should override this
      * behavior to define custom logic for handling SharedObjectMsgs.
      * @param msg the SharedObjectMsg received
      * @return true if the msg has been completely handled and subsequent processing should stop.  False if processing 
