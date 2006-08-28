@@ -10,7 +10,6 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.ecf.example.collab.ClientPluginConstants;
-import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -26,7 +25,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -37,7 +35,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 public class ConnectionDialog extends TitleAreaDialog {

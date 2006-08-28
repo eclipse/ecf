@@ -6,7 +6,8 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.remoteservice.generic.RemoteServiceContainerFactory"
-            name="ecf.generic.remoteservice"/>
+            name="ecf.generic.remoteservice"
+            description="ECF Generic Remoteservice" />
    </extension>
 
 </plugin>
