@@ -291,7 +291,7 @@ public class AbstractSharedObject implements ISharedObject,
      */
     protected boolean handleSharedObjectCreateResponseEvent(ISharedObjectCreateResponseEvent createResponseEvent) {
     	trace("handleSharedObjectCreateResponseEvent("+createResponseEvent+")");
-    	return true;
+    	return false;
     }
     /**
      * SharedObjectMsg handler method.  This method will be called by {@link #handleSharedObjectMsgEvent(ISharedObjectMessageEvent)} when

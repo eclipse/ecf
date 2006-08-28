@@ -13,4 +13,24 @@
                name="keepAlive"/>
       </connectionFactory>
    </extension>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.generic.ContainerInstantiator"
+            description="Generic Server Container Instantiator"
+            name="ecf.generic.server">
+         <defaultargument
+               value="ecftcp://localhost:3282/server"
+               type="org.eclipse.ecf.core.identity.ID"
+               name="id"/>
+         <defaultargument
+               value="30000"
+               type="java.lang.Integer"
+               name="keepAlive"/>
+         <property
+               value="true"
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.isServer"/>
+      </containerFactory>
+   </extension>
+
 </plugin>
