@@ -110,32 +110,6 @@
             id="org.eclipse.ecf.example.collab.ui.autologin"/>
    </extension>
 
-   <extension
-         point="org.eclipse.ecf.containerFactory">
-      <containerFactory
-            class="org.eclipse.ecf.provider.generic.ContainerInstantiator:foo:bar"
-            description="ECF Generic"
-            name="ecf.generic.client">
-         <defaultargument
-               type="org.eclipse.ecf.core.identity.ID"
-               name="id"/>
-         <defaultargument
-               value="30000"
-               type="java.lang.Integer"
-               name="keepAlive"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"
-               value="ecftcp://&lt;server&gt;:&lt;port&gt;/&lt;groupname&gt;"/>
-         <property
-               value="ecftcp://ecf.eclipse.org:3282/server"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"/>
-         <property
-               value="true"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usenickname"/>
-      </containerFactory>
-   </extension>
-
-
    <extension id="org.eclipse.ecf.example.collab.sharedmarker" point="org.eclipse.core.resources.markers" name="ECF Marker">
 	   <persistent value="true"/>
        <super type="org.eclipse.core.resources.problemmarker"/>
