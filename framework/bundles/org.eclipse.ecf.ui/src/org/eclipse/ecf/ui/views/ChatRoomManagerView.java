@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
@@ -32,6 +33,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -53,6 +56,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
@@ -229,12 +233,21 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 		dateColor = colorFromRGBString(DEFAULT_DATE_COLOR);
 		mainComp = new Composite(parent, SWT.NONE);
 		mainComp.setLayout(new FillLayout());
+		boolean useTraditionalTabFolder = PlatformUI.getPreferenceStore().getBoolean(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS);
 		tabFolder = new CTabFolder(mainComp, SWT.NORMAL);
 		// The following will allow tab folder to have close buttons on tab
 		// items
 		// tabFolder = new CTabFolder(mainComp, SWT.CLOSE);
 		// tabFolder.setUnselectedCloseVisible(false);
-		tabFolder.setSimple(false);
+		tabFolder.setSimple(useTraditionalTabFolder);
+		PlatformUI.getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getProperty().equals(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS) && !tabFolder.isDisposed()) {
+					tabFolder.setSimple(((Boolean) event.getNewValue()).booleanValue());
+					tabFolder.redraw();
+				}
+			}});
+		
 		tabFolder.addCTabFolder2Listener(new CTabFolder2Listener() {
 			public void close(CTabFolderEvent event) {
 				System.out.println("close(" + event + ")");
