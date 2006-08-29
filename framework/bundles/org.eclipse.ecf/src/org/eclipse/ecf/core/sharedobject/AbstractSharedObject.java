@@ -283,11 +283,12 @@ public class AbstractSharedObject implements ISharedObject,
     /**
      * Handle a ISharedObjectCreateResponseEvent.  This handler is called by handleSharedObjectMsgEvent
      * when the ISharedObjectMessageEvent is of type ISharedObjectCreateResponseEvent. This default 
-     * implementation simply returns true.  Subclasses may override
-     * as appropriate.
+     * implementation simply returns false.  Subclasses may override
+     * as appropriate.  Note that if return value is true, it will prevent subsequent event processors from
+     * having a chance to process event
      * @param createResponseEvent the ISharedObjectCreateResponseEvent received
      * @return true if the provided event should receive no further processing.  If false the provided Event should be
-     * passed to further event processors.  
+     * passed to subsequent event processors.  
      */
     protected boolean handleSharedObjectCreateResponseEvent(ISharedObjectCreateResponseEvent createResponseEvent) {
     	trace("handleSharedObjectCreateResponseEvent("+createResponseEvent+")");
