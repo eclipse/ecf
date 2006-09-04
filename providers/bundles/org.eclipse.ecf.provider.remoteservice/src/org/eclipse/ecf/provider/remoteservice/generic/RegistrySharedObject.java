@@ -42,16 +42,22 @@ public class RegistrySharedObject extends AbstractSharedObject {
 	private static final String HANDLE_CALL_REQUEST = "handleCallRequest";
 
 	private static final String SEND_REGISTRY_UPDATE = "handleRegistryUpdate";
+	
+	private static final String SEND_UNREGISTER = "handleUnregister";
 
 	private static final int SEND_REGISTRY_ERROR_CODE = 201;
 
 	private static final String SEND_REGISTRY_UPDATE_ERROR_MESSAGE = "exception sending local registry message";
+
+	private static final String SEND_UNREGISTER_ERROR_MESSAGE = "exception sending service unregister message";
 
 	private static final int MSG_INVOKE_ERROR_CODE = 202;
 
 	private static final String MSG_INVOKE_ERROR_MESSAGE = "Exception in ";
 
 	private static final int HANDLE_REQUEST_ERROR_CODE = 203;
+	
+	private static final int SEND_UNREGISTER_ERROR_CODE = 204;
 
 	private static final String HANDLE_REQUEST_ERROR_MESSAGE = "Exception locally invoking remote call";
 
@@ -443,7 +449,7 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		if (invalidService != null) throw new IllegalArgumentException("Service is not valid: "+ invalidService); 
 
 		RemoteServiceRegistrationImpl reg = new RemoteServiceRegistrationImpl();
-		reg.publish(localRegistry, service, clazzes, properties);
+		reg.publish(this, localRegistry, service, clazzes, properties);
 
 		notifyRemotesOfRegistryChange();
 		return reg;
@@ -454,7 +460,44 @@ public class RegistrySharedObject extends AbstractSharedObject {
 			sendRegistryUpdateToAll();
 		}
 	}
+	
+	protected void unregister(RemoteServiceRegistrationImpl serviceRegistration) {
+		synchronized (localRegistry) {
+			localRegistry.unpublishService(serviceRegistration);
+			sendUnregisterToAll(new Long(serviceRegistration.getServiceId()));
+			notifyLocalOfUnregister(serviceRegistration.getContainerID(), serviceRegistration);
+		}
+	}
+	
+	private void notifyLocalOfUnregister(ID registryContainer, RemoteServiceRegistrationImpl serviceRegistration) {
+		trace("notifyLocalOfUnregister("+registryContainer+","+serviceRegistration+")");
+		// TODO Auto-generated method stub
+	}
 
+	private void sendUnregisterToAll(Long serviceId) {
+		trace("sendUnregisterToAll("+serviceId+")");
+		try {
+			this.sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(SEND_UNREGISTER, new Object[] { serviceId }));
+		} catch (IOException e) {
+			messageError(SEND_UNREGISTER_ERROR_CODE,
+					SEND_UNREGISTER_ERROR_MESSAGE, e);
+		}
+	}
+
+	protected void handleUnregister(Long serviceId) {
+		trace("handleUnregister("+serviceId+")");
+		synchronized (remoteRegistrys) {
+			for (ID i : remoteRegistrys.keySet()) {
+				RemoteServiceRegistryImpl serviceRegistry = remoteRegistrys.get(i);
+				RemoteServiceRegistrationImpl registration = serviceRegistry.findRegistrationForServiceId(serviceId.longValue());
+				if (registration != null) {
+					trace("handleUnregister...FOUND IT...UNPUBLISHING "+serviceId);
+					serviceRegistry.unpublishService(registration);
+					notifyLocalOfUnregister(registration.getContainerID(), registration);
+				}
+			}
+		}
+	}
 	public boolean ungetRemoteService(IRemoteServiceReference ref) {
 		// TODO Auto-generated method stub
 		return false;

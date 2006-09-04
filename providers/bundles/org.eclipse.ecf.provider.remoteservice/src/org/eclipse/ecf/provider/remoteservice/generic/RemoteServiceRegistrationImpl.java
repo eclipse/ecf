@@ -46,12 +46,15 @@ public class RemoteServiceRegistrationImpl implements
 
 	protected transient RemoteServiceReferenceImpl reference = null;
 
+	protected transient RegistrySharedObject sharedObject = null;
+	
 	public RemoteServiceRegistrationImpl() {
 
 	}
 
-	public void publish(RemoteServiceRegistryImpl registry, Object service,
+	public void publish(RegistrySharedObject sharedObject, RemoteServiceRegistryImpl registry, Object service,
 			String[] clazzes, Dictionary properties) {
+		this.sharedObject = sharedObject;
 		this.service = service;
 		this.clazzes = clazzes;
 		this.containerID = registry.getContainerID();
@@ -103,8 +106,7 @@ public class RemoteServiceRegistrationImpl implements
 	}
 
 	public void unregister() {
-		// TODO Auto-generated method stub
-
+		if (sharedObject != null) sharedObject.unregister(this);
 	}
 
 	/**
