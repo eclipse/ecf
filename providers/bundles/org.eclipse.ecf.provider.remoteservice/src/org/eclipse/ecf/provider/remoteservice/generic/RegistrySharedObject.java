@@ -464,36 +464,38 @@ public class RegistrySharedObject extends AbstractSharedObject {
 	protected void unregister(RemoteServiceRegistrationImpl serviceRegistration) {
 		synchronized (localRegistry) {
 			localRegistry.unpublishService(serviceRegistration);
-			sendUnregisterToAll(new Long(serviceRegistration.getServiceId()));
-			notifyLocalOfUnregister(serviceRegistration.getContainerID(), serviceRegistration);
+			ID containerID = serviceRegistration.getContainerID();
+			sendUnregisterToAll(containerID, new Long(serviceRegistration.getServiceId()));
+			notifyLocalOfUnregister(serviceRegistration);
 		}
 	}
 	
-	private void notifyLocalOfUnregister(ID registryContainer, RemoteServiceRegistrationImpl serviceRegistration) {
-		trace("notifyLocalOfUnregister("+registryContainer+","+serviceRegistration+")");
+	private void notifyLocalOfUnregister(RemoteServiceRegistrationImpl serviceRegistration) {
+		trace("notifyLocalOfUnregister("+serviceRegistration+")");
 		// TODO Auto-generated method stub
 	}
 
-	private void sendUnregisterToAll(Long serviceId) {
-		trace("sendUnregisterToAll("+serviceId+")");
+	private void sendUnregisterToAll(ID containerID, Long serviceId) {
+		trace("sendUnregisterToAll(containerID="+containerID+",serviceId="+serviceId+")");
 		try {
-			this.sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(SEND_UNREGISTER, new Object[] { serviceId }));
+			this.sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(SEND_UNREGISTER, new Object[] { containerID, serviceId }));
 		} catch (IOException e) {
 			messageError(SEND_UNREGISTER_ERROR_CODE,
 					SEND_UNREGISTER_ERROR_MESSAGE, e);
 		}
 	}
 
-	protected void handleUnregister(Long serviceId) {
-		trace("handleUnregister("+serviceId+")");
+	protected void handleUnregister(ID containerID, Long serviceId) {
+		trace("handleUnregister(containerID="+containerID+",serviceId="+serviceId+")");
 		synchronized (remoteRegistrys) {
-			for (ID i : remoteRegistrys.keySet()) {
-				RemoteServiceRegistryImpl serviceRegistry = remoteRegistrys.get(i);
+			// get registry for given containerID
+			RemoteServiceRegistryImpl serviceRegistry = remoteRegistrys.get(containerID);
+			if (serviceRegistry != null) {
 				RemoteServiceRegistrationImpl registration = serviceRegistry.findRegistrationForServiceId(serviceId.longValue());
 				if (registration != null) {
 					trace("handleUnregister...FOUND IT...UNPUBLISHING "+serviceId);
 					serviceRegistry.unpublishService(registration);
-					notifyLocalOfUnregister(registration.getContainerID(), registration);
+					notifyLocalOfUnregister(registration);
 				}
 			}
 		}
