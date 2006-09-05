@@ -25,19 +25,15 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	}
 
 	public void callAsynch(IRemoteCall call, IRemoteCallListener listener) {
-		sharedObject.sendCallRequestWithListener(registration, call, listener);
+		sharedObject.callAsynchWithListener(registration, call, listener);
 	}
 
 	public Object callSynch(IRemoteCall call) throws ECFException {
-		return sharedObject.fireCallAndWait(registration, call);
+		return sharedObject.callSynch(registration, call);
 	}
 
 	public void fireAsynch(IRemoteCall call) throws ECFException {
-		try {
-			sharedObject.sendFireRequest(registration, call);
-		} catch (IOException e) {
-			throw new ECFException("IOException sending remote request", e);
-		}
+		sharedObject.sendFireAsynch(registration, call);
 	}
 
 	public Object getProxy() throws ECFException {

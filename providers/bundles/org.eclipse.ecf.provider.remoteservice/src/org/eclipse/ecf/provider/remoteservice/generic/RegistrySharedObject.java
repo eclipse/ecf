@@ -37,31 +37,55 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisterEvent;
 
 public class RegistrySharedObject extends AbstractSharedObject {
 
-	private static final String HANDLE_FIRE_REQUEST = "handleFireRequest";
+	private static final String FIRE_REQUEST = "handleFireRequest";
 
-	private static final String HANDLE_CALL_REQUEST = "handleCallRequest";
+	private static final String FIRE_REQUEST_ERROR_MESSAGE = "exception sending fire request message";
 
-	private static final String SEND_REGISTRY_UPDATE = "handleRegistryUpdate";
-	
-	private static final String SEND_UNREGISTER = "handleUnregister";
+	private static final int FIRE_REQUEST_ERROR_CODE = 202;
 
-	private static final int SEND_REGISTRY_ERROR_CODE = 201;
+	private static final String CALL_REQUEST = "handleCallRequest";
 
-	private static final String SEND_REGISTRY_UPDATE_ERROR_MESSAGE = "exception sending local registry message";
+	private static final String CALL_REQUEST_ERROR_MESSAGE = "exception sending call request message";
 
-	private static final String SEND_UNREGISTER_ERROR_MESSAGE = "exception sending service unregister message";
+	private static final int CALL_REQUEST_ERROR_CODE = 203;
 
-	private static final int MSG_INVOKE_ERROR_CODE = 202;
+	private static final String CALL_REQUEST_TIMEOUT_ERROR_MESSAGE = "timeout for call request";
 
-	private static final String MSG_INVOKE_ERROR_MESSAGE = "Exception in ";
+	private static final int CALL_REQUEST_TIMEOUT_ERROR_CODE = 204;
 
-	private static final int HANDLE_REQUEST_ERROR_CODE = 203;
-	
-	private static final int SEND_UNREGISTER_ERROR_CODE = 204;
+	private static final String REGISTRY_UPDATE = "handleRegistryUpdate";
+
+	private static final String REGISTRY_UPDATE_ERROR_MESSAGE = "exception sending local registry message";
+
+	private static final int REGISTRY_UPDATE_ERROR_CODE = 205;
+
+	private static final String UNREGISTER = "handleUnregister";
+
+	private static final String UNREGISTER_ERROR_MESSAGE = "exception sending service unregister message";
+
+	private static final int UNREGISTER_ERROR_CODE = 206;
+
+	private static final String MSG_INVOKE_ERROR_MESSAGE = "Exception in shared object message invoke";
+
+	private static final int MSG_INVOKE_ERROR_CODE = 207;
+
+	private static final String SERVICE_INVOKE_ERROR_MESSAGE = "Exception invoking service";
+
+	private static final int SERVICE_INVOKE_ERROR_CODE = 208;
 
 	private static final String HANDLE_REQUEST_ERROR_MESSAGE = "Exception locally invoking remote call";
 
-	private static final String HANDLE_RESPONSE = "handleResponse";
+	private static final int HANDLE_REQUEST_ERROR_CODE = 209;
+
+	private static final String RESPONSE = "handleResponse";
+
+	private static final String RESPONSE_ERROR_MESSAGE = "Exception sending response";
+
+	private static final int RESPONSE_ERROR_CODE = 210;
+
+	private static final String REQUEST_NOT_FOUND_ERROR_MESSAGE = "request not found for received response";
+
+	private static final int REQUEST_NOT_FOUND_ERROR_CODE = 211;
 
 	private static final long DEFAULT_WAIT_INTERVAL = 5000;
 
@@ -79,22 +103,29 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		return remoteRegistrys.put(registry.getContainerID(), registry);
 	}
 
-	private void notifyListenersAddRemoteRegistry(RemoteServiceRegistryImpl registry) {
-		RemoteServiceRegistrationImpl [] registrations = registry.getRegistrations();
-		for(int i=0; i < registrations.length; i++) fireRemoteServiceListeners(createAddServiceEvent(registrations[i]));
+	private void notifyListenersAddRemoteRegistry(
+			RemoteServiceRegistryImpl registry) {
+		RemoteServiceRegistrationImpl[] registrations = registry
+				.getRegistrations();
+		for (int i = 0; i < registrations.length; i++)
+			fireRemoteServiceListeners(createAddServiceEvent(registrations[i]));
 	}
 
-	private IRemoteServiceEvent createAddServiceEvent(final RemoteServiceRegistrationImpl registration) {
+	private IRemoteServiceEvent createAddServiceEvent(
+			final RemoteServiceRegistrationImpl registration) {
 		return new IRemoteServiceRegisterEvent() {
 
 			public String[] getClazzes() {
 				return registration.getClasses();
 			}
+
 			public ID getContainerID() {
 				return registration.getContainerID();
 			}
+
 			public String toString() {
-				StringBuffer buf = new StringBuffer("RemoteServiceRegisterEvent[");
+				StringBuffer buf = new StringBuffer(
+						"RemoteServiceRegisterEvent[");
 				buf.append("clazzes=").append(
 						Arrays.asList(registration.getClasses())).append(
 						";containerID=").append(registration.getContainerID())
@@ -141,13 +172,14 @@ public class RegistrySharedObject extends AbstractSharedObject {
 
 	private void sendRegistryUpdate(ID targetRemote) {
 		synchronized (localRegistry) {
-			trace(getLocalContainerID() + " sending " + localRegistry);
+			trace(getLocalContainerID() + " sending local registry: "
+					+ localRegistry);
 			try {
 				sendSharedObjectMsgTo(targetRemote, SharedObjectMsg.createMsg(
-						SEND_REGISTRY_UPDATE, localRegistry));
+						REGISTRY_UPDATE, localRegistry));
 			} catch (IOException e) {
-				messageError(SEND_REGISTRY_ERROR_CODE,
-						SEND_REGISTRY_UPDATE_ERROR_MESSAGE, e);
+				logSendError(REGISTRY_UPDATE_ERROR_CODE,
+						REGISTRY_UPDATE_ERROR_MESSAGE, e);
 			}
 		}
 	}
@@ -164,16 +196,21 @@ public class RegistrySharedObject extends AbstractSharedObject {
 				.getServiceId(), remoteCall, listener);
 	}
 
-	protected Request sendFireRequest(
+	protected Request sendFireAsynch(
 			RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call)
-			throws IOException {
-		Request request = createRequest(remoteRegistration, call, null);
-		sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
-				SharedObjectMsg.createMsg(HANDLE_FIRE_REQUEST, request));
-		return request;
+			throws ECFException {
+		try {
+			Request request = createRequest(remoteRegistration, call, null);
+			sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
+					SharedObjectMsg.createMsg(FIRE_REQUEST, request));
+			return request;
+		} catch (IOException e) {
+			logSendError(FIRE_REQUEST_ERROR_CODE, FIRE_REQUEST_ERROR_MESSAGE, e);
+			throw new ECFException("IOException sending remote request", e);
+		}
 	}
 
-	protected void sendCallRequestWithListener(
+	protected void callAsynchWithListener(
 			RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call,
 			IRemoteCallListener listener) {
 		Request request = createRequest(remoteRegistration, call, listener);
@@ -182,9 +219,9 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		try {
 			addRequest(request);
 			sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
-					SharedObjectMsg.createMsg(HANDLE_CALL_REQUEST, request));
+					SharedObjectMsg.createMsg(CALL_REQUEST, request));
 		} catch (IOException e) {
-			// XXX LOG
+			logSendError(CALL_REQUEST_ERROR_CODE, CALL_REQUEST_ERROR_MESSAGE, e);
 			removeRequest(request);
 			fireCallCompleteEvent(listener, request.getRequestId(), null, true,
 					e);
@@ -198,7 +235,7 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		addRequest(request);
 		try {
 			sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
-					SharedObjectMsg.createMsg(HANDLE_CALL_REQUEST, request));
+					SharedObjectMsg.createMsg(CALL_REQUEST, request));
 		} catch (IOException e) {
 			removeRequest(request);
 			throw e;
@@ -218,15 +255,12 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		trace("handleFireRequest(" + request + ") from "
 				+ request.getRequestContainerID());
 		RemoteServiceRegistrationImpl localRegistration = getLocalRegistrationForRequest(request);
-		if (localRegistration == null) {
-			handleNoLocalService();
-		}
 		// Else we've got a local service and we invoke it
 		RemoteCallImpl call = request.getCall();
 		try {
 			localRegistration.callService(call);
 		} catch (Exception e) {
-			messageError(HANDLE_REQUEST_ERROR_CODE,
+			logSendError(HANDLE_REQUEST_ERROR_CODE,
 					HANDLE_REQUEST_ERROR_MESSAGE, e);
 		}
 	}
@@ -235,9 +269,6 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		ID responseTarget = request.getRequestContainerID();
 		trace("handleCallRequest(" + request + ") from " + responseTarget);
 		RemoteServiceRegistrationImpl localRegistration = getLocalRegistrationForRequest(request);
-		if (localRegistration == null) {
-			handleNoLocalService();
-		}
 		// Else we've got a local service and we invoke it
 		RemoteCallImpl call = request.getCall();
 		Response response = null;
@@ -247,17 +278,16 @@ public class RegistrySharedObject extends AbstractSharedObject {
 			response = new Response(request.getRequestId(), result);
 		} catch (Exception e) {
 			response = new Response(request.getRequestId(), e);
-			// XXX log
-			traceException(
-					"got local exception, sending response back to caller", e);
+			logHandleError(SERVICE_INVOKE_ERROR_CODE,
+					SERVICE_INVOKE_ERROR_MESSAGE, e);
 		}
+		// Now send response back to responseTarget (original requestor)
 		try {
 			trace("sending response " + response + " to " + responseTarget);
 			sendSharedObjectMsgTo(responseTarget, SharedObjectMsg.createMsg(
-					HANDLE_RESPONSE, response));
+					RESPONSE, response));
 		} catch (IOException e) {
-			// XXX log
-			traceException("Exception sending response ", e);
+			logSendError(RESPONSE_ERROR_CODE, RESPONSE_ERROR_MESSAGE, e);
 		}
 	}
 
@@ -274,8 +304,8 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		trace("handleResponse(" + response + ")");
 		Request request = findRequestForId(response.getRequestId());
 		if (request == null) {
-			// XXX Log and return
-			trace("request not found for response " + response);
+			logHandleError(REQUEST_NOT_FOUND_ERROR_CODE,
+					REQUEST_NOT_FOUND_ERROR_MESSAGE, new NullPointerException());
 			return;
 		} else {
 			IRemoteCallListener listener = request.getListener();
@@ -316,11 +346,6 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		return requests.remove(request);
 	}
 
-	private void handleNoLocalService() {
-		// TODO Auto-generated method stub
-
-	}
-
 	protected void handleRegistryUpdate(RemoteServiceRegistryImpl registry) {
 		ID remoteClientID = registry.getContainerID();
 		if (remoteClientID == null)
@@ -338,19 +363,27 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		try {
 			msg.invoke(this);
 		} catch (Exception e) {
-			messageError(MSG_INVOKE_ERROR_CODE, MSG_INVOKE_ERROR_MESSAGE, e);
+			logHandleError(MSG_INVOKE_ERROR_CODE, MSG_INVOKE_ERROR_MESSAGE, e);
 		}
 		return false;
 	}
 
-	private void messageError(int code, String message, Throwable exception) {
+	private void logSendError(int code, String message, Throwable exception) {
+		traceException(message, exception);
+		Activator.getDefault().getLog().log(
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID, code, message,
+						exception));
+	}
+
+	private void logHandleError(int code, String message, Throwable exception) {
+		traceException(message, exception);
 		Activator.getDefault().getLog().log(
 				new Status(IStatus.ERROR, Activator.PLUGIN_ID, code, message,
 						exception));
 	}
 
 	protected List<IRemoteServiceListener> serviceListeners = new ArrayList<IRemoteServiceListener>();
-	
+
 	public void addRemoteServiceListener(IRemoteServiceListener listener) {
 		synchronized (serviceListeners) {
 			serviceListeners.add(listener);
@@ -437,7 +470,8 @@ public class RegistrySharedObject extends AbstractSharedObject {
 			throw new NullPointerException("service cannot be null");
 		int size = clazzes.length;
 
-		if (size == 0) throw new IllegalArgumentException("service classes list is empty");
+		if (size == 0)
+			throw new IllegalArgumentException("service classes list is empty");
 
 		String[] copy = new String[clazzes.length];
 		for (int i = 0; i < clazzes.length; i++) {
@@ -446,7 +480,9 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		clazzes = copy;
 
 		String invalidService = checkServiceClass(clazzes, service);
-		if (invalidService != null) throw new IllegalArgumentException("Service is not valid: "+ invalidService); 
+		if (invalidService != null)
+			throw new IllegalArgumentException("Service is not valid: "
+					+ invalidService);
 
 		RemoteServiceRegistrationImpl reg = new RemoteServiceRegistrationImpl();
 		reg.publish(this, localRegistry, service, clazzes, properties);
@@ -460,52 +496,60 @@ public class RegistrySharedObject extends AbstractSharedObject {
 			sendRegistryUpdateToAll();
 		}
 	}
-	
+
 	protected void unregister(RemoteServiceRegistrationImpl serviceRegistration) {
 		synchronized (localRegistry) {
 			localRegistry.unpublishService(serviceRegistration);
 			ID containerID = serviceRegistration.getContainerID();
-			sendUnregisterToAll(containerID, new Long(serviceRegistration.getServiceId()));
-			notifyLocalOfUnregister(serviceRegistration);
+			sendUnregisterToAll(containerID, new Long(serviceRegistration
+					.getServiceId()));
+			notifyUnregisterLocal(serviceRegistration);
 		}
 	}
-	
-	private void notifyLocalOfUnregister(RemoteServiceRegistrationImpl serviceRegistration) {
-		trace("notifyLocalOfUnregister("+serviceRegistration+")");
+
+	private void notifyUnregisterLocal(
+			RemoteServiceRegistrationImpl serviceRegistration) {
+		trace("notifyLocalOfUnregister(" + serviceRegistration + ")");
 		// TODO Auto-generated method stub
 	}
 
 	private void sendUnregisterToAll(ID containerID, Long serviceId) {
-		trace("sendUnregisterToAll(containerID="+containerID+",serviceId="+serviceId+")");
+		trace("sendUnregisterToAll(containerID=" + containerID + ",serviceId="
+				+ serviceId + ")");
 		try {
-			this.sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(SEND_UNREGISTER, new Object[] { containerID, serviceId }));
+			this.sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(
+					UNREGISTER, new Object[] { containerID, serviceId }));
 		} catch (IOException e) {
-			messageError(SEND_UNREGISTER_ERROR_CODE,
-					SEND_UNREGISTER_ERROR_MESSAGE, e);
+			logSendError(UNREGISTER_ERROR_CODE, UNREGISTER_ERROR_MESSAGE, e);
 		}
 	}
 
 	protected void handleUnregister(ID containerID, Long serviceId) {
-		trace("handleUnregister(containerID="+containerID+",serviceId="+serviceId+")");
+		trace("handleUnregister(containerID=" + containerID + ",serviceId="
+				+ serviceId + ")");
 		synchronized (remoteRegistrys) {
 			// get registry for given containerID
-			RemoteServiceRegistryImpl serviceRegistry = remoteRegistrys.get(containerID);
+			RemoteServiceRegistryImpl serviceRegistry = remoteRegistrys
+					.get(containerID);
 			if (serviceRegistry != null) {
-				RemoteServiceRegistrationImpl registration = serviceRegistry.findRegistrationForServiceId(serviceId.longValue());
+				RemoteServiceRegistrationImpl registration = serviceRegistry
+						.findRegistrationForServiceId(serviceId.longValue());
 				if (registration != null) {
-					trace("handleUnregister...FOUND IT...UNPUBLISHING "+serviceId);
+					trace("handleUnregister...FOUND IT...UNPUBLISHING "
+							+ serviceId);
 					serviceRegistry.unpublishService(registration);
-					notifyLocalOfUnregister(registration);
+					notifyUnregisterLocal(registration);
 				}
 			}
 		}
 	}
+
 	public boolean ungetRemoteService(IRemoteServiceReference ref) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public Object fireCallAndWait(RemoteServiceRegistrationImpl registration,
+	public Object callSynch(RemoteServiceRegistrationImpl registration,
 			IRemoteCall call) throws ECFException {
 		boolean doneWaiting = false;
 		Response response = null;
@@ -541,16 +585,13 @@ public class RegistrySharedObject extends AbstractSharedObject {
 				throw new ECFException("Request timed out after "
 						+ call.getTimeout() + " ms");
 		} catch (IOException e) {
-			// XXX log
+			logSendError(CALL_REQUEST_ERROR_CODE, CALL_REQUEST_ERROR_MESSAGE, e);
 			throw new ECFException("Exception sending request", e);
 		} catch (InterruptedException e) {
-			// XXX log
+			logSendError(CALL_REQUEST_TIMEOUT_ERROR_CODE,
+					CALL_REQUEST_TIMEOUT_ERROR_MESSAGE, e);
 			throw new ECFException("Wait for response interrupted", e);
-		} catch (ECFException e) {
-			// XXX log
-			throw e;
 		}
-
 		// Success...now get values and return
 		Object result = null;
 		if (response.hadException())
@@ -623,7 +664,7 @@ public class RegistrySharedObject extends AbstractSharedObject {
 				}
 			});
 	}
-	
+
 	static String checkServiceClass(final String[] clazzes,
 			final Object serviceObject) {
 		ClassLoader cl = (ClassLoader) AccessController
