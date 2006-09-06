@@ -56,7 +56,7 @@ public class PresenceContainerUI {
                     IViewPart view = wp.showView("org.eclipse.ecf.example.collab.ui.CollabRosterView");
                     rosterView = (RosterView) view;
                     String nickname = null;
-                    if (nick != null) {
+                    if (nick != null && !nick.equals("")) {
                         nickname = nick;
                     } else {
                         String name = localUser.getName();

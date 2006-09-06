@@ -51,32 +51,6 @@ public class CollabRosterView extends RosterView {
 			TreeBuddy buddy = (TreeBuddy) treeObject;
 			TreeParent group = treeObject.getParent();
 			final UserAccount ua = getAccount(buddy.getServiceID());
-			// Setup action for reporting active and total group size
-			int activeGroupSize = 0;
-			int totalGroupSize = 0;
-			String gn = "";
-			if (group instanceof TreeGroup) {
-				TreeGroup tg = (TreeGroup) group;
-				totalGroupSize = tg.getTotalCount();
-				activeGroupSize = tg.getActiveCount();
-				gn = tg.getLabel();
-			}
-			final Integer activeSize = new Integer(activeGroupSize);
-			final Integer totalSize = new Integer(totalGroupSize);
-			final String groupName = gn;
-			Action sendSOGroupSizeAction = new Action() {
-				public void run() {
-					RosterSharedObject so = (RosterSharedObject) ua
-							.getSharedObject();
-					if (so != null) {
-						so.sendGroupSizeMessageTo(treeObject.getId(), ua.getUser().getName(), groupName, activeSize, totalSize);
-					}
-				}
-			};
-			sendSOGroupSizeAction.setText("Send ECF Private Message to "
-					+ treeObject.getId().getName());
-			sendSOGroupSizeAction.setEnabled(ua.getSharedObject() != null);
-			manager.add(sendSOGroupSizeAction);
 			Action sendSOMessageAction = new Action() {
 				public void run() {
 					RosterSharedObject so = (RosterSharedObject) ua
@@ -105,6 +79,34 @@ public class CollabRosterView extends RosterView {
 					+ treeObject.getId().getName());
 			sendShowViewAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendShowViewAction);
+
+			// Setup action for reporting active and total group size
+			int activeGroupSize = 0;
+			int totalGroupSize = 0;
+			String gn = "";
+			if (group instanceof TreeGroup) {
+				TreeGroup tg = (TreeGroup) group;
+				totalGroupSize = tg.getTotalCount();
+				activeGroupSize = tg.getActiveCount();
+				gn = tg.getLabel();
+			}
+			final Integer activeSize = new Integer(activeGroupSize);
+			final Integer totalSize = new Integer(totalGroupSize);
+			final String groupName = gn;
+			Action sendSOGroupSizeAction = new Action() {
+				public void run() {
+					RosterSharedObject so = (RosterSharedObject) ua
+							.getSharedObject();
+					if (so != null) {
+						so.sendGroupSizeMessageTo(treeObject.getId(), ua.getUser().getName(), groupName, activeSize, totalSize);
+					}
+				}
+			};
+			sendSOGroupSizeAction.setText("Send ECF Private Message to "
+					+ treeObject.getId().getName());
+			sendSOGroupSizeAction.setEnabled(ua.getSharedObject() != null);
+			manager.add(sendSOGroupSizeAction);
+
 		}
 	}
 

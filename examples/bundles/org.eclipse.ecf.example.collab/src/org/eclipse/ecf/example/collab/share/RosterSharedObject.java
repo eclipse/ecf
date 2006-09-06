@@ -20,15 +20,6 @@ public class RosterSharedObject extends AbstractSharedObject {
 		this.view = view;
 	}
 
-	public void sendMessageTo(ID targetID, String fromName, String message) {
-		try {
-			super.sendSharedObjectMsgTo(targetID, SharedObjectMsg.createMsg(
-					null, "handleMessage", fromName, message));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	protected boolean handleSharedObjectMsg(SharedObjectMsg msg) {
 		try {
 			msg.invoke(this);
@@ -39,17 +30,44 @@ public class RosterSharedObject extends AbstractSharedObject {
 		return false;
 	}
 
-	protected void handleMessage(final String fromName, final String message) {
+	public void sendPrivateMessageTo(ID targetID, String fromName, String message) {
+		try {
+			super.sendSharedObjectMsgTo(targetID, SharedObjectMsg.createMsg(
+					null, "handlePrivateMessage", fromName, message));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void handlePrivateMessage(final String fromName, final String message) {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-				try {
-					MessageDialog.openInformation(Display.getCurrent()
-							.getActiveShell(), "ECF Private Message from "
-							+ ((fromName == null) ? "<nobody>" : fromName),
-							message);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				String from = ((fromName == null) ? "<nobody>" : fromName);
+				MessageDialog.openInformation(Display.getCurrent()
+						.getActiveShell(), "ECF Private Message from "
+						+ from,
+						from+" says: "+message);
+			}
+		});
+	}
+	
+	public void sendGroupSizeMessageTo(ID targetID, String fromName, String groupName, Integer activeSize, Integer totalSize) {
+		try {
+			super.sendSharedObjectMsgTo(targetID, SharedObjectMsg.createMsg(
+					null, "handleRosterSizeMessage", fromName, groupName, activeSize, totalSize));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void handleRosterSizeMessage(final String fromName, final String groupName, final Integer activeSize, final Integer totalSize) {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				String from = ((fromName == null) ? "<nobody>" : fromName);
+				MessageDialog.openInformation(Display.getCurrent()
+						.getActiveShell(), "ECF Roster Size Message from "
+						+ from,
+						"For Group '"+groupName+"' active="+activeSize+" and total="+totalSize);
 			}
 		});
 	}
