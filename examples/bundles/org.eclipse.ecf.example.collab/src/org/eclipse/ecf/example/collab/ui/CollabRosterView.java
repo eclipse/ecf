@@ -65,7 +65,7 @@ public class CollabRosterView extends RosterView {
 					}
 				}
 			};
-			sendSOMessageAction.setText("Send ECF Private Message to "
+			sendSOMessageAction.setText("(ECF) Send Private Message to "
 					+ treeObject.getId().getName());
 			sendSOMessageAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendSOMessageAction);
@@ -75,7 +75,7 @@ public class CollabRosterView extends RosterView {
 					sendShowViewRequest(treeObject.getId());
 				}
 			};
-			sendShowViewAction.setText("Open remote Eclipse View for "
+			sendShowViewAction.setText("(ECF) Remote Open View for "
 					+ treeObject.getId().getName());
 			sendShowViewAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendShowViewAction);
@@ -88,7 +88,7 @@ public class CollabRosterView extends RosterView {
 				TreeGroup tg = (TreeGroup) group;
 				totalGroupSize = tg.getTotalCount();
 				activeGroupSize = tg.getActiveCount();
-				gn = tg.getLabel();
+				gn = tg.getName();
 			}
 			final Integer activeSize = new Integer(activeGroupSize);
 			final Integer totalSize = new Integer(totalGroupSize);
@@ -102,7 +102,7 @@ public class CollabRosterView extends RosterView {
 					}
 				}
 			};
-			sendSOGroupSizeAction.setText("Send ECF Private Message to "
+			sendSOGroupSizeAction.setText("(ECF) Send Group Meta-Information to "
 					+ treeObject.getId().getName());
 			sendSOGroupSizeAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendSOGroupSizeAction);

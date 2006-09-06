@@ -67,7 +67,7 @@ public class RosterSharedObject extends AbstractSharedObject {
 				MessageDialog.openInformation(Display.getCurrent()
 						.getActiveShell(), "ECF Roster Size Message from "
 						+ from,
-						"For Group '"+groupName+"' active="+activeSize+" and total="+totalSize);
+						from+"'s '"+groupName+"' group has "+activeSize+" active and "+totalSize+" total group members");
 			}
 		});
 	}
