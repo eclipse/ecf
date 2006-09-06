@@ -1,6 +1,5 @@
 package org.eclipse.ecf.provider.remoteservice.generic;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
