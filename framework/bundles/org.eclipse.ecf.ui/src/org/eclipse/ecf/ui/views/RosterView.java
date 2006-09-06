@@ -338,6 +338,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			return presence.getType().equals(IPresence.Type.AVAILABLE);
 		}
 	}
+	
 	protected class ViewContentProvider implements IStructuredContentProvider,
 			ITreeContentProvider {
 		private TreeParent invisibleRoot;
