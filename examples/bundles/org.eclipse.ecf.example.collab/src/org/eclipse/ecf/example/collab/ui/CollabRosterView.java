@@ -48,8 +48,35 @@ public class CollabRosterView extends RosterView {
 		super.fillContextMenu(manager);
 		final TreeObject treeObject = getSelectedTreeObject();
 		if (treeObject != null && treeObject instanceof TreeBuddy) {
-			final UserAccount ua = getAccount(((TreeBuddy) treeObject)
-					.getServiceID());
+			TreeBuddy buddy = (TreeBuddy) treeObject;
+			TreeParent group = treeObject.getParent();
+			final UserAccount ua = getAccount(buddy.getServiceID());
+			// Setup action for reporting active and total group size
+			int activeGroupSize = 0;
+			int totalGroupSize = 0;
+			String gn = "";
+			if (group instanceof TreeGroup) {
+				TreeGroup tg = (TreeGroup) group;
+				totalGroupSize = tg.getTotalCount();
+				activeGroupSize = tg.getActiveCount();
+				gn = tg.getLabel();
+			}
+			final Integer activeSize = new Integer(activeGroupSize);
+			final Integer totalSize = new Integer(totalGroupSize);
+			final String groupName = gn;
+			Action sendSOGroupSizeAction = new Action() {
+				public void run() {
+					RosterSharedObject so = (RosterSharedObject) ua
+							.getSharedObject();
+					if (so != null) {
+						so.sendGroupSizeMessageTo(treeObject.getId(), ua.getUser().getName(), groupName, activeSize, totalSize);
+					}
+				}
+			};
+			sendSOGroupSizeAction.setText("Send ECF Private Message to "
+					+ treeObject.getId().getName());
+			sendSOGroupSizeAction.setEnabled(ua.getSharedObject() != null);
+			manager.add(sendSOGroupSizeAction);
 			Action sendSOMessageAction = new Action() {
 				public void run() {
 					RosterSharedObject so = (RosterSharedObject) ua
@@ -59,7 +86,7 @@ public class CollabRosterView extends RosterView {
 						dialog.open();
 						if (dialog.getReturnCode() == InputDialog.OK) {
 							String message = dialog.getValue();
-							so.sendMessageTo(treeObject.getId(), ua.getUser().getName(), message);
+							so.sendPrivateMessageTo(treeObject.getId(), ua.getUser().getName(), message);
 						}
 					}
 				}
@@ -68,6 +95,7 @@ public class CollabRosterView extends RosterView {
 					+ treeObject.getId().getName());
 			sendSOMessageAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendSOMessageAction);
+
 			Action sendShowViewAction = new Action() {
 				public void run() {
 					sendShowViewRequest(treeObject.getId());
