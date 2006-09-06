@@ -6,6 +6,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.AbstractSharedObject;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
 import org.eclipse.ecf.example.collab.ui.CollabRosterView;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -19,10 +20,10 @@ public class RosterSharedObject extends AbstractSharedObject {
 		this.view = view;
 	}
 
-	public void sendMessageTo(ID targetID, String message) {
+	public void sendMessageTo(ID targetID, String fromName, String message) {
 		try {
 			super.sendSharedObjectMsgTo(targetID, SharedObjectMsg.createMsg(
-					null, "handleMessage", message));
+					null, "handleMessage", fromName, message));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -38,9 +39,19 @@ public class RosterSharedObject extends AbstractSharedObject {
 		return false;
 	}
 
-	protected void handleMessage(String message) {
-		// XXX this should call the view back to display the message/do other things, etc
-		System.out.println("RosterSharedObject.handleMessage(" + message + ")");
+	protected void handleMessage(final String fromName, final String message) {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				try {
+					MessageDialog.openInformation(Display.getCurrent()
+							.getActiveShell(), "ECF Private Message from "
+							+ ((fromName == null) ? "<nobody>" : fromName),
+							message);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	
 	

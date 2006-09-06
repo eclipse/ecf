@@ -16,6 +16,7 @@ import org.eclipse.ecf.ui.views.RosterView;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -54,11 +55,16 @@ public class CollabRosterView extends RosterView {
 					RosterSharedObject so = (RosterSharedObject) ua
 							.getSharedObject();
 					if (so != null) {
-						so.sendMessageTo(treeObject.getId(), "hello via shared object!");
+						InputDialog dialog = new InputDialog(getSite().getShell(),"Send ECF Private Message","Private Message: ",null,null);
+						dialog.open();
+						if (dialog.getReturnCode() == InputDialog.OK) {
+							String message = dialog.getValue();
+							so.sendMessageTo(treeObject.getId(), ua.getUser().getName(), message);
+						}
 					}
 				}
 			};
-			sendSOMessageAction.setText("Send Shared Object  message to "
+			sendSOMessageAction.setText("Send ECF Private Message to "
 					+ treeObject.getId().getName());
 			sendSOMessageAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendSOMessageAction);
@@ -67,7 +73,7 @@ public class CollabRosterView extends RosterView {
 					sendShowViewRequest(treeObject.getId());
 				}
 			};
-			sendShowViewAction.setText("Open Remote Eclipse View for "
+			sendShowViewAction.setText("Open remote Eclipse View for "
 					+ treeObject.getId().getName());
 			sendShowViewAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendShowViewAction);
