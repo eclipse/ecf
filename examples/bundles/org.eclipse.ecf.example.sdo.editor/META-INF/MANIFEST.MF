@@ -16,3 +16,4 @@ Require-Bundle: org.eclipse.ui,
 Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.example.sdo.editor
 Export-Package: org.eclipse.ecf.example.sdo.editor
+Bundle-RequiredExecutionEnvironment: J2SE-1.4

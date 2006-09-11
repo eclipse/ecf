@@ -14,4 +14,5 @@ Provide-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app
 Export-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.gmm
 Eclipse-BuddyPolicy: global
 Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
 

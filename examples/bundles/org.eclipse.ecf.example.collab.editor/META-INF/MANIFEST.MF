@@ -24,3 +24,4 @@ Require-Bundle: org.eclipse.ui,
 Eclipse-LazyStart: true
 Bundle-Vendor: Eclipse.org
 Bundle-ClassPath: collabeditor.jar
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
