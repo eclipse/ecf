@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -37,6 +38,10 @@ import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.filetransfer.IFileTransferContainer;
+import org.eclipse.ecf.filetransfer.IFileTransferProgressListener;
+import org.eclipse.ecf.filetransfer.IIncomingFileTransferListener;
+import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
@@ -60,6 +65,7 @@ import org.eclipse.ecf.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
+import org.eclipse.ecf.provider.xmpp.filetransfer.XMPPOutgoingFileTransfer;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnection;
@@ -72,12 +78,13 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.RoomInfo;
 import org.jivesoftware.smackx.packet.MUCUser;
 
-public class XMPPClientSOContainer extends ClientSOContainer {
+public class XMPPClientSOContainer extends ClientSOContainer implements IFileTransferContainer {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
 	Trace trace = Trace.create("XMPPClientSOContainer");
@@ -646,5 +653,27 @@ public class XMPPClientSOContainer extends ClientSOContainer {
     	}
     	return null;
     }
+    
+    // IFileTransferContainer implementation
+    
+    List incomingTransferListeners = new ArrayList();
+    
+	public void addIncomingFileTransferListener(IIncomingFileTransferListener listener) {
+		incomingTransferListeners.add(listener);
+	}
+	public IOutgoingFileTransfer createOutgoingFileTransfer(final ID remoteTarget, IFileTransferProgressListener progressListener) throws ECFException {
+		if (remoteTarget == null) throw new NullPointerException("remoteTarget cannot be null");
+		XMPPConnection xmppConnection = sharedObject.getConnection();
+		if (xmppConnection == null || !xmppConnection.isConnected()) throw new ECFException("not connected");
+		final FileTransferManager manager = new FileTransferManager(xmppConnection);
+		XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer((XMPPID) remoteTarget, progressListener, manager);
+		return fileTransfer;
+	}
+	public Namespace getOutgoingFileTransferNamespace() {
+		return getConnectNamespace();
+	}
+	public boolean removeIncomingFileTransferListener(IIncomingFileTransferListener listener) {
+		return incomingTransferListeners.remove(listener);
+	}
 
 }

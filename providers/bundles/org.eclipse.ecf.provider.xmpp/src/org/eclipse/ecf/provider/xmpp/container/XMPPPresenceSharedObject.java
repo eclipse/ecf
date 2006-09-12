@@ -92,11 +92,14 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     protected String canonicalizePresenceFrom(String from) {
         if (from == null)
             return null;
+        else return from;
+        /*
         int index = from.indexOf("/");
         if (index > 0) {
             return from.substring(0, index);
         } else
             return from;
+            */
     }
 
     protected void debug(String msg) {
@@ -264,21 +267,22 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     }
 
     protected void handleIQEvent(IQEvent evt) {
-        IQ iq = evt.getIQ();
-        if (iq instanceof RosterPacket) {
-            // Roster packet...report to UI
-            RosterPacket rosterPacket = (RosterPacket) iq;
-			if (rosterPacket.getType() == IQ.Type.SET || rosterPacket.getType() == IQ.Type.RESULT) {
-            for (Iterator i = rosterPacket.getRosterItems(); i.hasNext();) {
-                IRosterEntry entry = createRosterEntry((RosterPacket.Item) i
-                        .next());
-                fireSetRosterEntry(entry);
-            }
+		IQ iq = evt.getIQ();
+		if (iq instanceof RosterPacket) {
+			// Roster packet...report to UI
+			RosterPacket rosterPacket = (RosterPacket) iq;
+			if (rosterPacket.getType() == IQ.Type.SET
+					|| rosterPacket.getType() == IQ.Type.RESULT) {
+				for (Iterator i = rosterPacket.getRosterItems(); i.hasNext();) {
+					IRosterEntry entry = createRosterEntry((RosterPacket.Item) i
+							.next());
+					fireSetRosterEntry(entry);
+				}
 			}
-        } else {
-            debug("Received unknown IQ message: " + iq.toXML());
-        }
-    }
+		} else {
+			debug("Received unknown IQ message: " + iq.toXML());
+		}
+	}
 
     protected void handleJoin(IContainerConnectedEvent event) {
         fireContainerJoined(event.getTargetID());

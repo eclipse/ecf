@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.example.clients;
 
+import java.io.File;
+
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -16,6 +18,8 @@ import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.filetransfer.IFileTransferContainer;
+import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresenceContainer;
@@ -34,6 +38,8 @@ public class XMPPClient {
 	// Interface for receiving messages
 	IMessageReceiver receiver = null;
 	IPresenceListener presenceListener = null;
+	// Interface for sending/receiving files
+	IFileTransferContainer fileTransferContainer = null;
 	
 	public XMPPClient() {
 		this(null);
@@ -84,10 +90,18 @@ public class XMPPClient {
 			}
 		}
 	}
+	protected void setupFileTransfer() throws ECFException {
+		fileTransferContainer = (IFileTransferContainer) container.getAdapter(IFileTransferContainer.class);
+	}
 	public void connect(String account, String password) throws ECFException {
 		setupContainer();
 		setupPresence();
+		setupFileTransfer();
 		doConnect(account,password);
+	}
+	
+	public IFileTransferContainer getFileTransferContainer() {
+		return this.fileTransferContainer;
 	}
 	protected void doConnect(String account, String password) throws ECFException  {
 		// Now connect

@@ -234,6 +234,9 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		public ID getId() {
 			return id;
 		}
+		public void setId(ID newID) {
+			this.id = newID;
+		}
 		public void setParent(TreeParent parent) {
 			this.parent = parent;
 		}
@@ -378,22 +381,22 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		public TreeBuddy fillPresence(TreeBuddy obj, IPresence presence) {
 			obj.setPresence(presence);
 			obj.removeChildren();
-			TreeObject type = new TreeObject("Status: "
-					+ presence.getType().toString());
-			obj.addChild(type);
+			obj.addChild(new TreeObject("Status: "
+					+ presence.getType().toString()));
 			String status = presence.getStatus();
-			if (status != null && !status.equals("")) {
-				TreeObject stat = new TreeObject("Details: " + status);
-				obj.addChild(stat);
-			}
+			if (status != null && !status.equals("")) obj.addChild(new TreeObject("Details: " + status));
 			Map props = presence.getProperties();
 			for (Iterator i = props.keySet().iterator(); i.hasNext();) {
 				String key = (String) i.next();
 				String value = (String) props.get(key);
-				if (key != null && value != null) {
-					TreeObject prop = new TreeObject(key + ": " + value);
-					obj.addChild(prop);
-				}
+				if (key != null && value != null) obj.addChild(new TreeObject(key + ": " + value));
+			}
+			ID id = obj.getId();
+			try {
+				URI uri = id.toURI();
+				obj.addChild(new TreeObject("URI: "+uri));
+			} catch (Exception e) {
+				// Ignore
 			}
 			return obj;
 		}
@@ -469,7 +472,10 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 					TreeBuddy tb = (TreeBuddy) objs[i];
 					ID tbid = tb.getId();
 					if (tbid != null && tbid.equals(entryID)) {
-						return (TreeBuddy) objs[i];
+						// Replace old ID with new ID
+						TreeBuddy buddy = (TreeBuddy) objs[i];
+						buddy.setId(entryID);
+						return buddy;
 					}
 				} else if (objs[i] instanceof TreeGroup) {
 					TreeBuddy found = findBuddy((TreeParent) objs[i], entryID);
