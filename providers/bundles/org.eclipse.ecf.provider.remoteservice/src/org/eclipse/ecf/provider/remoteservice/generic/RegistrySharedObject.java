@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -91,8 +92,8 @@ public class RegistrySharedObject extends AbstractSharedObject {
 
 	protected RemoteServiceRegistryImpl localRegistry;
 
-	protected Map<ID, RemoteServiceRegistryImpl> remoteRegistrys = Collections
-			.synchronizedMap(new HashMap<ID, RemoteServiceRegistryImpl>());
+	protected Map remoteRegistrys = Collections
+			.synchronizedMap(new HashMap());
 
 	public RegistrySharedObject() {
 	}
@@ -100,7 +101,7 @@ public class RegistrySharedObject extends AbstractSharedObject {
 	protected RemoteServiceRegistryImpl addRemoteRegistry(
 			RemoteServiceRegistryImpl registry) {
 		notifyListenersAddRemoteRegistry(registry);
-		return remoteRegistrys.put(registry.getContainerID(), registry);
+		return (RemoteServiceRegistryImpl) remoteRegistrys.put(registry.getContainerID(), registry);
 	}
 
 	private void notifyListenersAddRemoteRegistry(
@@ -136,11 +137,11 @@ public class RegistrySharedObject extends AbstractSharedObject {
 	}
 
 	protected RemoteServiceRegistryImpl getRemoteRegistry(ID containerID) {
-		return remoteRegistrys.get(containerID);
+		return (RemoteServiceRegistryImpl) remoteRegistrys.get(containerID);
 	}
 
 	protected RemoteServiceRegistryImpl removeRemoteRegistry(ID containerID) {
-		return remoteRegistrys.remove(containerID);
+		return (RemoteServiceRegistryImpl) remoteRegistrys.remove(containerID);
 	}
 
 	public void initialize() throws SharedObjectInitException {
@@ -324,8 +325,8 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		}
 	}
 
-	protected List<Request> requests = Collections
-			.synchronizedList(new ArrayList<Request>());
+	protected List requests = Collections
+			.synchronizedList(new ArrayList());
 
 	protected boolean addRequest(Request request) {
 		return requests.add(request);
@@ -333,10 +334,11 @@ public class RegistrySharedObject extends AbstractSharedObject {
 
 	protected Request findRequestForId(long requestId) {
 		synchronized (requests) {
-			for (Request i : requests) {
-				long reqId = i.getRequestId();
+			for(Iterator i= requests.iterator(); i.hasNext(); ) {
+				Request req = (Request) i.next();
+				long reqId = req.getRequestId();
 				if (reqId == requestId)
-					return i;
+					return req;
 			}
 		}
 		return null;
@@ -382,7 +384,7 @@ public class RegistrySharedObject extends AbstractSharedObject {
 						exception));
 	}
 
-	protected List<IRemoteServiceListener> serviceListeners = new ArrayList<IRemoteServiceListener>();
+	protected List serviceListeners = new ArrayList();
 
 	public void addRemoteServiceListener(IRemoteServiceListener listener) {
 		synchronized (serviceListeners) {
@@ -398,7 +400,8 @@ public class RegistrySharedObject extends AbstractSharedObject {
 
 	protected void fireRemoteServiceListeners(IRemoteServiceEvent event) {
 		synchronized (serviceListeners) {
-			for (IRemoteServiceListener l : serviceListeners) {
+			for(Iterator i=serviceListeners.iterator(); i.hasNext(); ) {
+				IRemoteServiceListener l = (IRemoteServiceListener) i.next();
 				l.handleServiceEvent(event);
 			}
 		}
@@ -434,16 +437,16 @@ public class RegistrySharedObject extends AbstractSharedObject {
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter,
 			String clazz, String filter) {
 		IRemoteFilter remoteFilter = createRemoteFilterFromString(filter);
-		List<IRemoteServiceReference> references = new ArrayList<IRemoteServiceReference>();
+		List references = new ArrayList();
 		if (idFilter == null) {
-			for (RemoteServiceRegistryImpl r : new ArrayList<RemoteServiceRegistryImpl>(
-					remoteRegistrys.values())) {
-				getReferencesListFromRegistry(clazz, remoteFilter, references,
-						r);
+			ArrayList registrys = new ArrayList(remoteRegistrys.values());
+			for(Iterator i=registrys.iterator(); i.hasNext(); ) {
+				RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
+				getReferencesListFromRegistry(clazz, remoteFilter, references, registry);
 			}
 		} else {
 			for (int i = 0; i < idFilter.length; i++) {
-				RemoteServiceRegistryImpl r = remoteRegistrys.get(idFilter[i]);
+				RemoteServiceRegistryImpl r = (RemoteServiceRegistryImpl) remoteRegistrys.get(idFilter[i]);
 				if (r != null)
 					getReferencesListFromRegistry(clazz, remoteFilter,
 							references, r);
@@ -455,7 +458,7 @@ public class RegistrySharedObject extends AbstractSharedObject {
 
 	private void getReferencesListFromRegistry(String clazz,
 			IRemoteFilter remoteFilter,
-			List<IRemoteServiceReference> references,
+			List references,
 			RemoteServiceRegistryImpl r) {
 		IRemoteServiceReference[] rs = r.lookupServiceReferences(clazz,
 				remoteFilter);
@@ -529,7 +532,7 @@ public class RegistrySharedObject extends AbstractSharedObject {
 				+ serviceId + ")");
 		synchronized (remoteRegistrys) {
 			// get registry for given containerID
-			RemoteServiceRegistryImpl serviceRegistry = remoteRegistrys
+			RemoteServiceRegistryImpl serviceRegistry = (RemoteServiceRegistryImpl) remoteRegistrys
 					.get(containerID);
 			if (serviceRegistry != null) {
 				RemoteServiceRegistrationImpl registration = serviceRegistry
