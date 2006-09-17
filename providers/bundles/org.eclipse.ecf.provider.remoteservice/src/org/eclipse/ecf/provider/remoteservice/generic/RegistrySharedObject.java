@@ -156,8 +156,8 @@ public class RegistrySharedObject extends AbstractSharedObject {
 		ID targetID = event.getTargetID();
 		synchronized (remoteRegistrys) {
 			RemoteServiceRegistryImpl registry = getRemoteRegistry(targetID);
-			removeRemoteRegistry(targetID);
 			if (registry != null) {
+				removeRemoteRegistry(targetID);
 				RemoteServiceRegistrationImpl registrations [] = registry.getRegistrations();
 				if (registrations != null) {
 					for(int i=0; i < registrations.length; i++) {
