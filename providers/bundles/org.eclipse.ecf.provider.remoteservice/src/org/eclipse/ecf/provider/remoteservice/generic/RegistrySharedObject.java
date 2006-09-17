@@ -152,9 +152,11 @@ public class RegistrySharedObject extends AbstractSharedObject {
 
 	protected void handleContainerDisconnectedEvent(
 			IContainerDisconnectedEvent event) {
+		trace("handleContainerDisconnectedEvent("+event+")");
 		ID targetID = event.getTargetID();
 		synchronized (remoteRegistrys) {
 			RemoteServiceRegistryImpl registry = getRemoteRegistry(targetID);
+			removeRemoteRegistry(targetID);
 			if (registry != null) {
 				RemoteServiceRegistrationImpl registrations [] = registry.getRegistrations();
 				if (registrations != null) {
@@ -166,7 +168,6 @@ public class RegistrySharedObject extends AbstractSharedObject {
 					}
 				}
 			}
-			removeRemoteRegistry(targetID);
 		}
 	}
 
