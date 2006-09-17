@@ -152,7 +152,22 @@ public class RegistrySharedObject extends AbstractSharedObject {
 
 	protected void handleContainerDisconnectedEvent(
 			IContainerDisconnectedEvent event) {
-		removeRemoteRegistry(event.getTargetID());
+		ID targetID = event.getTargetID();
+		synchronized (remoteRegistrys) {
+			RemoteServiceRegistryImpl registry = getRemoteRegistry(targetID);
+			if (registry != null) {
+				RemoteServiceRegistrationImpl registrations [] = registry.getRegistrations();
+				if (registrations != null) {
+					for(int i=0; i < registrations.length; i++) {
+						trace("handleContainerDisconnectedEvent.unregistering serviceid="
+								+ registrations[i].getServiceId());
+						registry.unpublishService(registrations[i]);
+						fireRemoteServiceListeners(createUnregisteredEvent(registrations[i]));
+					}
+				}
+			}
+			removeRemoteRegistry(targetID);
+		}
 	}
 
 	protected void handleContainerConnectedEvent(IContainerConnectedEvent event) {
@@ -650,38 +665,40 @@ public class RegistrySharedObject extends AbstractSharedObject {
 					trace("handleUnregister.unregistering serviceid="
 							+ serviceId);
 					serviceRegistry.unpublishService(registration);
-					fireRemoteServiceListeners(new IRemoteServiceUnregisteredEvent() {
-
-						public String[] getClazzes() {
-							return registration.getClasses();
-						}
-
-						public ID getContainerID() {
-							return registration.getContainerID();
-						}
-
-						public IRemoteServiceReference getReference() {
-							return registration.getReference();
-						}
-
-						public String toString() {
-							StringBuffer buf = new StringBuffer(
-									"RemoteServiceUnregisteredEvent[");
-							buf.append("containerID=").append(
-									registration.getContainerID());
-							buf.append(";clazzes=").append(
-									Arrays.asList(registration.getClasses()));
-							buf.append(";reference=").append(
-									registration.getReference()).append("]");
-							return buf.toString();
-						}
-
-					});
+					fireRemoteServiceListeners(createUnregisteredEvent(registration));
 				}
 			}
 		}
 	}
 
+	protected IRemoteServiceUnregisteredEvent createUnregisteredEvent(final RemoteServiceRegistrationImpl registration) {
+		return new IRemoteServiceUnregisteredEvent() {
+
+			public String[] getClazzes() {
+				return registration.getClasses();
+			}
+
+			public ID getContainerID() {
+				return registration.getContainerID();
+			}
+
+			public IRemoteServiceReference getReference() {
+				return registration.getReference();
+			}
+
+			public String toString() {
+				StringBuffer buf = new StringBuffer(
+						"RemoteServiceUnregisteredEvent[");
+				buf.append("containerID=").append(
+						registration.getContainerID());
+				buf.append(";clazzes=").append(
+						Arrays.asList(registration.getClasses()));
+				buf.append(";reference=").append(
+						registration.getReference()).append("]");
+				return buf.toString();
+			}
+		};
+	}
 	/**
 	 * End message send/handlers
 	 */
