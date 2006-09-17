@@ -64,12 +64,6 @@ public class RemoteServiceRegistrationImpl implements
 			this.properties = createProperties(properties);
 			registry.publishService(this);
 		}
-		notifyPublishServiceEvent();
-	}
-
-	private void notifyPublishServiceEvent() {
-		// XXX should notify via event here
-		System.out.println("TBD notification of publish service event needed");
 	}
 
 	public Object getService() {
@@ -106,7 +100,7 @@ public class RemoteServiceRegistrationImpl implements
 	}
 
 	public void unregister() {
-		if (sharedObject != null) sharedObject.unregister(this);
+		if (sharedObject != null) sharedObject.sendUnregister(this);
 	}
 
 	/**

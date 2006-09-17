@@ -1,0 +1,4 @@
+org.eclipse.ecf.provider.remoteservice/debug = true
+org.eclipse.ecf.provider.remoteservice/debug/filter = *
+org.eclipse.ecf.provider.remoteservice/debug/flag = true
+org.eclipse.ecf.provider.remoteservice/debug/registrysharedobject = true

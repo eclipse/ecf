@@ -24,6 +24,14 @@ public class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 		return registration.getContainerID();
 	}
 
+	public boolean isActive() {
+		return (registration == null);
+	}
+	
+	protected synchronized void setInactive() {
+		registration = null;
+		clazz = null;
+	}
 	protected RemoteServiceRegistrationImpl getRegistration() {
 		return registration;
 	}

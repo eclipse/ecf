@@ -45,7 +45,7 @@ public interface IRemoteServiceContainer {
 	 * @param service the service object itself.  This object must implement
 	 * all of the classes specified by the first parameter
 	 * @param properties to be associated with service
-	 * @return IRemoteServiceRegistration the service registration.  Will not be null
+	 * @return IRemoteServiceRegistration the service registration.  Will not return null.
 	 */
 	public IRemoteServiceRegistration registerRemoteService(String[] clazzes,
 			Object service, Dictionary properties);
@@ -67,9 +67,10 @@ public interface IRemoteServiceContainer {
 	 * Get remote service for given IRemoteServiceReference.  
 	 * 
 	 * @param ref the IRemoteServiceReference for the desired service
-	 * @return IRemoteService representing the remote service
+	 * @return IRemoteService representing the remote service. If remote service no longer exists
+	 * for reference, then null is returned.
 	 */
-	public IRemoteService getRemoteService(IRemoteServiceReference ref);
+	public IRemoteService getRemoteService(IRemoteServiceReference reference);
 
 	/**
 	 * Unget IRemoteServiceReference
@@ -77,6 +78,6 @@ public interface IRemoteServiceContainer {
 	 * @param ref the IRemoteServiceReference to unget
 	 * @return true if unget successful, false if not
 	 */
-	public boolean ungetRemoteService(IRemoteServiceReference ref);
+	public boolean ungetRemoteService(IRemoteServiceReference reference);
 
 }

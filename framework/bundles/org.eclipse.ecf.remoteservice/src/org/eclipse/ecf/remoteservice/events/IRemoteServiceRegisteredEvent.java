@@ -11,9 +11,11 @@
 package org.eclipse.ecf.remoteservice.events;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 
-public interface IRemoteServiceRegisterEvent extends IRemoteServiceEvent {
+public interface IRemoteServiceRegisteredEvent extends IRemoteServiceEvent {
 
 	public ID getContainerID();
 	public String [] getClazzes();
+	public IRemoteServiceReference getReference();
 }

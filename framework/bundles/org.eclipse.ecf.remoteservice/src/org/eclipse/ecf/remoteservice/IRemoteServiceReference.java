@@ -38,4 +38,11 @@ public interface IRemoteServiceReference {
 	 * @return String [] of property keys
 	 */
 	public String [] getPropertyKeys();
+	
+	/**
+	 * Return true if reference is active, false otherwise
+	 * @return true if reference is currently active, false otherwise
+	 */
+	public boolean isActive();
+	
 }

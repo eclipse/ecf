@@ -24,7 +24,7 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	}
 
 	public void callAsynch(IRemoteCall call, IRemoteCallListener listener) {
-		sharedObject.callAsynchWithListener(registration, call, listener);
+		sharedObject.sendCallRequestWithListener(registration, call, listener);
 	}
 
 	public Object callSynch(IRemoteCall call) throws ECFException {
@@ -32,7 +32,7 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 	}
 
 	public void fireAsynch(IRemoteCall call) throws ECFException {
-		sharedObject.sendFireAsynch(registration, call);
+		sharedObject.sendFireRequest(registration, call);
 	}
 
 	public Object getProxy() throws ECFException {
