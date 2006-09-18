@@ -9,10 +9,8 @@
 package org.eclipse.ecf.provider.datashare;
 
 import java.util.Map;
+
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
-import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.ISharedObjectTransactionParticipantsFilter;
-import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
@@ -42,27 +40,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	public IChannel createChannel(final ID newID,
 			final IChannelListener listener, final Map properties)
 			throws ECFException {
-		return adapter.createChannel(new IChannelConfig() {
-			public IChannelListener getListener() {
-				return listener;
-			}
-			public ISharedObjectTransactionConfig getTransactionConfig() {
-				return new ISharedObjectTransactionConfig() {
-					public int getTimeout() {
-						return DEFAULT_TRANSACTION_WAIT;
-					}
-					public ISharedObjectTransactionParticipantsFilter getParticipantsFilter() {
-						return null;
-					}};
-			}
-			public Object getAdapter(Class adapter) {
-				return null;
-			}
-			public SharedObjectDescription getPrimaryDescription() {
-				return new SharedObjectDescription(BaseChannel.class, newID,
-						properties);
-			}
-		});
+		return adapter.createChannel(newID,listener,properties);
 	}
 	public IChannel createChannel(IChannelConfig newChannelConfig)
 			throws ECFException {
