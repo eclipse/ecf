@@ -29,6 +29,7 @@ import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
@@ -38,7 +39,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 
-public class RegistrySharedObject extends AbstractSharedObject {
+public class RegistrySharedObject extends AbstractSharedObject implements IRemoteServiceContainer {
 
 	Trace trace = Trace.create("registrysharedobject");
 

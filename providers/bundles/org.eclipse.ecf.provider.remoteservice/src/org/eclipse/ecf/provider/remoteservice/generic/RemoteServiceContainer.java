@@ -1,8 +1,6 @@
 package org.eclipse.ecf.provider.remoteservice.generic;
 
-import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.List;
 
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.identity.ID;
@@ -18,7 +16,6 @@ public class RemoteServiceContainer extends TCPClientSOContainer
 		implements IRemoteServiceContainer {
 
 	private static final String REGISTRY_ID = RemoteServiceContainer.class.getName() + ".registry";
-	protected List serviceListener = new ArrayList();
 	protected RegistrySharedObject registrySharedObject;
 	
 	protected RegistrySharedObject createAndAddRegistry() {
@@ -29,8 +26,7 @@ public class RemoteServiceContainer extends TCPClientSOContainer
 					null);
 		} catch (Exception e) {
 			// Should not happen...if does throw NullPointerException
-			throw new NullPointerException();
-			// TODO: handle exception
+			throw new NullPointerException("Exception creating ID");
 		}	
 		return rso;
 	}
@@ -48,7 +44,6 @@ public class RemoteServiceContainer extends TCPClientSOContainer
 
 	public void addRemoteServiceListener(IRemoteServiceListener listener) {
 		registrySharedObject.addRemoteServiceListener(listener);
-
 	}
 
 	public IRemoteService getRemoteService(IRemoteServiceReference ref) {
