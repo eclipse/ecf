@@ -66,7 +66,7 @@ public interface IRemoteServiceContainer {
 	/**
 	 * Get remote service for given IRemoteServiceReference.  
 	 * 
-	 * @param ref the IRemoteServiceReference for the desired service
+	 * @param reference the IRemoteServiceReference for the desired service
 	 * @return IRemoteService representing the remote service. If remote service no longer exists
 	 * for reference, then null is returned.
 	 */
@@ -75,7 +75,7 @@ public interface IRemoteServiceContainer {
 	/**
 	 * Unget IRemoteServiceReference
 	 * 
-	 * @param ref the IRemoteServiceReference to unget
+	 * @param reference the IRemoteServiceReference to unget
 	 * @return true if unget successful, false if not
 	 */
 	public boolean ungetRemoteService(IRemoteServiceReference reference);
