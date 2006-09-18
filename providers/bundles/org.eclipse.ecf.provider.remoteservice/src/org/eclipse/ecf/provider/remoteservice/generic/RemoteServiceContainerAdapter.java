@@ -2,17 +2,17 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.SharedObjectContainerDelegate;
+import org.eclipse.ecf.core.AbstractSharedObjectContainerAdapter;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
 
-public class RemoteServiceContainerDelegate extends
-		SharedObjectContainerDelegate {
+public class RemoteServiceContainerAdapter extends
+		AbstractSharedObjectContainerAdapter {
 
-	private static final String REGISTRY_ID = RemoteServiceContainer.class.getName() + ".registry";
+	private static final String REGISTRY_ID = RegistrySharedObject.class.getName() + ".registry";
 
-	public RemoteServiceContainerDelegate(
+	public RemoteServiceContainerAdapter(
 			ISharedObjectManager sharedObjectManager) {
 		super(sharedObjectManager);
 	}

@@ -12,17 +12,17 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public abstract class SharedObjectContainerDelegate {
+public abstract class AbstractSharedObjectContainerAdapter {
 
 	protected ISharedObjectManager sharedObjectManager;
 
 	protected ID delegateID;
 
-	protected SharedObjectContainerDelegate() {
+	protected AbstractSharedObjectContainerAdapter() {
 
 	}
 
-	protected SharedObjectContainerDelegate(ISharedObjectManager manager) {
+	protected AbstractSharedObjectContainerAdapter(ISharedObjectManager manager) {
 		this.sharedObjectManager = manager;
 		this.delegateID = addDelegate();
 	}
@@ -54,7 +54,4 @@ public abstract class SharedObjectContainerDelegate {
 		return getSharedObjectManager().getSharedObject(delegateID);
 	}
 
-	public void dispose() {
-		getSharedObjectManager().removeSharedObject(delegateID);
-	}
 }

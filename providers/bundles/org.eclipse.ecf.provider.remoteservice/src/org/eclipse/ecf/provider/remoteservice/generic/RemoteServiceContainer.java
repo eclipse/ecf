@@ -14,12 +14,12 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 public class RemoteServiceContainer extends TCPClientSOContainer
 		implements IRemoteServiceContainer {
 
-	protected RemoteServiceContainerDelegate delegate;
+	protected RemoteServiceContainerAdapter adapter;
 	protected IRemoteServiceContainer registry;
 	
 	protected void createRegistry() {
-		delegate = new RemoteServiceContainerDelegate(getSharedObjectManager());
-		registry = (IRemoteServiceContainer) delegate.getDelegate();
+		adapter = new RemoteServiceContainerAdapter(getSharedObjectManager());
+		registry = (IRemoteServiceContainer) adapter.getDelegate();
 	}
 
 	public RemoteServiceContainer(ISharedObjectContainerConfig config) {
@@ -33,12 +33,6 @@ public class RemoteServiceContainer extends TCPClientSOContainer
 		createRegistry();
 	}
 
-	public void dispose() {
-		super.dispose();
-		delegate.dispose();
-		delegate = null;
-		registry = null;
-	}
 	public void addRemoteServiceListener(IRemoteServiceListener listener) {
 		registry.addRemoteServiceListener(listener);
 	}
