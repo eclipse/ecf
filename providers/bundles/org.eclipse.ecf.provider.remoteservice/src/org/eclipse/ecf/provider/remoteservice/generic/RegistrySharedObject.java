@@ -443,11 +443,11 @@ public class RegistrySharedObject extends AbstractSharedObject implements IRemot
 
 	private static final int HANDLE_REQUEST_ERROR_CODE = 209;
 
-	private static final String RESPONSE = "handleResponse";
+	private static final String CALL_RESPONSE = "handleCallResponse";
 
-	private static final String RESPONSE_ERROR_MESSAGE = "Exception sending response";
+	private static final String CALL_RESPONSE_ERROR_MESSAGE = "Exception sending response";
 
-	private static final int RESPONSE_ERROR_CODE = 210;
+	private static final int CALL_RESPONSE_ERROR_CODE = 210;
 
 	private static final String REQUEST_NOT_FOUND_ERROR_MESSAGE = "request not found for received response";
 
@@ -578,9 +578,9 @@ public class RegistrySharedObject extends AbstractSharedObject implements IRemot
 		try {
 			trace("sending response " + response + " to " + responseTarget);
 			sendSharedObjectMsgTo(responseTarget, SharedObjectMsg.createMsg(
-					RESPONSE, response));
+					CALL_RESPONSE, response));
 		} catch (IOException e) {
-			logSendError(RESPONSE_ERROR_CODE, RESPONSE_ERROR_MESSAGE, e);
+			logSendError(CALL_RESPONSE_ERROR_CODE, CALL_RESPONSE_ERROR_MESSAGE, e);
 		}
 	}
 

@@ -25,7 +25,7 @@ public class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 	}
 
 	public boolean isActive() {
-		return (registration == null);
+		return (registration != null);
 	}
 	
 	protected synchronized void setInactive() {
