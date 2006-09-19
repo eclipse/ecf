@@ -48,14 +48,14 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 			ISharedObject so = manager.getSharedObject(sharedObjectID);
 			if (so != null) return so;
 		}
-		ISharedObject adapter = createAdapter(adapterType);
+		ISharedObject adapter = createAdapter(container, adapterType);
 		if (adapter == null)
 			return null;
-		sharedObjectID = createSharedObjectID(adapter,
+		sharedObjectID = createAdapterID(adapter,
 				adapterType);
 		if (sharedObjectID == null)
 			return null;
-		Map sharedObjectProperties = createSharedObjectProperties(
+		Map sharedObjectProperties = createAdapterProperties(
 				adapter, adapterType);
 		try {
 			manager.addSharedObject(sharedObjectID, adapter,
@@ -71,12 +71,12 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 		return adapter;
 	}
 
-	protected Map createSharedObjectProperties(
+	protected Map createAdapterProperties(
 			ISharedObject sharedObjectAdapter, Class adapterType) {
 		return null;
 	}
 
-	protected ID createSharedObjectID(ISharedObject adapter,
+	protected ID createAdapterID(ISharedObject adapter,
 			Class adapterType) {
 		String singletonName = adapter.getClass().getName();
 		try {
@@ -91,7 +91,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 		}
 	}
 
-	protected abstract ISharedObject createAdapter(Class adapterType);
+	protected abstract ISharedObject createAdapter(ISharedObjectContainer container, Class adapterType);
 
 	public abstract Class[] getAdapterList();
 
