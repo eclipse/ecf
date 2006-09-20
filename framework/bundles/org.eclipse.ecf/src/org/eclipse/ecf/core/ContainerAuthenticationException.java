@@ -8,28 +8,28 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
-public class ContainerAuthorizationException extends ContainerConnectException {
+public class ContainerAuthenticationException extends ContainerConnectException {
 	private static final long serialVersionUID = 7038962779623213444L;
-	public ContainerAuthorizationException() {
+	public ContainerAuthenticationException() {
 		super();
 	}
 	/**
 	 * @param message
 	 */
-	public ContainerAuthorizationException(String message) {
+	public ContainerAuthenticationException(String message) {
 		super(message);
 	}
 	/**
 	 * @param cause
 	 */
-	public ContainerAuthorizationException(Throwable cause) {
+	public ContainerAuthenticationException(Throwable cause) {
 		super(cause);
 	}
 	/**
 	 * @param message
 	 * @param cause
 	 */
-	public ContainerAuthorizationException(String message, Throwable cause) {
+	public ContainerAuthenticationException(String message, Throwable cause) {
 		super(message, cause);
 	}
 	
