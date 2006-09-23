@@ -39,7 +39,7 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.filetransfer.IFileTransferContainer;
-import org.eclipse.ecf.filetransfer.IFileTransferProgressListener;
+import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
 import org.eclipse.ecf.presence.IAccountManager;
@@ -661,7 +661,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IFileTra
 	public void addIncomingFileTransferListener(IIncomingFileTransferListener listener) {
 		incomingTransferListeners.add(listener);
 	}
-	public IOutgoingFileTransfer createOutgoingFileTransfer(final ID remoteTarget, IFileTransferProgressListener progressListener) throws ECFException {
+	public IOutgoingFileTransfer createOutgoingFileTransfer(final ID remoteTarget, IFileTransferListener progressListener) throws ECFException {
 		if (remoteTarget == null) throw new NullPointerException("remoteTarget cannot be null");
 		XMPPConnection xmppConnection = sharedObject.getConnection();
 		if (xmppConnection == null || !xmppConnection.isConnected()) throw new ECFException("not connected");
