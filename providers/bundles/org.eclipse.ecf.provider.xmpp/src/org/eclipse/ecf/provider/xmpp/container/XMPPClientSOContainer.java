@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.xmpp.container;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -40,8 +41,12 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.filetransfer.IFileTransferContainer;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
+import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
+import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
+import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferCreateEvent;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
@@ -656,24 +661,45 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IFileTra
     
     // IFileTransferContainer implementation
     
+    List transferListeners = new ArrayList();
+    
     List incomingTransferListeners = new ArrayList();
     
+    protected void addFileTransferListener(IFileTransferListener listener) {
+    	transferListeners.add(listener);
+    }
+    protected void removeFileTransferListener(IFileTransferListener listener) {
+    	transferListeners.remove(listener);
+    }
 	public void addIncomingFileTransferListener(IIncomingFileTransferListener listener) {
 		incomingTransferListeners.add(listener);
 	}
-	public IOutgoingFileTransfer createOutgoingFileTransfer(final ID remoteTarget, IFileTransferListener progressListener) throws ECFException {
+	public void requestOutgoingFileTransfer(final ID remoteTarget, IFileTransferListener progressListener) throws ECFException {
 		if (remoteTarget == null) throw new NullPointerException("remoteTarget cannot be null");
 		XMPPConnection xmppConnection = sharedObject.getConnection();
 		if (xmppConnection == null || !xmppConnection.isConnected()) throw new ECFException("not connected");
-		final FileTransferManager manager = new FileTransferManager(xmppConnection);
-		XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer((XMPPID) remoteTarget, progressListener, manager);
-		return fileTransfer;
+		FileTransferManager manager = new FileTransferManager(xmppConnection);
+		
+		final XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer((XMPPID) remoteTarget, progressListener, manager);
+		
+		fireFileTransferEvent(new IOutgoingFileTransferCreateEvent() {
+			public IOutgoingFileTransfer getOutgoingFileTransfer() {
+				return fileTransfer;
+			}});
+	}
+	protected void fireFileTransferEvent(IFileTransferEvent event) {
+		for(Iterator i=transferListeners.iterator(); i.hasNext(); ) {
+			IFileTransferListener l = (IFileTransferListener) i.next();
+			l.handleTransferEvent(event);
+		}
 	}
 	public Namespace getOutgoingFileTransferNamespace() {
 		return getConnectNamespace();
 	}
 	public boolean removeIncomingFileTransferListener(IIncomingFileTransferListener listener) {
 		return incomingTransferListeners.remove(listener);
+	}
+	public void requestIncomingFileTransfer(IFileID remoteFileID, IFileTransferListener transferListener) throws ECFException {
 	}
 
 }
