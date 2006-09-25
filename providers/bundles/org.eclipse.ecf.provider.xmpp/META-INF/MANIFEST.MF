@@ -12,6 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.presence,
  org.jivesoftware.smack,
  org.eclipse.ecf.fileshare
+Eclipse-LazyStart: true
 Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.provider.xmpp.container, org.eclipse.ecf.provider.xmpp.identity
 Eclipse-BuddyPolicy: global

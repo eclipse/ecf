@@ -1,12 +1,11 @@
 package org.eclipse.ecf.provider.xmpp.filetransfer;
 
 import java.io.File;
-import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
-import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
@@ -18,6 +17,7 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 
 	ID sessionID;
 	XMPPID remoteTarget;
+	IFileTransferInfo transferInfo;
 	IFileTransferListener listener;
 	FileTransferManager manager;
 	
@@ -25,10 +25,11 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 	
 	OutgoingFileTransfer outgoingFileTransfer;
 	
-	public XMPPOutgoingFileTransfer(XMPPID remoteTarget, IFileTransferListener listener, FileTransferManager manager) {
-		this.remoteTarget = remoteTarget;
-		this.listener = listener;
+	public XMPPOutgoingFileTransfer(FileTransferManager manager, XMPPID remoteTarget, IFileTransferInfo fileTransferInfo, IFileTransferListener listener) {
 		this.manager = manager;
+		this.remoteTarget = remoteTarget;
+		this.transferInfo = fileTransferInfo;
+		this.listener = listener;
 		this.sessionID = createSessionID();
 		
 	}
@@ -45,19 +46,12 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 	public ID getID() {
 		return sessionID;
 	}
-	public IFileTransferListener getListener() {
-		return listener;
-	}
-	public synchronized void startSend(File localFile, Map options) throws ECFException {
-		if (localFile == null) throw new NullPointerException("localFile cannot be null");
-		if (!localFile.exists()) throw new ECFException("localFile "+localFile+" does not exist");
+	public void createFileTransfer() {
 		outgoingFileTransfer = manager.createOutgoingFileTransfer(remoteTarget.getName()+XMPPID.PATH_DELIMITER+remoteTarget.getResourceName());
-		try {
-			outgoingFileTransfer.sendFile(localFile, "from ECF");
-			this.localFile = localFile;
-		} catch (XMPPException e) {
-			throw new ECFException("Exception sending file "+localFile);
-		}
+	}
+	public synchronized void startSend(File localFile, String description) throws XMPPException {
+		outgoingFileTransfer.sendFile(localFile, description);
+		this.localFile = localFile;
 	}
 
 	public synchronized void cancel() {
@@ -85,6 +79,9 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 	}
 	public boolean isDone() {
 		return outgoingFileTransfer.isDone();
+	}
+	public ID getSessionID() {
+		return sessionID;
 	}
 
 }

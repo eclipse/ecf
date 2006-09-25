@@ -10,6 +10,7 @@ package org.eclipse.ecf.provider.xmpp.container;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,14 +40,14 @@ import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.filetransfer.FileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferContainer;
+import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
-import org.eclipse.ecf.filetransfer.IIncomingFileTransferListener;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
+import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
+import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
+import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
-import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferCreateEvent;
-import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
@@ -525,7 +526,6 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IFileTra
 							return results;
 						}
 						public Object getAdapter(Class adapter) {
-							// TODO Auto-generated method stub
 							return null;
 						}};
 				}
@@ -671,21 +671,23 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IFileTra
     protected void removeFileTransferListener(IFileTransferListener listener) {
     	transferListeners.remove(listener);
     }
-	public void addIncomingFileTransferListener(IIncomingFileTransferListener listener) {
+	public void addIncomingFileTransferRequestListener(IIncomingFileTransferRequestListener listener) {
 		incomingTransferListeners.add(listener);
 	}
-	public void requestOutgoingFileTransfer(final ID remoteTarget, IFileTransferListener progressListener) throws ECFException {
-		if (remoteTarget == null) throw new NullPointerException("remoteTarget cannot be null");
+	public void requestOutgoingFileTransfer(ID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener progressListener) throws OutgoingFileTransferException {
 		XMPPConnection xmppConnection = sharedObject.getConnection();
-		if (xmppConnection == null || !xmppConnection.isConnected()) throw new ECFException("not connected");
+		if (xmppConnection == null || !xmppConnection.isConnected()) throw new OutgoingFileTransferException("not connected");
 		FileTransferManager manager = new FileTransferManager(xmppConnection);
 		
-		final XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer((XMPPID) remoteTarget, progressListener, manager);
+		final XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(manager, (XMPPID) targetReceiver, localFileToSend, progressListener);
 		
-		fireFileTransferEvent(new IOutgoingFileTransferCreateEvent() {
-			public IOutgoingFileTransfer getOutgoingFileTransfer() {
-				return fileTransfer;
-			}});
+		fileTransfer.createFileTransfer();
+		
+		try {
+			fileTransfer.startSend(localFileToSend.getFile(), localFileToSend.getDescription());
+		} catch (XMPPException e) {
+			throw new OutgoingFileTransferException("Exception sending start request",e);
+		}
 	}
 	protected void fireFileTransferEvent(IFileTransferEvent event) {
 		for(Iterator i=transferListeners.iterator(); i.hasNext(); ) {
@@ -696,10 +698,13 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IFileTra
 	public Namespace getOutgoingFileTransferNamespace() {
 		return getConnectNamespace();
 	}
-	public boolean removeIncomingFileTransferListener(IIncomingFileTransferListener listener) {
+	public boolean removeIncomingFileTransferRequestListener(IIncomingFileTransferRequestListener listener) {
 		return incomingTransferListeners.remove(listener);
 	}
-	public void requestIncomingFileTransfer(IFileID remoteFileID, IFileTransferListener transferListener) throws ECFException {
+	public void requestRetrieveFileTransfer(URI remoteFile, IFileTransferListener transferListener) throws IncomingFileTransferException {
+	}
+	public void requestOutgoingFileTransfer(ID targetReceiver, File localFileToSend, IFileTransferListener transferListener) throws OutgoingFileTransferException {
+		requestOutgoingFileTransfer(targetReceiver, new FileTransferInfo(localFileToSend), transferListener);
 	}
 
 }
