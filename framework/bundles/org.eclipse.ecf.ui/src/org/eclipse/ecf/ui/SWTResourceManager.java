@@ -1,3 +1,14 @@
+/****************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Composent, Inc. - initial API and implementation
+*****************************************************************************/
+
 package org.eclipse.ecf.ui;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -21,7 +32,7 @@ import org.eclipse.swt.widgets.*;
  * <p>
  * Copyright (c) 2003 - 2005, Instantiations, Inc. <br>All Rights Reserved
  * 
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @author scheglov_ke
  * @author Dan Rubel
  */
