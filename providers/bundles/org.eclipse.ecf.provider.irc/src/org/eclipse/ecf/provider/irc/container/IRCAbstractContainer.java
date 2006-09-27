@@ -1,3 +1,14 @@
+/****************************************************************************
+* Copyright (c) 2004 Composent, Inc. and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*    Composent, Inc. - initial API and implementation
+*****************************************************************************/
+
 package org.eclipse.ecf.provider.irc.container;
 
 import java.util.ArrayList;
@@ -5,21 +16,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-
 import org.eclipse.ecf.core.AbstractContainer;
-import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
-import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.provider.irc.Activator;
 import org.eclipse.ecf.provider.irc.Trace;
-import org.eclipse.ecf.provider.irc.identity.IRCID;
 
 public abstract class IRCAbstractContainer extends AbstractContainer {
 
