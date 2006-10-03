@@ -674,7 +674,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IFileTra
 	public void addIncomingFileTransferRequestListener(IIncomingFileTransferRequestListener listener) {
 		incomingTransferListeners.add(listener);
 	}
-	public void requestOutgoingFileTransfer(ID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener progressListener) throws OutgoingFileTransferException {
+	public void sendOutgoingRequest(ID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener progressListener) throws OutgoingFileTransferException {
 		XMPPConnection xmppConnection = sharedObject.getConnection();
 		if (xmppConnection == null || !xmppConnection.isConnected()) throw new OutgoingFileTransferException("not connected");
 		FileTransferManager manager = new FileTransferManager(xmppConnection);
@@ -701,10 +701,10 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IFileTra
 	public boolean removeIncomingFileTransferRequestListener(IIncomingFileTransferRequestListener listener) {
 		return incomingTransferListeners.remove(listener);
 	}
-	public void requestRetrieveFileTransfer(URI remoteFile, IFileTransferListener transferListener) throws IncomingFileTransferException {
+	public void sendRetrieveRequest(URI remoteFile, IFileTransferListener transferListener) throws IncomingFileTransferException {
 	}
-	public void requestOutgoingFileTransfer(ID targetReceiver, File localFileToSend, IFileTransferListener transferListener) throws OutgoingFileTransferException {
-		requestOutgoingFileTransfer(targetReceiver, new FileTransferInfo(localFileToSend), transferListener);
+	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend, IFileTransferListener transferListener) throws OutgoingFileTransferException {
+		sendOutgoingRequest(targetReceiver, new FileTransferInfo(localFileToSend), transferListener);
 	}
 
 }
