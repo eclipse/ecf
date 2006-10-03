@@ -132,7 +132,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * @param serviceType
 	 *            the service type to look up
 	 * @return the service instance castable to the given class, or
-	 *         <code>null</code> ifnthis container does not support the given
+	 *         <code>null</code> if this container does not support the given
 	 *         service
 	 */
 	public Object getAdapter(Class serviceType);
