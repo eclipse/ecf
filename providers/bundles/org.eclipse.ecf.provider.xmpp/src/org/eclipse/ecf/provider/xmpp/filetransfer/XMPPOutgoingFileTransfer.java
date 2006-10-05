@@ -31,7 +31,7 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 		this.transferInfo = fileTransferInfo;
 		this.listener = listener;
 		this.sessionID = createSessionID();
-		
+		outgoingFileTransfer = manager.createOutgoingFileTransfer(remoteTarget.getName()+XMPPID.PATH_DELIMITER+remoteTarget.getResourceName());		
 	}
 	protected ID createSessionID() {
 		try {
@@ -45,9 +45,6 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 	}
 	public ID getID() {
 		return sessionID;
-	}
-	public void createFileTransfer() {
-		outgoingFileTransfer = manager.createOutgoingFileTransfer(remoteTarget.getName()+XMPPID.PATH_DELIMITER+remoteTarget.getResourceName());
 	}
 	public synchronized void startSend(File localFile, String description) throws XMPPException {
 		outgoingFileTransfer.sendFile(localFile, description);

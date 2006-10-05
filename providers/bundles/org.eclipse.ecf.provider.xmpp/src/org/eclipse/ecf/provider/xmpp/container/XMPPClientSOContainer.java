@@ -10,7 +10,6 @@ package org.eclipse.ecf.provider.xmpp.container;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,11 +40,10 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.filetransfer.FileTransferInfo;
-import org.eclipse.ecf.filetransfer.IFileTransferContainer;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
-import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
+import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainer;
 import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.presence.IAccountManager;
@@ -90,7 +88,7 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.RoomInfo;
 import org.jivesoftware.smackx.packet.MUCUser;
 
-public class XMPPClientSOContainer extends ClientSOContainer implements IFileTransferContainer {
+public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoingFileTransferContainer {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
 	Trace trace = Trace.create("XMPPClientSOContainer");
@@ -679,9 +677,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IFileTra
 		if (xmppConnection == null || !xmppConnection.isConnected()) throw new OutgoingFileTransferException("not connected");
 		FileTransferManager manager = new FileTransferManager(xmppConnection);
 		
-		final XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(manager, (XMPPID) targetReceiver, localFileToSend, progressListener);
-		
-		fileTransfer.createFileTransfer();
+		XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(manager, (XMPPID) targetReceiver, localFileToSend, progressListener);
 		
 		try {
 			fileTransfer.startSend(localFileToSend.getFile(), localFileToSend.getDescription());
@@ -700,8 +696,6 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IFileTra
 	}
 	public boolean removeIncomingFileTransferRequestListener(IIncomingFileTransferRequestListener listener) {
 		return incomingTransferListeners.remove(listener);
-	}
-	public void sendRetrieveRequest(URI remoteFile, IFileTransferListener transferListener) throws IncomingFileTransferException {
 	}
 	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend, IFileTransferListener transferListener) throws OutgoingFileTransferException {
 		sendOutgoingRequest(targetReceiver, new FileTransferInfo(localFileToSend), transferListener);
