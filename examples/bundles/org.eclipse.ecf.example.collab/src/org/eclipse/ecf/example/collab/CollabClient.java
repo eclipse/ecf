@@ -4,6 +4,7 @@ import java.net.URISyntaxException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -21,47 +22,63 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
 public class CollabClient {
 	public static final String WORKSPACE_NAME = "<workspace>";
-    public static final String GENERIC_CONTAINER_CLIENT_NAME = "ecf.generic.client";
+
+	public static final String GENERIC_CONTAINER_CLIENT_NAME = "ecf.generic.client";
+
 	static Hashtable clients = new Hashtable();
+
 	static CollabClient collabClient = new CollabClient();
 
 	PresenceContainerUI presenceContainerUI = null;
+
 	IRCChatRoomManagerUI ircchatRoomManagerUI = null;
-	
+
 	/**
 	 * Create a new container instance, and connect to a remote server or group.
 	 * 
-	 * @param containerType the container type used to create the new container instance.  Must not be null.
-	 * @param uri the uri that is used to create a targetID for connection.  Must not be null.
-	 * @param nickname an optional String nickname.  May be null.
-	 * @param connectData optional connection data.  May be null.
-	 * @param resource the resource that this container instance is associated with.  Must not be null.
+	 * @param containerType
+	 *            the container type used to create the new container instance.
+	 *            Must not be null.
+	 * @param uri
+	 *            the uri that is used to create a targetID for connection. Must
+	 *            not be null.
+	 * @param nickname
+	 *            an optional String nickname. May be null.
+	 * @param connectData
+	 *            optional connection data. May be null.
+	 * @param resource
+	 *            the resource that this container instance is associated with.
+	 *            Must not be null.
 	 * @throws Exception
 	 */
 	public void createAndConnectClient(final String containerType, String uri,
 			String nickname, final Object connectData, final IResource resource)
 			throws Exception {
 		// First create the new container instance
-		final IContainer newClient = ContainerFactory
-				.getDefault().createContainer(containerType);
-		
-		// Get the target namespace, so we can create a target ID of appropriate type
+		final IContainer newClient = ContainerFactory.getDefault()
+				.createContainer(containerType);
+
+		// Get the target namespace, so we can create a target ID of appropriate
+		// type
 		Namespace targetNamespace = newClient.getConnectNamespace();
 		// Create the targetID instance
 		ID targetID = IDFactory.getDefault().createID(targetNamespace, uri);
-		
+
 		// Setup username
-		String username = setupUsername(targetID,nickname);
+		String username = setupUsername(targetID, nickname);
 		// Create a new client entry to hold onto container once created
 		final ClientEntry newClientEntry = new ClientEntry(containerType,
 				newClient);
-		
-		IChatRoomManager man = (IChatRoomManager) newClient.getAdapter(IChatRoomManager.class);
+
+		IChatRoomManager man = (IChatRoomManager) newClient
+				.getAdapter(IChatRoomManager.class);
 		if (man != null) {
 			ircchatRoomManagerUI = new IRCChatRoomManagerUI(man);
-			ircchatRoomManagerUI = ircchatRoomManagerUI.setup(newClient, targetID, username);
+			if (!ircchatRoomManagerUI.setup(newClient, targetID, username))
+				return;
 		} else {
-		     // Check for IPresenceContainer....if it is, setup presence UI, if not setup shared object container
+			// Check for IPresenceContainer....if it is, setup presence UI, if
+			// not setup shared object container
 			IPresenceContainer pc = (IPresenceContainer) newClient
 					.getAdapter(IPresenceContainer.class);
 			if (pc != null) {
@@ -69,26 +86,33 @@ public class CollabClient {
 				presenceContainerUI = new PresenceContainerUI(pc);
 				presenceContainerUI.setup(newClient, targetID, username);
 			} else {
-				// Setup sharedobject container if the new instance supports this
+				// Setup sharedobject container if the new instance supports
+				// this
 				ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient
 						.getAdapter(ISharedObjectContainer.class);
 				if (sharedObjectContainer != null) {
-					new SharedObjectContainerUI(this,sharedObjectContainer).setup(sharedObjectContainer,
-							newClientEntry, resource, username);
+					SharedObjectContainerUI socui = new SharedObjectContainerUI(
+							this, sharedObjectContainer);
+					socui.setup(sharedObjectContainer, newClientEntry,
+							resource, username);
 				}
 			}
 		}
-		
+
 		// Now connect
 		try {
-			newClient.connect(targetID, ConnectContextFactory.createUsernamePasswordConnectContext(username, connectData));
+			newClient.connect(targetID,
+					ConnectContextFactory.createUsernamePasswordConnectContext(
+							username, connectData));
 		} catch (ContainerConnectException e) {
-			// If we have a connect exception then we remove any previously added shared object
+			// If we have a connect exception then we remove any previously
+			// added shared object
 			EclipseCollabSharedObject so = newClientEntry.getObject();
-			if (so != null) so.destroySelf();
+			if (so != null)
+				so.destroySelf();
 			throw e;
 		}
-		
+
 		// only add client if the connect was successful
 		addClientForResource(newClientEntry, resource);
 	}
@@ -208,27 +232,36 @@ public class CollabClient {
 		}
 		return false;
 	}
-    public synchronized static ISharedObjectContainer getContainer(IResource proj) {
-        ClientEntry entry = getClientEntry(proj,GENERIC_CONTAINER_CLIENT_NAME);
-        if (entry == null) {
-            entry = getClientEntry(ResourcesPlugin.getWorkspace().getRoot(),GENERIC_CONTAINER_CLIENT_NAME);
-        }
-        if (entry != null) {
-        	IContainer cont = entry.getContainer();
-        	if (cont != null) return (ISharedObjectContainer) cont.getAdapter(ISharedObjectContainer.class);
-        	else return null;
-        }
-        else return null;
-    }
+
+	public synchronized static ISharedObjectContainer getContainer(
+			IResource proj) {
+		ClientEntry entry = getClientEntry(proj, GENERIC_CONTAINER_CLIENT_NAME);
+		if (entry == null) {
+			entry = getClientEntry(ResourcesPlugin.getWorkspace().getRoot(),
+					GENERIC_CONTAINER_CLIENT_NAME);
+		}
+		if (entry != null) {
+			IContainer cont = entry.getContainer();
+			if (cont != null)
+				return (ISharedObjectContainer) cont
+						.getAdapter(ISharedObjectContainer.class);
+			else
+				return null;
+		} else
+			return null;
+	}
+
 	public static CollabClient getDefault() {
 		return collabClient;
 	}
+
 	protected synchronized void disposeClient(IResource proj, ClientEntry entry) {
 		entry.dispose();
 		removeClientForResource(proj, entry.getConnectedID());
 	}
 
-	protected String setupUsername(ID targetID, String nickname) throws URISyntaxException {
+	protected String setupUsername(ID targetID, String nickname)
+			throws URISyntaxException {
 		String username = null;
 		if (nickname != null) {
 			username = nickname;
@@ -239,6 +272,5 @@ public class CollabClient {
 		}
 		return username;
 	}
-
 
 }

@@ -20,27 +20,55 @@ import org.eclipse.ecf.ui.views.ChatRoomManagerView;
 import org.eclipse.ecf.ui.views.IChatRoomViewCloseListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 public class IRCChatRoomManagerUI {
+	private static final String CHAT_ROOM_MANAGER_VIEWID = "org.eclipse.ecf.ui.views.ChatRoomManagerView";
+
 	IChatRoomManager manager;
+	
+	boolean newViewCreated = true;
 	
 	public IRCChatRoomManagerUI(IChatRoomManager manager) {
 		super();
 		this.manager = manager;
 	}
-	protected ChatRoomManagerView getChatRoomManagerView() throws PartInitException {
+	
+	protected String getViewIDFromTargetID(ID targetID) {
+		URI uri;
+		try {
+			uri = targetID.toURI();
+		} catch (URISyntaxException e) {
+			return null;
+		}
+		// Get authority, host, and port to define view ID
+		int port = uri.getPort();
+		return uri.getAuthority() + ((port==-1)?"":":"+port);
+	}
+	protected ChatRoomManagerView getChatRoomManagerView(ID targetID) throws PartInitException {
 		// Get view
+		String secondaryViewID = getViewIDFromTargetID(targetID);
 		IWorkbenchWindow ww = PlatformUI.getWorkbench()
 		.getActiveWorkbenchWindow();
 		IWorkbenchPage wp = ww.getActivePage();
-		IViewPart view = wp.showView("org.eclipse.ecf.ui.views.ChatRoomManagerView");
+		IViewPart view = null;
+		if (secondaryViewID == null) view = wp.showView(CHAT_ROOM_MANAGER_VIEWID);
+		else {
+			IViewReference viewRef = wp.findViewReference(CHAT_ROOM_MANAGER_VIEWID, secondaryViewID);
+			if (viewRef == null) view = wp.showView(CHAT_ROOM_MANAGER_VIEWID,secondaryViewID,IWorkbenchPage.VIEW_ACTIVATE);
+			else {
+				// Old view with same secondaryViewID found, so use/restore it rather than creating new view
+				newViewCreated = false;
+				view = viewRef.getView(true);
+			}
+		}
 		return (ChatRoomManagerView) view;
 	}
-	public IRCChatRoomManagerUI setup(final IContainer container, final ID targetID,
+	public boolean setup(final IContainer container, final ID targetID,
 			String username) {
 		// If we don't already have a connection/view to this room then
 		// now, create chat room instance
@@ -49,56 +77,62 @@ public class IRCChatRoomManagerUI {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
 				try {
-					final ChatRoomManagerView chatroomview = getChatRoomManagerView();
-					// retrieve and get root chat room container
-					IRoomInfo roomInfo = manager.getChatRoomInfo(null);
-					if (roomInfo == null) throw new NullPointerException("Chat room manager does not expose chat room interface.  Cannot create UI");
-					IChatRoomContainer chatRoom = null;
-					try {
-						chatRoom = roomInfo.createChatRoomContainer();
-					} catch (ContainerInstantiationException e1) {
-						// can't happen for 'root' roomInfo
-					}
-					// initialize the chatroomview with the necessary
-					// information
-					chatroomview.initialize(new IChatRoomViewCloseListener() {
-						public void chatRoomViewClosing(String secondaryID) {
-							container.dispose();
+					final ChatRoomManagerView chatroomview = getChatRoomManagerView(targetID);
+					
+					if (newViewCreated) {
+						// retrieve and get root chat room container
+						IRoomInfo roomInfo = manager.getChatRoomInfo(null);
+						if (roomInfo == null) throw new NullPointerException("Chat room manager does not expose chat room interface.  Cannot create UI");
+						IChatRoomContainer chatRoom = null;
+						try {
+							chatRoom = roomInfo.createChatRoomContainer();
+						} catch (ContainerInstantiationException e1) {
+							// can't happen for 'root' roomInfo
 						}
-					}, chatRoom, manager, targetID, chatRoom.getChatMessageSender());
-					// Add listener for container, so that if the container is spontaneously disconnected,
-					// then we will be able to have the UI respond by making itself inactive
-					container.addListener(new IContainerListener() {
-						public void handleEvent(IContainerEvent evt) {
-							if (evt instanceof IContainerDisconnectedEvent) {
-								IContainerDisconnectedEvent cd = (IContainerDisconnectedEvent) evt;
-								final ID departedContainerID = cd.getTargetID();
-								ID connectedID = targetID;
-								if (connectedID == null
-										|| connectedID.equals(departedContainerID)) {
-									chatroomview.disconnected();
-								}
-							} else if (evt instanceof IContainerConnectedEvent) {
-								chatroomview.joinRoom(getChannelFromID(targetID));
+						// initialize the chatroomview with the necessary
+						// information
+						chatroomview.initialize(new IChatRoomViewCloseListener() {
+							public void chatRoomViewClosing(String secondaryID) {
+								container.dispose();
 							}
-						}
-					},"");
-					// Add listeners so that the new chat room gets
-					// asynch notifications of various relevant chat room events
-					chatRoom.addMessageListener(new IMessageListener() {
-						public void handleMessage(ID fromID, ID toID, Type type,
-								String subject, String messageBody) {
-							chatroomview.handleMessage(fromID, toID, type, subject,
-									messageBody);
-						}
-					});
-					chatRoom.addInvitationListener(new IInvitationListener() {
-						public void handleInvitationReceived(ID roomID, ID from,
-								ID toID, String subject, String body) {
-							chatroomview.handleInvitationReceived(roomID, from, toID,
-									subject, body);
-						}
-					});
+						}, chatRoom, manager, targetID, chatRoom.getChatMessageSender());
+						// Add listener for container, so that if the container is spontaneously disconnected,
+						// then we will be able to have the UI respond by making itself inactive
+						container.addListener(new IContainerListener() {
+							public void handleEvent(IContainerEvent evt) {
+								if (evt instanceof IContainerDisconnectedEvent) {
+									IContainerDisconnectedEvent cd = (IContainerDisconnectedEvent) evt;
+									final ID departedContainerID = cd.getTargetID();
+									ID connectedID = targetID;
+									if (connectedID == null
+											|| connectedID.equals(departedContainerID)) {
+										chatroomview.disconnected();
+									}
+								} else if (evt instanceof IContainerConnectedEvent) {
+									chatroomview.joinRoom(getChannelFromID(targetID));
+								}
+							}
+						},"");
+						// Add listeners so that the new chat room gets
+						// asynch notifications of various relevant chat room events
+						chatRoom.addMessageListener(new IMessageListener() {
+							public void handleMessage(ID fromID, ID toID, Type type,
+									String subject, String messageBody) {
+								chatroomview.handleMessage(fromID, toID, type, subject,
+										messageBody);
+							}
+						});
+						chatRoom.addInvitationListener(new IInvitationListener() {
+							public void handleInvitationReceived(ID roomID, ID from,
+									ID toID, String subject, String body) {
+								chatroomview.handleInvitationReceived(roomID, from, toID,
+										subject, body);
+							}
+						});
+					} else {
+						// Using old client so simply call chatroomview.joinRoom
+						chatroomview.joinRoom(getChannelFromID(targetID));
+					}
 				} catch (Exception e) {
 					UiPlugin.log(
 							"Exception in chat room view creation or initialization "
@@ -106,7 +140,7 @@ public class IRCChatRoomManagerUI {
 				}
             }
         });
-		return this;
+		return newViewCreated;
 	}
 	protected String getChannelFromID(ID targetID) {
 		String initialRoom = null;
