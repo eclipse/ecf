@@ -99,8 +99,6 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 
 	protected static final String DEFAULT_DATE_COLOR = "0,0,0";
 
-	protected static final String VIEW_PREFIX = "IRC: ";
-
 	protected static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
 
 	protected static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
@@ -150,6 +148,8 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 	private String userName = "<user>";
 
 	private String hostName = "<host>";
+	
+	private boolean enabled = false;
 
 	class Manager {
 		SashForm fullChat;
@@ -298,30 +298,30 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 			final IChatRoomContainer container,
 			final IChatRoomManager chatRoomManager, final ID targetID,
 			final IChatMessageSender sender) {
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				ChatRoomManagerView.this.chatRoomManager = chatRoomManager;
-				ChatRoomManagerView.this.closeListener = parent;
-				ChatRoomManagerView.this.chatRoomContainer = container;
-				ChatRoomManagerView.this.chatHostID = targetID;
-				ChatRoomManagerView.this.messageSender = sender;
-				setUsernameAndHost(ChatRoomManagerView.this.chatHostID);
-				ChatRoomManagerView.this.setPartName(VIEW_PREFIX + userName
-						+ USERNAME_HOST_DELIMETER + hostName);
-				ChatRoomManagerView.this.setTitleToolTip("IRC Host: "
-						+ hostName);
-				ChatRoomManagerView.this.rootChatRoomTabItem
-						.setTabName(hostName);
-				setEnabled(true);
-			}
-		});
+		ChatRoomManagerView.this.chatRoomManager = chatRoomManager;
+		ChatRoomManagerView.this.closeListener = parent;
+		ChatRoomManagerView.this.chatRoomContainer = container;
+		ChatRoomManagerView.this.chatHostID = targetID;
+		ChatRoomManagerView.this.messageSender = sender;
+		setUsernameAndHost(ChatRoomManagerView.this.chatHostID);
+		ChatRoomManagerView.this.setPartName(userName
+				+ USERNAME_HOST_DELIMETER + hostName);
+		ChatRoomManagerView.this.setTitleToolTip("IRC Host: "
+				+ hostName);
+		ChatRoomManagerView.this.rootChatRoomTabItem
+				.setTabName(hostName);
+		setEnabled(true);
 	}
 
 	protected void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 		if (!writeText.isDisposed())
 			writeText.setEnabled(enabled);
 	}
 
+	public boolean isEnabled() {
+		return enabled;
+	}
 	protected void clearInput() {
 		writeText.setText("");
 	}

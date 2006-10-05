@@ -74,7 +74,7 @@ public class CollabClient {
 				.getAdapter(IChatRoomManager.class);
 		if (man != null) {
 			ircchatRoomManagerUI = new IRCChatRoomManagerUI(man);
-			if (!ircchatRoomManagerUI.setup(newClient, targetID, username))
+			if (ircchatRoomManagerUI.setup(newClient, targetID, username))
 				return;
 		} else {
 			// Check for IPresenceContainer....if it is, setup presence UI, if
