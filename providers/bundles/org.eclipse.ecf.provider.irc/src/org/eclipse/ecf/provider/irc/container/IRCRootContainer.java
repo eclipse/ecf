@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.IContainer;
@@ -421,7 +422,14 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			}
 		} else if (command.equalsIgnoreCase(TOPIC_COMMAND)) {
 			if (args.length > 1) {
-				connection.doTopic(args[0], args[1]);
+				StringBuffer sb = new StringBuffer();
+				for (int i = 1; i < args.length; i++) {
+					if (i > 1) {
+						sb.append(COMMAND_DELIM);
+					}
+					sb.append(args[i]);
+				}
+				connection.doTopic(args[0], sb.toString());
 			} else if (args.length > 0) {
 				connection.doTopic(args[0]);
 			}
