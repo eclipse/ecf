@@ -11,7 +11,6 @@
 package org.eclipse.ecf.presence.chat;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.presence.IInvitationListener;
 
 public interface IChatRoomManager extends IAdaptable {
 	
