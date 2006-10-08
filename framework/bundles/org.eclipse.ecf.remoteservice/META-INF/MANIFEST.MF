@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Remoteservice API
 Bundle-SymbolicName: org.eclipse.ecf.remoteservice
-Bundle-Version: 0.9.2
+Bundle-Version: 0.9.3
 Bundle-Activator: org.eclipse.ecf.remoteservice.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
