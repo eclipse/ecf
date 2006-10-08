@@ -394,16 +394,6 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 								messageBody);
 					}
 				});
-				// setup invitation listener
-				chatRoomContainer
-						.addInvitationListener(new IInvitationListener() {
-							public void handleInvitationReceived(ID roomID,
-									ID from, ID toID, String subject,
-									String body) {
-								chatroomview.handleInvitationReceived(roomID,
-										from, toID, subject, body);
-							}
-						});
 				// setup participant listener
 				chatRoomContainer
 						.addChatParticipantListener(new IChatParticipantListener() {

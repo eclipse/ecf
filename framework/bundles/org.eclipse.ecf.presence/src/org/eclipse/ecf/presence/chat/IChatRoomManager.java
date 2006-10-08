@@ -45,5 +45,5 @@ public interface IChatRoomManager extends IAdaptable {
 	 * @return IRoomInfo an array of instances that provide info for all chat rooms
 	 */
 	public IRoomInfo[] getChatRoomsInfo();
-	
+
 }

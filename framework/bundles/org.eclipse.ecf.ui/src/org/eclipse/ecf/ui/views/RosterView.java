@@ -40,7 +40,6 @@ import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IAccountManager;
-import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainer;
@@ -1096,13 +1095,6 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 							chatroomview.handleLeave(user);
 						}
 					});
-			chatRoom.addInvitationListener(new IInvitationListener() {
-				public void handleInvitationReceived(ID roomID,
-						ID from, ID toID, String subject, String body) {
-					chatroomview.handleInvitationReceived(roomID, from,
-							toID, subject, body);
-				}
-			});
 		} catch (PartInitException e) {
 			UiPlugin.log(
 					"Exception in chat room view initialization for chat room "

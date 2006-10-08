@@ -13,7 +13,6 @@ package org.eclipse.ecf.example.collab;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
@@ -86,13 +85,6 @@ public class ChatRoomManagerUI {
 						}
 						public void left(ID user) {
 							chatroomview.handleLeave(user);
-						}
-					});
-					chatRoom.addInvitationListener(new IInvitationListener() {
-						public void handleInvitationReceived(ID roomID, ID from,
-								ID toID, String subject, String body) {
-							chatroomview.handleInvitationReceived(roomID, from, toID,
-									subject, body);
 						}
 					});
 				} catch (PartInitException e) {

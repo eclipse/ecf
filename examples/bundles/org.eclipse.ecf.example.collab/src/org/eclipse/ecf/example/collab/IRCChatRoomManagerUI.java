@@ -20,7 +20,6 @@ import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
@@ -118,13 +117,6 @@ public class IRCChatRoomManagerUI {
 					String subject, String messageBody) {
 				chatroomview.handleMessage(fromID, toID, type, subject,
 						messageBody);
-			}
-		});
-		chatRoom.addInvitationListener(new IInvitationListener() {
-			public void handleInvitationReceived(ID roomID, ID from,
-					ID toID, String subject, String body) {
-				chatroomview.handleInvitationReceived(roomID, from, toID,
-						subject, body);
 			}
 		});
 	}

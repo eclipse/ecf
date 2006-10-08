@@ -11,7 +11,6 @@
 package org.eclipse.ecf.presence.chat;
 
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 
 /**
@@ -31,12 +30,6 @@ public interface IChatRoomContainer extends IContainer {
 	 */
     public IChatMessageSender getChatMessageSender();
 
-    /**
-     * Add invitation listener.  The given listener will be notified if/when
-     * invitiations are received or invitation rejections are received
-     * @param invitationListener
-     */
-    public void addInvitationListener(IInvitationListener invitationListener);
     /**
      * Add participant listener.  The given listener will be notified if/when
      * participants are added or removed from given room
