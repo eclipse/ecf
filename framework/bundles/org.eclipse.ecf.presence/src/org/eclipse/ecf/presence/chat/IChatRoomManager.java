@@ -11,6 +11,7 @@
 package org.eclipse.ecf.presence.chat;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.presence.IInvitationListener;
 
 public interface IChatRoomManager extends IAdaptable {
 	
@@ -45,5 +46,8 @@ public interface IChatRoomManager extends IAdaptable {
 	 * @return IRoomInfo an array of instances that provide info for all chat rooms
 	 */
 	public IRoomInfo[] getChatRoomsInfo();
-
+	
+	// XXX these two methods should ultimately be added to IChatRoomManager
+	//public void addInvitationListener(IInvitationListener listener);
+	//public IChatRoomContainer createChatRoomContainer() throws ContainerInstantiationException;
 }
