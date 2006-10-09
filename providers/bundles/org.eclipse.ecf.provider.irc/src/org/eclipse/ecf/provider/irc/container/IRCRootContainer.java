@@ -196,7 +196,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			}
 			public void onTopic(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnTopic(" + arg0 + "," + arg1 + "," + arg2 + ")");
-				showMessage(null, "Topic: " + arg0 + "," + arg1 + "," + arg2);
+				showMessage(arg0, arg1.getNick() + " has changed the topic to: "
+						+ arg2);
 			}
 			public void unknown(String arg0, String arg1, String arg2,
 					String arg3) {
@@ -504,6 +505,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				break;
 			case 318:
 				showMessage(null, "whois end");
+				break;
 			case 319:
 				showMessage(null, "channels: " + arg2);
 				break;

@@ -35,20 +35,23 @@ public class Client4 extends XMPPClient {
 				});
 			}});
 		setPresenceListener(new IPresenceListener(){
-			public void handleContainerJoined(ID joinedContainer) {
-				System.out.println("handleContainerJoined("+joinedContainer+")");
+			public void handleConnected(ID connectedID) {
+				System.out.println("handleConnected("+connectedID+")");
 			}
-			public void handleRosterEntry(IRosterEntry entry) {
-				System.out.println("handleRosterEntry("+entry+")");
-			}
-			public void handleSetRosterEntry(IRosterEntry entry) {
-				System.out.println("handleSetRosterEntry("+entry+")");
-			}
-			public void handleContainerDeparted(ID departedContainer) {
-				System.out.println("handleContainerDeparted("+departedContainer+")");
+			public void handleDisconnected(ID disconnectedID) {
+				System.out.println("handleDisconnected("+disconnectedID+")");
 			}
 			public void handlePresence(ID fromID, IPresence presence) {
 				System.out.println("handlePresence("+fromID+","+presence+")");
+			}
+			public void handleRosterEntryAdd(IRosterEntry entry) {
+				System.out.println("handleRosterEntryAdd("+entry+")");
+			}
+			public void handleRosterEntryRemove(IRosterEntry entry) {
+				System.out.println("handleRosterEntryRemove("+entry+")");
+			}
+			public void handleRosterEntryUpdate(IRosterEntry entry) {
+				System.out.println("handleRosterEntryUpdate("+entry+")");
 			}});
 	}
 	public void createAndConnect() throws ECFException {

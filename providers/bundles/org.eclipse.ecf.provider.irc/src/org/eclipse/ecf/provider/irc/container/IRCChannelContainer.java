@@ -104,8 +104,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 				boolean localUserIsChannelOperator = isLocalUserChannelOperator(users[j]);
 				if (localUserIsChannelOperator) setChannelOperator(true);
 				l.handlePresence(fromID,createPresence(joined));
-				if (joined) l.joined(fromID);
-				else l.left(fromID);
+				if (joined) l.handleArrivedInChat(fromID);
+				else l.handleDepartedFromChat(fromID);
 			}
 		}
 	}

@@ -80,11 +80,11 @@ public class ChatRoomManagerUI {
 						public void handlePresence(ID fromID, IPresence presence) {
 							chatroomview.handlePresence(fromID, presence);
 						}
-						public void joined(ID user) {
-							chatroomview.handleJoin(user);
+						public void handleArrivedInChat(ID participant) {
+							chatroomview.handleJoin(participant);
 						}
-						public void left(ID user) {
-							chatroomview.handleLeave(user);
+						public void handleDepartedFromChat(ID participant) {
+							chatroomview.handleLeave(participant);
 						}
 					});
 				} catch (PartInitException e) {

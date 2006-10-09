@@ -466,26 +466,26 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 				
 				public IAccountManager getAccountManager() {
 					return new IAccountManager() {
-						public void changePassword(String newpassword) throws ECFException {
-							sharedObject.changePassword(newpassword);
+						public boolean changePassword(String newpassword) throws ECFException {
+							return sharedObject.changePassword(newpassword);
 						}
-						public void createAccount(String username, String password, Map attributes) throws ECFException {
-							sharedObject.createAccount(username,password,attributes);
+						public boolean createAccount(String username, String password, Map attributes) throws ECFException {
+							return sharedObject.createAccount(username,password,attributes);
 						}
-						public void deleteAccount() throws ECFException {
-							sharedObject.deleteAccount();
+						public boolean deleteAccount() throws ECFException {
+							return sharedObject.deleteAccount();
 						}
-						public String getAccountInstructions() {
+						public String getAccountInstructions() throws ECFException {
 							return sharedObject.getAccountInstructions();
 						}
-						public String[] getAccountAttributeNames() {
+						public String[] getAccountAttributeNames() throws ECFException {
 							return sharedObject.getAccountAttributeNames();
 						}
-						public Object getAccountAttribute(String name) {
+						public Object getAccountAttribute(String name) throws ECFException {
 							return sharedObject.getAccountAttribute(name);
 						}
-						public boolean supportsCreation() {
-							return sharedObject.supportsCreation();
+						public boolean isAccountCreationSupported() {
+							return sharedObject.isAccountCreationSupported();
 						}
 					};
 				}

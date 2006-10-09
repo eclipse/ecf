@@ -18,12 +18,13 @@ import java.util.*;
  * The main plugin class to be used in the desktop.
  */
 public class PresencePlugin extends Plugin {
-    
-	//The shared instance.
+
+	// The shared instance.
 	private static PresencePlugin plugin;
-	//Resource bundle.
+
+	// Resource bundle.
 	private ResourceBundle resourceBundle;
-	
+
 	/**
 	 * The constructor.
 	 */
@@ -56,8 +57,8 @@ public class PresencePlugin extends Plugin {
 	}
 
 	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
+	 * Returns the string from the plugin's resource bundle, or 'key' if not
+	 * found.
 	 */
 	public static String getResourceString(String key) {
 		ResourceBundle bundle = PresencePlugin.getDefault().getResourceBundle();
@@ -74,7 +75,8 @@ public class PresencePlugin extends Plugin {
 	public ResourceBundle getResourceBundle() {
 		try {
 			if (resourceBundle == null)
-				resourceBundle = ResourceBundle.getBundle("org.eclipse.ecf.presence.PresencePluginResources");
+				resourceBundle = ResourceBundle
+						.getBundle("org.eclipse.ecf.presence.PresencePluginResources");
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}

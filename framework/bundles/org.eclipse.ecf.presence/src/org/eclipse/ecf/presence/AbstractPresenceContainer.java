@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2005 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Chris Aniszczyk <zx@us.ibm.com> - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2005 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Chris Aniszczyk <zx@us.ibm.com> - initial API and implementation
+ *****************************************************************************/
 package org.eclipse.ecf.presence;
 
 import java.util.List;
@@ -21,14 +21,16 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
  */
 public abstract class AbstractPresenceContainer implements IPresenceContainer {
 
-    private Vector messageListeners = new Vector();
-    private Vector presenceListeners = new Vector();
-    private Vector subscribeListeners = new Vector();
+	private Vector messageListeners = new Vector();
+
+	private Vector presenceListeners = new Vector();
+
+	private Vector subscribeListeners = new Vector();
 
 	/**
-     * @see org.eclipse.ecf.presence.IPresenceContainer#addSubscribeListener(org.eclipse.ecf.presence.ISubscribeListener)
-     */
-    public void addSubscribeListener(ISubscribeListener listener) {
+	 * @see org.eclipse.ecf.presence.IPresenceContainer#addSubscribeListener(org.eclipse.ecf.presence.ISubscribeListener)
+	 */
+	public void addSubscribeListener(ISubscribeListener listener) {
 		subscribeListeners.add(listener);
 	}
 
@@ -45,13 +47,13 @@ public abstract class AbstractPresenceContainer implements IPresenceContainer {
 	public void addMessageListener(IMessageListener listener) {
 		messageListeners.add(listener);
 	}
-	
-    /** 
-     * Remove a subscription listener
-     * 
-     * @param listener
-     */
-    public void removeSubscribeListener(ISubscribeListener listener) {
+
+	/**
+	 * Remove a subscription listener
+	 * 
+	 * @param listener
+	 */
+	public void removeSubscribeListener(ISubscribeListener listener) {
 		subscribeListeners.remove(listener);
 	}
 
@@ -79,11 +81,11 @@ public abstract class AbstractPresenceContainer implements IPresenceContainer {
 	public Object getAdapter(Class adapter) {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}
-	
-    /**
-     * @return The list of message listeners
-     */
-    public List getMessageListeners() {
+
+	/**
+	 * @return The list of message listeners
+	 */
+	public List getMessageListeners() {
 		return messageListeners;
 	}
 
@@ -100,7 +102,7 @@ public abstract class AbstractPresenceContainer implements IPresenceContainer {
 	public List getSubscribeListeners() {
 		return subscribeListeners;
 	}
-	
+
 	public IAccountManager getAccountManager() {
 		return null;
 	}
@@ -108,11 +110,11 @@ public abstract class AbstractPresenceContainer implements IPresenceContainer {
 	public IChatRoomManager getChatRoomManager() {
 		return null;
 	}
-	
+
 	public IPresenceSender getPresenceSender() {
 		return null;
 	}
-	
+
 	public IMessageSender getMessageSender() {
 		return null;
 	}

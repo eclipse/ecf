@@ -1088,11 +1088,11 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 							chatroomview.handlePresence(fromID,
 									presence);
 						}
-						public void joined(ID user) {
-							chatroomview.handleJoin(user);
+						public void handleArrivedInChat(ID participant) {
+							chatroomview.handleJoin(participant);
 						}
-						public void left(ID user) {
-							chatroomview.handleLeave(user);
+						public void handleDepartedFromChat(ID participant) {
+							chatroomview.handleLeave(participant);
 						}
 					});
 		} catch (PartInitException e) {
@@ -1234,7 +1234,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
-	public void handleRosterEntry(ID groupID, IRosterEntry entry) {
+	public void handleRosterEntryAdd(ID groupID, IRosterEntry entry) {
 		if (entry == null)
 			return;
 		ViewContentProvider vcp = (ViewContentProvider) viewer
@@ -1249,8 +1249,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		}
 	}
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
-		IRosterEntry entry = new RosterEntry(groupID, userID, null, presence);
-		handleRosterEntry(groupID, entry);
+		handleRosterEntryAdd(groupID, new RosterEntry(groupID, userID, null, presence));
 	}
 	protected UserAccount getAccountForUser(ID userID) {
 		ViewContentProvider vcp = (ViewContentProvider) viewer
@@ -1348,7 +1347,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	public void accountDeparted(ID serviceID) {
 		UserAccount account = getAccount(serviceID);
 		if (account != null) {
-			handleAccountDeparted(account);
+			handleAccountDisconnected(account);
 		}
 	}
 	protected void disposeAllChatWindowsForAccount(UserAccount account,
@@ -1418,7 +1417,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			refreshView();
 		}
 	}
-	protected void handleAccountDeparted(UserAccount account) {
+	protected void handleAccountDisconnected(UserAccount account) {
 		removeAllRosterEntriesForAccount(account);
 		disposeAllChatWindowsForAccount(account,
 				"Disconnected from server.  Chat is inactive");
@@ -1426,20 +1425,27 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		if (accounts.size() == 0)
 			setToolbarEnabled(false);
 	}
-	public void handleSetRosterEntry(ID groupID, IRosterEntry entry) {
+	public void handleRosterEntryUpdate(ID groupID, IRosterEntry entry) {
 		if (groupID == null || entry == null)
 			return;
 		ViewContentProvider vcp = (ViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null) {
-			if (entry.getInterestType() == IRosterEntry.InterestType.REMOVE
-					|| entry.getInterestType() == IRosterEntry.InterestType.NONE) {
-				vcp.removeRosterEntry(entry.getUserID());
-			} else
-				vcp.replaceEntry(entry);
+			vcp.replaceEntry(entry);
 			refreshView();
 		}
 	}
+	
+	public void handleRosterEntryRemove(ID groupID, IRosterEntry entry) {
+		if (groupID == null || entry == null)
+			return;
+		ViewContentProvider vcp = (ViewContentProvider) viewer
+				.getContentProvider();
+		if (vcp != null)
+			vcp.removeRosterEntry(entry.getUserID());
+		refreshView();
+	}
+		
 	public void chatRoomViewClosing(String secondaryID) {
 		RoomWithAView roomView = (RoomWithAView) chatRooms.get(secondaryID);
 		if (roomView != null) {

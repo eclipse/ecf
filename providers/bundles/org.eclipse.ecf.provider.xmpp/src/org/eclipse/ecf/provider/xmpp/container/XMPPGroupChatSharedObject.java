@@ -259,9 +259,9 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         for (Iterator i = participantListeners.iterator(); i.hasNext();) {
             IChatParticipantListener l = (IChatParticipantListener) i.next();
             if (join) {
-            	l.joined(fromID);
+            	l.handleArrivedInChat(fromID);
             } else {
-            	l.left(fromID);
+            	l.handleDepartedFromChat(fromID);
             }
         }
     }

@@ -249,7 +249,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 	}
 	protected void handleOnTopic(String arg0, IRCUser arg1, String arg2) {
 		trace("handleOnTopic("+arg0+","+arg1+","+arg2+")");
-		showMessage(null,"Topic: "+arg0+","+arg1+","+arg2);
+		showMessage(arg0, arg1.getNick() + " has changed the topic to: " + arg2);
 	}
 	protected String [] parseUsers(String usergroup) {
 		if (usergroup == null) return null;
@@ -291,6 +291,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 				break;
 			case 318:
 				showMessage(null,"whois end");
+				break;
 			case 319:
 				showMessage(null,"channels: "+arg2);
 				break;
@@ -351,11 +352,11 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 				if (joined) {
 					if (!fromID.equals(localID)) {
 						l.handlePresence(fromID,createPresence(joined));
-						l.joined(fromID);
+						l.handleArrivedInChat(fromID);
 					}
 				} else {
 					l.handlePresence(fromID,createPresence(joined));
-					l.left(fromID);
+					l.handleDepartedFromChat(fromID);
 				}
 			}
 		}
@@ -365,7 +366,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 			IChatParticipantListener l = (IChatParticipantListener) i.next();
 			ID fromID = createIDFromString(ircUser.getNick());
 			l.handlePresence(fromID,createPresence(true));
-			l.joined(fromID);
+			l.handleArrivedInChat(fromID);
 		}
 	}
 	private void firePresenceListeners(boolean joined, String name) {

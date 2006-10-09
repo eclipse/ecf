@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 package org.eclipse.ecf.presence.chat;
 
 import org.eclipse.ecf.core.IContainer;
@@ -17,23 +17,28 @@ import org.eclipse.ecf.presence.IMessageListener;
  * Chat room container
  */
 public interface IChatRoomContainer extends IContainer {
-	
-    /**
-     * Setup listener for handling IM messages
-     * @param msgListener the listener to add
-     */
+
+	/**
+	 * Setup listener for handling IM messages
+	 * 
+	 * @param msgListener
+	 *            the listener to add
+	 */
 	public void addMessageListener(IMessageListener msgListener);
 
 	/**
 	 * Get interface for sending messages
-	 * @return IChatMessageSender.  Null if no message sender available
+	 * 
+	 * @return IChatMessageSender. Null if no message sender available
 	 */
-    public IChatMessageSender getChatMessageSender();
+	public IChatMessageSender getChatMessageSender();
 
-    /**
-     * Add participant listener.  The given listener will be notified if/when
-     * participants are added or removed from given room
-     * @param participantListener
-     */
-    public void addChatParticipantListener(IChatParticipantListener participantListener);
+	/**
+	 * Add participant listener. The given listener will be notified if/when
+	 * participants are added or removed from given room
+	 * 
+	 * @param participantListener
+	 */
+	public void addChatParticipantListener(
+			IChatParticipantListener participantListener);
 }

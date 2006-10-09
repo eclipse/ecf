@@ -134,14 +134,14 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     protected void fireContainerDeparted(ID departed) {
         for (Iterator i = presenceListeners.iterator(); i.hasNext();) {
             IPresenceListener l = (IPresenceListener) i.next();
-            l.handleContainerDeparted(departed);
+            l.handleDisconnected(departed);
         }
     }
 
     protected void fireContainerJoined(ID containerJoined) {
         for (Iterator i = presenceListeners.iterator(); i.hasNext();) {
             IPresenceListener l = (IPresenceListener) i.next();
-            l.handleContainerJoined(containerJoined);
+            l.handleConnected(containerJoined);
         }
     }
 
@@ -178,13 +178,15 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     protected void fireSetRosterEntry(IRosterEntry entry) {
         for (Iterator i = presenceListeners.iterator(); i.hasNext();) {
             IPresenceListener l = (IPresenceListener) i.next();
-            l.handleSetRosterEntry(entry);
+			if (entry.getInterestType() == IRosterEntry.InterestType.REMOVE
+					|| entry.getInterestType() == IRosterEntry.InterestType.NONE) l.handleRosterEntryRemove(entry);
+            else l.handleRosterEntryUpdate(entry);
         }
     }
     protected void fireRosterEntry(IRosterEntry entry) {
         for (Iterator i = presenceListeners.iterator(); i.hasNext();) {
             IPresenceListener l = (IPresenceListener) i.next();
-            l.handleRosterEntry(entry);
+            l.handleRosterEntryAdd(entry);
         }
     }
 
@@ -544,7 +546,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 			accountManager = new AccountManager(connection);
 		}
     }
-	public void changePassword(String newpassword) throws ECFException {
+	public boolean changePassword(String newpassword) throws ECFException {
 		if (accountManager == null) throw new ECFException("not connected");
 		try {
 			accountManager.changePassword(newpassword);
@@ -552,8 +554,9 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 			dumpStack("server exception changing password",e);
 			throw new ECFException("server exception changing password",e);
 		}
+		return true;
 	}
-	public void createAccount(String username, String password, Map attributes) throws ECFException {
+	public boolean createAccount(String username, String password, Map attributes) throws ECFException {
 		if (accountManager == null) throw new ECFException("not connected");
 		try {
 			accountManager.createAccount(username,password,attributes);
@@ -561,8 +564,9 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 			dumpStack("server exception creating account for "+username,e);
 			throw new ECFException("server exception creating account for "+username,e);
 		}
+		return true;
 	}
-	public void deleteAccount() throws ECFException {
+	public boolean deleteAccount() throws ECFException {
 		if (accountManager == null) throw new ECFException("not connected");
 		try {
 			accountManager.deleteAccount();
@@ -570,6 +574,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 			dumpStack("server exception deleting account",e);
 			throw new ECFException("server exception deleting account",e);
 		}
+		return true;
 	}
 	public String getAccountInstructions() {
 		if (accountManager == null) return null;
@@ -589,7 +594,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		return accountManager.getAccountAttribute(name);
 	}
 	
-	public boolean supportsCreation() {
+	public boolean isAccountCreationSupported() {
 		if (accountManager == null) return false;
 		return accountManager.supportsAccountCreation();
 	}
