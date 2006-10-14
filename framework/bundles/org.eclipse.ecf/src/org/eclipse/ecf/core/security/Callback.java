@@ -6,7 +6,8 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.core.events;
+package org.eclipse.ecf.core.security;
 
-public interface ISharedObjectCommitEvent extends ISharedObjectEvent {
+public interface Callback {
+
 }

@@ -11,10 +11,6 @@ package org.eclipse.ecf.provider.xmpp.container;
 import java.io.IOException;
 import java.util.HashMap;
 
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.SharedObjectAddException;
@@ -28,7 +24,10 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.Callback;
+import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.security.NameCallback;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;

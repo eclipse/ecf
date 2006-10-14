@@ -6,7 +6,11 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.core.events;
+package org.eclipse.ecf.core.security;
 
-public interface ISharedObjectCommitEvent extends ISharedObjectEvent {
+public interface CallbackHandler {
+
+	void handle(Callback[] callbacks) throws java.io.IOException,
+			UnsupportedCallbackException;
+
 }

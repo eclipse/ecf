@@ -9,11 +9,6 @@
 package org.eclipse.ecf.core.security;
 
 import java.io.IOException;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
-
 /**
  * Helper class for creating instances of IConnectContext
  *

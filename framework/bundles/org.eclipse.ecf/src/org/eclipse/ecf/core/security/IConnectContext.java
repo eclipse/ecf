@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.security;
 
-import javax.security.auth.callback.CallbackHandler;
-
 public interface IConnectContext {
 	/**
 	 * Get the callbackhandler instance used by the provider to callback into

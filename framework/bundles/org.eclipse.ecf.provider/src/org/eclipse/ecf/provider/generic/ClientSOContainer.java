@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.Serializable;
 import java.net.ConnectException;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
+
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.SharedObjectDescription;
@@ -24,12 +23,14 @@ import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.comm.SynchConnectionEvent;
-import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ContainerEjectedEvent;
-import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
+import org.eclipse.ecf.core.events.ContainerConnectingEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
+import org.eclipse.ecf.core.events.ContainerEjectedEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.security.Callback;
+import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 

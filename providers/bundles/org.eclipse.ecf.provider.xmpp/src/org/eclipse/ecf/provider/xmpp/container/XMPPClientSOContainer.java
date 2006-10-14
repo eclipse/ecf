@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.security.auth.callback.Callback;
-
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.SharedObjectAddException;
@@ -34,6 +32,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
