@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.security;
 
-import javax.security.auth.callback.Callback;
-
 public class UnsupportedCallbackException extends Exception {
 
 	private static final long serialVersionUID = -1821878324884011143L;
