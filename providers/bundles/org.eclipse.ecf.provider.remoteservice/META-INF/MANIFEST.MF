@@ -12,3 +12,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.remoteservice
 Eclipse-LazyStart: true
 Eclipse-BuddyPolicy: global
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
