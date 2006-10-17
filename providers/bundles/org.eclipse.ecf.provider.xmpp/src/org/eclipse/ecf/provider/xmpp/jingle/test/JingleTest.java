@@ -16,7 +16,7 @@ public class JingleTest {
 			// client1 make a call to client2
 			// this installs request listener for incoming sessions
 			ICallContainer jingle1= (ICallContainer)client1.getAdapter( ICallContainer.class );
-
+			// create a call session
 			jingle1.createCallSession( client1.getID() );
 
 
