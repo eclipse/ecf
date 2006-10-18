@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.provider.xmpp.container;
@@ -19,6 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.security.auth.callback.Callback;
+
+import org.eclipse.ecf.call.ICallContainer;
+import org.eclipse.ecf.call.ICallSession;
+import org.eclipse.ecf.call.ICallSessionListener;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.SharedObjectAddException;
@@ -32,7 +37,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
@@ -71,12 +75,15 @@ import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.provider.xmpp.filetransfer.XMPPOutgoingFileTransfer;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
+import org.eclipse.ecf.provider.xmpp.jingle.XMPPJingleContainer;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionPacketEvent;
+import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
@@ -85,26 +92,27 @@ import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.RoomInfo;
+import org.jivesoftware.smackx.packet.Jingle;
 import org.jivesoftware.smackx.packet.MUCUser;
 
 public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoingFileTransferContainer {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
 	Trace trace = Trace.create("XMPPClientSOContainer");
-	
+
 	public static final String NAMESPACE_IDENTIFIER = XmppPlugin.getDefault().getNamespaceIdentifier();
 	public static final String XMPP_SHARED_OBJECT_ID = XMPPClientSOContainer.class
 			.getName()
 			+ ".xmpphandler";
-	
+
 	protected static final String GOOGLE_SERVICENAME = "gmail.com";
-	
+
 	int keepAlive = 0;
 	protected IIMMessageSender messageSender = null;
 	protected XMPPPresenceSharedObject sharedObject = null;
 	protected ID sharedObjectID = null;
 	Vector chats = new Vector();
-	
+
 	protected void addChat(IChatRoomContainer container) {
 		chats.add(container);
 	}
@@ -246,17 +254,17 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 		} else
 			return null;
 	}
-	
+
 	public Namespace getConnectNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(XmppPlugin.getDefault().getNamespaceIdentifier());
 	}
-	
+
 	protected void deliverEvent(Event evt) {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
 		if (wrap != null) wrap.deliverEvent(evt);
 		else trace("deliverEvent("+evt+") wrapper object is unavailable");
 	}
-	
+
 	protected void handleXMPPMessage(Packet aPacket) throws IOException {
 		if (!handleAsExtension(aPacket)) {
 			if (aPacket instanceof IQ) {
@@ -384,7 +392,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 			messageSender.sendMessage(target, message);
 		}
 	}
-    
+
 	protected Presence createPresenceFromIPresence(IPresence presence) {
 		return sharedObject.createPresence(presence);
 	}
@@ -409,7 +417,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
     public Object getAdapter(Class clazz) {
 		if (clazz.equals(IPresenceContainer.class)) {
             return new IPresenceContainer() {
-            	
+
             	public Object getAdapter(Class clazz) {
             		return null;
             	}
@@ -429,7 +437,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
                             } catch (IOException e) {
                                 dumpStack("Exception in sendmessage to "+toID+" with message "+message,e);
                             }
-                            
+
                         }
 
                     };
@@ -462,7 +470,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 
 					};
 				}
-				
+
 				public IAccountManager getAccountManager() {
 					return new IAccountManager() {
 						public boolean changePassword(String newpassword) throws ECFException {
@@ -485,6 +493,10 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 						}
 						public boolean isAccountCreationSupported() {
 							return sharedObject.isAccountCreationSupported();
+						}
+						public boolean supportsCreation() {
+							// TODO Auto-generated method stub
+							return false;
 						}
 					};
 				}
@@ -527,7 +539,45 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 						}};
 				}
             };
-        } else {
+        }
+		if( clazz.equals( ICallContainer.class ) ){
+			// create call container
+			return new ICallContainer() {
+
+				public void addListener(ICallSessionListener listener) {
+					// TODO Auto-generated method stub
+
+				}
+
+				public ICallSession createCallSession() throws ECFException {
+
+					ECFConnection ecfCon= (ECFConnection)getConnection();
+					return new XMPPJingleContainer( ecfCon.getXMPPConnection() ).createCallSession();
+				}
+
+				public ICallSession createCallSession(ID sessionID) throws ECFException {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				public ICallSession getCallSession(ID callSessionID) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				public Namespace getCallSessionNamespace() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				public boolean removeCallSession(ID callSessionID) {
+					// TODO Auto-generated method stub
+					return false;
+				}
+
+			};
+		}
+		else {
 			return super.getAdapter(clazz);
 		}
     }
@@ -655,13 +705,13 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
     	}
     	return null;
     }
-    
+
     // IFileTransferContainer implementation
-    
+
     List transferListeners = new ArrayList();
-    
+
     List incomingTransferListeners = new ArrayList();
-    
+
     protected void addFileTransferListener(IFileTransferListener listener) {
     	transferListeners.add(listener);
     }
@@ -675,9 +725,9 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 		XMPPConnection xmppConnection = sharedObject.getConnection();
 		if (xmppConnection == null || !xmppConnection.isConnected()) throw new OutgoingFileTransferException("not connected");
 		FileTransferManager manager = new FileTransferManager(xmppConnection);
-		
+
 		XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(manager, (XMPPID) targetReceiver, localFileToSend, progressListener);
-		
+
 		try {
 			fileTransfer.startSend(localFileToSend.getFile(), localFileToSend.getDescription());
 		} catch (XMPPException e) {
@@ -699,5 +749,42 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend, IFileTransferListener transferListener) throws OutgoingFileTransferException {
 		sendOutgoingRequest(targetReceiver, new FileTransferInfo(localFileToSend), transferListener);
 	}
+	/**
+	 * Test for the session request detection. Here, we use the same filter we
+	 * use in the JingleManager...
+	 */
+	public void initJingleSessionRequestListeners() {
+
+
+		PacketFilter initRequestFilter = new PacketFilter() {
+			// Return true if we accept this packet
+			public boolean accept(Packet pin) {
+				if (pin instanceof IQ) {
+					IQ iq = (IQ) pin;
+					if (iq.getType().equals(IQ.Type.SET)) {
+						if (iq instanceof Jingle) {
+							Jingle jin = (Jingle) pin;
+							if (jin.getAction().equals(Jingle.Action.SESSIONINITIATE)) {
+								System.out
+										.println("Session initiation packet accepted... ");
+								return true;
+							}
+						}
+					}
+				}
+				return false;
+			}
+		};
+
+		// Start a packet listener for session initiation requests
+		((ECFConnection)getConnection()).getXMPPConnection().addPacketListener(
+			new PacketListener() {
+				public void processPacket(final Packet packet) {
+					System.out.println("Packet detected... ");
+				}
+			}, initRequestFilter);
+
+	}
+
 
 }
