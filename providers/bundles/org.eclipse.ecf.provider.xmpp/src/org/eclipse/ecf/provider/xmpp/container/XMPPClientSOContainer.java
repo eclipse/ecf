@@ -540,43 +540,6 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 				}
             };
         }
-		if( clazz.equals( ICallContainer.class ) ){
-			// create call container
-			return new ICallContainer() {
-
-				public void addListener(ICallSessionListener listener) {
-					// TODO Auto-generated method stub
-
-				}
-
-				public ICallSession createCallSession() throws ECFException {
-
-					ECFConnection ecfCon= (ECFConnection)getConnection();
-					return new XMPPJingleContainer( ecfCon.getXMPPConnection() ).createCallSession();
-				}
-
-				public ICallSession createCallSession(ID sessionID) throws ECFException {
-					// TODO Auto-generated method stub
-					return null;
-				}
-
-				public ICallSession getCallSession(ID callSessionID) {
-					// TODO Auto-generated method stub
-					return null;
-				}
-
-				public Namespace getCallSessionNamespace() {
-					// TODO Auto-generated method stub
-					return null;
-				}
-
-				public boolean removeCallSession(ID callSessionID) {
-					// TODO Auto-generated method stub
-					return false;
-				}
-
-			};
-		}
 		else {
 			return super.getAdapter(clazz);
 		}
@@ -748,42 +711,6 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 	}
 	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend, IFileTransferListener transferListener) throws OutgoingFileTransferException {
 		sendOutgoingRequest(targetReceiver, new FileTransferInfo(localFileToSend), transferListener);
-	}
-	/**
-	 * Test for the session request detection. Here, we use the same filter we
-	 * use in the JingleManager...
-	 */
-	public void initJingleSessionRequestListeners() {
-
-
-		PacketFilter initRequestFilter = new PacketFilter() {
-			// Return true if we accept this packet
-			public boolean accept(Packet pin) {
-				if (pin instanceof IQ) {
-					IQ iq = (IQ) pin;
-					if (iq.getType().equals(IQ.Type.SET)) {
-						if (iq instanceof Jingle) {
-							Jingle jin = (Jingle) pin;
-							if (jin.getAction().equals(Jingle.Action.SESSIONINITIATE)) {
-								System.out
-										.println("Session initiation packet accepted... ");
-								return true;
-							}
-						}
-					}
-				}
-				return false;
-			}
-		};
-
-		// Start a packet listener for session initiation requests
-		((ECFConnection)getConnection()).getXMPPConnection().addPacketListener(
-			new PacketListener() {
-				public void processPacket(final Packet packet) {
-					System.out.println("Packet detected... ");
-				}
-			}, initRequestFilter);
-
 	}
 
 
