@@ -19,11 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.security.auth.callback.Callback;
-
-import org.eclipse.ecf.call.ICallContainer;
-import org.eclipse.ecf.call.ICallSession;
-import org.eclipse.ecf.call.ICallSessionListener;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.SharedObjectAddException;
@@ -37,6 +32,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
@@ -75,15 +71,12 @@ import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.provider.xmpp.filetransfer.XMPPOutgoingFileTransfer;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
-import org.eclipse.ecf.provider.xmpp.jingle.XMPPJingleContainer;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnectionPacketEvent;
-import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
@@ -92,7 +85,6 @@ import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.RoomInfo;
-import org.jivesoftware.smackx.packet.Jingle;
 import org.jivesoftware.smackx.packet.MUCUser;
 
 public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoingFileTransferContainer {
