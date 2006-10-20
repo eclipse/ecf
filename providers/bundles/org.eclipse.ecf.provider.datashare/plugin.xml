@@ -19,7 +19,7 @@
       <factory
             adaptableType="org.eclipse.ecf.provider.generic.TCPClientSOContainer"
             class="org.eclipse.ecf.provider.datashare.DatashareContainerAdapterFactory">
-         <adapter type="org.eclipse.ecf.datashare.IChannelContainer"/>
+         <adapter type="org.eclipse.ecf.datashare.IChannelContainerAdapter"/>
       </factory>
    </extension>
 
