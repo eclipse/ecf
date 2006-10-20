@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.ServiceID;
+import org.eclipse.ecf.discovery.identity.ServiceID;
 import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;

@@ -22,9 +22,9 @@ import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.ServiceID;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
+import org.eclipse.ecf.discovery.identity.ServiceID;
 import org.eclipse.ecf.example.collab.actions.URIClientConnectAction;
 
 public class DiscoveryStartup {

@@ -11,5 +11,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
 Eclipse-LazyStart: true
 Eclipse-AutoStart: true
-Export-Package: org.eclipse.ecf.discovery
+Export-Package: org.eclipse.ecf.discovery, org.eclipse.ecf.discovery.identity
 Bundle-RequiredExecutionEnvironment: J2SE-1.4

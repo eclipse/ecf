@@ -11,7 +11,7 @@
 package org.eclipse.ecf.provider.jmdns.identity;
 
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.discovery.ServiceID;
+import org.eclipse.ecf.discovery.identity.ServiceID;
 
 public class JMDNSServiceID extends ServiceID {
 

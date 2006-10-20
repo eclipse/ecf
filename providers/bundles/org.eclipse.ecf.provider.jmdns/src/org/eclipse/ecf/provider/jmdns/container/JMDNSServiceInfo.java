@@ -14,8 +14,8 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.ServiceID;
 import org.eclipse.ecf.discovery.ServiceInfo;
+import org.eclipse.ecf.discovery.identity.ServiceID;
 
 public class JMDNSServiceInfo extends ServiceInfo {
 

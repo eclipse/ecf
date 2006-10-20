@@ -14,7 +14,7 @@ import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
-import org.eclipse.ecf.discovery.ServiceID;
+import org.eclipse.ecf.discovery.identity.ServiceID;
 import org.eclipse.ecf.ui.views.DiscoveryView;
 import org.eclipse.ecf.ui.views.IDiscoveryController;
 

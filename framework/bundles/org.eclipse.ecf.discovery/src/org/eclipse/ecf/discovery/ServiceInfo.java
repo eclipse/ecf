@@ -14,6 +14,8 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.eclipse.ecf.discovery.identity.ServiceID;
+
 
 /**
  * Information provided by discovery protocol about a remote service

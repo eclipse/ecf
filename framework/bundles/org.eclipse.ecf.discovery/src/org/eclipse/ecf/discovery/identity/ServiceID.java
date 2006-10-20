@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.discovery;
+package org.eclipse.ecf.discovery.identity;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,9 +14,15 @@ import java.net.URISyntaxException;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
 
+/**
+ * Identity type to represent discovered service
+ * 
+ */
 public class ServiceID extends BaseID {
 	private static final long serialVersionUID = 1L;
+
 	protected String type;
+
 	protected String name;
 
 	protected ServiceID(Namespace namespace, String type, String name) {
