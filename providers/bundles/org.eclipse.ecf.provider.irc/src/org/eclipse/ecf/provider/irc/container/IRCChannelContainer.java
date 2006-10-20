@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
@@ -24,7 +25,6 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
@@ -39,7 +39,6 @@ import org.schwering.irc.lib.IRCUser;
 public class IRCChannelContainer extends IRCAbstractContainer implements
 		IChatRoomContainer {
 	protected List participantListeners = new ArrayList();
-	protected IInvitationListener chatInvitationListener;
 	protected IRCRootContainer rootContainer;
 	protected  IRCUser ircUser = null;
 	protected boolean channelOperator = false;
@@ -113,14 +112,6 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 				else l.handleDepartedFromChat(fromID);
 			}
 		}
-	}
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.presence.chat.IChatRoomContainer#addInvitationListener(org.eclipse.ecf.presence.IInvitationListener)
-	 */
-	public void addInvitationListener(IInvitationListener invitationListener) {
-		this.chatInvitationListener = invitationListener;
 	}
 	/*
 	 * (non-Javadoc)

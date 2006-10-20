@@ -36,13 +36,13 @@ import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
-import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.ecf.provider.irc.Activator;
 import org.eclipse.ecf.provider.irc.Trace;
@@ -732,10 +732,6 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 	private boolean isCommand(String message) {
 		return (message != null && message.startsWith(COMMAND_PREFIX));
 	}
-	public void addInvitationListener(IInvitationListener invitationListener) {
-		// TODO Auto-generated method stub
-		
-	}
 	public void addChatParticipantListener(IChatParticipantListener participantListener) {
 		participantListeners.add(participantListener);
 	}
@@ -757,5 +753,11 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 		synchronized (listeners) {
 			listeners.remove(l);
 		}
+	}
+	public void addInvitationListener(IInvitationListener listener) {
+		// TODO Auto-generated method stub
+	}
+	public void removeInvitationListener(IInvitationListener listener) {
+		// TODO Auto-generated method stub
 	}
 }

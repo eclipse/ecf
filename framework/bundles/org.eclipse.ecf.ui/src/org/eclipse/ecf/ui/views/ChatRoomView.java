@@ -23,12 +23,12 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
-import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
+import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;

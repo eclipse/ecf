@@ -18,6 +18,21 @@ import org.eclipse.core.runtime.IAdaptable;
  * 
  */
 public interface IChatRoomManager extends IAdaptable {
+	/**
+	 * Add invitation listener
+	 * 
+	 * @param listener
+	 *            the invitation listener to add
+	 */
+	public void addInvitationListener(IInvitationListener listener);
+
+	/**
+	 * Remove invitation listener
+	 * 
+	 * @param listener
+	 *            the invitation listener to remove
+	 */
+	public void removeInvitationListener(IInvitationListener listener);
 
 	/**
 	 * Get parent IChatRoomManager. If this manager is the root, then this

@@ -13,6 +13,7 @@ package org.eclipse.ecf.provider.xmpp.container;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Vector;
+
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectConfig;
 import org.eclipse.ecf.core.ISharedObjectContext;
@@ -20,13 +21,11 @@ import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.provider.xmpp.Trace;
 import org.eclipse.ecf.provider.xmpp.events.ChatMembershipEvent;
-import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
@@ -47,7 +46,6 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
 	Namespace usernamespace = null;
 	XMPPConnection connection = null;
     Vector participantListeners = new Vector();
-    Vector invitationListeners = new Vector();
     
     protected void debug(String msg) {
     	if (config == null) return;
@@ -66,12 +64,6 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
     }
     protected void removeChatParticipantListener(IChatParticipantListener listener) {
         participantListeners.remove(listener);
-    }
-    protected void addInvitationListener(IInvitationListener listener) {
-        invitationListeners.add(listener);
-    }
-    protected void removeInvitationListener(IInvitationListener listener) {
-    	invitationListeners.remove(listener);
     }
     protected void addMessageListener(IMessageListener listener) {
         messageListeners.add(listener);
@@ -265,13 +257,6 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
             }
         }
     }
-    protected void fireInvitationReceived(ID roomID, ID fromID, ID toID, String subject, String body) {
-        for (Iterator i = invitationListeners.iterator(); i.hasNext();) {
-            IInvitationListener l = (IInvitationListener) i.next();
-            l.handleInvitationReceived(roomID,fromID,toID,subject,body);
-        }
-    }
-
     /* (non-Javadoc)
      * @see org.eclipse.ecf.core.ISharedObject#handleEvent(org.eclipse.ecf.core.util.Event)
      */
@@ -281,8 +266,6 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
             handleMessageEvent((MessageEvent) event);
         } else if (event instanceof PresenceEvent) {
         	handlePresenceEvent((PresenceEvent) event);
-        } else if (event instanceof InvitationReceivedEvent) {
-        	handleInvitationEvent((InvitationReceivedEvent) event);
         } else if (event instanceof ChatMembershipEvent) {
         	handleChatMembershipEvent((ChatMembershipEvent) event);
         } else {	
@@ -290,20 +273,6 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         }
     }
 
-    protected void handleInvitationEvent(InvitationReceivedEvent event) {
-    	XMPPConnection conn = event.getConnection();
-    	if (conn == connection) {
-	    	ID roomID = createRoomIDFromName(event.getRoom());
-	    	ID fromID = createUserIDFromName(event.getInviter());
-	    	Message mess = event.getMessage();
-	    	ID toID = createUserIDFromName(mess.getTo());
-	    	String subject = mess.getSubject();
-	    	String body = event.getReason();
-	    	fireInvitationReceived(roomID,fromID,toID,subject,body);
-    	} else {
-    		debug("got invitation event for other connection "+event);
-    	}
-    }
     /* (non-Javadoc)
      * @see org.eclipse.ecf.core.ISharedObject#handleEvents(org.eclipse.ecf.core.util.Event[])
      */
@@ -319,7 +288,6 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
     public void dispose(ID containerID) {
         messageListeners.clear();
         participantListeners.clear();
-        invitationListeners.clear();
         this.config = null;
         this.connection = null;
         this.usernamespace = null;

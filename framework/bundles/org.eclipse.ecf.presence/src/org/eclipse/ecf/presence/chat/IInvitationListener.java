@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.presence;
+package org.eclipse.ecf.presence.chat;
 
 import org.eclipse.ecf.core.identity.ID;
 

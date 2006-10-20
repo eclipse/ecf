@@ -29,7 +29,6 @@ import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.NameCallback;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
-import org.eclipse.ecf.presence.IInvitationListener;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
@@ -43,7 +42,6 @@ import org.eclipse.ecf.provider.generic.SOWrapper;
 import org.eclipse.ecf.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.events.ChatMembershipEvent;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
-import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
@@ -53,7 +51,6 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
@@ -183,15 +180,6 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 			}
 		} catch (IOException e) {
 			logException("Exception in handleXMPPMessage", e);
-		}
-	}
-
-	protected void handleInvitationMessage(XMPPConnection arg0, String arg1,
-			String arg2, String arg3, String arg4, Message arg5) {
-		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
-		if (wrap != null) {
-			wrap.deliverEvent(new InvitationReceivedEvent(arg0, arg1, arg2,
-					arg3, arg4, arg5));
 		}
 	}
 
@@ -377,15 +365,6 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 										+ "," + arg1 + ")");
 							}
 						});
-				MultiUserChat.addInvitationListener(xmppconnection,
-						new InvitationListener() {
-							public void invitationReceived(XMPPConnection arg0,
-									String arg1, String arg2, String arg3,
-									String arg4, Message arg5) {
-								handleInvitationMessage(arg0, arg1, arg2, arg3,
-										arg4, arg5);
-							}
-						});
 				multiuserchat.join(nickname);
 				connectionState = CONNECTED;
 				remoteServerID = roomID;
@@ -500,15 +479,4 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 		}
 	}
 
-	public void addInvitationListener(IInvitationListener invitationListener) {
-		if (delegate != null) {
-			delegate.addInvitationListener(invitationListener);
-		}
-	}
-
-	public void removeInvitationListener(IInvitationListener invitationListener) {
-		if (delegate != null) {
-			delegate.removeInvitationListener(invitationListener);
-		}
-	}
 }

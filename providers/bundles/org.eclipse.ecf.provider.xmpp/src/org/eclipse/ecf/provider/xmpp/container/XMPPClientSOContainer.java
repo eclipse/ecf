@@ -56,6 +56,7 @@ import org.eclipse.ecf.presence.ISubscribeListener;
 import org.eclipse.ecf.presence.IMessageListener.Type;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
 import org.eclipse.ecf.provider.generic.ContainerMessage;
@@ -66,6 +67,7 @@ import org.eclipse.ecf.provider.generic.SOWrapper;
 import org.eclipse.ecf.provider.xmpp.Trace;
 import org.eclipse.ecf.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
+import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.provider.xmpp.filetransfer.XMPPOutgoingFileTransfer;
@@ -83,6 +85,7 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.muc.HostedRoom;
+import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.RoomInfo;
 import org.jivesoftware.smackx.packet.MUCUser;
@@ -187,6 +190,15 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		return null;
 	}
 
+	protected void handleInvitationMessage(XMPPConnection arg0, String arg1,
+			String arg2, String arg3, String arg4, Message arg5) {
+		SOWrapper wrap = getSharedObjectWrapper(delegateID);
+		if (wrap != null) {
+			wrap.deliverEvent(new InvitationReceivedEvent(arg0, arg1, arg2,
+					arg3, arg4, arg5));
+		}
+	}
+
 	protected ID handleConnectResponse(ID originalTarget, Object serverData)
 			throws Exception {
 		if (originalTarget != null && !originalTarget.equals(getID())) {
@@ -200,6 +212,17 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		if (conn != null && delegate != null) {
 			delegate.setConnection(conn.getXMPPConnection());
 		}
+		// Setup invitation listener
+		MultiUserChat.addInvitationListener(conn.getXMPPConnection(),
+				new InvitationListener() {
+					public void invitationReceived(XMPPConnection arg0,
+							String arg1, String arg2, String arg3,
+							String arg4, Message arg5) {
+						handleInvitationMessage(arg0, arg1, arg2, arg3,
+								arg4, arg5);
+					}
+				});
+
 		return originalTarget;
 	}
 
@@ -595,6 +618,16 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 
 						public Object getAdapter(Class adapter) {
 							return null;
+						}
+
+						public void addInvitationListener(
+								IInvitationListener listener) {
+							delegate.addInvitationListener(listener);
+						}
+
+						public void removeInvitationListener(
+								IInvitationListener listener) {
+							delegate.removeInvitationListener(listener);
 						}
 					};
 				}

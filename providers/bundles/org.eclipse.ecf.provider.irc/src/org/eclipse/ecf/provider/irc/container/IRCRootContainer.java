@@ -26,13 +26,12 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.presence.IInvitationListener;
-import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomContainerOptions;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.ecf.provider.irc.Activator;
 import org.eclipse.ecf.provider.irc.identity.IRCID;
@@ -407,10 +406,6 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			IChatParticipantListener participantListener) {
 	}
 
-	public void addInvitationListener(IInvitationListener invitationListener) {
-		// for root container, no invitation listening...at least for now
-	}
-
 	public IChatMessageSender getChatMessageSender() {
 		return new IChatMessageSender() {
 			public void sendMessage(String message) throws IOException {
@@ -639,5 +634,13 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			return true;
 		} else
 			return false;
+	}
+
+	public void addInvitationListener(IInvitationListener listener) {
+		// TODO Auto-generated method stub
+	}
+
+	public void removeInvitationListener(IInvitationListener listener) {
+		// TODO Auto-generated method stub
 	}
 }

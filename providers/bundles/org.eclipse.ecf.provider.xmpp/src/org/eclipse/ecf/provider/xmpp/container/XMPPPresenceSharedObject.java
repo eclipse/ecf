@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.xmpp.container;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,11 +36,14 @@ import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
 import org.eclipse.ecf.presence.ISharedObjectMessageListener;
 import org.eclipse.ecf.presence.ISubscribeListener;
+import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.provider.xmpp.Trace;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
+import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
+import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
@@ -63,8 +67,22 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     Vector presenceListeners = new Vector();
     Vector sharedObjectMessageListeners = new Vector();
     Vector subscribeListeners = new Vector();
+    Vector invitationListeners = new Vector();
 	Namespace namespace = null;
 	
+    protected void fireInvitationReceived(ID roomID, ID fromID, ID toID, String subject, String body) {
+        for (Iterator i = invitationListeners.iterator(); i.hasNext();) {
+            IInvitationListener l = (IInvitationListener) i.next();
+            l.handleInvitationReceived(roomID,fromID,toID,subject,body);
+        }
+    }
+
+    protected void addInvitationListener(IInvitationListener listener) {
+        invitationListeners.add(listener);
+    }
+    protected void removeInvitationListener(IInvitationListener listener) {
+    	invitationListeners.remove(listener);
+    }
     protected void addPresenceListener(IPresenceListener listener) {
         presenceListeners.add(listener);
     }
@@ -123,6 +141,8 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     public void dispose(ID containerID) {
         config = null;
 		accountManager = null;
+        invitationListeners.clear();
+        invitationListeners = null;
     }
 
     protected void dumpStack(String msg, Throwable e) {
@@ -246,6 +266,8 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
             handleMessageEvent((MessageEvent) event);
         } else if (event instanceof PresenceEvent) {
             handlePresenceEvent((PresenceEvent) event);
+        } else if (event instanceof InvitationReceivedEvent) {
+        	handleInvitationEvent((InvitationReceivedEvent) event);
         } else if (event instanceof ISharedObjectDeactivatedEvent) {
             handleDeactivatedEvent((ISharedObjectDeactivatedEvent) event);
         } else if (event instanceof IContainerDisconnectedEvent) {
@@ -255,6 +277,40 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         } else {
             debug("unrecognized event " + event);
         }
+    }
+
+    protected ID createRoomIDFromName(String from) {
+    	try {
+    		return new XMPPRoomID(namespace,connection,from);
+    	} catch (URISyntaxException e) {
+            dumpStack("Exception in createRoomIDFromName", e);
+            return null;
+    	}
+    }
+    protected ID createUserIDFromName(String name) {
+        ID result = null;
+        try {
+            result = new XMPPID(namespace,name);
+            return result;
+        } catch (Exception e) {
+            dumpStack("Exception in createIDFromName", e);
+            return null;
+        }
+    }
+
+    protected void handleInvitationEvent(InvitationReceivedEvent event) {
+    	XMPPConnection conn = event.getConnection();
+    	if (conn == connection) {
+	    	ID roomID = createRoomIDFromName(event.getRoom());
+	    	ID fromID = createUserIDFromName(event.getInviter());
+	    	Message mess = event.getMessage();
+	    	ID toID = createUserIDFromName(mess.getTo());
+	    	String subject = mess.getSubject();
+	    	String body = event.getReason();
+	    	fireInvitationReceived(roomID,fromID,toID,subject,body);
+    	} else {
+    		debug("got invitation event for other connection "+event);
+    	}
     }
 
     /*
