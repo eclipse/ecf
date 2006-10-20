@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 package org.eclipse.ecf.provider.irc.container;
 
 import java.io.IOException;
@@ -27,6 +27,7 @@ import org.eclipse.ecf.core.identity.IDInstantiationException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.presence.IInvitationListener;
+import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
@@ -42,25 +43,31 @@ import org.schwering.irc.lib.IRCUser;
 import org.schwering.irc.lib.SSLIRCConnection;
 
 /**
- * IRC 'root' container implementation.  This class implements the IChatRoomManager and the IChatRoomContainer 
- * interfaces, allowing it to function as both a manager of IRC channels and as an IRC channel itself.
- *
+ * IRC 'root' container implementation. This class implements the
+ * IChatRoomManager and the IChatRoomContainer interfaces, allowing it to
+ * function as both a manager of IRC channels and as an IRC channel itself.
+ * 
  */
 public class IRCRootContainer extends IRCAbstractContainer implements
-		IContainer, IChatRoomManager, IChatRoomContainer, IRCMessageChannel, IChatRoomContainerOptions {
-	
+		IContainer, IChatRoomManager, IChatRoomContainer, IRCMessageChannel,
+		IChatRoomContainerOptions {
+
 	protected IRCConnection connection = null;
+
 	protected ReplyHandler replyHandler = null;
+
 	protected Map channels = new HashMap();
+
 	protected IRCUser ircUser;
 
 	protected String encoding = null;
-	
+
 	public IRCRootContainer(ID localID) throws IDInstantiationException {
 		this.localID = localID;
 		this.unknownID = IDFactory.getDefault().createStringID("host");
 		this.replyHandler = new ReplyHandler();
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -100,7 +107,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		connection.setPong(true);
 		connection.setDaemon(false);
 		connection.setColors(false);
-		if (encoding != null) connection.setEncoding(encoding);
+		if (encoding != null)
+			connection.setEncoding(encoding);
 		trace("connecting to " + targetID);
 		try {
 			connection.connect();
@@ -109,6 +117,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		}
 		this.targetID = tID;
 	}
+
 	protected void handleDisconnected() {
 		for (Iterator i = channels.values().iterator(); i.hasNext();) {
 			IRCChannelContainer c = (IRCChannelContainer) i.next();
@@ -117,6 +126,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		fireContainerEvent(new ContainerDisconnectedEvent(getID(), targetID));
 		channels.clear();
 	}
+
 	protected IRCEventListener getIRCEventListener() {
 		return new IRCEventListener() {
 			public void onRegistered() {
@@ -124,24 +134,29 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				fireContainerEvent(new ContainerConnectedEvent(
 						IRCRootContainer.this.getID(), targetID));
 			}
+
 			public void onDisconnected() {
 				trace("handleOnDisconnected()");
 				showMessage(null, "Disconnected");
 				handleDisconnected();
 			}
+
 			public void onError(String arg0) {
 				trace("handleOnError(" + arg0 + ")");
 				showMessage(null, "ERROR: " + arg0);
 				handleDisconnected();
 			}
+
 			public void onError(int arg0, String arg1) {
 				trace("handleOnError(" + arg0 + "," + arg1 + ")");
 				showMessage(null, "ERROR: " + arg0 + "," + arg1);
 				handleDisconnected();
 			}
+
 			public void onInvite(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnInvite(" + arg0 + "," + arg1 + "," + arg2 + ")");
 			}
+
 			public void onJoin(String arg0, IRCUser arg1) {
 				trace("handleOnJoin(" + arg0 + "," + arg1 + ")");
 				IRCChannelContainer container = getChannel(arg0);
@@ -149,27 +164,34 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					container.setIRCUser(arg1);
 				}
 			}
+
 			public void onKick(String arg0, IRCUser arg1, String arg2,
 					String arg3) {
 				trace("handleOnKick(" + arg0 + "," + arg1 + "," + arg2 + ","
 						+ arg3 + ")");
 			}
+
 			public void onMode(String arg0, IRCUser arg1, IRCModeParser arg2) {
 				trace("handleOnMode(" + arg0 + "," + arg1 + "," + arg2 + ")");
 			}
+
 			public void onMode(IRCUser arg0, String arg1, String arg2) {
 				trace("handleOnMode(" + arg0 + "," + arg1 + "," + arg2 + ")");
 			}
+
 			public void onNick(IRCUser arg0, String arg1) {
 				trace("handleOnNick(" + arg0 + "," + arg1 + ")");
 			}
+
 			public void onNotice(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnNotice(" + arg0 + "," + arg1 + "," + arg2 + ")");
 				showMessage(arg0, arg2);
 			}
+
 			public void onPart(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnPart(" + arg0 + "," + arg1 + "," + arg2 + ")");
 			}
+
 			public void onPing(String arg0) {
 				trace("handleOnPing(" + arg0 + ")");
 				synchronized (this) {
@@ -178,10 +200,12 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					}
 				}
 			}
+
 			public void onPrivmsg(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnPrivmsg(" + arg0 + "," + arg1 + "," + arg2 + ")");
 				showMessage(arg0, arg1.toString(), arg2);
 			}
+
 			public void onQuit(IRCUser arg0, String arg1) {
 				trace("handleOnQuit(" + arg0 + "," + arg1 + ")");
 				for (Iterator i = channels.values().iterator(); i.hasNext();) {
@@ -190,15 +214,18 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					container.handleUserQuit(getIRCUserName(arg0));
 				}
 			}
+
 			public void onReply(int arg0, String arg1, String arg2) {
 				trace("handleOnReply(" + arg0 + "|" + arg1 + "|" + arg2 + ")");
 				replyHandler.handleReply(arg0, arg1, arg2);
 			}
+
 			public void onTopic(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnTopic(" + arg0 + "," + arg1 + "," + arg2 + ")");
-				showMessage(arg0, arg1.getNick() + " has changed the topic to: "
-						+ arg2);
+				showMessage(arg0, arg1.getNick()
+						+ " has changed the topic to: " + arg2);
 			}
+
 			public void unknown(String arg0, String arg1, String arg2,
 					String arg3) {
 				trace("handleUnknown(" + arg0 + "," + arg1 + "," + arg2 + ","
@@ -208,12 +235,14 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			}
 		};
 	}
+
 	protected String getIRCUserName(IRCUser user) {
 		if (user == null)
 			return null;
 		else
 			return user.toString();
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -225,18 +254,22 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			connection = null;
 		}
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.IContainer#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class serviceType) {
-		if (serviceType == null) return null;
-		if (serviceType.equals(IChatRoomManager.class) || serviceType.equals(IChatRoomContainerOptions.class))
+		if (serviceType == null)
+			return null;
+		if (serviceType.equals(IChatRoomManager.class)
+				|| serviceType.equals(IChatRoomContainerOptions.class))
 			return this;
 		else
 			return null;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -246,6 +279,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		return IDFactory.getDefault().getNamespaceByName(
 				Activator.NAMESPACE_IDENTIFIER);
 	}
+
 	public IRoomInfo getChatRoomInfo(final String roomName) {
 		if (roomName == null)
 			return new IRoomInfo() {
@@ -253,33 +287,43 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						throws ContainerInstantiationException {
 					return IRCRootContainer.this;
 				}
+
 				public ID getConnectedID() {
 					return IRCRootContainer.this.getConnectedID();
 				}
+
 				public String getDescription() {
 					return "";
 				}
+
 				public String getName() {
 					return ROOT_ROOMNAME;
 				}
+
 				public int getParticipantsCount() {
 					return 0;
 				}
+
 				public ID getRoomID() {
 					return getSystemID();
 				}
+
 				public String getSubject() {
 					return "";
 				}
+
 				public boolean isModerated() {
 					return false;
 				}
+
 				public boolean isPersistent() {
 					return false;
 				}
+
 				public boolean requiresPassword() {
 					return false;
 				}
+
 				public Object getAdapter(Class adapter) {
 					return null;
 				}
@@ -299,54 +343,74 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 								"Exception creating IRCChannelContainer", e);
 					}
 				}
+
 				public ID getConnectedID() {
 					return IRCRootContainer.this.getConnectedID();
 				}
+
 				public String getDescription() {
 					return "";
 				}
+
 				public String getName() {
 					return roomName;
 				}
+
 				public int getParticipantsCount() {
 					return 0;
 				}
+
 				public ID getRoomID() {
 					return createIDFromString(roomName);
 				}
+
 				public String getSubject() {
 					return "";
 				}
+
 				public boolean isModerated() {
 					return false;
 				}
+
 				public boolean isPersistent() {
 					return false;
 				}
+
 				public boolean requiresPassword() {
 					return false;
 				}
+
 				public Object getAdapter(Class adapter) {
 					return null;
 				}
 			};
 	}
+
 	public IRoomInfo[] getChatRoomsInfo() {
 		return null;
 	}
+
 	public IChatRoomManager[] getChildren() {
 		return null;
 	}
+
 	public IChatRoomManager getParent() {
 		return null;
 	}
+
 	public void addChatParticipantListener(
 			IChatParticipantListener participantListener) {
 		// for root container, no participant listening
 	}
+
+	public void removeChatParticipantListener(
+			IChatParticipantListener participantListener) {
+	}
+
 	public void addInvitationListener(IInvitationListener invitationListener) {
 		// for root container, no invitation listening...at least for now
 	}
+
 	public IChatMessageSender getChatMessageSender() {
 		return new IChatMessageSender() {
 			public void sendMessage(String message) throws IOException {
@@ -354,6 +418,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			}
 		};
 	}
+
 	protected void parseMessageAndSend(String message) {
 		if (isCommand(message)) {
 			String[] tokens = parseCommandTokens(message);
@@ -369,6 +434,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			trace(message + " is not a command");
 		}
 	}
+
 	private synchronized void handleCommandMessage(String[] tokens) {
 		// Look at first one and switch
 		String command = tokens[0];
@@ -443,6 +509,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					+ getID());
 		}
 	}
+
 	protected IRCChannelContainer getChannel(String channel) {
 		if (channel == null)
 			return null;
@@ -451,6 +518,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			return null;
 		return container;
 	}
+
 	private void showMessage(String channel, String msg) {
 		IRCChannelContainer msgChannel = getChannel(channel);
 		if (msgChannel != null)
@@ -459,6 +527,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			fireMessageListeners((channel == null) ? getSystemID()
 					: createIDFromString(channel), msg);
 	}
+
 	private void showMessage(String channel, String user, String msg) {
 		IRCChannelContainer msgChannel = getChannel(channel);
 		if (msgChannel != null)
@@ -466,6 +535,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		else
 			fireMessageListeners(createIDFromString(user), msg);
 	}
+
 	private ID getSystemID() {
 		if (targetID == null)
 			return unknownID;
@@ -478,6 +548,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			return unknownID;
 		}
 	}
+
 	protected void handle353Reply(String channel, String[] strings) {
 		IRCChannelContainer container = getChannel(channel);
 		if (container == null) {
@@ -520,6 +591,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 			}
 		}
+
 		private String trimUsername(String un) {
 			int eq = un.indexOf('=');
 			return un.substring(eq + 1);
@@ -534,11 +606,13 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				connection.doJoin(channelName, key);
 		}
 	}
+
 	protected void doPartChannel(String channelName) {
 		if (connection != null) {
 			connection.doPart(channelName);
 		}
 	}
+
 	protected void doSendChannelMessage(String channelName, String ircUser,
 			String msg) {
 		if (connection != null) {
@@ -546,19 +620,24 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			showMessage(channelName, ircUser, msg);
 		}
 	}
+
 	protected void addChannel(String channel, IRCChannelContainer container) {
 		channels.put(channel, container);
 	}
+
 	protected IRCChannelContainer getContainerForChannel(String channel) {
 		return (IRCChannelContainer) channels.get(channel);
 	}
+
 	protected void removeChannel(String channel) {
 		channels.remove(channel);
 	}
+
 	public boolean setEncoding(String encoding) {
 		if (connection == null) {
 			this.encoding = encoding;
 			return true;
-		} else return false;
+		} else
+			return false;
 	}
 }

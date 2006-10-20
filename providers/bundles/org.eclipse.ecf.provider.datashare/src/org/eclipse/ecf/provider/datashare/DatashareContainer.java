@@ -69,10 +69,10 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	public Namespace getChannelNamespace() {
 		return adapter.getChannelNamespace();
 	}
-	public void addChannelContainerListener(IChannelContainerListener listener) {
-		adapter.addChannelContainerListener(listener);
+	public void addListener(IChannelContainerListener listener) {
+		adapter.addListener(listener);
 	}
-	public void removeChannelContainerListener(IChannelContainerListener listener) {
-		adapter.removeChannelContainerListener(listener);
+	public void removeListener(IChannelContainerListener listener) {
+		adapter.removeListener(listener);
 	}
 }

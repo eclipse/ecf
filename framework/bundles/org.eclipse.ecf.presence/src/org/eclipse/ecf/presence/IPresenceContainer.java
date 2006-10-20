@@ -44,6 +44,13 @@ public interface IPresenceContainer extends IAdaptable {
 	public void addSubscribeListener(ISubscribeListener listener);
 
 	/**
+	 * Remove listener for subscription requests.
+	 * 
+	 * @param listener the listener to remove
+	 */
+	public void removeSubscribeListener(ISubscribeListener listener);
+	
+	/**
 	 * Setup listener for handling presence updates. The given listener will
 	 * asynchronously be called when a subscription request is received by this
 	 * connected account.
@@ -54,6 +61,13 @@ public interface IPresenceContainer extends IAdaptable {
 	public void addPresenceListener(IPresenceListener listener);
 
 	/**
+	 * Remove listener for presence events.
+	 * 
+	 * @param listener the listener to remove
+	 */
+	public void removePresenceListener(IPresenceListener listener);
+	
+	/**
 	 * Setup listener for handling IM messages. The given listener will
 	 * asynchronously be called when a subscription request is received by this
 	 * connected account.
@@ -63,6 +77,13 @@ public interface IPresenceContainer extends IAdaptable {
 	 */
 	public void addMessageListener(IMessageListener listener);
 
+	/**
+	 * REmove listener for message events
+	 * 
+	 * @param listener the listener to remove
+	 */
+	public void removeMessageListener(IMessageListener listener);
+	
 	/**
 	 * Retrieve interface for sending presence updates. The returned
 	 * IPresenceSender (if not null) can be used to send presence change

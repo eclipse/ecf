@@ -230,10 +230,10 @@ public class DatashareContainerAdapter implements IChannelContainer {
 	public Namespace getChannelNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
 	}
-	public void addChannelContainerListener(IChannelContainerListener listener) {
+	public void addListener(IChannelContainerListener listener) {
 		channelContainerListener.add(listener);
 	}
-	public void removeChannelContainerListener(IChannelContainerListener listener) {
+	public void removeListener(IChannelContainerListener listener) {
 		channelContainerListener.add(listener);
 	}
 }

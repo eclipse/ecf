@@ -12,11 +12,11 @@ package org.eclipse.ecf.example.collab.start;
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IDiscoveryContainer;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
+import org.eclipse.ecf.discovery.ServiceID;
 
 public class Discovery {
 	

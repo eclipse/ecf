@@ -21,13 +21,13 @@ public interface IAbstractChannelContainer {
 	 * 
 	 * @param listener to be added
 	 */
-	public void addChannelContainerListener(IChannelContainerListener listener);
+	public void addListener(IChannelContainerListener listener);
 	/**
 	 * Remove listener for IChannelContainer events
 	 * 
 	 * @param listener to be removed.  
 	 */
-	public void removeChannelContainerListener(IChannelContainerListener listener);
+	public void removeListener(IChannelContainerListener listener);
 	/**
 	 * Get expected Namespace for channel ID creation
 	 * @return Namespace that can be used to create channel ID instances

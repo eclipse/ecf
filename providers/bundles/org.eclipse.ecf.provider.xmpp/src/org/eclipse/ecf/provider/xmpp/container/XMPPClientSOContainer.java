@@ -87,72 +87,93 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.RoomInfo;
 import org.jivesoftware.smackx.packet.MUCUser;
 
-public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoingFileTransferContainer {
+public class XMPPClientSOContainer extends ClientSOContainer implements
+		IOutgoingFileTransferContainer {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
+
 	Trace trace = Trace.create("XMPPClientSOContainer");
 
-	public static final String NAMESPACE_IDENTIFIER = XmppPlugin.getDefault().getNamespaceIdentifier();
-	public static final String XMPP_SHARED_OBJECT_ID = XMPPClientSOContainer.class
+	public static final String NAMESPACE_IDENTIFIER = XmppPlugin.getDefault()
+			.getNamespaceIdentifier();
+
+	public static final String XMPP_DELEGATE_ID = XMPPClientSOContainer.class
 			.getName()
 			+ ".xmpphandler";
 
 	protected static final String GOOGLE_SERVICENAME = "gmail.com";
 
 	int keepAlive = 0;
+
 	protected IIMMessageSender messageSender = null;
-	protected XMPPPresenceSharedObject sharedObject = null;
-	protected ID sharedObjectID = null;
-	Vector chats = new Vector();
+
+	protected XMPPPresenceSharedObject delegate = null;
+
+	protected ID delegateID = null;
+
+	Vector chatrooms = new Vector();
 
 	protected void addChat(IChatRoomContainer container) {
-		chats.add(container);
+		chatrooms.add(container);
 	}
+
 	protected void removeChat(IChatRoomContainer container) {
-		chats.remove(container);
+		chatrooms.remove(container);
 	}
+
 	protected void trace(String msg) {
 		if (trace != null) {
 			trace.msg(msg);
 		}
 	}
+
 	protected void dumpStack(Throwable t, String msg) {
 		if (trace != null) {
-			trace.dumpStack(t,msg);
+			trace.dumpStack(t, msg);
 		}
 	}
-	protected XMPPClientSOContainer(SOContainerConfig config, int keepAlive) throws Exception {
+
+	protected XMPPClientSOContainer(SOContainerConfig config, int keepAlive)
+			throws Exception {
 		super(config);
 		this.keepAlive = keepAlive;
-		this.sharedObjectID = IDFactory.getDefault().createStringID(XMPP_SHARED_OBJECT_ID);
-		sharedObject = new XMPPPresenceSharedObject();
+		this.delegateID = IDFactory.getDefault().createStringID(
+				XMPP_DELEGATE_ID);
+		delegate = new XMPPPresenceSharedObject();
 	}
+
 	public XMPPClientSOContainer() throws Exception {
 		this(DEFAULT_KEEPALIVE);
 	}
+
 	public XMPPClientSOContainer(int ka) throws Exception {
-		this(new SOContainerConfig(IDFactory.getDefault().createGUID()),ka);
+		this(new SOContainerConfig(IDFactory.getDefault().createGUID()), ka);
 	}
 
 	public XMPPClientSOContainer(String userhost, int ka) throws Exception {
-		this(new SOContainerConfig(IDFactory.getDefault().createStringID(userhost)),ka);
+		this(new SOContainerConfig(IDFactory.getDefault().createStringID(
+				userhost)), ka);
 	}
-	protected void disposeChats() {
-		for(Iterator i=chats.iterator(); i.hasNext(); ) {
+
+	protected void disposeChatRooms() {
+		for (Iterator i = chatrooms.iterator(); i.hasNext();) {
 			IChatRoomContainer cc = (IChatRoomContainer) i.next();
 			cc.dispose();
 		}
-		chats.clear();
+		chatrooms.clear();
 	}
-	protected IChatRoomContainer findChat(ID toID) {
-		if (toID == null) return null;
+
+	protected IChatRoomContainer findReceiverChatRoom(ID toID) {
+		if (toID == null)
+			return null;
 		XMPPRoomID roomID = null;
 		if (toID instanceof XMPPRoomID) {
 			roomID = (XMPPRoomID) toID;
 			String mucname = roomID.getMucString();
-			for(Iterator i=chats.iterator(); i.hasNext(); ) {
+			for (Iterator i = chatrooms.iterator(); i.hasNext();) {
 				IChatRoomContainer cont = (IChatRoomContainer) i.next();
-				if (cont == null) continue;
+				if (cont == null)
+					continue;
 				ID tid = cont.getConnectedID();
 				if (tid != null && tid instanceof XMPPRoomID) {
 					XMPPRoomID targetID = (XMPPRoomID) tid;
@@ -165,36 +186,37 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 		}
 		return null;
 	}
+
 	protected ID handleConnectResponse(ID originalTarget, Object serverData)
 			throws Exception {
 		if (originalTarget != null && !originalTarget.equals(getID())) {
 			addNewRemoteMember(originalTarget, null);
 			// notify listeners
-			fireContainerEvent(new ContainerConnectedEvent(this
-					.getID(), originalTarget));
+			fireContainerEvent(new ContainerConnectedEvent(this.getID(),
+					originalTarget));
 		}
 		// If we've got the connection then pass it onto shared object also
 		ECFConnection conn = (ECFConnection) getConnection();
-		if (conn != null && sharedObject != null) {
-			sharedObject.setConnection(conn.getXMPPConnection());
+		if (conn != null && delegate != null) {
+			delegate.setConnection(conn.getXMPPConnection());
 		}
 		return originalTarget;
 	}
 
 	protected void addSharedObjectToContainer(ID remote)
 			throws SharedObjectAddException {
-		getSharedObjectManager().addSharedObject(sharedObjectID, sharedObject,
+		getSharedObjectManager().addSharedObject(delegateID, delegate,
 				new HashMap());
 	}
 
 	public void dispose() {
-		if (sharedObject != null) {
-			getSharedObjectManager().removeSharedObject(sharedObjectID);
+		if (delegate != null) {
+			getSharedObjectManager().removeSharedObject(delegateID);
 		}
-		sharedObjectID = null;
-		sharedObject = null;
+		delegateID = null;
+		delegate = null;
 		messageSender = null;
-		disposeChats();
+		disposeChatRooms();
 		super.dispose();
 	}
 
@@ -209,7 +231,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 				google = true;
 			}
 		}
-		conn = new ECFConnection(google,getConnectNamespace(),receiver);
+		conn = new ECFConnection(google, getConnectNamespace(), receiver);
 		Object res = conn.getAdapter(IIMMessageSender.class);
 		if (res != null) {
 			// got it
@@ -218,7 +240,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 		return conn;
 	}
 
-	protected Object createConnectData(ID target, Callback [] cbs, Object data) {
+	protected Object createConnectData(ID target, Callback[] cbs, Object data) {
 		// first one is password callback
 		if (cbs.length > 0) {
 			if (cbs[0] instanceof ObjectCallback) {
@@ -230,11 +252,10 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 	}
 
 	protected Callback[] createAuthorizationCallbacks() {
-		Callback [] cbs = new Callback[1];
+		Callback[] cbs = new Callback[1];
 		cbs[0] = new ObjectCallback();
 		return cbs;
 	}
-
 
 	protected int getConnectTimeout() {
 		return keepAlive;
@@ -248,13 +269,16 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 	}
 
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(XmppPlugin.getDefault().getNamespaceIdentifier());
+		return IDFactory.getDefault().getNamespaceByName(
+				XmppPlugin.getDefault().getNamespaceIdentifier());
 	}
 
 	protected void deliverEvent(Event evt) {
-		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
-		if (wrap != null) wrap.deliverEvent(evt);
-		else trace("deliverEvent("+evt+") wrapper object is unavailable");
+		SOWrapper wrap = getSharedObjectWrapper(delegateID);
+		if (wrap != null)
+			wrap.deliverEvent(evt);
+		else
+			trace("deliverEvent(" + evt + ") wrapper object is unavailable");
 	}
 
 	protected void handleXMPPMessage(Packet aPacket) throws IOException {
@@ -274,15 +298,16 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 
 	protected boolean handleAsExtension(Packet packet) {
 		// XXX this is where extension mechanism needs to be added
-        Iterator i = packet.getExtensions();
-        for(; i.hasNext(); ) {
-        	Object extension = i.next();
-        	trace("XMPPClientSOContainer.handleAsExtension(ext="+extension+",packet="+packet.toXML()+")");
-            if (packet instanceof Presence && extension instanceof MUCUser) {
-            	trace("XMPPClientSOContainer.handleAsExtension: received presence for MUCUser");
-            	return true;
-            }
-        }
+		Iterator i = packet.getExtensions();
+		for (; i.hasNext();) {
+			Object extension = i.next();
+			trace("XMPPClientSOContainer.handleAsExtension(ext=" + extension
+					+ ",packet=" + packet.toXML() + ")");
+			if (packet instanceof Presence && extension instanceof MUCUser) {
+				trace("XMPPClientSOContainer.handleAsExtension: received presence for MUCUser");
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -297,14 +322,14 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 		} catch (SharedObjectAddException e1) {
 			dispose();
 			throw new ContainerConnectException(
-					"Exception adding shared object " + sharedObjectID, e1);
+					"Exception adding shared object " + delegateID, e1);
 		}
 	}
 
 	public void disconnect() {
 		ID groupID = getConnectedID();
-		fireContainerEvent(new ContainerDisconnectingEvent(this
-				.getID(), groupID));
+		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(),
+				groupID));
 		synchronized (getConnectLock()) {
 			// If we are currently connected
 			if (isConnected()) {
@@ -325,8 +350,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 			remoteServerID = null;
 		}
 		// notify listeners
-		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(),
-				groupID));
+		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), groupID));
 		dispose();
 	}
 
@@ -348,9 +372,11 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 				Object obj = evt.getObjectValue();
 				// this should be a ContainerMessage
 				Object cm = deserializeContainerMessage((byte[]) obj);
-                if (cm == null) throw new IOException("deserialized object is null");
+				if (cm == null)
+					throw new IOException("deserialized object is null");
 				ContainerMessage contMessage = (ContainerMessage) cm;
-				IChatRoomContainer chat = findChat(contMessage.getToContainerID());
+				IChatRoomContainer chat = findReceiverChatRoom(contMessage
+						.getToContainerID());
 				if (chat != null && chat instanceof XMPPGroupChatSOContainer) {
 					XMPPGroupChatSOContainer cont = (XMPPGroupChatSOContainer) chat;
 					cont.handleContainerMessage(contMessage);
@@ -366,15 +392,16 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 				} else if (data instanceof ContainerMessage.SharedObjectDisposeMessage) {
 					handleSharedObjectDisposeMessage(contMessage);
 				} else {
-					debug("got unrecognized container message...ignoring: " + contMessage);
+					debug("got unrecognized container message...ignoring: "
+							+ contMessage);
 				}
 			} else {
 				// Unexpected type...
 				debug("got unexpected event: " + e);
 			}
 		} catch (Exception except) {
-            System.err.println("Exception in processAsynch");
-            except.printStackTrace(System.err);
+			System.err.println("Exception in processAsynch");
+			except.printStackTrace(System.err);
 			dumpStack("Exception processing event " + e, except);
 		}
 	}
@@ -386,78 +413,99 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 	}
 
 	protected Presence createPresenceFromIPresence(IPresence presence) {
-		return sharedObject.createPresence(presence);
+		return delegate.createPresence(presence);
 	}
-	protected void sendPresenceUpdate(ID target, Presence presence) throws IOException {
+
+	protected void sendPresenceUpdate(ID target, Presence presence)
+			throws IOException {
 		if (messageSender != null) {
-			if (presence == null) throw new NullPointerException("presence cannot be null");
+			if (presence == null)
+				throw new NullPointerException("presence cannot be null");
 			messageSender.sendPresenceUpdate(target, presence);
 		}
 	}
 
-	protected void sendRosterAdd(String user, String name, String [] groups) throws IOException {
+	protected void sendRosterAdd(String user, String name, String[] groups)
+			throws IOException {
 		if (messageSender != null) {
-			messageSender.sendRosterAdd(user,name,groups);
+			messageSender.sendRosterAdd(user, name, groups);
 		}
 	}
+
 	protected void sendRosterRemove(String user) throws IOException {
 		if (messageSender != null) {
 			messageSender.sendRosterRemove(user);
 		}
 	}
 
-    public Object getAdapter(Class clazz) {
+	public Object getAdapter(Class clazz) {
 		if (clazz.equals(IPresenceContainer.class)) {
-            return new IPresenceContainer() {
+			return new IPresenceContainer() {
 
-            	public Object getAdapter(Class clazz) {
-            		return null;
-            	}
-                public void addPresenceListener(IPresenceListener listener) {
-                    sharedObject.addPresenceListener(listener);
-                }
+				public Object getAdapter(Class clazz) {
+					return null;
+				}
 
-                public void addMessageListener(IMessageListener listener) {
-                    sharedObject.addMessageListener(listener);
-                }
-                public IMessageSender getMessageSender() {
-                    return new IMessageSender() {
+				public void addPresenceListener(IPresenceListener listener) {
+					delegate.addPresenceListener(listener);
+				}
 
-                        public void sendMessage(ID fromID, ID toID, Type type, String subject, String message) {
-                            try {
-                                XMPPClientSOContainer.this.sendMessage(toID,message);
-                            } catch (IOException e) {
-                                dumpStack("Exception in sendmessage to "+toID+" with message "+message,e);
-                            }
+				public void addMessageListener(IMessageListener listener) {
+					delegate.addMessageListener(listener);
+				}
 
-                        }
+				public IMessageSender getMessageSender() {
+					return new IMessageSender() {
 
-                    };
-                }
+						public void sendMessage(ID fromID, ID toID, Type type,
+								String subject, String message) {
+							try {
+								XMPPClientSOContainer.this.sendMessage(toID,
+										message);
+							} catch (IOException e) {
+								dumpStack("Exception in sendmessage to " + toID
+										+ " with message " + message, e);
+							}
+
+						}
+
+					};
+				}
+
 				public IPresenceSender getPresenceSender() {
 					return new IPresenceSender() {
-						public void sendPresenceUpdate(ID fromID, ID toID, IPresence presence) {
-                            try {
+						public void sendPresenceUpdate(ID fromID, ID toID,
+								IPresence presence) {
+							try {
 								Presence newPresence = createPresenceFromIPresence(presence);
-                                XMPPClientSOContainer.this.sendPresenceUpdate(toID,newPresence);
-                            } catch (IOException e) {
-                                dumpStack("Exception in sendPresenceUpdate to "+toID+" with presence "+presence,e);
-                            }
+								XMPPClientSOContainer.this.sendPresenceUpdate(
+										toID, newPresence);
+							} catch (IOException e) {
+								dumpStack("Exception in sendPresenceUpdate to "
+										+ toID + " with presence " + presence,
+										e);
+							}
 						}
-						public void sendRosterAdd(ID fromID, String user, String name, String[] groups) {
-                            try {
-                                XMPPClientSOContainer.this.sendRosterAdd(user,name,groups);
-                            } catch (IOException e) {
-                                dumpStack("Exception in sendRosterAdd",e);
-                            }
+
+						public void sendRosterAdd(ID fromID, String user,
+								String name, String[] groups) {
+							try {
+								XMPPClientSOContainer.this.sendRosterAdd(user,
+										name, groups);
+							} catch (IOException e) {
+								dumpStack("Exception in sendRosterAdd", e);
+							}
 						}
+
 						public void sendRosterRemove(ID fromID, ID userID) {
-                            try {
-								if (userID == null) return;
-                                XMPPClientSOContainer.this.sendRosterRemove(userID.getName());
-                            } catch (IOException e) {
-                                dumpStack("Exception in sendRosterAdd",e);
-                            }
+							try {
+								if (userID == null)
+									return;
+								XMPPClientSOContainer.this
+										.sendRosterRemove(userID.getName());
+							} catch (IOException e) {
+								dumpStack("Exception in sendRosterAdd", e);
+							}
 						}
 
 					};
@@ -465,245 +513,331 @@ public class XMPPClientSOContainer extends ClientSOContainer implements IOutgoin
 
 				public IAccountManager getAccountManager() {
 					return new IAccountManager() {
-						public boolean changePassword(String newpassword) throws ECFException {
-							return sharedObject.changePassword(newpassword);
+						public boolean changePassword(String newpassword)
+								throws ECFException {
+							return delegate.changePassword(newpassword);
 						}
-						public boolean createAccount(String username, String password, Map attributes) throws ECFException {
-							return sharedObject.createAccount(username,password,attributes);
+
+						public boolean createAccount(String username,
+								String password, Map attributes)
+								throws ECFException {
+							return delegate.createAccount(username, password,
+									attributes);
 						}
+
 						public boolean deleteAccount() throws ECFException {
-							return sharedObject.deleteAccount();
+							return delegate.deleteAccount();
 						}
-						public String getAccountInstructions() throws ECFException {
-							return sharedObject.getAccountInstructions();
+
+						public String getAccountInstructions()
+								throws ECFException {
+							return delegate.getAccountInstructions();
 						}
-						public String[] getAccountAttributeNames() throws ECFException {
-							return sharedObject.getAccountAttributeNames();
+
+						public String[] getAccountAttributeNames()
+								throws ECFException {
+							return delegate.getAccountAttributeNames();
 						}
-						public Object getAccountAttribute(String name) throws ECFException {
-							return sharedObject.getAccountAttribute(name);
+
+						public Object getAccountAttribute(String name)
+								throws ECFException {
+							return delegate.getAccountAttribute(name);
 						}
+
 						public boolean isAccountCreationSupported() {
-							return sharedObject.isAccountCreationSupported();
-						}
-						public boolean supportsCreation() {
-							// TODO Auto-generated method stub
-							return false;
+							return delegate.isAccountCreationSupported();
 						}
 					};
 				}
+
 				public void addSubscribeListener(ISubscribeListener listener) {
-					sharedObject.addSubscribeListener(listener);
+					delegate.addSubscribeListener(listener);
 				}
+
 				public IChatRoomManager getChatRoomManager() {
 					return new IChatRoomManager() {
 						public IChatRoomManager getParent() {
 							return null;
 						}
+
 						public IChatRoomManager[] getChildren() {
 							return new IChatRoomManager[0];
 						}
+
 						public ID[] getChatRooms() {
 							return XMPPClientSOContainer.this.getChatRooms();
 						}
+
 						public IRoomInfo getChatRoomInfo(String roomname) {
-							return XMPPClientSOContainer.this.getChatRoomInfo(roomname);
+							return XMPPClientSOContainer.this
+									.getChatRoomInfo(roomname);
 						}
+
 						public IRoomInfo[] getChatRoomsInfo() {
-							ID [] chatRooms = getChatRooms();
-							if (chatRooms == null) return null;
-							IRoomInfo [] res = new IRoomInfo[chatRooms.length];
+							ID[] chatRooms = getChatRooms();
+							if (chatRooms == null)
+								return null;
+							IRoomInfo[] res = new IRoomInfo[chatRooms.length];
 							int count = 0;
-							for(int i=0; i < chatRooms.length; i++) {
-								IRoomInfo infoResult = XMPPClientSOContainer.this.getChatRoomInfo(chatRooms[i]);
+							for (int i = 0; i < chatRooms.length; i++) {
+								IRoomInfo infoResult = XMPPClientSOContainer.this
+										.getChatRoomInfo(chatRooms[i]);
 								if (infoResult != null) {
 									res[count++] = infoResult;
 								}
 							}
-							IRoomInfo [] results = new IRoomInfo[count];
-							for(int i=0; i < count; i++) {
+							IRoomInfo[] results = new IRoomInfo[count];
+							for (int i = 0; i < count; i++) {
 								results[i] = res[i];
 							}
 							return results;
 						}
+
 						public Object getAdapter(Class adapter) {
 							return null;
-						}};
+						}
+					};
 				}
-            };
-        }
-		else {
+
+				public void removeMessageListener(IMessageListener listener) {
+					delegate.removeMessageListener(listener);
+				}
+
+				public void removePresenceListener(IPresenceListener listener) {
+					delegate.removePresenceListener(listener);
+				}
+
+				public void removeSubscribeListener(ISubscribeListener listener) {
+					delegate.removeSubscribeListener(listener);
+				}
+			};
+		} else {
 			return super.getAdapter(clazz);
 		}
-    }
-    protected Collection getHostedRoomForService(String svc) throws XMPPException {
-		return MultiUserChat.getHostedRooms(sharedObject.getConnection(),svc);
-    }
-    protected ID createIDFromHostedRoom(HostedRoom room) {
-    	try {
-    		return new XMPPRoomID(getConnectNamespace(),sharedObject.getConnection(),room.getJid(),room.getName());
-    	} catch (URISyntaxException e) {
-    		// debug output
-    		dumpStack("Exception in createIDFromHostedRoom("+room+")",e);
-    		return null;
-    	}
-    }
-    protected ID[] getChatRooms() {
-    	if (sharedObject == null) return null;
-    	XMPPConnection conn = sharedObject.getConnection();
-    	if (conn == null) return null;
-    	Collection result = new ArrayList();
-    	try {
-    		Collection svcs = MultiUserChat.getServiceNames(sharedObject.getConnection());
-    		for(Iterator svcsi = svcs.iterator(); svcsi.hasNext(); ) {
-    			String svc = (String) svcsi.next();
-    			Collection rooms = getHostedRoomForService(svc);
-    			for(Iterator roomsi = rooms.iterator(); roomsi.hasNext(); ) {
-    				HostedRoom room = (HostedRoom) roomsi.next();
-    				ID roomID = createIDFromHostedRoom(room);
-    				if (roomID != null) result.add(roomID);
-    			}
-    		}
-    	} catch (XMPPException e) {
-    		dumpStack("Exception in getChatRooms()",e);
-    		return null;
-    	}
-    	return (ID []) result.toArray(new ID[] {});
-    }
-    class ECFRoomInfo implements IRoomInfo {
+	}
 
-    	RoomInfo info;
-    	XMPPRoomID roomID;
-    	ID connectedID;
-    	public ECFRoomInfo(XMPPRoomID roomID, RoomInfo info, ID connectedID) {
-    		this.roomID = roomID;
-    		this.info = info;
-    		this.connectedID = connectedID;
-    	}
+	protected Collection getHostedRoomForService(String svc)
+			throws XMPPException {
+		return MultiUserChat.getHostedRooms(delegate.getConnection(), svc);
+	}
+
+	protected ID createIDFromHostedRoom(HostedRoom room) {
+		try {
+			return new XMPPRoomID(getConnectNamespace(), delegate
+					.getConnection(), room.getJid(), room.getName());
+		} catch (URISyntaxException e) {
+			// debug output
+			dumpStack("Exception in createIDFromHostedRoom(" + room + ")", e);
+			return null;
+		}
+	}
+
+	protected ID[] getChatRooms() {
+		if (delegate == null)
+			return null;
+		XMPPConnection conn = delegate.getConnection();
+		if (conn == null)
+			return null;
+		Collection result = new ArrayList();
+		try {
+			Collection svcs = MultiUserChat.getServiceNames(delegate
+					.getConnection());
+			for (Iterator svcsi = svcs.iterator(); svcsi.hasNext();) {
+				String svc = (String) svcsi.next();
+				Collection rooms = getHostedRoomForService(svc);
+				for (Iterator roomsi = rooms.iterator(); roomsi.hasNext();) {
+					HostedRoom room = (HostedRoom) roomsi.next();
+					ID roomID = createIDFromHostedRoom(room);
+					if (roomID != null)
+						result.add(roomID);
+				}
+			}
+		} catch (XMPPException e) {
+			dumpStack("Exception in getChatRooms()", e);
+			return null;
+		}
+		return (ID[]) result.toArray(new ID[] {});
+	}
+
+	class ECFRoomInfo implements IRoomInfo {
+
+		RoomInfo info;
+
+		XMPPRoomID roomID;
+
+		ID connectedID;
+
+		public ECFRoomInfo(XMPPRoomID roomID, RoomInfo info, ID connectedID) {
+			this.roomID = roomID;
+			this.info = info;
+			this.connectedID = connectedID;
+		}
+
 		public String getDescription() {
 			return info.getDescription();
 		}
+
 		public String getSubject() {
 			return info.getSubject();
 		}
+
 		public ID getRoomID() {
 			return roomID;
 		}
+
 		public int getParticipantsCount() {
 			return info.getOccupantsCount();
 		}
+
 		public String getName() {
 			return roomID.getLongName();
 		}
+
 		public boolean isPersistent() {
 			return info.isPersistent();
 		}
+
 		public boolean requiresPassword() {
 			return info.isPasswordProtected();
 		}
+
 		public boolean isModerated() {
 			return info.isModerated();
 		}
+
 		public ID getConnectedID() {
 			return roomID;
 		}
+
 		public Object getAdapter(Class clazz) {
 			return null;
 		}
-		public IChatRoomContainer createChatRoomContainer() throws ContainerInstantiationException {
+
+		public IChatRoomContainer createChatRoomContainer()
+				throws ContainerInstantiationException {
 			IChatRoomContainer chatContainer = null;
 			try {
-				chatContainer = new XMPPGroupChatSOContainer(XMPPClientSOContainer.this.getConnection(),sharedObject.getConnection(),getConnectNamespace());
+				chatContainer = new XMPPGroupChatSOContainer(
+						XMPPClientSOContainer.this.getConnection(), delegate
+								.getConnection(), getConnectNamespace());
 			} catch (IDInstantiationException e) {
-				throw new ContainerInstantiationException("Exception creating chat container for presence container "+getID(),e);
+				throw new ContainerInstantiationException(
+						"Exception creating chat container for presence container "
+								+ getID(), e);
 			}
-			chats.add(chatContainer);
+			chatrooms.add(chatContainer);
 			return chatContainer;
 		}
-    	public String toString() {
-    		StringBuffer buf = new StringBuffer("ECFRoomInfo[");
-    		buf.append("id=").append(getID()).append(";name="+getName());
-    		buf.append(";service="+getConnectedID());
-    		buf.append(";count="+getParticipantsCount());
-    		buf.append(";subject="+getSubject()).append(";desc="+getDescription());
-    		buf.append(";pers="+isPersistent()).append(";pw="+requiresPassword());
-    		buf.append(";mod="+isModerated()).append("]");
-    		return buf.toString();
-    	}
-    }
-    protected IRoomInfo getChatRoomInfo(ID roomID) {
-    	if (!(roomID instanceof XMPPRoomID)) return null;
-    	XMPPRoomID cRoomID = (XMPPRoomID) roomID;
-    	try {
-    		RoomInfo info = MultiUserChat.getRoomInfo(sharedObject.getConnection(),cRoomID.getMucString());
-    		if (info != null) {
-    			return new ECFRoomInfo(cRoomID,info,getConnectedID());
-    		}
-    	} catch (XMPPException e) {
-    		dumpStack("Exception in getChatRoomInfo("+roomID+")",e);
-    		return null;
-    	}
-    	return null;
-    }
-    protected IRoomInfo getChatRoomInfo(String roomname) {
-    	try {
-			// Create roomid
-			XMPPRoomID roomID = new XMPPRoomID(getConnectNamespace(),sharedObject.getConnection(),roomname);
-			String mucName = roomID.getMucString();
-    		RoomInfo info = MultiUserChat.getRoomInfo(sharedObject.getConnection(),mucName);
-    		if (info != null) {
-    			return new ECFRoomInfo(roomID,info,getConnectedID());
-    		}
-    	} catch (Exception e) {
-    		dumpStack("Exception in getChatRoomInfo("+roomname+")",e);
-    		return null;
-    	}
-    	return null;
-    }
 
-    // IFileTransferContainer implementation
-
-    List transferListeners = new ArrayList();
-
-    List incomingTransferListeners = new ArrayList();
-
-    protected void addFileTransferListener(IFileTransferListener listener) {
-    	transferListeners.add(listener);
-    }
-    protected void removeFileTransferListener(IFileTransferListener listener) {
-    	transferListeners.remove(listener);
-    }
-	public void addIncomingFileTransferRequestListener(IIncomingFileTransferRequestListener listener) {
-		incomingTransferListeners.add(listener);
-	}
-	public void sendOutgoingRequest(ID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener progressListener) throws OutgoingFileTransferException {
-		XMPPConnection xmppConnection = sharedObject.getConnection();
-		if (xmppConnection == null || !xmppConnection.isConnected()) throw new OutgoingFileTransferException("not connected");
-		FileTransferManager manager = new FileTransferManager(xmppConnection);
-
-		XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(manager, (XMPPID) targetReceiver, localFileToSend, progressListener);
-
-		try {
-			fileTransfer.startSend(localFileToSend.getFile(), localFileToSend.getDescription());
-		} catch (XMPPException e) {
-			throw new OutgoingFileTransferException("Exception sending start request",e);
+		public String toString() {
+			StringBuffer buf = new StringBuffer("ECFRoomInfo[");
+			buf.append("id=").append(getID()).append(";name=" + getName());
+			buf.append(";service=" + getConnectedID());
+			buf.append(";count=" + getParticipantsCount());
+			buf.append(";subject=" + getSubject()).append(
+					";desc=" + getDescription());
+			buf.append(";pers=" + isPersistent()).append(
+					";pw=" + requiresPassword());
+			buf.append(";mod=" + isModerated()).append("]");
+			return buf.toString();
 		}
 	}
+
+	protected IRoomInfo getChatRoomInfo(ID roomID) {
+		if (!(roomID instanceof XMPPRoomID))
+			return null;
+		XMPPRoomID cRoomID = (XMPPRoomID) roomID;
+		try {
+			RoomInfo info = MultiUserChat.getRoomInfo(delegate.getConnection(),
+					cRoomID.getMucString());
+			if (info != null) {
+				return new ECFRoomInfo(cRoomID, info, getConnectedID());
+			}
+		} catch (XMPPException e) {
+			dumpStack("Exception in getChatRoomInfo(" + roomID + ")", e);
+			return null;
+		}
+		return null;
+	}
+
+	protected IRoomInfo getChatRoomInfo(String roomname) {
+		try {
+			// Create roomid
+			XMPPRoomID roomID = new XMPPRoomID(getConnectNamespace(), delegate
+					.getConnection(), roomname);
+			String mucName = roomID.getMucString();
+			RoomInfo info = MultiUserChat.getRoomInfo(delegate.getConnection(),
+					mucName);
+			if (info != null) {
+				return new ECFRoomInfo(roomID, info, getConnectedID());
+			}
+		} catch (Exception e) {
+			dumpStack("Exception in getChatRoomInfo(" + roomname + ")", e);
+			return null;
+		}
+		return null;
+	}
+
+	// IFileTransferContainer implementation
+
+	List transferListeners = new ArrayList();
+
+	List incomingTransferListeners = new ArrayList();
+
+	protected void addFileTransferListener(IFileTransferListener listener) {
+		transferListeners.add(listener);
+	}
+
+	protected void removeFileTransferListener(IFileTransferListener listener) {
+		transferListeners.remove(listener);
+	}
+
+	public void addListener(IIncomingFileTransferRequestListener listener) {
+		incomingTransferListeners.add(listener);
+	}
+
+	public void sendOutgoingRequest(ID targetReceiver,
+			IFileTransferInfo localFileToSend,
+			IFileTransferListener progressListener)
+			throws OutgoingFileTransferException {
+		XMPPConnection xmppConnection = delegate.getConnection();
+		if (xmppConnection == null || !xmppConnection.isConnected())
+			throw new OutgoingFileTransferException("not connected");
+		FileTransferManager manager = new FileTransferManager(xmppConnection);
+
+		XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(
+				manager, (XMPPID) targetReceiver, localFileToSend,
+				progressListener);
+
+		try {
+			fileTransfer.startSend(localFileToSend.getFile(), localFileToSend
+					.getDescription());
+		} catch (XMPPException e) {
+			throw new OutgoingFileTransferException(
+					"Exception sending start request", e);
+		}
+	}
+
 	protected void fireFileTransferEvent(IFileTransferEvent event) {
-		for(Iterator i=transferListeners.iterator(); i.hasNext(); ) {
+		for (Iterator i = transferListeners.iterator(); i.hasNext();) {
 			IFileTransferListener l = (IFileTransferListener) i.next();
 			l.handleTransferEvent(event);
 		}
 	}
+
 	public Namespace getOutgoingFileTransferNamespace() {
 		return getConnectNamespace();
 	}
-	public boolean removeIncomingFileTransferRequestListener(IIncomingFileTransferRequestListener listener) {
+
+	public boolean removeListener(IIncomingFileTransferRequestListener listener) {
 		return incomingTransferListeners.remove(listener);
 	}
-	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend, IFileTransferListener transferListener) throws OutgoingFileTransferException {
-		sendOutgoingRequest(targetReceiver, new FileTransferInfo(localFileToSend), transferListener);
-	}
 
+	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend,
+			IFileTransferListener transferListener)
+			throws OutgoingFileTransferException {
+		sendOutgoingRequest(targetReceiver, new FileTransferInfo(
+				localFileToSend), transferListener);
+	}
 
 }

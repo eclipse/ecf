@@ -25,6 +25,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.presence.IInvitationListener;
+import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
@@ -55,6 +56,10 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	public void addChatParticipantListener(
 			IChatParticipantListener participantListener) {
 		participantListeners.add(participantListener);
+	}
+	public void removeChatParticipantListener(
+			IChatParticipantListener participantListener) {
+		participantListeners.remove(participantListener);
 	}
 	protected void firePresenceListeners(boolean joined, String name) {
 		firePresenceListeners(joined, new String[] { name });
@@ -198,5 +203,9 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	}
 	protected void setChannelOperator(boolean channelOperator) {
 		this.channelOperator = channelOperator;
+	}
+	public void removeMessageListener(IMessageListener msgListener) {
+		// TODO Auto-generated method stub
+		
 	}
 }

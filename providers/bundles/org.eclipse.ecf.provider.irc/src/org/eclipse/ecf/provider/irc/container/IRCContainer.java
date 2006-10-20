@@ -739,6 +739,15 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 	public void addChatParticipantListener(IChatParticipantListener participantListener) {
 		participantListeners.add(participantListener);
 	}
+	public void removeChatParticipantListener(
+			IChatParticipantListener participantListener) {
+		participantListeners.remove(participantListener);
+		
+	}
+	public void removeMessageListener(IMessageListener msgListener) {
+		// TODO Auto-generated method stub
+		
+	}
 	public void addListener(IContainerListener l, String filter) {
 		synchronized (listeners) {
 			listeners.add(l);

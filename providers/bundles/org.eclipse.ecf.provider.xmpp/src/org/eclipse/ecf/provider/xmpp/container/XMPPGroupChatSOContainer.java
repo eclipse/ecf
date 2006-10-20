@@ -60,16 +60,22 @@ import org.jivesoftware.smackx.muc.ParticipantStatusListener;
 
 public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 		IChatRoomContainer {
-	public static final String XMPP_GROUP_CHAT_SHARED_OBJECT_ID = XMPPClientSOContainer.class
+	public static final String XMPP_GROUPCHAT_DELEGATE_ID = XMPPClientSOContainer.class
 			.getName()
 			+ ".xmppgroupchathandler";
+
 	XMPPConnection xmppconnection;
+
 	ID sharedObjectID;
-	XMPPGroupChatSharedObject sharedObject;
+
+	XMPPGroupChatSharedObject delegate;
+
 	MultiUserChat multiuserchat;
+
 	ISharedObjectContainerConfig config;
+
 	Namespace usernamespace = null;
-	
+
 	public XMPPGroupChatSOContainer(ISharedObjectContainerConfig config,
 			ISynchAsynchConnection conn, XMPPConnection xmppconn,
 			Namespace usernamespace) throws IDInstantiationException {
@@ -80,24 +86,27 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 		this.usernamespace = usernamespace;
 		initializeSharedObject();
 	}
+
 	public XMPPGroupChatSOContainer(ISynchAsynchConnection conn,
 			XMPPConnection xmppconn, Namespace usernamespace)
 			throws IDInstantiationException {
 		this(new SOContainerConfig(IDFactory.getDefault().createGUID()), conn,
 				xmppconn, usernamespace);
 	}
+
 	public void dispose() {
 		disconnect();
 		if (sharedObjectID != null) {
 			getSharedObjectManager().removeSharedObject(sharedObjectID);
 			sharedObjectID = null;
 		}
-		if (sharedObject != null) {
-			sharedObject.dispose(getID());
-			sharedObject = null;
+		if (delegate != null) {
+			delegate.dispose(getID());
+			delegate = null;
 		}
 		super.dispose();
 	}
+
 	protected void sendMessage(ContainerMessage data) throws IOException {
 		synchronized (getConnectLock()) {
 			ID toID = data.getToContainerID();
@@ -107,15 +116,18 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 			super.sendMessage(data);
 		}
 	}
+
 	protected void handleChatMessage(Message mess) throws IOException {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
 		if (wrap != null) {
 			wrap.deliverEvent(new MessageEvent(mess));
 		}
 	}
+
 	protected boolean verifyToIDForSharedObjectMessage(ID toID) {
 		return true;
 	}
+
 	protected void handleContainerMessage(ContainerMessage mess)
 			throws IOException {
 		if (mess == null) {
@@ -135,24 +147,28 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 			debug("got unrecognized container message...ignoring: " + mess);
 		}
 	}
+
 	protected void handleIQMessage(IQ mess) throws IOException {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
 		if (wrap != null) {
 			wrap.deliverEvent(new IQEvent(mess));
 		}
 	}
+
 	protected void handlePresenceMessage(Presence mess) throws IOException {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
 		if (wrap != null) {
 			wrap.deliverEvent(new PresenceEvent(mess));
 		}
 	}
+
 	protected void handleChatMembershipEvent(String from, boolean add) {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
 		if (wrap != null) {
 			wrap.deliverEvent(new ChatMembershipEvent(from, add));
 		}
 	}
+
 	protected void handleXMPPMessage(Packet aPacket) {
 		try {
 			if (aPacket instanceof IQ) {
@@ -169,6 +185,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 			logException("Exception in handleXMPPMessage", e);
 		}
 	}
+
 	protected void handleInvitationMessage(XMPPConnection arg0, String arg1,
 			String arg2, String arg3, String arg4, Message arg5) {
 		SOWrapper wrap = getSharedObjectWrapper(sharedObjectID);
@@ -177,30 +194,34 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 					arg3, arg4, arg5));
 		}
 	}
+
 	protected void initializeSharedObject() throws IDInstantiationException {
 		sharedObjectID = IDFactory.getDefault().createStringID(
-				XMPP_GROUP_CHAT_SHARED_OBJECT_ID);
-		sharedObject = new XMPPGroupChatSharedObject(usernamespace,
-				xmppconnection);
+				XMPP_GROUPCHAT_DELEGATE_ID);
+		delegate = new XMPPGroupChatSharedObject(usernamespace, xmppconnection);
 	}
+
 	protected void addSharedObjectToContainer(ID remote)
 			throws SharedObjectAddException {
-		getSharedObjectManager().addSharedObject(sharedObjectID, sharedObject,
+		getSharedObjectManager().addSharedObject(sharedObjectID, delegate,
 				new HashMap());
 	}
+
 	protected void cleanUpConnectFail() {
-		if (sharedObject != null) {
+		if (delegate != null) {
 			getSharedObjectManager().removeSharedObject(sharedObjectID);
-			sharedObject = null;
+			delegate = null;
 			sharedObjectID = null;
 		}
 		connectionState = DISCONNECTED;
 		remoteServerID = null;
 	}
+
 	public Namespace getConnectNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(
 				XmppPlugin.getDefault().getRoomNamespaceIdentifier());
 	}
+
 	public void connect(ID remote, IConnectContext connectContext)
 			throws ContainerConnectException {
 		if (!(remote instanceof XMPPRoomID)) {
@@ -208,8 +229,8 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 					+ " is not of room id type");
 		}
 		XMPPRoomID roomID = (XMPPRoomID) remote;
-		fireContainerEvent(new ContainerConnectingEvent(this
-				.getID(), remote, connectContext));
+		fireContainerEvent(new ContainerConnectingEvent(this.getID(), remote,
+				connectContext));
 		synchronized (getConnectLock()) {
 			try {
 				connectionState = CONNECTING;
@@ -259,76 +280,92 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 							public void joined(String arg0) {
 								handleChatMembershipEvent(arg0, true);
 							}
+
 							public void left(String arg0) {
 								handleChatMembershipEvent(arg0, false);
 							}
+
 							public void voiceGranted(String arg0) {
 								// TODO Auto-generated method stub
 								System.out
 										.println("voiceGranted(" + arg0 + ")");
 							}
+
 							public void voiceRevoked(String arg0) {
 								// TODO Auto-generated method stub
 								System.out
 										.println("voiceRevoked(" + arg0 + ")");
 							}
+
 							public void membershipGranted(String arg0) {
 								// TODO Auto-generated method stub
 								System.out.println("membershipGranted(" + arg0
 										+ ")");
 							}
+
 							public void membershipRevoked(String arg0) {
 								// TODO Auto-generated method stub
 								System.out.println("membershipRevoked(" + arg0
 										+ ")");
 							}
+
 							public void moderatorGranted(String arg0) {
 								// TODO Auto-generated method stub
 								System.out.println("moderatorGranted(" + arg0
 										+ ")");
 							}
+
 							public void moderatorRevoked(String arg0) {
 								// TODO Auto-generated method stub
 								System.out.println("moderatorRevoked(" + arg0
 										+ ")");
 							}
+
 							public void ownershipGranted(String arg0) {
 								// TODO Auto-generated method stub
 								System.out.println("ownershipGranted(" + arg0
 										+ ")");
 							}
+
 							public void ownershipRevoked(String arg0) {
 								// TODO Auto-generated method stub
 								System.out.println("ownershipRevoked(" + arg0
 										+ ")");
 							}
+
 							public void adminGranted(String arg0) {
 								// TODO Auto-generated method stub
 								System.out
 										.println("adminGranted(" + arg0 + ")");
 							}
+
 							public void adminRevoked(String arg0) {
 								// TODO Auto-generated method stub
 								System.out
 										.println("adminRevoked(" + arg0 + ")");
 							}
-							public void kicked(String arg0, String arg1, String arg2) {
+
+							public void kicked(String arg0, String arg1,
+									String arg2) {
 								// TODO Auto-generated method stub
-								System.out.println("kicked(" + arg0
-										+ ","+ arg1+","+arg2+")");
-								
+								System.out.println("kicked(" + arg0 + ","
+										+ arg1 + "," + arg2 + ")");
+
 							}
-							public void banned(String arg0, String arg1, String arg2) {
+
+							public void banned(String arg0, String arg1,
+									String arg2) {
 								// TODO Auto-generated method stub
-								System.out.println("kicked(" + arg0
-										+ ","+ arg1+","+arg2+")");
-								
+								System.out.println("kicked(" + arg0 + ","
+										+ arg1 + "," + arg2 + ")");
+
 							}
+
 							public void nicknameChanged(String arg0, String arg1) {
 								// TODO Auto-generated method stub
-								System.out.println("kicked(" + arg0
-										+ ","+ arg1+")");
-								
+								System.out.println("kicked(" + arg0 + ","
+										+ arg1 + ")");
+
 							}
 						});
 				multiuserchat
@@ -352,8 +389,8 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 				multiuserchat.join(nickname);
 				connectionState = CONNECTED;
 				remoteServerID = roomID;
-				fireContainerEvent(new ContainerConnectedEvent(this
-						.getID(), roomID));
+				fireContainerEvent(new ContainerConnectedEvent(this.getID(),
+						roomID));
 			} catch (Exception e) {
 				cleanUpConnectFail();
 				ContainerConnectException ce = new ContainerConnectException(
@@ -363,10 +400,11 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 			}
 		}
 	}
+
 	public void disconnect() {
 		ID groupID = getConnectedID();
-		fireContainerEvent(new ContainerDisconnectingEvent(this
-				.getID(), groupID));
+		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(),
+				groupID));
 		synchronized (getConnectLock()) {
 			// If we are currently connected
 			if (isConnected()) {
@@ -381,14 +419,15 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 			remoteServerID = null;
 		}
 		// notify listeners
-		fireContainerEvent(new ContainerDisconnectedEvent(this
-				.getID(), groupID));
+		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), groupID));
 	}
+
 	protected SOContext createSharedObjectContext(SOConfig soconfig,
 			IQueueEnqueue queue) {
 		return new XMPPContainerContext(soconfig.getSharedObjectID(), soconfig
 				.getHomeContainerID(), this, soconfig.getProperties(), queue);
 	}
+
 	protected ID createChatRoomID(String groupName)
 			throws IDInstantiationException {
 		String username = xmppconnection.getUser();
@@ -401,15 +440,24 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 				new Object[] { username, host, null, groupName, username });
 		return targetID;
 	}
-	protected ISynchAsynchConnection createConnection(ID remoteSpace, Object data)
-			throws ConnectionInstantiationException {
+
+	protected ISynchAsynchConnection createConnection(ID remoteSpace,
+			Object data) throws ConnectionInstantiationException {
 		return null;
 	}
+
 	public void addMessageListener(IMessageListener listener) {
-		if (sharedObject != null) {
-			sharedObject.addMessageListener(listener);
+		if (delegate != null) {
+			delegate.addMessageListener(listener);
 		}
 	}
+
+	public void removeMessageListener(IMessageListener msgListener) {
+		if (delegate != null) {
+			delegate.removeMessageListener(msgListener);
+		}
+	}
+
 	public IChatMessageSender getChatMessageSender() {
 		return new IChatMessageSender() {
 			public void sendMessage(String messageBody) throws IOException {
@@ -426,6 +474,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 			}
 		};
 	}
+
 	public void connect(String groupName) throws ContainerConnectException {
 		ID targetID = null;
 		try {
@@ -436,15 +485,30 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 		}
 		this.connect(targetID, null);
 	}
+
 	public void addChatParticipantListener(
 			IChatParticipantListener participantListener) {
-		if (sharedObject != null) {
-			sharedObject.addChatParticipantListener(participantListener);
+		if (delegate != null) {
+			delegate.addChatParticipantListener(participantListener);
 		}
 	}
+
+	public void removeChatParticipantListener(
+			IChatParticipantListener participantListener) {
+		if (delegate != null) {
+			delegate.removeChatParticipantListener(participantListener);
+		}
+	}
+
 	public void addInvitationListener(IInvitationListener invitationListener) {
-		if (sharedObject != null) {
-			sharedObject.addInvitationListener(invitationListener);
+		if (delegate != null) {
+			delegate.addInvitationListener(invitationListener);
+		}
+	}
+
+	public void removeInvitationListener(IInvitationListener invitationListener) {
+		if (delegate != null) {
+			delegate.removeInvitationListener(invitationListener);
 		}
 	}
 }

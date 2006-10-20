@@ -27,6 +27,11 @@ public interface IChatRoomContainer extends IContainer {
 	public void addMessageListener(IMessageListener msgListener);
 
 	/**
+	 * @param msgListener
+	 */
+	public void removeMessageListener(IMessageListener msgListener);
+	
+	/**
 	 * Get interface for sending messages
 	 * 
 	 * @return IChatMessageSender. Null if no message sender available
@@ -41,4 +46,10 @@ public interface IChatRoomContainer extends IContainer {
 	 */
 	public void addChatParticipantListener(
 			IChatParticipantListener participantListener);
+	
+	/**
+	 * Remove chat participant listener
+	 * @param participantListener the participant listener to remove
+	 */
+	public void removeChatParticipantListener(IChatParticipantListener participantListener);
 }

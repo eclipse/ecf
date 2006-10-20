@@ -170,4 +170,9 @@ public class XMPPJingleContainer implements ICallContainer, ICallSessionListener
 		return result;
 	}
 
+	public void removeListener(ICallSessionListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

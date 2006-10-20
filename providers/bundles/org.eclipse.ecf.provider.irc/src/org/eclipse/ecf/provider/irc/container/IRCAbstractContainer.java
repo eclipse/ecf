@@ -25,6 +25,10 @@ import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.provider.irc.Activator;
 import org.eclipse.ecf.provider.irc.Trace;
 
+/**
+ * @author slewis
+ *
+ */
 public abstract class IRCAbstractContainer extends AbstractContainer {
 
 	protected static final String ROOT_ROOMNAME = "/";
@@ -140,4 +144,8 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	public void addMessageListener(IMessageListener msgListener) {
 		msgListeners.add(msgListener);
 	}
+	public void removeMessageListener(IMessageListener msgListener) {
+		msgListeners.remove(msgListener);
+	}
+
 }

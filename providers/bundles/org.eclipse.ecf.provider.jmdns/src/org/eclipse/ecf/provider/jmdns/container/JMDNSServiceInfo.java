@@ -13,8 +13,8 @@ package org.eclipse.ecf.provider.jmdns.container;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.eclipse.ecf.core.identity.ServiceID;
 import org.eclipse.ecf.discovery.IServiceProperties;
+import org.eclipse.ecf.discovery.ServiceID;
 import org.eclipse.ecf.discovery.ServiceInfo;
 
 public class JMDNSServiceInfo extends ServiceInfo {

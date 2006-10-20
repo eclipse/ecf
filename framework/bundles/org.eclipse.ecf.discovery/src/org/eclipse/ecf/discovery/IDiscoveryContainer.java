@@ -11,7 +11,6 @@ package org.eclipse.ecf.discovery;
 
 import java.io.IOException;
 
-import org.eclipse.ecf.core.identity.ServiceID;
 
 /**
  * Adapter interface for shared object containers that support lookup and discovery.

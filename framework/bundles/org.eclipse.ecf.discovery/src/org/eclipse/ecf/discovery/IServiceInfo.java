@@ -12,7 +12,6 @@ package org.eclipse.ecf.discovery;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.eclipse.ecf.core.identity.ServiceID;
 /**
  * Service information contrace.  Defines the information associated
  * with a remotely discoverable service
