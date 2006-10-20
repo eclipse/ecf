@@ -15,7 +15,7 @@ import org.eclipse.ecf.discovery.identity.ServiceID;
 
 
 /**
- * Adapter interface for shared object containers that support lookup and discovery.
+ * Entry point discovery container adapter.
  * This interface exposes the ability to add/remove listeners for newly
  * discovered services and service types, register and unregister locally provided
  * services, and get (synch) and request (asynch) service info from a remote

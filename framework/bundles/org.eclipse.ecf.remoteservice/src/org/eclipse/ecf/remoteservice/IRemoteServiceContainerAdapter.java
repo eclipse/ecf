@@ -16,7 +16,7 @@ import java.util.Dictionary;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Container for remote service access.  This is the entry point innterface for accessing 
+ * Entry point remote service container adapter.  This is the entry point innterface for accessing 
  * remote services through ECF containers.  
  *
  */

@@ -13,7 +13,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
- * Channel container entry point interface.  This interface is an adapter to allow
+ * Channel container entry point adapter.  This interface is an adapter to allow
  * providers to expose channels to clients.  It may be used in the following
  * way:
  * <p>

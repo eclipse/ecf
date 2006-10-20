@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
 /**
- * Entry pointer adapter interface for setting up listeners for presence
+ * Entry poing presence container adapter.  For setting up listeners for presence
  * messages, text messages, subscription requests, and for getting interfaces
  * for message sending (IMessageSender) presence updates (IPresenceSender) and
  * account management (IAccountManager)

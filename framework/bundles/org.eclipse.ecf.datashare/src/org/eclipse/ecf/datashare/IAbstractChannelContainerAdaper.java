@@ -12,7 +12,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 
 /**
- * Abstract channel container
+ * Abstract channel container adapter
  *
  */
 public interface IAbstractChannelContainerAdaper {
