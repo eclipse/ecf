@@ -15,15 +15,15 @@ import org.eclipse.ecf.core.identity.Namespace;
  * Abstract channel container
  *
  */
-public interface IAbstractChannelContainer {
+public interface IAbstractChannelContainerAdaper {
 	/**
-	 * Add listener for IChannelContainer events.
+	 * Add listener for IChannelContainerAdapter events.
 	 * 
 	 * @param listener to be added
 	 */
 	public void addListener(IChannelContainerListener listener);
 	/**
-	 * Remove listener for IChannelContainer events
+	 * Remove listener for IChannelContainerAdapter events
 	 * 
 	 * @param listener to be removed.  
 	 */

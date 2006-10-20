@@ -19,7 +19,7 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerInstantiationException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.discovery.IDiscoveryContainer;
+import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
@@ -40,13 +40,13 @@ public class DiscoveryStartup {
 	public static final int SVC_DEF_WEIGHT = 0;
 	public static final int SVC_DEF_PRIORITY = 0;
 	
-	static IDiscoveryContainer discovery = null;
+	static IDiscoveryContainerAdapter discovery = null;
 	static IContainer container = null;
 	
 	public DiscoveryStartup() throws Exception {
 		setupDiscovery();
 	}
-	protected IDiscoveryContainer getDiscoveryContainer() {
+	protected IDiscoveryContainerAdapter getDiscoveryContainer() {
 		return discovery;
 	}
 	protected IContainer getContainer() {
@@ -66,8 +66,8 @@ public class DiscoveryStartup {
 		try {
 			container = ContainerFactory.getDefault().createContainer(
 					DISCOVERY_CONTAINER);
-			discovery = (IDiscoveryContainer) container
-					.getAdapter(IDiscoveryContainer.class);
+			discovery = (IDiscoveryContainerAdapter) container
+					.getAdapter(IDiscoveryContainerAdapter.class);
 			if (discovery != null) {
 				container.connect(null, null);
 			} else {

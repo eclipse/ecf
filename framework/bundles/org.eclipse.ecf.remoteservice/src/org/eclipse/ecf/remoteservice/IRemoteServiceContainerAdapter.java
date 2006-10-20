@@ -20,7 +20,7 @@ import org.eclipse.ecf.core.identity.ID;
  * remote services through ECF containers.  
  *
  */
-public interface IRemoteServiceContainer {
+public interface IRemoteServiceContainerAdapter {
 
 	/**
 	 * Add listener for remote service registration/unregistration for this

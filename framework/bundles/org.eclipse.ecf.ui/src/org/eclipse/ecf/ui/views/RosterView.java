@@ -41,7 +41,7 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.IPresenceContainer;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
@@ -120,12 +120,12 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		ID serviceID;
 		IUser user;
 		ILocalInputHandler inputHandler;
-		IPresenceContainer container;
+		IPresenceContainerAdapter container;
 		ISharedObjectContainer soContainer;
 		ISharedObject sharedObject = null;
 		
 		public UserAccount(ID serviceID, IUser user,
-				ILocalInputHandler handler, IPresenceContainer container, ISharedObjectContainer soContainer) {
+				ILocalInputHandler handler, IPresenceContainerAdapter container, ISharedObjectContainer soContainer) {
 			this.serviceID = serviceID;
 			this.user = user;
 			this.inputHandler = handler;
@@ -143,7 +143,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		public ILocalInputHandler getInputHandler() {
 			return inputHandler;
 		}
-		public IPresenceContainer getPresenceContainer() {
+		public IPresenceContainerAdapter getPresenceContainer() {
 			return container;
 		}
 		public ISharedObjectContainer getSOContainer() {
@@ -857,7 +857,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	protected void changePasswordForAccount(ID accountID) {
 		UserAccount account = getAccount(accountID);
 		if (account != null) {
-			IPresenceContainer pc = account.getPresenceContainer();
+			IPresenceContainerAdapter pc = account.getPresenceContainer();
 			IAccountManager am = pc.getAccountManager();
 			ChangePasswordDialog cpd = new ChangePasswordDialog(viewer.getControl().getShell());
 			cpd.open();
@@ -1335,7 +1335,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		}
 	}
 	public void addAccount(ID account, IUser user, ILocalInputHandler handler,
-			IPresenceContainer container, ISharedObjectContainer soContainer) {
+			IPresenceContainerAdapter container, ISharedObjectContainer soContainer) {
 		addAccount(new UserAccount(account, user, handler, container, soContainer));
 		setToolbarEnabled(true);
 	}

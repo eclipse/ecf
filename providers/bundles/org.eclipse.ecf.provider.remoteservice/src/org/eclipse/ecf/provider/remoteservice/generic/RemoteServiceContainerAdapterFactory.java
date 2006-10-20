@@ -11,17 +11,17 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 import org.eclipse.ecf.core.AbstractSharedObjectContainerAdapterFactory;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 
 public class RemoteServiceContainerAdapterFactory extends AbstractSharedObjectContainerAdapterFactory {
 
 	protected ISharedObject createAdapter(ISharedObjectContainer container, Class adapterType) {
-		if (adapterType.equals(IRemoteServiceContainer.class)) return new RegistrySharedObject();
+		if (adapterType.equals(IRemoteServiceContainerAdapter.class)) return new RegistrySharedObject();
 		else return null;
 	}
 
 	public Class[] getAdapterList() {
-		return new Class[] { IRemoteServiceContainer.class };
+		return new Class[] { IRemoteServiceContainerAdapter.class };
 	}
 	
 }

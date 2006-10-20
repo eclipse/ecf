@@ -15,11 +15,11 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Remote service reference.  Instances implementing this
- * interface are returned from the IRemoteServiceContainer.getRemoteServiceReferences call.
+ * interface are returned from the IRemoteServiceContainerAdapter.getRemoteServiceReferences call.
  * Once retrieved, such references can be resolved to
- * an IRemoteService via calls to IRemoteServiceContainer.getRemoteService(reference)
+ * an IRemoteService via calls to IRemoteServiceContainerAdapter.getRemoteService(reference)
  *
- * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainer
+ * @see org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter
  */
 public interface IRemoteServiceReference {
 	/**

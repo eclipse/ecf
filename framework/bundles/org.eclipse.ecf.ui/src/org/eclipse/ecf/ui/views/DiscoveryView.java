@@ -18,7 +18,7 @@ import java.util.Enumeration;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.discovery.IDiscoveryContainer;
+import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.ServiceID;
@@ -116,7 +116,7 @@ public class DiscoveryView extends ViewPart {
 			return c.getContainer();
 		}
 	}
-	protected IDiscoveryContainer getDiscoveryContainer() {
+	protected IDiscoveryContainerAdapter getDiscoveryContainer() {
 		IDiscoveryController c = getController();
 		if (c == null) return null;
 		else {
@@ -488,7 +488,7 @@ public class DiscoveryView extends ViewPart {
                 if (treeObject instanceof TreeParent) {
                 	TreeParent p = (TreeParent) treeObject;
                     final ServiceID targetID = p.getID();
-                    IDiscoveryContainer dcontainer = getDiscoveryContainer();
+                    IDiscoveryContainerAdapter dcontainer = getDiscoveryContainer();
                     if (dcontainer != null) {
                     	dcontainer.requestServiceInfo(targetID,SERVICE_INFO_TIMEOUT);
                     }
@@ -504,7 +504,7 @@ public class DiscoveryView extends ViewPart {
                 TreeObject treeObject = getSelectedTreeObject();
                 if (treeObject instanceof TreeParent) {
                 	TreeParent p = (TreeParent) treeObject;
-                    IDiscoveryContainer dcontainer = getDiscoveryContainer();
+                    IDiscoveryContainerAdapter dcontainer = getDiscoveryContainer();
                     if (dcontainer != null) {
                     	dcontainer.registerServiceType(p.getName());
                     }

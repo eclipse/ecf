@@ -16,7 +16,7 @@ package org.eclipse.ecf.provider.xmpp.jingle;
 import java.util.ArrayList;
 
 import org.eclipse.ecf.call.CallException;
-import org.eclipse.ecf.call.ICallContainer;
+import org.eclipse.ecf.call.ICallContainerAdapter;
 import org.eclipse.ecf.call.ICallDescription;
 import org.eclipse.ecf.call.ICallSession;
 import org.eclipse.ecf.call.ICallSessionListener;
@@ -39,7 +39,7 @@ import org.jivesoftware.smackx.nat.TransportResolver;
  * @author Pierre-Henry Perret
  *
  */
-public class XMPPJingleContainer implements ICallContainer, ICallSessionListener {
+public class XMPPJingleContainer implements ICallContainerAdapter, ICallSessionListener {
 
 	private TransportResolver tm= null;
 	private XMPPConnection conn= null;
@@ -71,7 +71,7 @@ public class XMPPJingleContainer implements ICallContainer, ICallSessionListener
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.call.ICallContainer#addListener(org.eclipse.ecf.call.ICallSessionListener)
+	 * @see org.eclipse.ecf.call.ICallContainerAdapter#addListener(org.eclipse.ecf.call.ICallSessionListener)
 	 */
 	public void addListener(ICallSessionListener listener) {
 		
@@ -79,7 +79,7 @@ public class XMPPJingleContainer implements ICallContainer, ICallSessionListener
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.call.ICallContainer#createCallSession()
+	 * @see org.eclipse.ecf.call.ICallContainerAdapter#createCallSession()
 	 */
 	public ICallSession createCallSession() {
 		

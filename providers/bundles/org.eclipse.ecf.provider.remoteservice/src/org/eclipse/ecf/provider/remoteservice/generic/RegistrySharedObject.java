@@ -37,7 +37,7 @@ import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteService;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
@@ -47,7 +47,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 
-public class RegistrySharedObject extends AbstractSharedObject implements IRemoteServiceContainer {
+public class RegistrySharedObject extends AbstractSharedObject implements IRemoteServiceContainerAdapter {
 
 	Trace trace = Trace.create("registrysharedobject");
 
@@ -60,7 +60,7 @@ public class RegistrySharedObject extends AbstractSharedObject implements IRemot
 	public RegistrySharedObject() {
 	}
 
-	/* Begin implementation of IRemoteServiceContainer public interface */
+	/* Begin implementation of IRemoteServiceContainerAdapter public interface */
 	public void addRemoteServiceListener(IRemoteServiceListener listener) {
 		trace("addRemoteServiceListener(" + listener + ")");
 		synchronized (serviceListeners) {
@@ -143,7 +143,7 @@ public class RegistrySharedObject extends AbstractSharedObject implements IRemot
 		return true;
 	}
 
-	/* End implementation of IRemoteServiceContainer public interface */
+	/* End implementation of IRemoteServiceContainerAdapter public interface */
 
 	public void initialize() throws SharedObjectInitException {
 		super.initialize();

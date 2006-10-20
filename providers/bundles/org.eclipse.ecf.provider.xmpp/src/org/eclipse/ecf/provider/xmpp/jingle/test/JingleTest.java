@@ -1,6 +1,6 @@
 package org.eclipse.ecf.provider.xmpp.jingle.test;
 
-import org.eclipse.ecf.call.ICallContainer;
+import org.eclipse.ecf.call.ICallContainerAdapter;
 import org.eclipse.ecf.provider.xmpp.container.XMPPClientSOContainer;
 
 public class JingleTest {
@@ -15,7 +15,7 @@ public class JingleTest {
 
 			// client1 make a call to client2
 			// this installs request listener for incoming sessions
-			ICallContainer jingle1= (ICallContainer)client1.getAdapter( ICallContainer.class );
+			ICallContainerAdapter jingle1= (ICallContainerAdapter)client1.getAdapter( ICallContainerAdapter.class );
 			// create a call session
 			jingle1.createCallSession( client1.getID() );
 

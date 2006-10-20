@@ -40,14 +40,14 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelConfig;
-import org.eclipse.ecf.datashare.IChannelContainer;
+import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.IChannelContainerListener;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelContainerChannelActivatedEvent;
 import org.eclipse.ecf.datashare.events.IChannelContainerChannelDeactivatedEvent;
 import org.eclipse.ecf.datashare.events.IChannelContainerEvent;
 
-public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject implements IChannelContainer {
+public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject implements IChannelContainerAdapter {
 	
 	protected static final int DEFAULT_TRANSACTION_WAIT = 30000;
 	
@@ -104,7 +104,7 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.datashare.IChannelContainer#createChannel(org.eclipse.ecf.datashare.IChannelConfig)
+	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#createChannel(org.eclipse.ecf.datashare.IChannelConfig)
 	 */
 	public IChannel createChannel(final ID newID,
 			final IChannelListener listener, final Map properties)
@@ -209,7 +209,7 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.datashare.IChannelContainer#getChannel(org.eclipse.ecf.core.identity.ID)
+	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#getChannel(org.eclipse.ecf.core.identity.ID)
 	 */
 	public IChannel getChannel(ID channelID) {
 		return (IChannel) getContext().getSharedObjectManager().getSharedObject(channelID);
@@ -217,7 +217,7 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.datashare.IChannelContainer#disposeChannel(org.eclipse.ecf.core.identity.ID)
+	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#disposeChannel(org.eclipse.ecf.core.identity.ID)
 	 */
 	public boolean removeChannel(ID channelID) {
 		ISharedObject o = getContext().getSharedObjectManager()
@@ -226,7 +226,7 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 	}
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ecf.datashare.IChannelContainer#getChannelNamespace()
+	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#getChannelNamespace()
 	 */
 	public Namespace getChannelNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());

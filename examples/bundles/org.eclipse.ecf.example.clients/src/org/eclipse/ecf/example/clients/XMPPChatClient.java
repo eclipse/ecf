@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
-import org.eclipse.ecf.presence.IPresenceContainer;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
@@ -29,7 +29,7 @@ public class XMPPChatClient {
 	
 	Namespace namespace = null;
 	IContainer container = null;
-	IPresenceContainer presence = null;
+	IPresenceContainerAdapter presence = null;
 	IMessageSender sender = null;
 	ID userID = null;
 	IChatRoomManager chatmanager = null;
@@ -60,8 +60,8 @@ public class XMPPChatClient {
 	}
 	protected void setupPresenceAdapter() {
 		// Get presence adapter off of container
-		presence = (IPresenceContainer) container
-				.getAdapter(IPresenceContainer.class);
+		presence = (IPresenceContainerAdapter) container
+				.getAdapter(IPresenceContainerAdapter.class);
 		// Get sender interface
 		sender = presence.getMessageSender();
 		// Setup message listener to handle incoming messages
@@ -71,7 +71,7 @@ public class XMPPChatClient {
 			}
 		});
 	}
-	protected IPresenceContainer getPresenceContainer() {
+	protected IPresenceContainerAdapter getPresenceContainer() {
 		return presence;
 	}
 	protected IMessageSender getMessageSender() {

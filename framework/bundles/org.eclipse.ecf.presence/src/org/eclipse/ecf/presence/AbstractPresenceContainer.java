@@ -19,7 +19,7 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
 /**
  * An abstract presence container implementation
  */
-public abstract class AbstractPresenceContainer implements IPresenceContainer {
+public abstract class AbstractPresenceContainer implements IPresenceContainerAdapter {
 
 	private Vector messageListeners = new Vector();
 
@@ -28,21 +28,21 @@ public abstract class AbstractPresenceContainer implements IPresenceContainer {
 	private Vector subscribeListeners = new Vector();
 
 	/**
-	 * @see org.eclipse.ecf.presence.IPresenceContainer#addSubscribeListener(org.eclipse.ecf.presence.ISubscribeListener)
+	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#addSubscribeListener(org.eclipse.ecf.presence.ISubscribeListener)
 	 */
 	public void addSubscribeListener(ISubscribeListener listener) {
 		subscribeListeners.add(listener);
 	}
 
 	/**
-	 * @see org.eclipse.ecf.presence.IPresenceContainer#addPresenceListener(org.eclipse.ecf.presence.IPresenceListener)
+	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#addPresenceListener(org.eclipse.ecf.presence.IPresenceListener)
 	 */
 	public void addPresenceListener(IPresenceListener listener) {
 		presenceListeners.add(listener);
 	}
 
 	/**
-	 * @see org.eclipse.ecf.presence.IPresenceContainer#addMessageListener(org.eclipse.ecf.presence.IMessageListener)
+	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#addMessageListener(org.eclipse.ecf.presence.IMessageListener)
 	 */
 	public void addMessageListener(IMessageListener listener) {
 		messageListeners.add(listener);

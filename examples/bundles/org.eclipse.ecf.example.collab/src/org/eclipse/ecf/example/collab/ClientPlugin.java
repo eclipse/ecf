@@ -16,7 +16,7 @@ import java.util.ResourceBundle;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.discovery.IDiscoveryContainer;
+import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.ui.views.IDiscoveryController;
 import org.eclipse.jface.resource.FontRegistry;
@@ -83,7 +83,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 			public void stopDiscovery() {
 				getDefault().disposeDiscovery();
 			}
-			public IDiscoveryContainer getDiscoveryContainer() {
+			public IDiscoveryContainerAdapter getDiscoveryContainer() {
 				synchronized (ClientPlugin.this) {
 					if (discoveryStartup == null)
 						return null;

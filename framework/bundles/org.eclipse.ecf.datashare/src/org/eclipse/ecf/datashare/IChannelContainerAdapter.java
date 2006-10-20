@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.util.ECFException;
  * way:
  * <p>
  * <pre>
- * IChannelContainer channelcontainer = (IChannelContainer) container.getAdapter(IChannelContainer.class);
+ * IChannelContainerAdapter channelcontainer = (IChannelContainerAdapter) container.getAdapter(IChannelContainerAdapter.class);
  * if (channelcontainer != null) {
  *    // use channelcontainer
  *    ...
@@ -28,7 +28,7 @@ import org.eclipse.ecf.core.util.ECFException;
  * </pre>
  * 
  */
-public interface IChannelContainer extends IAbstractChannelContainer {
+public interface IChannelContainerAdapter extends IAbstractChannelContainerAdaper {
 	/**
 	 * Create a new channel within this container
 	 * @param channelID the ID of the new channel.  Must not be null

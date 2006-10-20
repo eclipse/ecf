@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.BasicChannelConfig;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelConfig;
-import org.eclipse.ecf.datashare.IChannelContainer;
+import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
@@ -32,9 +32,9 @@ public class DsClient2 {
 	IChannel channel = null;
 	
 	protected IChannel createChannel(IContainer container) throws ECFException {
-		// Get IChannelContainer adapter
-		IChannelContainer channelContainer = (IChannelContainer) container
-				.getAdapter(IChannelContainer.class);
+		// Get IChannelContainerAdapter adapter
+		IChannelContainerAdapter channelContainer = (IChannelContainerAdapter) container
+				.getAdapter(IChannelContainerAdapter.class);
 		// Check it's valid, throw if not
 		if (channelContainer == null)
 			throw new NullPointerException(

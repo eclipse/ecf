@@ -42,14 +42,14 @@ import org.eclipse.ecf.filetransfer.FileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainer;
+import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.IPresenceContainer;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.ISubscribeListener;
@@ -88,7 +88,7 @@ import org.jivesoftware.smackx.muc.RoomInfo;
 import org.jivesoftware.smackx.packet.MUCUser;
 
 public class XMPPClientSOContainer extends ClientSOContainer implements
-		IOutgoingFileTransferContainer {
+		IOutgoingFileTransferContainerAdapter {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
 
@@ -439,8 +439,8 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 	}
 
 	public Object getAdapter(Class clazz) {
-		if (clazz.equals(IPresenceContainer.class)) {
-			return new IPresenceContainer() {
+		if (clazz.equals(IPresenceContainerAdapter.class)) {
+			return new IPresenceContainerAdapter() {
 
 				public Object getAdapter(Class clazz) {
 					return null;

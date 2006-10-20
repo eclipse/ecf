@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
-import org.eclipse.ecf.datashare.IChannelContainer;
+import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
@@ -34,9 +34,9 @@ public class ScribbleClient {
 	ScribbleView scribbleView = null;
 	
 	protected void createChannel() throws ECFException {
-		// Get IChannelContainer adapter
-		IChannelContainer channelContainer = (IChannelContainer) container
-				.getAdapter(IChannelContainer.class);
+		// Get IChannelContainerAdapter adapter
+		IChannelContainerAdapter channelContainer = (IChannelContainerAdapter) container
+				.getAdapter(IChannelContainerAdapter.class);
 		// Create channel ID with fixed name 'channel2'
 		final ID channelID = IDFactory.getDefault().createID(
 				channelContainer.getChannelNamespace(), CHANNEL_ID);

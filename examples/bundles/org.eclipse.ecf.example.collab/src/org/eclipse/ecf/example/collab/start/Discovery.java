@@ -12,7 +12,7 @@ package org.eclipse.ecf.example.collab.start;
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.discovery.IDiscoveryContainer;
+import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
@@ -21,7 +21,7 @@ import org.eclipse.ecf.discovery.identity.ServiceID;
 public class Discovery {
 	
 	IContainer container = null;
-	IDiscoveryContainer discoveryContainer = null;
+	IDiscoveryContainerAdapter discoveryContainer = null;
 	
 	public Discovery() throws Exception {
 		startDiscovery();
@@ -30,8 +30,8 @@ public class Discovery {
 		container = ContainerFactory.getDefault().createContainer(
 				"ecf.discovery.jmdns");
 		container.connect(null, null);
-		discoveryContainer = (IDiscoveryContainer) container
-				.getAdapter(IDiscoveryContainer.class);
+		discoveryContainer = (IDiscoveryContainerAdapter) container
+				.getAdapter(IDiscoveryContainerAdapter.class);
 		discoveryContainer
 				.addServiceTypeListener(new CollabServiceTypeListener());
 		System.out.println("startDiscovery()");

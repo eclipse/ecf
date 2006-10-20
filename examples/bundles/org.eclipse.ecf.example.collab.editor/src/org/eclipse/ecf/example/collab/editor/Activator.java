@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
-import org.eclipse.ecf.datashare.IChannelContainer;
+import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.example.collab.editor.message.SharedEditorSessionList;
 import org.eclipse.ecf.example.collab.editor.model.SessionInstance;
@@ -137,7 +137,7 @@ public class Activator extends AbstractUIPlugin {
 		presenceContainer = ContainerFactory.getDefault().createContainer(
 				Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CONTAINER_TYPE));
 
-		IChannelContainer channelContainer = (IChannelContainer) presenceContainer.getAdapter(IChannelContainer.class);
+		IChannelContainerAdapter channelContainer = (IChannelContainerAdapter) presenceContainer.getAdapter(IChannelContainerAdapter.class);
 
 		final ID channelID = IDFactory.getDefault().createID(channelContainer.getChannelNamespace(),
 				Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CHANNEL_ID) + ".presence");

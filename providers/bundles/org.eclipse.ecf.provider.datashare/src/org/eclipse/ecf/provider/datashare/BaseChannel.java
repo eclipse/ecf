@@ -22,7 +22,7 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.datashare.IChannel;
-import org.eclipse.ecf.datashare.IChannelContainer;
+import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelGroupDepartEvent;
@@ -282,7 +282,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
      * Note that this implementation checks for the existence of the RECEIVER_ID_PROPERTY on the
      * replica's properties, and if the property contains a valid ID will 
      * <ul>
-     * <li>lookup the IChannel on the given container via IChannelContainer.getID(ID)</li>
+     * <li>lookup the IChannel on the given container via IChannelContainerAdapter.getID(ID)</li>
      * <li>call IChannel.getListener() to retrieve the listener for the channel returned</li>
      * <li>set the listener for this object to the value returned from IChannel.getListener()</li>
      * </ul>
@@ -298,7 +298,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		}
 		if (rcvr != null) {
 			// Now...get local channel container first...throw if we can't get it
-			IChannelContainer container = (IChannelContainer) getContext().getAdapter(IChannelContainer.class);
+			IChannelContainerAdapter container = (IChannelContainerAdapter) getContext().getAdapter(IChannelContainerAdapter.class);
 			if (container == null) throw new SharedObjectInitException("channel container is null/not available");
 			// Now get receiver IChannel...throw if we can't get it
 			final IChannel receiver = container.getChannel(rcvr);

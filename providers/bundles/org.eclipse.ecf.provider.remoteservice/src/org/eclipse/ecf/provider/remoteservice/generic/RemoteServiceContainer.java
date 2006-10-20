@@ -14,15 +14,15 @@ import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
 import org.eclipse.ecf.remoteservice.IRemoteService;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainer;
+import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 
 public class RemoteServiceContainer extends TCPClientSOContainer
-		implements IRemoteServiceContainer {
+		implements IRemoteServiceContainerAdapter {
 
-	protected IRemoteServiceContainer registry;
+	protected IRemoteServiceContainerAdapter registry;
 	
 	protected void createRegistry() {
 		registry = new RegistrySharedObject();

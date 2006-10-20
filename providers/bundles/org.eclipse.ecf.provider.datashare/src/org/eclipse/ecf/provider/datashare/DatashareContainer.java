@@ -16,13 +16,13 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelConfig;
-import org.eclipse.ecf.datashare.IChannelContainer;
+import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.IChannelContainerListener;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
 
 public class DatashareContainer extends TCPClientSOContainer implements
-		IChannelContainer {
+		IChannelContainerAdapter {
 	protected static final int DEFAULT_CONTAINER_KEEP_ALIVE = 30000;
 	protected static final int DEFAULT_TRANSACTION_WAIT = 30000;
 	
@@ -35,7 +35,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.datashare.IChannelContainer#createChannel(org.eclipse.ecf.datashare.IChannelConfig)
+	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#createChannel(org.eclipse.ecf.datashare.IChannelConfig)
 	 */
 	public IChannel createChannel(final ID newID,
 			final IChannelListener listener, final Map properties)
@@ -49,7 +49,7 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.datashare.IChannelContainer#getChannel(org.eclipse.ecf.core.identity.ID)
+	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#getChannel(org.eclipse.ecf.core.identity.ID)
 	 */
 	public IChannel getChannel(ID channelID) {
 		return adapter.getChannel(channelID);
@@ -57,14 +57,14 @@ public class DatashareContainer extends TCPClientSOContainer implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.datashare.IChannelContainer#disposeChannel(org.eclipse.ecf.core.identity.ID)
+	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#disposeChannel(org.eclipse.ecf.core.identity.ID)
 	 */
 	public boolean removeChannel(ID channelID) {
 		return adapter.removeChannel(channelID);
 	}
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ecf.datashare.IChannelContainer#getChannelNamespace()
+	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#getChannelNamespace()
 	 */
 	public Namespace getChannelNamespace() {
 		return adapter.getChannelNamespace();

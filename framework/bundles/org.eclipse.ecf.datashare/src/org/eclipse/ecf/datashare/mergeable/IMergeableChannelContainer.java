@@ -11,7 +11,7 @@ package org.eclipse.ecf.datashare.mergeable;
 import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.datashare.IAbstractChannelContainer;
+import org.eclipse.ecf.datashare.IAbstractChannelContainerAdaper;
 import org.eclipse.ecf.datashare.IChannelListener;
 
 /**
@@ -30,7 +30,7 @@ import org.eclipse.ecf.datashare.IChannelListener;
  * </pre>
  * 
  */
-public interface IMergeableChannelContainer extends IAbstractChannelContainer {
+public interface IMergeableChannelContainer extends IAbstractChannelContainerAdaper {
 	/**
 	 * Create a mergeable channel within this container
 	 * @param channelID the ID of the mergeable channel created

@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
-import org.eclipse.ecf.datashare.IChannelContainer;
+import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 
@@ -28,7 +28,7 @@ public class DsClient1 {
 	IChannel channel = null;
 	
 	protected IChannel createChannel(IContainer container) throws ECFException {
-		IChannelContainer channelContainer = (IChannelContainer) container.getAdapter(IChannelContainer.class);
+		IChannelContainerAdapter channelContainer = (IChannelContainerAdapter) container.getAdapter(IChannelContainerAdapter.class);
 		if (channelContainer == null) throw new NullPointerException("cannot get channel container adapter");
 		
 		ID channelID = IDFactory.getDefault().createID(channelContainer.getChannelNamespace(), "channel1");

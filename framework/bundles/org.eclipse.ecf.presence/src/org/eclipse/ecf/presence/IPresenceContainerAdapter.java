@@ -22,7 +22,7 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
  * To use this adapter:
  * 
  * <pre>
- *  IPresenceContainer presenceContainer = (IPresenceContainer) container.getAdapter(IPresenceContainer.class);
+ *  IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
  *  if (presenceContainer != null) {
  *     ...use presenceContainer
  *  } else {
@@ -31,7 +31,7 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
  * </pre>
  * 
  */
-public interface IPresenceContainer extends IAdaptable {
+public interface IPresenceContainerAdapter extends IAdaptable {
 
 	/**
 	 * Setup listener for handling subscription requests. The given listener

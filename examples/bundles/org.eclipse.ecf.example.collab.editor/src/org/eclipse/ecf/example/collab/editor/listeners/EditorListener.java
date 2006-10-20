@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
-import org.eclipse.ecf.datashare.IChannelContainer;
+import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.example.collab.editor.Activator;
 import org.eclipse.ecf.example.collab.editor.message.EditorChangeMessage;
@@ -110,7 +110,7 @@ public class EditorListener implements IDocumentListener {
 		container = ContainerFactory.getDefault().createContainer(
 				Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CONTAINER_TYPE));
 
-		IChannelContainer channelContainer = (IChannelContainer) container.getAdapter(IChannelContainer.class);
+		IChannelContainerAdapter channelContainer = (IChannelContainerAdapter) container.getAdapter(IChannelContainerAdapter.class);
 
 		sessionID = Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CHANNEL_ID) + SESSION_NAME_DELIMITER + editor.getTitle();
 

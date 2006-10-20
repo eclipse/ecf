@@ -10,7 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.example.collab;
 
-import org.eclipse.ecf.discovery.IDiscoveryContainer;
+import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
@@ -29,7 +29,7 @@ public class CollabDiscoveryView extends DiscoveryView {
 	public void setDiscoveryController(final IDiscoveryController controller) {
 		super.setDiscoveryController(controller);
 		if (controller != null) {
-			final IDiscoveryContainer dc = controller.getDiscoveryContainer();
+			final IDiscoveryContainerAdapter dc = controller.getDiscoveryContainer();
 			if (dc != null) {
 				// setup listeners
 				dc.addServiceTypeListener(new IServiceTypeListener() {

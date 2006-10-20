@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * Interface providing runtime access to a remote service.  An instance
- * implementing this interface will be returned from the IRemoteServiceContainer.getRemoteService(IRemoteServiceReference)
+ * implementing this interface will be returned from the IRemoteServiceContainerAdapter.getRemoteService(IRemoteServiceReference)
  * and may then be used to communicate with a remote service.  The methods on this interface support accessing
  * the remote service in several ways:<br/>
  * <ul>

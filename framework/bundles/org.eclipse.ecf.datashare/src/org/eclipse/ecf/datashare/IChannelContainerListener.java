@@ -22,7 +22,7 @@ import org.eclipse.ecf.datashare.events.IChannelContainerEvent;
 public interface IChannelContainerListener {
 	/**
 	 * Handle channel container events.  
-	 * @param event IChannelContainer event
+	 * @param event IChannelContainerAdapter event
 	 */
 	public void handleChannelContainerEvent(IChannelContainerEvent event);
 }

@@ -27,7 +27,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
-import org.eclipse.ecf.presence.IPresenceContainer;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
 public class CollabClient {
@@ -87,10 +87,10 @@ public class CollabClient {
 			if (ircchatRoomManagerUI.setup(newClient, targetID, username))
 				return;
 		} else {
-			// Check for IPresenceContainer....if it is, setup presence UI, if
+			// Check for IPresenceContainerAdapter....if it is, setup presence UI, if
 			// not setup shared object container
-			IPresenceContainer pc = (IPresenceContainer) newClient
-					.getAdapter(IPresenceContainer.class);
+			IPresenceContainerAdapter pc = (IPresenceContainerAdapter) newClient
+					.getAdapter(IPresenceContainerAdapter.class);
 			if (pc != null) {
 				// Setup presence UI
 				presenceContainerUI = new PresenceContainerUI(pc);

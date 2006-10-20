@@ -19,7 +19,7 @@ import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.IPresenceContainer;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
@@ -40,14 +40,14 @@ public class PresenceContainerUI {
     protected IMessageSender messageSender = null;
     protected IPresenceSender presenceSender = null;
 	protected IAccountManager accountManager = null;
-	protected IPresenceContainer pc = null;
+	protected IPresenceContainerAdapter pc = null;
 	protected ISharedObjectContainer soContainer = null;
 
 	protected org.eclipse.ecf.core.user.User localUser = null;
 	protected ID groupID = null;
 	protected IContainer container;
 	
-	public PresenceContainerUI(IPresenceContainer pc) {
+	public PresenceContainerUI(IPresenceContainerAdapter pc) {
 		this.pc = pc;
         this.messageSender = pc.getMessageSender();
         this.presenceSender = pc.getPresenceSender();

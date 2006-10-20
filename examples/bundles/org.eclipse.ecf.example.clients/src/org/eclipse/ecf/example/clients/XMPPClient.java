@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
-import org.eclipse.ecf.presence.IPresenceContainer;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 
 public class XMPPClient {
@@ -27,7 +27,7 @@ public class XMPPClient {
 	
 	Namespace namespace = null;
 	IContainer container = null;
-	IPresenceContainer presence = null;
+	IPresenceContainerAdapter presence = null;
 	IMessageSender sender = null;
 	ID userID = null;
 	
@@ -68,8 +68,8 @@ public class XMPPClient {
 	}
 	protected void setupPresence() throws ECFException {
 		if (presence == null) {
-			presence = (IPresenceContainer) container
-					.getAdapter(IPresenceContainer.class);
+			presence = (IPresenceContainerAdapter) container
+					.getAdapter(IPresenceContainerAdapter.class);
 			sender = presence.getMessageSender();
 			presence.addMessageListener(new IMessageListener() {
 				public void handleMessage(ID fromID, ID toID, Type type,
