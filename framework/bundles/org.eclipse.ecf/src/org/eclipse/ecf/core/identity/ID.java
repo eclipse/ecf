@@ -52,10 +52,10 @@ public interface ID extends java.io.Serializable, java.lang.Comparable,
 	public Namespace getNamespace();
 
 	/**
-	 * If available, return this identity in URI form. If not available, throw
+	 * If available, return this identity in URI form. If not available as URI, throw
 	 * URISyntaxException
 	 * 
-	 * @return URI the URI representation of this identity.  Must not return null.
+	 * @return URI the URI representation of this identity.  Will not return null.
 	 * @throws URISyntaxException if this ID cannot be converted to URI form
 	 */
 	public URI toURI() throws URISyntaxException;

@@ -14,7 +14,7 @@ package org.eclipse.ecf.provider.irc.identity;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 
 public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 
@@ -22,22 +22,22 @@ public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 
 	public static final String IRC_PROTOCOL = "irc";
 	
-	public ID createInstance(Class[] argTypes, Object[] args) throws IDInstantiationException {
+	public ID createInstance(Class[] argTypes, Object[] args) throws IDCreateException {
 		URI newURI = null;
 		String s = null;
 		try {
 			s = (String) args[0];
 		} catch (ClassCastException e) {
-			throw new IDInstantiationException("Cannot cast argument "+args[0]+" to String");
+			throw new IDCreateException("Cannot cast argument "+args[0]+" to String");
 		}
 		try {
 			newURI = new URI(s);
 		} catch (URISyntaxException e) {
-			throw new IDInstantiationException("Exception creating URI out of "+s);
+			throw new IDCreateException("Exception creating URI out of "+s);
 		}
 		String uriScheme = newURI.getScheme();
 		if (uriScheme == null || !uriScheme.equalsIgnoreCase(getScheme())) {
-			throw new IDInstantiationException(newURI+" has invalid protocol.  URI must have protocol "+IRC_PROTOCOL);
+			throw new IDCreateException(newURI+" has invalid protocol.  URI must have protocol "+IRC_PROTOCOL);
 		}
 		return new IRCID(this,newURI);
 	}

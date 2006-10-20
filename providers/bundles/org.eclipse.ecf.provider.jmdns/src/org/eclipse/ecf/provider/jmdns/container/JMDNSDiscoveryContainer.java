@@ -38,7 +38,7 @@ import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
@@ -72,7 +72,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	Vector serviceTypeListeners = new Vector();
 	private Vector listeners = new Vector();
 	public JMDNSDiscoveryContainer() throws IOException,
-			IDInstantiationException {
+			IDCreateException {
 		this(null);
 	}
 	public ID getID() {
@@ -82,7 +82,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 			return config.getID();
 	}
 	public JMDNSDiscoveryContainer(InetAddress addr) throws IOException,
-			IDInstantiationException {
+			IDCreateException {
 		super();
 		intf = (addr == null) ? InetAddress.getLocalHost() : addr;
 		this.config = new ContainerConfig(IDFactory.getDefault()
@@ -280,7 +280,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		try {
 			id = (ServiceID) IDFactory.getDefault().createID(
 					JMDNS_NAMESPACE_ID, new Object[] { type, name });
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			// Should never happen
 			if (trace != null) {
 				trace.dumpStack(e, "JDNSDiscoveryContainer.createServiceID");

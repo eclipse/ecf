@@ -10,7 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.example.collab;
 
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IMessageListener;
@@ -51,7 +51,7 @@ public class ChatRoomManagerUI {
 					IChatRoomContainer chatRoom = null;
 					try {
 						chatRoom = roomInfo.createChatRoomContainer();
-					} catch (ContainerInstantiationException e1) {
+					} catch (ContainerCreateException e1) {
 						// can't happen
 					}
 					IChatMessageSender sender = chatRoom.getChatMessageSender();

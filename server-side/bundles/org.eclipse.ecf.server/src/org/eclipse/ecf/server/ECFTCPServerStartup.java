@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.provider.app.Connector;
 import org.eclipse.ecf.provider.app.NamedGroup;
 import org.eclipse.ecf.provider.app.ServerConfigParser;
@@ -86,7 +86,7 @@ public class ECFTCPServerStartup {
 	}
 	protected TCPServerSOContainer createServerContainer(String id,
 			TCPServerSOContainerGroup group, String path, int keepAlive)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		ID newServerID = IDFactory.getDefault().createStringID(id);
 		SOContainerConfig config = new SOContainerConfig(newServerID);
 		return new TCPServerSOContainer(config, group, path, keepAlive);

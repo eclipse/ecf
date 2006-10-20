@@ -25,7 +25,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ISharedObject;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -1048,7 +1048,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		IChatRoomContainer chatRoom = null;
 		try {
 			chatRoom = selectedInfo.createChatRoomContainer();
-		} catch (ContainerInstantiationException e1) {
+		} catch (ContainerCreateException e1) {
 			MessageDialog.openError(RosterView.this.getViewSite()
 					.getShell(), "Could not create chat room",
 					"Could not create chat room for account");

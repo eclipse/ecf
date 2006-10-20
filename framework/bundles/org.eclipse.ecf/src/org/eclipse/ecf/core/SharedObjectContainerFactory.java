@@ -56,12 +56,12 @@ public class SharedObjectContainerFactory implements
 	 */
 	public ISharedObjectContainer createSharedObjectContainer(
 			ContainerTypeDescription desc, String[] argTypes, Object[] args)
-			throws ContainerInstantiationException {
+			throws ContainerCreateException {
 		trace("createSharedObjectContainer(" + desc + ","
 				+ Trace.convertStringAToString(argTypes) + ","
 				+ Trace.convertObjectAToString(args) + ")");
 		if (desc == null)
-			throw new ContainerInstantiationException(
+			throw new ContainerCreateException(
 					"ContainerTypeDescription cannot be null");
 		IContainer newContainer = ContainerFactory.getDefault().createContainer(
 				desc, argTypes, args);
@@ -69,7 +69,7 @@ public class SharedObjectContainerFactory implements
 				.getAdapter(ISharedObjectContainer.class);
 		if (soContainer == null) {
 			newContainer.dispose();
-			throw new ContainerInstantiationException(
+			throw new ContainerCreateException(
 					"new container is not a shared object container");
 		}
 		return soContainer;
@@ -81,7 +81,7 @@ public class SharedObjectContainerFactory implements
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObjectContainer(java.lang.String)
 	 */
 	public ISharedObjectContainer createSharedObjectContainer(
-			String descriptionName) throws ContainerInstantiationException {
+			String descriptionName) throws ContainerCreateException {
 		return createSharedObjectContainer(ContainerFactory.getDefault()
 				.getDescriptionByName(descriptionName), null, null);
 	}
@@ -94,7 +94,7 @@ public class SharedObjectContainerFactory implements
 	 */
 	public ISharedObjectContainer createSharedObjectContainer(
 			String descriptionName, Object[] args)
-			throws ContainerInstantiationException {
+			throws ContainerCreateException {
 		return createSharedObjectContainer(ContainerFactory.getDefault()
 				.getDescriptionByName(descriptionName), null, args);
 	}
@@ -107,7 +107,7 @@ public class SharedObjectContainerFactory implements
 	 */
 	public ISharedObjectContainer createSharedObjectContainer(
 			String descriptionName, String[] argsTypes, Object[] args)
-			throws ContainerInstantiationException {
+			throws ContainerCreateException {
 		return createSharedObjectContainer(ContainerFactory.getDefault()
 				.getDescriptionByName(descriptionName), argsTypes, args);
 	}

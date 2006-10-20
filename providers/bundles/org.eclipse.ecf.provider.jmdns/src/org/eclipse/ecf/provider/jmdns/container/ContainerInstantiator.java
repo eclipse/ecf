@@ -13,9 +13,9 @@ package org.eclipse.ecf.provider.jmdns.container;
 import java.io.IOException;
 
 import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 
 public class ContainerInstantiator implements
@@ -27,16 +27,16 @@ public class ContainerInstantiator implements
 
 	public IContainer createInstance(
 			ContainerTypeDescription description, Class[] argTypes,
-			Object[] args) throws ContainerInstantiationException {
+			Object[] args) throws ContainerCreateException {
 			try {
 				JMDNSDiscoveryContainer container = new JMDNSDiscoveryContainer();
 				return container;
-			} catch (IDInstantiationException e) {
-				ContainerInstantiationException excep = new ContainerInstantiationException("Exception making JMDNS container");
+			} catch (IDCreateException e) {
+				ContainerCreateException excep = new ContainerCreateException("Exception making JMDNS container");
 				excep.setStackTrace(e.getStackTrace());
 				throw excep;
 			} catch (IOException e) {
-				ContainerInstantiationException excep = new ContainerInstantiationException("Exception getting InetAddress for JMDNS container");
+				ContainerCreateException excep = new ContainerCreateException("Exception getting InetAddress for JMDNS container");
 				excep.setStackTrace(e.getStackTrace());
 				throw excep;
 			}

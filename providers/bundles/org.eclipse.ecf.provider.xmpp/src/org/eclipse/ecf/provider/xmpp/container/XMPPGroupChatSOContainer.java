@@ -22,7 +22,7 @@ import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
@@ -75,7 +75,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 
 	public XMPPGroupChatSOContainer(ISharedObjectContainerConfig config,
 			ISynchAsynchConnection conn, XMPPConnection xmppconn,
-			Namespace usernamespace) throws IDInstantiationException {
+			Namespace usernamespace) throws IDCreateException {
 		super(config);
 		this.connection = conn;
 		this.xmppconnection = xmppconn;
@@ -86,7 +86,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 
 	public XMPPGroupChatSOContainer(ISynchAsynchConnection conn,
 			XMPPConnection xmppconn, Namespace usernamespace)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		this(new SOContainerConfig(IDFactory.getDefault().createGUID()), conn,
 				xmppconn, usernamespace);
 	}
@@ -183,7 +183,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 		}
 	}
 
-	protected void initializeSharedObject() throws IDInstantiationException {
+	protected void initializeSharedObject() throws IDCreateException {
 		sharedObjectID = IDFactory.getDefault().createStringID(
 				XMPP_GROUPCHAT_DELEGATE_ID);
 		delegate = new XMPPGroupChatSharedObject(usernamespace, xmppconnection);
@@ -408,7 +408,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 	}
 
 	protected ID createChatRoomID(String groupName)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		String username = xmppconnection.getUser();
 		int atIndex = username.indexOf('@');
 		if (atIndex > 0)
@@ -458,7 +458,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 		ID targetID = null;
 		try {
 			targetID = createChatRoomID(groupName);
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			throw new ContainerConnectException(
 					"Exception creating chat room id", e);
 		}

@@ -31,7 +31,7 @@ import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.util.ECFException;
@@ -131,7 +131,7 @@ public class DatashareContainerAdapter implements IChannelContainerAdapter {
 		});
 	}
 	protected SharedObjectDescription getDefaultChannelDescription()
-			throws IDInstantiationException {
+			throws IDCreateException {
 		return new SharedObjectDescription(BaseChannel.class, IDFactory
 				.getDefault().createGUID(), new HashMap());
 	}

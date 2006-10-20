@@ -161,11 +161,11 @@ public class ContainerFactory implements IContainerFactory {
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#getDescriptionByName(java.lang.String)
 	 */
 	public ContainerTypeDescription getDescriptionByName(String name)
-			throws ContainerInstantiationException {
+			throws ContainerCreateException {
 		trace("getDescriptionByName(" + name + ")");
 		ContainerTypeDescription res = getDescription0(name);
 		if (res == null) {
-			throw new ContainerInstantiationException(
+			throw new ContainerCreateException(
 					"ContainerTypeDescription named '" + name + "' not found");
 		}
 		return res;
@@ -179,16 +179,16 @@ public class ContainerFactory implements IContainerFactory {
 	 */
 	public IContainer createContainer(ContainerTypeDescription desc,
 			String[] argTypes, Object[] args)
-			throws ContainerInstantiationException {
+			throws ContainerCreateException {
 		trace("createContainer(" + desc + ","
 				+ Trace.convertStringAToString(argTypes) + ","
 				+ Trace.convertObjectAToString(args) + ")");
 		if (desc == null)
-			throw new ContainerInstantiationException(
+			throw new ContainerCreateException(
 					"ContainerTypeDescription cannot be null");
 		ContainerTypeDescription cd = getDescription0(desc);
 		if (cd == null)
-			throw new ContainerInstantiationException(
+			throw new ContainerCreateException(
 					"ContainerTypeDescription named '" + desc.getName()
 							+ "' not found");
 		Class clazzes[] = null;
@@ -198,7 +198,7 @@ public class ContainerFactory implements IContainerFactory {
 			clazzes = AbstractFactory.getClassesForTypes(argTypes, args, cd
 					.getClassLoader());
 		} catch (Exception e) {
-			ContainerInstantiationException newexcept = new ContainerInstantiationException(
+			ContainerCreateException newexcept = new ContainerCreateException(
 					"createContainer exception with description: " + desc + ": "
 							+ e.getClass().getName() + ": " + e.getMessage());
 			newexcept.setStackTrace(e.getStackTrace());
@@ -206,12 +206,12 @@ public class ContainerFactory implements IContainerFactory {
 			throw newexcept;
 		}
 		if (instantiator == null)
-			throw new ContainerInstantiationException(
+			throw new ContainerCreateException(
 					"Instantiator for ContainerTypeDescription " + cd.getName()
 							+ " is null");
 		// Ask instantiator to actually create instance
 		IContainer container = instantiator.createInstance(desc, clazzes, args);
-		if (container == null) throw new ContainerInstantiationException("Container instantiator returned null for createInstance " + cd.getName());
+		if (container == null) throw new ContainerCreateException("Container instantiator returned null for createInstance " + cd.getName());
 		// Add to containers map
 		addContainer(container);
 		return container;
@@ -223,7 +223,7 @@ public class ContainerFactory implements IContainerFactory {
 	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String)
 	 */
 	public IContainer createContainer(String descriptionName)
-			throws ContainerInstantiationException {
+			throws ContainerCreateException {
 		return createContainer(getDescriptionByName(descriptionName), null, null);
 	}
 
@@ -234,7 +234,7 @@ public class ContainerFactory implements IContainerFactory {
 	 *      java.lang.Object[])
 	 */
 	public IContainer createContainer(String descriptionName, Object[] args)
-			throws ContainerInstantiationException {
+			throws ContainerCreateException {
 		return createContainer(getDescriptionByName(descriptionName), null, args);
 	}
 
@@ -245,7 +245,7 @@ public class ContainerFactory implements IContainerFactory {
 	 *      java.lang.String[], java.lang.Object[])
 	 */
 	public IContainer createContainer(String descriptionName, String[] argsTypes,
-			Object[] args) throws ContainerInstantiationException {
+			Object[] args) throws ContainerCreateException {
 		return createContainer(getDescriptionByName(descriptionName), argsTypes,
 				args);
 	}

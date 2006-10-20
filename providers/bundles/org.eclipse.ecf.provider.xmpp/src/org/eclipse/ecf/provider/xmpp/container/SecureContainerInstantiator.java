@@ -11,7 +11,7 @@
 package org.eclipse.ecf.provider.xmpp.container;
 
 import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 
 public class SecureContainerInstantiator extends ContainerInstantiator {
@@ -21,7 +21,7 @@ public class SecureContainerInstantiator extends ContainerInstantiator {
     public IContainer createInstance(
             ContainerTypeDescription description, Class[] argTypes,
             Object[] args)
-            throws ContainerInstantiationException {
+            throws ContainerCreateException {
         try {
             Integer ka = new Integer(XMPPSClientSOContainer.DEFAULT_KEEPALIVE);
             String name = null;
@@ -46,7 +46,7 @@ public class SecureContainerInstantiator extends ContainerInstantiator {
                 return new XMPPSClientSOContainer(name,ka.intValue());                
             }
         } catch (Exception e) {
-            throw new ContainerInstantiationException(
+            throw new ContainerCreateException(
                     "Exception creating generic container", e);
         }
     }

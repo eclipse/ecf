@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.pubsub.IPublishedServiceDirectory;
 import org.eclipse.ecf.pubsub.IPublishedServiceRequestor;
 
@@ -42,7 +42,7 @@ public class PubSubAdapterFactory implements IAdapterFactory {
 		ID directoryID;
 		try {
 			directoryID = IDFactory.getDefault().createStringID(PublishedServiceDirectory.SHARED_OBJECT_ID);
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			throw new RuntimeException(e);
 		}
 		

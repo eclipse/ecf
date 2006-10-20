@@ -9,7 +9,7 @@
 package org.eclipse.ecf.core.provider;
 
 import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 
 /**
@@ -31,10 +31,10 @@ public interface IContainerInstantiator {
 	 * @param args arguments specified by the caller.  May be null if no
 	 * arguments are passed in by caller to ContainerFactory.getDefault().createContainer(...)
 	 * @return IContainer instance.  The provider implementation must return a valid object
-	 * implementing IContainer OR throw a ContainerInstantiationException.  Null may not be returned.
-	 * @throws ContainerInstantiationException
+	 * implementing IContainer OR throw a ContainerCreateException.  Null may not be returned.
+	 * @throws ContainerCreateException
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
 			Class[] argTypes, Object[] args)
-			throws ContainerInstantiationException;
+			throws ContainerCreateException;
 }

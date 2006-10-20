@@ -14,7 +14,7 @@ import java.io.File;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
@@ -46,7 +46,7 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 	protected ID createSessionID() {
 		try {
 			return IDFactory.getDefault().createGUID();
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			throw new NullPointerException("cannot create id for XMPPOutgoingFileTransfer");
 		}
 	}

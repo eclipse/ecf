@@ -11,7 +11,7 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.ISharedObjectContainerConfig;
@@ -24,7 +24,7 @@ public class RemoteServiceContainerFactory implements
 
 	public IContainer createInstance(ContainerTypeDescription description,
 			Class[] argTypes, Object[] args)
-			throws ContainerInstantiationException {
+			throws ContainerCreateException {
 		try {
 			final ID newID = IDFactory.getDefault().createGUID();
 			return new RemoteServiceContainer(new ISharedObjectContainerConfig() {
@@ -38,7 +38,7 @@ public class RemoteServiceContainerFactory implements
 					return newID;
 				}});
 		} catch (Exception e) {
-			throw new ContainerInstantiationException("Exception creating GenericRemoteServiceContainer",e);
+			throw new ContainerCreateException("Exception creating GenericRemoteServiceContainer",e);
 		}				
 		
 	}

@@ -9,11 +9,11 @@
 package org.eclipse.ecf.provider.xmpp.container;
 
 import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 
 
@@ -22,7 +22,7 @@ public class ContainerInstantiator implements IContainerInstantiator {
         
     }
     protected ID getIDFromArg(Class type, Object arg)
-            throws IDInstantiationException {
+            throws IDCreateException {
         if (arg instanceof ID)
             return (ID) arg;
         if (arg instanceof String) {
@@ -56,7 +56,7 @@ public class ContainerInstantiator implements IContainerInstantiator {
     public IContainer createInstance(
             ContainerTypeDescription description, Class[] argTypes,
             Object[] args)
-            throws ContainerInstantiationException {
+            throws ContainerCreateException {
         try {
             Integer ka = new Integer(XMPPClientSOContainer.DEFAULT_KEEPALIVE);
             String name = null;
@@ -81,7 +81,7 @@ public class ContainerInstantiator implements IContainerInstantiator {
                 return new XMPPClientSOContainer(name,ka.intValue());                
             }
         } catch (Exception e) {
-            throw new ContainerInstantiationException(
+            throw new ContainerCreateException(
                     "Exception creating generic container", e);
         }
     }

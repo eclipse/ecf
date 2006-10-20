@@ -40,7 +40,7 @@ import org.eclipse.ecf.core.events.SharedObjectManagerDisconnectEvent;
 import org.eclipse.ecf.core.events.SharedObjectManagerRemoveEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
@@ -185,7 +185,7 @@ public class SOManager implements ISharedObjectManager {
 		return result;
 	}
 
-	protected ID createNewSharedObjectID(SharedObjectDescription sd, ISharedObject newObject) throws IDInstantiationException {
+	protected ID createNewSharedObjectID(SharedObjectDescription sd, ISharedObject newObject) throws IDCreateException {
 		ID descID = sd.getID();
 		if (descID == null) {
 			return IDFactory.getDefault().createGUID(GUID_SIZE);

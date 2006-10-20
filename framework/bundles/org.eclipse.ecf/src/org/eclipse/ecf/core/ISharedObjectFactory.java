@@ -48,10 +48,10 @@ public interface ISharedObjectFactory {
 	 * 
 	 * @param name
 	 * @return SharedObjectTypeDescription found
-	 * @throws SharedObjectInstantiationException
+	 * @throws SharedObjectCreateException
 	 */
 	public SharedObjectTypeDescription getDescriptionByName(String name)
-			throws SharedObjectInstantiationException;
+			throws SharedObjectCreateException;
 
 	/**
 	 * Create ISharedObject instance. Given a SharedObjectTypeDescription object, a String []
@@ -73,11 +73,11 @@ public interface ISharedObjectFactory {
 	 *            an Object [] of arguments passed to the createInstance method of
 	 *            the ISharedObjectInstantiator
 	 * @return a valid instance of ISharedObject
-	 * @throws SharedObjectInstantiationException
+	 * @throws SharedObjectCreateException
 	 */
 	public ISharedObject createSharedObject(SharedObjectTypeDescription typeDescription,
 			String[] argTypes, Object[] args)
-			throws SharedObjectInstantiationException;
+			throws SharedObjectCreateException;
 
 	/**
 	 * Create ISharedObject instance. Given a SharedObjectTypeDescription name, this method
@@ -94,10 +94,10 @@ public interface ISharedObjectFactory {
 	 * @param descriptionName
 	 *            the SharedObjectTypeDescription name to lookup
 	 * @return a valid instance of ISharedObject
-	 * @throws SharedObjectInstantiationException
+	 * @throws SharedObjectCreateException
 	 */
 	public ISharedObject createSharedObject(String descriptionName)
-			throws SharedObjectInstantiationException;
+			throws SharedObjectCreateException;
 
 	/**
 	 * Create ISharedObject instance. Given a SharedObjectTypeDescription name, this method
@@ -117,10 +117,10 @@ public interface ISharedObjectFactory {
 	 *            the Object [] of arguments passed to the
 	 *            ISharedObjectInstantiator.createInstance method
 	 * @return a valid instance of IContainer
-	 * @throws SharedObjectInstantiationException 
+	 * @throws SharedObjectCreateException 
 	 */
 	public ISharedObject createSharedObject(String descriptionName, Object[] args)
-			throws SharedObjectInstantiationException;
+			throws SharedObjectCreateException;
 
 	/**
 	 * Create ISharedObject instance. Given a SharedObjectTypeDescription name, this method
@@ -142,10 +142,10 @@ public interface ISharedObjectFactory {
 	 *            the Object [] of arguments passed to the
 	 *            ISharedObjectInstantiator.createInstance method
 	 * @return a valid instance of ISharedObject
-	 * @throws SharedObjectInstantiationException
+	 * @throws SharedObjectCreateException
 	 */
 	public ISharedObject createSharedObject(String descriptionName, String[] argsTypes,
-			Object[] args) throws SharedObjectInstantiationException;
+			Object[] args) throws SharedObjectCreateException;
 
 	/**
 	 * Remove given description from set known to this factory.

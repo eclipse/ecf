@@ -80,5 +80,5 @@ public interface IChatRoomManager extends IAdaptable {
 	// XXX these two methods should ultimately be added to IChatRoomManager
 	// public void addInvitationListener(IInvitationListener listener);
 	// public IChatRoomContainer createChatRoomContainer() throws
-	// ContainerInstantiationException;
+	// ContainerCreateException;
 }

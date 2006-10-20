@@ -21,7 +21,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
@@ -30,7 +30,7 @@ import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
@@ -115,7 +115,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 			trace.dumpStack(t,msg);
 		}
 	}
-	public IRCContainer(ID localID) throws IDInstantiationException {
+	public IRCContainer(ID localID) throws IDCreateException {
 		super();
 		this.localID = localID;
 		this.unknownID = IDFactory.getDefault().createStringID("system.unknown");
@@ -398,7 +398,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 		if (targetID == null) return unknownID;
 		try {
 			return IDFactory.getDefault().createStringID(targetID.getHost());
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			Activator.log("ID creation exception in IRCContainer.getSystemID()",e);
 			return unknownID;
 		}
@@ -406,7 +406,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 	private ID createIDFromString(String str) {
 		try {
 			return IDFactory.getDefault().createStringID(str);
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			Activator.log("ID creation exception in IRCContainer.getIDForString()",e);
 			return unknownID;
 		} 
@@ -568,7 +568,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 	protected ID getRoomIDFromName(String roomname) {
 		try {
 			return IDFactory.getDefault().createStringID(roomname);
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			return null;
 		}
 	}
@@ -604,7 +604,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 			public Object getAdapter(Class clazz) {
 				return null;
 			}
-			public IChatRoomContainer createChatRoomContainer() throws ContainerInstantiationException {
+			public IChatRoomContainer createChatRoomContainer() throws ContainerCreateException {
 				return IRCContainer.this;
 			}
 		};

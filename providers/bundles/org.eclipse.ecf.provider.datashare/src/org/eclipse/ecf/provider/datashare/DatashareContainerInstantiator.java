@@ -8,12 +8,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.datashare;
 
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 
 public class DatashareContainerInstantiator implements IContainerInstantiator {
@@ -22,7 +22,7 @@ public class DatashareContainerInstantiator implements IContainerInstantiator {
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
 			Class[] argTypes, Object[] args)
-			throws ContainerInstantiationException {
+			throws ContainerCreateException {
         String [] argDefaults = description.getArgDefaults();
         try {
 			ID newID = (argDefaults==null||argDefaults.length==0)?null:getIDFromArg(String.class,
@@ -35,12 +35,12 @@ public class DatashareContainerInstantiator implements IContainerInstantiator {
 				newID = IDFactory.getDefault().createGUID();
 			}
 			return new DatashareContainer(new DatashareContainerConfig(newID));
-		} catch (IDInstantiationException e) {
-			throw new ContainerInstantiationException("Exception creating ID for container "+description,e);
+		} catch (IDCreateException e) {
+			throw new ContainerCreateException("Exception creating ID for container "+description,e);
 		}
 	}
     protected ID getIDFromArg(Class type, Object arg)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		if (arg instanceof ID)
 			return (ID) arg;
 		if (arg instanceof String) {

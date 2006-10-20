@@ -16,7 +16,7 @@ import java.net.URI;
 import java.util.Properties;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
@@ -74,7 +74,7 @@ public class DiscoveryStartup {
 				dispose();
 				ClientPlugin.log("No discovery container available");
 			}
-		} catch (ContainerInstantiationException e1) {
+		} catch (ContainerCreateException e1) {
 			container = null;
 			discovery = null;
 			ClientPlugin.log("No discovery container available", e1);

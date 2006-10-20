@@ -135,10 +135,10 @@ public abstract class Namespace implements Serializable {
 	 * arguments provided
 	 * @return a non-null ID instance.  The class used may extend BaseID or may implement
 	 * the ID interface directly
-	 * @throws IDInstantiationException if construction fails
+	 * @throws IDCreateException if construction fails
 	 */
 	public abstract ID createInstance(Class[] argTypes, Object[] args)
-			throws IDInstantiationException;
+			throws IDCreateException;
 
 	/**
 	 * Get the URI scheme associated with this namespace instance.  For example,

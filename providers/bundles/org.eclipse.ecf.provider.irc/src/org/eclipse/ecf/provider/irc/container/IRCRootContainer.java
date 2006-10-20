@@ -16,14 +16,14 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
@@ -61,7 +61,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 	protected String encoding = null;
 
-	public IRCRootContainer(ID localID) throws IDInstantiationException {
+	public IRCRootContainer(ID localID) throws IDCreateException {
 		this.localID = localID;
 		this.unknownID = IDFactory.getDefault().createStringID("host");
 		this.replyHandler = new ReplyHandler();
@@ -283,7 +283,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		if (roomName == null)
 			return new IRoomInfo() {
 				public IChatRoomContainer createChatRoomContainer()
-						throws ContainerInstantiationException {
+						throws ContainerCreateException {
 					return IRCRootContainer.this;
 				}
 
@@ -330,7 +330,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		else
 			return new IRoomInfo() {
 				public IChatRoomContainer createChatRoomContainer()
-						throws ContainerInstantiationException {
+						throws ContainerCreateException {
 					try {
 						IRCChannelContainer newChannelContainer = new IRCChannelContainer(
 								IRCRootContainer.this, IDFactory.getDefault()
@@ -338,7 +338,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						addChannel(roomName, newChannelContainer);
 						return newChannelContainer;
 					} catch (Exception e) {
-						throw new ContainerInstantiationException(
+						throw new ContainerCreateException(
 								"Exception creating IRCChannelContainer", e);
 					}
 				}
@@ -537,7 +537,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		try {
 			return IDFactory.getDefault().createStringID(
 					((IRCID) targetID).getHost());
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			Activator.log(
 					"ID creation exception in IRCContainer.getSystemID()", e);
 			return unknownID;

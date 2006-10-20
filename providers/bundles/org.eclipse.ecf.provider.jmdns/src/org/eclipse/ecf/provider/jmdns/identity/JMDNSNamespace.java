@@ -11,7 +11,7 @@
 package org.eclipse.ecf.provider.jmdns.identity;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 
 public class JMDNSNamespace extends Namespace {
@@ -19,7 +19,7 @@ public class JMDNSNamespace extends Namespace {
 	private static final String JMDNS_SCHEME = "jmdns";
 	
 	public ID createInstance(Class[] argTypes, Object[] args)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		String type = (String) args[0];
 		String name = null;
 		if (args.length > 1) {

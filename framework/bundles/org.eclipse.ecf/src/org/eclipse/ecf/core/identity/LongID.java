@@ -26,7 +26,7 @@ public class LongID extends BaseID {
 		}
 
 		public ID createInstance(Class[] argTypes, Object[] args)
-				throws IDInstantiationException {
+				throws IDCreateException {
 			return new LongID(this, (Long) args[0]);
 		}
 

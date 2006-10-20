@@ -119,7 +119,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * ISharedObjectContainer soContainer = (ISharedObjectContainer) newContainer
 	 * 		.getAdapter(ISharedObjectContainer.class);
 	 * if (soContainer == null)
-	 * 	throw new ContainerInstantiationException(message);
+	 * 	throw new ContainerCreateException(message);
 	 * </pre>
 	 * 
 	 * <p>

@@ -11,7 +11,7 @@
 package org.eclipse.ecf.provider.xmpp.identity;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 
 public class XMPPRoomNamespace extends Namespace {
@@ -20,7 +20,7 @@ public class XMPPRoomNamespace extends Namespace {
 	private static final String XMPP_ROOM_PROTOCOL = "xmpp.muc";
 	
 	public ID createInstance(Class[] argTypes, Object[] args)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		try {
 			if (args.length == 5) {
 				return new XMPPRoomID(this, (String) args[0], (String) args[1],
@@ -29,7 +29,7 @@ public class XMPPRoomNamespace extends Namespace {
 			throw new IllegalArgumentException(
 					"XMPPRoomID constructor arguments invalid");
 		} catch (Exception e) {
-			throw new IDInstantiationException("XMPP ID creation exception", e);
+			throw new IDCreateException("XMPP ID creation exception", e);
 		}
 	}
 

@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
@@ -30,7 +30,7 @@ import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -747,14 +747,14 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		}
 
 		public IChatRoomContainer createChatRoomContainer()
-				throws ContainerInstantiationException {
+				throws ContainerCreateException {
 			IChatRoomContainer chatContainer = null;
 			try {
 				chatContainer = new XMPPGroupChatSOContainer(
 						XMPPClientSOContainer.this.getConnection(), delegate
 								.getConnection(), getConnectNamespace());
-			} catch (IDInstantiationException e) {
-				throw new ContainerInstantiationException(
+			} catch (IDCreateException e) {
+				throw new ContainerCreateException(
 						"Exception creating chat container for presence container "
 								+ getID(), e);
 			}

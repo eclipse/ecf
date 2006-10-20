@@ -11,11 +11,11 @@
 
 package org.eclipse.ecf.provider.irc.container;
 
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 
 public class IRCContainerInstantiator implements IContainerInstantiator {
@@ -25,12 +25,12 @@ public class IRCContainerInstantiator implements IContainerInstantiator {
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
 			Class[] argTypes, Object[] args)
-			throws ContainerInstantiationException {
+			throws ContainerCreateException {
 		try {
 			return new IRCRootContainer(IDFactory.getDefault().createGUID());
 			//return new IRCContainer(IDFactory.getDefault().createGUID());
-		} catch (IDInstantiationException e) {
-			throw new ContainerInstantiationException("Exception creating ID",e);
+		} catch (IDCreateException e) {
+			throw new ContainerCreateException("Exception creating ID",e);
 		}
 	}
 }

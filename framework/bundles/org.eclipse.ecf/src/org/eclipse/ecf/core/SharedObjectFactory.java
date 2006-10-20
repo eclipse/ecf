@@ -110,12 +110,12 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#getDescriptionByName(java.lang.String)
 	 */
 	public SharedObjectTypeDescription getDescriptionByName(String name)
-			throws SharedObjectInstantiationException {
+			throws SharedObjectCreateException {
 		trace("getDescriptionByName(" + name + ")");
 		SharedObjectTypeDescription res = getDescription0(name);
 		if (res == null) {
-			throw new SharedObjectInstantiationException(
-					"SharedObjectInstantiationException named '" + name + "' not found");
+			throw new SharedObjectCreateException(
+					"SharedObjectCreateException named '" + name + "' not found");
 		}
 		return res;
 	}
@@ -128,16 +128,16 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 */
 	public ISharedObject createSharedObject(SharedObjectTypeDescription desc,
 			String[] argTypes, Object[] args)
-			throws SharedObjectInstantiationException {
+			throws SharedObjectCreateException {
 		trace("createSharedObject(" + desc + ","
 				+ Trace.convertStringAToString(argTypes) + ","
 				+ Trace.convertObjectAToString(args) + ")");
 		if (desc == null)
-			throw new SharedObjectInstantiationException(
+			throw new SharedObjectCreateException(
 					"SharedObjectDescription cannot be null");
 		SharedObjectTypeDescription cd = getDescription0(desc);
 		if (cd == null)
-			throw new SharedObjectInstantiationException(
+			throw new SharedObjectCreateException(
 					"SharedObjectDescription named '" + desc.getName()
 							+ "' not found");
 		Class clazzes[] = null;
@@ -147,7 +147,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 			clazzes = AbstractFactory.getClassesForTypes(argTypes, args, cd
 					.getClass().getClassLoader());
 		} catch (Exception e) {
-			SharedObjectInstantiationException newexcept = new SharedObjectInstantiationException(
+			SharedObjectCreateException newexcept = new SharedObjectCreateException(
 					"createSharedObject exception with description: " + desc + ": "
 							+ e.getClass().getName() + ": " + e.getMessage());
 			newexcept.setStackTrace(e.getStackTrace());
@@ -155,7 +155,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 			throw newexcept;
 		}
 		if (instantiator == null)
-			throw new SharedObjectInstantiationException(
+			throw new SharedObjectCreateException(
 					"Instantiator for SharedObjectDescription " + cd.getName()
 							+ " is null");
 		// Ask instantiator to actually create instance
@@ -168,7 +168,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObject(java.lang.String)
 	 */
 	public ISharedObject createSharedObject(String descriptionName)
-			throws SharedObjectInstantiationException {
+			throws SharedObjectCreateException {
 		return createSharedObject(getDescriptionByName(descriptionName), null, null);
 	}
 
@@ -179,7 +179,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 *      java.lang.Object[])
 	 */
 	public ISharedObject createSharedObject(String descriptionName, Object[] args)
-			throws SharedObjectInstantiationException {
+			throws SharedObjectCreateException {
 		return createSharedObject(getDescriptionByName(descriptionName), null, args);
 	}
 
@@ -190,7 +190,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 *      java.lang.String[], java.lang.Object[])
 	 */
 	public ISharedObject createSharedObject(String descriptionName, String[] argsTypes,
-			Object[] args) throws SharedObjectInstantiationException {
+			Object[] args) throws SharedObjectCreateException {
 		return createSharedObject(getDescriptionByName(descriptionName), argsTypes,
 				args);
 	}

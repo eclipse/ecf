@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 
 public abstract class AbstractSharedObjectContainerAdapterFactory implements
@@ -81,7 +81,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 		String singletonName = adapter.getClass().getName();
 		try {
 			return IDFactory.getDefault().createStringID(singletonName);
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			ECFPlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, ECFPlugin.getDefault()
 							.getBundle().getSymbolicName(),

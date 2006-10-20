@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.pubsub.IPublishedServiceRequestor;
 import org.eclipse.ecf.pubsub.ISubscriptionCallback;
 
@@ -50,7 +50,7 @@ public class ServiceRequestor implements IPublishedServiceRequestor {
 		ID id;
 		try {
 			id = IDFactory.getDefault().createGUID();
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			throw new RuntimeException(e);
 		}
 		

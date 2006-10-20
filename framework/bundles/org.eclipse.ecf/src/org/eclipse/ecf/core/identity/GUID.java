@@ -29,7 +29,7 @@ public class GUID extends StringID {
 		}
 
 		public ID createInstance(Class[] argTypes, Object[] args)
-				throws IDInstantiationException {
+				throws IDCreateException {
 			if (args.length == 1)
 				return new GUID(this, ((Integer) args[0]).intValue());
 			else
@@ -58,13 +58,13 @@ public class GUID extends StringID {
 	 *            the length of the target number (in bytes)
 	 */
 	protected GUID(Namespace n, String algo, String provider, int byteLength)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		super(n, "");
 		// Get SecureRandom instance for class
 		try {
 			getRandom(algo, provider);
 		} catch (Exception e) {
-			throw new IDInstantiationException("GUID creation failure: "
+			throw new IDCreateException("GUID creation failure: "
 					+ e.getMessage());
 		}
 		// make sure we have reasonable byteLength
@@ -77,11 +77,11 @@ public class GUID extends StringID {
 		value = Base64.encode(newBytes);
 	}
 
-	protected GUID(Namespace n, int byteLength) throws IDInstantiationException {
+	protected GUID(Namespace n, int byteLength) throws IDCreateException {
 		this(n, SR_DEFAULT_ALGO, SR_DEFAULT_PROVIDER, byteLength);
 	}
 
-	protected GUID(Namespace n) throws IDInstantiationException {
+	protected GUID(Namespace n) throws IDCreateException {
 		this(n, DEFAULT_BYTE_LENGTH);
 	}
 

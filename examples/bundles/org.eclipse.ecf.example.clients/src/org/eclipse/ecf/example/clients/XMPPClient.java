@@ -12,7 +12,7 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.util.ECFException;
@@ -99,7 +99,7 @@ public class XMPPClient {
 	public ID getID(String name) {
 		try {
 			return IDFactory.getDefault().createID(namespace, name);
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			e.printStackTrace();
 			return null;
 		}

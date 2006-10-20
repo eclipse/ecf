@@ -79,9 +79,9 @@ public interface IIDFactory {
 	 * value is Base64 encoded to allow for easy display. 
 	 * 
 	 * @return new ID instance
-	 * @throws IDInstantiationException if ID cannot be constructed
+	 * @throws IDCreateException if ID cannot be constructed
 	 */
-	public ID createGUID() throws IDInstantiationException;
+	public ID createGUID() throws IDCreateException;
 
 	/**
 	 * Make a GUID using SHA-1 hash algorithm and a default of 16bits of data length.  The
@@ -89,9 +89,9 @@ public interface IIDFactory {
 	 * 
 	 * @param length the byte-length of data used to create a GUID
 	 * @return new ID instance
-	 * @throws IDInstantiationException if ID cannot be constructed
+	 * @throws IDCreateException if ID cannot be constructed
 	 */
-	public ID createGUID(int length) throws IDInstantiationException;
+	public ID createGUID(int length) throws IDCreateException;
 
 	/**
 	 * Make a new identity. Given a Namespace instance, constructor argument
@@ -104,13 +104,13 @@ public interface IIDFactory {
 	 *            a String [] of the arg types for the ID instance constructor
 	 * @param args
 	 *            an Object [] of the args for the ID instance constructor
-	 * @exception IDInstantiationException
+	 * @exception IDCreateException
 	 *                thrown if class for instantiator or instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
 	public ID createID(Namespace n, String[] argTypes, Object[] args)
-			throws IDInstantiationException;
+			throws IDCreateException;
 
 	/**
 	 * Make a new identity. Given a Namespace name, constructor argument types,
@@ -123,13 +123,13 @@ public interface IIDFactory {
 	 *            a String [] of the arg types for the ID instance constructor
 	 * @param args
 	 *            an Object [] of the args for the ID instance constructor
-	 * @exception IDInstantiationException
+	 * @exception IDCreateException
 	 *                thrown if class for instantiator or instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
 	public ID createID(String namespacename, String[] argTypes, Object[] args)
-			throws IDInstantiationException;
+			throws IDCreateException;
 
 	/**
 	 * Make a new identity. Given a Namespace, and an array of instance
@@ -140,13 +140,13 @@ public interface IIDFactory {
 	 *            the Namespace to which the ID will belong
 	 * @param args
 	 *            an Object [] of the args for the ID instance constructor
-	 * @exception IDInstantiationException
+	 * @exception IDCreateException
 	 *                thrown if class for instantiator or instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
 	public ID createID(Namespace n, Object[] args)
-			throws IDInstantiationException;
+			throws IDCreateException;
 
 	/**
 	 * Make a new identity. Given a Namespace name, and an array of instance
@@ -157,13 +157,13 @@ public interface IIDFactory {
 	 *            the name of the Namespace to which the ID will belong
 	 * @param args
 	 *            an Object [] of the args for the ID instance constructor
-	 * @exception IDInstantiationException
+	 * @exception IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
 	public ID createID(String namespacename, Object[] args)
-			throws IDInstantiationException;
+			throws IDCreateException;
 
 	/**
 	 * Make a new identity instance from a namespace and String.
@@ -172,13 +172,13 @@ public interface IIDFactory {
 	 *            the namespace to use to create the ID
 	 * @param uri
 	 *            the String uri to use to create the ID
-	 * @exception IDInstantiationException
+	 * @exception IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
 	public ID createID(Namespace namespace, String uri)
-			throws IDInstantiationException;
+			throws IDCreateException;
 
 	/**
 	 * Make a new identity instance from a namespacename and URI.  The namespacename
@@ -189,13 +189,13 @@ public interface IIDFactory {
 	 *            the namespacename to use to create the ID
 	 * @param uri
 	 *            the String uri to use to create the ID
-	 * @exception IDInstantiationException
+	 * @exception IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
 	public ID createID(String namespacename, String uri)
-			throws IDInstantiationException;
+			throws IDCreateException;
 
 	/**
 	 * Make a new identity instance from a namespace and URI.
@@ -204,13 +204,13 @@ public interface IIDFactory {
 	 *            the namespace to use to create the ID
 	 * @param uri
 	 *            the URI to use to create ID.
-	 * @exception IDInstantiationException
+	 * @exception IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
 	public ID createID(Namespace namespace, URI uri)
-			throws IDInstantiationException;
+			throws IDCreateException;
 
 	/**
 	 * Make a new identity instance from a namespace name and URI.
@@ -219,13 +219,13 @@ public interface IIDFactory {
 	 *            the name of the namespace to use to create the ID
 	 * @param uri
 	 *            the URI to use to create ID.
-	 * @exception IDInstantiationException
+	 * @exception IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
 	public ID createID(String namespacename, URI uri)
-			throws IDInstantiationException;
+			throws IDCreateException;
 
 	/**
 	 * Make a an ID from a String
@@ -234,12 +234,12 @@ public interface IIDFactory {
 	 * satisfy the ID contract for global uniqueness within the associated Namespace.
 	 * 
 	 * @return valid ID instance
-	 * @throws IDInstantiationException
+	 * @throws IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createStringID(String idstring) throws IDInstantiationException;
+	public ID createStringID(String idstring) throws IDCreateException;
 
 	/**
 	 * Make a an ID from a Long
@@ -248,12 +248,12 @@ public interface IIDFactory {
 	 * satisfy the ID contract for global uniqueness within the associated Namespace.
 	 * 
 	 * @return valid ID instance
-	 * @throws IDInstantiationException
+	 * @throws IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createLongID(Long l) throws IDInstantiationException;
+	public ID createLongID(Long l) throws IDCreateException;
 
 	/**
 	 * Make a an ID from a long
@@ -262,12 +262,12 @@ public interface IIDFactory {
 	 * satisfy the ID contract for global uniqueness within the associated Namespace.
 	 * 
 	 * @return valid ID instance
-	 * @throws IDInstantiationException
+	 * @throws IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createLongID(long l) throws IDInstantiationException;
+	public ID createLongID(long l) throws IDCreateException;
 
 	/**
 	 * Remove the given Namespace from our table of available Namespaces

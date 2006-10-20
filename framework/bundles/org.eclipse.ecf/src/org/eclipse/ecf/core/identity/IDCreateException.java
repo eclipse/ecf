@@ -6,26 +6,26 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.core;
+package org.eclipse.ecf.core.identity;
 
 import org.eclipse.ecf.core.util.ECFException;
 
-public class ContainerInstantiationException extends ECFException {
-	private static final long serialVersionUID = -6979687717421003065L;
+public class IDCreateException extends ECFException {
+	private static final long serialVersionUID = 3258416140119323960L;
 
-	public ContainerInstantiationException() {
+	public IDCreateException() {
 		super();
 	}
 
-	public ContainerInstantiationException(String message) {
+	public IDCreateException(String message) {
 		super(message);
 	}
 
-	public ContainerInstantiationException(Throwable cause) {
+	public IDCreateException(Throwable cause) {
 		super(cause);
 	}
 
-	public ContainerInstantiationException(String message, Throwable cause) {
+	public IDCreateException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

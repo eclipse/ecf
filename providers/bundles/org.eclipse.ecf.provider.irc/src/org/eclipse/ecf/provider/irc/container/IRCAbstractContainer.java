@@ -20,7 +20,7 @@ import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.provider.irc.Activator;
 import org.eclipse.ecf.provider.irc.Trace;
@@ -115,7 +115,7 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 		if (str == null) return unknownID;
 		try {
 			return IDFactory.getDefault().createStringID(str);
-		} catch (IDInstantiationException e) {
+		} catch (IDCreateException e) {
 			Activator.log("ID creation exception in IRCContainer.getIDForString()",e);
 			return unknownID;
 		} 

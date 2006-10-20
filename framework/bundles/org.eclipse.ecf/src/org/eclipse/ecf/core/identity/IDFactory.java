@@ -156,7 +156,7 @@ public class IDFactory implements IIDFactory {
 	 * 
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createGUID()
 	 */
-	public ID createGUID() throws IDInstantiationException {
+	public ID createGUID() throws IDCreateException {
 		return createGUID(GUID.DEFAULT_BYTE_LENGTH);
 	}
 
@@ -165,7 +165,7 @@ public class IDFactory implements IIDFactory {
 	 * 
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createGUID(int)
 	 */
-	public ID createGUID(int length) throws IDInstantiationException {
+	public ID createGUID(int length) throws IDCreateException {
 		debug("createGUID(" + length + ")");
 		Namespace n = new GUID.GUIDNamespace();
 		return createID(n, new String[] { Namespace.class.getName(),
@@ -182,21 +182,21 @@ public class IDFactory implements IIDFactory {
 	}
 
 	protected static void logAndThrow(String s, Throwable t)
-			throws IDInstantiationException {
-		IDInstantiationException e = null;
+			throws IDCreateException {
+		IDCreateException e = null;
 		if (t != null) {
-			e = new IDInstantiationException(s + ": " + t.getClass().getName()
+			e = new IDCreateException(s + ": " + t.getClass().getName()
 					+ ": " + t.getMessage());
 			e.setStackTrace(t.getStackTrace());
 		} else {
-			e = new IDInstantiationException(s);
+			e = new IDCreateException(s);
 		}
 		logException(s, t);
 		throw e;
 	}
 
-	protected static void logAndThrow(String s) throws IDInstantiationException {
-		IDInstantiationException e = new IDInstantiationException(s);
+	protected static void logAndThrow(String s) throws IDCreateException {
+		IDCreateException e = new IDCreateException(s);
 		logException(s, null);
 		throw e;
 	}
@@ -208,7 +208,7 @@ public class IDFactory implements IIDFactory {
 	 *      java.lang.String[], java.lang.Object[])
 	 */
 	public ID createID(Namespace n, String[] argTypes, Object[] args)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		debug("createID(" + n + "," + Trace.convertStringAToString(argTypes)
 				+ "," + Trace.convertObjectAToString(args) + ")");
 		// Verify namespace is non-null
@@ -239,10 +239,10 @@ public class IDFactory implements IIDFactory {
 	 *      java.lang.String[], java.lang.Object[])
 	 */
 	public ID createID(String namespacename, String[] argTypes, Object[] args)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		Namespace n = getNamespaceByName(namespacename);
 		if (n == null)
-			throw new IDInstantiationException("Namespace named "
+			throw new IDCreateException("Namespace named "
 					+ namespacename + " not found");
 		return createID(n, argTypes, args);
 	}
@@ -254,7 +254,7 @@ public class IDFactory implements IIDFactory {
 	 *      java.lang.Object[])
 	 */
 	public ID createID(Namespace n, Object[] args)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		return createID(n, null, args);
 	}
 
@@ -265,15 +265,15 @@ public class IDFactory implements IIDFactory {
 	 *      java.lang.Object[])
 	 */
 	public ID createID(String namespacename, Object[] args)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		Namespace n = getNamespaceByName(namespacename);
 		if (n == null)
-			throw new IDInstantiationException("Namespace " + namespacename
+			throw new IDCreateException("Namespace " + namespacename
 					+ " not found");
 		return createID(n, args);
 	}
 
-	public ID createID(Namespace namespace, URI uri) throws IDInstantiationException {
+	public ID createID(Namespace namespace, URI uri) throws IDCreateException {
 		return createID(namespace,new Object[] { uri });
 	}
 	/*
@@ -283,19 +283,19 @@ public class IDFactory implements IIDFactory {
 	 *      java.net.URI)
 	 */
 	public ID createID(String namespacename, URI uri)
-			throws IDInstantiationException {
+			throws IDCreateException {
 		if (uri == null)
-			throw new IDInstantiationException("Null uri not allowed");
+			throw new IDCreateException("Null uri not allowed");
 		Namespace n = getNamespaceByName(namespacename);
 		if (n == null)
-			throw new IDInstantiationException("Namespace " + n + " not found");
+			throw new IDCreateException("Namespace " + n + " not found");
 		return createID(n, new Object[] { uri });
 	}
 
-	public ID createID(Namespace namespace, String uri) throws IDInstantiationException {
+	public ID createID(Namespace namespace, String uri) throws IDCreateException {
 		return createID(namespace,new Object[] { uri });
 	}
-	public ID createID(String namespace, String uri) throws IDInstantiationException {
+	public ID createID(String namespace, String uri) throws IDCreateException {
 		return createID(namespace,new Object[] { uri });		
 	}
 	/*
@@ -303,9 +303,9 @@ public class IDFactory implements IIDFactory {
 	 * 
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createStringID(java.lang.String)
 	 */
-	public ID createStringID(String idstring) throws IDInstantiationException {
+	public ID createStringID(String idstring) throws IDCreateException {
 		if (idstring == null)
-			throw new IDInstantiationException("String cannot be null");
+			throw new IDCreateException("String cannot be null");
 		Namespace n = new StringID.StringIDNamespace();
 		return createID(n, new String[] { String.class.getName() },
 				new Object[] { idstring });
@@ -316,9 +316,9 @@ public class IDFactory implements IIDFactory {
 	 * 
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createLongID(java.lang.Long)
 	 */
-	public ID createLongID(Long l) throws IDInstantiationException {
+	public ID createLongID(Long l) throws IDCreateException {
 		if (l == null)
-			throw new IDInstantiationException("Long cannot be null");
+			throw new IDCreateException("Long cannot be null");
 		Namespace n = new LongID.LongNamespace();
 		return createID(n, new String[] { String.class.getName() },
 				new Object[] { l });
@@ -329,7 +329,7 @@ public class IDFactory implements IIDFactory {
 	 * 
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createLongID(long)
 	 */
-	public ID createLongID(long l) throws IDInstantiationException {
+	public ID createLongID(long l) throws IDCreateException {
 		Namespace n = new LongID.LongNamespace();
 		return createID(n, new String[] { String.class.getName() },
 				new Object[] { new Long(l) });

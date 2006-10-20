@@ -13,7 +13,7 @@ package org.eclipse.ecf.example.collab;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
@@ -83,7 +83,7 @@ public class IRCChatRoomManagerUI {
 		IChatRoomContainer chatRoom = null;
 		try {
 			chatRoom = roomInfo.createChatRoomContainer();
-		} catch (ContainerInstantiationException e1) {
+		} catch (ContainerCreateException e1) {
 			// can't happen for 'root' roomInfo
 		}
 		// initialize the chatroomview with the necessary

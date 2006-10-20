@@ -9,7 +9,7 @@
 package org.eclipse.ecf.core.provider;
 
 import org.eclipse.ecf.core.ISharedObject;
-import org.eclipse.ecf.core.SharedObjectInstantiationException;
+import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.SharedObjectTypeDescription;
 
 /**
@@ -31,10 +31,10 @@ public interface ISharedObjectInstantiator {
 	 * @param args arguments specified by the caller.  May be null if no
 	 * arguments are passed in by caller to SharedObjectFactory.getDefault().createSharedObject(...)
 	 * @return ISharedObject instance.  The provider implementation must return a valid object
-	 * implementing ISharedObject OR throw a SharedObjectInstantiationException
-	 * @throws SharedObjectInstantiationException
+	 * implementing ISharedObject OR throw a SharedObjectCreateException
+	 * @throws SharedObjectCreateException TODO
 	 */
 	public ISharedObject createInstance(SharedObjectTypeDescription typeDescription,
 			Class[] argTypes, Object[] args)
-			throws SharedObjectInstantiationException;
+			throws SharedObjectCreateException;
 }

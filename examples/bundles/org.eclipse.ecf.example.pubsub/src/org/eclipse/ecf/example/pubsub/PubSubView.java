@@ -17,7 +17,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.example.collab.CollabClient;
 import org.eclipse.ecf.pubsub.IPublishedServiceDirectory;
 import org.eclipse.ecf.pubsub.IPublishedServiceDirectoryListener;
@@ -90,7 +90,7 @@ public class PubSubView extends ViewPart {
 				} catch (SharedObjectCreateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (IDInstantiationException e) {
+				} catch (IDCreateException e) {
 					throw new RuntimeException(e);
 				}
 			}

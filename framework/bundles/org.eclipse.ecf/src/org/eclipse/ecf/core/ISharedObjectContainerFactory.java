@@ -23,11 +23,11 @@ public interface ISharedObjectContainerFactory {
 	 *            an Object [] of arguments passed to the createInstance method of
 	 *            the IContainerInstantiator
 	 * @return a valid instance of ISharedObjectContainer
-	 * @throws ContainerInstantiationException
+	 * @throws ContainerCreateException
 	 */
 	public ISharedObjectContainer createSharedObjectContainer(
 			ContainerTypeDescription desc, String[] argTypes, Object[] args)
-			throws ContainerInstantiationException;
+			throws ContainerCreateException;
 
 	/**
 	 * Make ISharedObjectContainer instance.
@@ -35,10 +35,10 @@ public interface ISharedObjectContainerFactory {
 	 * @param descriptionName
 	 *            the ContainerTypeDescription name to lookup
 	 * @return a valid instance of ISharedObjectContainer
-	 * @throws ContainerInstantiationException
+	 * @throws ContainerCreateException
 	 */
 	public ISharedObjectContainer createSharedObjectContainer(
-			String descriptionName) throws ContainerInstantiationException;
+			String descriptionName) throws ContainerCreateException;
 
 	/**
 	 * Make ISharedObjectContainer instance.
@@ -49,11 +49,11 @@ public interface ISharedObjectContainerFactory {
 	 *            the Object [] of arguments passed to the
 	 *            IContainerInstantiator.createInstance method
 	 * @return a valid instance of ISharedObjectContainer
-	 * @throws ContainerInstantiationException
+	 * @throws ContainerCreateException
 	 */
 	public ISharedObjectContainer createSharedObjectContainer(
 			String descriptionName, Object[] args)
-			throws ContainerInstantiationException;
+			throws ContainerCreateException;
 
 	/**
 	 * Make ISharedObjectContainer instance. 
@@ -66,9 +66,9 @@ public interface ISharedObjectContainerFactory {
 	 *            the Object [] of arguments passed to the
 	 *            IContainerInstantiator.createInstance method
 	 * @return a valid instance of ISharedObjectContainer
-	 * @throws ContainerInstantiationException
+	 * @throws ContainerCreateException
 	 */
 	public ISharedObjectContainer createSharedObjectContainer(
 			String descriptionName, String[] argsTypes, Object[] args)
-			throws ContainerInstantiationException;
+			throws ContainerCreateException;
 }

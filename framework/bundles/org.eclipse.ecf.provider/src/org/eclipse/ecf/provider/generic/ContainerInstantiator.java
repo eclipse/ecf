@@ -9,11 +9,11 @@
 package org.eclipse.ecf.provider.generic;
 
 import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.ContainerInstantiationException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.provider.Trace;
 
@@ -37,7 +37,7 @@ public class ContainerInstantiator implements
         }
     }
     protected ID getIDFromArg(Class type, Object arg)
-            throws IDInstantiationException {
+            throws IDCreateException {
         if (arg instanceof ID) return (ID) arg;
         if (arg instanceof String) {
             String val = (String) arg;
@@ -61,7 +61,7 @@ public class ContainerInstantiator implements
 
     public IContainer createInstance(
             ContainerTypeDescription description, Class[] argTypes,
-            Object[] args) throws ContainerInstantiationException {
+            Object[] args) throws ContainerCreateException {
         boolean isClient = true;
         if (description.getName().equals(TCPSERVER_NAME)) {
             debug("creating server");
@@ -87,7 +87,7 @@ public class ContainerInstantiator implements
             debug("id="+newID+";keepAlive="+ka);
             // new ID must not be null
             if (newID == null)
-                throw new ContainerInstantiationException(
+                throw new ContainerCreateException(
                         "id must be provided");
             if (isClient) {
                 return new TCPClientSOContainer(new SOContainerConfig(newID),
@@ -98,11 +98,11 @@ public class ContainerInstantiator implements
             }
         } catch (ClassCastException e) {
             dumpStack("ClassCastException",e);
-            throw new ContainerInstantiationException(
+            throw new ContainerCreateException(
                     "Parameter type problem creating container", e);
         } catch (Exception e) {
             dumpStack("Exception",e);
-            throw new ContainerInstantiationException(
+            throw new ContainerCreateException(
                     "Exception creating generic container with id "+newID, e);
         }
     }

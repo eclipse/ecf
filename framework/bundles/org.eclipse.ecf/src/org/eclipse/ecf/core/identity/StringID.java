@@ -29,7 +29,7 @@ public class StringID extends BaseID {
 		}
 
 		public ID createInstance(Class[] argTypes, Object[] args)
-				throws IDInstantiationException {
+				throws IDCreateException {
 			return new StringID(this, (String) args[0]);
 		}
 

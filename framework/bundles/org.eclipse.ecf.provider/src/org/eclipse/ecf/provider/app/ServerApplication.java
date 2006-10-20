@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDInstantiationException;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.security.IConnectPolicy;
 import org.eclipse.ecf.core.security.ISharedObjectPolicy;
 import org.eclipse.ecf.provider.generic.SOContainerConfig;
@@ -140,7 +140,7 @@ public class ServerApplication {
 		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,port);
 		return group;
 	}
-	protected static TCPServerSOContainer createServerContainer(String id, TCPServerSOContainerGroup group, String path, int keepAlive) throws IDInstantiationException {
+	protected static TCPServerSOContainer createServerContainer(String id, TCPServerSOContainerGroup group, String path, int keepAlive) throws IDCreateException {
 		System.out.println("  Creating container with id="+id+", group="+path+" keepAlive="+keepAlive);
 		ID newServerID = IDFactory.getDefault().createStringID(id);
 		SOContainerConfig config = new SOContainerConfig(newServerID);
