@@ -31,6 +31,7 @@ public class IDFactory implements IIDFactory {
 			+ ".security";
 
 	private static final int SECURITY_INITIALIZE_ERRORCODE = 1001;
+	private static final int IDENTITY_CREATION_ERRORCODE = 2001;
 	
 	private static Hashtable namespaces = new Hashtable();
 
@@ -218,7 +219,7 @@ public class IDFactory implements IIDFactory {
 				IdentityDebugOptions.EXCEPTIONS_CATCHING, IDFactory.class,
 				"logAndThrow", e);
 		Activator.getDefault().getLog().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, s, e));
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IDENTITY_CREATION_ERRORCODE, s, e));
 		throw e;
 	}
 
