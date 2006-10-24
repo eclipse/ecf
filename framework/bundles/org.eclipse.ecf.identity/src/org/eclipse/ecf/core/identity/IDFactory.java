@@ -30,6 +30,8 @@ public class IDFactory implements IIDFactory {
 	public static final String SECURITY_PROPERTY = IDFactory.class.getName()
 			+ ".security";
 
+	private static final int SECURITY_INITIALIZE_ERRORCODE = 1001;
+	
 	private static Hashtable namespaces = new Hashtable();
 
 	private static boolean securityEnabled = false;
@@ -50,7 +52,7 @@ public class IDFactory implements IIDFactory {
 					IdentityDebugOptions.EXCEPTIONS_CATCHING, IDFactory.class,
 					"staticinitializer", e);
 			Activator.getDefault().getLog().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+					new Status(IStatus.ERROR, Activator.PLUGIN_ID, SECURITY_INITIALIZE_ERRORCODE,
 							"Exception reading SECURITY_PROPERTY", e));
 		}
 	}
