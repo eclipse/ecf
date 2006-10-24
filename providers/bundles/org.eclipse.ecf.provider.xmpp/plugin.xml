@@ -54,21 +54,21 @@
       </containerFactory>
    </extension>
    <extension
-         point="org.eclipse.ecf.namespace">
+         point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.provider.xmpp.identity.XMPPNamespace"
             description="XMPP Namespace"
             name="ecf.xmpp"/>
    </extension>
    <extension
-         point="org.eclipse.ecf.namespace">
+         point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.provider.xmpp.identity.XMPPSNamespace"
             description="XMPP SSL Namespace"
             name="ecf.xmpps"/>
    </extension>
    <extension
-         point="org.eclipse.ecf.namespace">
+         point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.provider.xmpp.identity.XMPPRoomNamespace"
             description="XMPP Room Namespace"

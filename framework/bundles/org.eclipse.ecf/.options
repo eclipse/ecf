@@ -1,6 +1,20 @@
-org.eclipse.ecf/debug = true
+# Debugging options for the org.eclipse.ecf plug-in
+
+# Turn on general debugging for the org.eclipse.ecf plug-in
+org.eclipse.ecf/debug=true
 org.eclipse.ecf/debug/filter = *
 org.eclipse.ecf/debug/flag = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf/debug/methods/exiting=false
+
 org.eclipse.ecf/debug/containerfactory = true
 org.eclipse.ecf/debug/sharedobjectcontainerfactory = true
 org.eclipse.ecf/debug/idfactory = true
@@ -9,3 +23,4 @@ org.eclipse.ecf/debug/factoryinit = true
 org.eclipse.ecf/debug/abstractsharedobject = true
 org.eclipse.ecf/debug/twophasecommiteventprocessor = true
 org.eclipse.ecf/debug/optimisticsharedobject = true
+

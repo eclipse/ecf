@@ -119,15 +119,16 @@ public class Trace {
 	public static String convertObjectAToString(Object[] objs) {
 		if (objs == null)
 			return "";
-		StringBuffer sb = new StringBuffer();
+		StringBuffer sb = new StringBuffer("[");
 		for (int i = 0; i < objs.length; i++) {
 			if (objs[i] == null)
-				sb.append("(null)");
+				sb.append("null");
 			else
 				sb.append(objs[i].toString());
 			if (i != (objs.length - 1))
-				sb.append(";");
+				sb.append(",");
 		}
+		sb.append("]");
 		return sb.toString();
 	}
 

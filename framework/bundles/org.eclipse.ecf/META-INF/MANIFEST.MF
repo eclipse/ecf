@@ -9,17 +9,17 @@ Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Eclipse-AutoStart: true
 Require-Bundle: org.eclipse.osgi,
- org.eclipse.core.runtime
-Provide-Package: org.eclipse.ecf.core,
+ org.eclipse.core.runtime,
+ org.eclipse.ecf.identity;visibility:=reexport
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Export-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.comm,
  org.eclipse.ecf.core.comm.provider,
  org.eclipse.ecf.core.events,
- org.eclipse.ecf.core.identity,
  org.eclipse.ecf.core.provider,
  org.eclipse.ecf.core.security,
  org.eclipse.ecf.core.sharedobject,
  org.eclipse.ecf.core.start,
  org.eclipse.ecf.core.user,
  org.eclipse.ecf.core.util
-Bundle-ManifestVersion: 2
-Bundle-RequiredExecutionEnvironment: J2SE-1.4

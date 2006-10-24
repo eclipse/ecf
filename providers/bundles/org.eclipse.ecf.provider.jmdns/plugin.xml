@@ -22,7 +22,7 @@
        </containerFactory>
    </extension>
    <extension
-         point="org.eclipse.ecf.namespace">
+         point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace"
             description="JMDNS Namespace"

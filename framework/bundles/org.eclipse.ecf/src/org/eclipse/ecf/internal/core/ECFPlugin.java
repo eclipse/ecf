@@ -14,6 +14,7 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.WeakHashMap;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -36,9 +37,6 @@ import org.eclipse.ecf.core.SharedObjectTypeDescription;
 import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IIDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
 import org.eclipse.ecf.core.start.ECFStartJob;
@@ -47,7 +45,10 @@ import org.osgi.framework.BundleContext;
 
 public class ECFPlugin extends Plugin {
 	protected static Trace trace = null;
-	public static final String ECFNAMESPACE = "org.eclipse.ecf";
+	
+	public static final String PLUGIN_ID = "org.eclipse.ecf";
+	
+	public static final String ECFNAMESPACE = PLUGIN_ID;
 	public static final String NAMESPACE_EPOINT = ECFNAMESPACE + ".namespace";
 	public static final String CONTAINER_FACTORY_EPOINT = ECFNAMESPACE
 			+ ".containerFactory";
@@ -72,6 +73,8 @@ public class ECFPlugin extends Plugin {
 	public static final int INSTANTIATOR_NAME_COLLISION_ERRORCODE = 50;
 	public static final int INSTANTIATOR_NAMESPACE_LOAD_ERRORCODE = 60;
 	public static final int START_ERRORCODE = 70;
+	
+	protected static final int REMOVE_NAMESPACE_ERRORCODE = 80;
 	// The shared instance.
 	private static ECFPlugin plugin;
 	// Resource bundle.
@@ -84,6 +87,7 @@ public class ECFPlugin extends Plugin {
 			trace.msg(msg);
 		}
 	}
+	
 	private static void dumpStack(String msg, Throwable e) {
 		if (Trace.ON && trace != null) {
 			trace.dumpStack(e, msg);
@@ -395,99 +399,6 @@ public class ECFPlugin extends Plugin {
 		addSharedObjectExtensions(extensionPoint.getConfigurationElements());
 	}
 	/**
-	 * Remove extensions for identity namespace extension point
-	 * 
-	 * @param members
-	 *            the members to remove
-	 */
-	protected void removeNamespaceExtensions(IConfigurationElement[] members) {
-		String bundleName = getDefault().getBundle().getSymbolicName();
-		for (int m = 0; m < members.length; m++) {
-			IConfigurationElement member = members[m];
-			String name = null;
-			IExtension extension = member.getDeclaringExtension();
-			try {
-				name = member.getAttribute(NAME_ATTRIBUTE);
-				if (name == null) {
-					name = member.getAttribute(CLASS_ATTRIBUTE);
-				}
-				if (name == null)
-					continue;
-				IIDFactory factory = IDFactory.getDefault();
-				Namespace n = factory.getNamespaceByName(name);
-				if (n == null || !factory.containsNamespace(n)) {
-					continue;
-				}
-				// remove
-				factory.removeNamespace(n);
-				debug("removeIdentityExtensions:removed namespace from factory:"
-						+ n);
-			} catch (Exception e) {
-				log(getStatusForContException(extension, bundleName, name));
-				dumpStack("Exception in removeIdentityExtensions", e);
-			}
-		}
-	}
-	/**
-	 * Add identity namespace extension point extensions
-	 * 
-	 * @param members
-	 *            to add
-	 */
-	protected void addNamespaceExtensions(IConfigurationElement[] members) {
-		String bundleName = getDefault().getBundle().getSymbolicName();
-		// For each service:
-		for (int m = 0; m < members.length; m++) {
-			IConfigurationElement member = members[m];
-			// Get the label of the extender plugin and the ID of the
-			// extension.
-			IExtension extension = member.getDeclaringExtension();
-			String nsName = null;
-			try {
-				Namespace ns = (Namespace) member
-						.createExecutableExtension(CLASS_ATTRIBUTE);
-				String clazz = ns.getClass().getName();
-				nsName = member.getAttribute(NAME_ATTRIBUTE);
-				if (nsName == null) {
-					nsName = clazz;
-				}
-				String nsDescription = member
-						.getAttribute(DESCRIPTION_ATTRIBUTE);
-				ns.initialize(nsName, nsDescription);
-				debug("addNamespaceExtensions:created namespace:" + ns);
-				if (IDFactory.getDefault().containsNamespace(ns)) {
-					throw new CoreException(getStatusForIDException(extension,
-							bundleName, nsName));
-				}
-				// Now add to known namespaces
-				IDFactory.getDefault().addNamespace(ns);
-				debug("addNamespaceExtensions:added namespace to factory:" + ns);
-			} catch (CoreException e) {
-				log(e.getStatus());
-				dumpStack("Exception in setupIdentityExtensionPoint", e);
-			} catch (Exception e) {
-				log(getStatusForIDException(extension, bundleName, nsName));
-				dumpStack("Exception in setupIdentityExtensionPoint", e);
-			}
-		}
-	}
-	/**
-	 * Setup identity namespace extension point
-	 * 
-	 * @param context
-	 *            the BundleContext for this bundle
-	 */
-	protected void setupNamespaceExtensionPoint(BundleContext context) {
-		// Process extension points
-		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = reg
-				.getExtensionPoint(NAMESPACE_EPOINT);
-		if (extensionPoint == null) {
-			return;
-		}
-		addNamespaceExtensions(extensionPoint.getConfigurationElements());
-	}
-	/**
 	 * Remove extensions for comm extension point
 	 * 
 	 * @param members
@@ -670,18 +581,6 @@ public class ECFPlugin extends Plugin {
 						+ ext.getExtensionPointUniqueIdentifier(), null);
 		return s;
 	}
-	protected IStatus getStatusForIDException(IExtension ext,
-			String bundleName, String name) {
-		IStatus s = new Status(
-				Status.ERROR,
-				bundleName,
-				FACTORY_NAME_COLLISION_ERRORCODE,
-				getResourceString("ExtPointError.IDNameCollisionPrefix")
-						+ name
-						+ getResourceString("ExtPointError.IDNameCollisionSuffix")
-						+ ext.getExtensionPointUniqueIdentifier(), null);
-		return s;
-	}
 	/**
 	 * This method is called upon plug-in activation
 	 */
@@ -693,7 +592,6 @@ public class ECFPlugin extends Plugin {
 		Platform.getExtensionRegistry().addRegistryChangeListener(
 				registryManager);
 		setupContainerFactoryExtensionPoint(context);
-		setupNamespaceExtensionPoint(context);
 		setupCommExtensionPoint(context);
 		setupSharedObjectExtensionPoint(context);
 		setupStartExtensionPoint(context);
@@ -728,19 +626,6 @@ public class ECFPlugin extends Plugin {
 					break;
 				}
 			}
-			delta = event.getExtensionDeltas(ECFNAMESPACE, "namespace");
-			for (int i = 0; i < delta.length; i++) {
-				switch (delta[i].getKind()) {
-				case IExtensionDelta.ADDED:
-					addNamespaceExtensions(delta[i].getExtension()
-							.getConfigurationElements());
-					break;
-				case IExtensionDelta.REMOVED:
-					removeNamespaceExtensions(delta[i].getExtension()
-							.getConfigurationElements());
-					break;
-				}
-			}
 			delta = event.getExtensionDeltas(ECFNAMESPACE, "connectionFactory");
 			for (int i = 0; i < delta.length; i++) {
 				switch (delta[i].getKind()) {
@@ -756,6 +641,7 @@ public class ECFPlugin extends Plugin {
 			}
 		}
 	}
+	
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
