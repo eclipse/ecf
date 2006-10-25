@@ -1,0 +1,15 @@
+# Debugging options for the org.eclipse.ecf.sharedobject plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.identity plug-in
+org.eclipse.ecf.sharedobject/debug=true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.sharedobject/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.sharedobject/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.sharedobject/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.sharedobject/debug/methods/exiting=false
+

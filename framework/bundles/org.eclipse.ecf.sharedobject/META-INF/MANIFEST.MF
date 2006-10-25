@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF Sharedobject API
+Bundle-SymbolicName: org.eclipse.ecf.sharedobject;singleton:=true
+Bundle-Version: 0.9.3
+Bundle-Activator: org.eclipse.ecf.internal.core.sharedobject.Activator
+Bundle-Vendor: Eclipse.org
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf
+Eclipse-LazyStart: true
+Export-Package: org.eclipse.ecf.core.sharedobject,
+ org.eclipse.ecf.core.sharedobject.events,
+ org.eclipse.ecf.core.sharedobject.provider,
+ org.eclipse.ecf.core.sharedobject.security
