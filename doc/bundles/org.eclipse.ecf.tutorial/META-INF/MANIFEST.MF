@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.example.clients,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.datashare,
- org.eclipse.ecf.provider.datashare
+ org.eclipse.ecf.provider.datashare,
+ org.eclipse.ecf.sharedobject
 Eclipse-LazyStart: true
 Eclipse-AutoStart: true
 Bundle-ClassPath: tutorial.jar

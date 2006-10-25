@@ -9,7 +9,7 @@
             name="ecf.generic.channel"/>
    </extension>
    <extension
-         point="org.eclipse.ecf.sharedObjectFactory">
+         point="org.eclipse.ecf.sharedobject.sharedObjectFactory">
       <sharedObjectFactory
             class="org.eclipse.ecf.provider.datashare.ChannelFactory"
             name="ecf.provider.datashare.channelimpl"/>

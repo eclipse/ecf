@@ -26,7 +26,7 @@ import java.util.Vector;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.security.ISharedObjectPolicy;
+import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConnector;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;

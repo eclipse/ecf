@@ -224,6 +224,8 @@ public class Activator extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		Trace.entering(Activator.getDefault(),
 				IdentityDebugOptions.METHODS_EXITING, Activator.class, "stop");
+		Platform.getExtensionRegistry().removeRegistryChangeListener(registryManager);
+		registryManager = null;
 		plugin = null;
 		super.stop(context);
 	}

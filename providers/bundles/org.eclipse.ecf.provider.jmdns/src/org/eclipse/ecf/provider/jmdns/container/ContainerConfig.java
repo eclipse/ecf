@@ -14,9 +14,8 @@ package org.eclipse.ecf.provider.jmdns.container;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 
-public class ContainerConfig implements ISharedObjectContainerConfig {
+public class ContainerConfig{
     ID id;
     Map properties;
 

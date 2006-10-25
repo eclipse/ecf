@@ -35,10 +35,12 @@ import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+/*
 import org.eclipse.ecf.core.sharedobject.ISharedObjectFactory;
 import org.eclipse.ecf.core.sharedobject.SharedObjectFactory;
 import org.eclipse.ecf.core.sharedobject.SharedObjectTypeDescription;
 import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
+*/
 import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.Trace;
@@ -52,8 +54,6 @@ public class ECFPlugin extends Plugin {
 	public static final String NAMESPACE_EPOINT = ECFNAMESPACE + ".namespace";
 	public static final String CONTAINER_FACTORY_EPOINT = ECFNAMESPACE
 			+ ".containerFactory";
-	public static final String SHAREDOBJECT_FACTORY_EPOINT = ECFNAMESPACE
-			+ ".sharedObjectFactory";
 	public static final String COMM_FACTORY_EPOINT = ECFNAMESPACE
 			+ ".connectionFactory";
 	public static final String START_EPOINT = ECFNAMESPACE + ".startup";
@@ -291,110 +291,6 @@ public class ECFPlugin extends Plugin {
 		addContainerFactoryExtensions(extensionPoint.getConfigurationElements());
 	}
 	/**
-	 * Remove extensions for shared object extension point
-	 * 
-	 * @param members
-	 *            the members to remove
-	 */
-	protected void removeSharedObjectExtensions(IConfigurationElement[] members) {
-		String bundleName = getDefault().getBundle().getSymbolicName();
-		for (int m = 0; m < members.length; m++) {
-			IConfigurationElement member = members[m];
-			String name = null;
-			IExtension extension = member.getDeclaringExtension();
-			try {
-				name = member.getAttribute(NAME_ATTRIBUTE);
-				if (name == null) {
-					name = member.getAttribute(CLASS_ATTRIBUTE);
-				}
-				if (name == null)
-					continue;
-				ISharedObjectFactory factory = SharedObjectFactory.getDefault();
-				SharedObjectTypeDescription sd = factory
-						.getDescriptionByName(name);
-				if (sd == null || !factory.containsDescription(sd)) {
-					continue;
-				}
-				// remove
-				factory.removeDescription(sd);
-				debug("removeSharedObjectExtensions:removed description from factory:"
-						+ sd);
-			} catch (Exception e) {
-				log(getStatusForContException(extension, bundleName, name));
-				dumpStack("Exception in removeSharedObjectExtensions", e);
-			}
-		}
-	}
-	/**
-	 * Add shared object extension point extensions
-	 * 
-	 * @param members
-	 *            to add
-	 */
-	protected void addSharedObjectExtensions(IConfigurationElement[] members) {
-		String bundleName = getDefault().getBundle().getSymbolicName();
-		// For each configuration element
-		for (int m = 0; m < members.length; m++) {
-			IConfigurationElement member = members[m];
-			// Get the label of the extender plugin and the ID of the extension.
-			IExtension extension = member.getDeclaringExtension();
-			ISharedObjectInstantiator exten = null;
-			String name = null;
-			try {
-				// The only required attribute is "class"
-				exten = (ISharedObjectInstantiator) member
-						.createExecutableExtension(CLASS_ATTRIBUTE);
-				name = member.getAttribute(NAME_ATTRIBUTE);
-				if (name == null) {
-					name = member.getAttribute(CLASS_ATTRIBUTE);
-				}
-				// Get description, if present
-				String description = member.getAttribute(DESCRIPTION_ATTRIBUTE);
-				if (description == null) {
-					description = "";
-				}
-				// Get any property elements
-				Map properties = getProperties(member
-						.getChildren(PROPERTY_ELEMENT_NAME));
-				// Now make description instance
-				SharedObjectTypeDescription scd = new SharedObjectTypeDescription(
-						name, exten, description, properties);
-				debug("setupSharedObjectExtensionPoint:created description:"
-						+ scd);
-				ISharedObjectFactory factory = SharedObjectFactory.getDefault();
-				if (factory.containsDescription(scd)) {
-					throw new CoreException(getStatusForContException(
-							extension, bundleName, name));
-				}
-				// Now add the description and we're ready to go.
-				factory.addDescription(scd);
-				debug("setupSharedObjectExtensionPoint:added description to factory:"
-						+ scd);
-			} catch (CoreException e) {
-				log(e.getStatus());
-				dumpStack("CoreException in setupSharedObjectExtensionPoint", e);
-			} catch (Exception e) {
-				log(getStatusForContException(extension, bundleName, name));
-				dumpStack("Exception in setupSharedObjectExtensionPoint", e);
-			}
-		}
-	}
-	/**
-	 * Setup shared object extension point
-	 * 
-	 * @param context
-	 *            the BundleContext for this bundle
-	 */
-	protected void setupSharedObjectExtensionPoint(BundleContext bc) {
-		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = reg
-				.getExtensionPoint(SHAREDOBJECT_FACTORY_EPOINT);
-		if (extensionPoint == null) {
-			return;
-		}
-		addSharedObjectExtensions(extensionPoint.getConfigurationElements());
-	}
-	/**
 	 * Remove extensions for comm extension point
 	 * 
 	 * @param members
@@ -588,7 +484,7 @@ public class ECFPlugin extends Plugin {
 				registryManager);
 		setupContainerFactoryExtensionPoint(context);
 		setupCommExtensionPoint(context);
-		setupSharedObjectExtensionPoint(context);
+		//setupSharedObjectExtensionPoint(context);
 		setupStartExtensionPoint(context);
 	}
 	protected class ECFRegistryManager implements IRegistryChangeListener {
@@ -607,6 +503,7 @@ public class ECFPlugin extends Plugin {
 					break;
 				}
 			}
+			/*
 			delta = event.getExtensionDeltas(ECFNAMESPACE,
 					"sharedObjectFactory");
 			for (int i = 0; i < delta.length; i++) {
@@ -621,6 +518,7 @@ public class ECFPlugin extends Plugin {
 					break;
 				}
 			}
+			*/
 			delta = event.getExtensionDeltas(ECFNAMESPACE, "connectionFactory");
 			for (int i = 0; i < delta.length; i++) {
 				switch (delta[i].getKind()) {
