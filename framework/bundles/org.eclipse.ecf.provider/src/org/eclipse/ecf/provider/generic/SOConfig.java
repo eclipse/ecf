@@ -17,9 +17,9 @@ package org.eclipse.ecf.provider.generic;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.ecf.core.ISharedObjectConfig;
-import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 
 public class SOConfig implements ISharedObjectConfig {

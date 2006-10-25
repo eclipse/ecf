@@ -11,13 +11,13 @@
 package org.eclipse.ecf.pubsub.impl;
 
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.SharedObjectCreateException;
-import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
+import org.eclipse.ecf.core.sharedobject.SharedObjectCreateException;
+import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
 import org.eclipse.ecf.pubsub.IPublishedServiceDirectory;
 import org.eclipse.ecf.pubsub.IPublishedServiceRequestor;
 

@@ -10,7 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.xmpp.container;
 
-import org.eclipse.ecf.core.ISharedObjectContainerConfig;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 
 public interface IGroupChatContainerConfig extends ISharedObjectContainerConfig {
     

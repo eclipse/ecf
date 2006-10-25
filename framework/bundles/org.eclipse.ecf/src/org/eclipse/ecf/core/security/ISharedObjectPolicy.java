@@ -9,8 +9,8 @@
 package org.eclipse.ecf.core.security;
 
 import java.security.PermissionCollection;
-import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
 
 public interface ISharedObjectPolicy extends IContainerPolicy {
 	/**

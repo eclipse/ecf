@@ -8,9 +8,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.remoteservice.generic;
 
-import org.eclipse.ecf.core.AbstractSharedObjectContainerAdapterFactory;
-import org.eclipse.ecf.core.ISharedObject;
-import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory;
+import org.eclipse.ecf.core.sharedobject.ISharedObject;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 
 public class RemoteServiceContainerAdapterFactory extends AbstractSharedObjectContainerAdapterFactory {

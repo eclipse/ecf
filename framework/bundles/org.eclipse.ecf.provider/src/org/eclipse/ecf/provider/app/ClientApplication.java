@@ -12,13 +12,13 @@ import java.util.HashMap;
 import java.util.Random;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.ISharedObject;
-import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.SharedObjectContainerFactory;
 import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.sharedobject.ISharedObject;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
+import org.eclipse.ecf.core.sharedobject.SharedObjectContainerFactory;
 import org.eclipse.ecf.provider.generic.ContainerInstantiator;
 import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
 

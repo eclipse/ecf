@@ -11,8 +11,8 @@
 
 package org.eclipse.ecf.example.collab.share;
 
-import org.eclipse.ecf.core.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectEvent;
 
 public class RemoteSharedObjectMsgEvent extends RemoteSharedObjectEvent {
 	private static final long serialVersionUID = -7198080945310388254L;

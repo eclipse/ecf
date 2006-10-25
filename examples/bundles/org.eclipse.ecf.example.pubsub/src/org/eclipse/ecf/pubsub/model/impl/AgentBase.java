@@ -14,15 +14,15 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ecf.core.IIdentifiable;
-import org.eclipse.ecf.core.ISharedObject;
-import org.eclipse.ecf.core.ISharedObjectConfig;
-import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectDeactivatedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObject;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
+import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectDeactivatedEvent;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.pubsub.model.IModelUpdater;
 

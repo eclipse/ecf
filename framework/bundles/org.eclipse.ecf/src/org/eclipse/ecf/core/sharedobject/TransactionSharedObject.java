@@ -10,9 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.sharedobject;
 
-import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
-import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.SharedObjectInitException;
 
 /**
  * Superclass for shared object classes that replicate themselves transactionally.  

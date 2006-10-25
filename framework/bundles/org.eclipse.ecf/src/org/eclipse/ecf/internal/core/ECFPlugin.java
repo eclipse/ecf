@@ -31,21 +31,21 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerFactory;
-import org.eclipse.ecf.core.ISharedObjectFactory;
-import org.eclipse.ecf.core.SharedObjectFactory;
-import org.eclipse.ecf.core.SharedObjectTypeDescription;
 import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
-import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectFactory;
+import org.eclipse.ecf.core.sharedobject.SharedObjectFactory;
+import org.eclipse.ecf.core.sharedobject.SharedObjectTypeDescription;
+import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
 import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
+import org.eclipse.ecf.core.util.Trace;
 import org.osgi.framework.BundleContext;
 
 public class ECFPlugin extends Plugin {
-	protected static Trace trace = null;
-	
+
 	public static final String PLUGIN_ID = "org.eclipse.ecf";
 	
 	public static final String ECFNAMESPACE = PLUGIN_ID;
@@ -83,15 +83,11 @@ public class ECFPlugin extends Plugin {
 	private Map disposables = new WeakHashMap();
 	private IRegistryChangeListener registryManager = null;
 	private static void debug(String msg) {
-		if (Trace.ON && trace != null) {
-			trace.msg(msg);
-		}
+		Trace.trace(ECFPlugin.getDefault(),msg);
 	}
 	
 	private static void dumpStack(String msg, Throwable e) {
-		if (Trace.ON && trace != null) {
-			trace.dumpStack(e, msg);
-		}
+		Trace.catching(ECFPlugin.getDefault(), ECFDebugOptions.EXCEPTIONS_CATCHING, ECFPlugin.class, "dumpStack", e);
 	}
 	public ECFPlugin() {
 		super();
@@ -586,7 +582,6 @@ public class ECFPlugin extends Plugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		trace = Trace.create("factoryinit");
 		this.bundlecontext = context;
 		this.registryManager = new ECFRegistryManager();
 		Platform.getExtensionRegistry().addRegistryChangeListener(

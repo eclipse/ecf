@@ -20,6 +20,8 @@ Export-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.provider,
  org.eclipse.ecf.core.security,
  org.eclipse.ecf.core.sharedobject,
+ org.eclipse.ecf.core.sharedobject.events,
+ org.eclipse.ecf.core.sharedobject.provider,
  org.eclipse.ecf.core.start,
  org.eclipse.ecf.core.user,
  org.eclipse.ecf.core.util

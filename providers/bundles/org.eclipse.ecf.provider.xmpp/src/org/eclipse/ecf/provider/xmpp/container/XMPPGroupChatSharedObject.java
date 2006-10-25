@@ -14,12 +14,12 @@ import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.ecf.core.ISharedObject;
-import org.eclipse.ecf.core.ISharedObjectConfig;
-import org.eclipse.ecf.core.ISharedObjectContext;
-import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.sharedobject.ISharedObject;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
+import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;

@@ -17,10 +17,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.eclipse.ecf.core.ISharedObjectContext;
-import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
+import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.example.pubsub.SerializationUtil;
 import org.eclipse.ecf.pubsub.IPublishedService;
 import org.eclipse.ecf.pubsub.impl.SubscribeMessage;

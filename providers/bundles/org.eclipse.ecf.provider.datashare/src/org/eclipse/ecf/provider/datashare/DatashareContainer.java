@@ -10,9 +10,9 @@ package org.eclipse.ecf.provider.datashare;
 
 import java.util.Map;
 
-import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelConfig;

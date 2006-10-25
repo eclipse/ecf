@@ -10,9 +10,9 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.datashare;
 
-import org.eclipse.ecf.core.AbstractSharedObjectContainerAdapterFactory;
-import org.eclipse.ecf.core.ISharedObject;
-import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory;
+import org.eclipse.ecf.core.sharedobject.ISharedObject;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 
 public class DatashareContainerAdapterFactory extends

@@ -17,9 +17,10 @@ import java.util.WeakHashMap;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.core.ECFDebugOptions;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 import org.eclipse.ecf.internal.core.IDisposable;
-import org.eclipse.ecf.internal.core.Trace;
 
 /**
  * Factory for creating {@link IContainer} instances. This class provides ECF
@@ -41,7 +42,6 @@ import org.eclipse.ecf.internal.core.Trace;
  */
 public class ContainerFactory implements IContainerFactory {
 	private static final int DISPOSE_ERROR_CODE = 100;
-	private static Trace debug = Trace.create("containerfactory");
 	private static Hashtable containerdescriptions = new Hashtable();
 	protected static IContainerFactory instance = null;
 	
@@ -67,15 +67,11 @@ public class ContainerFactory implements IContainerFactory {
 	}
 
 	private static void trace(String msg) {
-		if (Trace.ON && debug != null) {
-			debug.msg(msg);
-		}
+		Trace.trace(ECFPlugin.getDefault(),msg);
 	}
 
 	private static void dumpStack(String msg, Throwable e) {
-		if (Trace.ON && debug != null) {
-			debug.dumpStack(e, msg);
-		}
+		Trace.catching(ECFPlugin.getDefault(), ECFDebugOptions.EXCEPTIONS_CATCHING, ContainerFactory.class, "dumpStack", e);
 	}
 	protected void addContainer(IContainer container) {
 		containers.put(container,null);
@@ -181,8 +177,8 @@ public class ContainerFactory implements IContainerFactory {
 			String[] argTypes, Object[] args)
 			throws ContainerCreateException {
 		trace("createContainer(" + desc + ","
-				+ Trace.convertStringAToString(argTypes) + ","
-				+ Trace.convertObjectAToString(args) + ")");
+				+ Trace.getArgumentsString(argTypes) + ","
+				+ Trace.getArgumentsString(args) + ")");
 		if (desc == null)
 			throw new ContainerCreateException(
 					"ContainerTypeDescription cannot be null");

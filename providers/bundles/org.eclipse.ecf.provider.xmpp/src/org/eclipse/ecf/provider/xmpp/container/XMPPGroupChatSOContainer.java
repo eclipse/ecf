@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.ISharedObjectContainerConfig;
-import org.eclipse.ecf.core.SharedObjectAddException;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
@@ -28,6 +26,8 @@ import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.NameCallback;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
+import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;

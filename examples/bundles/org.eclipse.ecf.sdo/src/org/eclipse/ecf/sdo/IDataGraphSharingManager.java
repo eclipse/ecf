@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ecf.sdo;
 
-import org.eclipse.ecf.core.ISharedObjectContainer;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**

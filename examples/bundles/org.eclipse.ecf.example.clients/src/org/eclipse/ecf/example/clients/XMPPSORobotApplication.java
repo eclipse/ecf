@@ -1,9 +1,9 @@
 package org.eclipse.ecf.example.clients;
 
 import org.eclipse.core.runtime.IPlatformRunnable;
-import org.eclipse.ecf.core.ISharedObjectContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.util.ECFException;
 
 public class XMPPSORobotApplication implements IPlatformRunnable, IMessageReceiver {

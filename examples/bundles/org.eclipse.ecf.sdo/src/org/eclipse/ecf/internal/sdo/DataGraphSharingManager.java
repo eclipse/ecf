@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.sdo;
 
-import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.ISharedObjectManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.sdo.IDataGraphSharing;
 import org.eclipse.ecf.sdo.IDataGraphSharingManager;

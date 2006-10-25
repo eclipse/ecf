@@ -13,11 +13,12 @@ import java.util.Hashtable;
 import java.util.List;
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
-import org.eclipse.ecf.internal.core.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.core.ECFDebugOptions;
+import org.eclipse.ecf.internal.core.ECFPlugin;
 
 public class ConnectionFactory {
 	private static Hashtable connectiontypes = new Hashtable();
-	private static Trace debug = Trace.create("connectionfactory");
 
 	public final static ConnectionTypeDescription addDescription(
 			ConnectionTypeDescription scd) {
@@ -43,15 +44,11 @@ public class ConnectionFactory {
 	}
 
 	private static void debug(String msg) {
-		if (Trace.ON && debug != null) {
-			debug.msg(msg);
-		}
+		Trace.trace(ECFPlugin.getDefault(),msg);
 	}
-
+	
 	private static void dumpStack(String msg, Throwable e) {
-		if (Trace.ON && debug != null) {
-			debug.dumpStack(e, msg);
-		}
+		Trace.catching(ECFPlugin.getDefault(), ECFDebugOptions.EXCEPTIONS_CATCHING, ConnectionFactory.class, "dumpStack", e);
 	}
 
 	public final static ConnectionTypeDescription getDescription(
@@ -98,8 +95,8 @@ public class ConnectionFactory {
 			ConnectionTypeDescription desc, String[] argTypes, Object[] args)
 			throws ConnectionInstantiationException {
 		debug("createSynchAsynchConnection(" + handler + "," + desc + ","
-				+ Trace.convertStringAToString(argTypes) + ","
-				+ Trace.convertObjectAToString(args) + ")");
+				+ Trace.getArgumentsString(argTypes) + ","
+				+ Trace.getArgumentsString(args) + ")");
 		if (handler == null)
 			throw new ConnectionInstantiationException(
 					"ISynchAsynchConnectionEventHandler cannot be null");

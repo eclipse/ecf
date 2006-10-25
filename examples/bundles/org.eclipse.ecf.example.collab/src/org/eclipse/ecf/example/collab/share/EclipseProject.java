@@ -12,8 +12,8 @@
 package org.eclipse.ecf.example.collab.share;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.ecf.core.ISharedObjectContext;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.part.ViewPart;

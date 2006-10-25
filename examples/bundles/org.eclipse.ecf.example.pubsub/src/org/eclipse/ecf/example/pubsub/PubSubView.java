@@ -14,10 +14,10 @@ import java.io.IOException;
 import java.util.Vector;
 
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.SharedObjectCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
+import org.eclipse.ecf.core.sharedobject.SharedObjectCreateException;
 import org.eclipse.ecf.example.collab.CollabClient;
 import org.eclipse.ecf.pubsub.IPublishedServiceDirectory;
 import org.eclipse.ecf.pubsub.IPublishedServiceDirectoryListener;

@@ -14,9 +14,9 @@ package org.eclipse.ecf.example.collab.share;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
-import org.eclipse.ecf.core.SharedObjectAddAbortException;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerTransaction;
+import org.eclipse.ecf.core.sharedobject.SharedObjectAddAbortException;
 import org.eclipse.ecf.example.collab.Trace;
 
 public class TransactionSharedObject extends GenericSharedObject implements ISharedObjectContainerTransaction {

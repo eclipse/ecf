@@ -10,8 +10,8 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.util.Dictionary;
 
-import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
 import org.eclipse.ecf.remoteservice.IRemoteService;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;

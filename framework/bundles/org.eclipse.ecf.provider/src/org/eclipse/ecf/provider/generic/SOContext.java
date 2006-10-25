@@ -20,12 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IOSGIService;
-import org.eclipse.ecf.core.ISharedObjectContext;
-import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
+import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.provider.Trace;
 

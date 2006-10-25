@@ -14,10 +14,10 @@ import java.util.Map;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 
 public class RemoteServiceContainerFactory implements
 		IContainerInstantiator {

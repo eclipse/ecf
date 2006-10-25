@@ -17,10 +17,10 @@ package org.eclipse.ecf.provider.generic;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import org.eclipse.ecf.core.ISharedObjectConnector;
-import org.eclipse.ecf.core.events.ISharedObjectEvent;
-import org.eclipse.ecf.core.events.SharedObjectCallEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectConnector;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectEvent;
+import org.eclipse.ecf.core.sharedobject.events.SharedObjectCallEvent;
 import org.eclipse.ecf.core.util.AsynchResult;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.QueueException;

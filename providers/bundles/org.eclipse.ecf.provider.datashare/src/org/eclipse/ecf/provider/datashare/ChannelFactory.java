@@ -11,11 +11,11 @@
 
 package org.eclipse.ecf.provider.datashare;
 
-import org.eclipse.ecf.core.ISharedObject;
-import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.SharedObjectCreateException;
-import org.eclipse.ecf.core.SharedObjectTypeDescription;
-import org.eclipse.ecf.core.provider.ISharedObjectInstantiator;
+import org.eclipse.ecf.core.sharedobject.ISharedObject;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectTransactionConfig;
+import org.eclipse.ecf.core.sharedobject.SharedObjectCreateException;
+import org.eclipse.ecf.core.sharedobject.SharedObjectTypeDescription;
+import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
 import org.eclipse.ecf.datashare.IChannelListener;
 
 public class ChannelFactory implements ISharedObjectInstantiator {

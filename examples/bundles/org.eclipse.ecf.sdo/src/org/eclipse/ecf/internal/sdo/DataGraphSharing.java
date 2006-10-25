@@ -10,12 +10,12 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.sdo;
 
-import org.eclipse.ecf.core.ISharedObject;
-import org.eclipse.ecf.core.ISharedObjectConfig;
-import org.eclipse.ecf.core.ISharedObjectContext;
-import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObject;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
+import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.sdo.IDataGraphSharing;

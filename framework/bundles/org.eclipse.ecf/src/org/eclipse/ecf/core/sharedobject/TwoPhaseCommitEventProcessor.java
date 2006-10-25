@@ -14,22 +14,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import org.eclipse.ecf.core.ISharedObjectContainerTransaction;
-import org.eclipse.ecf.core.ISharedObjectContext;
-import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.ISharedObjectTransactionParticipantsFilter;
-import org.eclipse.ecf.core.SharedObjectAddAbortException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectCommitEvent;
-import org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent;
-import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
-import org.eclipse.ecf.core.events.SharedObjectCommitEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectCommitEvent;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectCreateResponseEvent;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
+import org.eclipse.ecf.core.sharedobject.events.SharedObjectCommitEvent;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
-import org.eclipse.ecf.internal.core.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.core.ECFDebugOptions;
+import org.eclipse.ecf.internal.core.ECFPlugin;
 
 /**
  * Implementation of two-phase commit for transactional replication of shared objects.
@@ -37,7 +34,6 @@ import org.eclipse.ecf.internal.core.Trace;
  */
 public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		ISharedObjectContainerTransaction {
-	public static final Trace trace = Trace.create("twophasecommiteventprocessor");
 	AbstractSharedObject sharedObject = null;
 	byte transactionState = ISharedObjectContainerTransaction.ACTIVE;
 	Object lock = new Object();
@@ -57,18 +53,10 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		this.participantsFilter = config.getParticipantsFilter();
 	}
 	protected void trace(String msg) {
-		if (Trace.ON && trace != null) {
-			trace.msg(getSharedObject().getID() + ":"
-					+ (getSharedObject().isPrimary() ? "primary:" : "replica:")
-					+ msg);
-		}
+		Trace.trace(ECFPlugin.getDefault(),msg);
 	}
 	protected void traceStack(String msg, Throwable t) {
-		if (Trace.ON && trace != null) {
-			trace.dumpStack(t, sharedObject.getID() + ":"
-					+ (getSharedObject().isPrimary() ? "primary" : "replica")
-					+ msg);
-		}
+		Trace.catching(ECFPlugin.getDefault(), ECFDebugOptions.EXCEPTIONS_CATCHING, TwoPhaseCommitEventProcessor.class, "traceStack", t);;
 	}
 	protected int getTimeout() {
 		return timeout;

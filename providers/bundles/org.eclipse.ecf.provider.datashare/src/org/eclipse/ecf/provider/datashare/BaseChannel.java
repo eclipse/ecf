@@ -10,14 +10,14 @@ package org.eclipse.ecf.provider.datashare;
 
 import java.io.Serializable;
 import java.util.Map;
-import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectTransactionConfig;
+import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.core.sharedobject.TransactionSharedObject;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;

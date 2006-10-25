@@ -11,7 +11,7 @@
 
 package org.eclipse.ecf.core.sharedobject;
 
-import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 

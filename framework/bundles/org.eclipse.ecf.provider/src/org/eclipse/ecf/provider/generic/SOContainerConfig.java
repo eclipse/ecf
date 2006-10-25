@@ -13,8 +13,8 @@ package org.eclipse.ecf.provider.generic;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 
 public class SOContainerConfig implements ISharedObjectContainerConfig {
     ID id;

@@ -15,10 +15,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.ecf.core.ISharedObjectConfig;
-import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
+import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.example.collab.Trace;
 import org.eclipse.ecf.example.collab.share.GenericSharedObject;
 

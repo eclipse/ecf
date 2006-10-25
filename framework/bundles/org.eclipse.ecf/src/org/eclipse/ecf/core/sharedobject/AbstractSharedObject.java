@@ -18,21 +18,17 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.IIdentifiable;
-import org.eclipse.ecf.core.ISharedObject;
-import org.eclipse.ecf.core.ISharedObjectConfig;
-import org.eclipse.ecf.core.ISharedObjectContext;
-import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.SharedObjectInitException;
-import org.eclipse.ecf.core.events.ISharedObjectCreateResponseEvent;
-import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
-import org.eclipse.ecf.core.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectCreateResponseEvent;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
+import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.QueueException;
-import org.eclipse.ecf.internal.core.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.core.ECFDebugOptions;
+import org.eclipse.ecf.internal.core.ECFPlugin;
 
 /**
  * Base class for shared object classes.
@@ -40,8 +36,6 @@ import org.eclipse.ecf.internal.core.Trace;
  */
 public class AbstractSharedObject implements ISharedObject,
 		IIdentifiable {
-	
-	private static final Trace trace = Trace.create("abstractsharedobject");
 	
 	private ISharedObjectConfig config = null;
 	private List eventProcessors = new Vector();
@@ -180,14 +174,10 @@ public class AbstractSharedObject implements ISharedObject,
     	getContext().sendDispose(remoteID);
     }
 	private void trace(String msg) {
-		if (Trace.ON && trace != null) {
-			trace.msg(getID()+":"+msg);
-		}
+		Trace.trace(ECFPlugin.getDefault(),getID()+":"+msg);
 	}
 	private void traceStack(String msg, Throwable t) {
-		if (Trace.ON && trace != null) {
-			trace.dumpStack(t,getID()+":"+msg);
-		}
+		Trace.catching(ECFPlugin.getDefault(), ECFDebugOptions.EXCEPTIONS_CATCHING, AbstractSharedObject.class, "traceStack", t);
 	}
 	/**
 	 * Send SharedObjectMessage to container with given ID.  The toID 

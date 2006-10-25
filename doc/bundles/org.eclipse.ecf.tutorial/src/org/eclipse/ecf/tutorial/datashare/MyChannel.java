@@ -1,10 +1,10 @@
 package org.eclipse.ecf.tutorial.datashare;
 
-import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectTransactionConfig;
+import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;

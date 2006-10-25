@@ -9,8 +9,8 @@
 package org.eclipse.ecf.datashare;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.SharedObjectDescription;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectTransactionConfig;
+import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
 
 /**
  * Channel configuration to be used during createChannel to 

@@ -10,8 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.sharedobject;
 
-import org.eclipse.ecf.core.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.ISharedObjectTransactionParticipantsFilter;
 
 /**
  * Configuration parameters for transaction shared object creation and replication. 

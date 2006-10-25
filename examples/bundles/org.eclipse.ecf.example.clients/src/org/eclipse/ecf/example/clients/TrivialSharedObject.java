@@ -2,9 +2,9 @@ package org.eclipse.ecf.example.clients;
 
 import java.io.IOException;
 
-import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.AbstractSharedObject;
+import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
 
 public class TrivialSharedObject extends AbstractSharedObject {

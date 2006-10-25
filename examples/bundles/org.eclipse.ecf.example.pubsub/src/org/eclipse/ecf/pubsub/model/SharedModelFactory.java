@@ -13,15 +13,15 @@ package org.eclipse.ecf.pubsub.model;
 import java.util.HashMap;
 
 import org.eclipse.ecf.core.IContainerListener;
-import org.eclipse.ecf.core.ISharedObjectContainer;
-import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.SharedObjectAddException;
-import org.eclipse.ecf.core.SharedObjectCreateException;
-import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.events.IContainerEvent;
-import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
+import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
+import org.eclipse.ecf.core.sharedobject.SharedObjectCreateException;
+import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.pubsub.model.impl.AgentBase;
 import org.eclipse.ecf.pubsub.model.impl.LocalAgent;
 

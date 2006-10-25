@@ -13,12 +13,12 @@ package org.eclipse.ecf.pubsub.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.ecf.core.ISharedObjectManager;
-import org.eclipse.ecf.core.SharedObjectCreateException;
-import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
+import org.eclipse.ecf.core.sharedobject.SharedObjectCreateException;
+import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
 import org.eclipse.ecf.pubsub.IPublishedServiceRequestor;
 import org.eclipse.ecf.pubsub.ISubscriptionCallback;
 

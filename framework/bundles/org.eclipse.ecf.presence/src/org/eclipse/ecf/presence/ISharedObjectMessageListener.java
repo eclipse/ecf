@@ -10,7 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence;
 
-import org.eclipse.ecf.core.events.ISharedObjectMessageEvent;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
 
 /**
  * Listener for receiving shared object messages

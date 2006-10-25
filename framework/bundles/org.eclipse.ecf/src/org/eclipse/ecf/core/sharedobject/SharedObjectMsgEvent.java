@@ -11,8 +11,8 @@
 
 package org.eclipse.ecf.core.sharedobject;
 
-import org.eclipse.ecf.core.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectEvent;
 
 /**
  * Event type to represent messages sent between shared objects

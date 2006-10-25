@@ -10,13 +10,14 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.sharedobject;
 
-import org.eclipse.ecf.core.SharedObjectInitException;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
-import org.eclipse.ecf.core.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
-import org.eclipse.ecf.internal.core.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.core.ECFDebugOptions;
+import org.eclipse.ecf.internal.core.ECFPlugin;
 
 /**
  * Superclass for shared object classes that replicate themselves
@@ -25,23 +26,18 @@ import org.eclipse.ecf.internal.core.Trace;
  */
 public class OptimisticSharedObject extends AbstractSharedObject {
 
-	public static final Trace trace = Trace.create("optimisticsharedobject");
 	public OptimisticSharedObject() {
 		super();
 	}
 	protected void trace(String msg) {
-		if (Trace.ON && trace != null) {
-			trace.msg(getID() + ":"
-					+ (isPrimary() ? "primary:" : "replica:")
-					+ msg);
-		}
+		Trace.trace(ECFPlugin.getDefault(),getID() + ":"
+				+ (isPrimary() ? "primary:" : "replica:")
+				+ msg);
 	}
 	protected void traceStack(String msg, Throwable t) {
-		if (Trace.ON && trace != null) {
-			trace.dumpStack(t, getID() + ":"
-					+ (isPrimary() ? "primary" : "replica")
-					+ msg);
-		}
+		Trace.catching(ECFPlugin.getDefault(), ECFDebugOptions.EXCEPTIONS_CATCHING, OptimisticSharedObject.class, getID() + ":"
+				+ (isPrimary() ? "primary" : "replica")
+				+ msg, t);
 	}
 
 	protected void initialize() throws SharedObjectInitException {

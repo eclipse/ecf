@@ -17,9 +17,9 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.comm.ConnectionRequestHandler;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 
 public class TCPServerSOContainer extends ServerSOContainer implements
         ConnectionRequestHandler {

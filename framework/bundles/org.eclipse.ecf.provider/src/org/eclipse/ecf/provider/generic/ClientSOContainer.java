@@ -14,8 +14,6 @@ import java.io.Serializable;
 import java.net.ConnectException;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.ISharedObjectContainerConfig;
-import org.eclipse.ecf.core.SharedObjectDescription;
 import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
 import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
 import org.eclipse.ecf.core.comm.DisconnectConnectionEvent;
@@ -32,6 +30,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
+import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public abstract class ClientSOContainer extends SOContainer {

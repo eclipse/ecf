@@ -10,8 +10,8 @@ package org.eclipse.ecf.provider.datashare;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.ecf.core.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 
 public class DatashareContainerConfig implements ISharedObjectContainerConfig {
 
