@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URI;
-import org.eclipse.ecf.core.comm.ConnectionRequestHandler;
+import org.eclipse.ecf.core.comm.IConnectionRequestHandler;
 import org.eclipse.ecf.provider.Trace;
 import org.eclipse.ecf.provider.comm.tcp.Client;
 import org.eclipse.ecf.provider.comm.tcp.ConnectRequestMessage;
@@ -126,8 +126,8 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
         // connect request
         synchronized (newClient) {
             // Call checkConnect
-            Serializable resp = (Serializable) ((ConnectionRequestHandler) srs)
-                    .checkConnect(aSocket, path, req.getData(), newClient);
+            Serializable resp = (Serializable) ((IConnectionRequestHandler) srs)
+                    .handleConnectRequest(aSocket, path, req.getData(), newClient);
             // Create connect response wrapper and send it back
             oStream.writeObject(new ConnectResultMessage(resp));
             oStream.flush();
