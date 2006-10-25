@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IIdentifiable;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectCreateResponseEvent;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectEvent;

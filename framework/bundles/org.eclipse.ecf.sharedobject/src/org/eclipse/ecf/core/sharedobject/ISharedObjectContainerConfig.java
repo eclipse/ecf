@@ -10,7 +10,7 @@ package org.eclipse.ecf.core.sharedobject;
 
 import java.util.Map;
 
-import org.eclipse.ecf.core.IIdentifiable;
+import org.eclipse.ecf.core.identity.IIdentifiable;
 
 /**
  * Configuration information associated with ISharedObjectContainer.
