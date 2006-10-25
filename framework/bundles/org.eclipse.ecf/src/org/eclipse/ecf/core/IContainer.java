@@ -10,6 +10,7 @@ package org.eclipse.ecf.core;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IIdentifiable;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 

@@ -9,7 +9,7 @@
 package org.eclipse.ecf.datashare;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.IIdentifiable;
+import org.eclipse.ecf.core.identity.IIdentifiable;
 
 /**
  * Abstract channel

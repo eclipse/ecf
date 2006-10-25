@@ -6,9 +6,8 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.core;
+package org.eclipse.ecf.core.identity;
 
-import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Defines implementing classes as being identifiable with an ECF identity.

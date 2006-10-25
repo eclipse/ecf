@@ -10,8 +10,8 @@ package org.eclipse.ecf.datashare.mergeable;
 
 import java.util.List;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IIdentifiable;
 
 /**
  * Mergeable channel for merging and publishing items.  This interface is an abstraction 

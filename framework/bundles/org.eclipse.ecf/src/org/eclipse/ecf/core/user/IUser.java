@@ -13,7 +13,7 @@ package org.eclipse.ecf.core.user;
 import java.io.Serializable;
 import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.IIdentifiable;
+import org.eclipse.ecf.core.identity.IIdentifiable;
 
 /**
  * Interface for arbitrary ECF system user. Instances represent a user within

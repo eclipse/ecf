@@ -9,7 +9,8 @@
 package org.eclipse.ecf.datashare.mergeable;
 
 import java.util.Date;
-import org.eclipse.ecf.core.IIdentifiable;
+
+import org.eclipse.ecf.core.identity.IIdentifiable;
 
 /**
  * Info about when an update was made and by whom.

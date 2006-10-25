@@ -10,8 +10,8 @@
  */
 package org.eclipse.ecf.pubsub;
 
-import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IIdentifiable;
 
 public interface ISubscribedService extends IIdentifiable {
 

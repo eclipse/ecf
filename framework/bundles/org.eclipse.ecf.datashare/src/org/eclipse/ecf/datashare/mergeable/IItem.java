@@ -9,7 +9,8 @@
 package org.eclipse.ecf.datashare.mergeable;
 
 import java.util.List;
-import org.eclipse.ecf.core.IIdentifiable;
+
+import org.eclipse.ecf.core.identity.IIdentifiable;
 
 public interface IItem extends IIdentifiable {
 	/**

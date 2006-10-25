@@ -13,10 +13,10 @@ package org.eclipse.ecf.pubsub.model.impl;
 import java.util.Map;
 
 import org.eclipse.core.runtime.PlatformObject;
-import org.eclipse.ecf.core.IIdentifiable;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IIdentifiable;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
 import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
