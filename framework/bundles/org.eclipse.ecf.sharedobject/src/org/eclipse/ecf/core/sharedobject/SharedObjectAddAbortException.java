@@ -13,8 +13,11 @@ import java.util.Map;
 
 public class SharedObjectAddAbortException extends SharedObjectAddException {
 	private static final long serialVersionUID = 4120851079287223088L;
+
 	protected long timeout = -1L;
+
 	protected Map causes;
+
 	protected List participants;
 
 	public SharedObjectAddAbortException() {

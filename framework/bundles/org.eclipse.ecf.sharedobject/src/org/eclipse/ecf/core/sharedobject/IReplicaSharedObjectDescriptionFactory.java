@@ -13,12 +13,13 @@ import org.eclipse.ecf.core.identity.ID;
 public interface IReplicaSharedObjectDescriptionFactory {
 	/**
 	 * Create new ReplicaSharedObjectDescription instance for delivery to remote
-	 * container identified by containerID parameter.  The containerID parameter ID
-	 * provided must not be null
+	 * container identified by containerID parameter. The containerID parameter
+	 * ID provided must not be null
 	 * 
 	 * @param containerID
-	 * @return ReplicaSharedObjectDescription.  Must not return null, but rather a valid
-	 * ReplicaSharedObjectDescription instance
+	 * @return ReplicaSharedObjectDescription. Must not return null, but rather
+	 *         a valid ReplicaSharedObjectDescription instance
 	 */
-	public ReplicaSharedObjectDescription createDescriptionForContainer(ID containerID, ISharedObjectConfig config);
+	public ReplicaSharedObjectDescription createDescriptionForContainer(
+			ID containerID, ISharedObjectConfig config);
 }

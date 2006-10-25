@@ -23,8 +23,8 @@ public interface ISharedObjectContainerFactory {
 	 * @param argTypes
 	 *            a String [] defining the types of the args parameter
 	 * @param args
-	 *            an Object [] of arguments passed to the createInstance method of
-	 *            the IContainerInstantiator
+	 *            an Object [] of arguments passed to the createInstance method
+	 *            of the IContainerInstantiator
 	 * @return a valid instance of ISharedObjectContainer
 	 * @throws ContainerCreateException
 	 */
@@ -59,7 +59,7 @@ public interface ISharedObjectContainerFactory {
 			throws ContainerCreateException;
 
 	/**
-	 * Make ISharedObjectContainer instance. 
+	 * Make ISharedObjectContainer instance.
 	 * 
 	 * @param descriptionName
 	 *            the ContainerTypeDescription name to lookup

@@ -30,7 +30,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 	private static final String CREATE_ADAPTER_ID_ERROR_MESSAGE = null;
 
 	protected ID sharedObjectID = null;
-	
+
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (ISharedObjectContainer.class.isInstance(adaptableObject))
 			return getSharedObjectAdapter(
@@ -46,17 +46,17 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 		// If so then return it
 		if (sharedObjectID != null) {
 			ISharedObject so = manager.getSharedObject(sharedObjectID);
-			if (so != null) return so;
+			if (so != null)
+				return so;
 		}
 		ISharedObject adapter = createAdapter(container, adapterType);
 		if (adapter == null)
 			return null;
-		sharedObjectID = createAdapterID(adapter,
-				adapterType);
+		sharedObjectID = createAdapterID(adapter, adapterType);
 		if (sharedObjectID == null)
 			return null;
-		Map sharedObjectProperties = createAdapterProperties(
-				adapter, adapterType);
+		Map sharedObjectProperties = createAdapterProperties(adapter,
+				adapterType);
 		try {
 			manager.addSharedObject(sharedObjectID, adapter,
 					sharedObjectProperties);
@@ -71,13 +71,12 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 		return adapter;
 	}
 
-	protected Map createAdapterProperties(
-			ISharedObject sharedObjectAdapter, Class adapterType) {
+	protected Map createAdapterProperties(ISharedObject sharedObjectAdapter,
+			Class adapterType) {
 		return null;
 	}
 
-	protected ID createAdapterID(ISharedObject adapter,
-			Class adapterType) {
+	protected ID createAdapterID(ISharedObject adapter, Class adapterType) {
 		String singletonName = adapter.getClass().getName();
 		try {
 			return IDFactory.getDefault().createStringID(singletonName);
@@ -85,13 +84,14 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 			Activator.getDefault().getLog().log(
 					new Status(IStatus.ERROR, Activator.getDefault()
 							.getBundle().getSymbolicName(),
-							CREATE_ADAPTER_ID_ERROR_CODE, CREATE_ADAPTER_ID_ERROR_MESSAGE,
-							e));
+							CREATE_ADAPTER_ID_ERROR_CODE,
+							CREATE_ADAPTER_ID_ERROR_MESSAGE, e));
 			return null;
 		}
 	}
 
-	protected abstract ISharedObject createAdapter(ISharedObjectContainer container, Class adapterType);
+	protected abstract ISharedObject createAdapter(
+			ISharedObjectContainer container, Class adapterType);
 
 	public abstract Class[] getAdapterList();
 

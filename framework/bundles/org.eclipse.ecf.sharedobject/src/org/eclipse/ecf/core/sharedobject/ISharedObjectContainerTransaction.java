@@ -15,9 +15,13 @@ package org.eclipse.ecf.core.sharedobject;
  */
 public interface ISharedObjectContainerTransaction {
 	public static final byte ACTIVE = 0;
+
 	public static final byte VOTING = 1;
+
 	public static final byte PREPARED = 2;
+
 	public static final byte COMMITTED = 3;
+
 	public static final byte ABORTED = 4;
 
 	/**

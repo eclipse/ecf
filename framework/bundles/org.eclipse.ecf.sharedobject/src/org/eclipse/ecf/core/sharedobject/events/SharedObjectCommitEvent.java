@@ -13,7 +13,9 @@ import org.eclipse.ecf.core.util.Event;
 
 public class SharedObjectCommitEvent implements ISharedObjectCommitEvent {
 	private static final long serialVersionUID = 4615634472917480497L;
+
 	ID senderSharedObjectID = null;
+
 	Event event = null;
 
 	public SharedObjectCommitEvent(ID senderSharedObjectID, Event event) {

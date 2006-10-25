@@ -30,22 +30,32 @@ import org.eclipse.ecf.internal.core.sharedobject.Activator;
 import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
 
 /**
- * Implementation of two-phase commit for transactional replication of shared objects.
- *
+ * Implementation of two-phase commit for transactional replication of shared
+ * objects.
+ * 
  */
 public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		ISharedObjectContainerTransaction {
 	AbstractSharedObject sharedObject = null;
+
 	byte transactionState = ISharedObjectContainerTransaction.ACTIVE;
+
 	Object lock = new Object();
+
 	List participants = new Vector();
+
 	Map failed = new HashMap();
+
 	int timeout = ISharedObjectTransactionConfig.DEFAULT_TIMEOUT;
+
 	int minFailedToAbort = 0;
+
 	long identifier = 0;
+
 	ISharedObjectTransactionParticipantsFilter participantsFilter = null;
-	
-	public TwoPhaseCommitEventProcessor(AbstractSharedObject bse, ISharedObjectTransactionConfig config) {
+
+	public TwoPhaseCommitEventProcessor(AbstractSharedObject bse,
+			ISharedObjectTransactionConfig config) {
 		this.sharedObject = bse;
 		if (config == null) {
 			config = new TransactionSharedObjectConfiguration();
@@ -53,27 +63,38 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		this.timeout = config.getTimeout();
 		this.participantsFilter = config.getParticipantsFilter();
 	}
+
 	protected void trace(String msg) {
-		Trace.trace(Activator.getDefault(),msg);
+		Trace.trace(Activator.getDefault(), msg);
 	}
+
 	protected void traceStack(String msg, Throwable t) {
-		Trace.catching(Activator.getDefault(), SharedObjectDebugOptions.EXCEPTIONS_CATCHING, TwoPhaseCommitEventProcessor.class, "traceStack", t);;
+		Trace.catching(Activator.getDefault(),
+				SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
+				TwoPhaseCommitEventProcessor.class, "traceStack", t);
+		;
 	}
+
 	protected int getTimeout() {
 		return timeout;
 	}
+
 	protected int getMinFailedToAbort() {
 		return minFailedToAbort;
 	}
+
 	protected boolean isPrimary() {
 		return getSharedObject().isPrimary();
 	}
+
 	protected AbstractSharedObject getSharedObject() {
 		return sharedObject;
 	}
+
 	protected ID getHomeID() {
 		return getSharedObject().getHomeContainerID();
 	}
+
 	protected void addParticipants(ID[] ids) {
 		if (ids != null) {
 			for (int i = 0; i < ids.length; i++) {
@@ -83,21 +104,25 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			}
 		}
 	}
+
 	protected void removeParticipant(ID id) {
 		if (id != null) {
 			trace("removeParticipant(" + id + ")");
 			participants.remove(id);
 		}
 	}
+
 	protected void addFailed(ID remote, Throwable failure) {
 		if (remote != null && failure != null) {
 			trace("addFailed(" + remote + "," + failure + ")");
 			failed.put(remote, failure);
 		}
 	}
+
 	protected ISharedObjectContext getContext() {
 		return getSharedObject().getContext();
 	}
+
 	/*
 	 * Implementation of IEventProcessor. These methods are entry point methods
 	 * for AbstractSharedObject method dispatch to call
@@ -119,11 +144,13 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		} else if (event instanceof ISharedObjectMessageEvent) {
 			ISharedObjectMessageEvent some = (ISharedObjectMessageEvent) event;
 			Object data = some.getData();
-			if (data instanceof ISharedObjectCommitEvent) localCommitted();
+			if (data instanceof ISharedObjectCommitEvent)
+				localCommitted();
 		}
 		// Let other event processors have a shot at this event
 		return false;
 	}
+
 	protected void handleActivated(ISharedObjectActivatedEvent event) {
 		trace("handleActivated(" + event + ")");
 		// No other state changes while this is going on
@@ -138,32 +165,37 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			lock.notifyAll();
 		}
 	}
+
 	protected void replicateTo(ID[] remotes) {
 		getSharedObject().replicateToRemoteContainers(remotes);
 	}
-	
+
 	protected void handlePrimaryActivated(ISharedObjectActivatedEvent event) {
-		trace("handlePrimaryActivated("+event+")");
+		trace("handlePrimaryActivated(" + event + ")");
 		// First get current group membership
 		if (getContext().getConnectedID() != null) {
 			ID[] groupMembers = getContext().getGroupMemberIDs();
 			// Now get participants
 			ID[] transactionParticipants = null;
-			// If there is a participants filter specified then use it and ask it to return an ID [] of participants (given
+			// If there is a participants filter specified then use it and ask
+			// it to return an ID [] of participants (given
 			// the current group membership
 			if (participantsFilter != null) {
-				transactionParticipants = participantsFilter.filterParticipants(groupMembers);
+				transactionParticipants = participantsFilter
+						.filterParticipants(groupMembers);
 			}
 			// replicate
 			if (transactionParticipants == null) {
-				// This means that all current group members should be included as participants
+				// This means that all current group members should be included
+				// as participants
 				replicateTo(null);
 				transactionParticipants = groupMembers;
 			} else {
-				// This means the participants filter provided us with an ID [] and so we replicate only to that ID []
+				// This means the participants filter provided us with an ID []
+				// and so we replicate only to that ID []
 				replicateTo(transactionParticipants);
 			}
-			
+
 			// Add participants to the collection
 			addParticipants(transactionParticipants);
 			// Now set transaction state to VOTING
@@ -172,11 +204,13 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			setTransactionState(ISharedObjectContainerTransaction.COMMITTED);
 		}
 	}
+
 	private long getNextIdentifier() {
 		return identifier++;
 	}
+
 	protected void handleReplicaActivated(ISharedObjectActivatedEvent event) {
-		trace("handleReplicaActivated("+event+")");
+		trace("handleReplicaActivated(" + event + ")");
 		try {
 			// Try to respond with create success message back to host
 			getContext().sendCreateResponse(getHomeID(), null,
@@ -189,21 +223,25 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			setTransactionState(ISharedObjectContainerTransaction.ABORTED);
 		}
 	}
+
 	protected void handleJoined(IContainerConnectedEvent event) {
 		trace("handleJoined(" + event + ")");
 		// If we are primary then this event matters to us
 		if (isPrimary()) {
-			// If transactionstate is VOTING then we replicate ourselves to participants
+			// If transactionstate is VOTING then we replicate ourselves to
+			// participants
 			if (getTransactionState() == ISharedObjectContainerTransaction.VOTING) {
 				synchronized (lock) {
-					// First send replicate message *no matter what state we are in*
-					ID [] newMember = new ID[] { event.getTargetID() };
+					// First send replicate message *no matter what state we are
+					// in*
+					ID[] newMember = new ID[] { event.getTargetID() };
 					replicateTo(newMember);
 					addParticipants(newMember);
 				}
 			}
 		}
 	}
+
 	protected void handleCreateResponse(ISharedObjectCreateResponseEvent event) {
 		trace("handleCreateResponse(" + event + ")");
 		if (isPrimary()) {
@@ -226,6 +264,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			// we don't care as we are note transaction monitor
 		}
 	}
+
 	protected void handleDeparted(IContainerDisconnectedEvent event) {
 		trace("handleDeparted(" + event + ")");
 		if (isPrimary()) {
@@ -241,9 +280,11 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			// we don't care as we are not transaction monitor
 		}
 	}
+
 	protected void handleVotingCompletedCreateResponse(ID fromID, Throwable e,
 			long identifier) {
-		trace("handleVotingCompletedCreateResponse(" + fromID + ","+e+","+identifier+")");
+		trace("handleVotingCompletedCreateResponse(" + fromID + "," + e + ","
+				+ identifier + ")");
 		// If remote creation was successful, simply send commit message back.
 		if (e == null) {
 			try {
@@ -257,12 +298,14 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			handlePostCommitFailure(fromID, e, identifier);
 		}
 	}
+
 	protected void handlePostCommitFailure(ID fromID, Throwable e,
 			long identifier) {
 		// Do nothing but report
 		trace("handlePostCommitFailure(" + fromID + "," + e + "," + identifier
 				+ ")");
 	}
+
 	protected void sendCommit() throws SharedObjectAddAbortException {
 		try {
 			getContext().sendMessage(null,
@@ -272,16 +315,19 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 					"Exception sending commit message", e2, getTimeout()));
 		}
 	}
+
 	public byte getTransactionState() {
 		synchronized (lock) {
 			return transactionState;
 		}
 	}
+
 	protected void setTransactionState(byte state) {
 		synchronized (lock) {
 			transactionState = state;
 		}
 	}
+
 	public void waitToCommit() throws SharedObjectAddAbortException {
 		if (getTransactionState() == ISharedObjectContainerTransaction.COMMITTED)
 			return;
@@ -308,6 +354,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			doTMCommit();
 		}
 	}
+
 	protected void doTMAbort(Throwable except)
 			throws SharedObjectAddAbortException {
 		trace("doTMAbort:" + except);
@@ -323,29 +370,33 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			throw new SharedObjectAddAbortException("Aborted", except,
 					getTimeout());
 	}
+
 	protected void doTMCommit() throws SharedObjectAddAbortException {
 		trace("doTMCommit");
-		// Make sure we are connected.  If so then send commit message
+		// Make sure we are connected. If so then send commit message
 		if (getSharedObject().getGroupID() != null) {
 			sendCommit();
 		}
 		// Call local committed message
 		localCommitted();
 	}
+
 	protected void localCommitted() {
 		trace("localCommitted()");
 		// Set state variable to committed.
 		setTransactionState(ISharedObjectContainerTransaction.COMMITTED);
 		getSharedObject().creationCompleted();
 	}
+
 	protected boolean isVotingCompleted() throws SharedObjectAddAbortException {
 		// The test here is is we've received any indication of failed
 		// participants in the transaction. If so, we throw.
-		if (getTransactionState() == ISharedObjectContainerTransaction.COMMITTED) return true;
+		if (getTransactionState() == ISharedObjectContainerTransaction.COMMITTED)
+			return true;
 		if (failed.size() > getMinFailedToAbort()) {
 			// Abort!
-			trace("isVotingCompleted:aborting:failed>"
-					+ getMinFailedToAbort() + ":failed=" + failed);
+			trace("isVotingCompleted:aborting:failed>" + getMinFailedToAbort()
+					+ ":failed=" + failed);
 			throw new SharedObjectAddAbortException("Abort received",
 					participants, failed, getTimeout());
 			// If no problems, and the number of participants to here from is 0,

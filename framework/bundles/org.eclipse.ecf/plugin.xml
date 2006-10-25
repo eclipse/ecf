@@ -3,6 +3,5 @@
 <plugin>
    <extension-point id="containerFactory" name="ECF Container Factory" schema="schema/containerFactory.exsd"/>
    <extension-point id="connectionFactory" name="ECF Connection Factory" schema="schema/connectionFactory.exsd"/>
-   <extension-point id="sharedObjectFactory" name="ECF Shared Object Factory" schema="schema/sharedObjectFactory.exsd"/>
    <extension-point id="startup" name="ECF Start Up" schema="schema/startup.exsd"/>
 </plugin>

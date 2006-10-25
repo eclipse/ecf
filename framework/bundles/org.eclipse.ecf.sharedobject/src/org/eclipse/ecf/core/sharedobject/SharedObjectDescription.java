@@ -19,42 +19,54 @@ import org.eclipse.ecf.core.identity.ID;
  */
 public class SharedObjectDescription implements Serializable {
 	private static final long serialVersionUID = -999672007680512082L;
-	
+
 	protected SharedObjectTypeDescription typeDescription;
+
 	protected ID id;
+
 	protected Map properties;
-	
-	protected SharedObjectDescription(SharedObjectTypeDescription typeDescription, ID id,
-			Map properties) {
+
+	protected SharedObjectDescription(
+			SharedObjectTypeDescription typeDescription, ID id, Map properties) {
 		this.typeDescription = typeDescription;
 		this.id = id;
 		this.properties = properties;
 	}
-	protected SharedObjectDescription(SharedObjectTypeDescription typeDescription, ID id) {
+
+	protected SharedObjectDescription(
+			SharedObjectTypeDescription typeDescription, ID id) {
 		this(typeDescription, id, null);
 	}
+
 	public SharedObjectDescription(String typeName, ID id, Map properties) {
-		this.typeDescription = new SharedObjectTypeDescription(typeName,null,null,null);
+		this.typeDescription = new SharedObjectTypeDescription(typeName, null,
+				null, null);
 		this.id = id;
 		this.properties = properties;
 	}
+
 	public SharedObjectDescription(Class clazz, ID id, Map properties) {
-		this.typeDescription = new SharedObjectTypeDescription(clazz.getName(),null);
+		this.typeDescription = new SharedObjectTypeDescription(clazz.getName(),
+				null);
 		this.id = id;
 		this.properties = properties;
 	}
+
 	public SharedObjectTypeDescription getTypeDescription() {
 		return typeDescription;
 	}
+
 	public ID getID() {
 		return id;
 	}
+
 	public Map getProperties() {
 		if (properties != null)
 			return properties;
 		else
 			return new HashMap();
 	}
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer("SharedObjectDescription[");
 		sb.append("type=").append(typeDescription).append(";");

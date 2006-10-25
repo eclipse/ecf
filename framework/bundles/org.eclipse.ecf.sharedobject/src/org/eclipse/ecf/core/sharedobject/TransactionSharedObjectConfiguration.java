@@ -10,32 +10,41 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.sharedobject;
 
-
 /**
- * Configuration parameters for transaction shared object creation and replication. 
- *
+ * Configuration parameters for transaction shared object creation and
+ * replication.
+ * 
  */
-public class TransactionSharedObjectConfiguration implements ISharedObjectTransactionConfig {
-	
+public class TransactionSharedObjectConfiguration implements
+		ISharedObjectTransactionConfig {
+
 	protected int timeout = DEFAULT_TIMEOUT;
+
 	protected ISharedObjectTransactionParticipantsFilter participantsFilter = null;
-	
+
 	public TransactionSharedObjectConfiguration() {
 		super();
 	}
+
 	public TransactionSharedObjectConfiguration(int timeout) {
-		this(timeout,null);
+		this(timeout, null);
 	}
-	public TransactionSharedObjectConfiguration(int timeout, ISharedObjectTransactionParticipantsFilter filter) {
+
+	public TransactionSharedObjectConfiguration(int timeout,
+			ISharedObjectTransactionParticipantsFilter filter) {
 		this.timeout = timeout;
 		this.participantsFilter = filter;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.sharedobject.ITransactionConfiguration#getTimeout()
 	 */
 	public int getTimeout() {
 		return timeout;
 	}
+
 	public ISharedObjectTransactionParticipantsFilter getParticipantsFilter() {
 		return participantsFilter;
 	}

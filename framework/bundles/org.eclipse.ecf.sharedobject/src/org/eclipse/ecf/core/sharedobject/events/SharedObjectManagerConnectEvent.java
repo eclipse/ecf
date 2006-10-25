@@ -18,8 +18,11 @@ import org.eclipse.ecf.core.identity.ID;
 public class SharedObjectManagerConnectEvent implements
 		ISharedObjectManagerEvent {
 	private static final long serialVersionUID = 3544670676712633650L;
+
 	ID localContainerID = null;
+
 	ID[] sharedObjectReceiverIDs = null;
+
 	ID sharedObjectSenderID = null;
 
 	public SharedObjectManagerConnectEvent(ID localContainerID,

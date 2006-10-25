@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -111,8 +110,9 @@ public interface ISharedObjectContext extends IAdaptable {
 	 *            is assumed to be made of <b>all </b> remote containers
 	 *            currently in the given group (excepting the local container).
 	 * @param sd
-	 *            the ReplicaSharedObjectDescription describing the class, constructor
-	 *            and other properties to be associated with the new instance
+	 *            the ReplicaSharedObjectDescription describing the class,
+	 *            constructor and other properties to be associated with the new
+	 *            instance
 	 * @throws IOException
 	 *             thrown if message cannot be sent by container
 	 */
@@ -186,17 +186,22 @@ public interface ISharedObjectContext extends IAdaptable {
 	 *         such services
 	 */
 	public IOSGIService getServiceAccess();
+
 	/**
-	 * Get the Namespace instance that defines the ID type expected by the remote target container 
-	 * @return Namespace the namespace by the target for a call to connect().  Null if container
-	 * namespace no longer available
+	 * Get the Namespace instance that defines the ID type expected by the
+	 * remote target container
+	 * 
+	 * @return Namespace the namespace by the target for a call to connect().
+	 *         Null if container namespace no longer available
 	 */
 	public Namespace getConnectNamespace();
-	
+
 	/**
-	 * Get local container properties that it wishes to expose to shared object access
+	 * Get local container properties that it wishes to expose to shared object
+	 * access
 	 * 
-	 * @return Map of properties available to calling shared object.  Map returned must not be null.
+	 * @return Map of properties available to calling shared object. Map
+	 *         returned must not be null.
 	 */
 	public Map getLocalContainerProperties();
 }

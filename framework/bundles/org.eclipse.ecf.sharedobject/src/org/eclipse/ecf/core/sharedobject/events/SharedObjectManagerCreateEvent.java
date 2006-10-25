@@ -18,7 +18,9 @@ import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
 public class SharedObjectManagerCreateEvent implements
 		ISharedObjectManagerEvent {
 	private static final long serialVersionUID = 3905527103070878006L;
+
 	SharedObjectDescription description = null;
+
 	ID localContainerID = null;
 
 	public SharedObjectManagerCreateEvent(ID localContainerID,

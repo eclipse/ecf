@@ -24,56 +24,72 @@ import java.security.PrivilegedExceptionAction;
  */
 public class SharedObjectMsg implements Serializable {
 	private static final long serialVersionUID = -8761203700888592267L;
+
 	public static final Object[] nullArgs = new Object[0];
+
 	public static final Class[] nullTypes = new Class[0];
-	
-	protected SharedObjectMsg() {}
+
+	protected SharedObjectMsg() {
+	}
+
 	// Static factory methods for creating SharedObjectMsg instances
-	public static SharedObjectMsg createMsg(String className, String methodName,
-			Object[] param) {
+	public static SharedObjectMsg createMsg(String className,
+			String methodName, Object[] param) {
 		if (methodName == null || param == null) {
 			throw new NullPointerException(
 					"Invalid SharedObjectMsg construction");
 		}
 		return new SharedObjectMsg(className, methodName, param);
 	}
+
 	public static SharedObjectMsg createMsg(String methodName, Object[] param) {
 		return createMsg((String) null, methodName, param);
 	}
+
 	public static SharedObjectMsg createMsg(String methodName) {
 		return createMsg((String) null, methodName, nullArgs);
 	}
+
 	public static SharedObjectMsg createMsg(String className, String methodName) {
 		return createMsg(className, methodName, nullArgs);
 	}
-	public static SharedObjectMsg createMsg(String className, String methodName,
-			Object arg) {
+
+	public static SharedObjectMsg createMsg(String className,
+			String methodName, Object arg) {
 		Object args[] = { arg };
 		return createMsg(className, methodName, args);
 	}
+
 	public static SharedObjectMsg createMsg(String methodName, Object arg) {
 		return createMsg((String) null, methodName, arg);
 	}
-	public static SharedObjectMsg createMsg(String className, String methodName,
-			Object arg1, Object arg2) {
+
+	public static SharedObjectMsg createMsg(String className,
+			String methodName, Object arg1, Object arg2) {
 		Object args[] = { arg1, arg2 };
 		return createMsg(className, methodName, args);
 	}
-	public static SharedObjectMsg createMsg(String className, String methodName,
-			Object arg1, Object arg2, Object arg3) {
+
+	public static SharedObjectMsg createMsg(String className,
+			String methodName, Object arg1, Object arg2, Object arg3) {
 		Object args[] = { arg1, arg2, arg3 };
 		return createMsg(className, methodName, args);
 	}
-	public static SharedObjectMsg createMsg(String className, String methodName,
-			Object arg1, Object arg2, Object arg3, Object arg4) {
+
+	public static SharedObjectMsg createMsg(String className,
+			String methodName, Object arg1, Object arg2, Object arg3,
+			Object arg4) {
 		Object args[] = { arg1, arg2, arg3, arg4 };
 		return createMsg(className, methodName, args);
 	}
-	public static SharedObjectMsg createMsg(String className, String methodName,
-			Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
+
+	public static SharedObjectMsg createMsg(String className,
+			String methodName, Object arg1, Object arg2, Object arg3,
+			Object arg4, Object arg5) {
 		Object args[] = { arg1, arg2, arg3, arg4, arg5 };
 		return createMsg(className, methodName, args);
 	}
+
 	/**
 	 * Utility for getting a Class instance from a String class name. Calls
 	 * Class.forName().
@@ -93,6 +109,7 @@ public class SharedObjectMsg implements Serializable {
 			return null;
 		return Class.forName(name, true, loader);
 	}
+
 	/**
 	 * Get name for given class.
 	 * 
@@ -103,10 +120,12 @@ public class SharedObjectMsg implements Serializable {
 	public static String getNameForClass(Class clazz) {
 		return clazz.getName();
 	}
+
 	/**
 	 * Get array of argument types from array of objects
 	 * 
-	 * @param args the arguments to get types for
+	 * @param args
+	 *            the arguments to get types for
 	 * @return Class[] of types for objects in given Object array
 	 */
 	public static Class[] getTypesForParameters(Object args[]) {
@@ -124,6 +143,7 @@ public class SharedObjectMsg implements Serializable {
 		}
 		return argTypes;
 	}
+
 	/**
 	 * Find a Method instance on given class. This method searches for a method
 	 * on the given class (first parameter), of the given name (second
@@ -154,6 +174,7 @@ public class SharedObjectMsg implements Serializable {
 		}
 		return searchForMethod(methods, meth, args);
 	}
+
 	public static Method searchForMethod(Method meths[], String meth,
 			Class args[]) {
 		// Find it from among the given set of Method objects
@@ -166,6 +187,7 @@ public class SharedObjectMsg implements Serializable {
 		}
 		return null;
 	}
+
 	/**
 	 * Find a Method instance on given class, and recursively search the class'
 	 * superclass tree for given method.
@@ -192,6 +214,7 @@ public class SharedObjectMsg implements Serializable {
 			return aMethod;
 		}
 	}
+
 	/**
 	 * Check a given msg to verify that all Objects in args array implement the
 	 * Serializable interface.
@@ -211,34 +234,42 @@ public class SharedObjectMsg implements Serializable {
 						+ " not Serializable");
 		}
 	}
+
 	// Instance fields
 	/**
 	 * @serial clazz the class name for the message
 	 */
 	protected String clazz;
+
 	/**
 	 * @serial method the method name of the message
 	 */
 	protected String method;
+
 	/**
 	 * @serial args arguments
 	 */
 	protected Object[] parameters;
+
 	// Constructor
-	protected SharedObjectMsg(String className, String methodName, Object[] parameters) {
+	protected SharedObjectMsg(String className, String methodName,
+			Object[] parameters) {
 		this.clazz = className;
 		this.method = methodName;
 		this.parameters = parameters;
 	}
+
 	public final String getMethod() {
 		return method;
 	}
+
 	public final void setMethod(String name) {
 		checkAlterMsg();
 		if (name == null)
 			throw new NullPointerException("methodname cannot be null");
 		method = name;
 	}
+
 	/**
 	 * Check if it is permitted to alter the state of this message (args, class
 	 * name, method name). Default: NOP; subclasses should override as
@@ -247,32 +278,41 @@ public class SharedObjectMsg implements Serializable {
 	protected void checkAlterMsg() {
 		// NOP; subclasses should override as appropriate
 	}
+
 	public final String getClassName() {
 		return clazz;
 	}
+
 	public final void setClassName(String name) {
 		checkAlterMsg();
 		clazz = name;
 	}
+
 	public Object[] getParameters() {
 		return parameters;
 	}
+
 	public final void setParameters(Object[] args) {
 		checkAlterMsg();
 		args = (args == null) ? nullArgs : args;
 	}
+
 	protected Class[] getParameterTypes() {
 		return getTypesForParameters(getParameters());
 	}
+
 	protected final Method findMethod(Class clazz) {
 		return findMethod(clazz, getMethod(), getParameterTypes());
 	}
+
 	protected final Method findMethodRecursive(Class clazz) {
 		return findMethodRecursive(clazz, getMethod(), getParameterTypes());
 	}
+
 	public final Object invoke(Object target) throws Exception {
 		return doInvoke(target);
 	}
+
 	Object doInvoke(final Object target) // package scope for security
 			throws Exception {
 		if (target == null)
@@ -303,10 +343,11 @@ public class SharedObjectMsg implements Serializable {
 		// Actually invoke method
 		return toCall.invoke(target, getParameters());
 	}
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("SharedObjectMsg[").append(clazz).append(":").append(
-				method).append("(");
+		sb.append("SharedObjectMsg[").append(clazz).append(":").append(method)
+				.append("(");
 		if (parameters == null) {
 			sb.append(parameters);
 		} else {

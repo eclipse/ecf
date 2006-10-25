@@ -44,15 +44,16 @@ public interface ISharedObjectConfig {
 	 * ISharedObject, as well as access to OSGI-platform services.
 	 * 
 	 * @return ISharedObjectContext for the ISharedObject to use to access
-	 *         container and associated services.  <b>Will</b> return null
-	 *         if context is no longer valid.
+	 *         container and associated services. <b>Will</b> return null if
+	 *         context is no longer valid.
 	 */
 	public ISharedObjectContext getContext();
 
 	/**
 	 * Get properties associated with with this ISharedObject
 	 * 
-	 * @return Map with properties associated with this ISharedObject instance.  Will not be null.
+	 * @return Map with properties associated with this ISharedObject instance.
+	 *         Will not be null.
 	 */
 	public Map getProperties();
 }

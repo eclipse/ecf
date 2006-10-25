@@ -22,13 +22,17 @@ import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
  */
 public class SharedObjectTypeDescription implements Serializable {
 	private static final long serialVersionUID = -553771188695892646L;
-	
+
 	protected String name;
+
 	protected ISharedObjectInstantiator instantiator;
+
 	protected String description;
+
 	protected Map typeProperties;
+
 	protected String className;
-	
+
 	public SharedObjectTypeDescription(String name,
 			ISharedObjectInstantiator instantiator, String desc, Map props) {
 		this.name = name;
@@ -36,25 +40,32 @@ public class SharedObjectTypeDescription implements Serializable {
 		this.description = desc;
 		this.typeProperties = props;
 	}
+
 	public SharedObjectTypeDescription(String className, Map props) {
 		this.className = className;
 		this.typeProperties = props;
 	}
+
 	public String getClassName() {
 		return className;
 	}
+
 	public String getDescription() {
 		return description;
 	}
+
 	public ISharedObjectInstantiator getInstantiator() {
 		return instantiator;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public Map getTypeProperties() {
 		return typeProperties;
 	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer("SharedObjectTypeDescription[");
 		buf.append("name=").append(name).append(";");

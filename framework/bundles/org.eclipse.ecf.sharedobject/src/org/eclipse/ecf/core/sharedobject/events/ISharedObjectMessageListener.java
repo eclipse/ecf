@@ -10,7 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.sharedobject.events;
 
-
 /**
  * Listener for receiving shared object messages
  * 

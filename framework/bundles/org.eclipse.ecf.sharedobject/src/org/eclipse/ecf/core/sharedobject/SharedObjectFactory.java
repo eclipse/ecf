@@ -23,10 +23,11 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
  * clients an entry point to constructing {@link ISharedObject} instances. <br>
  */
 public class SharedObjectFactory implements ISharedObjectFactory {
-	
+
 	private static Hashtable sharedobjectdescriptions = new Hashtable();
+
 	protected static ISharedObjectFactory instance = null;
-	
+
 	static {
 		instance = new SharedObjectFactory();
 	}
@@ -39,11 +40,13 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	}
 
 	private static void trace(String msg) {
-		Trace.trace(Activator.getDefault(),msg);
+		Trace.trace(Activator.getDefault(), msg);
 	}
 
 	private static void dumpStack(String msg, Throwable e) {
-		Trace.catching(Activator.getDefault(), SharedObjectDebugOptions.EXCEPTIONS_CATCHING, SharedObjectFactory.class, "dumpStack", e);
+		Trace.catching(Activator.getDefault(),
+				SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
+				SharedObjectFactory.class, "dumpStack", e);
 	}
 
 	/*
@@ -51,7 +54,8 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectFactory#addDescription(org.eclipse.ecf.core.SharedObjectTypeDescription)
 	 */
-	public SharedObjectTypeDescription addDescription(SharedObjectTypeDescription description) {
+	public SharedObjectTypeDescription addDescription(
+			SharedObjectTypeDescription description) {
 		trace("addDescription(" + description + ")");
 		return addDescription0(description);
 	}
@@ -69,10 +73,12 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		return new ArrayList(sharedobjectdescriptions.values());
 	}
 
-	protected SharedObjectTypeDescription addDescription0(SharedObjectTypeDescription n) {
+	protected SharedObjectTypeDescription addDescription0(
+			SharedObjectTypeDescription n) {
 		if (n == null)
 			return null;
-		return (SharedObjectTypeDescription) sharedobjectdescriptions.put(n.getName(), n);
+		return (SharedObjectTypeDescription) sharedobjectdescriptions.put(n
+				.getName(), n);
 	}
 
 	/*
@@ -90,10 +96,12 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		return sharedobjectdescriptions.containsKey(scd.getName());
 	}
 
-	protected SharedObjectTypeDescription getDescription0(SharedObjectTypeDescription scd) {
+	protected SharedObjectTypeDescription getDescription0(
+			SharedObjectTypeDescription scd) {
 		if (scd == null)
 			return null;
-		return (SharedObjectTypeDescription) sharedobjectdescriptions.get(scd.getName());
+		return (SharedObjectTypeDescription) sharedobjectdescriptions.get(scd
+				.getName());
 	}
 
 	protected SharedObjectTypeDescription getDescription0(String name) {
@@ -113,7 +121,8 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		SharedObjectTypeDescription res = getDescription0(name);
 		if (res == null) {
 			throw new SharedObjectCreateException(
-					"SharedObjectCreateException named '" + name + "' not found");
+					"SharedObjectCreateException named '" + name
+							+ "' not found");
 		}
 		return res;
 	}
@@ -141,13 +150,14 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 		Class clazzes[] = null;
 		ISharedObjectInstantiator instantiator = null;
 		try {
-			instantiator = (ISharedObjectInstantiator) cd.getInstantiator();
+			instantiator = cd.getInstantiator();
 			clazzes = AbstractFactory.getClassesForTypes(argTypes, args, cd
 					.getClass().getClassLoader());
 		} catch (Exception e) {
 			SharedObjectCreateException newexcept = new SharedObjectCreateException(
-					"createSharedObject exception with description: " + desc + ": "
-							+ e.getClass().getName() + ": " + e.getMessage());
+					"createSharedObject exception with description: " + desc
+							+ ": " + e.getClass().getName() + ": "
+							+ e.getMessage());
 			newexcept.setStackTrace(e.getStackTrace());
 			dumpStack("Exception in createSharedObject", newexcept);
 			throw newexcept;
@@ -157,7 +167,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 					"Instantiator for SharedObjectDescription " + cd.getName()
 							+ " is null");
 		// Ask instantiator to actually create instance
-		return (ISharedObject) instantiator.createInstance(desc, clazzes, args);
+		return instantiator.createInstance(desc, clazzes, args);
 	}
 
 	/*
@@ -167,7 +177,8 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 */
 	public ISharedObject createSharedObject(String descriptionName)
 			throws SharedObjectCreateException {
-		return createSharedObject(getDescriptionByName(descriptionName), null, null);
+		return createSharedObject(getDescriptionByName(descriptionName), null,
+				null);
 	}
 
 	/*
@@ -176,9 +187,10 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObject(java.lang.String,
 	 *      java.lang.Object[])
 	 */
-	public ISharedObject createSharedObject(String descriptionName, Object[] args)
-			throws SharedObjectCreateException {
-		return createSharedObject(getDescriptionByName(descriptionName), null, args);
+	public ISharedObject createSharedObject(String descriptionName,
+			Object[] args) throws SharedObjectCreateException {
+		return createSharedObject(getDescriptionByName(descriptionName), null,
+				args);
 	}
 
 	/*
@@ -187,10 +199,11 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObject(java.lang.String,
 	 *      java.lang.String[], java.lang.Object[])
 	 */
-	public ISharedObject createSharedObject(String descriptionName, String[] argsTypes,
-			Object[] args) throws SharedObjectCreateException {
-		return createSharedObject(getDescriptionByName(descriptionName), argsTypes,
-				args);
+	public ISharedObject createSharedObject(String descriptionName,
+			String[] argsTypes, Object[] args)
+			throws SharedObjectCreateException {
+		return createSharedObject(getDescriptionByName(descriptionName),
+				argsTypes, args);
 	}
 
 	/*
@@ -198,14 +211,17 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#removeDescription(org.eclipse.ecf.core.SharedObjectTypeDescription)
 	 */
-	public SharedObjectTypeDescription removeDescription(SharedObjectTypeDescription scd) {
+	public SharedObjectTypeDescription removeDescription(
+			SharedObjectTypeDescription scd) {
 		trace("removeDescription(" + scd + ")");
 		return removeDescription0(scd);
 	}
 
-	protected SharedObjectTypeDescription removeDescription0(SharedObjectTypeDescription n) {
+	protected SharedObjectTypeDescription removeDescription0(
+			SharedObjectTypeDescription n) {
 		if (n == null)
 			return null;
-		return (SharedObjectTypeDescription) sharedobjectdescriptions.remove(n.getName());
+		return (SharedObjectTypeDescription) sharedobjectdescriptions.remove(n
+				.getName());
 	}
 }

@@ -47,7 +47,7 @@ public class SharedObjectContainerFactory implements
 	}
 
 	private static void trace(String msg) {
-		Trace.trace(Activator.getDefault(),msg);
+		Trace.trace(Activator.getDefault(), msg);
 	}
 
 	/*
@@ -65,8 +65,8 @@ public class SharedObjectContainerFactory implements
 		if (desc == null)
 			throw new ContainerCreateException(
 					"ContainerTypeDescription cannot be null");
-		IContainer newContainer = ContainerFactory.getDefault().createContainer(
-				desc, argTypes, args);
+		IContainer newContainer = ContainerFactory.getDefault()
+				.createContainer(desc, argTypes, args);
 		ISharedObjectContainer soContainer = (ISharedObjectContainer) newContainer
 				.getAdapter(ISharedObjectContainer.class);
 		if (soContainer == null) {

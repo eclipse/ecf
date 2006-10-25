@@ -29,15 +29,17 @@ public class OptimisticSharedObject extends AbstractSharedObject {
 	public OptimisticSharedObject() {
 		super();
 	}
+
 	protected void trace(String msg) {
-		Trace.trace(Activator.getDefault(),getID() + ":"
-				+ (isPrimary() ? "primary:" : "replica:")
-				+ msg);
+		Trace.trace(Activator.getDefault(), getID() + ":"
+				+ (isPrimary() ? "primary:" : "replica:") + msg);
 	}
+
 	protected void traceStack(String msg, Throwable t) {
-		Trace.catching(Activator.getDefault(), SharedObjectDebugOptions.EXCEPTIONS_CATCHING, OptimisticSharedObject.class, getID() + ":"
-				+ (isPrimary() ? "primary" : "replica")
-				+ msg, t);
+		Trace.catching(Activator.getDefault(),
+				SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
+				OptimisticSharedObject.class, getID() + ":"
+						+ (isPrimary() ? "primary" : "replica") + msg, t);
 	}
 
 	protected void initialize() throws SharedObjectInitException {
@@ -49,13 +51,13 @@ public class OptimisticSharedObject extends AbstractSharedObject {
 					if (isPrimary() && isConnected()) {
 						trace("replicating to all");
 						OptimisticSharedObject.this
-						.replicateToRemoteContainers(null);
+								.replicateToRemoteContainers(null);
 					}
 				} else if (event instanceof IContainerConnectedEvent) {
 					if (isPrimary()) {
 						ID targetID = ((IContainerConnectedEvent) event)
-						.getTargetID();
-						trace("replicating to target="+targetID);
+								.getTargetID();
+						trace("replicating to target=" + targetID);
 						OptimisticSharedObject.this
 								.replicateToRemoteContainers(new ID[] { targetID });
 					}
