@@ -12,15 +12,17 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 
 /**
- * Interface that must be implemented by extensions of the org.eclipse.ecf.start 
- * extension point.  Such extensions will have their start method called by
- * a new Job upon ECF startup.
+ * Interface that must be implemented by extensions of the org.eclipse.ecf.start
+ * extension point. Such extensions will have their start method called by a new
+ * Job upon ECF startup.
  */
 public interface IECFStart {
 	/**
-	 * Start ECF client or server.  
+	 * Start ECF client or server.
+	 * 
 	 * @return IStatus the status of the start
-	 * @throws ECFStartException if some exception thrown during start
+	 * @throws ECFStartException
+	 *             if some exception thrown during start
 	 */
 	public IStatus startup(IProgressMonitor monitor);
 }

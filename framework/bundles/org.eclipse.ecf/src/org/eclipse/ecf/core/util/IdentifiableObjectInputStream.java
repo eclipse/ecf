@@ -20,8 +20,6 @@ import java.io.ObjectStreamClass;
  * returned from the call to given IClassLoaderMapper with the Namespace/ID
  * specified by the associated IdentifiableObjectOutputStream.
  * 
- * @author pnehrer
- * @author slewis
  */
 public class IdentifiableObjectInputStream extends ObjectInputStream {
 	IClassLoaderMapper mapper;

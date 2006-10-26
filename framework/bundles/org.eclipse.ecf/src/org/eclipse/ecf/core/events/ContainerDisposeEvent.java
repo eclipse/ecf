@@ -10,9 +10,9 @@ package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class ContainerDisposeEvent implements
-		IContainerDisposeEvent {
+public class ContainerDisposeEvent implements IContainerDisposeEvent {
 	private static final long serialVersionUID = 3618138961349062706L;
+
 	private final ID localContainerID;
 
 	public ContainerDisposeEvent(ID container) {
@@ -20,6 +20,11 @@ public class ContainerDisposeEvent implements
 		this.localContainerID = container;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.events.IContainerEvent#getLocalContainerID()
+	 */
 	public ID getLocalContainerID() {
 		return localContainerID;
 	}
@@ -30,8 +35,7 @@ public class ContainerDisposeEvent implements
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer(
-				"ContainerDisposeEvent[");
+		StringBuffer buf = new StringBuffer("ContainerDisposeEvent[");
 		buf.append(getLocalContainerID()).append("]");
 		return buf.toString();
 	}

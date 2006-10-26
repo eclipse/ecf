@@ -8,8 +8,13 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
+/**
+ * Timeout exception thrown when timeout occurs
+ * 
+ */
 public class TimeoutException extends InterruptedException {
 	private static final long serialVersionUID = 3256439218179158322L;
+
 	public final long duration;
 
 	public TimeoutException(long time) {

@@ -109,11 +109,9 @@ public class Activator extends Plugin {
 	 *            the members to remove
 	 */
 	protected void removeSharedObjectExtensions(IConfigurationElement[] members) {
-		String bundleName = getDefault().getBundle().getSymbolicName();
 		for (int m = 0; m < members.length; m++) {
 			IConfigurationElement member = members[m];
 			String name = null;
-			IExtension extension = member.getDeclaringExtension();
 			try {
 				name = member.getAttribute(NAME_ATTRIBUTE);
 				if (name == null) {

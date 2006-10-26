@@ -9,15 +9,28 @@
 package org.eclipse.ecf.core.security;
 
 import java.io.IOException;
+
 /**
  * Helper class for creating instances of IConnectContext
- *
+ * 
  */
 public class ConnectContextFactory {
 	private ConnectContextFactory() {
 		super();
 	}
-	public static IConnectContext createUsernamePasswordConnectContext(final String username, final Object password) {
+
+	/**
+	 * Create username and password connect context, where username is
+	 * represented as a String and password as an Object.
+	 * 
+	 * @param username
+	 *            the username
+	 * @param password
+	 *            the password
+	 * @return IConnectContext for accessing the username and password
+	 */
+	public static IConnectContext createUsernamePasswordConnectContext(
+			final String username, final Object password) {
 		return new IConnectContext() {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {
@@ -39,8 +52,17 @@ public class ConnectContextFactory {
 			}
 		};
 	}
-	
-	public static IConnectContext createPasswordConnectContext(final String password) {
+
+	/**
+	 * Create password connect context, where password is represented as a
+	 * String
+	 * 
+	 * @param password
+	 *            the password to use
+	 * @return IConnectContext for accessing the given password
+	 */
+	public static IConnectContext createPasswordConnectContext(
+			final String password) {
 		return new IConnectContext() {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {
@@ -59,5 +81,5 @@ public class ConnectContextFactory {
 			}
 		};
 	}
-	
+
 }

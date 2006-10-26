@@ -47,8 +47,9 @@ public interface IContainerFactory {
 	/**
 	 * Get the known ContainerTypeDescription given it's name.
 	 * 
-	 * @param name the name to use as key to find ContainerTypeDescription
-	 * @return ContainerTypeDescription found.  Null if not found.
+	 * @param name
+	 *            the name to use as key to find ContainerTypeDescription
+	 * @return ContainerTypeDescription found. Null if not found.
 	 */
 	public ContainerTypeDescription getDescriptionByName(String name);
 

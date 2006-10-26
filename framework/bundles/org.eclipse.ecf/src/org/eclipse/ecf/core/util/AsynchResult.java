@@ -10,9 +10,15 @@ package org.eclipse.ecf.core.util;
 
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Class to represent asynchronous result (aka Future)
+ * 
+ */
 public class AsynchResult {
 	protected Object resultValue = null;
+
 	protected boolean resultReady = false;
+
 	protected InvocationTargetException resultException = null;
 
 	public AsynchResult() {

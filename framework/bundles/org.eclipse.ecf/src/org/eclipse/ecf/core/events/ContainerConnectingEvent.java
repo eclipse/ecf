@@ -10,15 +10,16 @@ package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class ContainerConnectingEvent implements
-		IContainerConnectingEvent {
+public class ContainerConnectingEvent implements IContainerConnectingEvent {
 	private static final long serialVersionUID = 3544952173248263729L;
+
 	ID localContainerID;
+
 	ID groupID;
+
 	Object data;
 
-	public ContainerConnectingEvent(ID localContainerID,
-			ID groupID, Object data) {
+	public ContainerConnectingEvent(ID localContainerID, ID groupID, Object data) {
 		this.localContainerID = localContainerID;
 		this.groupID = groupID;
 		this.data = data;
@@ -47,8 +48,7 @@ public class ContainerConnectingEvent implements
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer(
-				"ContainerConnectingEvent[");
+		StringBuffer buf = new StringBuffer("ContainerConnectingEvent[");
 		buf.append(getLocalContainerID()).append(";");
 		buf.append(getTargetID()).append(";");
 		buf.append(getData()).append("]");

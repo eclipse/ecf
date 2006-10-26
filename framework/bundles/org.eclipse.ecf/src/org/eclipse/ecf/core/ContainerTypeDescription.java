@@ -29,11 +29,7 @@ public class ContainerTypeDescription {
 
 	protected String description;
 
-	protected String[] argTypes;
-
 	protected String[] argDefaults;
-
-	protected String[] argNames;
 
 	protected int hashCode = 0;
 
@@ -61,7 +57,7 @@ public class ContainerTypeDescription {
 
 	public ContainerTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc) {
-		this(loader, name, instantiatorClass, desc, EMPTY, EMPTY, EMPTY);
+		this(loader, name, instantiatorClass, desc, EMPTY);
 	}
 
 	public ContainerTypeDescription(String name, String instantiatorClass,
@@ -69,16 +65,14 @@ public class ContainerTypeDescription {
 		this(null, name, instantiatorClass, desc);
 	}
 
-	public ContainerTypeDescription(ClassLoader loader, String name,
-			String instantiatorClass, String desc, String[] argTypes,
-			String[] argDefaults, String[] argNames) {
-		this(loader, name, instantiatorClass, desc, argTypes, argDefaults,
-				argNames, null);
+	protected ContainerTypeDescription(ClassLoader loader, String name,
+			String instantiatorClass, String desc, String[] argDefaults) {
+		this(loader, name, instantiatorClass, desc, argDefaults, null);
 	}
 
-	public ContainerTypeDescription(ClassLoader loader, String name,
-			String instantiatorClass, String desc, String[] argTypes,
-			String[] argDefaults, String[] argNames, Map props) {
+	protected ContainerTypeDescription(ClassLoader loader, String name,
+			String instantiatorClass, String desc, String[] argDefaults,
+			Map props) {
 		this.classLoader = loader;
 		if (name == null)
 			throw new NullPointerException("name cannot be null");
@@ -88,22 +82,18 @@ public class ContainerTypeDescription {
 		this.instantiatorClass = instantiatorClass;
 		this.hashCode = name.hashCode();
 		this.description = desc;
-		this.argTypes = argTypes;
 		this.argDefaults = argDefaults;
-		this.argNames = argNames;
 		if (props != null)
 			this.properties = props;
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
-			String desc, String[] argTypes, String[] argDefaults,
-			String[] argNames) {
-		this(name, inst, desc, argTypes, argDefaults, argNames, null);
+			String desc, String[] argDefaults) {
+		this(name, inst, desc, argDefaults, null);
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
-			String desc, String[] argTypes, String[] argDefaults,
-			String[] argNames, Map props) {
+			String desc, String[] argDefaults, Map props) {
 		if (name == null)
 			throw new RuntimeException(
 					new InstantiationException(
@@ -116,16 +106,14 @@ public class ContainerTypeDescription {
 		this.name = name;
 		this.classLoader = this.instantiator.getClass().getClassLoader();
 		this.description = desc;
-		this.argTypes = argTypes;
 		this.argDefaults = argDefaults;
-		this.argNames = argNames;
 		if (props != null)
 			this.properties = props;
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
 			String desc) {
-		this(name, inst, desc, EMPTY, EMPTY, EMPTY);
+		this(name, inst, desc, EMPTY);
 	}
 
 	/**
@@ -159,15 +147,13 @@ public class ContainerTypeDescription {
 
 	public String toString() {
 		StringBuffer b = new StringBuffer("ContainerTypeDescription[");
-		b.append("name:").append(name).append(";");
+		b.append("name=").append(name).append(";");
 		if (instantiator == null)
-			b.append("class:").append(instantiatorClass).append(";");
+			b.append("class=").append(instantiatorClass).append(";");
 		else
-			b.append("instantiator:").append(instantiator).append(";");
-		b.append("desc:").append(description).append(";");
-		b.append("argtypes:").append(Arrays.asList(argTypes)).append(";");
-		b.append("argdefaults:").append(Arrays.asList(argDefaults)).append(";");
-		b.append("argnames:").append(Arrays.asList(argNames)).append("]");
+			b.append("instantiator=").append(instantiator).append(";");
+		b.append("desc=").append(description).append(";");
+		b.append("argdefaults=").append(Arrays.asList(argDefaults)).append(";");
 		return b.toString();
 	}
 
@@ -204,14 +190,6 @@ public class ContainerTypeDescription {
 
 	public String[] getArgDefaults() {
 		return argDefaults;
-	}
-
-	public String[] getArgTypes() {
-		return argTypes;
-	}
-
-	public String[] getArgNames() {
-		return argNames;
 	}
 
 	/**

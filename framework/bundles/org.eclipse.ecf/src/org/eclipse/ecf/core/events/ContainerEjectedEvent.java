@@ -11,22 +11,23 @@ package org.eclipse.ecf.core.events;
 import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 
-public class ContainerEjectedEvent implements
-		IContainerEjectedEvent {
+public class ContainerEjectedEvent implements IContainerEjectedEvent {
 	private static final long serialVersionUID = 3257567299946033970L;
+
 	private final ID localContainerID;
+
 	private final ID groupID;
+
 	private final Serializable reason;
 
-	public ContainerEjectedEvent(ID containerID, ID groupID,
-			Serializable reason) {
+	public ContainerEjectedEvent(ID containerID, ID groupID, Serializable reason) {
 		super();
 		this.localContainerID = containerID;
 		this.groupID = groupID;
 		this.reason = reason;
 	}
 
-	public ID getGroupID() {
+	public ID getTargetID() {
 		return groupID;
 	}
 
@@ -44,10 +45,9 @@ public class ContainerEjectedEvent implements
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer(
-				"ContainerEjectedEvent[");
+		StringBuffer buf = new StringBuffer("ContainerEjectedEvent[");
 		buf.append(getLocalContainerID()).append(";");
-		buf.append(getGroupID()).append(";");
+		buf.append(getTargetID()).append(";");
 		buf.append(getReason()).append("]");
 		return buf.toString();
 	}

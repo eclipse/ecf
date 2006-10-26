@@ -13,6 +13,7 @@ import java.util.LinkedList;
 
 public class SimpleQueueImpl implements ISimpleQueue {
 	List list;
+
 	boolean stopped;
 
 	public SimpleQueueImpl() {

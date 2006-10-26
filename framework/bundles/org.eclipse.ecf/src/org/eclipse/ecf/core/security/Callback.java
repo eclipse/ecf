@@ -9,5 +9,4 @@
 package org.eclipse.ecf.core.security;
 
 public interface Callback {
-
 }

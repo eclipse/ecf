@@ -10,6 +10,10 @@ package org.eclipse.ecf.core.util;
 
 import java.io.Serializable;
 
+/**
+ * Abstract Event
+ * 
+ */
 public interface Event extends Serializable {
 	// No methods. This is a 'tag' interface
 }

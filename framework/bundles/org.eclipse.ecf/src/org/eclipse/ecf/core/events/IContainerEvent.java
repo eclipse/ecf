@@ -11,6 +11,15 @@ package org.eclipse.ecf.core.events;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 
+/**
+ * An event received by a container
+ * 
+ */
 public interface IContainerEvent extends Event {
+	/**
+	 * Get ID of local container (the container receiving this event)
+	 * 
+	 * @return ID for local container. Will not return null.
+	 */
 	public ID getLocalContainerID();
 }

@@ -8,6 +8,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.security;
 
+/**
+ * Callback that handles arbitrary Objects
+ * 
+ */
 public class ObjectCallback implements Callback {
 	Object data;
 

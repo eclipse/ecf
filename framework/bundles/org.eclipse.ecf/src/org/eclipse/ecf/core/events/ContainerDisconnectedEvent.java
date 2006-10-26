@@ -10,44 +10,45 @@ package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public class ContainerDisconnectedEvent implements
-		IContainerDisconnectedEvent {
+public class ContainerDisconnectedEvent implements IContainerDisconnectedEvent {
 	private static final long serialVersionUID = 3256437002059527733L;
-	private final ID departedContainerID;
-	private final ID localContainerID;
-	private Throwable exception = null;
-	
-	public ContainerDisconnectedEvent(ID container, ID o) {
-		this(container,o,null);
-	}
 
-	public ContainerDisconnectedEvent(ID container, ID o, Throwable t) {
+	private final ID departedContainerID;
+
+	private final ID localContainerID;
+
+	public ContainerDisconnectedEvent(ID container, ID o) {
 		this.localContainerID = container;
 		this.departedContainerID = o;
-		this.exception = t;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.events.IContainerDisconnectedEvent#getTargetID()
+	 */
 	public ID getTargetID() {
 		return departedContainerID;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.events.IContainerEvent#getLocalContainerID()
+	 */
 	public ID getLocalContainerID() {
 		return localContainerID;
 	}
 
-	public Throwable getException() {
-		return exception;
-	}
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer(
-				"ContainerDisconnectedEvent[");
+		StringBuffer buf = new StringBuffer("ContainerDisconnectedEvent[");
 		buf.append(getTargetID()).append(";");
-		buf.append(getLocalContainerID()).append(";");
-		buf.append(getException()).append("]");
+		buf.append(getLocalContainerID()).append(";").append("]");
 		return buf.toString();
 	}
 }

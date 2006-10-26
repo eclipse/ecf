@@ -10,6 +10,15 @@ package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Container connected event interface
+ * 
+ */
 public interface IContainerConnectedEvent extends IContainerEvent {
+	/**
+	 * Get ID of container target (the container we are now connected to)
+	 * 
+	 * @return ID the ID of the container we connected to. Will not be null.
+	 */
 	public ID getTargetID();
 }

@@ -11,6 +11,10 @@ package org.eclipse.ecf.core.security;
 import java.security.PermissionCollection;
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Connect policy typically implemented by servers
+ * 
+ */
 public interface IConnectPolicy extends IContainerPolicy {
 	/**
 	 * Check connect request

@@ -85,24 +85,10 @@
          </documentation>
       </annotation>
       <complexType>
-         <attribute name="type" type="string">
-            <annotation>
-               <documentation>
-                  The fully qualified type of the default argument
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="value" type="string">
             <annotation>
                <documentation>
                   The value for the default argument
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="name" type="string">
-            <annotation>
-               <documentation>
-                  An optional name for the defaultargument element
                </documentation>
             </annotation>
          </attribute>
@@ -199,7 +185,7 @@ IContainer newContainer = ContainerFactory.getDefault().createContainer(&apos;fo
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.ContainerFactory&lt;/b&gt; static methods.  Specifically, the &apos;createContainer&apos; methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;ContainerFactory.addDescription(ContainerTypeDescription)&lt;/b&gt; method.
+         The API for this extension point is provided by the &lt;b&gt;org.eclipse.ecf.core.ContainerFactory&lt;/b&gt; static methods.  Specifically, the &apos;createContainer&apos; methods are to be used by clients.  The functionality provided by the extension point mechanism can be used at runtime via the &lt;b&gt;ContainerFactory.getDefault().addDescription(ContainerTypeDescription)&lt;/b&gt; method.
       </documentation>
    </annotation>
 

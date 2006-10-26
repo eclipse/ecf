@@ -11,7 +11,24 @@ package org.eclipse.ecf.core.events;
 import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Container ejected event. This event is received when a local container has
+ * been ejected from a remote group
+ * 
+ */
 public interface IContainerEjectedEvent extends IContainerEvent {
-	public ID getGroupID();
+	/**
+	 * Get ID of container target (the container we were ejected from)
+	 * 
+	 * @return ID the ID of the container we were ejected from. Will not be
+	 *         null.
+	 */
+	public ID getTargetID();
+
+	/**
+	 * Get reason for ejection
+	 * 
+	 * @return Serializable reason for ejection. May be null.
+	 */
 	public Serializable getReason();
 }

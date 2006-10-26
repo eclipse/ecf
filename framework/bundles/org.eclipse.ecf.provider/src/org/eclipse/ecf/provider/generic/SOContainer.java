@@ -890,7 +890,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			}
 			if (fromID != null)
 				fireContainerEvent(new ContainerDisconnectedEvent(
-						getID(), fromID,e.getException()));
+						getID(), fromID));
 		} catch (Exception except) {
 			logException("Exception in processDisconnect ", except);
 		}

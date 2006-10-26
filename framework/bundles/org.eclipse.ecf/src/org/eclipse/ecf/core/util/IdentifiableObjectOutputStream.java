@@ -19,8 +19,6 @@ import java.io.OutputStream;
  * corresponding input stream to use ID to lookup appropriate associated
  * classloader (via IClassLoaderMapper).
  * 
- * @author pnehrer
- * @author slewis
  */
 public class IdentifiableObjectOutputStream extends ObjectOutputStream {
 	String name = null;

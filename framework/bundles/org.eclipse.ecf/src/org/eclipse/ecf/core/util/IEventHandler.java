@@ -8,24 +8,24 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
+/**
+ * Generic event handler interface
+ * 
+ */
 public interface IEventHandler {
 	/**
-	 * Handle Event passed to this ISharedObject. The ISharedObjectContainer
-	 * will pass events to all SharedObjects via this method and the
-	 * handleEvents method.
+	 * Handle Event passed to this IEventHandler.
 	 * 
 	 * @param event
-	 *            the Event for the ISharedObject to handle
+	 *            the Event for the implementer to handle
 	 */
 	public void handleEvent(Event event);
 
 	/**
-	 * Handle Events passed to this ISharedObject. The ISharedObjectContainer
-	 * will pass events to all SharedObjects via this method and the
-	 * handleEvents method.
+	 * Handle Events passed to this IEventHandler.
 	 * 
 	 * @param events
-	 *            the Events [] for the ISharedObject to handle
+	 *            the Events [] for the implementer to handle
 	 */
 	public void handleEvents(Event[] events);
 }

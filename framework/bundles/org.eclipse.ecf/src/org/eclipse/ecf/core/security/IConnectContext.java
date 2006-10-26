@@ -8,6 +8,15 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.security;
 
+/**
+ * A connect context for passing in information to the
+ * {@link org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID, IConnectContext)}
+ * call.
+ * 
+ * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID,
+ *      IConnectContext)
+ * @see ConnectContextFactory
+ */
 public interface IConnectContext {
 	/**
 	 * Get the callbackhandler instance used by the provider to callback into
@@ -17,5 +26,5 @@ public interface IConnectContext {
 	 * @return CallbackHandler
 	 */
 	public CallbackHandler getCallbackHandler();
-	
+
 }

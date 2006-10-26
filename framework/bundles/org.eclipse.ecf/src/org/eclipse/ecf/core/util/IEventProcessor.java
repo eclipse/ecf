@@ -8,14 +8,19 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
+/**
+ * Event processor for processing events
+ * 
+ */
 public interface IEventProcessor {
 	/**
 	 * Process given Event
 	 * 
 	 * @param event
 	 *            the Event to process
-	 * @return true if the event has been successfully processed and no further processing should occur.
-	 * False if the event should receive further processing.
+	 * @return true if the event has been successfully processed and no further
+	 *         processing should occur. False if the event should receive
+	 *         further processing by another event processor (e.g. in a chain)
 	 */
 	public boolean processEvent(Event event);
 }

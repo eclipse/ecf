@@ -16,8 +16,11 @@ import org.eclipse.ecf.core.user.IUser;
 
 public class User implements IUser {
 	private static final long serialVersionUID = 3978709484518586169L;
+
 	protected ID id;
+
 	protected String name;
+
 	protected Map properties;
 
 	public User(ID userID) {
@@ -54,8 +57,10 @@ public class User implements IUser {
 		return id;
 	}
 
-	/**
-	 * @return Returns the name.
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.user.IUser#getName()
 	 */
 	public String getName() {
 		return name;

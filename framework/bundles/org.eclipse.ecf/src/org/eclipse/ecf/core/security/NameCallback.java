@@ -8,25 +8,18 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.security;
 
+/**
+ * Callback that handles String types
+ * 
+ */
 public class NameCallback implements Callback, java.io.Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2506493444608585718L;
 
 	private String prompt;
 
-	/**
-	 * @serial
-	 * @since 1.4
-	 */
 	private String defaultName;
 
-	/**
-	 * @serial
-	 * @since 1.4
-	 */
 	private String inputName;
 
 	/**

@@ -9,7 +9,7 @@
 package org.eclipse.ecf.core.events;
 
 /**
- * @author slewis
+ * Event sent to listeners when a container is disposed
  * 
  */
 public interface IContainerDisposeEvent extends IContainerEvent {

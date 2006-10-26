@@ -10,7 +10,16 @@ package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
-public interface IContainerDisconnectingEvent extends
-		IContainerEvent {
+/**
+ * Container disconnecting event
+ * 
+ */
+public interface IContainerDisconnectingEvent extends IContainerEvent {
+	/**
+	 * Get ID of container target (the container we are disconnecting from)
+	 * 
+	 * @return ID the ID of the container we are disconnecting from. Will not be
+	 *         null.
+	 */
 	public ID getTargetID();
 }

@@ -206,13 +206,11 @@ public class ContainerFactory implements IContainerFactory {
 						Trace.getArgumentsString(args) });
 		if (description == null)
 			throwContainerCreateException(
-					"ContainerTypeDescription cannot be null", null,
-					method);
+					"ContainerTypeDescription cannot be null", null, method);
 		ContainerTypeDescription cd = getDescription0(description);
 		if (cd == null)
 			throwContainerCreateException("ContainerTypeDescription '"
-					+ description.getName() + "' not found", null,
-					method);
+					+ description.getName() + "' not found", null, method);
 		Class clazzes[] = null;
 		IContainerInstantiator instantiator = null;
 		try {
@@ -226,8 +224,7 @@ public class ContainerFactory implements IContainerFactory {
 		}
 		if (instantiator == null)
 			throwContainerCreateException("ContainerTypeDescription '"
-					+ cd.getName() + "' instantiator is null", null,
-					method);
+					+ cd.getName() + "' instantiator is null", null, method);
 		// Ask instantiator to actually create instance
 		IContainer container = instantiator.createInstance(description,
 				clazzes, args);

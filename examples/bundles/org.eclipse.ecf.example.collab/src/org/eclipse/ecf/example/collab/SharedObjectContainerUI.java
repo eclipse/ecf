@@ -114,7 +114,7 @@ public class SharedObjectContainerUI {
 					}
 				} else if (evt instanceof IContainerEjectedEvent) {
 					IContainerEjectedEvent ce = (IContainerEjectedEvent) evt;
-					final ID departedContainerID = ce.getGroupID();
+					final ID departedContainerID = ce.getTargetID();
 					ID connectedID = newClientEntry.getConnectedID();
 					if (connectedID == null || connectedID.equals(departedContainerID)) {
 						if (!newClientEntry.isDisposed()) {

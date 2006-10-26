@@ -40,43 +40,59 @@ import org.osgi.framework.BundleContext;
 public class ECFPlugin extends Plugin {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf";
-	
-	public static final String ECFNAMESPACE = PLUGIN_ID;
-	public static final String CONTAINER_FACTORY_EPOINT = ECFNAMESPACE
-			+ ".containerFactory";
-	public static final String START_EPOINT = ECFNAMESPACE + ".startup";
-	
+
+	private static final String ECFNAMESPACE = PLUGIN_ID;
+
+	private static final String CONTAINER_FACTORY_NAME = "containerFactory";
+
+	private static final String CONTAINER_FACTORY_EPOINT = ECFNAMESPACE
+			+ CONTAINER_FACTORY_NAME;
+
+	private static final String STARTUP_NAME = "startup";
+
+	public static final String START_EPOINT = ECFNAMESPACE + "." + STARTUP_NAME;
+
 	public static final String PLUGIN_RESOURCE_BUNDLE = ECFNAMESPACE
 			+ ".ECFPluginResources";
+
 	public static final String CLASS_ATTRIBUTE = "class";
+
 	public static final String NAME_ATTRIBUTE = "name";
+
 	public static final String DESCRIPTION_ATTRIBUTE = "description";
+
 	public static final String ARG_ELEMENT_NAME = "defaultargument";
-	public static final String ARG_TYPE_ATTRIBUTE = "type";
+
 	public static final String VALUE_ATTRIBUTE = "value";
+
 	public static final String PROPERTY_ELEMENT_NAME = "property";
+
 	public static final int FACTORY_DOES_NOT_IMPLEMENT_ERRORCODE = 10;
+
 	public static final int FACTORY_NAME_COLLISION_ERRORCODE = 20;
+
 	public static final int INSTANTIATOR_DOES_NOT_IMPLEMENT_ERRORCODE = 30;
+
 	public static final int INSTANTIATOR_NAME_COLLISION_ERRORCODE = 50;
+
 	public static final int INSTANTIATOR_NAMESPACE_LOAD_ERRORCODE = 60;
+
 	public static final int START_ERRORCODE = 70;
-	
+
 	protected static final int REMOVE_NAMESPACE_ERRORCODE = 80;
+
 	// The shared instance.
 	private static ECFPlugin plugin;
+
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
+
 	BundleContext bundlecontext = null;
+
 	private Map disposables = new WeakHashMap();
+
 	private IRegistryChangeListener registryManager = null;
-	private static void debug(String msg) {
-		Trace.trace(ECFPlugin.getDefault(),msg);
-	}
-	
-	private static void dumpStack(String msg, Throwable e) {
-		Trace.catching(ECFPlugin.getDefault(), ECFDebugOptions.EXCEPTIONS_CATCHING, ECFPlugin.class, "dumpStack", e);
-	}
+
 	public ECFPlugin() {
 		super();
 		plugin = this;
@@ -86,12 +102,15 @@ public class ECFPlugin extends Plugin {
 			resourceBundle = null;
 		}
 	}
+
 	public void addDisposable(IDisposable disposable) {
 		disposables.put(disposable, null);
 	}
+
 	public void removeDisposable(IDisposable disposable) {
 		disposables.remove(disposable);
 	}
+
 	protected void fireDisposables() {
 		for (Iterator i = disposables.keySet().iterator(); i.hasNext();) {
 			IDisposable d = (IDisposable) i.next();
@@ -99,56 +118,31 @@ public class ECFPlugin extends Plugin {
 				d.dispose();
 		}
 	}
+
 	public static void log(IStatus status) {
 		if (status == null)
 			return;
 		ILog log = plugin.getLog();
-		if (log != null) {
+		if (log != null)
 			log.log(status);
-		} else {
+		else
 			System.err.println("No log output.  Status Message: "
 					+ status.getMessage());
-		}
 	}
-	class DefaultArgs {
-		String[] types;
-		String[] defaults;
-		String[] names;
-		public DefaultArgs(String[] types, String[] defaults, String[] names) {
-			this.types = types;
-			this.defaults = defaults;
-			this.names = names;
-		}
-		public String[] getDefaults() {
-			return defaults;
-		}
-		public String[] getNames() {
-			return names;
-		}
-		public String[] getTypes() {
-			return types;
-		}
-	}
-	protected DefaultArgs getDefaultArgs(IConfigurationElement[] argElements) {
-		String[] argTypes = new String[0];
+
+	protected String[] getDefaultArgs(IConfigurationElement[] argElements) {
 		String[] argDefaults = new String[0];
-		String[] argNames = new String[0];
 		if (argElements != null) {
 			if (argElements.length > 0) {
-				argTypes = new String[argElements.length];
 				argDefaults = new String[argElements.length];
-				argNames = new String[argElements.length];
-				for (int i = 0; i < argElements.length; i++) {
-					argTypes[i] = argElements[i]
-							.getAttribute(ARG_TYPE_ATTRIBUTE);
+				for (int i = 0; i < argElements.length; i++)
 					argDefaults[i] = argElements[i]
 							.getAttribute(VALUE_ATTRIBUTE);
-					argNames[i] = argElements[i].getAttribute(NAME_ATTRIBUTE);
-				}
 			}
 		}
-		return new DefaultArgs(argTypes, argDefaults, argNames);
+		return argDefaults;
 	}
+
 	protected Map getProperties(IConfigurationElement[] propertyElements) {
 		Properties props = new Properties();
 		if (propertyElements != null) {
@@ -167,6 +161,15 @@ public class ECFPlugin extends Plugin {
 		}
 		return props;
 	}
+
+	protected void logException(IStatus status, String method,
+			Throwable exception) {
+		log(status);
+		Trace.catching(ECFPlugin.getDefault(),
+				ECFDebugOptions.EXCEPTIONS_CATCHING, ECFPlugin.class, method,
+				exception);
+	}
+
 	/**
 	 * Remove extensions for container factory extension point
 	 * 
@@ -175,7 +178,10 @@ public class ECFPlugin extends Plugin {
 	 */
 	protected void removeContainerFactoryExtensions(
 			IConfigurationElement[] members) {
-		String bundleName = getDefault().getBundle().getSymbolicName();
+		String method = "removeContainerFactoryExtensions";
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method,
+				members);
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
 			IConfigurationElement member = members[m];
@@ -196,14 +202,24 @@ public class ECFPlugin extends Plugin {
 				}
 				// remove
 				factory.removeDescription(cd);
-				debug("removeContainerExtension:removed description from factory:"
-						+ cd);
+				Trace.trace(ECFPlugin.getDefault(), ECFDebugOptions.DEBUG,
+						method + ".removed " + cd + " from factory");
 			} catch (Exception e) {
-				log(getStatusForContException(extension, bundleName, name));
-				dumpStack("Exception in removeContainerExtension", e);
+				logException(
+						new Status(
+								Status.ERROR,
+								getDefault().getBundle().getSymbolicName(),
+								FACTORY_NAME_COLLISION_ERRORCODE,
+								getResourceString("ExtPointError.ContainerNameCollisionPrefix")
+										+ name
+										+ getResourceString("ExtPointError.ContainerNameCollisionSuffix")
+										+ extension
+												.getExtensionPointUniqueIdentifier(),
+								null), method, e);
 			}
 		}
 	}
+
 	/**
 	 * Add container factory extension point extensions
 	 * 
@@ -211,7 +227,10 @@ public class ECFPlugin extends Plugin {
 	 *            to add
 	 */
 	protected void addContainerFactoryExtensions(IConfigurationElement[] members) {
-		String bundleName = getDefault().getBundle().getSymbolicName();
+		String method = "addContainerFactoryExtensions";
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method,
+				members);
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
 			IConfigurationElement member = members[m];
@@ -234,7 +253,7 @@ public class ECFPlugin extends Plugin {
 					description = "";
 				}
 				// Get any arguments
-				DefaultArgs defaults = getDefaultArgs(member
+				String[] defaults = getDefaultArgs(member
 						.getChildren(ARG_ELEMENT_NAME));
 				// Get any property elements
 				Map properties = getProperties(member
@@ -242,27 +261,43 @@ public class ECFPlugin extends Plugin {
 				// Now make description instance
 				ContainerTypeDescription scd = new ContainerTypeDescription(
 						name, (IContainerInstantiator) exten, description,
-						defaults.getTypes(), defaults.getDefaults(), defaults
-								.getNames(), properties);
-				debug("addContainerExtensions:created description:" + scd);
+						defaults, properties);
 				IContainerFactory factory = ContainerFactory.getDefault();
 				if (factory.containsDescription(scd)) {
-					throw new CoreException(getStatusForContException(
-							extension, bundleName, name));
+					throw new CoreException(
+							new Status(
+									Status.ERROR,
+									getDefault().getBundle().getSymbolicName(),
+									FACTORY_NAME_COLLISION_ERRORCODE,
+									getResourceString("ExtPointError.ContainerNameCollisionPrefix")
+											+ name
+											+ getResourceString("ExtPointError.ContainerNameCollisionSuffix")
+											+ extension
+													.getExtensionPointUniqueIdentifier(),
+									null));
 				}
 				// Now add the description and we're ready to go.
 				factory.addDescription(scd);
-				debug("addContainerExtensions:added description to factory:"
-						+ scd);
+				Trace.trace(ECFPlugin.getDefault(), ECFDebugOptions.DEBUG,
+						method + ".added " + scd + " to factory " + factory);
 			} catch (CoreException e) {
-				log(e.getStatus());
-				dumpStack("CoreException in addContainerExtensions", e);
+				logException(e.getStatus(), method, e);
 			} catch (Exception e) {
-				log(getStatusForContException(extension, bundleName, name));
-				dumpStack("Exception in addContainerExtensions", e);
+				logException(
+						new Status(
+								Status.ERROR,
+								getDefault().getBundle().getSymbolicName(),
+								FACTORY_NAME_COLLISION_ERRORCODE,
+								getResourceString("ExtPointError.ContainerNameCollisionPrefix")
+										+ name
+										+ getResourceString("ExtPointError.ContainerNameCollisionSuffix")
+										+ extension
+												.getExtensionPointUniqueIdentifier(),
+								null), method, e);
 			}
 		}
 	}
+
 	/**
 	 * Setup container factory extension point
 	 * 
@@ -278,77 +313,55 @@ public class ECFPlugin extends Plugin {
 		}
 		addContainerFactoryExtensions(extensionPoint.getConfigurationElements());
 	}
+
+	/**
+	 * Setup start extension point
+	 * 
+	 * @param bc
+	 *            the BundleContext fro this bundle
+	 */
 	protected void setupStartExtensionPoint(BundleContext bc) {
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = reg
-				.getExtensionPoint(START_EPOINT);
+		IExtensionPoint extensionPoint = reg.getExtensionPoint(START_EPOINT);
 		if (extensionPoint == null) {
 			return;
 		}
-		startStartExtensions(extensionPoint.getConfigurationElements());
+		runStartExtensions(extensionPoint.getConfigurationElements());
 	}
-	protected void startStartExtensions(IConfigurationElement[] configurationElements) {
-		String bundleName = getDefault().getBundle().getSymbolicName();
+
+	protected void runStartExtensions(
+			IConfigurationElement[] configurationElements) {
+		String method = "runStartExtensions";
 		// For each configuration element
 		for (int m = 0; m < configurationElements.length; m++) {
 			IConfigurationElement member = configurationElements[m];
-			// Get the label of the extender plugin and the ID of the extension.
-			IExtension extension = member.getDeclaringExtension();
 			IECFStart exten = null;
 			String name = null;
 			try {
 				// The only required attribute is "class"
-				exten = (IECFStart) member.createExecutableExtension(CLASS_ATTRIBUTE);
+				exten = (IECFStart) member
+						.createExecutableExtension(CLASS_ATTRIBUTE);
 				// Get name and get version, if available
 				name = member.getAttribute(NAME_ATTRIBUTE);
-				if (name == null) name = exten.getClass().getName();
-				startExtension(name,exten);
+				if (name == null)
+					name = exten.getClass().getName();
+				startExtension(name, exten);
 			} catch (CoreException e) {
-				log(e.getStatus());
-				dumpStack("CoreException in startStartExtensions", e);
+				logException(e.getStatus(), method, e);
 			} catch (Exception e) {
-				log(getStatusForStartException(extension, bundleName, e));
-				dumpStack("Exception in startStartExtensions", e);
+				logException(new Status(Status.ERROR, getDefault().getBundle()
+						.getSymbolicName(), START_ERRORCODE,
+						"Unknown start exception", e), method, e);
 			}
 		}
 	}
+
 	private void startExtension(String name, IECFStart exten) {
 		// Create job to do start, and schedule
-		ECFStartJob job = new ECFStartJob(name,exten);
+		ECFStartJob job = new ECFStartJob(name, exten);
 		job.schedule();
 	}
-	protected IStatus getStatusForCommException(IExtension ext,
-			String bundleName, String name) {
-		IStatus s = new Status(
-				Status.ERROR,
-				bundleName,
-				FACTORY_NAME_COLLISION_ERRORCODE,
-				getResourceString("ExtPointError.CommNameCollisionPrefix")
-						+ name
-						+ getResourceString("ExtPointError.CommNameCollisionSuffix")
-						+ ext.getExtensionPointUniqueIdentifier(), null);
-		return s;
-	}
-	protected IStatus getStatusForStartException(IExtension ext,
-			String bundleName, Exception e) {
-		IStatus s = new Status(
-				Status.ERROR,
-				bundleName,
-				START_ERRORCODE,"Unknown start exception", e);
-		return s;
-	}
-	protected IStatus getStatusForContException(IExtension ext,
-			String bundleName, String name) {
-		IStatus s = new Status(
-				Status.ERROR,
-				bundleName,
-				FACTORY_NAME_COLLISION_ERRORCODE,
-				getResourceString("ExtPointError.ContainerNameCollisionPrefix")
-						+ name
-						+ getResourceString("ExtPointError.ContainerNameCollisionSuffix")
-						+ ext.getExtensionPointUniqueIdentifier(), null);
-		return s;
-	}
+
 	/**
 	 * This method is called upon plug-in activation
 	 */
@@ -361,10 +374,11 @@ public class ECFPlugin extends Plugin {
 		setupContainerFactoryExtensionPoint(context);
 		setupStartExtensionPoint(context);
 	}
+
 	protected class ECFRegistryManager implements IRegistryChangeListener {
 		public void registryChanged(IRegistryChangeEvent event) {
 			IExtensionDelta delta[] = event.getExtensionDeltas(ECFNAMESPACE,
-					"containerFactory");
+					CONTAINER_FACTORY_NAME);
 			for (int i = 0; i < delta.length; i++) {
 				switch (delta[i].getKind()) {
 				case IExtensionDelta.ADDED:
@@ -379,7 +393,7 @@ public class ECFPlugin extends Plugin {
 			}
 		}
 	}
-	
+
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
@@ -392,12 +406,14 @@ public class ECFPlugin extends Plugin {
 				registryManager);
 		this.registryManager = null;
 	}
+
 	/**
 	 * Returns the shared instance.
 	 */
 	public static ECFPlugin getDefault() {
 		return plugin;
 	}
+
 	/**
 	 * Returns the string from the plugin's resource bundle, or 'key' if not
 	 * found.
@@ -410,6 +426,7 @@ public class ECFPlugin extends Plugin {
 			return "!" + key + "!";
 		}
 	}
+
 	/**
 	 * Returns the plugin's resource bundle,
 	 */

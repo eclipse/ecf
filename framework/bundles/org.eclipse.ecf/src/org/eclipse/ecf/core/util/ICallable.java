@@ -8,6 +8,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
+/**
+ * Callable interface
+ * 
+ */
 public interface ICallable {
 	/** Perform some action that returns a result or throws an exception * */
 	Object call() throws Throwable;

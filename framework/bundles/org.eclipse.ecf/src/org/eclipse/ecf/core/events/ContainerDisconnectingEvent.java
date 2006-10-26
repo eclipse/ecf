@@ -13,11 +13,12 @@ import org.eclipse.ecf.core.identity.ID;
 public class ContainerDisconnectingEvent implements
 		IContainerDisconnectingEvent {
 	private static final long serialVersionUID = 3257570607204742200L;
+
 	ID localContainerID;
+
 	ID groupID;
 
-	public ContainerDisconnectingEvent(ID localContainerID,
-			ID groupID) {
+	public ContainerDisconnectingEvent(ID localContainerID, ID groupID) {
 		this.localContainerID = localContainerID;
 		this.groupID = groupID;
 	}
@@ -31,13 +32,22 @@ public class ContainerDisconnectingEvent implements
 		return localContainerID;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.events.IContainerDisconnectingEvent#getTargetID()
+	 */
 	public ID getTargetID() {
 		return groupID;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer(
-				"ContainerDisconnectingEvent[");
+		StringBuffer buf = new StringBuffer("ContainerDisconnectingEvent[");
 		buf.append(getLocalContainerID()).append(";");
 		buf.append(getTargetID()).append("]");
 		return buf.toString();
