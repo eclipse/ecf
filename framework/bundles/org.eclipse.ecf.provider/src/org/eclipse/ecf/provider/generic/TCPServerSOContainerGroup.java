@@ -19,8 +19,9 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URI;
-import org.eclipse.ecf.core.comm.IConnectRequestHandler;
-import org.eclipse.ecf.provider.Trace;
+
+import org.eclipse.ecf.internal.provider.Trace;
+import org.eclipse.ecf.provider.comm.IConnectRequestHandler;
 import org.eclipse.ecf.provider.comm.tcp.Client;
 import org.eclipse.ecf.provider.comm.tcp.ConnectRequestMessage;
 import org.eclipse.ecf.provider.comm.tcp.ConnectResultMessage;

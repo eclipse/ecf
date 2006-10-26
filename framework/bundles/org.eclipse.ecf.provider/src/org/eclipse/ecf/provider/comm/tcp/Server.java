@@ -14,7 +14,8 @@ package org.eclipse.ecf.provider.comm.tcp;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import org.eclipse.ecf.provider.Trace;
+
+import org.eclipse.ecf.internal.provider.Trace;
 
 public class Server extends ServerSocket {
 	

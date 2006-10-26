@@ -8,24 +8,15 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.core.comm;
+package org.eclipse.ecf.provider.comm;
 
 /**
- * Asynchronous connection event class. Extends ConnectionEvent
+ * Event handler callback interface for connections that have both asynchronous
+ * and synchronous capabilities
+ * 
+ * @author slewis
  * 
  */
-public class AsynchEvent extends ConnectionEvent {
-	private static final long serialVersionUID = 3618136762325873465L;
-
-	public AsynchEvent(IAsynchConnection conn, Object data) {
-		super(conn, data);
-	}
-
-	public String toString() {
-		StringBuffer buf = new StringBuffer("AsynchEvent[");
-		buf.append("conn=").append(getConnection()).append(";");
-		buf.append("data=").append(getData()).append("]");
-		return buf.toString();
-	}
-
+public interface ISynchAsynchEventHandler extends ISynchEventHandler,
+		IAsynchEventHandler {
 }

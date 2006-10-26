@@ -14,7 +14,8 @@ package org.eclipse.ecf.provider.comm.tcp;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import org.eclipse.ecf.provider.Trace;
+
+import org.eclipse.ecf.internal.provider.Trace;
 
 public class ExObjectOutputStream extends ObjectOutputStream {
     public static final Trace debug = Trace.create("connection");

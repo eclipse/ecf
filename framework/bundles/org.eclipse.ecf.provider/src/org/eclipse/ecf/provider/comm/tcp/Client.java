@@ -26,16 +26,16 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Vector;
 
-import org.eclipse.ecf.core.comm.AsynchEvent;
-import org.eclipse.ecf.core.comm.DisconnectEvent;
-import org.eclipse.ecf.core.comm.IConnectionListener;
-import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.core.comm.ISynchAsynchEventHandler;
-import org.eclipse.ecf.core.comm.SynchEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.SimpleQueueImpl;
-import org.eclipse.ecf.provider.Trace;
+import org.eclipse.ecf.internal.provider.Trace;
+import org.eclipse.ecf.provider.comm.AsynchEvent;
+import org.eclipse.ecf.provider.comm.DisconnectEvent;
+import org.eclipse.ecf.provider.comm.IConnectionListener;
+import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
+import org.eclipse.ecf.provider.comm.ISynchAsynchEventHandler;
+import org.eclipse.ecf.provider.comm.SynchEvent;
 
 public final class Client implements ISynchAsynchConnection {
 	public static final String PROTOCOL = "ecftcp";

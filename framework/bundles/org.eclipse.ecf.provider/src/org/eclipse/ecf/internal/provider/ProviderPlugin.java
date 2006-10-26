@@ -9,7 +9,7 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.provider;
+package org.eclipse.ecf.internal.provider;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;

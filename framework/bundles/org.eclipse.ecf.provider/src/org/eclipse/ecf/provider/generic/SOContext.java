@@ -26,7 +26,7 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
-import org.eclipse.ecf.provider.Trace;
+import org.eclipse.ecf.internal.provider.Trace;
 
 public class SOContext implements ISharedObjectContext {
     static Trace debug = Trace.create("sharedobjectcontext");

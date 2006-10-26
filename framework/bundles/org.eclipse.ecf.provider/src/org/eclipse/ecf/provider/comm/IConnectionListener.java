@@ -8,10 +8,30 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.core.comm;
+package org.eclipse.ecf.provider.comm;
 
-import java.io.IOException;
+import org.eclipse.ecf.core.identity.ID;
 
-public interface ISynchEventHandler extends IConnectionListener {
-	public Object handleSynchEvent(SynchEvent event) throws IOException;
+/**
+ * Connection listener
+ * 
+ * @see IConnection#addListener(IConnectionListener)
+ * 
+ */
+public interface IConnectionListener {
+	/**
+	 * Get ID of event handler
+	 * 
+	 * @return ID of event handler
+	 */
+	public ID getEventHandlerID();
+
+	/**
+	 * Handle disconnect event
+	 * 
+	 * @param event
+	 *            the disconnect event
+	 */
+	public void handleDisconnectEvent(DisconnectEvent event);
+
 }

@@ -10,11 +10,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.xmpp.container;
 
-import org.eclipse.ecf.core.comm.ConnectionCreateException;
-import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.provider.comm.ConnectionCreateException;
+import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.smack.ECFConnection;

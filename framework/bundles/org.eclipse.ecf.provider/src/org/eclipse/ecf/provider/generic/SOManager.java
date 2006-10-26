@@ -44,7 +44,7 @@ import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerDisconnectEve
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerRemoveEvent;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
-import org.eclipse.ecf.provider.Trace;
+import org.eclipse.ecf.internal.provider.Trace;
 
 /**
  * 

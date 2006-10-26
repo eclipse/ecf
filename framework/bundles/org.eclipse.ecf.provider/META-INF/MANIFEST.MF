@@ -4,7 +4,7 @@ Bundle-Version: 0.9.3
 Bundle-Name: ECF Provider API
 Bundle-Vendor: Eclipse.org
 Bundle-ClassPath: provider.jar
-Bundle-Activator: org.eclipse.ecf.provider.ProviderPlugin
+Bundle-Activator: org.eclipse.ecf.internal.provider.ProviderPlugin
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Eclipse-AutoStart: true
@@ -12,7 +12,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.sharedobject;visibility:=reexport
 Provide-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.gmm
-Export-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.gmm
+Export-Package: org.eclipse.ecf.provider.app,
+ org.eclipse.ecf.provider.comm,
+ org.eclipse.ecf.provider.comm.tcp,
+ org.eclipse.ecf.provider.generic,
+ org.eclipse.ecf.provider.generic.gmm
 Eclipse-BuddyPolicy: global
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.4

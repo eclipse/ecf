@@ -11,11 +11,11 @@
 
 package org.eclipse.ecf.provider.generic;
 
-import org.eclipse.ecf.core.comm.ConnectionCreateException;
-import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
+import org.eclipse.ecf.provider.comm.ConnectionCreateException;
+import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.comm.tcp.Client;
 
 public class TCPClientSOContainer extends ClientSOContainer {

@@ -8,8 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.xmpp.smack;
 
-import org.eclipse.ecf.core.comm.AsynchEvent;
-import org.eclipse.ecf.core.comm.IAsynchConnection;
+import org.eclipse.ecf.provider.comm.AsynchEvent;
+import org.eclipse.ecf.provider.comm.IAsynchConnection;
 import org.jivesoftware.smack.packet.Packet;
 
 public class ECFConnectionPacketEvent extends AsynchEvent {

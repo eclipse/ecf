@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
-import org.eclipse.ecf.provider.Trace;
+import org.eclipse.ecf.internal.provider.Trace;
 
 public class ContainerInstantiator implements
         IContainerInstantiator {

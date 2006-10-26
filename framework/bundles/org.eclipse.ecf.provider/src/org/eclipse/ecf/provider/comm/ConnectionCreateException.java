@@ -8,13 +8,10 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.core.comm;
+package org.eclipse.ecf.provider.comm;
 
 /**
  * Exception class for connection creation exceptions
- * 
- * @see ConnectionFactory#createSynchAsynchConnection(ISynchAsynchEventHandler,
- *      ConnectionTypeDescription, String[], Object[])
  * 
  */
 public class ConnectionCreateException extends Exception {

@@ -14,13 +14,6 @@ import java.io.Serializable;
 import java.net.ConnectException;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.comm.AsynchEvent;
-import org.eclipse.ecf.core.comm.ConnectionCreateException;
-import org.eclipse.ecf.core.comm.DisconnectEvent;
-import org.eclipse.ecf.core.comm.IAsynchConnection;
-import org.eclipse.ecf.core.comm.IConnection;
-import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.core.comm.SynchEvent;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
@@ -32,6 +25,13 @@ import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
+import org.eclipse.ecf.provider.comm.AsynchEvent;
+import org.eclipse.ecf.provider.comm.ConnectionCreateException;
+import org.eclipse.ecf.provider.comm.DisconnectEvent;
+import org.eclipse.ecf.provider.comm.IAsynchConnection;
+import org.eclipse.ecf.provider.comm.IConnection;
+import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
+import org.eclipse.ecf.provider.comm.SynchEvent;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public abstract class ClientSOContainer extends SOContainer {

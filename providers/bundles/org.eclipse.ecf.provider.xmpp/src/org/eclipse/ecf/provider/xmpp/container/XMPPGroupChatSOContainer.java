@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.comm.ConnectionCreateException;
-import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
@@ -33,6 +31,8 @@ import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
+import org.eclipse.ecf.provider.comm.ConnectionCreateException;
+import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
 import org.eclipse.ecf.provider.generic.ContainerMessage;
 import org.eclipse.ecf.provider.generic.SOConfig;

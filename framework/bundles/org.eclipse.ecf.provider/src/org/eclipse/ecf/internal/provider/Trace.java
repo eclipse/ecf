@@ -9,7 +9,7 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.provider;
+package org.eclipse.ecf.internal.provider;
 
 import java.io.File;
 import java.io.FileOutputStream;

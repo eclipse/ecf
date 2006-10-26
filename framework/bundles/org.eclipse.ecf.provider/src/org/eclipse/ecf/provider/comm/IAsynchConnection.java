@@ -8,30 +8,26 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.core.comm;
+package org.eclipse.ecf.provider.comm;
 
+import java.io.IOException;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Connection listener
- * 
- * @see IConnection#addListener(IConnectionListener)
+ * Asynchronous connection
  * 
  */
-public interface IConnectionListener {
+public interface IAsynchConnection extends IConnection {
 	/**
-	 * Get ID of event handler
+	 * Send data asynchronously. Implementing classes should not block on
+	 * sending the given data and return immediately.
 	 * 
-	 * @return ID of event handler
+	 * @param receiver
+	 *            the ID of the intended receiver
+	 * @param data
+	 *            the data to send
+	 * @throws IOException
+	 *             thrown if data cannot be sent (e.g. disconnected)
 	 */
-	public ID getEventHandlerID();
-
-	/**
-	 * Handle disconnect event
-	 * 
-	 * @param event
-	 *            the disconnect event
-	 */
-	public void handleDisconnectEvent(DisconnectEvent event);
-
+	public void sendAsynch(ID receiver, byte[] data) throws IOException;
 }

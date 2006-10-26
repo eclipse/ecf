@@ -26,7 +26,7 @@ import org.eclipse.ecf.core.sharedobject.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.SimpleQueueImpl;
-import org.eclipse.ecf.provider.Trace;
+import org.eclipse.ecf.internal.provider.Trace;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public class SOWrapper {

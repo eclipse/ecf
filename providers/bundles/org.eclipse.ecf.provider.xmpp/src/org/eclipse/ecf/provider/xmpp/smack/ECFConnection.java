@@ -10,13 +10,13 @@ package org.eclipse.ecf.provider.xmpp.smack;
 
 import java.io.IOException;
 import java.util.Map;
-import org.eclipse.ecf.core.comm.DisconnectEvent;
-import org.eclipse.ecf.core.comm.IAsynchEventHandler;
-import org.eclipse.ecf.core.comm.IConnectionListener;
-import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.provider.comm.DisconnectEvent;
+import org.eclipse.ecf.provider.comm.IAsynchEventHandler;
+import org.eclipse.ecf.provider.comm.IConnectionListener;
+import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.xmpp.Trace;
 import org.eclipse.ecf.provider.xmpp.container.IIMMessageSender;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;

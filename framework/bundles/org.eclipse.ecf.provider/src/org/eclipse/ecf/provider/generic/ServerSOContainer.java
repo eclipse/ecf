@@ -18,9 +18,6 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketAddress;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.comm.IAsynchConnection;
-import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.core.comm.ISynchConnection;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerEjectedEvent;
@@ -29,6 +26,9 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.IConnectPolicy;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerGroupManager;
+import org.eclipse.ecf.provider.comm.IAsynchConnection;
+import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
+import org.eclipse.ecf.provider.comm.ISynchConnection;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public class ServerSOContainer extends SOContainer implements ISharedObjectContainerGroupManager {

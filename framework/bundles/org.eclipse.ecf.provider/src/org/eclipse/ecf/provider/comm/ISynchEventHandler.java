@@ -8,13 +8,10 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.core.comm;
+package org.eclipse.ecf.provider.comm;
 
-/**
- * A connection instance that has both asynchronous and synchronous messaging
- * capabilities
- * 
- */
-public interface ISynchAsynchConnection extends IAsynchConnection,
-		ISynchConnection {
+import java.io.IOException;
+
+public interface ISynchEventHandler extends IConnectionListener {
+	public Object handleSynchEvent(SynchEvent event) throws IOException;
 }

@@ -17,7 +17,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeMap;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.provider.Trace;
+import org.eclipse.ecf.internal.provider.Trace;
 import org.eclipse.ecf.provider.generic.gmm.GMMImpl;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 import org.eclipse.ecf.provider.generic.gmm.MemberChanged;

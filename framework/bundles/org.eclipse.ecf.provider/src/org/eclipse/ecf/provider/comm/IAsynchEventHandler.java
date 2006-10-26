@@ -8,27 +8,22 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.core.comm;
+package org.eclipse.ecf.provider.comm;
 
 import java.io.IOException;
-import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Synchronous connection
+ * Callback interface for handling asynchronous connection events
  * 
  */
-public interface ISynchConnection extends IConnection {
+public interface IAsynchEventHandler extends IConnectionListener {
 	/**
-	 * Send data synchronously, blocking until a result is received
+	 * Handle asynchronous connection event
 	 * 
-	 * @param receiver
-	 *            the receiver to receive the synchronous request
-	 * @param data
-	 *            the data to send
-	 * @return the data received. The return type will be specific to the
-	 *         provider implementation.
+	 * @param event
+	 *            the asynchronous connection event to handle
 	 * @throws IOException
-	 *             thrown if sending cannot occur (e.g. not connected)
+	 *             if connection event cannot be handled
 	 */
-	public Object sendSynch(ID receiver, byte[] data) throws IOException;
+	public void handleAsynchEvent(AsynchEvent event) throws IOException;
 }
