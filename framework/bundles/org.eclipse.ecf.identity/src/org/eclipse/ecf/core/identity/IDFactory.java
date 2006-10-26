@@ -31,8 +31,9 @@ public class IDFactory implements IIDFactory {
 			+ ".security";
 
 	private static final int SECURITY_INITIALIZE_ERRORCODE = 1001;
+
 	private static final int IDENTITY_CREATION_ERRORCODE = 2001;
-	
+
 	private static Hashtable namespaces = new Hashtable();
 
 	private static boolean securityEnabled = false;
@@ -53,7 +54,8 @@ public class IDFactory implements IIDFactory {
 					IdentityDebugOptions.EXCEPTIONS_CATCHING, IDFactory.class,
 					"staticinitializer", e);
 			Activator.getDefault().getLog().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID, SECURITY_INITIALIZE_ERRORCODE,
+					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+							SECURITY_INITIALIZE_ERRORCODE,
 							"Exception reading SECURITY_PROPERTY", e));
 		}
 	}
@@ -219,7 +221,8 @@ public class IDFactory implements IIDFactory {
 				IdentityDebugOptions.EXCEPTIONS_CATCHING, IDFactory.class,
 				"logAndThrow", e);
 		Activator.getDefault().getLog().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IDENTITY_CREATION_ERRORCODE, s, e));
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+						IDENTITY_CREATION_ERRORCODE, s, e));
 		throw e;
 	}
 

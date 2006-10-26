@@ -46,7 +46,7 @@ public class ECFPlugin extends Plugin {
 	private static final String CONTAINER_FACTORY_NAME = "containerFactory";
 
 	private static final String CONTAINER_FACTORY_EPOINT = ECFNAMESPACE
-			+ CONTAINER_FACTORY_NAME;
+			+ "." + CONTAINER_FACTORY_NAME;
 
 	private static final String STARTUP_NAME = "startup";
 

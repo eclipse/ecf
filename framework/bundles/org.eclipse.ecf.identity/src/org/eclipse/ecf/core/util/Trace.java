@@ -136,7 +136,8 @@ public class Trace {
 	 * 
 	 */
 	public static boolean shouldTrace(Plugin plugin, String option) {
-		if (plugin == null) return false;
+		if (plugin == null)
+			return false;
 		if (shouldTrace(plugin)) {
 			Boolean value = null;
 
@@ -165,8 +166,10 @@ public class Trace {
 	 * 
 	 */
 	public static String getArgumentString(Object argument) {
-		if (argument.getClass().isArray()) return getArgumentsString((Object []) argument);
-		else return String.valueOf(argument);
+		if (argument.getClass().isArray())
+			return getArgumentsString((Object[]) argument);
+		else
+			return String.valueOf(argument);
 	}
 
 	/**
@@ -178,7 +181,8 @@ public class Trace {
 	 * 
 	 */
 	public static String getArgumentsString(Object[] arguments) {
-		if (arguments == null) return "";
+		if (arguments == null)
+			return "[]";
 		StringBuffer buffer = new StringBuffer("[");
 
 		for (int i = 0; i < arguments.length; i++) {

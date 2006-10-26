@@ -29,12 +29,12 @@ import java.net.URISyntaxException;
  * ECF extension registry:
  * 
  * <pre>
- *    &lt;extension
- *         point=&quot;org.eclipse.ecf.namespace&quot;&gt;
- *      &lt;namespace
- *            class=&quot;XMPPNamespace&quot;
- *            name=&quot;ecf.xmpp&quot;/&gt;
- *    &lt;/extension&gt;
+ *     &lt;extension
+ *          point=&quot;org.eclipse.ecf.namespace&quot;&gt;
+ *       &lt;namespace
+ *             class=&quot;XMPPNamespace&quot;
+ *             name=&quot;ecf.xmpp&quot;/&gt;
+ *     &lt;/extension&gt;
  * </pre>
  * 
  * @see ID
