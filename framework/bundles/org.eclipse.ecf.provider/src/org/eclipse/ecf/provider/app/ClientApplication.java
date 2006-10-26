@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.Random;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
-import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
@@ -36,9 +34,6 @@ public class ClientApplication {
 	public static final int DEFAULT_WAITTIME = 40000;
 
 	public static final int DEFAULT_TIMEOUT = TCPServerSOContainer.DEFAULT_KEEPALIVE;
-	
-	public static final String CONNECTION_NAME = org.eclipse.ecf.provider.comm.tcp.Client.class.getName();
-	public static final String CONNECTION_CLASS = org.eclipse.ecf.provider.comm.tcp.Client.Creator.class.getName();
 	
 	public static final String CONTAINER_FACTORY_NAME = ContainerInstantiator.class.getName();
 	public static final String CONTAINER_FACTORY_CLASS = CONTAINER_FACTORY_NAME;
@@ -74,8 +69,6 @@ public class ClientApplication {
 			}
 		}
 		// Setup factory descriptions since Eclipse does not do this for us
-		ConnectionTypeDescription cd = new ConnectionTypeDescription(ClientApplication.class.getClassLoader(),CONNECTION_NAME,CONNECTION_CLASS,null);
-		ConnectionFactory.getDefault().addDescription(cd);
 		contd = new ContainerTypeDescription(ClientApplication.class.getClassLoader(),CONTAINER_FACTORY_NAME,CONTAINER_FACTORY_CLASS,null);
 		ContainerFactory.getDefault().addDescription(contd);
 		for(int i=0; i < clientCount; i++) {

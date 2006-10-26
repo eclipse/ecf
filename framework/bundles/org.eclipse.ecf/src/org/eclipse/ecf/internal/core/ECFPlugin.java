@@ -31,16 +31,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerFactory;
-import org.eclipse.ecf.core.comm.ConnectionFactory;
-import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
-import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
-/*
-import org.eclipse.ecf.core.sharedobject.ISharedObjectFactory;
-import org.eclipse.ecf.core.sharedobject.SharedObjectFactory;
-import org.eclipse.ecf.core.sharedobject.SharedObjectTypeDescription;
-import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
-*/
 import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.Trace;
@@ -51,11 +42,8 @@ public class ECFPlugin extends Plugin {
 	public static final String PLUGIN_ID = "org.eclipse.ecf";
 	
 	public static final String ECFNAMESPACE = PLUGIN_ID;
-	public static final String NAMESPACE_EPOINT = ECFNAMESPACE + ".namespace";
 	public static final String CONTAINER_FACTORY_EPOINT = ECFNAMESPACE
 			+ ".containerFactory";
-	public static final String COMM_FACTORY_EPOINT = ECFNAMESPACE
-			+ ".connectionFactory";
 	public static final String START_EPOINT = ECFNAMESPACE + ".startup";
 	
 	public static final String PLUGIN_RESOURCE_BUNDLE = ECFNAMESPACE
@@ -290,118 +278,6 @@ public class ECFPlugin extends Plugin {
 		}
 		addContainerFactoryExtensions(extensionPoint.getConfigurationElements());
 	}
-	/**
-	 * Remove extensions for comm extension point
-	 * 
-	 * @param members
-	 *            the members to remove
-	 */
-	protected void removeCommExtensions(IConfigurationElement[] members) {
-		String bundleName = getDefault().getBundle().getSymbolicName();
-		for (int m = 0; m < members.length; m++) {
-			IConfigurationElement member = members[m];
-			String name = null;
-			IExtension extension = member.getDeclaringExtension();
-			try {
-				name = member.getAttribute(NAME_ATTRIBUTE);
-				if (name == null) {
-					name = member.getAttribute(CLASS_ATTRIBUTE);
-				}
-				if (name == null)
-					continue;
-				ConnectionTypeDescription cd = ConnectionFactory.getDefault()
-						.getDescriptionByName(name);
-				if (cd == null || !ConnectionFactory.getDefault().containsDescription(cd)) {
-					continue;
-				}
-				// remove
-				ConnectionFactory.getDefault().removeDescription(cd);
-				debug("removeCommExtensions:removed connection description:"
-						+ cd);
-			} catch (Exception e) {
-				log(getStatusForContException(extension, bundleName, name));
-				dumpStack("Exception in removeCommExtensions", e);
-			}
-		}
-	}
-	/**
-	 * Add comm extension point extensions
-	 * 
-	 * @param members
-	 *            to add
-	 */
-	protected void addCommExtensions(IConfigurationElement[] members) {
-		String bundleName = getDefault().getBundle().getSymbolicName();
-		// For each configuration element
-		for (int m = 0; m < members.length; m++) {
-			IConfigurationElement member = members[m];
-			// Get the label of the extender plugin and the ID of the extension.
-			IExtension extension = member.getDeclaringExtension();
-			Object exten = null;
-			String name = null;
-			try {
-				// The only required attribute is "instantiatorClass"
-				exten = member.createExecutableExtension(CLASS_ATTRIBUTE);
-				// Verify that object implements
-				// ISynchAsynchConnectionInstantiator
-				String clazz = exten.getClass().getName();
-				// Get name and get version, if available
-				name = member.getAttribute(NAME_ATTRIBUTE);
-				if (name == null) {
-					name = clazz;
-				}
-				String description = member.getAttribute(DESCRIPTION_ATTRIBUTE);
-				if (description == null) {
-					description = "";
-				}
-				// Get any arguments
-				// Get any arguments
-				DefaultArgs defaults = getDefaultArgs(member
-						.getChildren(ARG_ELEMENT_NAME));
-				ConnectionTypeDescription cd = new ConnectionTypeDescription(
-						name, (ISynchAsynchConnectionInstantiator) exten,
-						description, defaults.getTypes(), defaults
-								.getDefaults(), defaults.getNames());
-				debug("setupCommExtensionPoint:created description:" + cd);
-				if (ConnectionFactory.getDefault().containsDescription(cd)) {
-					// It's already there...log and throw as we can't use the
-					// same named factory
-					IStatus s = new Status(
-							Status.ERROR,
-							bundleName,
-							FACTORY_NAME_COLLISION_ERRORCODE,
-							getResourceString("ExtPointError.CommNameCollisionPrefix")
-									+ name
-									+ getResourceString("ExtPointError.CommNameCollisionSuffix")
-									+ extension
-											.getExtensionPointUniqueIdentifier(),
-							null);
-					log(s);
-					throw new CoreException(getStatusForCommException(
-							extension, bundleName, name));
-				}
-				// Now add the description and we're ready to go.
-				ConnectionFactory.getDefault().addDescription(cd);
-				debug("setupCommExtensionPoint:added description to factory:"
-						+ cd);
-			} catch (CoreException e) {
-				log(e.getStatus());
-				dumpStack("CoreException in setupCommExtensionPoint", e);
-			} catch (Exception e) {
-				log(getStatusForCommException(extension, bundleName, name));
-				dumpStack("Exception in setupCommExtensionPoint", e);
-			}
-		}
-	}
-	protected void setupCommExtensionPoint(BundleContext bc) {
-		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = reg
-				.getExtensionPoint(COMM_FACTORY_EPOINT);
-		if (extensionPoint == null) {
-			return;
-		}
-		addCommExtensions(extensionPoint.getConfigurationElements());
-	}
 	protected void setupStartExtensionPoint(BundleContext bc) {
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = reg
@@ -483,8 +359,6 @@ public class ECFPlugin extends Plugin {
 		Platform.getExtensionRegistry().addRegistryChangeListener(
 				registryManager);
 		setupContainerFactoryExtensionPoint(context);
-		setupCommExtensionPoint(context);
-		//setupSharedObjectExtensionPoint(context);
 		setupStartExtensionPoint(context);
 	}
 	protected class ECFRegistryManager implements IRegistryChangeListener {
@@ -499,35 +373,6 @@ public class ECFPlugin extends Plugin {
 					break;
 				case IExtensionDelta.REMOVED:
 					removeContainerFactoryExtensions(delta[i].getExtension()
-							.getConfigurationElements());
-					break;
-				}
-			}
-			/*
-			delta = event.getExtensionDeltas(ECFNAMESPACE,
-					"sharedObjectFactory");
-			for (int i = 0; i < delta.length; i++) {
-				switch (delta[i].getKind()) {
-				case IExtensionDelta.ADDED:
-					addSharedObjectExtensions(delta[i].getExtension()
-							.getConfigurationElements());
-					break;
-				case IExtensionDelta.REMOVED:
-					removeSharedObjectExtensions(delta[i].getExtension()
-							.getConfigurationElements());
-					break;
-				}
-			}
-			*/
-			delta = event.getExtensionDeltas(ECFNAMESPACE, "connectionFactory");
-			for (int i = 0; i < delta.length; i++) {
-				switch (delta[i].getKind()) {
-				case IExtensionDelta.ADDED:
-					addCommExtensions(delta[i].getExtension()
-							.getConfigurationElements());
-					break;
-				case IExtensionDelta.REMOVED:
-					removeCommExtensions(delta[i].getExtension()
 							.getConfigurationElements());
 					break;
 				}

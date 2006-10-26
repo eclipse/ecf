@@ -2,18 +2,6 @@
 <?eclipse version="3.1"?>
 <plugin>
    <extension
-         point="org.eclipse.ecf.connectionFactory">
-      <connectionFactory
-            class="org.eclipse.ecf.provider.comm.tcp.Client$Creator"
-            description="TCP Client Connection Factory"
-            name="org.eclipse.ecf.provider.comm.tcp.Client">
-         <defaultargument
-               value="30000"
-               type="java.lang.Integer"
-               name="keepAlive"/>
-      </connectionFactory>
-   </extension>
-   <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.generic.ContainerInstantiator"

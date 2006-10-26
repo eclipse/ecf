@@ -11,12 +11,12 @@
 
 package org.eclipse.ecf.provider.generic;
 
-import org.eclipse.ecf.core.comm.ConnectionFactory;
 import org.eclipse.ecf.core.comm.ConnectionCreateException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
+import org.eclipse.ecf.provider.comm.tcp.Client;
 
 public class TCPClientSOContainer extends ClientSOContainer {
     int keepAlive = 0;
@@ -40,10 +40,7 @@ public class TCPClientSOContainer extends ClientSOContainer {
     protected ISynchAsynchConnection createConnection(ID remoteSpace,
             Object data) throws ConnectionCreateException {
         debug("createClientConnection:" + remoteSpace + ":" + data);
-        Object[] args = { new Integer(keepAlive) };
-        ISynchAsynchConnection conn = null;
-        conn = ConnectionFactory.getDefault().createSynchAsynchConnection(receiver,
-                DEFAULT_COMM_NAME, args);
+        ISynchAsynchConnection conn = new Client(receiver,keepAlive);
         return conn;
     }
 

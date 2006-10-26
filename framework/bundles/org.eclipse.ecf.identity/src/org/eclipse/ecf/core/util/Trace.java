@@ -136,6 +136,7 @@ public class Trace {
 	 * 
 	 */
 	public static boolean shouldTrace(Plugin plugin, String option) {
+		if (plugin == null) return false;
 		if (shouldTrace(plugin)) {
 			Boolean value = null;
 

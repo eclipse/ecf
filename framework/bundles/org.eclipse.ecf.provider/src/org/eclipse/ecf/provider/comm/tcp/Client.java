@@ -27,49 +27,17 @@ import java.util.Random;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.comm.AsynchEvent;
-import org.eclipse.ecf.core.comm.ConnectionCreateException;
-import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
 import org.eclipse.ecf.core.comm.DisconnectEvent;
 import org.eclipse.ecf.core.comm.IConnectionListener;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchEventHandler;
 import org.eclipse.ecf.core.comm.SynchEvent;
-import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.SimpleQueueImpl;
 import org.eclipse.ecf.provider.Trace;
 
 public final class Client implements ISynchAsynchConnection {
-	public static class Creator implements ISynchAsynchConnectionInstantiator {
-		public ISynchAsynchConnection createInstance(
-				ConnectionTypeDescription description,
-				ISynchAsynchEventHandler handler, Class[] clazzes,
-				Object[] args) throws ConnectionCreateException {
-			try {
-				String[] argVals = description.getArgDefaults();
-				Integer ka = null;
-				if (argVals != null && argVals.length > 0) {
-					String val = argVals[0];
-					if (val != null) {
-						ka = new Integer(val);
-					}
-				}
-				if (args != null && args.length > 0) {
-					if (args[0] instanceof Integer) {
-						ka = (Integer) args[0];
-					} else if (args[0] instanceof String) {
-						ka = new Integer((String) args[0]);
-					}
-				}
-				return new Client(handler, ka);
-			} catch (Exception e) {
-				throw new ConnectionCreateException(
-						"Exception in creating connection "
-								+ Client.class.getName(), e);
-			}
-		}
-	}
 	public static final String PROTOCOL = "ecftcp";
 	protected static final Trace trace = Trace.create("connection");
 	public static final int DEFAULT_SNDR_PRIORITY = Thread.NORM_PRIORITY;
