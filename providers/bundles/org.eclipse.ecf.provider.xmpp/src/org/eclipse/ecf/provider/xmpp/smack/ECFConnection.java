@@ -10,9 +10,9 @@ package org.eclipse.ecf.provider.xmpp.smack;
 
 import java.io.IOException;
 import java.util.Map;
-import org.eclipse.ecf.core.comm.DisconnectConnectionEvent;
-import org.eclipse.ecf.core.comm.IAsynchConnectionEventHandler;
-import org.eclipse.ecf.core.comm.IConnectionEventHandler;
+import org.eclipse.ecf.core.comm.DisconnectEvent;
+import org.eclipse.ecf.core.comm.IAsynchEventHandler;
+import org.eclipse.ecf.core.comm.IConnectionListener;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -46,7 +46,7 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 			+ ".object";
 	protected static final int XMPP_NORMAL_PORT = 5222;
 	protected XMPPConnection connection = null;
-	protected IAsynchConnectionEventHandler handler = null;
+	protected IAsynchEventHandler handler = null;
 	protected ID localID = null;
 	protected boolean isStarted = false;
 	protected String serverName;
@@ -89,7 +89,7 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 	public XMPPConnection getXMPPConnection() {
 		return connection;
 	}
-	public ECFConnection(boolean google, Namespace ns, IAsynchConnectionEventHandler h, boolean secure) {
+	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h, boolean secure) {
 		this.handler = h;
 		this.namespace = ns;
 		this.google = google;
@@ -98,7 +98,7 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 			XMPPConnection.DEBUG_ENABLED = true;
 		}
 	}
-	public ECFConnection(boolean google, Namespace ns, IAsynchConnectionEventHandler h) {
+	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h) {
 		this(google,ns,h,false);
 	}
 	protected String getPasswordForObject(Object data) {
@@ -222,7 +222,7 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 	}
 
 	protected void handleConnectionClosed(Exception e) {
-		handler.handleDisconnectEvent(new DisconnectConnectionEvent(this, e,
+		handler.handleDisconnectEvent(new DisconnectEvent(this, e,
 				null));
 	}
 
@@ -294,11 +294,11 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 		return null;
 	}
 
-	public void addCommEventListener(IConnectionEventHandler listener) {
+	public void addListener(IConnectionListener listener) {
 		// XXX Not yet implemented
 	}
 
-	public void removeCommEventListener(IConnectionEventHandler listener) {
+	public void removeListener(IConnectionListener listener) {
 		// XXX Not yet implemented
 	}
 

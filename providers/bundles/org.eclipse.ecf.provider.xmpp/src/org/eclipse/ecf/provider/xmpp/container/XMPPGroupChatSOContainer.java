@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
+import org.eclipse.ecf.core.comm.ConnectionCreateException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
@@ -421,7 +421,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 	}
 
 	protected ISynchAsynchConnection createConnection(ID remoteSpace,
-			Object data) throws ConnectionInstantiationException {
+			Object data) throws ConnectionCreateException {
 		return null;
 	}
 

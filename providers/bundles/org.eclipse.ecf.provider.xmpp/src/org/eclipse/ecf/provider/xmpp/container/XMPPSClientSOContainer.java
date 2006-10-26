@@ -10,7 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.xmpp.container;
 
-import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
+import org.eclipse.ecf.core.comm.ConnectionCreateException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -42,7 +42,7 @@ public class XMPPSClientSOContainer extends XMPPClientSOContainer {
 		return IDFactory.getDefault().getNamespaceByName(XmppPlugin.getDefault().getSecureNamespaceIdentifier());
 	}
 	protected ISynchAsynchConnection createConnection(ID remoteSpace,
-			Object data) throws ConnectionInstantiationException {
+			Object data) throws ConnectionCreateException {
 		ISynchAsynchConnection conn = null;
 		boolean google = false;
 		boolean secure = false;

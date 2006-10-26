@@ -11,37 +11,54 @@ package org.eclipse.ecf.core;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
+
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 
 /**
- * Description of an IContainer implementation.
+ * Description of an IContainer type implementation.
  * 
  */
 public class ContainerTypeDescription {
 	protected String name;
+
 	protected String instantiatorClass;
+
 	protected ClassLoader classLoader;
+
 	protected IContainerInstantiator instantiator;
+
 	protected String description;
+
 	protected String[] argTypes;
+
 	protected String[] argDefaults;
+
 	protected String[] argNames;
+
 	protected int hashCode = 0;
+
 	protected static final String[] EMPTY = new String[0];
-	protected Map properties;
+
+	protected Map properties = new HashMap();
 
 	public ContainerTypeDescription(String name) {
-		this(name,null);
+		this(name, null);
 	}
+
 	public ContainerTypeDescription(String name, String description) {
-		this(name,description,new HashMap());
+		this(name, description, (Map) null);
 	}
-	public ContainerTypeDescription(String name, String description, Map properties) {
+
+	public ContainerTypeDescription(String name, String description,
+			Map properties) {
+		if (name == null)
+			throw new NullPointerException("name cannot be null");
 		this.name = name;
 		this.description = description;
-		this.properties = properties;
+		if (properties != null)
+			this.properties = properties;
 	}
+
 	public ContainerTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc) {
 		this(loader, name, instantiatorClass, desc, EMPTY, EMPTY, EMPTY);
@@ -56,7 +73,7 @@ public class ContainerTypeDescription {
 			String instantiatorClass, String desc, String[] argTypes,
 			String[] argDefaults, String[] argNames) {
 		this(loader, name, instantiatorClass, desc, argTypes, argDefaults,
-				argNames, new Properties());
+				argNames, null);
 	}
 
 	public ContainerTypeDescription(ClassLoader loader, String name,
@@ -64,28 +81,24 @@ public class ContainerTypeDescription {
 			String[] argDefaults, String[] argNames, Map props) {
 		this.classLoader = loader;
 		if (name == null)
-			throw new RuntimeException(
-					new InstantiationException(
-							"SharedObjectContainerDescription<init> name cannot be null"));
+			throw new NullPointerException("name cannot be null");
 		this.name = name;
 		if (instantiatorClass == null)
-			throw new RuntimeException(
-					new InstantiationException(
-							"SharedObjectContainerDescription<init> instantiatorClass cannot be null"));
+			throw new NullPointerException("instantiatorClass cannot be null");
 		this.instantiatorClass = instantiatorClass;
 		this.hashCode = name.hashCode();
 		this.description = desc;
 		this.argTypes = argTypes;
 		this.argDefaults = argDefaults;
 		this.argNames = argNames;
-		this.properties = props;
+		if (props != null)
+			this.properties = props;
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
 			String desc, String[] argTypes, String[] argDefaults,
 			String[] argNames) {
-		this(name, inst, desc, argTypes, argDefaults, argNames,
-				new Properties());
+		this(name, inst, desc, argTypes, argDefaults, argNames, null);
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
@@ -106,7 +119,8 @@ public class ContainerTypeDescription {
 		this.argTypes = argTypes;
 		this.argDefaults = argDefaults;
 		this.argNames = argNames;
-		this.properties = props;
+		if (props != null)
+			this.properties = props;
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
@@ -114,10 +128,20 @@ public class ContainerTypeDescription {
 		this(name, inst, desc, EMPTY, EMPTY, EMPTY);
 	}
 
+	/**
+	 * Get ContainerTypeDescription name
+	 * 
+	 * @return String name for the ContainerTypeDescription. Will not be null.
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Get ClassLoader for this ContainerTypeDescription
+	 * 
+	 * @return ClassLoader associated with this ContainerTypeDescription
+	 */
 	public ClassLoader getClassLoader() {
 		return classLoader;
 	}
@@ -169,7 +193,10 @@ public class ContainerTypeDescription {
 	}
 
 	/**
-	 * @return Returns the description.
+	 * Get the String description associated with this ContainerTypeDescription
+	 * instance
+	 * 
+	 * @return String description. May be null.
 	 */
 	public String getDescription() {
 		return description;
@@ -187,6 +214,11 @@ public class ContainerTypeDescription {
 		return argNames;
 	}
 
+	/**
+	 * Get properties associated with this ContainerTypeDescription instance
+	 * 
+	 * @return Map the properties. Will not be null.
+	 */
 	public Map getProperties() {
 		return properties;
 	}

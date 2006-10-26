@@ -10,10 +10,22 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.comm;
 
-public class SynchConnectionEvent extends ConnectionEvent {
-	private static final long serialVersionUID = 3257288019714324532L;
+/**
+ * Asynchronous connection event class. Extends ConnectionEvent
+ * 
+ */
+public class AsynchEvent extends ConnectionEvent {
+	private static final long serialVersionUID = 3618136762325873465L;
 
-	public SynchConnectionEvent(ISynchConnection conn, Object data) {
+	public AsynchEvent(IAsynchConnection conn, Object data) {
 		super(conn, data);
 	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("AsynchEvent[");
+		buf.append("conn=").append(getConnection()).append(";");
+		buf.append("data=").append(getData()).append("]");
+		return buf.toString();
+	}
+
 }

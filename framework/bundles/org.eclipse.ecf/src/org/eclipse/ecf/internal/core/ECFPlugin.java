@@ -309,13 +309,13 @@ public class ECFPlugin extends Plugin {
 				}
 				if (name == null)
 					continue;
-				ConnectionTypeDescription cd = ConnectionFactory
+				ConnectionTypeDescription cd = ConnectionFactory.getDefault()
 						.getDescriptionByName(name);
-				if (cd == null || !ConnectionFactory.containsDescription(cd)) {
+				if (cd == null || !ConnectionFactory.getDefault().containsDescription(cd)) {
 					continue;
 				}
 				// remove
-				ConnectionFactory.removeDescription(cd);
+				ConnectionFactory.getDefault().removeDescription(cd);
 				debug("removeCommExtensions:removed connection description:"
 						+ cd);
 			} catch (Exception e) {
@@ -363,7 +363,7 @@ public class ECFPlugin extends Plugin {
 						description, defaults.getTypes(), defaults
 								.getDefaults(), defaults.getNames());
 				debug("setupCommExtensionPoint:created description:" + cd);
-				if (ConnectionFactory.containsDescription(cd)) {
+				if (ConnectionFactory.getDefault().containsDescription(cd)) {
 					// It's already there...log and throw as we can't use the
 					// same named factory
 					IStatus s = new Status(
@@ -381,7 +381,7 @@ public class ECFPlugin extends Plugin {
 							extension, bundleName, name));
 				}
 				// Now add the description and we're ready to go.
-				ConnectionFactory.addDescription(cd);
+				ConnectionFactory.getDefault().addDescription(cd);
 				debug("setupCommExtensionPoint:added description to factory:"
 						+ cd);
 			} catch (CoreException e) {

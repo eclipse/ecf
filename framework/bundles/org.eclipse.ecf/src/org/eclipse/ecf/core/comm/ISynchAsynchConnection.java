@@ -10,6 +10,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.comm;
 
+/**
+ * A connection instance that has both asynchronous and synchronous messaging
+ * capabilities
+ * 
+ */
 public interface ISynchAsynchConnection extends IAsynchConnection,
 		ISynchConnection {
 }

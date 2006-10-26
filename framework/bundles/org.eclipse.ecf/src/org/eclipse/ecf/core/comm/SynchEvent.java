@@ -10,6 +10,22 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.comm;
 
-public interface ISynchAsynchConnectionEventHandler extends
-		ISynchConnectionEventHandler, IAsynchConnectionEventHandler {
+/**
+ * Synchronous connection event.
+ * 
+ */
+public class SynchEvent extends ConnectionEvent {
+	private static final long serialVersionUID = 3257288019714324532L;
+
+	public SynchEvent(ISynchConnection conn, Object data) {
+		super(conn, data);
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("SynchEvent[");
+		buf.append("conn=").append(getConnection()).append(";");
+		buf.append("data=").append(getData()).append("]");
+		return buf.toString();
+	}
+
 }

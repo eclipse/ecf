@@ -11,6 +11,7 @@ package org.eclipse.ecf.core.comm;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.Trace;
@@ -18,95 +19,126 @@ import org.eclipse.ecf.internal.core.ECFDebugOptions;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 
 public class ConnectionFactory {
+
 	private static Hashtable connectiontypes = new Hashtable();
 
-	public final static ConnectionTypeDescription addDescription(
-			ConnectionTypeDescription scd) {
-		debug("addDescription(" + scd + ")");
-		return addDescription0(scd);
+	protected static ConnectionFactory instance = null;
+
+	static {
+		instance = new ConnectionFactory();
 	}
 
-	protected static ConnectionTypeDescription addDescription0(
+	public static ConnectionFactory getDefault() {
+		return instance;
+	}
+
+	protected ConnectionFactory() {
+
+	}
+
+	public ConnectionTypeDescription addDescription(
+			ConnectionTypeDescription scd) {
+		String method = "addDescription";
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, ConnectionFactory.class,
+				method, scd);
+		ConnectionTypeDescription result = addDescription0(scd);
+		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+				ConnectionFactory.class, method, result);
+		return result;
+	}
+
+	protected ConnectionTypeDescription addDescription0(
 			ConnectionTypeDescription n) {
 		if (n == null)
 			return null;
 		return (ConnectionTypeDescription) connectiontypes.put(n.getName(), n);
 	}
 
-	public final static boolean containsDescription(ConnectionTypeDescription scd) {
+	public boolean containsDescription(ConnectionTypeDescription scd) {
 		return containsDescription0(scd);
 	}
 
-	protected static boolean containsDescription0(ConnectionTypeDescription scd) {
+	protected boolean containsDescription0(ConnectionTypeDescription scd) {
 		if (scd == null)
 			return false;
 		return connectiontypes.containsKey(scd.getName());
 	}
 
-	private static void debug(String msg) {
-		Trace.trace(ECFPlugin.getDefault(),msg);
-	}
-	
-	private static void dumpStack(String msg, Throwable e) {
-		Trace.catching(ECFPlugin.getDefault(), ECFDebugOptions.EXCEPTIONS_CATCHING, ConnectionFactory.class, "dumpStack", e);
-	}
-
-	public final static ConnectionTypeDescription getDescription(
+	public ConnectionTypeDescription getDescription(
 			ConnectionTypeDescription scd) {
 		return getDescription0(scd);
 	}
 
-	protected static ConnectionTypeDescription getDescription0(
+	protected ConnectionTypeDescription getDescription0(
 			ConnectionTypeDescription scd) {
 		if (scd == null)
 			return null;
 		return (ConnectionTypeDescription) connectiontypes.get(scd.getName());
 	}
 
-	protected static ConnectionTypeDescription getDescription0(String name) {
+	protected ConnectionTypeDescription getDescription0(String name) {
 		if (name == null)
 			return null;
 		return (ConnectionTypeDescription) connectiontypes.get(name);
 	}
 
-	public final static ConnectionTypeDescription getDescriptionByName(String name) {
-		return getDescription0(name);
+	public ConnectionTypeDescription getDescriptionByName(String name) {
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, ConnectionFactory.class,
+				"getDescriptionByName", name);
+		ConnectionTypeDescription result = getDescription0(name);
+		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+				ConnectionFactory.class, "getDescriptionByName", result);
+		return result;
 	}
 
-	public static final List getDescriptions() {
+	public List getDescriptions() {
 		return getDescriptions0();
 	}
 
-	protected static List getDescriptions0() {
+	protected List getDescriptions0() {
 		return new ArrayList(connectiontypes.values());
 	}
 
-	public static ISynchAsynchConnection createSynchAsynchConnection(
-			ISynchAsynchConnectionEventHandler handler,
-			ConnectionTypeDescription desc, Object[] args)
-			throws ConnectionInstantiationException {
+	public ISynchAsynchConnection createSynchAsynchConnection(
+			ISynchAsynchEventHandler handler, ConnectionTypeDescription desc,
+			Object[] args) throws ConnectionCreateException {
 		if (handler == null)
-			throw new ConnectionInstantiationException("handler cannot be null");
+			throw new ConnectionCreateException("handler cannot be null");
 		return createSynchAsynchConnection(handler, desc, null, args);
 	}
 
-	public static ISynchAsynchConnection createSynchAsynchConnection(
-			ISynchAsynchConnectionEventHandler handler,
-			ConnectionTypeDescription desc, String[] argTypes, Object[] args)
-			throws ConnectionInstantiationException {
-		debug("createSynchAsynchConnection(" + handler + "," + desc + ","
-				+ Trace.getArgumentsString(argTypes) + ","
-				+ Trace.getArgumentsString(args) + ")");
+	protected void throwConnectionCreateException(String message,
+			Throwable cause, String method) throws ConnectionCreateException {
+		ConnectionCreateException except = (cause == null) ? new ConnectionCreateException(
+				message)
+				: new ConnectionCreateException(message, cause);
+		Trace.throwing(ECFPlugin.getDefault(),
+				ECFDebugOptions.EXCEPTIONS_THROWING, ConnectionFactory.class,
+				method, except);
+		throw except;
+	}
+
+	public ISynchAsynchConnection createSynchAsynchConnection(
+			ISynchAsynchEventHandler handler, ConnectionTypeDescription desc,
+			String[] argTypes, Object[] args) throws ConnectionCreateException {
+		String method = "createSynchAsynchConnection";
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, ConnectionFactory.class,
+				method, new Object[] { handler, desc,
+						Trace.getArgumentsString(argTypes),
+						Trace.getArgumentsString(args) });
 		if (handler == null)
-			throw new ConnectionInstantiationException(
-					"ISynchAsynchConnectionEventHandler cannot be null");
+			throwConnectionCreateException(
+					"ISynchAsynchEventHandler cannot be null", null, method);
 		if (desc == null)
-			throw new ConnectionInstantiationException(
-					"ConnectionTypeDescription cannot be null");
+			throwConnectionCreateException(
+					"ConnectionTypeDescription cannot be null", null, method);
 		ConnectionTypeDescription cd = desc;
 		if (cd == null)
-			throw new ConnectionInstantiationException("ConnectionTypeDescription "
-					+ desc.getName() + " not found");
+			throwConnectionCreateException("ConnectionTypeDescription '"
+					+ desc.getName() + "' not found", null, method);
 		ISynchAsynchConnectionInstantiator instantiator = null;
 		Class clazzes[] = null;
 		try {
@@ -114,70 +146,61 @@ public class ConnectionFactory {
 					.getInstantiator();
 			clazzes = AbstractFactory.getClassesForTypes(argTypes, args, cd
 					.getClassLoader());
-			if (instantiator == null)
-				throw new InstantiationException(
-						"Instantiator for ConnectionTypeDescription "
-								+ cd.getName() + " is null");
 		} catch (Exception e) {
-			ConnectionInstantiationException newexcept = new ConnectionInstantiationException(
-					"createSynchAsynchConnection exception with description: "
-							+ desc + ": " + e.getClass().getName() + ": "
-							+ e.getMessage());
-			newexcept.setStackTrace(e.getStackTrace());
-			dumpStack("Exception in createSynchAsynchConnection", newexcept);
-			throw newexcept;
+			throwConnectionCreateException(
+					"createSynchAsynchConnection exception with description:"
+							+ desc, e, method);
 		}
+		if (instantiator == null)
+			throwConnectionCreateException(
+					"Instantiator for ConnectionTypeDescription '"
+							+ cd.getName() + "' is null", null, method);
 		// Ask instantiator to actually create instance
-		return instantiator.createInstance(desc, handler, clazzes, args);
+		ISynchAsynchConnection result = instantiator.createInstance(desc,
+				handler, clazzes, args);
+		if (result == null)
+			throwConnectionCreateException("Instantiator returned null for '"
+					+ cd.getName() + "'", null, method);
+		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+				ConnectionFactory.class, method, result);
+		return result;
+
 	}
 
-	public static ISynchAsynchConnection createSynchAsynchConnection(
-			ISynchAsynchConnectionEventHandler handler, String descriptionName)
-			throws ConnectionInstantiationException {
-		if (handler == null)
-			throw new ConnectionInstantiationException(
-					"ISynchAsynchConnectionEventHandler cannot be null");
-		ConnectionTypeDescription desc = getDescriptionByName(descriptionName);
-		if (desc == null)
-			throw new ConnectionInstantiationException(
-					"Connection type named '" + descriptionName + "' not found");
-		return createSynchAsynchConnection(handler, desc, null, null);
+	public ISynchAsynchConnection createSynchAsynchConnection(
+			ISynchAsynchEventHandler handler, String descriptionName)
+			throws ConnectionCreateException {
+		return createSynchAsynchConnection(handler,
+				getDescriptionByName(descriptionName), null, null);
 	}
 
-	public static ISynchAsynchConnection createSynchAsynchConnection(
-			ISynchAsynchConnectionEventHandler handler, String descriptionName,
-			Object[] args) throws ConnectionInstantiationException {
-		if (handler == null)
-			throw new ConnectionInstantiationException(
-					"ISynchAsynchConnectionEventHandler cannot be null");
-		ConnectionTypeDescription desc = getDescriptionByName(descriptionName);
-		if (desc == null)
-			throw new ConnectionInstantiationException(
-					"Connection type named '" + descriptionName + "' not found");
-		return createSynchAsynchConnection(handler, desc, args);
+	public ISynchAsynchConnection createSynchAsynchConnection(
+			ISynchAsynchEventHandler handler, String descriptionName,
+			Object[] args) throws ConnectionCreateException {
+		return createSynchAsynchConnection(handler,
+				getDescriptionByName(descriptionName), args);
 	}
 
-	public static ISynchAsynchConnection createSynchAsynchConnection(
-			ISynchAsynchConnectionEventHandler handler, String descriptionName,
-			String[] argTypes, Object[] args)
-			throws ConnectionInstantiationException {
-		if (handler == null)
-			throw new ConnectionInstantiationException(
-					"ISynchAsynchConnectionEventHandler cannot be null");
-		ConnectionTypeDescription desc = getDescriptionByName(descriptionName);
-		if (desc == null)
-			throw new ConnectionInstantiationException(
-					"Connection type named '" + descriptionName + "' not found");
-		return createSynchAsynchConnection(handler, desc, argTypes, args);
+	public ISynchAsynchConnection createSynchAsynchConnection(
+			ISynchAsynchEventHandler handler, String descriptionName,
+			String[] argTypes, Object[] args) throws ConnectionCreateException {
+		return createSynchAsynchConnection(handler,
+				getDescriptionByName(descriptionName), argTypes, args);
 	}
 
-	public final static ConnectionTypeDescription removeDescription(
+	public ConnectionTypeDescription removeDescription(
 			ConnectionTypeDescription scd) {
-		debug("removeDescription(" + scd + ")");
-		return removeDescription0(scd);
+		String method = "removeDescription";
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, ConnectionFactory.class,
+				method, scd);
+		ConnectionTypeDescription result = removeDescription0(scd);
+		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+				ConnectionFactory.class, method, scd);
+		return result;
 	}
 
-	protected static ConnectionTypeDescription removeDescription0(
+	protected ConnectionTypeDescription removeDescription0(
 			ConnectionTypeDescription n) {
 		if (n == null)
 			return null;

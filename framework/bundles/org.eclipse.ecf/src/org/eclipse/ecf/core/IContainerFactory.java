@@ -11,15 +11,16 @@ package org.eclipse.ecf.core;
 import java.util.List;
 
 /**
- * Container factory contract {@link ContainerFactory} for default implementation.
+ * Container factory contract {@link ContainerFactory} for default
+ * implementation.
  */
 public interface IContainerFactory {
 	/*
 	 * Add a ContainerTypeDescription to the set of known ContainerDescriptions.
 	 * 
 	 * @param scd the ContainerTypeDescription to add to this factory @return
-	 * ContainerTypeDescription the old description of the same name, null if none
-	 * found
+	 * ContainerTypeDescription the old description of the same name, null if
+	 * none found
 	 */
 	public ContainerTypeDescription addDescription(ContainerTypeDescription scd);
 
@@ -46,16 +47,15 @@ public interface IContainerFactory {
 	/**
 	 * Get the known ContainerTypeDescription given it's name.
 	 * 
-	 * @param name
-	 * @return ContainerTypeDescription found
-	 * @throws ContainerCreateException
+	 * @param name the name to use as key to find ContainerTypeDescription
+	 * @return ContainerTypeDescription found.  Null if not found.
 	 */
-	public ContainerTypeDescription getDescriptionByName(String name)
-			throws ContainerCreateException;
+	public ContainerTypeDescription getDescriptionByName(String name);
 
 	/**
-	 * Make IContainer instance. Given a ContainerTypeDescription object, a String []
-	 * of argument types, and an Object [] of parameters, this method will
+	 * Make IContainer instance. Given a ContainerTypeDescription object, a
+	 * String [] of argument types, and an Object [] of parameters, this method
+	 * will
 	 * <p>
 	 * <ul>
 	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
@@ -70,18 +70,17 @@ public interface IContainerFactory {
 	 * @param argTypes
 	 *            a String [] defining the types of the args parameter
 	 * @param args
-	 *            an Object [] of arguments passed to the createInstance method of
-	 *            the IContainerInstantiator
+	 *            an Object [] of arguments passed to the createInstance method
+	 *            of the IContainerInstantiator
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException
 	 */
 	public IContainer createContainer(ContainerTypeDescription desc,
-			String[] argTypes, Object[] args)
-			throws ContainerCreateException;
+			String[] argTypes, Object[] args) throws ContainerCreateException;
 
 	/**
-	 * Make IContainer instance. Given a ContainerTypeDescription name, this method
-	 * will
+	 * Make IContainer instance. Given a ContainerTypeDescription name, this
+	 * method will
 	 * <p>
 	 * <ul>
 	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
@@ -100,8 +99,8 @@ public interface IContainerFactory {
 			throws ContainerCreateException;
 
 	/**
-	 * Make IContainer instance. Given a ContainerTypeDescription name, this method
-	 * will
+	 * Make IContainer instance. Given a ContainerTypeDescription name, this
+	 * method will
 	 * <p>
 	 * <ul>
 	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
@@ -123,8 +122,8 @@ public interface IContainerFactory {
 			throws ContainerCreateException;
 
 	/**
-	 * Make IContainer instance. Given a ContainerTypeDescription name, this method
-	 * will
+	 * Make IContainer instance. Given a ContainerTypeDescription name, this
+	 * method will
 	 * <p>
 	 * <ul>
 	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
@@ -144,8 +143,8 @@ public interface IContainerFactory {
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException
 	 */
-	public IContainer createContainer(String descriptionName, String[] argsTypes,
-			Object[] args) throws ContainerCreateException;
+	public IContainer createContainer(String descriptionName,
+			String[] argsTypes, Object[] args) throws ContainerCreateException;
 
 	/**
 	 * Remove given description from set known to this factory.
@@ -154,5 +153,6 @@ public interface IContainerFactory {
 	 *            the ContainerTypeDescription to remove
 	 * @return the removed ContainerTypeDescription, null if nothing removed
 	 */
-	public ContainerTypeDescription removeDescription(ContainerTypeDescription scd);
+	public ContainerTypeDescription removeDescription(
+			ContainerTypeDescription scd);
 }

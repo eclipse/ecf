@@ -12,7 +12,6 @@ package org.eclipse.ecf.core.comm;
 
 import java.io.IOException;
 
-public interface IAsynchConnectionEventHandler extends IConnectionEventHandler {
-	public void handleAsynchEvent(AsynchConnectionEvent event)
-			throws IOException;
+public interface ISynchEventHandler extends IConnectionListener {
+	public Object handleSynchEvent(SynchEvent event) throws IOException;
 }

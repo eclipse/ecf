@@ -12,7 +12,7 @@
 package org.eclipse.ecf.provider.generic;
 
 import org.eclipse.ecf.core.comm.ConnectionFactory;
-import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
+import org.eclipse.ecf.core.comm.ConnectionCreateException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -38,11 +38,11 @@ public class TCPClientSOContainer extends ClientSOContainer {
 		return DEFAULT_TCP_CONNECT_TIMEOUT;
 	}
     protected ISynchAsynchConnection createConnection(ID remoteSpace,
-            Object data) throws ConnectionInstantiationException {
+            Object data) throws ConnectionCreateException {
         debug("createClientConnection:" + remoteSpace + ":" + data);
         Object[] args = { new Integer(keepAlive) };
         ISynchAsynchConnection conn = null;
-        conn = ConnectionFactory.createSynchAsynchConnection(receiver,
+        conn = ConnectionFactory.getDefault().createSynchAsynchConnection(receiver,
                 DEFAULT_COMM_NAME, args);
         return conn;
     }

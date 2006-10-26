@@ -15,37 +15,40 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 
 /**
- * Contract for ECF communications container<br><br>
- * IContainer instances are used by clients to define a context for
- * communications.  
+ * Contract for ECF communications container<br>
  * <br>
+ * IContainer instances are used by clients to define a context for
+ * communications. <br>
  * <br>
  * The typical lifecycle of an ECF communications container is:
  * <ol>
  * <li>Create an IContainer instance via a {@link ContainerFactory}</li>
- * <li><b>Optional</b>: Setup client-specific protocol adapters for communicating via specific protocols</li>
+ * <li><b>Optional</b>: Setup client-specific protocol adapters for
+ * communicating via specific protocols</li>
  * <li>Connect the container to a remote process or group</li>
  * <li>Engage in communication via protocol adapaters</li>
  * <li>Disconnect</li>
  * </ol>
  * For example, to create and connect an ECF "generic client":
- *
- * <pre>
- *      // Create container instance via factory
- * 		IContainer container = ContainerFactory.getDefault().createContainer("ecf.generic.client");
  * 
- *      // Get presence protocol adapter
- * 		IPresenceContainer presence = (IPresenceContainer) container.getAdapter(IPresenceContainer.class);
- *      // ... setup presence listeners and local input here using presence
- *      
- *      // Connect
- *      container.connect(target,targetConnectContext);
- *      
- *      // Engage in appropriate communications here using protocol adapter(s)
- *      // Manage protocol adapters as needed when finished
- *      
- *      // Disconnect
- *      container.disconnect();
+ * <pre>
+ * // Create container instance via factory
+ * IContainer container = ContainerFactory.getDefault().createContainer(
+ * 		&quot;ecf.generic.client&quot;);
+ * 
+ * // Get presence protocol adapter
+ * IPresenceContainer presence = (IPresenceContainer) container
+ * 		.getAdapter(IPresenceContainer.class);
+ * // ... setup presence listeners and local input here using presence
+ * 
+ * // Connect
+ * container.connect(target, targetConnectContext);
+ * 
+ * // Engage in appropriate communications here using protocol adapter(s)
+ * // Manage protocol adapters as needed when finished
+ * 
+ * // Disconnect
+ * container.disconnect();
  * </pre>
  * 
  */
@@ -58,7 +61,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * (connectContext).
 	 * 
 	 * Callers note that depending upon the provider implementation this method
-	 * may block.  It is suggested that callers use a separate thread to call
+	 * may block. It is suggested that callers use a separate thread to call
 	 * this method.
 	 * 
 	 * This method provides an implementation independent way for container
@@ -79,8 +82,8 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 			throws ContainerConnectException;
 
 	/**
-	 * Get the target ID that this container instance has connected
-	 * to. Returns null if not connected.
+	 * Get the target ID that this container instance has connected to. Returns
+	 * null if not connected.
 	 * 
 	 * @return ID of the target we are connected to. Null if currently not
 	 *         connected.
@@ -88,7 +91,8 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	public ID getConnectedID();
 
 	/**
-	 * Get the Namespace expected by the remote target container.  Must not return null.
+	 * Get the Namespace expected by the remote target container. Must not
+	 * return null.
 	 * 
 	 * @return Namespace the namespace by the target for a call to connect()
 	 */
@@ -139,10 +143,10 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	public Object getAdapter(Class serviceType);
 
 	/**
-	 * Dispose this IContainer instance.  The container instance will be made
+	 * Dispose this IContainer instance. The container instance will be made
 	 * inactive after the completion of this method and will be unavailable for
-	 * subsequent usage.  NOTE:  This method is not intended to be called
-	 * by clients.
+	 * subsequent usage. NOTE: This method is not intended to be called by
+	 * clients.
 	 * 
 	 */
 	public void dispose();

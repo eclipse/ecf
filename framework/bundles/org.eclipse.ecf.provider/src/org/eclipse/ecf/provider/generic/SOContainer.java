@@ -27,14 +27,12 @@ import java.util.Vector;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainerListener;
-import org.eclipse.ecf.core.IOSGIService;
-import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
-import org.eclipse.ecf.core.comm.ConnectionEvent;
-import org.eclipse.ecf.core.comm.DisconnectConnectionEvent;
+import org.eclipse.ecf.core.comm.AsynchEvent;
+import org.eclipse.ecf.core.comm.DisconnectEvent;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.eclipse.ecf.core.comm.IConnection;
-import org.eclipse.ecf.core.comm.ISynchAsynchConnectionEventHandler;
-import org.eclipse.ecf.core.comm.SynchConnectionEvent;
+import org.eclipse.ecf.core.comm.ISynchAsynchEventHandler;
+import org.eclipse.ecf.core.comm.SynchEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
@@ -42,7 +40,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
@@ -55,6 +52,7 @@ import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
 import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectDeactivatedEvent;
+import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IClassLoaderMapper;
 import org.eclipse.ecf.core.util.IQueueEnqueue;
@@ -175,7 +173,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			}
 		}
 	}
-	class MessageReceiver implements ISynchAsynchConnectionEventHandler {
+	class MessageReceiver implements ISynchAsynchEventHandler {
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -189,7 +187,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		 * 
 		 * @see org.eclipse.ecf.internal.comm.IAsynchConnectionEventHandler#handleAsynchEvent(org.eclipse.ecf.internal.comm.AsynchConnectionEvent)
 		 */
-		public void handleAsynchEvent(AsynchConnectionEvent event)
+		public void handleAsynchEvent(AsynchEvent event)
 				throws IOException {
 			processAsynch(event);
 		}
@@ -198,23 +196,15 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		 * 
 		 * @see org.eclipse.ecf.internal.comm.IConnectionEventHandler#handleDisconnectEvent(org.eclipse.ecf.internal.comm.ConnectionEvent)
 		 */
-		public void handleDisconnectEvent(DisconnectConnectionEvent event) {
+		public void handleDisconnectEvent(DisconnectEvent event) {
 			processDisconnect(event);
-		}
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ecf.internal.comm.IConnectionEventHandler#handleSuspectEvent(org.eclipse.ecf.internal.comm.ConnectionEvent)
-		 */
-		public boolean handleSuspectEvent(ConnectionEvent event) {
-			return false;
 		}
 		/*
 		 * (non-Javadoc)
 		 * 
 		 * @see org.eclipse.ecf.internal.comm.ISynchConnectionEventHandler#handleSynchEvent(org.eclipse.ecf.internal.comm.SynchConnectionEvent)
 		 */
-		public Object handleSynchEvent(SynchConnectionEvent event)
+		public Object handleSynchEvent(SynchEvent event)
 				throws IOException {
 			return processSynch(event);
 		}
@@ -545,13 +535,10 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			return null;
 		}
 	}
-	protected IOSGIService getOSGIServiceInterface() {
-		return null;
-	}
 	public ID[] getOtherMemberIDs() {
 		return groupManager.getOtherMemberIDs();
 	}
-	protected ISynchAsynchConnectionEventHandler getReceiver() {
+	protected ISynchAsynchEventHandler getReceiver() {
 		return receiver;
 	}
 	protected ISharedObject getSharedObject(ID id) {
@@ -579,7 +566,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return groupManager.getFromActive(id);
 	}
 	protected void handleAsynchIOException(IOException except,
-			AsynchConnectionEvent e) {
+			AsynchEvent e) {
 		// If we get IO Exception, we'll disconnect...if we can
 		killConnection(e.getConnection());
 	}
@@ -850,7 +837,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			return null;
 		}
 	}
-	protected void processAsynch(AsynchConnectionEvent e) throws IOException {
+	protected void processAsynch(AsynchEvent e) throws IOException {
 		debug("processAsynch(" + e + ")");
 		try {
 			Object obj = e.getData();
@@ -890,7 +877,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		}
 	}
 	protected abstract ID getIDForConnection(IAsynchConnection connection);
-	protected void processDisconnect(DisconnectConnectionEvent e) {
+	protected void processDisconnect(DisconnectEvent e) {
 		debug("processDisconnect[" + Thread.currentThread().getName() + "]");
 		try {
 			// Get connection responsible for disconnect event
@@ -908,7 +895,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			logException("Exception in processDisconnect ", except);
 		}
 	}
-	protected Serializable processSynch(SynchConnectionEvent e)
+	protected Serializable processSynch(SynchEvent e)
 			throws IOException {
 		debug("processSynch:" + e);
 		ContainerMessage mess = deserializeContainerMessage((byte[]) e

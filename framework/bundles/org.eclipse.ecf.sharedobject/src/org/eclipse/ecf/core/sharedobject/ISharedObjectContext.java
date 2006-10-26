@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -175,17 +174,6 @@ public interface ISharedObjectContext extends IAdaptable {
 	 *             cannot be serialized
 	 */
 	public void sendMessage(ID toContainerID, Object data) throws IOException;
-
-	/**
-	 * Get a reference to a proxy instance that allows the registration and
-	 * access to local OSGI-platform-provided services. If this method returns
-	 * null, then such services are not available.
-	 * 
-	 * @return null if OSGI platform services cannot be accessed, a valid
-	 *         instance of the given interface if the context allows access to
-	 *         such services
-	 */
-	public IOSGIService getServiceAccess();
 
 	/**
 	 * Get the Namespace instance that defines the ID type expected by the

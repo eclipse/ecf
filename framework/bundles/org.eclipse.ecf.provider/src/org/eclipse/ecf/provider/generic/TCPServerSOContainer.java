@@ -17,12 +17,12 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.eclipse.ecf.core.comm.IConnectionRequestHandler;
+import org.eclipse.ecf.core.comm.IConnectRequestHandler;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 
 public class TCPServerSOContainer extends ServerSOContainer implements
-        IConnectionRequestHandler {
+        IConnectRequestHandler {
     public static final String DEFAULT_PROTOCOL = "ecftcp";
     public static final int DEFAULT_PORT = 3282;
     public static final int DEFAULT_KEEPALIVE = 30000;

@@ -8,11 +8,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.xmpp.smack;
 
-import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
+import org.eclipse.ecf.core.comm.AsynchEvent;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.jivesoftware.smack.packet.Packet;
 
-public class ECFConnectionPacketEvent extends AsynchConnectionEvent {
+public class ECFConnectionPacketEvent extends AsynchEvent {
 
 	private static final long serialVersionUID = 7000820721266245824L;
 

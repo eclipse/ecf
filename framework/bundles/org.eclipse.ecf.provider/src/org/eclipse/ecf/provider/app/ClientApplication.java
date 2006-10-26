@@ -75,7 +75,7 @@ public class ClientApplication {
 		}
 		// Setup factory descriptions since Eclipse does not do this for us
 		ConnectionTypeDescription cd = new ConnectionTypeDescription(ClientApplication.class.getClassLoader(),CONNECTION_NAME,CONNECTION_CLASS,null);
-		ConnectionFactory.addDescription(cd);
+		ConnectionFactory.getDefault().addDescription(cd);
 		contd = new ContainerTypeDescription(ClientApplication.class.getClassLoader(),CONTAINER_FACTORY_NAME,CONTAINER_FACTORY_CLASS,null);
 		ContainerFactory.getDefault().addDescription(contd);
 		for(int i=0; i < clientCount; i++) {

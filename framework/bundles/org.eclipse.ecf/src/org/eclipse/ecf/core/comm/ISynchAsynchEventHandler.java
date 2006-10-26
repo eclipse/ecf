@@ -10,10 +10,13 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.comm;
 
-public class AsynchConnectionEvent extends ConnectionEvent {
-	private static final long serialVersionUID = 3618136762325873465L;
-
-	public AsynchConnectionEvent(IAsynchConnection conn, Object data) {
-		super(conn, data);
-	}
+/**
+ * Event handler callback interface for connections that have both asynchronous
+ * and synchronous capabilities
+ * 
+ * @author slewis
+ * 
+ */
+public interface ISynchAsynchEventHandler extends ISynchEventHandler,
+		IAsynchEventHandler {
 }

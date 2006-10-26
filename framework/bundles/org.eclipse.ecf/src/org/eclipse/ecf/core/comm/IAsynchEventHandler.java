@@ -10,10 +10,20 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.comm;
 
-class SuspectConnectionEvent extends ConnectionEvent {
-	private static final long serialVersionUID = 3688783665748588344L;
+import java.io.IOException;
 
-	public SuspectConnectionEvent(IConnection source, Object data) {
-		super(source, data);
-	}
+/**
+ * Callback interface for handling asynchronous connection events
+ * 
+ */
+public interface IAsynchEventHandler extends IConnectionListener {
+	/**
+	 * Handle asynchronous connection event
+	 * 
+	 * @param event
+	 *            the asynchronous connection event to handle
+	 * @throws IOException
+	 *             if connection event cannot be handled
+	 */
+	public void handleAsynchEvent(AsynchEvent event) throws IOException;
 }

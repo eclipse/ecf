@@ -15,16 +15,23 @@ import java.net.Socket;
 
 /**
  * Connection request handler
- *
+ * 
  */
-public interface IConnectionRequestHandler {
+public interface IConnectRequestHandler {
 	/**
 	 * Handle a connect request from remote client
-	 * @param aSocket the Socket that the request came in on
-	 * @param target the target that the request is intended for
-	 * @param data any data that was sent along with request (e.g. password or other authentication data)
-	 * @param conn the connection instance that received the request
-	 * @return any data intended as a response.  If null is returned, this typically means refusal of connect request
+	 * 
+	 * @param aSocket
+	 *            the Socket that the request came in on
+	 * @param target
+	 *            the target that the request is intended for
+	 * @param data
+	 *            any data that was sent along with request (e.g. password or
+	 *            other authentication data)
+	 * @param conn
+	 *            the connection instance that received the request
+	 * @return any data intended as a response. If null is returned, this
+	 *         typically means refusal of connect request
 	 */
 	public Serializable handleConnectRequest(Socket aSocket, String target,
 			Serializable data, ISynchAsynchConnection conn);

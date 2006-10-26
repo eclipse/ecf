@@ -21,8 +21,8 @@ import java.util.Vector;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
-import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
+import org.eclipse.ecf.core.comm.AsynchEvent;
+import org.eclipse.ecf.core.comm.ConnectionCreateException;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
@@ -244,7 +244,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 	}
 
 	protected ISynchAsynchConnection createConnection(ID remoteSpace,
-			Object data) throws ConnectionInstantiationException {
+			Object data) throws ConnectionCreateException {
 		ISynchAsynchConnection conn = null;
 		boolean google = false;
 		if (remoteSpace instanceof XMPPID) {
@@ -383,7 +383,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 				.getHomeContainerID(), this, soconfig.getProperties(), queue);
 	}
 
-	protected void processAsynch(AsynchConnectionEvent e) {
+	protected void processAsynch(AsynchEvent e) {
 		try {
 			if (e instanceof ECFConnectionPacketEvent) {
 				// It's a regular xmpp message

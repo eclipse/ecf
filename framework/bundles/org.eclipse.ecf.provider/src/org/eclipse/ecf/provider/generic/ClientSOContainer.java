@@ -14,13 +14,13 @@ import java.io.Serializable;
 import java.net.ConnectException;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
-import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
-import org.eclipse.ecf.core.comm.DisconnectConnectionEvent;
+import org.eclipse.ecf.core.comm.AsynchEvent;
+import org.eclipse.ecf.core.comm.ConnectionCreateException;
+import org.eclipse.ecf.core.comm.DisconnectEvent;
 import org.eclipse.ecf.core.comm.IAsynchConnection;
 import org.eclipse.ecf.core.comm.IConnection;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.core.comm.SynchConnectionEvent;
+import org.eclipse.ecf.core.comm.SynchEvent;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
@@ -279,7 +279,7 @@ public abstract class ClientSOContainer extends SOContainer {
 		}
 	}
 	protected abstract ISynchAsynchConnection createConnection(ID remoteSpace,
-			Object data) throws ConnectionInstantiationException;
+			Object data) throws ConnectionCreateException;
 	protected void queueContainerMessage(ContainerMessage message)
 			throws IOException {
 		// Do it
@@ -319,21 +319,21 @@ public abstract class ClientSOContainer extends SOContainer {
 			return super.sendCreateSharedObjectMessage(toID, createInfo);
 		}
 	}
-	protected void processDisconnect(DisconnectConnectionEvent evt) {
+	protected void processDisconnect(DisconnectEvent evt) {
 		// Get connect lock, and just return if this connection has been
 		// terminated
 		synchronized (connectLock) {
 			super.processDisconnect(evt);
 		}
 	}
-	protected void processAsynch(AsynchConnectionEvent evt) throws IOException {
+	protected void processAsynch(AsynchEvent evt) throws IOException {
 		// Get connect lock, then call super version
 		synchronized (connectLock) {
 			checkConnected();
 			super.processAsynch(evt);
 		}
 	}
-	protected Serializable processSynch(SynchConnectionEvent evt)
+	protected Serializable processSynch(SynchEvent evt)
 			throws IOException {
 		synchronized (connectLock) {
 			checkConnected();

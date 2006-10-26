@@ -10,32 +10,29 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.comm;
 
-public class ConnectionInstantiationException extends Exception {
+/**
+ * Exception class for connection creation exceptions
+ * 
+ * @see ConnectionFactory#createSynchAsynchConnection(ISynchAsynchEventHandler,
+ *      ConnectionTypeDescription, String[], Object[])
+ * 
+ */
+public class ConnectionCreateException extends Exception {
 	private static final long serialVersionUID = 3904958651231058229L;
 
-	public ConnectionInstantiationException() {
+	public ConnectionCreateException() {
 		super();
 	}
 
-	/**
-	 * @param message
-	 */
-	public ConnectionInstantiationException(String message) {
+	public ConnectionCreateException(String message) {
 		super(message);
 	}
 
-	/**
-	 * @param cause
-	 */
-	public ConnectionInstantiationException(Throwable cause) {
+	public ConnectionCreateException(Throwable cause) {
 		super(cause);
 	}
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public ConnectionInstantiationException(String message, Throwable cause) {
+	public ConnectionCreateException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.IOSGIService;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -250,21 +249,6 @@ public class SOContext implements ISharedObjectContext {
      */
     public Object getAdapter(Class clazz) {
         return container.getAdapter(clazz);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.core.ISharedObjectContext#getServiceAccess()
-     */
-    public IOSGIService getServiceAccess() {
-        if (isInactive()) {
-            trace("getServiceAccess() CONTEXT INACTIVE returning null");
-            return null;
-        } else {
-            trace("getServiceAccess()");
-            return container.getOSGIServiceInterface();
-        }
     }
 
 	public Namespace getConnectNamespace() {

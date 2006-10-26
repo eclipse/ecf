@@ -12,9 +12,15 @@ package org.eclipse.ecf.core.comm;
 
 import org.eclipse.ecf.core.util.Event;
 
+/**
+ * Connection event super class.
+ * 
+ */
 public class ConnectionEvent implements Event {
 	private static final long serialVersionUID = 3257290214476362291L;
+
 	Object data = null;
+
 	IConnection connection = null;
 
 	public ConnectionEvent(IConnection source, Object data) {
@@ -29,4 +35,13 @@ public class ConnectionEvent implements Event {
 	public Object getData() {
 		return data;
 	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer("ConnectionEvent[");
+		buf.append("conn=").append(getConnection()).append(";").append("data=")
+				.append(getData());
+		buf.append("]");
+		return buf.toString();
+	}
+
 }

@@ -10,12 +10,16 @@
  *****************************************************************************/
 package org.eclipse.ecf.core.comm;
 
-public class DisconnectConnectionEvent extends ConnectionEvent {
+/**
+ * Disconnection event
+ * 
+ */
+public class DisconnectEvent extends ConnectionEvent {
 	private static final long serialVersionUID = 3545519491132832050L;
+
 	Throwable exception = null;
 
-	public DisconnectConnectionEvent(IAsynchConnection conn, Throwable e,
-			Object data) {
+	public DisconnectEvent(IAsynchConnection conn, Throwable e, Object data) {
 		super(conn, data);
 		exception = e;
 	}
@@ -23,10 +27,11 @@ public class DisconnectConnectionEvent extends ConnectionEvent {
 	public Throwable getException() {
 		return exception;
 	}
-	
+
 	public String toString() {
-		StringBuffer buf = new StringBuffer("DisconnectConnectionEvent[");
-		buf.append("conn=").append(getConnection()).append(";").append("e=").append(getException());
+		StringBuffer buf = new StringBuffer("DisconnectEvent[");
+		buf.append("conn=").append(getConnection()).append(";").append("e=")
+				.append(getException());
 		buf.append("data=").append(getData()).append("]");
 		return buf.toString();
 	}

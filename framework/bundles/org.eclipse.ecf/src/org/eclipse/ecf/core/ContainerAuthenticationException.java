@@ -8,29 +8,29 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
+/**
+ * Exception class to be thrown upon authentication failure during connect
+ * 
+ * @see IContainer#connect(org.eclipse.ecf.core.identity.ID,
+ *      org.eclipse.ecf.core.security.IConnectContext)
+ */
 public class ContainerAuthenticationException extends ContainerConnectException {
 	private static final long serialVersionUID = 7038962779623213444L;
+
 	public ContainerAuthenticationException() {
 		super();
 	}
-	/**
-	 * @param message
-	 */
+
 	public ContainerAuthenticationException(String message) {
 		super(message);
 	}
-	/**
-	 * @param cause
-	 */
+
 	public ContainerAuthenticationException(Throwable cause) {
 		super(cause);
 	}
-	/**
-	 * @param message
-	 * @param cause
-	 */
+
 	public ContainerAuthenticationException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 }

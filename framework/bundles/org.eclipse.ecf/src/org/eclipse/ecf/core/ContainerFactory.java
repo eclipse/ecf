@@ -34,19 +34,21 @@ import org.eclipse.ecf.internal.core.IDisposable;
  * 			ContainerFactory.getDefault().createContainer("ecf.generic.client");
  *      <br><br>
  *      ...further use of container here...
- * </code>
- * For more details on the creation and lifecycle of IContainer instances created via this 
- * factory see {@link IContainer}.
+ * </code> For more details on the creation
+ * and lifecycle of IContainer instances created via this factory see
+ * {@link IContainer}.
  * 
  * @see IContainer
  */
 public class ContainerFactory implements IContainerFactory {
 	private static final int DISPOSE_ERROR_CODE = 100;
+
 	private static Hashtable containerdescriptions = new Hashtable();
+
 	protected static IContainerFactory instance = null;
-	
+
 	protected static Map containers = new WeakHashMap();
-	
+
 	static {
 		instance = new ContainerFactory();
 	}
@@ -56,9 +58,12 @@ public class ContainerFactory implements IContainerFactory {
 			ECFPlugin.getDefault().addDisposable(new IDisposable() {
 				public void dispose() {
 					doDispose();
-				}});
+				}
+			});
 		} catch (Exception e) {
-			System.err.println("WARNING:  Exception accessing ECFPlugin within ContainerFactory initialization.  May not be running as OSGI bundle");
+			System.err
+					.println("WARNING:  Exception accessing ECFPlugin within ContainerFactory initialization.  May not be running as OSGI bundle");
+			e.printStackTrace(System.err);
 		}
 	}
 
@@ -66,19 +71,14 @@ public class ContainerFactory implements IContainerFactory {
 		return instance;
 	}
 
-	private static void trace(String msg) {
-		Trace.trace(ECFPlugin.getDefault(),msg);
+	protected void addContainer(IContainer container) {
+		containers.put(container, null);
 	}
 
-	private static void dumpStack(String msg, Throwable e) {
-		Trace.catching(ECFPlugin.getDefault(), ECFDebugOptions.EXCEPTIONS_CATCHING, ContainerFactory.class, "dumpStack", e);
-	}
-	protected void addContainer(IContainer container) {
-		containers.put(container,null);
-	}
 	protected void removeContainer(IContainer container) {
 		containers.remove(container);
 	}
+
 	protected void doDispose() {
 		for (Iterator i = containers.keySet().iterator(); i.hasNext();) {
 			IContainer c = (IContainer) i.next();
@@ -90,19 +90,28 @@ public class ContainerFactory implements IContainerFactory {
 					ECFPlugin.log(new Status(Status.ERROR, ECFPlugin
 							.getDefault().getBundle().getSymbolicName(),
 							DISPOSE_ERROR_CODE, "container dispose error", e));
+					Trace.catching(ECFPlugin.getDefault(),
+							ECFDebugOptions.EXCEPTIONS_CATCHING,
+							ContainerFactory.class, "doDispose", e);
 				}
 			}
 		}
 		containers.clear();
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.IContainerFactory#addDescription(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
 	public ContainerTypeDescription addDescription(ContainerTypeDescription scd) {
-		trace("addDescription(" + scd + ")");
-		return addDescription0(scd);
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
+				"addDescription", scd);
+		ContainerTypeDescription result = addDescription0(scd);
+		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+				ContainerFactory.class, "addDescription", result);
+		return result;
 	}
 
 	/*
@@ -118,10 +127,12 @@ public class ContainerFactory implements IContainerFactory {
 		return new ArrayList(containerdescriptions.values());
 	}
 
-	protected ContainerTypeDescription addDescription0(ContainerTypeDescription n) {
+	protected ContainerTypeDescription addDescription0(
+			ContainerTypeDescription n) {
 		if (n == null)
 			return null;
-		return (ContainerTypeDescription) containerdescriptions.put(n.getName(), n);
+		return (ContainerTypeDescription) containerdescriptions.put(
+				n.getName(), n);
 	}
 
 	/*
@@ -139,10 +150,12 @@ public class ContainerFactory implements IContainerFactory {
 		return containerdescriptions.containsKey(scd.getName());
 	}
 
-	protected ContainerTypeDescription getDescription0(ContainerTypeDescription scd) {
+	protected ContainerTypeDescription getDescription0(
+			ContainerTypeDescription scd) {
 		if (scd == null)
 			return null;
-		return (ContainerTypeDescription) containerdescriptions.get(scd.getName());
+		return (ContainerTypeDescription) containerdescriptions.get(scd
+				.getName());
 	}
 
 	protected ContainerTypeDescription getDescription0(String name) {
@@ -154,17 +167,27 @@ public class ContainerFactory implements IContainerFactory {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#getDescriptionByName(java.lang.String)
+	 * @see org.eclipse.ecf.core.IContainerFactory#getDescriptionByName(java.lang.String)
 	 */
-	public ContainerTypeDescription getDescriptionByName(String name)
-			throws ContainerCreateException {
-		trace("getDescriptionByName(" + name + ")");
+	public ContainerTypeDescription getDescriptionByName(String name) {
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
+				"getDescriptionByName", name);
 		ContainerTypeDescription res = getDescription0(name);
-		if (res == null) {
-			throw new ContainerCreateException(
-					"ContainerTypeDescription named '" + name + "' not found");
-		}
+		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+				ContainerFactory.class, "getDescriptionByName", res);
 		return res;
+	}
+
+	protected void throwContainerCreateException(String message,
+			Throwable cause, String method) throws ContainerCreateException {
+		ContainerCreateException except = (cause == null) ? new ContainerCreateException(
+				message)
+				: new ContainerCreateException(message, cause);
+		Trace.throwing(ECFPlugin.getDefault(),
+				ECFDebugOptions.EXCEPTIONS_THROWING, ContainerFactory.class,
+				method, except);
+		throw except;
 	}
 
 	/*
@@ -173,20 +196,23 @@ public class ContainerFactory implements IContainerFactory {
 	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription,
 	 *      java.lang.String[], java.lang.Object[])
 	 */
-	public IContainer createContainer(ContainerTypeDescription desc,
-			String[] argTypes, Object[] args)
-			throws ContainerCreateException {
-		trace("createContainer(" + desc + ","
-				+ Trace.getArgumentsString(argTypes) + ","
-				+ Trace.getArgumentsString(args) + ")");
-		if (desc == null)
-			throw new ContainerCreateException(
-					"ContainerTypeDescription cannot be null");
-		ContainerTypeDescription cd = getDescription0(desc);
+	public IContainer createContainer(ContainerTypeDescription description,
+			String[] argTypes, Object[] args) throws ContainerCreateException {
+		String method = "createContainer";
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
+				method, new Object[] { description,
+						Trace.getArgumentsString(argTypes),
+						Trace.getArgumentsString(args) });
+		if (description == null)
+			throwContainerCreateException(
+					"ContainerTypeDescription cannot be null", null,
+					method);
+		ContainerTypeDescription cd = getDescription0(description);
 		if (cd == null)
-			throw new ContainerCreateException(
-					"ContainerTypeDescription named '" + desc.getName()
-							+ "' not found");
+			throwContainerCreateException("ContainerTypeDescription '"
+					+ description.getName() + "' not found", null,
+					method);
 		Class clazzes[] = null;
 		IContainerInstantiator instantiator = null;
 		try {
@@ -194,22 +220,24 @@ public class ContainerFactory implements IContainerFactory {
 			clazzes = AbstractFactory.getClassesForTypes(argTypes, args, cd
 					.getClassLoader());
 		} catch (Exception e) {
-			ContainerCreateException newexcept = new ContainerCreateException(
-					"createContainer exception with description: " + desc + ": "
-							+ e.getClass().getName() + ": " + e.getMessage());
-			newexcept.setStackTrace(e.getStackTrace());
-			dumpStack("Exception in createContainer", newexcept);
-			throw newexcept;
+			throwContainerCreateException(
+					"createContainer exception with description: "
+							+ description, e, method);
 		}
 		if (instantiator == null)
-			throw new ContainerCreateException(
-					"Instantiator for ContainerTypeDescription " + cd.getName()
-							+ " is null");
+			throwContainerCreateException("ContainerTypeDescription '"
+					+ cd.getName() + "' instantiator is null", null,
+					method);
 		// Ask instantiator to actually create instance
-		IContainer container = instantiator.createInstance(desc, clazzes, args);
-		if (container == null) throw new ContainerCreateException("Container instantiator returned null for createInstance " + cd.getName());
+		IContainer container = instantiator.createInstance(description,
+				clazzes, args);
+		if (container == null)
+			throwContainerCreateException("Instantiator returned null for '"
+					+ cd.getName() + "'", null, method);
 		// Add to containers map
 		addContainer(container);
+		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+				ContainerFactory.class, method, container);
 		return container;
 	}
 
@@ -220,7 +248,8 @@ public class ContainerFactory implements IContainerFactory {
 	 */
 	public IContainer createContainer(String descriptionName)
 			throws ContainerCreateException {
-		return createContainer(getDescriptionByName(descriptionName), null, null);
+		return createContainer(getDescriptionByName(descriptionName), null,
+				null);
 	}
 
 	/*
@@ -231,7 +260,8 @@ public class ContainerFactory implements IContainerFactory {
 	 */
 	public IContainer createContainer(String descriptionName, Object[] args)
 			throws ContainerCreateException {
-		return createContainer(getDescriptionByName(descriptionName), null, args);
+		return createContainer(getDescriptionByName(descriptionName), null,
+				args);
 	}
 
 	/*
@@ -240,10 +270,10 @@ public class ContainerFactory implements IContainerFactory {
 	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String,
 	 *      java.lang.String[], java.lang.Object[])
 	 */
-	public IContainer createContainer(String descriptionName, String[] argsTypes,
-			Object[] args) throws ContainerCreateException {
-		return createContainer(getDescriptionByName(descriptionName), argsTypes,
-				args);
+	public IContainer createContainer(String descriptionName,
+			String[] argsTypes, Object[] args) throws ContainerCreateException {
+		return createContainer(getDescriptionByName(descriptionName),
+				argsTypes, args);
 	}
 
 	/*
@@ -251,14 +281,23 @@ public class ContainerFactory implements IContainerFactory {
 	 * 
 	 * @see org.eclipse.ecf.core.IContainerFactory#removeDescription(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public ContainerTypeDescription removeDescription(ContainerTypeDescription scd) {
-		trace("removeDescription(" + scd + ")");
-		return removeDescription0(scd);
+	public ContainerTypeDescription removeDescription(
+			ContainerTypeDescription scd) {
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
+				"removeDescription", scd);
+		ContainerTypeDescription description = removeDescription0(scd);
+		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+				ContainerFactory.class, "removeDescription", description);
+		return description;
+
 	}
 
-	protected ContainerTypeDescription removeDescription0(ContainerTypeDescription n) {
+	protected ContainerTypeDescription removeDescription0(
+			ContainerTypeDescription n) {
 		if (n == null)
 			return null;
-		return (ContainerTypeDescription) containerdescriptions.remove(n.getName());
+		return (ContainerTypeDescription) containerdescriptions.remove(n
+				.getName());
 	}
 }

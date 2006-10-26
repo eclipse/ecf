@@ -12,14 +12,23 @@ import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 
 public class ConnectionTypeDescription {
 	protected String name;
+
 	protected String instantiatorClass;
+
 	protected ISynchAsynchConnectionInstantiator instantiator;
+
 	protected int hashCode = 0;
+
 	protected ClassLoader classLoader = null;
+
 	protected String description;
+
 	protected String[] argTypes;
+
 	protected String[] argDefaults;
+
 	protected String[] argNames;
+
 	protected static final String[] EMPTY = new String[0];
 
 	public ConnectionTypeDescription(ClassLoader loader, String name,

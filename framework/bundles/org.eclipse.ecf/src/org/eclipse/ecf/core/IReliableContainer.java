@@ -11,7 +11,9 @@ package org.eclipse.ecf.core;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Contract for reliable container
+ * Contract for reliable container. Extends IContainer
+ * 
+ * @see IContainer
  */
 public interface IReliableContainer extends IContainer {
 	/**

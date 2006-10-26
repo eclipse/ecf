@@ -19,6 +19,12 @@ import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 
+/**
+ * Abstract implementer of IContainer. Provides implementations of listener
+ * methods that subsclasses may use to avoid having to implement them
+ * themselves. This class may be subclassed as needed.
+ * 
+ */
 public abstract class AbstractContainer implements IContainer {
 
 	protected List containerListeners = new ArrayList();
@@ -31,8 +37,9 @@ public abstract class AbstractContainer implements IContainer {
 		containerListeners.remove(l);
 	}
 
-	public void dispose() {}
-	
+	public void dispose() {
+	}
+
 	/**
 	 * Fires a container event
 	 * 
@@ -48,8 +55,9 @@ public abstract class AbstractContainer implements IContainer {
 	public Object getAdapter(Class serviceType) {
 		return Platform.getAdapterManager().getAdapter(this, serviceType);
 	}
-	
-	protected String getPasswordFromConnectContext(IConnectContext connectContext) throws ContainerConnectException {
+
+	protected String getPasswordFromConnectContext(
+			IConnectContext connectContext) throws ContainerConnectException {
 		String pw = null;
 		try {
 			Callback[] callbacks = new Callback[1];
@@ -63,10 +71,10 @@ public abstract class AbstractContainer implements IContainer {
 			ObjectCallback cb = (ObjectCallback) callbacks[0];
 			pw = (String) cb.getObject();
 		} catch (Exception e) {
-			throw new ContainerConnectException("Exception in CallbackHandler.handle(<callbacks>)",e);
+			throw new ContainerConnectException(
+					"Exception in CallbackHandler.handle(<callbacks>)", e);
 		}
 		return pw;
 	}
-
 
 }

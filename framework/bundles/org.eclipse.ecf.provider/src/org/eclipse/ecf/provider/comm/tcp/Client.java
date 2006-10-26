@@ -25,15 +25,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Vector;
-import org.eclipse.ecf.core.comm.AsynchConnectionEvent;
-import org.eclipse.ecf.core.comm.ConnectionEvent;
-import org.eclipse.ecf.core.comm.ConnectionInstantiationException;
+
+import org.eclipse.ecf.core.comm.AsynchEvent;
+import org.eclipse.ecf.core.comm.ConnectionCreateException;
 import org.eclipse.ecf.core.comm.ConnectionTypeDescription;
-import org.eclipse.ecf.core.comm.DisconnectConnectionEvent;
-import org.eclipse.ecf.core.comm.IConnectionEventHandler;
+import org.eclipse.ecf.core.comm.DisconnectEvent;
+import org.eclipse.ecf.core.comm.IConnectionListener;
 import org.eclipse.ecf.core.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.core.comm.ISynchAsynchConnectionEventHandler;
-import org.eclipse.ecf.core.comm.SynchConnectionEvent;
+import org.eclipse.ecf.core.comm.ISynchAsynchEventHandler;
+import org.eclipse.ecf.core.comm.SynchEvent;
 import org.eclipse.ecf.core.comm.provider.ISynchAsynchConnectionInstantiator;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -44,8 +44,8 @@ public final class Client implements ISynchAsynchConnection {
 	public static class Creator implements ISynchAsynchConnectionInstantiator {
 		public ISynchAsynchConnection createInstance(
 				ConnectionTypeDescription description,
-				ISynchAsynchConnectionEventHandler handler, Class[] clazzes,
-				Object[] args) throws ConnectionInstantiationException {
+				ISynchAsynchEventHandler handler, Class[] clazzes,
+				Object[] args) throws ConnectionCreateException {
 			try {
 				String[] argVals = description.getArgDefaults();
 				Integer ka = null;
@@ -64,7 +64,7 @@ public final class Client implements ISynchAsynchConnection {
 				}
 				return new Client(handler, ka);
 			} catch (Exception e) {
-				throw new ConnectionInstantiationException(
+				throw new ConnectionCreateException(
 						"Exception in creating connection "
 								+ Client.class.getName(), e);
 			}
@@ -85,7 +85,7 @@ public final class Client implements ISynchAsynchConnection {
 	protected ObjectOutputStream outputStream;
 	protected ObjectInputStream inputStream;
 	// Event handler
-	protected ISynchAsynchConnectionEventHandler handler;
+	protected ISynchAsynchEventHandler handler;
 	// Our queue
 	protected SimpleQueueImpl queue = new SimpleQueueImpl();
 	protected int keepAlive = 0;
@@ -107,7 +107,7 @@ public final class Client implements ISynchAsynchConnection {
 	
 	public Client(Socket aSocket, ObjectInputStream iStream,
 			ObjectOutputStream oStream,
-			ISynchAsynchConnectionEventHandler handler, int keepAlive)
+			ISynchAsynchEventHandler handler, int keepAlive)
 			throws IOException {
 		this(aSocket, iStream, oStream, handler, keepAlive,
 				DEFAULT_MAX_BUFFER_MSG);
@@ -122,7 +122,7 @@ public final class Client implements ISynchAsynchConnection {
 	}
 	public Client(Socket aSocket, ObjectInputStream iStream,
 			ObjectOutputStream oStream,
-			ISynchAsynchConnectionEventHandler handler, int keepAlive,
+			ISynchAsynchEventHandler handler, int keepAlive,
 			int maxmsgs) throws IOException {
 		if (handler == null)
 			throw new NullPointerException("event handler cannot be null");
@@ -136,13 +136,13 @@ public final class Client implements ISynchAsynchConnection {
 		properties = new Properties();
 		setupThreads();
 	}
-	public Client(ISynchAsynchConnectionEventHandler handler, Integer keepAlive) {
+	public Client(ISynchAsynchEventHandler handler, Integer keepAlive) {
 		this(handler, keepAlive.intValue());
 	}
-	public Client(ISynchAsynchConnectionEventHandler handler, int keepAlive) {
+	public Client(ISynchAsynchEventHandler handler, int keepAlive) {
 		this(handler, keepAlive, DEFAULT_MAX_BUFFER_MSG);
 	}
-	public Client(ISynchAsynchConnectionEventHandler handler, int keepAlive,
+	public Client(ISynchAsynchEventHandler handler, int keepAlive,
 			int maxmsgs) {
 		if (handler == null)
 			throw new NullPointerException("event handler cannot be null");
@@ -168,10 +168,10 @@ public final class Client implements ISynchAsynchConnection {
 		}
 		return retID;
 	}
-	public synchronized void removeCommEventListener(IConnectionEventHandler l) {
+	public synchronized void removeListener(IConnectionListener l) {
 		eventNotify.remove(l);
 	}
-	public synchronized void addCommEventListener(IConnectionEventHandler l) {
+	public synchronized void addListener(IConnectionListener l) {
 		if (eventNotify == null)
 			eventNotify = new Vector();
 		eventNotify.add(l);
@@ -297,11 +297,9 @@ public final class Client implements ISynchAsynchConnection {
 				if (e != null)
 					dumpStack("handleException in thread="
 							+ Thread.currentThread().getName(), e);
-				if (!handler.handleSuspectEvent(new ConnectionEvent(this, e))) {
 					handler
-							.handleDisconnectEvent(new DisconnectConnectionEvent(
+							.handleDisconnectEvent(new DisconnectEvent(
 									this, e, queue));
-				}
 			}
 		}
 		synchronized (Client.this) {
@@ -378,12 +376,12 @@ public final class Client implements ISynchAsynchConnection {
 			if (rcv instanceof SynchMessage) {
 				// Handle synch message. The only valid synch message is
 				// 'close'.
-				handler.handleSynchEvent(new SynchConnectionEvent(this,
+				handler.handleSynchEvent(new SynchEvent(this,
 						((SynchMessage) rcv).getData()));
 			} else if (rcv instanceof AsynchMessage) {
 				Serializable d = ((AsynchMessage) rcv).getData();
 				// Handle asynch messages.
-				handler.handleAsynchEvent(new AsynchConnectionEvent(this, d));
+				handler.handleAsynchEvent(new AsynchEvent(this, d));
 			} else if (rcv instanceof PingMessage) {
 				// Handle ping by sending response back immediately
 				send(pingResp);

@@ -10,6 +10,13 @@ package org.eclipse.ecf.core;
 
 import org.eclipse.ecf.core.util.ECFException;
 
+/**
+ * Exception class to be thrown upon connection failure.
+ * 
+ * @see IContainer#connect(org.eclipse.ecf.core.identity.ID,
+ *      org.eclipse.ecf.core.security.IConnectContext)
+ * 
+ */
 public class ContainerConnectException extends ECFException {
 	private static final long serialVersionUID = 4078658849424746859L;
 
@@ -17,24 +24,14 @@ public class ContainerConnectException extends ECFException {
 		super();
 	}
 
-	/**
-	 * @param message
-	 */
 	public ContainerConnectException(String message) {
 		super(message);
 	}
 
-	/**
-	 * @param cause
-	 */
 	public ContainerConnectException(Throwable cause) {
 		super(cause);
 	}
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
 	public ContainerConnectException(String message, Throwable cause) {
 		super(message, cause);
 	}
