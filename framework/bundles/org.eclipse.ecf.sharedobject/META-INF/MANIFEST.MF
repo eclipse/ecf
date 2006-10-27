@@ -12,3 +12,5 @@ Export-Package: org.eclipse.ecf.core.sharedobject,
  org.eclipse.ecf.core.sharedobject.events,
  org.eclipse.ecf.core.sharedobject.provider,
  org.eclipse.ecf.core.sharedobject.security
+Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+ CDC-1.1/Foundation-1.1

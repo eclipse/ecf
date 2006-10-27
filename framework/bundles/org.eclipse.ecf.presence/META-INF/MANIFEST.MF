@@ -12,4 +12,5 @@ Eclipse-LazyStart: true
 Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.presence, org.eclipse.ecf.presence.impl, org.eclipse.ecf.presence.chat
 Bundle-ManifestVersion: 2
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+ CDC-1.1/Foundation-1.1

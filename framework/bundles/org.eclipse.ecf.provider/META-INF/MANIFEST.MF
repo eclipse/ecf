@@ -19,5 +19,6 @@ Export-Package: org.eclipse.ecf.provider.app,
  org.eclipse.ecf.provider.generic.gmm
 Eclipse-BuddyPolicy: global
 Bundle-ManifestVersion: 2
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+ CDC-1.1/Foundation-1.1
 

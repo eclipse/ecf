@@ -12,4 +12,5 @@ Require-Bundle: org.eclipse.ecf;visibility:=reexport,
 Export-Package: org.eclipse.ecf.datashare,
  org.eclipse.ecf.datashare.events,
  org.eclipse.ecf.datashare.mergeable
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+ CDC-1.1/Foundation-1.1

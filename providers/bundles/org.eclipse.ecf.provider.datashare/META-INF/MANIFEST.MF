@@ -16,5 +16,6 @@ Eclipse-RegisterBuddy: org.eclipse.ecf
 Eclipse-BuddyPolicy: global
 Bundle-ClassPath: dsprovider.jar
 Export-Package: org.eclipse.ecf.provider.datashare
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+ CDC-1.1/Foundation-1.1
 

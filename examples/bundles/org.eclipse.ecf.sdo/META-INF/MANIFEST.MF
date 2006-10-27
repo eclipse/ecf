@@ -16,4 +16,5 @@ Provide-Package: org.eclipse.ecf.sdo,
  org.eclipse.ecf.sdo.emf
 Export-Package: org.eclipse.ecf.sdo,
  org.eclipse.ecf.internal.sdo
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+ CDC-1.1/Foundation-1.1

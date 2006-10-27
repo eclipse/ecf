@@ -22,5 +22,6 @@ Provide-Package: org.eclipse.ecf.ui,
 Export-Package:  org.eclipse.ecf.ui.views, org.eclipse.ecf.ui.dialogs
 Eclipse-RegisterBuddy: org.eclipse.ecf
 Eclipse-BuddyPolicy: dependent
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+ CDC-1.1/Foundation-1.1
 

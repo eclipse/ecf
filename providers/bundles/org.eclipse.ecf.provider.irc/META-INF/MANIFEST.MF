@@ -13,4 +13,5 @@ Eclipse-LazyStart: true
 Eclipse-AutoStart: true
 Bundle-ClassPath: lib/irclib.jar,
  ircprovider.jar
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+ CDC-1.1/Foundation-1.1

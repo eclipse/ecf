@@ -24,6 +24,7 @@ Export-Package: org.jivesoftware.smack,
 Require-Bundle: org.eclipse.core.runtime
 Bundle-ClassPath: jars/xmlpull.v1.jar,
  smack.jar
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+ CDC-1.1/Foundation-1.1
 Eclipse-ExtensibleAPI: true
 
