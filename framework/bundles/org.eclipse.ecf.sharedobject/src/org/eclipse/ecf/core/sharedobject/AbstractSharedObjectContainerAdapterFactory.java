@@ -93,6 +93,9 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 	protected abstract ISharedObject createAdapter(
 			ISharedObjectContainer container, Class adapterType);
 
+	protected ID getSharedObjectID() {
+		return sharedObjectID;
+	}
 	public abstract Class[] getAdapterList();
 
 }

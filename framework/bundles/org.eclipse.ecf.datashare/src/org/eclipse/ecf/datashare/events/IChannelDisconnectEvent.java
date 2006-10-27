@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.identity.ID;
  * departs from group
  *
  */
-public interface IChannelGroupDepartEvent extends IChannelEvent {
+public interface IChannelDisconnectEvent extends IChannelEvent {
 	/**
 	 * Get ID of target group that departed
 	 * @return ID of target group that departed

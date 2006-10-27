@@ -25,8 +25,8 @@ import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
-import org.eclipse.ecf.datashare.events.IChannelGroupDepartEvent;
-import org.eclipse.ecf.datashare.events.IChannelGroupJoinEvent;
+import org.eclipse.ecf.datashare.events.IChannelDisconnectEvent;
+import org.eclipse.ecf.datashare.events.IChannelConnectEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 
 public class BaseChannel extends TransactionSharedObject implements IChannel {
@@ -133,9 +133,9 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		} else
 			return super.getAdapter(clazz);
 	}
-	private IChannelGroupJoinEvent createChannelGroupJoinEvent(
+	private IChannelConnectEvent createChannelGroupJoinEvent(
 			final boolean hasJoined, final ID targetID) {
-		return new IChannelGroupJoinEvent() {
+		return new IChannelConnectEvent() {
 			private static final long serialVersionUID = -1085237280463725283L;
 			public ID getTargetID() {
 				return targetID;
@@ -151,9 +151,9 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			}
 		};
 	}
-	private IChannelGroupDepartEvent createChannelGroupDepartEvent(
+	private IChannelDisconnectEvent createChannelGroupDepartEvent(
 			final boolean hasJoined, final ID targetID) {
-		return new IChannelGroupDepartEvent() {
+		return new IChannelDisconnectEvent() {
 			private static final long serialVersionUID = -1085237280463725283L;
 			public ID getTargetID() {
 				return targetID;

@@ -9,13 +9,13 @@
 package org.eclipse.ecf.tutorial.datashare;
 
 import java.util.HashMap;
+
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.datashare.BasicChannelConfig;
+import org.eclipse.ecf.datashare.BaseChannelConfig;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelConfig;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
@@ -53,9 +53,8 @@ public class DsClient2 {
 			}
 		};
 		// Create channel config information
-		IChannelConfig config = new BasicChannelConfig(
-				new SharedObjectDescription(MyChannel.class, channelID,
-						new HashMap()), channelListener);
+		IChannelConfig config = new BaseChannelConfig(channelID,
+						channelListener, new HashMap());
 		// Create and return new channel
 		return channelContainer.createChannel(config);
 	}

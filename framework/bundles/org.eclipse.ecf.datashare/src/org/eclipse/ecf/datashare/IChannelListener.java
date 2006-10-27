@@ -18,10 +18,10 @@ import org.eclipse.ecf.datashare.events.IChannelEvent;
  * <p>
  * IChannelMessageEvent - delivered when channel receives a message
  * <p>
- * IChannelGroupJoinEvent - delivered when container channel is in joins
+ * IChannelConnectEvent - delivered when container channel is in joins
  * a group
  * <p>
- * IChannelGroupDepartEvent - delivered when container channel is in departs
+ * IChannelDisconnectEvent - delivered when container channel is in departs
  *
  */
 public interface IChannelListener {

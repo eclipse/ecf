@@ -8,21 +8,17 @@
  ******************************************************************************/
 package org.eclipse.ecf.datashare;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
+import org.eclipse.ecf.core.identity.IIdentifiable;
 
 /**
  * Channel configuration to be used during createChannel to 
  * configure the newly created IChannel implementation
  *
  */
-public interface IChannelConfig extends IAdaptable {
-	/**
-	 * Get SharedObjectDescription to be used to create primary (local) IChannel implementation.
-	 * @return SharedObjectDescription to be used to create primary IChannel implementation
-	 */
-	public SharedObjectDescription getPrimaryDescription();
+public interface IChannelConfig extends IAdaptable, IIdentifiable {
 	/**
 	 * Get listener for channel being created.  Typically, provider will call this
 	 * method during the implementation of createChannel.  If this method returns
@@ -32,11 +28,10 @@ public interface IChannelConfig extends IAdaptable {
 	 * @return IChannelListener to use for notification of received channel events
 	 */
 	public IChannelListener getListener();
+	
 	/**
-	 * Get the ISharedObjectTransactionConfig to use for replicating newly created IChannel
-	 * @return ISharedObjectTransactionConfig.  Null if no transaction config specified.  If null,
-	 * then provider implementers of createChannel are free to specify whatever transaction 
-	 * config parameters appropriate
+	 * Get properties for new channel creation
+	 * @return Map with properties for new channel
 	 */
-	public ISharedObjectTransactionConfig getTransactionConfig();
+	public Map getProperties();
 }

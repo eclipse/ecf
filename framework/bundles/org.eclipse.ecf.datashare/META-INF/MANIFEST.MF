@@ -8,8 +8,7 @@ Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Eclipse-AutoStart: true
 Require-Bundle: org.eclipse.ecf;visibility:=reexport,
- org.eclipse.core.runtime,
- org.eclipse.ecf.sharedobject
+ org.eclipse.core.runtime
 Export-Package: org.eclipse.ecf.datashare,
  org.eclipse.ecf.datashare.events,
  org.eclipse.ecf.datashare.mergeable

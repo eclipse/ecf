@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.identity.ID;
  * joins/connects to a group
  *
  */
-public interface IChannelGroupJoinEvent extends IChannelEvent {
+public interface IChannelConnectEvent extends IChannelEvent {
 	/**
 	 * Get ID of target group joined
 	 * @return ID of target group joined

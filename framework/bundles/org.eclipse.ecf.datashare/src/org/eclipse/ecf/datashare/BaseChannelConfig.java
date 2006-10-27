@@ -8,36 +8,45 @@
  ******************************************************************************/
 package org.eclipse.ecf.datashare;
 
-import org.eclipse.ecf.core.sharedobject.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
+import java.util.Map;
+
+import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Channel configuration
- *
+ * 
  */
-public class BasicChannelConfig implements IChannelConfig {
-	
-	protected SharedObjectDescription description = null;
+public class BaseChannelConfig implements IChannelConfig {
+
+	protected ID id = null;
+
 	protected IChannelListener listener = null;
-	
-	public BasicChannelConfig() {}
-	
-	public BasicChannelConfig(SharedObjectDescription description) {
-		this.description = description;
+
+	protected Map properties = null;
+
+	public BaseChannelConfig() {
 	}
-	public BasicChannelConfig(SharedObjectDescription description, IChannelListener listener) {
-		this.description = description;
+
+	public BaseChannelConfig(ID id, IChannelListener listener, Map properties) {
+		if (id == null)
+			throw new NullPointerException("id cannot be null");
+		this.id = id;
 		this.listener = listener;
+		this.properties = properties;
 	}
-	public SharedObjectDescription getPrimaryDescription() {
-		return description;
-	}
+
 	public IChannelListener getListener() {
 		return listener;
 	}
-	public ISharedObjectTransactionConfig getTransactionConfig() {
-		return null;
+
+	public ID getID() {
+		return id;
 	}
+
+	public Map getProperties() {
+		return properties;
+	}
+
 	public Object getAdapter(Class adapter) {
 		return null;
 	}

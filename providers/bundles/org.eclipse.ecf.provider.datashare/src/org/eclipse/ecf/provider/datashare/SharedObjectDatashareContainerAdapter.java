@@ -14,20 +14,17 @@ package org.eclipse.ecf.provider.datashare;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.sharedobject.AbstractSharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectTransactionParticipantsFilter;
 import org.eclipse.ecf.core.sharedobject.SharedObjectCreateException;
 import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
 import org.eclipse.ecf.core.sharedobject.SharedObjectFactory;
@@ -51,7 +48,7 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 	
 	protected static final int DEFAULT_TRANSACTION_WAIT = 30000;
 	
-	protected List channelContainerListener = Collections.synchronizedList(new ArrayList());
+	protected List channelContainerListeners = Collections.synchronizedList(new ArrayList());
 	
 	protected void initialize() throws SharedObjectInitException {
 		super.initialize();
@@ -59,42 +56,44 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 			public boolean processEvent(Event event) {
 				if (event instanceof ISharedObjectActivatedEvent) {
 					final ISharedObjectActivatedEvent soae = (ISharedObjectActivatedEvent) event;
-					fireChannelContainerListeners(new IChannelContainerChannelActivatedEvent() {
-						public ID getChannelID() {
-							return soae.getActivatedID();
-						}
-						public ID getChannelContainerID() {
-							return soae.getLocalContainerID();
-						}
-						public String toString() {
-							StringBuffer buf = new StringBuffer("ChannelActivatedEvent[");
-							buf.append("channelid=").append(soae.getActivatedID()).append(";");
-							buf.append("containerid=").append(soae.getLocalContainerID()).append("]");
-							return buf.toString();
-						}});
+					if (!soae.getActivatedID().equals(getID())) 
+						fireChannelContainerListeners(new IChannelContainerChannelActivatedEvent() {
+							public ID getChannelID() {
+								return soae.getActivatedID();
+							}
+							public ID getChannelContainerID() {
+								return soae.getLocalContainerID();
+							}
+							public String toString() {
+								StringBuffer buf = new StringBuffer("ChannelActivatedEvent[");
+								buf.append("channelid=").append(soae.getActivatedID()).append(";");
+								buf.append("containerid=").append(soae.getLocalContainerID()).append("]");
+								return buf.toString();
+							}});
 				} else if (event instanceof ISharedObjectDeactivatedEvent) {
 					final ISharedObjectDeactivatedEvent sode = (ISharedObjectDeactivatedEvent) event;
-					fireChannelContainerListeners(new IChannelContainerChannelDeactivatedEvent() {
-						public ID getChannelID() {
-							return sode.getDeactivatedID();
-						}
-						public ID getChannelContainerID() {
-							return sode.getLocalContainerID();
-						}
-						public String toString() {
-							StringBuffer buf = new StringBuffer("ChannelDeactivatedEvent[");
-							buf.append("channelid=").append(sode.getDeactivatedID()).append(";");
-							buf.append("containerid=").append(sode.getLocalContainerID()).append("]");
-							return buf.toString();
-						}});
+					if (!sode.getDeactivatedID().equals(getID())) 
+						fireChannelContainerListeners(new IChannelContainerChannelDeactivatedEvent() {
+							public ID getChannelID() {
+								return sode.getDeactivatedID();
+							}
+							public ID getChannelContainerID() {
+								return sode.getLocalContainerID();
+							}
+							public String toString() {
+								StringBuffer buf = new StringBuffer("ChannelDeactivatedEvent[");
+								buf.append("channelid=").append(sode.getDeactivatedID()).append(";");
+								buf.append("containerid=").append(sode.getLocalContainerID()).append("]");
+								return buf.toString();
+							}});
 				}
 				return false;
 			}});
 	}
 
 	protected void fireChannelContainerListeners(IChannelContainerEvent event) {
-		synchronized (channelContainerListener) {
-			for(Iterator i=channelContainerListener.iterator(); i.hasNext(); ) {
+		synchronized (channelContainerListeners) {
+			for(Iterator i=channelContainerListeners.iterator(); i.hasNext(); ) {
 				IChannelContainerListener l = (IChannelContainerListener) i.next();
 				if (l != null) l.handleChannelContainerEvent(event);
 			}
@@ -113,28 +112,22 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 			public IChannelListener getListener() {
 				return listener;
 			}
-			public ISharedObjectTransactionConfig getTransactionConfig() {
-				return new ISharedObjectTransactionConfig() {
-					public int getTimeout() {
-						return DEFAULT_TRANSACTION_WAIT;
-					}
-					public ISharedObjectTransactionParticipantsFilter getParticipantsFilter() {
-						return null;
-					}};
+			public ID getID() {
+				return newID;
 			}
 			public Object getAdapter(Class adapter) {
 				return null;
 			}
-			public SharedObjectDescription getPrimaryDescription() {
-				return new SharedObjectDescription(BaseChannel.class, newID,
-						properties);
+			public Map getProperties() {
+				return properties;
 			}
 		});
 	}
-	protected SharedObjectDescription getDefaultChannelDescription()
-			throws IDCreateException {
-		return new SharedObjectDescription(BaseChannel.class, IDFactory
-				.getDefault().createGUID(), new HashMap());
+	protected SharedObjectDescription createChannelSharedObjectDescription(final IChannelConfig channelConfig) {
+		return new SharedObjectDescription(BaseChannel.class, channelConfig.getID(), channelConfig.getProperties());
+	}
+	protected ISharedObjectTransactionConfig createChannelSharedObjectTransactionConfig() {
+		return null;
 	}
 	protected ISharedObject createSharedObject(
 			SharedObjectTypeDescription typeDescription,
@@ -171,13 +164,10 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 	}
 	public IChannel createChannel(IChannelConfig newChannelConfig)
 			throws ECFException {
-		SharedObjectDescription sodesc = newChannelConfig.getPrimaryDescription();
-		if (sodesc == null)
-			sodesc = getDefaultChannelDescription();
+		SharedObjectDescription sodesc = createChannelSharedObjectDescription(newChannelConfig);
 		SharedObjectTypeDescription sotypedesc = sodesc.getTypeDescription();
 		IChannelListener listener = newChannelConfig.getListener();
-		ISharedObjectTransactionConfig transactionConfig = newChannelConfig
-				.getTransactionConfig();
+		ISharedObjectTransactionConfig transactionConfig = createChannelSharedObjectTransactionConfig();
 		ISharedObject so = null;
 		if (sotypedesc.getName() != null) {
 			so = SharedObjectFactory
@@ -194,16 +184,13 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 		}
 		IChannel channel = (IChannel) so.getAdapter(IChannel.class);
 		if (channel == null)
-			throw new SharedObjectCreateException("Cannot coerce object "
+			throw new SharedObjectCreateException("Cannot adapt object "
 					+ channel + " to be of type IChannel");
 		ID newID = sodesc.getID();
 		if (newID == null)
 			newID = IDFactory.getDefault().createGUID();
-		Map properties = sodesc.getProperties();
-		if (properties == null)
-			properties = new HashMap();
 		// Now add channel to container...this will block
-		getContext().getSharedObjectManager().addSharedObject(newID, so, properties);
+		getContext().getSharedObjectManager().addSharedObject(newID, so, sodesc.getProperties());
 		return channel;
 	}
 	/*
@@ -212,7 +199,8 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#getChannel(org.eclipse.ecf.core.identity.ID)
 	 */
 	public IChannel getChannel(ID channelID) {
-		return (IChannel) getContext().getSharedObjectManager().getSharedObject(channelID);
+		if (channelID == null || channelID.equals(getID())) return null;
+		else return (IChannel) getContext().getSharedObjectManager().getSharedObject(channelID);
 	}
 	/*
 	 * (non-Javadoc)
@@ -220,6 +208,7 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#disposeChannel(org.eclipse.ecf.core.identity.ID)
 	 */
 	public boolean removeChannel(ID channelID) {
+		if (channelID == null || channelID.equals(getID())) return false;
 		ISharedObject o = getContext().getSharedObjectManager()
 				.removeSharedObject(channelID);
 		return (o != null);
@@ -232,9 +221,9 @@ public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject 
 		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
 	}
 	public void addListener(IChannelContainerListener listener) {
-		channelContainerListener.add(listener);
+		channelContainerListeners.add(listener);
 	}
 	public void removeListener(IChannelContainerListener listener) {
-		channelContainerListener.add(listener);
+		channelContainerListeners.add(listener);
 	}
 }
