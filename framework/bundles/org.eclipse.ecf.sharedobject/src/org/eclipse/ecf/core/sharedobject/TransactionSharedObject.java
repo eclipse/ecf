@@ -15,7 +15,7 @@ package org.eclipse.ecf.core.sharedobject;
  * transactionally.
  * 
  */
-public class TransactionSharedObject extends AbstractSharedObject {
+public class TransactionSharedObject extends BaseSharedObject {
 
 	protected ISharedObjectContainerTransaction transaction = null;
 

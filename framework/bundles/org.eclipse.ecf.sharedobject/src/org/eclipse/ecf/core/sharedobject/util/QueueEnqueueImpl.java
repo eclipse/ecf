@@ -9,22 +9,15 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-/*
- * Created on Dec 6, 2004
- *  
- */
-package org.eclipse.ecf.provider.generic;
+package org.eclipse.ecf.core.sharedobject.util;
 
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.IEnqueuePredicate;
-import org.eclipse.ecf.core.util.IQueueEnqueue;
-import org.eclipse.ecf.core.util.QueueException;
-import org.eclipse.ecf.core.util.SimpleQueueImpl;
+
 
 public class QueueEnqueueImpl implements IQueueEnqueue {
-    SimpleQueueImpl queue = null;
+    SimpleFIFOQueue queue = null;
 
-    public QueueEnqueueImpl(SimpleQueueImpl impl) {
+    public QueueEnqueueImpl(SimpleFIFOQueue impl) {
         super();
         this.queue = impl;
     }
@@ -101,7 +94,7 @@ public class QueueEnqueueImpl implements IQueueEnqueue {
      * 
      * @see org.eclipse.ecf.core.util.IQueueEnqueue#setEnqueuePredicate(org.eclipse.ecf.core.util.IEnqueuePredicate)
      */
-    public void setEnqueuePredicate(IEnqueuePredicate pred) {
+    public void setEnqueueProcessor(IEnqueueProcessor pred) {
         // This queue does not support enqueue predicate
         // So we do nothing
     }
@@ -111,7 +104,7 @@ public class QueueEnqueueImpl implements IQueueEnqueue {
      * 
      * @see org.eclipse.ecf.core.util.IQueueEnqueue#getEnqueuePredicate()
      */
-    public IEnqueuePredicate getEnqueuePredicate() {
+    public IEnqueueProcessor getEnqueueProcessor() {
         // We don't support enqueue predicate, so return null;
         return null;
     }

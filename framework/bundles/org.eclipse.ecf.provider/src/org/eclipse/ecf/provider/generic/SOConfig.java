@@ -20,7 +20,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
-import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 
 public class SOConfig implements ISharedObjectConfig {
     protected SOContainer container = null;

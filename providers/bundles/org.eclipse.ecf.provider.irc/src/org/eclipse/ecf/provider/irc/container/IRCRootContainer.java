@@ -22,14 +22,15 @@ import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
-import org.eclipse.ecf.presence.chat.IChatRoomContainerOptions;
+import org.eclipse.ecf.presence.chat.IChatRoomContainerOptionsAdapter;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
@@ -49,7 +50,7 @@ import org.schwering.irc.lib.SSLIRCConnection;
  */
 public class IRCRootContainer extends IRCAbstractContainer implements
 		IContainer, IChatRoomManager, IChatRoomContainer, IRCMessageChannel,
-		IChatRoomContainerOptions {
+		IChatRoomContainerOptionsAdapter {
 
 	protected IRCConnection connection = null;
 
@@ -263,7 +264,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		if (serviceType == null)
 			return null;
 		if (serviceType.equals(IChatRoomManager.class)
-				|| serviceType.equals(IChatRoomContainerOptions.class))
+				|| serviceType.equals(IChatRoomContainerOptionsAdapter.class))
 			return this;
 		else
 			return null;
@@ -408,7 +409,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 	public IChatMessageSender getChatMessageSender() {
 		return new IChatMessageSender() {
-			public void sendMessage(String message) throws IOException {
+			public void sendMessage(String message) throws ECFException {
 				parseMessageAndSend(message);
 			}
 		};

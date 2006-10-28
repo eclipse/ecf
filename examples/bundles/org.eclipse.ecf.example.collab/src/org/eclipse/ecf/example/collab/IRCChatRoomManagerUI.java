@@ -109,7 +109,7 @@ public class IRCChatRoomManagerUI {
 					chatroomview.joinRoom(getChannelFromID(targetID));
 				}
 			}
-		},"");
+		});
 		// Add listeners so that the new chat room gets
 		// asynch notifications of various relevant chat room events
 		chatRoom.addMessageListener(new IMessageListener() {

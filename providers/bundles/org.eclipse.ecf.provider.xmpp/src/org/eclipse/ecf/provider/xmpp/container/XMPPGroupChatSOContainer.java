@@ -26,7 +26,8 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.NameCallback;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
-import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
@@ -439,14 +440,13 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 
 	public IChatMessageSender getChatMessageSender() {
 		return new IChatMessageSender() {
-			public void sendMessage(String messageBody) throws IOException {
+			public void sendMessage(String messageBody) throws ECFException {
 				if (multiuserchat != null) {
 					try {
 						multiuserchat.sendMessage(messageBody);
 					} catch (Exception e) {
-						IOException except = new IOException(
-								"Send message exception");
-						except.setStackTrace(e.getStackTrace());
+						ECFException except = new ECFException(
+								"Send message exception",e);
 						throw except;
 					}
 				}

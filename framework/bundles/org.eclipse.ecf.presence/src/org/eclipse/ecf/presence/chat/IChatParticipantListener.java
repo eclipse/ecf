@@ -14,7 +14,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IParticipantListener;
 
 /**
- * Listener interface for receiving participant arrive and departed notifications
+ * Listener interface for receiving participant arrive and departed
+ * notifications
  * 
  */
 public interface IChatParticipantListener extends IParticipantListener {

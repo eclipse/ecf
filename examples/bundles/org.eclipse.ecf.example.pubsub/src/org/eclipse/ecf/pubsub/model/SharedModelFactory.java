@@ -63,7 +63,7 @@ public class SharedModelFactory {
 		};
 		
 		try {
-			container.addListener(listener, null);
+			container.addListener(listener);
 /*			SharedObjectDescription desc = createLocalAgentDescription(id, container.getID(), data, updaterID);
 			synchronized (monitor) {
 				mgr.createSharedObject(desc);

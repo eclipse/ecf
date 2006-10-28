@@ -90,7 +90,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 * that override this method should be certain to call super.initialize() as
 	 * the first thing in their own initialization so they get the
 	 * initialization defined by TransactionSharedObject and
-	 * AbstractSharedObject.</b>
+	 * BaseSharedObject.</b>
 	 * 
 	 * @throws SharedObjectInitException
 	 *             if initialization should fail
@@ -258,7 +258,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			trace("replica.receiveUndeliveredChannelEvent(" + channelEvent + ";containerid="+getContext().getLocalContainerID()+")");
 	}
 	/**
-	 * Override of AbstractSharedObject.getReplicaDescription.  Note this method
+	 * Override of BaseSharedObject.getReplicaDescription.  Note this method
 	 * should be overridden by subclasses that wish to specify the type of the 
 	 * replica created.
 	 * 

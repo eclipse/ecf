@@ -25,7 +25,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.internal.provider.Trace;
 
 public class SOContext implements ISharedObjectContext {

@@ -11,7 +11,6 @@
 
 package org.eclipse.ecf.ui.views;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -23,6 +22,7 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
@@ -178,7 +178,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 		} else {
 			try {
 				messageSender.sendMessage(text);
-			} catch (IOException e) {
+			} catch (ECFException e) {
 				// And cut ourselves off
 				removeLocalUser();
 			}

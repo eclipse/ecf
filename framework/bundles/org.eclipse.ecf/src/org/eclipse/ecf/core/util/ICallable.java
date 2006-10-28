@@ -9,10 +9,14 @@
 package org.eclipse.ecf.core.util;
 
 /**
- * Callable interface
+ * Interface defining a block that can be called, can return an Object result
+ * and throw an arbitrary Throwable
  * 
  */
 public interface ICallable {
-	/** Perform some action that returns a result or throws an exception * */
+	/** Perform some action that returns a result or throws an exception
+	 * @return result from calling action
+	 * @throws Throwable
+	 */
 	Object call() throws Throwable;
 }

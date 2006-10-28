@@ -180,12 +180,8 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * 
 	 * @param listener
 	 *            the IContainerListener to add
-	 * @param filter
-	 *            the filter to define types of container events to receive.
-	 *            Provider implementations may choose to use a filter to
-	 *            determine a subset of possible events to deliver to listener
 	 */
-	public void addListener(IContainerListener listener, String filter);
+	public void addListener(IContainerListener listener);
 
 	/**
 	 * Remove listener from IContainer.

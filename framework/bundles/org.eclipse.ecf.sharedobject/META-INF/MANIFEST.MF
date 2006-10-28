@@ -8,7 +8,8 @@ Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
 Eclipse-LazyStart: true
-Export-Package: org.eclipse.ecf.core.sharedobject,
+Export-Package: org.eclipse.ecf.core.sharedobject, 
+ org.eclipse.ecf.core.sharedobject.util,
  org.eclipse.ecf.core.sharedobject.events,
  org.eclipse.ecf.core.sharedobject.provider,
  org.eclipse.ecf.core.sharedobject.security

@@ -9,17 +9,19 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.impl;
+package org.eclipse.ecf.presence;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.IRosterEntry;
-import org.eclipse.ecf.presence.IRosterGroup;
 
+/**
+ * Roster entry base class implementing {@link IRosterEntry}. Subclasses may be
+ * created as appropriate
+ * 
+ */
 public class RosterEntry implements IRosterEntry {
 
 	protected ID userID;

@@ -9,12 +9,16 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.impl;
+package org.eclipse.ecf.presence;
 
 import java.util.Map;
 import java.util.Properties;
-import org.eclipse.ecf.presence.IPresence;
 
+/**
+ * Base presence class implementing {@link IPresence}. Subclasses may be
+ * created as appropriate
+ * 
+ */
 public class Presence implements IPresence {
 
 	private static final long serialVersionUID = 3906369346107618354L;

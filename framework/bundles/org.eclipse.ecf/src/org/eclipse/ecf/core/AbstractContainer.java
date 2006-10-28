@@ -29,7 +29,7 @@ public abstract class AbstractContainer implements IContainer {
 
 	protected List containerListeners = new ArrayList();
 
-	public void addListener(IContainerListener l, String filter) {
+	public void addListener(IContainerListener l) {
 		containerListeners.add(l);
 	}
 

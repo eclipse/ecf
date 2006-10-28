@@ -6,7 +6,9 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.core.util;
+package org.eclipse.ecf.core.sharedobject.util;
+
+import org.eclipse.ecf.core.util.Event;
 
 public interface IQueueDequeue {
 	/*

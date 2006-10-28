@@ -28,7 +28,7 @@ import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.util.SimpleQueueImpl;
+import org.eclipse.ecf.core.sharedobject.util.SimpleFIFOQueue;
 import org.eclipse.ecf.internal.provider.Trace;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
 import org.eclipse.ecf.provider.comm.DisconnectEvent;
@@ -55,7 +55,7 @@ public final class Client implements ISynchAsynchConnection {
 	// Event handler
 	protected ISynchAsynchEventHandler handler;
 	// Our queue
-	protected SimpleQueueImpl queue = new SimpleQueueImpl();
+	protected SimpleFIFOQueue queue = new SimpleFIFOQueue();
 	protected int keepAlive = 0;
 	protected Thread sendThread;
 	protected Thread rcvThread;

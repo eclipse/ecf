@@ -21,9 +21,9 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConnector;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectEvent;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectCallEvent;
+import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
+import org.eclipse.ecf.core.sharedobject.util.QueueException;
 import org.eclipse.ecf.core.util.AsynchResult;
-import org.eclipse.ecf.core.util.IQueueEnqueue;
-import org.eclipse.ecf.core.util.QueueException;
 
 public class SOConnector implements ISharedObjectConnector {
     ID sender;

@@ -11,7 +11,8 @@ package org.eclipse.ecf.core.util;
 import java.io.Serializable;
 
 /**
- * Abstract Event
+ * Event 'tag' interface. This is a super-interface for all ECF event
+ * interfaces/classes
  * 
  */
 public interface Event extends Serializable {

@@ -445,7 +445,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     protected IPresence createIPresence(Presence xmppPresence) {
         int priority = xmppPresence.getPriority();
         String status = xmppPresence.getStatus();
-        IPresence newPresence = new org.eclipse.ecf.presence.impl.Presence(
+        IPresence newPresence = new org.eclipse.ecf.presence.Presence(
                 createIPresenceType(xmppPresence), priority, status,
                 createIPresenceMode(xmppPresence));
         return newPresence;
@@ -551,7 +551,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
             RosterPacket.ItemType itemType = entry.getType();
             IRosterEntry.InterestType iType = createInterestType(itemType);
             ID svcID = getContext().getConnectedID();
-            IRosterEntry newEntry = new org.eclipse.ecf.presence.impl.RosterEntry(svcID,
+            IRosterEntry newEntry = new org.eclipse.ecf.presence.RosterEntry(svcID,
                     userID, name, iType);
             Iterator grps = entry.getGroups();
             for (; grps.hasNext();) {
@@ -573,7 +573,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
             RosterPacket.ItemType itemType = entry.getItemType();
             IRosterEntry.InterestType iType = createInterestType(itemType);
             ID svcID = getContext().getConnectedID();
-            IRosterEntry newEntry = new org.eclipse.ecf.presence.impl.RosterEntry(svcID,
+            IRosterEntry newEntry = new org.eclipse.ecf.presence.RosterEntry(svcID,
                     userID, name, iType);
             Iterator grps = entry.getGroupNames();
             for (; grps.hasNext();) {
@@ -589,11 +589,11 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     }
 
     protected IRosterGroup createRosterGroup(RosterGroup grp) {
-        return new org.eclipse.ecf.presence.impl.RosterGroup(grp.getName());
+        return new org.eclipse.ecf.presence.RosterGroup(grp.getName());
     }
 
     protected IRosterGroup createRosterGroup(String grp) {
-        return new org.eclipse.ecf.presence.impl.RosterGroup(grp);
+        return new org.eclipse.ecf.presence.RosterGroup(grp);
     }
 
     protected void setConnection(XMPPConnection connection) {

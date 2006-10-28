@@ -426,7 +426,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	public Namespace getConnectNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(JMDNS_NAMESPACE_ID);
 	}
-	public void addListener(IContainerListener l, String filter) {
+	public void addListener(IContainerListener l) {
 		synchronized (listeners) {
 			listeners.add(l);
 		}

@@ -13,8 +13,11 @@ package org.eclipse.ecf.presence;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Listener for receiving and processing presence and roster update events
+ * Listener for receiving and processing presence and roster update events.
+ * Implementers of this interface must be registered via
+ * {@link IPresenceContainerAdapter#addPresenceListener(IPresenceListener)}
  * 
+ * @see IPresenceContainerAdapter
  */
 public interface IPresenceListener extends IParticipantListener {
 
@@ -51,6 +54,7 @@ public interface IPresenceListener extends IParticipantListener {
 	 *            the entry that has been removed
 	 */
 	public void handleRosterEntryRemove(IRosterEntry entry);
+
 	/**
 	 * Notification that this presence listener has disconnected to a
 	 * notification source (e.g. a presence server).

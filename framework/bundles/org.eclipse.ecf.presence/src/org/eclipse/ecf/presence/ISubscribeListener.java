@@ -13,7 +13,11 @@ package org.eclipse.ecf.presence;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Listener for handling notifications of subscribe/unsubscribe requests
+ * Listener for handling notifications of subscribe/unsubscribe requests.
+ * Implementers of this interface must be registered via
+ * {@link IPresenceContainerAdapter#addSubscribeListener(ISubscribeListener)}
+ * 
+ * @see IPresenceContainerAdapter
  * 
  */
 public interface ISubscribeListener {

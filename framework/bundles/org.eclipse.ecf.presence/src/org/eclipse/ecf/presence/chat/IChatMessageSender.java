@@ -10,12 +10,14 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.chat;
 
-import java.io.IOException;
+import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * Chat message sender. Interface for sending chat messages within an
- * {@link IChatRoomContainer}
+ * {@link IChatRoomContainer}. Access to instances implementing this interface
+ * is provided via the {@link IChatRoomContainer#getChatMessageSender()}
  * 
+ * @see IChatRoomContainer
  */
 public interface IChatMessageSender {
 	/**
@@ -23,8 +25,9 @@ public interface IChatMessageSender {
 	 * 
 	 * @param message
 	 *            the message to send
-	 * @throws IOException
-	 *             thrown if message cannot be sent
+	 * @throws ECFException
+	 *             thrown if message cannot be sent (e.g. because of previous
+	 *             disconnect)
 	 */
-	public void sendMessage(String message) throws IOException;
+	public void sendMessage(String message) throws ECFException;
 }

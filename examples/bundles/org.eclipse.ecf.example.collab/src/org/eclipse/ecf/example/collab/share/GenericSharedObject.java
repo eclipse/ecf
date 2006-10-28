@@ -32,9 +32,9 @@ import org.eclipse.ecf.core.sharedobject.events.ISharedObjectCreateResponseEvent
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectEvent;
+import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
+import org.eclipse.ecf.core.sharedobject.util.QueueException;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.IQueueEnqueue;
-import org.eclipse.ecf.core.util.QueueException;
 import org.eclipse.ecf.example.collab.Trace;
 
 /**

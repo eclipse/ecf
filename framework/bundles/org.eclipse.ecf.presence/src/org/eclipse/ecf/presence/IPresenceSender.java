@@ -11,9 +11,14 @@
 package org.eclipse.ecf.presence;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
 
 /**
- * Send presence change events to remotes on buddy list
+ * Send presence change events to remotes on buddy list. Access to instances
+ * implementing this interface is provided by
+ * {@link IPresenceContainerAdapter#getPresenceSender()}
+ * 
+ * @see IPresenceContainerAdapter
  * 
  */
 public interface IPresenceSender {
@@ -27,8 +32,12 @@ public interface IPresenceSender {
 	 *            the target user. Should not be null.
 	 * @param presence
 	 *            the presence information. Should not be null.
+	 * @exception ECFException
+	 *                thrown if request cannot be sent (e.g. because of previous
+	 *                disconnect
 	 */
-	public void sendPresenceUpdate(ID fromID, ID toID, IPresence presence);
+	public void sendPresenceUpdate(ID fromID, ID toID, IPresence presence)
+			throws ECFException;
 
 	/**
 	 * Send a roster add request (subscribe) to a remote
@@ -40,9 +49,12 @@ public interface IPresenceSender {
 	 * @param groups
 	 *            an array of group names that this use will belong to on the
 	 *            roster entry. Should not be null.
+	 * @exception ECFException
+	 *                thrown if request cannot be sent (e.g. because of previous
+	 *                disconnect
 	 */
 	public void sendRosterAdd(ID fromID, String user, String name,
-			String[] groups);
+			String[] groups) throws ECFException;
 
 	/**
 	 * Send roster remove request (unsubscribe) to a remote
@@ -50,7 +62,10 @@ public interface IPresenceSender {
 	 * @param fromID
 	 *            the user id the request is from. Should not be null.
 	 * @param userID
-	 *            the user id the request it intended for. Should not be null.
+	 *            the user id the request it intended for. Should not be null
+	 * @exception ECFException
+	 *                thrown if request cannot be sent (e.g. because of previous
+	 *                disconnect
 	 */
-	public void sendRosterRemove(ID fromID, ID userID);
+	public void sendRosterRemove(ID fromID, ID userID) throws ECFException;
 }

@@ -16,8 +16,10 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Roster entry object. Instances implementing this interface provide
- * information about roster entrys
+ * information about roster entrys. Implementers of this interface are provided
+ * via the {@link IPresenceListener} methods. callback
  * 
+ * @see IPresenceListener
  */
 public interface IRosterEntry {
 
@@ -38,7 +40,8 @@ public interface IRosterEntry {
 	public void remove(IRosterGroup group);
 
 	/**
-	 * Get groups associated with this roster entry
+	 * Get groups associated with this roster entry. Instance in list are of
+	 * type {@link IRosterGroup}
 	 * 
 	 * @return Iterator of groups that this roster entry belongs to. Will not
 	 *         return null.

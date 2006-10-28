@@ -24,8 +24,9 @@ import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectCreateResponse
 import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectDeactivatedEvent;
+import org.eclipse.ecf.core.sharedobject.util.QueueEnqueueImpl;
+import org.eclipse.ecf.core.sharedobject.util.SimpleFIFOQueue;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.SimpleQueueImpl;
 import org.eclipse.ecf.internal.provider.Trace;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
@@ -37,7 +38,7 @@ public class SOWrapper {
     private SOContainer container;
     private ID containerID;
     private Thread thread;
-    private SimpleQueueImpl queue;
+    private SimpleFIFOQueue queue;
 
     protected SOWrapper(SOContainer.LoadingSharedObject obj, SOContainer cont) {
         sharedObjectID = obj.getID();
@@ -46,7 +47,7 @@ public class SOWrapper {
         containerID = cont.getID();
         sharedObjectConfig = null;
         thread = null;
-        queue = new SimpleQueueImpl();
+        queue = new SimpleFIFOQueue();
     }
 
     protected SOWrapper(SOConfig aConfig, ISharedObject obj, SOContainer cont) {
@@ -56,7 +57,7 @@ public class SOWrapper {
         container = cont;
         containerID = cont.getID();
         thread = null;
-        queue = new SimpleQueueImpl();
+        queue = new SimpleFIFOQueue();
     }
 
     protected void init() throws SharedObjectInitException {
@@ -248,7 +249,7 @@ public class SOWrapper {
         return sharedObject;
     }
 
-    public SimpleQueueImpl getQueue() {
+    public SimpleFIFOQueue getQueue() {
         return queue;
     }
 }

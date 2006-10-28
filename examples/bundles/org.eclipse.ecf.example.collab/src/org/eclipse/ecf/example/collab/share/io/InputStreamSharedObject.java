@@ -16,11 +16,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
-import org.eclipse.ecf.core.util.SimpleQueueImpl;
+import org.eclipse.ecf.core.sharedobject.util.SimpleFIFOQueue;
 
 public class InputStreamSharedObject extends InputStream
 {
-    protected SimpleQueueImpl myQueue = new SimpleQueueImpl();
+    protected SimpleFIFOQueue myQueue = new SimpleFIFOQueue();
 
     int currentLength;
     int currentRead;

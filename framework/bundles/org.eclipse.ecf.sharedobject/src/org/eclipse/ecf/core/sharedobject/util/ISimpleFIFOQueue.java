@@ -6,11 +6,23 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.core.util;
+package org.eclipse.ecf.core.sharedobject.util;
 
-public interface ISimpleQueue {
+/**
+ * Simple queue
+ *
+ */
+public interface ISimpleFIFOQueue {
+	/**
+	 * Enqueue given object.  Blocks until enqueue is completed.
+	 * @param obj the Object to enqueue
+	 * @return true if enqueued, false if not successfully enqueue
+	 */
 	public boolean enqueue(Object obj);
-
+	/**
+	 * Dequeue an object from off the 
+	 * @return
+	 */
 	public Object dequeue();
 
 	public Object peekQueue();

@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.example.clients;
 
-import java.io.IOException;
-
 import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
@@ -83,7 +81,7 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 		// direct message
 		try {
 			sender.sendMessage("gotta run");
-		} catch (IOException e) {
+		} catch (ECFException e) {
 			e.printStackTrace();
 		}
 		running = false;
@@ -99,13 +97,13 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 		}
 		try {
 			if (messageBody.indexOf("e") != -1) {
-				sender.sendMessage("kewl");
+					sender.sendMessage("kewl");
 			} else if (messageBody.indexOf("s") != -1) {
-				sender.sendMessage(";-)");
+					sender.sendMessage(";-)");
 			} else {
 				sender.sendMessage("'s up?");
 			}
-		} catch (IOException e) {
+		} catch (ECFException e) {
 			e.printStackTrace();
 		}
 	}

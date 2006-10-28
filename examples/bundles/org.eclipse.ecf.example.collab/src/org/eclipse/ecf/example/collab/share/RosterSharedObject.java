@@ -13,7 +13,7 @@ package org.eclipse.ecf.example.collab.share;
 import java.io.IOException;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.AbstractSharedObject;
+import org.eclipse.ecf.core.sharedobject.BaseSharedObject;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
 import org.eclipse.ecf.example.collab.ui.CollabRosterView;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -22,7 +22,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-public class RosterSharedObject extends AbstractSharedObject {
+public class RosterSharedObject extends BaseSharedObject {
 
 	CollabRosterView view;
 

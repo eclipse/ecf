@@ -10,17 +10,21 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence;
 
+import org.eclipse.ecf.core.identity.ID;
+
 /**
  * Adapter interface for chatIDs. The typical usage of this interface is as
  * follows:
  * 
  * <pre>
- *  ID myID = ...
- *  IChatID chatID = (IChatID) myID.getAdapter(IChatID.class);
- *  if (chatID != null) {
- *    ...use chatID here
- *  }
+ *   ID myID = ...
+ *   IChatID chatID = (IChatID) myID.getAdapter(IChatID.class);
+ *   if (chatID != null) {
+ *     ...use chatID here
+ *   }
  * </pre>
+ * 
+ * @see ID
  */
 public interface IChatID {
 	/**

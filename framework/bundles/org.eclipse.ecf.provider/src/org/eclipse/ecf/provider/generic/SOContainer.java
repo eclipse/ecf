@@ -18,7 +18,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -47,11 +46,8 @@ import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
+import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.IClassLoaderMapper;
-import org.eclipse.ecf.core.util.IQueueEnqueue;
-import org.eclipse.ecf.core.util.IdentifiableObjectInputStream;
-import org.eclipse.ecf.core.util.IdentifiableObjectOutputStream;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.internal.provider.Trace;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
@@ -61,6 +57,9 @@ import org.eclipse.ecf.provider.comm.IConnection;
 import org.eclipse.ecf.provider.comm.ISynchAsynchEventHandler;
 import org.eclipse.ecf.provider.comm.SynchEvent;
 import org.eclipse.ecf.provider.generic.gmm.Member;
+import org.eclipse.ecf.provider.util.IClassLoaderMapper;
+import org.eclipse.ecf.provider.util.IdentifiableObjectInputStream;
+import org.eclipse.ecf.provider.util.IdentifiableObjectOutputStream;
 
 public abstract class SOContainer implements ISharedObjectContainer {
 	class LoadingSharedObject implements ISharedObject {
@@ -247,9 +246,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#addListener(org.eclipse.ecf.core.IContainerListener,
 	 *      java.lang.String)
 	 */
-	public void addListener(IContainerListener l, String filter) {
+	public void addListener(IContainerListener l) {
 		synchronized (listeners) {
-			listeners.add(new ContainerListener(l, filter));
+			listeners.add(l);
 		}
 	}
 	protected void setRemoteAddPolicy(ISharedObjectPolicy policy) {
@@ -381,7 +380,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	protected void fireContainerEvent(IContainerEvent event) {
 		synchronized (listeners) {
 			for (Iterator i = listeners.iterator(); i.hasNext();) {
-				ContainerListener l = (ContainerListener) i.next();
+				IContainerListener l = (IContainerListener) i.next();
 				l.handleEvent(event);
 			}
 		}
@@ -919,13 +918,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 */
 	public void removeListener(IContainerListener l) {
 		synchronized (listeners) {
-			for (Enumeration e = listeners.elements(); e.hasMoreElements();) {
-				ContainerListener list = (ContainerListener) e.nextElement();
-				if (list.isListener(l)) {
-					// found it...so remove
-					listeners.remove(list);
-				}
-			}
+			listeners.remove(l);
 		}
 	}
 	protected boolean removeRemoteMember(ID remoteMember) {

@@ -9,7 +9,10 @@
 package org.eclipse.ecf.core.util;
 
 /**
- * Event processor for processing events
+ * Event processor for processing events in a sequence.  If the implementer of this interface
+ * intends to prevent further processing for the given event, then it should return true
+ * to prevent further processing.  It should return false to allow further processing of 
+ * the given event to continue (e.g. in a chain of event processors)
  * 
  */
 public interface IEventProcessor {

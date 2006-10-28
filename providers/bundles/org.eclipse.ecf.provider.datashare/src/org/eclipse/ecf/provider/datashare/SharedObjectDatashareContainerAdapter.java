@@ -22,7 +22,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
-import org.eclipse.ecf.core.sharedobject.AbstractSharedObject;
+import org.eclipse.ecf.core.sharedobject.BaseSharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectTransactionConfig;
 import org.eclipse.ecf.core.sharedobject.SharedObjectCreateException;
@@ -44,7 +44,7 @@ import org.eclipse.ecf.datashare.events.IChannelContainerChannelActivatedEvent;
 import org.eclipse.ecf.datashare.events.IChannelContainerChannelDeactivatedEvent;
 import org.eclipse.ecf.datashare.events.IChannelContainerEvent;
 
-public class SharedObjectDatashareContainerAdapter extends AbstractSharedObject implements IChannelContainerAdapter {
+public class SharedObjectDatashareContainerAdapter extends BaseSharedObject implements IChannelContainerAdapter {
 	
 	protected static final int DEFAULT_TRANSACTION_WAIT = 30000;
 	

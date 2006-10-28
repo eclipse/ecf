@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 
 /**
  * Context reference provided to all ISharedObjects upon initialization.

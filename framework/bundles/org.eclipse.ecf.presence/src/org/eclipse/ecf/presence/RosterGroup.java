@@ -9,15 +9,18 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.impl;
+package org.eclipse.ecf.presence;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.presence.IRosterEntry;
-import org.eclipse.ecf.presence.IRosterGroup;
 
+/**
+ * Base roster group class implementing {@link IRosterGroup}. Subclasses may be
+ * created as appropriate
+ * 
+ */
 public class RosterGroup implements IRosterGroup {
 
 	protected Map entries;

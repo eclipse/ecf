@@ -12,9 +12,10 @@ package org.eclipse.ecf.presence;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.core.IContainer;
 
 /**
- * Entry poing presence container adapter.  For setting up listeners for presence
+ * Entry poing presence container adapter. For setting up listeners for presence
  * messages, text messages, subscription requests, and for getting interfaces
  * for message sending (IMessageSender) presence updates (IPresenceSender) and
  * account management (IAccountManager)
@@ -22,14 +23,15 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
  * To use this adapter:
  * 
  * <pre>
- *  IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
- *  if (presenceContainer != null) {
- *     ...use presenceContainer
- *  } else {
- *     ...presence not supported by provider
- *  }
+ *   IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
+ *   if (presenceContainer != null) {
+ *      ...use presenceContainer
+ *   } else {
+ *      ...presence not supported by provider
+ *   }
  * </pre>
  * 
+ * @see IContainer#getAdapter(Class)
  */
 public interface IPresenceContainerAdapter extends IAdaptable {
 
@@ -46,10 +48,11 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	/**
 	 * Remove listener for subscription requests.
 	 * 
-	 * @param listener the listener to remove
+	 * @param listener
+	 *            the listener to remove
 	 */
 	public void removeSubscribeListener(ISubscribeListener listener);
-	
+
 	/**
 	 * Setup listener for handling presence updates. The given listener will
 	 * asynchronously be called when a subscription request is received by this
@@ -63,10 +66,11 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	/**
 	 * Remove listener for presence events.
 	 * 
-	 * @param listener the listener to remove
+	 * @param listener
+	 *            the listener to remove
 	 */
 	public void removePresenceListener(IPresenceListener listener);
-	
+
 	/**
 	 * Setup listener for handling IM messages. The given listener will
 	 * asynchronously be called when a subscription request is received by this
@@ -80,10 +84,11 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	/**
 	 * REmove listener for message events
 	 * 
-	 * @param listener the listener to remove
+	 * @param listener
+	 *            the listener to remove
 	 */
 	public void removeMessageListener(IMessageListener listener);
-	
+
 	/**
 	 * Retrieve interface for sending presence updates. The returned
 	 * IPresenceSender (if not null) can be used to send presence change

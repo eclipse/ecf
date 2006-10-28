@@ -15,8 +15,10 @@ import java.util.Map;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
- * Presence account management
+ * Presence account management. Access to instances implementing this interface
+ * is provided by calling {@link IPresenceContainerAdapter#getAccountManager()}
  * 
+ * @see IPresenceContainerAdapter
  */
 public interface IAccountManager {
 
@@ -37,8 +39,11 @@ public interface IAccountManager {
 	 * Determine whether account creation is supported for this account manager
 	 * 
 	 * @return true if account creation supported, false otherwise
+	 * @throws ECFException
+	 *             thrown if not connected, or if query fails due to network
+	 *             failure or server failure
 	 */
-	public boolean isAccountCreationSupported();
+	public boolean isAccountCreationSupported() throws ECFException;
 
 	/**
 	 * Create a new account. Create a new account using given username,

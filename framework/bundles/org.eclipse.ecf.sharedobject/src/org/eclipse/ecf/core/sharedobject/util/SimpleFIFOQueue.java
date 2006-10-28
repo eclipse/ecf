@@ -6,17 +6,17 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.core.util;
+package org.eclipse.ecf.core.sharedobject.util;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
-public class SimpleQueueImpl implements ISimpleQueue {
+public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 	List list;
 
 	boolean stopped;
 
-	public SimpleQueueImpl() {
+	public SimpleFIFOQueue() {
 		list = new LinkedList();
 		stopped = false;
 	}
@@ -110,7 +110,7 @@ public class SimpleQueueImpl implements ISimpleQueue {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("SimpleQueueImpl[");
+		StringBuffer sb = new StringBuffer("SimpleFIFOQueue[");
 		sb.append(list).append("]");
 		return sb.toString();
 	}

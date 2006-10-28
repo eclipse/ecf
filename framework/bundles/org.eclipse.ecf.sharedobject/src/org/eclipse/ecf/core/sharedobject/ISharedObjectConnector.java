@@ -10,8 +10,8 @@ package org.eclipse.ecf.core.sharedobject;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectEvent;
+import org.eclipse.ecf.core.sharedobject.util.QueueException;
 import org.eclipse.ecf.core.util.AsynchResult;
-import org.eclipse.ecf.core.util.QueueException;
 
 /**
  * Implementers which represent the one-way associations between SharedObject

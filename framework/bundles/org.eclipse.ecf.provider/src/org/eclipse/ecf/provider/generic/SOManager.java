@@ -27,6 +27,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
+import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
+import org.eclipse.ecf.core.sharedobject.util.QueueEnqueueImpl;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConnector;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
@@ -43,7 +45,6 @@ import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerCreateEvent;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerDisconnectEvent;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerRemoveEvent;
 import org.eclipse.ecf.core.util.AbstractFactory;
-import org.eclipse.ecf.core.util.IQueueEnqueue;
 import org.eclipse.ecf.internal.provider.Trace;
 
 /**

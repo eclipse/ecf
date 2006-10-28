@@ -10,14 +10,14 @@ package org.eclipse.ecf.core.sharedobject;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.IEventHandler;
+import org.eclipse.ecf.core.util.Event;
 
 /**
  * Core interface for implementing components that exist within
  * {@link ISharedObjectContainer}
  * 
  */
-public interface ISharedObject extends IAdaptable, IEventHandler {
+public interface ISharedObject extends IAdaptable {
 	/**
 	 * Initialize this ISharedObject. The ISharedObjectContainer for this
 	 * ISharedObject must call this method with a non-null instance of
@@ -39,6 +39,22 @@ public interface ISharedObject extends IAdaptable, IEventHandler {
 	 */
 	public void init(ISharedObjectConfig initData)
 			throws SharedObjectInitException;
+
+	/**
+	 * Handle Event passed to this IEventHandler.
+	 * 
+	 * @param event
+	 *            the Event for the implementer to handle
+	 */
+	public void handleEvent(Event event);
+
+	/**
+	 * Handle Events passed to this IEventHandler.
+	 * 
+	 * @param events
+	 *            the Events [] for the implementer to handle
+	 */
+	public void handleEvents(Event[] events);
 
 	/**
 	 * Method called by the ISharedObjectContainer upon ISharedObject

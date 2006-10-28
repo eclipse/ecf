@@ -11,13 +11,15 @@
 package org.eclipse.ecf.presence;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener.Type;
 
 /**
- * Interface for sending text messages (IM) between users.
+ * Interface for sending text messages (IM) between users. Access to instances
+ * implementing this interface is provided by
+ * {@link IPresenceContainerAdapter#getMessageSender()}
  * 
- * @author slewis
- * 
+ * @see IPresenceContainerAdapter
  */
 public interface IMessageSender {
 	/**
@@ -34,7 +36,10 @@ public interface IMessageSender {
 	 *            the subject of the message
 	 * @param messageBody
 	 *            the message body
+	 * @exception ECFException
+	 *                thrown if message cannot be sent (e.g. because of previous
+	 *                disconnection)
 	 */
 	public void sendMessage(ID fromID, ID toID, Type type, String subject,
-			String messageBody);
+			String messageBody) throws ECFException;
 }

@@ -11,11 +11,14 @@
 package org.eclipse.ecf.presence.chat;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 
 /**
  * Chat room manager. Entry point for getting access to chat rooms managed by
- * this manager.
+ * this manager. Access to objects implementing this interface is provided by
+ * {@link IPresenceContainerAdapter#getChatRoomManager()}
  * 
+ * @see IPresenceContainerAdapter#getChatRoomManager()
  */
 public interface IChatRoomManager extends IAdaptable {
 	/**

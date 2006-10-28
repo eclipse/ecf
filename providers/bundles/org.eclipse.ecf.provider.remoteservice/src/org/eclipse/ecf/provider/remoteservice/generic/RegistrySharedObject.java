@@ -25,7 +25,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.AbstractSharedObject;
+import org.eclipse.ecf.core.sharedobject.BaseSharedObject;
 import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
 import org.eclipse.ecf.core.util.ECFException;
@@ -47,7 +47,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 
-public class RegistrySharedObject extends AbstractSharedObject implements IRemoteServiceContainerAdapter {
+public class RegistrySharedObject extends BaseSharedObject implements IRemoteServiceContainerAdapter {
 
 	Trace trace = Trace.create("registrysharedobject");
 

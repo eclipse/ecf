@@ -29,13 +29,14 @@ import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
@@ -618,7 +619,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 	}
 	public IChatMessageSender getChatMessageSender() {
 		return new IChatMessageSender() {
-			public void sendMessage(String message) throws IOException {
+			public void sendMessage(String message) throws ECFException {
 				parseMessageAndSend(message);
 			}
 		};
@@ -744,7 +745,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 		// TODO Auto-generated method stub
 		
 	}
-	public void addListener(IContainerListener l, String filter) {
+	public void addListener(IContainerListener l) {
 		synchronized (listeners) {
 			listeners.add(l);
 		}

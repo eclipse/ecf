@@ -123,7 +123,7 @@ public class SharedObjectContainerUI {
 					}
 				}
 			}
-		}, "");
+		});
 	}
 
 	protected void createAndAddSharedObject(final ISharedObjectContainer soContainer, final ClientEntry client,

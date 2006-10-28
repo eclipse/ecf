@@ -36,7 +36,7 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
  */
 public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		ISharedObjectContainerTransaction {
-	AbstractSharedObject sharedObject = null;
+	BaseSharedObject sharedObject = null;
 
 	byte transactionState = ISharedObjectContainerTransaction.ACTIVE;
 
@@ -54,7 +54,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 
 	ISharedObjectTransactionParticipantsFilter participantsFilter = null;
 
-	public TwoPhaseCommitEventProcessor(AbstractSharedObject bse,
+	public TwoPhaseCommitEventProcessor(BaseSharedObject bse,
 			ISharedObjectTransactionConfig config) {
 		this.sharedObject = bse;
 		if (config == null) {
@@ -87,7 +87,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		return getSharedObject().isPrimary();
 	}
 
-	protected AbstractSharedObject getSharedObject() {
+	protected BaseSharedObject getSharedObject() {
 		return sharedObject;
 	}
 
@@ -125,7 +125,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 
 	/*
 	 * Implementation of IEventProcessor. These methods are entry point methods
-	 * for AbstractSharedObject method dispatch to call
+	 * for BaseSharedObject method dispatch to call
 	 */
 	/*
 	 * (non-Javadoc)

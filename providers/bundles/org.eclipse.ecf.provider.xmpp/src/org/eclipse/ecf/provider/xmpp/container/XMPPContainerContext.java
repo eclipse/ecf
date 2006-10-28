@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.IQueueEnqueue;
+import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.provider.generic.SOContainer;
 import org.eclipse.ecf.provider.generic.SOContext;
 import org.jivesoftware.smack.Roster;

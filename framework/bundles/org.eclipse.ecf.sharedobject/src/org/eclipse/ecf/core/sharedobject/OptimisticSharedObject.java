@@ -24,7 +24,7 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
  * optimistically.
  * 
  */
-public class OptimisticSharedObject extends AbstractSharedObject {
+public class OptimisticSharedObject extends BaseSharedObject {
 
 	public OptimisticSharedObject() {
 		super();

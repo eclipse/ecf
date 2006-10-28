@@ -222,7 +222,7 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
     protected IPresence createIPresence(Presence xmppPresence) {
         int priority = xmppPresence.getPriority();
         String status = xmppPresence.getStatus();
-        IPresence newPresence = new org.eclipse.ecf.presence.impl.Presence(
+        IPresence newPresence = new org.eclipse.ecf.presence.Presence(
                 createIPresenceType(xmppPresence), priority, status,
                 createIPresenceMode(xmppPresence));
         return newPresence;

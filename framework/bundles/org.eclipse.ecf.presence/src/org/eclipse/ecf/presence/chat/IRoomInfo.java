@@ -15,8 +15,11 @@ import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Chat room information
+ * Chat room information. Instances implementing this interface are returned by
+ * {@link IChatRoomManager#getChatRoomInfo(String)} or
+ * {@link IChatRoomManager#getChatRoomsInfo()}
  * 
+ * @see IChatRoomManager#getChatRoomInfo(String)
  */
 public interface IRoomInfo extends IAdaptable {
 	/**

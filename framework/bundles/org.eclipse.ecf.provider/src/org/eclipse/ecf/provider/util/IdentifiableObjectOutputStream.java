@@ -8,7 +8,7 @@
  * Contributors:
  *     Peter Nehrer - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ecf.core.util;
+package org.eclipse.ecf.provider.util;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;

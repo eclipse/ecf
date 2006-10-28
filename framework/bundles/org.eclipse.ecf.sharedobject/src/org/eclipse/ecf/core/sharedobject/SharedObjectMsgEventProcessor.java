@@ -21,9 +21,9 @@ import org.eclipse.ecf.core.util.IEventProcessor;
  */
 public class SharedObjectMsgEventProcessor implements IEventProcessor {
 
-	AbstractSharedObject sharedObject = null;
+	BaseSharedObject sharedObject = null;
 
-	public SharedObjectMsgEventProcessor(AbstractSharedObject sharedObject) {
+	public SharedObjectMsgEventProcessor(BaseSharedObject sharedObject) {
 		super();
 		this.sharedObject = sharedObject;
 	}

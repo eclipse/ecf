@@ -14,7 +14,7 @@ import org.eclipse.ecf.core.events.IContainerEvent;
  * Listener for objects that wish to receive events from an IContainer
  * instances.
  * 
- * @see IContainer#addListener(IContainerListener, String)
+ * @see IContainer#addListener(IContainerListener)
  */
 public interface IContainerListener {
 	/**

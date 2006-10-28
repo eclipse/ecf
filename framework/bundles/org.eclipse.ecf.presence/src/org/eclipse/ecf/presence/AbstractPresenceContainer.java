@@ -17,9 +17,11 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
 /**
- * An abstract presence container implementation
+ * An abstract {@link IPresenceContainerAdapter} implementation. This class is
+ * intended to be subclassed.
  */
-public abstract class AbstractPresenceContainer implements IPresenceContainerAdapter {
+public abstract class AbstractPresenceContainer implements
+		IPresenceContainerAdapter {
 
 	private Vector messageListeners = new Vector();
 
@@ -97,24 +99,44 @@ public abstract class AbstractPresenceContainer implements IPresenceContainerAda
 	}
 
 	/**
-	 * @return The list of subscribe listeners
+	 * @return The list of {@link ISubscribeListener}
 	 */
 	public List getSubscribeListeners() {
 		return subscribeListeners;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#getAccountManager()
+	 */
 	public IAccountManager getAccountManager() {
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#getChatRoomManager()
+	 */
 	public IChatRoomManager getChatRoomManager() {
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#getPresenceSender()
+	 */
 	public IPresenceSender getPresenceSender() {
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#getMessageSender()
+	 */
 	public IMessageSender getMessageSender() {
 		return null;
 	}

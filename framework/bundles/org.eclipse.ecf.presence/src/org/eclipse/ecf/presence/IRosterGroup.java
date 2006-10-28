@@ -14,7 +14,8 @@ package org.eclipse.ecf.presence;
 import java.util.Iterator;
 
 /**
- * Roster group information
+ * Roster group information. The roster group information is associated with
+ * {@link IRosterEntry} instances.
  * 
  */
 public interface IRosterGroup {
@@ -38,7 +39,8 @@ public interface IRosterGroup {
 	public boolean contains(IRosterEntry entry);
 
 	/**
-	 * Get Iterator of roster entries belonging to this group.
+	 * Get Iterator of roster entries belonging to this group. Instances of list
+	 * are of type {@link IRosterEntry}
 	 * 
 	 * @return Iterator of roster entries. Will not return null.
 	 */

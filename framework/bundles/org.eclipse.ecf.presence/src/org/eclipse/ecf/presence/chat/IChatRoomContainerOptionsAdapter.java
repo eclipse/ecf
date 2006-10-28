@@ -15,7 +15,7 @@ package org.eclipse.ecf.presence.chat;
  * chat room containers managed by manager
  * 
  */
-public interface IChatRoomContainerOptions {
+public interface IChatRoomContainerOptionsAdapter {
 	/**
 	 * Set encoding for chat room manager that supports IChatRoomOptions
 	 * 

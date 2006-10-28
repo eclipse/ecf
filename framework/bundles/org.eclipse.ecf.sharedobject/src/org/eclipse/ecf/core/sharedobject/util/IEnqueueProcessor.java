@@ -6,26 +6,15 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.core.util;
+package org.eclipse.ecf.core.sharedobject.util;
+
+import org.eclipse.ecf.core.util.Event;
 
 /**
- * Generic event handler interface
- * 
+ * Predicate 
+ * @author slewis
+ *
  */
-public interface IEventHandler {
-	/**
-	 * Handle Event passed to this IEventHandler.
-	 * 
-	 * @param event
-	 *            the Event for the implementer to handle
-	 */
-	public void handleEvent(Event event);
-
-	/**
-	 * Handle Events passed to this IEventHandler.
-	 * 
-	 * @param events
-	 *            the Events [] for the implementer to handle
-	 */
-	public void handleEvents(Event[] events);
+public interface IEnqueueProcessor {
+	boolean accept(Event element);
 }

@@ -10,7 +10,6 @@
 *****************************************************************************/
 package org.eclipse.ecf.provider.irc.container;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +24,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatMessageSender;
@@ -120,7 +120,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	 */
 	public IChatMessageSender getChatMessageSender() {
 		return new IChatMessageSender() {
-			public void sendMessage(String message) throws IOException {
+			public void sendMessage(String message) throws ECFException {
 				doSendChannelMessage(message);
 			}
 		};

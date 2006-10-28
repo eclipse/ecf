@@ -22,10 +22,10 @@ import org.eclipse.ecf.core.identity.IIdentifiable;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectCreateResponseEvent;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectEvent;
+import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
+import org.eclipse.ecf.core.sharedobject.util.QueueException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
-import org.eclipse.ecf.core.util.IQueueEnqueue;
-import org.eclipse.ecf.core.util.QueueException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.sharedobject.Activator;
 import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
@@ -34,13 +34,13 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
  * Base class for shared object classes.
  * 
  */
-public class AbstractSharedObject implements ISharedObject, IIdentifiable {
+public class BaseSharedObject implements ISharedObject, IIdentifiable {
 
 	private ISharedObjectConfig config = null;
 
 	private List eventProcessors = new Vector();
 
-	public AbstractSharedObject() {
+	public BaseSharedObject() {
 		super();
 	}
 
@@ -93,15 +93,15 @@ public class AbstractSharedObject implements ISharedObject, IIdentifiable {
 		}
 	}
 
-	protected boolean addEventProcessor(IEventProcessor proc) {
+	public boolean addEventProcessor(IEventProcessor proc) {
 		return eventProcessors.add(proc);
 	}
 
-	protected boolean removeEventProcessor(IEventProcessor proc) {
+	public boolean removeEventProcessor(IEventProcessor proc) {
 		return eventProcessors.remove(proc);
 	}
 
-	protected void clearEventProcessors() {
+	public void clearEventProcessors() {
 		eventProcessors.clear();
 	}
 
@@ -213,7 +213,7 @@ public class AbstractSharedObject implements ISharedObject, IIdentifiable {
 	private void traceStack(String msg, Throwable t) {
 		Trace.catching(Activator.getDefault(),
 				SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
-				AbstractSharedObject.class, "traceStack", t);
+				BaseSharedObject.class, "traceStack", t);
 	}
 
 	/**

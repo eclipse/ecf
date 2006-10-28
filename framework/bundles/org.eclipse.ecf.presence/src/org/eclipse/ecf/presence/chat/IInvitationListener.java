@@ -14,7 +14,10 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Invitation listener for handling asynchronous chat room invitation events.
+ * Instances implementing this interface must be registered via the
+ * {@link IChatRoomManager#addInvitationListener(IInvitationListener)}
  * 
+ * @see IChatRoomManager#addInvitationListener(IInvitationListener)
  */
 public interface IInvitationListener {
 
