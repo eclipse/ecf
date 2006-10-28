@@ -16,11 +16,11 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 public class DatashareContainerConfig implements ISharedObjectContainerConfig {
 
 	ID containerID = null;
-	Map properties = new HashMap();
+	Map properties = null;
 	
 	public DatashareContainerConfig(ID containerID, Map properties) {
 		this.containerID = containerID;
-		if (properties != null) this.properties = properties;
+		this.properties = (properties == null)?new HashMap():properties;
 	}
 	public DatashareContainerConfig(ID containerID) {
 		this(containerID,null);

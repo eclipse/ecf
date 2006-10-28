@@ -35,7 +35,7 @@ public class ContainerTypeDescription {
 
 	protected static final String[] EMPTY = new String[0];
 
-	protected Map properties = new HashMap();
+	protected Map properties = null;
 
 	public ContainerTypeDescription(String name) {
 		this(name, null);
@@ -51,8 +51,7 @@ public class ContainerTypeDescription {
 			throw new NullPointerException("name cannot be null");
 		this.name = name;
 		this.description = description;
-		if (properties != null)
-			this.properties = properties;
+		this.properties = (properties == null)?new HashMap():properties;
 	}
 
 	public ContainerTypeDescription(ClassLoader loader, String name,

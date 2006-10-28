@@ -24,13 +24,13 @@ public class SharedObjectDescription implements Serializable {
 
 	protected ID id;
 
-	protected Map properties = new HashMap();
+	protected Map properties = null;
 
 	protected SharedObjectDescription(
 			SharedObjectTypeDescription typeDescription, ID id, Map properties) {
 		this.typeDescription = typeDescription;
 		this.id = id;
-		if (properties != null) this.properties = properties;
+		this.properties = (properties == null)?new HashMap():properties;
 	}
 
 	protected SharedObjectDescription(
@@ -42,14 +42,14 @@ public class SharedObjectDescription implements Serializable {
 		this.typeDescription = new SharedObjectTypeDescription(typeName, null,
 				null, null);
 		this.id = id;
-		if (properties != null) this.properties = properties;
+		this.properties = (properties == null)?new HashMap():properties;
 	}
 
 	public SharedObjectDescription(Class clazz, ID id, Map properties) {
 		this.typeDescription = new SharedObjectTypeDescription(clazz.getName(),
 				null);
 		this.id = id;
-		if (properties != null) this.properties = properties;
+		this.properties = (properties == null)?new HashMap():properties;
 	}
 
 	public SharedObjectTypeDescription getTypeDescription() {
