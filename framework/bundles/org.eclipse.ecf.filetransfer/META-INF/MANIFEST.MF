@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF Filetransfer API
+Bundle-SymbolicName: org.eclipse.ecf.filetransfer
+Bundle-Version: 0.9.3
+Bundle-Activator: org.eclipse.ecf.internal.filetransfer.Activator
+Bundle-Vendor: Eclipse.org
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf
+Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+ CDC-1.1/Foundation-1.1
+Export-Package: org.eclipse.ecf.filetransfer,
+ org.eclipse.ecf.filetransfer.events
