@@ -31,10 +31,8 @@ public class GUID extends StringID {
 
 		public ID createInstance(Class[] argTypes, Object[] args)
 				throws IDCreateException {
-			if (args.length == 1)
-				return new GUID(this, ((Integer) args[0]).intValue());
-			else
-				return new GUID(this);
+			if (args == null || args.length <= 0) return new GUID(this);
+			else return new GUID(this, ((Integer) args[0]).intValue());
 		}
 
 		public String getScheme() {
