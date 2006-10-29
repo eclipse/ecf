@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.provider.remoteservice;
+package org.eclipse.ecf.internal.provider.remoteservice;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;

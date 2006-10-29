@@ -31,8 +31,9 @@ import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
-import org.eclipse.ecf.provider.remoteservice.Trace;
-import org.eclipse.ecf.remoteservice.Activator;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.provider.remoteservice.Activator;
+import org.eclipse.ecf.internal.provider.remoteservice.IRemoteServiceProviderDebugOptions;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
@@ -47,9 +48,8 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 
-public class RegistrySharedObject extends BaseSharedObject implements IRemoteServiceContainerAdapter {
-
-	Trace trace = Trace.create("registrysharedobject");
+public class RegistrySharedObject extends BaseSharedObject implements
+		IRemoteServiceContainerAdapter {
 
 	protected RemoteServiceRegistryImpl localRegistry;
 
@@ -161,15 +161,16 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 
 	protected void handleContainerDisconnectedEvent(
 			IContainerDisconnectedEvent event) {
-		trace("handleContainerDisconnectedEvent("+event+")");
+		trace("handleContainerDisconnectedEvent(" + event + ")");
 		ID targetID = event.getTargetID();
 		synchronized (remoteRegistrys) {
 			RemoteServiceRegistryImpl registry = getRemoteRegistry(targetID);
 			if (registry != null) {
 				removeRemoteRegistry(targetID);
-				RemoteServiceRegistrationImpl registrations [] = registry.getRegistrations();
+				RemoteServiceRegistrationImpl registrations[] = registry
+						.getRegistrations();
 				if (registrations != null) {
-					for(int i=0; i < registrations.length; i++) {
+					for (int i = 0; i < registrations.length; i++) {
 						trace("handleContainerDisconnectedEvent.unregistering serviceid="
 								+ registrations[i].getServiceId());
 						registry.unpublishService(registrations[i]);
@@ -588,7 +589,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			sendSharedObjectMsgTo(responseTarget, SharedObjectMsg.createMsg(
 					CALL_RESPONSE, response));
 		} catch (IOException e) {
-			logSendError(CALL_RESPONSE_ERROR_CODE, CALL_RESPONSE_ERROR_MESSAGE, e);
+			logSendError(CALL_RESPONSE_ERROR_CODE, CALL_RESPONSE_ERROR_MESSAGE,
+					e);
 		}
 	}
 
@@ -681,7 +683,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 	}
 
-	protected IRemoteServiceUnregisteredEvent createUnregisteredEvent(final RemoteServiceRegistrationImpl registration) {
+	protected IRemoteServiceUnregisteredEvent createUnregisteredEvent(
+			final RemoteServiceRegistrationImpl registration) {
 		return new IRemoteServiceUnregisteredEvent() {
 
 			public String[] getClazzes() {
@@ -699,16 +702,17 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			public String toString() {
 				StringBuffer buf = new StringBuffer(
 						"RemoteServiceUnregisteredEvent[");
-				buf.append("containerID=").append(
-						registration.getContainerID());
+				buf.append("containerID=")
+						.append(registration.getContainerID());
 				buf.append(";clazzes=").append(
 						Arrays.asList(registration.getClasses()));
-				buf.append(";reference=").append(
-						registration.getReference()).append("]");
+				buf.append(";reference=").append(registration.getReference())
+						.append("]");
 				return buf.toString();
 			}
 		};
 	}
+
 	/**
 	 * End message send/handlers
 	 */
@@ -736,14 +740,14 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	protected void trace(String msg) {
-		if (Trace.ON && trace != null)
-			trace.msg(msg);
+		Trace.trace(Activator.getDefault(),
+				IRemoteServiceProviderDebugOptions.DEBUG, msg);
 	}
 
-	protected void traceException(String msg, Throwable t) {
-		if (Trace.ON && trace != null) {
-			trace.errDumpStack(t, msg);
-		}
+	protected void traceException(String methodName, Throwable t) {
+		Trace.catching(Activator.getDefault(),
+				IRemoteServiceProviderDebugOptions.EXCEPTIONS_CATCHING,
+				RegistrySharedObject.class, methodName, t);
 	}
 
 	protected List requests = Collections.synchronizedList(new ArrayList());

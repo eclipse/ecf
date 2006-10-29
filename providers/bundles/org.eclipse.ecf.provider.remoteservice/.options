@@ -1,4 +1,25 @@
-org.eclipse.ecf.provider.remoteservice/debug = true
+# Debugging options for the org.eclipse.ecf.provider.remoteservice plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.provider.remoteservice plug-in
+org.eclipse.ecf.provider.remoteservice/debug=true
 org.eclipse.ecf.provider.remoteservice/debug/filter = *
 org.eclipse.ecf.provider.remoteservice/debug/flag = true
-org.eclipse.ecf.provider.remoteservice/debug/registrysharedobject = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.provider.remoteservice/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.provider.remoteservice/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.provider.remoteservice/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.provider.remoteservice/debug/methods/exiting=false
+
+org.eclipse.ecf.provider.remoteservice/debug/containerfactory = true
+org.eclipse.ecf.provider.remoteservice/debug/sharedobjectcontainerfactory = true
+org.eclipse.ecf.provider.remoteservice/debug/idfactory = true
+org.eclipse.ecf.provider.remoteservice/debug/connectionfactory = true
+org.eclipse.ecf.provider.remoteservice/debug/factoryinit = true
+org.eclipse.ecf.provider.remoteservice/debug/abstractsharedobject = true
+org.eclipse.ecf.provider.remoteservice/debug/twophasecommiteventprocessor = true
+org.eclipse.ecf.provider.remoteservice/debug/optimisticsharedobject = true

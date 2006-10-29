@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF Remoteservice Provider
 Bundle-SymbolicName: org.eclipse.ecf.provider.remoteservice;singleton:=true
 Bundle-Version: 0.9.3
-Bundle-Activator: org.eclipse.ecf.provider.remoteservice.Activator
+Bundle-Activator: org.eclipse.ecf.internal.provider.remoteservice.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
