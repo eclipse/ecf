@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF Filetransfer Provider
+Bundle-SymbolicName: org.eclipse.ecf.provider.filetransfer;singleton:=true
+Bundle-Version: 0.9.3
+Bundle-Activator: org.eclipse.ecf.provider.internal.filetransfer.Activator
+Bundle-Vendor: Eclipse.org
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ecf.filetransfer,
+ org.eclipse.ecf.sharedobject,
+ org.eclipse.ecf.provider
+Eclipse-LazyStart: true
