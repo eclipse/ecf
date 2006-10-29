@@ -11,6 +11,9 @@ package org.eclipse.ecf.filetransfer;
 import java.net.URI;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
+import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
+import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 
 /**
  * Entry point retrieval file transfer adapter.  This adapter interface allows providers to
@@ -54,6 +57,7 @@ import org.eclipse.ecf.core.IContainer;
  * <ul>
  * <li>{@link IIncomingFileTransferReceiveStartEvent}</li>
  * <li>{@link IIncomingFileTransferReceiveDataEvent}</li>
+ * <li>{@link IIncomingFileTransferReceiveDoneEvent}</li>
  * </ul>
  */
 public interface IRetrieveFileTransferContainerAdapter {

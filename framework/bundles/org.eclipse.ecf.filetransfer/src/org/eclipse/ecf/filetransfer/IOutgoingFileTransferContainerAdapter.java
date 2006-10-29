@@ -12,6 +12,12 @@ import java.io.File;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
+import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
+import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
+import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
+import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDataEvent;
+import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDoneEvent;
 
 /**
  * Entry point outgoing file transfer container adapter. This adapter interface allows providers to
@@ -53,12 +59,14 @@ import org.eclipse.ecf.core.identity.ID;
  * <ul>
  * <li>{@link IOutgoingFileTransferResponseEvent}</li>
  * <li>{@link IOutgoingFileTransferSendDataEvent}</li>
+ * <li>{@link IOutgoingFileTransferSendDoneEvent}</li>
  * </ul>
  * and <b>for the {@link IIncomingFileTransferRequestListener}</b> events
  * delivered will be:
  * <ul>
  * <li>{@link IFileTransferRequestEvent}</li>
  * <li>{@link IIncomingFileTransferReceiveDataEvent}</li>
+ * <li>{@link IIncomingFileTransferReceiveDoneEvent}</li>
  * </ul>
  */
 public interface IOutgoingFileTransferContainerAdapter {
@@ -100,7 +108,7 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 * @param transferListener
 	 *            a {@link IFileTransferListener} for responding to file
 	 *            transfer events. Must not be null. If the target receiver
-	 *            responds then an {@link IOutgoingFileTransferResponseEvent}
+	 *            responds then an IOutgoingFileTransfer
 	 *            will be delivered to the listener
 	 * @throws OutgoingFileTransferException
 	 *             if the provider is not connected or is not in the correct

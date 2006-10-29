@@ -35,7 +35,7 @@ import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.filetransfer.FileTransferInfo;
+import org.eclipse.ecf.filetransfer.BaseFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
@@ -869,7 +869,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend,
 			IFileTransferListener transferListener)
 			throws OutgoingFileTransferException {
-		sendOutgoingRequest(targetReceiver, new FileTransferInfo(
+		sendOutgoingRequest(targetReceiver, new BaseFileTransferInfo(
 				localFileToSend), transferListener);
 	}
 

@@ -10,6 +10,7 @@ package org.eclipse.ecf.filetransfer;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.IIdentifiable;
+import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 
 /**
  * File transfer super interface. This interface provides the abstract file
