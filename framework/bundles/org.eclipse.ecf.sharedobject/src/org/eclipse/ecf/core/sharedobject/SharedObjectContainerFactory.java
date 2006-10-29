@@ -66,7 +66,7 @@ public class SharedObjectContainerFactory implements
 			throw new ContainerCreateException(
 					"ContainerTypeDescription cannot be null");
 		IContainer newContainer = ContainerFactory.getDefault()
-				.createContainer(desc, argTypes, args);
+				.createContainer(desc, args);
 		ISharedObjectContainer soContainer = (ISharedObjectContainer) newContainer
 				.getAdapter(ISharedObjectContainer.class);
 		if (soContainer == null) {

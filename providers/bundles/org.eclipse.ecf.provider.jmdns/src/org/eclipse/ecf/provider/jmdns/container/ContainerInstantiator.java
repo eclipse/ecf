@@ -26,8 +26,7 @@ public class ContainerInstantiator implements
 	}
 
 	public IContainer createInstance(
-			ContainerTypeDescription description, Class[] argTypes,
-			Object[] args) throws ContainerCreateException {
+			ContainerTypeDescription description, Object[] args) throws ContainerCreateException {
 			try {
 				JMDNSDiscoveryContainer container = new JMDNSDiscoveryContainer();
 				return container;

@@ -17,7 +17,7 @@ import java.net.URISyntaxException;
  * <p>
  * This class and subclasses define a namespace for the creation and management
  * of ID instances. Creation of ID instances is accomplished via the
- * {@link #createInstance(Class[], Object[])} method, implemented by subclasses
+ * {@link #createInstance(Object[])} method, implemented by subclasses
  * of this Namespace superclass.
  * <p>
  * All Namespace instances must have a unique name passed to the Namespace upon
@@ -136,20 +136,16 @@ public abstract class Namespace implements Serializable {
 	 * Make an instance of this namespace. Namespace subclasses, provided by
 	 * plugins must implement this method to construct ID instances for the
 	 * given namespace.
-	 * 
-	 * @param argTypes
-	 *            a Class[] of classes defining the types of the args. May be
-	 *            null if no arguments given. The arity and classes provided
-	 *            must correspond to the types of the associated arguments
 	 * @param args
 	 *            an Object[] of arguments for creating ID instances. May be
 	 *            null if no arguments provided
+	 * 
 	 * @return a non-null ID instance. The class used may extend BaseID or may
 	 *         implement the ID interface directly
 	 * @throws IDCreateException
 	 *             if construction fails
 	 */
-	public abstract ID createInstance(Class[] argTypes, Object[] args)
+	public abstract ID createInstance(Object[] args)
 			throws IDCreateException;
 
 	/**

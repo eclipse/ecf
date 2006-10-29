@@ -68,8 +68,6 @@ public interface IContainerFactory {
 	 * 
 	 * @param desc
 	 *            the ContainerTypeDescription to use to create the instance
-	 * @param argTypes
-	 *            a String [] defining the types of the args parameter
 	 * @param args
 	 *            an Object [] of arguments passed to the createInstance method
 	 *            of the IContainerInstantiator
@@ -77,7 +75,7 @@ public interface IContainerFactory {
 	 * @throws ContainerCreateException
 	 */
 	public IContainer createContainer(ContainerTypeDescription desc,
-			String[] argTypes, Object[] args) throws ContainerCreateException;
+			Object[] args) throws ContainerCreateException;
 
 	/**
 	 * Make IContainer instance. Given a ContainerTypeDescription name, this
@@ -121,31 +119,6 @@ public interface IContainerFactory {
 	 */
 	public IContainer createContainer(String descriptionName, Object[] args)
 			throws ContainerCreateException;
-
-	/**
-	 * Make IContainer instance. Given a ContainerTypeDescription name, this
-	 * method will
-	 * <p>
-	 * <ul>
-	 * <li>lookup the known ContainerDescriptions to find one of matching name</li>
-	 * <li>if found, will retrieve or create an IContainerInstantiator for that
-	 * description</li>
-	 * <li>Call the IContainerInstantiator.createInstance method to return an
-	 * instance of IContainer</li>
-	 * </ul>
-	 * 
-	 * @param descriptionName
-	 *            the ContainerTypeDescription name to lookup
-	 * @param argsTypes
-	 *            the String [] of argument types of the following args
-	 * @param args
-	 *            the Object [] of arguments passed to the
-	 *            IContainerInstantiator.createInstance method
-	 * @return a valid instance of IContainer
-	 * @throws ContainerCreateException
-	 */
-	public IContainer createContainer(String descriptionName,
-			String[] argsTypes, Object[] args) throws ContainerCreateException;
 
 	/**
 	 * Remove given description from set known to this factory.

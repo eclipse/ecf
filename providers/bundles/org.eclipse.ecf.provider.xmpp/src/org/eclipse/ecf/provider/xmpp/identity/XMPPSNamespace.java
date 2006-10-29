@@ -19,7 +19,7 @@ public class XMPPSNamespace extends Namespace {
 	private static final long serialVersionUID = 390139788867091795L;
 	private static final String XMPP_PROTOCOL = "xmpps";
 	
-	public ID createInstance(Class[] argTypes, Object[] args)
+	public ID createInstance(Object[] args)
 			throws IDCreateException {
 		try {
 			return new XMPPID(this, (String) args[0]);

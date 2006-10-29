@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.provider.xmpp.container.ContainerInstantiator"
+            class="org.eclipse.ecf.provider.xmpp.container.XMPPContainerInstantiator"
             description="XMPP (Jabber)"
             name="ecf.xmpp.smack">
          <property
@@ -30,7 +30,7 @@
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.provider.xmpp.container.SecureContainerInstantiator"
+            class="org.eclipse.ecf.provider.xmpp.container.XMPPSContainerInstantiator"
             description="XMPP SSL (Jabber)"
             name="ecf.xmpps.smack">
          <property

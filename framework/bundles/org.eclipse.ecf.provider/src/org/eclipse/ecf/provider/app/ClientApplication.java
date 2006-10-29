@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.sharedobject.SharedObjectContainerFactory;
-import org.eclipse.ecf.provider.generic.ContainerInstantiator;
+import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
 import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
 
 /**
@@ -35,10 +35,10 @@ public class ClientApplication {
 
 	public static final int DEFAULT_TIMEOUT = TCPServerSOContainer.DEFAULT_KEEPALIVE;
 	
-	public static final String CONTAINER_FACTORY_NAME = ContainerInstantiator.class.getName();
+	public static final String CONTAINER_FACTORY_NAME = GenericContainerInstantiator.class.getName();
 	public static final String CONTAINER_FACTORY_CLASS = CONTAINER_FACTORY_NAME;
 	
-	public static final String COMPOSENT_CONTAINER_NAME = ContainerInstantiator.class.getName();
+	public static final String COMPOSENT_CONTAINER_NAME = GenericContainerInstantiator.class.getName();
 
 	// Number of clients to create
 	static int clientCount = 1;

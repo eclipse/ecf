@@ -22,7 +22,7 @@ public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 
 	public static final String IRC_PROTOCOL = "irc";
 	
-	public ID createInstance(Class[] argTypes, Object[] args) throws IDCreateException {
+	public ID createInstance(Object[] args) throws IDCreateException {
 		URI newURI = null;
 		String s = null;
 		try {

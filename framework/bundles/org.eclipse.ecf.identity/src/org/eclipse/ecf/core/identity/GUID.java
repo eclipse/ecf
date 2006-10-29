@@ -29,12 +29,13 @@ public class GUID extends StringID {
 			super(GUID.class.getName(), "GUID Namespace");
 		}
 
-		public ID createInstance(Class[] argTypes, Object[] args)
-				throws IDCreateException {
-			if (args == null || args.length <= 0) return new GUID(this);
-			else if (args.length == 1) return new GUID(((Namespace) args[0]));
-			else if (args.length == 2) return new GUID(((Namespace) args[0]),((Integer)args[1]).intValue());
-			else return new GUID(this);
+		public ID createInstance(Object[] args) throws IDCreateException {
+			if (args == null || args.length <= 0)
+				return new GUID(this);
+			else if (args.length == 1 && args[0] instanceof Integer)
+				return new GUID(this, ((Integer) args[0]).intValue());
+			else
+				return new GUID(this);
 		}
 
 		public String getScheme() {

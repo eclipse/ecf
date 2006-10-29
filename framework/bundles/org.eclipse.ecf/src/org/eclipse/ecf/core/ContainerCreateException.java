@@ -13,8 +13,7 @@ import org.eclipse.ecf.core.util.ECFException;
 /**
  * Exception thrown during container creation
  * 
- * @see ContainerFactory#createContainer(ContainerTypeDescription, String[],
- *      Object[])
+ * @see ContainerFactory#createContainer(ContainerTypeDescription, Object[])
  */
 public class ContainerCreateException extends ECFException {
 	private static final long serialVersionUID = -6979687717421003065L;

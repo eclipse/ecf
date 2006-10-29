@@ -9,7 +9,7 @@ public class DummyFileTransferContainerInstantiator implements
 		IContainerInstantiator {
 
 	public IContainer createInstance(ContainerTypeDescription description,
-			Class[] argTypes, Object[] args) throws ContainerCreateException {
+			Object[] args) throws ContainerCreateException {
 		throw new ContainerCreateException("can't create an instance of dummy");
 	}
 

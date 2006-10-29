@@ -18,7 +18,7 @@ public class JMDNSNamespace extends Namespace {
 	private static final long serialVersionUID = 1L;
 	private static final String JMDNS_SCHEME = "jmdns";
 	
-	public ID createInstance(Class[] argTypes, Object[] args)
+	public ID createInstance(Object[] args)
 			throws IDCreateException {
 		String type = (String) args[0];
 		String name = null;

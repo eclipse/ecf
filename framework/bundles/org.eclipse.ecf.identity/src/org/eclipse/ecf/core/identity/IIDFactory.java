@@ -98,44 +98,6 @@ public interface IIDFactory {
 	public ID createGUID(int length) throws IDCreateException;
 
 	/**
-	 * Make a new identity. Given a Namespace instance, constructor argument
-	 * types, and an array of arguments, return a new instance of an ID
-	 * belonging to the given Namespace
-	 * 
-	 * @param n
-	 *            the Namespace to which the ID belongs
-	 * @param argTypes
-	 *            a String [] of the arg types for the ID instance constructor
-	 * @param args
-	 *            an Object [] of the args for the ID instance constructor
-	 * @exception IDCreateException
-	 *                thrown if class for instantiator or instance can't be
-	 *                loaded, if something goes wrong during instance
-	 *                construction
-	 */
-	public ID createID(Namespace n, String[] argTypes, Object[] args)
-			throws IDCreateException;
-
-	/**
-	 * Make a new identity. Given a Namespace name, constructor argument types,
-	 * and an array of arguments, return a new instance of an ID belonging to
-	 * the given Namespace
-	 * 
-	 * @param namespacename
-	 *            the name of the Namespace to which the ID belongs
-	 * @param argTypes
-	 *            a String [] of the arg types for the ID instance constructor
-	 * @param args
-	 *            an Object [] of the args for the ID instance constructor
-	 * @exception IDCreateException
-	 *                thrown if class for instantiator or instance can't be
-	 *                loaded, if something goes wrong during instance
-	 *                construction
-	 */
-	public ID createID(String namespacename, String[] argTypes, Object[] args)
-			throws IDCreateException;
-
-	/**
 	 * Make a new identity. Given a Namespace, and an array of instance
 	 * constructor arguments, return a new instance of an ID belonging to the
 	 * given Namespace
@@ -245,22 +207,6 @@ public interface IIDFactory {
 	 *             loaded, if something goes wrong during instance construction
 	 */
 	public ID createStringID(String idstring) throws IDCreateException;
-
-	/**
-	 * Make a an ID from a Long
-	 * 
-	 * @param l
-	 *            the Long to use as this ID's unique value. Note: It is
-	 *            incumbent upon the caller of this method to be sure that the
-	 *            given Long allows the resulting ID to satisfy the ID contract
-	 *            for global uniqueness within the associated Namespace.
-	 * 
-	 * @return valid ID instance
-	 * @throws IDCreateException
-	 *             thrown if class for instantiator or ID instance can't be
-	 *             loaded, if something goes wrong during instance construction
-	 */
-	public ID createLongID(Long l) throws IDCreateException;
 
 	/**
 	 * Make a an ID from a long

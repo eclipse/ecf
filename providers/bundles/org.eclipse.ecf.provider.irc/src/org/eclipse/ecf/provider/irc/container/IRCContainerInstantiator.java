@@ -24,7 +24,7 @@ public class IRCContainerInstantiator implements IContainerInstantiator {
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Class[], java.lang.Object[])
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
-			Class[] argTypes, Object[] args)
+			Object[] args)
 			throws ContainerCreateException {
 		try {
 			return new IRCRootContainer(IDFactory.getDefault().createGUID());

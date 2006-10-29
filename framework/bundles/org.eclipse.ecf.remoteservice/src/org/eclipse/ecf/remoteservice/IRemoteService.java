@@ -29,7 +29,7 @@ import org.eclipse.ecf.core.util.ECFException;
  * call the remote methods when invoked.  For example:</li>
  * <pre>
  * IRemoteServiceReference [] references = serviceContainer.getRemoteServiceReferences(null,"java.lang.Runnable",null);
- * IRemoteService remoteService = references[0].getRemoteService(references[0]);
+ * IRemoteService remoteService = serviceContainer.getRemoteService(references[0]);
  * Runnable runnable = (Runnable) remoteService.getProxy();
  * runnable.run();
  * </pre>

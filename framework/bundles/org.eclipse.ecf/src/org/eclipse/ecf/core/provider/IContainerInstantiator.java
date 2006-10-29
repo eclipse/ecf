@@ -36,10 +36,6 @@ public interface IContainerInstantiator {
 	 * @param description
 	 *            the ContainerTypeDescription associated with the registered
 	 *            container provider implementation
-	 * @param argTypes
-	 *            the argument types specified by the caller. May be null if no
-	 *            arguments are passed in by caller to
-	 *            ContainerFactory.getDefault().createContainer(...)
 	 * @param args
 	 *            arguments specified by the caller. May be null if no arguments
 	 *            are passed in by caller to
@@ -50,5 +46,5 @@ public interface IContainerInstantiator {
 	 * @throws ContainerCreateException
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
-			Class[] argTypes, Object[] args) throws ContainerCreateException;
+			Object[] args) throws ContainerCreateException;
 }

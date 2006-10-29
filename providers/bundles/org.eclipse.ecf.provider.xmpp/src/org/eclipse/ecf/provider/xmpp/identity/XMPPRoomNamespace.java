@@ -19,7 +19,7 @@ public class XMPPRoomNamespace extends Namespace {
 	private static final long serialVersionUID = 4348545761410397583L;
 	private static final String XMPP_ROOM_PROTOCOL = "xmpp.muc";
 	
-	public ID createInstance(Class[] argTypes, Object[] args)
+	public ID createInstance(Object[] args)
 			throws IDCreateException {
 		try {
 			if (args.length == 5) {

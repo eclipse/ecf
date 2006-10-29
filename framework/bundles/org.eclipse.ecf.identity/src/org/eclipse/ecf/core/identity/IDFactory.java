@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.identity.Activator;
 import org.eclipse.ecf.internal.core.identity.IdentityDebugOptions;
@@ -89,7 +88,11 @@ public class IDFactory implements IIDFactory {
 				"addNamespace", namespace);
 		checkPermission(new NamespacePermission(namespace.toString(),
 				NamespacePermission.ADD_NAMESPACE));
-		return addNamespace0(namespace);
+		Namespace result = addNamespace0(namespace);
+		Trace.exiting(Activator.getDefault(),
+				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
+				"addNamespace", result);
+		return result;
 	}
 
 	protected final static Namespace addNamespace0(Namespace namespace) {
@@ -118,7 +121,11 @@ public class IDFactory implements IIDFactory {
 			return false;
 		checkPermission(new NamespacePermission(namespace.toString(),
 				NamespacePermission.CONTAINS_NAMESPACE));
-		return containsNamespace0(namespace);
+		boolean result = containsNamespace0(namespace);
+		Trace.exiting(Activator.getDefault(),
+				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
+				"containsNamespace", new Boolean(result));
+		return result;
 	}
 
 	/*
@@ -154,7 +161,11 @@ public class IDFactory implements IIDFactory {
 			return null;
 		checkPermission(new NamespacePermission(namespace.toString(),
 				NamespacePermission.GET_NAMESPACE));
-		return getNamespace0(namespace);
+		Namespace result = getNamespace0(namespace);
+		Trace.exiting(Activator.getDefault(),
+				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
+				"getNamespace", result);
+		return result;
 	}
 
 	/*
@@ -167,7 +178,11 @@ public class IDFactory implements IIDFactory {
 		Trace.entering(Activator.getDefault(),
 				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
 				"getNamespaceByName", name);
-		return getNamespace0(name);
+		Namespace result = getNamespace0(name);
+		Trace.exiting(Activator.getDefault(),
+				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
+				"getNamespaceByName", result);
+		return result;
 	}
 
 	protected final static Namespace getNamespace0(Namespace n) {
@@ -202,9 +217,11 @@ public class IDFactory implements IIDFactory {
 				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
 				"createGUID", new Integer(length));
 		Namespace namespace = new GUID.GUIDNamespace();
-		return createID(namespace, new String[] { Namespace.class.getName(),
-				Integer.class.getName() }, new Object[] { namespace,
-				new Integer(length) });
+		ID result = createID(namespace, new Integer[] { new Integer(length) });
+		Trace.exiting(Activator.getDefault(),
+				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
+				"createGUID", result);
+		return result;
 	}
 
 	protected static void logAndThrow(String s, Throwable t)
@@ -218,7 +235,7 @@ public class IDFactory implements IIDFactory {
 			e = new IDCreateException(s);
 		}
 		Trace.catching(Activator.getDefault(),
-				IdentityDebugOptions.EXCEPTIONS_CATCHING, IDFactory.class,
+				IdentityDebugOptions.EXCEPTIONS_THROWING, IDFactory.class,
 				"logAndThrow", e);
 		Activator.getDefault().getLog().log(
 				new Status(IStatus.ERROR, Activator.PLUGIN_ID,
@@ -230,16 +247,13 @@ public class IDFactory implements IIDFactory {
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(org.eclipse.ecf.core.identity.Namespace,
-	 *      java.lang.String[], java.lang.Object[])
+	 *      java.lang.Object[])
 	 */
-	public ID createID(Namespace n, String[] argTypes, Object[] args)
-			throws IDCreateException {
+	public ID createID(Namespace n, Object[] args) throws IDCreateException {
 		initialize();
 		Trace.entering(Activator.getDefault(),
 				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
-				"createID", new Object[] { n,
-						Trace.getArgumentsString(argTypes),
-						Trace.getArgumentsString(args) });
+				"createID", new Object[] { n, Trace.getArgumentsString(args) });
 		// Verify namespace is non-null
 		if (n == null)
 			logAndThrow("Namespace cannot be null", null);
@@ -250,45 +264,12 @@ public class IDFactory implements IIDFactory {
 			logAndThrow("Namespace '" + n.getName() + "' not found", null);
 		// We're OK, go ahead and setup array of classes for call to
 		// instantiator
-		Class clazzes[] = null;
-		ClassLoader cl = ns.getClass().getClassLoader();
-		try {
-			clazzes = AbstractFactory.getClassesForTypes(argTypes, args, cl);
-		} catch (ClassNotFoundException e) {
-			logAndThrow("Exception in getClassesForTypes", e);
-		}
 		// Ask instantiator to actually create instance
-		ID result = ns.createInstance(clazzes, args);
-
+		ID result = ns.createInstance(args);
 		Trace.exiting(Activator.getDefault(),
-				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
+				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
 				"createID", result);
 		return result;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(java.lang.String,
-	 *      java.lang.String[], java.lang.Object[])
-	 */
-	public ID createID(String namespacename, String[] argTypes, Object[] args)
-			throws IDCreateException {
-		Namespace n = getNamespaceByName(namespacename);
-		if (n == null)
-			throw new IDCreateException("Namespace named " + namespacename
-					+ " not found");
-		return createID(n, argTypes, args);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(org.eclipse.ecf.core.identity.Namespace,
-	 *      java.lang.Object[])
-	 */
-	public ID createID(Namespace n, Object[] args) throws IDCreateException {
-		return createID(n, null, args);
 	}
 
 	/*
@@ -301,7 +282,7 @@ public class IDFactory implements IIDFactory {
 			throws IDCreateException {
 		Namespace n = getNamespaceByName(namespacename);
 		if (n == null)
-			throw new IDCreateException("Namespace " + namespacename
+			throw new IDCreateException("Namespace named " + namespacename
 					+ " not found");
 		return createID(n, args);
 	}
@@ -343,21 +324,7 @@ public class IDFactory implements IIDFactory {
 		if (idstring == null)
 			throw new IDCreateException("String cannot be null");
 		Namespace n = new StringID.StringIDNamespace();
-		return createID(n, new String[] { String.class.getName() },
-				new Object[] { idstring });
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#createLongID(java.lang.Long)
-	 */
-	public ID createLongID(Long l) throws IDCreateException {
-		if (l == null)
-			throw new IDCreateException("Long cannot be null");
-		Namespace n = new LongID.LongNamespace();
-		return createID(n, new String[] { String.class.getName() },
-				new Object[] { l });
+		return createID(n, new String[] { idstring });
 	}
 
 	/*
@@ -367,8 +334,7 @@ public class IDFactory implements IIDFactory {
 	 */
 	public ID createLongID(long l) throws IDCreateException {
 		Namespace n = new LongID.LongNamespace();
-		return createID(n, new String[] { String.class.getName() },
-				new Object[] { new Long(l) });
+		return createID(n, new Long[] { new Long(l) });
 	}
 
 	/*
@@ -377,12 +343,18 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#removeNamespace(org.eclipse.ecf.core.identity.Namespace)
 	 */
 	public Namespace removeNamespace(Namespace n) throws SecurityException {
-		Trace.trace(Activator.getDefault(), "removeNamespace(" + n + ")");
+		Trace.entering(Activator.getDefault(),
+				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
+				"removeNamespace", n);
 		if (n == null)
 			return null;
 		checkPermission(new NamespacePermission(n.toString(),
 				NamespacePermission.REMOVE_NAMESPACE));
-		return removeNamespace0(n);
+		Namespace result = removeNamespace0(n);
+		Trace.exiting(Activator.getDefault(),
+				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
+				"removeNamespace", result);
+		return result;
 	}
 
 	protected final static Namespace removeNamespace0(Namespace n) {

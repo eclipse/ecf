@@ -20,7 +20,7 @@ public class XMPPNamespace extends Namespace {
 
 	private static final String XMPP_PROTOCOL = "xmpp";
 	
-	public ID createInstance(Class[] argTypes, Object[] args)
+	public ID createInstance(Object[] args)
 			throws IDCreateException {
 		try {
 			return new XMPPID(this, (String) args[0]);

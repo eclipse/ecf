@@ -23,7 +23,7 @@ public class RemoteServiceContainerFactory implements
 		IContainerInstantiator {
 
 	public IContainer createInstance(ContainerTypeDescription description,
-			Class[] argTypes, Object[] args)
+			Object[] args)
 			throws ContainerCreateException {
 		try {
 			final ID newID = IDFactory.getDefault().createGUID();

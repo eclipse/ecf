@@ -14,9 +14,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
-import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.ECFDebugOptions;
 import org.eclipse.ecf.internal.core.ECFPlugin;
@@ -194,16 +194,14 @@ public class ContainerFactory implements IContainerFactory {
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(org.eclipse.ecf.core.ContainerTypeDescription,
-	 *      java.lang.String[], java.lang.Object[])
+	 *      java.lang.Object[])
 	 */
 	public IContainer createContainer(ContainerTypeDescription description,
-			String[] argTypes, Object[] args) throws ContainerCreateException {
+			Object[] args) throws ContainerCreateException {
 		String method = "createContainer";
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
-				method, new Object[] { description,
-						Trace.getArgumentsString(argTypes),
-						Trace.getArgumentsString(args) });
+				method, new Object[] { description,Trace.getArgumentsString(args) });
 		if (description == null)
 			throwContainerCreateException(
 					"ContainerTypeDescription cannot be null", null, method);
@@ -211,23 +209,17 @@ public class ContainerFactory implements IContainerFactory {
 		if (cd == null)
 			throwContainerCreateException("ContainerTypeDescription '"
 					+ description.getName() + "' not found", null, method);
-		Class clazzes[] = null;
 		IContainerInstantiator instantiator = null;
 		try {
 			instantiator = (IContainerInstantiator) cd.getInstantiator();
-			clazzes = AbstractFactory.getClassesForTypes(argTypes, args, cd
-					.getClassLoader());
 		} catch (Exception e) {
 			throwContainerCreateException(
-					"createContainer exception with description: "
+					"createContainer cannot get IContainerInstantiator for description : "
 							+ description, e, method);
 		}
-		if (instantiator == null)
-			throwContainerCreateException("ContainerTypeDescription '"
-					+ cd.getName() + "' instantiator is null", null, method);
 		// Ask instantiator to actually create instance
 		IContainer container = instantiator.createInstance(description,
-				clazzes, args);
+				args);
 		if (container == null)
 			throwContainerCreateException("Instantiator returned null for '"
 					+ cd.getName() + "'", null, method);
@@ -245,8 +237,7 @@ public class ContainerFactory implements IContainerFactory {
 	 */
 	public IContainer createContainer(String descriptionName)
 			throws ContainerCreateException {
-		return createContainer(getDescriptionByName(descriptionName), null,
-				null);
+		return createContainer(getDescriptionByName(descriptionName), null);
 	}
 
 	/*
@@ -257,20 +248,7 @@ public class ContainerFactory implements IContainerFactory {
 	 */
 	public IContainer createContainer(String descriptionName, Object[] args)
 			throws ContainerCreateException {
-		return createContainer(getDescriptionByName(descriptionName), null,
-				args);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String,
-	 *      java.lang.String[], java.lang.Object[])
-	 */
-	public IContainer createContainer(String descriptionName,
-			String[] argsTypes, Object[] args) throws ContainerCreateException {
-		return createContainer(getDescriptionByName(descriptionName),
-				argsTypes, args);
+		return createContainer(getDescriptionByName(descriptionName), args);
 	}
 
 	/*

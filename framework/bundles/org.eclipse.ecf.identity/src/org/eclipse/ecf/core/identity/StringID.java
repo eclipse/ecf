@@ -29,7 +29,7 @@ public class StringID extends BaseID {
 			super(StringID.class.getName(), "String Namespace");
 		}
 
-		public ID createInstance(Class[] argTypes, Object[] args)
+		public ID createInstance(Object[] args)
 				throws IDCreateException {
 			return new StringID(this, (String) args[0]);
 		}

@@ -100,28 +100,43 @@ public interface IRemoteServiceContainerAdapter {
 	 * @param clazz
 	 *            the fully qualified name of the interface class that describes
 	 *            the desired service
-	 * @param filter The filter criteria.
+	 * @param filter
+	 *            The filter criteria.
 	 * @return IRemoteServiceReference [] the matching IRemoteServiceReferences
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter,
 			String clazz, String filter);
 
 	/**
-	 * Get remote service for given IRemoteServiceReference.
+	 * Get remote service for given IRemoteServiceReference. Note that clients
+	 * that call this method successfully should later call
+	 * {@link IRemoteServiceContainerAdapter#ungetRemoteService(IRemoteServiceReference)}
+	 * when the IRemoteService will no longer be used.
 	 * 
 	 * @param reference
 	 *            the IRemoteServiceReference for the desired service
 	 * @return IRemoteService representing the remote service. If remote service
 	 *         no longer exists for reference, then null is returned.
+	 * 
+	 * @see #ungetRemoteService(IRemoteServiceReference)
 	 */
 	public IRemoteService getRemoteService(IRemoteServiceReference reference);
 
 	/**
-	 * Unget IRemoteServiceReference
+	 * Unget IRemoteServiceReference. Release all resources associated with the
+	 * given IRemoteServiceReference. This method should be called by users of
+	 * the IRemoteServiceReference that have previously called
+	 * {@link IRemoteServiceContainerAdapter#getRemoteService(IRemoteServiceReference)}.  If
+	 * this method returns true, then the previously used IRemoteService will no 
+	 * longer be usable.
 	 * 
 	 * @param reference
 	 *            the IRemoteServiceReference to unget
-	 * @return true if unget successful, false if not
+	 * @return true if unget successful, false if not.  If this method returns true, then
+	 * the IRemoteService instance previously retrieved via the given IRemoteServiceReference
+	 * instance provided will no longer be usable.
+	 * 
+	 * @see #getRemoteService(IRemoteServiceReference)
 	 */
 	public boolean ungetRemoteService(IRemoteServiceReference reference);
 
