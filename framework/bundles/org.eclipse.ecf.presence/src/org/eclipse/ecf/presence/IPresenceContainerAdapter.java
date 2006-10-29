@@ -36,14 +36,14 @@ import org.eclipse.ecf.core.IContainer;
 public interface IPresenceContainerAdapter extends IAdaptable {
 
 	/**
-	 * Setup listener for handling subscription requests. The given listener
+	 * Setup listener for handling roster subscription requests. The given listener
 	 * will asynchronously be called when a subscription request is received by
 	 * this connected account.
 	 * 
 	 * @param listener
 	 *            for receiving subscription requests. Must not be null.
 	 */
-	public void addSubscribeListener(ISubscribeListener listener);
+	public void addRosterSubscribeListener(IRosterSubscribeListener listener);
 
 	/**
 	 * Remove listener for subscription requests.
@@ -51,7 +51,7 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * @param listener
 	 *            the listener to remove
 	 */
-	public void removeSubscribeListener(ISubscribeListener listener);
+	public void removeSubscribeListener(IRosterSubscribeListener listener);
 
 	/**
 	 * Setup listener for handling presence updates. The given listener will

@@ -35,7 +35,7 @@ import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
-import org.eclipse.ecf.presence.ISubscribeListener;
+import org.eclipse.ecf.presence.IRosterSubscribeListener;
 import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.provider.xmpp.Trace;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
@@ -101,10 +101,10 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     protected void removeSharedObjectMessageListener(ISharedObjectMessageListener listener) {
         sharedObjectMessageListeners.remove(listener);
     }
-	protected void addSubscribeListener(ISubscribeListener listener) {
+	protected void addSubscribeListener(IRosterSubscribeListener listener) {
 		subscribeListeners.add(listener);
 	}
-	protected void removeSubscribeListener(ISubscribeListener listener) {
+	protected void removeSubscribeListener(IRosterSubscribeListener listener) {
 		subscribeListeners.remove(listener);
 	}
     protected String canonicalizePresenceFrom(String from) {
@@ -182,7 +182,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 
     protected void fireSubscribe(ID fromID, IPresence presence) {
         for (Iterator i = subscribeListeners.iterator(); i.hasNext();) {
-            ISubscribeListener l = (ISubscribeListener) i.next();
+            IRosterSubscribeListener l = (IRosterSubscribeListener) i.next();
 			if (presence.getType().equals(IPresence.Type.SUBSCRIBE)) {
 				l.handleSubscribeRequest(fromID,presence);
 			} else if (presence.getType().equals(IPresence.Type.SUBSCRIBED)) {

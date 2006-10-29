@@ -49,7 +49,7 @@ import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
-import org.eclipse.ecf.presence.ISubscribeListener;
+import org.eclipse.ecf.presence.IRosterSubscribeListener;
 import org.eclipse.ecf.presence.IMessageListener.Type;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
@@ -573,7 +573,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 					};
 				}
 
-				public void addSubscribeListener(ISubscribeListener listener) {
+				public void addRosterSubscribeListener(IRosterSubscribeListener listener) {
 					delegate.addSubscribeListener(listener);
 				}
 
@@ -640,7 +640,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 					delegate.removePresenceListener(listener);
 				}
 
-				public void removeSubscribeListener(ISubscribeListener listener) {
+				public void removeSubscribeListener(IRosterSubscribeListener listener) {
 					delegate.removeSubscribeListener(listener);
 				}
 			};

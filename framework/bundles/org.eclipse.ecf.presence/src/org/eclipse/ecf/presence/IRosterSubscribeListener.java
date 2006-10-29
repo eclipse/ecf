@@ -15,12 +15,12 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Listener for handling notifications of subscribe/unsubscribe requests.
  * Implementers of this interface must be registered via
- * {@link IPresenceContainerAdapter#addSubscribeListener(ISubscribeListener)}
+ * {@link IPresenceContainerAdapter#addRosterSubscribeListener(IRosterSubscribeListener)}
  * 
  * @see IPresenceContainerAdapter
  * 
  */
-public interface ISubscribeListener {
+public interface IRosterSubscribeListener {
 
 	/**
 	 * Receive subscribe request.
