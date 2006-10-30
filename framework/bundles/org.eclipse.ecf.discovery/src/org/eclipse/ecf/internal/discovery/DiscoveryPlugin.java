@@ -7,7 +7,7 @@
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.ecf.discovery;
+package org.eclipse.ecf.internal.discovery;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
