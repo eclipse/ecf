@@ -68,9 +68,6 @@ public class ServerApplication {
     	
     }
     public static void main(String args[]) throws Exception {
-    	// Setup IDFactory so that it runs standalone (not requiring extension point setup through
-    	// Activator.start
-    	System.setProperty("org.eclipse.ecf.core.identity.IDFactory.standalone", "true");
         // Get server identity
         String serverName = null;
 		List connectors = null;

@@ -22,27 +22,12 @@ import org.eclipse.ecf.internal.core.identity.IdentityDebugOptions;
 
 /**
  * A factory class for creating ID instances. This is the factory for plugins to
- * manufacture ID instances. Note that typically the singleton instance for this
- * factory is initialized by consulting the extension registry for extensions to
- * the <b>org.eclipse.ecf.identity.namespace</b> extension point. If, however,
- * the system property <b>org.eclipse.ecf.core.identity.IDFactory.standalone</b>
- * is set to true, this factory will <b>not</b> consult the extension registry
- * for initialization, and rather will be assumed to be running standalone (i.e.
- * suitable for usage within a java application). When running standalone, it is
- * the application's responsibility to assure that the appropriate Namespace are
- * populated in the factory (via {@link #addNamespace(Namespace)}, prior to
- * calling one of the ID creation methods (e.g. {@link #createGUID()} or
- * {@link #createID(Namespace, Object[])}.
- * 
+ * manufacture ID instances. 
+ *  
  */
 public class IDFactory implements IIDFactory {
 	public static final String SECURITY_PROPERTY = IDFactory.class.getName()
 			+ ".security";
-
-	public static final String STAND_ALONE_PROPERTY = IDFactory.class.getName()
-			+ ".standalone";
-
-	private static final int PROPERTY_INITIALIZE_ERRORCODE = 1001;
 
 	private static final int IDENTITY_CREATION_ERRORCODE = 2001;
 
@@ -50,32 +35,9 @@ public class IDFactory implements IIDFactory {
 
 	private static boolean securityEnabled = false;
 
-	private static boolean standAlone = false;
-
-	private static boolean initialized = false;
-
 	protected static IIDFactory instance = null;
 
 	static {
-		String propertyToRead = null;
-		try {
-			propertyToRead = SECURITY_PROPERTY;
-			securityEnabled = Boolean.valueOf(
-					System.getProperty(propertyToRead, "false")).booleanValue();
-			propertyToRead = STAND_ALONE_PROPERTY;
-			standAlone = Boolean.valueOf(
-					System.getProperty(propertyToRead, "false")).booleanValue();
-		} catch (Exception e) {
-			Trace.catching(Activator.getDefault(),
-					IdentityDebugOptions.EXCEPTIONS_CATCHING, IDFactory.class,
-					"staticinitializer", e);
-			Activator.getDefault().getLog()
-					.log(
-							new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-									PROPERTY_INITIALIZE_ERRORCODE,
-									"Exception reading property: "
-											+ propertyToRead, e));
-		}
 		instance = new IDFactory();
 		addNamespace0(new StringID.StringIDNamespace());
 		addNamespace0(new GUID.GUIDNamespace());
@@ -83,13 +45,6 @@ public class IDFactory implements IIDFactory {
 	}
 
 	protected IDFactory() {
-		if (!initialized) {
-			if (standAlone)
-				System.out.println("WARNING: IDFactory running standalone");
-			else
-				Activator.getDefault().setupNamespaceExtensionPoint();
-		}
-		initialized = true;
 	}
 
 	public static IIDFactory getDefault() {

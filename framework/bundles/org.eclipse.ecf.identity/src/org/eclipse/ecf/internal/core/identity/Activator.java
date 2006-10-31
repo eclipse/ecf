@@ -68,6 +68,7 @@ public class Activator extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		this.setupNamespaceExtensionPoint();
 		this.registryManager = new IdentityRegistryManager();
 		Platform.getExtensionRegistry().addRegistryChangeListener(
 				registryManager);

@@ -167,6 +167,7 @@ public class Trace {
 	 * 
 	 */
 	public static String getArgumentString(Object argument) {
+		if (argument == null) return "null";
 		if (argument.getClass().isArray())
 			return getArgumentsString((Object[]) argument);
 		else
@@ -189,9 +190,7 @@ public class Trace {
 		for (int i = 0; i < arguments.length; i++) {
 			buffer.append(getArgumentString(arguments[i]));
 
-			if (i < arguments.length - 1) {
-				buffer.append(SEPARATOR_PARAMETER);
-			}
+			if (i < arguments.length - 1) buffer.append(SEPARATOR_PARAMETER);
 		}
 		buffer.append("]");
 		return buffer.toString();
