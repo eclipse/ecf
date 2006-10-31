@@ -17,7 +17,6 @@ import java.util.WeakHashMap;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.ECFDebugOptions;
@@ -81,7 +80,7 @@ public class ContainerFactory implements IContainerFactory {
 					System.getProperty(propertyToRead, "false")).booleanValue();
 		} catch (Exception e) {
 			Trace.catching(ECFPlugin.getDefault(),
-					ECFDebugOptions.EXCEPTIONS_CATCHING, IDFactory.class,
+					ECFDebugOptions.EXCEPTIONS_CATCHING, ContainerFactory.class,
 					"staticinitializer", e);
 			ECFPlugin.getDefault().getLog()
 					.log(
