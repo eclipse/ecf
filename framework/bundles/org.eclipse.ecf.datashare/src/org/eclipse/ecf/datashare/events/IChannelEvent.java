@@ -17,6 +17,7 @@ import org.eclipse.ecf.core.identity.ID;
 public interface IChannelEvent {
 	/**
 	 * Get the id of the channel associated with this event
+	 * 
 	 * @return ID of the channel
 	 */
 	public ID getChannelID();

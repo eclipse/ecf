@@ -10,22 +10,27 @@ package org.eclipse.ecf.datashare.mergeable;
 
 /**
  * Channel header information
- *
+ * 
  */
 public interface IChannelHeader {
 	/**
 	 * Get title
-	 * @return String title.  May be null.
+	 * 
+	 * @return String title. May be null.
 	 */
 	public String getTitle();
-	/** 
+
+	/**
 	 * Get link
-	 * @return String link.  May be null.
+	 * 
+	 * @return String link. May be null.
 	 */
 	public String getLink();
+
 	/**
 	 * Get description
-	 * @return String description.  May be null.
+	 * 
+	 * @return String description. May be null.
 	 */
 	public String getDescription();
 }

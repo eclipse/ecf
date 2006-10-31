@@ -9,8 +9,8 @@
 package org.eclipse.ecf.datashare.events;
 
 /**
- * Event delivered to IChannelContainerListener when channel is
- * activated
+ * Event delivered to IChannelContainerListener when channel is activated
  */
-public interface IChannelContainerChannelActivatedEvent extends IChannelContainerEvent {
+public interface IChannelContainerChannelActivatedEvent extends
+		IChannelContainerEvent {
 }

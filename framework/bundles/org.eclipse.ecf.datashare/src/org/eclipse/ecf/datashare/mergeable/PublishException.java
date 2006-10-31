@@ -14,14 +14,18 @@ public class PublishException extends ECFException {
 	public PublishException() {
 		super();
 	}
+
 	public PublishException(String message, Throwable cause) {
 		super(message, cause);
 	}
+
 	public PublishException(String message) {
 		super(message);
 	}
+
 	public PublishException(Throwable cause) {
 		super(cause);
 	}
+
 	private static final long serialVersionUID = 291096966795312256L;
 }

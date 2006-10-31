@@ -15,29 +15,38 @@ import org.eclipse.ecf.datashare.IAbstractChannelContainerAdaper;
 import org.eclipse.ecf.datashare.IChannelListener;
 
 /**
- * MergeableChannel container entry point interface.  This interface is an adapter to allow
- * providers to expose mergeable channels to clients.  It may be used in the following
- * way:
+ * MergeableChannel container entry point interface. This interface is an
+ * adapter to allow providers to expose mergeable channels to clients. It may be
+ * used in the following way:
  * <p>
+ * 
  * <pre>
- * IMergeableChannelContainer channelcontainer = (IMergeableChannelContainer) container.getAdapter(IMergeableChannelContainer.class);
- * if (channelcontainer != null) {
- *    // use channelcontainer
- *    ...
- * } else {
- *    // container does not support channel container functionality
- * }
+ *  IMergeableChannelContainer channelcontainer = (IMergeableChannelContainer) container.getAdapter(IMergeableChannelContainer.class);
+ *  if (channelcontainer != null) {
+ *     // use channelcontainer
+ *     ...
+ *  } else {
+ *     // container does not support channel container functionality
+ *  }
  * </pre>
  * 
  */
-public interface IMergeableChannelContainer extends IAbstractChannelContainerAdaper {
+public interface IMergeableChannelContainer extends
+		IAbstractChannelContainerAdaper {
 	/**
 	 * Create a mergeable channel within this container
-	 * @param channelID the ID of the mergeable channel created
-	 * @param listener the channel listener associated with this channel to receive asynchronous events
-	 * @param properties a Map of properties to provide to the channel.
+	 * 
+	 * @param channelID
+	 *            the ID of the mergeable channel created
+	 * @param listener
+	 *            the channel listener associated with this channel to receive
+	 *            asynchronous events
+	 * @param properties
+	 *            a Map of properties to provide to the channel.
 	 * @return IMergeableChannel the mergeable channel created
-	 * @throws ECFException thrown if mergeable channel cannot be created
+	 * @throws ECFException
+	 *             thrown if mergeable channel cannot be created
 	 */
-	public IMergeableChannel createMergeableChannel(ID channelID, IChannelListener listener, Map properties) throws ECFException;
+	public IMergeableChannel createMergeableChannel(ID channelID,
+			IChannelListener listener, Map properties) throws ECFException;
 }

@@ -13,11 +13,12 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Event delivered to IChannelListener when the container for channel
  * joins/connects to a group
- *
+ * 
  */
 public interface IChannelConnectEvent extends IChannelEvent {
 	/**
 	 * Get ID of target group joined
+	 * 
 	 * @return ID of target group joined
 	 */
 	public ID getTargetID();

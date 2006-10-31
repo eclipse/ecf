@@ -10,13 +10,15 @@ package org.eclipse.ecf.datashare.mergeable;
 
 /**
  * Factory for creating items
- *
+ * 
  */
 public interface IItemFactory {
 	/**
 	 * Create item with given description
-	 * @param description the description to add to the item.  The description represents
-	 * the actual data associated with an item
+	 * 
+	 * @param description
+	 *            the description to add to the item. The description represents
+	 *            the actual data associated with an item
 	 * @return IItem result
 	 */
 	public IItem createItem(String description);

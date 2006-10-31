@@ -13,20 +13,22 @@ import org.eclipse.ecf.core.identity.IIdentifiable;
 
 /**
  * Abstract channel
- *
+ * 
  */
 public interface IAbstractChannel extends IAdaptable, IIdentifiable {
 	/**
 	 * Get IChannelListener instance for this IAbstractChannel
 	 * 
-	 * @return IChannelListener for this IAbstractChannel instance.  If null, the channel has no listener
+	 * @return IChannelListener for this IAbstractChannel instance. If null, the
+	 *         channel has no listener
 	 */
 	public IChannelListener getListener();
-	
+
 	/**
 	 * Set listener to new IChannelListener instance
 	 * 
-	 * @return IChannelListener that was previously the listener.  If null, then then channel had no previous listener
+	 * @return IChannelListener that was previously the listener. If null, then
+	 *         then channel had no previous listener
 	 */
 	public IChannelListener setListener(IChannelListener listener);
 }

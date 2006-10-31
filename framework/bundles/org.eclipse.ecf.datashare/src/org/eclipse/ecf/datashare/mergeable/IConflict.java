@@ -10,12 +10,13 @@ package org.eclipse.ecf.datashare.mergeable;
 
 /**
  * Item conflict structure
- *
+ * 
  */
 public interface IConflict extends IUpdateInfo {
 	/**
-	 * Get version number for conflict.  
-	 * @return Integer version number.  Minimum of 1.
+	 * Get version number for conflict.
+	 * 
+	 * @return Integer version number. Minimum of 1.
 	 */
 	public Integer getVersion();
 }

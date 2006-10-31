@@ -13,36 +13,50 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
- * Channel container entry point adapter.  This interface is an adapter to allow
- * providers to expose channels to clients.  It may be used in the following
- * way:
+ * Channel container entry point adapter. This interface is an adapter to allow
+ * providers to expose channels to clients. It may be used in the following way:
  * <p>
+ * 
  * <pre>
- * IChannelContainerAdapter channelcontainer = (IChannelContainerAdapter) container.getAdapter(IChannelContainerAdapter.class);
- * if (channelcontainer != null) {
- *    // use channelcontainer
- *    ...
- * } else {
- *    // container does not support channel container functionality
- * }
+ *  IChannelContainerAdapter channelcontainer = (IChannelContainerAdapter) container.getAdapter(IChannelContainerAdapter.class);
+ *  if (channelcontainer != null) {
+ *     // use channelcontainer
+ *     ...
+ *  } else {
+ *     // container does not support channel container functionality
+ *  }
  * </pre>
  * 
  */
-public interface IChannelContainerAdapter extends IAbstractChannelContainerAdaper {
+public interface IChannelContainerAdapter extends
+		IAbstractChannelContainerAdaper {
 	/**
 	 * Create a new channel within this container
-	 * @param channelID the ID of the new channel.  Must not be null
-	 * @param listener a listener for receiving messages from remotes for this channel.  Must not be null
-	 * @param properties a Map of properties to provide to the channel.
+	 * 
+	 * @param channelID
+	 *            the ID of the new channel. Must not be null
+	 * @param listener
+	 *            a listener for receiving messages from remotes for this
+	 *            channel. Must not be null
+	 * @param properties
+	 *            a Map of properties to provide to the channel.
 	 * @return IChannel the new IChannel instance
-	 * @throws ECFException if some problem creating IChannel instance
+	 * @throws ECFException
+	 *             if some problem creating IChannel instance
 	 */
-	public IChannel createChannel(ID channelID, IChannelListener listener, Map properties) throws ECFException;
+	public IChannel createChannel(ID channelID, IChannelListener listener,
+			Map properties) throws ECFException;
+
 	/**
 	 * Create a new channel within this container
-	 * @param newChannelConfig the configuration for the newly created channel.  Must not be null
+	 * 
+	 * @param newChannelConfig
+	 *            the configuration for the newly created channel. Must not be
+	 *            null
 	 * @return IChannel the new IChannel instance
-	 * @throws ECFException if some problem creating IChannel instance
+	 * @throws ECFException
+	 *             if some problem creating IChannel instance
 	 */
-	public IChannel createChannel(IChannelConfig newChannelConfig) throws ECFException;
+	public IChannel createChannel(IChannelConfig newChannelConfig)
+			throws ECFException;
 }

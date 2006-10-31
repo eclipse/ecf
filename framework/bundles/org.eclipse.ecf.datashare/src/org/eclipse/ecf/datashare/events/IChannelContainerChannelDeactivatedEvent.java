@@ -10,7 +10,8 @@ package org.eclipse.ecf.datashare.events;
 
 /**
  * Event delivered to channel container when channel deactivated
- *
+ * 
  */
-public interface IChannelContainerChannelDeactivatedEvent extends IChannelContainerEvent {
+public interface IChannelContainerChannelDeactivatedEvent extends
+		IChannelContainerEvent {
 }

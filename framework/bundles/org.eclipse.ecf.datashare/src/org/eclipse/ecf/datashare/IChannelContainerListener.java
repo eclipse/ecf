@@ -11,18 +11,22 @@ package org.eclipse.ecf.datashare;
 import org.eclipse.ecf.datashare.events.IChannelContainerEvent;
 
 /**
- * Listener for channel container events.  The following types of events
- * can be received via this listener:
+ * Listener for channel container events. The following types of events can be
+ * received via this listener:
  * <p>
- * IChannelContainerChannelActivatedEvent - delivered when a channel within this container is activated
+ * IChannelContainerChannelActivatedEvent - delivered when a channel within this
+ * container is activated
  * <p>
- * IChannelContainerChannelDeactivatedEvent - delivered when a channel within this container is deactivated
- *
+ * IChannelContainerChannelDeactivatedEvent - delivered when a channel within
+ * this container is deactivated
+ * 
  */
 public interface IChannelContainerListener {
 	/**
-	 * Handle channel container events.  
-	 * @param event IChannelContainerAdapter event
+	 * Handle channel container events.
+	 * 
+	 * @param event
+	 *            IChannelContainerAdapter event
 	 */
 	public void handleChannelContainerEvent(IChannelContainerEvent event);
 }

@@ -25,6 +25,7 @@ public interface IChannel extends IAbstractChannel {
 	 *             if some problem sending message
 	 */
 	public void sendMessage(byte[] message) throws ECFException;
+
 	/**
 	 * Send message to remote instances of this channel
 	 * 

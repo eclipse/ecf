@@ -18,7 +18,8 @@ import org.eclipse.ecf.core.identity.IIdentifiable;
 public interface IUpdateInfo extends IIdentifiable {
 	/**
 	 * Get date of when update was applied.
-	 * @return Date the date when applied.  Will not be null.
+	 * 
+	 * @return Date the date when applied. Will not be null.
 	 */
 	public Date getWhen();
 }

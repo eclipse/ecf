@@ -13,7 +13,9 @@ import java.util.List;
 public interface IItemHistory extends IUpdateInfo {
 	/**
 	 * Get updates previously applied as part of this item history
-	 * @return List of IUpdateInfo instances of previous updates.  Will not return null.
+	 * 
+	 * @return List of IUpdateInfo instances of previous updates. Will not
+	 *         return null.
 	 */
 	public List getUpdates();
 }
