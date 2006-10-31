@@ -76,7 +76,7 @@ public interface IQueueEnqueue {
 	 * 
 	 * @param event
 	 *            the event to
-	 * @return
+	 * @return true if enqueued successfully, false if not
 	 */
 	boolean enqueue_lossy(Event event);
 

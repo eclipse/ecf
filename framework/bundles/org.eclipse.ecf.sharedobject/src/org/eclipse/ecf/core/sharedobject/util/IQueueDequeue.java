@@ -68,9 +68,7 @@ public interface IQueueDequeue {
 	 * 
 	 * @param timeout_millis
 	 *            the timeout for a dequeue in milliseconds.
-	 * @param num
-	 *            the number of Events to dequeue
-	 * 
+     *
 	 * @return Event [] the num Events removed from queue
 	 */
 	Event[] blocking_dequeue_all(int timeout_millis);
