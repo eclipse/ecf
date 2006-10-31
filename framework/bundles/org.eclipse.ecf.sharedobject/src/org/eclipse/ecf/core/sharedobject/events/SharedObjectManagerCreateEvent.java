@@ -9,24 +9,24 @@
 package org.eclipse.ecf.core.sharedobject.events;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 
 /**
- * @author slewis
- * 
+ * Manger create event. Sent/triggered when
+ * {@link ISharedObjectManager#createSharedObject(org.eclipse.ecf.core.sharedobject.SharedObjectDescription)}
+ * is called
  */
 public class SharedObjectManagerCreateEvent implements
 		ISharedObjectManagerEvent {
 	private static final long serialVersionUID = 3905527103070878006L;
 
-	SharedObjectDescription description = null;
-
 	ID localContainerID = null;
 
-	public SharedObjectManagerCreateEvent(ID localContainerID,
-			SharedObjectDescription description) {
+	ID sharedObjectID = null;
+
+	public SharedObjectManagerCreateEvent(ID localContainerID, ID sharedObjectID) {
 		this.localContainerID = localContainerID;
-		this.description = description;
+		this.sharedObjectID = sharedObjectID;
 	}
 
 	/*
@@ -38,14 +38,19 @@ public class SharedObjectManagerCreateEvent implements
 		return localContainerID;
 	}
 
-	public SharedObjectDescription getDescription() {
-		return description;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.sharedobject.events.ISharedObjectManagerEvent#getSharedObjectID()
+	 */
+	public ID getSharedObjectID() {
+		return sharedObjectID;
 	}
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer("SharedObjectManagerCreateEvent[");
 		buf.append(getLocalContainerID()).append(";");
-		buf.append(getDescription()).append("]");
+		buf.append(getSharedObjectID()).append("]");
 		return buf.toString();
 	}
 }

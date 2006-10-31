@@ -56,6 +56,7 @@ public class SOManager implements ISharedObjectManager {
 	static Trace debug = Trace.create("sharedobjectmanager");
 
 	SOContainer container = null;
+
 	Vector connectors = null;
 
 	public SOManager(SOContainer cont) {
@@ -122,7 +123,9 @@ public class SOManager implements ISharedObjectManager {
 
 	protected ISharedObject loadSharedObject(SharedObjectDescription sd)
 			throws Exception {
-		if (sd == null) throw new NullPointerException("SharedObjectDescription cannot be null");
+		if (sd == null)
+			throw new NullPointerException(
+					"SharedObjectDescription cannot be null");
 		// Then get args array from properties
 		Object[] args = container.getArgsFromProperties(sd);
 		// And arg types
@@ -133,12 +136,14 @@ public class SOManager implements ISharedObjectManager {
 		if (descName == null) {
 			// First get classloader
 			ClassLoader cl = container.getClassLoaderForSharedObject(sd);
-			final Class newClass = Class.forName(typeDesc.getClassName(), true, cl);
-			Class [] argTypes = getArgTypes(types, args, cl);
+			final Class newClass = Class.forName(typeDesc.getClassName(), true,
+					cl);
+			Class[] argTypes = getArgTypes(types, args, cl);
 			res = createSharedObjectInstance(newClass, argTypes, args);
 			// 'new style'
 		} else {
-			res = SharedObjectFactory.getDefault().createSharedObject(typeDesc, args);
+			res = SharedObjectFactory.getDefault().createSharedObject(typeDesc,
+					args);
 		}
 		return res;
 	}
@@ -164,39 +169,41 @@ public class SOManager implements ISharedObjectManager {
 		if (sd == null)
 			throw new SharedObjectCreateException(
 					"SharedObjectDescription cannot be null");
-		container.fireContainerEvent(new SharedObjectManagerCreateEvent(
-				container.getID(), sd));
 		ISharedObject newObject = null;
 		ID result = null;
 		try {
 			newObject = loadSharedObject(sd);
-			ID newID = createNewSharedObjectID(sd,newObject);
-			result = addSharedObject(newID,newObject, sd
-					.getProperties());
+			ID newID = createNewSharedObjectID(sd, newObject);
+			container.fireContainerEvent(new SharedObjectManagerCreateEvent(
+					container.getID(), newID));
+			result = addSharedObject(newID, newObject, sd.getProperties());
 		} catch (Exception e) {
 			dumpStack("Exception in createSharedObject", e);
 			SharedObjectCreateException newExcept = new SharedObjectCreateException(
 					"Container " + container.getID()
 							+ " had exception creating shared object "
-							+ sd.getID() + ": " + e.getClass().getName()
-							+ ": " + e.getMessage());
+							+ sd.getID() + ": " + e.getClass().getName() + ": "
+							+ e.getMessage());
 			newExcept.setStackTrace(e.getStackTrace());
 			throw newExcept;
 		}
 		return result;
 	}
 
-	protected ID createNewSharedObjectID(SharedObjectDescription sd, ISharedObject newObject) throws IDCreateException {
+	protected ID createNewSharedObjectID(SharedObjectDescription sd,
+			ISharedObject newObject) throws IDCreateException {
 		ID descID = sd.getID();
 		if (descID == null) {
 			return IDFactory.getDefault().createGUID(GUID_SIZE);
-		} else return descID;
+		} else
+			return descID;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectManager#addSharedObject(org.eclipse.ecf.core.ISharedObject, java.util.Map,
+	 * @see org.eclipse.ecf.core.ISharedObjectManager#addSharedObject(org.eclipse.ecf.core.ISharedObject,
+	 *      java.util.Map,
 	 *      org.eclipse.ecf.core.ISharedObjectContainerTransaction)
 	 */
 	public ID addSharedObject(ID sharedObjectID, ISharedObject sharedObject,
@@ -205,7 +212,7 @@ public class SOManager implements ISharedObjectManager {
 				+ properties + ")");
 		// notify listeners
 		container.fireContainerEvent(new SharedObjectManagerAddEvent(container
-				.getID(), sharedObjectID, sharedObject, properties));
+				.getID(), sharedObjectID));
 		ID result = sharedObjectID;
 		try {
 			ISharedObject so = sharedObject;
@@ -255,9 +262,6 @@ public class SOManager implements ISharedObjectManager {
 			ID[] sharedObjectsTo) throws SharedObjectConnectException {
 		debug("connectSharedObjects(" + sharedObjectFrom + ","
 				+ sharedObjectsTo + ")");
-		// notify listeners
-		container.fireContainerEvent(new SharedObjectManagerConnectEvent(
-				container.getID(), sharedObjectFrom, sharedObjectsTo));
 		if (sharedObjectFrom == null)
 			throw new SharedObjectConnectException("sender cannot be null");
 		if (sharedObjectsTo == null)
@@ -281,6 +285,9 @@ public class SOManager implements ISharedObjectManager {
 			// OK now we've got ids and wrappers, create a connector
 			result = new SOConnector(sharedObjectFrom, sharedObjectsTo, queues);
 			addConnector(result);
+			// notify listeners
+			container.fireContainerEvent(new SharedObjectManagerConnectEvent(
+					container.getID(), result));
 		}
 		return result;
 	}
@@ -292,20 +299,16 @@ public class SOManager implements ISharedObjectManager {
 	 */
 	public void disconnectSharedObjects(ISharedObjectConnector connector)
 			throws SharedObjectDisconnectException {
-		if (connector != null) {
-			debug("disconnectSharedObjects(" + connector.getSender() + ")");
-			// notify listeners
-			container
-					.fireContainerEvent(new SharedObjectManagerDisconnectEvent(
-							container.getID(), connector.getSender()));
-		}
 		if (connector == null)
-			throw new SharedObjectDisconnectException("connect cannot be null");
+			throw new SharedObjectDisconnectException("connector cannot be null");
+		debug("disconnectSharedObjects(" + connector.getSenderID() + ")");
 		if (!removeConnector(connector)) {
 			throw new SharedObjectDisconnectException("connector " + connector
 					+ " not found");
 		}
 		connector.dispose();
+		container.fireContainerEvent(new SharedObjectManagerDisconnectEvent(
+				container.getID(), connector));
 	}
 
 	protected void dispose() {
@@ -329,7 +332,7 @@ public class SOManager implements ISharedObjectManager {
 		for (Enumeration e = connectors.elements(); e.hasMoreElements();) {
 			ISharedObjectConnector conn = (ISharedObjectConnector) e
 					.nextElement();
-			if (sharedObjectFrom.equals(conn.getSender())) {
+			if (sharedObjectFrom.equals(conn.getSenderID())) {
 				results.add(conn);
 			}
 		}

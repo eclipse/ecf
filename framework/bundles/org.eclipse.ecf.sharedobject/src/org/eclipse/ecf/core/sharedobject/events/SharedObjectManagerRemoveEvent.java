@@ -9,10 +9,13 @@
 package org.eclipse.ecf.core.sharedobject.events;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 
 /**
- * @author slewis
- * 
+ * Shared object manager event sent/triggered when a shared object is removed from a
+ * container via
+ * {@link ISharedObjectManager#removeSharedObject(ID)}
+ * is called
  */
 public class SharedObjectManagerRemoveEvent implements
 		ISharedObjectManagerEvent {
@@ -36,6 +39,9 @@ public class SharedObjectManagerRemoveEvent implements
 		return localContainerID;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.events.ISharedObjectManagerEvent#getSharedObjectID()
+	 */
 	public ID getSharedObjectID() {
 		return sharedObjectID;
 	}

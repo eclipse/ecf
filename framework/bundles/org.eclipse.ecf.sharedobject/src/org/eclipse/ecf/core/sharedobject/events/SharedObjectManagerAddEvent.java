@@ -8,31 +8,25 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.sharedobject.events;
 
-import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.ISharedObject;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 
 /**
- * @author slewis
- * 
+ * Shared object manager event sent/triggered when a shared object is added to
+ * container via
+ * {@link ISharedObjectManager#addSharedObject(ID, org.eclipse.ecf.core.sharedobject.ISharedObject, java.util.Map)}
+ * is called
  */
 public class SharedObjectManagerAddEvent implements ISharedObjectManagerEvent {
 	private static final long serialVersionUID = 3258413923916330551L;
 
 	ID localContainerID = null;
 
-	Map properties = null;
-
-	ISharedObject sharedObject = null;
-
 	ID sharedObjectID = null;
 
-	public SharedObjectManagerAddEvent(ID localContainerID, ID sharedObjectID,
-			ISharedObject object, Map properties) {
+	public SharedObjectManagerAddEvent(ID localContainerID, ID sharedObjectID) {
 		this.localContainerID = localContainerID;
 		this.sharedObjectID = sharedObjectID;
-		this.sharedObject = object;
-		this.properties = properties;
 	}
 
 	/*
@@ -44,14 +38,9 @@ public class SharedObjectManagerAddEvent implements ISharedObjectManagerEvent {
 		return localContainerID;
 	}
 
-	public Map getProperties() {
-		return properties;
-	}
-
-	public ISharedObject getSharedObject() {
-		return sharedObject;
-	}
-
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.events.ISharedObjectManagerEvent#getSharedObjectID()
+	 */
 	public ID getSharedObjectID() {
 		return sharedObjectID;
 	}
@@ -59,9 +48,7 @@ public class SharedObjectManagerAddEvent implements ISharedObjectManagerEvent {
 	public String toString() {
 		StringBuffer buf = new StringBuffer("SharedObjectManagerAddEvent[");
 		buf.append(getLocalContainerID()).append(";");
-		buf.append(getSharedObjectID()).append(";");
-		buf.append(getSharedObject()).append(";");
-		buf.append(getProperties()).append("]");
+		buf.append(getSharedObjectID()).append("]");
 		return buf.toString();
 	}
 }

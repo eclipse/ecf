@@ -71,7 +71,7 @@ public class SOConnector implements ISharedObjectConnector {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectConnector#getSender()
      */
-    public ID getSender() {
+    public ID getSenderID() {
         return sender;
     }
 
@@ -80,7 +80,7 @@ public class SOConnector implements ISharedObjectConnector {
      * 
      * @see org.eclipse.ecf.core.ISharedObjectConnector#getReceivers()
      */
-    public ID[] getReceivers() {
+    public ID[] getReceiverIDs() {
         return (ID[]) receiverQueues.keySet().toArray(
                 new ID[receiverQueues.size()]);
     }
@@ -103,11 +103,6 @@ public class SOConnector implements ISharedObjectConnector {
         fireEvents(events);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ecf.core.ISharedObjectConnector#callAsynch(org.eclipse.ecf.core.events.ISharedObjectEvent)
-     */
     public AsynchResult[] callAsynch(ISharedObjectEvent arg) throws Exception {
         return fireCallEvent(arg);
     }

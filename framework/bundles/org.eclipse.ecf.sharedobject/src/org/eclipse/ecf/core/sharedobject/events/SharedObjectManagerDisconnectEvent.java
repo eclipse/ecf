@@ -9,23 +9,28 @@
 package org.eclipse.ecf.core.sharedobject.events;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectConnector;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 
 /**
- * @author slewis
+ * Shared object manager connection event. Instances implementing this interface
+ * are sent to IContainerListeners when the
+ * {@link ISharedObjectManager#disconnectSharedObjects(ISharedObjectConnector)}
+ * is called.
  * 
  */
 public class SharedObjectManagerDisconnectEvent implements
-		ISharedObjectManagerEvent {
+		ISharedObjectManagerConnectionEvent {
 	private static final long serialVersionUID = 3257008743777448761L;
 
 	ID localContainerID = null;
 
-	ID sharedObjectSenderID = null;
+	ISharedObjectConnector connector = null;
 
 	public SharedObjectManagerDisconnectEvent(ID localContainerID,
-			ID sharedObjectSenderID) {
+			ISharedObjectConnector connector) {
 		this.localContainerID = localContainerID;
-		this.sharedObjectSenderID = sharedObjectSenderID;
+		this.connector = connector;
 	}
 
 	/*
@@ -37,15 +42,26 @@ public class SharedObjectManagerDisconnectEvent implements
 		return localContainerID;
 	}
 
-	public ID getSharedObjectSenderID() {
-		return sharedObjectSenderID;
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.events.ISharedObjectManagerEvent#getSharedObjectID()
+	 */
+	public ID getSharedObjectID() {
+		return connector.getSenderID();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.events.ISharedObjectManagerConnectionEvent#getConnector()
+	 */
+	public ISharedObjectConnector getConnector() {
+		return connector;
+	}
+	
 	public String toString() {
 		StringBuffer buf = new StringBuffer(
 				"SharedObjectManagerDisconnectEvent[");
 		buf.append(getLocalContainerID()).append(";");
-		buf.append(getSharedObjectSenderID()).append(";");
+		buf.append(getSharedObjectID()).append(";");
+		buf.append(getConnector()).append("]");
 		return buf.toString();
 	}
 }

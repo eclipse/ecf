@@ -8,28 +8,29 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.sharedobject.events;
 
-import java.util.Arrays;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectConnector;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 
 /**
- * @author slewis
+ * Shared object manager connection event. Instances implementing this interface
+ * are sent to IContainerListeners when the
+ * {@link ISharedObjectManager#connectSharedObjects(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.identity.ID[])}
+ * is called.
  * 
  */
 public class SharedObjectManagerConnectEvent implements
-		ISharedObjectManagerEvent {
+		ISharedObjectManagerConnectionEvent {
 	private static final long serialVersionUID = 3544670676712633650L;
 
 	ID localContainerID = null;
 
-	ID[] sharedObjectReceiverIDs = null;
-
-	ID sharedObjectSenderID = null;
+	ISharedObjectConnector connector = null;
 
 	public SharedObjectManagerConnectEvent(ID localContainerID,
-			ID sharedObjectSenderID, ID[] sharedObjectReceiverIDs) {
+			ISharedObjectConnector connector) {
 		this.localContainerID = localContainerID;
-		this.sharedObjectSenderID = sharedObjectSenderID;
-		this.sharedObjectReceiverIDs = sharedObjectReceiverIDs;
+		this.connector = connector;
 	}
 
 	/*
@@ -41,20 +42,29 @@ public class SharedObjectManagerConnectEvent implements
 		return localContainerID;
 	}
 
-	public ID[] getSharedObjectReceiverIDs() {
-		return (sharedObjectReceiverIDs == null) ? new ID[0]
-				: sharedObjectReceiverIDs;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.sharedobject.events.ISharedObjectManagerConnectionEvent#getConnector()
+	 */
+	public ISharedObjectConnector getConnector() {
+		return connector;
 	}
 
-	public ID getSharedObjectSenderID() {
-		return sharedObjectSenderID;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.sharedobject.events.ISharedObjectManagerEvent#getSharedObjectID()
+	 */
+	public ID getSharedObjectID() {
+		return connector.getSenderID();
 	}
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer("SharedObjectManagerConnectEvent[");
 		buf.append(getLocalContainerID()).append(";");
-		buf.append(getSharedObjectSenderID()).append(";");
-		buf.append(Arrays.asList(getSharedObjectReceiverIDs())).append("]");
+		buf.append(getConnector()).append(";");
+		buf.append(getSharedObjectID()).append("]");
 		return buf.toString();
 	}
 }
