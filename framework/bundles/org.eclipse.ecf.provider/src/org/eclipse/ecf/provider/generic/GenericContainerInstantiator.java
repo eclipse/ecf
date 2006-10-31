@@ -15,29 +15,28 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
-import org.eclipse.ecf.internal.provider.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 public class GenericContainerInstantiator implements IContainerInstantiator {
 	public static final String TCPCLIENT_NAME = "ecf.generic.client";
 
 	public static final String TCPSERVER_NAME = "ecf.generic.server";
 
-	public static final Trace debug = Trace.create("containerfactory");
-
 	public GenericContainerInstantiator() {
 		super();
 	}
 
 	protected void debug(String msg) {
-		if (Trace.ON && debug != null) {
-			debug.msg(msg);
-		}
+		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
+				msg);
 	}
-
-	protected void dumpStack(String msg, Throwable t) {
-		if (Trace.ON && debug != null) {
-			debug.dumpStack(t, msg);
-		}
+	
+	protected void traceStack(String msg, Throwable e) {
+		Trace.catching(ProviderPlugin.getDefault(),
+				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainer.class,
+				msg, e);
 	}
 
 	protected ID getIDFromArg(Object arg) throws IDCreateException {
@@ -102,11 +101,11 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 						ka.intValue());
 			}
 		} catch (ClassCastException e) {
-			dumpStack("ClassCastException", e);
+			traceStack("ClassCastException", e);
 			throw new ContainerCreateException(
 					"Parameter type problem creating container", e);
 		} catch (Exception e) {
-			dumpStack("Exception", e);
+			traceStack("Exception", e);
 			throw new ContainerCreateException(
 					"Exception creating generic container with id " + newID, e);
 		}

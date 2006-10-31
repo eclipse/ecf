@@ -130,7 +130,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		}
 	}
 
-	protected void dumpStack(Throwable t, String msg) {
+	protected void dumpStack(String msg, Throwable t) {
 		if (trace != null) {
 			trace.dumpStack(t, msg);
 		}

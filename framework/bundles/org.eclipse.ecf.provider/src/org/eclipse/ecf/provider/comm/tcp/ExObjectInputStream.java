@@ -15,12 +15,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
-import org.eclipse.ecf.internal.provider.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 public class ExObjectInputStream extends ObjectInputStream {
-    public static final Trace debug = Trace.create("connection");
 
-    public ExObjectInputStream(InputStream in) throws IOException,
+	public ExObjectInputStream(InputStream in) throws IOException,
             SecurityException {
         super(in);
     }
@@ -39,15 +40,15 @@ public class ExObjectInputStream extends ObjectInputStream {
         }
     }
 
-    protected void debug(String msg) {
-        if (Trace.ON && debug != null) {
-            debug.msg(msg);
-        }
-    }
+	protected void debug(String msg) {
+		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
+				msg);
+	}
+	
+	protected void traceStack(String msg, Throwable e) {
+		Trace.catching(ProviderPlugin.getDefault(),
+				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, ExObjectInputStream.class,
+				msg, e);
+	}
 
-    protected void dumpStack(String msg, Throwable e) {
-        if (Trace.ON && debug != null) {
-            debug.dumpStack(e, msg);
-        }
-    }
 }

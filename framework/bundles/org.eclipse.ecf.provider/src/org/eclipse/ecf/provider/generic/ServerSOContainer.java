@@ -145,7 +145,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                                         getNextSequenceNumber(),
                                         new ID[] { remoteID }, true, null));
                     } catch (IOException e) {
-                    	dumpStack("Exception in acceptNewClient sending view change message",e);
+                    	traceStack("Exception in acceptNewClient sending view change message",e);
                     }
                     // Get current membership
                     memberIDs = groupManager.getMemberIDs();

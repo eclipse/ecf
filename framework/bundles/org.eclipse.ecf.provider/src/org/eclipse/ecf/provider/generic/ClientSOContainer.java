@@ -156,7 +156,7 @@ public abstract class ClientSOContainer extends SOContainer {
 				}
 			}
 		} catch (Exception e) {
-			dumpStack("Exception in connect", e);
+			traceStack("Exception in connect", e);
 			ContainerConnectException except = new ContainerConnectException(
 					"exception connecting to " + remote.getName(), e);
 			throw except;

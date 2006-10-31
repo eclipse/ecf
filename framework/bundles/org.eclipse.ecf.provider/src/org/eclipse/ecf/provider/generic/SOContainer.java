@@ -48,8 +48,9 @@ import org.eclipse.ecf.core.sharedobject.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
-import org.eclipse.ecf.internal.provider.Trace;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
 import org.eclipse.ecf.provider.comm.DisconnectEvent;
 import org.eclipse.ecf.provider.comm.IAsynchConnection;
@@ -123,13 +124,13 @@ public abstract class SOContainer implements ISharedObjectContainer {
 						// object is done
 						SOContainer.this.moveFromLoadingToActive(wrap);
 					} catch (Exception e) {
-						dumpStack("Exception loading:"+description, e);
+						traceStack("Exception loading:"+description, e);
 						SOContainer.this.removeFromLoading(getID());
 						try {
 							sendCreateResponse(getHomeID(), getID(), e,
 									description.getIdentifier());
 						} catch (Exception e1) {
-							dumpStack(
+							traceStack(
 									"Exception sending create response from LoadingSharedObject.run:"+description,
 									e1);
 						}
@@ -211,7 +212,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			return getID();
 		}
 	}
-	static Trace debug = Trace.create("container");
 	public static final String DEFAULT_OBJECT_ARG_KEY = SOContainer.class
 			.getName()
 			+ ".sharedobjectargs";
@@ -334,9 +334,13 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return desc;
 	}
 	protected void debug(String msg) {
-		if (Trace.ON && debug != null) {
-			debug.msg(msg + ":" + config.getID());
-		}
+		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
+				msg + ":" + config.getID());
+	}
+	protected void traceStack(String msg, Throwable e) {
+		Trace.catching(ProviderPlugin.getDefault(),
+				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainer.class,
+				config.getID() + ":" + msg, e);
 	}
 	protected boolean destroySharedObject(ID sharedObjectID) {
 		return groupManager.removeSharedObject(sharedObjectID);
@@ -360,21 +364,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			sharedObjectManager.dispose();
 			sharedObjectManager = null;
 		}
-		/*
-		 * if (sharedObjectThreadGroup != null) {
-		 * sharedObjectThreadGroup.interrupt(); sharedObjectThreadGroup = null; }
-		 */
 		if (loadingThreadGroup != null) {
 			loadingThreadGroup.interrupt();
 			loadingThreadGroup = null;
-		}
-	}
-	protected void dumpStack(String msg, Throwable e) {
-		String fullMsg = config.getID() + ":" + this.getClass().getName()+":"+ msg;
-		if (Trace.ON && debug != null) {
-			debug.dumpStack(e, fullMsg);
-		} else {
-			Trace.errDumpStack(e, fullMsg);
 		}
 	}
 	protected void fireContainerEvent(IContainerEvent event) {
@@ -521,16 +513,16 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		try {
 			obj = ois.readObject();
 		} catch (ClassNotFoundException e) {
-			dumpStack("class not found for message", e);
+			traceStack("class not found for message", e);
 			return null;
 		} catch (InvalidClassException e) {
-			dumpStack("invalid class for message", e);
+			traceStack("invalid class for message", e);
 			return null;
 		}
 		if (obj instanceof ContainerMessage) {
 			return (ContainerMessage) obj;
 		} else {
-			dumpStack("not a containermessage",new Exception());
+			traceStack("not a containermessage",new Exception());
 			return null;
 		}
 	}
@@ -595,7 +587,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			SharedObjectAddException addException = new SharedObjectAddException(
 					"shared object " + sharedObjectID
 							+ " rejected by container " + getID(), e);
-			dumpStack("Exception in checkRemoteCreate:"+desc, addException);
+			traceStack("Exception in checkRemoteCreate:"+desc, addException);
 			try {
 				sendCreateResponse(fromID, sharedObjectID, addException, desc
 						.getIdentifier());
@@ -698,7 +690,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 									(Serializable) deserializeSharedObjectMessage((byte[]) resp
 											.getData()));
 				} catch (ClassNotFoundException e) {
-					dumpStack(
+					traceStack(
 							"Exception in handleSharedObjectMessage:"+resp,e);
 				}
 			}
@@ -751,7 +743,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		debug(msg);
 	}
 	protected void logException(String msg, Throwable e) {
-		dumpStack(msg, e);
+		traceStack(msg, e);
 	}
 	protected ThreadGroup createLoadingThreadGroup() {
 		return new ThreadGroup(getID() + ":load");

@@ -26,11 +26,13 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
-import org.eclipse.ecf.internal.provider.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 public class SOContext implements ISharedObjectContext {
-    static Trace debug = Trace.create("sharedobjectcontext");
-    protected SOContainer container = null;
+
+	protected SOContainer container = null;
     protected ID sharedObjectID;
     protected ID homeContainerID;
     protected boolean isActive;
@@ -51,17 +53,18 @@ public class SOContext implements ISharedObjectContext {
     public boolean isActive() {
     	return isActive;
     }
-    protected void trace(String msg) {
-        if (Trace.ON && debug != null) {
-            debug.msg(msg);
-        }
-    }
+    
+	protected void trace(String msg) {
+		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
+				msg + ":" + container.getID());
+	}
+	
+	protected void traceStack(String msg, Throwable e) {
+		Trace.catching(ProviderPlugin.getDefault(),
+				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContext.class,
+				container.getID() + ":" + msg, e);
+	}
 
-    protected void traceDump(String msg, Throwable e) {
-        if (Trace.ON && debug != null) {
-            debug.dumpStack(e, msg);
-        }
-    }
 
 
     protected void makeInactive() {

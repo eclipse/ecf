@@ -15,28 +15,28 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.eclipse.ecf.internal.provider.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 public class Server extends ServerSocket {
 	
 	public static final int DEFAULT_BACKLOG = 50;
 	
-    public static Trace debug = Trace.create("connection");
     ISocketAcceptHandler acceptHandler;
     Thread listenerThread;
     ThreadGroup threadGroup;
 
-    protected void debug(String msg) {
-        if (Trace.ON && debug != null) {
-            debug.msg(msg);
-        }
-    }
-
-    protected void dumpStack(String msg, Throwable e) {
-        if (Trace.ON && debug != null) {
-            debug.dumpStack(e, msg);
-        }
-    }
+	protected void debug(String msg) {
+		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
+				msg);
+	}
+	
+	protected void traceStack(String msg, Throwable e) {
+		Trace.catching(ProviderPlugin.getDefault(),
+				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, Server.class,
+				msg, e);
+	}
 
     public Server(ThreadGroup group, int port, ISocketAcceptHandler handler)
             throws IOException {
@@ -60,17 +60,13 @@ public class Server extends ServerSocket {
                     try {
                         handleAccept(accept());
                     } catch (Exception e) {
-                        if (Trace.ON && debug != null) {
-                            debug.dumpStack(e, "Exception in accept");
-                        }
+                            traceStack("Exception in accept", e);
                         // If we get an exception on accept(), we should just
                         // exit
                         break;
                     }
                 }
-                if (Trace.ON && debug != null) {
-                    debug.msg("Closing listener normally.");
-                }
+                debug("Closing listener normally.");
             }
         }, "ServerApplication(" + getLocalPort() + ")");
     }
@@ -82,7 +78,7 @@ public class Server extends ServerSocket {
                     debug("accept:" + aSocket.getInetAddress());
                     acceptHandler.handleAccept(aSocket);
                 } catch (Exception e) {
-                    dumpStack("Unexpected exception in handleAccept...closing",
+                    traceStack("Unexpected exception in handleAccept...closing",
                             e);
                     try {
                         aSocket.close();

@@ -19,6 +19,9 @@ import java.util.*;
  * The main plugin class to be used in the desktop.
  */
 public class ProviderPlugin extends Plugin {
+	
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider";
+	
     //The shared instance.
     private static ProviderPlugin plugin;
     //Resource bundle.

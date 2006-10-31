@@ -45,15 +45,15 @@ import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerCreateEvent;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerDisconnectEvent;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerRemoveEvent;
 import org.eclipse.ecf.core.util.AbstractFactory;
-import org.eclipse.ecf.internal.provider.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 /**
  * 
  */
 public class SOManager implements ISharedObjectManager {
 	private static final int GUID_SIZE = 20;
-
-	static Trace debug = Trace.create("sharedobjectmanager");
 
 	SOContainer container = null;
 
@@ -66,15 +66,14 @@ public class SOManager implements ISharedObjectManager {
 	}
 
 	protected void debug(String msg) {
-		if (Trace.ON && debug != null) {
-			debug.msg(msg + ":" + container.getID());
-		}
+		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
+				msg + ":" + container.getID());
 	}
-
-	protected void dumpStack(String msg, Throwable e) {
-		if (Trace.ON && debug != null) {
-			debug.dumpStack(e, msg + ":" + container.getID());
-		}
+	
+	protected void traceStack(String msg, Throwable e) {
+		Trace.catching(ProviderPlugin.getDefault(),
+				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOManager.class,
+				container.getID() + ":" + msg, e);
 	}
 
 	protected void addConnector(ISharedObjectConnector conn) {
@@ -178,7 +177,7 @@ public class SOManager implements ISharedObjectManager {
 					container.getID(), newID));
 			result = addSharedObject(newID, newObject, sd.getProperties());
 		} catch (Exception e) {
-			dumpStack("Exception in createSharedObject", e);
+			traceStack("Exception in createSharedObject", e);
 			SharedObjectCreateException newExcept = new SharedObjectCreateException(
 					"Container " + container.getID()
 							+ " had exception creating shared object "
@@ -218,7 +217,7 @@ public class SOManager implements ISharedObjectManager {
 			ISharedObject so = sharedObject;
 			container.addSharedObjectAndWait(sharedObjectID, so, properties);
 		} catch (Exception e) {
-			dumpStack("Exception in addSharedObject", e);
+			traceStack("Exception in addSharedObject", e);
 			SharedObjectAddException newExcept = new SharedObjectAddException(
 					"Container " + container.getID()
 							+ " had exception adding shared object "

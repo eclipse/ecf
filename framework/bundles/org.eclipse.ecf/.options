@@ -14,13 +14,3 @@ org.eclipse.ecf/debug/exceptions/throwing=false
 org.eclipse.ecf/debug/methods/entering=false
 # Trace when methods are exited
 org.eclipse.ecf/debug/methods/exiting=false
-
-org.eclipse.ecf/debug/containerfactory = true
-org.eclipse.ecf/debug/sharedobjectcontainerfactory = true
-org.eclipse.ecf/debug/idfactory = true
-org.eclipse.ecf/debug/connectionfactory = true
-org.eclipse.ecf/debug/factoryinit = true
-org.eclipse.ecf/debug/abstractsharedobject = true
-org.eclipse.ecf/debug/twophasecommiteventprocessor = true
-org.eclipse.ecf/debug/optimisticsharedobject = true
-

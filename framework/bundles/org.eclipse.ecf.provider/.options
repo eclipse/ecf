@@ -1,6 +1,20 @@
-org.eclipse.ecf.provider/debug = true
+# Debugging options for the org.eclipse.ecf plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.provider plug-in
+org.eclipse.ecf.provider/debug=true
 org.eclipse.ecf.provider/debug/filter = *
 org.eclipse.ecf.provider/debug/flag = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.provider/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.provider/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.provider/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.provider/debug/methods/exiting=false
+
 org.eclipse.ecf.provider/debug/connection = true
 org.eclipse.ecf.provider/debug/container = true
 org.eclipse.ecf.provider/debug/sharedobjectwrapper = true

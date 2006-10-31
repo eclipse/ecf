@@ -20,7 +20,9 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.URI;
 
-import org.eclipse.ecf.internal.provider.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.comm.IConnectRequestHandler;
 import org.eclipse.ecf.provider.comm.tcp.Client;
 import org.eclipse.ecf.provider.comm.tcp.ConnectRequestMessage;
@@ -33,7 +35,6 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 	
 	public static final int DEFAULT_SOCKET_KEEPALIVE = 30000;
     public static final String INVALID_CONNECT = "Invalid connect request.  ";
-    public static final Trace debug = Trace.create("connection");
     public static final String DEFAULT_GROUP_NAME = TCPServerSOContainerGroup.class
             .getName();
     protected int port;
@@ -62,18 +63,16 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
         this(DEFAULT_GROUP_NAME, null, port);
     }
 
-    protected void debug(String msg) {
-        if (Trace.ON && debug != null) {
-            debug.msg(msg);
-        }
-    }
-
-    protected void dumpStack(String msg, Throwable e) {
-        if (Trace.ON && debug != null) {
-            debug.dumpStack(e, msg);
-        }
-    }
-
+	protected void debug(String msg) {
+		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,msg);
+	}
+	
+	protected void traceStack(String msg, Throwable e) {
+		Trace.catching(ProviderPlugin.getDefault(),
+				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, TCPServerSOContainerGroup.class,
+				msg, e);
+	}
+	
     public synchronized void putOnTheAir() throws IOException {
         debug("group at port " + port + " on the air");
         listener = new Server(threadGroup, port, this);
@@ -100,9 +99,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
         ObjectInputStream iStream = new ObjectInputStream(aSocket.getInputStream());
         ConnectRequestMessage req = (ConnectRequestMessage) iStream
                 .readObject();
-        if (Trace.ON && debug != null) {
-            debug.msg("serverrecv:" + req);
-        }
+        debug("serverrecv:" + req);
         if (req == null)
             throw new InvalidObjectException(INVALID_CONNECT
                     + "ConnectRequestMessage is null");
@@ -137,15 +134,11 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 
     public synchronized void takeOffTheAir() {
         if (listener != null) {
-            if (Trace.ON && debug != null) {
-                debug.msg("Taking " + getName() + " off the air.");
-            }
+            debug("Taking " + getName() + " off the air.");
             try {
                 listener.close();
             } catch (IOException e) {
-                if (Trace.ON && debug != null) {
-                    debug.dumpStack(e, "Exception in closeListener");
-                }
+                traceStack("Exception in closeListener", e);
             }
             listener = null;
         }

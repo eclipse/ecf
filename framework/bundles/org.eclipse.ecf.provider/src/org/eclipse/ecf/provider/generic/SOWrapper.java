@@ -27,11 +27,12 @@ import org.eclipse.ecf.core.sharedobject.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.sharedobject.util.QueueEnqueueImpl;
 import org.eclipse.ecf.core.sharedobject.util.SimpleFIFOQueue;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.internal.provider.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public class SOWrapper {
-    static Trace debug = Trace.create("sharedobjectwrapper");
     protected ISharedObject sharedObject;
     private SOConfig sharedObjectConfig;
     private ID sharedObjectID;
@@ -226,21 +227,20 @@ public class SOWrapper {
         return sb.toString();
     }
 
-    protected void debug(String msg) {
-        if (Trace.ON && debug != null) {
-            debug.msg(msg);
-        }
-    }
-
-    protected void dumpStack(String msg, Throwable e) {
-        if (Trace.ON && debug != null) {
-            debug.dumpStack(e, msg);
-        }
-    }
+	protected void debug(String msg) {
+		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
+				msg + ":" + container.getID());
+	}
+	
+	protected void traceStack(String msg, Throwable e) {
+		Trace.catching(ProviderPlugin.getDefault(),
+				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainerGMM.class,
+				container.getID() + ":" + msg, e);
+	}
 
     protected void handleRuntimeException(Throwable except) {
         except.printStackTrace(System.err);
-        dumpStack(
+        traceStack(
                 "runner:handleRuntimeException(" + sharedObjectID.getName() + ")",
                 except);
     }

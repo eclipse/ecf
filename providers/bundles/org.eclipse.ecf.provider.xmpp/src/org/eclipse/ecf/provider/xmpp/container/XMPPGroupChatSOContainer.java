@@ -391,7 +391,7 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 				try {
 					multiuserchat.leave();
 				} catch (Exception e) {
-					dumpStack("Exception in multi user chat.leave", e);
+					traceStack("Exception in multi user chat.leave", e);
 				}
 			}
 			connectionState = DISCONNECTED;

@@ -29,7 +29,9 @@ import java.util.Vector;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.util.SimpleFIFOQueue;
-import org.eclipse.ecf.internal.provider.Trace;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
 import org.eclipse.ecf.provider.comm.DisconnectEvent;
 import org.eclipse.ecf.provider.comm.IConnectionListener;
@@ -39,7 +41,6 @@ import org.eclipse.ecf.provider.comm.SynchEvent;
 
 public final class Client implements ISynchAsynchConnection {
 	public static final String PROTOCOL = "ecftcp";
-	protected static final Trace trace = Trace.create("connection");
 	public static final int DEFAULT_SNDR_PRIORITY = Thread.NORM_PRIORITY;
 	public static final int DEFAULT_RCVR_PRIORITY = Thread.NORM_PRIORITY;
 	// Default close timeout is 2 seconds
@@ -131,7 +132,7 @@ public final class Client implements ISynchAsynchConnection {
 					PROTOCOL + "://" + socket.getLocalAddress().getHostName()
 							+ ":" + socket.getLocalPort());
 		} catch (Exception e) {
-			dumpStack("Exception in getLocalID()", e);
+			traceStack("Exception in getLocalID()", e);
 			return null;
 		}
 		return retID;
@@ -165,7 +166,7 @@ public final class Client implements ISynchAsynchConnection {
 	}
 	public synchronized Object connect(ID remote, Object data, int timeout)
 			throws IOException {
-		trace("connect(" + remote + "," + data + "," + timeout + ")");
+		debug("connect(" + remote + "," + data + "," + timeout + ")");
 		if (socket != null)
 			throw new ConnectException("Already connected to "
 					+ getAddressPort());
@@ -191,22 +192,22 @@ public final class Client implements ISynchAsynchConnection {
 		outputStream = new ObjectOutputStream(s.getOutputStream());
 		outputStream.flush();
 		inputStream = new ObjectInputStream(s.getInputStream());
-		trace("connect;" + anURI);
+		debug("connect;" + anURI);
 		// send connect data and get syncronous response
 		send(new ConnectRequestMessage(anURI, (Serializable) data));
 		ConnectResultMessage res = null;
 		res = (ConnectResultMessage) readObject();
-		trace("connect;rcv:" + res);
+		debug("connect;rcv:" + res);
 		// Setup threads
 		setupThreads();
 		// Return results.
 		Object ret = res.getData();
-		trace("connect;returning:" + ret);
+		debug("connect;returning:" + ret);
 		return ret;
 	}
 	private void setupThreads() {
 		// Setup threads
-		trace("setupThreads()");
+		debug("setupThreads()");
 		sendThread = (Thread) AccessController
 				.doPrivileged(new PrivilegedAction() {
 					public Object run() {
@@ -251,7 +252,7 @@ public final class Client implements ISynchAsynchConnection {
 					}
 				}
 				handleException(null);
-				trace("SENDER TERMINATING");
+				debug("SENDER TERMINATING");
 			}
 		}, getLocalID() + ":sndr:" + getAddressPort());
 		// Set priority for new thread
@@ -263,7 +264,7 @@ public final class Client implements ISynchAsynchConnection {
 			if (!disconnectHandled) {
 				disconnectHandled = true;
 				if (e != null)
-					dumpStack("handleException in thread="
+					traceStack("handleException in thread="
 							+ Thread.currentThread().getName(), e);
 					handler
 							.handleDisconnectEvent(new DisconnectEvent(
@@ -281,11 +282,11 @@ public final class Client implements ISynchAsynchConnection {
 				setSocket(null);
 			}
 		} catch (IOException e) {
-			dumpStack("closeSocket Exception", e);
+			traceStack("closeSocket Exception", e);
 		}
 	}
 	private void send(Serializable snd) throws IOException {
-		trace("send(" + snd + ")");
+		debug("send(" + snd + ")");
 		outputStream.writeObject(snd);
 		outputStream.flush();
 	}
@@ -299,7 +300,7 @@ public final class Client implements ISynchAsynchConnection {
 	}
 	private void sendClose(Serializable snd) throws IOException {
 		isClosing = true;
-		trace("sendClose(" + snd + ")");
+		debug("sendClose(" + snd + ")");
 		send(snd);
 		int count = 0;
 		int interval = DEFAULT_WAIT_INTERVAL;
@@ -308,7 +309,7 @@ public final class Client implements ISynchAsynchConnection {
 				wait(closeTimeout / interval);
 				count++;
 			} catch (InterruptedException e) {
-				dumpStack("sendClose wait", e);
+				traceStack("sendClose wait", e);
 				return;
 			}
 		}
@@ -329,7 +330,7 @@ public final class Client implements ISynchAsynchConnection {
 					}
 				}
 				handleException(null);
-				trace("RCVR TERMINATING");
+				debug("RCVR TERMINATING");
 			}
 		}, getLocalID() + ":rcvr:" + getAddressPort());
 		// Set priority and return
@@ -339,7 +340,7 @@ public final class Client implements ISynchAsynchConnection {
 	// private int rcvCount = 0;
 	private void handleRcv(Serializable rcv) throws IOException {
 		try {
-			trace("recv(" + rcv + ")");
+			debug("recv(" + rcv + ")");
 			// Handle all messages
 			if (rcv instanceof SynchMessage) {
 				// Handle synch message. The only valid synch message is
@@ -364,7 +365,7 @@ public final class Client implements ISynchAsynchConnection {
 		}
 	}
 	public synchronized void start() {
-		trace("start()");
+		debug("start()");
 		if (sendThread != null)
 			sendThread.start();
 		if (rcvThread != null)
@@ -376,10 +377,10 @@ public final class Client implements ISynchAsynchConnection {
 			keepAliveThread.start();
 	}
 	public void stop() {
-		trace("stop()");
+		debug("stop()");
 	}
 	private Thread setupPing() {
-		trace("setupPing()");
+		debug("setupPing()");
 		final int pingStartWait = (new Random()).nextInt(keepAlive / 2);
 		return new Thread(new Runnable() {
 			public void run() {
@@ -428,12 +429,12 @@ public final class Client implements ISynchAsynchConnection {
 					}
 				}
 				handleException(null);
-				trace("PING TERMINATING");
+				debug("PING TERMINATING");
 			}
 		}, getLocalID() + ":ping:" + getAddressPort());
 	}
 	public synchronized void disconnect() throws IOException {
-		trace("disconnect()");
+		debug("disconnect()");
 		// Close send queue and socket
 		queue.close();
 		closeSocket();
@@ -461,23 +462,23 @@ public final class Client implements ISynchAsynchConnection {
 			throws IOException {
 		if (queue.isStopped() || isClosing)
 			throw new ConnectException("Not connected");
-		trace("queueObject(" + recipient + "," + obj + ")");
+		debug("queueObject(" + recipient + "," + obj + ")");
 		queue.enqueue(new AsynchMessage(obj));
 	}
 	public synchronized Serializable sendObject(ID recipient, Serializable obj)
 			throws IOException {
 		if (queue.isStopped() || isClosing)
 			throw new ConnectException("Not connected");
-		trace("sendObject(" + recipient + "," + obj + ")");
+		debug("sendObject(" + recipient + "," + obj + ")");
 		sendClose(new SynchMessage(obj));
 		return null;
 	}
 	public Object sendSynch(ID rec, Object obj) throws IOException {
-		trace("sendSynch(" + rec + "," + obj + ")");
+		debug("sendSynch(" + rec + "," + obj + ")");
 		return sendObject(rec, (Serializable) obj);
 	}
 	public Object sendSynch(ID rec, byte[] obj) throws IOException {
-		trace("sendSynch(" + rec + "," + obj + ")");
+		debug("sendSynch(" + rec + "," + obj + ")");
 		return sendObject(rec, obj);
 	}
 	private Serializable readObject() throws IOException {
@@ -485,7 +486,7 @@ public final class Client implements ISynchAsynchConnection {
 		try {
 			ret = (Serializable) inputStream.readObject();
 		} catch (ClassNotFoundException e) {
-			dumpStack("readObject;classnotfoundexception", e);
+			traceStack("readObject;classnotfoundexception", e);
 			IOException except = new IOException(
 					"Protocol violation due to class load failure.  "
 							+ e.getMessage());
@@ -503,16 +504,14 @@ public final class Client implements ISynchAsynchConnection {
 	private String getAddressPort() {
 		return addressPort;
 	}
-	protected void trace(String msg) {
-		if (Trace.ON && trace != null) {
-			trace.msg(getLocalID() + ":" + getAddressPort() + ";" + msg);
-		}
+	protected void debug(String msg) {
+		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
+				msg);
 	}
-	protected void dumpStack(String msg, Throwable e) {
-		if (Trace.ON && trace != null) {
-			trace.dumpStack(e, getLocalID() + ":" + getAddressPort() + ";"
-					+ msg);
-		}
+	protected void traceStack(String msg, Throwable e) {
+		Trace.catching(ProviderPlugin.getDefault(),
+				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, Client.class,
+				msg, e);
 	}
 	public void setProperties(Map props) {
 		this.properties = props;
