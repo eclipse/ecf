@@ -17,11 +17,12 @@ import java.util.*;
  * The main plugin class to be used in the desktop.
  */
 public class DiscoveryPlugin extends Plugin {
-	//The shared instance.
+	// The shared instance.
 	private static DiscoveryPlugin plugin;
-	//Resource bundle.
+
+	// Resource bundle.
 	private ResourceBundle resourceBundle;
-	
+
 	/**
 	 * The constructor.
 	 */
@@ -54,11 +55,12 @@ public class DiscoveryPlugin extends Plugin {
 	}
 
 	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
+	 * Returns the string from the plugin's resource bundle, or 'key' if not
+	 * found.
 	 */
 	public static String getResourceString(String key) {
-		ResourceBundle bundle = DiscoveryPlugin.getDefault().getResourceBundle();
+		ResourceBundle bundle = DiscoveryPlugin.getDefault()
+				.getResourceBundle();
 		try {
 			return (bundle != null) ? bundle.getString(key) : key;
 		} catch (MissingResourceException e) {
@@ -72,7 +74,8 @@ public class DiscoveryPlugin extends Plugin {
 	public ResourceBundle getResourceBundle() {
 		try {
 			if (resourceBundle == null)
-				resourceBundle = ResourceBundle.getBundle("org.eclipse.ecf.discovery.DiscoveryPluginResources");
+				resourceBundle = ResourceBundle
+						.getBundle("org.eclipse.ecf.discovery.DiscoveryPluginResources");
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}

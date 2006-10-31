@@ -17,7 +17,8 @@ import org.eclipse.ecf.core.events.IContainerEvent;
 public interface IServiceEvent extends IContainerEvent {
 	/**
 	 * Get the service info associated with this event
-	 * @return IServiceInfo any info associated with this event.  May be null.
+	 * 
+	 * @return IServiceInfo any info associated with this event. May be null.
 	 */
 	public IServiceInfo getServiceInfo();
 }

@@ -17,7 +17,9 @@ import org.eclipse.ecf.core.identity.ID;
 public class ServiceContainerEvent implements IServiceEvent {
 
 	private static final long serialVersionUID = 1L;
+
 	protected IServiceInfo info;
+
 	protected ID containerID;
 
 	public ServiceContainerEvent(IServiceInfo info, ID containerID) {
@@ -35,8 +37,7 @@ public class ServiceContainerEvent implements IServiceEvent {
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ServiceContainerEvent[");
-		buf.append("serviceinfo=")
-				.append(info).append("]");
+		buf.append("serviceinfo=").append(info).append("]");
 		return buf.toString();
 	}
 }

@@ -16,27 +16,34 @@ import java.net.URISyntaxException;
 
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
-
 /**
  * Information provided by discovery protocol about a remote service
  */
 public class ServiceInfo implements IServiceInfo, Serializable {
 
 	private static final long serialVersionUID = 1L;
+
 	InetAddress addr = null;
+
 	ServiceID serviceID;
+
 	int port;
+
 	int priority;
+
 	int weight;
+
 	IServiceProperties properties;
 
-	public ServiceInfo(InetAddress address, String type, int port, int priority, int weight, IServiceProperties props) {
+	public ServiceInfo(InetAddress address, String type, int port,
+			int priority, int weight, IServiceProperties props) {
 		this.addr = address;
-		this.serviceID = new ServiceID(type,null);
+		this.serviceID = new ServiceID(type, null);
 		this.port = port;
 		this.weight = weight;
 		this.properties = props;
 	}
+
 	public ServiceInfo(InetAddress address, ServiceID id, int port,
 			int priority, int weight, IServiceProperties props) {
 		this.addr = address;
@@ -74,19 +81,22 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	public IServiceProperties getServiceProperties() {
 		return properties;
 	}
+
 	public boolean isResolved() {
 		return (addr != null);
 	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ServiceInfo[");
-		buf.append("addr=").append(addr).append(";id=").append(serviceID).append(
-				";port=").append(port).append(";priority=").append(priority)
-				.append(";weight=").append(weight).append(";props=").append(
-						properties).append("]");
+		buf.append("addr=").append(addr).append(";id=").append(serviceID)
+				.append(";port=").append(port).append(";priority=").append(
+						priority).append(";weight=").append(weight).append(
+						";props=").append(properties).append("]");
 		return buf.toString();
 	}
-	
+
 	public URI getServiceURI() throws URISyntaxException {
-		throw new URISyntaxException(this.toString(),"ServiceInfo doesn't support URI syntax");
+		throw new URISyntaxException(this.toString(),
+				"ServiceInfo doesn't support URI syntax");
 	}
 }

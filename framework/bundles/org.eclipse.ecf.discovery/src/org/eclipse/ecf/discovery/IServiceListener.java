@@ -20,14 +20,17 @@ public interface IServiceListener {
 	 * @param event
 	 */
 	public void serviceAdded(IServiceEvent event);
+
 	/**
 	 * Notification that a service has been removed.
 	 * 
 	 * @param event
 	 */
 	public void serviceRemoved(IServiceEvent event);
+
 	/**
-	 * Notification that a service has been resolved (that complete service info is now available).
+	 * Notification that a service has been resolved (that complete service info
+	 * is now available).
 	 * 
 	 * @param event
 	 */
