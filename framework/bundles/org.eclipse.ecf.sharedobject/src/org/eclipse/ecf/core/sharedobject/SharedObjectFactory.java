@@ -13,7 +13,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
-import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.sharedobject.Activator;
 import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
@@ -131,13 +130,11 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObject(org.eclipse.ecf.core.SharedObjectTypeDescription,
-	 *      java.lang.String[], java.lang.Object[])
+	 *      java.lang.Object[])
 	 */
 	public ISharedObject createSharedObject(SharedObjectTypeDescription desc,
-			String[] argTypes, Object[] args)
-			throws SharedObjectCreateException {
+			Object[] args) throws SharedObjectCreateException {
 		trace("createSharedObject(" + desc + ","
-				+ Trace.getArgumentsString(argTypes) + ","
 				+ Trace.getArgumentsString(args) + ")");
 		if (desc == null)
 			throw new SharedObjectCreateException(
@@ -147,12 +144,9 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 			throw new SharedObjectCreateException(
 					"SharedObjectDescription named '" + desc.getName()
 							+ "' not found");
-		Class clazzes[] = null;
 		ISharedObjectInstantiator instantiator = null;
 		try {
 			instantiator = cd.getInstantiator();
-			clazzes = AbstractFactory.getClassesForTypes(argTypes, args, cd
-					.getClass().getClassLoader());
 		} catch (Exception e) {
 			SharedObjectCreateException newexcept = new SharedObjectCreateException(
 					"createSharedObject exception with description: " + desc
@@ -167,7 +161,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 					"Instantiator for SharedObjectDescription " + cd.getName()
 							+ " is null");
 		// Ask instantiator to actually create instance
-		return instantiator.createInstance(desc, clazzes, args);
+		return instantiator.createInstance(desc, args);
 	}
 
 	/*
@@ -177,8 +171,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 */
 	public ISharedObject createSharedObject(String descriptionName)
 			throws SharedObjectCreateException {
-		return createSharedObject(getDescriptionByName(descriptionName), null,
-				null);
+		return createSharedObject(getDescriptionByName(descriptionName), null);
 	}
 
 	/*
@@ -189,21 +182,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 */
 	public ISharedObject createSharedObject(String descriptionName,
 			Object[] args) throws SharedObjectCreateException {
-		return createSharedObject(getDescriptionByName(descriptionName), null,
-				args);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObject(java.lang.String,
-	 *      java.lang.String[], java.lang.Object[])
-	 */
-	public ISharedObject createSharedObject(String descriptionName,
-			String[] argsTypes, Object[] args)
-			throws SharedObjectCreateException {
-		return createSharedObject(getDescriptionByName(descriptionName),
-				argsTypes, args);
+		return createSharedObject(getDescriptionByName(descriptionName), args);
 	}
 
 	/*

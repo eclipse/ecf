@@ -37,10 +37,6 @@ public interface ISharedObjectInstantiator {
 	 * @param typeDescription
 	 *            the SharedObjectTypeDescription associated with the registered
 	 *            shared object provider implementation plugin
-	 * @param argTypes
-	 *            the argument types specified by the caller. May be null if no
-	 *            arguments are passed in by caller to
-	 *            SharedObjectFactory.getDefault().createSharedObject(...)
 	 * @param args
 	 *            arguments specified by the caller. May be null if no arguments
 	 *            are passed in by caller to
@@ -48,10 +44,8 @@ public interface ISharedObjectInstantiator {
 	 * @return ISharedObject instance. The provider implementation must return a
 	 *         valid object implementing ISharedObject OR throw a
 	 *         SharedObjectCreateException
-	 * @throws SharedObjectCreateException
-	 *             TODO
+	 * @throws SharedObjectCreateException if shared object instance cannot be created
 	 */
 	public ISharedObject createInstance(
-			SharedObjectTypeDescription typeDescription, Class[] argTypes,
-			Object[] args) throws SharedObjectCreateException;
+			SharedObjectTypeDescription typeDescription, Object[] args) throws SharedObjectCreateException;
 }

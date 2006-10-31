@@ -138,7 +138,7 @@ public class SOManager implements ISharedObjectManager {
 			res = createSharedObjectInstance(newClass, argTypes, args);
 			// 'new style'
 		} else {
-			res = SharedObjectFactory.getDefault().createSharedObject(typeDesc, types, args);
+			res = SharedObjectFactory.getDefault().createSharedObject(typeDesc, args);
 		}
 		return res;
 	}

@@ -50,7 +50,7 @@ public interface ISharedObjectFactory {
 	 * Get the known SharedObjectTypeDescription given it's name.
 	 * 
 	 * @param name
-	 * @return SharedObjectTypeDescription found
+	 * @return SharedObjectTypeDescription found.  Null if description not found.
 	 * @throws SharedObjectCreateException
 	 */
 	public SharedObjectTypeDescription getDescriptionByName(String name)
@@ -72,17 +72,14 @@ public interface ISharedObjectFactory {
 	 * 
 	 * @param typeDescription
 	 *            the SharedObjectTypeDescription to use to create the instance
-	 * @param argTypes
-	 *            a String [] defining the types of the args parameter
 	 * @param args
 	 *            an Object [] of arguments passed to the createInstance method
 	 *            of the ISharedObjectInstantiator
-	 * @return a valid instance of ISharedObject
-	 * @throws SharedObjectCreateException
+	 * @return a valid instance of ISharedObject.  Will not be null.
+	 * @throws SharedObjectCreateException if shared object cannot be created
 	 */
 	public ISharedObject createSharedObject(
-			SharedObjectTypeDescription typeDescription, String[] argTypes,
-			Object[] args) throws SharedObjectCreateException;
+			SharedObjectTypeDescription typeDescription, Object[] args) throws SharedObjectCreateException;
 
 	/**
 	 * Create ISharedObject instance. Given a SharedObjectTypeDescription name,
@@ -99,7 +96,7 @@ public interface ISharedObjectFactory {
 	 * 
 	 * @param descriptionName
 	 *            the SharedObjectTypeDescription name to lookup
-	 * @return a valid instance of ISharedObject
+	 * @return a valid instance of ISharedObject.  Will not be null.
 	 * @throws SharedObjectCreateException
 	 */
 	public ISharedObject createSharedObject(String descriptionName)
@@ -123,38 +120,11 @@ public interface ISharedObjectFactory {
 	 * @param args
 	 *            the Object [] of arguments passed to the
 	 *            ISharedObjectInstantiator.createInstance method
-	 * @return a valid instance of IContainer
+	 * @return a valid instance of IContainer.   Will not be null.
 	 * @throws SharedObjectCreateException
 	 */
 	public ISharedObject createSharedObject(String descriptionName,
 			Object[] args) throws SharedObjectCreateException;
-
-	/**
-	 * Create ISharedObject instance. Given a SharedObjectTypeDescription name,
-	 * this method will
-	 * <p>
-	 * <ul>
-	 * <li>lookup the known SharedObjectTypeDescriptions to find one of
-	 * matching name</li>
-	 * <li>if found, will retrieve or create an ISharedObjectInstantiator for
-	 * that description</li>
-	 * <li>Call the ISharedObjectInstantiator.createInstance method to return
-	 * an instance of ISharedObject</li>
-	 * </ul>
-	 * 
-	 * @param descriptionName
-	 *            the SharedObjectTypeDescription name to lookup
-	 * @param argsTypes
-	 *            the String [] of argument types of the following args
-	 * @param args
-	 *            the Object [] of arguments passed to the
-	 *            ISharedObjectInstantiator.createInstance method
-	 * @return a valid instance of ISharedObject
-	 * @throws SharedObjectCreateException
-	 */
-	public ISharedObject createSharedObject(String descriptionName,
-			String[] argsTypes, Object[] args)
-			throws SharedObjectCreateException;
 
 	/**
 	 * Remove given description from set known to this factory.

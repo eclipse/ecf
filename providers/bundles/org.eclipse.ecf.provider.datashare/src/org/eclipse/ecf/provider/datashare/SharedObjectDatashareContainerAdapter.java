@@ -174,10 +174,6 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject impl
 					.getDefault()
 					.createSharedObject(
 							sotypedesc,
-							new String[] {
-									ISharedObjectTransactionConfig.class
-											.getName(),
-									IChannelListener.class.getName() },
 							new Object[] { transactionConfig, listener });
 		} else {
 			so = createSharedObject(sotypedesc, transactionConfig, listener);
