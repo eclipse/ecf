@@ -15,12 +15,14 @@ import java.util.List;
  * implementation.
  */
 public interface IContainerFactory {
-	/*
+	/**
 	 * Add a ContainerTypeDescription to the set of known ContainerDescriptions.
 	 * 
-	 * @param scd the ContainerTypeDescription to add to this factory @return
-	 * ContainerTypeDescription the old description of the same name, null if
-	 * none found
+	 * @param scd
+	 *            the ContainerTypeDescription to add to this factory. Must not
+	 *            be null.
+	 * @return ContainerTypeDescription the old description of the same name,
+	 *         null if none found
 	 */
 	public ContainerTypeDescription addDescription(ContainerTypeDescription scd);
 
