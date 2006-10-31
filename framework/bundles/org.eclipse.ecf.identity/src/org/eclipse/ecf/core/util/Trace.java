@@ -121,6 +121,7 @@ public class Trace {
 	 * 
 	 */
 	protected static boolean shouldTrace(Plugin plugin) {
+		if (plugin == null) return false;
 		return plugin.isDebugging();
 	}
 

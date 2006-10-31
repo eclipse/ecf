@@ -22,14 +22,27 @@ import org.eclipse.ecf.internal.core.identity.IdentityDebugOptions;
 
 /**
  * A factory class for creating ID instances. This is the factory for plugins to
- * manufacture ID instances.
+ * manufacture ID instances. Note that typically the singleton instance for this
+ * factory is initialized by consulting the extension registry for extensions to
+ * the <b>org.eclipse.ecf.identity.namespace</b> extension point. If, however,
+ * the system property <b>org.eclipse.ecf.core.identity.IDFactory.standalone</b>
+ * is set to true, this factory will <b>not</b> consult the extension registry
+ * for initialization, and rather will be assumed to be running standalone (i.e.
+ * suitable for usage within a java application). When running standalone, it is
+ * the application's responsibility to assure that the appropriate Namespace are
+ * populated in the factory (via {@link #addNamespace(Namespace)}, prior to
+ * calling one of the ID creation methods (e.g. {@link #createGUID()} or
+ * {@link #createID(Namespace, Object[])}.
  * 
  */
 public class IDFactory implements IIDFactory {
 	public static final String SECURITY_PROPERTY = IDFactory.class.getName()
 			+ ".security";
 
-	private static final int SECURITY_INITIALIZE_ERRORCODE = 1001;
+	public static final String STAND_ALONE_PROPERTY = IDFactory.class.getName()
+			+ ".standalone";
+
+	private static final int PROPERTY_INITIALIZE_ERRORCODE = 1001;
 
 	private static final int IDENTITY_CREATION_ERRORCODE = 2001;
 
@@ -37,42 +50,50 @@ public class IDFactory implements IIDFactory {
 
 	private static boolean securityEnabled = false;
 
+	private static boolean standAlone = false;
+
+	private static boolean initialized = false;
+
 	protected static IIDFactory instance = null;
 
 	static {
-		instance = new IDFactory();
-		addNamespace0(new StringID.StringIDNamespace());
-		addNamespace0(new GUID.GUIDNamespace());
-		addNamespace0(new LongID.LongNamespace());
+		String propertyToRead = null;
 		try {
+			propertyToRead = SECURITY_PROPERTY;
 			securityEnabled = Boolean.valueOf(
-					System.getProperty(SECURITY_PROPERTY, "false"))
-					.booleanValue();
+					System.getProperty(propertyToRead, "false")).booleanValue();
+			propertyToRead = STAND_ALONE_PROPERTY;
+			standAlone = Boolean.valueOf(
+					System.getProperty(propertyToRead, "false")).booleanValue();
 		} catch (Exception e) {
 			Trace.catching(Activator.getDefault(),
 					IdentityDebugOptions.EXCEPTIONS_CATCHING, IDFactory.class,
 					"staticinitializer", e);
-			Activator.getDefault().getLog().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							SECURITY_INITIALIZE_ERRORCODE,
-							"Exception reading SECURITY_PROPERTY", e));
+			Activator.getDefault().getLog()
+					.log(
+							new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+									PROPERTY_INITIALIZE_ERRORCODE,
+									"Exception reading property: "
+											+ propertyToRead, e));
 		}
+		instance = new IDFactory();
+		addNamespace0(new StringID.StringIDNamespace());
+		addNamespace0(new GUID.GUIDNamespace());
+		addNamespace0(new LongID.LongNamespace());
 	}
 
 	protected IDFactory() {
+		if (!initialized) {
+			if (standAlone)
+				System.out.println("WARNING: IDFactory running standalone");
+			else
+				Activator.getDefault().setupNamespaceExtensionPoint();
+		}
+		initialized = true;
 	}
 
 	public static IIDFactory getDefault() {
 		return instance;
-	}
-
-	protected boolean isInitialized = false;
-
-	protected synchronized void initialize() {
-		if (!isInitialized) {
-			Activator.getDefault().setupNamespaceExtensionPoint();
-			isInitialized = true;
-		}
 	}
 
 	/*
@@ -134,7 +155,6 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#getNamespaces()
 	 */
 	public List getNamespaces() {
-		initialize();
 		Trace.entering(Activator.getDefault(),
 				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
 				"getNamespaces");
@@ -153,7 +173,6 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#getNamespace(org.eclipse.ecf.core.identity.Namespace)
 	 */
 	public Namespace getNamespace(Namespace namespace) throws SecurityException {
-		initialize();
 		Trace.entering(Activator.getDefault(),
 				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
 				"getNamespace", namespace);
@@ -174,7 +193,6 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#getNamespaceByName(java.lang.String)
 	 */
 	public Namespace getNamespaceByName(String name) throws SecurityException {
-		initialize();
 		Trace.entering(Activator.getDefault(),
 				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
 				"getNamespaceByName", name);
@@ -250,7 +268,6 @@ public class IDFactory implements IIDFactory {
 	 *      java.lang.Object[])
 	 */
 	public ID createID(Namespace n, Object[] args) throws IDCreateException {
-		initialize();
 		Trace.entering(Activator.getDefault(),
 				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
 				"createID", new Object[] { n, Trace.getArgumentsString(args) });

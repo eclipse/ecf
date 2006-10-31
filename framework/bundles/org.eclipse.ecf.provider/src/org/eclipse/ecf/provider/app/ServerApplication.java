@@ -13,14 +13,15 @@ import java.security.PermissionCollection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.IConnectPolicy;
-import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerGroupManager;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
 import org.eclipse.ecf.provider.generic.SOContainerConfig;
 import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
 import org.eclipse.ecf.provider.generic.TCPServerSOContainerGroup;
@@ -66,8 +67,10 @@ public class ServerApplication {
 		}
     	
     }
-
     public static void main(String args[]) throws Exception {
+    	// Setup IDFactory so that it runs standalone (not requiring extension point setup through
+    	// Activator.start
+    	System.setProperty("org.eclipse.ecf.core.identity.IDFactory.standalone", "true");
         // Get server identity
         String serverName = null;
 		List connectors = null;

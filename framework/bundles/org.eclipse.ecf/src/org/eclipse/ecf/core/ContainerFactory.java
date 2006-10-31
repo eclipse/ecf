@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.ECFDebugOptions;
@@ -38,9 +40,29 @@ import org.eclipse.ecf.internal.core.IDisposable;
  * and lifecycle of IContainer instances created via this factory see
  * {@link IContainer}.
  * 
+ * Note that typically the singleton instance for this factory is initialized by
+ * consulting the extension registry for extensions to the
+ * <b>org.eclipse.ecf.containerFactory</b> extension point. If, however, the
+ * system property <b>org.eclipse.ecf.ContainerFactory.standalone</b> is set to
+ * true, this factory will <b>not</b> consult the extension registry for
+ * initialization, and rather will be assumed to be running standalone (i.e.
+ * suitable for usage within a java application). When running standalone, it is
+ * the application's responsibility to assure that the appropriate
+ * ContainerTypeDescriptions are populated in the factory (via
+ * {@link #addDescription(ContainerTypeDescription)}, prior to calling one of
+ * the IContainer creation methods (e.g. {@link #createContainer(String)} or
+ * {@link #createContainer(ContainerTypeDescription, Object[])}.
+ * 
  * @see IContainer
  */
 public class ContainerFactory implements IContainerFactory {
+
+	public static final String STAND_ALONE_PROPERTY = ContainerFactory.class
+			.getName()
+			+ ".standalone";
+
+	private static final int PROPERTY_INITIALIZE_ERRORCODE = 1001;
+
 	private static final int DISPOSE_ERROR_CODE = 100;
 
 	private static Hashtable containerdescriptions = new Hashtable();
@@ -49,22 +71,39 @@ public class ContainerFactory implements IContainerFactory {
 
 	protected static Map containers = new WeakHashMap();
 
+	private static boolean standAlone = false;
+
 	static {
+		String propertyToRead = null;
+		try {
+			propertyToRead = STAND_ALONE_PROPERTY;
+			standAlone = Boolean.valueOf(
+					System.getProperty(propertyToRead, "false")).booleanValue();
+		} catch (Exception e) {
+			Trace.catching(ECFPlugin.getDefault(),
+					ECFDebugOptions.EXCEPTIONS_CATCHING, IDFactory.class,
+					"staticinitializer", e);
+			ECFPlugin.getDefault().getLog()
+					.log(
+							new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID,
+									PROPERTY_INITIALIZE_ERRORCODE,
+									"Exception reading property: "
+											+ propertyToRead, e));
+		}
 		instance = new ContainerFactory();
 	}
 
 	protected ContainerFactory() {
-		try {
+		if (!standAlone) {
 			ECFPlugin.getDefault().addDisposable(new IDisposable() {
 				public void dispose() {
 					doDispose();
 				}
 			});
-		} catch (Exception e) {
-			System.err
-					.println("WARNING:  Exception accessing ECFPlugin within ContainerFactory initialization.  May not be running as OSGI bundle");
-			e.printStackTrace(System.err);
+		} else {
+			System.out.println("WARNING:  ContainerFactory running standalone");
 		}
+
 	}
 
 	public static IContainerFactory getDefault() {
@@ -201,7 +240,8 @@ public class ContainerFactory implements IContainerFactory {
 		String method = "createContainer";
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
-				method, new Object[] { description,Trace.getArgumentsString(args) });
+				method, new Object[] { description,
+						Trace.getArgumentsString(args) });
 		if (description == null)
 			throwContainerCreateException(
 					"ContainerTypeDescription cannot be null", null, method);
@@ -218,8 +258,7 @@ public class ContainerFactory implements IContainerFactory {
 							+ description, e, method);
 		}
 		// Ask instantiator to actually create instance
-		IContainer container = instantiator.createInstance(description,
-				args);
+		IContainer container = instantiator.createInstance(description, args);
 		if (container == null)
 			throwContainerCreateException("Instantiator returned null for '"
 					+ cd.getName() + "'", null, method);
