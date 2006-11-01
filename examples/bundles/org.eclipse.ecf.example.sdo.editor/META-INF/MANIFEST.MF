@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-Name: ECF SDO Editor Example
-Bundle-SymbolicName: org.eclipse.ecf.example.sdo.editor;singleton=true
+Bundle-SymbolicName: org.eclipse.ecf.example.sdo.editor;singleton:=true
 Bundle-Version: 0.9.3
 Bundle-ClassPath: editor.jar
 Bundle-Activator: org.eclipse.ecf.example.sdo.editor.EditorPlugin

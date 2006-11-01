@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-Name: ECF Presence API
-Bundle-SymbolicName: org.eclipse.ecf.presence;singleton=true
+Bundle-SymbolicName: org.eclipse.ecf.presence;singleton:=true
 Bundle-Version: 0.9.3
 Bundle-ClassPath: presence.jar
 Bundle-Activator: org.eclipse.ecf.internal.presence.PresencePlugin

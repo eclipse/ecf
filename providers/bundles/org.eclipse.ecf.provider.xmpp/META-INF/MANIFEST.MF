@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-Name: ECF XMPP Provider
-Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp;singleton=true
+Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp;singleton:=true
 Bundle-Version: 0.9.3
 Bundle-ClassPath: xmpp.jar
 Bundle-Activator: org.eclipse.ecf.provider.xmpp.XmppPlugin

@@ -8,13 +8,9 @@
             description="Generic Server Container Instantiator"
             name="ecf.generic.server">
          <defaultargument
-               value="ecftcp://localhost:3282/server"
-               type="org.eclipse.ecf.core.identity.ID"
-               name="id"/>
+               value="ecftcp://localhost:3282/server"/>
          <defaultargument
-               value="30000"
-               type="java.lang.Integer"
-               name="keepAlive"/>
+               value="30000"/>
          <property
                value="true"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.isServer"/>
@@ -27,12 +23,7 @@
             description="ECF Generic Client"
             name="ecf.generic.client">
          <defaultargument
-               type="org.eclipse.ecf.core.identity.ID"
-               name="id"/>
-         <defaultargument
-               value="30000"
-               type="java.lang.Integer"
-               name="keepAlive"/>
+               value="30000"/>
          <property
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"
                value="ecftcp://&lt;server&gt;:&lt;port&gt;/&lt;groupname&gt;"/>

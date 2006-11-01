@@ -252,7 +252,7 @@ public class RemoteServiceRegistrationImpl implements
 			}
 			// must use reflection because Object clone method is protected!!
 			try {
-				return (clazz.getMethod("clone", null).invoke(value, null));
+				return (clazz.getMethod("clone", (Class []) null).invoke(value, (Object []) null));
 			} catch (Exception e) {
 				/* clone is not a public method on value's class */
 			} catch (Error e) {

@@ -35,8 +35,6 @@ public class AddBuddyDialog extends Dialog {
 	private Combo groups;
 	
 	private String user = null;
-	private String [] existing = null;
-	private int selectedGroup = -1;
 	
 	private int result = Window.CANCEL;
 	
@@ -52,8 +50,6 @@ public class AddBuddyDialog extends Dialog {
 	public AddBuddyDialog(Shell parentShell,String username, String [] existingGroups, int selectedGroup) {
 		super(parentShell);
 		this.user = username;
-		this.existing = existingGroups;
-		this.selectedGroup = selectedGroup;
 	}
 	protected Control createDialogArea(Composite parent) {
 		Composite container = (Composite) super.createDialogArea(parent);

@@ -70,6 +70,9 @@ public class XMPPJingleContainer implements ICallContainerAdapter, ICallSessionL
 		});
 	}
 	
+	protected XMPPConnection getConnection() {
+		return conn;
+	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.call.ICallContainerAdapter#addListener(org.eclipse.ecf.call.ICallSessionListener)
 	 */
