@@ -40,20 +40,8 @@ import org.eclipse.ecf.internal.core.IDisposable;
  * and lifecycle of IContainer instances created via this factory see
  * {@link IContainer}.
  * 
- * Note that typically the singleton instance for this factory is initialized by
- * consulting the extension registry for extensions to the
- * <b>org.eclipse.ecf.containerFactory</b> extension point. If, however, the
- * system property <b>org.eclipse.ecf.ContainerFactory.standalone</b> is set to
- * true, this factory will <b>not</b> consult the extension registry for
- * initialization, and rather will be assumed to be running standalone (i.e.
- * suitable for usage within a java application). When running standalone, it is
- * the application's responsibility to assure that the appropriate
- * ContainerTypeDescriptions are populated in the factory (via
- * {@link #addDescription(ContainerTypeDescription)}, prior to calling one of
- * the IContainer creation methods (e.g. {@link #createContainer(String)} or
- * {@link #createContainer(ContainerTypeDescription, Object[])}.
- * 
  * @see IContainer
+ * @see IContainerFactory
  */
 public class ContainerFactory implements IContainerFactory {
 
