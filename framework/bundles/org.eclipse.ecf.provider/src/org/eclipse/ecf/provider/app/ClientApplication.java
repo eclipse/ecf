@@ -134,8 +134,6 @@ public class ClientApplication {
 	 *  
 	 */
 	public static void main(String[] args) throws Exception {
-		// Setup ContainerFactory for standalone usage
-		System.setProperty("org.eclipse.ecf.core.ContainerFactory.standalone","true");
 		ClientApplication st = new ClientApplication();
 		st.init(args);
 		// Get server id to join

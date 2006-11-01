@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
@@ -56,10 +57,6 @@ import org.eclipse.ecf.internal.core.IDisposable;
  */
 public class ContainerFactory implements IContainerFactory {
 
-	public static final String STAND_ALONE_PROPERTY = ContainerFactory.class
-			.getName()
-			+ ".standalone";
-
 	private static final int PROPERTY_INITIALIZE_ERRORCODE = 1001;
 
 	private static final int DISPOSE_ERROR_CODE = 100;
@@ -73,11 +70,8 @@ public class ContainerFactory implements IContainerFactory {
 	private static boolean standAlone = false;
 
 	static {
-		String propertyToRead = null;
 		try {
-			propertyToRead = STAND_ALONE_PROPERTY;
-			standAlone = Boolean.valueOf(
-					System.getProperty(propertyToRead, "false")).booleanValue();
+			standAlone = !Platform.isRunning();
 		} catch (Exception e) {
 			Trace.catching(ECFPlugin.getDefault(),
 					ECFDebugOptions.EXCEPTIONS_CATCHING, ContainerFactory.class,
@@ -86,8 +80,7 @@ public class ContainerFactory implements IContainerFactory {
 					.log(
 							new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID,
 									PROPERTY_INITIALIZE_ERRORCODE,
-									"Exception reading property: "
-											+ propertyToRead, e));
+									"Exception determining if platform is running", e));
 		}
 		instance = new ContainerFactory();
 	}
