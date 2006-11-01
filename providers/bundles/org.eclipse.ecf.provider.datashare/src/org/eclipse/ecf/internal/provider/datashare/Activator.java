@@ -9,7 +9,7 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.provider.datashare;
+package org.eclipse.ecf.internal.provider.datashare;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
@@ -19,6 +19,8 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator extends Plugin {
 
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.datashare";
+	
 	//The shared instance.
 	private static Activator plugin;
 	

@@ -21,6 +21,7 @@ import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.datashare.IChannel;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.datashare.IChannelListener;
@@ -28,10 +29,9 @@ import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelDisconnectEvent;
 import org.eclipse.ecf.datashare.events.IChannelConnectEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
+import org.eclipse.ecf.internal.provider.datashare.Activator;
 
 public class BaseChannel extends TransactionSharedObject implements IChannel {
-	
-	protected static final Trace trace = Trace.create("basechannel");
 	
 	public static final String RECEIVER_ID_PROPERTY = BaseChannel.class.getName();
 	
@@ -80,9 +80,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		this.listener = l;
 	}
 	protected void trace(String msg) {
-		if (Trace.ON && trace != null) {
-			trace.msg(msg);
-		}
+		Trace.trace(Activator.getDefault(), msg);
 	}
 	/**
 	 * Override of TransasctionSharedObject.initialize(). This method is called
