@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer;
 
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
@@ -17,7 +18,7 @@ public class UrlFileTransferAdapterFactory extends
 		AbstractSharedObjectContainerAdapterFactory {
 
 	protected ISharedObject createAdapter(ISharedObjectContainer container,
-			Class adapterType) {
+			Class adapterType, ID adapterID) {
 		if (adapterType.equals(IRetrieveFileTransferContainerAdapter.class)) {
 			return new UrlRetrieveFileTransfer();
 		} else return null;

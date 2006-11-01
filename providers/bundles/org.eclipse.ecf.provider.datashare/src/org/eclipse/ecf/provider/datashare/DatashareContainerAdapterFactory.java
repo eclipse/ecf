@@ -10,6 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.datashare;
 
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
@@ -18,7 +19,10 @@ import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 public class DatashareContainerAdapterFactory extends
 		AbstractSharedObjectContainerAdapterFactory {
 
-	protected ISharedObject createAdapter(ISharedObjectContainer container, Class adapterType) {
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory#createAdapter(org.eclipse.ecf.core.sharedobject.ISharedObjectContainer, java.lang.Class, org.eclipse.ecf.core.identity.ID)
+	 */
+	protected ISharedObject createAdapter(ISharedObjectContainer container, Class adapterType, ID adapterID) {
 		if (adapterType.equals(IChannelContainerAdapter.class)) {
 			return new SharedObjectDatashareContainerAdapter();
 		} else return null;
