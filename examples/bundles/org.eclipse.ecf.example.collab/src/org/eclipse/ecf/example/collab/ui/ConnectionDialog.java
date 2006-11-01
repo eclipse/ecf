@@ -397,8 +397,6 @@ public class ConnectionDialog extends TitleAreaDialog {
 						.get(USEPASSWORD_PROP_NAME);
 				String examplegroupid = (String) properties
 						.get(EXAMPLEGROUPID_PROP_NAME);
-				String defaultgroupid = (String) properties
-						.get(DEFAULTGROUPID_PROP_NAME);
 				String useNickname = (String) properties
 						.get(USENICKNAME_PROP_NAME);
 				urlPrefix = (String) properties.get(URLPREFIX_NAME);

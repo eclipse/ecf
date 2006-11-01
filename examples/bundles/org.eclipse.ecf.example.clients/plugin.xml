@@ -17,13 +17,4 @@
          <run class="org.eclipse.ecf.example.clients.XMPPSORobotApplication"/>
       </application>
    </extension>
-   <extension
-         id="filetransferrobot"
-         name="Example XMPP File Transfer"
-         point="org.eclipse.core.runtime.applications">
-      <application>
-         <run class="org.eclipse.ecf.example.clients.XMPPFileTransferApplication"/>
-      </application>
-   </extension>
-
 </plugin>
