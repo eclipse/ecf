@@ -20,19 +20,17 @@ public class DatashareContainerInstantiator implements IContainerInstantiator {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription,
-	 *      java.lang.Class[], java.lang.Object[])
+	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] args) throws ContainerCreateException {
 		String[] argDefaults = description.getArgDefaults();
 		try {
-			ID newID = (argDefaults == null || argDefaults.length == 0) ? null
-					: getIDFromArg(description.getArgDefaults()[0]);
-			if (args != null) {
-				if (args.length > 0) {
-					newID = getIDFromArg(args[0]);
-				}
+			ID newID = null;
+			if (args != null && args.length != 0) {
+				newID = getIDFromArg(args[0]);
+			} else if (argDefaults != null && argDefaults.length != 0) {
+				newID = getIDFromArg(description.getArgDefaults()[0]);
 			} else {
 				newID = IDFactory.getDefault().createGUID();
 			}
@@ -48,7 +46,7 @@ public class DatashareContainerInstantiator implements IContainerInstantiator {
 			return (ID) arg;
 		if (arg instanceof String) {
 			String val = (String) arg;
-			if (val == null || val.equals("")) {
+			if (val.equals("")) { //$NON-NLS-1$
 				return IDFactory.getDefault().createGUID();
 			} else
 				return IDFactory.getDefault().createStringID((String) arg);
