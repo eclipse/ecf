@@ -10,7 +10,7 @@ package org.eclipse.ecf.core.sharedobject;
 
 import java.io.Serializable;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.IConnectPolicy;
+import org.eclipse.ecf.core.security.IConnectHandlerPolicy;
 
 /**
  * Contract for shared object container group manager (e.g. servers)
@@ -24,7 +24,7 @@ public interface ISharedObjectContainerGroupManager {
 	 * 
 	 * @param policy
 	 */
-	public void setConnectPolicy(IConnectPolicy policy);
+	public void setConnectPolicy(IConnectHandlerPolicy policy);
 
 	/**
 	 * Eject the given groupMemberID from the current group of containers, for

@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.security.IConnectPolicy;
+import org.eclipse.ecf.core.security.IConnectHandlerPolicy;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerGroupManager;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
@@ -44,7 +44,7 @@ public class ServerApplication {
     static TCPServerSOContainerGroup serverGroups[] = null;
     static List servers = new ArrayList();
 
-    static class JoinListener implements IConnectPolicy {
+    static class JoinListener implements IConnectHandlerPolicy {
 		public PermissionCollection checkConnect(Object addr, ID fromID, ID targetID, String targetGroup, Object joinData) throws SecurityException {
 			System.out.println("JOIN Addr="+addr+";From="+fromID+";Group="+targetGroup+";Data="+joinData);
 			return null;

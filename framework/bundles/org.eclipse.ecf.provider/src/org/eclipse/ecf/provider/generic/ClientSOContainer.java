@@ -23,6 +23,9 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.security.IConnectInitiatorPolicy;
+import org.eclipse.ecf.core.security.UnsupportedCallbackException;
+import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerClient;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
@@ -34,28 +37,49 @@ import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.comm.SynchEvent;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
-public abstract class ClientSOContainer extends SOContainer {
+public abstract class ClientSOContainer extends SOContainer implements
+		ISharedObjectContainerClient {
+	
+	public static final int DEFAULT_CONNECT_TIMEOUT = 30000;
+	
 	protected ISynchAsynchConnection connection;
+
 	protected ID remoteServerID;
+
 	protected byte connectionState;
+
+	protected IConnectInitiatorPolicy connectPolicy = null;
+	
 	public static final byte DISCONNECTED = 0;
+
 	public static final byte CONNECTING = 1;
+
 	public static final byte CONNECTED = 2;
+
 	static final class Lock {
 	}
+
 	protected Lock connectLock;
+
 	protected Lock getConnectLock() {
 		return connectLock;
 	}
+
 	protected ISynchAsynchConnection getConnection() {
 		return connection;
 	}
+
 	public ClientSOContainer(ISharedObjectContainerConfig config) {
 		super(config);
 		connection = null;
 		connectionState = DISCONNECTED;
 		connectLock = new Lock();
 	}
+
+	public void setConnectInitiatorPolicy(IConnectInitiatorPolicy policy) {
+		this.connectPolicy = policy;
+	}
+	
 	public void dispose() {
 		synchronized (connectLock) {
 			isClosing = true;
@@ -68,32 +92,35 @@ public abstract class ClientSOContainer extends SOContainer {
 		}
 		super.dispose();
 	}
+
 	public final boolean isGroupManager() {
 		return false;
 	}
+
 	public ID getConnectedID() {
 		synchronized (getConnectLock()) {
 			return remoteServerID;
 		}
 	}
-	protected Callback[] createAuthorizationCallbacks() {
-		return null;
-	}
+
 	private void setStateDisconnected(ISynchAsynchConnection conn) {
 		killConnection(conn);
 		connectionState = DISCONNECTED;
 		connection = null;
 		remoteServerID = null;
 	}
+
 	private void setStateConnecting(ISynchAsynchConnection conn) {
 		connectionState = CONNECTING;
 		connection = conn;
 	}
+
 	private void setStateConnected(ID serverID, ISynchAsynchConnection conn) {
 		connectionState = CONNECTED;
 		connection = conn;
 		remoteServerID = serverID;
 	}
+
 	public void connect(ID remote, IConnectContext joinContext)
 			throws ContainerConnectException {
 		try {
@@ -103,33 +130,28 @@ public abstract class ClientSOContainer extends SOContainer {
 			Object response = null;
 			synchronized (getConnectLock()) {
 				// Throw if already connected
-				if (isConnected()) throw new ConnectException("already connected to "
+				if (isConnected())
+					throw new ConnectException("already connected to "
 							+ getConnectedID());
 				// Throw if connecting
-				if (isConnecting()) throw new ConnectException("currently connecting");
+				if (isConnecting())
+					throw new ConnectException("currently connecting");
 				// else we're entering connecting state
 				// first notify synchonously
-				fireContainerEvent(new ContainerConnectingEvent(this.getID(), remote,
-						joinContext));
+				fireContainerEvent(new ContainerConnectingEvent(this.getID(),
+						remote, joinContext));
 				ISynchAsynchConnection aConnection = createConnection(remote,
 						joinContext);
 				setStateConnecting(aConnection);
 				synchronized (aConnection) {
-					// Now call join callback handler, if it exists
-					Callback[] callbacks = createAuthorizationCallbacks();
-					if (joinContext != null) {
-						CallbackHandler handler = joinContext
-								.getCallbackHandler();
-						if (handler != null) {
-							handler.handle(callbacks);
-						}
-					}
+
+					Object connectData = getConnectData(remote,joinContext);
+					int connectTimeout = getConnectTimeout();
+					
 					try {
-						Object connectData = createConnectData(remote,
-								callbacks, null);
 						// Make connect call
 						response = aConnection.connect(remote, connectData,
-								getConnectTimeout());
+								connectTimeout);
 					} catch (IOException e) {
 						if (getConnection() != aConnection)
 							killConnection(aConnection);
@@ -162,9 +184,36 @@ public abstract class ClientSOContainer extends SOContainer {
 			throw except;
 		}
 	}
-	protected int getConnectTimeout() {
-		return 0;
+
+	protected Callback[] createAuthorizationCallbacks() {
+		return null;
 	}
+
+	protected Object createConnectData(ID target, Object data) {
+		return ContainerMessage.createJoinGroupMessage(getID(), target,
+				getNextSequenceNumber(), (Serializable) data);
+	}
+
+	protected Object getConnectData(ID remote, IConnectContext joinContext) throws IOException, UnsupportedCallbackException {
+		if (connectPolicy != null) return connectPolicy.createConnectData(this, remote, joinContext);
+		else {
+			Callback[] callbacks = createAuthorizationCallbacks();
+			if (joinContext != null) {
+				CallbackHandler handler = joinContext
+						.getCallbackHandler();
+				if (handler != null) {
+					handler.handle(callbacks);
+				}
+			}
+			return createConnectData(remote, null);
+		}
+	}
+
+	protected int getConnectTimeout() {
+		if (connectPolicy != null) return connectPolicy.getConnectTimeout();
+		else return DEFAULT_CONNECT_TIMEOUT;
+	}
+
 	protected void handleLeaveGroupMessage(ContainerMessage mess) {
 		if (!isConnected())
 			return;
@@ -183,6 +232,7 @@ public abstract class ClientSOContainer extends SOContainer {
 		fireContainerEvent(new ContainerEjectedEvent(getID(), fromID, lgm
 				.getData()));
 	}
+
 	protected void handleViewChangeMessage(ContainerMessage mess)
 			throws IOException {
 		if (!isConnected())
@@ -239,17 +289,16 @@ public abstract class ClientSOContainer extends SOContainer {
 			}
 		}
 	}
+
 	protected void forwardExcluding(ID from, ID excluding, ContainerMessage data)
 			throws IOException {
 		// NOP
 	}
-	protected Object createConnectData(ID target, Callback[] cbs, Object data) {
-		return ContainerMessage.createJoinGroupMessage(getID(), target,
-				getNextSequenceNumber(), (Serializable) data);
-	}
+
 	protected Serializable getLeaveData(ID target) {
 		return null;
 	}
+
 	public void disconnect() {
 		synchronized (getConnectLock()) {
 			// If we are currently connected then get connection lock and send
@@ -257,8 +306,8 @@ public abstract class ClientSOContainer extends SOContainer {
 			if (isConnected()) {
 				ID groupID = getConnectedID();
 				debug("disconnect(" + groupID + ")");
-				fireContainerEvent(new ContainerDisconnectingEvent(this.getID(),
-						groupID));
+				fireContainerEvent(new ContainerDisconnectingEvent(
+						this.getID(), groupID));
 				synchronized (connection) {
 					try {
 						connection.sendSynch(groupID,
@@ -274,27 +323,34 @@ public abstract class ClientSOContainer extends SOContainer {
 					}
 				}
 				// notify listeners
-				fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), groupID));
+				fireContainerEvent(new ContainerDisconnectedEvent(this.getID(),
+						groupID));
 			}
 		}
 	}
+
 	protected abstract ISynchAsynchConnection createConnection(ID remoteSpace,
 			Object data) throws ConnectionCreateException;
+
 	protected void queueContainerMessage(ContainerMessage message)
 			throws IOException {
 		// Do it
 		connection.sendAsynch(message.getToContainerID(),
 				serializeObject(message));
 	}
+
 	protected void forwardExcluding(ID from, ID excluding, byte msg,
 			Serializable data) throws IOException { /* NOP */
 	}
+
 	protected void forwardToRemote(ID from, ID to, ContainerMessage message)
 			throws IOException { /* NOP */
 	}
+
 	protected ID getIDForConnection(IAsynchConnection conn) {
 		return remoteServerID;
 	}
+
 	protected void memberLeave(ID fromID, IAsynchConnection conn) {
 		if (fromID.equals(remoteServerID)) {
 			groupManager.removeNonLocalMembers();
@@ -304,6 +360,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			super.memberLeave(fromID, conn);
 		}
 	}
+
 	protected void sendMessage(ContainerMessage data) throws IOException {
 		// Get connect lock, then call super version
 		synchronized (connectLock) {
@@ -311,6 +368,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			super.sendMessage(data);
 		}
 	}
+
 	protected ID[] sendCreateMsg(ID toID, SharedObjectDescription createInfo)
 			throws IOException {
 		// Get connect lock, then call super version
@@ -319,6 +377,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			return super.sendCreateSharedObjectMessage(toID, createInfo);
 		}
 	}
+
 	protected void processDisconnect(DisconnectEvent evt) {
 		// Get connect lock, and just return if this connection has been
 		// terminated
@@ -326,6 +385,7 @@ public abstract class ClientSOContainer extends SOContainer {
 			super.processDisconnect(evt);
 		}
 	}
+
 	protected void processAsynch(AsynchEvent evt) throws IOException {
 		// Get connect lock, then call super version
 		synchronized (connectLock) {
@@ -333,8 +393,8 @@ public abstract class ClientSOContainer extends SOContainer {
 			super.processAsynch(evt);
 		}
 	}
-	protected Serializable processSynch(SynchEvent evt)
-			throws IOException {
+
+	protected Serializable processSynch(SynchEvent evt) throws IOException {
 		synchronized (connectLock) {
 			checkConnected();
 			IConnection conn = evt.getConnection();
@@ -343,16 +403,20 @@ public abstract class ClientSOContainer extends SOContainer {
 			return super.processSynch(evt);
 		}
 	}
+
 	protected boolean isConnected() {
 		return (connectionState == CONNECTED);
 	}
+
 	protected boolean isConnecting() {
 		return (connectionState == CONNECTING);
 	}
+
 	private void checkConnected() throws ConnectException {
 		if (!isConnected())
 			throw new ConnectException("not connected");
 	}
+
 	protected ID handleConnectResponse(ID orginalTarget, Object serverData)
 			throws Exception {
 		ContainerMessage aPacket = (ContainerMessage) serverData;
