@@ -20,7 +20,6 @@ import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 import org.eclipse.ecf.example.collab.editor.Activator;
 import org.eclipse.ecf.example.collab.editor.message.EditorChangeMessage;
 import org.eclipse.ecf.example.collab.editor.message.EditorUpdateRequest;
-import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;

@@ -12,9 +12,11 @@ package org.eclipse.ecf.example.collab.editor.wizards;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
@@ -187,8 +189,10 @@ public class NewSharedSessionWizardPage extends WizardPage {
 				case 1:
 					text = instance.getOwner();
 					break;
-				case 2:				
-					text = instance.getCreated().toGMTString();
+				case 2:		
+					DateFormat df = DateFormat.getInstance();
+					df.setTimeZone(TimeZone.getTimeZone("GMT"));
+					text = df.format(instance.getCreated());
 					break;
 				default:
 					text = "";
