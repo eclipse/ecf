@@ -150,7 +150,8 @@ public abstract class ClientSOContainer extends SOContainer implements
 					
 					try {
 						// Make connect call
-						response = aConnection.connect(remote, connectData,
+						response = aConnection.connect(remote, ContainerMessage.createJoinGroupMessage(getID(), remote,
+								getNextSequenceNumber(), (Serializable) connectData),
 								connectTimeout);
 					} catch (IOException e) {
 						if (getConnection() != aConnection)
@@ -189,13 +190,9 @@ public abstract class ClientSOContainer extends SOContainer implements
 		return null;
 	}
 
-	protected Object createConnectData(ID target, Object data) {
-		return ContainerMessage.createJoinGroupMessage(getID(), target,
-				getNextSequenceNumber(), (Serializable) data);
-	}
-
 	protected Object getConnectData(ID remote, IConnectContext joinContext) throws IOException, UnsupportedCallbackException {
-		if (connectPolicy != null) return connectPolicy.createConnectData(this, remote, joinContext);
+		Object connectData = null;
+		if (connectPolicy != null) connectData = connectPolicy.createConnectData(this, remote, joinContext);
 		else {
 			Callback[] callbacks = createAuthorizationCallbacks();
 			if (joinContext != null) {
@@ -205,8 +202,8 @@ public abstract class ClientSOContainer extends SOContainer implements
 					handler.handle(callbacks);
 				}
 			}
-			return createConnectData(remote, null);
 		}
+		return connectData;
 	}
 
 	protected int getConnectTimeout() {
