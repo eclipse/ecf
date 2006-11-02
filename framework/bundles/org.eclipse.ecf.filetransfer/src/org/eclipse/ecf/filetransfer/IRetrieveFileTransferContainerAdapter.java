@@ -9,6 +9,7 @@
 package org.eclipse.ecf.filetransfer;
 
 import java.net.URI;
+import java.util.Map;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
@@ -16,13 +17,13 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 
 /**
- * Entry point retrieval file transfer adapter.  This adapter interface allows providers to
- * expose file retrieval semantics to clients in a transport independent manner.
- * To be used, a non-null adapter reference must be returned from a call to
- * {@link IContainer#getAdapter(Class)}. Once a non-null reference is
- * retrieved, then it may be used to send a retrieve request. Events will then
- * be asynchronously delivered to the provided listener to complete file
- * transfer.
+ * Entry point retrieval file transfer adapter. This adapter interface allows
+ * providers to expose file retrieval semantics to clients in a transport
+ * independent manner. To be used, a non-null adapter reference must be returned
+ * from a call to {@link IContainer#getAdapter(Class)}. Once a non-null
+ * reference is retrieved, then it may be used to send a retrieve request.
+ * Events will then be asynchronously delivered to the provided listener to
+ * complete file transfer.
  * <p>
  * For example, to retrieve a remote file and store it in a local file:
  * 
@@ -49,7 +50,7 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
  * 	URI remoteFileToRetrieve = new URI(&quot;http://www.composent.com/index.html&quot;);
  * 	// Actually make request to start retrieval.  The listener provided will then be notified asynchronously 
  * 	// as file transfer events occur
- * 	ftc.sendRetrieveRequest(remoteFileToRetrieve, listener);
+ * 	ftc.sendRetrieveRequest(remoteFileToRetrieve, listener, null);
  * }
  * </pre>
  * 
@@ -80,12 +81,16 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 *            IncomingFileTransferException will be thrown. Must not be null
 	 * @param transferListener
 	 *            a listener for file transfer events. Must not be null
+	 * @param options
+	 *            a Map of options associated with sendRetrieveRequest. The
+	 *            particular name/value pairs will be unique to the individual
+	 *            providers. May be null.
 	 * @throws IncomingFileTransferException
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
 	 */
 	public void sendRetrieveRequest(URI remoteFileReference,
-			IFileTransferListener transferListener)
+			IFileTransferListener transferListener, Map options)
 			throws IncomingFileTransferException;
 
 }

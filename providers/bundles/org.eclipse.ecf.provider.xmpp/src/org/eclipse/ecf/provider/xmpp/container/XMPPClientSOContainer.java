@@ -831,7 +831,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 
 	public void sendOutgoingRequest(ID targetReceiver,
 			IFileTransferInfo localFileToSend,
-			IFileTransferListener progressListener)
+			IFileTransferListener progressListener, Map options)
 			throws OutgoingFileTransferException {
 		XMPPConnection xmppConnection = delegate.getConnection();
 		if (xmppConnection == null || !xmppConnection.isConnected())
@@ -867,10 +867,10 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 	}
 
 	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend,
-			IFileTransferListener transferListener)
+			IFileTransferListener transferListener, Map options)
 			throws OutgoingFileTransferException {
 		sendOutgoingRequest(targetReceiver, new BaseFileTransferInfo(
-				localFileToSend), transferListener);
+				localFileToSend), transferListener, options);
 	}
 
 }

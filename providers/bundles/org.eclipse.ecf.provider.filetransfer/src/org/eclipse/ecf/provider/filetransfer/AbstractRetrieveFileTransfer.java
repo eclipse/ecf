@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -209,7 +210,7 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 	protected abstract void openStreams() throws IncomingFileTransferException;
 
 	public void sendRetrieveRequest(final URI remoteFileReference,
-			IFileTransferListener transferListener)
+			IFileTransferListener transferListener, Map options)
 			throws IncomingFileTransferException {
 		if (remoteFileReference == null)
 			throw new NullPointerException("remoteFileReference cannot be null");
