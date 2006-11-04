@@ -32,7 +32,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
 				msg);
 	}
-	
+
 	protected void traceStack(String msg, Throwable e) {
 		Trace.catching(ProviderPlugin.getDefault(),
 				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainer.class,
@@ -65,6 +65,75 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 			return new Integer(-1);
 	}
 
+	protected class GenericContainerArgs {
+		ID id;
+
+		Integer keepAlive;
+
+		public GenericContainerArgs(ID id, Integer keepAlive) {
+			this.id = id;
+			this.keepAlive = keepAlive;
+		}
+
+		public ID getID() {
+			return id;
+		}
+
+		public Integer getKeepAlive() {
+			return keepAlive;
+		}
+	}
+
+	protected GenericContainerArgs getClientArgs(String[] argDefaults,
+			Object[] args) throws IDCreateException {
+		ID newID = null;
+		Integer ka = null;
+		if (argDefaults != null && argDefaults.length > 0) {
+			if (argDefaults.length == 2) {
+				newID = getIDFromArg(argDefaults[0]);
+				ka = getIntegerFromArg(argDefaults[1]);
+			} else
+				ka = getIntegerFromArg(argDefaults[0]);
+		}
+		if (args != null && args.length > 0) {
+			if (args.length == 2) {
+				newID = getIDFromArg(args[0]);
+				ka = getIntegerFromArg(args[1]);
+			} else
+				ka = getIntegerFromArg(args[0]);
+		}
+		if (newID == null)
+			newID = IDFactory.getDefault().createGUID();
+		if (ka == null)
+			ka = new Integer(0);
+		return new GenericContainerArgs(newID, ka);
+	}
+
+	protected GenericContainerArgs getServerArgs(String[] argDefaults,
+			Object[] args) throws IDCreateException {
+		ID newID = null;
+		Integer ka = null;
+		if (argDefaults != null && argDefaults.length > 0) {
+			if (argDefaults.length == 2) {
+				newID = getIDFromArg(argDefaults[0]);
+				ka = getIntegerFromArg(argDefaults[1]);
+			} else
+				newID = getIDFromArg(argDefaults[0]);
+		}
+		if (args != null && args.length > 0) {
+			if (args.length == 2) {
+				newID = getIDFromArg(args[0]);
+				ka = getIntegerFromArg(args[1]);
+			} else
+				newID = getIDFromArg(args[0]);
+		}
+		if (newID == null)
+			newID = IDFactory.getDefault().createGUID();
+		if (ka == null)
+			ka = new Integer(0);
+		return new GenericContainerArgs(newID, ka);
+	}
+
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] args) throws ContainerCreateException {
 		boolean isClient = true;
@@ -74,40 +143,27 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 		} else {
 			debug("creating client");
 		}
-		ID newID = null;
 		try {
+			GenericContainerArgs gcargs = null;
 			String[] argDefaults = description.getArgDefaults();
-			newID = (argDefaults == null || argDefaults.length == 0) ? null
-					: getIDFromArg(description.getArgDefaults()[0]);
-			Integer ka = (argDefaults == null || argDefaults.length < 2) ? null
-					: getIntegerFromArg(description.getArgDefaults()[1]);
-			if (args != null) {
-				if (args.length > 0) {
-					newID = getIDFromArg(args[0]);
-					if (args.length > 1) {
-						ka = getIntegerFromArg(args[1]);
-					}
-				}
-			}
-			debug("id=" + newID + ";keepAlive=" + ka);
+			if (isClient)
+				gcargs = getClientArgs(argDefaults, args);
+			else
+				gcargs = getServerArgs(argDefaults, args);
 			// new ID must not be null
-			if (newID == null)
-				throw new ContainerCreateException("id must be provided");
 			if (isClient) {
-				return new TCPClientSOContainer(new SOContainerConfig(newID),
-						ka.intValue());
+				return new TCPClientSOContainer(new SOContainerConfig(gcargs
+						.getID()), gcargs.getKeepAlive().intValue());
 			} else {
-				return new TCPServerSOContainer(new SOContainerConfig(newID),
-						ka.intValue());
+				return new TCPServerSOContainer(new SOContainerConfig(gcargs
+						.getID()), gcargs.getKeepAlive().intValue());
 			}
-		} catch (ClassCastException e) {
-			traceStack("ClassCastException", e);
-			throw new ContainerCreateException(
-					"Parameter type problem creating container", e);
 		} catch (Exception e) {
-			traceStack("Exception", e);
+			traceStack(
+					"Exception in GenericContainerInstantiator.createInstance",
+					e);
 			throw new ContainerCreateException(
-					"Exception creating generic container with id " + newID, e);
+					"Exception creating generic container", e);
 		}
 	}
 }
