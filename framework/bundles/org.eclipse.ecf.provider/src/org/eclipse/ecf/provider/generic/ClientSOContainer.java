@@ -150,8 +150,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 					
 					try {
 						// Make connect call
-						response = aConnection.connect(remote, ContainerMessage.createJoinGroupMessage(getID(), remote,
-								getNextSequenceNumber(), (Serializable) connectData),
+						response = aConnection.connect(remote, connectData,
 								connectTimeout);
 					} catch (IOException e) {
 						if (getConnection() != aConnection)
@@ -203,7 +202,8 @@ public abstract class ClientSOContainer extends SOContainer implements
 				}
 			}
 		}
-		return connectData;
+		return ContainerMessage.createJoinGroupMessage(getID(), remote,
+				getNextSequenceNumber(), (Serializable) connectData);
 	}
 
 	protected int getConnectTimeout() {

@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.provider.xmpp;
+package org.eclipse.ecf.internal.provider.xmpp;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;

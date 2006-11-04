@@ -8,9 +8,6 @@ Bundle-Activator: org.eclipse.ecf.internal.provider.ProviderPlugin
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Eclipse-AutoStart: true
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ecf,
- org.eclipse.ecf.sharedobject;visibility:=reexport
 Provide-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.gmm
 Export-Package: org.eclipse.ecf.provider.app,
  org.eclipse.ecf.provider.comm,
@@ -21,4 +18,16 @@ Eclipse-BuddyPolicy: global
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
+Import-Package: org.eclipse.core.runtime,
+ org.eclipse.ecf.core,
+ org.eclipse.ecf.core.events,
+ org.eclipse.ecf.core.identity,
+ org.eclipse.ecf.core.provider,
+ org.eclipse.ecf.core.security,
+ org.eclipse.ecf.core.sharedobject,
+ org.eclipse.ecf.core.sharedobject.events,
+ org.eclipse.ecf.core.sharedobject.security,
+ org.eclipse.ecf.core.sharedobject.util,
+ org.eclipse.ecf.core.util,
+ org.osgi.framework;version="1.3.0"
 

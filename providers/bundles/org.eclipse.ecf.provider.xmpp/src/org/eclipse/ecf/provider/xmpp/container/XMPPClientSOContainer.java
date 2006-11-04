@@ -29,8 +29,10 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.Callback;
+import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
+import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.ECFException;
@@ -42,6 +44,8 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
+import org.eclipse.ecf.internal.provider.xmpp.Trace;
+import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
@@ -64,8 +68,6 @@ import org.eclipse.ecf.provider.generic.SOConfig;
 import org.eclipse.ecf.provider.generic.SOContainerConfig;
 import org.eclipse.ecf.provider.generic.SOContext;
 import org.eclipse.ecf.provider.generic.SOWrapper;
-import org.eclipse.ecf.provider.xmpp.Trace;
-import org.eclipse.ecf.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
@@ -261,6 +263,22 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 			messageSender = (IIMMessageSender) res;
 		}
 		return conn;
+	}
+
+	protected Object getConnectData(ID remote, IConnectContext joinContext) throws IOException, UnsupportedCallbackException {
+		Callback[] callbacks = createAuthorizationCallbacks();
+		if (joinContext != null && callbacks != null && callbacks.length > 0) {
+			CallbackHandler handler = joinContext
+					.getCallbackHandler();
+			if (handler != null) {
+				handler.handle(callbacks);
+			}
+			if (callbacks[0] instanceof ObjectCallback) {
+				ObjectCallback cb = (ObjectCallback) callbacks[0];
+				return cb.getObject();
+			}
+		}
+		return null;
 	}
 
 	protected Object createConnectData(ID target, Callback[] cbs, Object data) {

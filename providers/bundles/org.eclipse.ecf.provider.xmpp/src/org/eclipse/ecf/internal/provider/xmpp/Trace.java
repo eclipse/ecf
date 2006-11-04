@@ -9,7 +9,7 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.provider.xmpp;
+package org.eclipse.ecf.internal.provider.xmpp;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
