@@ -121,30 +121,4 @@ public final class Base64 {
 		throw new NumberFormatException("Invalid value '" + c
 				+ "' in base64 string");
 	}
-
-	public static void main(String[] args) throws Exception {
-		System.out.println("Starting Base64 test program.");
-		int byteLength = 16;
-		java.security.SecureRandom ar = new java.security.SecureRandom();
-		byte[] buf = new byte[byteLength];
-		ar.nextBytes(buf);
-		System.out.println("Secure random bytes are:");
-		for (int i = 0; i < buf.length; i++)
-			System.out.print(buf[i] + " ");
-		System.out.println();
-		System.out.println("Converting secure random number to Base64...");
-		String res = Base64.encode(buf);
-		System.out.println("Converted string is: ");
-		System.out.println(res);
-		byte[] buf2 = new byte[byteLength];
-		System.out.println("Converting string back to byte array...");
-		buf2 = Base64.decode(res);
-		System.out.println("Converted byte array as: ");
-		for (int i = 0; i < buf2.length; i++)
-			System.out.print(buf2[i] + " ");
-		System.out.println();
-		System.out.println("Trying to decode a bogus string...");
-		buf2 = Base64.decode("ADDFDSFasdfasdf%$###");
-		System.out.println("Done.");
-	}
 }
