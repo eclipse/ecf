@@ -21,9 +21,9 @@ import org.eclipse.ecf.discovery.identity.ServiceID;
  * <p>
  * This interface can be used by container provider implementations as an
  * adapter so that calls to
- * ISharedObjectContainer.getAdapter(IDiscoveryContainerAdapter.class) will
- * return a non-null instance of a class that implements this interface. Clients
- * can then proceed to use this interface to interact with the given discovery
+ * IContainer.getAdapter(IDiscoveryContainerAdapter.class) will return a
+ * non-null instance of a class that implements this interface. Clients can then
+ * proceed to use this interface to interact with the given discovery
  * implementation.
  * 
  */

@@ -24,6 +24,8 @@ import org.eclipse.ecf.core.identity.ID;
  */
 public class RosterEntry implements IRosterEntry {
 
+	protected ID serviceID;
+
 	protected ID userID;
 
 	protected String name;
@@ -34,16 +36,20 @@ public class RosterEntry implements IRosterEntry {
 
 	protected List groups;
 
-	protected ID serviceID;
-
 	public RosterEntry(ID svcID, ID userID, String name,
 			IPresence presenceState, InterestType interestType, Collection grps) {
+		if (svcID == null)
+			throw new RuntimeException(new InstantiationException(
+					"svcID cannot be null"));
+		this.serviceID = svcID;
+		if (userID == null)
+			throw new RuntimeException(new InstantiationException(
+					"userID cannot be null"));
 		this.userID = userID;
 		this.name = name;
 		this.presenceState = presenceState;
 		this.interestType = interestType;
 		this.groups = new ArrayList();
-		this.serviceID = svcID;
 		if (grps != null)
 			this.groups.addAll(groups);
 	}
@@ -130,10 +136,12 @@ public class RosterEntry implements IRosterEntry {
 	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#addGroup(org.eclipse.ecf.ui.presence.IRosterGroup)
 	 */
 	public void add(IRosterGroup group) {
+		if (group == null) return;
 		groups.add(group);
 	}
 
 	public void addAll(Collection grps) {
+		if (grps == null) return;
 		groups.addAll(grps);
 	}
 
@@ -143,6 +151,7 @@ public class RosterEntry implements IRosterEntry {
 	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#remvoe(org.eclipse.ecf.ui.presence.IRosterGroup)
 	 */
 	public void remove(IRosterGroup group) {
+		if (group == null) return;
 		groups.remove(group);
 	}
 

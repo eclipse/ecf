@@ -58,9 +58,11 @@ public class RosterGroup implements IRosterGroup {
 	}
 
 	public void addAll(Map existing) {
+		if (existing == null) return;
 		synchronized (entries) {
 			for (Iterator i = existing.entrySet().iterator(); i.hasNext();) {
-				IRosterEntry entry = (IRosterEntry) i.next();
+				Map.Entry mapEntry = (Map.Entry) i.next();
+				IRosterEntry entry = (IRosterEntry) mapEntry.getValue();
 				add(entry);
 			}
 		}
@@ -120,9 +122,9 @@ public class RosterGroup implements IRosterGroup {
 		synchronized (entries) {
 			IRosterEntry res = (IRosterEntry) entries.remove(entry.getUserID());
 			if (res == null)
-				return true;
-			else
 				return false;
+			else
+				return true;
 		}
 	}
 

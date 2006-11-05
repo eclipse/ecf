@@ -37,23 +37,6 @@ public class ContainerTypeDescription {
 
 	protected Map properties = null;
 
-	public ContainerTypeDescription(String name) {
-		this(name, null);
-	}
-
-	public ContainerTypeDescription(String name, String description) {
-		this(name, description, (Map) null);
-	}
-
-	public ContainerTypeDescription(String name, String description,
-			Map properties) {
-		if (name == null)
-			throw new NullPointerException("name cannot be null");
-		this.name = name;
-		this.description = description;
-		this.properties = (properties == null)?new HashMap():properties;
-	}
-
 	public ContainerTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc) {
 		this(loader, name, instantiatorClass, desc, EMPTY);
@@ -64,26 +47,34 @@ public class ContainerTypeDescription {
 		this(null, name, instantiatorClass, desc);
 	}
 
-	protected ContainerTypeDescription(ClassLoader loader, String name,
+	public ContainerTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc, String[] argDefaults) {
 		this(loader, name, instantiatorClass, desc, argDefaults, null);
 	}
 
-	protected ContainerTypeDescription(ClassLoader loader, String name,
+	public ContainerTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc, String[] argDefaults,
 			Map props) {
 		this.classLoader = loader;
 		if (name == null)
-			throw new NullPointerException("name cannot be null");
+			throw new RuntimeException(
+					new InstantiationException(
+							"SharedObjectContainerDescription<init> name cannot be null"));
 		this.name = name;
-		if (instantiatorClass == null)
-			throw new NullPointerException("instantiatorClass cannot be null");
-		this.instantiatorClass = instantiatorClass;
 		this.hashCode = name.hashCode();
+		if (instantiatorClass == null) 
+			throw new RuntimeException(
+				new InstantiationException(
+						"SharedObjectContainerDescription<init> instantiatorClass cannot be null"));
+		this.instantiatorClass = instantiatorClass;
 		this.description = desc;
 		this.argDefaults = argDefaults;
-		if (props != null)
-			this.properties = props;
+		this.properties = (props == null)?new HashMap():props;
+	}
+
+	public ContainerTypeDescription(String name, IContainerInstantiator inst,
+			String desc) {
+		this(name, inst, desc, EMPTY);
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
@@ -97,22 +88,17 @@ public class ContainerTypeDescription {
 			throw new RuntimeException(
 					new InstantiationException(
 							"SharedObjectContainerDescription<init> name cannot be null"));
+		this.name = name;
+		this.hashCode = name.hashCode();
 		if (inst == null)
 			throw new RuntimeException(
 					new InstantiationException(
 							"SharedObjectContainerDescription<init> instantiator instance cannot be null"));
 		this.instantiator = inst;
-		this.name = name;
 		this.classLoader = this.instantiator.getClass().getClassLoader();
 		this.description = desc;
 		this.argDefaults = argDefaults;
-		if (props != null)
-			this.properties = props;
-	}
-
-	public ContainerTypeDescription(String name, IContainerInstantiator inst,
-			String desc) {
-		this(name, inst, desc, EMPTY);
+		this.properties = (props == null)?new HashMap():props;
 	}
 
 	/**

@@ -52,4 +52,44 @@ public interface IServiceProperties {
 	 * @return the property as an Object
 	 */
 	public Object getProperty(String name);
+
+	/**
+	 * Set property as String.
+	 * 
+	 * @param name
+	 *            the property name of the property. Must not be null.
+	 * @param value
+	 *            the property value to associated with the name. Must not be
+	 *            null
+	 * @return Object that was previous value associated with given name. Null
+	 *         if not previously in properties
+	 */
+	public Object setPropertyString(String name, String value);
+
+	/**
+	 * Set property as byte [].
+	 * 
+	 * @param name
+	 *            the property name of the property. Must not be null.
+	 * @param value
+	 *            the property value to associated with the name. Must not be
+	 *            null.
+	 * @return Object that was previous value associated with given name. Null
+	 *         if not previously in properties
+	 */
+	public Object setPropertyBytes(String name, byte[] value);
+
+	/**
+	 * Set property as Object.
+	 * 
+	 * @param name
+	 *            the property name of the property. Must not be null.
+	 * @param value
+	 *            the property value to associated with the name. Must not be
+	 *            null.
+	 * @return Object that was previous value associated with given name. Null
+	 *         if not previously in properties
+	 */
+	public Object setProperty(String name, Object value);
+
 }

@@ -22,7 +22,7 @@ public class ServiceProperties implements IServiceProperties {
 
 	public ServiceProperties(Properties props) {
 		super();
-		this.props = props;
+		this.props = (props == null)?new Properties():props;
 	}
 
 	/*
@@ -67,5 +67,26 @@ public class ServiceProperties implements IServiceProperties {
 	 */
 	public Object getProperty(String name) {
 		return props.get(name);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceProperties#setProperty(java.lang.String, java.lang.Object)
+	 */
+	public Object setProperty(String name, Object value) {
+		return props.put(name, value);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceProperties#setPropertyBytes(java.lang.String, byte[])
+	 */
+	public Object setPropertyBytes(String name, byte[] value) {
+		return props.put(name,value);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceProperties#setPropertyString(java.lang.String, java.lang.String)
+	 */
+	public Object setPropertyString(String name, String value) {
+		return props.put(name,value);
 	}
 }

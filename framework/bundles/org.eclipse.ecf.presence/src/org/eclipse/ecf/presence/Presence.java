@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.presence;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -46,7 +47,7 @@ public class Presence implements IPresence {
 		this.priority = priority;
 		this.status = status;
 		this.mode = mode;
-		this.properties = props;
+		this.properties = (props == null)?new HashMap():props;
 	}
 
 	public Presence(Type type, int priority, String status, Mode mode) {

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -257,18 +258,35 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		int port = serviceInfo.getPort();
 		int priority = serviceInfo.getPriority();
 		int weight = serviceInfo.getWeight();
+		Properties props = new Properties();
+		for(Enumeration e=serviceInfo.getPropertyNames(); e.hasMoreElements(); ) {
+			String name = (String) e.nextElement();
+			Object value = serviceInfo.getPropertyString(name);
+			if (value == null) value = serviceInfo.getPropertyBytes(name);
+			if (value != null) props.put(name, value);
+		}
+		final ServiceProperties svcProperties = new ServiceProperties(props);
 		IServiceProperties newProps = new IServiceProperties() {
 			public Enumeration getPropertyNames() {
-				return serviceInfo.getPropertyNames();
+				return svcProperties.getPropertyNames();
 			}
 			public String getPropertyString(String name) {
-				return serviceInfo.getPropertyString(name);
+				return svcProperties.getPropertyString(name);
 			}
 			public byte[] getPropertyBytes(String name) {
-				return serviceInfo.getPropertyBytes(name);
+				return svcProperties.getPropertyBytes(name);
 			}
 			public Object getProperty(String name) {
-				return getPropertyBytes(name);
+				return svcProperties.getPropertyBytes(name);
+			}
+			public Object setProperty(String name, Object value) {
+				return svcProperties.setProperty(name, value);
+			}
+			public Object setPropertyBytes(String name, byte[] value) {
+				return svcProperties.setPropertyBytes(name, value);
+			}
+			public Object setPropertyString(String name, String value) {
+				return svcProperties.setPropertyString(name, value);
 			}
 		};
 		IServiceInfo newInfo = new JMDNSServiceInfo(addr, sID, port, priority,

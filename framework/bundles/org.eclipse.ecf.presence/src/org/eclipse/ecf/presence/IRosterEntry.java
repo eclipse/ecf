@@ -27,7 +27,7 @@ public interface IRosterEntry {
 	 * Add this roster entry to the given group.
 	 * 
 	 * @param group
-	 *            the group to add this entry to.
+	 *            the group to add this entry to.  If group is null, it will be ignored.
 	 */
 	public void add(IRosterGroup group);
 
@@ -49,18 +49,25 @@ public interface IRosterEntry {
 	public Iterator getGroups();
 
 	/**
-	 * Get name for roster entry
+	 * Get service ID associated with this roster entry
 	 * 
-	 * @return name. Will not return null.
+	 * @return ID that is service ID for this entry.  Will not be null
 	 */
-	public String getName();
+	public ID getServiceID();
 
 	/**
 	 * Get ID for user
 	 * 
-	 * @return ID user ID. Can be null.
+	 * @return ID user ID. Will not be null.
 	 */
 	public ID getUserID();
+
+	/**
+	 * Get name for roster entry
+	 * 
+	 * @return name. May return null.
+	 */
+	public String getName();
 
 	/**
 	 * Set name for this roster entry
@@ -80,7 +87,7 @@ public interface IRosterEntry {
 	/**
 	 * Get presence state for this roster entry.
 	 * 
-	 * @return IPresence information for this roster entry
+	 * @return IPresence information for this roster entry.  May be null.
 	 */
 	public IPresence getPresenceState();
 
@@ -91,13 +98,6 @@ public interface IRosterEntry {
 	 *            the presence information for this roster entry
 	 */
 	public void setPresenceState(IPresence presence);
-
-	/**
-	 * Get service ID associated with this roster entry
-	 * 
-	 * @return ID that is service ID for this entry
-	 */
-	public ID getServiceID();
 
 	public static class InterestType {
 
