@@ -10,6 +10,10 @@ package org.eclipse.ecf.core.sharedobject;
 
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Replica shared object factory
+ *
+ */
 public interface IReplicaSharedObjectDescriptionFactory {
 	/**
 	 * Create new ReplicaSharedObjectDescription instance for delivery to remote
