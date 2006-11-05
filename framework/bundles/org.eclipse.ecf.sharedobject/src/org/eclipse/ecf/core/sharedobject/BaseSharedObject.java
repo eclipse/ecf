@@ -37,7 +37,8 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
  */
 public class BaseSharedObject implements ISharedObject, IIdentifiable {
 
-	private static final int DESTROYREMOTE_CODE = 8001;
+	protected static final int DESTROYREMOTE_CODE = 8001;
+	protected static final int DESTROYSELFLOCAL_CODE = 8002;
 
 	private ISharedObjectConfig config = null;
 
@@ -47,32 +48,13 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		super();
 	}
 
-	private void traceEntering(String methodName, Object[] params) {
-		Trace.entering(Activator.getDefault(),
-				SharedObjectDebugOptions.METHODS_ENTERING,
-				BaseSharedObject.class, getID() + "." + methodName, params);
-	}
-
-	private void traceEntering(String methodName, Object param) {
-		Trace.entering(Activator.getDefault(),
-				SharedObjectDebugOptions.METHODS_ENTERING,
-				BaseSharedObject.class, getID() + "." + methodName, param);
-	}
-
-	private void traceExiting(String methodName, Object result) {
-		Trace.entering(Activator.getDefault(),
-				SharedObjectDebugOptions.METHODS_EXITING,
-				BaseSharedObject.class, getID() + "." + methodName, result);
-	}
-
 	public final void init(ISharedObjectConfig initData)
 			throws SharedObjectInitException {
-		String methodName = "init";
-		traceEntering(methodName, new Object[] { initData });
 		this.config = initData;
+		traceEntering("init", initData);
 		addEventProcessor(new SharedObjectMsgEventProcessor(this));
 		initialize();
-		traceExiting(methodName, null);
+		traceExiting("init");
 	}
 
 	/**
@@ -86,7 +68,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 *             if initialization should throw
 	 */
 	protected void initialize() throws SharedObjectInitException {
-		traceEntering("initialize", null);
+		traceEntering("initialize");
 	}
 
 	/**
@@ -101,10 +83,10 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	}
 
 	public void dispose(ID containerID) {
-		traceEntering("dispose", new Object[] { containerID });
+		traceEntering("dispose", containerID );
 		eventProcessors.clear();
 		config = null;
-		traceExiting("dispose", null);
+		traceExiting("dispose");
 	}
 
 	public Object getAdapter(Class adapter) {
@@ -113,12 +95,10 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 
 	public void handleEvent(Event event) {
 		traceEntering("handleEvent", event);
-		Trace.trace(Activator.getDefault(), getID() + ":" + "handleEvent("
-				+ event + ")");
 		synchronized (eventProcessors) {
 			fireEventProcessors(event);
 		}
-		traceExiting("handleEvent", event);
+		traceExiting("handleEvent");
 	}
 
 	public boolean addEventProcessor(IEventProcessor proc) {
@@ -159,7 +139,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		for (int i = 0; i < events.length; i++) {
 			handleEvent(events[i]);
 		}
-		traceExiting("handleEvents", null);
+		traceExiting("handleEvents");
 	}
 
 	public ID getID() {
@@ -204,27 +184,23 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	}
 
 	protected void destroySelf() {
-		traceEntering("destroySelf", null);
+		traceEntering("destroySelf");
 		if (isPrimary()) {
 			try {
 				// Send destroy message to all known remotes
 				destroyRemote(null);
 			} catch (IOException e) {
-				traceCatching("destroySelfLocal", e);
-				Activator.getDefault().getLog()
-						.log(
-								new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-										DESTROYREMOTE_CODE,
-										"Exception in destroyRemote for "
-												+ getID(), e));
+				traceCatching("destroySelf", e);
+				logError(DESTROYREMOTE_CODE, "destroySelf", e);
 			}
 		}
+		// Now destroy self locally
 		destroySelfLocal();
-		traceExiting("destroySelf", null);
+		traceExiting("destroySelf");
 	}
 
 	protected void destroySelfLocal() {
-		traceEntering("destroySelfLocal", null);
+		traceEntering("destroySelfLocal");
 		try {
 			ISharedObjectManager manager = getContext()
 					.getSharedObjectManager();
@@ -233,18 +209,13 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 			}
 		} catch (Exception e) {
 			traceCatching("destroySelfLocal", e);
+			logError(DESTROYSELFLOCAL_CODE,"destroySelfLocal",e);
 		}
-		traceExiting("destroySelfLocal", null);
+		traceExiting("destroySelfLocal");
 	}
 
 	protected void destroyRemote(ID remoteID) throws IOException {
 		getContext().sendDispose(remoteID);
-	}
-
-	private void traceCatching(String method, Throwable t) {
-		Trace.catching(Activator.getDefault(),
-				SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
-				BaseSharedObject.class, getID() + "." + method, t);
 	}
 
 	/**
@@ -270,7 +241,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		traceEntering(method, new Object[] { toID, msg });
 		getContext().sendMessage(toID,
 				new SharedObjectMsgEvent(getID(), toID, msg));
-		traceExiting(method, null);
+		traceExiting(method);
 	}
 
 	/**
@@ -306,10 +277,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 					.getLocalContainerID(), msg));
 		} catch (QueueException e) {
 			traceCatching("sendSharedObjectMsgToSelf", e);
-			Activator.getDefault().getLog().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							DESTROYREMOTE_CODE,
-							"Exception in queue.enqueue for " + getID(), e));
+			logError(DESTROYREMOTE_CODE,"sendSharedObjectMsgToSelf",e);
 		}
 	}
 
@@ -327,8 +295,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	protected SharedObjectMsg getSharedObjectMsgFromEvent(
 			ISharedObjectMessageEvent event) {
-		String method = "getSharedObjectMsgFromEvent";
-		traceEntering(method, event);
+		traceEntering("getSharedObjectMsgFromEvent", event);
 		Object eventData = event.getData();
 		Object msgData = null;
 		// If eventData is not null and instanceof RemoteSharedObjectEvent
@@ -341,9 +308,14 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 				msgData = ((SharedObjectMsgEvent) rsoeData).getData();
 		} else
 			msgData = eventData;
-		if (msgData != null && msgData instanceof SharedObjectMsg)
+		
+		if (msgData != null && msgData instanceof SharedObjectMsg) {
+			traceExiting("getSharedObjectMsgFromEvent",msgData);
 			return (SharedObjectMsg) msgData;
-		return null;
+		} else {
+			traceExiting("getSharedObjectMsgFromEvent",null);
+			return null;
+		}
 	}
 
 	/**
@@ -360,15 +332,15 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	protected boolean handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
 		traceEntering("handleSharedObjectMsgEvent", event);
+		boolean result = false;
 		if (event instanceof ISharedObjectCreateResponseEvent)
-			return handleSharedObjectCreateResponseEvent((ISharedObjectCreateResponseEvent) event);
+			result = handleSharedObjectCreateResponseEvent((ISharedObjectCreateResponseEvent) event);
 		else {
 			SharedObjectMsg msg = getSharedObjectMsgFromEvent(event);
-			if (msg != null)
-				return handleSharedObjectMsg(msg);
-			else
-				return false;
+			if (msg != null) result = handleSharedObjectMsg(msg);
 		}
+		traceExiting("handleSharedObjectMsgEvent",new Boolean(result));
+		return result;
 	}
 
 	/**
@@ -387,8 +359,6 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	protected boolean handleSharedObjectCreateResponseEvent(
 			ISharedObjectCreateResponseEvent createResponseEvent) {
-		traceEntering("handleSharedObjectCreateResponseEvent",
-				createResponseEvent);
 		return false;
 	}
 
@@ -406,7 +376,6 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 *         processing should stop. False if processing should continue
 	 */
 	protected boolean handleSharedObjectMsg(SharedObjectMsg msg) {
-		traceEntering("handleSharedObjectMsg", msg);
 		return false;
 	}
 
@@ -475,6 +444,17 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	}
 
 	/**
+	 * Get IDs of remote containers currently in this group.  This method consults the current
+	 * container context to retrieve the current group membership
+	 * 
+	 * @return ID[] of current group membership.  Will not return null;
+	 * 
+	 * @see ISharedObjectContext#getGroupMemberIDs()
+	 */
+	protected ID[] getGroupMemberIDs() {
+		return getContext().getGroupMemberIDs();
+	}
+	/**
 	 * Replicate this shared object to a given set of remote containers. This
 	 * method will invoke the method getReplicaDescriptions in order to
 	 * determine the set of ReplicaSharedObjectDescriptions to send to remote
@@ -486,36 +466,74 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 *            replica of this shared object.
 	 */
 	protected void replicateToRemoteContainers(ID[] remoteContainers) {
-		traceEntering("replicatToRemoteContainers", remoteContainers);
+		traceEntering("replicateToRemoteContainers", remoteContainers);
 		try {
 			// Get current group membership
-			ISharedObjectContext context = getContext();
-			if (context == null)
-				return;
-			ID[] group = context.getGroupMemberIDs();
-			if (group == null || group.length < 1) {
-				// we're done
-				return;
-			}
 			ReplicaSharedObjectDescription[] createInfos = getReplicaDescriptions(remoteContainers);
 			if (createInfos != null) {
 				if (createInfos.length == 1) {
-					context.sendCreate((remoteContainers == null) ? null
+					getContext().sendCreate((remoteContainers == null) ? null
 							: remoteContainers[0], createInfos[0]);
 				} else {
 					for (int i = 0; i < remoteContainers.length; i++) {
-						context.sendCreate(remoteContainers[i], createInfos[i]);
+						getContext().sendCreate(remoteContainers[i], createInfos[i]);
 					}
 				}
 			}
 		} catch (IOException e) {
-			traceCatching("replicateToRemoteContainers", e);
-			Activator.getDefault().getLog().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							DESTROYREMOTE_CODE,
-							"Exception in replicateToRemoteContainers for "
-									+ getID(), e));
+			traceCatching("replicateToRemoteContainers."+DESTROYREMOTE_CODE, e);
+			logError(DESTROYREMOTE_CODE,"replicateToRemoteContainers",e);
 		}
+	}
+
+	protected void logError(int code, String method, Throwable e) {
+		Activator.getDefault().getLog().log(
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+						code,
+						getSharedObjectAsString(method), e));
+	}
+	
+	private String getSharedObjectAsString(String suffix) {
+		StringBuffer buf = new StringBuffer(String.valueOf(getID()));
+		buf.append(((isPrimary())?".p.":".r."));
+		buf.append(suffix);
+		return buf.toString();
+	}
+	
+	protected void traceEntering(String methodName) {
+		Trace.entering(Activator.getDefault(),
+				SharedObjectDebugOptions.METHODS_ENTERING,
+				this.getClass(), getSharedObjectAsString(methodName));
+	}
+	
+	protected void traceEntering(String methodName, Object[] params) {
+		Trace.entering(Activator.getDefault(),
+				SharedObjectDebugOptions.METHODS_ENTERING,
+				this.getClass(), getSharedObjectAsString(methodName));
+	}
+
+	protected void traceEntering(String methodName, Object param) {
+		Trace.entering(Activator.getDefault(),
+				SharedObjectDebugOptions.METHODS_ENTERING,
+				this.getClass(), getSharedObjectAsString(methodName));
+	}
+	
+	protected void traceExiting(String methodName) {
+		Trace.entering(Activator.getDefault(),
+				SharedObjectDebugOptions.METHODS_EXITING,
+				this.getClass(), getSharedObjectAsString(methodName));
+	}
+	
+	protected void traceExiting(String methodName, Object result) {
+		Trace.entering(Activator.getDefault(),
+				SharedObjectDebugOptions.METHODS_EXITING,
+				this.getClass(), getSharedObjectAsString(methodName));
+	}
+
+	protected void traceCatching(String method, Throwable t) {
+		Trace.catching(Activator.getDefault(),
+				SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
+				this.getClass(), getSharedObjectAsString(method), t);
 	}
 
 }

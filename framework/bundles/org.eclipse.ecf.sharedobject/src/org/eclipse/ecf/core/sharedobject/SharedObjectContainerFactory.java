@@ -54,13 +54,12 @@ public class SharedObjectContainerFactory implements
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObjectContainer(org.eclipse.ecf.core.SharedObjectContainerDescription,
-	 *      java.lang.String[], java.lang.Object[])
+	 *      java.lang.Object[])
 	 */
 	public ISharedObjectContainer createSharedObjectContainer(
-			ContainerTypeDescription desc, String[] argTypes, Object[] args)
+			ContainerTypeDescription desc, Object[] args)
 			throws ContainerCreateException {
 		trace("createSharedObjectContainer(" + desc + ","
-				+ Trace.getArgumentsString(argTypes) + ","
 				+ Trace.getArgumentsString(args) + ")");
 		if (desc == null)
 			throw new ContainerCreateException(
@@ -85,7 +84,7 @@ public class SharedObjectContainerFactory implements
 	public ISharedObjectContainer createSharedObjectContainer(
 			String descriptionName) throws ContainerCreateException {
 		return createSharedObjectContainer(ContainerFactory.getDefault()
-				.getDescriptionByName(descriptionName), null, null);
+				.getDescriptionByName(descriptionName), null);
 	}
 
 	/*
@@ -98,19 +97,7 @@ public class SharedObjectContainerFactory implements
 			String descriptionName, Object[] args)
 			throws ContainerCreateException {
 		return createSharedObjectContainer(ContainerFactory.getDefault()
-				.getDescriptionByName(descriptionName), null, args);
+				.getDescriptionByName(descriptionName), args);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObjectContainer(java.lang.String,
-	 *      java.lang.String[], java.lang.Object[])
-	 */
-	public ISharedObjectContainer createSharedObjectContainer(
-			String descriptionName, String[] argsTypes, Object[] args)
-			throws ContainerCreateException {
-		return createSharedObjectContainer(ContainerFactory.getDefault()
-				.getDescriptionByName(descriptionName), argsTypes, args);
-	}
 }

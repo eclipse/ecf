@@ -129,7 +129,8 @@ public class Trace {
 	 * 
 	 */
 	protected static boolean shouldTrace(Plugin plugin) {
-		if (plugin == null) return false;
+		if (plugin == null)
+			return false;
 		return plugin.isDebugging();
 	}
 
@@ -175,7 +176,8 @@ public class Trace {
 	 * 
 	 */
 	public static String getArgumentString(Object argument) {
-		if (argument == null) return "null";
+		if (argument == null)
+			return "null";
 		if (argument.getClass().isArray())
 			return getArgumentsString((Object[]) argument);
 		else
@@ -198,7 +200,8 @@ public class Trace {
 		for (int i = 0; i < arguments.length; i++) {
 			buffer.append(getArgumentString(arguments[i]));
 
-			if (i < arguments.length - 1) buffer.append(SEPARATOR_PARAMETER);
+			if (i < arguments.length - 1)
+				buffer.append(SEPARATOR_PARAMETER);
 		}
 		buffer.append("]");
 		return buffer.toString();
@@ -400,7 +403,8 @@ public class Trace {
 		if (shouldTrace(plugin, option)) {
 			StringBuffer buf = new StringBuffer(PREFIX_ENTERING).append(clazz
 					.getName());
-			buf.append(SEPARATOR_METHOD).append(methodName);
+			buf.append(SEPARATOR_METHOD).append(methodName).append(
+					PARENTHESIS_OPEN).append(PARENTHESIS_CLOSE);
 			trace(buf.toString());
 		}
 	}

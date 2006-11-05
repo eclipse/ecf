@@ -21,7 +21,7 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
 
 /**
  * Superclass for shared object classes that replicate themselves
- * optimistically.
+ * optimistically. May be subclassed as desired.
  * 
  */
 public class OptimisticSharedObject extends BaseSharedObject {
@@ -30,34 +30,26 @@ public class OptimisticSharedObject extends BaseSharedObject {
 		super();
 	}
 
-	protected void trace(String msg) {
-		Trace.trace(Activator.getDefault(), getID() + ":"
-				+ (isPrimary() ? "primary:" : "replica:") + msg);
-	}
-
-	protected void traceStack(String msg, Throwable t) {
-		Trace.catching(Activator.getDefault(),
-				SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
-				OptimisticSharedObject.class, getID() + ":"
-						+ (isPrimary() ? "primary" : "replica") + msg, t);
-	}
-
 	protected void initialize() throws SharedObjectInitException {
 		super.initialize();
-		trace("initialize()");
+		Trace.entering(Activator.getDefault(),
+				SharedObjectDebugOptions.METHODS_ENTERING,
+				OptimisticSharedObject.class, "initialize");
 		addEventProcessor(new IEventProcessor() {
 			public boolean processEvent(Event event) {
 				if (event instanceof ISharedObjectActivatedEvent) {
+					// If we've been activated, are primary and are connected
+					// then replicate to all remotes
 					if (isPrimary() && isConnected()) {
-						trace("replicating to all");
 						OptimisticSharedObject.this
 								.replicateToRemoteContainers(null);
 					}
 				} else if (event instanceof IContainerConnectedEvent) {
+					// If we've have just been connected, and are primary
+					// then replicate to the newly arrived container
 					if (isPrimary()) {
 						ID targetID = ((IContainerConnectedEvent) event)
 								.getTargetID();
-						trace("replicating to target=" + targetID);
 						OptimisticSharedObject.this
 								.replicateToRemoteContainers(new ID[] { targetID });
 					}
@@ -65,5 +57,8 @@ public class OptimisticSharedObject extends BaseSharedObject {
 				return false;
 			}
 		});
+		Trace.exiting(Activator.getDefault(),
+				SharedObjectDebugOptions.METHODS_EXITING,
+				OptimisticSharedObject.class, "initialize");
 	}
 }

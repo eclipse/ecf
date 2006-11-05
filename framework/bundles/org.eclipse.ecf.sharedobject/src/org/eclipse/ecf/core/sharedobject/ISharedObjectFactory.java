@@ -32,7 +32,7 @@ public interface ISharedObjectFactory {
 	 * if any other SharedObjectTypeDescriptions are currently registered with
 	 * the factory, and if so, what they are.
 	 * 
-	 * @return List of SharedObjectTypeDescription instances
+	 * @return List of SharedObjectTypeDescription instances.  Will not be null.
 	 */
 	public List getDescriptions();
 
