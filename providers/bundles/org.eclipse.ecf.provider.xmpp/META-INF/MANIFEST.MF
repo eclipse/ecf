@@ -6,7 +6,8 @@ Bundle-ClassPath: xmpp.jar
 Bundle-Activator: org.eclipse.ecf.internal.provider.xmpp.XmppPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
-Require-Bundle: org.jivesoftware.smack
+Require-Bundle: org.jivesoftware.smack,
+ org.eclipse.ecf.filetransfer
 Eclipse-LazyStart: true
 Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.internal.provider.xmpp;x-internal:=true,
@@ -30,8 +31,6 @@ Import-Package: org.eclipse.core.runtime,
  org.eclipse.ecf.core.sharedobject.events,
  org.eclipse.ecf.core.sharedobject.util,
  org.eclipse.ecf.core.util,
- org.eclipse.ecf.filetransfer,
- org.eclipse.ecf.filetransfer.events,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.presence.chat,
  org.eclipse.ecf.provider.comm,
