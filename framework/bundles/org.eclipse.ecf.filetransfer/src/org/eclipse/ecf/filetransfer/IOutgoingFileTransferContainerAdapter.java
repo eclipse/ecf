@@ -32,28 +32,28 @@ import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDoneEvent;
  * To request and initiate sending a local file to a remote user:
  * 
  * <pre>
- *    // Get IOutgoingFileTransferContainerAdapter adapter
- *     IOutgoingFileTransferContainerAdapter ftc = (IOutgoingFileTransferContainerAdapter) container.getAdapter(IOutgoingFileTransferContainerAdapter.class);
- *     if (ftc != null) {
- *       // Create listener for receiving/responding to asynchronous file transfer events
- *   	     IFileTransferListener listener = new IFileTransferListener() {
- *   		     public void handleTransferEvent(IFileTransferEvent event) {
- *                 // If this event is a response to the transfer request, check if file transfer rejected
- *                 if (event instanceof IOutgoingFileTransferResponseEvent) {
- *                     IOutgoingFileTransferResponseEvent oftr = (IOutgoingFileTransferResponseEvent) event;
- *                     if (!oftr.requestAccepted()) {
- *                         // request rejected...tell user
- *                     }
- *                 }
- *   		     }
- *   	     };
- *         // Specify the target user to receive file being sent
- *         ID userID = target user id to receive file;
- *         // Specify the local file to send
- *         File localFileToSend = new File(&quot;filename&quot;);
- *         // Actually send outgoing file request to remote user.  
- *         ftc.sendOutgoingRequest(userID, localFileToSend, listener, null);
- *     }
+ *     // Get IOutgoingFileTransferContainerAdapter adapter
+ *      IOutgoingFileTransferContainerAdapter ftc = (IOutgoingFileTransferContainerAdapter) container.getAdapter(IOutgoingFileTransferContainerAdapter.class);
+ *      if (ftc != null) {
+ *        // Create listener for receiving/responding to asynchronous file transfer events
+ *    	     IFileTransferListener listener = new IFileTransferListener() {
+ *    		     public void handleTransferEvent(IFileTransferEvent event) {
+ *                  // If this event is a response to the transfer request, check if file transfer rejected
+ *                  if (event instanceof IOutgoingFileTransferResponseEvent) {
+ *                      IOutgoingFileTransferResponseEvent oftr = (IOutgoingFileTransferResponseEvent) event;
+ *                      if (!oftr.requestAccepted()) {
+ *                          // request rejected...tell user
+ *                      }
+ *                  }
+ *    		     }
+ *    	     };
+ *          // Specify the target user to receive file being sent
+ *          ID userID = target user id to receive file;
+ *          // Specify the local file to send
+ *          File localFileToSend = new File(&quot;filename&quot;);
+ *          // Actually send outgoing file request to remote user.  
+ *          ftc.sendOutgoingRequest(userID, localFileToSend, listener, null);
+ *      }
  * </pre>
  * 
  * <b>For the sender</b> the delivered events will be:

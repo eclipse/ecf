@@ -65,6 +65,10 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 							return sb.toString();
 						}
 
+						public void cancel() {
+							hardClose();
+						}
+
 					});
 		} catch (Exception e) {
 			throw new IncomingFileTransferException("Exception connecting to "

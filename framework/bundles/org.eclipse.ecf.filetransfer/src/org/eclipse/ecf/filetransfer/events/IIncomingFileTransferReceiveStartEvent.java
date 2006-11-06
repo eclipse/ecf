@@ -14,22 +14,22 @@ import java.net.URI;
 
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
 
 /**
  * Event sent to {@link IFileTransferListener} associated with
- * {@link IOutgoingFileTransfer} instances
+ * {@link IIncomingFileTransfer} instances
  * 
  */
 public interface IIncomingFileTransferReceiveStartEvent extends
 		IFileTransferEvent {
-	
+
 	/**
 	 * Get URI of incoming file
+	 * 
 	 * @return URI of incoming file
 	 */
 	public URI getURI();
-	
+
 	/**
 	 * Get incoming file transfer.
 	 * 
@@ -42,4 +42,9 @@ public interface IIncomingFileTransferReceiveStartEvent extends
 	 */
 	public IIncomingFileTransfer receive(File localFileToSave)
 			throws IOException;
+
+	/**
+	 * Cancel incoming file transfer
+	 */
+	public void cancel();
 }

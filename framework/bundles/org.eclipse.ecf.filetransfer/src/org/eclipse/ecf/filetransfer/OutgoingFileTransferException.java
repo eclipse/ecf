@@ -12,7 +12,7 @@ import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * Outgoing file transfer exception
- *
+ * 
  */
 public class OutgoingFileTransferException extends ECFException {
 

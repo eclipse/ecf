@@ -11,17 +11,17 @@ package org.eclipse.ecf.filetransfer;
 /**
  * Adapter for setting rate control on IFileTransferInfo instances that expose
  * expose this adapter interface via
- * {@link IFileTransfer#getAdapter(Class adapter)}.  To use this interface,
+ * {@link IFileTransfer#getAdapter(Class adapter)}. To use this interface,
  * clients should do the following:
  * 
  * <pre>
- * IFileTransfer fileTransfer;
- * IFileTransferRateControl rateController = (IFileTransferRateControl) fileTransfer.getAdapter(IFileTransferRateControl.class);
- * if (rateController !=null) {
- *    ... use it
- * } else {
- *    ... does not support rate control
- * }
+ *  IFileTransfer fileTransfer;
+ *  IFileTransferRateControl rateController = (IFileTransferRateControl) fileTransfer.getAdapter(IFileTransferRateControl.class);
+ *  if (rateController !=null) {
+ *     ... use it
+ *  } else {
+ *     ... does not support rate control
+ *  }
  * </pre>
  * 
  */

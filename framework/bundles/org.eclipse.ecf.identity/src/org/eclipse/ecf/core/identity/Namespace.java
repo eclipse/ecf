@@ -61,6 +61,7 @@ public abstract class Namespace implements Serializable {
 			this.name = name;
 			this.description = desc;
 			this.hashCode = name.hashCode();
+			this.isInitialized = true;
 			return true;
 		} else
 			return false;

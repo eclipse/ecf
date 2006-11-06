@@ -17,7 +17,7 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 
 /**
- * Event to represent remote file transfer requests.  Events implementing this
+ * Event to represent remote file transfer requests. Events implementing this
  * interface are delivered to {@link IIncomingFileTransferRequestListener}
  * 
  * @see IIncomingFileTransferRequestListener#handleFileTransferRequest(IFileTransferRequestEvent)

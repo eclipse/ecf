@@ -19,16 +19,16 @@ import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
  */
 public interface IFileTransfer extends IAdaptable, IIdentifiable {
 	/**
-	 * Cancel this file transfer.  If file transfer has already been completed,
-	 * then this method has no effect.  If the file transfer has not been completed
-	 * then calling this method will result in an {@link IFileTransferEvent} being
-	 * delivered to the {@link IFileTransferListener} indicating that transfer
-	 * is done ({@link #isDone()} returns true), and some exception will be made
-	 * available
+	 * Cancel this file transfer. If file transfer has already been completed,
+	 * then this method has no effect. If the file transfer has not been
+	 * completed then calling this method will result in an
+	 * {@link IFileTransferEvent} being delivered to the
+	 * {@link IFileTransferListener} indicating that transfer is done ({@link #isDone()}
+	 * returns true), and some exception will be made available
 	 * 
 	 */
 	public void cancel();
-	
+
 	/**
 	 * Get the percent complete for this file transfer. The returned value will
 	 * be either -1.0, meaning that the underlying provider does not support

@@ -9,7 +9,8 @@
 package org.eclipse.ecf.filetransfer.events;
 
 /**
- * Event sent to IFileTransferListeners when an incoming transfer is completed.
+ * Event sent to IFileTransferListeners when an incoming file transfer is
+ * completed.
  * 
  */
 public interface IIncomingFileTransferReceiveDoneEvent extends

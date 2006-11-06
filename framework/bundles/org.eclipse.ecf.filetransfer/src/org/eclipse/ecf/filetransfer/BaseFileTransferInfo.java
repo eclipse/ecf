@@ -16,9 +16,10 @@ import java.util.Map;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 
 /**
- * File transfer information delivered to {@link IIncomingFileTransferRequestListener} via
- * an event implementing {@link IFileTransferRequestEvent#getFileTransferInfo()}
- *
+ * File transfer information delivered to
+ * {@link IIncomingFileTransferRequestListener} via an event implementing
+ * {@link IFileTransferRequestEvent#getFileTransferInfo()}
+ * 
  */
 public class BaseFileTransferInfo implements IFileTransferInfo, Serializable {
 
@@ -42,7 +43,7 @@ public class BaseFileTransferInfo implements IFileTransferInfo, Serializable {
 		if (file == null)
 			throw new NullPointerException("file must not be null");
 		this.file = file;
-		this.properties = (properties == null)?new HashMap():properties;
+		this.properties = (properties == null) ? new HashMap() : properties;
 		this.description = description;
 	}
 

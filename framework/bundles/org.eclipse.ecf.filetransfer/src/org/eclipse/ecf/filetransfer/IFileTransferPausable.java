@@ -11,17 +11,17 @@ package org.eclipse.ecf.filetransfer;
 /**
  * Adapter interface for pausing and resuming IFileTransfer instances that
  * expose this adapter interface via
- * {@link IFileTransfer#getAdapter(Class adapter)}.  To use this interface,
+ * {@link IFileTransfer#getAdapter(Class adapter)}. To use this interface,
  * clients should do the following:
  * 
  * <pre>
- * IFileTransfer fileTransfer;
- * IFileTransferPausable pausable = (IFileTransferPausable) fileTransfer.getAdapter(IFileTransferPausable.class);
- * if (pausable !=null) {
- *    ... use it
- * } else {
- *    ... does not support pausing
- * }
+ *  IFileTransfer fileTransfer;
+ *  IFileTransferPausable pausable = (IFileTransferPausable) fileTransfer.getAdapter(IFileTransferPausable.class);
+ *  if (pausable !=null) {
+ *     ... use it
+ *  } else {
+ *     ... does not support pausing
+ *  }
  * </pre>
  * 
  */

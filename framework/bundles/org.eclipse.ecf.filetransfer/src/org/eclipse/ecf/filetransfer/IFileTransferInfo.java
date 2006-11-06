@@ -15,9 +15,10 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 
 /**
- * File transfer information delivered to {@link IIncomingFileTransferRequestListener} via
- * an event implementing {@link IFileTransferRequestEvent#getFileTransferInfo()}
- *
+ * File transfer information delivered to
+ * {@link IIncomingFileTransferRequestListener} via an event implementing
+ * {@link IFileTransferRequestEvent#getFileTransferInfo()}
+ * 
  */
 public interface IFileTransferInfo extends IAdaptable {
 	/**
@@ -31,8 +32,8 @@ public interface IFileTransferInfo extends IAdaptable {
 	 * Get any properties associated with this file transfer. The map keys and
 	 * values are assumed to be Strings.
 	 * 
-	 * @return Map of properties associated with this file transfer info.
-	 *         Will not return null.
+	 * @return Map of properties associated with this file transfer info. Will
+	 *         not return null.
 	 */
 	public Map getProperties();
 

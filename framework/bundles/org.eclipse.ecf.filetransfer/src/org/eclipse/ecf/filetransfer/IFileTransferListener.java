@@ -12,9 +12,9 @@ import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 
 /**
  * Listener for handling file transfer events. Instances implementing this
- * interface or sub-interfaces will have their handleTransferEvent called 
- * asynchronously when a given event is received. Implementers must be 
- * prepared to have this method called asynchronously by an arbitrary thread.
+ * interface or sub-interfaces will have their handleTransferEvent called
+ * asynchronously when a given event is received. Implementers must be prepared
+ * to have this method called asynchronously by an arbitrary thread.
  * 
  */
 public interface IFileTransferListener {
