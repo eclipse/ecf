@@ -50,8 +50,11 @@
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The fully qualified name of the class that implements the org.eclipse.ecf.core.start.IECFStart interface.
                </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.ecf.core.start.IECFStart"/>
+               </appInfo>
             </annotation>
          </attribute>
          <attribute name="name" type="string">

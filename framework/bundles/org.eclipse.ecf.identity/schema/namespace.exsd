@@ -58,10 +58,10 @@ Plugins implementing this extension point must define a Namespace class that ext
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  Required class for namespace.  Note that the given class &lt;b&gt;must&lt;/b&gt; extend &lt;b&gt;org.eclipse.ecf.core.identity.Namespace&lt;/b&gt;.
+                  The fully qualified name of a class that extends &lt;b&gt;org.eclipse.ecf.core.identity.Namespace&lt;/b&gt;.
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.ecf.core.identity.Namespace"/>
                </appInfo>
             </annotation>
          </attribute>

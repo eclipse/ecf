@@ -54,10 +54,10 @@
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  The class implementing the containerFactory extension point.  The given class must implement the &lt;b&gt;org.eclipse.ecf.core.provider.IContainerInstantiator&lt;/b&gt; interface
+                  The fully qualified name of the class that implements the &lt;b&gt;org.eclipse.ecf.core.provider.IContainerInstantiator&lt;/b&gt; interface.
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.ecf.core.provider.IContainerInstantiator"/>
                </appInfo>
             </annotation>
          </attribute>
