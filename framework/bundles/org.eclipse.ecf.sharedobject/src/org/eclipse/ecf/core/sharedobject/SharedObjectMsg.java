@@ -19,8 +19,8 @@ import java.security.PrivilegedExceptionAction;
 
 /**
  * Shared Object Message. Instances may be used for sending/receiving messages
- * among shared object replicas.
- * 
+ * among shared object replicas. This class can be used to create
+ * SharedObjectMsg instances via one of {@link #createMsg(String)} methods.
  */
 public class SharedObjectMsg implements Serializable {
 	private static final long serialVersionUID = -8761203700888592267L;

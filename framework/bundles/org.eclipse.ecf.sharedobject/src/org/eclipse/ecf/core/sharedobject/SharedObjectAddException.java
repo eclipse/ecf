@@ -10,6 +10,12 @@ package org.eclipse.ecf.core.sharedobject;
 
 import org.eclipse.ecf.core.util.ECFException;
 
+/**
+ * Exception thrown upon shared object add to container
+ * 
+ * @see ISharedObjectManager#addSharedObject(org.eclipse.ecf.core.identity.ID,
+ *      ISharedObject, java.util.Map)
+ */
 public class SharedObjectAddException extends ECFException {
 	private static final long serialVersionUID = 3257853198755705913L;
 

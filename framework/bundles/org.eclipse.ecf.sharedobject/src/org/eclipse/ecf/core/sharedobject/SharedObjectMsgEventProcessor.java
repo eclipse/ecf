@@ -18,6 +18,8 @@ import org.eclipse.ecf.core.util.IEventProcessor;
 /**
  * Event processor to process SharedObjectMsgEvents
  * 
+ * @see IEventProcessor
+ * @see BaseSharedObject#addEventProcessor(IEventProcessor)
  */
 public class SharedObjectMsgEventProcessor implements IEventProcessor {
 

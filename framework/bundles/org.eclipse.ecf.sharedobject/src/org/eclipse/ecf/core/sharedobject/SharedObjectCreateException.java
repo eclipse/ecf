@@ -10,6 +10,11 @@ package org.eclipse.ecf.core.sharedobject;
 
 import org.eclipse.ecf.core.util.ECFException;
 
+/**
+ * Exception thrown upon shared object create by {@link ISharedObjectManager}
+ * 
+ * @see ISharedObjectManager#createSharedObject(SharedObjectDescription)
+ */
 public class SharedObjectCreateException extends ECFException {
 	private static final long serialVersionUID = 3546919195137815606L;
 

@@ -32,7 +32,7 @@ public interface ISharedObjectFactory {
 	 * if any other SharedObjectTypeDescriptions are currently registered with
 	 * the factory, and if so, what they are.
 	 * 
-	 * @return List of SharedObjectTypeDescription instances.  Will not be null.
+	 * @return List of SharedObjectTypeDescription instances. Will not be null.
 	 */
 	public List getDescriptions();
 
@@ -50,7 +50,7 @@ public interface ISharedObjectFactory {
 	 * Get the known SharedObjectTypeDescription given it's name.
 	 * 
 	 * @param name
-	 * @return SharedObjectTypeDescription found.  Null if description not found.
+	 * @return SharedObjectTypeDescription found. Null if description not found.
 	 * @throws SharedObjectCreateException
 	 */
 	public SharedObjectTypeDescription getDescriptionByName(String name)
@@ -75,11 +75,13 @@ public interface ISharedObjectFactory {
 	 * @param args
 	 *            an Object [] of arguments passed to the createInstance method
 	 *            of the ISharedObjectInstantiator
-	 * @return a valid instance of ISharedObject.  Will not be null.
-	 * @throws SharedObjectCreateException if shared object cannot be created
+	 * @return a valid instance of ISharedObject. Will not be null.
+	 * @throws SharedObjectCreateException
+	 *             if shared object cannot be created
 	 */
 	public ISharedObject createSharedObject(
-			SharedObjectTypeDescription typeDescription, Object[] args) throws SharedObjectCreateException;
+			SharedObjectTypeDescription typeDescription, Object[] args)
+			throws SharedObjectCreateException;
 
 	/**
 	 * Create ISharedObject instance. Given a SharedObjectTypeDescription name,
@@ -96,7 +98,7 @@ public interface ISharedObjectFactory {
 	 * 
 	 * @param descriptionName
 	 *            the SharedObjectTypeDescription name to lookup
-	 * @return a valid instance of ISharedObject.  Will not be null.
+	 * @return a valid instance of ISharedObject. Will not be null.
 	 * @throws SharedObjectCreateException
 	 */
 	public ISharedObject createSharedObject(String descriptionName)
@@ -120,7 +122,7 @@ public interface ISharedObjectFactory {
 	 * @param args
 	 *            the Object [] of arguments passed to the
 	 *            ISharedObjectInstantiator.createInstance method
-	 * @return a valid instance of IContainer.   Will not be null.
+	 * @return a valid instance of IContainer. Will not be null.
 	 * @throws SharedObjectCreateException
 	 */
 	public ISharedObject createSharedObject(String descriptionName,

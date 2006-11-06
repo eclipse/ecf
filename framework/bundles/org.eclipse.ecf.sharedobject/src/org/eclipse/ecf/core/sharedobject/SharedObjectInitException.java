@@ -10,6 +10,12 @@ package org.eclipse.ecf.core.sharedobject;
 
 import org.eclipse.ecf.core.util.ECFException;
 
+/**
+ * Exception thrown during calls to
+ * {@link ISharedObject#init(ISharedObjectConfig)}
+ * 
+ * @see ISharedObject#init(ISharedObjectConfig)
+ */
 public class SharedObjectInitException extends ECFException {
 	private static final long serialVersionUID = 3617579318620862771L;
 

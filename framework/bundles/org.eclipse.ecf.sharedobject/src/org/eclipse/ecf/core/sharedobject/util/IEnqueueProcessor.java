@@ -11,9 +11,10 @@ package org.eclipse.ecf.core.sharedobject.util;
 import org.eclipse.ecf.core.util.Event;
 
 /**
- * Predicate 
+ * Predicate
+ * 
  * @author slewis
- *
+ * 
  */
 public interface IEnqueueProcessor {
 	boolean accept(Event element);

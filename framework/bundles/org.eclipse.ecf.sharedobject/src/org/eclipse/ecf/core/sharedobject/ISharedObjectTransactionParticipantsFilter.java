@@ -15,6 +15,8 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Filter for determining transaction participants
  * 
+ * @see ISharedObjectContainerTransaction
+ * 
  */
 public interface ISharedObjectTransactionParticipantsFilter {
 	/**

@@ -33,6 +33,9 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
  * Implementation of two-phase commit for transactional replication of shared
  * objects.
  * 
+ * @see ISharedObjectTransactionConfig
+ * @see ISharedObjectTransactionParticipantsFilter
+ * 
  */
 public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		ISharedObjectContainerTransaction {

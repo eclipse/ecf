@@ -44,8 +44,10 @@ public interface ISharedObjectInstantiator {
 	 * @return ISharedObject instance. The provider implementation must return a
 	 *         valid object implementing ISharedObject OR throw a
 	 *         SharedObjectCreateException
-	 * @throws SharedObjectCreateException if shared object instance cannot be created
+	 * @throws SharedObjectCreateException
+	 *             if shared object instance cannot be created
 	 */
 	public ISharedObject createInstance(
-			SharedObjectTypeDescription typeDescription, Object[] args) throws SharedObjectCreateException;
+			SharedObjectTypeDescription typeDescription, Object[] args)
+			throws SharedObjectCreateException;
 }

@@ -10,6 +10,12 @@ package org.eclipse.ecf.core.sharedobject;
 
 import org.eclipse.ecf.core.util.ECFException;
 
+/**
+ * Exception thrown when creating connector between shared object
+ * 
+ * @see ISharedObjectManager#connectSharedObjects(org.eclipse.ecf.core.identity.ID,
+ *      org.eclipse.ecf.core.identity.ID[])
+ */
 public class SharedObjectConnectException extends ECFException {
 	private static final long serialVersionUID = 3256440287659570228L;
 

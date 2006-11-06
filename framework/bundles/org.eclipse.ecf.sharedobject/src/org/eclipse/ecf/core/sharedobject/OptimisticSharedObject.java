@@ -23,6 +23,7 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
  * Superclass for shared object classes that replicate themselves
  * optimistically. May be subclassed as desired.
  * 
+ * @see BaseSharedObject
  */
 public class OptimisticSharedObject extends BaseSharedObject {
 

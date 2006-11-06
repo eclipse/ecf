@@ -10,6 +10,12 @@ package org.eclipse.ecf.core.sharedobject;
 
 import org.eclipse.ecf.core.util.ECFException;
 
+/**
+ * Exception thrown upon
+ * {@link ISharedObjectManager#disconnectSharedObjects(ISharedObjectConnector)}
+ * 
+ * @see ISharedObjectManager#disconnectSharedObjects(ISharedObjectConnector)
+ */
 public class SharedObjectDisconnectException extends ECFException {
 	private static final long serialVersionUID = 3258689922876586289L;
 

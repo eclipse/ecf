@@ -12,7 +12,7 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Replica shared object factory
- *
+ * 
  */
 public interface IReplicaSharedObjectDescriptionFactory {
 	/**

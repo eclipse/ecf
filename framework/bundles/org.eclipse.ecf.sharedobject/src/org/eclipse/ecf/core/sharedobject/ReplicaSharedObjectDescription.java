@@ -103,10 +103,10 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ReplicaSharedObjectDescription[");
 		sb.append("type=").append(typeDescription).append(";");
-		sb.append("id:").append(id).append(";");
-		sb.append("homeID:").append(homeID).append(";");
-		sb.append("props:").append(properties).append(";");
-		sb.append("ident:").append(identifier).append("]");
+		sb.append("id=").append(id).append(";");
+		sb.append("homeID=").append(homeID).append(";");
+		sb.append("props=").append(properties).append(";");
+		sb.append("ident=").append(identifier).append("]");
 		return sb.toString();
 	}
 }

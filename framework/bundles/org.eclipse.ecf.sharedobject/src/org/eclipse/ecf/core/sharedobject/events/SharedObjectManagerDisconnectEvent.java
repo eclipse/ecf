@@ -42,20 +42,24 @@ public class SharedObjectManagerDisconnectEvent implements
 		return localContainerID;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.sharedobject.events.ISharedObjectManagerEvent#getSharedObjectID()
 	 */
 	public ID getSharedObjectID() {
 		return connector.getSenderID();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.sharedobject.events.ISharedObjectManagerConnectionEvent#getConnector()
 	 */
 	public ISharedObjectConnector getConnector() {
 		return connector;
 	}
-	
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer(
 				"SharedObjectManagerDisconnectEvent[");

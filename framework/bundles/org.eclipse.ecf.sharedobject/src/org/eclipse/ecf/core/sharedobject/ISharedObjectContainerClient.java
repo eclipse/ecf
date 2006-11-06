@@ -11,15 +11,18 @@ package org.eclipse.ecf.core.sharedobject;
 import org.eclipse.ecf.core.security.IConnectInitiatorPolicy;
 
 /**
- * Interface for shared object containers that are clients rather than group manager
- *
+ * Interface for shared object containers that are clients rather than group
+ * manager
+ * 
  * @see ISharedObjectContainerGroupManager
  */
 public interface ISharedObjectContainerClient {
 
 	/**
 	 * Set the connect initiator policy handler for authentication policy
-	 * @param policy the policy to use
+	 * 
+	 * @param policy
+	 *            the policy to use
 	 */
 	public void setConnectInitiatorPolicy(IConnectInitiatorPolicy policy);
 }

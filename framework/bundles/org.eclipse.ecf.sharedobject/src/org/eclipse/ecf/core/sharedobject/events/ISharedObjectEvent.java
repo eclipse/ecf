@@ -13,14 +13,14 @@ import org.eclipse.ecf.core.util.Event;
 
 /**
  * Shared object event
- *
+ * 
  */
 public interface ISharedObjectEvent extends Event {
-	
+
 	/**
 	 * Get ID of sender shared object responsible for this event
 	 * 
-	 * @return ID of sender shared object.  Will not be null.
+	 * @return ID of sender shared object. Will not be null.
 	 */
 	public ID getSenderSharedObjectID();
 

@@ -10,17 +10,21 @@ package org.eclipse.ecf.core.sharedobject.util;
 
 /**
  * Simple queue
- *
+ * 
  */
 public interface ISimpleFIFOQueue {
 	/**
-	 * Enqueue given object.  Blocks until enqueue is completed.
-	 * @param obj the Object to enqueue
+	 * Enqueue given object. Blocks until enqueue is completed.
+	 * 
+	 * @param obj
+	 *            the Object to enqueue
 	 * @return true if enqueued, false if not successfully enqueue
 	 */
 	public boolean enqueue(Object obj);
+
 	/**
-	 * Dequeue an object from off the 
+	 * Dequeue an object from off the
+	 * 
 	 * @return Object dequeued
 	 */
 	public Object dequeue();
@@ -31,13 +35,12 @@ public interface ISimpleFIFOQueue {
 	public Object peekQueue();
 
 	/**
-	 * @return Object that is head of queue.  Removes head from queue
+	 * @return Object that is head of queue. Removes head from queue
 	 */
 	public Object removeHead();
 
 	/**
-	 * Close this queue.  Once closed, the underlying queue cannot be 
-	 * used again
+	 * Close this queue. Once closed, the underlying queue cannot be used again
 	 */
 	public void close();
 }

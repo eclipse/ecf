@@ -18,7 +18,9 @@ import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
  * necessary to determine the type of a shared object instance. It is used by
  * the SharedObjectDescription class to specify the <b>local</b> type of a
  * shared object instance, and by ReplicaSharedObjectDescription to specify the
- * type of a remote shared object instance
+ * type of a remote shared object instance.
+ * 
+ * @see SharedObjectDescription
  */
 public class SharedObjectTypeDescription implements Serializable {
 	private static final long serialVersionUID = -553771188695892646L;

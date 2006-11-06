@@ -11,6 +11,12 @@ package org.eclipse.ecf.core.sharedobject;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Exception thrown during transactional add of shared object
+ * 
+ * @see ISharedObjectContainerTransaction#waitToCommit()
+ * 
+ */
 public class SharedObjectAddAbortException extends SharedObjectAddException {
 	private static final long serialVersionUID = 4120851079287223088L;
 

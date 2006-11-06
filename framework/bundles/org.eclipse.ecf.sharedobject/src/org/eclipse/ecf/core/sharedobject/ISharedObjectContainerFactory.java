@@ -13,6 +13,7 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 
 /**
  * Factory contract for {@link SharedObjectContainerFactory}
+ * 
  */
 public interface ISharedObjectContainerFactory {
 	/**

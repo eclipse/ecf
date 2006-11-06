@@ -13,6 +13,9 @@ import org.eclipse.ecf.core.IReliableContainer;
 /**
  * Core interface that must be implemented by all ECF container instances.
  * Instances are typically created via {@link SharedObjectContainerFactory}
+ * 
+ * @see ISharedObject
+ * @see ISharedObjectManager
  */
 public interface ISharedObjectContainer extends IReliableContainer {
 	/**

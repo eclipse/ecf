@@ -9,8 +9,8 @@
 package org.eclipse.ecf.core.sharedobject.util;
 
 /**
- * Queue that includes both enqueue ({@link IQueueEnqueue})
- * and dequeue ({@link IQueueDequeue}) operations
+ * Queue that includes both enqueue ({@link IQueueEnqueue}) and dequeue ({@link IQueueDequeue})
+ * operations
  * 
  * @see IQueueEnqueue
  * @see IQueueDequeue

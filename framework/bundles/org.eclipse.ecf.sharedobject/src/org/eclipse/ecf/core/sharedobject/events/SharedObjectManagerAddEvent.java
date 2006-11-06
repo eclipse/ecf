@@ -38,7 +38,9 @@ public class SharedObjectManagerAddEvent implements ISharedObjectManagerEvent {
 		return localContainerID;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.sharedobject.events.ISharedObjectManagerEvent#getSharedObjectID()
 	 */
 	public ID getSharedObjectID() {

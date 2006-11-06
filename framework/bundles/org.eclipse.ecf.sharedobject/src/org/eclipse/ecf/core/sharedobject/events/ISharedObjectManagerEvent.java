@@ -13,13 +13,14 @@ import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Shared object manager event
- *
+ * 
  */
 public interface ISharedObjectManagerEvent extends IContainerEvent {
-	
+
 	/**
 	 * Get shared object ID for shared object in question
-	 * @return ID of shared object in question.  Will not return null.
+	 * 
+	 * @return ID of shared object in question. Will not return null.
 	 */
 	public ID getSharedObjectID();
 }
