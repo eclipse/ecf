@@ -48,6 +48,14 @@ obtained at http://www.eclipse.org.
       <import plugin="org.eclipse.help"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.core.jobs"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="org.eclipse.jface"/>
+      <import plugin="org.eclipse.core.commands"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.browser"/>
+      <import plugin="org.eclipse.ui.workbench"/>
    </requires>
 
    <plugin
@@ -165,5 +173,18 @@ obtained at http://www.eclipse.org.
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="org.jivesoftware.smack"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.ecf.server"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
