@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.presence;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,12 +28,12 @@ public class RosterGroup implements IRosterGroup {
 
 	protected String name;
 
-	public RosterGroup(String name, Map existing) {
+	public RosterGroup(String name, Collection /* <IRosterEntry> */ existingEntries) {
 		super();
 		this.name = name;
 		entries = new HashMap();
-		if (existing != null)
-			addAll(existing);
+		if (existingEntries != null)
+			addAll(existingEntries);
 	}
 
 	public RosterGroup(String name) {
@@ -57,12 +58,11 @@ public class RosterGroup implements IRosterGroup {
 			return null;
 	}
 
-	public void addAll(Map existing) {
-		if (existing == null) return;
+	public void addAll(Collection /* <IRosterEntry> */ existingEntryies) {
+		if (existingEntryies == null) return;
 		synchronized (entries) {
-			for (Iterator i = existing.entrySet().iterator(); i.hasNext();) {
-				Map.Entry mapEntry = (Map.Entry) i.next();
-				IRosterEntry entry = (IRosterEntry) mapEntry.getValue();
+			for (Iterator i = existingEntryies.iterator(); i.hasNext();) {
+				IRosterEntry entry = (IRosterEntry) i.next();
 				add(entry);
 			}
 		}
