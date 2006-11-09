@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF IRC Provider
 Bundle-SymbolicName: org.eclipse.ecf.provider.irc; singleton:=true
 Bundle-Version: 0.9.3
-Bundle-Activator: org.eclipse.ecf.provider.irc.Activator
+Bundle-Activator: org.eclipse.ecf.internal.provider.irc.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,

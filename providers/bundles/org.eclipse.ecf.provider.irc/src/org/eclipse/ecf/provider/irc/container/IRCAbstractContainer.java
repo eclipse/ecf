@@ -21,9 +21,9 @@ import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.internal.provider.irc.Activator;
+import org.eclipse.ecf.internal.provider.irc.Trace;
 import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.provider.irc.Activator;
-import org.eclipse.ecf.provider.irc.Trace;
 
 /**
  * @author slewis

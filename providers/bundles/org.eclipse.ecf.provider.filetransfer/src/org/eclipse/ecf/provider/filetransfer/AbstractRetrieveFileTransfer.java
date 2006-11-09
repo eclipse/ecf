@@ -31,8 +31,8 @@ import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.provider.filetransfer.identity.URLFileNamespace;
 import org.eclipse.ecf.provider.internal.filetransfer.Activator;
-import org.eclipse.ecf.provider.internal.filetransfer.identity.URLFileNamespace;
 
 public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 		implements IIncomingFileTransfer,

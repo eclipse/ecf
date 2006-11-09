@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.provider.internal.filetransfer.identity;
+package org.eclipse.ecf.provider.filetransfer.identity;
 
 import java.net.URL;
 

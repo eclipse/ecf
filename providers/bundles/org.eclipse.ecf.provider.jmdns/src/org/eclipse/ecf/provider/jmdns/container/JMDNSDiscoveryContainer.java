@@ -50,8 +50,8 @@ import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceContainerEvent;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.ServiceID;
-import org.eclipse.ecf.provider.jmdns.Messages;
-import org.eclipse.ecf.provider.jmdns.Trace;
+import org.eclipse.ecf.internal.provider.jmdns.Messages;
+import org.eclipse.ecf.internal.provider.jmdns.Trace;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceID;
 
 public class JMDNSDiscoveryContainer implements IContainer,

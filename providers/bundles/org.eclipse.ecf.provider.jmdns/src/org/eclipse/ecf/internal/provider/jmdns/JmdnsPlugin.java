@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.provider.jmdns;
+package org.eclipse.ecf.internal.provider.jmdns;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
@@ -75,7 +75,7 @@ public class JmdnsPlugin extends Plugin {
 	public ResourceBundle getResourceBundle() {
 		try {
 			if (resourceBundle == null)
-				resourceBundle = ResourceBundle.getBundle("org.eclipse.ecf.provider.jmdns.JmdnsPluginResources"); //$NON-NLS-1$
+				resourceBundle = ResourceBundle.getBundle("org.eclipse.ecf.internal.provider.jmdns.JmdnsPluginResources"); //$NON-NLS-1$
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}

@@ -19,7 +19,7 @@
    <extension
          point="org.eclipse.ecf.identity.namespace">
       <namespace
-            class="org.eclipse.ecf.provider.internal.filetransfer.identity.URLFileNamespace"
+            class="org.eclipse.ecf.provider.filetransfer.identity.URLFileNamespace"
             description="ECF URL FileTransfer Provider Namespace"
             name="ecf.provider.filetransfer.url">
       </namespace>

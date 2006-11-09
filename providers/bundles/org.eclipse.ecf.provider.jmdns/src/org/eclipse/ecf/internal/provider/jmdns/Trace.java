@@ -9,7 +9,7 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.provider.jmdns;
+package org.eclipse.ecf.internal.provider.jmdns;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,7 +38,7 @@ public class Trace {
             }
         } catch (Exception e) {
             try {
-                String val = System.getProperty("org.eclipse.ecf.provider.jmdns.Trace");
+                String val = System.getProperty("org.eclipse.ecf.internal.provider.jmdns.Trace");
                 if (val != null) {
                     setTrace(true);
                     isEclipse = false;

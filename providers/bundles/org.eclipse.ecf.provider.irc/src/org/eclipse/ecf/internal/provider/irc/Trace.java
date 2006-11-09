@@ -9,7 +9,7 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.provider.irc;
+package org.eclipse.ecf.internal.provider.irc;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,7 +29,7 @@ public class Trace {
             pluginName = Activator.getDefault().getBundle().getSymbolicName();
         } catch (Exception e) {
             try {
-                String val = System.getProperty("org.eclipse.ecf.provider.irc.Trace");
+                String val = System.getProperty("org.eclipse.ecf.internal.provider.irc.Trace");
                 if (val != null) {
                     setTrace(true);
                     isEclipse = false;
