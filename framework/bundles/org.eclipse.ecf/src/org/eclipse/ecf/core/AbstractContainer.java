@@ -20,7 +20,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 
 /**
- * Abstract implementer of IContainer. Provides implementations of listener
+ * Abstract implementation of IContainer. Provides implementations of listener
  * methods that subsclasses may use to avoid having to implement them
  * themselves. This class may be subclassed as needed.
  * 
