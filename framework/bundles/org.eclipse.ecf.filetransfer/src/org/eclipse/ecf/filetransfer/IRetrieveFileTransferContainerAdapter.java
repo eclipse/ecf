@@ -11,12 +11,12 @@ package org.eclipse.ecf.filetransfer;
 import java.util.Map;
 
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 
 /**
  * Entry point retrieval file transfer adapter. This adapter interface allows
@@ -49,7 +49,7 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
  * 		}
  * 	};
  * 	// Identify file to retrieve and create ID
- * 	ID remoteFileID = IDFactory.getDefault().createID(
+ * 	IFileID remoteFileID = FileIDFactory.getDefault().createID(
  * 			ftc.getRetrieveNamespace(), &quot;http://www.composent.com/index.html&quot;);
  * 	// Actually make request to start retrieval.  The listener provided will then be notified asynchronously 
  * 	// as file transfer events occur
@@ -82,7 +82,13 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 *            required format of the scheme-specific information. If a
 	 *            protocol is specified that is not supported, or the
 	 *            scheme-specific information is not well-formed, then an
-	 *            IncomingFileTransferException will be thrown. Must not be null
+	 *            IncomingFileTransferException will be thrown.  Typically,
+	 *            callers will create IFileID instances via calls such as:
+	 *            <pre>
+     *                IFileID remoteFileID = FileIDFactory.getDefault().createID(
+     *                    ftc.getRetrieveNamespace(), &quot;http://www.composent.com/index.html&quot;);
+	 *            </pre>
+	 *            Must not be null.
 	 * @param transferListener
 	 *            a listener for file transfer events. Must not be null
 	 * @param options
@@ -93,7 +99,7 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
 	 */
-	public void sendRetrieveRequest(ID remoteFileID,
+	public void sendRetrieveRequest(IFileID remoteFileID,
 			IFileTransferListener transferListener, Map options)
 			throws IncomingFileTransferException;
 
@@ -101,7 +107,7 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 * Get namespace to be used for creation of remoteFileID for retrieve
 	 * request. Result typically used as first parameter for
 	 * {@link IDFactory#createID(Namespace, String)} to be used as first in
-	 * {@link #sendRetrieveRequest(ID, IFileTransferListener, Map)}
+	 * {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}
 	 * 
 	 * @return Namespace to use for ID creation via
 	 *         {@link IDFactory#createID(Namespace, String)}. Will not be null.

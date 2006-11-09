@@ -11,18 +11,16 @@ package org.eclipse.ecf.provider.filetransfer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.sharedobject.BaseSharedObject;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
@@ -32,7 +30,9 @@ import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.provider.internal.filetransfer.Activator;
+import org.eclipse.ecf.provider.internal.filetransfer.identity.URLFileNamespace;
 
 public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 		implements IIncomingFileTransfer,
@@ -44,7 +44,9 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 
 	protected Job job;
 
-	protected URI remoteFileReference;
+	protected URL remoteFileURL;
+
+	protected IFileID remoteFileID;
 
 	protected IFileTransferListener listener;
 
@@ -62,8 +64,8 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 
 	protected long fileLength = -1;
 
-	protected URI getRemoteFileReference() {
-		return remoteFileReference;
+	protected URL getRemoteFileURL() {
+		return remoteFileURL;
 	}
 
 	protected void setInputStream(InputStream ins) {
@@ -90,7 +92,7 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 		protected IStatus run(IProgressMonitor monitor) {
 			byte[] buf = new byte[buff_length];
 			int totalWork = ((fileLength == -1) ? 100 : (int) fileLength);
-			monitor.beginTask(getRemoteFileReference().toString() + " - data ",
+			monitor.beginTask(getRemoteFileURL().toString() + " - data ",
 					totalWork);
 			try {
 				while (!isDone()) {
@@ -215,18 +217,25 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 	 */
 	protected abstract void openStreams() throws IncomingFileTransferException;
 
-	public void sendRetrieveRequest(final ID remoteFileReference,
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#sendRetrieveRequest(org.eclipse.ecf.filetransfer.identity.IFileID,
+	 *      org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
+	 */
+	public void sendRetrieveRequest(final IFileID remoteFileID,
 			IFileTransferListener transferListener, Map options)
 			throws IncomingFileTransferException {
-		if (remoteFileReference == null)
-			throw new NullPointerException("remoteFileReference cannot be null");
+		if (remoteFileID == null)
+			throw new NullPointerException("remoteFileID cannot be null");
 		if (transferListener == null)
 			throw new NullPointerException("transferListener cannot be null");
 		try {
-			this.remoteFileReference = new URI(remoteFileReference.getName());
-		} catch (URISyntaxException e) {
+			this.remoteFileID = remoteFileID;
+			this.remoteFileURL = new URL(remoteFileID.getName());
+		} catch (MalformedURLException e) {
 			throw new IncomingFileTransferException(
-					"Exception creating URI for " + remoteFileReference, e);
+					"Exception creating URI for " + remoteFileID, e);
 		}
 		this.listener = transferListener;
 		openStreams();
@@ -234,7 +243,7 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 
 	public Namespace getRetrieveNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(
-				StringID.class.getName());
+				URLFileNamespace.NAMESPACE_NAME);
 	}
 
 	public boolean isPaused() {

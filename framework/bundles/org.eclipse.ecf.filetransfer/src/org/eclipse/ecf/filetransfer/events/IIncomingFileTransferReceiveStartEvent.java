@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 
 /**
  * Event sent to {@link IFileTransferListener} associated with
@@ -23,11 +24,11 @@ public interface IIncomingFileTransferReceiveStartEvent extends
 		IFileTransferEvent {
 
 	/**
-	 * Get path and file name from server for incoming file
+	 * Get IFileID for incoming file
 	 * 
-	 * @return file path from server of incoming file
+	 * @return IFileID for this file transfer event.  Will not be null.
 	 */
-	public String getPath();
+	public IFileID getFileID();
 
 	/**
 	 * Get incoming file transfer.

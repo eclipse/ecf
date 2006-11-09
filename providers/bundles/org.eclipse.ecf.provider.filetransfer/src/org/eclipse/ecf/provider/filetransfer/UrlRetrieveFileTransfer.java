@@ -18,6 +18,7 @@ import java.net.URLConnection;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
+import org.eclipse.ecf.filetransfer.identity.IFileID;
 
 public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
@@ -28,7 +29,7 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
 		try {
 
-			theURL = getRemoteFileReference().toURL();
+			theURL = getRemoteFileURL();
 			urlConnection = theURL.openConnection();
 			setInputStream(urlConnection.getInputStream());
 			setFileLength(fileLength = urlConnection.getContentLength());
@@ -37,19 +38,15 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 					.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
 						private static final long serialVersionUID = -59096575294481755L;
 
-						public String getPath() {
-							try {
-								return urlConnection.getURL().getPath();
-							} catch (Exception e) {
-								return getRemoteFileReference().getPath();
-							}
+						public IFileID getFileID() {
+							return remoteFileID;
 						}
 
 						public IIncomingFileTransfer receive(
 								File localFileToSave) throws IOException {
 							setOutputStream(new BufferedOutputStream(
 									new FileOutputStream(localFileToSave)));
-							job = new FileTransferJob(getRemoteFileReference().toString());
+							job = new FileTransferJob(getRemoteFileURL().toString());
 							job.schedule();
 							return UrlRetrieveFileTransfer.this;
 						}
