@@ -12,12 +12,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.sharedobject.BaseSharedObject;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
@@ -119,7 +124,8 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 					.getSymbolicName(), 0, "Transfer Completed OK", null);
 		else
 			return new Status(IStatus.ERROR, Activator.getDefault().getBundle()
-					.getSymbolicName(), FILETRANSFER_ERRORCODE, "Transfer Exception", exception);
+					.getSymbolicName(), FILETRANSFER_ERRORCODE,
+					"Transfer Exception", exception);
 	}
 
 	protected void hardClose() {
@@ -209,16 +215,26 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 	 */
 	protected abstract void openStreams() throws IncomingFileTransferException;
 
-	public void sendRetrieveRequest(final URI remoteFileReference,
+	public void sendRetrieveRequest(final ID remoteFileReference,
 			IFileTransferListener transferListener, Map options)
 			throws IncomingFileTransferException {
 		if (remoteFileReference == null)
 			throw new NullPointerException("remoteFileReference cannot be null");
 		if (transferListener == null)
 			throw new NullPointerException("transferListener cannot be null");
-		this.remoteFileReference = remoteFileReference;
+		try {
+			this.remoteFileReference = new URI(remoteFileReference.getName());
+		} catch (URISyntaxException e) {
+			throw new IncomingFileTransferException(
+					"Exception creating URI for " + remoteFileReference, e);
+		}
 		this.listener = transferListener;
 		openStreams();
+	}
+
+	public Namespace getRetrieveNamespace() {
+		return IDFactory.getDefault().getNamespaceByName(
+				StringID.class.getName());
 	}
 
 	public boolean isPaused() {

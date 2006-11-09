@@ -16,7 +16,7 @@ package org.eclipse.ecf.core.util;
  * Several small modifications were made: the '_' character was substituted for
  * the '/' character, the '-' char substituted for the '=' char, and the '.'
  * substituted for the '+' char so that the resulting string does not use any of
- * the reserved characters in the URI reserved character set as described in
+ * the reserved characters in the reserved character set as described in
  * RFC2396. See ftp://ftp.isi.edu/in-notes/rfc2396.txt for details.
  * 
  */

@@ -11,6 +11,7 @@
 package org.eclipse.ecf.example.collab;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -101,7 +102,7 @@ public class ServerStartup {
 	}
 	protected void registerServer(ISharedObjectContainer cont)
 			throws URISyntaxException {
-		DiscoveryStartup.registerService(cont.getID().toURI());
+		DiscoveryStartup.registerService(new URI(cont.getID().getName()));
 	}
 	protected TCPServerSOContainerGroup createServerGroup(String name, int port) {
 		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,

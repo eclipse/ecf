@@ -391,7 +391,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			}
 			ID id = obj.getId();
 			try {
-				URI uri = id.toURI();
+				URI uri = new URI(id.getName());
 				obj.addChild(new TreeObject("URI: "+uri));
 			} catch (Exception e) {
 				// Ignore
@@ -955,7 +955,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	}
 	private String getChatRoomSecondaryID(ID roomID) {
 		try {
-			URI aURI = roomID.toURI();
+			URI aURI = new URI(roomID.getName());
 			String auth = aURI.getAuthority();
 			String path = aURI.getPath();
 			return auth + path;

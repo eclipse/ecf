@@ -8,9 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 /**
  * A string-based identity
  * 
@@ -80,17 +77,17 @@ public class StringID extends BaseID {
 		return namespace;
 	}
 
+	public String toExternalForm() {
+		setEmptyNamespace();
+		return super.toExternalForm();
+	}
+	
 	public String toString() {
 		setEmptyNamespace();
 		int strlen = value.length();
 		StringBuffer sb = new StringBuffer(strlen + 10);
 		sb.insert(0, "StringID[").insert(9, value).insert(strlen + 9, ']');
 		return sb.toString();
-	}
-
-	public URI toURI() throws URISyntaxException {
-		setEmptyNamespace();
-		return super.toURI();
 	}
 
 	protected int namespaceCompareTo(BaseID obj) {
@@ -112,14 +109,11 @@ public class StringID extends BaseID {
 		return value.hashCode() ^ getClass().hashCode();
 	}
 
-	protected URI namespaceToURI() throws URISyntaxException {
-		return new URI(getName());
-	}
-
 	protected synchronized void setEmptyNamespace() {
 		if (namespace == null) {
 			namespace = IDFactory.getDefault().getNamespaceByName(
 					StringID.class.getName());
 		}
 	}
+
 }

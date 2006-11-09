@@ -27,7 +27,7 @@ public interface IFileTransferInfo extends IAdaptable {
 	 * @return the proposed file. Will not return null.
 	 */
 	public File getFile();
-
+	
 	/**
 	 * Get any properties associated with this file transfer. The map keys and
 	 * values are assumed to be Strings.

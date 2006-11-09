@@ -875,7 +875,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 	protected void setUsernameAndHost(ID chatHostID) {
 		URI uri = null;
 		try {
-			uri = chatHostID.toURI();
+			uri = new URI(chatHostID.getName());
 			String tmp = uri.getUserInfo();
 			if (tmp != null)
 				userName = tmp;
@@ -922,7 +922,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 	private String trimUserID(ID userID) {
 		URI aURI = null;
 		try {
-			aURI = userID.toURI();
+			aURI = new URI(userID.getName());
 		} catch (URISyntaxException e) {
 			aURI = null;
 		}

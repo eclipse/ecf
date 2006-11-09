@@ -8,9 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 /**
  * Base class for ID implementation classes
  * 
@@ -61,6 +58,10 @@ public abstract class BaseID implements ID {
 		return namespace.getHashCodeForID(this);
 	}
 
+	public String toExternalForm() {
+		return namespace.toExternalForm(this);
+	}
+	
 	protected abstract int namespaceCompareTo(BaseID o);
 
 	protected abstract boolean namespaceEquals(BaseID o);
@@ -69,12 +70,10 @@ public abstract class BaseID implements ID {
 
 	protected abstract int namespaceHashCode();
 
-	protected abstract URI namespaceToURI() throws URISyntaxException;
-
-	public URI toURI() throws URISyntaxException {
-		return namespace.getURIForID(this);
+	protected String namespaceToExternalForm() {
+		return namespace.getName()+Namespace.PROTOCOL_SEPARATOR+namespaceGetName();
 	}
-
+	
 	public Object getAdapter(Class clazz) {
 		return null;
 	}

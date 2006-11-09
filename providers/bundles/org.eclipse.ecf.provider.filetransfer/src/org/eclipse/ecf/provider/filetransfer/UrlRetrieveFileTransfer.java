@@ -12,7 +12,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -38,12 +37,11 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 					.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
 						private static final long serialVersionUID = -59096575294481755L;
 
-						public URI getURI() {
+						public String getPath() {
 							try {
-								return new URI(urlConnection.getURL()
-										.toString());
+								return urlConnection.getURL().getPath();
 							} catch (Exception e) {
-								return getRemoteFileReference();
+								return getRemoteFileReference().getPath();
 							}
 						}
 
@@ -76,6 +74,6 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 		}
 
 	}
-	
+
 
 }

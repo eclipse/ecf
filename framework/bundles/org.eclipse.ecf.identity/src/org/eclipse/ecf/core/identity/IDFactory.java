@@ -8,7 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
-import java.net.URI;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -257,25 +256,6 @@ public class IDFactory implements IIDFactory {
 			throw new IDCreateException("Namespace named " + namespacename
 					+ " not found");
 		return createID(n, args);
-	}
-
-	public ID createID(Namespace namespace, URI uri) throws IDCreateException {
-		return createID(namespace, new Object[] { uri });
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(java.lang.String,
-	 *      java.net.URI)
-	 */
-	public ID createID(String namespacename, URI uri) throws IDCreateException {
-		if (uri == null)
-			throw new IDCreateException("Null uri not allowed");
-		Namespace n = getNamespaceByName(namespacename);
-		if (n == null)
-			throw new IDCreateException("Namespace " + n + " not found");
-		return createID(n, new Object[] { uri });
 	}
 
 	public ID createID(Namespace namespace, String uri)

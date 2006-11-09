@@ -8,7 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -146,50 +145,22 @@ public interface IIDFactory {
 			throws IDCreateException;
 
 	/**
-	 * Make a new identity instance from a namespacename and URI. The
+	 * Make a new identity instance from a namespacename and idvalue. The
 	 * namespacename is first used to lookup the namespace with
 	 * getNamespaceByName(), and then the result is passed into
 	 * createID(Namespace,String).
 	 * 
 	 * @param namespacename
 	 *            the namespacename to use to create the ID
-	 * @param uri
-	 *            the String uri to use to create the ID
+	 * @param idvalue
+	 *            the String idvalue to use to create the ID
 	 * @exception IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createID(String namespacename, String uri)
+	public ID createID(String namespacename, String idvalue)
 			throws IDCreateException;
-
-	/**
-	 * Make a new identity instance from a namespace and URI.
-	 * 
-	 * @param namespace
-	 *            the namespace to use to create the ID
-	 * @param uri
-	 *            the URI to use to create ID.
-	 * @exception IDCreateException
-	 *                thrown if class for instantiator or ID instance can't be
-	 *                loaded, if something goes wrong during instance
-	 *                construction
-	 */
-	public ID createID(Namespace namespace, URI uri) throws IDCreateException;
-
-	/**
-	 * Make a new identity instance from a namespace name and URI.
-	 * 
-	 * @param namespacename
-	 *            the name of the namespace to use to create the ID
-	 * @param uri
-	 *            the URI to use to create ID.
-	 * @exception IDCreateException
-	 *                thrown if class for instantiator or ID instance can't be
-	 *                loaded, if something goes wrong during instance
-	 *                construction
-	 */
-	public ID createID(String namespacename, URI uri) throws IDCreateException;
 
 	/**
 	 * Make a an ID from a String

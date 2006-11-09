@@ -8,9 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.eclipse.core.runtime.IAdaptable;
 
 /**
@@ -42,7 +39,7 @@ public interface ID extends java.io.Serializable, java.lang.Comparable,
 	/**
 	 * Get the unique name of this identity.
 	 * 
-	 * @return String unique name for this identity. Must not be null, and must
+	 * @return String unique name for this identity. Will not be null, and must
 	 *         be a unique String within the Namespace returned by
 	 *         getNamespace()
 	 */
@@ -51,19 +48,14 @@ public interface ID extends java.io.Serializable, java.lang.Comparable,
 	/**
 	 * Get the Namespace instance associated with this identity
 	 * 
-	 * @return Namespace the Namespace corresponding to this identity. Must not
+	 * @return Namespace the Namespace corresponding to this identity. Will not
 	 *         return null.
 	 */
 	public Namespace getNamespace();
 
 	/**
-	 * If available, return this identity in URI form. If not available as URI,
-	 * throw URISyntaxException
-	 * 
-	 * @return URI the URI representation of this identity. Will not return
-	 *         null.
-	 * @throws URISyntaxException
-	 *             if this ID cannot be converted to URI form
+	 * Get this ID instance in String form.  Will not return null.
+	 * @return String that is external representation of this ID
 	 */
-	public URI toURI() throws URISyntaxException;
+	public String toExternalForm();
 }

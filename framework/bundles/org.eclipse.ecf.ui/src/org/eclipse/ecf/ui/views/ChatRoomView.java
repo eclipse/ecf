@@ -23,6 +23,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.presence.IChatID;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
@@ -248,22 +249,27 @@ public class ChatRoomView extends ViewPart implements IMessageListener, IPartici
 	}
 	private String trimUserID(ID userID) {
 		URI aURI = null;
-		try {
-			aURI = userID.toURI();
-		} catch (URISyntaxException e) {
-			aURI = null;
-		}
-		if (aURI != null) {
-			String user = aURI.getUserInfo();
-			if (user != null) return user;
-			else return userID.getName();
+		IChatID chatID = (IChatID) userID.getAdapter(IChatID.class);
+		if (chatID != null) {
+			return chatID.getUsername();
 		} else {
-			String userathost = userID.getName();
-			int atIndex = userathost.lastIndexOf(USERNAME_HOST_DELIMETER);
-			if (atIndex != -1) {
-				userathost = userathost.substring(0,atIndex);
+			try {
+				aURI = new URI(userID.getName());
+			} catch (URISyntaxException e) {
+				aURI = null;
 			}
-			return userathost;
+			if (aURI != null) {
+				String user = aURI.getUserInfo();
+				if (user != null) return user;
+				else return userID.getName();
+			} else {
+				String userathost = userID.getName();
+				int atIndex = userathost.lastIndexOf(USERNAME_HOST_DELIMETER);
+				if (atIndex != -1) {
+					userathost = userathost.substring(0,atIndex);
+				}
+				return userathost;
+			}
 		}
 	}
 	class Participant implements IUser {

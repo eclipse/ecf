@@ -9,8 +9,6 @@
 package org.eclipse.ecf.core.identity;
 
 import java.io.Serializable;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Namespace base class
@@ -41,6 +39,7 @@ import java.net.URISyntaxException;
  */
 public abstract class Namespace implements Serializable {
 	private static final long serialVersionUID = 3976740272094720312L;
+	public static final String PROTOCOL_SEPARATOR = ":";
 
 	private String name;
 
@@ -101,10 +100,6 @@ public abstract class Namespace implements Serializable {
 		return id.namespaceGetName();
 	}
 
-	protected URI getURIForID(BaseID id) throws URISyntaxException {
-		return id.namespaceToURI();
-	}
-
 	protected int getCompareToForObject(BaseID first, BaseID second) {
 		return first.namespaceCompareTo(second);
 	}
@@ -113,6 +108,10 @@ public abstract class Namespace implements Serializable {
 		return id.namespaceHashCode();
 	}
 
+	protected String toExternalForm(BaseID id) {
+		return id.namespaceToExternalForm();
+	}
+	
 	/**
 	 * Get the name of this namespace. May not return null.
 	 * 
@@ -150,7 +149,7 @@ public abstract class Namespace implements Serializable {
 			throws IDCreateException;
 
 	/**
-	 * Get the URI scheme associated with this namespace instance. For example,
+	 * Get the scheme associated with this namespace instance. For example,
 	 * a namespace with name "ecf.http" would have an associated scheme
 	 * identifier of "http". Subclasses must provide an implementation that
 	 * returns a valid non-null scheme identifier.

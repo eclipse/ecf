@@ -91,9 +91,6 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	protected int namespaceHashCode() {
 		return uri.hashCode();
 	}
-	protected URI namespaceToURI() throws URISyntaxException {
-		return uri;
-	}
 	public String getMucString() {
 		String host = uri.getHost();
 		String group = fixPath(uri.getPath());

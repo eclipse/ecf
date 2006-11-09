@@ -49,7 +49,7 @@ public class IRCChatRoomManagerUI {
 	protected String getViewIDFromTargetID(ID targetID) {
 		URI uri;
 		try {
-			uri = targetID.toURI();
+			uri = new URI(targetID.getName());
 		} catch (URISyntaxException e) {
 			return null;
 		}
@@ -146,7 +146,7 @@ public class IRCChatRoomManagerUI {
 	protected String getChannelFromID(ID targetID) {
 		String initialRoom = null;
     	try {
-    		URI targetURI = targetID.toURI();
+    		URI targetURI = new URI(targetID.getName());
     		initialRoom = targetURI.getRawFragment();
     	} catch (URISyntaxException e) {}
     	if (initialRoom == null || initialRoom.equals("")) return null;

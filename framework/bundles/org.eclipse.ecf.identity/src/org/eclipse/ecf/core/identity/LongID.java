@@ -8,9 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 /**
  * A unique ID class based upon Long/long
  * 
@@ -67,12 +64,8 @@ public class LongID extends BaseID {
 		return value.hashCode();
 	}
 
-	protected URI namespaceToURI() throws URISyntaxException {
-		throw new URISyntaxException(value.toString(),
-				"LongID instances cannot create URL values");
-	}
-
 	public long longValue() {
 		return value.longValue();
 	}
+
 }

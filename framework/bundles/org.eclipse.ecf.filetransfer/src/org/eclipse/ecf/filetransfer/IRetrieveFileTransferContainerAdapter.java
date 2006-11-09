@@ -8,10 +8,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer;
 
-import java.net.URI;
 import java.util.Map;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
@@ -46,11 +48,12 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
  * 			}
  * 		}
  * 	};
- * 	// Identify file to retrieve
- * 	URI remoteFileToRetrieve = new URI(&quot;http://www.composent.com/index.html&quot;);
+ * 	// Identify file to retrieve and create ID
+ * 	ID remoteFileID = IDFactory.getDefault().createID(
+ * 			ftc.getRetrieveNamespace(), &quot;http://www.composent.com/index.html&quot;);
  * 	// Actually make request to start retrieval.  The listener provided will then be notified asynchronously 
  * 	// as file transfer events occur
- * 	ftc.sendRetrieveRequest(remoteFileToRetrieve, listener, null);
+ * 	ftc.sendRetrieveRequest(remoteFileID, listener, null);
  * }
  * </pre>
  * 
@@ -62,6 +65,7 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
  * </ul>
  */
 public interface IRetrieveFileTransferContainerAdapter {
+
 	/**
 	 * Send request for transfer of a remote file to local file storage. This
 	 * method is used to initiate a file retrieve for a remoteFileID (first
@@ -69,7 +73,7 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 * transfer listener (second parameter). The given remoteFileID and
 	 * transferListener must not be null.
 	 * 
-	 * @param remoteFileReference
+	 * @param remoteFileID
 	 *            reference to the remote target file (e.g.
 	 *            http://www.eclipse.org/index.html) or a reference to a
 	 *            resource that specifies the location of a target file.
@@ -89,8 +93,19 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
 	 */
-	public void sendRetrieveRequest(URI remoteFileReference,
+	public void sendRetrieveRequest(ID remoteFileID,
 			IFileTransferListener transferListener, Map options)
 			throws IncomingFileTransferException;
+
+	/**
+	 * Get namespace to be used for creation of remoteFileID for retrieve
+	 * request. Result typically used as first parameter for
+	 * {@link IDFactory#createID(Namespace, String)} to be used as first in
+	 * {@link #sendRetrieveRequest(ID, IFileTransferListener, Map)}
+	 * 
+	 * @return Namespace to use for ID creation via
+	 *         {@link IDFactory#createID(Namespace, String)}. Will not be null.
+	 */
+	public Namespace getRetrieveNamespace();
 
 }

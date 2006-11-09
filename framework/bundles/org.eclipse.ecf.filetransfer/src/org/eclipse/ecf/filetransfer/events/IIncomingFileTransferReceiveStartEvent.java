@@ -10,7 +10,6 @@ package org.eclipse.ecf.filetransfer.events;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
@@ -24,11 +23,11 @@ public interface IIncomingFileTransferReceiveStartEvent extends
 		IFileTransferEvent {
 
 	/**
-	 * Get URI of incoming file
+	 * Get path and file name from server for incoming file
 	 * 
-	 * @return URI of incoming file
+	 * @return file path from server of incoming file
 	 */
-	public URI getURI();
+	public String getPath();
 
 	/**
 	 * Get incoming file transfer.

@@ -81,10 +81,6 @@ public class XMPPID extends BaseID implements IChatID {
 		return uri.hashCode();
 	}
 
-	protected URI namespaceToURI() throws URISyntaxException {
-		return uri;
-	}
-	
 	public String getUsername() {
 		return username;
 	}
