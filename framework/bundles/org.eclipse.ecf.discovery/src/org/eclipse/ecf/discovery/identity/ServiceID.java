@@ -8,9 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.discovery.identity;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
 
@@ -73,12 +70,6 @@ public class ServiceID extends BaseID {
 
 	protected int namespaceHashCode() {
 		return getFullyQualifiedName().hashCode();
-	}
-
-	protected URI namespaceToURI() throws URISyntaxException {
-		throw new URISyntaxException(
-				"cannot create URI from service id with name " + getName(),
-				getName());
 	}
 
 	public String getServiceType() {

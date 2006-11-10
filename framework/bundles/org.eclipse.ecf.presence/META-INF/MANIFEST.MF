@@ -14,7 +14,7 @@ Export-Package: org.eclipse.ecf.internal.presence;x-internal:=true,
  org.eclipse.ecf.presence.provider
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
- CDC-1.1/Foundation-1.1
+ CDC-1.0/Foundation-1.0
 Import-Package: org.eclipse.core.runtime,
  org.eclipse.ecf.core,
  org.eclipse.ecf.core.identity,

@@ -10,7 +10,7 @@ Eclipse-LazyStart: true
 Eclipse-AutoStart: true
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
- CDC-1.1/Foundation-1.1
+ CDC-1.0/Foundation-1.0
 Export-Package: org.eclipse.ecf.core,
  org.eclipse.ecf.core.events,
  org.eclipse.ecf.core.provider,

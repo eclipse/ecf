@@ -7,7 +7,7 @@ Bundle-Activator: org.eclipse.ecf.internal.filetransfer.Activator
 Bundle-Vendor: Eclipse.org
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
- CDC-1.1/Foundation-1.1
+ CDC-1.0/Foundation-1.0
 Export-Package: org.eclipse.ecf.filetransfer,
  org.eclipse.ecf.filetransfer.events,
  org.eclipse.ecf.filetransfer.identity,

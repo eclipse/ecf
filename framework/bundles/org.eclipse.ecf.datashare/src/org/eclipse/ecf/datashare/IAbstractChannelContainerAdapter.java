@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.identity.Namespace;
  * Abstract channel container adapter
  * 
  */
-public interface IAbstractChannelContainerAdaper {
+public interface IAbstractChannelContainerAdapter {
 	/**
 	 * Add listener for IChannelContainerAdapter events.
 	 * 

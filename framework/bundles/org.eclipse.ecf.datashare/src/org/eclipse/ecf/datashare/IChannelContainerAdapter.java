@@ -29,7 +29,7 @@ import org.eclipse.ecf.core.util.ECFException;
  * 
  */
 public interface IChannelContainerAdapter extends
-		IAbstractChannelContainerAdaper {
+		IAbstractChannelContainerAdapter {
 	/**
 	 * Create a new channel within this container
 	 * 
