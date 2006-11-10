@@ -8,25 +8,32 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
-public class ECFException extends Exception {
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.internal.core.identity.Activator;
+
+public class ECFException extends CoreException {
 	private static final long serialVersionUID = 3256440309134406707L;
 
 	public ECFException() {
-		super();
+		this(null, null);
 	}
 
 	/**
 	 * @param message
+	 *            message associated with exception
 	 */
 	public ECFException(String message) {
-		super(message);
+		this(message, null);
 	}
 
 	/**
 	 * @param cause
+	 *            the cause of the new exception
 	 */
 	public ECFException(Throwable cause) {
-		super(cause);
+		this(null, cause);
 	}
 
 	/**
@@ -34,6 +41,14 @@ public class ECFException extends Exception {
 	 * @param cause
 	 */
 	public ECFException(String message, Throwable cause) {
-		super(message, cause);
+		this(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, message, cause));
+	}
+
+	/**
+	 * @param status
+	 *            the status for th
+	 */
+	public ECFException(IStatus status) {
+		super(status);
 	}
 }
