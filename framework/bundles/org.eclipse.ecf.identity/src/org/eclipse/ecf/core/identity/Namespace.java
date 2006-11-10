@@ -39,7 +39,7 @@ import java.io.Serializable;
  */
 public abstract class Namespace implements Serializable {
 	private static final long serialVersionUID = 3976740272094720312L;
-	public static final String PROTOCOL_SEPARATOR = ":";
+	public static final String SCHEME_SEPARATOR = ":";
 
 	private String name;
 

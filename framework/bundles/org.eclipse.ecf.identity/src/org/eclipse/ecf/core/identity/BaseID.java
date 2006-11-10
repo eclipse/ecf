@@ -61,7 +61,7 @@ public abstract class BaseID implements ID {
 	public String toExternalForm() {
 		return namespace.toExternalForm(this);
 	}
-	
+
 	protected abstract int namespaceCompareTo(BaseID o);
 
 	protected abstract boolean namespaceEquals(BaseID o);
@@ -71,9 +71,10 @@ public abstract class BaseID implements ID {
 	protected abstract int namespaceHashCode();
 
 	protected String namespaceToExternalForm() {
-		return namespace.getName()+Namespace.PROTOCOL_SEPARATOR+namespaceGetName();
+		return namespace.getScheme() + Namespace.SCHEME_SEPARATOR
+				+ namespaceGetName();
 	}
-	
+
 	public Object getAdapter(Class clazz) {
 		return null;
 	}
