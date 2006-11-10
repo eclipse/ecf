@@ -15,3 +15,4 @@ Import-Package: org.eclipse.ecf.core.identity,
  org.eclipse.ecf.provider.app,
  org.eclipse.ecf.provider.generic
 Require-Bundle: org.eclipse.core.runtime
+Export-Package: org.eclipse.ecf.server

@@ -28,7 +28,8 @@ public class RosterGroup implements IRosterGroup {
 
 	protected String name;
 
-	public RosterGroup(String name, Collection /* <IRosterEntry> */ existingEntries) {
+	public RosterGroup(String name,
+			Collection /* <IRosterEntry> */existingEntries) {
 		super();
 		this.name = name;
 		entries = new HashMap();
@@ -58,8 +59,9 @@ public class RosterGroup implements IRosterGroup {
 			return null;
 	}
 
-	public void addAll(Collection /* <IRosterEntry> */ existingEntryies) {
-		if (existingEntryies == null) return;
+	public void addAll(Collection /* <IRosterEntry> */existingEntryies) {
+		if (existingEntryies == null)
+			return;
 		synchronized (entries) {
 			for (Iterator i = existingEntryies.iterator(); i.hasNext();) {
 				IRosterEntry entry = (IRosterEntry) i.next();

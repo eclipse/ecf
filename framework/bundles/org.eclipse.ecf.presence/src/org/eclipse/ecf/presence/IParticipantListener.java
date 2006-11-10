@@ -11,13 +11,11 @@
 package org.eclipse.ecf.presence;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 
 /**
  * Super interface receiving participant presence messages.
  * 
  * @see IPresenceListener
- * @see IChatParticipantListener
  * 
  */
 public interface IParticipantListener {

@@ -136,12 +136,14 @@ public class RosterEntry implements IRosterEntry {
 	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#addGroup(org.eclipse.ecf.ui.presence.IRosterGroup)
 	 */
 	public void add(IRosterGroup group) {
-		if (group == null) return;
+		if (group == null)
+			return;
 		groups.add(group);
 	}
 
 	public void addAll(Collection grps) {
-		if (grps == null) return;
+		if (grps == null)
+			return;
 		groups.addAll(grps);
 	}
 
@@ -151,7 +153,8 @@ public class RosterEntry implements IRosterEntry {
 	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#remvoe(org.eclipse.ecf.ui.presence.IRosterGroup)
 	 */
 	public void remove(IRosterGroup group) {
-		if (group == null) return;
+		if (group == null)
+			return;
 		groups.remove(group);
 	}
 

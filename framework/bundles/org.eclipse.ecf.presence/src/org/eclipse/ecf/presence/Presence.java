@@ -47,7 +47,7 @@ public class Presence implements IPresence {
 		this.priority = priority;
 		this.status = status;
 		this.mode = mode;
-		this.properties = (props == null)?new HashMap():props;
+		this.properties = (props == null) ? new HashMap() : props;
 	}
 
 	public Presence(Type type, int priority, String status, Mode mode) {

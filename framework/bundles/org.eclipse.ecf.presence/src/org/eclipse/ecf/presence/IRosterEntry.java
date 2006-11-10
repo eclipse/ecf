@@ -27,7 +27,8 @@ public interface IRosterEntry {
 	 * Add this roster entry to the given group.
 	 * 
 	 * @param group
-	 *            the group to add this entry to.  If group is null, it will be ignored.
+	 *            the group to add this entry to. If group is null, it will be
+	 *            ignored.
 	 */
 	public void add(IRosterGroup group);
 
@@ -51,7 +52,7 @@ public interface IRosterEntry {
 	/**
 	 * Get service ID associated with this roster entry
 	 * 
-	 * @return ID that is service ID for this entry.  Will not be null
+	 * @return ID that is service ID for this entry. Will not be null
 	 */
 	public ID getServiceID();
 
@@ -87,7 +88,7 @@ public interface IRosterEntry {
 	/**
 	 * Get presence state for this roster entry.
 	 * 
-	 * @return IPresence information for this roster entry.  May be null.
+	 * @return IPresence information for this roster entry. May be null.
 	 */
 	public IPresence getPresenceState();
 

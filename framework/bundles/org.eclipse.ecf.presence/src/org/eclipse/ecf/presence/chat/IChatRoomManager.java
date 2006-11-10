@@ -18,7 +18,6 @@ import org.eclipse.ecf.presence.IPresenceContainerAdapter;
  * this manager. Access to objects implementing this interface is provided by
  * {@link IPresenceContainerAdapter#getChatRoomManager()}
  * 
- * @see IPresenceContainerAdapter#getChatRoomManager()
  */
 public interface IChatRoomManager extends IAdaptable {
 	/**

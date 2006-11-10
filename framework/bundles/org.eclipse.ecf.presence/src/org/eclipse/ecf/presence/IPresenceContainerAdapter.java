@@ -12,7 +12,6 @@ package org.eclipse.ecf.presence;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.core.IContainer;
 
 /**
  * Entry poing presence container adapter. For setting up listeners for presence
@@ -23,22 +22,21 @@ import org.eclipse.ecf.core.IContainer;
  * To use this adapter:
  * 
  * <pre>
- *   IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
- *   if (presenceContainer != null) {
- *      ...use presenceContainer
- *   } else {
- *      ...presence not supported by provider
- *   }
+ *    IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
+ *    if (presenceContainer != null) {
+ *       ...use presenceContainer
+ *    } else {
+ *       ...presence not supported by provider
+ *    }
  * </pre>
  * 
- * @see IContainer#getAdapter(Class)
  */
 public interface IPresenceContainerAdapter extends IAdaptable {
 
 	/**
-	 * Setup listener for handling roster subscription requests. The given listener
-	 * will asynchronously be called when a subscription request is received by
-	 * this connected account.
+	 * Setup listener for handling roster subscription requests. The given
+	 * listener will asynchronously be called when a subscription request is
+	 * received by this connected account.
 	 * 
 	 * @param listener
 	 *            for receiving subscription requests. Must not be null.
