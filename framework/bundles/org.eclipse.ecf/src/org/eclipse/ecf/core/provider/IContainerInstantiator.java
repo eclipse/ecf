@@ -52,27 +52,33 @@ public interface IContainerInstantiator {
 	 * Get array of supported adapters for the given container type description.
 	 * Providers can implement this method to allow clients to inspect the
 	 * adapter types implemented by the container described by the given
-	 * description.  
+	 * description. The returned array entries will be the fully qualified names
+	 * of the adapter classes.
 	 * 
-	 * Note that the returned types do not guarantee that
-	 * a subsequent call to {@link IContainer#getAdapter(Class)} with the same type name
-	 * as a returned value will return a non-null result. 
-	 * <code>IContainer.getAdapter</code> may still return <code>null</code>.
+	 * Note that the returned types do not guarantee that a subsequent call to
+	 * {@link IContainer#getAdapter(Class)} with the same type name as a
+	 * returned value will return a non-null result. In other words, even if the
+	 * class name is in the returned array, subsequent calls to
+	 * {@link IContainer#getAdapter(Class)} may still return <code>null</code>.
 	 * 
-	 * This method should not return
-	 * null, but rather an empty String[] if no adapters are exposed.
+	 * This method should not return null, but rather an empty String[] if no
+	 * adapters are exposed.
 	 * 
 	 * @param description
-	 *            the ContainerTypeDescription to report adapters for
-	 * @return String[] of supported adapter types.  If no
-	 *         adapters supported, will return null
+	 *            the ContainerTypeDescription to report adapters for. Must not
+	 *            be null
+	 * @return String[] of supported adapters. The entries in the returned array
+	 *         will be the fully qualified class names of adapters supported by
+	 *         the given description. Null may be returned if adapter types are
+	 *         supported.
 	 */
-	public String[] getSupportedAdapterTypes(ContainerTypeDescription description);
+	public String[] getSupportedAdapterTypes(
+			ContainerTypeDescription description);
 
 	/**
 	 * Get array of parameter types for given container type description.
-	 * Providers can implement this method to allow clients to inspect the
-	 * available set of parameter types understood for calls to
+	 * Providers implement this method to allow clients to inspect the available
+	 * set of parameter types understood for calls to
 	 * {@link #createInstance(ContainerTypeDescription, Object[])}. Each of the
 	 * rows of the returned array specifies a Class[] of parameter types. These
 	 * parameter types correspond to the types of Object[] that can be passed
@@ -88,7 +94,8 @@ public interface IContainerInstantiator {
 	 * @return Class[][] array of Class[]s. Each row in the table corresponds to
 	 *         a Class[] that describes the types of Objects in Object[] for
 	 *         second parameter to
-	 *         {@link #createInstance(ContainerTypeDescription, Object[])}.  Null may be returned.
+	 *         {@link #createInstance(ContainerTypeDescription, Object[])}.
+	 *         Null may be returned if no parameter types supported.
 	 */
 	public Class[][] getSupportedParameterTypes(
 			ContainerTypeDescription description);

@@ -197,21 +197,25 @@ public class ContainerTypeDescription {
 	 * Get array of supported adapters for the given container type description.
 	 * Providers can implement this method to allow clients to inspect the
 	 * adapter types implemented by the container described by the given
-	 * description.
+	 * description. The returned array entries will be the fully qualified names
+	 * of the adapter classes.
 	 * 
 	 * Note that the returned types do not guarantee that a subsequent call to
 	 * {@link IContainer#getAdapter(Class)} with the same type name as a
-	 * returned value will return a non-null result.
-	 * <code>IContainer.getAdapter</code> may still return <code>null</code>. *
+	 * returned value will return a non-null result. In other words, even if the
+	 * class name is in the returned array, subsequent calls to
+	 * {@link IContainer#getAdapter(Class)} may still return <code>null</code>.
 	 * 
-	 * @return Class[] of supported adapters. Null will be returned if no
-	 *         adapters are supported
+	 * @return String[] of supported adapters. The entries in the returned array
+	 *         will be the fully qualified class names of adapters supported by
+	 *         the given description. An empty string array (String[0]) will be
+	 *         returned if no adapters are supported.
 	 */
 	public String[] getSupportedAdapterTypes() {
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, this.getClass(),
 				"getSupportedAdapterTypes");
-		String[] result = null;
+		String[] result = new String[0];
 		try {
 			result = getInstantiator().getSupportedAdapterTypes(this);
 		} catch (Exception e) {
@@ -244,19 +248,20 @@ public class ContainerTypeDescription {
 	 * String.class }, { String.class }} this indicates that a call to
 	 * createInstance(description,new String[] { "hello", "there" }) and a call
 	 * to createInstance(description,new String[] { "hello" }) will be
-	 * understood by the provider implementation.
+	 * understood by the underlying provider implementation.
 	 * 
 	 * @return Class[][] array of Class arrays. Each row corresponds to a
 	 *         Class[] that describes the types of Objects for second parameter
 	 *         to
 	 *         {@link IContainerInstantiator#createInstance(ContainerTypeDescription, Object[])}.
-	 *         Null may be returned
+	 *         If no parameter types are understood as arguments, a Class[0][0]
+	 *         array will be returned
 	 */
 	public Class[][] getSupportedParameterTypes() {
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, this.getClass(),
 				"getParameterTypes");
-		Class[][] result = null;
+		Class[][] result = new Class[0][0];
 		try {
 			result = getInstantiator().getSupportedParameterTypes(this);
 		} catch (Exception e) {
