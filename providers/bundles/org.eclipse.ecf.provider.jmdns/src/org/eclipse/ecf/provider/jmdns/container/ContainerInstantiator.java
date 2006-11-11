@@ -17,6 +17,7 @@ import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 
 public class ContainerInstantiator implements
 		IContainerInstantiator {
@@ -39,6 +40,15 @@ public class ContainerInstantiator implements
 				excep.setStackTrace(e.getStackTrace());
 				throw excep;
 			}
+	}
+
+	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
+		return new String[] { IDiscoveryContainerAdapter.class.getName() };
+	}
+
+	public Class[][] getSupportedParameterTypes(
+			ContainerTypeDescription description) {
+		return new Class[0][0];
 	}
 
 }
