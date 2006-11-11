@@ -62,7 +62,8 @@ obtained at http://www.eclipse.org.
          id="org.jivesoftware.smack"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.ecf.identity"
@@ -75,16 +76,17 @@ obtained at http://www.eclipse.org.
          id="org.eclipse.ecf"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
- 
-    <plugin
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.ecf.sharedobject"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
- 
-    <plugin
+
+   <plugin
          id="org.eclipse.ecf.call"
          download-size="0"
          install-size="0"
@@ -95,20 +97,22 @@ obtained at http://www.eclipse.org.
          id="org.eclipse.ecf.datashare"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
- 
-    <plugin
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.ecf.discovery"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
- 
-    <plugin
+
+   <plugin
          id="org.eclipse.ecf.doc"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.ecf.filetransfer"
@@ -121,19 +125,22 @@ obtained at http://www.eclipse.org.
          id="org.eclipse.ecf.presence"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.ecf.provider"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.ecf.provider.datashare"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.ecf.provider.filetransfer"
@@ -146,7 +153,8 @@ obtained at http://www.eclipse.org.
          id="org.eclipse.ecf.provider.irc"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.ecf.provider.remoteservice"
@@ -159,7 +167,8 @@ obtained at http://www.eclipse.org.
          id="org.eclipse.ecf.provider.xmpp"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.ecf.remoteservice"
@@ -172,7 +181,8 @@ obtained at http://www.eclipse.org.
          id="org.eclipse.ecf.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.ecf.server"
@@ -185,5 +195,7 @@ obtained at http://www.eclipse.org.
          id="org.eclipse.ecf.provider.jmdns"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
