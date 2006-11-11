@@ -206,7 +206,7 @@ public class IDFactory implements IIDFactory {
 		} else {
 			e = new IDCreateException(s);
 		}
-		Trace.catching(Activator.getDefault(),
+		Trace.throwing(Activator.getDefault(),
 				IdentityDebugOptions.EXCEPTIONS_THROWING, IDFactory.class,
 				"logAndThrow", e);
 		Activator.getDefault().getLog().log(
