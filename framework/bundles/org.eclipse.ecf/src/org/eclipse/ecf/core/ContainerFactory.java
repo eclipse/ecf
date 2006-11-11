@@ -216,12 +216,12 @@ public class ContainerFactory implements IContainerFactory {
 	 *      java.lang.Object[])
 	 */
 	public IContainer createContainer(ContainerTypeDescription description,
-			Object[] args) throws ContainerCreateException {
+			Object[] parameters) throws ContainerCreateException {
 		String method = "createContainer";
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
 				method, new Object[] { description,
-						Trace.getArgumentsString(args) });
+						Trace.getArgumentsString(parameters) });
 		if (description == null)
 			throwContainerCreateException(
 					"ContainerTypeDescription cannot be null", null, method);
@@ -238,7 +238,7 @@ public class ContainerFactory implements IContainerFactory {
 							+ description, e, method);
 		}
 		// Ask instantiator to actually create instance
-		IContainer container = instantiator.createInstance(description, args);
+		IContainer container = instantiator.createInstance(description, parameters);
 		if (container == null)
 			throwContainerCreateException("Instantiator returned null for '"
 					+ cd.getName() + "'", null, method);
@@ -265,9 +265,9 @@ public class ContainerFactory implements IContainerFactory {
 	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String,
 	 *      java.lang.Object[])
 	 */
-	public IContainer createContainer(String descriptionName, Object[] args)
+	public IContainer createContainer(String descriptionName, Object[] parameters)
 			throws ContainerCreateException {
-		return createContainer(getDescriptionByName(descriptionName), args);
+		return createContainer(getDescriptionByName(descriptionName), parameters);
 	}
 
 	/*

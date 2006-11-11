@@ -16,11 +16,10 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
+import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
 
-public class RemoteServiceContainerFactory implements
-		IContainerInstantiator {
+public class RemoteServiceContainerFactory extends GenericContainerInstantiator {
 
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] args)

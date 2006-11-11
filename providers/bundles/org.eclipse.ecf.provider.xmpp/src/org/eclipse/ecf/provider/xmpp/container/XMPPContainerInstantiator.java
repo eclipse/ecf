@@ -11,47 +11,14 @@ package org.eclipse.ecf.provider.xmpp.container;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
 
-
-public class XMPPContainerInstantiator implements IContainerInstantiator {
-    public XMPPContainerInstantiator() {
-        
-    }
-    protected ID getIDFromArg(Object arg)
-            throws IDCreateException {
-        if (arg instanceof ID)
-            return (ID) arg;
-        if (arg instanceof String) {
-            String val = (String) arg;
-            if (val == null || val.equals("")) {
-                return IDFactory.getDefault().createGUID();
-            } else
-                return IDFactory.getDefault().createStringID((String) arg);
-        } else if (arg instanceof Integer) {
-            return IDFactory.getDefault().createGUID(((Integer) arg).intValue());
-        } else
-            return IDFactory.getDefault().createGUID();
-    }
-
-    protected Integer getIntegerFromArg(Object arg)
-            throws NumberFormatException {
-        if (arg instanceof Integer)
-            return (Integer) arg;
-        else if (arg != null) {
-            return new Integer((String) arg);
-        } else
-            return new Integer(-1);
-    }
-
+public class XMPPContainerInstantiator extends GenericContainerInstantiator {
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(.ContainerDescription,
-     *      java.lang.Class[], java.lang.Object[])
+     * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(ContainerDescription,
+     *      java.lang.Object[])
      */
     public IContainer createInstance(
             ContainerTypeDescription description, Object[] args)

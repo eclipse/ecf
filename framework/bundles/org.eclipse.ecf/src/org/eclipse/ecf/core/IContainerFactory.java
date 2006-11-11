@@ -18,13 +18,13 @@ public interface IContainerFactory {
 	/**
 	 * Add a ContainerTypeDescription to the set of known ContainerDescriptions.
 	 * 
-	 * @param scd
+	 * @param description
 	 *            the ContainerTypeDescription to add to this factory. Must not
 	 *            be null.
 	 * @return ContainerTypeDescription the old description of the same name,
 	 *         null if none found
 	 */
-	public ContainerTypeDescription addDescription(ContainerTypeDescription scd);
+	public ContainerTypeDescription addDescription(ContainerTypeDescription description);
 
 	/**
 	 * Get a collection of the ContainerDescriptions currently known to this
@@ -34,17 +34,17 @@ public interface IContainerFactory {
 	 * 
 	 * @return List of ContainerTypeDescription instances
 	 */
-	public List getDescriptions();
+	public List /* ContainerTypeDescription */ getDescriptions();
 
 	/**
 	 * Check to see if a given named description is already contained by this
 	 * factory
 	 * 
-	 * @param scd
+	 * @param description
 	 *            the ContainerTypeDescription to look for
 	 * @return true if description is already known to factory, false otherwise
 	 */
-	public boolean containsDescription(ContainerTypeDescription scd);
+	public boolean containsDescription(ContainerTypeDescription description);
 
 	/**
 	 * Get the known ContainerTypeDescription given it's name.
@@ -68,16 +68,16 @@ public interface IContainerFactory {
 	 * instance of IContainer</li>
 	 * </ul>
 	 * 
-	 * @param desc
+	 * @param description
 	 *            the ContainerTypeDescription to use to create the instance
-	 * @param args
-	 *            an Object [] of arguments passed to the createInstance method
+	 * @param parameters
+	 *            an Object [] of parameters passed to the createInstance method
 	 *            of the IContainerInstantiator
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException
 	 */
-	public IContainer createContainer(ContainerTypeDescription desc,
-			Object[] args) throws ContainerCreateException;
+	public IContainer createContainer(ContainerTypeDescription description,
+			Object[] parameters) throws ContainerCreateException;
 
 	/**
 	 * Make IContainer instance. Given a ContainerTypeDescription name, this
@@ -113,22 +113,22 @@ public interface IContainerFactory {
 	 * 
 	 * @param descriptionName
 	 *            the ContainerTypeDescription name to lookup
-	 * @param args
-	 *            the Object [] of arguments passed to the
+	 * @param parameters
+	 *            the Object [] of parameters passed to the
 	 *            IContainerInstantiator.createInstance method
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException
 	 */
-	public IContainer createContainer(String descriptionName, Object[] args)
+	public IContainer createContainer(String descriptionName, Object[] parameters)
 			throws ContainerCreateException;
 
 	/**
 	 * Remove given description from set known to this factory.
 	 * 
-	 * @param scd
+	 * @param description
 	 *            the ContainerTypeDescription to remove
 	 * @return the removed ContainerTypeDescription, null if nothing removed
 	 */
 	public ContainerTypeDescription removeDescription(
-			ContainerTypeDescription scd);
+			ContainerTypeDescription description);
 }

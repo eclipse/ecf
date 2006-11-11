@@ -12,11 +12,11 @@ import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
 
-public class DatashareContainerInstantiator implements IContainerInstantiator {
+public class DatashareContainerInstantiator extends GenericContainerInstantiator {
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -24,13 +24,13 @@ public class DatashareContainerInstantiator implements IContainerInstantiator {
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] args) throws ContainerCreateException {
-		String[] argDefaults = description.getArgDefaults();
+		String[] argDefaults = description.getParameterDefaults();
 		try {
 			ID newID = null;
 			if (args != null && args.length != 0) {
 				newID = getIDFromArg(args[0]);
 			} else if (argDefaults != null && argDefaults.length != 0) {
-				newID = getIDFromArg(description.getArgDefaults()[0]);
+				newID = getIDFromArg(description.getParameterDefaults()[0]);
 			} else {
 				newID = IDFactory.getDefault().createGUID();
 			}
@@ -39,22 +39,6 @@ public class DatashareContainerInstantiator implements IContainerInstantiator {
 			throw new ContainerCreateException(
 					"Exception creating ID for container " + description, e);
 		}
-	}
-
-	protected ID getIDFromArg(Object arg) throws IDCreateException {
-		if (arg instanceof ID)
-			return (ID) arg;
-		if (arg instanceof String) {
-			String val = (String) arg;
-			if (val.equals("")) { //$NON-NLS-1$
-				return IDFactory.getDefault().createGUID();
-			} else
-				return IDFactory.getDefault().createStringID((String) arg);
-		} else if (arg instanceof Integer) {
-			return IDFactory.getDefault()
-					.createGUID(((Integer) arg).intValue());
-		} else
-			return IDFactory.getDefault().createGUID();
 	}
 
 }

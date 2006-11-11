@@ -12,11 +12,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.internal.core.ECFDebugOptions;
+import org.eclipse.ecf.internal.core.ECFPlugin;
 
 /**
- * Description of an IContainer type implementation.
+ * Description of an {@link IContainer} type.
  * 
+ * @see ContainerFactory
  */
 public class ContainerTypeDescription {
 	protected String name;
@@ -29,11 +35,15 @@ public class ContainerTypeDescription {
 
 	protected String description;
 
-	protected String[] argDefaults;
+	protected String[] parameterDefaults;
 
 	protected int hashCode = 0;
 
 	protected static final String[] EMPTY = new String[0];
+
+	private static final int GET_PARAMETER_TYPES_ERROR_CODE = 2672;
+
+	private static final int GET_SUPPORTED_ADAPTERS_ERROR_CODE = 2673;
 
 	protected Map properties = null;
 
@@ -48,12 +58,12 @@ public class ContainerTypeDescription {
 	}
 
 	public ContainerTypeDescription(ClassLoader loader, String name,
-			String instantiatorClass, String desc, String[] argDefaults) {
-		this(loader, name, instantiatorClass, desc, argDefaults, null);
+			String instantiatorClass, String desc, String[] parameterDefaults) {
+		this(loader, name, instantiatorClass, desc, parameterDefaults, null);
 	}
 
 	public ContainerTypeDescription(ClassLoader loader, String name,
-			String instantiatorClass, String desc, String[] argDefaults,
+			String instantiatorClass, String desc, String[] parameterDefaults,
 			Map props) {
 		this.classLoader = loader;
 		if (name == null)
@@ -62,14 +72,14 @@ public class ContainerTypeDescription {
 							"SharedObjectContainerDescription<init> name cannot be null"));
 		this.name = name;
 		this.hashCode = name.hashCode();
-		if (instantiatorClass == null) 
+		if (instantiatorClass == null)
 			throw new RuntimeException(
-				new InstantiationException(
-						"SharedObjectContainerDescription<init> instantiatorClass cannot be null"));
+					new InstantiationException(
+							"SharedObjectContainerDescription<init> instantiatorClass cannot be null"));
 		this.instantiatorClass = instantiatorClass;
 		this.description = desc;
-		this.argDefaults = argDefaults;
-		this.properties = (props == null)?new HashMap():props;
+		this.parameterDefaults = parameterDefaults;
+		this.properties = (props == null) ? new HashMap() : props;
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
@@ -78,12 +88,12 @@ public class ContainerTypeDescription {
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
-			String desc, String[] argDefaults) {
-		this(name, inst, desc, argDefaults, null);
+			String desc, String[] parameterDefaults) {
+		this(name, inst, desc, parameterDefaults, null);
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
-			String desc, String[] argDefaults, Map props) {
+			String desc, String[] parameterDefaults, Map props) {
 		if (name == null)
 			throw new RuntimeException(
 					new InstantiationException(
@@ -97,8 +107,8 @@ public class ContainerTypeDescription {
 		this.instantiator = inst;
 		this.classLoader = this.instantiator.getClass().getClassLoader();
 		this.description = desc;
-		this.argDefaults = argDefaults;
-		this.properties = (props == null)?new HashMap():props;
+		this.parameterDefaults = parameterDefaults;
+		this.properties = (props == null) ? new HashMap() : props;
 	}
 
 	/**
@@ -138,7 +148,8 @@ public class ContainerTypeDescription {
 		else
 			b.append("instantiator=").append(instantiator).append(";");
 		b.append("desc=").append(description).append(";");
-		b.append("argdefaults=").append(Arrays.asList(argDefaults)).append(";");
+		b.append("argdefaults=").append(Arrays.asList(parameterDefaults))
+				.append(";");
 		return b.toString();
 	}
 
@@ -173,8 +184,88 @@ public class ContainerTypeDescription {
 		return description;
 	}
 
-	public String[] getArgDefaults() {
-		return argDefaults;
+	/**
+	 * Get parameter defaults.
+	 * 
+	 * @return String [] default parameters
+	 */
+	public String[] getParameterDefaults() {
+		return parameterDefaults;
+	}
+
+	/**
+	 * Get array of supported adapters for the given container type description.
+	 * Providers can implement this method to allow clients to inspect the
+	 * adapter types implemented by the container described by the given
+	 * description.
+	 * 
+	 * Note that the returned types do not guarantee that a subsequent call to
+	 * {@link IContainer#getAdapter(Class)} with the same type name as a
+	 * returned value will return a non-null result.
+	 * <code>IContainer.getAdapter</code> may still return <code>null</code>. *
+	 * 
+	 * @return Class[] of supported adapters. Null will be returned if no
+	 *         adapters are supported
+	 */
+	public String[] getSupportedAdapterTypes() {
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, this.getClass(),
+				"getSupportedAdapterTypes");
+		String[] result = null;
+		try {
+			result = getInstantiator().getSupportedAdapterTypes(this);
+		} catch (Exception e) {
+			traceAndLogException(GET_SUPPORTED_ADAPTERS_ERROR_CODE,
+					"getSupportedAdapterTypes", e);
+		}
+		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+				this.getClass(), "getSupportedAdapterTypes", result);
+		return result;
+	}
+
+	protected void traceAndLogException(int code, String method, Throwable e) {
+		Trace
+				.catching(ECFPlugin.getDefault(),
+						ECFDebugOptions.EXCEPTIONS_CATCHING, this.getClass(),
+						method, e);
+		ECFPlugin.getDefault().getLog()
+				.log(
+						new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, code,
+								method, e));
+	}
+
+	/**
+	 * Get array of parameter types for this ContainerTypeDescription. Each of
+	 * the rows of the returned array specifies a Class[] of parameter types.
+	 * These parameter types correspond to the types of Objects that can be
+	 * passed into the second parameter of
+	 * {@link IContainerInstantiator#createInstance(ContainerTypeDescription, Object[])}.
+	 * For example, if this method returns a Class [] = {{ String.class,
+	 * String.class }, { String.class }} this indicates that a call to
+	 * createInstance(description,new String[] { "hello", "there" }) and a call
+	 * to createInstance(description,new String[] { "hello" }) will be
+	 * understood by the provider implementation.
+	 * 
+	 * @return Class[][] array of Class arrays. Each row corresponds to a
+	 *         Class[] that describes the types of Objects for second parameter
+	 *         to
+	 *         {@link IContainerInstantiator#createInstance(ContainerTypeDescription, Object[])}.
+	 *         Null may be returned
+	 */
+	public Class[][] getSupportedParameterTypes() {
+		Trace.entering(ECFPlugin.getDefault(),
+				ECFDebugOptions.METHODS_ENTERING, this.getClass(),
+				"getParameterTypes");
+		Class[][] result = null;
+		try {
+			result = getInstantiator().getSupportedParameterTypes(this);
+		} catch (Exception e) {
+			traceAndLogException(GET_PARAMETER_TYPES_ERROR_CODE,
+					"getParameterTypes", e);
+		}
+		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+				this.getClass(), "getParameterTypes", result);
+		return result;
 	}
 
 	/**
