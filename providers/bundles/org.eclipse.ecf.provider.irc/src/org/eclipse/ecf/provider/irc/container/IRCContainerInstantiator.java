@@ -14,14 +14,17 @@ package org.eclipse.ecf.provider.irc.container;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
+import org.eclipse.ecf.presence.chat.IChatRoomContainerOptionsAdapter;
+import org.eclipse.ecf.presence.chat.IChatRoomManager;
 
 public class IRCContainerInstantiator implements IContainerInstantiator {
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Class[], java.lang.Object[])
+	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
 	 */
 	public IContainer createInstance(ContainerTypeDescription description,
 			Object[] args)
@@ -32,5 +35,14 @@ public class IRCContainerInstantiator implements IContainerInstantiator {
 		} catch (IDCreateException e) {
 			throw new ContainerCreateException("Exception creating ID",e);
 		}
+	}
+
+	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
+		return new String[] { IChatRoomManager.class.getName(), IChatRoomContainerOptionsAdapter.class.getName(), IPresenceContainerAdapter.class.getName() };
+	}
+
+	public Class[][] getSupportedParameterTypes(
+			ContainerTypeDescription description) {
+		return new Class[0][0];
 	}
 }

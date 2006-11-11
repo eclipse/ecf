@@ -26,8 +26,7 @@ import org.eclipse.ecf.internal.provider.irc.Trace;
 import org.eclipse.ecf.presence.IMessageListener;
 
 /**
- * @author slewis
- *
+ * 
  */
 public abstract class IRCAbstractContainer extends AbstractContainer {
 
