@@ -658,7 +658,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 					delegate.removePresenceListener(listener);
 				}
 
-				public void removeSubscribeListener(IRosterSubscribeListener listener) {
+				public void removeRosterSubscribeListener(IRosterSubscribeListener listener) {
 					delegate.removeSubscribeListener(listener);
 				}
 			};

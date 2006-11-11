@@ -55,7 +55,7 @@ public abstract class AbstractPresenceContainer implements
 	 * 
 	 * @param listener
 	 */
-	public void removeSubscribeListener(IRosterSubscribeListener listener) {
+	public void removeRosterSubscribeListener(IRosterSubscribeListener listener) {
 		subscribeListeners.remove(listener);
 	}
 
