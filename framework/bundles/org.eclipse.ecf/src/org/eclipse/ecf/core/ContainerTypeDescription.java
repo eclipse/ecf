@@ -212,18 +212,19 @@ public class ContainerTypeDescription {
 	 *         returned if no adapters are supported.
 	 */
 	public String[] getSupportedAdapterTypes() {
+		String method = "getSupportedAdapterTypes";
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, this.getClass(),
-				"getSupportedAdapterTypes");
+				method);
 		String[] result = new String[0];
 		try {
 			result = getInstantiator().getSupportedAdapterTypes(this);
 		} catch (Exception e) {
 			traceAndLogException(GET_SUPPORTED_ADAPTERS_ERROR_CODE,
-					"getSupportedAdapterTypes", e);
+					method, e);
 		}
 		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
-				this.getClass(), "getSupportedAdapterTypes", result);
+				this.getClass(), method, result);
 		return result;
 	}
 
@@ -258,18 +259,19 @@ public class ContainerTypeDescription {
 	 *         array will be returned
 	 */
 	public Class[][] getSupportedParameterTypes() {
+		String method = "getParameterTypes";
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, this.getClass(),
-				"getParameterTypes");
+				method);
 		Class[][] result = new Class[0][0];
 		try {
 			result = getInstantiator().getSupportedParameterTypes(this);
 		} catch (Exception e) {
 			traceAndLogException(GET_PARAMETER_TYPES_ERROR_CODE,
-					"getParameterTypes", e);
+					method, e);
 		}
 		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
-				this.getClass(), "getParameterTypes", result);
+				this.getClass(), method, result);
 		return result;
 	}
 
