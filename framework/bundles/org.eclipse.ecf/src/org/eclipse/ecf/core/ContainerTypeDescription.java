@@ -46,7 +46,11 @@ public class ContainerTypeDescription {
 	private static final int GET_SUPPORTED_ADAPTERS_ERROR_CODE = 2673;
 
 	protected Map properties = null;
+	
+	protected String iconFile = null;
 
+	protected boolean visible = true;
+	
 	public ContainerTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc) {
 		this(loader, name, instantiatorClass, desc, EMPTY);
@@ -69,13 +73,13 @@ public class ContainerTypeDescription {
 		if (name == null)
 			throw new RuntimeException(
 					new InstantiationException(
-							"SharedObjectContainerDescription<init> name cannot be null"));
+							"ContainerTypeDescription<init> name cannot be null"));
 		this.name = name;
 		this.hashCode = name.hashCode();
 		if (instantiatorClass == null)
 			throw new RuntimeException(
 					new InstantiationException(
-							"SharedObjectContainerDescription<init> instantiatorClass cannot be null"));
+							"ContainerTypeDescription<init> instantiatorClass cannot be null"));
 		this.instantiatorClass = instantiatorClass;
 		this.description = desc;
 		this.parameterDefaults = parameterDefaults;
@@ -94,21 +98,28 @@ public class ContainerTypeDescription {
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
 			String desc, String[] parameterDefaults, Map props) {
+		this(name,inst,desc,parameterDefaults,props,null,true);
+	}
+
+	public ContainerTypeDescription(String name, IContainerInstantiator inst,
+			String desc, String[] parameterDefaults, Map props, String iconFile, boolean visible) {
 		if (name == null)
 			throw new RuntimeException(
 					new InstantiationException(
-							"SharedObjectContainerDescription<init> name cannot be null"));
+							"ContainerTypeDescription<init> name cannot be null"));
 		this.name = name;
 		this.hashCode = name.hashCode();
 		if (inst == null)
 			throw new RuntimeException(
 					new InstantiationException(
-							"SharedObjectContainerDescription<init> instantiator instance cannot be null"));
+							"ContainerTypeDescription<init> instantiator instance cannot be null"));
 		this.instantiator = inst;
 		this.classLoader = this.instantiator.getClass().getClassLoader();
 		this.description = desc;
 		this.parameterDefaults = parameterDefaults;
 		this.properties = (props == null) ? new HashMap() : props;
+		this.iconFile = iconFile;
+		this.visible = visible;
 	}
 
 	/**
@@ -144,12 +155,15 @@ public class ContainerTypeDescription {
 		StringBuffer b = new StringBuffer("ContainerTypeDescription[");
 		b.append("name=").append(name).append(";");
 		if (instantiator == null)
-			b.append("class=").append(instantiatorClass).append(";");
+			b.append("instantiatorClass=").append(instantiatorClass).append(";");
 		else
 			b.append("instantiator=").append(instantiator).append(";");
 		b.append("desc=").append(description).append(";");
 		b.append("argdefaults=").append(Arrays.asList(parameterDefaults))
 				.append(";");
+		b.append("properties=").append(properties).append(";");
+		b.append("icon=").append(iconFile).append(";");
+		b.append("visible=").append(visible).append("]");
 		return b.toString();
 	}
 
@@ -282,5 +296,23 @@ public class ContainerTypeDescription {
 	 */
 	public Map getProperties() {
 		return properties;
+	}
+
+	/**
+	 * Get icon file name for this ContainerTypeDescription instance
+	 * 
+	 * @return String name of icon file relative to the plugin's top-level directory
+	 */
+	public String getIconFile() {
+		return iconFile;
+	}
+
+	/**
+	 * Ask whether the container type description should be visible in the UI
+	 * 
+	 * @return true if should be visible (default), or false if should not be visible
+	 */
+	public boolean isVisible() {
+		return visible;
 	}
 }

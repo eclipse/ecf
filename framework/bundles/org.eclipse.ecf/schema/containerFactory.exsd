@@ -75,6 +75,20 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  Icon for use in extension point user interface display
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="visible" type="boolean">
+            <annotation>
+               <documentation>
+                  Indication in UI of whether extension is to be visible or not
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -194,125 +208,124 @@ contract:
  * implementation.
  */
 public interface IContainerFactory {
-	/**
-	 * Add a ContainerTypeDescription to the set of known ContainerDescriptions.
-	 * 
-	 * @param description
-	 *            the ContainerTypeDescription to add to this factory. Must not
-	 *            be null.
-	 * @return ContainerTypeDescription the old description of the same name,
-	 *         null if none found
-	 */
-	public ContainerTypeDescription addDescription(ContainerTypeDescription description);
+ /**
+  * Add a ContainerTypeDescription to the set of known ContainerDescriptions.
+  * 
+  * @param description
+  *            the ContainerTypeDescription to add to this factory. Must not
+  *            be null.
+  * @return ContainerTypeDescription the old description of the same name,
+  *         null if none found
+  */
+ public ContainerTypeDescription addDescription(ContainerTypeDescription description);
 
-	/**
-	 * Get a collection of the ContainerDescriptions currently known to this
-	 * factory. This allows clients to query the factory to determine what if
-	 * any other ContainerDescriptions are currently registered with the
-	 * factory, and if so, what they are.
-	 * 
-	 * @return List of ContainerTypeDescription instances
-	 */
-	public List /* ContainerTypeDescription */ getDescriptions();
+ /**
+  * Get a collection of the ContainerDescriptions currently known to this
+  * factory. This allows clients to query the factory to determine what if
+  * any other ContainerDescriptions are currently registered with the
+  * factory, and if so, what they are.
+  * 
+  * @return List of ContainerTypeDescription instances
+  */
+ public List /* ContainerTypeDescription */ getDescriptions();
 
-	/**
-	 * Check to see if a given named description is already contained by this
-	 * factory
-	 * 
-	 * @param description
-	 *            the ContainerTypeDescription to look for
-	 * @return true if description is already known to factory, false otherwise
-	 */
-	public boolean containsDescription(ContainerTypeDescription description);
+ /**
+  * Check to see if a given named description is already contained by this
+  * factory
+  * 
+  * @param description
+  *            the ContainerTypeDescription to look for
+  * @return true if description is already known to factory, false otherwise
+  */
+ public boolean containsDescription(ContainerTypeDescription description);
 
-	/**
-	 * Get the known ContainerTypeDescription given it&apos;s name.
-	 * 
-	 * @param name
-	 *            the name to use as key to find ContainerTypeDescription
-	 * @return ContainerTypeDescription found. Null if not found.
-	 */
-	public ContainerTypeDescription getDescriptionByName(String name);
+ /**
+  * Get the known ContainerTypeDescription given it&apos;s name.
+  * 
+  * @param name
+  *            the name to use as key to find ContainerTypeDescription
+  * @return ContainerTypeDescription found. Null if not found.
+  */
+ public ContainerTypeDescription getDescriptionByName(String name);
 
-	/**
-	 * Make IContainer instance. Given a ContainerTypeDescription object, a
-	 * String [] of argument types, and an Object [] of parameters, this method
-	 * will
-	 * &lt;p&gt;
-	 * &lt;ul&gt;
-	 * &lt;li&gt;lookup the known ContainerDescriptions to find one of matching name&lt;/li&gt;
-	 * &lt;li&gt;if found, will retrieve or create an IContainerInstantiator for that
-	 * description&lt;/li&gt;
-	 * &lt;li&gt;Call the IContainerInstantiator.createInstance method to return an
-	 * instance of IContainer&lt;/li&gt;
-	 * &lt;/ul&gt;
-	 * 
-	 * @param description
-	 *            the ContainerTypeDescription to use to create the instance
-	 * @param parameters
-	 *            an Object [] of parameters passed to the createInstance method
-	 *            of the IContainerInstantiator
-	 * @return a valid instance of IContainer
-	 * @throws ContainerCreateException
-	 */
-	public IContainer createContainer(ContainerTypeDescription description,
-			Object[] parameters) throws ContainerCreateException;
+ /**
+  * Make IContainer instance. Given a ContainerTypeDescription object, a
+  * String [] of argument types, and an Object [] of parameters, this method
+  * will
+  * &lt;p&gt;
+  * &lt;ul&gt;
+  * &lt;li&gt;lookup the known ContainerDescriptions to find one of matching name&lt;/li&gt;
+  * &lt;li&gt;if found, will retrieve or create an IContainerInstantiator for that
+  * description&lt;/li&gt;
+  * &lt;li&gt;Call the IContainerInstantiator.createInstance method to return an
+  * instance of IContainer&lt;/li&gt;
+  * &lt;/ul&gt;
+  * 
+  * @param description
+  *            the ContainerTypeDescription to use to create the instance
+  * @param parameters
+  *            an Object [] of parameters passed to the createInstance method
+  *            of the IContainerInstantiator
+  * @return a valid instance of IContainer
+  * @throws ContainerCreateException
+  */
+ public IContainer createContainer(ContainerTypeDescription description,
+   Object[] parameters) throws ContainerCreateException;
 
-	/**
-	 * Make IContainer instance. Given a ContainerTypeDescription name, this
-	 * method will
-	 * &lt;p&gt;
-	 * &lt;ul&gt;
-	 * &lt;li&gt;lookup the known ContainerDescriptions to find one of matching name&lt;/li&gt;
-	 * &lt;li&gt;if found, will retrieve or create an IContainerInstantiator for that
-	 * description&lt;/li&gt;
-	 * &lt;li&gt;Call the IContainerInstantiator.createInstance method to return an
-	 * instance of IContainer&lt;/li&gt;
-	 * &lt;/ul&gt;
-	 * 
-	 * @param descriptionName
-	 *            the ContainerTypeDescription name to lookup
-	 * @return a valid instance of IContainer
-	 * @throws ContainerCreateException
-	 */
-	public IContainer createContainer(String descriptionName)
-			throws ContainerCreateException;
+ /**
+  * Make IContainer instance. Given a ContainerTypeDescription name, this
+  * method will
+  * &lt;p&gt;
+  * &lt;ul&gt;
+  * &lt;li&gt;lookup the known ContainerDescriptions to find one of matching name&lt;/li&gt;
+  * &lt;li&gt;if found, will retrieve or create an IContainerInstantiator for that
+  * description&lt;/li&gt;
+  * &lt;li&gt;Call the IContainerInstantiator.createInstance method to return an
+  * instance of IContainer&lt;/li&gt;
+  * &lt;/ul&gt;
+  * 
+  * @param descriptionName
+  *            the ContainerTypeDescription name to lookup
+  * @return a valid instance of IContainer
+  * @throws ContainerCreateException
+  */
+ public IContainer createContainer(String descriptionName)
+   throws ContainerCreateException;
 
-	/**
-	 * Make IContainer instance. Given a ContainerTypeDescription name, this
-	 * method will
-	 * &lt;p&gt;
-	 * &lt;ul&gt;
-	 * &lt;li&gt;lookup the known ContainerDescriptions to find one of matching name&lt;/li&gt;
-	 * &lt;li&gt;if found, will retrieve or create an IContainerInstantiator for that
-	 * description&lt;/li&gt;
-	 * &lt;li&gt;Call the IContainerInstantiator.createInstance method to return an
-	 * instance of IContainer&lt;/li&gt;
-	 * &lt;/ul&gt;
-	 * 
-	 * @param descriptionName
-	 *            the ContainerTypeDescription name to lookup
-	 * @param parameters
-	 *            the Object [] of parameters passed to the
-	 *            IContainerInstantiator.createInstance method
-	 * @return a valid instance of IContainer
-	 * @throws ContainerCreateException
-	 */
-	public IContainer createContainer(String descriptionName, Object[] parameters)
-			throws ContainerCreateException;
+ /**
+  * Make IContainer instance. Given a ContainerTypeDescription name, this
+  * method will
+  * &lt;p&gt;
+  * &lt;ul&gt;
+  * &lt;li&gt;lookup the known ContainerDescriptions to find one of matching name&lt;/li&gt;
+  * &lt;li&gt;if found, will retrieve or create an IContainerInstantiator for that
+  * description&lt;/li&gt;
+  * &lt;li&gt;Call the IContainerInstantiator.createInstance method to return an
+  * instance of IContainer&lt;/li&gt;
+  * &lt;/ul&gt;
+  * 
+  * @param descriptionName
+  *            the ContainerTypeDescription name to lookup
+  * @param parameters
+  *            the Object [] of parameters passed to the
+  *            IContainerInstantiator.createInstance method
+  * @return a valid instance of IContainer
+  * @throws ContainerCreateException
+  */
+ public IContainer createContainer(String descriptionName, Object[] parameters)
+   throws ContainerCreateException;
 
-	/**
-	 * Remove given description from set known to this factory.
-	 * 
-	 * @param description
-	 *            the ContainerTypeDescription to remove
-	 * @return the removed ContainerTypeDescription, null if nothing removed
-	 */
-	public ContainerTypeDescription removeDescription(
-			ContainerTypeDescription description);
+ /**
+  * Remove given description from set known to this factory.
+  * 
+  * @param description
+  *            the ContainerTypeDescription to remove
+  * @return the removed ContainerTypeDescription, null if nothing removed
+  */
+ public ContainerTypeDescription removeDescription(
+   ContainerTypeDescription description);
 }
 &lt;/pre&gt;
-
       </documentation>
    </annotation>
 
@@ -324,7 +337,6 @@ public interface IContainerFactory {
          The supplied implementations of this extension point are:
 
 org.eclipse.ecf.provider.generic.GenericContainerInstantiator
-
       </documentation>
    </annotation>
 

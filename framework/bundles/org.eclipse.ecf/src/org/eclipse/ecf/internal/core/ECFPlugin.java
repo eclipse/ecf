@@ -60,6 +60,10 @@ public class ECFPlugin extends Plugin {
 	public static final String NAME_ATTRIBUTE = "name";
 
 	public static final String DESCRIPTION_ATTRIBUTE = "description";
+	
+	public static final String ICON_ATTRIBUTE = "icon";
+	
+	public static final String VISIBLE_ATTRIBUTE = "visible";
 
 	public static final String ARG_ELEMENT_NAME = "defaultargument";
 
@@ -252,6 +256,12 @@ public class ECFPlugin extends Plugin {
 				if (description == null) {
 					description = "";
 				}
+				
+				String icon = member.getAttribute(ICON_ATTRIBUTE);
+				
+				String visibleAttr = member.getAttribute(VISIBLE_ATTRIBUTE);
+				boolean visible = (visibleAttr == null)?true:Boolean.valueOf(visibleAttr).booleanValue();
+				
 				// Get any arguments
 				String[] defaults = getDefaultArgs(member
 						.getChildren(ARG_ELEMENT_NAME));
@@ -261,7 +271,7 @@ public class ECFPlugin extends Plugin {
 				// Now make description instance
 				ContainerTypeDescription scd = new ContainerTypeDescription(
 						name, (IContainerInstantiator) exten, description,
-						defaults, properties);
+						defaults, properties, icon, visible);
 				IContainerFactory factory = ContainerFactory.getDefault();
 				if (factory.containsDescription(scd)) {
 					throw new CoreException(
