@@ -3,10 +3,10 @@
 <schema targetNamespace="org.eclipse.ecf">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.ecf" id="startup" name="ECF Start"/>
+         <meta.schema plugin="org.eclipse.ecf" id="startup" name="ECF Core Startup"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         ECF Core Startup Extension Point.  This extension point (&lt;b&gt;org.eclipse.ecf.startup&lt;/b&gt;) allows other bundles to have arbitrary code run upon ECF startup.  Note that extensions will be run when the ECF core bundle (ID: &lt;b&gt;org.eclipse.ecf&lt;/b&gt;) is started by the runtime, not necessarily upon platform startup.  Of course, if the &lt;b&gt;org.eclipse.ecf&lt;/b&gt; bundle is started at platform startup, then extensions of this extension point will also be run.
       </documentation>
    </annotation>
 
@@ -72,7 +72,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         0.9.0
       </documentation>
    </annotation>
 
@@ -81,7 +81,47 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         Here is an example usage of this extension point:
+
+&lt;pre&gt;
+&lt;extension
+      point=&quot;org.eclipse.ecf.startup&quot;&gt;
+   &lt;ecfstart
+         class=&quot;org.eclipse.ecf.example.collab.start.CollabStart&quot;/&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+
+Note that the CollabStart class must implement the &lt;b&gt;org.eclipse.ecf.start.IECFStart&lt;/b&gt; interface.
+
+Here&apos;s an example implementation class:
+
+&lt;pre&gt;
+public class CollabStart implements IECFStart {
+ Discovery discovery = null;
+ public IStatus startup(IProgressMonitor monitor) {
+  try {
+   AccountStart as = new AccountStart();
+   as.loadConnectionDetailsFromPreferenceStore();
+   Collection c = as.getConnectionDetails();
+   for (Iterator i = c.iterator(); i.hasNext();) {
+    startConnection((ConnectionDetails) i.next());
+   }
+  } catch (Exception e) {
+   return new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID, 200,
+     &quot;Exception in starting connection&quot;, e);
+  }
+  return new Status(IStatus.OK, ClientPlugin.PLUGIN_ID, 100, &quot;OK&quot;, null);
+ }
+ private void startConnection(ConnectionDetails details) throws Exception {
+  CollabClient client = new CollabClient();
+  //ClientPlugin.log(&quot;ECF: Autostarting containerType=&quot;+details.getContainerType()+&quot;,uri=&quot;+details.getTargetURI()+&quot;,nickname=&quot;+details.getNickname());
+  client.createAndConnectClient(details.getContainerType(), details
+    .getTargetURI(), details.getNickname(), details.getPassword(),
+    ResourcesPlugin.getWorkspace().getRoot());
+ }
+}
+
+&lt;/pre&gt;
       </documentation>
    </annotation>
 
@@ -90,7 +130,26 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         The API for the &lt;b&gt;org.eclipse.ecf.startup&lt;/b&gt; extension point is provided by the
+&lt;b&gt;org.eclipse.ecf.startup.IECFStartup&lt;/b&gt; interface:
+
+&lt;pre&gt;
+/**
+ * Interface that must be implemented by extensions of the org.eclipse.ecf.start
+ * extension point. Such extensions will have their start method called by a new
+ * Job upon ECF startup.
+ */
+public interface IECFStart {
+ /**
+  * Start ECF client or server.
+  * 
+  * @return IStatus the status of the start
+  * @throws ECFStartException
+  *             if some exception thrown during start
+  */
+ public IStatus startup(IProgressMonitor monitor);
+}
+&lt;/pre&gt;
       </documentation>
    </annotation>
 
@@ -99,7 +158,7 @@
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         No implementation supplied for this extensinion point.
       </documentation>
    </annotation>
 
@@ -108,7 +167,8 @@
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         
+         Copyright (c) 2004 Composent, Inc. and others.
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation
       </documentation>
    </annotation>
 

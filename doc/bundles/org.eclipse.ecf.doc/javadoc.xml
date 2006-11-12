@@ -1,8 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="javadoc">
-<target name="javadoc">
-<javadoc access="protected" additionalparam="-J-Xmx256m  " author="false" classpath="C:\eclipse3.2\eclipse\plugins\org.eclipse.ui.workbench_3.2.0.I20060605-1400.jar;../org.eclipse.ecf.core.sharedobject/bin;../org.eclipse.ecf.presence/bin;C:\eclipse3.2\eclipse\plugins\org.eclipse.core.jobs_3.2.0.v20060603.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.ui.ide_3.2.0.I20060605-1400.jar;../org.eclipse.ecf.discovery/bin;../org.eclipse.ecf.provider/bin;C:\eclipse3.2\eclipse\plugins\org.eclipse.core.runtime.compatibility.registry_3.2.0.v20060603\runtime_registry_compatibility.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.jface_3.2.0.I20060605-1400.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.text_3.2.0.v20060605-1400.jar;../org.eclipse.ecf/bin;C:\eclipse3.2\eclipse\plugins\org.eclipse.core.commands_3.2.0.I20060605-1400.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.jface.text_3.2.0.v20060605-1400.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.swt.win32.win32.x86_3.2.0.v3232m.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.equinox.registry_3.2.0.v20060601.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.swt_3.2.0.v3232o.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.core.runtime_3.2.0.v20060603.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.equinox.preferences_3.2.0.v20060601.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.core.contenttype_3.2.0.v20060603.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.osgi_3.2.0.v20060601.jar;../org.eclipse.ecf.core.identity/bin;C:\eclipse3.2\eclipse\plugins\org.eclipse.equinox.common_3.2.0.v20060603.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.ui.browser_3.2.0.v20060602.jar" destdir="html/reference/api" doctitle="Eclipse Communication Framework (ECF) 0.9.3" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="org.eclipse.ecf.core.sharedobject,org.eclipse.ecf.core.sharedobject.events,org.eclipse.ecf.provider.comm,org.eclipse.ecf.core.sharedobject.provider,org.eclipse.ecf.presence,org.eclipse.ecf.ui.views,org.eclipse.ecf.provider.generic.gmm,org.eclipse.ecf.provider.app,org.eclipse.ecf.discovery.identity,org.eclipse.ecf.core.sharedobject.util,org.eclipse.ecf.remoteservice,org.eclipse.ecf.filetransfer.identity,org.eclipse.ecf.core.sharedobject.security,org.eclipse.ecf.server,org.eclipse.ecf.provider.util,org.eclipse.ecf.filetransfer.events,org.eclipse.ecf.datashare,org.eclipse.ecf.datashare.events,org.eclipse.ecf.ui.wizards,org.eclipse.ecf.core.util,org.eclipse.ecf.discovery,org.eclipse.ecf.presence.provider,org.eclipse.ecf.call.events,org.eclipse.ecf.provider.comm.tcp,org.eclipse.ecf.provider.generic,org.eclipse.ecf.remoteservice.events,org.eclipse.ecf.filetransfer,org.eclipse.ecf.presence.chat,org.eclipse.ecf.call,org.eclipse.ecf.ui.util,org.eclipse.ecf.datashare.mergeable,org.eclipse.ecf.core.identity,org.eclipse.ecf.ui.dialogs,org.eclipse.ecf.ui" source="1.4" sourcepath="../org.eclipse.ecf.filetransfer/src;../org.eclipse.ecf.server/src;../org.eclipse.ecf.core.identity/src;../org.eclipse.ecf.ui/src;../org.eclipse.ecf.provider/src;../org.eclipse.ecf.discovery/src;../org.eclipse.ecf.remoteservice/src;../org.eclipse.ecf.presence/src;../org.eclipse.ecf.core.sharedobject/src;../org.eclipse.ecf.datashare/src;../org.eclipse.ecf.call/src" splitindex="true" use="true" version="true">
-<link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
-</javadoc>
-</target>
+	
+	<property name="dest.path" value="html/reference/api" />
+
+	<target name="javadoc">
+		<javadoc access="protected"
+		         additionalparam="-J-Xmx256m  "
+		         author="false"
+		         classpath="C:\eclipse3.2\eclipse\plugins\org.eclipse.ui.workbench_3.2.0.I20060605-1400.jar;../org.eclipse.ecf.core.sharedobject/bin;../org.eclipse.ecf.presence/bin;C:\eclipse3.2\eclipse\plugins\org.eclipse.core.jobs_3.2.0.v20060603.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.ui.ide_3.2.0.I20060605-1400.jar;../org.eclipse.ecf.discovery/bin;../org.eclipse.ecf.provider/bin;C:\eclipse3.2\eclipse\plugins\org.eclipse.core.runtime.compatibility.registry_3.2.0.v20060603\runtime_registry_compatibility.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.jface_3.2.0.I20060605-1400.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.text_3.2.0.v20060605-1400.jar;../org.eclipse.ecf/bin;C:\eclipse3.2\eclipse\plugins\org.eclipse.core.commands_3.2.0.I20060605-1400.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.jface.text_3.2.0.v20060605-1400.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.swt.win32.win32.x86_3.2.0.v3232m.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.equinox.registry_3.2.0.v20060601.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.swt_3.2.0.v3232o.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.core.runtime_3.2.0.v20060603.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.equinox.preferences_3.2.0.v20060601.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.core.contenttype_3.2.0.v20060603.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.osgi_3.2.0.v20060601.jar;../org.eclipse.ecf.core.identity/bin;C:\eclipse3.2\eclipse\plugins\org.eclipse.equinox.common_3.2.0.v20060603.jar;C:\eclipse3.2\eclipse\plugins\org.eclipse.ui.browser_3.2.0.v20060602.jar"
+		         destdir="${dest.path}"
+		         doctitle="Eclipse Communication Framework (ECF) 0.9.3"
+		         nodeprecated="false"
+		         nodeprecatedlist="false"
+		         noindex="false"
+		         nonavbar="false"
+		         notree="false"
+		         packagenames="org.eclipse.ecf.core.sharedobject,org.eclipse.ecf.core.sharedobject.events,org.eclipse.ecf.provider.comm,org.eclipse.ecf.core.sharedobject.provider,org.eclipse.ecf.presence,org.eclipse.ecf.ui.views,org.eclipse.ecf.provider.generic.gmm,org.eclipse.ecf.provider.app,org.eclipse.ecf.discovery.identity,org.eclipse.ecf.core.sharedobject.util,org.eclipse.ecf.remoteservice,org.eclipse.ecf.filetransfer.identity,org.eclipse.ecf.core.sharedobject.security,org.eclipse.ecf.server,org.eclipse.ecf.provider.util,org.eclipse.ecf.filetransfer.events,org.eclipse.ecf.datashare,org.eclipse.ecf.datashare.events,org.eclipse.ecf.ui.wizards,org.eclipse.ecf.core.util,org.eclipse.ecf.discovery,org.eclipse.ecf.presence.provider,org.eclipse.ecf.call.events,org.eclipse.ecf.provider.comm.tcp,org.eclipse.ecf.provider.generic,org.eclipse.ecf.remoteservice.events,org.eclipse.ecf.filetransfer,org.eclipse.ecf.presence.chat,org.eclipse.ecf.call,org.eclipse.ecf.ui.util,org.eclipse.ecf.datashare.mergeable,org.eclipse.ecf.core.identity,org.eclipse.ecf.ui.dialogs,org.eclipse.ecf.ui"
+		         source="1.4"
+		         sourcepath="../org.eclipse.ecf.filetransfer/src;../org.eclipse.ecf.server/src;../org.eclipse.ecf.core.identity/src;../org.eclipse.ecf.ui/src;../org.eclipse.ecf.provider/src;../org.eclipse.ecf.discovery/src;../org.eclipse.ecf.remoteservice/src;../org.eclipse.ecf.presence/src;../org.eclipse.ecf.core.sharedobject/src;../org.eclipse.ecf.datashare/src;../org.eclipse.ecf.call/src"
+		         splitindex="true"
+		         use="true"
+		         version="true">
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+		</javadoc>
+	</target>
+
+	<target name="clean">
+		<delete>
+			<fileset dir="${dest.path}" includes="*.html" />
+		</delete>
+	</target>
 </project>
