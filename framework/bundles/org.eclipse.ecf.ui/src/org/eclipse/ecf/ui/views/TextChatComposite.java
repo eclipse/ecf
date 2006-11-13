@@ -16,7 +16,6 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.user.IUser;
-import org.eclipse.ecf.internal.ui.Trace;
 import org.eclipse.ecf.internal.ui.UiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -53,8 +52,6 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 
 public class TextChatComposite extends Composite {
-    
-    public static final Trace trace = Trace.create("textchatcomposite");
     
     protected static final int DEFAULT_INPUT_HEIGHT = 25;
     protected static final int DEFAULT_INPUT_SEPARATOR = 5;
