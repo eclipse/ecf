@@ -10,8 +10,6 @@
 package org.eclipse.ecf.discovery;
 
 import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
@@ -73,9 +71,4 @@ public interface IServiceInfo {
 	 */
 	public boolean isResolved();
 
-	/**
-	 * Returns URI of service (if available). Throws URISyntaxException if
-	 * existing service info cannot be used to create URI
-	 */
-	public URI getServiceURI() throws URISyntaxException;
 }

@@ -46,11 +46,11 @@ public class ContainerTypeDescription {
 	private static final int GET_SUPPORTED_ADAPTERS_ERROR_CODE = 2673;
 
 	protected Map properties = null;
-	
+
 	protected String iconFile = null;
 
 	protected boolean visible = true;
-	
+
 	public ContainerTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc) {
 		this(loader, name, instantiatorClass, desc, EMPTY);
@@ -71,15 +71,13 @@ public class ContainerTypeDescription {
 			Map props) {
 		this.classLoader = loader;
 		if (name == null)
-			throw new RuntimeException(
-					new InstantiationException(
-							"ContainerTypeDescription<init> name cannot be null"));
+			throw new NullPointerException(
+					"ContainerTypeDescription<init> name cannot be null");
 		this.name = name;
 		this.hashCode = name.hashCode();
 		if (instantiatorClass == null)
-			throw new RuntimeException(
-					new InstantiationException(
-							"ContainerTypeDescription<init> instantiatorClass cannot be null"));
+			throw new NullPointerException(
+					"ContainerTypeDescription<init> instantiatorClass cannot be null");
 		this.instantiatorClass = instantiatorClass;
 		this.description = desc;
 		this.parameterDefaults = parameterDefaults;
@@ -98,15 +96,15 @@ public class ContainerTypeDescription {
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
 			String desc, String[] parameterDefaults, Map props) {
-		this(name,inst,desc,parameterDefaults,props,null,true);
+		this(name, inst, desc, parameterDefaults, props, null, true);
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
-			String desc, String[] parameterDefaults, Map props, String iconFile, boolean visible) {
+			String desc, String[] parameterDefaults, Map props,
+			String iconFile, boolean visible) {
 		if (name == null)
-			throw new RuntimeException(
-					new InstantiationException(
-							"ContainerTypeDescription<init> name cannot be null"));
+			throw new NullPointerException(
+					"ContainerTypeDescription<init> name cannot be null");
 		this.name = name;
 		this.hashCode = name.hashCode();
 		if (inst == null)
@@ -155,7 +153,8 @@ public class ContainerTypeDescription {
 		StringBuffer b = new StringBuffer("ContainerTypeDescription[");
 		b.append("name=").append(name).append(";");
 		if (instantiator == null)
-			b.append("instantiatorClass=").append(instantiatorClass).append(";");
+			b.append("instantiatorClass=").append(instantiatorClass)
+					.append(";");
 		else
 			b.append("instantiator=").append(instantiator).append(";");
 		b.append("desc=").append(description).append(";");
@@ -228,14 +227,12 @@ public class ContainerTypeDescription {
 	public String[] getSupportedAdapterTypes() {
 		String method = "getSupportedAdapterTypes";
 		Trace.entering(ECFPlugin.getDefault(),
-				ECFDebugOptions.METHODS_ENTERING, this.getClass(),
-				method);
+				ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		String[] result = new String[0];
 		try {
 			result = getInstantiator().getSupportedAdapterTypes(this);
 		} catch (Exception e) {
-			traceAndLogException(GET_SUPPORTED_ADAPTERS_ERROR_CODE,
-					method, e);
+			traceAndLogException(GET_SUPPORTED_ADAPTERS_ERROR_CODE, method, e);
 		}
 		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
 				this.getClass(), method, result);
@@ -275,14 +272,12 @@ public class ContainerTypeDescription {
 	public Class[][] getSupportedParameterTypes() {
 		String method = "getParameterTypes";
 		Trace.entering(ECFPlugin.getDefault(),
-				ECFDebugOptions.METHODS_ENTERING, this.getClass(),
-				method);
+				ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		Class[][] result = new Class[0][0];
 		try {
 			result = getInstantiator().getSupportedParameterTypes(this);
 		} catch (Exception e) {
-			traceAndLogException(GET_PARAMETER_TYPES_ERROR_CODE,
-					method, e);
+			traceAndLogException(GET_PARAMETER_TYPES_ERROR_CODE, method, e);
 		}
 		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
 				this.getClass(), method, result);
@@ -301,7 +296,8 @@ public class ContainerTypeDescription {
 	/**
 	 * Get icon file name for this ContainerTypeDescription instance
 	 * 
-	 * @return String name of icon file relative to the plugin's top-level directory
+	 * @return String name of icon file relative to the plugin's top-level
+	 *         directory
 	 */
 	public String getIconFile() {
 		return iconFile;
@@ -310,7 +306,8 @@ public class ContainerTypeDescription {
 	/**
 	 * Ask whether the container type description should be visible in the UI
 	 * 
-	 * @return true if should be visible (default), or false if should not be visible
+	 * @return true if should be visible (default), or false if should not be
+	 *         visible
 	 */
 	public boolean isVisible() {
 		return visible;

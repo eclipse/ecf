@@ -15,6 +15,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.core.IContainer;
@@ -275,7 +276,7 @@ public class DiscoveryView extends ViewPart {
 			TreeParent typenode = findServiceTypeNode(svcID.getServiceType());
 			URI uri = null;
 			try {
-				uri = serviceInfo.getServiceURI();
+				uri = new URI(serviceInfo.getServiceID().getName());
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
@@ -601,7 +602,7 @@ public class DiscoveryView extends ViewPart {
 					if (svcInfo != null) {
 						if (svcInfo.isResolved() && isSupportedServiceType(svcID.getServiceType())) {
 							try {
-								URI uri = svcInfo.getServiceURI();
+								URI uri = new URI(svcInfo.getServiceID().getName());
 								if (uri != null) {
 									connectToAction.setEnabled(true);
 								}

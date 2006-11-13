@@ -94,7 +94,7 @@ public class DiscoveryStartup {
 		String targetString = null;
 		IResource workspace = null;
 		try {
-			targetString = svcInfo.getServiceURI().toString();
+			targetString = new URI(svcInfo.getServiceID().getName()).toString();
 			workspace = CollabClient.getWorkspace();
 		} catch (Exception e) {
 			ClientPlugin.log("Exception connecting to service with info "

@@ -11,8 +11,6 @@ package org.eclipse.ecf.discovery;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
@@ -95,8 +93,4 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		return buf.toString();
 	}
 
-	public URI getServiceURI() throws URISyntaxException {
-		throw new URISyntaxException(this.toString(),
-				"ServiceInfo doesn't support URI syntax");
-	}
 }
