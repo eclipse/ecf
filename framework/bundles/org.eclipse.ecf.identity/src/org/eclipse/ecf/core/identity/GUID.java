@@ -113,14 +113,14 @@ public class GUID extends StringID {
 
 	protected static synchronized void initializeRandom(String algo,
 			String provider) throws Exception {
-		
 		if (provider == null) {
-			try {
-				random = SecureRandom.getInstance("IBMSECURERANDOM");
-			} catch (Exception e) {
-				// If we don't have the IBMSECURERANDOM, then use SHA1PRNG
-				random = SecureRandom.getInstance("SHA1PRNG");
-			}			
+			if (algo == null) {
+				try {
+					random = SecureRandom.getInstance("IBMSECURERANDOM");
+				} catch (Exception e) {
+					random = SecureRandom.getInstance("SHA1PRNG");
+				}
+			} else random = SecureRandom.getInstance(algo);
 		} else {
 			random = SecureRandom.getInstance(algo, provider);
 		}
