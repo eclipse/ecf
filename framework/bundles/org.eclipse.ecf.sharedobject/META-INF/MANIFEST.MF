@@ -12,7 +12,7 @@ Export-Package: org.eclipse.ecf.core.sharedobject,
  org.eclipse.ecf.core.sharedobject.security,
  org.eclipse.ecf.core.sharedobject.util,
  org.eclipse.ecf.internal.core.sharedobject;x-internal:=true
-Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+Bundle-RequiredExecutionEnvironment: J2SE-1.3,
  CDC-1.0/Foundation-1.0
 Import-Package: org.eclipse.core.runtime,
  org.eclipse.ecf.core,
