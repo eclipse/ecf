@@ -16,8 +16,8 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.user.IUser;
-import org.eclipse.ecf.ui.Trace;
-import org.eclipse.ecf.ui.UiPlugin;
+import org.eclipse.ecf.internal.ui.Trace;
+import org.eclipse.ecf.internal.ui.UiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;

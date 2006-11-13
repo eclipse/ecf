@@ -13,6 +13,8 @@ package org.eclipse.ecf.example.collab;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
@@ -24,7 +26,6 @@ import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
-import org.eclipse.ecf.ui.UiPlugin;
 import org.eclipse.ecf.ui.views.ChatRoomManagerView;
 import org.eclipse.ecf.ui.views.IChatRoomViewCloseListener;
 import org.eclipse.swt.widgets.Display;
@@ -134,9 +135,9 @@ public class IRCChatRoomManagerUI {
 					if (!viewAlreadyActive) setupNewView(container, targetID, chatroomview);
 					else chatroomview.joinRoom(getChannelFromID(targetID));
 				} catch (Exception e) {
-					UiPlugin.log(
-							"Exception in chat room view creation or initialization "
-									+ targetID, e);
+					ClientPlugin.getDefault().getLog().log(new Status(IStatus.ERROR,ClientPlugin.PLUGIN_ID,0,
+							"Exception in chat room view initialization for chat room "
+									+ targetID, e));
 				}
             }
 

@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.ui.UiPlugin;
+import org.eclipse.ecf.internal.ui.UiPlugin;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;

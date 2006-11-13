@@ -9,7 +9,7 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.ui;
+package org.eclipse.ecf.internal.ui;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
