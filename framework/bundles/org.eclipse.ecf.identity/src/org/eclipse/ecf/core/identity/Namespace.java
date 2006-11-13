@@ -54,8 +54,7 @@ public abstract class Namespace implements Serializable {
 
 	public final boolean initialize(String name, String desc) {
 		if (name == null)
-			throw new RuntimeException(new InstantiationException(
-					"Namespace<init> name cannot be null"));
+			throw new NullPointerException("Namespace<init> name cannot be null");
 		if (!isInitialized) {
 			this.name = name;
 			this.description = desc;

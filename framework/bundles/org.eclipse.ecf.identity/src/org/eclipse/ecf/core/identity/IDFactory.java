@@ -201,8 +201,7 @@ public class IDFactory implements IIDFactory {
 		IDCreateException e = null;
 		if (t != null) {
 			e = new IDCreateException(s + ": " + t.getClass().getName() + ": "
-					+ t.getMessage());
-			e.setStackTrace(t.getStackTrace());
+					+ t.getMessage(), t);
 		} else {
 			e = new IDCreateException(s);
 		}
