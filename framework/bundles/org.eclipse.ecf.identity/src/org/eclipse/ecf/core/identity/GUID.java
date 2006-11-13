@@ -9,8 +9,8 @@
 package org.eclipse.ecf.core.identity;
 
 import java.security.SecureRandom;
-import java.security.Security;
 import java.util.Set;
+
 import org.eclipse.ecf.core.util.Base64;
 
 /**
@@ -118,7 +118,7 @@ public class GUID extends StringID {
 			if (algo == null) {
 				Set algos = null;
 				try {
-					algos = Security.getAlgorithms("SecureRandom");
+					//algos = Security.getAlgorithms("SecureRandom");
 				} catch (Exception e) {
 					// Might not have getAlgorithms for F1.0
 					// If so runtime exception will be thrown and we'll catch.
