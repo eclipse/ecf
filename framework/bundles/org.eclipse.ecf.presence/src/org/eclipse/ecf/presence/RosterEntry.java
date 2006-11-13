@@ -39,12 +39,10 @@ public class RosterEntry implements IRosterEntry {
 	public RosterEntry(ID svcID, ID userID, String name,
 			IPresence presenceState, InterestType interestType, Collection grps) {
 		if (svcID == null)
-			throw new RuntimeException(new InstantiationException(
-					"svcID cannot be null"));
+			throw new NullPointerException("svcID cannot be null");
 		this.serviceID = svcID;
 		if (userID == null)
-			throw new RuntimeException(new InstantiationException(
-					"userID cannot be null"));
+			throw new NullPointerException("userID cannot be null");
 		this.userID = userID;
 		this.name = name;
 		this.presenceState = presenceState;
