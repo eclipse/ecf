@@ -11,7 +11,6 @@
 
 package org.eclipse.ecf.ui;
 
-import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.ui.IWorkbench;
@@ -29,12 +28,8 @@ public interface IConnectWizard extends IWizard {
 	 * 
 	 * @param workbench
 	 *            the currently working workbench instance. Will not be null.
-	 * @param description
-	 *            the ContainerTypeDescription of the container instance. Will
-	 *            not be null.
 	 * @param container
 	 *            the container that is to be connected. Will not be null.
 	 */
-	public void init(IWorkbench workbench,
-			ContainerTypeDescription description, IContainer container);
+	public void init(IWorkbench workbench, IContainer container);
 }
