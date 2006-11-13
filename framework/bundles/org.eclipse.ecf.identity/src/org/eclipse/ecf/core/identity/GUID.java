@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.util.Base64;
 
 /**
  * Globally unique ID implementation class. Uses
- * {@link java.security.SecureRandom}to create a unique number of given byte
+ * {@link java.security.SecureRandom} to create a unique number of given byte
  * length. Default byte length for secure number is 20 bytes. Default algorithm
  * used for creating a SecureRandom instance is SHA1PRNG.
  */
@@ -116,8 +116,14 @@ public class GUID extends StringID {
 			String provider) throws Exception {
 		if (provider == null) {
 			if (algo == null) {
-				Set algos = Security.getAlgorithms("SecureRandom");
-				if (algos.contains("IBMSECURERANDOM"))
+				Set algos = null;
+				try {
+					algos = Security.getAlgorithms("SecureRandom");
+				} catch (Exception e) {
+					// Might not have getAlgorithms for F1.0
+					// If so runtime exception will be thrown and we'll catch.
+				}
+				if (algos != null && algos.contains("IBMSECURERANDOM"))
 					algo = "IBMSECURERANDOM";
 				else
 					algo = "SHA1PRNG";
