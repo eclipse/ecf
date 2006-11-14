@@ -11,7 +11,7 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            icon="icons/person.gif"
+            icon="icons/epresence16/buddy_available.gif"
             class="org.eclipse.ecf.ui.views.RosterView"
             category="org.eclipse.ecf.ui.viewcategory"
             name="ECF Roster"
@@ -20,14 +20,14 @@
             allowMultiple="true"
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.ui.views.ChatRoomView"
-            icon="icons/person.gif"
+            icon="icons/epresence16/group.gif"
             id="org.eclipse.ecf.ui.views.ChatRoomView"
             name="Chat Room"/>
       <view
             allowMultiple="true"
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.ui.views.ChatRoomManagerView"
-            icon="icons/person.gif"
+            icon="icons/epresence16/group.gif"
             id="org.eclipse.ecf.ui.views.ChatRoomManagerView"
             name="Chat Room"/>
    </extension>

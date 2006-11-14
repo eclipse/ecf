@@ -5,7 +5,7 @@
          id="org.eclipse.ecf.example.collab.ui.ClientPreferencePage"
          point="org.eclipse.ui.views">
       <view
-            icon="icons/person.gif"
+            icon="icons/group.gif"
             class="org.eclipse.ecf.example.collab.ui.LineChatView"
             category="org.eclipse.ecf.ui.viewcategory"
             name="ECF Collaboration"
@@ -13,13 +13,13 @@
       <view
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.example.collab.CollabDiscoveryView"
-            icon="icons/person.gif"
+            icon="icons/default_provider_image.gif"
             id="org.eclipse.ecf.example.collab.discoveryview"
             name="ECF Dynamic Service Discovery"/>
       <view
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.example.collab.ui.CollabRosterView"
-            icon="icons/person.gif"
+            icon="icons/group.gif"
             id="org.eclipse.ecf.example.collab.ui.CollabRosterView"
             name="ECF Collab Roster"/>
    </extension>
@@ -45,7 +45,7 @@
                label="Connect Workspace (new dialog)..."
                class="org.eclipse.ecf.example.collab.actions.NewWorkbenchAction"
                tooltip="Connect Workspace to ECF Group"
-               icon="icons/person.gif"
+               icon="icons/group.gif"
                style="push"
                menubarPath="org.eclipse.ecf.example.collab.topmenu/org.eclipse.ecf.example.collab.topseparator"
                id="org.eclipse.ecf.example.collab.joingroupaction"/>

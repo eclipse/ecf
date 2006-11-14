@@ -110,8 +110,10 @@ public class UiPlugin extends AbstractUIPlugin {
         registry = super.createImageRegistry();
        
         registry.put(UiPluginConstants.DECORATION_PROJECT, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
-        registry.put(UiPluginConstants.DECORATION_USER, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/enabled/presence_member.gif").createImage());
-        registry.put(UiPluginConstants.DECORATION_USER_INACTIVE, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/disabled/presence_member.gif").createImage());
+        registry.put(UiPluginConstants.DECORATION_USER_AVAILABLE, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/epresence16/buddy_available.gif").createImage());
+        registry.put(UiPluginConstants.DECORATION_USER_AWAY, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/epresence16/buddy_away.gif").createImage());
+        registry.put(UiPluginConstants.DECORATION_GROUP, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/epresence16/group.gif").createImage());
+        registry.put(UiPluginConstants.DECORATION_USER_UNAVAILABLE, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/epresence16/buddy_unavailable.gif").createImage());
         registry.put(UiPluginConstants.DECORATION_TIME, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_FORWARD));
         registry.put(UiPluginConstants.DECORATION_TASK, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT));
         
@@ -119,6 +121,19 @@ public class UiPlugin extends AbstractUIPlugin {
         registry.put(UiPluginConstants.DECORATION_RECEIVE , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_REDO));
         registry.put(UiPluginConstants.DECORATION_PRIVATE , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK));
         registry.put(UiPluginConstants.DECORATION_SYSTEM_MESSAGE , PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK));
+
+        registry.put(UiPluginConstants.DECORATION_DISCONNECT_ICON_DISABLED , AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/disabled/terminate_co.gif").createImage());
+        registry.put(UiPluginConstants.DECORATION_DISCONNECT_ICON_ENABLED , AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/enabled/terminate_co.gif").createImage());
+
+        registry.put(UiPluginConstants.DECORATION_ADD_GROUP , AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/epresence16/add_group.gif").createImage());
+        registry.put(UiPluginConstants.DECORATION_ADD_BUDDY , AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/epresence16/add_buddy.gif").createImage());
+
+        registry.put(UiPluginConstants.DECORATION_ADD_CHAT , AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/enabled/addchat.gif").createImage());
+
+        registry.put(UiPluginConstants.DECORATION_MESSAGE , AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/enabled/message.gif").createImage());
+
+        registry.put(UiPluginConstants.DECORATION_ADD , AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/enabled/add.gif").createImage());
+
         return registry;
     }
 
