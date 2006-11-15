@@ -10,11 +10,13 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.comm;
 
+import org.eclipse.ecf.core.util.ECFException;
+
 /**
  * Exception class for connection creation exceptions
  * 
  */
-public class ConnectionCreateException extends Exception {
+public class ConnectionCreateException extends ECFException {
 	private static final long serialVersionUID = 3904958651231058229L;
 
 	public ConnectionCreateException() {
