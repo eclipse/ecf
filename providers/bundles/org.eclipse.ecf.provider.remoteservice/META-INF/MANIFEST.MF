@@ -17,3 +17,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.sharedobject,
  org.eclipse.ecf.provider,
  org.eclipse.ecf.remoteservice
+Bundle-ClassPath: remoteserviceprovider.jar
