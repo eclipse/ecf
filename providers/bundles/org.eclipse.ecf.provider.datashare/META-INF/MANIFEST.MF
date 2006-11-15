@@ -10,7 +10,7 @@ Eclipse-LazyStart: true
 Eclipse-AutoStart: true
 Eclipse-RegisterBuddy: org.eclipse.ecf
 Eclipse-BuddyPolicy: global
-Bundle-ClassPath: dsprovider.jar
+Bundle-ClassPath: datashareprovider.jar
 Export-Package: org.eclipse.ecf.internal.provider.datashare;x-internal:=true,
  org.eclipse.ecf.provider.datashare
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
