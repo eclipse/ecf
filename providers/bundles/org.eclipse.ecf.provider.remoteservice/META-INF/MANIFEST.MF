@@ -10,16 +10,10 @@ Eclipse-LazyStart: true
 Eclipse-BuddyPolicy: global
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
-Import-Package: org.eclipse.core.runtime,
- org.eclipse.ecf.core,
- org.eclipse.ecf.core.events,
- org.eclipse.ecf.core.identity,
- org.eclipse.ecf.core.provider,
- org.eclipse.ecf.core.sharedobject,
- org.eclipse.ecf.core.util,
- org.eclipse.ecf.provider.generic,
- org.eclipse.ecf.remoteservice,
- org.eclipse.ecf.remoteservice.events,
- org.osgi.framework;version="1.3.0"
 Export-Package: org.eclipse.ecf.internal.provider.remoteservice;x-internal:=true,
  org.eclipse.ecf.provider.remoteservice.generic
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ecf.sharedobject,
+ org.eclipse.ecf.provider,
+ org.eclipse.ecf.remoteservice

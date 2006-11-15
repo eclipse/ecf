@@ -15,7 +15,7 @@
       <containerFactory
             class="org.eclipse.ecf.provider.remoteservice.generic.RemoteServiceContainerFactory"
             name="ecf.generic.remoteservice"
-            description="ECF Generic Remoteservice" />
+            description="Dummy Remoteservice" />
    </extension>
 
 </plugin>
