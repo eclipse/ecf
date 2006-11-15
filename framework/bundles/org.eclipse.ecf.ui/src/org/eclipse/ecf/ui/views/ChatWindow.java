@@ -13,13 +13,12 @@ package org.eclipse.ecf.ui.views;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.ui.UiPlugin;
+import org.eclipse.ecf.internal.ui.UiPluginConstants;
 import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -45,7 +44,6 @@ import org.eclipse.ui.progress.UIJob;
  */
 public class ChatWindow extends ApplicationWindow implements IMessageListener {
 	
-	protected static final String ICONS_PERSON_GIF = "icons/person.gif";
     private static final long FLASH_INTERVAL = 600;
 
 	private String initText;
@@ -104,9 +102,7 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
         }
         titleBarText = shellTitlePrefix + titleBarText;
         newShell.setText(titleBarText);
-		image = ImageDescriptor.createFromURL(
-				UiPlugin.getDefault().find(new Path(ICONS_PERSON_GIF)))
-				.createImage();
+		image = UiPlugin.getDefault().getImageRegistry().get(UiPluginConstants.DECORATION_USER_AVAILABLE);
 		newShell.setImage(image);
 		RGB[] colors = new RGB[2];
 		colors[0] = new RGB(0, 0, 0);

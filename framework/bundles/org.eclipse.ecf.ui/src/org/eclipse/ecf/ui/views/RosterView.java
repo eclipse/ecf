@@ -334,7 +334,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		public String getLabel() {
 			return getName();
 		}
-		
+
 		public Image getImage() {
 			ImageRegistry registry = UiPlugin.getDefault().getImageRegistry();
 			return registry.get(UiPluginConstants.DECORATION_USER_AVAILABLE);
@@ -407,11 +407,21 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			IPresence p = getPresence();
 			ImageRegistry registry = UiPlugin.getDefault().getImageRegistry();
 			if (p != null) {
-				if (p.getMode().equals(IPresence.Mode.AVAILABLE))
-					return registry
-							.get(UiPluginConstants.DECORATION_USER_AVAILABLE);
-				else if (p.getMode().equals(IPresence.Mode.AWAY))
-					return registry.get(UiPluginConstants.DECORATION_USER_AWAY);
+				IPresence.Type pType = p.getType();
+				IPresence.Mode pMode = p.getMode();
+				// If type is unavailable then we're unavailable
+				if (pType.equals(IPresence.Type.AVAILABLE)) {
+					// if type and mode are both 'available' then we're actually
+					// available
+					if (pMode.equals(IPresence.Mode.AVAILABLE))
+						return registry
+								.get(UiPluginConstants.DECORATION_USER_AVAILABLE);
+					// If mode is away then we're away
+					else if (pMode.equals(IPresence.Mode.AWAY)
+							|| pMode.equals(IPresence.Mode.EXTENDED_AWAY))
+						return registry
+								.get(UiPluginConstants.DECORATION_USER_AWAY);
+				}
 			}
 			return registry.get(UiPluginConstants.DECORATION_USER_UNAVAILABLE);
 		}
@@ -465,24 +475,20 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		public TreeBuddy fillPresence(TreeBuddy obj, IPresence presence) {
 			obj.setPresence(presence);
 			obj.removeChildren();
-			obj.addChild(new TreeObject("Status: "
+			obj.addChild(new TreeObject("XMPPID: " + obj.getId().getName()));
+			obj.addChild(new TreeObject("Type: "
 					+ presence.getType().toString()));
+			obj.addChild(new TreeObject("Mode: "
+					+ presence.getMode().toString()));
 			String status = presence.getStatus();
 			if (status != null && !status.equals(""))
-				obj.addChild(new TreeObject("Details: " + status));
+				obj.addChild(new TreeObject("Status: " + status));
 			Map props = presence.getProperties();
 			for (Iterator i = props.keySet().iterator(); i.hasNext();) {
 				String key = (String) i.next();
 				String value = (String) props.get(key);
 				if (key != null && value != null)
 					obj.addChild(new TreeObject(key + ": " + value));
-			}
-			ID id = obj.getId();
-			try {
-				URI uri = new URI(id.getName());
-				obj.addChild(new TreeObject("URI: " + uri));
-			} catch (Exception e) {
-				// Ignore
 			}
 			return obj;
 		}

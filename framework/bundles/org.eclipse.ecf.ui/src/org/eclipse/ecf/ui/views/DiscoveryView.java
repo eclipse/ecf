@@ -53,7 +53,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class DiscoveryView extends ViewPart {
-	protected static final String DISCOVERED_SERVICES = "Network Services";
+	protected static final String DISCOVERED_SERVICES = "Services";
 
 	protected static final int SERVICE_INFO_TIMEOUT = 3000;
 
