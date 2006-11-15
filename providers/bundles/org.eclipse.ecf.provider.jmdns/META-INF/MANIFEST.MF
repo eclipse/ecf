@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.discovery
 Eclipse-LazyStart: true
-Bundle-ClassPath: jmdns.jar,
+Bundle-ClassPath: jmdnsdiscoveryprovider.jar,
  lib/jmdns-1.0.3.jar
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
