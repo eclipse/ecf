@@ -3,7 +3,7 @@ Bundle-SymbolicName: org.eclipse.ecf.provider;singleton:=true
 Bundle-Version: 0.9.3
 Bundle-Name: ECF Provider API
 Bundle-Vendor: Eclipse.org
-Bundle-ClassPath: provider.jar
+Bundle-ClassPath: providerapi.jar
 Bundle-Activator: org.eclipse.ecf.internal.provider.ProviderPlugin
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
