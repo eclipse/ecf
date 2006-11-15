@@ -12,8 +12,5 @@ Export-Package: org.eclipse.ecf.filetransfer,
  org.eclipse.ecf.filetransfer.events,
  org.eclipse.ecf.filetransfer.identity,
  org.eclipse.ecf.internal.filetransfer;x-internal:=true
-Import-Package: org.eclipse.core.runtime,
- org.eclipse.ecf.core,
- org.eclipse.ecf.core.identity,
- org.eclipse.ecf.core.util,
- org.osgi.framework;version="1.3.0"
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf
