@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Smack Plug-in
+Bundle-Name: Jive Software Smack API
 Bundle-SymbolicName: org.jivesoftware.smack;singleton:=true
 Bundle-Version: 2.2.0
-Bundle-Vendor: eclipsercp.org
+Bundle-Vendor: Jive Software
 Bundle-Localization: plugin
 Export-Package: org.jivesoftware.smack,
  org.jivesoftware.smack.debugger,

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Shared Editor Plug-in
+Bundle-Name: ECF Shared Editor Example
 Bundle-SymbolicName: org.eclipse.ecf.example.collab.editor; singleton:=true
 Bundle-Version: 0.9.3
 Bundle-Activator: org.eclipse.ecf.example.collab.editor.Activator
