@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.ecf.example_feature"
+      id="org.eclipse.ecf.examples"
       label="ECF Examples"
       version="0.9.3"
       provider-name="Eclipse.org">
