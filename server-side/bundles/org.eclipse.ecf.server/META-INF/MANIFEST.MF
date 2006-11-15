@@ -10,9 +10,8 @@ Eclipse-LazyStart: true
 Eclipse-AutoStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
-Import-Package: org.eclipse.ecf.core.identity,
- org.eclipse.ecf.core.sharedobject,
- org.eclipse.ecf.provider.app,
- org.eclipse.ecf.provider.generic
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ecf.provider,
+ org.eclipse.ecf.sharedobject
 Export-Package: org.eclipse.ecf.server
