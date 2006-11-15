@@ -15,7 +15,7 @@
             class="org.eclipse.ecf.example.collab.CollabDiscoveryView"
             icon="icons/default_provider_image.gif"
             id="org.eclipse.ecf.example.collab.discoveryview"
-            name="ECF Dynamic Service Discovery"/>
+            name="ECF Service Discovery"/>
       <view
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.example.collab.ui.CollabRosterView"
