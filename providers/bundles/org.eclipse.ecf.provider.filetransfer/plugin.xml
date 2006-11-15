@@ -5,8 +5,8 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.filetransfer.DummyFileTransferContainerInstantiator"
-            description="ECF Dummy Fileshare"
-            name="ecf.dummy.fileshare"/>
+            description="Dummy Filetransfer"
+            name="ecf.dummy.filetransfer"/>
    </extension>
    <extension
          point="org.eclipse.core.runtime.adapters">
