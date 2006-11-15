@@ -41,7 +41,8 @@ public class ECFException extends CoreException {
 	 * @param cause
 	 */
 	public ECFException(String message, Throwable cause) {
-		this(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, message, cause));
+		this(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0,
+				((message == null) ? "" : message), cause));
 	}
 
 	/**
