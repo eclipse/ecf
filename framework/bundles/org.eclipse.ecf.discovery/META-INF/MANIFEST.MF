@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF Discovery API
 Bundle-SymbolicName: org.eclipse.ecf.discovery
 Bundle-Version: 0.9.3
-Bundle-ClassPath: discovery.jar
+Bundle-ClassPath: discoveryapi.jar
 Bundle-Activator: org.eclipse.ecf.internal.discovery.DiscoveryPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
