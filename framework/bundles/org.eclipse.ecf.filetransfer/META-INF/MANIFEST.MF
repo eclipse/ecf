@@ -14,3 +14,4 @@ Export-Package: org.eclipse.ecf.filetransfer,
  org.eclipse.ecf.internal.filetransfer;x-internal:=true
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf
+Bundle-ClassPath: filetransferapi.jar
