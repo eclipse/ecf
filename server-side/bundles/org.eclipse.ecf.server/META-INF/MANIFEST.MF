@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Server Plug-in
 Bundle-SymbolicName: org.eclipse.ecf.server
-Bundle-Version: 0.9.3
+Bundle-Version: 0.9.4
 Bundle-Activator: org.eclipse.ecf.server.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
@@ -10,9 +10,11 @@ Eclipse-LazyStart: true
 Eclipse-AutoStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ecf,
+Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.provider,
  org.eclipse.ecf.sharedobject
 Export-Package: org.eclipse.ecf.server
 Bundle-ClassPath: serverapi.jar
+Import-Package: org.eclipse.core.runtime,
+ org.eclipse.osgi.util;version="1.0.0",
+ org.osgi.framework;version="1.3.0"
