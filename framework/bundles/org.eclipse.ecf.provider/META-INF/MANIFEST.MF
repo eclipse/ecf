@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.eclipse.ecf.provider;singleton:=true
-Bundle-Version: 0.9.3
+Bundle-Version: 0.9.4
 Bundle-Name: ECF Provider API
 Bundle-Vendor: Eclipse.org
 Bundle-ClassPath: providerapi.jar
@@ -20,7 +20,8 @@ Eclipse-BuddyPolicy: global
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ecf,
+Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.sharedobject
+Import-Package: org.eclipse.core.runtime,
+ org.osgi.framework;version="1.3.0"
 
