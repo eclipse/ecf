@@ -21,7 +21,7 @@ import org.eclipse.ecf.datashare.IChannelListener;
  * <p>
  * 
  * <pre>
- *  IMergeableChannelContainer channelcontainer = (IMergeableChannelContainer) container.getAdapter(IMergeableChannelContainer.class);
+ *  IMergeableChannelContainerAdapter channelcontainer = (IMergeableChannelContainerAdapter) container.getAdapter(IMergeableChannelContainerAdapter.class);
  *  if (channelcontainer != null) {
  *     // use channelcontainer
  *     ...
@@ -31,7 +31,7 @@ import org.eclipse.ecf.datashare.IChannelListener;
  * </pre>
  * 
  */
-public interface IMergeableChannelContainer extends
+public interface IMergeableChannelContainerAdapter extends
 		IAbstractChannelContainerAdapter {
 	/**
 	 * Create a mergeable channel within this container
