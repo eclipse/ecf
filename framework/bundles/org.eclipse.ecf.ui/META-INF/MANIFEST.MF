@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: ECF UI API
 Bundle-SymbolicName: org.eclipse.ecf.ui;singleton:=true
-Bundle-Version: 0.9.3
+Bundle-Version: 0.9.4
 Bundle-ClassPath: uiapi.jar
 Bundle-Activator: org.eclipse.ecf.internal.ui.UiPlugin
 Bundle-Vendor: Eclipse.org
@@ -20,8 +20,7 @@ Eclipse-RegisterBuddy: org.eclipse.ecf
 Eclipse-BuddyPolicy: dependent
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.jface,
+Require-Bundle: org.eclipse.jface,
  org.eclipse.ecf,
  org.eclipse.ecf.discovery,
  org.eclipse.ecf.presence,
@@ -29,4 +28,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.ui,
  org.eclipse.ui.browser
+Import-Package: org.eclipse.core.runtime,
+ org.eclipse.core.runtime.jobs,
+ org.osgi.framework;specification-version="1.3.0"
 
