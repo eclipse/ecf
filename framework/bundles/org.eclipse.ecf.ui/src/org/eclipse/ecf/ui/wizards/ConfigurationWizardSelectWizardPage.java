@@ -13,7 +13,6 @@ package org.eclipse.ecf.ui.wizards;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
@@ -21,6 +20,7 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.Messages;
+import org.eclipse.ecf.internal.ui.wizards.ConfigurationWizardNode;
 import org.eclipse.ecf.internal.ui.wizards.IWizardRegistryConstants;
 import org.eclipse.ecf.internal.ui.wizards.WizardActivityFilter;
 import org.eclipse.ecf.internal.ui.wizards.WizardCollectionElement;
@@ -28,7 +28,6 @@ import org.eclipse.ecf.internal.ui.wizards.WizardContentProvider;
 import org.eclipse.ecf.internal.ui.wizards.WizardsRegistryReader;
 import org.eclipse.ecf.internal.ui.wizards.WorkbenchLabelProvider;
 import org.eclipse.ecf.internal.ui.wizards.WorkbenchWizardElement;
-import org.eclipse.ecf.internal.ui.wizards.WizardNode;
 import org.eclipse.ecf.ui.IConfigurationWizard;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -41,7 +40,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardNode;
 import org.eclipse.jface.wizard.WizardSelectionPage;
 import org.eclipse.swt.SWT;
@@ -73,10 +71,6 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 		return treeViewer;
 	}
 
-	protected IContainer getContainerResult() {
-		return ((IConfigurationWizard) getSelectedNode().getWizard()).getConfigurationResult();
-	}
-	
 	protected class CategorizedWizardSelectionTree {
 		private final static int SIZING_LISTS_HEIGHT = 200;
 
@@ -280,7 +274,13 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 				.getDescriptions();
 	}
 
-	protected IWizardCategory getRootCategory() {
+	protected IContainer getContainerResult() {
+		ConfigurationWizardNode cwn = (ConfigurationWizardNode) getSelectedNode();
+		if (cwn == null) return null;
+		return ((IConfigurationWizard) getSelectedNode().getWizard()).getConfigurationResult();
+	}
+	
+	private IWizardCategory getRootCategory() {
 		return new WizardsRegistryReader(Activator.PLUGIN_ID,
 				IWizardRegistryConstants.CONFIGURE_EPOINT).getWizardElements();
 	}
@@ -338,26 +338,20 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 		}
 	}
 
-	private IWizardNode createWizardNode(final WorkbenchWizardElement element) {
-		final ContainerTypeDescription typeDescription = ContainerFactory
-				.getDefault().getDescriptionByName(element.getContainerTypeName());
-		if (typeDescription == null) {
-			String msg = "The container type name '"+element+"' does not exist";
-			setErrorMessage(msg);
-			ErrorDialog.openError(getShell(),
-					"Problem Opening Wizard",
-					"The selected wizard could not be started.", new Status(IStatus.ERROR,Activator.PLUGIN_ID,2222,msg,null));
-			return null;
-		}
-		return new WizardNode(getWorkbench(), this, element) {
-			public IWizard createWizard() throws CoreException {
-				IConfigurationWizard configWizard = (IConfigurationWizard) element.createWizardForNode();
-				configWizard.init(getWorkbench(), typeDescription);
-				return configWizard;
+	private ContainerTypeDescription getContainerTypeDescriptionForElement(WorkbenchWizardElement element) {
+		ContainerTypeDescription typeDescription = ContainerFactory
+		.getDefault().getDescriptionByName(element.getContainerTypeName());
+			if (typeDescription == null) {
+				String msg = "The container type name '"+element+"' does not exist";
+				setErrorMessage(msg);
+				ErrorDialog.openError(getShell(),
+						"Problem Opening Wizard",
+						"The selected wizard could not be started.", new Status(IStatus.ERROR,Activator.PLUGIN_ID,2222,msg,null));
+				return null;
 			}
-		};
+	    return typeDescription;
 	}
-
+	
 	private void updateSelectedNode(WorkbenchWizardElement wizardElement) {
 		setErrorMessage(null);
 		if (wizardElement == null) {
@@ -366,7 +360,9 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 			return;
 		}
 
-		setSelectedNode(createWizardNode(wizardElement));
+		ConfigurationWizardNode cwn = new ConfigurationWizardNode(getWorkbench(), this, wizardElement, getContainerTypeDescriptionForElement(wizardElement));
+		
+		setSelectedNode(cwn);
 		setMessage(wizardElement.getDescription());
 	}
 

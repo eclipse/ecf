@@ -89,7 +89,6 @@
       <complexType>
          <sequence>
             <element ref="description" minOccurs="0" maxOccurs="1"/>
-            <element ref="selection" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -121,11 +120,11 @@ added to the &quot;Other&quot; category.
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  a fully qualified name of the class that implements &lt;tt&gt;org.eclipse.ui.IExportWizard&lt;/tt&gt;
+                  a fully qualified name of the class that implements &lt;tt&gt;org.eclipse.ecf.ui.IConnectWizard&lt;/tt&gt;
 interface
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.jface.wizard.Wizard:org.eclipse.ecf.ui.IConfigurationWizard"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.jface.wizard.Wizard:org.eclipse.ecf.ui.IConnectWizard"/>
                </appInfo>
             </annotation>
          </attribute>
@@ -153,34 +152,6 @@ alongside the wizard name in the export engine listing.
 of the export engine functionality.
          </documentation>
       </annotation>
-   </element>
-
-   <element name="selection">
-      <annotation>
-         <documentation>
-            an optional element that restricts the types and names of objects that can be selected 
-when the wizard is invoked.
-         </documentation>
-      </annotation>
-      <complexType>
-         <attribute name="name" type="string">
-            <annotation>
-               <documentation>
-                  an optional name filter.  Each object in the workbench selection must match the name filter to be passed to the wizard.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="class" type="string" use="required">
-            <annotation>
-               <documentation>
-                  a fully qualified class name.  If each object in the workbench selection implements this interface the selection will be passed to the wizard.  Otherwise, an empty selection is passed.
-               </documentation>
-               <appInfo>
-                  <meta.attribute kind="java"/>
-               </appInfo>
-            </annotation>
-         </attribute>
-      </complexType>
    </element>
 
    <annotation>

@@ -53,6 +53,13 @@ public abstract class WizardNode implements IWizardNode,
 		this.wizardElement = wizardElement;
 	}
 
+	protected IWorkbench getWorkbench() {
+		return this.workbench;
+	}
+	
+	protected WorkbenchWizardElement getWizardElement() {
+		return wizardElement;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
