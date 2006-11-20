@@ -29,12 +29,12 @@ public interface IConfigurationWizard extends IWizard {
 	 * 
 	 * @param workbench
 	 *            the workbench for the wizard. Will not be null.
-	 * @param containerDescription
+	 * @param description
 	 *            the {@link ContainerTypeDescription} to use to
 	 *            create/configure the new IContainer instance
 	 */
 	public void init(IWorkbench workbench,
-			ContainerTypeDescription containerDescription);
+			ContainerTypeDescription description);
 
 	/**
 	 * Get result of configuration.

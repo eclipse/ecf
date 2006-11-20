@@ -44,7 +44,7 @@
       </category>
       <wizard
             category="org.eclipse.ecf.ui.clientcategory"
-            class="asdfasdf"
+            class="org.eclipse.ecf.ui.wizards.EmptyConfigurationWizard"
             containerTypeName="ecf.generic.client"
             icon="icons/epresence16/buddy_available.gif"
             id="org.eclipse.ecf.ui.wizard1"
@@ -52,7 +52,7 @@
       </wizard>
       <wizard
             category="org.eclipse.ecf.ui.servercategory"
-            class="sdasdfasdf"
+            class="org.eclipse.ecf.ui.wizards.EmptyConfigurationWizard"
             containerTypeName="ecf.generic.server"
             icon="icons/epresence16/buddy_unavailable.gif"
             id="org.eclipse.ecf.ui.wizard2"
