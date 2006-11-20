@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 
 package org.eclipse.ecf.ui.views;
 
@@ -16,8 +16,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
-import org.eclipse.ecf.internal.ui.UiPlugin;
-import org.eclipse.ecf.internal.ui.UiPluginConstants;
+import org.eclipse.ecf.internal.ui.Activator;
+import org.eclipse.ecf.internal.ui.Constants;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -43,52 +43,60 @@ import org.eclipse.ui.progress.UIJob;
  * 
  */
 public class ChatWindow extends ApplicationWindow implements IMessageListener {
-	
-    private static final long FLASH_INTERVAL = 600;
+
+	private static final long FLASH_INTERVAL = 600;
 
 	private String initText;
+
 	private TextChatComposite chat;
+
 	private Image image;
+
 	private Image blank;
-    
-    private String titleBarText;
-    
-    protected ViewPart view;
-    protected IUser localUser;
-    protected IUser remoteUser;
-    
-    protected boolean disposed = false;
-    
-    protected IUser getLocalUser() {
-        return localUser;
-    }
-    
-    protected IUser getRemoteUser() {
-        return remoteUser;
-    }
-	
+
+	private String titleBarText;
+
+	protected ViewPart view;
+
+	protected IUser localUser;
+
+	protected IUser remoteUser;
+
+	protected boolean disposed = false;
+
+	protected IUser getLocalUser() {
+		return localUser;
+	}
+
+	protected IUser getRemoteUser() {
+		return remoteUser;
+	}
+
 	private UIJob flasher;
 
-	public ChatWindow(ViewPart view, String titleBarText, String initOutputText, IUser localUser, IUser remoteUser) {
+	public ChatWindow(ViewPart view, String titleBarText,
+			String initOutputText, IUser localUser, IUser remoteUser) {
 		super(null);
-        this.view = view;
-        this.titleBarText = titleBarText;
+		this.view = view;
+		this.titleBarText = titleBarText;
 		this.initText = initOutputText;
-        this.localUser = localUser;
-        this.remoteUser = remoteUser;
+		this.localUser = localUser;
+		this.remoteUser = remoteUser;
 		addStatusLine();
 	}
 
-    public void setStatus(final String status) {
-        Display.getDefault().syncExec(new Runnable() {
-            public void run() {
-                ChatWindow.super.setStatus(status);
-            }            
-        });
-    }
-    protected String getShellName() {
-        return chat.getShellName();
-    }
+	public void setStatus(final String status) {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				ChatWindow.super.setStatus(status);
+			}
+		});
+	}
+
+	protected String getShellName() {
+		return chat.getShellName();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -96,13 +104,15 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 	 */
 	protected void configureShell(final Shell newShell) {
 		super.configureShell(newShell);
-        String shellTitlePrefix = MessageLoader.getString("ChatWindow.titleprefix");
-        if (shellTitlePrefix != null && !shellTitlePrefix.equals("")) {
-            shellTitlePrefix = shellTitlePrefix + ": ";
-        }
-        titleBarText = shellTitlePrefix + titleBarText;
-        newShell.setText(titleBarText);
-		image = UiPlugin.getDefault().getImageRegistry().get(UiPluginConstants.DECORATION_USER_AVAILABLE);
+		String shellTitlePrefix = MessageLoader
+				.getString("ChatWindow.titleprefix");
+		if (shellTitlePrefix != null && !shellTitlePrefix.equals("")) {
+			shellTitlePrefix = shellTitlePrefix + ": ";
+		}
+		titleBarText = shellTitlePrefix + titleBarText;
+		newShell.setText(titleBarText);
+		image = Activator.getDefault().getImageRegistry().get(
+				Constants.DECORATION_USER_AVAILABLE);
 		newShell.setImage(image);
 		RGB[] colors = new RGB[2];
 		colors[0] = new RGB(0, 0, 0);
@@ -112,31 +122,31 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 		blank = new Image(newShell.getDisplay(), data);
 
 		flasher = new UIJob("Chat View Icon Flasher") {
-			
+
 			public IStatus runInUIThread(IProgressMonitor monitor) {
 				Shell shell = getShell();
 				if (shell.getImage() == image)
 					shell.setImage(blank);
 				else
 					shell.setImage(image);
-				
+
 				schedule(FLASH_INTERVAL);
 				return Status.OK_STATUS;
 			}
-			
+
 			public boolean shouldRun() {
 				return !getShell().isDisposed();
 			}
 		};
-		
+
 		flasher.setSystem(true);
-		
+
 		newShell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				flasher.cancel();
 				if (image != null)
 					image.dispose();
-				
+
 				if (blank != null)
 					blank.dispose();
 			}
@@ -150,7 +160,7 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 			}
 		});
 	}
-	
+
 	protected Point getInitialSize() {
 		return new Point(320, 240);
 	}
@@ -161,62 +171,69 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 	 * @see org.eclipse.jface.window.Window#createContents(org.eclipse.swt.widgets.Composite)
 	 */
 	protected Control createContents(Composite parent) {
-        if (view == null) throw new NullPointerException("view cannot be null");
-        // Get ILocalInputHandler from view
-        ILocalInputHandler inputHandler = null;
-        Object obj = view.getAdapter(ILocalInputHandler.class);
-        if (obj == null) {
-            throw new NullPointerException("view "+view+" did not provide ILocalInputHandler adapter");
-        } else if (obj instanceof ILocalInputHandler) {
-            inputHandler = (ILocalInputHandler) obj;
-        }
-		chat = new TextChatComposite(parent, SWT.NORMAL, initText, inputHandler,getLocalUser(),getRemoteUser());
+		if (view == null)
+			throw new NullPointerException("view cannot be null");
+		// Get ILocalInputHandler from view
+		ILocalInputHandler inputHandler = null;
+		Object obj = view.getAdapter(ILocalInputHandler.class);
+		if (obj == null)
+			throw new NullPointerException("view " + view
+					+ " did not provide ILocalInputHandler adapter");
+		else if (obj instanceof ILocalInputHandler) {
+			inputHandler = (ILocalInputHandler) obj;
+		}
+		chat = new TextChatComposite(parent, SWT.NORMAL, initText,
+				inputHandler, getLocalUser(), getRemoteUser());
 		chat.setLayoutData(new GridData(GridData.FILL_BOTH));
 		chat.setFont(parent.getFont());
 		return chat;
 	}
 
-    public void setLocalUser(IUser localUser) {
-        this.localUser = localUser;
-        chat.setLocalUser(localUser);
-    }
-    public void setRemoteUser(IUser remoteUser) {
-        this.remoteUser = remoteUser;
-        chat.setRemoteUser(remoteUser);
-    }
+	public void setLocalUser(IUser localUser) {
+		this.localUser = localUser;
+		chat.setLocalUser(localUser);
+	}
+
+	public void setRemoteUser(IUser remoteUser) {
+		this.remoteUser = remoteUser;
+		chat.setRemoteUser(remoteUser);
+	}
+
 	protected TextChatComposite getTextChatComposite() {
 		return chat;
 	}
 
-    private boolean hasFocus = false;
-    
-    private int openResult = 0;
-    
-    public int open() {
-        Display.getDefault().syncExec(new Runnable() {
-            public void run() {
-                openResult = ChatWindow.super.open();
-            }            
-        });
-        return openResult;
-    }
-    public void create() {
-        Display.getDefault().syncExec(new Runnable() {
-            public void run() {
-                ChatWindow.super.create();
-            }            
-        });
-    }
+	private boolean hasFocus = false;
+
+	private int openResult = 0;
+
+	public int open() {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				openResult = ChatWindow.super.open();
+			}
+		});
+		return openResult;
+	}
+
+	public void create() {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				ChatWindow.super.create();
+			}
+		});
+	}
+
 	public boolean hasFocus() {
-        Display.getDefault().syncExec(new Runnable() {
-            public void run() {
-                if (getShell().isDisposed())
-                    hasFocus = false;
-                else
-                    hasFocus = hasFocus(getShell());
-            }            
-        });
-        return hasFocus;
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				if (getShell().isDisposed())
+					hasFocus = false;
+				else
+					hasFocus = hasFocus(getShell());
+			}
+		});
+		return hasFocus;
 	}
 
 	private boolean hasFocus(Composite composite) {
@@ -245,30 +262,32 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 			getShell().setImage(image);
 	}
 
-    public void setDisposed(final String message) {
-        Display.getDefault().syncExec(new Runnable() {
-            public void run() {
-                disposed = true;
-                if (chat != null) {
-                    chat.setDisposed();
-                }
-                if (!getShell().isDisposed()) {
-                    getShell().setText(getShell().getText()+" (inactive)");
-                }
-                setStatus(message);
-            }            
-        });
-    }
-    public void openAndFlash() {
-        Display.getDefault().syncExec(new Runnable() {
-            public void run() {
-                flash();
-                if (!getShell().isVisible()) {
-                    open();
-                }
-            }            
-        });
-    }
+	public void setDisposed(final String message) {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				disposed = true;
+				if (chat != null) {
+					chat.setDisposed();
+				}
+				if (!getShell().isDisposed()) {
+					getShell().setText(getShell().getText() + " (inactive)");
+				}
+				setStatus(message);
+			}
+		});
+	}
+
+	public void openAndFlash() {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				flash();
+				if (!getShell().isVisible()) {
+					open();
+				}
+			}
+		});
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -276,23 +295,24 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 	 */
 	protected void handleShellCloseEvent() {
 		if (!getShell().isDisposed()) {
-            if (disposed) {
-                chat.dispose();
-                chat = null;
-                getShell().dispose();
-            } else {
-                getShell().setVisible(false);
-            }
-        }
+			if (disposed) {
+				chat.dispose();
+				chat = null;
+				getShell().dispose();
+			} else {
+				getShell().setVisible(false);
+			}
+		}
 	}
 
-    public void handleMessage(final ID fromID, ID toID, Type type, String subject, final String message) {
-        Display.getDefault().syncExec(new Runnable() {
-            public void run() {
-                if (!disposed && chat != null) {
-                    chat.appendText(new ChatLine(message,getRemoteUser()));
-                }
-            }            
-        });
-    }
+	public void handleMessage(final ID fromID, ID toID, Type type,
+			String subject, final String message) {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				if (!disposed && chat != null) {
+					chat.appendText(new ChatLine(message, getRemoteUser()));
+				}
+			}
+		});
+	}
 }

@@ -2,6 +2,7 @@
 <?eclipse version="3.1"?>
 <plugin>
    <extension-point id="connectWizards" name="ECF Connect Wizard" schema="schema/connectWizards.exsd"/>
+   <extension-point id="configurationWizards" name="ECF Container Configuration Wizard" schema="schema/configurationWizards.exsd"/>
    <extension
          point="org.eclipse.ui.views">
       <category
@@ -30,5 +31,32 @@
             icon="icons/epresence16/group.gif"
             id="org.eclipse.ecf.ui.views.ChatRoomManagerView"
             name="Chat Room"/>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.ui.configurationWizards">
+      <category
+            id="org.eclipse.ecf.ui.clientcategory"
+            name="Clients">
+      </category>
+      <wizard
+            category="org.eclipse.ecf.ui.clientcategory"
+            class="org.eclipse.ecf.ui.tests.wizards.TestConfigurationWizard"
+            containerTypeName="ecf.generic.client"
+            icon="icons/epresence16/buddy_available.gif"
+            id="org.eclipse.ecf.ui.wizard1"
+            name="ECF Generic Client">
+      </wizard>
+      <category
+            id="org.eclipse.ecf.ui.servercategory"
+            name="Servers">
+      </category>
+      <wizard
+            category="org.eclipse.ecf.ui.servercategory"
+            class="org.eclipse.ecf.ui.ConfigurationWizard2"
+            containerTypeName="ecf.generic.server"
+            icon="icons/epresence16/buddy_unavailable.gif"
+            id="org.eclipse.ecf.ui.wizard2"
+            name="ECF Generic Server">
+      </wizard>
    </extension>
 </plugin>

@@ -148,7 +148,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 	private String userName = "<user>";
 
 	private String hostName = "<host>";
-	
+
 	private boolean enabled = false;
 
 	class Manager {
@@ -241,21 +241,31 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 		dateColor = colorFromRGBString(DEFAULT_DATE_COLOR);
 		mainComp = new Composite(parent, SWT.NONE);
 		mainComp.setLayout(new FillLayout());
-		boolean useTraditionalTabFolder = PlatformUI.getPreferenceStore().getBoolean(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS);
+		boolean useTraditionalTabFolder = PlatformUI
+				.getPreferenceStore()
+				.getBoolean(
+						IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS);
 		tabFolder = new CTabFolder(mainComp, SWT.NORMAL);
 		// The following will allow tab folder to have close buttons on tab
 		// items
 		// tabFolder = new CTabFolder(mainComp, SWT.CLOSE);
 		// tabFolder.setUnselectedCloseVisible(false);
 		tabFolder.setSimple(useTraditionalTabFolder);
-		PlatformUI.getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent event) {
-				if (event.getProperty().equals(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS) && !tabFolder.isDisposed()) {
-					tabFolder.setSimple(((Boolean) event.getNewValue()).booleanValue());
-					tabFolder.redraw();
-				}
-			}});
-		
+		PlatformUI.getPreferenceStore().addPropertyChangeListener(
+				new IPropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent event) {
+						if (event
+								.getProperty()
+								.equals(
+										IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS)
+								&& !tabFolder.isDisposed()) {
+							tabFolder.setSimple(((Boolean) event.getNewValue())
+									.booleanValue());
+							tabFolder.redraw();
+						}
+					}
+				});
+
 		tabFolder.addCTabFolder2Listener(new CTabFolder2Listener() {
 			public void close(CTabFolderEvent event) {
 				System.out.println("close(" + event + ")");
@@ -304,12 +314,10 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 		ChatRoomManagerView.this.chatHostID = targetID;
 		ChatRoomManagerView.this.messageSender = sender;
 		setUsernameAndHost(ChatRoomManagerView.this.chatHostID);
-		ChatRoomManagerView.this.setPartName(userName
-				+ USERNAME_HOST_DELIMETER + hostName);
-		ChatRoomManagerView.this.setTitleToolTip("IRC Host: "
+		ChatRoomManagerView.this.setPartName(userName + USERNAME_HOST_DELIMETER
 				+ hostName);
-		ChatRoomManagerView.this.rootChatRoomTabItem
-				.setTabName(hostName);
+		ChatRoomManagerView.this.setTitleToolTip("IRC Host: " + hostName);
+		ChatRoomManagerView.this.rootChatRoomTabItem.setTabName(hostName);
 		setEnabled(true);
 	}
 
@@ -322,6 +330,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 	public boolean isEnabled() {
 		return enabled;
 	}
+
 	protected void clearInput() {
 		writeText.setText("");
 	}
@@ -375,10 +384,10 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 		// channel
 		IRoomInfo roomInfo = chatRoomManager.getChatRoomInfo(target);
 		// If it's null, we give up
-		if (roomInfo == null) {
+		if (roomInfo == null)
 			// no room info for given target...give error message and skip
 			return;
-		} else {
+		else {
 			IChatRoomContainer chatRoomContainer = null;
 			try {
 				// Then we create a new container from the roomInfo
@@ -562,9 +571,8 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 				evt.doit = false;
 				int pos = inputText.getCaretPosition();
 				// if the user is at the beginning of the line, do nothing
-				if (pos == 0) {
+				if (pos == 0)
 					return;
-				}
 				String text = inputText.getText();
 				// check to see if the user is currently cycling through the
 				// available nicknames
@@ -604,9 +612,8 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 					String prefix = text.substring(count, pos);
 					isAtStart = count == 0;
 					// if what's found was actually whitespace, do nothing
-					if (prefix.trim().equals("")) {
+					if (prefix.trim().equals(""))
 						return;
-					}
 					// get all of the users in this room and store them if they
 					// start with the prefix that the user has typed
 					String[] participants = memberViewer.getList().getItems();
@@ -617,9 +624,8 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 					}
 
 					// simply return if no matches have been found
-					if (options.isEmpty()) {
+					if (options.isEmpty())
 						return;
-					}
 
 					prefixLength = prefix.length();
 					if (options.size() == 1) {
@@ -778,9 +784,9 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 		protected boolean isLocalUser(ID id) {
 			if (localUser == null)
 				return false;
-			else if (localUser.getID().equals(id)) {
+			else if (localUser.getID().equals(id))
 				return true;
-			} else
+			else
 				return false;
 		}
 

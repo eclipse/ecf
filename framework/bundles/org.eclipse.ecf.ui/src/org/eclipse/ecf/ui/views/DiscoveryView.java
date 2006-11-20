@@ -22,8 +22,8 @@ import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.ServiceID;
-import org.eclipse.ecf.internal.ui.UiPlugin;
-import org.eclipse.ecf.internal.ui.UiPluginConstants;
+import org.eclipse.ecf.internal.ui.Activator;
+import org.eclipse.ecf.internal.ui.Constants;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -86,9 +86,8 @@ public class DiscoveryView extends ViewPart {
 		if (controllerServiceTypes == null || serviceType == null)
 			return false;
 		for (int i = 0; i < controllerServiceTypes.length; i++) {
-			if (serviceType.equals(controllerServiceTypes[i])) {
+			if (serviceType.equals(controllerServiceTypes[i]))
 				return true;
-			}
 		}
 		return false;
 	}
@@ -110,9 +109,8 @@ public class DiscoveryView extends ViewPart {
 			IContainer container = c.getContainer();
 			if (container == null)
 				return false;
-			else {
+			else
 				return true;
-			}
 		}
 	}
 
@@ -124,18 +122,16 @@ public class DiscoveryView extends ViewPart {
 		IDiscoveryController c = getController();
 		if (c == null)
 			return null;
-		else {
+		else
 			return c.getContainer();
-		}
 	}
 
 	protected IDiscoveryContainerAdapter getDiscoveryContainer() {
 		IDiscoveryController c = getController();
 		if (c == null)
 			return null;
-		else {
+		else
 			return c.getDiscoveryContainer();
-		}
 	}
 
 	class TreeObject implements IAdaptable {
@@ -236,16 +232,14 @@ public class DiscoveryView extends ViewPart {
 		}
 
 		public Object getParent(Object child) {
-			if (child instanceof TreeObject) {
+			if (child instanceof TreeObject)
 				return ((TreeObject) child).getParent();
-			}
 			return null;
 		}
 
 		public Object[] getChildren(Object parent) {
-			if (parent instanceof TreeParent) {
+			if (parent instanceof TreeParent)
 				return ((TreeParent) parent).getChildren();
-			}
 			return new Object[0];
 		}
 
@@ -301,9 +295,8 @@ public class DiscoveryView extends ViewPart {
 			for (int i = 0; i < types.length; i++) {
 				if (types[i] instanceof TreeParent) {
 					String type = types[i].getName();
-					if (type.equals(typename)) {
+					if (type.equals(typename))
 						return (TreeParent) types[i];
-					}
 				}
 			}
 			return null;
@@ -365,7 +358,7 @@ public class DiscoveryView extends ViewPart {
 						String val = props.getPropertyString(keys);
 						if (val != null) {
 							TreeObject prop = new TreeObject(keys + "="
-									+ (String) val);
+									+ val);
 							newEntry.addChild(prop);
 						}
 					}
@@ -379,10 +372,9 @@ public class DiscoveryView extends ViewPart {
 				return;
 			ServiceID svcID = serviceInfo.getServiceID();
 			TreeParent typenode = findServiceTypeNode(svcID.getServiceType());
-			if (typenode == null) {
+			if (typenode == null)
 				return;
-			}
-			TreeObject[] childs = (TreeObject[]) typenode.getChildren();
+			TreeObject[] childs = typenode.getChildren();
 			for (int i = 0; i < childs.length; i++) {
 				if (childs[i] instanceof TreeParent) {
 					TreeParent parent = (TreeParent) childs[i];
@@ -419,9 +411,8 @@ public class DiscoveryView extends ViewPart {
 			if (obj != null && obj instanceof TreeParent) {
 				TreeParent tp = (TreeParent) obj;
 				ServiceID svcID = tp.getID();
-				if (svcID == null) {
+				if (svcID == null)
 					return cleanTypeName(tp.getName());
-				}
 			}
 			return obj.toString();
 		}
@@ -620,15 +611,11 @@ public class DiscoveryView extends ViewPart {
 		disconnectContainerAction
 				.setToolTipText("Stop network service discovery");
 		disconnectContainerAction.setImageDescriptor(ImageDescriptor
-				.createFromImage(UiPlugin.getDefault().getImageRegistry().get(
-						UiPluginConstants.DECORATION_DISCONNECT_ICON_ENABLED)));
-		disconnectContainerAction
-				.setDisabledImageDescriptor(ImageDescriptor
-						.createFromImage(UiPlugin
-								.getDefault()
-								.getImageRegistry()
-								.get(
-										UiPluginConstants.DECORATION_DISCONNECT_ICON_DISABLED)));
+				.createFromImage(Activator.getDefault().getImageRegistry().get(
+						Constants.DECORATION_DISCONNECT_ENABLED)));
+		disconnectContainerAction.setDisabledImageDescriptor(ImageDescriptor
+				.createFromImage(Activator.getDefault().getImageRegistry().get(
+						Constants.DECORATION_DISCONNECT_DISABLED)));
 		IDiscoveryController c = getController();
 		if (c == null)
 			disconnectContainerAction.setEnabled(false);
@@ -659,8 +646,8 @@ public class DiscoveryView extends ViewPart {
 			connectContainerAction.setEnabled(false);
 		connectContainerAction.setEnabled(!c.isDiscoveryStarted());
 		connectContainerAction.setImageDescriptor(ImageDescriptor
-				.createFromImage(UiPlugin.getDefault().getImageRegistry().get(
-						UiPluginConstants.DECORATION_ADD)));
+				.createFromImage(Activator.getDefault().getImageRegistry().get(
+						Constants.DECORATION_ADD)));
 	}
 
 	private void fillContextMenu(IMenuManager manager) {

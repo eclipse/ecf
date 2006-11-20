@@ -63,7 +63,7 @@ public class SimpleLinkTextViewer implements ISelectionProvider {
 	private List links = new ArrayList();
 
 	private StyledText styledText;
-	
+
 	private List listeners = new ArrayList();
 
 	/**
@@ -77,9 +77,8 @@ public class SimpleLinkTextViewer implements ISelectionProvider {
 			public void mouseUp(MouseEvent e) {
 				LinkInfo linkInfo = null;
 				synchronized (SimpleLinkTextViewer.this) {
-					if (styledText.isDisposed()) {
+					if (styledText.isDisposed())
 						return;
-					}
 					linkInfo = findLinkInfo(e);
 				}
 				if (linkInfo != null) {
@@ -90,9 +89,8 @@ public class SimpleLinkTextViewer implements ISelectionProvider {
 		styledText.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
 				synchronized (SimpleLinkTextViewer.this) {
-					if (styledText.isDisposed()) {
+					if (styledText.isDisposed())
 						return;
-					}
 					LinkInfo linkInfo = findLinkInfo(e);
 					if (linkInfo != null) {
 						setHandCursor();
@@ -110,9 +108,8 @@ public class SimpleLinkTextViewer implements ISelectionProvider {
 	 * @param text
 	 */
 	public synchronized void append(String text) {
-		if (styledText.isDisposed()) {
+		if (styledText.isDisposed())
 			return;
-		}
 		styledText.append(text);
 	}
 
@@ -123,9 +120,8 @@ public class SimpleLinkTextViewer implements ISelectionProvider {
 	 * @param text
 	 */
 	public synchronized void appendLink(String text, Runnable onClick) {
-		if (styledText.isDisposed()) {
+		if (styledText.isDisposed())
 			return;
-		}
 		int start = styledText.getCharCount();
 		styledText.replaceTextRange(start, 0, text);
 		StyleRange styleRange = new StyleRange();
@@ -149,13 +145,11 @@ public class SimpleLinkTextViewer implements ISelectionProvider {
 				low = index;
 			}
 		}
-		if (low == -1) {
+		if (low == -1)
 			return null;
-		}
 		LinkInfo result = (LinkInfo) links.get(low);
-		if(result.start <= offset && offset < result.start + result.length) {
+		if (result.start <= offset && offset < result.start + result.length)
 			return result;
-		}
 		return null;
 	}
 
@@ -200,8 +194,9 @@ public class SimpleLinkTextViewer implements ISelectionProvider {
 		Shell shell = new Shell(display);
 		shell.setText(SimpleLinkTextViewer.class.getName());
 		shell.setLayout(new FillLayout());
-		SimpleLinkTextViewer chatTextViewer = new SimpleLinkTextViewer(shell, SWT.V_SCROLL | SWT.H_SCROLL
-				| SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
+		SimpleLinkTextViewer chatTextViewer = new SimpleLinkTextViewer(shell,
+				SWT.V_SCROLL | SWT.H_SCROLL | SWT.WRAP | SWT.BORDER
+						| SWT.READ_ONLY);
 		chatTextViewer.append("Hello world\n");
 		chatTextViewer.append("Hello ");
 		chatTextViewer.appendLink("linked", new Runnable() {
@@ -239,10 +234,10 @@ public class SimpleLinkTextViewer implements ISelectionProvider {
 	}
 
 	public StyledText getTextWidget() {
-		
+
 		return styledText;
 	}
-	
+
 	public Control getControl() {
 		return getTextWidget();
 	}
@@ -254,12 +249,15 @@ public class SimpleLinkTextViewer implements ISelectionProvider {
 	}
 
 	public ISelection getSelection() {
-		ISelection selection = new TextSelection(styledText.getSelectionRange().x, styledText.getSelectionRange().y);
-		
+		ISelection selection = new TextSelection(
+				styledText.getSelectionRange().x, styledText
+						.getSelectionRange().y);
+
 		return selection;
 	}
 
-	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+	public void removeSelectionChangedListener(
+			ISelectionChangedListener listener) {
 		if (listeners.contains(listener)) {
 			listeners.remove(listener);
 		}
@@ -268,7 +266,9 @@ public class SimpleLinkTextViewer implements ISelectionProvider {
 	public void setSelection(ISelection selection) {
 		if (selection instanceof ITextSelection) {
 			ITextSelection textSelection = (ITextSelection) selection;
-			styledText.setSelection(textSelection.getOffset(), textSelection.getOffset() + textSelection.getLength());
+			styledText.setSelection(textSelection.getOffset(), textSelection
+					.getOffset()
+					+ textSelection.getLength());
 		}
 	}
 

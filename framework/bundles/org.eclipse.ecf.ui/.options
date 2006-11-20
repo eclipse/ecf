@@ -1,4 +1,17 @@
-org.eclipse.ecf.ui/debug = true
+# Debugging options for the org.eclipse.ecf.ui plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.ui plug-in
+org.eclipse.ecf.ui/debug=true
 org.eclipse.ecf.ui/debug/filter = *
 org.eclipse.ecf.ui/debug/flag = true
-org.eclipse.ecf.ui/debug/textchatcomposite = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.ui/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.ui/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.ui/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.ui/debug/methods/exiting=false
+

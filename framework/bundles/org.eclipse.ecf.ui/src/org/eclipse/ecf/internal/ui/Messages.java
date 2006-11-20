@@ -9,10 +9,21 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.ui.views;
+package org.eclipse.ecf.internal.ui;
 
-import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.osgi.util.NLS;
 
-public interface IRemoteViewSender {
-	public void sendShowView(ID target, String viewid);
+public class Messages extends NLS {
+
+	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.ui.messages";//$NON-NLS-1$
+
+	public static String CreateContainerWizard_title;
+
+	public static String Select;
+
+	static {
+		// load message values from bundle file
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	}
+
 }

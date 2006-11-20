@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 
 package org.eclipse.ecf.ui.dialogs;
 
@@ -27,6 +27,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -38,26 +39,31 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 public class ChatRoomSelectionDialog extends TitleAreaDialog {
-	IChatRoomManager [] managers = null;
-	
+	IChatRoomManager[] managers = null;
+
 	private Room selectedRoom = null;
 
 	public class Room {
 		IRoomInfo info;
+
 		IChatRoomManager manager;
-		
+
 		public Room(IRoomInfo info, IChatRoomManager man) {
 			this.info = info;
 			this.manager = man;
 		}
+
 		public IRoomInfo getRoomInfo() {
 			return info;
 		}
+
 		public IChatRoomManager getManager() {
 			return manager;
 		}
 	}
-	public ChatRoomSelectionDialog(Shell parentShell, IChatRoomManager [] managers) {
+
+	public ChatRoomSelectionDialog(Shell parentShell,
+			IChatRoomManager[] managers) {
 		super(parentShell);
 		this.managers = managers;
 	}
@@ -67,30 +73,31 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		main.setLayout(new GridLayout());
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		TableViewer viewer = new TableViewer(main, SWT.BORDER | SWT.FULL_SELECTION);
+		TableViewer viewer = new TableViewer(main, SWT.BORDER
+				| SWT.FULL_SELECTION);
 		Table table = viewer.getTable();
-		
+
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		GridData tableGridData = new GridData(GridData.FILL_BOTH);
 		tableGridData.grabExcessHorizontalSpace = true;
-		
+
 		table.setLayoutData(tableGridData);
 		TableColumn tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Room Name");
 		tc.pack();
 		int width = tc.getWidth();
-		tc.setWidth(width+(width/4));
+		tc.setWidth(width + (width / 4));
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Subject");
 		tc.pack();
 		width = tc.getWidth();
-		tc.setWidth(width+(width/4));
+		tc.setWidth(width + (width / 4));
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Description");
 		tc.pack();
 		width = tc.getWidth();
-		tc.setWidth(width+(width/3));
+		tc.setWidth(width + (width / 3));
 		tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Members");
 		tc.pack();
@@ -98,54 +105,56 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		tc.setText("Moderated");
 		tc.pack();
 		tc = new TableColumn(table, SWT.NONE);
-		tc.setText("Persistent");		
+		tc.setText("Persistent");
 		tc.pack();
-		tc = new TableColumn(table,  SWT.NONE);
+		tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Account");
 		tc.pack();
 		width = tc.getWidth();
-		tc.setWidth(width*3);
-		
+		tc.setWidth(width * 3);
+
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
 				if (!event.getSelection().isEmpty()) {
-					ChatRoomSelectionDialog.this.getButton(Dialog.OK).setEnabled(true);
+					ChatRoomSelectionDialog.this.getButton(Window.OK)
+							.setEnabled(true);
 				}
 			}
-			
+
 		});
-		
+
 		viewer.setContentProvider(new ChatRoomContentProvider());
 		viewer.setLabelProvider(new ChatRoomLabelProvider());
-		
+
 		List all = new ArrayList();
-		for(int i=0; i < managers.length; i++) {
-			IRoomInfo [] infos = managers[i].getChatRoomsInfo();
+		for (int i = 0; i < managers.length; i++) {
+			IRoomInfo[] infos = managers[i].getChatRoomsInfo();
 			if (infos != null) {
-				for(int j=0; j < infos.length; j++) {
+				for (int j = 0; j < infos.length; j++) {
 					if (infos[j] != null && managers[i] != null) {
-						all.add(new Room(infos[j],managers[i]));
+						all.add(new Room(infos[j], managers[i]));
 					}
 				}
 			}
 		}
-		Room [] rooms = (Room []) all.toArray(new Room[] {});
+		Room[] rooms = (Room[]) all.toArray(new Room[] {});
 		viewer.setInput(rooms);
-		
+
 		this.setTitle("Chat Room Selection");
 		this.setMessage("Select a Chat Room to Enter");
-		
+
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				StructuredSelection s = (StructuredSelection) event.getSelection();
+				StructuredSelection s = (StructuredSelection) event
+						.getSelection();
 				if (s.getFirstElement() instanceof Room) {
 					selectedRoom = (Room) s.getFirstElement();
 				}
 			}
-			
+
 		});
-		
+
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 
 			public void doubleClick(DoubleClickEvent event) {
@@ -153,7 +162,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 					ChatRoomSelectionDialog.this.okPressed();
 				}
 			}
-			
+
 		});
 
 		return parent;
@@ -224,8 +233,8 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 	protected Control createButtonBar(Composite parent) {
 
 		Control bar = super.createButtonBar(parent);
-		this.getButton(Dialog.OK).setText("Enter Chat");
-		this.getButton(Dialog.OK).setEnabled(false);
+		this.getButton(Window.OK).setText("Enter Chat");
+		this.getButton(Window.OK).setEnabled(false);
 		return bar;
 	}
 

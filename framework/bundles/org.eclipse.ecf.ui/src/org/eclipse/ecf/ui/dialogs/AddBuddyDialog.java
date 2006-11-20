@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 
 package org.eclipse.ecf.ui.dialogs;
 
@@ -31,26 +31,34 @@ import org.eclipse.swt.widgets.Text;
 public class AddBuddyDialog extends Dialog {
 
 	private Text usertext;
+
 	private Text nicknametext;
+
 	private Combo groups;
-	
+
 	private String user = null;
-	
+
 	private int result = Window.CANCEL;
-	
+
 	private String userresult = "";
+
 	private String nicknameresult = "";
+
 	private String groupsresult = "";
-	
+
 	Button okButton = null;
-	
-	public AddBuddyDialog(Shell parentShell, String [] existingGroups, int selectedGroup) {
+
+	public AddBuddyDialog(Shell parentShell, String[] existingGroups,
+			int selectedGroup) {
 		this(parentShell, null, existingGroups, selectedGroup);
 	}
-	public AddBuddyDialog(Shell parentShell,String username, String [] existingGroups, int selectedGroup) {
+
+	public AddBuddyDialog(Shell parentShell, String username,
+			String[] existingGroups, int selectedGroup) {
 		super(parentShell);
 		this.user = username;
 	}
+
 	protected Control createDialogArea(Composite parent) {
 		Composite container = (Composite) super.createDialogArea(parent);
 		final GridLayout gridLayout = new GridLayout();
@@ -62,8 +70,8 @@ public class AddBuddyDialog extends Dialog {
 		gridLayout_2.numColumns = 2;
 		composite.setLayout(gridLayout_2);
 
-		//final Label l = new Label(composite, SWT.NONE);
-		
+		// final Label l = new Label(composite, SWT.NONE);
+
 		final Label label_4 = new Label(composite, SWT.NONE);
 		label_4.setText("<user>@<jabberserver>");
 
@@ -79,29 +87,27 @@ public class AddBuddyDialog extends Dialog {
 		usertext.addModifyListener(new ModifyListener() {
 
 			public void modifyText(ModifyEvent e) {
-				if (user != null || (usertext.getText().length() > 3 && usertext.getText().indexOf("@") != -1)) {
+				if (user != null
+						|| (usertext.getText().length() > 3 && usertext
+								.getText().indexOf("@") != -1)) {
 					okButton.setEnabled(true);
 				} else {
 					okButton.setEnabled(false);
 				}
-			}});
-		/*
-		final Label label_1 = new Label(composite, SWT.NONE);
-		label_1.setText("Group:");
-
-		groups = new Combo(composite, SWT.NONE);
-		groups.setToolTipText("Select group or enter new group");
-		final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.widthHint = 141;
-		groups.setLayoutData(gridData);
-		if (existing != null) {
-			for(int i=0; i < existing.length; i++) {
-				groups.add(existing[i]);
 			}
-			if (selectedGroup != -1) groups.select(selectedGroup);
-			else groups.select(0);
-		}
-		*/
+		});
+		/*
+		 * final Label label_1 = new Label(composite, SWT.NONE);
+		 * label_1.setText("Group:");
+		 * 
+		 * groups = new Combo(composite, SWT.NONE);
+		 * groups.setToolTipText("Select group or enter new group"); final
+		 * GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		 * gridData.widthHint = 141; groups.setLayoutData(gridData); if
+		 * (existing != null) { for(int i=0; i < existing.length; i++) {
+		 * groups.add(existing[i]); } if (selectedGroup != -1)
+		 * groups.select(selectedGroup); else groups.select(0); }
+		 */
 		final Label label_2 = new Label(composite, SWT.NONE);
 		label_2.setText("Nickname:");
 
@@ -123,22 +129,29 @@ public class AddBuddyDialog extends Dialog {
 				IDialogConstants.CANCEL_LABEL, true);
 		okButton = getButton(IDialogConstants.OK_ID);
 		if (okButton != null) {
-			if (user != null) okButton.setEnabled(true);
-			else okButton.setEnabled(false);
+			if (user != null)
+				okButton.setEnabled(true);
+			else
+				okButton.setEnabled(false);
 		}
 	}
+
 	public String getGroup() {
 		return groupsresult;
 	}
+
 	public String getUser() {
 		return userresult;
 	}
+
 	public String getNickname() {
 		return nicknameresult;
 	}
+
 	protected Point getInitialSize() {
 		return new Point(310, 197);
 	}
+
 	public void buttonPressed(int button) {
 		result = button;
 		userresult = usertext.getText();
@@ -148,9 +161,11 @@ public class AddBuddyDialog extends Dialog {
 		}
 		close();
 	}
+
 	public int getResult() {
 		return result;
 	}
+
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText("Add Buddy");

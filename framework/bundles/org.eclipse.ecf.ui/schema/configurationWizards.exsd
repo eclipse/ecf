@@ -3,10 +3,10 @@
 <schema targetNamespace="org.eclipse.ecf.ui">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.ecf.ui" id="connectWizards" name="ECF Connect Wizard"/>
+         <meta.schema plugin="org.eclipse.ecf.ui" id="configurationWizards" name="ECF Configuration Wizards"/>
       </appInfo>
       <documentation>
-         ECF Connect Wizard Extension Point.
+         [Enter description of this extension point.]
       </documentation>
    </annotation>
 
@@ -138,6 +138,13 @@ alongside the wizard name in the export engine listing.
                <appInfo>
                   <meta.attribute kind="resource"/>
                </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="containerTypeName" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The ContainerTypeName of the container to be created.  For example, &quot;ecf.generic.client&quot;.
+               </documentation>
             </annotation>
          </attribute>
       </complexType>

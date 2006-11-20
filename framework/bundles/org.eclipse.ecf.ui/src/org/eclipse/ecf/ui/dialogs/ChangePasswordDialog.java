@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 
 package org.eclipse.ecf.ui.dialogs;
 
@@ -29,17 +29,21 @@ import org.eclipse.swt.widgets.Text;
 public class ChangePasswordDialog extends Dialog {
 
 	private Text p1;
+
 	private Text p2;
+
 	private int result = Window.CANCEL;
-	
+
 	private String pass1 = "";
+
 	private String pass2 = "";
-	
+
 	Button okButton = null;
-	
+
 	public ChangePasswordDialog(Shell parentShell) {
 		super(parentShell);
 	}
+
 	protected Control createDialogArea(Composite parent) {
 		Composite container = (Composite) super.createDialogArea(parent);
 		final GridLayout gridLayout = new GridLayout();
@@ -77,12 +81,15 @@ public class ChangePasswordDialog extends Dialog {
 		okButton = getButton(IDialogConstants.OK_ID);
 		okButton.setEnabled(true);
 	}
+
 	public String getNewPassword() {
 		return pass1;
 	}
+
 	protected Point getInitialSize() {
 		return new Point(330, 157);
 	}
+
 	public void buttonPressed(int button) {
 		result = button;
 		if (button == Window.OK) {
@@ -90,7 +97,8 @@ public class ChangePasswordDialog extends Dialog {
 			pass2 = p2.getText();
 			if (!pass1.equals(pass2)) {
 				// message box that passwords do not match
-				MessageDialog.openError(getShell(),"Passwords do not match","Passwords do not match.  Please try again");
+				MessageDialog.openError(getShell(), "Passwords do not match",
+						"Passwords do not match.  Please try again");
 				p1.setText("");
 				p2.setText("");
 				p1.setFocus();
@@ -99,9 +107,11 @@ public class ChangePasswordDialog extends Dialog {
 		}
 		close();
 	}
+
 	public int getResult() {
 		return result;
 	}
+
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText("Change Password");

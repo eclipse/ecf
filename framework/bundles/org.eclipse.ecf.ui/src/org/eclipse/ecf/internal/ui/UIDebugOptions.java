@@ -9,24 +9,21 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.ui.views;
+package org.eclipse.ecf.internal.ui;
 
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
-import org.eclipse.ecf.discovery.IServiceInfo;
+public interface UIDebugOptions {
 
-public interface IDiscoveryController {
-	public IDiscoveryContainerAdapter getDiscoveryContainer();
+	public static final String DEBUG = Activator.PLUGIN_ID + "/debug"; //$NON-NLS-1$
 
-	public IContainer getContainer();
+	public static final String EXCEPTIONS_CATCHING = DEBUG
+			+ "/exceptions/catching"; //$NON-NLS-1$
 
-	public String[] getServiceTypes();
+	public static final String EXCEPTIONS_THROWING = DEBUG
+			+ "/exceptions/throwing"; //$NON-NLS-1$
 
-	public void connectToService(IServiceInfo service);
+	public static final String METHODS_ENTERING = DEBUG + "/methods/entering"; //$NON-NLS-1$
 
-	public void startDiscovery();
+	public static final String METHODS_EXITING = DEBUG + "/methods/exiting"; //$NON-NLS-1$
 
-	public boolean isDiscoveryStarted();
 
-	public void stopDiscovery();
 }

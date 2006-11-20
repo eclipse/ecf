@@ -16,25 +16,31 @@ import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.ui.IWorkbench;
 
 /**
- * Required interface for implementing <b>org.eclipse.ecf.ui.configurationWizards</b>
- * extension point. Extensions for extension point
- * <b>org.eclipse.ecf.ui.configurationWizards</b> must provide a class implementing
- * this interface.
+ * Required interface for implementing
+ * <b>org.eclipse.ecf.ui.configurationWizards</b> extension point. Extensions
+ * for extension point <b>org.eclipse.ecf.ui.configurationWizards</b> must
+ * provide a class implementing this interface.
  */
 public interface IConfigurationWizard extends IWizard {
 
 	/**
-	 * Initialize the wizard with the workbench and the desired container type description
-	 * @param workbench the workbench for the wizard.  Will not be null.
-	 * @param containerDescription the {@link ContainerTypeDescription} to use to create/configure
-	 * the new IContainer instance
-	 */
-	public void init(IWorkbench workbench, ContainerTypeDescription containerDescription);
-	
-	/**
-	 * Get the container result coming from the wizard.
+	 * Initialize the wizard with the workbench and the desired container type
+	 * description
 	 * 
-	 * @return IContainer the IContainer result of running the wizard.
+	 * @param workbench
+	 *            the workbench for the wizard. Will not be null.
+	 * @param containerDescription
+	 *            the {@link ContainerTypeDescription} to use to
+	 *            create/configure the new IContainer instance
 	 */
-	public IContainer getECFContainer();
+	public void init(IWorkbench workbench,
+			ContainerTypeDescription containerDescription);
+
+	/**
+	 * Get result of configuration.
+	 * 
+	 * @return IContainer the result of the configuration.  If null, the container could not be
+	 * created.
+	 */
+	public IContainer getConfigurationResult();
 }
