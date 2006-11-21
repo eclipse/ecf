@@ -11,8 +11,11 @@ Provide-Package: org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.dialogs,
  org.eclipse.ecf.ui.views,
  org.eclipse.ecf.ui.wizards
-Export-Package: org.eclipse.ecf.ui,
+Export-Package: org.eclipse.ecf.internal.ui;x-internal:=true,
+ org.eclipse.ecf.internal.ui.wizards;x-internal:=true,
+ org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.dialogs,
+ org.eclipse.ecf.ui.tests.actions,
  org.eclipse.ecf.ui.util,
  org.eclipse.ecf.ui.views,
  org.eclipse.ecf.ui.wizards
@@ -20,13 +23,11 @@ Eclipse-RegisterBuddy: org.eclipse.ecf
 Eclipse-BuddyPolicy: dependent
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
-Require-Bundle: org.eclipse.jface,
- org.eclipse.ecf,
+Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.discovery,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.sharedobject,
  org.eclipse.jface.text,
  org.eclipse.ui,
- org.eclipse.ui.browser,
  org.eclipse.core.runtime
 

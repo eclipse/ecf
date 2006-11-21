@@ -201,7 +201,6 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 			/**
 			 * Create a new instance of a WizardPatternFilter
 			 * 
-			 * @param isMatchItem
 			 */
 			public WizardPatternFilter() {
 				super();

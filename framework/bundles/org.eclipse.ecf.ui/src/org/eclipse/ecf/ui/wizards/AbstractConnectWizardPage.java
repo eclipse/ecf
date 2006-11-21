@@ -102,7 +102,7 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 
 	/**
 	 * Checks
-	 * @return
+	 * @return boolean true if page should request password
 	 */
 	protected abstract boolean shouldRequestPassword();
 
