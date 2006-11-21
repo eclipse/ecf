@@ -39,7 +39,7 @@ public class SampleAction implements IWorkbenchWindowActionDelegate {
 		ccd.open();
 		IContainerHolder result = ccd.getResult();
 		System.out.println("Got container result="+result);
-		
+		// Then try to get/run connect dialog
 		ConnectWizardDialog cwd = new ConnectWizardDialog(window.getShell(),window.getWorkbench(), result);
 		cwd.open();
 	}
