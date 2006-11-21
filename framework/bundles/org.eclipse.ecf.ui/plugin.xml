@@ -86,7 +86,7 @@
    <extension
          point="org.eclipse.ecf.ui.connectWizards">
       <wizard
-            class="org.eclipse.ecf.ui.wizards.EmptyConnectWizard"
+            class="org.eclipse.ecf.ui.wizards.GenericClientConnectWizard"
             containerTypeName="ecf.generic.client"
             id="org.eclipse.ecf.ui.wizard2"
             name="org.eclipse.ecf.ui.wizard2">
