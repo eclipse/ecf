@@ -10,6 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.ui.wizards;
 
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
@@ -64,6 +65,13 @@ public class GenericClientConnectWizard extends Wizard implements IConnectWizard
 			targetID = IDFactory.getDefault().createID(
 					container.getConnectNamespace(), wizardPage.getConnectID());
 		} catch (IDCreateException e) {
+			// TODO: This needs to be handled properly
+			e.printStackTrace();
+		}
+		
+		try {
+			container.connect(getTargetID(), getConnectContext());
+		} catch (ContainerConnectException e) {
 			// TODO: This needs to be handled properly
 			e.printStackTrace();
 		}
