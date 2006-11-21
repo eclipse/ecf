@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.internal.ui.wizards;
 
+import org.eclipse.ecf.internal.ui.Activator;
+
 public interface IWizardRegistryConstants {
 
 	public static final String ATT_ID = "id";
@@ -33,6 +35,12 @@ public interface IWizardRegistryConstants {
 
 	public static final String CONFIGURE_EPOINT = "configurationWizards";
 
+	public static final String CONNECT_EPOINT = "connectWizards";
+	
+	public static final String CONFIGURE_EPOINT_ID = Activator.PLUGIN_ID + "." + CONFIGURE_EPOINT;
+	
+	public static final String CONNECT_EPOINT_ID = Activator.PLUGIN_ID + "." + CONNECT_EPOINT;
+	
 	public static final String PRIMARY_WIZARD = "primaryWizard";
 	
 	public static final String HAS_PAGES = "hasPages";

@@ -40,6 +40,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardSelectionPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -49,6 +50,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.activities.ITriggerPoint;
+import org.eclipse.ui.activities.WorkbenchActivityHelper;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.model.AdaptableList;
@@ -70,6 +73,11 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 		return treeViewer;
 	}
 
+	protected ITriggerPoint getTriggerPoint(){
+		return getWorkbench().getActivitySupport()
+    		.getTriggerPointManager().getTriggerPoint(IWizardRegistryConstants.CONFIGURE_EPOINT_ID);
+	}
+	
 	protected class CategorizedWizardSelectionTree {
 		private final static int SIZING_LISTS_HEIGHT = 200;
 
@@ -380,6 +388,15 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 			setMessage(null);
 		}
 	}
+
+    public IWizardPage getNextPage() { 
+    	ITriggerPoint triggerPoint = getTriggerPoint();
+        
+        if (triggerPoint == null || WorkbenchActivityHelper.allowUseOf(triggerPoint, getSelectedNode())) {
+			return super.getNextPage();
+		}
+        return null;
+    }
 
 	/*
 	 * (non-Javadoc)

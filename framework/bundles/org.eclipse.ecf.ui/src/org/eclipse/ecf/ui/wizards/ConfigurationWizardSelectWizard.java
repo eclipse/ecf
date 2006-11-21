@@ -44,6 +44,7 @@ public class ConfigurationWizardSelectWizard extends Wizard {
 	}
 	
 	public void addPages() {
+		setForcePreviousAndNextButtons(true);
 		createContainerWizardPage = new ConfigurationWizardSelectWizardPage(
 				this.workbench, this.selection);
 		addPage(createContainerWizardPage);
