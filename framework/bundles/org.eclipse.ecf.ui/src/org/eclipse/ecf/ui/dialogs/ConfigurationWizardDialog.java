@@ -8,9 +8,10 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.ui.wizards;
+package org.eclipse.ecf.ui.dialogs;
 
 import org.eclipse.ecf.ui.IContainerHolder;
+import org.eclipse.ecf.ui.wizards.ConfigurationWizardSelectionWizard;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;

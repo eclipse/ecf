@@ -1,8 +1,8 @@
 package org.eclipse.ecf.ui.tests.actions;
 
 import org.eclipse.ecf.ui.IContainerHolder;
-import org.eclipse.ecf.ui.wizards.ConfigurationWizardDialog;
-import org.eclipse.ecf.ui.wizards.ConnectWizardDialog;
+import org.eclipse.ecf.ui.dialogs.ConfigurationWizardDialog;
+import org.eclipse.ecf.ui.dialogs.ConnectWizardDialog;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
