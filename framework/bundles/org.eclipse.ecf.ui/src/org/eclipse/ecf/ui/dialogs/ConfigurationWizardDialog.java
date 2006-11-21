@@ -27,6 +27,10 @@ public class ConfigurationWizardDialog extends WizardDialog {
 		wizard.init(workbench, selection);
 	}
 	
+	public ConfigurationWizardDialog(Shell shell, IWorkbench workbench) {
+		this(shell,workbench, null);
+	}
+	
 	public IContainerHolder getResult() {
 		return wizard.getResult();
 	}

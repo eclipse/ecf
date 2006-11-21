@@ -139,7 +139,7 @@ alongside the wizard name in the export engine listing.
                </appInfo>
             </annotation>
          </attribute>
-         <attribute name="containerTypeName" type="string" use="required">
+         <attribute name="containerFactoryName" type="string" use="required">
             <annotation>
                <documentation>
                   The ContainerTypeName of the container to be created.  For example, &quot;ecf.generic.client&quot;.

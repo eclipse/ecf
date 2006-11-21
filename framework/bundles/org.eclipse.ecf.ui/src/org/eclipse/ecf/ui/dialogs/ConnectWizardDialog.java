@@ -10,6 +10,9 @@
  *****************************************************************************/
 package org.eclipse.ecf.ui.dialogs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -33,7 +36,7 @@ public class ConnectWizardDialog extends WizardDialog {
 			IContainerHolder containerHolder) {
 		IConnectWizard connectWizard = null;
 		try {
-			IConfigurationElement ce = findConnectWizardExtension(containerHolder);
+			IConfigurationElement ce = findConnectWizardConfigurationElements(containerHolder)[0];
 			connectWizard = (IConnectWizard) ce
 					.createExecutableExtension(IWizardRegistryConstants.ATT_CLASS);
 			connectWizard.init(workbench, containerHolder.getContainer());
@@ -46,8 +49,9 @@ public class ConnectWizardDialog extends WizardDialog {
 		return connectWizard;
 	}
 
-	private static IConfigurationElement findConnectWizardExtension(
+	public static IConfigurationElement[] findConnectWizardConfigurationElements(
 			IContainerHolder containerHolder) {
+		List result = new ArrayList();
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = reg
 				.getExtensionPoint(IWizardRegistryConstants.CONNECT_EPOINT_ID);
@@ -61,8 +65,13 @@ public class ConnectWizardDialog extends WizardDialog {
 			if (value != null
 					&& value.equals(containerHolder
 							.getContainerTypeDescription().getName()))
-				return ce[i];
+				result.add(ce[i]);
 		}
-		return null;
+		return (IConfigurationElement[]) result
+				.toArray(new IConfigurationElement[] {});
+	}
+
+	public boolean hasConnectWizard(IContainerHolder containerHolder) {
+		return (findConnectWizardConfigurationElements(containerHolder).length > 0);
 	}
 }

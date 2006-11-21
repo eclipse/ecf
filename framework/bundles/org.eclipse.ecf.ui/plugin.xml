@@ -45,7 +45,7 @@
       <wizard
             category="org.eclipse.ecf.ui.clientcategory"
             class="org.eclipse.ecf.ui.wizards.EmptyConfigurationWizard"
-            containerTypeName="ecf.generic.client"
+            containerFactoryName="ecf.generic.client"
             icon="icons/epresence16/buddy_available.gif"
             id="org.eclipse.ecf.ui.wizard1"
             name="ECF Generic Client">
@@ -53,7 +53,7 @@
       <wizard
             category="org.eclipse.ecf.ui.servercategory"
             class="org.eclipse.ecf.ui.wizards.EmptyConfigurationWizard"
-            containerTypeName="ecf.generic.server"
+            containerFactoryName="ecf.generic.server"
             icon="icons/epresence16/buddy_unavailable.gif"
             id="org.eclipse.ecf.ui.wizard2"
             name="ECF Generic Server">
@@ -87,7 +87,7 @@
          point="org.eclipse.ecf.ui.connectWizards">
       <wizard
             class="org.eclipse.ecf.ui.wizards.GenericClientConnectWizard"
-            containerTypeName="ecf.generic.client"
+            containerFactoryName="ecf.generic.client"
             id="org.eclipse.ecf.ui.wizard2"
             name="org.eclipse.ecf.ui.wizard2">
       </wizard>

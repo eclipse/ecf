@@ -49,7 +49,7 @@ public interface IWizardRegistryConstants {
 
 	public static final String HELP_HREF = "helpHref";
 	
-	public static final String ATT_CONTAINER_TYPE_NAME = "containerTypeName";
+	public static final String ATT_CONTAINER_TYPE_NAME = "containerFactoryName";
 	
 
 }
