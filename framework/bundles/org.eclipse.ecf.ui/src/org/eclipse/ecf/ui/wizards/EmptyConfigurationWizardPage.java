@@ -26,6 +26,7 @@ public class EmptyConfigurationWizardPage extends WizardPage {
 		label.setFont(font);
 		setControl(outerContainer);
 		setPageComplete(true);
+		
 	}
 
 }
