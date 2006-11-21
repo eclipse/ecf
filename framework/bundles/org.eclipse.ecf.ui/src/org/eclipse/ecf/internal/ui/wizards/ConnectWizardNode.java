@@ -12,38 +12,28 @@
 package org.eclipse.ecf.internal.ui.wizards;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.ui.ContainerHolder;
-import org.eclipse.ecf.ui.IConfigurationWizard;
+import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.ui.IWorkbench;
 
-public class ConfigurationWizardNode extends WizardNode {
+public class ConnectWizardNode extends WizardNode {
 
-	protected ContainerTypeDescription typeDescription;
-
-	protected ContainerHolder containerHolder = null;
+	protected IContainer containerToConnect;
 	
-	public ConfigurationWizardNode(IWorkbench workbench, WizardPage wizardPage,
+	public ConnectWizardNode(IWorkbench workbench, WizardPage wizardPage,
 			WorkbenchWizardElement wizardElement,
-			ContainerTypeDescription containerTypeDescription) {
+			IContainer container) {
 		super(workbench, wizardPage, wizardElement);
-		this.typeDescription = containerTypeDescription;
+		this.containerToConnect = container;
 	}
 
 	public IWizard createWizard() throws CoreException {
-		IConfigurationWizard configWizard = ((IConfigurationWizard) getWizardElement()
+		IConnectWizard connectWizard = ((IConnectWizard) getWizardElement()
 				.createWizardForNode());
-		configWizard.init(getWorkbench(), typeDescription);
-		return configWizard;
+		connectWizard.init(getWorkbench(), containerToConnect);
+		return connectWizard;
 	}
 
-	public ContainerHolder getConfigurationResult() {
-		if (containerHolder != null)
-			return containerHolder;
-		else
-			return ((IConfigurationWizard) getWizard())
-					.getConfigurationResult();
-	}
 }

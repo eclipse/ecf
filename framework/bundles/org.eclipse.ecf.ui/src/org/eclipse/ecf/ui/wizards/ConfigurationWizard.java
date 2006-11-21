@@ -11,41 +11,40 @@
 
 package org.eclipse.ecf.ui.wizards;
 
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.IImageFiles;
-import org.eclipse.ecf.ui.IConfigurationWizard;
+import org.eclipse.ecf.internal.ui.Messages;
+import org.eclipse.ecf.ui.ContainerHolder;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-public class ConfigurationWizardSelectWizard extends Wizard {
+public class ConfigurationWizard extends Wizard {
 
 	private IWorkbench workbench;
 
 	private IStructuredSelection selection;
 
-	protected IConfigurationWizard configurationWizard;
+	protected ConfigurationWizardSelectionPage createContainerWizardPage;
 
-	protected ConfigurationWizardSelectWizardPage createContainerWizardPage;
-
-	protected IContainer containerResult;
+	protected ContainerHolder containerHolder;
 	
 	public boolean performFinish() {
 		if (createContainerWizardPage != null) {
-			this.containerResult = createContainerWizardPage.getContainerResult();
+			this.containerHolder = createContainerWizardPage.getContainerResult();
 		}
 		return false;
 	}
 
-	public IContainer getContainerResult() {
-		return this.containerResult;
+	public ContainerHolder getResult() {
+		return this.containerHolder;
 	}
 	
 	public void addPages() {
 		setForcePreviousAndNextButtons(true);
-		createContainerWizardPage = new ConfigurationWizardSelectWizardPage(
+		createContainerWizardPage = new ConfigurationWizardSelectionPage(
 				this.workbench, this.selection);
 		addPage(createContainerWizardPage);
 	}
@@ -56,17 +55,21 @@ public class ConfigurationWizardSelectWizard extends Wizard {
 	 * @param aWorkbench
 	 *            the workbench
 	 * @param currentSelection
-	 *            the current selectio
+	 *            the current selection
 	 */
 	public void init(IWorkbench aWorkbench,
 			IStructuredSelection currentSelection) {
 		this.workbench = aWorkbench;
 		this.selection = currentSelection;
 
-		setDefaultPageImageDescriptor(AbstractUIPlugin
-				.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
-						IImageFiles.USER_AVAILABLE));
+		ImageDescriptor wizardBannerImage = AbstractUIPlugin
+		.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+				IImageFiles.CONFIGURATION_WIZARD);
+		
+		if (wizardBannerImage != null)	setDefaultPageImageDescriptor(wizardBannerImage);
 
+		setWindowTitle(Messages.ConfigurationWizard_title);
+		
 		setNeedsProgressMonitor(true);
 	}
 

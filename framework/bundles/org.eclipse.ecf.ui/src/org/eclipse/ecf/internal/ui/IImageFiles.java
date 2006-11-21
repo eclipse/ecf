@@ -34,4 +34,8 @@ public interface IImageFiles {
 	public static final String SEND_MESSAGE = "icons/enabled/message.gif";
 
 	public static final String ADD = "icons/enabled/add.gif";
+
+	public static final String CONFIGURATION_WIZARD = "icons/wizards/configuration.gif";
+
+	public static final String CONNECT_WIZARD = "icons/wizards/connect.gif";
 }

@@ -4,6 +4,7 @@ import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.ui.ContainerHolder;
 import org.eclipse.ecf.ui.IConfigurationWizard;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
@@ -33,8 +34,8 @@ public class EmptyConfigurationWizard extends Wizard implements
 		}
 	}
 
-	public IContainer getConfigurationResult() {
-		return container;
+	public ContainerHolder getConfigurationResult() {
+		return new ContainerHolder(containerDescription, container);
 	}
 
 	public void init(IWorkbench workbench,

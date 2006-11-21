@@ -1,36 +1,25 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation, Composent, Inc. and others.
+/****************************************************************************
+ * Copyright (c) 2004 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
+
 package org.eclipse.ecf.ui.wizards;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.Messages;
-import org.eclipse.ecf.internal.ui.wizards.ConfigurationWizardNode;
-import org.eclipse.ecf.internal.ui.wizards.IWizardRegistryConstants;
 import org.eclipse.ecf.internal.ui.wizards.WizardActivityFilter;
 import org.eclipse.ecf.internal.ui.wizards.WizardCollectionElement;
 import org.eclipse.ecf.internal.ui.wizards.WizardContentProvider;
-import org.eclipse.ecf.internal.ui.wizards.WizardsRegistryReader;
 import org.eclipse.ecf.internal.ui.wizards.WorkbenchLabelProvider;
 import org.eclipse.ecf.internal.ui.wizards.WorkbenchWizardElement;
-import org.eclipse.ecf.ui.IConfigurationWizard;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -57,27 +46,24 @@ import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.model.AdaptableList;
 import org.eclipse.ui.wizards.IWizardCategory;
 
-public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
-
-	protected IStructuredSelection currentResourceSelection;
+public abstract class AbstractWizardSelectionPage extends WizardSelectionPage {
 
 	protected IWorkbench workbench;
 
-	protected List containerTypeDescriptions;
+	protected TreeViewer treeViewer;
 
 	protected CategorizedWizardSelectionTree wizardSelectionTree;
 
-	private TreeViewer treeViewer;
+	protected IStructuredSelection currentResourceSelection;
 
-	protected TreeViewer getTreeViewer() {
-		return treeViewer;
+	public AbstractWizardSelectionPage(String name, IWorkbench workbench,
+			IStructuredSelection selection) {
+		super(name);
+		this.workbench = workbench;
+		this.currentResourceSelection = selection;
+		setTitle(Messages.Select);
 	}
 
-	protected ITriggerPoint getTriggerPoint(){
-		return getWorkbench().getActivitySupport()
-    		.getTriggerPointManager().getTriggerPoint(IWizardRegistryConstants.CONFIGURE_EPOINT_ID);
-	}
-	
 	protected class CategorizedWizardSelectionTree {
 		private final static int SIZING_LISTS_HEIGHT = 200;
 
@@ -194,6 +180,47 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 			viewer.setInput(input);
 		}
 
+		protected class WizardPatternFilter extends PatternFilter {
+
+			/**
+			 * Create a new instance of a WizardPatternFilter
+			 * 
+			 * @param isMatchItem
+			 */
+			public WizardPatternFilter() {
+				super();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see org.eclipse.ui.internal.dialogs.PatternFilter#isElementSelectable(java.lang.Object)
+			 */
+			public boolean isElementSelectable(Object element) {
+				return element instanceof WorkbenchWizardElement;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see org.eclipse.ui.internal.dialogs.PatternFilter#isElementMatch(org.eclipse.jface.viewers.Viewer,
+			 *      java.lang.Object)
+			 */
+			protected boolean isLeafMatch(Viewer viewer, Object element) {
+				if (element instanceof WizardCollectionElement)
+					return false;
+
+				if (element instanceof WorkbenchWizardElement) {
+					WorkbenchWizardElement desc = (WorkbenchWizardElement) element;
+					String text = desc.getLabel();
+					if (wordMatches(text))
+						return true;
+				}
+				return false;
+			}
+
+		}
+
 		/**
 		 * 
 		 * @return the categorized tree viewer
@@ -226,70 +253,31 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 		}
 	}
 
-	public class WizardPatternFilter extends PatternFilter {
-
-		/**
-		 * Create a new instance of a WizardPatternFilter
-		 * 
-		 * @param isMatchItem
-		 */
-		public WizardPatternFilter() {
-			super();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ui.internal.dialogs.PatternFilter#isElementSelectable(java.lang.Object)
-		 */
-		public boolean isElementSelectable(Object element) {
-			return element instanceof WorkbenchWizardElement;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ui.internal.dialogs.PatternFilter#isElementMatch(org.eclipse.jface.viewers.Viewer,
-		 *      java.lang.Object)
-		 */
-		protected boolean isLeafMatch(Viewer viewer, Object element) {
-			if (element instanceof WizardCollectionElement)
-				return false;
-
-			if (element instanceof WorkbenchWizardElement) {
-				WorkbenchWizardElement desc = (WorkbenchWizardElement) element;
-				String text = desc.getLabel();
-				if (wordMatches(text))
-					return true;
-			}
-			return false;
-		}
-
-	}
+	protected abstract IWizardCategory getRootCategory();
 
 	protected IWorkbench getWorkbench() {
 		return this.workbench;
 	}
 
-	public ConfigurationWizardSelectWizardPage(IWorkbench workbench,
-			IStructuredSelection selection) {
-		super("createContainerWizardPage");
-		this.workbench = workbench;
-		this.currentResourceSelection = selection;
-		setTitle(Messages.Select);
-		this.containerTypeDescriptions = ContainerFactory.getDefault()
-				.getDescriptions();
+	protected TreeViewer getTreeViewer() {
+		return treeViewer;
 	}
 
-	protected IContainer getContainerResult() {
-		ConfigurationWizardNode cwn = (ConfigurationWizardNode) getSelectedNode();
-		if (cwn == null) return null;
-		return ((IConfigurationWizard) getSelectedNode().getWizard()).getConfigurationResult();
+	protected void setTreeViewer(TreeViewer viewer) {
+		treeViewer = viewer;
 	}
-	
-	private IWizardCategory getRootCategory() {
-		return new WizardsRegistryReader(Activator.PLUGIN_ID,
-				IWizardRegistryConstants.CONFIGURE_EPOINT).getWizardElements();
+
+	protected abstract ITriggerPoint getTriggerPoint();
+
+	public IWizardPage getNextPage() {
+		ITriggerPoint triggerPoint = getTriggerPoint();
+
+		if (triggerPoint == null
+				|| WorkbenchActivityHelper.allowUseOf(triggerPoint,
+						getSelectedNode())) {
+			return super.getNextPage();
+		}
+		return null;
 	}
 
 	protected Composite createTreeViewer(Composite parent) {
@@ -329,10 +317,6 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 		getContainer().showPage(getNextPage());
 	}
 
-	protected void setTreeViewer(TreeViewer viewer) {
-		treeViewer = viewer;
-	}
-
 	protected void listSelectionChanged(ISelection selection) {
 		setErrorMessage(null);
 		IStructuredSelection ss = (IStructuredSelection) selection;
@@ -345,33 +329,8 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 		}
 	}
 
-	private ContainerTypeDescription getContainerTypeDescriptionForElement(WorkbenchWizardElement element) {
-		ContainerTypeDescription typeDescription = ContainerFactory
-		.getDefault().getDescriptionByName(element.getContainerTypeName());
-			if (typeDescription == null) {
-				String msg = "The container type name '"+element+"' does not exist";
-				setErrorMessage(msg);
-				ErrorDialog.openError(getShell(),
-						"Problem Opening Wizard",
-						"The selected wizard could not be started.", new Status(IStatus.ERROR,Activator.PLUGIN_ID,2222,msg,null));
-				return null;
-			}
-	    return typeDescription;
-	}
-	
-	private void updateSelectedNode(WorkbenchWizardElement wizardElement) {
-		setErrorMessage(null);
-		if (wizardElement == null) {
-			updateMessage();
-			setSelectedNode(null);
-			return;
-		}
-
-		ConfigurationWizardNode cwn = new ConfigurationWizardNode(getWorkbench(), this, wizardElement, getContainerTypeDescriptionForElement(wizardElement));
-		
-		setSelectedNode(cwn);
-		setMessage(wizardElement.getDescription());
-	}
+	protected abstract void updateSelectedNode(
+			WorkbenchWizardElement wizardElement);
 
 	protected void updateMessage() {
 		TreeViewer viewer = getTreeViewer();
@@ -389,20 +348,6 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 		}
 	}
 
-    public IWizardPage getNextPage() { 
-    	ITriggerPoint triggerPoint = getTriggerPoint();
-        
-        if (triggerPoint == null || WorkbenchActivityHelper.allowUseOf(triggerPoint, getSelectedNode())) {
-			return super.getNextPage();
-		}
-        return null;
-    }
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
 	public void createControl(Composite parent) {
 		Font font = parent.getFont();
 
@@ -418,5 +363,4 @@ public class ConfigurationWizardSelectWizardPage extends WizardSelectionPage {
 		setControl(outerContainer);
 
 	}
-
 }

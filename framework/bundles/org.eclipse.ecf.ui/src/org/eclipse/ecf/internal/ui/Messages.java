@@ -17,9 +17,11 @@ public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.ui.messages";//$NON-NLS-1$
 
-	public static String CreateContainerWizard_title;
-
 	public static String Select;
+
+	public static String ConfigurationWizard_title;
+
+	public static String ConnectWizard_title;
 
 	static {
 		// load message values from bundle file

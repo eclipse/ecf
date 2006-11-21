@@ -1,6 +1,6 @@
 package org.eclipse.ecf.ui.tests.actions;
 
-import org.eclipse.ecf.ui.wizards.ConfigurationWizardSelectWizard;
+import org.eclipse.ecf.ui.wizards.ConfigurationWizard;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -34,11 +34,13 @@ public class SampleAction implements IWorkbenchWindowActionDelegate {
 	 * @see IWorkbenchWindowActionDelegate#run
 	 */
 	public void run(IAction action) {
-		ConfigurationWizardSelectWizard ccw = new ConfigurationWizardSelectWizard();
+		ConfigurationWizard ccw = new ConfigurationWizard();
 		ccw.init(window.getWorkbench(), this.selection);
 		WizardDialog wd = new WizardDialog(window.getShell(),
 				ccw);
 		wd.open();
+		
+		System.out.println("Got container result="+ccw.getResult());
 	}
 
 	/**

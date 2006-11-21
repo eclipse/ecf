@@ -11,7 +11,6 @@
 package org.eclipse.ecf.ui;
 
 import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.ui.IWorkbench;
 
@@ -39,8 +38,8 @@ public interface IConfigurationWizard extends IWizard {
 	/**
 	 * Get result of configuration.
 	 * 
-	 * @return IContainer the result of the configuration.  If null, the container could not be
+	 * @return ContainerHolder the result of the configuration.  If null, the container could not be
 	 * created.
 	 */
-	public IContainer getConfigurationResult();
+	public ContainerHolder getConfigurationResult();
 }
