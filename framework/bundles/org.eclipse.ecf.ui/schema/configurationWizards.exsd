@@ -6,7 +6,8 @@
          <meta.schema plugin="org.eclipse.ecf.ui" id="configurationWizards" name="ECF Configuration Wizards"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         This extension point allows providers to register wizards for creating and configuration IContainer
+instances.
       </documentation>
    </annotation>
 
@@ -166,7 +167,7 @@ of the export engine functionality.
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         ECF v0.9.4
       </documentation>
    </annotation>
 
@@ -175,7 +176,22 @@ of the export engine functionality.
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         Implementers of this extension point must specify an extension of the &lt;b&gt;org.eclipse.ecf.ui.configurationWizards&lt;/b&gt; extension point.
+
+&lt;pre&gt;
+  &lt;extension
+        point=&quot;org.eclipse.ecf.ui.configurationWizards&quot;&gt;
+     &lt;wizard
+           class=&quot;org.my.client.MyClientConfigurationWizard&quot;
+           containerFactoryName=&quot;org.my.client&quot;
+           id=&quot;my.client.configuration.wizard&quot;
+           name=&quot;My Client Configuration Wizard&quot;
+           icon=&quot;icons/configuration.png&quot;&gt;
+     &lt;/wizard&gt;
+  &lt;/extension&gt;
+&lt;/pre&gt;
+
+
       </documentation>
    </annotation>
 
@@ -184,7 +200,41 @@ of the export engine functionality.
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         The &quot;class&quot; attribute (required) must have a class that implements the &lt;b&gt;org.eclipse.ecf.ui.IConfigurationWizard&lt;/b&gt; interface:
+
+&lt;pre&gt;
+/**
+ * Required interface for implementing
+ * &lt;b&gt;org.eclipse.ecf.ui.configurationWizards&lt;/b&gt; extension point. Extensions
+ * for extension point &lt;b&gt;org.eclipse.ecf.ui.configurationWizards&lt;/b&gt; must
+ * provide a class implementing this interface.
+ */
+public interface IConfigurationWizard extends IWizard {
+
+	/**
+	 * Initialize the wizard with the workbench and the desired container type
+	 * description
+	 * 
+	 * @param workbench
+	 *            the workbench for the wizard. Will not be null.
+	 * @param description
+	 *            the {@link ContainerTypeDescription} to use to
+	 *            create/configure the new IContainer instance
+	 */
+	public void init(IWorkbench workbench,
+			ContainerTypeDescription description);
+
+	/**
+	 * Get result of configuration.
+	 * 
+	 * @return ContainerHolder the result of the configuration.  If null, the container could not be
+	 * created.
+	 */
+	public ContainerHolder getConfigurationResult();
+}
+
+&lt;/pre&gt;
+
       </documentation>
    </annotation>
 
@@ -193,7 +243,7 @@ of the export engine functionality.
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         
       </documentation>
    </annotation>
 
@@ -202,7 +252,18 @@ of the export engine functionality.
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         
+         /****************************************************************************
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
+
+
       </documentation>
    </annotation>
 

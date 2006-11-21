@@ -6,7 +6,8 @@
          <meta.schema plugin="org.eclipse.ecf.ui" id="connectWizards" name="ECF Connect Wizard"/>
       </appInfo>
       <documentation>
-         ECF Connect Wizard Extension Point.
+         This extension point allows providers to register wizards for connecting IContainer
+instances.
       </documentation>
    </annotation>
 
@@ -166,7 +167,7 @@ of the export engine functionality.
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         ECF 0.9.4
       </documentation>
    </annotation>
 
@@ -175,7 +176,21 @@ of the export engine functionality.
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         Implementers of this extension point must specify an extension of the &lt;b&gt;org.eclipse.ecf.ui.connectWizards&lt;/b&gt; extension point.
+
+&lt;pre&gt;
+  &lt;extension
+        point=&quot;org.eclipse.ecf.ui.connectWizards&quot;&gt;
+     &lt;wizard
+           class=&quot;org.my.client.MyClientConnectWizard&quot;
+           containerFactoryName=&quot;org.my.client&quot;
+           id=&quot;my.client.connect.wizard&quot;
+           name=&quot;My Client Connect Wizard&quot;
+           icon=&quot;icons/connect.png&quot;&gt;
+     &lt;/wizard&gt;
+  &lt;/extension&gt;
+&lt;/pre&gt;
+
       </documentation>
    </annotation>
 
@@ -184,7 +199,31 @@ of the export engine functionality.
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         The &quot;class&quot; attribute (required) must have a class that implements the &lt;b&gt;org.eclipse.ecf.ui.IConfigurationWizard&lt;/b&gt; interface:
+
+&lt;pre&gt;
+/**
+ * Required interface for implementing &lt;b&gt;org.eclipse.ecf.ui.connectWizards&lt;/b&gt;
+ * extension point. Extensions for extension point
+ * &lt;b&gt;org.eclipse.ecf.ui.connectWizards&lt;/b&gt; must provide a class implementing
+ * this interface.
+ */
+public interface IConnectWizard extends IWizard {
+
+	/**
+	 * Initialize the connect wizard.
+	 * 
+	 * @param workbench
+	 *            the currently working workbench instance. Will not be null.
+	 * @param container
+	 *            the container that is to be connected. Will not be null.
+	 */
+	public void init(IWorkbench workbench, IContainer container);
+}
+
+&lt;/pre&gt;
+
+
       </documentation>
    </annotation>
 
@@ -193,7 +232,7 @@ of the export engine functionality.
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         
       </documentation>
    </annotation>
 
@@ -202,7 +241,18 @@ of the export engine functionality.
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         
+         /****************************************************************************
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
+
+
       </documentation>
    </annotation>
 
