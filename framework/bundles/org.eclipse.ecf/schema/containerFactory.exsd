@@ -75,20 +75,6 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="icon" type="string">
-            <annotation>
-               <documentation>
-                  Icon for use in extension point user interface display
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="visible" type="boolean">
-            <annotation>
-               <documentation>
-                  Indication in UI of whether extension is to be visible or not
-               </documentation>
-            </annotation>
-         </attribute>
       </complexType>
    </element>
 

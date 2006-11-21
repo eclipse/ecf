@@ -47,10 +47,6 @@ public class ContainerTypeDescription {
 
 	protected Map properties = null;
 
-	protected String iconFile = null;
-
-	protected boolean visible = true;
-
 	public ContainerTypeDescription(ClassLoader loader, String name,
 			String instantiatorClass, String desc) {
 		this(loader, name, instantiatorClass, desc, EMPTY);
@@ -96,12 +92,6 @@ public class ContainerTypeDescription {
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
 			String desc, String[] parameterDefaults, Map props) {
-		this(name, inst, desc, parameterDefaults, props, null, true);
-	}
-
-	public ContainerTypeDescription(String name, IContainerInstantiator inst,
-			String desc, String[] parameterDefaults, Map props,
-			String iconFile, boolean visible) {
 		if (name == null)
 			throw new NullPointerException(
 					"ContainerTypeDescription<init> name cannot be null");
@@ -116,8 +106,6 @@ public class ContainerTypeDescription {
 		this.description = desc;
 		this.parameterDefaults = parameterDefaults;
 		this.properties = (props == null) ? new HashMap() : props;
-		this.iconFile = iconFile;
-		this.visible = visible;
 	}
 
 	/**
@@ -161,8 +149,6 @@ public class ContainerTypeDescription {
 		b.append("argdefaults=").append(Arrays.asList(parameterDefaults))
 				.append(";");
 		b.append("properties=").append(properties).append(";");
-		b.append("icon=").append(iconFile).append(";");
-		b.append("visible=").append(visible).append("]");
 		return b.toString();
 	}
 
@@ -293,23 +279,4 @@ public class ContainerTypeDescription {
 		return properties;
 	}
 
-	/**
-	 * Get icon file name for this ContainerTypeDescription instance
-	 * 
-	 * @return String name of icon file relative to the plugin's top-level
-	 *         directory
-	 */
-	public String getIconFile() {
-		return iconFile;
-	}
-
-	/**
-	 * Ask whether the container type description should be visible in the UI
-	 * 
-	 * @return true if should be visible (default), or false if should not be
-	 *         visible
-	 */
-	public boolean isVisible() {
-		return visible;
-	}
 }
