@@ -83,4 +83,13 @@
          </action>
       </actionSet>
    </extension>
+   <extension
+         point="org.eclipse.ecf.ui.connectWizards">
+      <wizard
+            class="org.eclipse.ecf.ui.wizards.EmptyConnectWizard"
+            containerTypeName="ecf.generic.client"
+            id="org.eclipse.ecf.ui.wizard2"
+            name="org.eclipse.ecf.ui.wizard2">
+      </wizard>
+   </extension>
 </plugin>

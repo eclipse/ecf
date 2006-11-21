@@ -15,13 +15,14 @@ import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.IImageFiles;
 import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.ecf.ui.ContainerHolder;
+import org.eclipse.ecf.ui.IContainerHolder;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-public class ConfigurationWizard extends Wizard {
+public class ConfigurationWizardSelectionWizard extends Wizard {
 
 	private IWorkbench workbench;
 
@@ -30,18 +31,19 @@ public class ConfigurationWizard extends Wizard {
 	protected ConfigurationWizardSelectionPage createContainerWizardPage;
 
 	protected ContainerHolder containerHolder;
-	
+
 	public boolean performFinish() {
 		if (createContainerWizardPage != null) {
-			this.containerHolder = createContainerWizardPage.getContainerResult();
+			this.containerHolder = createContainerWizardPage
+					.getContainerResult();
 		}
 		return false;
 	}
 
-	public ContainerHolder getResult() {
+	public IContainerHolder getResult() {
 		return this.containerHolder;
 	}
-	
+
 	public void addPages() {
 		setForcePreviousAndNextButtons(true);
 		createContainerWizardPage = new ConfigurationWizardSelectionPage(
@@ -63,13 +65,14 @@ public class ConfigurationWizard extends Wizard {
 		this.selection = currentSelection;
 
 		ImageDescriptor wizardBannerImage = AbstractUIPlugin
-		.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
-				IImageFiles.CONFIGURATION_WIZARD);
-		
-		if (wizardBannerImage != null)	setDefaultPageImageDescriptor(wizardBannerImage);
+				.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+						IImageFiles.CONFIGURATION_WIZARD);
+
+		if (wizardBannerImage != null)
+			setDefaultPageImageDescriptor(wizardBannerImage);
 
 		setWindowTitle(Messages.ConfigurationWizard_title);
-		
+
 		setNeedsProgressMonitor(true);
 	}
 

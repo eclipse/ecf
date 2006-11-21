@@ -1,10 +1,11 @@
 package org.eclipse.ecf.ui.tests.actions;
 
-import org.eclipse.ecf.ui.wizards.ConfigurationWizard;
+import org.eclipse.ecf.ui.IContainerHolder;
+import org.eclipse.ecf.ui.wizards.ConfigurationWizardDialog;
+import org.eclipse.ecf.ui.wizards.ConnectWizardDialog;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
@@ -34,13 +35,13 @@ public class SampleAction implements IWorkbenchWindowActionDelegate {
 	 * @see IWorkbenchWindowActionDelegate#run
 	 */
 	public void run(IAction action) {
-		ConfigurationWizard ccw = new ConfigurationWizard();
-		ccw.init(window.getWorkbench(), this.selection);
-		WizardDialog wd = new WizardDialog(window.getShell(),
-				ccw);
-		wd.open();
+		ConfigurationWizardDialog ccd = new ConfigurationWizardDialog(window.getShell(),window.getWorkbench(),this.selection);
+		ccd.open();
+		IContainerHolder result = ccd.getResult();
+		System.out.println("Got container result="+result);
 		
-		System.out.println("Got container result="+ccw.getResult());
+		ConnectWizardDialog cwd = new ConnectWizardDialog(window.getShell(),window.getWorkbench(), result);
+		cwd.open();
 	}
 
 	/**

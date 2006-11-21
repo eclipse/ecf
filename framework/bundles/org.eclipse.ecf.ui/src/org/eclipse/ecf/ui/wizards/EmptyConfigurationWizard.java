@@ -13,19 +13,19 @@ public class EmptyConfigurationWizard extends Wizard implements
 		IConfigurationWizard {
 
 	protected IContainer container;
-	
+
 	protected ContainerTypeDescription containerDescription;
-	
-	protected Object [] containerParameters = null;
-	
+
+	protected Object[] containerParameters = null;
+
 	protected ContainerTypeDescription getContainerTypeDescription() {
 		return containerDescription;
 	}
-	
+
 	public boolean performFinish() {
 		try {
-			container = ContainerFactory.getDefault()
-			.createContainer(containerDescription, containerParameters);
+			container = ContainerFactory.getDefault().createContainer(
+					containerDescription, containerParameters);
 			return true;
 		} catch (ContainerCreateException e) {
 			// TODO Auto-generated catch block
@@ -44,6 +44,6 @@ public class EmptyConfigurationWizard extends Wizard implements
 	}
 
 	public void addPages() {
-		addPage(new FinishedConfigurationWizardPage("finishPage"));
+		addPage(new EmptyConfigurationWizardPage("finishPage"));
 	}
 }

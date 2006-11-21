@@ -564,4 +564,19 @@ public class WizardsRegistryReader extends RegistryReader {
 		}
 		return null;
 	}
+	
+	public WorkbenchWizardElement findWizard(String attName, String value) {
+		Object[] wizards = getWizardCollectionElements();
+		for (int nX = 0; nX < wizards.length; nX++) {
+			WizardCollectionElement collection = (WizardCollectionElement) wizards[nX];
+				WorkbenchWizardElement [] elements = collection.getWorkbenchWizardElements();
+				for(int i=0; i < elements.length; i++) {
+					WorkbenchWizardElement element = elements[i];
+					IConfigurationElement configElement = element.getConfigurationElement();
+					String att = configElement.getAttribute(attName);
+					if (att != null && att.equals(value)) return element;
+				}
+			}
+		return null;
+	}
 }

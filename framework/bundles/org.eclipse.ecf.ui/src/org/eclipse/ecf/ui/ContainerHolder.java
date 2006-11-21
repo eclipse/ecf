@@ -13,7 +13,7 @@ package org.eclipse.ecf.ui;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 
-public class ContainerHolder {
+public class ContainerHolder implements IContainerHolder {
 
 	protected IContainer container;
 	protected ContainerTypeDescription containerTypeDescription;
