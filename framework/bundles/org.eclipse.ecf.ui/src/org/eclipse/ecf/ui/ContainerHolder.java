@@ -10,27 +10,40 @@
  *****************************************************************************/
 package org.eclipse.ecf.ui;
 
+import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 
 public class ContainerHolder implements IContainerHolder {
 
 	protected IContainer container;
+
 	protected ContainerTypeDescription containerTypeDescription;
-	
-	public ContainerHolder(ContainerTypeDescription containerTypeDescription, IContainer container) {
+
+	public ContainerHolder(ContainerTypeDescription containerTypeDescription,
+			IContainer container) {
 		this.containerTypeDescription = containerTypeDescription;
 		this.container = container;
+		if (this.container == null)
+			throw new NullPointerException("container cannot be null");
+		if (this.containerTypeDescription == null)
+			throw new NullPointerException(
+					"containerTypeDescription cannot be null");
 	}
-	
+
+	public ContainerHolder(String containerType, IContainer container) {
+		this(ContainerFactory.getDefault().getDescriptionByName(containerType),
+				container);
+	}
+
 	public IContainer getContainer() {
 		return this.container;
 	}
-	
+
 	public ContainerTypeDescription getContainerTypeDescription() {
 		return this.containerTypeDescription;
 	}
-	
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ContainerHolder[");
 		buf.append(containerTypeDescription).append(";");
