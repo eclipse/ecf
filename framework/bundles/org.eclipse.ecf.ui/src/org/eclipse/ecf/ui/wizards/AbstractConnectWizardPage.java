@@ -79,6 +79,7 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 			label.setText("Password:");
 			passwordText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 			passwordText.setLayoutData(data);
+			passwordText.setEchoChar('*');
 			passwordText.addModifyListener(inputVerifier);
 		}
 
