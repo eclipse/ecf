@@ -23,18 +23,18 @@ import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.UIDebugOptions;
 import org.eclipse.jface.action.IAction;
 
-public class AsynchConnectContainerAction extends SynchConnectContainerAction {
+public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 
 	private static final String RUN_METHOD = "run";
 
 	private static final int ERROR_CODE = 999;
 
-	public AsynchConnectContainerAction(IContainer container, ID targetID,
+	public AsynchContainerConnectAction(IContainer container, ID targetID,
 			IConnectContext connectContext, IExceptionHandler exceptionHandler) {
 		super(container, targetID, connectContext, exceptionHandler);
 	}
 
-	public AsynchConnectContainerAction(IContainer container, ID targetID,
+	public AsynchContainerConnectAction(IContainer container, ID targetID,
 			IConnectContext connectContext) {
 		this(container, targetID, connectContext, null);
 	}
@@ -71,30 +71,32 @@ public class AsynchConnectContainerAction extends SynchConnectContainerAction {
 		}
 
 		protected IContainer getContainer() {
-			return AsynchConnectContainerAction.this.getContainer();
+			return AsynchContainerConnectAction.this.getContainer();
 		}
 
 		public boolean isConflicting(ISchedulingRule rule) {
-			if (rule == this
-					|| isSameContainer(((ContainerMutex) rule).getContainer()))
+			if (rule == this)
+				return true;
+			else if (rule instanceof ContainerMutex
+					&& isSameContainer(((ContainerMutex) rule).getContainer()))
 				return true;
 			else
 				return false;
 		}
 
 		public boolean contains(ISchedulingRule rule) {
-			return isConflicting(rule);
+			return (rule == this);
 		}
 	}
 
-	protected class AsynchActionJob extends Job {
+	public class AsynchActionJob extends Job {
 
 		public AsynchActionJob() {
-			super("AsynchConnectContainerAction." + getContainer().getID());
+			super("Connect for container " + getContainer().getID().getName());
 			setRule(new ContainerMutex(getContainer()));
 		}
 
-		protected IStatus run(IProgressMonitor monitor) {
+		public IStatus run(IProgressMonitor monitor) {
 			Trace.entering(Activator.getDefault(),
 					UIDebugOptions.METHODS_ENTERING, this.getClass(),
 					RUN_METHOD);

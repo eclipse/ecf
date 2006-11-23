@@ -13,7 +13,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
-public class SynchConnectContainerAction implements
+public class SynchContainerConnectAction implements
 		IWorkbenchWindowActionDelegate {
 
 	private static final String RUN_METHOD = "run";
@@ -28,7 +28,7 @@ public class SynchConnectContainerAction implements
 
 	protected IExceptionHandler exceptionHandler;
 
-	public SynchConnectContainerAction(IContainer container, ID targetID,
+	public SynchContainerConnectAction(IContainer container, ID targetID,
 			IConnectContext connectContext, IExceptionHandler exceptionHandler) {
 		this.container = container;
 		this.targetID = targetID;
@@ -36,7 +36,7 @@ public class SynchConnectContainerAction implements
 		this.exceptionHandler = exceptionHandler;
 	}
 
-	public SynchConnectContainerAction(IContainer container, ID targetID,
+	public SynchContainerConnectAction(IContainer container, ID targetID,
 			IConnectContext connectContext) {
 		this(container, targetID, connectContext, null);
 	}
