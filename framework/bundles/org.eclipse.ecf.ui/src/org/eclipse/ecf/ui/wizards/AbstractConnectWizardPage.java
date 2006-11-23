@@ -98,15 +98,15 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 	 * @return <tt>true</tt> if a username is required to connect to the
 	 *         selected <tt>IContainer</tt>, <tt>false</tt> otherwise
 	 */
-	protected abstract boolean shouldRequestUsername();
+	public abstract boolean shouldRequestUsername();
 
 	/**
 	 * Checks
 	 * @return boolean true if page should request password
 	 */
-	protected abstract boolean shouldRequestPassword();
+	public abstract boolean shouldRequestPassword();
 
-	protected abstract String getExampleID();
+	public abstract String getExampleID();
 
 	protected String getProviderTitle() {
 		return "New Provider Connection";
@@ -116,15 +116,15 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 		return null;
 	}
 
-	String getConnectID() {
+	public String getConnectID() {
 		return connectText.getText();
 	}
 
-	String getUsername() {
+	public String getUsername() {
 		return usernameText.getText();
 	}
 
-	String getPassword() {
+	public String getPassword() {
 		return passwordText.getText();
 	}
 
