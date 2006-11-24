@@ -108,6 +108,9 @@ public class RegistrySharedObject extends BaseSharedObject implements
 				}
 			}
 		}
+		synchronized (localRegistry) {
+			addReferencesFromRegistry(clazz, remoteFilter, localRegistry, references);
+		}
 		return (IRemoteServiceReference[]) references
 				.toArray(new IRemoteServiceReference[references.size()]);
 	}
@@ -234,7 +237,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			return null;
 	}
 
-	IRemoteServiceReference[] getRemoteSeifrviceReferencesForRegistry(
+	IRemoteServiceReference[] getRemoteServiceReferencesForRegistry(
 			RemoteServiceRegistryImpl registry, String clazz, String filter) {
 		return registry.lookupServiceReferences(clazz,
 				createRemoteFilterFromString(filter));
