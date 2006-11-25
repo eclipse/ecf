@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.Arrays;
 
 /**
  * Shared Object Message. Instances may be used for sending/receiving messages
@@ -345,19 +346,11 @@ public class SharedObjectMsg implements Serializable {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("SharedObjectMsg[").append(clazz).append(":").append(method)
-				.append("(");
-		if (parameters == null) {
-			sb.append(parameters);
-		} else {
-			for (int i = 0; i < parameters.length; i++) {
-				if (i > 0)
-					sb.append(",");
-				sb.append(parameters[i]);
-			}
-		}
-		sb.append(")]");
+		StringBuffer sb = new StringBuffer("SharedObjectMsg[");
+		sb.append("class=").append(clazz).append(";");
+		sb.append("method=").append(method)
+				.append(";");
+		sb.append("params=").append(Arrays.asList(parameters)).append("]");
 		return sb.toString();
 	}
 }
