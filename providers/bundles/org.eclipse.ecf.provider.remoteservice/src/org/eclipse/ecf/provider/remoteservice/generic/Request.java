@@ -83,7 +83,7 @@ public class Request implements Serializable {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("Request[");
+		final StringBuffer buf = new StringBuffer("Request[");
 		buf.append("requestId=").append(requestId).append(";cont=").append(
 				requestContainerID).append(";serviceId=").append(serviceId)
 				.append(";call=").append(call).append(";done=").append(done)

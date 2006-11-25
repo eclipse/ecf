@@ -22,5 +22,4 @@ public interface IRemoteServiceProviderDebugOptions {
 
 	public static final String METHODS_EXITING = DEBUG + "/methods/exiting"; //$NON-NLS-1$
 
-
 }

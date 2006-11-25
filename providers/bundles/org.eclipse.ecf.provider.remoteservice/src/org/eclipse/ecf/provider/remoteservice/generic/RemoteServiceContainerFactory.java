@@ -22,24 +22,28 @@ import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
 public class RemoteServiceContainerFactory extends GenericContainerInstantiator {
 
 	public IContainer createInstance(ContainerTypeDescription description,
-			Object[] args)
-			throws ContainerCreateException {
+			Object[] args) throws ContainerCreateException {
 		try {
 			final ID newID = IDFactory.getDefault().createGUID();
-			return new RemoteServiceContainer(new ISharedObjectContainerConfig() {
-				public Object getAdapter(Class clazz) {
-					return null;
-				}
-				public Map getProperties() {
-					return new HashMap();
-				}
-				public ID getID() {
-					return newID;
-				}});
-		} catch (Exception e) {
-			throw new ContainerCreateException("Exception creating GenericRemoteServiceContainer",e);
-		}				
-		
+			return new RemoteServiceContainer(
+					new ISharedObjectContainerConfig() {
+						public Object getAdapter(Class clazz) {
+							return null;
+						}
+
+						public Map getProperties() {
+							return new HashMap();
+						}
+
+						public ID getID() {
+							return newID;
+						}
+					});
+		} catch (final Exception e) {
+			throw new ContainerCreateException(
+					"Exception creating GenericRemoteServiceContainer", e);
+		}
+
 	}
 
 }

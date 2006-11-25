@@ -10,6 +10,7 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -55,12 +56,13 @@ public class RemoteServiceRegistrationImpl implements
 	protected transient RemoteServiceReferenceImpl reference = null;
 
 	protected transient RegistrySharedObject sharedObject = null;
-	
+
 	public RemoteServiceRegistrationImpl() {
 
 	}
 
-	public void publish(RegistrySharedObject sharedObject, RemoteServiceRegistryImpl registry, Object service,
+	public void publish(RegistrySharedObject sharedObject,
+			RemoteServiceRegistryImpl registry, Object service,
 			String[] clazzes, Dictionary properties) {
 		this.sharedObject = sharedObject;
 		this.service = service;
@@ -81,8 +83,8 @@ public class RemoteServiceRegistrationImpl implements
 	public ID getContainerID() {
 		return containerID;
 	}
-	
-	protected String [] getClasses() {
+
+	protected String[] getClasses() {
 		return clazzes;
 	}
 
@@ -108,7 +110,9 @@ public class RemoteServiceRegistrationImpl implements
 	}
 
 	public void unregister() {
-		if (sharedObject != null) sharedObject.sendUnregister(this);
+		if (sharedObject != null) {
+			sharedObject.sendUnregister(this);
+		}
 	}
 
 	/**
@@ -120,7 +124,7 @@ public class RemoteServiceRegistrationImpl implements
 	 * @return A Properties object for this ServiceRegistration.
 	 */
 	protected Properties createProperties(Dictionary props) {
-		Properties properties = new Properties(props);
+		final Properties properties = new Properties(props);
 
 		properties.setProperty(RemoteServiceRegistryImpl.REMOTEOBJECTCLASS,
 				clazzes);
@@ -128,7 +132,7 @@ public class RemoteServiceRegistrationImpl implements
 		properties.setProperty(RemoteServiceRegistryImpl.REMOTESERVICE_ID,
 				new Long(serviceid));
 
-		Object ranking = properties
+		final Object ranking = properties
 				.getProperty(RemoteServiceRegistryImpl.REMOTESERVICE_RANKING);
 
 		serviceranking = (ranking instanceof Integer) ? ((Integer) ranking)
@@ -155,13 +159,13 @@ public class RemoteServiceRegistrationImpl implements
 
 			if (props != null) {
 				synchronized (props) {
-					Enumeration keysEnum = props.keys();
+					final Enumeration keysEnum = props.keys();
 
 					while (keysEnum.hasMoreElements()) {
-						Object key = keysEnum.nextElement();
+						final Object key = keysEnum.nextElement();
 
 						if (key instanceof String) {
-							String header = (String) key;
+							final String header = (String) key;
 
 							setProperty(header, props.get(header));
 						}
@@ -198,11 +202,11 @@ public class RemoteServiceRegistrationImpl implements
 		 * @return The list of property key names.
 		 */
 		protected synchronized String[] getPropertyKeys() {
-			int size = size();
+			final int size = size();
 
-			String[] keynames = new String[size];
+			final String[] keynames = new String[size];
 
-			Enumeration keysEnum = keys();
+			final Enumeration keysEnum = keys();
 
 			for (int i = 0; i < size; i++) {
 				keynames[i] = (String) keysEnum.nextElement();
@@ -236,60 +240,67 @@ public class RemoteServiceRegistrationImpl implements
 		 * @return cloned object or original object if we didn't clone it.
 		 */
 		protected static Object cloneValue(Object value) {
-			if (value == null)
+			if (value == null) {
 				return null;
-			if (value instanceof String) /* shortcut String */
+			}
+			if (value instanceof String) {
 				return (value);
+			}
 
-			Class clazz = value.getClass();
+			final Class clazz = value.getClass();
 			if (clazz.isArray()) {
 				// Do an array copy
-				Class type = clazz.getComponentType();
-				int len = Array.getLength(value);
-				Object clonedArray = Array.newInstance(type, len);
+				final Class type = clazz.getComponentType();
+				final int len = Array.getLength(value);
+				final Object clonedArray = Array.newInstance(type, len);
 				System.arraycopy(value, 0, clonedArray, 0, len);
 				return clonedArray;
 			}
 			// must use reflection because Object clone method is protected!!
 			try {
-				return (clazz.getMethod("clone", (Class []) null).invoke(value, (Object []) null));
-			} catch (Exception e) {
+				return (clazz.getMethod("clone", (Class[]) null).invoke(value,
+						(Object[]) null));
+			} catch (final Exception e) {
 				/* clone is not a public method on value's class */
-			} catch (Error e) {
+			} catch (final Error e) {
 				/* JCL does not support reflection; try some well known types */
-				if (value instanceof Vector)
+				if (value instanceof Vector) {
 					return (((Vector) value).clone());
-				if (value instanceof Hashtable)
+				}
+				if (value instanceof Hashtable) {
 					return (((Hashtable) value).clone());
+				}
 			}
 			return (value);
 		}
 
 		public synchronized String toString() {
-			String keys[] = getPropertyKeys();
+			final String keys[] = getPropertyKeys();
 
-			int size = keys.length;
+			final int size = keys.length;
 
-			StringBuffer sb = new StringBuffer(20 * size);
+			final StringBuffer sb = new StringBuffer(20 * size);
 
 			sb.append('{');
 
 			int n = 0;
 			for (int i = 0; i < size; i++) {
-				String key = keys[i];
+				final String key = keys[i];
 				if (!key.equals(RemoteServiceRegistryImpl.REMOTEOBJECTCLASS)) {
-					if (n > 0)
+					if (n > 0) {
 						sb.append(", "); //$NON-NLS-1$
+					}
 
 					sb.append(key);
 					sb.append('=');
-					Object value = get(key);
+					final Object value = get(key);
 					if (value.getClass().isArray()) {
 						sb.append('[');
-						int length = Array.getLength(value);
+						final int length = Array.getLength(value);
 						for (int j = 0; j < length; j++) {
-							if (j > 0)
+							if (j > 0) {
 								sb.append(',');
+							}
 							sb.append(Array.get(value, j));
 						}
 						sb.append(']');
@@ -321,4 +332,16 @@ public class RemoteServiceRegistrationImpl implements
 	public Object callService(RemoteCallImpl call) throws Exception {
 		return call.invoke(service);
 	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer("RemoteServiceRegistrationImpl[");
+		buf.append("containerID=").append(containerID).append(";");
+		buf.append("serviceid=").append(serviceid).append(";");
+		buf.append("serviceranking=").append(serviceranking).append(";");
+		buf.append("classes=").append(Arrays.asList(clazzes)).append(";");
+		buf.append("state=").append(state).append(";");
+		buf.append("sharedobject=").append(sharedObject).append("]");
+		return buf.toString();
+	}
+
 }

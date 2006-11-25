@@ -47,7 +47,7 @@ public class Response implements Serializable {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("Response[");
+		final StringBuffer buf = new StringBuffer("Response[");
 		buf.append("requestId=").append(requestId).append(";response=").append(
 				response).append(";exception=").append(exception).append("]");
 		return buf.toString();

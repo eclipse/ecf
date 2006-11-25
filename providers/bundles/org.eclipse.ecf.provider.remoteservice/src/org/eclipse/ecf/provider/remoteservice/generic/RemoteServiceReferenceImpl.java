@@ -14,12 +14,13 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 public class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 
 	protected RemoteServiceRegistrationImpl registration;
+
 	protected String clazz = null;
-	
+
 	public RemoteServiceReferenceImpl(RemoteServiceRegistrationImpl registration) {
 		this.registration = registration;
 	}
-	
+
 	public Object getProperty(String key) {
 		return registration.getProperty(key);
 	}
@@ -35,19 +36,28 @@ public class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 	public boolean isActive() {
 		return (registration != null);
 	}
-	
+
 	protected synchronized void setInactive() {
 		registration = null;
 		clazz = null;
 	}
+
 	protected RemoteServiceRegistrationImpl getRegistration() {
 		return registration;
 	}
+
 	protected void setRemoteClass(String clazz) {
 		this.clazz = clazz;
 	}
 
 	protected String getRemoteClass() {
 		return clazz;
+	}
+	
+	public String toString() {
+		StringBuffer buf = new StringBuffer("RemoteServiceReferenceImpl[");
+		buf.append("class=").append(getRemoteClass()).append(";");
+		buf.append("registration=").append(getRegistration()).append("]");
+		return buf.toString();
 	}
 }

@@ -19,11 +19,11 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 
-public class RemoteServiceContainer extends TCPClientSOContainer
-		implements IRemoteServiceContainerAdapter {
+public class RemoteServiceContainer extends TCPClientSOContainer implements
+		IRemoteServiceContainerAdapter {
 
 	protected IRemoteServiceContainerAdapter registry;
-	
+
 	protected void createRegistry() {
 		registry = new RegistrySharedObject();
 	}
@@ -33,8 +33,7 @@ public class RemoteServiceContainer extends TCPClientSOContainer
 		createRegistry();
 	}
 
-	public RemoteServiceContainer(ISharedObjectContainerConfig config,
-			int ka) {
+	public RemoteServiceContainer(ISharedObjectContainerConfig config, int ka) {
 		super(config, ka);
 		createRegistry();
 	}
@@ -49,12 +48,12 @@ public class RemoteServiceContainer extends TCPClientSOContainer
 
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter,
 			String clazz, String filter) {
-		return registry.getRemoteServiceReferences(idFilter,clazz,filter);
+		return registry.getRemoteServiceReferences(idFilter, clazz, filter);
 	}
 
 	public IRemoteServiceRegistration registerRemoteService(String[] clazzes,
 			Object service, Dictionary properties) {
-		return registry.registerRemoteService(clazzes,service,properties);
+		return registry.registerRemoteService(clazzes, service, properties);
 	}
 
 	public void removeRemoteServiceListener(IRemoteServiceListener listener) {

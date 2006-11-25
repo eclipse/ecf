@@ -14,18 +14,26 @@ import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 
-public class RemoteServiceContainerAdapterFactory extends AbstractSharedObjectContainerAdapterFactory {
+public class RemoteServiceContainerAdapterFactory extends
+		AbstractSharedObjectContainerAdapterFactory {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory#createAdapter(org.eclipse.ecf.core.sharedobject.ISharedObjectContainer, java.lang.Class, org.eclipse.ecf.core.identity.ID)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory#createAdapter(org.eclipse.ecf.core.sharedobject.ISharedObjectContainer,
+	 *      java.lang.Class, org.eclipse.ecf.core.identity.ID)
 	 */
-	protected ISharedObject createAdapter(ISharedObjectContainer container, Class adapterType, ID adapterID) {
-		if (adapterType.equals(IRemoteServiceContainerAdapter.class)) return new RegistrySharedObject();
-		else return null;
+	protected ISharedObject createAdapter(ISharedObjectContainer container,
+			Class adapterType, ID adapterID) {
+		if (adapterType.equals(IRemoteServiceContainerAdapter.class)) {
+			return new RegistrySharedObject();
+		} else {
+			return null;
+		}
 	}
 
 	public Class[] getAdapterList() {
 		return new Class[] { IRemoteServiceContainerAdapter.class };
 	}
-	
+
 }
