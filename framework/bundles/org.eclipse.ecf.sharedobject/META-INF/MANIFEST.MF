@@ -15,6 +15,5 @@ Export-Package: org.eclipse.ecf.core.sharedobject,
 Bundle-RequiredExecutionEnvironment: J2SE-1.3,
  CDC-1.0/Foundation-1.0
 Require-Bundle: org.eclipse.ecf
-Bundle-ClassPath: sharedobjectapi.jar
 Import-Package: org.eclipse.core.runtime,
  org.osgi.framework;version="1.3.0"
