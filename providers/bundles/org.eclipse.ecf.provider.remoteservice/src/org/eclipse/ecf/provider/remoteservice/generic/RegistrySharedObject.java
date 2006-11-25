@@ -109,7 +109,8 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			}
 		}
 		synchronized (localRegistry) {
-			addReferencesFromRegistry(clazz, remoteFilter, localRegistry, references);
+			addReferencesFromRegistry(clazz, remoteFilter, localRegistry,
+					references);
 		}
 		return (IRemoteServiceReference[]) references
 				.toArray(new IRemoteServiceReference[references.size()]);
@@ -138,7 +139,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 		RemoteServiceRegistrationImpl reg = new RemoteServiceRegistrationImpl();
 		reg.publish(this, localRegistry, service, clazzes, properties);
 
-		sendAddRegistration(reg);
+		sendAddRegistration(null, reg);
 		return reg;
 	}
 
@@ -187,20 +188,21 @@ public class RegistrySharedObject extends BaseSharedObject implements
 	protected void handleContainerConnectedEvent(IContainerConnectedEvent event) {
 		// If we're a group manager or the newly connected container is the
 		// group manager
+		ID targetID = event.getTargetID();
+		// If we're the group manager, or we've just joined the group,
+		// then we sendAddRegistration to all
 		if (getContext().isGroupManager()
 				|| event.getTargetID().equals(getGroupID())) {
-			trace("local containerID=" + getLocalContainerID()
-					+ " connected to groupID=" + getGroupID());
-			// No local registry changes while this is going on
-			synchronized (localRegistry) {
-				RemoteServiceRegistrationImpl registrations[] = localRegistry
-						.getRegistrations();
-				if (registrations != null)
-					for (int i = 0; i < registrations.length; i++) {
-						RemoteServiceRegistrationImpl registration = registrations[i];
-						sendAddRegistration(registration);
-					}
-			}
+			targetID = null;
+		}
+		synchronized (localRegistry) {
+			RemoteServiceRegistrationImpl registrations[] = localRegistry
+					.getRegistrations();
+			if (registrations != null)
+				for (int i = 0; i < registrations.length; i++) {
+					RemoteServiceRegistrationImpl registration = registrations[i];
+					sendAddRegistration(targetID, registration);
+				}
 		}
 	}
 
@@ -473,7 +475,8 @@ public class RegistrySharedObject extends BaseSharedObject implements
 
 	private static final int ADD_REGISTRATION_ERROR_CODE = 212;
 
-	protected void sendAddRegistration(RemoteServiceRegistrationImpl reg) {
+	protected void sendAddRegistration(ID receiver,
+			RemoteServiceRegistrationImpl reg) {
 		trace("sendAddRegistration(" + null + "," + reg + ")");
 		try {
 			sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(null,
@@ -521,6 +524,50 @@ public class RegistrySharedObject extends BaseSharedObject implements
 				public String toString() {
 					StringBuffer buf = new StringBuffer(
 							"RemoteServiceRegisteredEvent[");
+					buf.append("containerID=").append(
+							registration.getContainerID());
+					buf.append(";clazzes=").append(
+							Arrays.asList(registration.getClasses()));
+					buf.append(";reference=").append(
+							registration.getReference()).append("]");
+					return buf.toString();
+				}
+			});
+		}
+	}
+
+	protected void handleRemoveRegistration(ID remoteContainerID,
+			final RemoteServiceRegistrationImpl registration) {
+		if (remoteContainerID == null || getLocalContainerID().equals(remoteContainerID))
+			return;
+		trace(remoteContainerID + " to " + getLocalContainerID() + " removed "
+				+ registration);
+		synchronized (remoteRegistrys) {
+			// Find registry for remoteContainer
+			RemoteServiceRegistryImpl registry = getRemoteRegistry(remoteContainerID);
+			// If no registry for remove then simply return
+			if (registry == null) return;
+			// publish service in this registry. At this point it's ready to go
+			registry.unpublishService(registration);
+			
+			// notify IRemoteServiceListeners synchronously
+			fireRemoteServiceListeners(new IRemoteServiceUnregisteredEvent() {
+
+				public String[] getClazzes() {
+					return registration.getClasses();
+				}
+
+				public ID getContainerID() {
+					return registration.getContainerID();
+				}
+
+				public IRemoteServiceReference getReference() {
+					return registration.getReference();
+				}
+
+				public String toString() {
+					StringBuffer buf = new StringBuffer(
+							"IRemoteServiceUnregisteredEvent[");
 					buf.append("containerID=").append(
 							registration.getContainerID());
 					buf.append(";clazzes=").append(
