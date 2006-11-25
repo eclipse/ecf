@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF DataShare API
 Bundle-SymbolicName: org.eclipse.ecf.datashare;singleton:=true
 Bundle-Version: 0.9.4
-Bundle-ClassPath: datashareapi.jar
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Export-Package: org.eclipse.ecf.datashare,
