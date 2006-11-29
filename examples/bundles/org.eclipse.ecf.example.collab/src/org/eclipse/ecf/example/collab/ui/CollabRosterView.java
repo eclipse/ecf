@@ -22,7 +22,12 @@ import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.ecf.example.collab.share.RosterSharedObject;
+import org.eclipse.ecf.ui.views.RosterBuddy;
+import org.eclipse.ecf.ui.views.RosterGroup;
+import org.eclipse.ecf.ui.views.RosterObject;
+import org.eclipse.ecf.ui.views.RosterParent;
 import org.eclipse.ecf.ui.views.RosterView;
+import org.eclipse.ecf.ui.views.RosterUserAccount;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -56,11 +61,11 @@ public class CollabRosterView extends RosterView {
 	 */
 	protected void fillContextMenu(IMenuManager manager) {
 		super.fillContextMenu(manager);
-		final TreeObject treeObject = getSelectedTreeObject();
-		if (treeObject != null && treeObject instanceof TreeBuddy) {
-			TreeBuddy buddy = (TreeBuddy) treeObject;
-			TreeParent group = treeObject.getParent();
-			final UserAccount ua = getAccount(buddy.getServiceID());
+		final RosterObject rosterObject = getSelectedTreeObject();
+		if (rosterObject != null && rosterObject instanceof RosterBuddy) {
+			RosterBuddy buddy = (RosterBuddy) rosterObject;
+			RosterParent group = rosterObject.getParent();
+			final RosterUserAccount ua = getAccount(buddy.getServiceID());
 			Action sendSOMessageAction = new Action() {
 				public void run() {
 					RosterSharedObject so = (RosterSharedObject) ua
@@ -70,23 +75,23 @@ public class CollabRosterView extends RosterView {
 						dialog.open();
 						if (dialog.getReturnCode() == InputDialog.OK) {
 							String message = dialog.getValue();
-							so.sendPrivateMessageTo(treeObject.getId(), ua.getUser().getName(), message);
+							so.sendPrivateMessageTo(rosterObject.getID(), ua.getUser().getName(), message);
 						}
 					}
 				}
 			};
 			sendSOMessageAction.setText("(ECF) Send Private Message to "
-					+ treeObject.getId().getName());
+					+ rosterObject.getID().getName());
 			sendSOMessageAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendSOMessageAction);
 
 			Action sendShowViewAction = new Action() {
 				public void run() {
-					sendShowViewRequest(treeObject.getId());
+					sendShowViewRequest(rosterObject.getID());
 				}
 			};
 			sendShowViewAction.setText("(ECF) Remote Open View for "
-					+ treeObject.getId().getName());
+					+ rosterObject.getID().getName());
 			sendShowViewAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendShowViewAction);
 
@@ -94,8 +99,8 @@ public class CollabRosterView extends RosterView {
 			int activeGroupSize = 0;
 			int totalGroupSize = 0;
 			String gn = "";
-			if (group instanceof TreeGroup) {
-				TreeGroup tg = (TreeGroup) group;
+			if (group instanceof RosterGroup) {
+				RosterGroup tg = (RosterGroup) group;
 				totalGroupSize = tg.getTotalCount();
 				activeGroupSize = tg.getActiveCount();
 				gn = tg.getName();
@@ -108,12 +113,12 @@ public class CollabRosterView extends RosterView {
 					RosterSharedObject so = (RosterSharedObject) ua
 							.getSharedObject();
 					if (so != null) {
-						so.sendGroupSizeMessageTo(treeObject.getId(), ua.getUser().getName(), groupName, activeSize, totalSize);
+						so.sendGroupSizeMessageTo(rosterObject.getID(), ua.getUser().getName(), groupName, activeSize, totalSize);
 					}
 				}
 			};
 			sendSOGroupSizeAction.setText("(ECF) Send Group Meta-Information to "
-					+ treeObject.getId().getName());
+					+ rosterObject.getID().getName());
 			sendSOGroupSizeAction.setEnabled(ua.getSharedObject() != null);
 			manager.add(sendSOGroupSizeAction);
 
@@ -126,7 +131,7 @@ public class CollabRosterView extends RosterView {
 	 * @see org.eclipse.ecf.ui.views.RosterView#createAndAddSharedObjectForAccount(org.eclipse.ecf.ui.views.RosterView.UserAccount)
 	 */
 	protected ISharedObject createAndAddSharedObjectForAccount(
-			UserAccount account) {
+			RosterUserAccount account) {
 		ISharedObjectContainer container = account.getSOContainer();
 		if (container != null) {
 			try {

@@ -41,7 +41,7 @@ class ViewLabelProvider extends LabelProvider {
 		return image;
 		/*
 		 * String imageKey = ISharedImages.IMG_OBJ_ELEMENT; if (obj
-		 * instanceof TreeParent) imageKey = ISharedImages.IMG_OBJ_PROJECT;
+		 * instanceof RosterParent) imageKey = ISharedImages.IMG_OBJ_PROJECT;
 		 * return
 		 * PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 		 */
