@@ -145,8 +145,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	/**
 	 * Dispose this IContainer instance. The container instance will be made
 	 * inactive after the completion of this method and will be unavailable for
-	 * subsequent usage. NOTE: This method is not intended to be called by
-	 * clients.
+	 * subsequent usage. 
 	 * 
 	 */
 	public void dispose();
