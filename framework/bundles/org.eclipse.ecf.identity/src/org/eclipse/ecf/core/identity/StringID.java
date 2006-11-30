@@ -23,12 +23,14 @@ public class StringID extends BaseID {
 		}
 
 		public StringIDNamespace() {
-			super(StringID.class.getName(), "String Namespace");
+			super(StringID.class.getName(), "StringID Namespace");
 		}
 
 		public ID createInstance(Object[] args)
 				throws IDCreateException {
-			return new StringID(this, (String) args[0]);
+			if (args == null || args.length == 0) {
+				throw new IDCreateException("StringID name cannot be null");
+			} else return new StringID(this, (String) args[0]);
 		}
 
 		public String getScheme() {

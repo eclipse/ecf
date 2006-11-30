@@ -311,6 +311,6 @@ public class IDFactory implements IIDFactory {
 	protected final static Namespace removeNamespace0(Namespace n) {
 		if (n == null)
 			return null;
-		return (Namespace) namespaces.remove(n);
+		return (Namespace) namespaces.remove(n.getName());
 	}
 }

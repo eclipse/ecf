@@ -31,7 +31,7 @@ public class GUID extends StringID {
 		public ID createInstance(Object[] args) throws IDCreateException {
 			if (args == null || args.length <= 0)
 				return new GUID(this);
-			else if (args.length == 1 && args[0] instanceof Integer)
+			else if (args.length == 1 && args[0] instanceof Integer) 
 				return new GUID(this, ((Integer) args[0]).intValue());
 			else
 				return new GUID(this);
