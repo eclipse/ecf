@@ -8,8 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer.events;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
@@ -43,6 +42,17 @@ public interface IIncomingFileTransferReceiveStartEvent extends
 	public IIncomingFileTransfer receive(File localFileToSave)
 			throws IOException;
 
+	/**
+	 * Get incoming file transfer.
+	 * 
+	 * @param streamToStore
+	 *            the output stream to store the incoming file
+	 * @return IIncomingFileTransfer the incoming file transfer object
+	 * @throws IOException
+	 *             if streamToStore cannot be opened for writing
+	 */
+	public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException;
+	
 	/**
 	 * Cancel incoming file transfer
 	 */
