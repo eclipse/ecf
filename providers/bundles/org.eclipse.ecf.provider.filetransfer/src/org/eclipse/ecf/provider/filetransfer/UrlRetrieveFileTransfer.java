@@ -8,10 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -62,6 +59,14 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
 						public void cancel() {
 							hardClose();
+						}
+
+						public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
+							setOutputStream(new BufferedOutputStream(streamToStore));
+							setCloseOutputStream(false);
+							job = new FileTransferJob(getRemoteFileURL().toString());
+							job.schedule();
+							return UrlRetrieveFileTransfer.this;
 						}
 
 					});

@@ -59,7 +59,8 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 	protected InputStream remoteFileContents;
 
 	protected OutputStream localFileContents;
-
+	protected boolean closeOutputStream = true;
+	
 	protected Exception exception;
 
 	protected long fileLength = -1;
@@ -76,6 +77,10 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 		localFileContents = outs;
 	}
 
+	protected void setCloseOutputStream(boolean close) {
+		closeOutputStream = close;
+	}
+	
 	protected void setFileLength(long length) {
 		fileLength = length;
 	}
@@ -136,7 +141,8 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 		} catch (IOException e) {
 		}
 		try {
-			localFileContents.close();
+			if (closeOutputStream)
+				localFileContents.close();
 		} catch (IOException e) {
 		}
 	}
