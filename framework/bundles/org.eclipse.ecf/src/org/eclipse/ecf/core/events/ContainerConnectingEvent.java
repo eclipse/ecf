@@ -15,18 +15,22 @@ public class ContainerConnectingEvent implements IContainerConnectingEvent {
 
 	ID localContainerID;
 
-	ID groupID;
+	ID targetID;
 
 	Object data;
 
 	public ContainerConnectingEvent(ID localContainerID, ID groupID, Object data) {
 		this.localContainerID = localContainerID;
-		this.groupID = groupID;
+		this.targetID = groupID;
 		this.data = data;
 	}
 
+	public ContainerConnectingEvent(ID localContainerID, ID targetID) {
+		this(localContainerID, targetID, null);
+	}
+	
 	public ID getTargetID() {
-		return groupID;
+		return targetID;
 	}
 
 	/*
