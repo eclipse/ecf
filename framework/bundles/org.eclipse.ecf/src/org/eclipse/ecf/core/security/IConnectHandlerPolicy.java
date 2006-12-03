@@ -31,10 +31,9 @@ public interface IConnectHandlerPolicy extends IContainerPolicy {
 	 *            arbitrary data associated with the join request
 	 * @return PermissionCollection a collection of permissions associated with
 	 *         a successful acceptance of join request
-	 * @throws SecurityException
-	 *             if join is to be refused
+	 * @throws Exception thrown if connect should not be allowed
 	 */
 	public PermissionCollection checkConnect(Object address, ID fromID,
 			ID targetID, String targetGroup, Object connectData)
-			throws SecurityException;
+			throws Exception;
 }
