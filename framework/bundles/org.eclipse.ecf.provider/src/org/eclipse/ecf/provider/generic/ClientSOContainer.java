@@ -9,7 +9,6 @@
 package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
-import java.io.InvalidObjectException;
 import java.io.Serializable;
 import java.net.ConnectException;
 
@@ -131,11 +130,11 @@ public abstract class ClientSOContainer extends SOContainer implements
 			synchronized (getConnectLock()) {
 				// Throw if already connected
 				if (isConnected())
-					throw new ConnectException("already connected to "
+					throw new IllegalStateException("already connected to "
 							+ getConnectedID());
 				// Throw if connecting
 				if (isConnecting())
-					throw new ConnectException("currently connecting");
+					throw new IllegalStateException("currently connecting");
 				// else we're entering connecting state
 				// first notify synchonously
 				fireContainerEvent(new ContainerConnectingEvent(this.getID(),
@@ -162,7 +161,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 					// If not in correct state, disconnect and return
 					if (getConnection() != aConnection) {
 						killConnection(aConnection);
-						throw new ConnectException(
+						throw new IllegalStateException(
 								"connect failed because not in correct state");
 					}
 					ID serverID = null;
@@ -170,8 +169,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 						serverID = handleConnectResponse(remote, response);
 					} catch (Exception e) {
 						setStateDisconnected(aConnection);
-						throw new ConnectException(
-								"connect refused locally via acceptNewServer");
+						throw e;
 					}
 					aConnection.start();
 					setStateConnected(serverID, aConnection);
@@ -419,11 +417,20 @@ public abstract class ClientSOContainer extends SOContainer implements
 		ContainerMessage aPacket = (ContainerMessage) serverData;
 		ID fromID = aPacket.getFromContainerID();
 		if (fromID == null)
-			throw new InvalidObjectException("server id is null");
-		ID[] ids = ((ContainerMessage.ViewChangeMessage) aPacket.getData())
-				.getChangeIDs();
+			throw new NullPointerException("server id cannot be null");
+		ContainerMessage.ViewChangeMessage viewChangeMessage = (ContainerMessage.ViewChangeMessage) aPacket.getData();
+		// If it's not an add message then we've been refused.  Get exception info from viewChangeMessage and
+		// throw if there
+		if (!viewChangeMessage.isAdd()) {
+			// We were refused by server...so we retrieve data and throw
+			Object data = viewChangeMessage.getData();
+			if (data != null && data instanceof Exception) throw (Exception) data;
+			else throw new NullPointerException("invalid response from server");
+		}
+		// Otherwize everything is OK to this point and we get the group member IDs from server
+		ID[] ids = viewChangeMessage.getChangeIDs();
 		if (ids == null)
-			throw new java.io.InvalidObjectException("id array null");
+			throw new NullPointerException("id array null");
 		for (int i = 0; i < ids.length; i++) {
 			ID id = ids[i];
 			if (id != null && !id.equals(getID())) {

@@ -12,11 +12,11 @@
 package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
-import java.io.InvalidObjectException;
 import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketAddress;
+
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
@@ -109,22 +109,22 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
     protected ContainerMessage acceptNewClient(Socket socket, String target,
             Serializable data, ISynchAsynchConnection conn) {
     	debug("acceptNewClient("+socket+","+target+","+data+","+conn+")");
+    	ContainerMessage connectMessage = null;
+    	ID remoteID = null;
         try {
-            ContainerMessage mess = (ContainerMessage) data;
-            if (mess == null)
-                throw new InvalidObjectException("container message is null");
-            ID remoteID = mess.getFromContainerID();
-            if (remoteID == null)
-                throw new InvalidObjectException("remote id is null");
-            ContainerMessage.JoinGroupMessage jgm = (ContainerMessage.JoinGroupMessage) mess
+        	connectMessage = (ContainerMessage) data;
+       		if (connectMessage == null) throw new NullPointerException("connect request message is null");
+        	remoteID = connectMessage.getFromContainerID();
+        	if (remoteID == null) throw new NullPointerException("fromID is null");
+            ContainerMessage.JoinGroupMessage jgm = (ContainerMessage.JoinGroupMessage) connectMessage
                     .getData();
             if (jgm == null)
-                throw new IOException("join group message is null");
+                throw new NullPointerException("connect request message is null");
             ID memberIDs[] = null;
             synchronized (getGroupMembershipLock()) {
                 if (isClosing) {
-                    Exception e = new InvalidObjectException(
-                            "container is closing");
+                    Exception e = new IllegalStateException(
+                            "server is closing");
                     throw e;
                 }
                 // Now check to see if this request is going to be allowed
@@ -165,8 +165,8 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
         } catch (Exception e) {
             logException("Exception in acceptNewClient(" + socket + ","
                     + target + "," + data + "," + conn, e);
-            // And then return null...which means refusal
-            return null;
+            // And then return leave group message...which means refusal
+            return ContainerMessage.createViewChangeMessage(getID(), remoteID, getNextSequenceNumber(), null, false, e);
         }
     }
     protected Object checkJoin(SocketAddress saddr, ID fromID, String target, Serializable data)
@@ -267,7 +267,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 
 	public void connect(ID groupID, IConnectContext joinContext) throws ContainerConnectException {
         ContainerConnectException e = new ContainerConnectException(
-                "ServerApplication cannot join group " + groupID.getName());
+                "ServerApplication cannot connect to " + groupID.getName());
         throw e;
 	}
 

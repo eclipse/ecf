@@ -45,8 +45,8 @@ public class ServerApplication {
     static List servers = new ArrayList();
 
     static class JoinListener implements IConnectHandlerPolicy {
-		public PermissionCollection checkConnect(Object addr, ID fromID, ID targetID, String targetGroup, Object joinData) throws SecurityException {
-			System.out.println("JOIN Addr="+addr+";From="+fromID+";Group="+targetGroup+";Data="+joinData);
+		public PermissionCollection checkConnect(Object addr, ID fromID, ID targetID, String targetGroup, Object joinData) throws Exception {
+			System.out.println("JOIN Addr="+addr+";From="+fromID+";Target Group="+targetGroup+";Data="+joinData);
 			return null;
 		}
 
@@ -89,6 +89,8 @@ public class ServerApplication {
 				for(Iterator g=groups.iterator(); g.hasNext(); ) {
 					NamedGroup group = (NamedGroup) g.next();
 					TCPServerSOContainer cont = createServerContainer(group.getIDForGroup(),serverGroups[j],group.getName(),connect.getTimeout());
+			        // Setup join policy
+			        ((ISharedObjectContainerGroupManager)cont).setConnectPolicy(new JoinListener());
 					servers.add(cont);
 				}
 				System.out.println("Putting server "+connect.getHostname()+" on the air");
