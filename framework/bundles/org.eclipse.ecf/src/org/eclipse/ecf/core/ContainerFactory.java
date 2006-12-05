@@ -62,13 +62,12 @@ public class ContainerFactory implements IContainerFactory {
 			standAlone = !Platform.isRunning();
 		} catch (Exception e) {
 			Trace.catching(ECFPlugin.getDefault(),
-					ECFDebugOptions.EXCEPTIONS_CATCHING, ContainerFactory.class,
-					"staticinitializer", e);
-			ECFPlugin.getDefault().getLog()
-					.log(
-							new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID,
-									PROPERTY_INITIALIZE_ERRORCODE,
-									"Exception determining if platform is running", e));
+					ECFDebugOptions.EXCEPTIONS_CATCHING,
+					ContainerFactory.class, "staticinitializer", e);
+			ECFPlugin.getDefault().getLog().log(
+					new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID,
+							PROPERTY_INITIALIZE_ERRORCODE,
+							"Exception determining if platform is running", e));
 		}
 		instance = new ContainerFactory();
 	}
@@ -238,7 +237,8 @@ public class ContainerFactory implements IContainerFactory {
 							+ description, e, method);
 		}
 		// Ask instantiator to actually create instance
-		IContainer container = instantiator.createInstance(description, parameters);
+		IContainer container = instantiator.createInstance(description,
+				parameters);
 		if (container == null)
 			throwContainerCreateException("Instantiator returned null for '"
 					+ cd.getName() + "'", null, method);
@@ -265,9 +265,10 @@ public class ContainerFactory implements IContainerFactory {
 	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String,
 	 *      java.lang.Object[])
 	 */
-	public IContainer createContainer(String descriptionName, Object[] parameters)
-			throws ContainerCreateException {
-		return createContainer(getDescriptionByName(descriptionName), parameters);
+	public IContainer createContainer(String descriptionName,
+			Object[] parameters) throws ContainerCreateException {
+		return createContainer(getDescriptionByName(descriptionName),
+				parameters);
 	}
 
 	/*
@@ -293,5 +294,31 @@ public class ContainerFactory implements IContainerFactory {
 			return null;
 		return (ContainerTypeDescription) containerdescriptions.remove(n
 				.getName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.IContainerFactory#getDescriptionsForSupportedAdapter(java.lang.Class)
+	 */
+	public ContainerTypeDescription[] getDescriptionsForAdapter(
+			Class containerAdapter) {
+		if (containerAdapter == null)
+			throw new NullPointerException("containerAdapter cannot be null");
+		List result = new ArrayList();
+		List descriptions = getDescriptions();
+		for (Iterator i = descriptions.iterator(); i.hasNext();) {
+			ContainerTypeDescription description = (ContainerTypeDescription) i
+					.next();
+			String[] supportedAdapters = description.getSupportedAdapterTypes();
+			if (supportedAdapters != null) {
+				for (int j = 0; j < supportedAdapters.length; j++) {
+					if (supportedAdapters[j].equals(containerAdapter.getName()))
+						result.add(description);
+				}
+			}
+		}
+		return (ContainerTypeDescription[]) result
+				.toArray(new ContainerTypeDescription[] {});
 	}
 }

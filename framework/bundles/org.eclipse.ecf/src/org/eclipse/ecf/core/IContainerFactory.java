@@ -131,4 +131,14 @@ public interface IContainerFactory {
 	 */
 	public ContainerTypeDescription removeDescription(
 			ContainerTypeDescription description);
+	
+	/**
+	 * Get container type descriptions that support the given containerAdapter
+	 * 
+	 * @param containerAdapter the container adapter.  Must not be null.
+	 * @return ContainerTypeDescription[] of descriptions that support the given container adapter.  If no 
+	 * ContainerTypeDescriptions found that support the given adapter, an empty array will be returned.
+	 */
+	public ContainerTypeDescription[] getDescriptionsForAdapter(Class containerAdapter);
+	
 }
