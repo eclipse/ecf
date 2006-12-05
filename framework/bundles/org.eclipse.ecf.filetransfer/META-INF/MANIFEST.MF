@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Filetransfer API
 Bundle-SymbolicName: org.eclipse.ecf.filetransfer
-Bundle-Version: 0.9.4
+Bundle-Version: 0.9.5
 Bundle-Activator: org.eclipse.ecf.internal.filetransfer.Activator
 Bundle-Vendor: Eclipse.org
 Eclipse-LazyStart: true
