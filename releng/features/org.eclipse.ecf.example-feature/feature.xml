@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.examples"
       label="ECF Examples"
-      version="0.9.4"
+      version="0.9.5"
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
