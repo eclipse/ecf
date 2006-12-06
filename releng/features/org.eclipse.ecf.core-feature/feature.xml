@@ -205,4 +205,11 @@ obtained at http://www.eclipse.org.
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.eclipse.ecf.presence.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
