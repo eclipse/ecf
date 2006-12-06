@@ -299,9 +299,9 @@ public class ContainerFactory implements IContainerFactory {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.IContainerFactory#getDescriptionsForSupportedAdapter(java.lang.Class)
+	 * @see org.eclipse.ecf.core.IContainerFactory#getDescriptionsForContainerAdapter(java.lang.Class)
 	 */
-	public ContainerTypeDescription[] getDescriptionsForAdapter(
+	public ContainerTypeDescription[] getDescriptionsForContainerAdapter(
 			Class containerAdapter) {
 		if (containerAdapter == null)
 			throw new NullPointerException("containerAdapter cannot be null");

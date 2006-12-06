@@ -139,6 +139,6 @@ public interface IContainerFactory {
 	 * @return ContainerTypeDescription[] of descriptions that support the given container adapter.  If no 
 	 * ContainerTypeDescriptions found that support the given adapter, an empty array will be returned.
 	 */
-	public ContainerTypeDescription[] getDescriptionsForAdapter(Class containerAdapter);
+	public ContainerTypeDescription[] getDescriptionsForContainerAdapter(Class containerAdapter);
 	
 }
