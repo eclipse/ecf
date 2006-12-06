@@ -32,7 +32,7 @@ import org.osgi.framework.BundleContext;
  */
 public class ClientPlugin extends AbstractUIPlugin implements
 		ClientPluginConstants {
-	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab.ClientPlugin";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab";
 	// The shared instance.
 	private static ClientPlugin plugin;
 	// Resource bundle.
