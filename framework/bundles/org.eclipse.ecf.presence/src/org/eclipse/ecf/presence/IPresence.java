@@ -179,8 +179,6 @@ public interface IPresence extends IAdaptable, Serializable {
 
 		private static final String EXTENDED_AWAY_NAME = "extended away";
 
-		private static final String INVISIBLE_NAME = "unsubscribed";
-
 		private final transient String name;
 
 		// Protected constructor so that only subclasses are allowed to create
@@ -202,8 +200,6 @@ public interface IPresence extends IAdaptable, Serializable {
 				return DND;
 			} else if (presenceMode.equals(EXTENDED_AWAY_NAME)) {
 				return EXTENDED_AWAY;
-			} else if (presenceMode.equals(INVISIBLE_NAME)) {
-				return INVISIBLE;
 			} else
 				return null;
 		}
@@ -217,8 +213,6 @@ public interface IPresence extends IAdaptable, Serializable {
 		public static final Mode DND = new Mode(DND_NAME);
 
 		public static final Mode EXTENDED_AWAY = new Mode(EXTENDED_AWAY_NAME);
-
-		public static final Mode INVISIBLE = new Mode(INVISIBLE_NAME);
 
 		public String toString() {
 			return name;
@@ -239,7 +233,7 @@ public interface IPresence extends IAdaptable, Serializable {
 		private final int ordinal = nextOrdinal++;
 
 		private static final Mode[] VALUES = { AVAILABLE, AWAY, CHAT, DND,
-				EXTENDED_AWAY, INVISIBLE };
+				EXTENDED_AWAY };
 
 		Object readResolve() throws ObjectStreamException {
 			return VALUES[ordinal];
