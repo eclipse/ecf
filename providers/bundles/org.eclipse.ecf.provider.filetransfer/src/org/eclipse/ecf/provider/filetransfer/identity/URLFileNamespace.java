@@ -15,35 +15,53 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 
 /**
- * URL file namespace class.  This defines a namespace that understands how to create
- * IFileID instances from arbitary URLs
+ * URL file namespace class. This defines a namespace that understands how to
+ * create IFileID instances from arbitary URLs
  */
 public class URLFileNamespace extends Namespace {
 
 	private static final long serialVersionUID = 8204058147686930765L;
 
 	public static final String PROTOCOL = "ecf.provider.filetransfer.url";
+
 	public static final String NAMESPACE_NAME = PROTOCOL;
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
 	public ID createInstance(Object[] args) throws IDCreateException {
-		if (args == null || args.length == 0) throw new IDCreateException("arguments is null or empty");
+		if (args == null || args.length == 0)
+			throw new IDCreateException("arguments is null or empty");
 		try {
-			if (args[0] instanceof URL) return new URLFileID(this,(URL) args[0]);
-			if (args[0] instanceof String) return new URLFileID(this,new URL((String) args[0]));
+			if (args[0] instanceof URL)
+				return new URLFileID(this, (URL) args[0]);
+			if (args[0] instanceof String)
+				return new URLFileID(this, new URL((String) args[0]));
 		} catch (Exception e) {
-			throw new IDCreateException("Exception in createInstance",e);
+			throw new IDCreateException("Exception in createInstance", e);
 		}
-		throw new IDCreateException("arguments not correct to create instance of URLFileNamespace");
+		throw new IDCreateException(
+				"arguments not correct to create instance of URLFileNamespace");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.identity.Namespace#getScheme()
 	 */
 	public String getScheme() {
 		return PROTOCOL;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
+	 */
+	public Class[][] getSupportedParameterTypesForCreateInstance() {
+		return new Class[][] { { URL.class }, { String.class } };
 	}
 
 }
