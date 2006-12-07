@@ -69,8 +69,8 @@ public interface IContainerInstantiator {
 	 *            be null
 	 * @return String[] of supported adapters. The entries in the returned array
 	 *         will be the fully qualified class names of adapters supported by
-	 *         the given description. Null returned if no adapters are
-	 *         supported for given description.
+	 *         the given description. Null returned if no adapters are supported
+	 *         for given description.
 	 */
 	public String[] getSupportedAdapterTypes(
 			ContainerTypeDescription description);
@@ -79,15 +79,40 @@ public interface IContainerInstantiator {
 	 * Get array of parameter types for given container type description.
 	 * Providers implement this method to allow clients to inspect the available
 	 * set of parameter types understood for calls to
-	 * {@link #createInstance(ContainerTypeDescription, Object[])}. Each of the
-	 * rows of the returned array specifies a Class[] of parameter types. These
-	 * parameter types correspond to the types of Object[] that can be passed
-	 * into the second parameter of
-	 * {@link #createInstance(ContainerTypeDescription, Object[])}. For
-	 * example, if this method returns a Class [] = {{ String.class,
-	 * String.class }} this indicates that a call to
-	 * createInstance(description,new String[] { "hello", "there" }) will be
-	 * understood by the provider implementation.
+	 * {@link #createInstance(ContainerTypeDescription, Object[])}.
+	 * <p>
+	 * </p>
+	 * Each of the rows of the returned array specifies a Class[] of parameter
+	 * types. These parameter types correspond to the types of Object[] that can
+	 * be passed into the second parameter of
+	 * {@link #createInstance(ContainerTypeDescription, Object[])}.
+	 * <p>
+	 * </p>
+	 * Consider the following example:
+	 * <p>
+	 * </p>
+	 * 
+	 * <pre>
+	 * public Class[][] getSupportedParameterTypes() {
+	 * 	  return new Class[][] { { String.class }, { String.class, String.class } };
+	 * }
+	 * </pre>
+	 * 
+	 * The above means that there are two acceptable values for the Object []
+	 * passed into {@link #createInstance(ContainerTypeDescription, Object[])}:
+	 * 1) a single String, and 2) two Strings. These would therefore be
+	 * acceptable as input to createInstance:
+	 * 
+	 * <pre>
+	 * IContainer container = ContainerFactory.getDefault().createContainer(
+	 * 		description, new Object[] { &quot;Hello&quot; });
+	 * 
+	 * IContainer container2 = ContainerFactory.getDefault().createContainer(
+	 * 		description, new Object[] { &quot;Hello&quot; });
+	 * </pre>
+	 * 
+	 * <p>
+	 * </p>
 	 * 
 	 * @param description
 	 *            the ContainerTypeDescription to return parameter types for
@@ -95,7 +120,8 @@ public interface IContainerInstantiator {
 	 *         a Class[] that describes the types of Objects in Object[] for
 	 *         second parameter to
 	 *         {@link #createInstance(ContainerTypeDescription, Object[])}.
-	 *         Null returned if no parameter types supported for given description.
+	 *         Null returned if no parameter types supported for given
+	 *         description.
 	 */
 	public Class[][] getSupportedParameterTypes(
 			ContainerTypeDescription description);
