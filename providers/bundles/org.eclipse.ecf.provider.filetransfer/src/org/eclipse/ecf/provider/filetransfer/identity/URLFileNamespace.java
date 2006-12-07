@@ -60,7 +60,7 @@ public class URLFileNamespace extends Namespace {
 	 * 
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
-	public Class[][] getSupportedParameterTypesForCreateInstance() {
+	public Class[][] getSupportedParameterTypes() {
 		return new Class[][] { { URL.class }, { String.class } };
 	}
 
