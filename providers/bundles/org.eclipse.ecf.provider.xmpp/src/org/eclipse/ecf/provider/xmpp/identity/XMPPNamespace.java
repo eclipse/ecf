@@ -32,4 +32,11 @@ public class XMPPNamespace extends Namespace {
 	public String getScheme() {
 		return XMPP_PROTOCOL;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
+	 */
+	public Class[][] getSupportedParameterTypesForCreateInstance() {
+		return new Class[][] { { String.class } };
+	}
 }

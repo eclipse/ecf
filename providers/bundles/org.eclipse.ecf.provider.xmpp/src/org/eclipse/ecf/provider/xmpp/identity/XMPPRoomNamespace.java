@@ -17,10 +17,10 @@ import org.eclipse.ecf.core.identity.Namespace;
 public class XMPPRoomNamespace extends Namespace {
 
 	private static final long serialVersionUID = 4348545761410397583L;
+
 	private static final String XMPP_ROOM_PROTOCOL = "xmpp.muc";
-	
-	public ID createInstance(Object[] args)
-			throws IDCreateException {
+
+	public ID createInstance(Object[] args) throws IDCreateException {
 		try {
 			if (args.length == 5) {
 				return new XMPPRoomID(this, (String) args[0], (String) args[1],
@@ -35,5 +35,15 @@ public class XMPPRoomNamespace extends Namespace {
 
 	public String getScheme() {
 		return XMPP_ROOM_PROTOCOL;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
+	 */
+	public Class[][] getSupportedParameterTypesForCreateInstance() {
+		return new Class[][] { { String.class, String.class, String.class,
+				String.class, String.class } };
 	}
 }
