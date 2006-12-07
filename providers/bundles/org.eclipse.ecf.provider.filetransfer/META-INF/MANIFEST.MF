@@ -7,7 +7,8 @@ Bundle-Activator: org.eclipse.ecf.provider.internal.filetransfer.Activator
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.filetransfer,
- org.eclipse.ecf.sharedobject
+ org.eclipse.ecf.sharedobject,
+ org.apache.commons
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
@@ -17,3 +18,5 @@ Export-Package: org.eclipse.ecf.provider.filetransfer,
 Import-Package: org.eclipse.core.runtime,
  org.eclipse.core.runtime.jobs,
  org.osgi.framework;version="1.3.0"
+Bundle-ClassPath: lib/commons-httpclient-3.0.1.jar,
+ .

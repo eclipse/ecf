@@ -185,8 +185,8 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 						StringBuffer sb = new StringBuffer(
 								"IIncomingFileTransferReceiveDataEvent[");
 						sb.append("isDone=").append(done).append(";");
-						sb.append("bytesReceived=").append(bytesReceived)
-								.append("]");
+						sb.append("bytesReceived=").append(bytesReceived).append(";");
+						sb.append("percentComplete=").append(getPercentComplete()*100).append("]");
 						return sb.toString();
 					}
 				});
@@ -205,7 +205,7 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 	}
 
 	public double getPercentComplete() {
-		return (bytesReceived / fileLength);
+		return ((double) bytesReceived / (double) fileLength);
 	}
 
 	public boolean isDone() {
