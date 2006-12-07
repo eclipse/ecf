@@ -53,6 +53,7 @@ public class SharedObjectAddAbortException extends SharedObjectAddException {
 		super(msg);
 		this.participants = participants;
 		this.causes = causes;
+		this.timeout = timeout;
 	}
 
 	public SharedObjectAddAbortException(Throwable cause) {
