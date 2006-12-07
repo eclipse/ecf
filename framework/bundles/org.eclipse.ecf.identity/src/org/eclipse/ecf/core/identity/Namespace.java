@@ -15,8 +15,8 @@ import java.io.Serializable;
  * <p>
  * This class and subclasses define a namespace for the creation and management
  * of ID instances. Creation of ID instances is accomplished via the
- * {@link #createInstance(Object[])} method, implemented by subclasses
- * of this Namespace superclass.
+ * {@link #createInstance(Object[])} method, implemented by subclasses of this
+ * Namespace superclass.
  * <p>
  * All Namespace instances must have a unique name passed to the Namespace upon
  * construction.
@@ -27,18 +27,19 @@ import java.io.Serializable;
  * ECF extension registry:
  * 
  * <pre>
- *     &lt;extension
- *          point=&quot;org.eclipse.ecf.namespace&quot;&gt;
- *       &lt;namespace
- *             class=&quot;XMPPNamespace&quot;
- *             name=&quot;ecf.xmpp&quot;/&gt;
- *     &lt;/extension&gt;
+ *       &lt;extension
+ *            point=&quot;org.eclipse.ecf.namespace&quot;&gt;
+ *         &lt;namespace
+ *               class=&quot;XMPPNamespace&quot;
+ *               name=&quot;ecf.xmpp&quot;/&gt;
+ *       &lt;/extension&gt;
  * </pre>
  * 
  * @see ID
  */
 public abstract class Namespace implements Serializable {
 	private static final long serialVersionUID = 3976740272094720312L;
+
 	public static final String SCHEME_SEPARATOR = ":";
 
 	private String name;
@@ -54,7 +55,8 @@ public abstract class Namespace implements Serializable {
 
 	public final boolean initialize(String name, String desc) {
 		if (name == null)
-			throw new NullPointerException("Namespace<init> name cannot be null");
+			throw new NullPointerException(
+					"Namespace<init> name cannot be null");
 		if (!isInitialized) {
 			this.name = name;
 			this.description = desc;
@@ -110,7 +112,7 @@ public abstract class Namespace implements Serializable {
 	protected String toExternalForm(BaseID id) {
 		return id.namespaceToExternalForm();
 	}
-	
+
 	/**
 	 * Get the name of this namespace. May not return null.
 	 * 
@@ -135,10 +137,13 @@ public abstract class Namespace implements Serializable {
 	 * Make an instance of this namespace. Namespace subclasses, provided by
 	 * plugins must implement this method to construct ID instances for the
 	 * given namespace.
-	 * <p></p>
-	 * See {@link #getSupportedParameterTypesForCreateInstance()} to get information
-	 * relevant to deciding what parameter types are expected by this method.
-	 * <p></p>
+	 * <p>
+	 * </p>
+	 * See {@link #getSupportedParameterTypes()} to get information relevant to
+	 * deciding what parameter types are expected by this method.
+	 * <p>
+	 * </p>
+	 * 
 	 * @param parameters
 	 *            an Object[] of parameters for creating ID instances. May be
 	 *            null.
@@ -152,63 +157,75 @@ public abstract class Namespace implements Serializable {
 			throws IDCreateException;
 
 	/**
-	 * Get the scheme associated with this namespace instance. For example,
-	 * a namespace with name "ecf.http" would have an associated scheme
-	 * identifier of "http". Subclasses must provide an implementation that
-	 * returns a valid non-null scheme identifier.
+	 * Get the scheme associated with this namespace instance. For example, a
+	 * namespace with name "ecf.http" would have an associated scheme identifier
+	 * of "http". Subclasses must provide an implementation that returns a valid
+	 * non-null scheme identifier.
 	 * 
 	 * @return a String scheme identifier
 	 */
 	public abstract String getScheme();
 
 	/**
-	 * Get an array of schemes supported by this Namespace instance.  By default,
+	 * Get an array of schemes supported by this Namespace instance. By default,
 	 * this returns an array with the value returned from {@link #getScheme()}.
 	 * Subclasses are free to override to support multiple schemes.
 	 * 
-	 * @return String[] of schemes supported by this Namespace.  Will not be null,
-	 * and should always be of length >= 1.
+	 * @return String[] of schemes supported by this Namespace. Will not be
+	 *         null, and should always be of length >= 1.
 	 */
 	public String[] getSupportedSchemes() {
 		return new String[] { getScheme() };
 	}
-	
+
 	/**
-	 * Get the supported parameter types for ID instances created by this Namespace via calls to {@link #createInstance(Object[])}.
-	 * Callers may use this method to determine the available parameter types for a given Namespace,
-	 * and then pass in conforming Object [] instances to subsequent calls to {@link #createInstance(Object[])}.
-	 * Namespace provider implementations may override this method.
-	 * <p></p>
-	 * An empty two-dimensional array (new Class[0][0]) is the default returned by this 
-	 * abstract superclass.  This means that the Object [] passed to {@link #createInstance(Object[])}
-	 * will be ignored.
-	 * <p></p>
-	 * Subsclasses should override this method to specify the parameters that their Namespaces
-	 * will accept in {@link #createInstance(Object[])}.  Note that the parameters
-	 * for a given acceptable set of parameters are one-per-row of the returned array.  
+	 * Get the supported parameter types for IDs created via subsequent calls to
+	 * {@link #createInstance(Object[])}. Callers may use this method to
+	 * determine the available parameter types, and then create and pass in
+	 * conforming Object arrays to to {@link #createInstance(Object[])}.
+	 * <p>
+	 * </p>
+	 * An empty two-dimensional array (new Class[0][0]) is the default returned
+	 * by this abstract superclass. This means that the Object [] passed to
+	 * {@link #createInstance(Object[])} will be ignored.
+	 * <p>
+	 * </p>
+	 * Subsclasses should override this method to specify the parameters that
+	 * they will accept in calls to {@link #createInstance(Object[])}. The rows
+	 * of the returned Class array are the acceptable types for a given
+	 * invocation of createInstance.
+	 * <p>
+	 * </p>
 	 * Consider the following example:
-	 * <p></p>
+	 * <p>
+	 * </p>
+	 * 
 	 * <pre>
-	 *    public Class[][] getSupportedParameterTypesForCreateInstance() {
-	 *        return new Class[][] { { String.class }, { String.class, String.class } };
-	 *    }
+	 * public Class[][] getSupportedParameterTypes() {
+	 * 	return new Class[][] { { String.class }, { String.class, String.class } };
+	 * }
 	 * </pre>
-	 * The above means that there are two acceptable values for the Object [] passed into
-	 * {@link #createInstance(Object[])}: 1) a String, and 2) two Strings.
-	 * Therefore these would be acceptable as input to createInstance:
+	 * 
+	 * The above means that there are two acceptable values for the Object []
+	 * passed into {@link #createInstance(Object[])}: 1) a single String, and
+	 * 2) two Strings. These would therefore be acceptable as input to
+	 * createInstance:
+	 * 
 	 * <pre>
-	 *     ID newID1 = namespace.createInstance(new Object[] { "Hello" });
-	 *     ID newID2 = namespace.createInstance(new Object[] { "Hello", "There"}};
+	 *       ID newID1 = namespace.createInstance(new Object[] { &quot;Hello&quot; });
+	 *       ID newID2 = namespace.createInstance(new Object[] { &quot;Hello&quot;, &quot;There&quot;}};
 	 * </pre>
-	 * @return Class [][] an array of class []s.  Rows define the acceptable parameter types
-	 * for a single call to {@link #createInstance(Object[])}.  If zero-length Class arrays are 
-	 * returned (i.e. Class[0][0]), then Object [] parameters to {@link #createInstance(Object[])}
-	 * will be ignored.
+	 * 
+	 * @return Class [][] an array of class []s. Rows of the returned
+	 *         two-dimensional array define the acceptable parameter types for a
+	 *         single call to {@link #createInstance(Object[])}. If zero-length
+	 *         Class arrays are returned (i.e. Class[0][0]), then Object []
+	 *         parameters to {@link #createInstance(Object[])} will be ignored.
 	 */
-	public Class[][] getSupportedParameterTypesForCreateInstance() {
-		return new Class[][] { { } };
+	public Class[][] getSupportedParameterTypes() {
+		return new Class[][] { {} };
 	}
-		
+
 	public String toString() {
 		StringBuffer b = new StringBuffer("Namespace[");
 		b.append("name=").append(name).append(";");

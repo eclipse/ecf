@@ -46,7 +46,7 @@ public class GUID extends StringID {
 		 * 
 		 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 		 */
-		public Class[][] getSupportedParameterTypesForCreateInstance() {
+		public Class[][] getSupportedParameterTypes() {
 			return new Class[][] { {}, { Integer.class } };
 		}
 
