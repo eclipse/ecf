@@ -31,7 +31,7 @@ public class GUID extends StringID {
 		public ID createInstance(Object[] args) throws IDCreateException {
 			if (args == null || args.length <= 0)
 				return new GUID(this);
-			else if (args.length == 1 && args[0] instanceof Integer) 
+			else if (args.length == 1 && args[0] instanceof Integer)
 				return new GUID(this, ((Integer) args[0]).intValue());
 			else
 				return new GUID(this);
@@ -40,6 +40,16 @@ public class GUID extends StringID {
 		public String getScheme() {
 			return GUID.class.getName();
 		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
+		 */
+		public Class[][] getSupportedParameterTypesForCreateInstance() {
+			return new Class[][] { {}, { Integer.class } };
+		}
+
 	}
 
 	public static final String SR_DEFAULT_ALGO = null;
@@ -120,7 +130,8 @@ public class GUID extends StringID {
 				} catch (Exception e) {
 					random = SecureRandom.getInstance("SHA1PRNG");
 				}
-			} else random = SecureRandom.getInstance(algo);
+			} else
+				random = SecureRandom.getInstance(algo);
 		} else {
 			random = SecureRandom.getInstance(algo, provider);
 		}

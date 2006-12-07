@@ -135,16 +135,20 @@ public abstract class Namespace implements Serializable {
 	 * Make an instance of this namespace. Namespace subclasses, provided by
 	 * plugins must implement this method to construct ID instances for the
 	 * given namespace.
-	 * @param args
-	 *            an Object[] of arguments for creating ID instances. May be
-	 *            null if no arguments provided
+	 * <p></p>
+	 * See {@link #getSupportedParameterTypesForCreateInstance()} to get information
+	 * relevant to deciding what parameter types are expected by this method.
+	 * <p></p>
+	 * @param parameters
+	 *            an Object[] of parameters for creating ID instances. May be
+	 *            null.
 	 * 
 	 * @return a non-null ID instance. The class used may extend BaseID or may
 	 *         implement the ID interface directly
 	 * @throws IDCreateException
 	 *             if construction fails
 	 */
-	public abstract ID createInstance(Object[] args)
+	public abstract ID createInstance(Object[] parameters)
 			throws IDCreateException;
 
 	/**
@@ -157,6 +161,54 @@ public abstract class Namespace implements Serializable {
 	 */
 	public abstract String getScheme();
 
+	/**
+	 * Get an array of schemes supported by this Namespace instance.  By default,
+	 * this returns an array with the value returned from {@link #getScheme()}.
+	 * Subclasses are free to override to support multiple schemes.
+	 * 
+	 * @return String[] of schemes supported by this Namespace.  Will not be null,
+	 * and should always be of length >= 1.
+	 */
+	public String[] getSupportedSchemes() {
+		return new String[] { getScheme() };
+	}
+	
+	/**
+	 * Get the supported parameter types for ID instances created by this Namespace via calls to {@link #createInstance(Object[])}.
+	 * Callers may use this method to determine the available parameter types for a given Namespace,
+	 * and then pass in conforming Object [] instances to subsequent calls to {@link #createInstance(Object[])}.
+	 * Namespace provider implementations may override this method.
+	 * <p></p>
+	 * An empty two-dimensional array (new Class[0][0]) is the default returned by this 
+	 * abstract superclass.  This means that the Object [] passed to {@link #createInstance(Object[])}
+	 * will be ignored.
+	 * <p></p>
+	 * Subsclasses should override this method to specify the parameters that their Namespaces
+	 * will accept in {@link #createInstance(Object[])}.  Note that the parameters
+	 * for a given acceptable set of parameters are one-per-row of the returned array.  
+	 * Consider the following example:
+	 * <p></p>
+	 * <pre>
+	 *    public Class[][] getSupportedParameterTypesForCreateInstance() {
+	 *        return new Class[][] { { String.class }, { String.class, String.class } };
+	 *    }
+	 * </pre>
+	 * The above means that there are two acceptable values for the Object [] passed into
+	 * {@link #createInstance(Object[])}: 1) a String, and 2) two Strings.
+	 * Therefore these would be acceptable as input to createInstance:
+	 * <pre>
+	 *     ID newID1 = namespace.createInstance(new Object[] { "Hello" });
+	 *     ID newID2 = namespace.createInstance(new Object[] { "Hello", "There"}};
+	 * </pre>
+	 * @return Class [][] an array of class []s.  Rows define the acceptable parameter types
+	 * for a single call to {@link #createInstance(Object[])}.  If zero-length Class arrays are 
+	 * returned (i.e. Class[0][0]), then Object [] parameters to {@link #createInstance(Object[])}
+	 * will be ignored.
+	 */
+	public Class[][] getSupportedParameterTypesForCreateInstance() {
+		return new Class[][] { { } };
+	}
+		
 	public String toString() {
 		StringBuffer b = new StringBuffer("Namespace[");
 		b.append("name=").append(name).append(";");

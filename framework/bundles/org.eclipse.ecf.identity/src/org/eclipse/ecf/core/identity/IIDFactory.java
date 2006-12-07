@@ -98,13 +98,13 @@ public interface IIDFactory {
 
 	/**
 	 * Make a new identity. Given a Namespace, and an array of instance
-	 * constructor arguments, return a new instance of an ID belonging to the
+	 * constructor parameters, return a new instance of an ID belonging to the
 	 * given Namespace
 	 * 
 	 * @param n
 	 *            the Namespace to which the ID will belong
 	 * @param args
-	 *            an Object [] of the args for the ID instance constructor
+	 *            an Object [] of the parameters for the ID instance constructor
 	 * @exception IDCreateException
 	 *                thrown if class for instantiator or instance can't be
 	 *                loaded, if something goes wrong during instance
@@ -114,13 +114,13 @@ public interface IIDFactory {
 
 	/**
 	 * Make a new identity. Given a Namespace name, and an array of instance
-	 * constructor arguments, return a new instance of an ID belonging to the
+	 * constructor parameters, return a new instance of an ID belonging to the
 	 * given Namespace
 	 * 
 	 * @param namespacename
 	 *            the name of the Namespace to which the ID will belong
 	 * @param args
-	 *            an Object [] of the args for the ID instance constructor
+	 *            an Object [] of the parameters for the ID instance constructor
 	 * @exception IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance

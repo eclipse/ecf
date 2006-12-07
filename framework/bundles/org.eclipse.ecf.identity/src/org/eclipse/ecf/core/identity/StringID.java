@@ -26,15 +26,24 @@ public class StringID extends BaseID {
 			super(StringID.class.getName(), "StringID Namespace");
 		}
 
-		public ID createInstance(Object[] args)
-				throws IDCreateException {
-			if (args == null || args.length == 0) {
+		public ID createInstance(Object[] parameters) throws IDCreateException {
+			if (parameters == null || parameters.length == 0) {
 				throw new IDCreateException("StringID name cannot be null");
-			} else return new StringID(this, (String) args[0]);
+			} else
+				return new StringID(this, (String) parameters[0]);
 		}
 
 		public String getScheme() {
 			return StringID.class.getName();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
+		 */
+		public Class[][] getSupportedParameterTypesForCreateInstance() {
+			return new Class[][] { { String.class } };
 		}
 	}
 
@@ -83,7 +92,7 @@ public class StringID extends BaseID {
 		setEmptyNamespace();
 		return super.toExternalForm();
 	}
-	
+
 	public String toString() {
 		setEmptyNamespace();
 		int strlen = value.length();

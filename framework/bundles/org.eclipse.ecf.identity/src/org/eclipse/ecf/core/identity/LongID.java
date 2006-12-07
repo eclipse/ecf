@@ -24,13 +24,21 @@ public class LongID extends BaseID {
 			super(LongID.class.getName(), "Long Namespace");
 		}
 
-		public ID createInstance(Object[] args)
-				throws IDCreateException {
+		public ID createInstance(Object[] args) throws IDCreateException {
 			return new LongID(this, (Long) args[0]);
 		}
 
 		public String getScheme() {
 			return LongID.class.toString();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
+		 */
+		public Class[][] getSupportedParameterTypesForCreateInstance() {
+			return new Class[][] { { Long.class } };
 		}
 	}
 
