@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Discovery API
-Bundle-SymbolicName: org.eclipse.ecf.discovery
+Bundle-SymbolicName: org.eclipse.ecf.discovery;singleton:=true
 Bundle-Version: 0.9.5
 Bundle-Activator: org.eclipse.ecf.internal.discovery.DiscoveryPlugin
 Bundle-Vendor: Eclipse.org
