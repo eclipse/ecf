@@ -55,6 +55,10 @@ public class NamespaceTest extends ECFAbstractTestCase {
 			public String getScheme() {
 				return NamespaceTest.this.getClass().getName();
 			}
+
+			public Class[][] getSupportedParameterTypesForCreateInstance() {
+				return new Class[][] { { String.class } };
+			}
 		};
 		return namespace;
 	}
@@ -92,6 +96,13 @@ public class NamespaceTest extends ECFAbstractTestCase {
 		assertTrue(desc.equals(DESCRIPTION));
 	}
 
+	public void testNewNamespaceGetSupportedParameterTypesForCreateInstance() {
+		Namespace ns = createNamespace();
+		Class [][] result = ns.getSupportedParameterTypesForCreateInstance();
+		assertTrue(result.length == 1);
+		assertTrue(result[0][0].equals(String.class));
+	}
+	
 	public final void testSerializable() throws Exception {
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 		ObjectOutputStream out = new ObjectOutputStream(buf);
