@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.provider.filetransfer;
+package org.eclipse.ecf.internal.provider.filetransfer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +31,6 @@ import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.provider.filetransfer.identity.URLFileNamespace;
-import org.eclipse.ecf.provider.internal.filetransfer.Activator;
 
 public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 		implements IIncomingFileTransfer,

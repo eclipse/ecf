@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.provider.filetransfer;
+package org.eclipse.ecf.internal.provider.filetransfer;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory;

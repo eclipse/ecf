@@ -1,4 +1,4 @@
-package org.eclipse.ecf.provider.internal.filetransfer;
+package org.eclipse.ecf.internal.provider.filetransfer;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;

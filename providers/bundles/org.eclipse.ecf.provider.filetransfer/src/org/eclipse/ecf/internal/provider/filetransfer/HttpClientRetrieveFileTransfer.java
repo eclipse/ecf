@@ -6,30 +6,55 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.provider.filetransfer;
+package org.eclipse.ecf.internal.provider.filetransfer;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLConnection;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
-public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
+public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
-	URLConnection urlConnection;
-
+	protected static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
+	
+	GetMethod getMethod = null;
+	HttpClient client = null;
+	
+	protected void hardClose() {
+		super.hardClose();
+		if (getMethod != null) {
+			getMethod.releaseConnection();
+			getMethod = null;
+		}
+	}
+	
 	protected void openStreams() throws IncomingFileTransferException {
 		URL theURL = null;
 
 		try {
-
 			theURL = getRemoteFileURL();
-			urlConnection = theURL.openConnection();
-			setInputStream(urlConnection.getInputStream());
-			setFileLength(fileLength = urlConnection.getContentLength());
+			
+		    client = new HttpClient();
+		    client.getHttpConnectionManager().
+		        getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
+
+			getMethod = new GetMethod(theURL.toExternalForm());
+			getMethod.setFollowRedirects(true);
+			
+			client.executeMethod(getMethod);
+			
+			long contentLength = getMethod.getResponseContentLength();
+			setInputStream(getMethod.getResponseBodyAsStream());
+			setFileLength(contentLength);
 
 			listener
 					.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
@@ -45,7 +70,7 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 									new FileOutputStream(localFileToSave)));
 							job = new FileTransferJob(getRemoteFileURL().toString());
 							job.schedule();
-							return UrlRetrieveFileTransfer.this;
+							return HttpClientRetrieveFileTransfer.this;
 						}
 
 						public String toString() {
@@ -66,7 +91,7 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 							setCloseOutputStream(false);
 							job = new FileTransferJob(getRemoteFileURL().toString());
 							job.schedule();
-							return UrlRetrieveFileTransfer.this;
+							return HttpClientRetrieveFileTransfer.this;
 						}
 
 					});

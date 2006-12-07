@@ -1,4 +1,4 @@
-package org.eclipse.ecf.provider.filetransfer.identity;
+package org.eclipse.ecf.internal.provider.filetransfer;
 
 import java.net.URL;
 
