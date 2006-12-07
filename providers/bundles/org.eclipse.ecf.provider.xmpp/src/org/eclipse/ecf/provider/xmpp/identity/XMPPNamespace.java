@@ -36,7 +36,7 @@ public class XMPPNamespace extends Namespace {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
-	public Class[][] getSupportedParameterTypesForCreateInstance() {
+	public Class[][] getSupportedParameterTypes() {
 		return new Class[][] { { String.class } };
 	}
 }
