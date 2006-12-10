@@ -190,11 +190,15 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 			public void onPart(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnPart(" + arg0 + "," + arg1 + "," + arg2 + ")");
+				IRCChannelContainer channel = (IRCChannelContainer) channels.get(arg0);
+				if (channel != null) {
+					channel.firePresenceListeners(false, getIRCUserName(arg1));
+				}
 			}
 
 			public void onPing(String arg0) {
 				trace("handleOnPing(" + arg0 + ")");
-				synchronized (this) {
+				synchronized (IRCRootContainer.this) {
 					if (connection != null) {
 						connection.doPong(arg0);
 					}
