@@ -13,6 +13,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
@@ -114,4 +115,14 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 */
 	public Namespace getRetrieveNamespace();
 
+	/**
+	 * Set connect context for authentication upon subsequent {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.  This
+	 * method should be called with a valid connectContext parameter in order to allow authentication to occur during
+	 * call to {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
+	 * 
+	 * @param connectContext the connect context to use for authenticating during subsequent call to {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
+	 * If null, then no authentication will be attempted.
+	 */
+	public void setConnectContextForAuthentication(IConnectContext connectContext);
+	
 }
