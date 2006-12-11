@@ -12,6 +12,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
@@ -75,6 +76,13 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 					+ theURL.toString(), e);
 		}
 
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
+	 */
+	public void setConnectContextForAuthentication(
+			IConnectContext connectContext) {
 	}
 
 

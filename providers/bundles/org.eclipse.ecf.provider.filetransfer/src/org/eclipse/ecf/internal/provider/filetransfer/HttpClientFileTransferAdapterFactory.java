@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.filetransfer;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
@@ -17,10 +19,12 @@ import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 public class HttpClientFileTransferAdapterFactory extends
 		AbstractSharedObjectContainerAdapterFactory {
 
+	private HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+	
 	protected ISharedObject createAdapter(ISharedObjectContainer container,
 			Class adapterType, ID adapterID) {
 		if (adapterType.equals(IRetrieveFileTransferContainerAdapter.class)) {
-			return new HttpClientRetrieveFileTransfer();
+			return new HttpClientRetrieveFileTransfer(httpClient);
 		} else return null;
 	}
 
