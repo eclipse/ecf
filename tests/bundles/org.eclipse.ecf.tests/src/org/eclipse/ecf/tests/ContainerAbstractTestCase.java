@@ -11,6 +11,9 @@
 
 package org.eclipse.ecf.tests;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -87,17 +90,23 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 		clients = createClients();
 	}
 
+	protected void cleanUpClients() {
+		if (clients != null) {
+			for(int i=0; i < clients.length; i++) {
+				clients[i].disconnect();
+				clients[i].dispose();
+				clients[i] = null;
+			}
+			clients = null;
+		}
+	}
+	
 	protected void cleanUpServerAndClients() {
 		serverID = null;
 		server.disconnect();
 		server.dispose();
 		server = null;
-		for(int i=0; i < clients.length; i++) {
-			clients[i].disconnect();
-			clients[i].dispose();
-			clients[i] = null;
-		}
-		clients = null;
+		cleanUpClients();
 	}
 	
 	protected void connectClients() throws Exception {
@@ -112,6 +121,28 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 		for(int i=0; i < clients.length; i++) {
 			clients[i].disconnect();
 		}
+	}
+
+	protected void assertHasEvent(Collection collection, Class eventType) {
+		assertHasEventCount(collection, eventType, 1);
+	}
+	
+	protected void assertHasEventCount(Collection collection, Class eventType, int eventCount) {
+		int count = 0;
+		for(Iterator i=collection.iterator(); i.hasNext(); ) {
+			Object o = i.next();
+			if (eventType.isInstance(o)) count++;
+		}
+		assertTrue(count == eventCount);
+	}
+	
+	protected void assertHasMoreThanEventCount(Collection collection, Class eventType, int eventCount) {
+		int count = 0;
+		for(Iterator i=collection.iterator(); i.hasNext(); ) {
+			Object o = i.next();
+			if (eventType.isInstance(o)) count++;
+		}
+		assertTrue(count > eventCount);
 	}
 
 }
