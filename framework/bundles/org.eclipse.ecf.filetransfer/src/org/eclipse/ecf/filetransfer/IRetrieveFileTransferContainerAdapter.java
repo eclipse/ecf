@@ -14,6 +14,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
@@ -117,7 +118,7 @@ public interface IRetrieveFileTransferContainerAdapter {
 
 	/**
 	 * Set connect context for authentication upon subsequent {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.  This
-	 * method should be called with a valid connectContext parameter in order to allow authentication to occur during
+	 * method should be called with a non-null connectContext in order to allow authentication to occur during
 	 * call to {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
 	 * 
 	 * @param connectContext the connect context to use for authenticating during subsequent call to {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
@@ -125,4 +126,13 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 */
 	public void setConnectContextForAuthentication(IConnectContext connectContext);
 	
+	/**
+	 * Set proxy for use upon subsequent {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
+	 * This method should be called with a non-null proxy to allow the given proxy to be used in subsequent
+	 * calls to {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
+	 * 
+	 * @param proxy the proxy to use for subsequent calls to {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.  If
+	 * null, then no proxy will be used.
+	 */
+	public void setProxy(Proxy proxy);
 }
