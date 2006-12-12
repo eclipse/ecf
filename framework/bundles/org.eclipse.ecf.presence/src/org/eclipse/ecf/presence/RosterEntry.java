@@ -161,11 +161,21 @@ public class RosterEntry implements IRosterEntry {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("RosterEntry[");
-		sb.append("userID=").append(userID).append(";");
-		sb.append("name=").append(name).append(";");
-		sb.append("presence=").append(presenceState).append(";");
-		sb.append("interest=").append(interestType).append("]");
+		StringBuffer sb = new StringBuffer("RosterEntry["); //$NON-NLS-1$
+		synchronized (sb) {
+			sb.append("userID=").append(userID).append(';'); //$NON-NLS-1$
+			sb.append("name=").append(name).append(';'); //$NON-NLS-1$
+			sb.append("presence=").append(presenceState).append(';'); //$NON-NLS-1$
+			sb.append("interest=").append(interestType).append(';'); //$NON-NLS-1$
+			sb.append("groups="); //$NON-NLS-1$
+			if (!groups.isEmpty()) {
+				for (int i = 0; i < groups.size(); i++) {
+					sb.append(((IRosterGroup) groups.get(i)).getName());
+					if (i < (groups.size()-1)) sb.append(',');
+				}
+			}
+			sb.append(']');
+		}
 		return sb.toString();
 	}
 
