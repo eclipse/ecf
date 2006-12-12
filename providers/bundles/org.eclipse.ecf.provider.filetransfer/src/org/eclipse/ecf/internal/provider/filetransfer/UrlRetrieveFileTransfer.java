@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
@@ -83,6 +84,12 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 	 */
 	public void setConnectContextForAuthentication(
 			IConnectContext connectContext) {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
+	 */
+	public void setProxy(Proxy proxy) {
 	}
 
 
