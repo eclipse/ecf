@@ -165,9 +165,7 @@ public class RosterEntry implements IRosterEntry {
 		sb.append("userID=").append(userID).append(";");
 		sb.append("name=").append(name).append(";");
 		sb.append("presence=").append(presenceState).append(";");
-		sb.append("interest=").append(interestType).append(";");
-		sb.append("groups=").append(groups).append(";");
-		sb.append("]");
+		sb.append("interest=").append(interestType).append("]");
 		return sb.toString();
 	}
 
