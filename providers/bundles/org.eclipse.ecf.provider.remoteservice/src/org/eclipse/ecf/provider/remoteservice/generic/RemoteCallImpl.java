@@ -58,7 +58,7 @@ public class RemoteCallImpl extends SharedObjectMsg implements IRemoteCall,
 		buf.append("class=").append(clazz).append(";");
 		buf.append("method=").append(method)
 				.append(";");
-		buf.append("params=").append(Arrays.asList(parameters)).append(";");
+		buf.append("params=").append(parameters == null ? "" : Arrays.asList(parameters)).append(";");
 		buf.append("timeout=").append(timeout).append("]");
 		return buf.toString();
 	}
