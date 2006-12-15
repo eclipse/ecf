@@ -54,12 +54,15 @@ public class RemoteCallImpl extends SharedObjectMsg implements IRemoteCall,
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("RemoteCallImpl[");
-		buf.append("class=").append(clazz).append(";");
-		buf.append("method=").append(method)
-				.append(";");
-		buf.append("params=").append(parameters == null ? "" : Arrays.asList(parameters)).append(";");
-		buf.append("timeout=").append(timeout).append("]");
+		StringBuffer buf = new StringBuffer("RemoteCallImpl["); //$NON-NLS-1$
+		synchronized (buf) {
+			buf.append("class=").append(clazz).append(';'); //$NON-NLS-1$
+			buf.append("method=").append(method).append(';'); //$NON-NLS-1$
+			buf.append("params=").append( //$NON-NLS-1$
+					parameters == null ? "" : Arrays.asList(parameters) //$NON-NLS-1$
+							.toString()).append(';');
+			buf.append("timeout=").append(timeout).append(']'); //$NON-NLS-1$
+		}
 		return buf.toString();
 	}
 }
