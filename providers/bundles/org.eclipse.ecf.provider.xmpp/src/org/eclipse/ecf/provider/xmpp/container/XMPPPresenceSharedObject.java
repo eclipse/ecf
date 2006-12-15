@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -36,7 +37,7 @@ import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
-import org.eclipse.ecf.presence.IRosterSubscribeListener;
+import org.eclipse.ecf.presence.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
@@ -101,10 +102,10 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     protected void removeSharedObjectMessageListener(ISharedObjectMessageListener listener) {
         sharedObjectMessageListeners.remove(listener);
     }
-	protected void addSubscribeListener(IRosterSubscribeListener listener) {
+	protected void addSubscribeListener(IRosterSubscriptionListener listener) {
 		subscribeListeners.add(listener);
 	}
-	protected void removeSubscribeListener(IRosterSubscribeListener listener) {
+	protected void removeSubscribeListener(IRosterSubscriptionListener listener) {
 		subscribeListeners.remove(listener);
 	}
     protected String canonicalizePresenceFrom(String from) {
@@ -182,15 +183,13 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 
     protected void fireSubscribe(ID fromID, IPresence presence) {
         for (Iterator i = subscribeListeners.iterator(); i.hasNext();) {
-            IRosterSubscribeListener l = (IRosterSubscribeListener) i.next();
+            IRosterSubscriptionListener l = (IRosterSubscriptionListener) i.next();
 			if (presence.getType().equals(IPresence.Type.SUBSCRIBE)) {
-				l.handleSubscribeRequest(fromID,presence);
+				l.handleSubscribeRequest(fromID);
 			} else if (presence.getType().equals(IPresence.Type.SUBSCRIBED)) {
-				l.handleSubscribed(fromID,presence);
-			} else if (presence.getType().equals(IPresence.Type.UNSUBSCRIBE)) {
-				l.handleUnsubscribeRequest(fromID,presence);
+				l.handleSubscribed(fromID);
 			} else if (presence.getType().equals(IPresence.Type.UNSUBSCRIBED)) {
-				l.handleUnsubscribed(fromID,presence);
+				l.handleUnsubscribed(fromID);
 			}
         }
     }
@@ -443,20 +442,16 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
     }
 
     protected IPresence createIPresence(Presence xmppPresence) {
-        int priority = xmppPresence.getPriority();
         String status = xmppPresence.getStatus();
         IPresence newPresence = new org.eclipse.ecf.presence.Presence(
-                createIPresenceType(xmppPresence), priority, status,
+                createIPresenceType(xmppPresence), status,
                 createIPresenceMode(xmppPresence));
         return newPresence;
     }
 
     protected Presence createPresence(IPresence ipresence) {
-        int priority = ipresence.getPriority();
         String status = ipresence.getStatus();
-        Presence newPresence = new Presence(
-                createPresenceType(ipresence), status, priority,
-                createPresenceMode(ipresence));
+        Presence newPresence = new Presence(createPresenceType(ipresence), status, 0, createPresenceMode(ipresence));
         return newPresence;
     }
 
