@@ -30,9 +30,9 @@ public abstract class AbstractPresenceContainer implements
 	private Vector subscribeListeners = new Vector();
 
 	/**
-	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#addRosterSubscribeListener(org.eclipse.ecf.presence.IRosterSubscribeListener)
+	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#addRosterSubscriptionListener(org.eclipse.ecf.presence.IRosterSubscriptionListener)
 	 */
-	public void addRosterSubscribeListener(IRosterSubscribeListener listener) {
+	public void addRosterSubscriptionListener(IRosterSubscriptionListener listener) {
 		subscribeListeners.add(listener);
 	}
 
@@ -55,7 +55,7 @@ public abstract class AbstractPresenceContainer implements
 	 * 
 	 * @param listener
 	 */
-	public void removeRosterSubscribeListener(IRosterSubscribeListener listener) {
+	public void removeRosterSubscriptionListener(IRosterSubscriptionListener listener) {
 		subscribeListeners.remove(listener);
 	}
 
@@ -99,7 +99,7 @@ public abstract class AbstractPresenceContainer implements
 	}
 
 	/**
-	 * @return The list of {@link IRosterSubscribeListener}
+	 * @return The list of {@link IRosterSubscriptionListener}
 	 */
 	public List getSubscribeListeners() {
 		return subscribeListeners;

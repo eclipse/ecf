@@ -179,4 +179,11 @@ public class RosterEntry implements IRosterEntry {
 		return sb.toString();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		return null;
+	}
+
 }

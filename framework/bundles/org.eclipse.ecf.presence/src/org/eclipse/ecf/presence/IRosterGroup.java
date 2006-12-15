@@ -13,12 +13,14 @@ package org.eclipse.ecf.presence;
 
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.IAdaptable;
+
 /**
  * Roster group information. The roster group information is associated with
  * {@link IRosterEntry} instances.
  * 
  */
-public interface IRosterGroup {
+public interface IRosterGroup extends IAdaptable {
 	/**
 	 * Add a roster entry to this group
 	 * 

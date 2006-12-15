@@ -12,6 +12,8 @@
 package org.eclipse.ecf.presence;
 
 import java.util.Iterator;
+
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
@@ -21,7 +23,7 @@ import org.eclipse.ecf.core.identity.ID;
  * 
  * @see IPresenceListener
  */
-public interface IRosterEntry {
+public interface IRosterEntry extends IAdaptable {
 
 	/**
 	 * Add this roster entry to the given group.

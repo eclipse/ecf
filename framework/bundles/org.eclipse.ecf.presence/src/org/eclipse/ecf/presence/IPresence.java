@@ -34,14 +34,6 @@ public interface IPresence extends IAdaptable, Serializable {
 	public Mode getMode();
 
 	/**
-	 * Get priority of this presence. The priority of this presence can range
-	 * from 0 (minimum priority) to 10 (maximum priority)
-	 * 
-	 * @return int priority for this presence information
-	 */
-	public int getPriority();
-
-	/**
 	 * Get properties for this presence
 	 * 
 	 * @return Map of properties for this presence information. Will not return

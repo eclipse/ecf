@@ -41,15 +41,15 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * @param listener
 	 *            for receiving subscription requests. Must not be null.
 	 */
-	public void addRosterSubscribeListener(IRosterSubscribeListener listener);
+	public void addRosterSubscriptionListener(IRosterSubscriptionListener listener);
 
 	/**
 	 * Remove listener for roster subscription requests.
 	 * 
 	 * @param listener
-	 *            the listener to remove
+	 *            the listener to remove.  Must not be null.
 	 */
-	public void removeRosterSubscribeListener(IRosterSubscribeListener listener);
+	public void removeRosterSubscriptionListener(IRosterSubscriptionListener listener);
 
 	/**
 	 * Setup listener for handling presence updates. The given listener will

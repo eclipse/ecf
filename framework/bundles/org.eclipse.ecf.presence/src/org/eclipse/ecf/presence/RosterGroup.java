@@ -138,4 +138,11 @@ public class RosterGroup implements IRosterGroup {
 		return sb.toString();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		return null;
+	}
+
 }

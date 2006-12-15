@@ -15,54 +15,34 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Listener for handling notifications of subscribe/unsubscribe requests.
  * Implementers of this interface must be registered via
- * {@link IPresenceContainerAdapter#addRosterSubscribeListener(IRosterSubscribeListener)}
+ * {@link IPresenceContainerAdapter#addRosterSubscriptionListener(IRosterSubscriptionListener)}
  * 
  * @see IPresenceContainerAdapter
  * 
  */
-public interface IRosterSubscribeListener {
+public interface IRosterSubscriptionListener {
 
 	/**
 	 * Receive subscribe request.
 	 * 
 	 * @param fromID
 	 *            the sender of the subscribe request
-	 * @param presence
-	 *            the presence information associated with the user making the
-	 *            request
 	 */
-	public void handleSubscribeRequest(ID fromID, IPresence presence);
-
-	/**
-	 * Receive unsubscribe request.
-	 * 
-	 * @param fromID
-	 *            the sender of the unsubscribe request
-	 * @param presence
-	 *            the presence information associated with the user making the
-	 *            request
-	 */
-	public void handleUnsubscribeRequest(ID fromID, IPresence presence);
+	public void handleSubscribeRequest(ID fromID);
 
 	/**
 	 * Receive subscribed notification.
 	 * 
 	 * @param fromID
 	 *            the sender of the subscribed notification
-	 * @param presence
-	 *            the presence information associated with the user sending the
-	 *            notification
 	 */
-	public void handleSubscribed(ID fromID, IPresence presence);
+	public void handleSubscribed(ID fromID);
 
 	/**
 	 * Receive unsubscribed notification.
 	 * 
 	 * @param fromID
 	 *            the sender of the unsubscribed notification
-	 * @param presence
-	 *            the presence information associated with the user sending the
-	 *            notification
 	 */
-	public void handleUnsubscribed(ID fromID, IPresence presence);
+	public void handleUnsubscribed(ID fromID);
 }

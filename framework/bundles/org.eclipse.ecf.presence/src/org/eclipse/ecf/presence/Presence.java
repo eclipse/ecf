@@ -13,7 +13,6 @@ package org.eclipse.ecf.presence;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Base presence class implementing {@link IPresence}. Subclasses may be
@@ -28,8 +27,6 @@ public class Presence implements IPresence {
 
 	protected Mode mode;
 
-	protected int priority;
-
 	protected String status;
 
 	protected Map properties;
@@ -42,28 +39,19 @@ public class Presence implements IPresence {
 		this(type, "", Mode.AVAILABLE);
 	}
 
-	public Presence(Type type, int priority, String status, Mode mode, Map props) {
+	public Presence(Type type, String status, Mode mode, Map props) {
 		this.type = type;
-		this.priority = priority;
 		this.status = status;
 		this.mode = mode;
 		this.properties = (props == null) ? new HashMap() : props;
 	}
 
-	public Presence(Type type, int priority, String status, Mode mode) {
-		this(type, priority, status, mode, new Properties());
-	}
-
 	public Presence(Type type, String status, Mode mode) {
-		this(type, -1, status, mode);
+		this(type, status, mode, null);
 	}
 
 	public Mode getMode() {
 		return mode;
-	}
-
-	public int getPriority() {
-		return priority;
 	}
 
 	public Map getProperties() {
@@ -91,7 +79,6 @@ public class Presence implements IPresence {
 		StringBuffer sb = new StringBuffer("Presence[");
 		sb.append("type=").append(type).append(";");
 		sb.append("mode=").append(mode).append(";");
-		sb.append("priority=").append(priority).append(";");
 		sb.append("status=").append(status).append(";");
 		sb.append("props=").append(properties).append(";");
 		sb.append("]");
