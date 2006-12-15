@@ -24,7 +24,7 @@ import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
-import org.eclipse.ecf.presence.IRosterSubscribeListener;
+import org.eclipse.ecf.presence.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.Presence;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
 import org.eclipse.ecf.ui.views.ILocalInputHandler;
@@ -262,10 +262,9 @@ public class PresenceContainerUI {
 			}
 
 		});
-		pc.addRosterSubscribeListener(new IRosterSubscribeListener() {
+		pc.addRosterSubscriptionListener(new IRosterSubscriptionListener() {
 
-			public void handleSubscribeRequest(final ID fromID,
-					IPresence presence) {
+			public void handleSubscribeRequest(final ID fromID) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
 						try {
@@ -313,7 +312,7 @@ public class PresenceContainerUI {
 				});
 			}
 
-			public void handleUnsubscribeRequest(ID fromID, IPresence presence) {
+			public void handleUnsubscribeRequest(ID fromID) {
 				if (presenceSender != null) {
 					try {
 						presenceSender.sendPresenceUpdate(localUser, fromID,
@@ -328,11 +327,11 @@ public class PresenceContainerUI {
 				}
 			}
 
-			public void handleSubscribed(ID fromID, IPresence presence) {
+			public void handleSubscribed(ID fromID) {
 				// System.out.println("subscribed from "+fromID);
 			}
 
-			public void handleUnsubscribed(ID fromID, IPresence presence) {
+			public void handleUnsubscribed(ID fromID) {
 				// System.out.println("unsubscribed from "+fromID);
 			}
 		});
