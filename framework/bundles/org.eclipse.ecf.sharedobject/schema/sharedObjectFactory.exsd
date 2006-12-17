@@ -157,6 +157,7 @@ public interface ISharedObjectInstantiator {
       &lt;sharedObjectFactory
             class=&quot;org.eclipse.ecf.tests.provider.TestSharedObjectInstantiator&quot;
             name=&quot;ecf.test.sharedobjectfactory&quot;/&gt;
+   &lt;/extension&gt;
 &lt;/pre&gt;
 
 and the TestSharedObjectInstantiator is defined:
