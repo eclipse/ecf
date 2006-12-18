@@ -106,7 +106,7 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		String name = entry.getName();
 		if (name == null)
 			name = this.rosterView.getUserNameFromID(entry.getUserID());
-		IPresence presence = entry.getPresenceState();
+		IPresence presence = entry.getPresence();
 		RosterBuddy newBuddy = null;
 		if (oldBuddy == null)
 			newBuddy = new RosterBuddy(entry.getServiceID(), name, entry
@@ -217,7 +217,7 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 			tp.addChild(newBuddy);
 		} else {
 			// The parent group is not there
-			Iterator groups = entry.getGroups();
+			Iterator groups = entry.getGroups().iterator();
 			// If the entry has any group, then take first one
 			if (groups.hasNext()) {
 				// There's a group associated with entry
