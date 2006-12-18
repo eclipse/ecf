@@ -107,8 +107,8 @@ public class XMPPClient {
 	public void sendMessage(String jid, String msg) {
 		if (sender != null) {
 			try {
-				sender.sendMessage(userID, getID(jid),
-						IMessageListener.Type.NORMAL, "", msg);
+				sender.sendMessage(getID(jid), IMessageListener.Type.NORMAL,
+						"", msg);
 			} catch (ECFException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
