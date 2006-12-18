@@ -21,6 +21,7 @@ import java.util.Vector;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
@@ -35,6 +36,7 @@ import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
+import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.filetransfer.BaseFileTransferInfo;
@@ -59,6 +61,7 @@ import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
@@ -483,6 +486,15 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		if (clazz.equals(IPresenceContainerAdapter.class)) {
 			return new IPresenceContainerAdapter() {
 
+				public IUser getUser() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				public IRosterManager getRosterManager() {
+					return null;
+				}
+				
 				public Object getAdapter(Class clazz) {
 					return null;
 				}
@@ -498,8 +510,8 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 				public IMessageSender getMessageSender() {
 					return new IMessageSender() {
 
-						public void sendMessage(ID fromID, ID toID, Type type,
-								String subject, String message) {
+						public void sendMessage(ID toID, Type type, String subject,
+								String message) {
 							try {
 								XMPPClientSOContainer.this.sendMessage(toID,
 										message);
@@ -515,8 +527,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 
 				public IPresenceSender getPresenceSender() {
 					return new IPresenceSender() {
-						public void sendPresenceUpdate(ID fromID, ID toID,
-								IPresence presence) {
+						public void sendPresenceUpdate(ID toID, IPresence presence) {
 							try {
 								Presence newPresence = createPresenceFromIPresence(presence);
 								XMPPClientSOContainer.this.sendPresenceUpdate(
@@ -528,8 +539,8 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 							}
 						}
 
-						public void sendRosterAdd(ID fromID, String user,
-								String name, String[] groups) {
+						public void sendRosterAdd(String user, String name,
+								String[] groups) {
 							try {
 								XMPPClientSOContainer.this.sendRosterAdd(user,
 										name, groups);
@@ -538,7 +549,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 							}
 						}
 
-						public void sendRosterRemove(ID fromID, ID userID) {
+						public void sendRosterRemove(ID userID) {
 							try {
 								if (userID == null)
 									return;
@@ -596,11 +607,8 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 				}
 
 				public IChatRoomManager getChatRoomManager() {
+					
 					return new IChatRoomManager() {
-						public IChatRoomManager getParent() {
-							return null;
-						}
-
 						public IChatRoomManager[] getChildren() {
 							return new IChatRoomManager[0];
 						}
@@ -647,6 +655,10 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 								IInvitationListener listener) {
 							delegate.removeInvitationListener(listener);
 						}
+
+						public IChatRoomManager getParent() {
+							return null;
+						}
 					};
 				}
 
@@ -661,6 +673,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 				public void removeRosterSubscriptionListener(IRosterSubscriptionListener listener) {
 					delegate.removeSubscribeListener(listener);
 				}
+
 			};
 		} else {
 			return super.getAdapter(clazz);

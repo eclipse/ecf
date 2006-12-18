@@ -434,9 +434,9 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
         } else if (type == Message.Type.GROUP_CHAT) {
             return IMessageListener.Type.GROUP_CHAT;
         } else if (type == Message.Type.HEADLINE) {
-            return IMessageListener.Type.HEADLINE;
+            return IMessageListener.Type.SYSTEM;
         } else if (type == Message.Type.HEADLINE) {
-            return IMessageListener.Type.HEADLINE;
+            return IMessageListener.Type.SYSTEM;
         } else
             return IMessageListener.Type.NORMAL;
     }
