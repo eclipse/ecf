@@ -33,7 +33,7 @@ public interface IRosterGroup extends IRosterItem {
 	 * Get roster entries belonging to this group. Instances of list
 	 * are of type {@link IRosterEntry}
 	 * 
-	 * @return Collection of roster entries. Will not return null.
+	 * @return Collection of IRosterEntrys. Will not return null.
 	 */
 	public Collection getEntries();
 
