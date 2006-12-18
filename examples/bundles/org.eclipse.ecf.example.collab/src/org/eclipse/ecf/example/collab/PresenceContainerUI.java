@@ -116,8 +116,8 @@ public class PresenceContainerUI {
 						ILocalInputHandler handler = new ILocalInputHandler() {
 							public void inputText(ID userID, String text) {
 								try {
-									messageSender.sendMessage(localUser,
-											userID, null, null, text);
+									messageSender.sendMessage(userID,
+											null, null, text);
 								} catch (ECFException e) {
 									ClientPlugin.getDefault().getLog().log(
 											new Status(IStatus.ERROR,
@@ -142,7 +142,7 @@ public class PresenceContainerUI {
 									IPresence presence) {
 								try {
 									presenceSender.sendPresenceUpdate(
-											localUser, userID, presence);
+											userID, presence);
 								} catch (ECFException e) {
 									ClientPlugin
 											.getDefault()
@@ -164,8 +164,8 @@ public class PresenceContainerUI {
 									String[] groups) {
 								// Send roster add
 								try {
-									presenceSender.sendRosterAdd(localUser,
-											user, name, groups);
+									presenceSender.sendRosterAdd(user,
+											name, groups);
 								} catch (ECFException e) {
 									ClientPlugin
 											.getDefault()
@@ -185,8 +185,7 @@ public class PresenceContainerUI {
 
 							public void sendRosterRemove(ID userID) {
 								try {
-									presenceSender.sendRosterRemove(localUser,
-											userID);
+									presenceSender.sendRosterRemove(userID);
 								} catch (ECFException e) {
 									ClientPlugin
 											.getDefault()
@@ -279,7 +278,7 @@ public class PresenceContainerUI {
 							if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_AND_ADD) {
 								if (presenceSender != null) {
 									presenceSender.sendPresenceUpdate(
-											localUser, fromID, new Presence(
+											fromID, new Presence(
 													IPresence.Type.SUBSCRIBED));
 									if (rosterView != null)
 										rosterView.sendRosterAdd(localUser,
@@ -288,7 +287,7 @@ public class PresenceContainerUI {
 							} else if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_ID) {
 								if (presenceSender != null) {
 									presenceSender.sendPresenceUpdate(
-											localUser, fromID, new Presence(
+											fromID, new Presence(
 													IPresence.Type.SUBSCRIBED));
 								}
 							} else if (res == ReceiveAuthorizeRequestDialog.REFUSE_ID) {
@@ -315,8 +314,7 @@ public class PresenceContainerUI {
 			public void handleUnsubscribeRequest(ID fromID) {
 				if (presenceSender != null) {
 					try {
-						presenceSender.sendPresenceUpdate(localUser, fromID,
-								new Presence(IPresence.Type.UNSUBSCRIBED));
+						presenceSender.sendPresenceUpdate(fromID, new Presence(IPresence.Type.UNSUBSCRIBED));
 					} catch (ECFException e) {
 						ClientPlugin.getDefault().getLog().log(
 								new Status(IStatus.ERROR, ClientPlugin
