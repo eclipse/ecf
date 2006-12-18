@@ -30,19 +30,16 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 	
 	protected IPresence presence;
 
-	protected InterestType interestType;
-
 	protected List groups;
 
 	public RosterEntry(IRosterItem parent, IUser user,
-			IPresence presenceState, InterestType interestType) {
+			IPresence presenceState) {
 		Assert.isNotNull(parent);
 		Assert.isNotNull(user);
 		this.parent = parent;
 		this.name = user.getName();
 		this.user = user;
 		this.presence = presenceState;
-		this.interestType = interestType;
 		this.groups = Collections.synchronizedList(new ArrayList());
 		if (parent instanceof RosterGroup) {
 			groups.add(parent);
@@ -85,15 +82,6 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#getInterestType()
-	 */
-	public InterestType getInterestType() {
-		return interestType;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#getPresenceState()
 	 */
 	public IPresence getPresence() {
@@ -108,7 +96,6 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 		synchronized (sb) {
 			sb.append("name=").append(name).append(';'); //$NON-NLS-1$
 			sb.append("presence=").append(presence).append(';'); //$NON-NLS-1$
-			sb.append("interest=").append(interestType).append(';'); //$NON-NLS-1$
 			sb.append("groups="); //$NON-NLS-1$
 			if (!groups.isEmpty()) {
 				for (int i = 0; i < groups.size(); i++) {
