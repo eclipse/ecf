@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.datashare;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 
@@ -15,7 +16,7 @@ import org.eclipse.ecf.core.identity.Namespace;
  * Abstract channel container adapter
  * 
  */
-public interface IAbstractChannelContainerAdapter {
+public interface IAbstractChannelContainerAdapter extends IAdaptable {
 	/**
 	 * Add listener for IChannelContainerAdapter events.
 	 * 
