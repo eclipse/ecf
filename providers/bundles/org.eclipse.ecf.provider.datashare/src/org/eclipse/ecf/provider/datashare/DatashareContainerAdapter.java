@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -122,5 +123,10 @@ public class DatashareContainerAdapter implements IChannelContainerAdapter {
 
 	public void removeListener(IChannelContainerListener listener) {
 		delegate.removeListener(listener);
+	}
+
+	public Object getAdapter(Class adapter) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -222,4 +222,5 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject impl
 	public void removeListener(IChannelContainerListener listener) {
 		channelContainerListeners.add(listener);
 	}
+
 }
