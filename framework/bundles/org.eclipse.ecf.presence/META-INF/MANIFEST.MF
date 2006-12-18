@@ -10,7 +10,8 @@ Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.internal.presence;x-internal:=true,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.presence.chat,
- org.eclipse.ecf.presence.provider
+ org.eclipse.ecf.presence.provider,
+ org.eclipse.ecf.presence.roster
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.3,
  CDC-1.0/Foundation-1.0

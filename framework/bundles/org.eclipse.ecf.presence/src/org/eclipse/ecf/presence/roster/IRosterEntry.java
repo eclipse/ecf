@@ -9,23 +9,35 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence;
+package org.eclipse.ecf.presence.roster;
 
 import java.util.Collection;
 
-import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.user.IUser;
 
 /**
  * Roster entry object. Instances implementing this interface provide
- * information about roster entrys. Implementers of this interface are provided
- * via the {@link IPresenceListener} methods. callback
+ * information about roster entryies.
  * 
- * @see IPresenceListener
  */
-public interface IRosterEntry {
+public interface IRosterEntry extends IRosterItem {
 
-	public String getName();
+	/**
+	 * Get user for this roster entry.
+	 * 
+	 * @return IUser that represents user associated with this roster entry
+	 */
+	public IUser getUser();
 	
+	/**
+	 * Get groups associated with this roster entry. Instance in list are of
+	 * type {@link IRosterGroup}
+	 * 
+	 * @return Iterator of groups that this roster entry belongs to. Will not
+	 *         return null.
+	 */
+	public Collection getGroups();
+
 	/**
 	 * Add this roster entry to the given group.
 	 * 
@@ -45,28 +57,6 @@ public interface IRosterEntry {
 	 */
 	public boolean remove(IRosterGroup group);
 
-	/**
-	 * Get groups associated with this roster entry. Instance in list are of
-	 * type {@link IRosterGroup}
-	 * 
-	 * @return Iterator of groups that this roster entry belongs to. Will not
-	 *         return null.
-	 */
-	public Collection getGroups();
-
-	/**
-	 * Get service ID associated with this roster entry
-	 * 
-	 * @return ID that is service ID for this entry. Will not be null
-	 */
-	public ID getServiceID();
-
-	/**
-	 * Get ID for user
-	 * 
-	 * @return ID user ID. Will not be null.
-	 */
-	public ID getUserID();
 
 	/**
 	 * Get interest type for this roster entry

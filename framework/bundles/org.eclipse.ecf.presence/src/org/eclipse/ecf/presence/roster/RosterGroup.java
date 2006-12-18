@@ -9,10 +9,11 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence;
+package org.eclipse.ecf.presence.roster;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,38 +22,26 @@ import java.util.List;
  * created as appropriate
  * 
  */
-public class RosterGroup implements IRosterGroup {
+public class RosterGroup extends RosterItem implements IRosterGroup {
 
 	protected List entries;
 
-	protected String name;
-
-	public RosterGroup(String name,
+	public RosterGroup(IRosterItem parent, String name,
 			Collection /* <IRosterEntry> */existingEntries) {
-		super();
-		this.name = name;
-		entries = new ArrayList();
+		super(parent, name);
+		entries = Collections.synchronizedList(new ArrayList());
 		if (existingEntries != null)
 			addAll(existingEntries);
 	}
 
-	public RosterGroup(String name) {
-		this(name, null);
+	public RosterGroup(IRosterItem parent, String name) {
+		this(parent, name, null);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.ui.presence.IRosterGroup#add(org.eclipse.ecf.core.identity.ID,
-	 *      org.eclipse.ecf.ui.presence.IRosterEntry)
-	 */
-	public boolean add(IRosterEntry entry) {
-		if (entry == null) return false;
-		synchronized (entries) {
-			entries.add(entry);
-			if (entry.add(this)) return true;
-			else return false;
-		}
+	public boolean add(IRosterItem item) {
+		if (item == null) return false;
+		if (entries.add(item)) return true;
+		else return false;
 	}
 
 	protected void addAll(Collection /* <IRosterEntry> */existingEntries) {
@@ -74,24 +63,11 @@ public class RosterGroup implements IRosterGroup {
 		return entries;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.ui.presence.IRosterGroup#getName()
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.roster.IRosterGroup#remove(org.eclipse.ecf.presence.roster.IRosterItem)
 	 */
-	public String getName() {
-		return this.name;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.ui.presence.IRosterGroup#removeEntry(org.eclipse.ecf.ui.presence.IRosterEntry)
-	 */
-	public boolean remove(IRosterEntry entry) {
-		synchronized (entries) {
-			return entries.remove(entry);
-		}
+	public boolean remove(IRosterItem item) {
+		return entries.remove(item);
 	}
 
 	public String toString() {
@@ -100,13 +76,6 @@ public class RosterGroup implements IRosterGroup {
 		sb.append("entries=").append(entries).append(";");
 		sb.append("]");
 		return sb.toString();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	public Object getAdapter(Class adapter) {
-		return null;
 	}
 
 }

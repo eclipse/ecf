@@ -51,7 +51,7 @@ public interface IMessageListener {
 
 		private static final String GROUP_CHAT_NAME = "group_chat";
 
-		private static final String HEADLINE_NAME = "headline";
+		private static final String SYSTEM_NAME = "system";
 
 		private static final String ERROR_NAME = "error";
 
@@ -72,8 +72,8 @@ public interface IMessageListener {
 				return CHAT;
 			} else if (itemType.equals(GROUP_CHAT_NAME)) {
 				return GROUP_CHAT;
-			} else if (itemType.equals(HEADLINE_NAME)) {
-				return HEADLINE;
+			} else if (itemType.equals(SYSTEM_NAME)) {
+				return SYSTEM;
 			} else if (itemType.equals(ERROR_NAME)) {
 				return ERROR;
 			} else
@@ -86,7 +86,7 @@ public interface IMessageListener {
 
 		public static final Type GROUP_CHAT = new Type(GROUP_CHAT_NAME);
 
-		public static final Type HEADLINE = new Type(HEADLINE_NAME);
+		public static final Type SYSTEM = new Type(SYSTEM_NAME);
 
 		public static final Type ERROR = new Type(ERROR_NAME);
 

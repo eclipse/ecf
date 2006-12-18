@@ -24,9 +24,6 @@ import org.eclipse.ecf.presence.IMessageListener.Type;
 public interface IMessageSender {
 	/**
 	 * Send text message
-	 * 
-	 * @param fromID
-	 *            the user id of the sender. Cannot be null
 	 * @param toID
 	 *            the user id of the target receiver of the message. Cannot be
 	 *            null
@@ -34,12 +31,12 @@ public interface IMessageSender {
 	 *            the Type of the message
 	 * @param subject
 	 *            the subject of the message
-	 * @param messageBody
+	 * @param body
 	 *            the message body
+	 * 
 	 * @exception ECFException
 	 *                thrown if message cannot be sent (e.g. because of previous
 	 *                disconnection)
 	 */
-	public void sendMessage(ID fromID, ID toID, Type type, String subject,
-			String messageBody) throws ECFException;
+	public void sendMessage(ID toID, Type type, String subject, String body) throws ECFException;
 }

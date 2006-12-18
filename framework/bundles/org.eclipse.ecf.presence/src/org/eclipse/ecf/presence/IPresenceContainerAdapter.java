@@ -12,6 +12,7 @@ package org.eclipse.ecf.presence;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.roster.IRosterManager;
 
 /**
  * Entry poing presence container adapter. For setting up listeners for presence
@@ -51,6 +52,8 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 */
 	public void removeRosterSubscriptionListener(IRosterSubscriptionListener listener);
 
+	public IRosterManager getRosterManager();
+	
 	/**
 	 * Setup listener for handling presence updates. The given listener will
 	 * asynchronously be called when a subscription request is received by this

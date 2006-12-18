@@ -13,7 +13,6 @@ package org.eclipse.ecf.presence;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import org.eclipse.ecf.core.identity.ID;
 
@@ -30,7 +29,7 @@ public class RosterEntry implements IRosterEntry {
 
 	protected String name;
 
-	protected IPresence presenceState;
+	protected IPresence presence;
 
 	protected InterestType interestType;
 
@@ -45,7 +44,7 @@ public class RosterEntry implements IRosterEntry {
 			throw new NullPointerException("userID cannot be null");
 		this.userID = userID;
 		this.name = name;
-		this.presenceState = presenceState;
+		this.presence = presenceState;
 		this.interestType = interestType;
 		this.groups = new ArrayList();
 		if (grps != null)
@@ -70,8 +69,8 @@ public class RosterEntry implements IRosterEntry {
 	 * 
 	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#getGroups()
 	 */
-	public Iterator getGroups() {
-		return groups.iterator();
+	public Collection getGroups() {
+		return groups;
 	}
 
 	/*
@@ -95,15 +94,6 @@ public class RosterEntry implements IRosterEntry {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#setName(java.lang.String)
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#getInterestType()
 	 */
 	public InterestType getInterestType() {
@@ -115,17 +105,8 @@ public class RosterEntry implements IRosterEntry {
 	 * 
 	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#getPresenceState()
 	 */
-	public IPresence getPresenceState() {
-		return presenceState;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#setPresenceState(org.eclipse.ecf.ui.presence.IPresence)
-	 */
-	public void setPresenceState(IPresence presence) {
-		this.presenceState = presence;
+	public IPresence getPresence() {
+		return presence;
 	}
 
 	/*
@@ -133,10 +114,10 @@ public class RosterEntry implements IRosterEntry {
 	 * 
 	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#addGroup(org.eclipse.ecf.ui.presence.IRosterGroup)
 	 */
-	public void add(IRosterGroup group) {
+	public boolean add(IRosterGroup group) {
 		if (group == null)
-			return;
-		groups.add(group);
+			return false;
+		return groups.add(group);
 	}
 
 	public void addAll(Collection grps) {
@@ -150,10 +131,10 @@ public class RosterEntry implements IRosterEntry {
 	 * 
 	 * @see org.eclipse.ecf.ui.presence.IRosterEntry#remvoe(org.eclipse.ecf.ui.presence.IRosterGroup)
 	 */
-	public void remove(IRosterGroup group) {
+	public boolean remove(IRosterGroup group) {
 		if (group == null)
-			return;
-		groups.remove(group);
+			return false;
+		return groups.remove(group);
 	}
 
 	public ID getServiceID() {
@@ -165,7 +146,7 @@ public class RosterEntry implements IRosterEntry {
 		synchronized (sb) {
 			sb.append("userID=").append(userID).append(';'); //$NON-NLS-1$
 			sb.append("name=").append(name).append(';'); //$NON-NLS-1$
-			sb.append("presence=").append(presenceState).append(';'); //$NON-NLS-1$
+			sb.append("presence=").append(presence).append(';'); //$NON-NLS-1$
 			sb.append("interest=").append(interestType).append(';'); //$NON-NLS-1$
 			sb.append("groups="); //$NON-NLS-1$
 			if (!groups.isEmpty()) {

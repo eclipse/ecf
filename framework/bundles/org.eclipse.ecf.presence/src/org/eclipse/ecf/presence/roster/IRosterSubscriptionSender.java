@@ -8,34 +8,12 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.presence;
+package org.eclipse.ecf.presence.roster;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 
-/**
- * Send presence change events to remotes on buddy list. Access to instances
- * implementing this interface is provided by
- * {@link IPresenceContainerAdapter#getPresenceSender()}
- * 
- * @see IPresenceContainerAdapter
- * 
- */
-public interface IPresenceSender {
-
-	/**
-	 * Send a presence update to a remote target user
-	 * @param toID
-	 *            the target user. Should not be null.
-	 * @param presence
-	 *            the presence information. Should not be null.
-	 * 
-	 * @exception ECFException
-	 *                thrown if request cannot be sent (e.g. because of previous
-	 *                disconnect
-	 */
-	public void sendPresenceUpdate(ID toID, IPresence presence)
-			throws ECFException;
+public interface IRosterSubscriptionSender {
 
 	/**
 	 * Send a roster add request (subscribe) to a remote
@@ -61,4 +39,5 @@ public interface IPresenceSender {
 	 *                disconnect
 	 */
 	public void sendRosterRemove(ID userID) throws ECFException;
+
 }
