@@ -21,6 +21,6 @@ public interface IRosterUpdateListener {
 	 * 
 	 * @param changedValue the roster item that changed
 	 */
-	public void handleRosterUpdate(IRosterItem changedValue);
+	public void handleRosterUpdate(IRoster roster, IRosterItem changedValue);
 	
 }

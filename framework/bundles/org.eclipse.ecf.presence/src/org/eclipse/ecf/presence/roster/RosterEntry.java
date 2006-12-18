@@ -44,9 +44,9 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 		this.presence = presenceState;
 		this.interestType = interestType;
 		this.groups = Collections.synchronizedList(new ArrayList());
-		if (parent instanceof IRosterGroup) {
+		if (parent instanceof RosterGroup) {
 			groups.add(parent);
-			((IRosterGroup) parent).add(this);
+			((RosterGroup) parent).add(this);
 		}
 	}
 

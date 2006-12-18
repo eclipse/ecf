@@ -30,26 +30,6 @@ import java.util.Collection;
  */
 public interface IRosterGroup extends IRosterItem {
 	/**
-	 * Add a roster item to this group (either IRosterGroup or IRosterEntry).
-	 * 
-	 * @param item
-	 *            the entry to add
-	 * @return old roster entry associated with this group, null if not
-	 *         previously associated with this group
-	 */
-	public boolean add(IRosterItem item);
-
-	/**
-	 * Remove given roster entry from group
-	 * 
-	 * @param item
-	 *            the entry to remove
-	 * @return true if entry removed, false if entry did not previously exist in
-	 *         group
-	 */
-	public boolean remove(IRosterItem item);
-
-	/**
 	 * Get roster entries belonging to this group. Instances of list
 	 * are of type {@link IRosterEntry}
 	 * 

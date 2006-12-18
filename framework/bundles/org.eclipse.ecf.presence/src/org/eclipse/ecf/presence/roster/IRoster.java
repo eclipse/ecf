@@ -38,17 +38,4 @@ public interface IRoster extends IAdaptable, Serializable {
 	 */
 	public Collection getItems();
 	
-	/**
-	 * Add roster item to this roster.
-	 * 
-	 * @return true if underlying roster has been modified, false otherwise.
-	 */
-	public boolean addItem(IRosterItem item);
-	
-	/**
-	 * Remove roster item from this roster.
-	 * 
-	 * @return true if underlying roster has been modified, false otherwise.
-	 */
-	public boolean removeItem(IRosterItem item);
 }

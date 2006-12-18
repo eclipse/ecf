@@ -37,7 +37,7 @@ public abstract class AbstractRosterManager implements IRosterManager {
 		synchronized (this) {
 			for(Iterator i=rosterUpdateListeners.iterator(); i.hasNext(); ) {
 				IRosterUpdateListener l = (IRosterUpdateListener) i.next();
-				l.handleRosterUpdate(changedItem);
+				l.handleRosterUpdate(roster, changedItem);
 			}
 		}
 	}

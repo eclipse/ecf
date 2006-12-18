@@ -39,26 +39,6 @@ public interface IRosterEntry extends IRosterItem {
 	public Collection getGroups();
 
 	/**
-	 * Add this roster entry to the given group.
-	 * 
-	 * @param group
-	 *            the group to add this entry to. If group is null, it will be
-	 *            ignored.
-	 * @return true if entry changed, false if not changed
-	 */
-	public boolean add(IRosterGroup group);
-
-	/**
-	 * Remove this roster entry from the given group.
-	 * 
-	 * @param group
-	 *            the group to remove this entry from.
-	 * @return true if entry changed, false if not changed
-	 */
-	public boolean remove(IRosterGroup group);
-
-
-	/**
 	 * Get interest type for this roster entry
 	 * 
 	 * @return InterestType
