@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.ecf.presence.roster.Roster"
+            class="org.eclipse.ecf.presence.ui.RosterAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipse.ecf.presence.roster.RosterGroup"
+            class="org.eclipse.ecf.presence.ui.RosterAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipse.ecf.presence.roster.RosterEntry"
+            class="org.eclipse.ecf.presence.ui.RosterAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="org.eclipse.ecf.presence.ui.RosterView"
+            id="org.eclipse.ecf.presence.ui.view1"
+            name="Test Roster View">
+      </view>
+   </extension>
+
+</plugin>
