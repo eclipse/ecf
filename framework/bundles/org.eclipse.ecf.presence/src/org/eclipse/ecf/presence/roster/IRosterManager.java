@@ -19,23 +19,23 @@ import org.eclipse.core.runtime.IAdaptable;
 public interface IRosterManager extends IAdaptable {
 	
 	/**
-	 * Get roster for this account
+	 * Get roster for this account.  Will not be null.
 	 * 
-	 * @return IRoster for this roster manager
+	 * @return IRoster for this roster manager.  Will not be null.
 	 */
 	public IRoster getRoster();
 	
 	/**
 	 * Add roster update listener to receive roster update events for this roster manager
 	 * 
-	 * @param listener the listener to add.  Must not be null
+	 * @param listener the listener to add.  Will not be null.
 	 */
 	public void addRosterUpdateListener(IRosterUpdateListener listener);
 	
 	/**
 	 * Remove roster update listener 
 	 * 
-	 * @param listener the listener to remove.  Must not be null.
+	 * @param listener the listener to remove.  Will not be null.
 	 */
 	public void removeRosterUpdateListener(IRosterUpdateListener listener);
 	
@@ -54,7 +54,7 @@ public interface IRosterManager extends IAdaptable {
 	 * received by this connected account.
 	 * 
 	 * @param listener
-	 *            for receiving subscription requests. Must not be null.
+	 *            for receiving subscription requests. Will not be null.
 	 */
 	public void addRosterSubscriptionListener(IRosterSubscriptionListener listener);
 
@@ -62,7 +62,7 @@ public interface IRosterManager extends IAdaptable {
 	 * Remove listener for roster subscription requests.
 	 * 
 	 * @param listener
-	 *            the listener to remove.  Must not be null.
+	 *            the listener to remove.  Will not be null.
 	 */
 	public void removeRosterSubscriptionListener(IRosterSubscriptionListener listener);
 

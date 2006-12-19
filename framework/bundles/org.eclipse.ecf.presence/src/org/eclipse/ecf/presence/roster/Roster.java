@@ -34,6 +34,10 @@ public class Roster implements IRoster {
 		this.rosteritems = Collections.synchronizedList(new ArrayList());
 	}
 
+	public Roster() {
+		this(null);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.roster.IRoster#getItems()
 	 */
@@ -69,6 +73,13 @@ public class Roster implements IRoster {
 	public boolean removeItem(IRosterItem item) {
 		if (item == null) return false;
 		return rosteritems.remove(item);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.roster.IRoster#setUser(org.eclipse.ecf.core.user.IUser)
+	 */
+	public void setUser(IUser user) {
+		this.rosterUser = user;
 	}
 	
 	/* (non-Javadoc)

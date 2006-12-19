@@ -22,6 +22,14 @@ public abstract class AbstractRosterManager implements IRosterManager {
 	protected List rosterSubscriptionListeners = new ArrayList();
 	protected List rosterUpdateListeners = new ArrayList();
 	
+	public AbstractRosterManager() {
+		
+	}
+	
+	public AbstractRosterManager(IRoster roster) {
+		this.roster = roster;
+	}
+	
 	public synchronized void addRosterSubscriptionListener(
 			IRosterSubscriptionListener listener) {
 		if (listener == null) return;

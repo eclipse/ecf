@@ -32,7 +32,7 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 
 	protected List groups;
 
-	public RosterEntry(IRosterItem parent, IUser user,
+	public RosterEntry(Object parent, IUser user,
 			IPresence presenceState) {
 		Assert.isNotNull(parent);
 		Assert.isNotNull(user);

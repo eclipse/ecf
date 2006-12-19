@@ -23,20 +23,21 @@ import org.eclipse.ecf.core.user.IUser;
 public interface IRoster extends IAdaptable, Serializable {
 
 	/**
-	 * Get local user for this roster.  This is the user that 
-	 * owns this roster.  Will not be null.
+	 * Get local user for this roster. This is the user that owns this roster.
+	 * If null, this means that the user is not yet logged in.
 	 * 
-	 * @return IUser local user associated with this roster.  Will not be null. 
+	 * @return IUser local user associated with this roster. If null, this means
+	 *         that the user is not yet logged in.
 	 */
 	public IUser getUser();
-	
+
 	/**
-	 * Get the IRosterItems for this roster.  The collection returned will
-	 * not be null, and will contain IRosterItems.  The IRosterItems may
-	 * be either IRosterGroups and/or IRosterEntries.
+	 * Get the IRosterItems for this roster. The collection returned will not be
+	 * null, and will contain IRosterItems. The IRosterItems may be either
+	 * IRosterGroups and/or IRosterEntries.
 	 * 
-	 * @return Collection of IRosterItems.  Will not be null.
+	 * @return Collection of IRosterItems. Will not be null.
 	 */
 	public Collection getItems();
-	
+
 }
