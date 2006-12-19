@@ -21,6 +21,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
+/**
+ * Label provider for multiple roster viewer
+ * 
+ */
 public class MultiRosterLabelProvider extends LabelProvider {
 
 	private Map imageTable = new HashMap(7);

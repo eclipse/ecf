@@ -28,6 +28,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 
+/**
+ * View class for displaying multiple rosters in a tree viewer
+ *
+ */
 public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	protected TreeViewer treeViewer;

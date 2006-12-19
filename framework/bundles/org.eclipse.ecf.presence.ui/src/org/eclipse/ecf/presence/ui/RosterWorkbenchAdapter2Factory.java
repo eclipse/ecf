@@ -19,6 +19,9 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.model.IWorkbenchAdapter2;
 
+/**
+ * Adapter factory for adapter to IWorkbenchAdapter2 (foreground and background color and font for labels)
+ */
 public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 
 	private IWorkbenchAdapter2 rosterAdapter = new IWorkbenchAdapter2() {

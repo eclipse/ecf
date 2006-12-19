@@ -21,6 +21,10 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
+/**
+ * Content provider for multiple roster viewer
+ * 
+ */
 public class MultiRosterContentProvider implements IMultiRosterContentProvider {
 
 	protected List rosters = Collections.synchronizedList(new ArrayList());
