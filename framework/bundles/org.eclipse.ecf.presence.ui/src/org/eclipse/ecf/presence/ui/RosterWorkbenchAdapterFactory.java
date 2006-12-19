@@ -24,7 +24,7 @@ import org.eclipse.ecf.presence.roster.RosterItem;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
-public class RosterAdapterFactory implements IAdapterFactory {
+public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	private static final String LEFT_PAREN = "(";
 	private static final String RIGHT_PAREN = ")";
