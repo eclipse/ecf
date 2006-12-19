@@ -10,6 +10,7 @@ package org.eclipse.ecf.provider.xmpp.container;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,13 +22,12 @@ import java.util.Vector;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
@@ -36,7 +36,7 @@ import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
-import org.eclipse.ecf.core.user.IUser;
+import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.filetransfer.BaseFileTransferInfo;
@@ -208,27 +208,31 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 			throws Exception {
 		if (originalTarget != null && !originalTarget.equals(getID())) {
 			addNewRemoteMember(originalTarget, null);
+
+			// If we've got the connection then pass it onto shared object also
+			ECFConnection conn = (ECFConnection) getConnection();
+			if (conn != null && delegate != null) {
+				delegate.setConnection(conn.getXMPPConnection());
+				delegate.setUser(new User(originalTarget));
+			}
+			// Setup invitation listener
+			MultiUserChat.addInvitationListener(conn.getXMPPConnection(),
+					new InvitationListener() {
+						public void invitationReceived(XMPPConnection arg0,
+								String arg1, String arg2, String arg3,
+								String arg4, Message arg5) {
+							handleInvitationMessage(arg0, arg1, arg2, arg3,
+									arg4, arg5);
+						}
+					});
+
+			
 			// notify listeners
 			fireContainerEvent(new ContainerConnectedEvent(this.getID(),
 					originalTarget));
-		}
-		// If we've got the connection then pass it onto shared object also
-		ECFConnection conn = (ECFConnection) getConnection();
-		if (conn != null && delegate != null) {
-			delegate.setConnection(conn.getXMPPConnection());
-		}
-		// Setup invitation listener
-		MultiUserChat.addInvitationListener(conn.getXMPPConnection(),
-				new InvitationListener() {
-					public void invitationReceived(XMPPConnection arg0,
-							String arg1, String arg2, String arg3,
-							String arg4, Message arg5) {
-						handleInvitationMessage(arg0, arg1, arg2, arg3,
-								arg4, arg5);
-					}
-				});
-
-		return originalTarget;
+			return originalTarget;
+			
+		} else throw new ConnectException("invalid response from server");
 	}
 
 	protected void addSharedObjectToContainer(ID remote)
@@ -482,17 +486,16 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		}
 	}
 
+	protected IRosterManager getRosterManager() {
+		return delegate.getRosterManager();
+	}
+	
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(IPresenceContainerAdapter.class)) {
 			return new IPresenceContainerAdapter() {
 
-				public IUser getUser() {
-					// TODO Auto-generated method stub
-					return null;
-				}
-
 				public IRosterManager getRosterManager() {
-					return null;
+					return delegate.getRosterManager();
 				}
 				
 				public Object getAdapter(Class clazz) {
