@@ -26,6 +26,7 @@ import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.Presence;
+import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
 import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.ecf.ui.views.RosterView;
@@ -78,6 +79,7 @@ public class PresenceContainerUI {
 					IViewPart view = wp
 							.showView("org.eclipse.ecf.ui.view.rosterview");
 					rosterView = (RosterView) view;
+					
 					String nickname = null;
 					if (nick != null) {
 						nickname = nick;
@@ -87,6 +89,11 @@ public class PresenceContainerUI {
 					}
 					PresenceContainerUI.this.localUser = new org.eclipse.ecf.core.user.User(
 							localUser, nickname);
+					
+					// XXX Testing
+					MultiRosterView rv = (MultiRosterView) wp.showView("org.eclipse.ecf.presence.ui.view1");
+					rv.addContainer(container);
+					
 				} catch (Exception e) {
 					ClientPlugin.getDefault().getLog().log(
 							new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID,
