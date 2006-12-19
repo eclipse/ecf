@@ -32,8 +32,6 @@ public class User implements IUser {
 	}
 
 	public User(ID userID, String name, Map properties) {
-		if (userID == null)
-			throw new NullPointerException("userID must not be null");
 		this.id = userID;
 		this.name = name;
 		this.properties = properties;
