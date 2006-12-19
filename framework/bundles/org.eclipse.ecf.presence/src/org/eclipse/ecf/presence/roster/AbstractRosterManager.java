@@ -58,8 +58,6 @@ public abstract class AbstractRosterManager implements IRosterManager {
 
 	public abstract IRosterSubscriptionSender getRosterSubscriptionSender();
 
-	public abstract IRosterUpdateSender getRosterUpdateSender();
-
 	public synchronized void removeRosterSubscriptionListener(
 			IRosterSubscriptionListener listener) {
 		if (listener == null) return;

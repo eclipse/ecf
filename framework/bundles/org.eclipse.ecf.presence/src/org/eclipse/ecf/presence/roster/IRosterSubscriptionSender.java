@@ -32,7 +32,7 @@ public interface IRosterSubscriptionSender {
 	/**
 	 * Send roster remove request (unsubscribe) to a remote
 	 * @param userID
-	 *            the user id the request it intended for. Should not be null
+	 *            the user id the request it is intended for. Should not be null
 	 * 
 	 * @exception ECFException
 	 *                thrown if request cannot be sent (e.g. because of previous

@@ -40,15 +40,6 @@ public interface IRosterManager extends IAdaptable {
 	public void removeRosterUpdateListener(IRosterUpdateListener listener);
 	
 	/**
-	 * Get roster update sender.  If not null, the returned object can
-	 * be used to send requests for roster updates.
-	 * 
-	 * @return IRosterUpdateSender to use to send roster update requests.
-	 * If null, sending requests for roster updates are not supported
-	 */
-	public IRosterUpdateSender getRosterUpdateSender();
-	
-	/**
 	 * Setup listener for handling roster subscription requests. The given
 	 * listener will asynchronously be called when a subscription request is
 	 * received by this connected account.
