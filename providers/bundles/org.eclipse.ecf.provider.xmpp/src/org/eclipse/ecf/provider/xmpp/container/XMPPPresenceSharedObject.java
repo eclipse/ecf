@@ -46,7 +46,6 @@ import org.eclipse.ecf.presence.roster.AbstractRosterManager;
 import org.eclipse.ecf.presence.roster.IPresenceSender;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
-import org.eclipse.ecf.presence.roster.IRosterUpdateSender;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
@@ -769,16 +768,6 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		 * @see org.eclipse.ecf.presence.roster.AbstractRosterManager#getRosterSubscriptionSender()
 		 */
 		public IRosterSubscriptionSender getRosterSubscriptionSender() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ecf.presence.roster.AbstractRosterManager#getRosterUpdateSender()
-		 */
-		public IRosterUpdateSender getRosterUpdateSender() {
 			// TODO Auto-generated method stub
 			return null;
 		}
