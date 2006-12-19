@@ -52,6 +52,12 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 */
 	public void removeRosterSubscriptionListener(IRosterSubscriptionListener listener);
 
+	/**
+	 * Get roster manager for access to roster model.  If null is returned roster manager
+	 * unavailable for this adapter.
+	 * 
+	 * @return IRosterManager if available for this adapter.  Null if not available for adapter.
+	 */
 	public IRosterManager getRosterManager();
 	
 	/**
