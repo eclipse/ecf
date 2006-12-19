@@ -41,6 +41,7 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @param listener
 	 *            for receiving subscription requests. Must not be null.
+	 * @deprecated in favor of {@link #getRosterManager()}{@link #addRosterSubscriptionListener(IRosterSubscriptionListener)}
 	 */
 	public void addRosterSubscriptionListener(IRosterSubscriptionListener listener);
 
@@ -49,6 +50,8 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @param listener
 	 *            the listener to remove.  Must not be null.
+	 *            
+	 * @deprecated in favor of {@link #getRosterManager()}{@link #removeRosterSubscriptionListener(IRosterSubscriptionListener)}
 	 */
 	public void removeRosterSubscriptionListener(IRosterSubscriptionListener listener);
 
@@ -67,6 +70,8 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @param listener
 	 *            for receiving presence notifications. Must not be null.
+	 *            
+	 * @deprecated 
 	 */
 	public void addPresenceListener(IPresenceListener listener);
 
@@ -75,8 +80,23 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @param listener
 	 *            the listener to remove
+	 *   
+	 * @deprecated
 	 */
 	public void removePresenceListener(IPresenceListener listener);
+
+	/**
+	 * Retrieve interface for sending presence updates. The returned
+	 * IPresenceSender (if not null) can be used to send presence change
+	 * messages to remote users that have access to the presence information for
+	 * the connected account.
+	 * 
+	 * @return IPresenceSender. Null if no presence sender available for this
+	 *         provider.
+	 *         
+	 * @deprecated in favor of {@link #getRosterManager()}{@link #getPresenceSender()}
+	 */
+	public IPresenceSender getPresenceSender();
 
 	/**
 	 * Setup listener for handling IM messages. The given listener will
@@ -95,17 +115,6 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 *            the listener to remove
 	 */
 	public void removeMessageListener(IMessageListener listener);
-
-	/**
-	 * Retrieve interface for sending presence updates. The returned
-	 * IPresenceSender (if not null) can be used to send presence change
-	 * messages to remote users that have access to the presence information for
-	 * the connected account.
-	 * 
-	 * @return IPresenceSender. Null if no presence sender available for this
-	 *         provider.
-	 */
-	public IPresenceSender getPresenceSender();
 
 	/**
 	 * Get interface for sending messages
