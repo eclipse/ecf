@@ -62,6 +62,7 @@ import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.presence.chat.IRoomInfo;
 import org.eclipse.ecf.presence.roster.IRosterManager;
+import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
@@ -147,7 +148,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		this.keepAlive = keepAlive;
 		this.delegateID = IDFactory.getDefault().createStringID(
 				XMPP_DELEGATE_ID);
-		delegate = new XMPPPresenceSharedObject();
+		delegate = new XMPPPresenceSharedObject(this);
 	}
 
 	public XMPPClientSOContainer() throws Exception {
@@ -907,4 +908,49 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 				localFileToSend), transferListener, options);
 	}
 
+	
+	private IRosterSubscriptionSender rosterSubscriptionSender = new IRosterSubscriptionSender() {
+
+		public void sendRosterAdd(String user, String name, String[] groups)
+				throws ECFException {
+			try {
+				XMPPClientSOContainer.this.sendRosterAdd(user,
+						name, groups);
+			} catch (IOException e) {
+				dumpStack("sendRosterAdd", e);
+				throw new ECFException("sendRosterAdd", e);
+			}
+		}
+
+		public void sendRosterRemove(ID userID) throws ECFException {
+			try {
+				if (userID == null)
+					return;
+				XMPPClientSOContainer.this
+						.sendRosterRemove(userID.getName());
+			} catch (IOException e) {
+				dumpStack("Exception in sendRosterRemove", e);
+				throw new ECFException("sendRosterRemove",e);
+			}
+		}
+		
+	};
+	
+	protected IRosterSubscriptionSender getRosterSubscriptionSender() {
+		return rosterSubscriptionSender;
+	}
+	
+	org.eclipse.ecf.presence.roster.IPresenceSender rosterPresenceSender = new org.eclipse.ecf.presence.roster.IPresenceSender() {
+
+		public void sendPresenceUpdate(ID toID,
+				org.eclipse.ecf.presence.roster.IPresence presence)
+				throws ECFException {
+			sendPresenceUpdate(toID, presence);
+		}
+		
+	};
+	
+	protected org.eclipse.ecf.presence.roster.IPresenceSender getPresenceSender() {
+		return rosterPresenceSender;
+	}
 }

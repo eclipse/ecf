@@ -86,7 +86,13 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 	Vector invitationListeners = new Vector();
 
 	Namespace namespace = null;
+	
+	XMPPClientSOContainer container = null;
 
+	public XMPPPresenceSharedObject(XMPPClientSOContainer container) {
+		this.container = container;
+	}
+	
 	protected void fireInvitationReceived(ID roomID, ID fromID, ID toID,
 			String subject, String body) {
 		for (Iterator i = invitationListeners.iterator(); i.hasNext();) {
@@ -706,8 +712,6 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		return accountManager.supportsAccountCreation();
 	}
 
-	PresenceRosterManager rosterManager = new PresenceRosterManager();
-
 	public IRosterManager getRosterManager() {
 		return rosterManager;
 	}
@@ -716,12 +720,17 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		rosterManager.setUser(user);
 	}
 
+	protected org.eclipse.ecf.presence.roster.Roster roster = new org.eclipse.ecf.presence.roster.Roster();
+	
+	protected PresenceRosterManager rosterManager = new PresenceRosterManager(roster);
+
 	class PresenceRosterManager extends AbstractRosterManager {
 
-		public PresenceRosterManager() {
-			super(new org.eclipse.ecf.presence.roster.Roster());
+		public PresenceRosterManager(org.eclipse.ecf.presence.roster.Roster roster) {
+			super(roster);
 		}
-
+		
+		// XXX testing
 		protected ID createStringID(String val) {
 			try {
 				return IDFactory.getDefault().createStringID(val);
@@ -730,6 +739,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 			return null;
 		}
 
+		// XXX Testing
 		protected org.eclipse.ecf.presence.roster.IPresence getPresenceState() {
 			return new org.eclipse.ecf.presence.roster.Presence(
 					org.eclipse.ecf.presence.roster.IPresence.Type.AVAILABLE, "available",
@@ -741,14 +751,12 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 			r.setUser(user);
 			// XXX testing
 			Collection childs = r.getItems();
-
 			org.eclipse.ecf.presence.roster.RosterGroup group1 = new org.eclipse.ecf.presence.roster.RosterGroup(
 					getRoster(), "group1");
 			org.eclipse.ecf.presence.roster.RosterEntry entry1 = new org.eclipse.ecf.presence.roster.RosterEntry(
 					group1, (IUser) new User(createStringID("foo")), (org.eclipse.ecf.presence.roster.IPresence) getPresenceState());
-			
 			r.addItem(group1);
-			
+			// XXX end testing
 			fireRosterUpdate(null);
 		}
 
@@ -758,8 +766,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		 * @see org.eclipse.ecf.presence.roster.AbstractRosterManager#getPresenceSender()
 		 */
 		public IPresenceSender getPresenceSender() {
-			// TODO Auto-generated method stub
-			return null;
+			return container.getPresenceSender();
 		}
 
 		/*
@@ -768,8 +775,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		 * @see org.eclipse.ecf.presence.roster.AbstractRosterManager#getRosterSubscriptionSender()
 		 */
 		public IRosterSubscriptionSender getRosterSubscriptionSender() {
-			// TODO Auto-generated method stub
-			return null;
+			return container.getRosterSubscriptionSender();
 		}
 
 	}
