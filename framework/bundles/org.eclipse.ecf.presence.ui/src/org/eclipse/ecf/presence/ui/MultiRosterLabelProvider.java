@@ -27,7 +27,7 @@ public class MultiRosterLabelProvider extends LabelProvider {
 
 	/**
 	 * @param element
-	 * @return
+	 * @return IWorkbenchAdapter for the given element
 	 */
 	protected IWorkbenchAdapter getAdapter(Object element) {
 		IWorkbenchAdapter adapter = null;
