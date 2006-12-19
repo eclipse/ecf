@@ -86,7 +86,7 @@ public interface IAccountManager {
 	 *             thrown if account account instructions not supported, or if
 	 *             fails for some reason (network failure or server failure)
 	 */
-	public String getAccountInstructions() throws ECFException;
+	public String getAccountCreationInstructions() throws ECFException;
 
 	/**
 	 * Get account attribute names for this account

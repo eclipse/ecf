@@ -30,13 +30,11 @@ public interface IInvitationListener {
 	 *            the room id associated with the invitation
 	 * @param from
 	 *            the id of the sender
-	 * @param to
-	 *            the id of the intended receiver
 	 * @param subject
 	 *            a subject for the invitation
 	 * @param body
 	 *            a message body for the invitation
 	 */
-	public void handleInvitationReceived(ID roomID, ID from, ID to,
-			String subject, String body);
+	public void handleInvitationReceived(ID roomID, ID from, String subject,
+			String body);
 }
