@@ -18,7 +18,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
  * Contract implemented by RosterContentProviders.
  * 
  */
-public interface IRosterContentProvider extends ITreeContentProvider {
+public interface IMultiRosterContentProvider extends ITreeContentProvider {
 
 	/**
 	 * Add roster to set of known rosters for this content provider.

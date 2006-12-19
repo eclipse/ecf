@@ -21,7 +21,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
-public class RosterLabelProvider extends LabelProvider {
+public class MultiRosterLabelProvider extends LabelProvider {
 
 	private Map imageTable = new HashMap(7);
 

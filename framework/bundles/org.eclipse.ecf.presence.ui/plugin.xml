@@ -24,11 +24,18 @@
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
       </factory>
+      <factory
+            adaptableType="org.eclipse.ecf.presence.roster.RosterItem"
+            class="org.eclipse.ecf.presence.ui.RosterAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
    </extension>
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="org.eclipse.ecf.presence.ui.RosterView"
+            class="org.eclipse.ecf.presence.ui.MultiRosterView"
             id="org.eclipse.ecf.presence.ui.view1"
             name="Test Roster View">
       </view>
