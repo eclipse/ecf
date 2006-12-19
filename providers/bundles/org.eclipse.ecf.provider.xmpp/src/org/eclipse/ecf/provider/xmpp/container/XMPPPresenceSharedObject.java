@@ -91,7 +91,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 			String subject, String body) {
 		for (Iterator i = invitationListeners.iterator(); i.hasNext();) {
 			IInvitationListener l = (IInvitationListener) i.next();
-			l.handleInvitationReceived(roomID, fromID, toID, subject, body);
+			l.handleInvitationReceived(roomID, fromID, subject, body);
 		}
 	}
 
@@ -677,7 +677,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		return true;
 	}
 
-	public String getAccountInstructions() {
+	public String getAccountCreationInstructions() {
 		if (accountManager == null)
 			return null;
 		return accountManager.getAccountInstructions();

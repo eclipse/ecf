@@ -584,9 +584,9 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 							return delegate.deleteAccount();
 						}
 
-						public String getAccountInstructions()
+						public String getAccountCreationInstructions()
 								throws ECFException {
-							return delegate.getAccountInstructions();
+							return delegate.getAccountCreationInstructions();
 						}
 
 						public String[] getAccountAttributeNames()
