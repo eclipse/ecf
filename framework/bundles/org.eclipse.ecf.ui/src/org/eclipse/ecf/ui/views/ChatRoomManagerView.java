@@ -545,10 +545,10 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 			});
 		}
 
-		public void handleInvitationReceived(ID roomID, ID from, ID to,
-				String subject, String body) {
+		public void handleInvitationReceived(ID roomID, ID from, String subject,
+				String body) {
 			System.out.println("invitation room=" + roomID + ",from=" + from
-					+ ",to=" + to + ",subject=" + subject + ",body=" + body);
+					+ ",subject=" + subject + ",body=" + body);
 		}
 
 		public void keyPressed(KeyEvent e) {
@@ -1024,10 +1024,10 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 		setEnabled(false);
 	}
 
-	public void handleInvitationReceived(ID roomID, ID from, ID toID,
-			String subject, String body) {
+	public void handleInvitationReceived(ID roomID, ID from, String subject,
+			String body) {
 		System.out.println("invitation room=" + roomID + ",from=" + from
-				+ ",to=" + toID + ",subject=" + subject + ",body=" + body);
+				+ ",subject=" + subject + ",body=" + body);
 	}
 
 	protected void appendText(SimpleLinkTextViewer readText, ChatLine text) {
