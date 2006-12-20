@@ -43,13 +43,13 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
  */
 public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
-	private static final String STATUS_PREFIX = "Status: ";
+	private static final String MODE_PREFIX = "Mode: ";
+	private static final String TYPE_PREFIX = "Type: ";
 	private static final String USER_PREFIX = "User: ";
 	private static final String LEFT_PAREN = "(";
 	private static final String RIGHT_PAREN = ")";
 	private static final String SLASH = "/";
-	private static final String ROSTER_DISCONNECTED_NAME = LEFT_PAREN
-			+ "disconnected" + RIGHT_PAREN;
+	private static final String ROSTER_DISCONNECTED_NAME = "connecting...";
 
 	protected String getRosterLabel(Roster roster) {
 		IUser user = roster.getUser();
@@ -171,11 +171,12 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	protected Object[] getRosterEntryChildrenFromPresence(RosterEntry entry) {
 		IPresence presence = entry.getPresence();
 		Map properties = presence.getProperties();
-		int fixedEntries = 2;
+		int fixedEntries = 3;
 		Object[] children = new Object[fixedEntries + properties.size()];
 		children[0] = new RosterItem(entry, USER_PREFIX
 				+ entry.getUser().getName());
-		children[1] = new RosterItem(entry, STATUS_PREFIX + presence.getStatus());
+		children[1] = new RosterItem(entry, TYPE_PREFIX + presence.getType().toString());
+		children[2] = new RosterItem(entry, MODE_PREFIX + presence.getMode().toString());
 		for (Iterator i = properties.keySet().iterator(); i.hasNext(); fixedEntries++) {
 			children[fixedEntries] = properties.get(i.next());
 		}

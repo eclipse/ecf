@@ -116,7 +116,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		IRosterUpdateListener updateListener = new IRosterUpdateListener() {
 			public void handleRosterUpdate(final IRoster roster,
 					final IRosterItem changedValue) {
-				Display.getDefault().asyncExec(new Runnable() {
+				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
 						refreshTreeViewer(changedValue,true);
 					}
