@@ -44,6 +44,8 @@ import org.eclipse.ecf.presence.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.presence.roster.AbstractRosterManager;
 import org.eclipse.ecf.presence.roster.IPresenceSender;
+import org.eclipse.ecf.presence.roster.IRoster;
+import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.provider.xmpp.events.IQEvent;
@@ -226,6 +228,8 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 				l.handleUnsubscribed(fromID);
 			}
 		}
+		// XXX here's invoke of rostermanager
+		rosterManager.notifySubscriptionListener(fromID, presence);
 	}
 
 	protected void fireSetRosterEntry(IRosterEntry entry) {
@@ -728,6 +732,14 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 
 		public PresenceRosterManager(org.eclipse.ecf.presence.roster.Roster roster) {
 			super(roster);
+		}
+		
+		public void notifySubscriptionListener(ID fromID, IPresence presence) {
+			fireSubscriptionListener(fromID, presence);
+		}
+		
+		public void notifyRosterUpdate(IRosterItem changedItem) {
+			fireRosterUpdate(changedItem);
 		}
 		
 		// XXX testing
