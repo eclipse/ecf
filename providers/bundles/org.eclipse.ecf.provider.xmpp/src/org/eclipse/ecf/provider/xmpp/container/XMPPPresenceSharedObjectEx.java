@@ -169,9 +169,7 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 
 	protected void fireSetRosterEntry(RosterPacket.ItemType itemType,
 			IRosterItem[] entries) {
-		System.out.println("fireSetRosterEntry(" + entries + ")");
-		if (itemType == RosterPacket.ItemType.NONE
-				|| itemType == RosterPacket.ItemType.NONE) {
+		if (itemType == RosterPacket.ItemType.NONE) {
 			removeFromRoster(entries);
 		} else {
 			addToRoster(entries);
@@ -186,7 +184,6 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 
 	private void removeFromRoster(IRosterItem[] entries) {
 		// TODO Auto-generated method stub
-
 	}
 
 	protected void fireSharedObjectMessage(ISharedObjectMessageEvent event) {
@@ -361,23 +358,22 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 				updatePresenceInGroup((IRosterGroup) item, fromID, newPresence);
 			} else {
 				if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
-					org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) item;
-					User user = (User) entry.getUser();
-					if (fromID.getName().equals(user.getID().getName())) {
-						entry.setPresence(newPresence);
-					}
+					updatePresenceForMatchingEntry((org.eclipse.ecf.presence.roster.RosterEntry) item, fromID, newPresence);
 				}
 			}
 		}
 	}
 
+	private void updatePresenceForMatchingEntry(org.eclipse.ecf.presence.roster.RosterEntry entry, XMPPID fromID, IPresence newPresence) {
+		User user = (User) entry.getUser();
+		if (fromID.getName().equals(user.getID().getName())) {
+			entry.setPresence(newPresence);
+		}
+	}
+	
 	private void updatePresenceInGroup(IRosterGroup group, XMPPID fromID, IPresence newPresence) {
 		for(Iterator i=group.getEntries().iterator(); i.hasNext(); ) {
-			org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) i.next();
-			User user = (User) entry.getUser();
-			if (fromID.getName().equals(user.getID().getName())) {
-				entry.setPresence(newPresence);
-			}
+			updatePresenceForMatchingEntry((org.eclipse.ecf.presence.roster.RosterEntry) i.next(),fromID,newPresence);
 		}
 	}
 
