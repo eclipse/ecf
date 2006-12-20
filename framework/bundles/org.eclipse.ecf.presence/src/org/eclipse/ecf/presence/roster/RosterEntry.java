@@ -37,7 +37,6 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 		Assert.isNotNull(parent);
 		Assert.isNotNull(user);
 		this.parent = parent;
-		this.name = user.getName();
 		this.user = user;
 		this.presence = presenceState;
 		this.groups = Collections.synchronizedList(new ArrayList());
@@ -47,6 +46,14 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 		}
 	}
 
+	public void setPresence(IPresence newPresence) {
+		this.presence = newPresence;
+	}
+	
+	public String getName() {
+		return user.getName();
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.roster.IRosterEntry#add(org.eclipse.ecf.presence.roster.IRosterGroup)
 	 */
@@ -94,7 +101,7 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 	public String toString() {
 		StringBuffer sb = new StringBuffer("RosterEntry["); //$NON-NLS-1$
 		synchronized (sb) {
-			sb.append("name=").append(name).append(';'); //$NON-NLS-1$
+			sb.append("name=").append(getName()).append(';'); //$NON-NLS-1$
 			sb.append("presence=").append(presence).append(';'); //$NON-NLS-1$
 			sb.append("groups="); //$NON-NLS-1$
 			if (!groups.isEmpty()) {

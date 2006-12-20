@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.presence.IPresence;
 
 public abstract class AbstractRosterManager implements IRosterManager {
 
