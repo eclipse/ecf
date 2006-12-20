@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.presence.IPresence;
+
 public abstract class AbstractRosterManager implements IRosterManager {
 
 	protected IRoster roster;
@@ -46,6 +49,21 @@ public abstract class AbstractRosterManager implements IRosterManager {
 			for(Iterator i=rosterUpdateListeners.iterator(); i.hasNext(); ) {
 				IRosterUpdateListener l = (IRosterUpdateListener) i.next();
 				l.handleRosterUpdate(roster, changedItem);
+			}
+		}
+	}
+	
+	protected void fireSubscriptionListener(ID fromID, IPresence presence) {
+		synchronized (this) {
+			for(Iterator i=rosterSubscriptionListeners.iterator(); i.hasNext(); ) {
+				IRosterSubscriptionListener l = (IRosterSubscriptionListener) i.next();
+				if (presence.getType().equals(IPresence.Type.SUBSCRIBE)) {
+					l.handleSubscribeRequest(fromID);
+				} else if (presence.getType().equals(IPresence.Type.SUBSCRIBED)) {
+					l.handleSubscribed(fromID);
+				} else if (presence.getType().equals(IPresence.Type.UNSUBSCRIBED)) {
+					l.handleUnsubscribed(fromID);
+				}
 			}
 		}
 	}
