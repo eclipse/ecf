@@ -547,24 +547,51 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 				if (!groupFound)
 					rosterGroup = new org.eclipse.ecf.presence.roster.RosterGroup(
 							parent, groupName);
+				
+				org.eclipse.ecf.presence.roster.RosterEntry oldEntry = findRosterEntry(rosterGroup,user);
 				// Now create new roster entry
 				new org.eclipse.ecf.presence.roster.RosterEntry(rosterGroup, user,
 						new org.eclipse.ecf.presence.roster.Presence(
-								IPresence.Type.AVAILABLE,
-								IPresence.Type.AVAILABLE.toString(),
-								IPresence.Mode.AVAILABLE));
+								IPresence.Type.UNAVAILABLE,
+								IPresence.Type.UNAVAILABLE.toString(),
+								IPresence.Mode.AWAY));
 				// Only add localGrp if not already in list
 				if (!groupFound)
 					result.add(rosterGroup);
 			}
 		} else {
-			org.eclipse.ecf.presence.roster.RosterEntry newEntry = new org.eclipse.ecf.presence.roster.RosterEntry(
-					parent, user, new org.eclipse.ecf.presence.roster.Presence(
-							IPresence.Type.UNAVAILABLE, IPresence.Type.UNAVAILABLE
-									.toString(), IPresence.Mode.AWAY));
-			result.add(newEntry);
+			org.eclipse.ecf.presence.roster.RosterEntry oldEntry = findRosterEntry((org.eclipse.ecf.presence.roster.RosterGroup) null,user);
+			if (oldEntry == null) {
+				org.eclipse.ecf.presence.roster.RosterEntry newEntry = new org.eclipse.ecf.presence.roster.RosterEntry(
+						parent, user, new org.eclipse.ecf.presence.roster.Presence(
+								IPresence.Type.UNAVAILABLE, IPresence.Type.UNAVAILABLE
+										.toString(), IPresence.Mode.AWAY));
+				result.add(newEntry);
+			}
 		}
 		return (IRosterItem[]) result.toArray(new IRosterItem[] {});
+	}
+
+	private org.eclipse.ecf.presence.roster.RosterEntry findRosterEntry(
+			org.eclipse.ecf.presence.roster.RosterGroup rosterGroup, IUser user) {
+		if (rosterGroup != null) {
+			// find in group
+			return findRosterEntry(rosterGroup.getEntries(),user);
+		} else {
+			return findRosterEntry(roster.getItems(),user);
+		}
+	}
+
+	private org.eclipse.ecf.presence.roster.RosterEntry findRosterEntry(
+			Collection entries, IUser user) {
+		for(Iterator i=entries.iterator(); i.hasNext(); ) {
+			org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) i.next();
+			if (entry.getUser().getID().equals(user.getID())) {
+				// found it
+				return entry;
+			}
+		}
+		return null;
 	}
 
 	protected IRosterItem[] createRosterEntry(RosterPacket.Item entry) {
