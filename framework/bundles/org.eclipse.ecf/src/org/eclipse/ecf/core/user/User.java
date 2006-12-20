@@ -64,6 +64,9 @@ public class User implements IUser {
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
 	public Object getAdapter(Class clazz) {
 		return null;
 	}
