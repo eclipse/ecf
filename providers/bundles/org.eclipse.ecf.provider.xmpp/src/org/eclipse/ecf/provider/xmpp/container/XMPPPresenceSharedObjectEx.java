@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
@@ -31,7 +30,6 @@ import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.internal.provider.xmpp.Trace;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresenceListener;
@@ -40,7 +38,6 @@ import org.eclipse.ecf.presence.chat.IInvitationListener;
 import org.eclipse.ecf.presence.roster.AbstractRosterManager;
 import org.eclipse.ecf.presence.roster.IPresence;
 import org.eclipse.ecf.presence.roster.IPresenceSender;
-import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterManager;
@@ -63,6 +60,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smack.packet.Presence.Mode;
 import org.jivesoftware.smack.packet.Presence.Type;
+import org.jivesoftware.smack.packet.RosterPacket.Item;
 
 public class XMPPPresenceSharedObjectEx implements ISharedObject,
 		IAccountManager {
@@ -167,23 +165,10 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 		}
 	}
 
-	protected void fireSetRosterEntry(RosterPacket.ItemType itemType,
-			IRosterItem[] entries) {
-		if (itemType == RosterPacket.ItemType.NONE) {
-			removeFromRoster(entries);
-		} else {
-			addToRoster(entries);
-		}
-	}
-
 	private void addToRoster(IRosterItem[] items) {
 		for (int i = 0; i < items.length; i++)
 			roster.addItem(items[i]);
 		rosterManager.notifyRosterUpdate(null);
-	}
-
-	private void removeFromRoster(IRosterItem[] entries) {
-		// TODO Auto-generated method stub
 	}
 
 	protected void fireSharedObjectMessage(ISharedObjectMessageEvent event) {
@@ -300,12 +285,49 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 				for (Iterator i = rosterPacket.getRosterItems(); i.hasNext();) {
 					RosterPacket.Item item = (RosterPacket.Item) i.next();
 					RosterPacket.ItemType itemType = item.getItemType();
-					IRosterItem[] items = createRosterEntry(item);
-					fireSetRosterEntry(itemType, items);
+					if (itemType == RosterPacket.ItemType.NONE)
+						removeItemFromRoster(roster.getItems(),
+								createIDFromName(item.getUser()));
+					else
+						addToRoster(createRosterEntry(item));
 				}
 			}
 		} else {
 			debug("Received non rosterpacket IQ message: " + iq.toXML());
+		}
+	}
+
+	private void removeFromRoster(Item item) {
+	}
+
+	private void removeItemFromRoster(Collection rosterItems,
+			XMPPID itemIDToRemove) {
+		synchronized (rosterItems) {
+			for (Iterator i = rosterItems.iterator(); i.hasNext();) {
+				IRosterItem item = (IRosterItem) i.next();
+				if (item instanceof org.eclipse.ecf.presence.roster.RosterGroup) {
+					org.eclipse.ecf.presence.roster.RosterGroup group = (org.eclipse.ecf.presence.roster.RosterGroup) item;
+					removeItemFromRosterGroup(group, itemIDToRemove);
+					if (group.getEntries().size() == 0)
+						roster.removeItem(item);
+					rosterManager.notifyRosterUpdate(null);
+				} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
+					if (((org.eclipse.ecf.presence.roster.RosterEntry) item)
+							.getUser().getID().equals(itemIDToRemove))
+						roster.removeItem(item);
+				}
+			}
+		}
+	}
+
+	private void removeItemFromRosterGroup(
+			org.eclipse.ecf.presence.roster.RosterGroup group,
+			XMPPID itemIDToRemove) {
+		for (Iterator i = group.getEntries().iterator(); i.hasNext();) {
+			org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) i
+					.next();
+			if (entry.getUser().getID().equals(itemIDToRemove))
+				group.remove(entry);
 		}
 	}
 
@@ -352,28 +374,31 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 	}
 
 	private void updatePresence(XMPPID fromID, IPresence newPresence) {
-		for(Iterator i=roster.getItems().iterator(); i.hasNext(); ) {
+		for (Iterator i = roster.getItems().iterator(); i.hasNext();) {
 			IRosterItem item = (IRosterItem) i.next();
-			if (item instanceof IRosterGroup) {
+			if (item instanceof IRosterGroup)
 				updatePresenceInGroup((IRosterGroup) item, fromID, newPresence);
-			} else {
-				if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
-					updatePresenceForMatchingEntry((org.eclipse.ecf.presence.roster.RosterEntry) item, fromID, newPresence);
-				}
-			}
+			else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry)
+				updatePresenceForMatchingEntry(
+						(org.eclipse.ecf.presence.roster.RosterEntry) item,
+						fromID, newPresence);
 		}
 	}
 
-	private void updatePresenceForMatchingEntry(org.eclipse.ecf.presence.roster.RosterEntry entry, XMPPID fromID, IPresence newPresence) {
+	private void updatePresenceForMatchingEntry(
+			org.eclipse.ecf.presence.roster.RosterEntry entry, XMPPID fromID,
+			IPresence newPresence) {
 		User user = (User) entry.getUser();
-		if (fromID.getName().equals(user.getID().getName())) {
+		if (fromID.equals(user.getID()))
 			entry.setPresence(newPresence);
-		}
 	}
-	
-	private void updatePresenceInGroup(IRosterGroup group, XMPPID fromID, IPresence newPresence) {
-		for(Iterator i=group.getEntries().iterator(); i.hasNext(); ) {
-			updatePresenceForMatchingEntry((org.eclipse.ecf.presence.roster.RosterEntry) i.next(),fromID,newPresence);
+
+	private void updatePresenceInGroup(IRosterGroup group, XMPPID fromID,
+			IPresence newPresence) {
+		for (Iterator i = group.getEntries().iterator(); i.hasNext();) {
+			updatePresenceForMatchingEntry(
+					(org.eclipse.ecf.presence.roster.RosterEntry) i.next(),
+					fromID, newPresence);
 		}
 	}
 
@@ -402,7 +427,7 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 
 	protected XMPPID createIDFromName(String name) {
 		try {
-			return new XMPPID(namespace,name);
+			return new XMPPID(namespace, name);
 		} catch (Exception e) {
 			dumpStack("Exception in createIDFromName", e);
 			return null;
@@ -539,6 +564,11 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 				// Get group name
 				String groupName = (o instanceof String) ? (String) o
 						: ((RosterGroup) o).getName();
+
+				if (groupName == null || groupName.equals("")) {
+					createRosterEntry(result, parent, user);
+					continue;
+				}
 				// See if group is already in roster
 				org.eclipse.ecf.presence.roster.RosterGroup rosterGroup = findRosterGroup(
 						parent, groupName);
@@ -547,11 +577,12 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 				if (!groupFound)
 					rosterGroup = new org.eclipse.ecf.presence.roster.RosterGroup(
 							parent, groupName);
-				
-				org.eclipse.ecf.presence.roster.RosterEntry oldEntry = findRosterEntry(rosterGroup,user);
+
+				org.eclipse.ecf.presence.roster.RosterEntry oldEntry = findRosterEntry(
+						rosterGroup, user);
 				// Now create new roster entry
-				new org.eclipse.ecf.presence.roster.RosterEntry(rosterGroup, user,
-						new org.eclipse.ecf.presence.roster.Presence(
+				new org.eclipse.ecf.presence.roster.RosterEntry(rosterGroup,
+						user, new org.eclipse.ecf.presence.roster.Presence(
 								IPresence.Type.UNAVAILABLE,
 								IPresence.Type.UNAVAILABLE.toString(),
 								IPresence.Mode.AWAY));
@@ -559,36 +590,40 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 				if (!groupFound)
 					result.add(rosterGroup);
 			}
-		} else {
-			org.eclipse.ecf.presence.roster.RosterEntry oldEntry = findRosterEntry((org.eclipse.ecf.presence.roster.RosterGroup) null,user);
-			if (oldEntry == null) {
-				org.eclipse.ecf.presence.roster.RosterEntry newEntry = new org.eclipse.ecf.presence.roster.RosterEntry(
-						parent, user, new org.eclipse.ecf.presence.roster.Presence(
-								IPresence.Type.UNAVAILABLE, IPresence.Type.UNAVAILABLE
-										.toString(), IPresence.Mode.AWAY));
-				result.add(newEntry);
-			}
-		}
+		} else
+			createRosterEntry(result, parent, user);
 		return (IRosterItem[]) result.toArray(new IRosterItem[] {});
+	}
+
+	private void createRosterEntry(List result, Object parent, IUser user) {
+		org.eclipse.ecf.presence.roster.RosterEntry oldEntry = findRosterEntry(
+				(org.eclipse.ecf.presence.roster.RosterGroup) null, user);
+		if (oldEntry == null) {
+			org.eclipse.ecf.presence.roster.RosterEntry newEntry = new org.eclipse.ecf.presence.roster.RosterEntry(
+					parent, user, new org.eclipse.ecf.presence.roster.Presence(
+							IPresence.Type.UNAVAILABLE,
+							IPresence.Type.UNAVAILABLE.toString(),
+							IPresence.Mode.AWAY));
+			result.add(newEntry);
+		}
 	}
 
 	private org.eclipse.ecf.presence.roster.RosterEntry findRosterEntry(
 			org.eclipse.ecf.presence.roster.RosterGroup rosterGroup, IUser user) {
-		if (rosterGroup != null) {
-			// find in group
-			return findRosterEntry(rosterGroup.getEntries(),user);
-		} else {
-			return findRosterEntry(roster.getItems(),user);
-		}
+		if (rosterGroup != null)
+			return findRosterEntry(rosterGroup.getEntries(), user);
+		else
+			return findRosterEntry(roster.getItems(), user);
 	}
 
 	private org.eclipse.ecf.presence.roster.RosterEntry findRosterEntry(
 			Collection entries, IUser user) {
-		for(Iterator i=entries.iterator(); i.hasNext(); ) {
-			org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) i.next();
-			if (entry.getUser().getID().equals(user.getID())) {
-				// found it
-				return entry;
+		for (Iterator i = entries.iterator(); i.hasNext();) {
+			Object o = i.next();
+			if (o instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
+				org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) o;
+				if (entry.getUser().getID().equals(user.getID()))
+					return entry;
 			}
 		}
 		return null;
@@ -597,9 +632,10 @@ public class XMPPPresenceSharedObjectEx implements ISharedObject,
 	protected IRosterItem[] createRosterEntry(RosterPacket.Item entry) {
 		XMPPID id = createIDFromName(entry.getUser());
 		String name = entry.getName();
-		if (name == null) name = id.getUsername();
-		return createRosterEntry(entry.getGroupNames(), roster, new User(
-				id, name));
+		if (name == null)
+			name = id.getUsername();
+		return createRosterEntry(entry.getGroupNames(), roster, new User(id,
+				name));
 	}
 
 	protected org.eclipse.ecf.presence.roster.RosterGroup findRosterGroup(
