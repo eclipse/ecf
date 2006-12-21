@@ -16,6 +16,8 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ecf.core.user.IUser;
+import org.eclipse.ecf.internal.presence.ui.Activator;
+import org.eclipse.ecf.internal.presence.ui.IImageFiles;
 import org.eclipse.ecf.presence.roster.IPresence;
 import org.eclipse.ecf.presence.roster.Roster;
 import org.eclipse.ecf.presence.roster.RosterEntry;
@@ -23,33 +25,40 @@ import org.eclipse.ecf.presence.roster.RosterGroup;
 import org.eclipse.ecf.presence.roster.RosterItem;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
- * Adapter factory for adapter to IWorkbenchAdapter (labels and images).  Subclasses
- * may override as desired and appropriate.  The adapter factory is to be used
- * with the <code>org.eclipse.core.runtime.adapters</code> extension point.
- * Here is example markup for the
+ * Adapter factory for adapter to IWorkbenchAdapter (labels and images).
+ * Subclasses may override as desired and appropriate. The adapter factory is to
+ * be used with the <code>org.eclipse.core.runtime.adapters</code> extension
+ * point. Here is example markup for the
+ * 
  * <pre>
- * &lt;extension point="org.eclipse.core.runtime.adapters" &gt;
- *      &lt;factory
- *           adaptableType="org.eclipse.ecf.presence.roster.Roster"
- *           class="org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory"&gt;
- *        &lt;adapter
- *              type="org.eclipse.ui.model.IWorkbenchAdapter"&gt;
- *        &lt;/adapter&gt;
- *     &lt;/factory&gt;
- * &lt;/extension>
+ *   &lt;extension point=&quot;org.eclipse.core.runtime.adapters&quot; &gt;
+ *        &lt;factory
+ *             adaptableType=&quot;org.eclipse.ecf.presence.roster.Roster&quot;
+ *             class=&quot;org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory&quot;&gt;
+ *          &lt;adapter
+ *                type=&quot;org.eclipse.ui.model.IWorkbenchAdapter&quot;&gt;
+ *          &lt;/adapter&gt;
+ *       &lt;/factory&gt;
+ *   &lt;/extension&gt;
  * </pre>
  */
 public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	private static final String MODE_PREFIX = "Mode: ";
 	private static final String TYPE_PREFIX = "Type: ";
-	private static final String USER_PREFIX = "User: ";
+	private static final String ACCOUNT_PREFIX = "Account: ";
 	private static final String LEFT_PAREN = "(";
 	private static final String RIGHT_PAREN = ")";
 	private static final String SLASH = "/";
 	private static final String ROSTER_DISCONNECTED_NAME = "connecting...";
+
+	protected ImageDescriptor getImageDescriptor(String iconFile) {
+		return AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+				iconFile);
+	}
 
 	protected String getRosterLabel(Roster roster) {
 		IUser user = roster.getUser();
@@ -60,7 +69,11 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	}
 
 	protected ImageDescriptor getRosterImageDescriptor(Roster roster) {
-		return null;
+		IUser user = roster.getUser();
+		if (user == null)
+			return getImageDescriptor(IImageFiles.USER_UNAVAILABLE_ICON);
+		else
+			return getImageDescriptor(IImageFiles.USER_AVAILABLE_ICON);
 	}
 
 	private IWorkbenchAdapter rosterAdapter = new IWorkbenchAdapter() {
@@ -110,15 +123,16 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	protected String getRosterGroupLabel(RosterGroup group) {
 		Collection entries = group.getEntries();
 		StringBuffer buf = new StringBuffer(group.getName()).append(" ");
-		buf.append(LEFT_PAREN).append(getEntriesAvailableCount(entries)).append(SLASH);
+		buf.append(LEFT_PAREN).append(getEntriesAvailableCount(entries))
+				.append(SLASH);
 		buf.append(getEntriesTotalCount(entries)).append(RIGHT_PAREN);
 		return buf.toString();
 	}
 
 	protected ImageDescriptor getRosterGroupImageDescriptor(RosterGroup group) {
-		return null;
+		return getImageDescriptor(IImageFiles.GROUP_ICON);
 	}
-	
+
 	private IWorkbenchAdapter rosterGroupAdapter = new IWorkbenchAdapter() {
 
 		public Object[] getChildren(Object o) {
@@ -146,7 +160,6 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	protected ImageDescriptor getRosterItemImageDescriptor(RosterItem item) {
 		return null;
 	}
-	
 
 	private IWorkbenchAdapter rosterItemAdapter = new IWorkbenchAdapter() {
 
@@ -173,10 +186,12 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 		Map properties = presence.getProperties();
 		int fixedEntries = 3;
 		Object[] children = new Object[fixedEntries + properties.size()];
-		children[0] = new RosterItem(entry, USER_PREFIX
-				+ entry.getUser().getName());
-		children[1] = new RosterItem(entry, TYPE_PREFIX + presence.getType().toString());
-		children[2] = new RosterItem(entry, MODE_PREFIX + presence.getMode().toString());
+		children[0] = new RosterItem(entry, ACCOUNT_PREFIX
+				+ entry.getUser().getID().getName());
+		children[1] = new RosterItem(entry, TYPE_PREFIX
+				+ presence.getType().toString());
+		children[2] = new RosterItem(entry, MODE_PREFIX
+				+ presence.getMode().toString());
 		for (Iterator i = properties.keySet().iterator(); i.hasNext(); fixedEntries++) {
 			children[fixedEntries] = properties.get(i.next());
 		}
@@ -188,9 +203,26 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	}
 
 	protected ImageDescriptor getRosterEntryImageDescriptor(RosterEntry entry) {
-		return null;
+		IPresence p = entry.getPresence();
+		if (p != null) {
+			IPresence.Type pType = p.getType();
+			IPresence.Mode pMode = p.getMode();
+			// If type is unavailable then we're unavailable
+			if (pType.equals(IPresence.Type.AVAILABLE)) {
+				// if type and mode are both 'available' then we're actually
+				// available
+				if (pMode.equals(IPresence.Mode.AVAILABLE))
+					return getImageDescriptor(IImageFiles.USER_AVAILABLE_ICON);
+				// If mode is away then we're away
+				else if (pMode.equals(IPresence.Mode.AWAY)
+						|| pMode.equals(IPresence.Mode.EXTENDED_AWAY))
+					return getImageDescriptor(IImageFiles.USER_AWAY_ICON);
+				else if (pMode.equals(IPresence.Mode.DND))
+					return getImageDescriptor(IImageFiles.USER_DND_ICON);
+			}
+		}
+		return getImageDescriptor(IImageFiles.USER_UNAVAILABLE_ICON);
 	}
-	
 
 	private IWorkbenchAdapter rosterEntryAdapter = new IWorkbenchAdapter() {
 
