@@ -20,6 +20,7 @@ import java.util.List;
  * Base roster group class implementing {@link IRosterGroup}. Subclasses may be
  * created as appropriate
  * 
+ * @deprecated in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
  */
 public class RosterGroup implements IRosterGroup {
 

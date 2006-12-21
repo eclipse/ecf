@@ -20,6 +20,7 @@ import org.eclipse.ecf.core.identity.ID;
  * Roster entry base class implementing {@link IRosterEntry}. Subclasses may be
  * created as appropriate
  * 
+ * @deprecated  in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
  */
 public class RosterEntry implements IRosterEntry {
 

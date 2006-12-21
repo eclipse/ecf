@@ -19,7 +19,7 @@ import org.eclipse.ecf.core.util.ECFException;
  * {@link IPresenceContainerAdapter#getPresenceSender()}
  * 
  * @see IPresenceContainerAdapter
- * 
+ * @deprecated  in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
  */
 public interface IPresenceSender {
 

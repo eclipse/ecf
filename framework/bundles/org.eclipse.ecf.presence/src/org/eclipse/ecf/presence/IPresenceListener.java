@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.ID;
  * Implementers of this interface must be registered via
  * {@link IPresenceContainerAdapter#addPresenceListener(IPresenceListener)}
  * 
- * @see IPresenceContainerAdapter
+ * @deprecated in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
  */
 public interface IPresenceListener extends IParticipantListener {
 

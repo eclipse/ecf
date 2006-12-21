@@ -20,7 +20,7 @@ import org.eclipse.ecf.core.identity.ID;
  * information about roster entrys. Implementers of this interface are provided
  * via the {@link IPresenceListener} methods. callback
  * 
- * @see IPresenceListener
+ * @deprecated  in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
  */
 public interface IRosterEntry {
 

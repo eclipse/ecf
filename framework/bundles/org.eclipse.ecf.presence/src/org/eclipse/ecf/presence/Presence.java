@@ -18,6 +18,7 @@ import java.util.Map;
  * Base presence class implementing {@link IPresence}. Subclasses may be
  * created as appropriate
  * 
+ * @deprecated  in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
  */
 public class Presence implements IPresence {
 

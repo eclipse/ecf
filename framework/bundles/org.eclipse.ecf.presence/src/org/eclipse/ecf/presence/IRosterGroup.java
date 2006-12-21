@@ -16,7 +16,7 @@ import java.util.Collection;
 /**
  * Roster group information. The roster group information is associated with
  * {@link IRosterEntry} instances.
- * 
+ * @deprecated  in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
  */
 public interface IRosterGroup {
 	

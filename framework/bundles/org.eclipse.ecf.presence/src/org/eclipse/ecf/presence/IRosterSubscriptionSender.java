@@ -13,6 +13,10 @@ package org.eclipse.ecf.presence;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 
+/**
+ * 
+ * @deprecated  in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
+ */
 public interface IRosterSubscriptionSender {
 
 	/**
