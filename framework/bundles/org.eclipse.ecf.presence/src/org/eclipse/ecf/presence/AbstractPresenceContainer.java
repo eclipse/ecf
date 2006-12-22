@@ -25,47 +25,11 @@ public abstract class AbstractPresenceContainer implements
 
 	private Vector messageListeners = new Vector();
 
-	private Vector presenceListeners = new Vector();
-
-	private Vector subscribeListeners = new Vector();
-
-	/**
-	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#addRosterSubscriptionListener(org.eclipse.ecf.presence.IRosterSubscriptionListener)
-	 */
-	public void addRosterSubscriptionListener(IRosterSubscriptionListener listener) {
-		subscribeListeners.add(listener);
-	}
-
-	/**
-	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#addPresenceListener(org.eclipse.ecf.presence.IPresenceListener)
-	 */
-	public void addPresenceListener(IPresenceListener listener) {
-		presenceListeners.add(listener);
-	}
-
 	/**
 	 * @see org.eclipse.ecf.presence.IPresenceContainerAdapter#addMessageListener(org.eclipse.ecf.presence.IMessageListener)
 	 */
 	public void addMessageListener(IMessageListener listener) {
 		messageListeners.add(listener);
-	}
-
-	/**
-	 * Remove a subscription listener
-	 * 
-	 * @param listener
-	 */
-	public void removeRosterSubscriptionListener(IRosterSubscriptionListener listener) {
-		subscribeListeners.remove(listener);
-	}
-
-	/**
-	 * Remove a presence listener
-	 * 
-	 * @param listener
-	 */
-	public void removePresenceListener(IPresenceListener listener) {
-		presenceListeners.remove(listener);
 	}
 
 	/**
@@ -89,20 +53,6 @@ public abstract class AbstractPresenceContainer implements
 	 */
 	public List getMessageListeners() {
 		return messageListeners;
-	}
-
-	/**
-	 * @return The list of presence listeners
-	 */
-	public List getPresenceListeners() {
-		return presenceListeners;
-	}
-
-	/**
-	 * @return The list of {@link IRosterSubscriptionListener}
-	 */
-	public List getSubscribeListeners() {
-		return subscribeListeners;
 	}
 
 	/*
