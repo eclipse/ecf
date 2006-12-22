@@ -38,12 +38,12 @@ import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceListener;
+import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
 import org.eclipse.ecf.presence.IRosterSubscriptionListener;
-import org.eclipse.ecf.presence.chat.IInvitationListener;
+import org.eclipse.ecf.presence.chat.IChatRoomInvitationListener;
 import org.eclipse.ecf.presence.roster.AbstractRosterManager;
-import org.eclipse.ecf.presence.roster.IPresenceSender;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
@@ -84,11 +84,12 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 
 	Vector subscribeListeners = new Vector();
 
-	Vector invitationListeners = new Vector();
-
 	Namespace namespace = null;
 	
 	XMPPClientSOContainer container = null;
+
+	Vector invitationListeners = new Vector();
+
 
 	public XMPPPresenceSharedObject(XMPPClientSOContainer container) {
 		this.container = container;
@@ -97,16 +98,16 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 	protected void fireInvitationReceived(ID roomID, ID fromID, ID toID,
 			String subject, String body) {
 		for (Iterator i = invitationListeners.iterator(); i.hasNext();) {
-			IInvitationListener l = (IInvitationListener) i.next();
+			IChatRoomInvitationListener l = (IChatRoomInvitationListener) i.next();
 			l.handleInvitationReceived(roomID, fromID, subject, body);
 		}
 	}
 
-	protected void addInvitationListener(IInvitationListener listener) {
+	protected void addInvitationListener(IChatRoomInvitationListener listener) {
 		invitationListeners.add(listener);
 	}
 
-	protected void removeInvitationListener(IInvitationListener listener) {
+	protected void removeInvitationListener(IChatRoomInvitationListener listener) {
 		invitationListeners.remove(listener);
 	}
 
@@ -176,8 +177,6 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 	public void dispose(ID containerID) {
 		config = null;
 		accountManager = null;
-		invitationListeners.clear();
-		invitationListeners = null;
 	}
 
 	protected void dumpStack(String msg, Throwable e) {
@@ -731,7 +730,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 			super(roster);
 		}
 		
-		public void notifySubscriptionListener(ID fromID, org.eclipse.ecf.presence.roster.IPresence presence) {
+		public void notifySubscriptionListener(ID fromID, org.eclipse.ecf.presence.IPresence presence) {
 			super.fireSubscriptionListener(fromID, presence);
 		}
 		
@@ -749,10 +748,10 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		}
 
 		// XXX Testing
-		protected org.eclipse.ecf.presence.roster.IPresence getPresenceState() {
-			return new org.eclipse.ecf.presence.roster.Presence(
-					org.eclipse.ecf.presence.roster.IPresence.Type.AVAILABLE, "available",
-					org.eclipse.ecf.presence.roster.IPresence.Mode.AVAILABLE);
+		protected org.eclipse.ecf.presence.IPresence getPresenceState() {
+			return new org.eclipse.ecf.presence.Presence(
+					org.eclipse.ecf.presence.IPresence.Type.AVAILABLE, "available",
+					org.eclipse.ecf.presence.IPresence.Mode.AVAILABLE);
 		}
 
 		public void setUser(IUser user) {
@@ -763,7 +762,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 			org.eclipse.ecf.presence.roster.RosterGroup group1 = new org.eclipse.ecf.presence.roster.RosterGroup(
 					getRoster(), "group1");
 			org.eclipse.ecf.presence.roster.RosterEntry entry1 = new org.eclipse.ecf.presence.roster.RosterEntry(
-					group1, (IUser) new User(createStringID("foo")), (org.eclipse.ecf.presence.roster.IPresence) getPresenceState());
+					group1, (IUser) new User(createStringID("foo")), (org.eclipse.ecf.presence.IPresence) getPresenceState());
 			r.addItem(group1);
 			// XXX end testing
 			fireRosterUpdate(null);

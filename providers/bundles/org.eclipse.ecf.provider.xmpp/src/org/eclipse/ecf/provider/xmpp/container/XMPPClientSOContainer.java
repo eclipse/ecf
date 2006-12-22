@@ -56,11 +56,10 @@ import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterSubscriptionListener;
-import org.eclipse.ecf.presence.IMessageListener.Type;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.presence.chat.IInvitationListener;
-import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.presence.chat.IChatRoomInvitationListener;
+import org.eclipse.ecf.presence.chat.IChatRoomInfo;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
@@ -101,7 +100,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
 
-	Trace trace = Trace.create("XMPPClientSOContainer");
+	Trace trace = Trace.create("XMPPContainer");
 
 	public static final String NAMESPACE_IDENTIFIER = XmppPlugin.getDefault()
 			.getNamespaceIdentifier();
@@ -350,10 +349,10 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		Iterator i = packet.getExtensions();
 		for (; i.hasNext();) {
 			Object extension = i.next();
-			trace("XMPPClientSOContainer.handleAsExtension(ext=" + extension
+			trace("XMPPContainer.handleAsExtension(ext=" + extension
 					+ ",packet=" + packet.toXML() + ")");
 			if (packet instanceof Presence && extension instanceof MUCUser) {
-				trace("XMPPClientSOContainer.handleAsExtension: received presence for MUCUser");
+				trace("XMPPContainer.handleAsExtension: received presence for MUCUser");
 				return true;
 			}
 		}
@@ -491,6 +490,10 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		return delegate.getRosterManager();
 	}
 	
+	protected ECFConnection getECFConnection() {
+		return (ECFConnection) super.getConnection();
+	}
+	
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(IPresenceContainerAdapter.class)) {
 			return new IPresenceContainerAdapter() {
@@ -514,8 +517,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 				public IMessageSender getMessageSender() {
 					return new IMessageSender() {
 
-						public void sendMessage(ID toID, Type type, String subject,
-								String message) {
+						public void sendMessage(ID toID, String subject, String message) {
 							try {
 								XMPPClientSOContainer.this.sendMessage(toID,
 										message);
@@ -621,25 +623,25 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 							return XMPPClientSOContainer.this.getChatRooms();
 						}
 
-						public IRoomInfo getChatRoomInfo(String roomname) {
+						public IChatRoomInfo getChatRoomInfo(String roomname) {
 							return XMPPClientSOContainer.this
 									.getChatRoomInfo(roomname);
 						}
 
-						public IRoomInfo[] getChatRoomsInfo() {
+						public IChatRoomInfo[] getChatRoomsInfo() {
 							ID[] chatRooms = getChatRooms();
 							if (chatRooms == null)
 								return null;
-							IRoomInfo[] res = new IRoomInfo[chatRooms.length];
+							IChatRoomInfo[] res = new IChatRoomInfo[chatRooms.length];
 							int count = 0;
 							for (int i = 0; i < chatRooms.length; i++) {
-								IRoomInfo infoResult = XMPPClientSOContainer.this
+								IChatRoomInfo infoResult = XMPPClientSOContainer.this
 										.getChatRoomInfo(chatRooms[i]);
 								if (infoResult != null) {
 									res[count++] = infoResult;
 								}
 							}
-							IRoomInfo[] results = new IRoomInfo[count];
+							IChatRoomInfo[] results = new IChatRoomInfo[count];
 							for (int i = 0; i < count; i++) {
 								results[i] = res[i];
 							}
@@ -651,12 +653,12 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 						}
 
 						public void addInvitationListener(
-								IInvitationListener listener) {
+								IChatRoomInvitationListener listener) {
 							delegate.addInvitationListener(listener);
 						}
 
 						public void removeInvitationListener(
-								IInvitationListener listener) {
+								IChatRoomInvitationListener listener) {
 							delegate.removeInvitationListener(listener);
 						}
 
@@ -727,7 +729,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		return (ID[]) result.toArray(new ID[] {});
 	}
 
-	class ECFRoomInfo implements IRoomInfo {
+	class ECFRoomInfo implements IChatRoomInfo {
 
 		RoomInfo info;
 
@@ -811,7 +813,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		}
 	}
 
-	protected IRoomInfo getChatRoomInfo(ID roomID) {
+	protected IChatRoomInfo getChatRoomInfo(ID roomID) {
 		if (!(roomID instanceof XMPPRoomID))
 			return null;
 		XMPPRoomID cRoomID = (XMPPRoomID) roomID;
@@ -828,7 +830,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		return null;
 	}
 
-	protected IRoomInfo getChatRoomInfo(String roomname) {
+	protected IChatRoomInfo getChatRoomInfo(String roomname) {
 		try {
 			// Create roomid
 			XMPPRoomID roomID = new XMPPRoomID(getConnectNamespace(), delegate
@@ -940,17 +942,17 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		return rosterSubscriptionSender;
 	}
 	
-	org.eclipse.ecf.presence.roster.IPresenceSender rosterPresenceSender = new org.eclipse.ecf.presence.roster.IPresenceSender() {
+	org.eclipse.ecf.presence.IPresenceSender rosterPresenceSender = new org.eclipse.ecf.presence.IPresenceSender() {
 
 		public void sendPresenceUpdate(ID toID,
-				org.eclipse.ecf.presence.roster.IPresence presence)
+				org.eclipse.ecf.presence.IPresence presence)
 				throws ECFException {
 			sendPresenceUpdate(toID, presence);
 		}
 		
 	};
 	
-	protected org.eclipse.ecf.presence.roster.IPresenceSender getPresenceSender() {
+	protected org.eclipse.ecf.presence.IPresenceSender getPresenceSender() {
 		return rosterPresenceSender;
 	}
 }
