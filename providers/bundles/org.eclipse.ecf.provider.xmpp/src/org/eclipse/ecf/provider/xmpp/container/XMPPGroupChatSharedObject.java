@@ -24,7 +24,7 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.internal.provider.xmpp.Trace;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chat.IChatParticipantListener;
+import org.eclipse.ecf.presence.chat.IChatRoomParticipantListener;
 import org.eclipse.ecf.provider.xmpp.events.ChatMembershipEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
@@ -59,10 +59,10 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
         }
     }
 
-    protected void addChatParticipantListener(IChatParticipantListener listener) {
+    protected void addChatParticipantListener(IChatRoomParticipantListener listener) {
         participantListeners.add(listener);
     }
-    protected void removeChatParticipantListener(IChatParticipantListener listener) {
+    protected void removeChatParticipantListener(IChatRoomParticipantListener listener) {
         participantListeners.remove(listener);
     }
     protected void addMessageListener(IMessageListener listener) {
@@ -243,13 +243,13 @@ public class XMPPGroupChatSharedObject implements ISharedObject {
     }
     protected void fireParticipant(ID fromID, IPresence presence) {
         for (Iterator i = participantListeners.iterator(); i.hasNext();) {
-            IChatParticipantListener l = (IChatParticipantListener) i.next();
+            IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
             l.handlePresence(fromID, presence);
         }
     }
     protected void fireChatParticipant(ID fromID, boolean join) {
         for (Iterator i = participantListeners.iterator(); i.hasNext();) {
-            IChatParticipantListener l = (IChatParticipantListener) i.next();
+            IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
             if (join) {
             	l.handleArrivedInChat(fromID);
             } else {

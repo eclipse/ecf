@@ -31,7 +31,7 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
-import org.eclipse.ecf.presence.chat.IChatParticipantListener;
+import org.eclipse.ecf.presence.chat.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
@@ -466,14 +466,14 @@ public class XMPPGroupChatSOContainer extends ClientSOContainer implements
 	}
 
 	public void addChatParticipantListener(
-			IChatParticipantListener participantListener) {
+			IChatRoomParticipantListener participantListener) {
 		if (delegate != null) {
 			delegate.addChatParticipantListener(participantListener);
 		}
 	}
 
 	public void removeChatParticipantListener(
-			IChatParticipantListener participantListener) {
+			IChatRoomParticipantListener participantListener) {
 		if (delegate != null) {
 			delegate.removeChatParticipantListener(participantListener);
 		}
