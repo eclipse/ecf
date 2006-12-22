@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
-import org.eclipse.ecf.presence.chat.IChatParticipantListener;
+import org.eclipse.ecf.presence.chat.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IChatRoomInfo;
@@ -77,7 +77,7 @@ public class ChatRoomManagerUI {
 									messageBody);
 						}
 					});
-					chatRoom.addChatParticipantListener(new IChatParticipantListener() {
+					chatRoom.addChatParticipantListener(new IChatRoomParticipantListener() {
 						public void handlePresence(ID fromID, IPresence presence) {
 							chatroomview.handlePresence(fromID, presence);
 						}
