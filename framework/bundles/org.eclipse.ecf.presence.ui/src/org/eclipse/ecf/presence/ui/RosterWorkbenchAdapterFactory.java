@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.IImageFiles;
-import org.eclipse.ecf.presence.roster.IPresence;
+import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.roster.Roster;
 import org.eclipse.ecf.presence.roster.RosterEntry;
 import org.eclipse.ecf.presence.roster.RosterGroup;
