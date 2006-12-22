@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.identity.ID;
  * 
  * @see IChatRoomManager#getChatRoomInfo(String)
  */
-public interface IRoomInfo extends IAdaptable {
+public interface IChatRoomInfo extends IAdaptable {
 	/**
 	 * Get a description for this room
 	 * 

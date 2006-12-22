@@ -19,7 +19,7 @@ import org.eclipse.ecf.core.util.ECFException;
  * 
  * @see IChatRoomContainer
  */
-public interface IChatMessageSender {
+public interface IChatRoomMessageSender {
 	/**
 	 * Send a message to chat room
 	 * 

@@ -22,8 +22,6 @@ import org.eclipse.core.runtime.IAdaptable;
  * {@link IParticipantListener#handlePresence(org.eclipse.ecf.core.identity.ID, IPresence)}
  * callback
  * 
- * @deprecated  in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
- * 
  */
 public interface IPresence extends IAdaptable, Serializable {
 

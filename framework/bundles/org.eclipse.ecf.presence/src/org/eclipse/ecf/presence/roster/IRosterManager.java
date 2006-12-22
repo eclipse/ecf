@@ -11,6 +11,7 @@
 package org.eclipse.ecf.presence.roster;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.presence.IPresenceSender;
 
 /**
  * Roster manager for getting access to and changing roster.

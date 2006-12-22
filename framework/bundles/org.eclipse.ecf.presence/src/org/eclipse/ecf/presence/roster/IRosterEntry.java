@@ -14,6 +14,7 @@ package org.eclipse.ecf.presence.roster;
 import java.util.Collection;
 
 import org.eclipse.ecf.core.user.IUser;
+import org.eclipse.ecf.presence.IPresence;
 
 /**
  * Roster entry object. Instances implementing this interface provide

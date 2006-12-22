@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.user.IUser;
+import org.eclipse.ecf.presence.IPresence;
 
 /**
  * Roster entry base class implementing {@link IRosterEntry}. Subclasses may be

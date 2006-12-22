@@ -16,9 +16,8 @@ import java.util.Map;
 
 /**
  * Base presence class implementing {@link IPresence}. Subclasses may be
- * created as appropriate
+ * created as appropriate.
  * 
- * @deprecated  in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
  */
 public class Presence implements IPresence {
 
@@ -51,18 +50,30 @@ public class Presence implements IPresence {
 		this(type, status, mode, null);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.roster.IPresence#getMode()
+	 */
 	public Mode getMode() {
 		return mode;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.roster.IPresence#getProperties()
+	 */
 	public Map getProperties() {
 		return properties;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.roster.IPresence#getStatus()
+	 */
 	public String getStatus() {
 		return status;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.roster.IPresence#getType()
+	 */
 	public Type getType() {
 		return type;
 	}
@@ -76,6 +87,9 @@ public class Presence implements IPresence {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuffer sb = new StringBuffer("Presence[");
 		sb.append("type=").append(type).append(";");

@@ -26,7 +26,7 @@ public interface IChatRoomManager extends IAdaptable {
 	 * @param listener
 	 *            the invitation listener to add
 	 */
-	public void addInvitationListener(IInvitationListener listener);
+	public void addInvitationListener(IChatRoomInvitationListener listener);
 
 	/**
 	 * Remove invitation listener
@@ -34,7 +34,7 @@ public interface IChatRoomManager extends IAdaptable {
 	 * @param listener
 	 *            the invitation listener to remove
 	 */
-	public void removeInvitationListener(IInvitationListener listener);
+	public void removeInvitationListener(IChatRoomInvitationListener listener);
 
 	/**
 	 * Get parent IChatRoomManager. If this manager is the root, then this
@@ -66,21 +66,21 @@ public interface IChatRoomManager extends IAdaptable {
 	 *            room manager instance itself. For example, for IRC, the chat
 	 *            room manager is also a chat room where message can be
 	 *            sent/received
-	 * @return IRoomInfo an instance that provides the given info. Null if no
+	 * @return IChatRoomInfo an instance that provides the given info. Null if no
 	 *         chat room info associated with given name or null
 	 */
-	public IRoomInfo getChatRoomInfo(String roomname);
+	public IChatRoomInfo getChatRoomInfo(String roomname);
 
 	/**
 	 * Get detailed room info for all chat rooms associated with this manager
 	 * 
-	 * @return IRoomInfo an array of instances that provide info for all chat
+	 * @return IChatRoomInfo an array of instances that provide info for all chat
 	 *         rooms
 	 */
-	public IRoomInfo[] getChatRoomsInfo();
+	public IChatRoomInfo[] getChatRoomsInfo();
 
 	// XXX these two methods should ultimately be added to IChatRoomManager
-	// public void addInvitationListener(IInvitationListener listener);
+	// public void addInvitationListener(IChatRoomInvitationListener listener);
 	// public IChatRoomContainer createChatRoomContainer() throws
 	// ContainerCreateException;
 }

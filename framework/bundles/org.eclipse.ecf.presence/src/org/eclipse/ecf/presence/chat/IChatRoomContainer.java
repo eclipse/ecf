@@ -34,9 +34,9 @@ public interface IChatRoomContainer extends IContainer {
 	/**
 	 * Get interface for sending messages
 	 * 
-	 * @return IChatMessageSender. Null if no message sender available
+	 * @return IChatRoomMessageSender. Null if no message sender available
 	 */
-	public IChatMessageSender getChatMessageSender();
+	public IChatRoomMessageSender getChatMessageSender();
 
 	/**
 	 * Add participant listener. The given listener will be notified if/when
