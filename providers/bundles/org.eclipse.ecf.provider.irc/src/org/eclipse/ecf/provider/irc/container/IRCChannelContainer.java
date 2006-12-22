@@ -27,7 +27,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chat.IChatMessageSender;
+import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.schwering.irc.lib.IRCUser;
@@ -118,8 +118,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	 * 
 	 * @see org.eclipse.ecf.presence.chat.IChatRoomContainer#getChatMessageSender()
 	 */
-	public IChatMessageSender getChatMessageSender() {
-		return new IChatMessageSender() {
+	public IChatRoomMessageSender getChatMessageSender() {
+		return new IChatRoomMessageSender() {
 			public void sendMessage(String message) throws ECFException {
 				doSendChannelMessage(message);
 			}

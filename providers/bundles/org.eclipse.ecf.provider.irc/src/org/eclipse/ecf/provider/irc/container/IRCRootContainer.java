@@ -28,13 +28,13 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.irc.Activator;
-import org.eclipse.ecf.presence.chat.IChatMessageSender;
+import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomContainerOptionsAdapter;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.presence.chat.IInvitationListener;
-import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.presence.chat.IChatRoomInvitationListener;
+import org.eclipse.ecf.presence.chat.IChatRoomInfo;
 import org.eclipse.ecf.provider.irc.identity.IRCID;
 import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCEventListener;
@@ -284,9 +284,9 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				Activator.NAMESPACE_IDENTIFIER);
 	}
 
-	public IRoomInfo getChatRoomInfo(final String roomName) {
+	public IChatRoomInfo getChatRoomInfo(final String roomName) {
 		if (roomName == null)
-			return new IRoomInfo() {
+			return new IChatRoomInfo() {
 				public IChatRoomContainer createChatRoomContainer()
 						throws ContainerCreateException {
 					return IRCRootContainer.this;
@@ -333,7 +333,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 			};
 		else
-			return new IRoomInfo() {
+			return new IChatRoomInfo() {
 				public IChatRoomContainer createChatRoomContainer()
 						throws ContainerCreateException {
 					try {
@@ -390,7 +390,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			};
 	}
 
-	public IRoomInfo[] getChatRoomsInfo() {
+	public IChatRoomInfo[] getChatRoomsInfo() {
 		return null;
 	}
 
@@ -411,8 +411,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			IChatParticipantListener participantListener) {
 	}
 
-	public IChatMessageSender getChatMessageSender() {
-		return new IChatMessageSender() {
+	public IChatRoomMessageSender getChatMessageSender() {
+		return new IChatRoomMessageSender() {
 			public void sendMessage(String message) throws ECFException {
 				parseMessageAndSend(message);
 			}
@@ -641,11 +641,11 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			return false;
 	}
 
-	public void addInvitationListener(IInvitationListener listener) {
+	public void addInvitationListener(IChatRoomInvitationListener listener) {
 		// TODO Auto-generated method stub
 	}
 
-	public void removeInvitationListener(IInvitationListener listener) {
+	public void removeInvitationListener(IChatRoomInvitationListener listener) {
 		// TODO Auto-generated method stub
 	}
 }

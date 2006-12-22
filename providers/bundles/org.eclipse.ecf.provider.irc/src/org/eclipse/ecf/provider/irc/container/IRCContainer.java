@@ -41,12 +41,12 @@ import org.eclipse.ecf.internal.provider.irc.Activator;
 import org.eclipse.ecf.internal.provider.irc.Trace;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chat.IChatMessageSender;
+import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.presence.chat.IInvitationListener;
-import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.presence.chat.IChatRoomInvitationListener;
+import org.eclipse.ecf.presence.chat.IChatRoomInfo;
 import org.eclipse.ecf.provider.irc.identity.IRCID;
 import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCEventListener;
@@ -573,8 +573,8 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 			return null;
 		}
 	}
-	public IRoomInfo getChatRoomInfo(final String roomname) {
-		return new IRoomInfo() {
+	public IChatRoomInfo getChatRoomInfo(final String roomname) {
+		return new IChatRoomInfo() {
 			public String getDescription() {
 				return "Channel "+joinedChannel;
 			}
@@ -610,15 +610,15 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 			}
 		};
 	}
-	public IRoomInfo[] getChatRoomsInfo() {
+	public IChatRoomInfo[] getChatRoomsInfo() {
 		return null;
 	}
 	// IChatRoomContainer
 	public void addMessageListener(IMessageListener msgListener) {
 		msgListeners.add(msgListener);
 	}
-	public IChatMessageSender getChatMessageSender() {
-		return new IChatMessageSender() {
+	public IChatRoomMessageSender getChatMessageSender() {
+		return new IChatRoomMessageSender() {
 			public void sendMessage(String message) throws ECFException {
 				parseMessageAndSend(message);
 			}
@@ -755,10 +755,10 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 			listeners.remove(l);
 		}
 	}
-	public void addInvitationListener(IInvitationListener listener) {
+	public void addInvitationListener(IChatRoomInvitationListener listener) {
 		// TODO Auto-generated method stub
 	}
-	public void removeInvitationListener(IInvitationListener listener) {
+	public void removeInvitationListener(IChatRoomInvitationListener listener) {
 		// TODO Auto-generated method stub
 	}
 }
