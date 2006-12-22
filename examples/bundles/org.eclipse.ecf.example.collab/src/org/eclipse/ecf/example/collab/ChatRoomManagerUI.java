@@ -17,11 +17,11 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chat.IChatMessageSender;
+import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.presence.chat.IChatRoomInfo;
 import org.eclipse.ecf.ui.views.ChatRoomView;
 import org.eclipse.ecf.ui.views.IChatRoomViewCloseListener;
 import org.eclipse.swt.widgets.Display;
@@ -48,14 +48,14 @@ public class ChatRoomManagerUI {
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
 				try {
-					IRoomInfo roomInfo = manager.getChatRoomInfo(targetID.getName());
+					IChatRoomInfo roomInfo = manager.getChatRoomInfo(targetID.getName());
 					IChatRoomContainer chatRoom = null;
 					try {
 						chatRoom = roomInfo.createChatRoomContainer();
 					} catch (ContainerCreateException e1) {
 						// can't happen
 					}
-					IChatMessageSender sender = chatRoom.getChatMessageSender();
+					IChatRoomMessageSender sender = chatRoom.getChatMessageSender();
 					IWorkbenchWindow ww = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow();
 					IWorkbenchPage wp = ww.getActivePage();

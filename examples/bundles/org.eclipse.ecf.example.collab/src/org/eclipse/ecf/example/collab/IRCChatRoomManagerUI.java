@@ -25,7 +25,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.presence.chat.IChatRoomInfo;
 import org.eclipse.ecf.ui.views.ChatRoomManagerView;
 import org.eclipse.ecf.ui.views.IChatRoomViewCloseListener;
 import org.eclipse.swt.widgets.Display;
@@ -79,7 +79,7 @@ public class IRCChatRoomManagerUI {
 	}
 	
 	private void setupNewView(final IContainer container, final ID targetID, final ChatRoomManagerView chatroomview) {
-		IRoomInfo roomInfo = manager.getChatRoomInfo(null);
+		IChatRoomInfo roomInfo = manager.getChatRoomInfo(null);
 		if (roomInfo == null) throw new NullPointerException("Chat room manager does not expose chat room interface.  Cannot create UI");
 		IChatRoomContainer chatRoom = null;
 		try {

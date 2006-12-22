@@ -26,6 +26,7 @@ import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.Presence;
+import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
 import org.eclipse.ecf.ui.views.ILocalInputHandler;
@@ -48,6 +49,8 @@ public class PresenceContainerUI {
 
 	protected IAccountManager accountManager = null;
 
+	protected IRosterSubscriptionSender rosterSubscriptionSender = null;
+	
 	protected IPresenceContainerAdapter pc = null;
 
 	protected ISharedObjectContainer soContainer = null;
@@ -61,8 +64,10 @@ public class PresenceContainerUI {
 	public PresenceContainerUI(IPresenceContainerAdapter pc) {
 		this.pc = pc;
 		this.messageSender = pc.getMessageSender();
-		this.presenceSender = pc.getPresenceSender();
+		this.presenceSender = pc.getRosterManager().getPresenceSender();
+		this.rosterSubscriptionSender = pc.getRosterManager().getRosterSubscriptionSender();
 		this.accountManager = pc.getAccountManager();
+		
 	}
 
 	protected void setup(final IContainer container, final ID localUser,
@@ -76,23 +81,25 @@ public class PresenceContainerUI {
 					IWorkbenchWindow ww = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow();
 					IWorkbenchPage wp = ww.getActivePage();
-					IViewPart view = wp
-							.showView("org.eclipse.ecf.ui.view.rosterview");
-					rosterView = (RosterView) view;
 					
-					String nickname = null;
-					if (nick != null) {
-						nickname = nick;
+					if (pc.getAdapter(IPresenceContainerAdapter.class) == null) {
+						IViewPart view = wp
+								.showView("org.eclipse.ecf.ui.view.rosterview");
+						rosterView = (RosterView) view;
+						
+						String nickname = null;
+						if (nick != null) {
+							nickname = nick;
+						} else {
+							String name = localUser.getName();
+							nickname = name.substring(0, name.indexOf("@"));
+						}
+						PresenceContainerUI.this.localUser = new org.eclipse.ecf.core.user.User(
+								localUser, nickname);
 					} else {
-						String name = localUser.getName();
-						nickname = name.substring(0, name.indexOf("@"));
+						MultiRosterView rv = (MultiRosterView) wp.showView("org.eclipse.ecf.presence.ui.view1");
+						rv.addContainer(container);
 					}
-					PresenceContainerUI.this.localUser = new org.eclipse.ecf.core.user.User(
-							localUser, nickname);
-					
-					// XXX Testing
-					MultiRosterView rv = (MultiRosterView) wp.showView("org.eclipse.ecf.presence.ui.view1");
-					rv.addContainer(container);
 					
 				} catch (Exception e) {
 					ClientPlugin.getDefault().getLog().log(
@@ -124,7 +131,7 @@ public class PresenceContainerUI {
 							public void inputText(ID userID, String text) {
 								try {
 									messageSender.sendMessage(userID,
-											null, null, text);
+											null, text);
 								} catch (ECFException e) {
 									ClientPlugin.getDefault().getLog().log(
 											new Status(IStatus.ERROR,
@@ -171,8 +178,7 @@ public class PresenceContainerUI {
 									String[] groups) {
 								// Send roster add
 								try {
-									presenceSender.sendRosterAdd(user,
-											name, groups);
+									rosterSubscriptionSender.sendRosterAdd(user, name, groups);
 								} catch (ECFException e) {
 									ClientPlugin
 											.getDefault()
@@ -192,7 +198,7 @@ public class PresenceContainerUI {
 
 							public void sendRosterRemove(ID userID) {
 								try {
-									presenceSender.sendRosterRemove(userID);
+									rosterSubscriptionSender.sendRosterRemove(userID);
 								} catch (ECFException e) {
 									ClientPlugin
 											.getDefault()
