@@ -21,7 +21,7 @@ import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.presence.chat.IChatRoomInfo;
 
 public class XMPPChatClient {
 	
@@ -34,7 +34,7 @@ public class XMPPChatClient {
 	ID userID = null;
 	IChatRoomManager chatmanager = null;
 	IChatRoomContainer chatroom = null;
-	IRoomInfo roomInfo = null;
+	IChatRoomInfo roomInfo = null;
 	
 	// Interface for receiving messages
 	IMessageReceiver receiver = null;
@@ -93,7 +93,7 @@ public class XMPPChatClient {
 		chatroom = roomInfo.createChatRoomContainer();
 		return chatroom;
 	}
-	public IRoomInfo getChatRoomInfo() {
+	public IChatRoomInfo getChatRoomInfo() {
 		return roomInfo;
 	}
 	private ID getID(String name) {
@@ -107,8 +107,8 @@ public class XMPPChatClient {
 	public void sendMessage(String jid, String msg) {
 		if (sender != null) {
 			try {
-				sender.sendMessage(getID(jid), IMessageListener.Type.NORMAL,
-						"", msg);
+				sender.sendMessage(getID(jid), "",
+						msg);
 			} catch (ECFException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

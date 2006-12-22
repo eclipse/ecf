@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.presence.chat.IChatMessageSender;
+import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 
 /**
@@ -24,7 +24,7 @@ import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 		IMessageListener {
 
-	private IChatMessageSender sender;
+	private IChatRoomMessageSender sender;
 
 	private boolean running = false;
 
