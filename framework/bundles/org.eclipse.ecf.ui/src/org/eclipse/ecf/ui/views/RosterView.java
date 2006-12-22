@@ -45,11 +45,11 @@ import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.RosterEntry;
-import org.eclipse.ecf.presence.chat.IChatMessageSender;
+import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.presence.chat.IChatRoomInfo;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ChangePasswordDialog;
 import org.eclipse.ecf.ui.dialogs.ChatRoomSelectionDialog;
@@ -555,9 +555,9 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		// If selection cancelled then simply return
 		if (dialog.getReturnCode() != Window.OK)
 			return;
-		// Get selected room, selected manager, and selected IRoomInfo
+		// Get selected room, selected manager, and selected IChatRoomInfo
 		ChatRoomSelectionDialog.Room room = dialog.getSelectedRoom();
-		IRoomInfo selectedInfo = room.getRoomInfo();
+		IChatRoomInfo selectedInfo = room.getRoomInfo();
 		// If they are null then we can't proceed
 		if (room == null || selectedInfo == null) {
 			MessageDialog.openInformation(RosterView.this.getViewSite()
@@ -601,7 +601,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		}
 		// Get the chat message sender callback so that we can send
 		// messages to chat room
-		IChatMessageSender sender = chatRoom.getChatMessageSender();
+		IChatRoomMessageSender sender = chatRoom.getChatMessageSender();
 		IViewPart view = null;
 		try {
 			IViewReference ref = wp.findViewReference(CHAT_ROOM_VIEW_CLASS,

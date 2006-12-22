@@ -14,7 +14,7 @@ package org.eclipse.ecf.ui.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.presence.chat.IChatRoomInfo;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -44,16 +44,16 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 	private Room selectedRoom = null;
 
 	public class Room {
-		IRoomInfo info;
+		IChatRoomInfo info;
 
 		IChatRoomManager manager;
 
-		public Room(IRoomInfo info, IChatRoomManager man) {
+		public Room(IChatRoomInfo info, IChatRoomManager man) {
 			this.info = info;
 			this.manager = man;
 		}
 
-		public IRoomInfo getRoomInfo() {
+		public IChatRoomInfo getRoomInfo() {
 			return info;
 		}
 
@@ -129,7 +129,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 
 		List all = new ArrayList();
 		for (int i = 0; i < managers.length; i++) {
-			IRoomInfo[] infos = managers[i].getChatRoomsInfo();
+			IChatRoomInfo[] infos = managers[i].getChatRoomsInfo();
 			if (infos != null) {
 				for (int j = 0; j < infos.length; j++) {
 					if (infos[j] != null && managers[i] != null) {
@@ -192,7 +192,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		public String getColumnText(Object element, int columnIndex) {
 			Room room = (Room) element;
 
-			IRoomInfo info = room.getRoomInfo();
+			IChatRoomInfo info = room.getRoomInfo();
 			switch (columnIndex) {
 			case 0:
 				return info.getName();

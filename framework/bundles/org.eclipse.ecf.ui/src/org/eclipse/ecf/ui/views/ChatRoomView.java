@@ -27,10 +27,10 @@ import org.eclipse.ecf.presence.IChatID;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chat.IChatMessageSender;
+import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
-import org.eclipse.ecf.presence.chat.IInvitationListener;
-import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.presence.chat.IChatRoomInvitationListener;
+import org.eclipse.ecf.presence.chat.IChatRoomInfo;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -58,7 +58,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class ChatRoomView extends ViewPart implements IMessageListener,
-		IParticipantListener, IInvitationListener {
+		IParticipantListener, IChatRoomInvitationListener {
 	private static final String USERNAME_HOST_DELIMETER = "@";
 
 	private static final int RATIO_WRITE_PANE = 2;
@@ -89,7 +89,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener,
 
 	private Composite mainComp = null;
 
-	private IRoomInfo roomInfo = null;
+	private IChatRoomInfo roomInfo = null;
 
 	private Text writeText = null;
 
@@ -99,7 +99,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener,
 
 	IChatRoomViewCloseListener closeListener = null;
 
-	IChatMessageSender messageSender = null;
+	IChatRoomMessageSender messageSender = null;
 
 	IChatRoomContainer chatRoomContainer = null;
 
@@ -248,13 +248,13 @@ public class ChatRoomView extends ViewPart implements IMessageListener,
 		writeText.setFocus();
 	}
 
-	public IRoomInfo getRoomInfo() {
+	public IChatRoomInfo getRoomInfo() {
 		return roomInfo;
 	}
 
 	public void initialize(final IChatRoomViewCloseListener parent,
 			final String secondaryID, final IChatRoomContainer container,
-			final IRoomInfo info, final IChatMessageSender sender) {
+			final IChatRoomInfo info, final IChatRoomMessageSender sender) {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				removeAllParticipants();

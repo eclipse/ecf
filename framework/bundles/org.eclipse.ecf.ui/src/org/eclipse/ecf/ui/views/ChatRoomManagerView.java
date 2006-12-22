@@ -29,12 +29,12 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chat.IChatMessageSender;
+import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chat.IChatParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.presence.chat.IInvitationListener;
-import org.eclipse.ecf.presence.chat.IRoomInfo;
+import org.eclipse.ecf.presence.chat.IChatRoomInvitationListener;
+import org.eclipse.ecf.presence.chat.IChatRoomInfo;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -70,7 +70,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class ChatRoomManagerView extends ViewPart implements IMessageListener,
-		IInvitationListener {
+		IChatRoomInvitationListener {
 	private static final String COMMAND_PREFIX = "/";
 
 	private static final String COMMAND_DELIM = " ";
@@ -119,7 +119,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 
 	IChatRoomViewCloseListener closeListener = null;
 
-	IChatMessageSender messageSender = null;
+	IChatRoomMessageSender messageSender = null;
 
 	IChatRoomContainer chatRoomContainer = null;
 
@@ -307,7 +307,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 	public void initialize(final IChatRoomViewCloseListener parent,
 			final IChatRoomContainer container,
 			final IChatRoomManager chatRoomManager, final ID targetID,
-			final IChatMessageSender sender) {
+			final IChatRoomMessageSender sender) {
 		ChatRoomManagerView.this.chatRoomManager = chatRoomManager;
 		ChatRoomManagerView.this.closeListener = parent;
 		ChatRoomManagerView.this.chatRoomContainer = container;
@@ -380,9 +380,9 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 	}
 
 	protected void doJoin(String target, String key) {
-		// With manager, first thing we do is get the IRoomInfo for the target
+		// With manager, first thing we do is get the IChatRoomInfo for the target
 		// channel
-		IRoomInfo roomInfo = chatRoomManager.getChatRoomInfo(target);
+		IChatRoomInfo roomInfo = chatRoomManager.getChatRoomInfo(target);
 		// If it's null, we give up
 		if (roomInfo == null)
 			// no room info for given target...give error message and skip
@@ -442,7 +442,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 		}
 	}
 
-	class ChatRoom implements IMessageListener, IInvitationListener,
+	class ChatRoom implements IMessageListener, IChatRoomInvitationListener,
 			IParticipantListener, KeyListener {
 		IChatRoomContainer container;
 
@@ -452,7 +452,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 
 		SimpleLinkTextViewer outputText;
 
-		IChatMessageSender channelMessageSender;
+		IChatRoomMessageSender channelMessageSender;
 
 		private List otherUsers = Collections.synchronizedList(new ArrayList());
 
