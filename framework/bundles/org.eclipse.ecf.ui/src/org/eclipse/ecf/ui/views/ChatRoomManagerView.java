@@ -30,7 +30,7 @@ import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
-import org.eclipse.ecf.presence.chat.IChatParticipantListener;
+import org.eclipse.ecf.presence.chat.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IChatRoomInvitationListener;
@@ -405,7 +405,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 				});
 				// setup participant listener
 				chatRoomContainer
-						.addChatParticipantListener(new IChatParticipantListener() {
+						.addChatParticipantListener(new IChatRoomParticipantListener() {
 							public void handlePresence(ID fromID,
 									IPresence presence) {
 								chatroomview.handlePresence(fromID, presence);

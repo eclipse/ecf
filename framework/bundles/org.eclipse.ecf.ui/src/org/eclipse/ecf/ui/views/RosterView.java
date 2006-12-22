@@ -46,7 +46,7 @@ import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.RosterEntry;
 import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
-import org.eclipse.ecf.presence.chat.IChatParticipantListener;
+import org.eclipse.ecf.presence.chat.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IChatRoomInfo;
@@ -626,7 +626,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 							messageBody);
 				}
 			});
-			chatRoom.addChatParticipantListener(new IChatParticipantListener() {
+			chatRoom.addChatParticipantListener(new IChatRoomParticipantListener() {
 				public void handlePresence(ID fromID, IPresence presence) {
 					chatroomview.handlePresence(fromID, presence);
 				}
