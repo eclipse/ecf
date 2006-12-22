@@ -45,7 +45,7 @@ public interface IChatRoomContainer extends IContainer {
 	 * @param participantListener
 	 */
 	public void addChatParticipantListener(
-			IChatParticipantListener participantListener);
+			IChatRoomParticipantListener participantListener);
 
 	/**
 	 * Remove chat participant listener
@@ -54,5 +54,5 @@ public interface IChatRoomContainer extends IContainer {
 	 *            the participant listener to remove
 	 */
 	public void removeChatParticipantListener(
-			IChatParticipantListener participantListener);
+			IChatRoomParticipantListener participantListener);
 }

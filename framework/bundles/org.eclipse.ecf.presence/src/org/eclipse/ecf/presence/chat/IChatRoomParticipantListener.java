@@ -18,7 +18,7 @@ import org.eclipse.ecf.presence.IParticipantListener;
  * notifications
  * 
  */
-public interface IChatParticipantListener extends IParticipantListener {
+public interface IChatRoomParticipantListener extends IParticipantListener {
 	/**
 	 * Notification that participant arrived in associated chat room
 	 * 
