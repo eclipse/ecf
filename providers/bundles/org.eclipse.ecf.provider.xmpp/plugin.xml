@@ -57,7 +57,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.xmpp.XMPPContainerInstantiator"
-            description="XMPP (Jabber) v2"
+            description="XMPP (experimental)"
             name="ecf.xmpp.smack.v2">
          <property
                value="true"
@@ -83,7 +83,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.xmpp.XMPPSContainerInstantiator"
-            description="XMPP SSL (Jabber) v2"
+            description="XMPP SSL (experimental)"
             name="ecf.xmpps.smack.v2">
          <property
                value="true"
