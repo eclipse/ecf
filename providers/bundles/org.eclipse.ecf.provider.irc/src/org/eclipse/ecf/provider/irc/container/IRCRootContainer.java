@@ -29,7 +29,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.irc.Activator;
 import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
-import org.eclipse.ecf.presence.chat.IChatParticipantListener;
+import org.eclipse.ecf.presence.chat.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomContainerOptionsAdapter;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
@@ -403,12 +403,12 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	}
 
 	public void addChatParticipantListener(
-			IChatParticipantListener participantListener) {
+			IChatRoomParticipantListener participantListener) {
 		// for root container, no participant listening
 	}
 
 	public void removeChatParticipantListener(
-			IChatParticipantListener participantListener) {
+			IChatRoomParticipantListener participantListener) {
 	}
 
 	public IChatRoomMessageSender getChatMessageSender() {

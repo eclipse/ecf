@@ -28,7 +28,7 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
-import org.eclipse.ecf.presence.chat.IChatParticipantListener;
+import org.eclipse.ecf.presence.chat.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.schwering.irc.lib.IRCUser;
 
@@ -50,14 +50,14 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.presence.chat.IChatRoomContainer#addChatParticipantListener(org.eclipse.ecf.presence.chat.IChatParticipantListener)
+	 * @see org.eclipse.ecf.presence.chat.IChatRoomContainer#addChatParticipantListener(org.eclipse.ecf.presence.chat.IChatRoomParticipantListener)
 	 */
 	public void addChatParticipantListener(
-			IChatParticipantListener participantListener) {
+			IChatRoomParticipantListener participantListener) {
 		participantListeners.add(participantListener);
 	}
 	public void removeChatParticipantListener(
-			IChatParticipantListener participantListener) {
+			IChatRoomParticipantListener participantListener) {
 		participantListeners.remove(participantListener);
 	}
 	protected void firePresenceListeners(boolean joined, String name) {
@@ -102,7 +102,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	}
 	protected void firePresenceListeners(boolean joined, String[] users) {
 		for(Iterator i=participantListeners.iterator(); i.hasNext(); ) {
-			IChatParticipantListener l = (IChatParticipantListener) i.next();
+			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
 			for(int j=0; j < users.length; j++) {
 				ID fromID = createIDFromString(users[j]);
 				boolean localUserIsChannelOperator = isLocalUserChannelOperator(users[j]);

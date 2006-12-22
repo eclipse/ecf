@@ -42,7 +42,7 @@ import org.eclipse.ecf.internal.provider.irc.Trace;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
-import org.eclipse.ecf.presence.chat.IChatParticipantListener;
+import org.eclipse.ecf.presence.chat.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.chat.IChatRoomContainer;
 import org.eclipse.ecf.presence.chat.IChatRoomManager;
 import org.eclipse.ecf.presence.chat.IChatRoomInvitationListener;
@@ -345,7 +345,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 	private void firePresenceListeners(boolean joined, String[] strings) {
 		String [] users = removeOperators(strings);
 		for(Iterator i=participantListeners.iterator(); i.hasNext(); ) {
-			IChatParticipantListener l = (IChatParticipantListener) i.next();
+			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
 			for(int j=0; j < users.length; j++) {
 				ID fromID = createIDFromString(users[j]);
 				ID localID = (ircUser != null)?createIDFromString(ircUser.getNick()):null;
@@ -363,7 +363,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 	}
 	private void joinLocalUser() {
 		for(Iterator i=participantListeners.iterator(); i.hasNext(); ) {
-			IChatParticipantListener l = (IChatParticipantListener) i.next();
+			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
 			ID fromID = createIDFromString(ircUser.getNick());
 			l.handlePresence(fromID,createPresence(true));
 			l.handleArrivedInChat(fromID);
@@ -733,11 +733,11 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 	private boolean isCommand(String message) {
 		return (message != null && message.startsWith(COMMAND_PREFIX));
 	}
-	public void addChatParticipantListener(IChatParticipantListener participantListener) {
+	public void addChatParticipantListener(IChatRoomParticipantListener participantListener) {
 		participantListeners.add(participantListener);
 	}
 	public void removeChatParticipantListener(
-			IChatParticipantListener participantListener) {
+			IChatRoomParticipantListener participantListener) {
 		participantListeners.remove(participantListener);
 		
 	}
