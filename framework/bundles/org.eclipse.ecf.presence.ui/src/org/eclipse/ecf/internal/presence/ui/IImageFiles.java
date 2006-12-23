@@ -20,7 +20,7 @@ public interface IImageFiles {
 	public static final String DECORATION_USER_UNAVAILABLE = "user_unavailable";
 
 	public static final String USER_UNAVAILABLE_ICON = "icons/epresence16/buddy_unavailable.gif";
-	
+
 	public static final String DECORATION_USER_AWAY = "user_away";
 
 	public static final String USER_AWAY_ICON = "icons/epresence16/buddy_away.gif";

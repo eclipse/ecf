@@ -15,7 +15,9 @@ import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 
 /**
- * Contract implemented by RosterContentProviders.
+ * Contract implemented by MultiRosterContentProviders. These are content
+ * providers that support the display of multiple rosters (i.e. from different
+ * accounts/connections.
  * 
  */
 public interface IMultiRosterContentProvider extends ITreeContentProvider {
@@ -23,16 +25,19 @@ public interface IMultiRosterContentProvider extends ITreeContentProvider {
 	/**
 	 * Add roster to set of known rosters for this content provider.
 	 * 
-	 * @param roster the roster to add
+	 * @param roster
+	 *            the roster to add
 	 * @return true if roster successfully added. False otherwise.
 	 */
 	public boolean add(IRoster roster);
+
 	/**
 	 * Remove roster from set of known rosters for this content provider.
 	 * 
-	 * @param roster the roster to remove
+	 * @param roster
+	 *            the roster to remove
 	 * @return true if roster successfully removed. False otherwise.
 	 */
 	public boolean remove(IRoster roster);
-	
+
 }

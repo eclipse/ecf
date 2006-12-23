@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.IImageFiles;
+import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.roster.Roster;
 import org.eclipse.ecf.presence.roster.RosterEntry;
@@ -34,26 +35,26 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  * point. Here is example markup for the
  * 
  * <pre>
- *   &lt;extension point=&quot;org.eclipse.core.runtime.adapters&quot; &gt;
- *        &lt;factory
- *             adaptableType=&quot;org.eclipse.ecf.presence.roster.Roster&quot;
- *             class=&quot;org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory&quot;&gt;
- *          &lt;adapter
- *                type=&quot;org.eclipse.ui.model.IWorkbenchAdapter&quot;&gt;
- *          &lt;/adapter&gt;
- *       &lt;/factory&gt;
- *   &lt;/extension&gt;
+ *     &lt;extension point=&quot;org.eclipse.core.runtime.adapters&quot; &gt;
+ *          &lt;factory
+ *               adaptableType=&quot;org.eclipse.ecf.presence.roster.Roster&quot;
+ *               class=&quot;org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory&quot;&gt;
+ *            &lt;adapter
+ *                  type=&quot;org.eclipse.ui.model.IWorkbenchAdapter&quot;&gt;
+ *            &lt;/adapter&gt;
+ *         &lt;/factory&gt;
+ *     &lt;/extension&gt;
  * </pre>
  */
 public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
-	private static final String MODE_PREFIX = "Mode: ";
-	private static final String TYPE_PREFIX = "Type: ";
-	private static final String ACCOUNT_PREFIX = "Account: ";
-	private static final String LEFT_PAREN = "(";
-	private static final String RIGHT_PAREN = ")";
-	private static final String SLASH = "/";
-	private static final String ROSTER_DISCONNECTED_NAME = "connecting...";
+	private static final String MODE_PREFIX = Messages.getString("RosterWorkbenchAdapterFactory.0"); //$NON-NLS-1$
+	private static final String TYPE_PREFIX = Messages.getString("RosterWorkbenchAdapterFactory.1"); //$NON-NLS-1$
+	private static final String ACCOUNT_PREFIX = Messages.getString("RosterWorkbenchAdapterFactory.2"); //$NON-NLS-1$
+	private static final String LEFT_PAREN = Messages.getString("RosterWorkbenchAdapterFactory.3"); //$NON-NLS-1$
+	private static final String RIGHT_PAREN = Messages.getString("RosterWorkbenchAdapterFactory.4"); //$NON-NLS-1$
+	private static final String SLASH = Messages.getString("RosterWorkbenchAdapterFactory.5"); //$NON-NLS-1$
+	private static final String ROSTER_DISCONNECTED_NAME = Messages.getString("RosterWorkbenchAdapterFactory.6"); //$NON-NLS-1$
 
 	protected ImageDescriptor getImageDescriptor(String iconFile) {
 		return AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
@@ -122,7 +123,7 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	protected String getRosterGroupLabel(RosterGroup group) {
 		Collection entries = group.getEntries();
-		StringBuffer buf = new StringBuffer(group.getName()).append(" ");
+		StringBuffer buf = new StringBuffer(group.getName()).append(Messages.getString("RosterWorkbenchAdapterFactory.7")); //$NON-NLS-1$
 		buf.append(LEFT_PAREN).append(getEntriesAvailableCount(entries))
 				.append(SLASH);
 		buf.append(getEntriesTotalCount(entries)).append(RIGHT_PAREN);
@@ -244,6 +245,9 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	};
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
+	 */
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType.equals(IWorkbenchAdapter.class)) {
 			if (adaptableObject instanceof Roster)
@@ -258,6 +262,9 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
+	 */
 	public Class[] getAdapterList() {
 		return new Class[] { IWorkbenchAdapter.class };
 	}

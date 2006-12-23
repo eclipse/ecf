@@ -20,7 +20,8 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.model.IWorkbenchAdapter2;
 
 /**
- * Adapter factory for adapter to IWorkbenchAdapter2 (foreground and background color and font for labels)
+ * Adapter factory for adapter to IWorkbenchAdapter2 (foreground and background
+ * color and font for labels).  Subclasses may override as appropriate.
  */
 public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 
@@ -103,106 +104,140 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	}
 
 	/**
-	 * @param element to get foreground color for.  This implementation returns
-	 * null, meaning that the default color will be used.  Subclasses should override as appropriate.
-	 * @return RGB to use as foreground color.  If <code>null</code> use default color
+	 * @param element
+	 *            to get foreground color for. This implementation returns null,
+	 *            meaning that the default color will be used. Subclasses should
+	 *            override as appropriate.
+	 * @return RGB to use as foreground color. If <code>null</code> use
+	 *         default color
 	 */
 	protected RGB getForegroundForRosterEntry(RosterEntry element) {
 		return null;
 	}
 
 	/**
-	 * @param element to get fontdata for.  This implementation returns
-	 * null, meaning that the default font will be used.  Subclasses should override as appropriate.
-	 * @return FontData to use for rendering given element.  If <code>null</code> use default FontData
+	 * @param element
+	 *            to get fontdata for. This implementation returns null, meaning
+	 *            that the default font will be used. Subclasses should override
+	 *            as appropriate.
+	 * @return FontData to use for rendering given element. If <code>null</code>
+	 *         use default FontData
 	 */
 	protected FontData getFontForRosterEntry(RosterEntry element) {
 		return null;
 	}
 
 	/**
-	 * @param element to get background color for.  This implementation returns
-	 * null, meaning that the default color will be used.  Subclasses should override as appropriate.
-	 * @return RGB to use as background color.  If <code>null</code> use default color
+	 * @param element
+	 *            to get background color for. This implementation returns null,
+	 *            meaning that the default color will be used. Subclasses should
+	 *            override as appropriate.
+	 * @return RGB to use as background color. If <code>null</code> use
+	 *         default color
 	 */
 	protected RGB getBackgroundForRosterEntry(RosterEntry element) {
 		return null;
 	}
 
 	/**
-	 * @param element to get foreground color for.  This implementation returns
-	 * null, meaning that the default color will be used.  Subclasses should override as appropriate.
-	 * @return RGB to use as foreground color.  If <code>null</code> use default color
+	 * @param element
+	 *            to get foreground color for. This implementation returns null,
+	 *            meaning that the default color will be used. Subclasses should
+	 *            override as appropriate.
+	 * @return RGB to use as foreground color. If <code>null</code> use
+	 *         default color
 	 */
 	protected RGB getForegroundForRosterItem(RosterItem element) {
 		return null;
 	}
 
 	/**
-	 * @param element to get fontdata for.  This implementation returns
-	 * null, meaning that the default font will be used.  Subclasses should override as appropriate.
-	 * @return FontData to use for rendering given element.  If <code>null</code> use default FontData
+	 * @param element
+	 *            to get fontdata for. This implementation returns null, meaning
+	 *            that the default font will be used. Subclasses should override
+	 *            as appropriate.
+	 * @return FontData to use for rendering given element. If <code>null</code>
+	 *         use default FontData
 	 */
 	protected FontData getFontForRosterItem(RosterItem element) {
 		return null;
 	}
 
 	/**
-	 * @param element to get background color for.  This implementation returns
-	 * null, meaning that the default color will be used.  Subclasses should override as appropriate.
-	 * @return RGB to use as background color.  If <code>null</code> use default color
+	 * @param element
+	 *            to get background color for. This implementation returns null,
+	 *            meaning that the default color will be used. Subclasses should
+	 *            override as appropriate.
+	 * @return RGB to use as background color. If <code>null</code> use
+	 *         default color
 	 */
 	protected RGB getBackgroundForRosterItem(RosterItem element) {
 		return null;
 	}
 
 	/**
-	 * @param element to get foreground color for.  This implementation returns
-	 * null, meaning that the default color will be used.  Subclasses should override as appropriate.
-	 * @return RGB to use as foreground color.  If <code>null</code> use default color
+	 * @param element
+	 *            to get foreground color for. This implementation returns null,
+	 *            meaning that the default color will be used. Subclasses should
+	 *            override as appropriate.
+	 * @return RGB to use as foreground color. If <code>null</code> use
+	 *         default color
 	 */
 	protected RGB getForegroundForRosterGroup(RosterGroup element) {
 		return null;
 	}
 
 	/**
-	 * @param element to get fontdata for.  This implementation returns
-	 * null, meaning that the default font will be used.  Subclasses should override as appropriate.
-	 * @return FontData to use for rendering given element.  If <code>null</code> use default FontData
+	 * @param element
+	 *            to get fontdata for. This implementation returns null, meaning
+	 *            that the default font will be used. Subclasses should override
+	 *            as appropriate.
+	 * @return FontData to use for rendering given element. If <code>null</code>
+	 *         use default FontData
 	 */
 	protected FontData getFontForRosterGroup(RosterGroup element) {
 		return null;
 	}
 
 	/**
-	 * @param element to get background color for.
-	 * @return RGB to use as background color.  If <code>null</code> use default color
+	 * @param element
+	 *            to get background color for.
+	 * @return RGB to use as background color. If <code>null</code> use
+	 *         default color
 	 */
 	protected RGB getBackgroundForRosterGroup(RosterGroup element) {
 		return null;
 	}
 
 	/**
-	 * @param element to get foreground color for.
-	 * @return RGB to use as foreground color.  If <code>null</code> use default color
+	 * @param element
+	 *            to get foreground color for.
+	 * @return RGB to use as foreground color. If <code>null</code> use
+	 *         default color
 	 */
 	protected RGB getForegroundForRoster(Roster element) {
 		return null;
 	}
 
 	/**
-	 * @param element to get fontdata for.  This implementation returns
-	 * null, meaning that the default font will be used.  Subclasses should override as appropriate.
-	 * @return FontData to use for rendering given element.  If <code>null</code> use default FontData
+	 * @param element
+	 *            to get fontdata for. This implementation returns null, meaning
+	 *            that the default font will be used. Subclasses should override
+	 *            as appropriate.
+	 * @return FontData to use for rendering given element. If <code>null</code>
+	 *         use default FontData
 	 */
 	protected FontData getFontForRoster(Roster element) {
 		return null;
 	}
 
 	/**
-	 * @param element to get background color for.  This implementation returns
-	 * null, meaning that the default color will be used.  Subclasses should override as appropriate.
-	 * @return RGB to use as background color.  If <code>null</code> use default color
+	 * @param element
+	 *            to get background color for. This implementation returns null,
+	 *            meaning that the default color will be used. Subclasses should
+	 *            override as appropriate.
+	 * @return RGB to use as background color. If <code>null</code> use
+	 *         default color
 	 */
 	protected RGB getBackgroundForRoster(Roster element) {
 		return null;

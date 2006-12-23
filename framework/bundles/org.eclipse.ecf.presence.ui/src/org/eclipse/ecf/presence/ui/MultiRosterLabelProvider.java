@@ -22,7 +22,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
 /**
- * Label provider for multiple roster viewer
+ * Label provider for multiple roster viewer. This label provider implements an
+ * LabelProvider suitable for use by viewers that accepts LabelProvider as
+ * input. This class may be subclassed in order to customize the
+ * behavior/display of other label providers.
  * 
  */
 public class MultiRosterLabelProvider extends LabelProvider {
@@ -44,7 +47,9 @@ public class MultiRosterLabelProvider extends LabelProvider {
 		return adapter;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.LabelProvider#getImage(java.lang.Object)
 	 */
 	public Image getImage(Object element) {
@@ -62,7 +67,9 @@ public class MultiRosterLabelProvider extends LabelProvider {
 		return image;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
 	 */
 	public String getText(Object element) {
@@ -72,7 +79,9 @@ public class MultiRosterLabelProvider extends LabelProvider {
 		return adapter.getLabel(element);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.BaseLabelProvider#dispose()
 	 */
 	public void dispose() {
@@ -83,5 +92,5 @@ public class MultiRosterLabelProvider extends LabelProvider {
 			imageTable = null;
 		}
 	}
-	
+
 }

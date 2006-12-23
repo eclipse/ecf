@@ -15,47 +15,52 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.roster.IRoster;
-import org.eclipse.ecf.presence.roster.IRosterItem;
-import org.eclipse.ecf.presence.roster.IRosterManager;
-import org.eclipse.ecf.presence.roster.IRosterUpdateListener;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 
 /**
- * View class for displaying multiple rosters in a tree viewer
- *
+ * View class for displaying multiple rosters in a tree viewer. This view part
+ * implements {@link IMultiRosterViewPart} and provides the ability to display
+ * multiple rosters in a single tree viewer. This class may be subclassed as
+ * desired to add or customize behavior.
+ * 
  */
 public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
+	protected static final int DEFAULT_EXPAND_LEVEL = 3;
+	
 	protected TreeViewer treeViewer;
 
-	protected MultiRosterLabelProvider rosterLabelProvider;
+	protected MultiRosterLabelProvider multiRosterLabelProvider;
 
-	protected MultiRosterContentProvider rosterContentProvider;
+	protected MultiRosterContentProvider multiRosterContentProvider;
 
 	protected List rosterAccounts = new ArrayList();
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createPartControl(Composite parent) {
+		setupTreeViewer(parent);
+	}
+
+	protected void setupTreeViewer(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.MULTI
 				| SWT.V_SCROLL);
 		getSite().setSelectionProvider(treeViewer);
-		rosterContentProvider = new MultiRosterContentProvider();
-		rosterLabelProvider = new MultiRosterLabelProvider();
-		treeViewer.setLabelProvider(rosterLabelProvider);
-		treeViewer.setContentProvider(rosterContentProvider);
+		multiRosterContentProvider = new MultiRosterContentProvider();
+		multiRosterLabelProvider = new MultiRosterLabelProvider();
+		treeViewer.setLabelProvider(multiRosterLabelProvider);
+		treeViewer.setContentProvider(multiRosterContentProvider);
 		treeViewer.setInput(new Object());
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -64,36 +69,36 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	public void dispose() {
 		super.dispose();
 		treeViewer = null;
-		rosterLabelProvider = null;
-		rosterContentProvider = null;
+		multiRosterLabelProvider = null;
+		multiRosterContentProvider = null;
 		rosterAccounts.clear();
 	}
 
 	protected void addRosterAccountsToProviders() {
 		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
-			RosterAccount account = (RosterAccount) i.next();
-			rosterContentProvider.add(account.getRoster());
+			MultiRosterAccount account = (MultiRosterAccount) i.next();
+			multiRosterContentProvider.add(account.getRoster());
 		}
 	}
 
-	protected boolean addRosterAccount(RosterAccount account) {
+	protected boolean addRosterAccount(MultiRosterAccount account) {
 		if (account == null)
 			return false;
 		if (rosterAccounts.add(account)) {
-			if (rosterContentProvider != null) {
-				rosterContentProvider.add(account.getRoster());
+			if (multiRosterContentProvider != null) {
+				multiRosterContentProvider.add(account.getRoster());
 			}
 			return true;
 		} else
 			return false;
 	}
 
-	protected boolean removeRosterAccount(RosterAccount account) {
+	protected boolean removeRosterAccount(MultiRosterAccount account) {
 		if (account == null)
 			return false;
 		if (rosterAccounts.remove(account)) {
-			if (rosterContentProvider != null) {
-				rosterContentProvider.remove(account.getRoster());
+			if (multiRosterContentProvider != null) {
+				multiRosterContentProvider.remove(account.getRoster());
 			}
 			account.dispose();
 			return true;
@@ -101,68 +106,25 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
 	 */
 	public void setFocus() {
 		treeViewer.getControl().setFocus();
 	}
 
-	class RosterAccount {
-		IContainer container;
-
-		IPresenceContainerAdapter adapter;
-
-		IRosterUpdateListener updateListener = new IRosterUpdateListener() {
-			public void handleRosterUpdate(final IRoster roster,
-					final IRosterItem changedValue) {
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						refreshTreeViewer(changedValue,true);
-					}
-				});
-			}
-		};
-
-		public RosterAccount(IContainer container,
-				IPresenceContainerAdapter adapter) {
-			Assert.isNotNull(container);
-			Assert.isNotNull(adapter);
-			this.container = container;
-			this.adapter = adapter;
-			getRosterManager().addRosterUpdateListener(updateListener);
-		}
-
-		public IContainer getContainer() {
-			return container;
-		}
-
-		public IPresenceContainerAdapter getPresenceAdapter() {
-			return adapter;
-		}
-
-		public IRosterManager getRosterManager() {
-			return getPresenceAdapter().getRosterManager();
-		}
-
-		public IRoster getRoster() {
-			return getRosterManager().getRoster();
-		}
-		
-		public void dispose() {
-			getRosterManager().removeRosterUpdateListener(updateListener);
-			container = null;
-			adapter = null;
-		}
-	}
-
 	protected void refreshTreeViewer(Object val, boolean labels) {
 		if (treeViewer != null) {
-			if (val != null) treeViewer.refresh(val,labels);
-			else treeViewer.refresh(labels);
+			if (val != null)
+				treeViewer.refresh(val, labels);
+			else
+				treeViewer.refresh(labels);
+			treeViewer.expandToLevel(DEFAULT_EXPAND_LEVEL);
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -175,8 +137,9 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				.getAdapter(IPresenceContainerAdapter.class);
 		if (containerAdapter == null)
 			return false;
-		if (addRosterAccount(new RosterAccount(container, containerAdapter))) {
-			refreshTreeViewer(null,true);
+		if (addRosterAccount(new MultiRosterAccount(this, container,
+				containerAdapter))) {
+			refreshTreeViewer(null, true);
 			return true;
 		} else
 			return false;
