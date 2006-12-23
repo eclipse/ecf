@@ -14,8 +14,9 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
+ * Roster subscription change sender
  * 
- * @deprecated  in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
+ * @deprecated  See replacement interface and implementation in <code>org.eclipse.ecf.presence.roster</code> package
  */
 public interface IRosterSubscriptionSender {
 

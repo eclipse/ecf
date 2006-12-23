@@ -11,7 +11,7 @@
 package org.eclipse.ecf.presence;
 
 /**
- * Adapter interface for chatIDs. The typical usage of this interface is as
+ * Adapter interface for chatIDs. The typical usage of this adapter is as
  * follows:
  * 
  * <pre>

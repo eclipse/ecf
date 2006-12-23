@@ -17,10 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Base roster group class implementing {@link IRosterGroup}. Subclasses may be
- * created as appropriate
+ * Base roster group class.
  * 
- * @deprecated in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
+ * @deprecated  See replacement interface and implementation in <code>org.eclipse.ecf.presence.roster</code> package
  */
 public class RosterGroup implements IRosterGroup {
 

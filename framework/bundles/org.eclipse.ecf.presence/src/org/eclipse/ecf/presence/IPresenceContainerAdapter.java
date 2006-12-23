@@ -23,12 +23,12 @@ import org.eclipse.ecf.presence.roster.IRosterManager;
  * To use this adapter:
  * 
  * <pre>
- *    IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
- *    if (presenceContainer != null) {
- *       ...use presenceContainer
- *    } else {
- *       ...presence not supported by provider
- *    }
+ *     IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
+ *     if (presenceContainer != null) {
+ *        ...use presenceContainer
+ *     } else {
+ *        ...presence not supported by provider
+ *     }
  * </pre>
  * 
  */
@@ -41,28 +41,33 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @param listener
 	 *            for receiving subscription requests. Must not be null.
-	 * @deprecated in favor of {@link #getRosterManager()}{@link #addRosterSubscriptionListener(IRosterSubscriptionListener)}
+	 * @deprecated See replacement available via {@link #getRosterManager()} and
+	 *             {@link IRosterManager#addRosterSubscriptionListener(org.eclipse.ecf.presence.roster.IRosterSubscriptionListener)
 	 */
-	public void addRosterSubscriptionListener(IRosterSubscriptionListener listener);
+	public void addRosterSubscriptionListener(
+			IRosterSubscriptionListener listener);
 
 	/**
 	 * Remove listener for roster subscription requests.
 	 * 
 	 * @param listener
-	 *            the listener to remove.  Must not be null.
-	 *            
-	 * @deprecated in favor of {@link #getRosterManager()}{@link #removeRosterSubscriptionListener(IRosterSubscriptionListener)}
+	 *            the listener to remove. Must not be null.
+	 * 
+	 * @deprecated See replacement available via {@link #getRosterManager()} and
+	 *             {@link IRosterManager#removeRosterSubscriptionListener(org.eclipse.ecf.presence.roster.IRosterSubscriptionListener)
 	 */
-	public void removeRosterSubscriptionListener(IRosterSubscriptionListener listener);
+	public void removeRosterSubscriptionListener(
+			IRosterSubscriptionListener listener);
 
 	/**
-	 * Get roster manager for access to roster model.  If null is returned roster manager
-	 * unavailable for this adapter.
+	 * Get roster manager for access to roster model. If null is returned roster
+	 * manager unavailable for this adapter.
 	 * 
-	 * @return IRosterManager if available for this adapter.  Null if not available for adapter.
+	 * @return IRosterManager if available for this adapter. Null if not
+	 *         available for for the implementing provider.
 	 */
 	public IRosterManager getRosterManager();
-	
+
 	/**
 	 * Setup listener for handling presence updates. The given listener will
 	 * asynchronously be called when a subscription request is received by this
@@ -70,8 +75,9 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @param listener
 	 *            for receiving presence notifications. Must not be null.
-	 *            
-	 * @deprecated 
+	 * 
+	 * @deprecated No longer needed with provider managed roster model available in
+	 *              <code>org.eclipse.ecf.presence.roster</code> package.
 	 */
 	public void addPresenceListener(IPresenceListener listener);
 
@@ -80,7 +86,7 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @param listener
 	 *            the listener to remove
-	 *   
+	 * 
 	 * @deprecated
 	 */
 	public void removePresenceListener(IPresenceListener listener);
@@ -93,8 +99,8 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @return IPresenceSender. Null if no presence sender available for this
 	 *         provider.
-	 *         
-	 * @deprecated in favor of {@link #getRosterManager()}{@link #getPresenceSender()}
+	 * 
+	 * @deprecated See {@link #getRosterManager()} and {@link IRosterM<anager#getPresenceSender()}
 	 */
 	public IPresenceSender getPresenceSender();
 
@@ -112,7 +118,7 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * REmove listener for message events
 	 * 
 	 * @param listener
-	 *            the listener to remove
+	 *            the listener to remove.  Must not be null.
 	 */
 	public void removeMessageListener(IMessageListener listener);
 

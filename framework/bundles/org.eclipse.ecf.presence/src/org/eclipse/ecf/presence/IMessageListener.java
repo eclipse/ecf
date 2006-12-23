@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.ID;
  * Listener for text IM messages. Implementers of this interface are registered
  * via {@link IPresenceContainerAdapter#addMessageListener(IMessageListener)}
  * 
- * @see IPresenceContainerAdapter
+ * @see IPresenceContainerAdapter#addMessageListener(IMessageListener)
  */
 public interface IMessageListener {
 

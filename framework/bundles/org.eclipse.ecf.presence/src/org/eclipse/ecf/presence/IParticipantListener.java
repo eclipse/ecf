@@ -15,8 +15,6 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Super interface receiving participant presence messages.
  * 
- * @see IPresenceListener
- * 
  */
 public interface IParticipantListener {
 

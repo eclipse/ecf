@@ -20,7 +20,7 @@ import org.eclipse.ecf.core.util.ECFException;
 public interface IPresenceSender {
 
 	/**
-	 * Send a presence update to a remote target user
+	 * Send a presence update to a remote user
 	 * @param toID
 	 *            the target user. Should not be null.
 	 * @param presence

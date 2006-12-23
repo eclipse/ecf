@@ -16,11 +16,9 @@ import java.util.Collection;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Roster entry object. Instances implementing this interface provide
- * information about roster entrys. Implementers of this interface are provided
- * via the {@link IPresenceListener} methods. callback
+ * Roster entry object. 
  * 
- * @deprecated  in favor of interfaces/classes in <code>org.eclipse.ecf.presence.roster</code> package
+ * @deprecated  See replacement interface and implementation in <code>org.eclipse.ecf.presence.roster</code> package
  */
 public interface IRosterEntry {
 

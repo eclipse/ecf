@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.util.ECFException;
  * Presence account management. Access to instances implementing this interface
  * is provided by calling {@link IPresenceContainerAdapter#getAccountManager()}
  * 
- * @see IPresenceContainerAdapter
+ * @see IPresenceContainerAdapter#getAccountManager()
  */
 public interface IAccountManager {
 

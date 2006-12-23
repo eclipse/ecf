@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.util.ECFException;
  * implementing this interface is provided by
  * {@link IPresenceContainerAdapter#getMessageSender()}
  * 
- * @see IPresenceContainerAdapter
+ * @see IPresenceContainerAdapter#getMessageSender()
  */
 public interface IMessageSender {
 	/**
