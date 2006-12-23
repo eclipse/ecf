@@ -19,8 +19,9 @@ public interface IRosterUpdateListener {
 	/**
 	 * Handle roster update notification.
 	 * 
-	 * @param changedValue the roster item that changed
+	 * @param changedValue
+	 *            the roster item that changed
 	 */
 	public void handleRosterUpdate(IRoster roster, IRosterItem changedValue);
-	
+
 }

@@ -17,6 +17,7 @@ public interface IRosterSubscriptionSender {
 
 	/**
 	 * Send a roster add request (subscribe) to a remote
+	 * 
 	 * @param user
 	 *            the account name of the target user. Should not be null.
 	 * @param groups
@@ -27,10 +28,12 @@ public interface IRosterSubscriptionSender {
 	 *                thrown if request cannot be sent (e.g. because of previous
 	 *                disconnect
 	 */
-	public void sendRosterAdd(String user, String name, String[] groups) throws ECFException;
+	public void sendRosterAdd(String user, String name, String[] groups)
+			throws ECFException;
 
 	/**
 	 * Send roster remove request (unsubscribe) to a remote
+	 * 
 	 * @param userID
 	 *            the user id the request it is intended for. Should not be null
 	 * 

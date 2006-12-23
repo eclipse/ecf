@@ -23,6 +23,7 @@ import org.eclipse.ecf.core.util.ECFException;
 public interface IMessageSender {
 	/**
 	 * Send text message
+	 * 
 	 * @param toID
 	 *            the user id of the target receiver of the message. Cannot be
 	 *            null
@@ -34,5 +35,6 @@ public interface IMessageSender {
 	 *                thrown if message cannot be sent (e.g. because of previous
 	 *                disconnection)
 	 */
-	public void sendMessage(ID toID, String subject, String body) throws ECFException;
+	public void sendMessage(ID toID, String subject, String body)
+			throws ECFException;
 }

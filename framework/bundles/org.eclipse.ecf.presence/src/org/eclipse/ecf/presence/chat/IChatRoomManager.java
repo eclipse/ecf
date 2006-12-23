@@ -66,16 +66,16 @@ public interface IChatRoomManager extends IAdaptable {
 	 *            room manager instance itself. For example, for IRC, the chat
 	 *            room manager is also a chat room where message can be
 	 *            sent/received
-	 * @return IChatRoomInfo an instance that provides the given info. Null if no
-	 *         chat room info associated with given name or null
+	 * @return IChatRoomInfo an instance that provides the given info. Null if
+	 *         no chat room info associated with given name or null
 	 */
 	public IChatRoomInfo getChatRoomInfo(String roomname);
 
 	/**
 	 * Get detailed room info for all chat rooms associated with this manager
 	 * 
-	 * @return IChatRoomInfo an array of instances that provide info for all chat
-	 *         rooms
+	 * @return IChatRoomInfo an array of instances that provide info for all
+	 *         chat rooms
 	 */
 	public IChatRoomInfo[] getChatRoomsInfo();
 

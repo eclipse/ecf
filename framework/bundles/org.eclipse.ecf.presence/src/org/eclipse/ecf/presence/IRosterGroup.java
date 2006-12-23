@@ -14,14 +14,15 @@ package org.eclipse.ecf.presence;
 import java.util.Collection;
 
 /**
- * Roster group information. 
+ * Roster group information.
  * 
- * @deprecated  See replacement interface and implementation in <code>org.eclipse.ecf.presence.roster</code> package
+ * @deprecated See replacement interface and implementation in
+ *             <code>org.eclipse.ecf.presence.roster</code> package
  */
 public interface IRosterGroup {
-	
+
 	public String getName();
-	
+
 	/**
 	 * Add a roster entry to this group
 	 * 
@@ -33,8 +34,8 @@ public interface IRosterGroup {
 	public boolean add(IRosterEntry entry);
 
 	/**
-	 * Get roster entries belonging to this group. Instances of list
-	 * are of type {@link IRosterEntry}
+	 * Get roster entries belonging to this group. Instances of list are of type
+	 * {@link IRosterEntry}
 	 * 
 	 * @return Collection of roster entries. Will not return null.
 	 */

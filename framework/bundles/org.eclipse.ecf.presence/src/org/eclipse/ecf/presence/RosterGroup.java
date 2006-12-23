@@ -19,7 +19,8 @@ import java.util.List;
 /**
  * Base roster group class.
  * 
- * @deprecated  See replacement interface and implementation in <code>org.eclipse.ecf.presence.roster</code> package
+ * @deprecated See replacement interface and implementation in
+ *             <code>org.eclipse.ecf.presence.roster</code> package
  */
 public class RosterGroup implements IRosterGroup {
 
@@ -47,11 +48,14 @@ public class RosterGroup implements IRosterGroup {
 	 *      org.eclipse.ecf.ui.presence.IRosterEntry)
 	 */
 	public boolean add(IRosterEntry entry) {
-		if (entry == null) return false;
+		if (entry == null)
+			return false;
 		synchronized (entries) {
 			entries.add(entry);
-			if (entry.add(this)) return true;
-			else return false;
+			if (entry.add(this))
+				return true;
+			else
+				return false;
 		}
 	}
 
@@ -102,7 +106,9 @@ public class RosterGroup implements IRosterGroup {
 		return sb.toString();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {

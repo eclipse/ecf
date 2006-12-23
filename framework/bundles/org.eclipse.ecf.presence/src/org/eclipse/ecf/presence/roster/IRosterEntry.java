@@ -29,7 +29,7 @@ public interface IRosterEntry extends IRosterItem {
 	 * @return IUser that represents user associated with this roster entry
 	 */
 	public IUser getUser();
-	
+
 	/**
 	 * Get groups associated with this roster entry. Instance in list are of
 	 * type {@link IRosterGroup}

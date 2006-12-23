@@ -15,11 +15,11 @@ package org.eclipse.ecf.presence;
  * follows:
  * 
  * <pre>
- *    ID myID = ...
- *    IChatID chatID = (IChatID) myID.getAdapter(IChatID.class);
- *    if (chatID != null) {
- *      ...use chatID here
- *    }
+ *     ID myID = ...
+ *     IChatID chatID = (IChatID) myID.getAdapter(IChatID.class);
+ *     if (chatID != null) {
+ *       ...use chatID here
+ *     }
  * </pre>
  * 
  */

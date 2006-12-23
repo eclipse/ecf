@@ -30,8 +30,8 @@ import java.util.Collection;
  */
 public interface IRosterGroup extends IRosterItem {
 	/**
-	 * Get roster entries belonging to this group. Instances of list
-	 * are of type {@link IRosterEntry}
+	 * Get roster entries belonging to this group. Instances of list are of type
+	 * {@link IRosterEntry}
 	 * 
 	 * @return Collection of IRosterEntrys. Will not return null.
 	 */

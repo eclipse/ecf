@@ -19,7 +19,7 @@ public interface IRosterItem extends IAdaptable {
 	 * @return String name of item. May return null.
 	 */
 	public String getName();
-	
+
 	/**
 	 * Return parent of item
 	 * 

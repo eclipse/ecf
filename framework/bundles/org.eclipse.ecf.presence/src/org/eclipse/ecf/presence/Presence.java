@@ -50,28 +50,36 @@ public class Presence implements IPresence {
 		this(type, status, mode, null);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IPresence#getMode()
 	 */
 	public Mode getMode() {
 		return mode;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IPresence#getProperties()
 	 */
 	public Map getProperties() {
 		return properties;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IPresence#getStatus()
 	 */
 	public String getStatus() {
 		return status;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IPresence#getType()
 	 */
 	public Type getType() {
@@ -87,7 +95,9 @@ public class Presence implements IPresence {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {

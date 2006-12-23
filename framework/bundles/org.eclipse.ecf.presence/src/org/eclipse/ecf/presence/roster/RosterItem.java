@@ -15,16 +15,17 @@ import org.eclipse.core.runtime.Assert;
 public class RosterItem implements IRosterItem {
 
 	protected String name;
-	
+
 	protected Object parent;
-	
-	protected RosterItem() {}
-	
+
+	protected RosterItem() {
+	}
+
 	public RosterItem(Object parent, String name) {
 		Assert.isNotNull(name);
 		this.name = name;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -32,7 +33,7 @@ public class RosterItem implements IRosterItem {
 	public Object getParent() {
 		return parent;
 	}
-	
+
 	public Object getAdapter(Class adapter) {
 		return null;
 	}

@@ -39,9 +39,12 @@ public class RosterGroup extends RosterItem implements IRosterGroup {
 	}
 
 	public boolean add(IRosterItem item) {
-		if (item == null) return false;
-		if (entries.add(item)) return true;
-		else return false;
+		if (item == null)
+			return false;
+		if (entries.add(item))
+			return true;
+		else
+			return false;
 	}
 
 	protected void addAll(Collection /* <IRosterEntry> */existingEntries) {
@@ -63,7 +66,9 @@ public class RosterGroup extends RosterItem implements IRosterGroup {
 		return entries;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRosterGroup#remove(org.eclipse.ecf.presence.roster.IRosterItem)
 	 */
 	public boolean remove(IRosterItem item) {

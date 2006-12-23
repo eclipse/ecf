@@ -15,7 +15,8 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Listener for handling notifications of subscribe/unsubscribe requests.
  * 
- * @deprecated  See replacement interface and implementation in <code>org.eclipse.ecf.presence.roster</code> package
+ * @deprecated See replacement interface and implementation in
+ *             <code>org.eclipse.ecf.presence.roster</code> package
  * 
  */
 public interface IRosterSubscriptionListener {

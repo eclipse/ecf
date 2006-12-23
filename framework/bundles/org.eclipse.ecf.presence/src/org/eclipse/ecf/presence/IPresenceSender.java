@@ -14,13 +14,14 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
- * Send presence change events to remotes on buddy list. 
+ * Send presence change events to remotes on buddy list.
  * 
  */
 public interface IPresenceSender {
 
 	/**
 	 * Send a presence update to a remote user
+	 * 
 	 * @param toID
 	 *            the target user. Should not be null.
 	 * @param presence

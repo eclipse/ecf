@@ -23,12 +23,12 @@ import org.eclipse.ecf.presence.roster.IRosterManager;
  * To use this adapter:
  * 
  * <pre>
- *     IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
- *     if (presenceContainer != null) {
- *        ...use presenceContainer
- *     } else {
- *        ...presence not supported by provider
- *     }
+ *      IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
+ *      if (presenceContainer != null) {
+ *         ...use presenceContainer
+ *      } else {
+ *         ...presence not supported by provider
+ *      }
  * </pre>
  * 
  */
@@ -76,8 +76,8 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * @param listener
 	 *            for receiving presence notifications. Must not be null.
 	 * 
-	 * @deprecated No longer needed with provider managed roster model available in
-	 *              <code>org.eclipse.ecf.presence.roster</code> package.
+	 * @deprecated No longer needed with provider managed roster model available
+	 *             in <code>org.eclipse.ecf.presence.roster</code> package.
 	 */
 	public void addPresenceListener(IPresenceListener listener);
 
@@ -100,7 +100,8 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * @return IPresenceSender. Null if no presence sender available for this
 	 *         provider.
 	 * 
-	 * @deprecated See {@link #getRosterManager()} and {@link IRosterM<anager#getPresenceSender()}
+	 * @deprecated See {@link #getRosterManager()} and
+	 *             {@link IRosterManager#getPresenceSender()}
 	 */
 	public IPresenceSender getPresenceSender();
 
@@ -118,7 +119,7 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * REmove listener for message events
 	 * 
 	 * @param listener
-	 *            the listener to remove.  Must not be null.
+	 *            the listener to remove. Must not be null.
 	 */
 	public void removeMessageListener(IMessageListener listener);
 

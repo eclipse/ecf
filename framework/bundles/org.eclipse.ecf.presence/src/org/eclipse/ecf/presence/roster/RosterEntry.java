@@ -28,13 +28,12 @@ import org.eclipse.ecf.presence.IPresence;
 public class RosterEntry extends RosterItem implements IRosterEntry {
 
 	protected IUser user;
-	
+
 	protected IPresence presence;
 
 	protected List groups;
 
-	public RosterEntry(Object parent, IUser user,
-			IPresence presenceState) {
+	public RosterEntry(Object parent, IUser user, IPresence presenceState) {
 		Assert.isNotNull(parent);
 		Assert.isNotNull(user);
 		this.parent = parent;
@@ -50,34 +49,42 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 	public void setPresence(IPresence newPresence) {
 		this.presence = newPresence;
 	}
-	
+
 	public String getName() {
 		return user.getName();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRosterEntry#add(org.eclipse.ecf.presence.roster.IRosterGroup)
 	 */
 	public boolean add(IRosterGroup group) {
-		if (group == null) return false;
+		if (group == null)
+			return false;
 		return groups.add(group);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRosterEntry#remove(org.eclipse.ecf.presence.roster.IRosterGroup)
 	 */
 	public boolean remove(IRosterGroup group) {
-		if (group == null) return false;
+		if (group == null)
+			return false;
 		return groups.remove(group);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRosterEntry#getUser()
 	 */
 	public IUser getUser() {
 		return user;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -96,7 +103,9 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 		return presence;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -108,7 +117,8 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 			if (!groups.isEmpty()) {
 				for (int i = 0; i < groups.size(); i++) {
 					sb.append(((IRosterGroup) groups.get(i)).getName());
-					if (i < (groups.size()-1)) sb.append(',');
+					if (i < (groups.size() - 1))
+						sb.append(',');
 				}
 			}
 			sb.append(']');

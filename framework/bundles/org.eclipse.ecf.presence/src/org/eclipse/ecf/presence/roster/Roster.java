@@ -26,9 +26,9 @@ public class Roster implements IRoster {
 	private static final long serialVersionUID = 5600691290032864241L;
 
 	protected List rosteritems;
-	
+
 	protected IUser rosterUser;
-	
+
 	public Roster(IUser user) {
 		this.rosterUser = user;
 		this.rosteritems = Collections.synchronizedList(new ArrayList());
@@ -37,52 +37,68 @@ public class Roster implements IRoster {
 	public Roster() {
 		this(null);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRoster#getItems()
 	 */
 	public Collection getItems() {
 		return rosteritems;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRosterItem#getName()
 	 */
 	public String getName() {
 		return getUser().getName();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRoster#getUser()
 	 */
 	public IUser getUser() {
 		return rosterUser;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRoster#addItem(org.eclipse.ecf.presence.roster.IRosterItem)
 	 */
 	public boolean addItem(IRosterItem item) {
-		if (item == null) return false;
+		if (item == null)
+			return false;
 		return rosteritems.add(item);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRoster#removeItem(org.eclipse.ecf.presence.roster.IRosterItem)
 	 */
 	public boolean removeItem(IRosterItem item) {
-		if (item == null) return false;
+		if (item == null)
+			return false;
 		return rosteritems.remove(item);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRoster#setUser(org.eclipse.ecf.core.user.IUser)
 	 */
 	public void setUser(IUser user) {
 		this.rosterUser = user;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {

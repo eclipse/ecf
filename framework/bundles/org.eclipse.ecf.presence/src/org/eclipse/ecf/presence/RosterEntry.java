@@ -19,7 +19,8 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Roster entry base class
  * 
- * @deprecated  See replacement interface and implementation in <code>org.eclipse.ecf.presence.roster</code> package
+ * @deprecated See replacement interface and implementation in
+ *             <code>org.eclipse.ecf.presence.roster</code> package
  */
 public class RosterEntry implements IRosterEntry {
 
@@ -152,7 +153,8 @@ public class RosterEntry implements IRosterEntry {
 			if (!groups.isEmpty()) {
 				for (int i = 0; i < groups.size(); i++) {
 					sb.append(((IRosterGroup) groups.get(i)).getName());
-					if (i < (groups.size()-1)) sb.append(',');
+					if (i < (groups.size() - 1))
+						sb.append(',');
 				}
 			}
 			sb.append(']');
@@ -160,7 +162,9 @@ public class RosterEntry implements IRosterEntry {
 		return sb.toString();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {

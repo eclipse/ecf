@@ -16,14 +16,15 @@ import java.util.Collection;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Roster entry object. 
+ * Roster entry object.
  * 
- * @deprecated  See replacement interface and implementation in <code>org.eclipse.ecf.presence.roster</code> package
+ * @deprecated See replacement interface and implementation in
+ *             <code>org.eclipse.ecf.presence.roster</code> package
  */
 public interface IRosterEntry {
 
 	public String getName();
-	
+
 	/**
 	 * Add this roster entry to the given group.
 	 * 

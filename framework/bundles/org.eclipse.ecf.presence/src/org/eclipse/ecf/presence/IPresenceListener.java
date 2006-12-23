@@ -15,7 +15,8 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Listener for receiving and processing presence and roster update events.
  * 
- * @deprecated No longer needed with roster model presented in <code>org.eclipse.ecf.presence.roster</code>
+ * @deprecated No longer needed with roster model presented in
+ *             <code>org.eclipse.ecf.presence.roster</code>
  */
 public interface IPresenceListener extends IParticipantListener {
 
