@@ -42,7 +42,7 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * @param listener
 	 *            for receiving subscription requests. Must not be null.
 	 * @deprecated See replacement available via {@link #getRosterManager()} and
-	 *             {@link IRosterManager#addRosterSubscriptionListener(org.eclipse.ecf.presence.roster.IRosterSubscriptionListener)
+	 *             {@link IRosterManager#addRosterSubscriptionListener(org.eclipse.ecf.presence.roster.IRosterSubscriptionListener)}
 	 */
 	public void addRosterSubscriptionListener(
 			IRosterSubscriptionListener listener);
@@ -54,7 +54,7 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 *            the listener to remove. Must not be null.
 	 * 
 	 * @deprecated See replacement available via {@link #getRosterManager()} and
-	 *             {@link IRosterManager#removeRosterSubscriptionListener(org.eclipse.ecf.presence.roster.IRosterSubscriptionListener)
+	 *             {@link IRosterManager#removeRosterSubscriptionListener(org.eclipse.ecf.presence.roster.IRosterSubscriptionListener)}
 	 */
 	public void removeRosterSubscriptionListener(
 			IRosterSubscriptionListener listener);
