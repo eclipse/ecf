@@ -31,7 +31,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.xmpp.container.XMPPSContainerInstantiator"
-            description="XMPP SSL (Jabber)"
+            description="XMPP SSL (Jabber SSL)"
             name="ecf.xmpps.smack">
          <property
                value="true"
@@ -57,8 +57,8 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.xmpp.XMPPContainerInstantiator"
-            description="XMPP (experimental)"
-            name="ecf.xmpp.smack.v2">
+            description="XMPP (under construction)"
+            name="ecf.xmpp.smack.2">
          <property
                value="true"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>
@@ -83,8 +83,8 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.xmpp.XMPPSContainerInstantiator"
-            description="XMPP SSL (experimental)"
-            name="ecf.xmpps.smack.v2">
+            description="XMPP SSL (under construction)"
+            name="ecf.xmpps.smack.2">
          <property
                value="true"
                name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>
