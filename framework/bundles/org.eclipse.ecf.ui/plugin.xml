@@ -59,6 +59,7 @@
             name="ECF Generic Server">
       </wizard>
    </extension>
+   <!--
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
@@ -83,4 +84,5 @@
          </action>
       </actionSet>
    </extension>
+   -->
 </plugin>
