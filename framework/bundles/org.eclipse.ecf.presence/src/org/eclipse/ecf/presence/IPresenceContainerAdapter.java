@@ -16,7 +16,7 @@ import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 
 /**
- * Entry poing presence container adapter. For setting up listeners for presence
+ * Entry point presence container adapter. For setting up listeners for presence
  * messages, text messages, subscription requests, and for getting interfaces
  * for message sending (IMessageSender) presence updates (IPresenceSender) and
  * account management (IAccountManager)
