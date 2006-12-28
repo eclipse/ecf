@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 
 /**
  * An abstract {@link IPresenceContainerAdapter} implementation. This class is

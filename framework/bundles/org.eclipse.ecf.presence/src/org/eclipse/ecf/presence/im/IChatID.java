@@ -8,20 +8,26 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.presence.chat;
+package org.eclipse.ecf.presence.im;
 
 /**
- * Adapter interface for {@link IChatRoomManager} allowing options to be set for
- * chat room containers managed by manager
+ * Adapter interface for chatIDs. The typical usage of this adapter is as
+ * follows:
+ * 
+ * <pre>
+ *     ID myID = ...
+ *     IChatID chatID = (IChatID) myID.getAdapter(IChatID.class);
+ *     if (chatID != null) {
+ *       ...use chatID here
+ *     }
+ * </pre>
  * 
  */
-public interface IChatRoomContainerOptionsAdapter {
+public interface IChatID {
 	/**
-	 * Set encoding for chat room manager that supports IChatRoomOptions
+	 * Get username for this IChatID
 	 * 
-	 * @param encoding
-	 * @return true if encoding set properly, false if encoding cannot be
-	 *         set/reset
+	 * @return String username for the implementing IChatID. May return null.
 	 */
-	public boolean setEncoding(String encoding);
+	public String getUsername();
 }

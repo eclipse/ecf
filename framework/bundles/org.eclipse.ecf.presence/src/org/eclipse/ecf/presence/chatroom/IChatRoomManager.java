@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.presence.chat;
+package org.eclipse.ecf.presence.chatroom;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;

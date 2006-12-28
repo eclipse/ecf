@@ -9,47 +9,55 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence;
+package org.eclipse.ecf.presence.im;
 
+import java.io.Serializable;
+
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Listener for text IM messages. Implementers of this interface are registered
- * via {@link IPresenceContainerAdapter#addMessageListener(IMessageListener)}
- * 
- * @deprecated to receive messages use IChatManager.addChatMessageListener(IChatMessageListener)
+ * Chat message
  */
-public interface IMessageListener {
+public interface IChatMessage extends IAdaptable, Serializable {
 
 	/**
-	 * Handle message from remote user. This method will be called by some
-	 * thread when a message is received.
+	 * Get thread ID for this message. If thread IDs are not supported, null
+	 * will be returned.
 	 * 
-	 * @param fromID
-	 *            the ID of the user sending the message
-	 * @param toID
-	 *            the ID of the user to receive the message
-	 * @param type
-	 *            the Type of the message
-	 * @param subject
-	 *            the subject of the message
-	 * @param messageBody
-	 *            the message body
+	 * @return ID that identifies thread for this message. If threads are not
+	 *         supported by provider, will return null.
 	 */
-	public void handleMessage(ID fromID, ID toID, Type type, String subject,
-			String messageBody);
+	public ID getThreadID();
 
 	/**
-	 * Inner class describing Type of message received
+	 * Get subject for this message. If subjects are not supported, null will be
+	 * returned.
 	 * 
+	 * @return String that is the subject of this message. If subjects are not
+	 *         supported by provider, will return null.
 	 */
+	public String getSubject();
+
+	/**
+	 * Get the message body for this message. Will not be null.
+	 * 
+	 * @return String content/body of this message. Will not be null.
+	 */
+	public String getBody();
+
+	/**
+	 * Get type for this message. Will not be null. Defaults to Type.NORMAL.
+	 * 
+	 * @return Type associated with this message. Defaults to Type.NORMAL.
+	 */
+	public Type getType();
+
 	public static class Type {
 
 		private static final String NORMAL_NAME = "normal";
 
 		private static final String CHAT_NAME = "chat";
-
-		private static final String GROUP_CHAT_NAME = "group_chat";
 
 		private static final String SYSTEM_NAME = "system";
 
@@ -70,8 +78,6 @@ public interface IMessageListener {
 				return NORMAL;
 			} else if (itemType.equals(CHAT_NAME)) {
 				return CHAT;
-			} else if (itemType.equals(GROUP_CHAT_NAME)) {
-				return GROUP_CHAT;
 			} else if (itemType.equals(SYSTEM_NAME)) {
 				return SYSTEM;
 			} else if (itemType.equals(ERROR_NAME)) {
@@ -83,8 +89,6 @@ public interface IMessageListener {
 		public static final Type NORMAL = new Type(NORMAL_NAME);
 
 		public static final Type CHAT = new Type(CHAT_NAME);
-
-		public static final Type GROUP_CHAT = new Type(GROUP_CHAT_NAME);
 
 		public static final Type SYSTEM = new Type(SYSTEM_NAME);
 

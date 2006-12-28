@@ -11,7 +11,8 @@
 package org.eclipse.ecf.presence;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 
 /**
@@ -23,12 +24,12 @@ import org.eclipse.ecf.presence.roster.IRosterManager;
  * To use this adapter:
  * 
  * <pre>
- *      IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
- *      if (presenceContainer != null) {
- *         ...use presenceContainer
- *      } else {
- *         ...presence not supported by provider
- *      }
+ *           IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
+ *           if (presenceContainer != null) {
+ *              ...use presenceContainer
+ *           } else {
+ *              ...presence not supported by provider
+ *           }
  * </pre>
  * 
  */
@@ -76,8 +77,8 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * @param listener
 	 *            for receiving presence notifications. Must not be null.
 	 * 
-	 * @deprecated No longer needed with provider managed roster model available
-	 *             in <code>org.eclipse.ecf.presence.roster</code> package.
+	 * @deprecated See replacement via {@link #getRosterManager()} and
+	 *             {@link IRosterManager#addRosterUpdateListener(org.eclipse.ecf.presence.roster.IRosterUpdateListener)}
 	 */
 	public void addPresenceListener(IPresenceListener listener);
 
@@ -87,7 +88,8 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * @param listener
 	 *            the listener to remove
 	 * 
-	 * @deprecated
+	 * @deprecated See replacement via {@link #getRosterManager()} and
+	 *             {@link IRosterManager#removeRosterUpdateListener(org.eclipse.ecf.presence.roster.IRosterUpdateListener)}
 	 */
 	public void removePresenceListener(IPresenceListener listener);
 
@@ -100,7 +102,7 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * @return IPresenceSender. Null if no presence sender available for this
 	 *         provider.
 	 * 
-	 * @deprecated See {@link #getRosterManager()} and
+	 * @deprecated See replacement via {@link #getRosterManager()} and
 	 *             {@link IRosterManager#getPresenceSender()}
 	 */
 	public IPresenceSender getPresenceSender();
@@ -112,6 +114,8 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @param listener
 	 *            for receiving message notifications. Must not be null.
+	 * @deprecated See replacement via {@link #getChatManager()} and
+	 *             {@link IChatManager#addChatMessageListener(org.eclipse.ecf.presence.im.IChatMessageListener)}
 	 */
 	public void addMessageListener(IMessageListener listener);
 
@@ -120,6 +124,9 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @param listener
 	 *            the listener to remove. Must not be null.
+	 * 
+	 * @deprecated See replacement via {@link #getChatManager()} and
+	 *             {@link IChatManager#removeChatMessageListener(org.eclipse.ecf.presence.im.IChatMessageListener)}
 	 */
 	public void removeMessageListener(IMessageListener listener);
 
@@ -127,8 +134,18 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * Get interface for sending messages
 	 * 
 	 * @return IMessageSender. Null if no message sender available
+	 * 
+	 * @deprecated See replacement via {@link #getChatManager()} and {@link IChatManager#getChatMessageSender()}
 	 */
 	public IMessageSender getMessageSender();
+
+	/**
+	 * Get chat manager for sending and receiving chat messages
+	 * 
+	 * @return IChatManager for this presence container adapter. Null if no chat
+	 *         manager available for given provider.
+	 */
+	public IChatManager getChatManager();
 
 	/**
 	 * Get interface for managing account

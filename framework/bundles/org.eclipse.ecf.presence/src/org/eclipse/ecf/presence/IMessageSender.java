@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.util.ECFException;
  * implementing this interface is provided by
  * {@link IPresenceContainerAdapter#getMessageSender()}
  * 
- * @see IPresenceContainerAdapter#getMessageSender()
+ *  @deprecated to receive messages use IChatManager.getChatMessageSender()
  */
 public interface IMessageSender {
 	/**
