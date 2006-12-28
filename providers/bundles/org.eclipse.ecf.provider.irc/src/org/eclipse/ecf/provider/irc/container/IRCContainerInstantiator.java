@@ -18,8 +18,8 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.chat.IChatRoomContainerOptionsAdapter;
-import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.chatroom.IChatRoomContainerOptionsAdapter;
+import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 
 public class IRCContainerInstantiator implements IContainerInstantiator {
 

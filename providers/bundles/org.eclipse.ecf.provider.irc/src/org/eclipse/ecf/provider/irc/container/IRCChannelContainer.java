@@ -27,9 +27,9 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chat.IChatRoomMessageSender;
-import org.eclipse.ecf.presence.chat.IChatRoomParticipantListener;
-import org.eclipse.ecf.presence.chat.IChatRoomContainer;
+import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
+import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.schwering.irc.lib.IRCUser;
 
 /**
@@ -50,7 +50,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.presence.chat.IChatRoomContainer#addChatParticipantListener(org.eclipse.ecf.presence.chat.IChatRoomParticipantListener)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addChatParticipantListener(org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener)
 	 */
 	public void addChatParticipantListener(
 			IChatRoomParticipantListener participantListener) {
@@ -116,7 +116,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.presence.chat.IChatRoomContainer#getChatMessageSender()
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#getChatMessageSender()
 	 */
 	public IChatRoomMessageSender getChatMessageSender() {
 		return new IChatRoomMessageSender() {

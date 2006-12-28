@@ -15,7 +15,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.presence.IChatID;
+import org.eclipse.ecf.presence.im.IChatID;
 
 public class IRCID extends BaseID implements IChatID {
 	private static final long serialVersionUID = -6582811574473106742L;
