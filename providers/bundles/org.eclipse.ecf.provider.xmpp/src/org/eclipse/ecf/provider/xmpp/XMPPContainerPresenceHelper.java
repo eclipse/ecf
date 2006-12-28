@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
@@ -31,6 +32,7 @@ import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceSender;
+import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.AbstractRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
@@ -62,8 +64,11 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	XMPPContainer container = null;
 
+	XMPPChatManager chatManager = null;
+	
 	public XMPPContainerPresenceHelper(XMPPContainer container) {
 		this.container = container;
+		chatManager = new XMPPChatManager(this);
 	}
 
 	// ISharedObject implementation
@@ -141,9 +146,12 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		public void sendMessage(ID toID, String subject, String message)
 				throws ECFException {
 			try {
-				getConnectionOrThrowIfNull().sendMessage(toID, message);
+				getConnectionOrThrowIfNull().sendMessage(toID, null,
+						Message.Type.CHAT, subject, message);
 			} catch (IOException e) {
 				traceStack("Exception in sendmessage to " + toID
+						+ " with message " + message, e);
+				throw new ECFException("Exception in sendmessage to " + toID
 						+ " with message " + message, e);
 			}
 		}
@@ -357,10 +365,14 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		String subject = msg.getSubject();
 		ID fromID = createIDFromName(from);
 		ID toID = createIDFromName(to);
+		ID threadID = createThreadID(msg.getThread());
 		msg = filterMessageType(msg);
-		if (msg != null)
+		if (msg != null) {
 			fireMessageListeners(fromID, toID,
 					createMessageType(msg.getType()), subject, body);
+			chatManager.fireChatMessage(fromID, threadID,
+							msg.getType(), subject, body);
+		}
 	}
 
 	protected void handlePresenceEvent(PresenceEvent evt) {
@@ -429,6 +441,18 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		}
 	}
 
+	protected ID createThreadID(String thread) {
+		try {
+			if (thread == null || thread.equals(""))
+				return null;
+			return IDFactory.getDefault().createStringID(thread);
+		} catch (Exception e) {
+			traceStack("Exception in createThreadID", e);
+			return null;
+		}
+
+	}
+
 	protected IMessageListener.Type createMessageType(Message.Type type) {
 		if (type == null)
 			return IMessageListener.Type.NORMAL;
@@ -438,8 +462,6 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			return IMessageListener.Type.NORMAL;
 		} else if (type == Message.Type.GROUP_CHAT) {
 			return IMessageListener.Type.GROUP_CHAT;
-		} else if (type == Message.Type.HEADLINE) {
-			return IMessageListener.Type.SYSTEM;
 		} else if (type == Message.Type.HEADLINE) {
 			return IMessageListener.Type.SYSTEM;
 		} else
@@ -699,6 +721,13 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @return
+	 */
+	public IChatManager getChatManager() {
+		return chatManager;
 	}
 
 }

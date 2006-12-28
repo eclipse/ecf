@@ -24,7 +24,7 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.internal.provider.xmpp.Trace;
 import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chat.IChatRoomParticipantListener;
+import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.ecf.provider.xmpp.events.ChatMembershipEvent;
 import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;

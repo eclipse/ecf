@@ -34,6 +34,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Message.Type;
 
 public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 
@@ -302,12 +303,6 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 		// XXX Not yet implemented
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.provider.xmpp.IIMMessageSender#sendMessage(org.eclipse.ecf.core.identity.ID,
-	 *      java.lang.String)
-	 */
 	public void sendMessage(ID target, String message) throws IOException {
 		if (target == null)
 			throw new IOException("target cannot be null");
@@ -319,6 +314,20 @@ public class ECFConnection implements ISynchAsynchConnection, IIMMessageSender {
 		sendMessage(target, aMsg);
 	}
 
+	public void sendMessage(ID target, ID thread, Type type, String subject, String body) throws IOException {
+		if (target == null)
+			throw new IOException("target cannot be null");
+		if (body == null)
+			throw new IOException("message cannot be null");
+		debug("sendMessage(" + target + "," + body + ")");
+		Message aMsg = new Message();
+		aMsg.setBody(body);
+		if (thread != null) aMsg.setThread(thread.getName());
+		if (type != null) aMsg.setType(type);
+		if (subject != null) aMsg.setSubject(subject);
+		sendMessage(target, aMsg);
+	}
+	
 	public void sendPresenceUpdate(ID target, Presence presence) throws IOException {
 		if (target == null)
 			throw new IOException("target cannot be null");

@@ -56,10 +56,11 @@ import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterSubscriptionListener;
-import org.eclipse.ecf.presence.chat.IChatRoomContainer;
-import org.eclipse.ecf.presence.chat.IChatRoomManager;
-import org.eclipse.ecf.presence.chat.IChatRoomInvitationListener;
-import org.eclipse.ecf.presence.chat.IChatRoomInfo;
+import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
+import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
+import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
+import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
@@ -678,6 +679,10 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 
 				public void removeRosterSubscriptionListener(IRosterSubscriptionListener listener) {
 					delegate.removeSubscribeListener(listener);
+				}
+
+				public IChatManager getChatManager() {
+					return delegate.getChatManager();
 				}
 
 			};

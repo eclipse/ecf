@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.xmpp.container;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +43,8 @@ import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
 import org.eclipse.ecf.presence.IRosterGroup;
 import org.eclipse.ecf.presence.IRosterSubscriptionListener;
-import org.eclipse.ecf.presence.chat.IChatRoomInvitationListener;
+import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
+import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.AbstractRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterManager;
@@ -53,6 +55,7 @@ import org.eclipse.ecf.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
+import org.eclipse.ecf.provider.xmpp.smack.ECFConnection;
 import org.jivesoftware.smack.AccountManager;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
@@ -90,11 +93,20 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 
 	Vector invitationListeners = new Vector();
 
-
+	XMPPChatManager chatManager = null;
+	
 	public XMPPPresenceSharedObject(XMPPClientSOContainer container) {
 		this.container = container;
+		this.chatManager = new XMPPChatManager(this);
 	}
 	
+	protected ECFConnection getConnectionOrThrowIfNull() throws IOException {
+		ECFConnection conn = container.getECFConnection();
+		if (conn == null)
+			throw new IOException("Not connected");
+		return conn;
+	}
+
 	protected void fireInvitationReceived(ID roomID, ID fromID, ID toID,
 			String subject, String body) {
 		for (Iterator i = invitationListeners.iterator(); i.hasNext();) {
@@ -402,12 +414,27 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		String to = msg.getTo();
 		String body = msg.getBody();
 		String subject = msg.getSubject();
-		ID fromID = createIDFromName(canonicalizePresenceFrom(from));
-		ID toID = createIDFromName(canonicalizePresenceFrom(to));
+		ID fromID = createIDFromName(from);
+		ID toID = createIDFromName(to);
+		ID threadID = createThreadID(msg.getThread());
 		msg = filterMessageType(msg);
-		if (msg != null)
-			fireMessage(fromID, toID, createMessageType(msg.getType()),
-					subject, body);
+		if (msg != null) {
+			fireMessage(fromID, toID,
+					createMessageType(msg.getType()), subject, body);
+			chatManager.fireChatMessage(fromID, threadID,
+							msg.getType(), subject, body);
+		}
+	}
+
+	protected ID createThreadID(String thread) {
+		try {
+			if (thread == null || thread.equals(""))
+				return null;
+			return IDFactory.getDefault().createStringID(thread);
+		} catch (Exception e) {
+			return null;
+		}
+
 	}
 
 	protected void handlePresenceEvent(PresenceEvent evt) {
@@ -786,6 +813,13 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 			return container.getRosterSubscriptionSender();
 		}
 
+	}
+
+	/**
+	 * @return
+	 */
+	public IChatManager getChatManager() {
+		return chatManager;
 	}
 
 }

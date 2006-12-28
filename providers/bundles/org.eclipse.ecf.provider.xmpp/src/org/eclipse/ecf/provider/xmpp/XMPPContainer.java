@@ -38,8 +38,9 @@ import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterSubscriptionListener;
-import org.eclipse.ecf.presence.chat.IChatRoomContainer;
-import org.eclipse.ecf.presence.chat.IChatRoomManager;
+import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
+import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
@@ -172,6 +173,10 @@ public class XMPPContainer extends ClientSOContainer {
 				return this;
 			else
 				return null;
+		}
+
+		public IChatManager getChatManager() {
+			return presenceHelper.getChatManager();
 		}
 
 	};
