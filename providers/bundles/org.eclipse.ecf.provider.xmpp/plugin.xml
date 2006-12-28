@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.provider.xmpp.container.XMPPContainerInstantiator"
+            class="org.eclipse.ecf.internal.provider.xmpp.deprecated.XMPPContainerInstantiator"
             description="XMPP (Jabber)"
             name="ecf.xmpp.smack">
          <property
@@ -30,7 +30,7 @@
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.provider.xmpp.container.XMPPSContainerInstantiator"
+            class="org.eclipse.ecf.internal.provider.xmpp.deprecated.XMPPSContainerInstantiator"
             description="XMPP SSL (Jabber SSL)"
             name="ecf.xmpps.smack">
          <property
@@ -56,7 +56,7 @@
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.provider.xmpp.XMPPContainerInstantiator"
+            class="org.eclipse.ecf.internal.provider.xmpp.XMPPContainerInstantiator"
             description="XMPP (under construction)"
             name="ecf.xmpp.smack.2">
          <property
@@ -82,7 +82,7 @@
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.provider.xmpp.XMPPSContainerInstantiator"
+            class="org.eclipse.ecf.internal.provider.xmpp.XMPPSContainerInstantiator"
             description="XMPP SSL (under construction)"
             name="ecf.xmpps.smack.2">
          <property
@@ -108,21 +108,21 @@
    <extension
          point="org.eclipse.ecf.identity.namespace">
       <namespace
-            class="org.eclipse.ecf.provider.xmpp.identity.XMPPNamespace"
+            class="org.eclipse.ecf.internal.provider.xmpp.identity.XMPPNamespace"
             description="XMPP Namespace"
             name="ecf.xmpp"/>
    </extension>
    <extension
          point="org.eclipse.ecf.identity.namespace">
       <namespace
-            class="org.eclipse.ecf.provider.xmpp.identity.XMPPSNamespace"
+            class="org.eclipse.ecf.internal.provider.xmpp.identity.XMPPSNamespace"
             description="XMPP SSL Namespace"
             name="ecf.xmpps"/>
    </extension>
    <extension
          point="org.eclipse.ecf.identity.namespace">
       <namespace
-            class="org.eclipse.ecf.provider.xmpp.identity.XMPPRoomNamespace"
+            class="org.eclipse.ecf.internal.provider.xmpp.identity.XMPPRoomNamespace"
             description="XMPP Room Namespace"
             name="xmpp.room.jive"/>
    </extension>
