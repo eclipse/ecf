@@ -71,15 +71,13 @@ public class XMPPChatManager implements IChatManager {
 
 	protected IChatMessage.Type createMessageType(Message.Type type) {
 		if (type == null)
-			return IChatMessage.Type.NORMAL;
+			return IChatMessage.Type.CHAT;
 		if (type == Message.Type.CHAT) {
 			return IChatMessage.Type.CHAT;
-		} else if (type == Message.Type.NORMAL) {
-			return IChatMessage.Type.NORMAL;
 		} else if (type == Message.Type.HEADLINE) {
 			return IChatMessage.Type.SYSTEM;
 		} else
-			return IChatMessage.Type.NORMAL;
+			return IChatMessage.Type.CHAT;
 	}
 
 	protected Message.Type createMessageType(IChatMessage.Type type) {
@@ -87,8 +85,6 @@ public class XMPPChatManager implements IChatManager {
 			return Message.Type.NORMAL;
 		if (type == IChatMessage.Type.CHAT) {
 			return Message.Type.CHAT;
-		} else if (type == IChatMessage.Type.NORMAL) {
-			return Message.Type.NORMAL;
 		} else if (type == IChatMessage.Type.SYSTEM) {
 			return Message.Type.HEADLINE;
 		} else
