@@ -47,15 +47,13 @@ public interface IChatMessage extends IAdaptable, Serializable {
 	public String getBody();
 
 	/**
-	 * Get type for this message. Will not be null. Defaults to Type.NORMAL.
+	 * Get type for this message. Will not be null. Defaults to Type.CHAT.
 	 * 
-	 * @return Type associated with this message. Defaults to Type.NORMAL.
+	 * @return Type associated with this message. Defaults to Type.CHAT.
 	 */
 	public Type getType();
 
 	public static class Type {
-
-		private static final String NORMAL_NAME = "normal";
 
 		private static final String CHAT_NAME = "chat";
 
@@ -74,9 +72,7 @@ public interface IChatMessage extends IAdaptable, Serializable {
 		public static Type fromString(String itemType) {
 			if (itemType == null)
 				return null;
-			if (itemType.equals(NORMAL_NAME)) {
-				return NORMAL;
-			} else if (itemType.equals(CHAT_NAME)) {
+			if (itemType.equals(CHAT_NAME)) {
 				return CHAT;
 			} else if (itemType.equals(SYSTEM_NAME)) {
 				return SYSTEM;
@@ -85,8 +81,6 @@ public interface IChatMessage extends IAdaptable, Serializable {
 			} else
 				return null;
 		}
-
-		public static final Type NORMAL = new Type(NORMAL_NAME);
 
 		public static final Type CHAT = new Type(CHAT_NAME);
 

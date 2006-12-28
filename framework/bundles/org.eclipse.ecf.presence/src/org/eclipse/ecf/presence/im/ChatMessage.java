@@ -37,7 +37,7 @@ public class ChatMessage implements IChatMessage {
 	}
 
 	public ChatMessage(ID threadID, String subject, String body) {
-		this(threadID, IChatMessage.Type.NORMAL, subject, body);
+		this(threadID, IChatMessage.Type.CHAT, subject, body);
 	}
 
 	public ChatMessage(IChatMessage.Type type, String subject, String body) {
