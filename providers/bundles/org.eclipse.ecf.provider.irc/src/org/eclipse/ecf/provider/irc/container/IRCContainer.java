@@ -331,6 +331,9 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 			public Object getAdapter(Class adapter) {
 				return null;
 			}
+			public byte[] getPictureData() {
+				return new byte[0];
+			}
 			
 		};
 	}

@@ -90,6 +90,9 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 			public Object getAdapter(Class adapter) {
 				return null;
 			}
+			public byte[] getPictureData() {
+				return new byte[0];
+			}
 		};
 	}
 	
