@@ -28,8 +28,11 @@ import org.eclipse.ecf.presence.im.ChatMessage;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageEvent;
-import org.eclipse.ecf.presence.im.IChatMessageListener;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
+import org.eclipse.ecf.presence.im.IIMMessageEvent;
+import org.eclipse.ecf.presence.im.IIMMessageListener;
+import org.eclipse.ecf.presence.im.ITypingMessageEvent;
+import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
@@ -67,6 +70,8 @@ public class PresenceContainerUI {
 
 	protected IChatMessageSender chatMessageSender;
 	
+	protected ITypingMessageSender typingMessageSender;
+	
 	public PresenceContainerUI(IPresenceContainerAdapter pc) {
 		this.pc = pc;
 		this.presenceSender = pc.getRosterManager().getPresenceSender();
@@ -74,6 +79,7 @@ public class PresenceContainerUI {
 		this.accountManager = pc.getAccountManager();
 		this.chatManager = pc.getChatManager();
 		this.chatMessageSender = this.chatManager.getChatMessageSender();
+		this.typingMessageSender = this.chatManager.getTypingMessageSender();
 	}
 
 	protected void setup(final IContainer container, final ID localUser,
@@ -116,33 +122,24 @@ public class PresenceContainerUI {
 			}
 		});
 
-		chatManager.addChatMessageListener(new IChatMessageListener() {
+		chatManager.addMessageListener(new IIMMessageListener() {
 
-			public void handleChatMessageEvent(
-					final IChatMessageEvent chatMessageEvent) {
+			public void handleMessageEvent(
+					final IIMMessageEvent chatMessageEvent) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						IChatMessage message = chatMessageEvent.getChatMessage();
-						rosterView.handleMessage(
-								PresenceContainerUI.this.groupID, chatMessageEvent.getFromID(), null,
-								null, message.getSubject(), message.getBody());
+						if (chatMessageEvent instanceof IChatMessageEvent) {
+							IChatMessage message = ((IChatMessageEvent) chatMessageEvent).getChatMessage();
+							rosterView.handleMessage(
+									PresenceContainerUI.this.groupID, chatMessageEvent.getFromID(), null,
+									null, message.getSubject(), message.getBody());
+						} else if (chatMessageEvent instanceof ITypingMessageEvent) {
+							rosterView.handleTyping(chatMessageEvent.getFromID());
+						}
 					}
 				});
 			}});
-		/*
-		pc.addMessageListener(new IMessageListener() {
-			public void handleMessage(final ID fromID, final ID toID,
-					final Type type, final String subject, final String message) {
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						rosterView.handleMessage(
-								PresenceContainerUI.this.groupID, fromID, toID,
-								type, subject, message);
-					}
-				});
-			}
-		});
-		*/
+
 		pc.addPresenceListener(new IPresenceListener() {
 
 			public void handleConnected(final ID joinedContainer) {
@@ -151,7 +148,7 @@ public class PresenceContainerUI {
 						ILocalInputHandler handler = new ILocalInputHandler() {
 							public void inputText(ID userID, String text) {
 								try {
-									chatMessageSender.sendChatMessage(userID, new ChatMessage(text));
+									chatMessageSender.sendChatMessage(userID, text);
 								} catch (ECFException e) {
 									ClientPlugin.getDefault().getLog().log(
 											new Status(IStatus.ERROR,
@@ -164,7 +161,17 @@ public class PresenceContainerUI {
 							}
 
 							public void startTyping(ID userID) {
-								// System.out.println("handleStartTyping("+userID+")");
+								try {
+									typingMessageSender.sendTypingMessage(userID, true, "");
+								} catch (ECFException e) {
+									ClientPlugin.getDefault().getLog().log(
+											new Status(IStatus.ERROR,
+													ClientPlugin.getDefault()
+															.getBundle()
+															.getSymbolicName(),
+													SEND_ERRORCODE,
+													"Error in startTyping", e));
+								}
 							}
 
 							public void disconnect() {
