@@ -50,6 +50,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ChangePasswordDialog;
 import org.eclipse.ecf.ui.dialogs.ChatRoomSelectionDialog;
@@ -897,8 +898,6 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 	public void handleMessage(ID groupID, ID fromID, ID toID,
 			IMessageListener.Type type, String subject, String message) {
 		ChatWindow window = openChatWindowForTarget(fromID);
-		System.out.println("handleMessage(" + groupID + "," + fromID + ","
-				+ toID + "," + type + "," + subject + "," + message + ")");
 		// finally, show message
 		if (window != null) {
 			window.handleMessage(fromID, toID, type, subject, message);
@@ -1037,6 +1036,19 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			IChatRoomContainer container = roomView.getContainer();
 			container.dispose();
 			removeRoomView(roomView);
+		}
+	}
+
+	public void handleTyping(ID fromID) {
+		ChatWindow window = null;
+		synchronized (chatThreads) {
+			window = (ChatWindow) chatThreads.get(fromID);
+		}
+		if (window != null) {
+			IChatID chatID = (IChatID) fromID.getAdapter(IChatID.class);
+			String name = fromID.getName();
+			if (chatID != null) name = chatID.getUsername();
+			window.setStatus(name+" is typing");
 		}
 	}
 }
