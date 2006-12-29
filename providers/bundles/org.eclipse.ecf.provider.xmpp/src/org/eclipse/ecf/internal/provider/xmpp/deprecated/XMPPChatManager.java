@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.provider.xmpp.deprecated;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
@@ -27,6 +28,8 @@ import org.eclipse.ecf.presence.im.IIMMessageListener;
 import org.eclipse.ecf.presence.im.ITypingMessage;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.im.TypingMessageEvent;
+import org.eclipse.ecf.presence.im.XHTMLChatMessage;
+import org.eclipse.ecf.presence.im.XHTMLChatMessageEvent;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 
@@ -41,8 +44,13 @@ public class XMPPChatManager implements IChatManager {
 
 	protected IChatMessageSender chatMessageSender = new IChatMessageSender() {
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.presence.im.IChatMessageSender#sendChatMessage(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.presence.im.IChatMessage.Type, java.lang.String, java.lang.String)
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.presence.im.IChatMessageSender#sendChatMessage(org.eclipse.ecf.core.identity.ID,
+		 *      org.eclipse.ecf.core.identity.ID,
+		 *      org.eclipse.ecf.presence.im.IChatMessage.Type, java.lang.String,
+		 *      java.lang.String)
 		 */
 		public void sendChatMessage(ID toID, ID threadID,
 				org.eclipse.ecf.presence.im.IChatMessage.Type type,
@@ -59,8 +67,11 @@ public class XMPPChatManager implements IChatManager {
 
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.presence.im.IChatMessageSender#sendChatMessage(org.eclipse.ecf.core.identity.ID, java.lang.String)
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.presence.im.IChatMessageSender#sendChatMessage(org.eclipse.ecf.core.identity.ID,
+		 *      java.lang.String)
 		 */
 		public void sendChatMessage(ID toID, String body) throws ECFException {
 			sendChatMessage(toID, null, IChatMessage.Type.CHAT, null, body);
@@ -160,6 +171,22 @@ public class XMPPChatManager implements IChatManager {
 	 */
 	public ITypingMessageSender getTypingMessageSender() {
 		return typingMessageSender;
+	}
+
+	/**
+	 * @param fromID
+	 * @param threadID
+	 * @param type
+	 * @param subject
+	 * @param body
+	 * @param xhtmlbodylist
+	 */
+	protected void fireXHTMLChatMessage(ID fromID, ID threadID, Type type,
+			String subject, String body, List xhtmlbodylist) {
+		fireMessageEvent(new XHTMLChatMessageEvent(fromID,
+				new XHTMLChatMessage(fromID, threadID, createMessageType(type),
+						subject, body, xhtmlbodylist)));
+
 	}
 
 }

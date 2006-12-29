@@ -382,7 +382,12 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		if (msg != null) {
 			fireMessageListeners(fromID, toID,
 					createMessageType(msg.getType()), subject, body);
-			chatManager.fireChatMessage(fromID, threadID,
+			Iterator xhtmlbodies = evt.getXHTMLBodies();
+			if (xhtmlbodies != null) {
+				List xhtmlbodylist  = new ArrayList();
+				for(  ; xhtmlbodies.hasNext(); ) xhtmlbodylist.add(xhtmlbodies.next());
+				chatManager.fireXHTMLChatMessage(fromID, threadID, msg.getType(), subject, body, xhtmlbodylist);
+			} else chatManager.fireChatMessage(fromID, threadID,
 							msg.getType(), subject, body);
 		}
 	}

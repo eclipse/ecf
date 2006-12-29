@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.provider.xmpp;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
@@ -27,6 +28,8 @@ import org.eclipse.ecf.presence.im.IIMMessageListener;
 import org.eclipse.ecf.presence.im.ITypingMessage;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.im.TypingMessageEvent;
+import org.eclipse.ecf.presence.im.XHTMLChatMessage;
+import org.eclipse.ecf.presence.im.XHTMLChatMessageEvent;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 
@@ -161,6 +164,22 @@ public class XMPPChatManager implements IChatManager {
 	 */
 	public ITypingMessageSender getTypingMessageSender() {
 		return typingMessageSender;
+	}
+
+	/**
+	 * @param fromID
+	 * @param threadID
+	 * @param type
+	 * @param subject
+	 * @param body
+	 * @param xhtmlbodylist
+	 */
+	protected void fireXHTMLChatMessage(ID fromID, ID threadID, Type type,
+			String subject, String body, List xhtmlbodylist) {
+		fireMessageEvent(new XHTMLChatMessageEvent(fromID,
+				new XHTMLChatMessage(fromID, threadID, createMessageType(type),
+						subject, body, xhtmlbodylist)));
+
 	}
 
 }

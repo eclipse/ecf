@@ -95,6 +95,7 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.RoomInfo;
 import org.jivesoftware.smackx.packet.MUCUser;
 import org.jivesoftware.smackx.packet.VCardTempXUpdateExtension;
+import org.jivesoftware.smackx.packet.XHTMLExtension;
 
 public class XMPPClientSOContainer extends ClientSOContainer implements
 		IOutgoingFileTransferContainerAdapter {
@@ -338,6 +339,10 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 			if (extension instanceof VCardTempXUpdateExtension) {
 				VCardTempXUpdateExtension photoExtension = (VCardTempXUpdateExtension) extension;
 				deliverEvent(new PresenceEvent((Presence) packet, photoExtension.getPhotoDataAsBytes()));
+				return true;
+			} else if (extension instanceof XHTMLExtension) {
+				XHTMLExtension xhtmlExtension = (XHTMLExtension) extension;
+				deliverEvent(new MessageEvent((Message) packet, xhtmlExtension.getBodies()));
 				return true;
 			}
 			trace("XMPPContainer.handleAsExtension(ext=" + extension
