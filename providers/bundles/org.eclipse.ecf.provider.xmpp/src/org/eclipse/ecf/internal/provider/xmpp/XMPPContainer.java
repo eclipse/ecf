@@ -63,6 +63,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.packet.MUCUser;
+import org.jivesoftware.smackx.packet.VCardTempXUpdateExtension;
 
 public class XMPPContainer extends ClientSOContainer {
 
@@ -167,7 +168,7 @@ public class XMPPContainer extends ClientSOContainer {
 			// XXX this is being used to distinguish between this, more modern
 			// version of
 			// IPresenceContainerAdapter implementation and the older one.
-			// This should be removed
+			// This should be eventually removed
 			if (clazz.equals(IPresenceContainerAdapter.class))
 				return this;
 			else
@@ -403,11 +404,15 @@ public class XMPPContainer extends ClientSOContainer {
 	}
 
 	protected boolean handleAsExtension(Packet packet) {
-		// XXX this is where the xmpp extension mechanism support needs to be
-		// added
+		// XXX this is where extension mechanism needs to be added
 		Iterator i = packet.getExtensions();
 		for (; i.hasNext();) {
 			Object extension = i.next();
+			if (extension instanceof VCardTempXUpdateExtension) {
+				VCardTempXUpdateExtension photoExtension = (VCardTempXUpdateExtension) extension;
+				deliverEvent(new PresenceEvent((Presence) packet, photoExtension.getPhotoDataAsBytes()));
+				return true;
+			}
 			trace("XMPPContainer.handleAsExtension(ext=" + extension
 					+ ",packet=" + packet.toXML() + ")");
 			if (packet instanceof Presence && extension instanceof MUCUser) {

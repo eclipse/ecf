@@ -308,8 +308,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 	public void sendMessage(ID target, ID thread, Type type, String subject, String body) throws IOException {
 		if (target == null)
 			throw new IOException("target cannot be null");
-		if (body == null)
-			throw new IOException("message cannot be null");
+		if (body == null) body = "";
 		debug("sendMessage(" + target + "," + body + ")");
 		Message aMsg = new Message();
 		aMsg.setBody(body);

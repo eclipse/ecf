@@ -34,7 +34,6 @@ import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.InvitationReceivedEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
@@ -52,6 +51,8 @@ import org.eclipse.ecf.presence.IRosterGroup;
 import org.eclipse.ecf.presence.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
 import org.eclipse.ecf.presence.im.IChatManager;
+import org.eclipse.ecf.presence.im.ITypingMessage;
+import org.eclipse.ecf.presence.im.TypingMessage;
 import org.eclipse.ecf.presence.roster.AbstractRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterManager;
@@ -250,12 +251,23 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		}
 	}
 
-	protected void fireSharedObjectMessage(ISharedObjectMessageEvent event) {
+	protected void sendTypingMessage(ID toID, boolean isTyping, String body) throws IOException {
+		getContext().sendMessage(toID, new TypingMessage(rosterManager.getRoster().getUser().getID(),isTyping,body));
+	}
+
+	protected void handleSharedObjectMessageEvent(ISharedObjectMessageEvent event) {
 		for (Iterator i = sharedObjectMessageListeners.iterator(); i.hasNext();) {
 			ISharedObjectMessageListener l = (ISharedObjectMessageListener) i
 					.next();
 			l.handleSharedObjectMessage(event);
 		}
+		
+		Object data = event.getData();
+		if (data instanceof ITypingMessage) {
+			ITypingMessage tmess = (ITypingMessage) data;
+			chatManager.fireTypingMessage(tmess.getFromID(), tmess);
+		}
+
 	}
 
 	/*
@@ -314,7 +326,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		} else if (event instanceof IContainerDisconnectedEvent) {
 			handleContainerDepartedEvent((IContainerDisconnectedEvent) event);
 		} else if (event instanceof ISharedObjectMessageEvent) {
-			fireSharedObjectMessage((ISharedObjectMessageEvent) event);
+			handleSharedObjectMessageEvent((ISharedObjectMessageEvent) event);
 		} else {
 			debug("unrecognized event " + event);
 		}
@@ -432,7 +444,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 	protected void handlePresenceEvent(PresenceEvent evt) {
 		Presence xmppPresence = evt.getPresence();
 		String from = canonicalizePresenceFrom(xmppPresence.getFrom());
-		IPresence newPresence = createIPresence(xmppPresence);
+		IPresence newPresence = createIPresence(xmppPresence, evt.getPhotoData());
 		ID fromID = createIDFromName(from);
 		if (newPresence.getType().equals(IPresence.Type.SUBSCRIBE)
 				|| newPresence.getType().equals(IPresence.Type.UNSUBSCRIBE)
@@ -506,11 +518,11 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 			return IMessageListener.Type.NORMAL;
 	}
 
-	protected IPresence createIPresence(Presence xmppPresence) {
+	protected IPresence createIPresence(Presence xmppPresence, byte [] photoData) {
 		String status = xmppPresence.getStatus();
 		IPresence newPresence = new org.eclipse.ecf.presence.Presence(
 				createIPresenceType(xmppPresence), status,
-				createIPresenceMode(xmppPresence));
+				createIPresenceMode(xmppPresence), null, photoData);
 		return newPresence;
 	}
 

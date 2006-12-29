@@ -94,6 +94,7 @@ import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.RoomInfo;
 import org.jivesoftware.smackx.packet.MUCUser;
+import org.jivesoftware.smackx.packet.VCardTempXUpdateExtension;
 
 public class XMPPClientSOContainer extends ClientSOContainer implements
 		IOutgoingFileTransferContainerAdapter {
@@ -126,7 +127,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 	}
 
 	protected void trace(String msg) {
-		
+		System.out.println(msg);
 	}
 
 	protected void dumpStack(String msg, Throwable t) {
@@ -334,6 +335,11 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 		Iterator i = packet.getExtensions();
 		for (; i.hasNext();) {
 			Object extension = i.next();
+			if (extension instanceof VCardTempXUpdateExtension) {
+				VCardTempXUpdateExtension photoExtension = (VCardTempXUpdateExtension) extension;
+				deliverEvent(new PresenceEvent((Presence) packet, photoExtension.getPhotoDataAsBytes()));
+				return true;
+			}
 			trace("XMPPContainer.handleAsExtension(ext=" + extension
 					+ ",packet=" + packet.toXML() + ")");
 			if (packet instanceof Presence && extension instanceof MUCUser) {

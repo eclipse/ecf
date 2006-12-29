@@ -78,7 +78,7 @@ public class XMPPID extends BaseID implements IChatID {
 	}
 
 	protected int namespaceHashCode() {
-		return uri.hashCode();
+		return getUsernameAtHost().hashCode();
 	}
 
 	public String getUsername() {
