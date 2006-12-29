@@ -34,7 +34,7 @@ public class ChatMessage extends IMMessage implements IChatMessage {
 		this.threadID = threadID;
 		this.type = type;
 		this.subject = subject;
-		this.body = body;
+		this.body = (body == null)?"":body;
 	}
 
 	public ChatMessage(ID fromID, ID threadID, String subject, String body) {
