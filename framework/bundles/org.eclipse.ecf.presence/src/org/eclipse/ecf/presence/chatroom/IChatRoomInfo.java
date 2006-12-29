@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Chat room information. Instances implementing this interface are returned by
  * {@link IChatRoomManager#getChatRoomInfo(String)} or
- * {@link IChatRoomManager#getChatRoomsInfo()}
+ * {@link IChatRoomManager#getChatRoomInfos()}
  * 
  * @see IChatRoomManager#getChatRoomInfo(String)
  */

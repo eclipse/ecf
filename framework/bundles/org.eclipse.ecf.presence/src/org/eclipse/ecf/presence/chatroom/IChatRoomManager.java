@@ -77,7 +77,7 @@ public interface IChatRoomManager extends IAdaptable {
 	 * @return IChatRoomInfo an array of instances that provide info for all
 	 *         chat rooms
 	 */
-	public IChatRoomInfo[] getChatRoomsInfo();
+	public IChatRoomInfo[] getChatRoomInfos();
 
 	// XXX these two methods should ultimately be added to IChatRoomManager
 	// public void addInvitationListener(IChatRoomInvitationListener listener);
