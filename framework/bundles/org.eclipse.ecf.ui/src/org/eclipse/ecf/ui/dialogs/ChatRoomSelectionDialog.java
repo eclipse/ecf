@@ -130,7 +130,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 
 		List all = new ArrayList();
 		for (int i = 0; i < managers.length; i++) {
-			IChatRoomInfo[] infos = managers[i].getChatRoomsInfo();
+			IChatRoomInfo[] infos = managers[i].getChatRoomInfos();
 			if (infos != null) {
 				for (int j = 0; j < infos.length; j++) {
 					if (infos[j] != null && managers[i] != null) {
