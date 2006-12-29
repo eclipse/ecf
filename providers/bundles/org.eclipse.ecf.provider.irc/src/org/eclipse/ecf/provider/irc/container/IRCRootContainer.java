@@ -390,7 +390,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			};
 	}
 
-	public IChatRoomInfo[] getChatRoomsInfo() {
+	public IChatRoomInfo[] getChatRoomInfos() {
 		return null;
 	}
 

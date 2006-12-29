@@ -613,7 +613,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 			}
 		};
 	}
-	public IChatRoomInfo[] getChatRoomsInfo() {
+	public IChatRoomInfo[] getChatRoomInfos() {
 		return null;
 	}
 	// IChatRoomContainer
