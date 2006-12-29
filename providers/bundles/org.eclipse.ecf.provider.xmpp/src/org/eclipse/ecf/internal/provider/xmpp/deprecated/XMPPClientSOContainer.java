@@ -620,7 +620,7 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 									.getChatRoomInfo(roomname);
 						}
 
-						public IChatRoomInfo[] getChatRoomsInfo() {
+						public IChatRoomInfo[] getChatRoomInfos() {
 							ID[] chatRooms = getChatRooms();
 							if (chatRooms == null)
 								return null;

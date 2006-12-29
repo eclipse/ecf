@@ -299,7 +299,7 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 		return null;
 	}
 
-	public IChatRoomInfo[] getChatRoomsInfo() {
+	public IChatRoomInfo[] getChatRoomInfos() {
 		ID[] chatRooms = getChatRooms();
 		if (chatRooms == null)
 			return null;
