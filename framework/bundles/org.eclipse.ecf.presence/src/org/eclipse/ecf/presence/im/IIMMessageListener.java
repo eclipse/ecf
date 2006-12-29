@@ -11,17 +11,17 @@
 
 package org.eclipse.ecf.presence.im;
 
-
 /**
- * Chat message event.
+ * IM message listener.  This listener receives IIMMessageEvents.
  */
-public interface IChatMessageEvent extends IIMMessageEvent {
+public interface IIMMessageListener {
 
 	/**
-	 * Get chat message sent.
+	 * Handle message event (reception of chat, typing, or object message).
 	 * 
-	 * @return IChatMessage sent to this receiver
+	 * @param messageEvent
+	 *            the event instance to handle. Will not be null.
 	 */
-	public IChatMessage getChatMessage();
+	public void handleMessageEvent(IIMMessageEvent messageEvent);
 
 }

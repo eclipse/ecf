@@ -11,15 +11,12 @@
 
 package org.eclipse.ecf.presence.im;
 
-import java.io.Serializable;
-
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Chat message
  */
-public interface IChatMessage extends IAdaptable, Serializable {
+public interface IChatMessage extends IIMMessage {
 
 	/**
 	 * Get thread ID for this message. If thread IDs are not supported, null

@@ -11,17 +11,25 @@
 
 package org.eclipse.ecf.presence.im;
 
+import org.eclipse.ecf.core.identity.ID;
 
-/**
- * Chat message event.
- */
-public interface IChatMessageEvent extends IIMMessageEvent {
+public abstract class IMMessage implements IIMMessage {
 
-	/**
-	 * Get chat message sent.
-	 * 
-	 * @return IChatMessage sent to this receiver
+	protected ID fromID;
+	
+	public IMMessage(ID fromID) {
+		this.fromID = fromID;
+	}
+	
+	public ID getFromID() {
+		return fromID;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-	public IChatMessage getChatMessage();
+	public Object getAdapter(Class adapter) {
+		return null;
+	}
 
 }

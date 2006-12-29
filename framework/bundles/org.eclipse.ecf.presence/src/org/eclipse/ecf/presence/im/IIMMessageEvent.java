@@ -11,17 +11,16 @@
 
 package org.eclipse.ecf.presence.im;
 
-/**
- * Chat message listener
- */
-public interface IChatMessageListener {
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.Event;
 
+public interface IIMMessageEvent extends Event {
+	
 	/**
-	 * Handle chat message event (reception of chat message).
+	 * Get the ID of the sender of the chat message
 	 * 
-	 * @param chatMessageEvent
-	 *            the event instance to handle. Will not be null.
+	 * @return ID of the sender of the message. Will not be null.
 	 */
-	public void handleChatMessageEvent(IChatMessageEvent chatMessageEvent);
+	public ID getFromID();
 
 }

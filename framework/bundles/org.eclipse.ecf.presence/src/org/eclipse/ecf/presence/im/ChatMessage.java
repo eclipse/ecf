@@ -16,7 +16,7 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * Chat message concrete class. Implements IChatMessage.
  */
-public class ChatMessage implements IChatMessage {
+public class ChatMessage extends IMMessage implements IChatMessage {
 
 	private static final long serialVersionUID = 483032454041915204L;
 	
@@ -28,28 +28,29 @@ public class ChatMessage implements IChatMessage {
 	
 	protected String body;
 
-	public ChatMessage(ID threadID, IChatMessage.Type type, String subject,
+	public ChatMessage(ID fromID, ID threadID, IChatMessage.Type type, String subject,
 			String body) {
+		super(fromID);
 		this.threadID = threadID;
 		this.type = type;
 		this.subject = subject;
 		this.body = body;
 	}
 
-	public ChatMessage(ID threadID, String subject, String body) {
-		this(threadID, IChatMessage.Type.CHAT, subject, body);
+	public ChatMessage(ID fromID, ID threadID, String subject, String body) {
+		this(fromID, threadID, IChatMessage.Type.CHAT, subject, body);
 	}
 
-	public ChatMessage(IChatMessage.Type type, String subject, String body) {
-		this(null, type, subject, body);
+	public ChatMessage(ID fromID, IChatMessage.Type type, String subject, String body) {
+		this(fromID, null, type, subject, body);
 	}
 
-	public ChatMessage(String subject, String body) {
-		this((ID) null, subject, body);
+	public ChatMessage(ID fromID, String subject, String body) {
+		this(fromID, (ID) null, subject, body);
 	}
 
-	public ChatMessage(String body) {
-		this(null, body);
+	public ChatMessage(ID fromID, String body) {
+		this(fromID, null, body);
 	}
 
 	/*
@@ -86,15 +87,6 @@ public class ChatMessage implements IChatMessage {
 	 */
 	public Type getType() {
 		return type;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	public Object getAdapter(Class adapter) {
-		return null;
 	}
 
 }

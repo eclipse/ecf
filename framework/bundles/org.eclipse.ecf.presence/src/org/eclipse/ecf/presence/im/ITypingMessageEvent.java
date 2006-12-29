@@ -11,17 +11,10 @@
 
 package org.eclipse.ecf.presence.im;
 
-
 /**
- * Chat message event.
+ * Typing message event.
  */
-public interface IChatMessageEvent extends IIMMessageEvent {
-
-	/**
-	 * Get chat message sent.
-	 * 
-	 * @return IChatMessage sent to this receiver
-	 */
-	public IChatMessage getChatMessage();
-
+public interface ITypingMessageEvent extends IIMMessageEvent {
+	
+	public ITypingMessage getTypingMessage();
 }

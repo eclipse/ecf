@@ -115,7 +115,7 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * @param listener
 	 *            for receiving message notifications. Must not be null.
 	 * @deprecated See replacement via {@link #getChatManager()} and
-	 *             {@link IChatManager#addChatMessageListener(org.eclipse.ecf.presence.im.IChatMessageListener)}
+	 *             {@link IChatManager#addMessageListener(org.eclipse.ecf.presence.im.IIMMessageListener)}
 	 */
 	public void addMessageListener(IMessageListener listener);
 
@@ -126,7 +126,7 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 *            the listener to remove. Must not be null.
 	 * 
 	 * @deprecated See replacement via {@link #getChatManager()} and
-	 *             {@link IChatManager#removeChatMessageListener(org.eclipse.ecf.presence.im.IChatMessageListener)}
+	 *             {@link IChatManager#removeMessageListener(org.eclipse.ecf.presence.im.IIMMessageListener)}
 	 */
 	public void removeMessageListener(IMessageListener listener);
 

@@ -12,23 +12,24 @@
 package org.eclipse.ecf.presence.im;
 
 /**
- * Chat manager
+ * Chat manager access methods.  The chat manager supports the sending and receiving
+ * of person-to-person messages for a given account.  
  */
 public interface IChatManager {
 
 	/**
-	 * Add chat message listener.
+	 * Add message listener.
 	 * 
 	 * @param listener the listener to add.  Must not be null.
 	 */
-	public void addChatMessageListener(IChatMessageListener listener);
+	public void addMessageListener(IIMMessageListener listener);
 
 	/**
-	 * Remove chat message listener.
+	 * Remove message listener.
 	 * 
 	 * @param listener the listener to remove.  Must not be null.
 	 */
-	public void removeChatMessageListener(IChatMessageListener listener);
+	public void removeMessageListener(IIMMessageListener listener);
 
 	/**
 	 * Get chat message sender.  If sending chat messages not supported
@@ -38,5 +39,14 @@ public interface IChatManager {
 	 * null, sending chat messages not supported by this provider.
 	 */
 	public IChatMessageSender getChatMessageSender();
+
+	/**
+	 * Get typing message sender.  If sending typing messages not supported
+	 * by this provider then null will be returned.
+	 * 
+	 * @return ITypingMessageSender to use for sending typing messages (instances of ITypingMessage).  If
+	 * null, sending typing messages not supported by this provider.
+	 */
+	public ITypingMessageSender getTypingMessageSender();
 
 }

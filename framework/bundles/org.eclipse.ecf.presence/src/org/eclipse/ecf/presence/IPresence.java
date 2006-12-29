@@ -57,6 +57,13 @@ public interface IPresence extends IAdaptable, Serializable {
 	public Type getType();
 
 	/**
+	 * Get picture data for this presence
+	 * 
+	 * @return byte [] image data
+	 */
+	public byte [] getPictureData();
+	
+	/**
 	 * A type-safe enum class to represent the presence type information
 	 * 
 	 */

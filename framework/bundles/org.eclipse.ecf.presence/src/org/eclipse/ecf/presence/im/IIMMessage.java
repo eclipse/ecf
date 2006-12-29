@@ -11,17 +11,16 @@
 
 package org.eclipse.ecf.presence.im;
 
+import java.io.Serializable;
+
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Chat message event.
+ * Super interface for chat and typing messages
  */
-public interface IChatMessageEvent extends IIMMessageEvent {
+public interface IIMMessage extends IAdaptable, Serializable {
 
-	/**
-	 * Get chat message sent.
-	 * 
-	 * @return IChatMessage sent to this receiver
-	 */
-	public IChatMessage getChatMessage();
-
+	public ID getFromID();
+	
 }

@@ -25,14 +25,41 @@ public interface IChatMessageSender {
 	 * @param toID
 	 *            the target receiver to receive the chat message. Must not be
 	 *            null.
-	 * @param message
-	 *            the IChatMessage instance to send. Must not be null.
+	 * 
+	 * @param threadID
+	 *            the threadID for the message. May be null.
+	 * 
+	 * @param type
+	 *            the IChatMessage.Type of the message. May not be null.
+	 * 
+	 * @param subject
+	 *            the subject of the message. May be null.
+	 * 
+	 * @param body
+	 *            the body of the message to send. May be null.
 	 * 
 	 * @throws ECFException
-	 *             thrown if toID is null, message is null, or currently
+	 *             thrown if toID is null, or currently
 	 *             disconnected
 	 */
-	public void sendChatMessage(ID toID, IChatMessage message)
+	public void sendChatMessage(ID toID, ID threadID, IChatMessage.Type type, String subject, String body)
 			throws ECFException;
+	
+	/**
+	 * Send chat message to given ID.
+	 * 
+	 * @param toID
+	 *            the target receiver to receive the chat message. Must not be
+	 *            null.
+	 * 
+	 * @param body
+	 *            the body of the message to send. May be null.
+	 * 
+	 * @throws ECFException
+	 *             thrown if toID is null, or currently
+	 *             disconnected
+	 */
+	public void sendChatMessage(ID toID, String body) throws ECFException;
+	
 
 }

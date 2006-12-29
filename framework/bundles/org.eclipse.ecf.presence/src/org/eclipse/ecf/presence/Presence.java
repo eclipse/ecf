@@ -31,6 +31,8 @@ public class Presence implements IPresence {
 
 	protected Map properties;
 
+	protected byte [] pictureData;
+	
 	public Presence() {
 		this(Type.AVAILABLE);
 	}
@@ -39,11 +41,16 @@ public class Presence implements IPresence {
 		this(type, "", Mode.AVAILABLE);
 	}
 
-	public Presence(Type type, String status, Mode mode, Map props) {
+	public Presence(Type type, String status, Mode mode, Map props, byte [] picture) {
 		this.type = type;
 		this.status = status;
 		this.mode = mode;
 		this.properties = (props == null) ? new HashMap() : props;
+		this.pictureData = picture;
+	}
+	
+	public Presence(Type type, String status, Mode mode, Map props) {
+		this(type,status,mode,props,null);
 	}
 
 	public Presence(Type type, String status, Mode mode) {
@@ -95,6 +102,10 @@ public class Presence implements IPresence {
 		return null;
 	}
 
+	public byte [] getPictureData() {
+		return pictureData;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -106,7 +117,7 @@ public class Presence implements IPresence {
 		sb.append("mode=").append(mode).append(";");
 		sb.append("status=").append(status).append(";");
 		sb.append("props=").append(properties).append(";");
-		sb.append("]");
+		sb.append("picture=").append(pictureData).append("]");
 		return sb.toString();
 	}
 }

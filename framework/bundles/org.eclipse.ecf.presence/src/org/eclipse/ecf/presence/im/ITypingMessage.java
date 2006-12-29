@@ -11,17 +11,25 @@
 
 package org.eclipse.ecf.presence.im;
 
-
 /**
- * Chat message event.
+ * Typing message.  This object represents information
+ * about a using typing during chat.
  */
-public interface IChatMessageEvent extends IIMMessageEvent {
+public interface ITypingMessage extends IIMMessage {
 
 	/**
-	 * Get chat message sent.
+	 * Indicates whether remote user is actually typing.
 	 * 
-	 * @return IChatMessage sent to this receiver
+	 * @return true if currently typing, false if currently stopped.
 	 */
-	public IChatMessage getChatMessage();
-
+	public boolean isTyping();
+	
+	/**
+	 * Get the contents of the typing
+	 * 
+	 * @return String contents of the typing.  Will return empty String if
+	 * no contents
+	 */
+	public String getBody();
+	
 }
