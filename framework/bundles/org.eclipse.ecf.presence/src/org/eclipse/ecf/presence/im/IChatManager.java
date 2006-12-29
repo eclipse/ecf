@@ -12,7 +12,7 @@
 package org.eclipse.ecf.presence.im;
 
 /**
- * Chat manager access methods.  The chat manager supports the sending and receiving
+ * Chat manager access entry interface.  The chat manager supports the sending and receiving
  * of person-to-person messages for a given account.  
  */
 public interface IChatManager {
