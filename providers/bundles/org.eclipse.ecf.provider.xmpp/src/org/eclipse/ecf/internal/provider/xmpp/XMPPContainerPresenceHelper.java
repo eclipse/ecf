@@ -11,8 +11,10 @@ package org.eclipse.ecf.internal.provider.xmpp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
@@ -486,17 +488,37 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	protected IPresence createIPresence(Presence xmppPresence, byte [] photoData) {
-		String status = xmppPresence.getStatus();
-		IPresence newPresence = new org.eclipse.ecf.presence.Presence(
-				createIPresenceType(xmppPresence), status,
-				createIPresenceMode(xmppPresence), null, photoData);
-		return newPresence;
+		return new org.eclipse.ecf.presence.Presence(
+				createIPresenceType(xmppPresence), xmppPresence.getStatus(),
+				createIPresenceMode(xmppPresence), getPropertiesFromPresence(xmppPresence), photoData);
+	}
+
+	private Map getPropertiesFromPresence(Presence xmppPresence) {
+		Map result = new HashMap();
+		Iterator i = xmppPresence.getPropertyNames();
+		for(  ; i.hasNext(); ) {
+			String name = (String) i.next();
+			result.put(name, xmppPresence.getProperty(name));
+		}
+		return result;
 	}
 
 	protected Presence createPresence(IPresence ipresence) {
-		String status = ipresence.getStatus();
 		Presence newPresence = new Presence(createPresenceType(ipresence),
-				status, 0, createPresenceMode(ipresence));
+				ipresence.getStatus(), 0, createPresenceMode(ipresence));
+		Map properties = ipresence.getProperties();
+		if (properties != null) {
+			for(Iterator i=properties.keySet().iterator(); i.hasNext(); ) {
+				String key = (String) i.next();
+				Object val = properties.get(key);
+				if (val instanceof Boolean) newPresence.setProperty(key,((Boolean) val).booleanValue());
+				else if (val instanceof Double) newPresence.setProperty(key, ((Double) val).doubleValue());
+				else if (val instanceof Float) newPresence.setProperty(key, ((Float) val).floatValue());
+				else if (val instanceof Integer) newPresence.setProperty(key, ((Integer) val).intValue());
+				else if (val instanceof Long) newPresence.setProperty(key, ((Long) val).floatValue());
+				else if (val instanceof Object) newPresence.setProperty(key, val);
+			}
+		}
 		return newPresence;
 	}
 
