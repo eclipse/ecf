@@ -25,7 +25,6 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
@@ -52,11 +51,11 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	 * 
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addChatParticipantListener(org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener)
 	 */
-	public void addChatParticipantListener(
+	public void addChatRoomParticipantListener(
 			IChatRoomParticipantListener participantListener) {
 		participantListeners.add(participantListener);
 	}
-	public void removeChatParticipantListener(
+	public void removeChatRoomParticipantListener(
 			IChatRoomParticipantListener participantListener) {
 		participantListeners.remove(participantListener);
 	}
@@ -73,9 +72,6 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 			public Mode getMode() {
 				return (available ? IPresence.Mode.AVAILABLE
 						: IPresence.Mode.AWAY);
-			}
-			public int getPriority() {
-				return 0;
 			}
 			public Map getProperties() {
 				return null;
@@ -121,7 +117,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	 * 
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#getChatMessageSender()
 	 */
-	public IChatRoomMessageSender getChatMessageSender() {
+	public IChatRoomMessageSender getChatRoomMessageSender() {
 		return new IChatRoomMessageSender() {
 			public void sendMessage(String message) throws ECFException {
 				doSendChannelMessage(message);
@@ -197,9 +193,5 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	}
 	protected void setChannelOperator(boolean channelOperator) {
 		this.channelOperator = channelOperator;
-	}
-	public void removeMessageListener(IMessageListener msgListener) {
-		// TODO Auto-generated method stub
-		
 	}
 }

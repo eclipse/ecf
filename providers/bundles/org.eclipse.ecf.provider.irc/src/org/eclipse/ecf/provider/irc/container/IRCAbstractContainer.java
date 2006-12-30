@@ -19,11 +19,13 @@ import java.util.StringTokenizer;
 import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.internal.provider.irc.Activator;
 import org.eclipse.ecf.internal.provider.irc.Trace;
-import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IIMMessageListener;
+import org.eclipse.ecf.presence.chatroom.ChatRoomMessage;
+import org.eclipse.ecf.presence.chatroom.ChatRoomMessageEvent;
 
 /**
  * 
@@ -70,10 +72,11 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 
 	public void fireMessageListeners(ID sender, String msg) {
 		for(Iterator i=msgListeners.iterator(); i.hasNext(); ) {
-			IMessageListener l = (IMessageListener) i.next();
-			l.handleMessage(sender, null, IMessageListener.Type.GROUP_CHAT, "", msg);
+			IIMMessageListener l = (IIMMessageListener) i.next();
+			l.handleMessageEvent(new ChatRoomMessageEvent(sender, new ChatRoomMessage(sender, msg)));
 		}
 	}
+	
 	public ID getID() {
 		return localID;
 	}
@@ -140,11 +143,11 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 		return (message != null && message.startsWith(COMMAND_PREFIX));
 	}
 
-	public void addMessageListener(IMessageListener msgListener) {
-		msgListeners.add(msgListener);
+	public void addMessageListener(IIMMessageListener l) {
+		msgListeners.add(l);
 	}
-	public void removeMessageListener(IMessageListener msgListener) {
-		msgListeners.remove(msgListener);
+	
+	public void removeMessageListener(IIMMessageListener l) {
+		msgListeners.remove(l);
 	}
-
 }

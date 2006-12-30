@@ -39,9 +39,11 @@ import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.irc.Activator;
 import org.eclipse.ecf.internal.provider.irc.Trace;
-import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
+import org.eclipse.ecf.presence.chatroom.ChatRoomMessage;
+import org.eclipse.ecf.presence.chatroom.ChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
@@ -416,12 +418,27 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 			return unknownID;
 		} 
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addMessageListener(org.eclipse.ecf.presence.IIMMessageListener)
+	 */
+	public void addMessageListener(IIMMessageListener listener) {
+		msgListeners.add(listener);
+	}
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#removeMessageListener(org.eclipse.ecf.presence.IIMMessageListener)
+	 */
+	public void removeMessageListener(IIMMessageListener listener) {
+		msgListeners.remove(listener);
+	}
+
 	private void fireMessageListeners(ID sender, String msg) {
 		for(Iterator i=msgListeners.iterator(); i.hasNext(); ) {
-			IMessageListener l = (IMessageListener) i.next();
-			l.handleMessage(sender, null, IMessageListener.Type.GROUP_CHAT, "", msg);
+			IIMMessageListener l = (IIMMessageListener) i.next();
+			l.handleMessageEvent(new ChatRoomMessageEvent(sender, new ChatRoomMessage(sender, msg)));
 		}
 	}
+	
 	protected void handleOnQuit(IRCUser arg0, String arg1) {
 		trace("handleOnQuit("+arg0+","+arg1+")");
 		firePresenceListeners(false, getIRCUserName(arg0));
@@ -617,11 +634,8 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 	public IChatRoomInfo[] getChatRoomInfos() {
 		return null;
 	}
-	// IChatRoomContainer
-	public void addMessageListener(IMessageListener msgListener) {
-		msgListeners.add(msgListener);
-	}
-	public IChatRoomMessageSender getChatMessageSender() {
+
+	public IChatRoomMessageSender getChatRoomMessageSender() {
 		return new IChatRoomMessageSender() {
 			public void sendMessage(String message) throws ECFException {
 				parseMessageAndSend(message);
@@ -737,18 +751,15 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 	private boolean isCommand(String message) {
 		return (message != null && message.startsWith(COMMAND_PREFIX));
 	}
-	public void addChatParticipantListener(IChatRoomParticipantListener participantListener) {
+	public void addChatRoomParticipantListener(IChatRoomParticipantListener participantListener) {
 		participantListeners.add(participantListener);
 	}
-	public void removeChatParticipantListener(
+	public void removeChatRoomParticipantListener(
 			IChatRoomParticipantListener participantListener) {
 		participantListeners.remove(participantListener);
 		
 	}
-	public void removeMessageListener(IMessageListener msgListener) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	public void addListener(IContainerListener l) {
 		synchronized (listeners) {
 			listeners.add(l);

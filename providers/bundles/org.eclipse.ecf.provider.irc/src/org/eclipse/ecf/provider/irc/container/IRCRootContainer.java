@@ -403,16 +403,16 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		return null;
 	}
 
-	public void addChatParticipantListener(
+	public void addChatRoomParticipantListener(
 			IChatRoomParticipantListener participantListener) {
 		// for root container, no participant listening
 	}
 
-	public void removeChatParticipantListener(
+	public void removeChatRoomParticipantListener(
 			IChatRoomParticipantListener participantListener) {
 	}
 
-	public IChatRoomMessageSender getChatMessageSender() {
+	public IChatRoomMessageSender getChatRoomMessageSender() {
 		return new IChatRoomMessageSender() {
 			public void sendMessage(String message) throws ECFException {
 				parseMessageAndSend(message);
