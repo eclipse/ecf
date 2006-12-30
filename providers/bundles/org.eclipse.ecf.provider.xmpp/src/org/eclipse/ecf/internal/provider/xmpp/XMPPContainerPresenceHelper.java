@@ -35,6 +35,7 @@ import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPRoomID;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.presence.IPresence;
+import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.im.ITypingMessage;
@@ -66,6 +67,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	XMPPChatManager chatManager = null;
 
+	Vector presenceListeners = new Vector();
+	
 	public XMPPContainerPresenceHelper(XMPPContainer container) {
 		this.container = container;
 		chatManager = new XMPPChatManager(this);
@@ -225,6 +228,20 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			return rosterSubscriptionSender;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.presence.roster.IRosterManager#addPresenceListener(org.eclipse.ecf.presence.roster.IPresenceListener)
+		 */
+		public void addPresenceListener(IPresenceListener listener) {
+			presenceListeners.add(listener);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.presence.roster.IRosterManager#removePresenceListener(org.eclipse.ecf.presence.roster.IPresenceListener)
+		 */
+		public void removePresenceListener(IPresenceListener listener) {
+			presenceListeners.add(listener);
+		}
+
 	}
 
 	public IRosterManager getRosterManager() {
@@ -371,9 +388,18 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			rosterManager.notifySubscriptionListener(fromID, newPresence);
 		} else {
 			updatePresence(fromID, newPresence);
+			firePresenceListeners(fromID, newPresence);
 			rosterManager.notifyRosterUpdate(null);
 		}
 	}
+
+	private void firePresenceListeners(ID fromID, IPresence presence) {
+		for (Iterator i = presenceListeners.iterator(); i.hasNext();) {
+			IPresenceListener l = (IPresenceListener) i.next();
+			l.handlePresence(fromID, presence);
+		}
+	}
+	
 
 	private void updatePresence(XMPPID fromID, IPresence newPresence) {
 		for (Iterator i = roster.getItems().iterator(); i.hasNext();) {

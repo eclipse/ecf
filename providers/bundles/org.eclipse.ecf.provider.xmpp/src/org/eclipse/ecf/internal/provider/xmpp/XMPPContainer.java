@@ -39,8 +39,6 @@ import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionObjectPacketEve
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionPacketEvent;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.IPresenceListener;
-import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.im.IChatManager;
@@ -130,12 +128,6 @@ public class XMPPContainer extends ClientSOContainer {
 
 		public IChatRoomManager getChatRoomManager() {
 			return chatRoomManager;
-		}
-
-		public void addPresenceListener(IPresenceListener listener) {
-		}
-
-		public void removePresenceListener(IPresenceListener listener) {
 		}
 
 		public Object getAdapter(Class clazz) {
@@ -286,7 +278,6 @@ public class XMPPContainer extends ClientSOContainer {
 	 */
 	protected ISynchAsynchConnection createConnection(ID remoteSpace,
 			Object data) throws ConnectionCreateException {
-		ISynchAsynchConnection conn = null;
 		boolean google = false;
 		if (remoteSpace instanceof XMPPID) {
 			XMPPID theID = (XMPPID) remoteSpace;

@@ -60,8 +60,6 @@ import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionPacketEvent;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.IPresenceListener;
-import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
@@ -69,7 +67,6 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
-import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
@@ -496,11 +493,6 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 					return null;
 				}
 
-				public void addPresenceListener(IPresenceListener listener) {
-					delegate.addPresenceListener(listener);
-				}
-
-
 				public IAccountManager getAccountManager() {
 					return new IAccountManager() {
 						public boolean changePassword(String newpassword)
@@ -602,10 +594,6 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 							throw new ChatRoomCreateException(roomname,"creation not supported", null);
 						}
 					};
-				}
-
-				public void removePresenceListener(IPresenceListener listener) {
-					delegate.removePresenceListener(listener);
 				}
 
 				public IChatManager getChatManager() {
