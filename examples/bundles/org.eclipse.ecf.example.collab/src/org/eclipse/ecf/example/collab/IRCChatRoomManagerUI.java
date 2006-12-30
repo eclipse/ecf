@@ -22,10 +22,13 @@ import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IIMMessageEvent;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 import org.eclipse.ecf.ui.views.ChatRoomManagerView;
 import org.eclipse.ecf.ui.views.IChatRoomViewCloseListener;
 import org.eclipse.swt.widgets.Display;
@@ -93,7 +96,7 @@ public class IRCChatRoomManagerUI {
 			public void chatRoomViewClosing(String secondaryID) {
 				container.dispose();
 			}
-		}, chatRoom, manager, targetID, chatRoom.getChatMessageSender());
+		}, chatRoom, manager, targetID, chatRoom.getChatRoomMessageSender());
 		// Add listener for container, so that if the container is spontaneously disconnected,
 		// then we will be able to have the UI respond by making itself inactive
 		container.addListener(new IContainerListener() {
@@ -113,11 +116,12 @@ public class IRCChatRoomManagerUI {
 		});
 		// Add listeners so that the new chat room gets
 		// asynch notifications of various relevant chat room events
-		chatRoom.addMessageListener(new IMessageListener() {
-			public void handleMessage(ID fromID, ID toID, Type type,
-					String subject, String messageBody) {
-				chatroomview.handleMessage(fromID, toID, type, subject,
-						messageBody);
+		chatRoom.addMessageListener(new IIMMessageListener() {
+			public void handleMessageEvent(IIMMessageEvent messageEvent) {
+				if (messageEvent instanceof IChatRoomMessageEvent) {
+					IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
+					chatroomview.handleMessage(m.getFromID(), m.getMessage());
+				}
 			}
 		});
 	}

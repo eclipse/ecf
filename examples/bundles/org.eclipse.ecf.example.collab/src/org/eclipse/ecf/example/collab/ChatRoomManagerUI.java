@@ -15,11 +15,14 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IIMMessageEvent;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.ecf.ui.views.ChatRoomView;
@@ -55,7 +58,7 @@ public class ChatRoomManagerUI {
 					} catch (ContainerCreateException e1) {
 						// can't happen
 					}
-					IChatRoomMessageSender sender = chatRoom.getChatMessageSender();
+					IChatRoomMessageSender sender = chatRoom.getChatRoomMessageSender();
 					IWorkbenchWindow ww = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow();
 					IWorkbenchPage wp = ww.getActivePage();
@@ -70,14 +73,16 @@ public class ChatRoomManagerUI {
 					}, null, chatRoom, roomInfo, sender);
 					// Add listeners so that the new chat room gets
 					// asynch notifications of various relevant chat room events
-					chatRoom.addMessageListener(new IMessageListener() {
-						public void handleMessage(ID fromID, ID toID, Type type,
-								String subject, String messageBody) {
-							chatroomview.handleMessage(fromID, toID, type, subject,
-									messageBody);
+					chatRoom.addMessageListener(new IIMMessageListener() {
+						public void handleMessageEvent(
+								IIMMessageEvent messageEvent) {
+							if (messageEvent instanceof IChatRoomMessageEvent) {
+								IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
+								chatroomview.handleMessage(m.getFromID(), m.getMessage());
+							}					
 						}
 					});
-					chatRoom.addChatParticipantListener(new IChatRoomParticipantListener() {
+					chatRoom.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
 						public void handlePresence(ID fromID, IPresence presence) {
 							chatroomview.handlePresence(fromID, presence);
 						}

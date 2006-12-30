@@ -17,22 +17,20 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IAccountManager;
+import org.eclipse.ecf.presence.IIMMessageEvent;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterEntry;
-import org.eclipse.ecf.presence.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.Presence;
-import org.eclipse.ecf.presence.im.ChatMessage;
 import org.eclipse.ecf.presence.im.IChatManager;
-import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageEvent;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
-import org.eclipse.ecf.presence.im.IIMMessageEvent;
-import org.eclipse.ecf.presence.im.IIMMessageListener;
 import org.eclipse.ecf.presence.im.ITypingMessageEvent;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
+import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
@@ -123,16 +121,12 @@ public class PresenceContainerUI {
 		});
 
 		chatManager.addMessageListener(new IIMMessageListener() {
-
 			public void handleMessageEvent(
 					final IIMMessageEvent chatMessageEvent) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
 						if (chatMessageEvent instanceof IChatMessageEvent) {
-							IChatMessage message = ((IChatMessageEvent) chatMessageEvent).getChatMessage();
-							rosterView.handleMessage(
-									PresenceContainerUI.this.groupID, chatMessageEvent.getFromID(), null,
-									null, message.getSubject(), message.getBody());
+							rosterView.handleMessageEvent(chatMessageEvent);
 						} else if (chatMessageEvent instanceof ITypingMessageEvent) {
 							rosterView.handleTyping(chatMessageEvent.getFromID());
 						}
@@ -176,7 +170,6 @@ public class PresenceContainerUI {
 
 							public void disconnect() {
 								container.disconnect();
-								PresenceContainerUI.this.groupID = null;
 							}
 
 							public void updatePresence(ID userID,
@@ -300,7 +293,8 @@ public class PresenceContainerUI {
 			}
 
 		});
-		pc.addRosterSubscriptionListener(new IRosterSubscriptionListener() {
+		
+		pc.getRosterManager().addRosterSubscriptionListener(new IRosterSubscriptionListener() {
 
 			public void handleSubscribeRequest(final ID fromID) {
 				Display.getDefault().syncExec(new Runnable() {
@@ -371,7 +365,8 @@ public class PresenceContainerUI {
 			public void handleUnsubscribed(ID fromID) {
 				// System.out.println("unsubscribed from "+fromID);
 			}
-		});
+			});
+		
 	}
 
 }
