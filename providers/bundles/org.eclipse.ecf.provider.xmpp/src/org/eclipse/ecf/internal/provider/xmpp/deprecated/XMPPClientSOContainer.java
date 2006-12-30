@@ -65,6 +65,7 @@ import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.IRosterSubscriptionListener;
+import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
@@ -656,6 +657,14 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 
 						public IChatRoomManager getParent() {
 							return null;
+						}
+
+						/* (non-Javadoc)
+						 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#createChatRoom(java.lang.String, java.util.Map)
+						 */
+						public IChatRoomInfo createChatRoom(String roomname, Map properties)
+								throws ChatRoomCreateException {
+							throw new ChatRoomCreateException(roomname,"creation not supported", null);
 						}
 					};
 				}

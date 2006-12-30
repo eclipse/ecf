@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.ContainerCreateException;
@@ -24,6 +25,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPRoomID;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
+import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
@@ -341,6 +343,14 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 
 	public IChatRoomManager getParent() {
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#createChatRoom(java.lang.String, java.util.Map)
+	 */
+	public IChatRoomInfo createChatRoom(String roomname, Map properties)
+			throws ChatRoomCreateException {
+		throw new ChatRoomCreateException(roomname,"creation not supported", null);
 	}
 
 }
