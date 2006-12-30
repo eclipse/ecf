@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.presence.im;
 
+import java.util.Map;
+
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 
@@ -37,12 +39,15 @@ public interface IChatMessageSender {
 	 * 
 	 * @param body
 	 *            the body of the message to send. May be null.
+	 *            
+	 * @param properties
+	 *            properties associated with message.  May be null.
 	 * 
 	 * @throws ECFException
 	 *             thrown if toID is null, or currently
 	 *             disconnected
 	 */
-	public void sendChatMessage(ID toID, ID threadID, IChatMessage.Type type, String subject, String body)
+	public void sendChatMessage(ID toID, ID threadID, IChatMessage.Type type, String subject, String body, Map properties)
 			throws ECFException;
 	
 	/**

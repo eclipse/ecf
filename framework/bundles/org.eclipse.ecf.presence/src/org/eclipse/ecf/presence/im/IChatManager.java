@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.presence.im;
 
+import org.eclipse.ecf.presence.IIMMessageListener;
+
 /**
  * Chat manager access entry interface.  The chat manager supports the sending and receiving
  * of person-to-person messages for a given account.  

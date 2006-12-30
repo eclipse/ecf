@@ -13,6 +13,7 @@ package org.eclipse.ecf.presence.im;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 
@@ -26,63 +27,34 @@ public class XHTMLChatMessage extends ChatMessage implements IXHTMLChatMessage {
 	
 	protected List xhtmlbodies;
 	
-	/**
-	 * @param fromID
-	 * @param threadID
-	 * @param type
-	 * @param subject
-	 * @param body
-	 * @param xhtmlbodies
-	 */
 	public XHTMLChatMessage(ID fromID, ID threadID, Type type, String subject,
-			String body, List xhtmlbodies) {
-		super(fromID, threadID, type, subject, body);
+			String body, Map properties, List xhtmlbodies) {
+		super(fromID, threadID, type, subject, body, properties);
 		this.xhtmlbodies = (xhtmlbodies == null)?new ArrayList():xhtmlbodies;
 	}
 
-	/**
-	 * @param fromID
-	 * @param threadID
-	 * @param subject
-	 * @param body
-	 * @param xhtmlbodies
-	 */
-	public XHTMLChatMessage(ID fromID, ID threadID, String subject, String body, List xhtmlbodies) {
-		this(fromID, threadID, IChatMessage.Type.CHAT, subject, body, xhtmlbodies);
+	public XHTMLChatMessage(ID fromID, ID threadID, String subject, String body, Map properties, List xhtmlbodies) {
+		this(fromID, threadID, IChatMessage.Type.CHAT, subject, body, properties, xhtmlbodies);
 	}
 
-	/**
-	 * @param fromID
-	 * @param type
-	 * @param subject
-	 * @param body
-	 * @param xhtmlbodies
-	 */
-	public XHTMLChatMessage(ID fromID, Type type, String subject, String body, List xhtmlbodies) {
-		this(fromID, null, type, subject, body, xhtmlbodies);
+	public XHTMLChatMessage(ID fromID, Type type, String subject, String body, Map properties, List xhtmlbodies) {
+		this(fromID, null, type, subject, body, properties, xhtmlbodies);
 	}
 
-	/**
-	 * @param fromID
-	 * @param subject
-	 * @param body
-	 * @param xhtmlbodies
-	 */
-	public XHTMLChatMessage(ID fromID, String subject, String body, List xhtmlbodies) {
-		this(fromID, (ID) null, subject, body, xhtmlbodies);
+	public XHTMLChatMessage(ID fromID, String subject, String body, Map properties, List xhtmlbodies) {
+		this(fromID, (ID) null, subject, body, properties, xhtmlbodies);
 	}
 
-	/**
-	 * @param fromID
-	 * @param body
-	 * @param xhtmlbodies
-	 */
-	public XHTMLChatMessage(ID fromID, String body, List xhtmlbodies) {
-		this(fromID, (String) null, body, xhtmlbodies);
+	public XHTMLChatMessage(ID fromID, String body, Map properties, List xhtmlbodies) {
+		this(fromID, (String) null, body, properties, xhtmlbodies);
 	}
 
+	public XHTMLChatMessage(ID fromID, Map properties, List xhtmlbodies) {
+		this(fromID, (String) null, properties, xhtmlbodies);
+	}
+	
 	public XHTMLChatMessage(ID fromID, List xhtmlbodies) {
-		this(fromID, (String) null, xhtmlbodies);
+		this(fromID, (Map) null, xhtmlbodies);
 	}
 	
 	/* (non-Javadoc)

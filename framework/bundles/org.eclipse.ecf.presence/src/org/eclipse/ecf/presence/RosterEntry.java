@@ -14,6 +14,8 @@ package org.eclipse.ecf.presence;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
@@ -38,11 +40,9 @@ public class RosterEntry implements IRosterEntry {
 
 	public RosterEntry(ID svcID, ID userID, String name,
 			IPresence presenceState, InterestType interestType, Collection grps) {
-		if (svcID == null)
-			throw new NullPointerException("svcID cannot be null");
+		Assert.isNotNull(svcID);
 		this.serviceID = svcID;
-		if (userID == null)
-			throw new NullPointerException("userID cannot be null");
+		Assert.isNotNull(userID);
 		this.userID = userID;
 		this.name = name;
 		this.presence = presenceState;

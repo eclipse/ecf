@@ -11,7 +11,7 @@
 package org.eclipse.ecf.presence.chatroom;
 
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IIMMessageListener;
 
 /**
  * Chat room container
@@ -19,40 +19,41 @@ import org.eclipse.ecf.presence.IMessageListener;
 public interface IChatRoomContainer extends IContainer {
 
 	/**
-	 * Setup listener for handling IM messages
+	 * Add message listener.
 	 * 
-	 * @param msgListener
-	 *            the listener to add
+	 * @param listener the listener to add.  Must not be null.
 	 */
-	public void addMessageListener(IMessageListener msgListener);
+	public void addMessageListener(IIMMessageListener listener);
 
 	/**
-	 * @param msgListener
+	 * Remove message listener.
+	 * 
+	 * @param listener the listener to remove.  Must not be null.
 	 */
-	public void removeMessageListener(IMessageListener msgListener);
+	public void removeMessageListener(IIMMessageListener listener);
 
 	/**
 	 * Get interface for sending messages
 	 * 
 	 * @return IChatRoomMessageSender. Null if no message sender available
 	 */
-	public IChatRoomMessageSender getChatMessageSender();
+	public IChatRoomMessageSender getChatRoomMessageSender();
 
 	/**
-	 * Add participant listener. The given listener will be notified if/when
+	 * Add chat room participant listener. The given listener will be notified if/when
 	 * participants are added or removed from given room
 	 * 
 	 * @param participantListener
 	 */
-	public void addChatParticipantListener(
+	public void addChatRoomParticipantListener(
 			IChatRoomParticipantListener participantListener);
 
 	/**
-	 * Remove chat participant listener
+	 * Remove chat room participant listener
 	 * 
 	 * @param participantListener
 	 *            the participant listener to remove
 	 */
-	public void removeChatParticipantListener(
+	public void removeChatRoomParticipantListener(
 			IChatRoomParticipantListener participantListener);
 }

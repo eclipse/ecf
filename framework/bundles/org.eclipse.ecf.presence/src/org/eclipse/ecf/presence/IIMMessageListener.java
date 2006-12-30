@@ -9,21 +9,19 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.im;
-
-import org.eclipse.ecf.presence.IIMMessageEvent;
-
+package org.eclipse.ecf.presence;
 
 /**
- * Chat message event.
+ * IM message listener.  This listener receives IIMMessageEvents.
  */
-public interface IXHTMLChatMessageEvent extends IIMMessageEvent {
+public interface IIMMessageListener {
 
 	/**
-	 * Get XHTML chat message sent.
+	 * Handle message event (reception of chat, typing, or object message).
 	 * 
-	 * @return IXHTMLChatMessage sent to this receiver
+	 * @param messageEvent
+	 *            the event instance to handle. Will not be null.
 	 */
-	public IXHTMLChatMessage getXHTMLChatMessage();
+	public void handleMessageEvent(IIMMessageEvent messageEvent);
 
 }

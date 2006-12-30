@@ -11,7 +11,10 @@
 
 package org.eclipse.ecf.presence.im;
 
+import java.util.Map;
+
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.presence.IIMMessage;
 
 /**
  * Chat message
@@ -49,6 +52,13 @@ public interface IChatMessage extends IIMMessage {
 	 * @return Type associated with this message. Defaults to Type.CHAT.
 	 */
 	public Type getType();
+
+	/**
+	 * Get properties associated with this chat message
+	 * 
+	 * @return Map of properties.  Will not be null.
+	 */
+	public Map getProperties();
 
 	public static class Type {
 

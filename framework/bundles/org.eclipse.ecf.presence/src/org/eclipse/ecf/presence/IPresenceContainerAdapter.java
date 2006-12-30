@@ -36,31 +36,6 @@ import org.eclipse.ecf.presence.roster.IRosterManager;
 public interface IPresenceContainerAdapter extends IAdaptable {
 
 	/**
-	 * Setup listener for handling roster subscription requests. The given
-	 * listener will asynchronously be called when a subscription request is
-	 * received by this connected account.
-	 * 
-	 * @param listener
-	 *            for receiving subscription requests. Must not be null.
-	 * @deprecated See replacement available via {@link #getRosterManager()} and
-	 *             {@link IRosterManager#addRosterSubscriptionListener(org.eclipse.ecf.presence.roster.IRosterSubscriptionListener)}
-	 */
-	public void addRosterSubscriptionListener(
-			IRosterSubscriptionListener listener);
-
-	/**
-	 * Remove listener for roster subscription requests.
-	 * 
-	 * @param listener
-	 *            the listener to remove. Must not be null.
-	 * 
-	 * @deprecated See replacement available via {@link #getRosterManager()} and
-	 *             {@link IRosterManager#removeRosterSubscriptionListener(org.eclipse.ecf.presence.roster.IRosterSubscriptionListener)}
-	 */
-	public void removeRosterSubscriptionListener(
-			IRosterSubscriptionListener listener);
-
-	/**
 	 * Get roster manager for access to roster model. If null is returned roster
 	 * manager unavailable for this adapter.
 	 * 
@@ -92,52 +67,6 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 *             {@link IRosterManager#removeRosterUpdateListener(org.eclipse.ecf.presence.roster.IRosterUpdateListener)}
 	 */
 	public void removePresenceListener(IPresenceListener listener);
-
-	/**
-	 * Retrieve interface for sending presence updates. The returned
-	 * IPresenceSender (if not null) can be used to send presence change
-	 * messages to remote users that have access to the presence information for
-	 * the connected account.
-	 * 
-	 * @return IPresenceSender. Null if no presence sender available for this
-	 *         provider.
-	 * 
-	 * @deprecated See replacement via {@link #getRosterManager()} and
-	 *             {@link IRosterManager#getPresenceSender()}
-	 */
-	public IPresenceSender getPresenceSender();
-
-	/**
-	 * Setup listener for handling IM messages. The given listener will
-	 * asynchronously be called when a subscription request is received by this
-	 * connected account.
-	 * 
-	 * @param listener
-	 *            for receiving message notifications. Must not be null.
-	 * @deprecated See replacement via {@link #getChatManager()} and
-	 *             {@link IChatManager#addMessageListener(org.eclipse.ecf.presence.im.IIMMessageListener)}
-	 */
-	public void addMessageListener(IMessageListener listener);
-
-	/**
-	 * REmove listener for message events
-	 * 
-	 * @param listener
-	 *            the listener to remove. Must not be null.
-	 * 
-	 * @deprecated See replacement via {@link #getChatManager()} and
-	 *             {@link IChatManager#removeMessageListener(org.eclipse.ecf.presence.im.IIMMessageListener)}
-	 */
-	public void removeMessageListener(IMessageListener listener);
-
-	/**
-	 * Get interface for sending messages
-	 * 
-	 * @return IMessageSender. Null if no message sender available
-	 * 
-	 * @deprecated See replacement via {@link #getChatManager()} and {@link IChatManager#getChatMessageSender()}
-	 */
-	public IMessageSender getMessageSender();
 
 	/**
 	 * Get chat manager for sending and receiving chat messages

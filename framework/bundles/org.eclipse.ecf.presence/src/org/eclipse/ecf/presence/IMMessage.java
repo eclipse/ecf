@@ -9,18 +9,27 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.im;
+package org.eclipse.ecf.presence;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.util.Event;
 
-public interface IIMMessageEvent extends Event {
+public abstract class IMMessage implements IIMMessage {
+
+	protected ID fromID;
 	
-	/**
-	 * Get the ID of the sender of the chat message
-	 * 
-	 * @return ID of the sender of the message. Will not be null.
+	public IMMessage(ID fromID) {
+		this.fromID = fromID;
+	}
+	
+	public ID getFromID() {
+		return fromID;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
-	public ID getFromID();
+	public Object getAdapter(Class adapter) {
+		return null;
+	}
 
 }

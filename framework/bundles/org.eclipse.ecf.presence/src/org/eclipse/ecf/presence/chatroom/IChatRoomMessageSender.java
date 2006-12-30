@@ -15,7 +15,7 @@ import org.eclipse.ecf.core.util.ECFException;
 /**
  * Chat message sender. Interface for sending chat messages within an
  * {@link IChatRoomContainer}. Access to instances implementing this interface
- * is provided via the {@link IChatRoomContainer#getChatMessageSender()}
+ * is provided via the {@link IChatRoomContainer#getChatRoomMessageSender()}
  * 
  * @see IChatRoomContainer
  */

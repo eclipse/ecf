@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.presence.im;
 
+import org.eclipse.ecf.presence.IIMMessageEvent;
+
 /**
  * Typing message event.
  */

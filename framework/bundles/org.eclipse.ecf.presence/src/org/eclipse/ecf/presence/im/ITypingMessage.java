@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.presence.im;
 
+import org.eclipse.ecf.presence.IIMMessage;
+
 /**
  * Typing message.  This object represents information
  * about a using typing during chat.

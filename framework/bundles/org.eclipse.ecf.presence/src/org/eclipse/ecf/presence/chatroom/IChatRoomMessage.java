@@ -9,21 +9,20 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.im;
+package org.eclipse.ecf.presence.chatroom;
 
-import org.eclipse.ecf.presence.IIMMessageEvent;
-
+import org.eclipse.ecf.presence.IIMMessage;
 
 /**
- * Chat message event.
+ * Chat room message.
  */
-public interface IXHTMLChatMessageEvent extends IIMMessageEvent {
+public interface IChatRoomMessage extends IIMMessage {
 
-	/**
-	 * Get XHTML chat message sent.
+	/** 
+	 * Get the actual message sent to the chat room
 	 * 
-	 * @return IXHTMLChatMessage sent to this receiver
+	 * @return String message sent to chat room.
 	 */
-	public IXHTMLChatMessage getXHTMLChatMessage();
-
+	public String getMessage();
+	
 }

@@ -12,6 +12,7 @@
 package org.eclipse.ecf.presence.im;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.presence.IMMessage;
 
 /**
  * Typing Message implementation class
@@ -41,7 +42,7 @@ public class TypingMessage extends IMMessage implements ITypingMessage {
 	}
 	
 	public TypingMessage(ID fromID) {
-		this(fromID,true,"");
+		this(fromID,"");
 	}
 	
 	/* (non-Javadoc)

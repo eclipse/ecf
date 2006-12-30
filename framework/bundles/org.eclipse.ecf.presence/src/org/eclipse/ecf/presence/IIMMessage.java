@@ -9,21 +9,18 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.im;
+package org.eclipse.ecf.presence;
 
-import org.eclipse.ecf.presence.IIMMessageEvent;
+import java.io.Serializable;
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Chat message event.
+ * Super interface for chat and typing messages
  */
-public interface IXHTMLChatMessageEvent extends IIMMessageEvent {
+public interface IIMMessage extends IAdaptable, Serializable {
 
-	/**
-	 * Get XHTML chat message sent.
-	 * 
-	 * @return IXHTMLChatMessage sent to this receiver
-	 */
-	public IXHTMLChatMessage getXHTMLChatMessage();
-
+	public ID getFromID();
+	
 }

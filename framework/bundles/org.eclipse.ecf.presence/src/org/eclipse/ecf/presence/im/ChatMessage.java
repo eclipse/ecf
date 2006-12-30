@@ -11,7 +11,11 @@
 
 package org.eclipse.ecf.presence.im;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.presence.IMMessage;
 
 /**
  * Chat message concrete class. Implements IChatMessage.
@@ -28,31 +32,38 @@ public class ChatMessage extends IMMessage implements IChatMessage {
 	
 	protected String body;
 
+	protected Map properties;
+	
 	public ChatMessage(ID fromID, ID threadID, IChatMessage.Type type, String subject,
-			String body) {
+			String body, Map properties) {
 		super(fromID);
 		this.threadID = threadID;
 		this.type = type;
 		this.subject = subject;
 		this.body = (body == null)?"":body;
+		this.properties = (properties == null)?new HashMap():properties;
 	}
 
-	public ChatMessage(ID fromID, ID threadID, String subject, String body) {
-		this(fromID, threadID, IChatMessage.Type.CHAT, subject, body);
+	public ChatMessage(ID fromID, ID threadID, String subject, String body, Map properties) {
+		this(fromID, threadID, IChatMessage.Type.CHAT, subject, body, properties);
 	}
 
-	public ChatMessage(ID fromID, IChatMessage.Type type, String subject, String body) {
-		this(fromID, null, type, subject, body);
+	public ChatMessage(ID fromID, IChatMessage.Type type, String subject, String body, Map properties) {
+		this(fromID, null, type, subject, body, properties);
 	}
 
-	public ChatMessage(ID fromID, String subject, String body) {
-		this(fromID, (ID) null, subject, body);
+	public ChatMessage(ID fromID, String subject, String body, Map properties) {
+		this(fromID, (ID) null, subject, body, properties);
+	}
+
+	public ChatMessage(ID fromID, String body, Map properties) {
+		this(fromID, null, body, properties);
 	}
 
 	public ChatMessage(ID fromID, String body) {
-		this(fromID, null, body);
+		this(fromID, body, null);
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -87,6 +98,13 @@ public class ChatMessage extends IMMessage implements IChatMessage {
 	 */
 	public Type getType() {
 		return type;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.im.IIMMessage#getProperties()
+	 */
+	public Map getProperties() {
+		return properties;
 	}
 
 }

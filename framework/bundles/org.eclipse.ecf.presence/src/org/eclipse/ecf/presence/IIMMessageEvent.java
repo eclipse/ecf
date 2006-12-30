@@ -9,19 +9,18 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.im;
+package org.eclipse.ecf.presence;
 
-/**
- * IM message listener.  This listener receives IIMMessageEvents.
- */
-public interface IIMMessageListener {
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.Event;
 
+public interface IIMMessageEvent extends Event {
+	
 	/**
-	 * Handle message event (reception of chat, typing, or object message).
+	 * Get the ID of the sender of the chat message
 	 * 
-	 * @param messageEvent
-	 *            the event instance to handle. Will not be null.
+	 * @return ID of the sender of the message. Will not be null.
 	 */
-	public void handleMessageEvent(IIMMessageEvent messageEvent);
+	public ID getFromID();
 
 }

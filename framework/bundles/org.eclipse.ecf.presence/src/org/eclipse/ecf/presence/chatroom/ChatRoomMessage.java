@@ -9,27 +9,34 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.im;
+package org.eclipse.ecf.presence.chatroom;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.presence.IMMessage;
 
-public abstract class IMMessage implements IIMMessage {
+/**
+ * Chat room message implementation class.
+ */
+public class ChatRoomMessage extends IMMessage implements IChatRoomMessage {
 
-	protected ID fromID;
+	private static final long serialVersionUID = -5099099538044060019L;
+
+	protected String message;
 	
-	public IMMessage(ID fromID) {
-		this.fromID = fromID;
-	}
-	
-	public ID getFromID() {
-		return fromID;
+	/**
+	 * @param fromID the sender ID
+	 * @param message the message sent.
+	 */
+	public ChatRoomMessage(ID fromID, String message) {
+		super(fromID);
+		this.message = message;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomMessage#getMessage()
 	 */
-	public Object getAdapter(Class adapter) {
-		return null;
+	public String getMessage() {
+		return message;
 	}
 
 }
