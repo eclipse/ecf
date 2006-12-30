@@ -34,7 +34,7 @@ import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPRoomID;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
-import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
@@ -420,19 +420,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 		return null;
 	}
 
-	public void addMessageListener(IMessageListener listener) {
-		if (containerHelper != null) {
-			containerHelper.addMessageListener(listener);
-		}
-	}
-
-	public void removeMessageListener(IMessageListener msgListener) {
-		if (containerHelper != null) {
-			containerHelper.removeMessageListener(msgListener);
-		}
-	}
-
-	public IChatRoomMessageSender getChatMessageSender() {
+	public IChatRoomMessageSender getChatRoomMessageSender() {
 		return new IChatRoomMessageSender() {
 			public void sendMessage(String messageBody) throws ECFException {
 				if (multiuserchat != null) {
@@ -459,18 +447,32 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 		this.connect(targetID, null);
 	}
 
-	public void addChatParticipantListener(
+	public void addChatRoomParticipantListener(
 			IChatRoomParticipantListener participantListener) {
 		if (containerHelper != null) {
 			containerHelper.addChatParticipantListener(participantListener);
 		}
 	}
 
-	public void removeChatParticipantListener(
+	public void removeChatRoomParticipantListener(
 			IChatRoomParticipantListener participantListener) {
 		if (containerHelper != null) {
 			containerHelper.removeChatParticipantListener(participantListener);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addMessageListener(org.eclipse.ecf.presence.IIMMessageListener)
+	 */
+	public void addMessageListener(IIMMessageListener listener) {
+		containerHelper.addChatRoomMessageListener(listener);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#removeMessageListener(org.eclipse.ecf.presence.IIMMessageListener)
+	 */
+	public void removeMessageListener(IIMMessageListener listener) {
+		containerHelper.removeChatRoomMessageListener(listener);		
 	}
 
 }

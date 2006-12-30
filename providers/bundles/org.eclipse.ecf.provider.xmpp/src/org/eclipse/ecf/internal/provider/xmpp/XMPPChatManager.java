@@ -14,17 +14,18 @@ package org.eclipse.ecf.internal.provider.xmpp;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.presence.IIMMessageEvent;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.im.ChatMessage;
 import org.eclipse.ecf.presence.im.ChatMessageEvent;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
-import org.eclipse.ecf.presence.im.IIMMessageEvent;
-import org.eclipse.ecf.presence.im.IIMMessageListener;
 import org.eclipse.ecf.presence.im.ITypingMessage;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.im.TypingMessageEvent;
@@ -49,13 +50,13 @@ public class XMPPChatManager implements IChatManager {
 		 */
 		public void sendChatMessage(ID toID, ID threadID,
 				org.eclipse.ecf.presence.im.IChatMessage.Type type,
-				String subject, String body) throws ECFException {
+				String subject, String body, Map properties) throws ECFException {
 			if (toID == null)
 				throw new ECFException("receiver cannot be null");
 			try {
 				presenceHelper.getConnectionOrThrowIfNull().sendMessage(toID,
 						threadID, XMPPChatManager.this.createMessageType(type),
-						subject, body);
+						subject, body, properties);
 			} catch (IOException e) {
 				throw new ECFException("sendChatMessage exception", e);
 			}
@@ -66,7 +67,7 @@ public class XMPPChatManager implements IChatManager {
 		 * @see org.eclipse.ecf.presence.im.IChatMessageSender#sendChatMessage(org.eclipse.ecf.core.identity.ID, java.lang.String)
 		 */
 		public void sendChatMessage(ID toID, String body) throws ECFException {
-			sendChatMessage(toID, null, IChatMessage.Type.CHAT, null, body);
+			sendChatMessage(toID, null, IChatMessage.Type.CHAT, null, body, null);
 		}
 
 	};
@@ -148,9 +149,9 @@ public class XMPPChatManager implements IChatManager {
 	}
 
 	protected void fireChatMessage(ID fromID, ID threadID, Type type,
-			String subject, String body) {
+			String subject, String body, Map properties) {
 		fireMessageEvent(new ChatMessageEvent(fromID, new ChatMessage(threadID,
-				createMessageType(type), subject, body)));
+				createMessageType(type), subject, body, properties)));
 	}
 
 	protected void fireTypingMessage(ID fromID, ITypingMessage typingMessage) {
@@ -166,19 +167,11 @@ public class XMPPChatManager implements IChatManager {
 		return typingMessageSender;
 	}
 
-	/**
-	 * @param fromID
-	 * @param threadID
-	 * @param type
-	 * @param subject
-	 * @param body
-	 * @param xhtmlbodylist
-	 */
 	protected void fireXHTMLChatMessage(ID fromID, ID threadID, Type type,
-			String subject, String body, List xhtmlbodylist) {
+			String subject, String body, Map properties, List xhtmlbodylist) {
 		fireMessageEvent(new XHTMLChatMessageEvent(fromID,
 				new XHTMLChatMessage(fromID, threadID, createMessageType(type),
-						subject, body, xhtmlbodylist)));
+						subject, body, properties, xhtmlbodylist)));
 
 	}
 

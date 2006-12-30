@@ -38,12 +38,9 @@ import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionPacketEvent;
 import org.eclipse.ecf.presence.IAccountManager;
-import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
-import org.eclipse.ecf.presence.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.im.IChatManager;
@@ -123,24 +120,8 @@ public class XMPPContainer extends ClientSOContainer {
 
 	IPresenceContainerAdapter presenceContainerAdapter = new IPresenceContainerAdapter() {
 
-		public IPresenceSender getPresenceSender() {
-			return presenceHelper.getRosterManager().getPresenceSender();
-		}
-
 		public IRosterManager getRosterManager() {
 			return presenceHelper.getRosterManager();
-		}
-
-		public void addMessageListener(IMessageListener listener) {
-			presenceHelper.addMessageListener(listener);
-		}
-
-		public void removeMessageListener(IMessageListener listener) {
-			presenceHelper.removeMessageListener(listener);
-		}
-
-		public IMessageSender getMessageSender() {
-			return presenceHelper.getMessageSender();
 		}
 
 		public IAccountManager getAccountManager() {
@@ -154,15 +135,7 @@ public class XMPPContainer extends ClientSOContainer {
 		public void addPresenceListener(IPresenceListener listener) {
 		}
 
-		public void addRosterSubscriptionListener(
-				IRosterSubscriptionListener listener) {
-		}
-
 		public void removePresenceListener(IPresenceListener listener) {
-		}
-
-		public void removeRosterSubscriptionListener(
-				IRosterSubscriptionListener listener) {
 		}
 
 		public Object getAdapter(Class clazz) {
@@ -405,7 +378,6 @@ public class XMPPContainer extends ClientSOContainer {
 	}
 
 	protected boolean handleAsExtension(Packet packet) {
-		// XXX this is where extension mechanism needs to be added
 		Iterator i = packet.getExtensions();
 		for (; i.hasNext();) {
 			Object extension = i.next();

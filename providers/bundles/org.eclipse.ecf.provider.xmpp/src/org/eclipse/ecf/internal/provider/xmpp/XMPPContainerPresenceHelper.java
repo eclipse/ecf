@@ -11,10 +11,8 @@ package org.eclipse.ecf.internal.provider.xmpp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
@@ -36,8 +34,6 @@ import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPRoomID;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
-import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.im.IChatManager;
@@ -146,26 +142,6 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	// end ISharedObject implementation
 
-	IMessageSender messageSender = new IMessageSender() {
-		public void sendMessage(ID toID, String subject, String message)
-				throws ECFException {
-			try {
-				getConnectionOrThrowIfNull().sendMessage(toID, null,
-						Message.Type.CHAT, subject, message);
-			} catch (IOException e) {
-				traceStack("Exception in sendmessage to " + toID
-						+ " with message " + message, e);
-				throw new ECFException("Exception in sendmessage to " + toID
-						+ " with message " + message, e);
-			}
-		}
-
-	};
-
-	protected IMessageSender getMessageSender() {
-		return messageSender;
-	}
-
 	protected org.eclipse.ecf.presence.roster.Roster roster = new org.eclipse.ecf.presence.roster.Roster();
 
 	protected PresenceRosterManager rosterManager = new PresenceRosterManager(
@@ -257,22 +233,6 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	public void setUser(IUser user) {
 		rosterManager.setUser(user);
-	}
-
-	protected void addMessageListener(IMessageListener listener) {
-		messageListeners.add(listener);
-	}
-
-	protected void fireMessageListeners(ID from, ID to,
-			IMessageListener.Type type, String subject, String body) {
-		for (Iterator i = messageListeners.iterator(); i.hasNext();) {
-			IMessageListener l = (IMessageListener) i.next();
-			l.handleMessage(from, to, type, subject, body);
-		}
-	}
-
-	protected void removeMessageListener(IMessageListener listener) {
-		messageListeners.add(listener);
 	}
 
 	protected void addSharedObjectMessageListener(
@@ -379,26 +339,22 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	protected void handleMessageEvent(MessageEvent evt) {
 		Message msg = evt.getMessage();
 		String from = msg.getFrom();
-		String to = msg.getTo();
 		String body = msg.getBody();
 		String subject = msg.getSubject();
 		ID fromID = createIDFromName(from);
-		ID toID = createIDFromName(to);
 		ID threadID = createThreadID(msg.getThread());
 		msg = filterMessageType(msg);
 		if (msg != null) {
-			fireMessageListeners(fromID, toID,
-					createMessageType(msg.getType()), subject, body);
 			Iterator xhtmlbodies = evt.getXHTMLBodies();
 			if (xhtmlbodies != null) {
 				List xhtmlbodylist = new ArrayList();
 				for (; xhtmlbodies.hasNext();)
 					xhtmlbodylist.add(xhtmlbodies.next());
 				chatManager.fireXHTMLChatMessage(fromID, threadID, msg
-						.getType(), subject, body, xhtmlbodylist);
+						.getType(), subject, body, ECFConnection.getPropertiesFromPacket(msg), xhtmlbodylist);
 			} else
 				chatManager.fireChatMessage(fromID, threadID, msg.getType(),
-						subject, body);
+						subject, body, ECFConnection.getPropertiesFromPacket(msg));
 		}
 	}
 
@@ -481,63 +437,17 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	}
 
-	protected IMessageListener.Type createMessageType(Message.Type type) {
-		if (type == null)
-			return IMessageListener.Type.NORMAL;
-		if (type == Message.Type.CHAT) {
-			return IMessageListener.Type.CHAT;
-		} else if (type == Message.Type.NORMAL) {
-			return IMessageListener.Type.NORMAL;
-		} else if (type == Message.Type.GROUP_CHAT) {
-			return IMessageListener.Type.GROUP_CHAT;
-		} else if (type == Message.Type.HEADLINE) {
-			return IMessageListener.Type.SYSTEM;
-		} else
-			return IMessageListener.Type.NORMAL;
-	}
-
 	protected IPresence createIPresence(Presence xmppPresence, byte[] photoData) {
 		return new org.eclipse.ecf.presence.Presence(
 				createIPresenceType(xmppPresence), xmppPresence.getStatus(),
 				createIPresenceMode(xmppPresence),
-				getPropertiesFromPresence(xmppPresence), photoData);
-	}
-
-	private Map getPropertiesFromPresence(Presence xmppPresence) {
-		Map result = new HashMap();
-		Iterator i = xmppPresence.getPropertyNames();
-		for (; i.hasNext();) {
-			String name = (String) i.next();
-			result.put(name, xmppPresence.getProperty(name));
-		}
-		return result;
+				ECFConnection.getPropertiesFromPacket(xmppPresence), photoData);
 	}
 
 	protected Presence createPresence(IPresence ipresence) {
 		Presence newPresence = new Presence(createPresenceType(ipresence),
 				ipresence.getStatus(), 0, createPresenceMode(ipresence));
-		Map properties = ipresence.getProperties();
-		if (properties != null) {
-			for (Iterator i = properties.keySet().iterator(); i.hasNext();) {
-				Object keyo = i.next();
-				Object val = properties.get(keyo);
-				String key = (keyo instanceof String) ? (String) keyo : keyo
-						.toString();
-				if (val instanceof Boolean)
-					newPresence
-							.setProperty(key, ((Boolean) val).booleanValue());
-				else if (val instanceof Double)
-					newPresence.setProperty(key, ((Double) val).doubleValue());
-				else if (val instanceof Float)
-					newPresence.setProperty(key, ((Float) val).floatValue());
-				else if (val instanceof Integer)
-					newPresence.setProperty(key, ((Integer) val).intValue());
-				else if (val instanceof Long)
-					newPresence.setProperty(key, ((Long) val).floatValue());
-				else if (val instanceof Object)
-					newPresence.setProperty(key, val);
-			}
-		}
+		ECFConnection.setPropertiesInPacket(newPresence, ipresence.getProperties());
 		return newPresence;
 	}
 

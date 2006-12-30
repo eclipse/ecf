@@ -58,13 +58,10 @@ import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionObjectPacketEvent;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnectionPacketEvent;
 import org.eclipse.ecf.presence.IAccountManager;
-import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.presence.IMessageSender;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
-import org.eclipse.ecf.presence.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
@@ -503,64 +500,6 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 					delegate.addPresenceListener(listener);
 				}
 
-				public void addMessageListener(IMessageListener listener) {
-					delegate.addMessageListener(listener);
-				}
-
-				public IMessageSender getMessageSender() {
-					return new IMessageSender() {
-
-						public void sendMessage(ID toID, String subject, String message) {
-							try {
-								XMPPClientSOContainer.this.sendMessage(toID,
-										message);
-							} catch (IOException e) {
-								dumpStack("Exception in sendmessage to " + toID
-										+ " with message " + message, e);
-							}
-
-						}
-
-					};
-				}
-
-				public IPresenceSender getPresenceSender() {
-					return new IPresenceSender() {
-						public void sendPresenceUpdate(ID toID, IPresence presence) {
-							try {
-								Presence newPresence = createPresenceFromIPresence(presence);
-								XMPPClientSOContainer.this.sendPresenceUpdate(
-										toID, newPresence);
-							} catch (IOException e) {
-								dumpStack("Exception in sendPresenceUpdate to "
-										+ toID + " with presence " + presence,
-										e);
-							}
-						}
-
-						public void sendRosterAdd(String user, String name,
-								String[] groups) {
-							try {
-								XMPPClientSOContainer.this.sendRosterAdd(user,
-										name, groups);
-							} catch (IOException e) {
-								dumpStack("Exception in sendRosterAdd", e);
-							}
-						}
-
-						public void sendRosterRemove(ID userID) {
-							try {
-								if (userID == null)
-									return;
-								XMPPClientSOContainer.this
-										.sendRosterRemove(userID.getName());
-							} catch (IOException e) {
-								dumpStack("Exception in sendRosterAdd", e);
-							}
-						}
-
-					};
-				}
 
 				public IAccountManager getAccountManager() {
 					return new IAccountManager() {
@@ -599,10 +538,6 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 							return delegate.isAccountCreationSupported();
 						}
 					};
-				}
-
-				public void addRosterSubscriptionListener(IRosterSubscriptionListener listener) {
-					delegate.addSubscribeListener(listener);
 				}
 
 				public IChatRoomManager getChatRoomManager() {
@@ -669,16 +604,8 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 					};
 				}
 
-				public void removeMessageListener(IMessageListener listener) {
-					delegate.removeMessageListener(listener);
-				}
-
 				public void removePresenceListener(IPresenceListener listener) {
 					delegate.removePresenceListener(listener);
-				}
-
-				public void removeRosterSubscriptionListener(IRosterSubscriptionListener listener) {
-					delegate.removeSubscribeListener(listener);
 				}
 
 				public IChatManager getChatManager() {
@@ -915,37 +842,6 @@ public class XMPPClientSOContainer extends ClientSOContainer implements
 				localFileToSend), transferListener, options);
 	}
 
-	
-	private IRosterSubscriptionSender rosterSubscriptionSender = new IRosterSubscriptionSender() {
-
-		public void sendRosterAdd(String user, String name, String[] groups)
-				throws ECFException {
-			try {
-				XMPPClientSOContainer.this.sendRosterAdd(user,
-						name, groups);
-			} catch (IOException e) {
-				dumpStack("sendRosterAdd", e);
-				throw new ECFException("sendRosterAdd", e);
-			}
-		}
-
-		public void sendRosterRemove(ID userID) throws ECFException {
-			try {
-				if (userID == null)
-					return;
-				XMPPClientSOContainer.this
-						.sendRosterRemove(userID.getName());
-			} catch (IOException e) {
-				dumpStack("Exception in sendRosterRemove", e);
-				throw new ECFException("sendRosterRemove",e);
-			}
-		}
-		
-	};
-	
-	protected IRosterSubscriptionSender getRosterSubscriptionSender() {
-		return rosterSubscriptionSender;
-	}
 	
 	org.eclipse.ecf.presence.IPresenceSender rosterPresenceSender = new org.eclipse.ecf.presence.IPresenceSender() {
 

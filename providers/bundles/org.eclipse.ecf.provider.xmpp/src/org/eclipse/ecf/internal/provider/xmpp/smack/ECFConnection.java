@@ -9,6 +9,8 @@
 package org.eclipse.ecf.internal.provider.xmpp.smack;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
@@ -54,11 +56,11 @@ public class ECFConnection implements ISynchAsynchConnection {
 	protected Map properties = null;
 	protected boolean isConnected = false;
 	protected Namespace namespace = null;
-	
+
 	protected boolean google = false;
-	
+
 	protected boolean secure = false;
-	
+
 	protected void debug(String msg) {
 	}
 
@@ -80,8 +82,9 @@ public class ECFConnection implements ISynchAsynchConnection {
 	public XMPPConnection getXMPPConnection() {
 		return connection;
 	}
-	
-	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h, boolean secure) {
+
+	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h,
+			boolean secure) {
 		this.handler = h;
 		this.namespace = ns;
 		this.google = google;
@@ -90,9 +93,11 @@ public class ECFConnection implements ISynchAsynchConnection {
 			XMPPConnection.DEBUG_ENABLED = true;
 		}
 	}
+
 	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h) {
-		this(google,ns,h,false);
+		this(google, ns, h, false);
 	}
+
 	protected String getPasswordForObject(Object data) {
 		String password = null;
 		try {
@@ -102,7 +107,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 		}
 		return password;
 	}
-	
+
 	protected XMPPID getXMPPID(ID remote) throws IOException {
 		XMPPID jabberID = null;
 		try {
@@ -114,6 +119,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 		}
 		return jabberID;
 	}
+
 	public synchronized Object connect(ID remote, Object data, int timeout)
 			throws IOException {
 		if (connection != null)
@@ -121,7 +127,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 		if (timeout > 0)
 			SmackConfiguration.setPacketReplyTimeout(timeout);
 		Roster.setDefaultSubscriptionMode(Roster.SUBSCRIPTION_MANUAL);
-		
+
 		XMPPID jabberURI = getXMPPID(remote);
 		String username = jabberURI.getUsername();
 		serverName = jabberURI.getHostname();
@@ -191,8 +197,8 @@ public class ECFConnection implements ISynchAsynchConnection {
 		if (!isConnected())
 			return null;
 		try {
-			return IDFactory.getDefault().createID(namespace.getName(), new Object[] { connection
-					.getConnectionID() });
+			return IDFactory.getDefault().createID(namespace.getName(),
+					new Object[] { connection.getConnectionID() });
 		} catch (Exception e) {
 			logException("Exception in getLocalID", e);
 			return null;
@@ -214,8 +220,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 	}
 
 	protected void handleConnectionClosed(Exception e) {
-		handler.handleDisconnectEvent(new DisconnectEvent(this, e,
-				null));
+		handler.handleDisconnectEvent(new DisconnectEvent(this, e, null));
 	}
 
 	protected void handlePacket(Packet arg0) {
@@ -246,29 +251,32 @@ public class ECFConnection implements ISynchAsynchConnection {
 		debug("sendAsynch(" + receiver + "," + data + ")");
 		Message aMsg = new Message();
 		aMsg.setProperty(OBJECT_PROPERTY_NAME, data);
-		sendMessage(receiver,aMsg);
+		sendMessage(receiver, aMsg);
 	}
-	
+
 	protected void sendMessage(ID receiver, Message aMsg) throws IOException {
 		synchronized (this) {
 			if (!isConnected())
 				throw new IOException("not connected");
 			try {
-				if (receiver == null) throw new IOException(
+				if (receiver == null)
+					throw new IOException(
 							"receiver cannot be null for xmpp instant messaging");
 				else if (receiver instanceof XMPPID) {
-						XMPPID rcvr = (XMPPID) receiver;
-						aMsg.setType(Message.Type.CHAT);
-						String userAtHost = rcvr.getUsernameAtHost();
-						Chat localChat = connection.createChat(userAtHost);
-						localChat.sendMessage(aMsg);
-					} else if (receiver instanceof XMPPRoomID) {
-						XMPPRoomID roomID = (XMPPRoomID) receiver;
-						aMsg.setType(Message.Type.GROUP_CHAT);
-						String to = roomID.getMucString();
-						aMsg.setTo(to);
-						connection.sendPacket(aMsg);
-					} else throw new IOException("receiver must be of type XMPPID or XMPPRoomID");
+					XMPPID rcvr = (XMPPID) receiver;
+					aMsg.setType(Message.Type.CHAT);
+					String userAtHost = rcvr.getUsernameAtHost();
+					Chat localChat = connection.createChat(userAtHost);
+					localChat.sendMessage(aMsg);
+				} else if (receiver instanceof XMPPRoomID) {
+					XMPPRoomID roomID = (XMPPRoomID) receiver;
+					aMsg.setType(Message.Type.GROUP_CHAT);
+					String to = roomID.getMucString();
+					aMsg.setTo(to);
+					connection.sendPacket(aMsg);
+				} else
+					throw new IOException(
+							"receiver must be of type XMPPID or XMPPRoomID");
 			} catch (XMPPException e) {
 				IOException result = new IOException(
 						"XMPPException in sendMessage: " + e.getMessage());
@@ -277,6 +285,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 			}
 		}
 	}
+
 	public synchronized Object sendSynch(ID receiver, byte[] data)
 			throws IOException {
 		if (data == null)
@@ -305,7 +314,41 @@ public class ECFConnection implements ISynchAsynchConnection {
 		sendMessage(target, aMsg);
 	}
 
-	public void sendMessage(ID target, ID thread, Type type, String subject, String body) throws IOException {
+	public static Map getPropertiesFromPacket(Packet packet) {
+		Map result = new HashMap();
+		Iterator i = packet.getPropertyNames();
+		for (; i.hasNext();) {
+			String name = (String) i.next();
+			result.put(name, packet.getProperty(name));
+		}
+		return result;
+	}
+	
+	public static Packet setPropertiesInPacket(Packet input, Map properties) {
+		if (properties != null) {
+			for (Iterator i = properties.keySet().iterator(); i.hasNext();) {
+				Object keyo = i.next();
+				Object val = properties.get(keyo);
+				String key = (keyo instanceof String) ? (String) keyo : keyo
+						.toString();
+				if (val instanceof Boolean)
+					input.setProperty(key, ((Boolean) val).booleanValue());
+				else if (val instanceof Double)
+					input.setProperty(key, ((Double) val).doubleValue());
+				else if (val instanceof Float)
+					input.setProperty(key, ((Float) val).floatValue());
+				else if (val instanceof Integer)
+					input.setProperty(key, ((Integer) val).intValue());
+				else if (val instanceof Long)
+					input.setProperty(key, ((Long) val).floatValue());
+				else if (val instanceof Object)
+					input.setProperty(key, val);
+			}
+		}
+		return input;
+	}
+
+	public void sendMessage(ID target, ID thread, Type type, String subject, String body, Map properties2) throws IOException {
 		if (target == null)
 			throw new IOException("target cannot be null");
 		if (body == null) body = "";
@@ -315,10 +358,12 @@ public class ECFConnection implements ISynchAsynchConnection {
 		if (thread != null) aMsg.setThread(thread.getName());
 		if (type != null) aMsg.setType(type);
 		if (subject != null) aMsg.setSubject(subject);
+		setPropertiesInPacket(aMsg,properties2);
 		sendMessage(target, aMsg);
 	}
-	
-	public void sendPresenceUpdate(ID target, Presence presence) throws IOException {
+
+	public void sendPresenceUpdate(ID target, Presence presence)
+			throws IOException {
 		if (target == null)
 			throw new IOException("target cannot be null");
 		if (presence == null)
@@ -329,18 +374,20 @@ public class ECFConnection implements ISynchAsynchConnection {
 		synchronized (this) {
 			if (!isConnected())
 				throw new IOException("not connected");
-				connection.sendPacket(presence);
+			connection.sendPacket(presence);
 		}
 	}
-	
-	public void sendRosterAdd(String user, String name, String [] groups) throws IOException {
+
+	public void sendRosterAdd(String user, String name, String[] groups)
+			throws IOException {
 		Roster r = getRoster();
 		try {
-			r.createEntry(user,name,groups);
+			r.createEntry(user, name, groups);
 		} catch (XMPPException e) {
 			e.printStackTrace();
 		}
 	}
+
 	public void sendRosterRemove(String user) throws IOException {
 		Roster r = getRoster();
 		RosterEntry re = r.getEntry(user);
@@ -350,6 +397,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 			e.printStackTrace();
 		}
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
