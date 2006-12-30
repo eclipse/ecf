@@ -86,7 +86,7 @@ public class XMPPClient {
 				}
 			});
 			if (presenceListener != null) {
-				presence.addPresenceListener(presenceListener);
+				presence.getRosterManager().addPresenceListener(presenceListener);
 			}
 		}
 	}
