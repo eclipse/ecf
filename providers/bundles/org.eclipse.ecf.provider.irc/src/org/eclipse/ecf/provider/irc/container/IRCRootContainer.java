@@ -28,6 +28,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.irc.Activator;
+import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainerOptionsAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
@@ -647,5 +648,13 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 	public void removeInvitationListener(IChatRoomInvitationListener listener) {
 		// TODO Auto-generated method stub
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#createChatRoom(java.lang.String, java.util.Map)
+	 */
+	public IChatRoomInfo createChatRoom(String roomname, Map properties)
+			throws ChatRoomCreateException {
+		throw new ChatRoomCreateException(roomname,"creation not supported", null);
 	}
 }
