@@ -10,6 +10,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.chatroom;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 
@@ -83,4 +85,18 @@ public interface IChatRoomManager extends IAdaptable {
 	// public void addInvitationListener(IChatRoomInvitationListener listener);
 	// public IChatRoomContainer createChatRoomContainer() throws
 	// ContainerCreateException;
+	
+	/**
+	 * 
+	 * Create a chat room with the given roomname and properties.
+	 * 
+	 * @param roomname the name of the room.  Must not be null.
+	 * @param properties properties associated with the room's creation.  May be null.
+	 * @return IChatRoomInfo room info suitable for creating a chat room container and connecting.  Will not
+	 * be null.
+	 * @throws ChatRoomCreateException if roomname is null, or if chat room creation cannot occur (e.g. server 
+	 * refuses, name collision occurs, user has insufficient rights to perform creation operation, etc).
+	 */
+	public IChatRoomInfo createChatRoom(String roomname, Map properties) throws ChatRoomCreateException;
+	
 }
