@@ -11,15 +11,18 @@ package org.eclipse.ecf.example.clients;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.presence.IMessageSender;
+import org.eclipse.ecf.presence.IIMMessageEvent;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
+import org.eclipse.ecf.presence.im.IChatMessage;
+import org.eclipse.ecf.presence.im.IChatMessageEvent;
+import org.eclipse.ecf.presence.im.IChatMessageSender;
 
 public class XMPPClient {
 	
@@ -28,7 +31,7 @@ public class XMPPClient {
 	Namespace namespace = null;
 	IContainer container = null;
 	IPresenceContainerAdapter presence = null;
-	IMessageSender sender = null;
+	IChatMessageSender sender = null;
 	ID userID = null;
 	
 	// Interface for receiving messages
@@ -70,13 +73,16 @@ public class XMPPClient {
 		if (presence == null) {
 			presence = (IPresenceContainerAdapter) container
 					.getAdapter(IPresenceContainerAdapter.class);
-			sender = presence.getMessageSender();
-			presence.addMessageListener(new IMessageListener() {
-				public void handleMessage(ID fromID, ID toID, Type type,
-						String subject, String messageBody) {
-					if (receiver != null) {
-						receiver.handleMessage(fromID.getName(), messageBody);
+			sender = presence.getChatManager().getChatMessageSender();
+			presence.getChatManager().addMessageListener(new IIMMessageListener() {
+				public void handleMessageEvent(IIMMessageEvent messageEvent) {
+					if (messageEvent instanceof IChatMessageEvent) {
+						IChatMessage m = ((IChatMessageEvent) messageEvent).getChatMessage();
+						if (receiver != null) {
+							receiver.handleMessage(m.getFromID().getName(), m.getBody());
+						}
 					}
+					
 				}
 			});
 			if (presenceListener != null) {
@@ -107,8 +113,7 @@ public class XMPPClient {
 	public void sendMessage(String jid, String msg) {
 		if (sender != null) {
 			try {
-				sender.sendMessage(getID(jid), "",
-						msg);
+				sender.sendChatMessage(getID(jid), msg);
 			} catch (ECFException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -11,8 +11,11 @@ package org.eclipse.ecf.example.clients;
 import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IIMMessageEvent;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 
 /**
@@ -22,7 +25,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
  * 
  */
 public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
-		IMessageListener {
+		IIMMessageListener {
 
 	private IChatRoomMessageSender sender;
 
@@ -68,7 +71,7 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 		
 		System.out.println(room.getConnectedID().getName());
 		room.addMessageListener(this);
-		sender = room.getChatMessageSender();
+		sender = room.getChatRoomMessageSender();
 		running = true;
 		sender
 				.sendMessage("Hi, I'm a robot. To get rid of me, send me a direct message.");
@@ -88,8 +91,7 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 		notifyAll();
 	}
 
-	public void handleMessage(ID fromID, ID toID, Type type, String subject,
-			String messageBody) {
+	public void handleMessage(ID fromID, String messageBody) {
 		// message in chat room
 		if (fromID.getName().startsWith(userName + "@")) {
 			// my own message, don't respond
@@ -105,6 +107,16 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 			}
 		} catch (ECFException e) {
 			e.printStackTrace();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.IIMMessageListener#handleMessageEvent(org.eclipse.ecf.presence.IIMMessageEvent)
+	 */
+	public void handleMessageEvent(IIMMessageEvent messageEvent) {
+		if (messageEvent instanceof IChatRoomMessageEvent) {
+			IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
+			handleMessage(m.getFromID(), m.getMessage());
 		}
 	}
 

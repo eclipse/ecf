@@ -11,17 +11,20 @@ package org.eclipse.ecf.example.clients;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.presence.IMessageListener;
-import org.eclipse.ecf.presence.IMessageSender;
+import org.eclipse.ecf.presence.IIMMessageEvent;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.im.IChatMessage;
+import org.eclipse.ecf.presence.im.IChatMessageEvent;
+import org.eclipse.ecf.presence.im.IChatMessageSender;
 
 public class XMPPChatClient {
 	
@@ -30,7 +33,7 @@ public class XMPPChatClient {
 	Namespace namespace = null;
 	IContainer container = null;
 	IPresenceContainerAdapter presence = null;
-	IMessageSender sender = null;
+	IChatMessageSender sender = null;
 	ID userID = null;
 	IChatRoomManager chatmanager = null;
 	IChatRoomContainer chatroom = null;
@@ -63,20 +66,21 @@ public class XMPPChatClient {
 		presence = (IPresenceContainerAdapter) container
 				.getAdapter(IPresenceContainerAdapter.class);
 		// Get sender interface
-		sender = presence.getMessageSender();
+		sender = presence.getChatManager().getChatMessageSender();
 		// Setup message listener to handle incoming messages
-		presence.addMessageListener(new IMessageListener() {
-			public void handleMessage(ID fromID, ID toID, Type type, String subject, String messageBody) {
-				receiver.handleMessage(fromID.getName(), messageBody);
+		presence.getChatManager().addMessageListener(new IIMMessageListener() {
+			public void handleMessageEvent(IIMMessageEvent messageEvent) {
+				if (messageEvent instanceof IChatMessageEvent) {
+					IChatMessage m = ((IChatMessageEvent) messageEvent).getChatMessage();
+					receiver.handleMessage(m.getFromID().getName(), m.getBody());
+				}
 			}
 		});
 	}
 	protected IPresenceContainerAdapter getPresenceContainer() {
 		return presence;
 	}
-	protected IMessageSender getMessageSender() {
-		return sender;
-	}
+
 	public void connect(String account, String password) throws ECFException {
 		createContainer();
 		setupPresenceAdapter();
@@ -107,10 +111,8 @@ public class XMPPChatClient {
 	public void sendMessage(String jid, String msg) {
 		if (sender != null) {
 			try {
-				sender.sendMessage(getID(jid), "",
-						msg);
+				sender.sendChatMessage(getID(jid), msg);
 			} catch (ECFException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
