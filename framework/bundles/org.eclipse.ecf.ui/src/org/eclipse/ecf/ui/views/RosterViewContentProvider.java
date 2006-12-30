@@ -17,8 +17,8 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.IRosterEntry;
-import org.eclipse.ecf.presence.IRosterGroup;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -102,15 +102,15 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		return obj;
 	}
 
-	public RosterBuddy createBuddy(RosterBuddy oldBuddy, IRosterEntry entry) {
+	public RosterBuddy createBuddy(ID svcID, RosterBuddy oldBuddy, IRosterEntry entry) {
 		String name = entry.getName();
 		if (name == null)
-			name = this.rosterView.getUserNameFromID(entry.getUserID());
+			name = this.rosterView.getUserNameFromID(entry.getUser().getID());
 		IPresence presence = entry.getPresence();
 		RosterBuddy newBuddy = null;
 		if (oldBuddy == null)
-			newBuddy = new RosterBuddy(entry.getServiceID(), name, entry
-					.getUserID(), presence);
+			newBuddy = new RosterBuddy(svcID, name, entry
+					.getUser().getID(), presence);
 		else {
 			newBuddy = oldBuddy;
 			if (entry.getName() != null)
@@ -165,7 +165,7 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 	}
 
 	public RosterBuddy findBuddy(RosterParent parent, IRosterEntry entry) {
-		return findBuddy(parent, entry.getUserID());
+		return findBuddy(parent, entry.getUser().getID());
 	}
 
 	public RosterBuddy findBuddy(RosterParent parent, ID entryID) {
@@ -193,7 +193,7 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		return null;
 	}
 
-	public void replaceEntry(RosterParent parent, IRosterEntry entry) {
+	public void replaceEntry(ID svcID, RosterParent parent, IRosterEntry entry) {
 		RosterBuddy tb = findBuddy(parent, entry);
 		RosterParent tp = null;
 		// If entry already in tree, remove it from current position
@@ -210,7 +210,7 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 			}
 		}
 		// Create new buddy
-		RosterBuddy newBuddy = createBuddy(tb, entry);
+		RosterBuddy newBuddy = createBuddy(svcID, tb, entry);
 		// If it's a replacement for an existing buddy with group (tg), then
 		// simply add as child
 		if (tp != null) {
@@ -232,12 +232,12 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 					// valid
 					if (groupName.equals(""))
 						groupName = RosterView.UNFILED_GROUP_NAME;
-					addBuddyWithGroupName(parent, entry.getServiceID(),
+					addBuddyWithGroupName(parent, parent.getID(),
 							groupName, newBuddy);
 				}
 			} else {
 				// No group name, so we add under UNFILED_GROUP_NAME
-				addBuddyWithGroupName(parent, entry.getServiceID(),
+				addBuddyWithGroupName(parent, parent.getID(),
 						RosterView.UNFILED_GROUP_NAME, newBuddy);
 			}
 		}
@@ -303,12 +303,11 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		removeGroup(root, name);
 	}
 
-	public void replaceEntry(IRosterEntry entry) {
+	public void replaceEntry(ID serviceID, IRosterEntry entry) {
 		if (entry == null)
 			return;
-		ID svcID = entry.getServiceID();
-		RosterGroup tg = findAccount(svcID.getName());
-		replaceEntry(tg, entry);
+		RosterGroup tg = findAccount(serviceID.getName());
+		replaceEntry(serviceID, tg, entry);
 	}
 
 	public void removeRosterEntry(ID entry) {

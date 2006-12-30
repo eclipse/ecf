@@ -44,8 +44,6 @@ import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
-import org.eclipse.ecf.presence.IRosterEntry;
-import org.eclipse.ecf.presence.RosterEntry;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
@@ -54,6 +52,8 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.im.IChatID;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.presence.roster.RosterEntry;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ChangePasswordDialog;
 import org.eclipse.ecf.ui.dialogs.ChatRoomSelectionDialog;
@@ -804,18 +804,13 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null) {
-			if (entry.getInterestType() == IRosterEntry.InterestType.REMOVE
-					|| entry.getInterestType() == IRosterEntry.InterestType.NONE) {
-				vcp.removeRosterEntry(entry.getUserID());
-			} else
-				vcp.replaceEntry(entry);
+			vcp.replaceEntry(groupID, entry);
 			refreshView();
 		}
 	}
 
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
-		handleRosterEntryAdd(groupID, new RosterEntry(groupID, userID, null,
-				presence));
+		handleRosterEntryAdd(groupID, new RosterEntry(new Object(), new User(userID), presence));
 	}
 
 	protected RosterUserAccount getAccountForUser(ID userID) {
@@ -1035,7 +1030,7 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null) {
-			vcp.replaceEntry(entry);
+			vcp.replaceEntry(groupID, entry);
 			refreshView();
 		}
 	}
@@ -1046,7 +1041,7 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null)
-			vcp.removeRosterEntry(entry.getUserID());
+			vcp.removeRosterEntry(entry.getUser().getID());
 		refreshView();
 	}
 
