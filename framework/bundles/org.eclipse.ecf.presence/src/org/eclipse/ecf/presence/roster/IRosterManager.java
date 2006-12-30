@@ -11,6 +11,7 @@
 package org.eclipse.ecf.presence.roster;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 
 /**
@@ -83,5 +84,26 @@ public interface IRosterManager extends IAdaptable {
 	 *         provider.
 	 */
 	public IPresenceSender getPresenceSender();
+
+	/**
+	 * Setup listener for handling presence updates. The given listener will
+	 * asynchronously be called when a subscription request is received by this
+	 * connected account.
+	 * 
+	 * @param listener
+	 *            for receiving presence notifications. Must not be null.
+	 * 
+	 */
+	public void addPresenceListener(IPresenceListener listener);
+
+	/**
+	 * Remove listener for presence events.
+	 * 
+	 * @param listener
+	 *            the listener to remove.  Must not be null.
+	 * 
+	 */
+	public void removePresenceListener(IPresenceListener listener);
+
 
 }

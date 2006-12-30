@@ -10,25 +10,13 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence;
 
-import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
 
 /**
  * Listener for receiving and processing presence and roster update events.
  * 
- * @deprecated No longer needed with roster model presented in
- *             <code>org.eclipse.ecf.presence.roster</code>
  */
 public interface IPresenceListener extends IParticipantListener {
-
-	/**
-	 * Notification that this presence listener has connected to a notification
-	 * source (e.g. a presence server).
-	 * 
-	 * @param connectedID
-	 *            the ID of the presence notification source we are now
-	 *            connected to.
-	 */
-	public void handleConnected(ID connectedID);
 
 	/**
 	 * Notification that a roster entry has been added
@@ -53,15 +41,5 @@ public interface IPresenceListener extends IParticipantListener {
 	 *            the entry that has been removed
 	 */
 	public void handleRosterEntryRemove(IRosterEntry entry);
-
-	/**
-	 * Notification that this presence listener has disconnected to a
-	 * notification source (e.g. a presence server).
-	 * 
-	 * @param disconnectedID
-	 *            the ID of the presence notification source we are now
-	 *            connected to.
-	 */
-	public void handleDisconnected(ID disconnectedID);
 
 }

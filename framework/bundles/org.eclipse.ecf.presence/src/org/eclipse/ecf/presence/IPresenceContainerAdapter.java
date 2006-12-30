@@ -45,30 +45,6 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	public IRosterManager getRosterManager();
 
 	/**
-	 * Setup listener for handling presence updates. The given listener will
-	 * asynchronously be called when a subscription request is received by this
-	 * connected account.
-	 * 
-	 * @param listener
-	 *            for receiving presence notifications. Must not be null.
-	 * 
-	 * @deprecated See replacement via {@link #getRosterManager()} and
-	 *             {@link IRosterManager#addRosterUpdateListener(org.eclipse.ecf.presence.roster.IRosterUpdateListener)}
-	 */
-	public void addPresenceListener(IPresenceListener listener);
-
-	/**
-	 * Remove listener for presence events.
-	 * 
-	 * @param listener
-	 *            the listener to remove
-	 * 
-	 * @deprecated See replacement via {@link #getRosterManager()} and
-	 *             {@link IRosterManager#removeRosterUpdateListener(org.eclipse.ecf.presence.roster.IRosterUpdateListener)}
-	 */
-	public void removePresenceListener(IPresenceListener listener);
-
-	/**
 	 * Get chat manager for sending and receiving chat messages
 	 * 
 	 * @return IChatManager for this presence container adapter. Null if no chat
