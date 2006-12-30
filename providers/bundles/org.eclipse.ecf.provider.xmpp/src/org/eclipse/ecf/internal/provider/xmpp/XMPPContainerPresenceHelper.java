@@ -69,7 +69,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	XMPPContainer container = null;
 
 	XMPPChatManager chatManager = null;
-	
+
 	public XMPPContainerPresenceHelper(XMPPContainer container) {
 		this.container = container;
 		chatManager = new XMPPChatManager(this);
@@ -280,17 +280,22 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		sharedObjectMessageListeners.add(listener);
 	}
 
-	protected void sendTypingMessage(ID toID, boolean isTyping, String body) throws IOException {
-		getContext().sendMessage(toID, new TypingMessage(rosterManager.getRoster().getUser().getID(),isTyping,body));
+	protected void sendTypingMessage(ID toID, boolean isTyping, String body)
+			throws IOException {
+		getContext().sendMessage(
+				toID,
+				new TypingMessage(rosterManager.getRoster().getUser().getID(),
+						isTyping, body));
 	}
 
-	protected void handleSharedObjectMessageEvent(ISharedObjectMessageEvent event) {
+	protected void handleSharedObjectMessageEvent(
+			ISharedObjectMessageEvent event) {
 		for (Iterator i = sharedObjectMessageListeners.iterator(); i.hasNext();) {
 			ISharedObjectMessageListener l = (ISharedObjectMessageListener) i
 					.next();
 			l.handleSharedObjectMessage(event);
 		}
-		
+
 		Object data = event.getData();
 		if (data instanceof ITypingMessage) {
 			ITypingMessage tmess = (ITypingMessage) data;
@@ -386,18 +391,22 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 					createMessageType(msg.getType()), subject, body);
 			Iterator xhtmlbodies = evt.getXHTMLBodies();
 			if (xhtmlbodies != null) {
-				List xhtmlbodylist  = new ArrayList();
-				for(  ; xhtmlbodies.hasNext(); ) xhtmlbodylist.add(xhtmlbodies.next());
-				chatManager.fireXHTMLChatMessage(fromID, threadID, msg.getType(), subject, body, xhtmlbodylist);
-			} else chatManager.fireChatMessage(fromID, threadID,
-							msg.getType(), subject, body);
+				List xhtmlbodylist = new ArrayList();
+				for (; xhtmlbodies.hasNext();)
+					xhtmlbodylist.add(xhtmlbodies.next());
+				chatManager.fireXHTMLChatMessage(fromID, threadID, msg
+						.getType(), subject, body, xhtmlbodylist);
+			} else
+				chatManager.fireChatMessage(fromID, threadID, msg.getType(),
+						subject, body);
 		}
 	}
 
 	protected void handlePresenceEvent(PresenceEvent evt) {
 		Presence xmppPresence = evt.getPresence();
 		String from = xmppPresence.getFrom();
-		IPresence newPresence = createIPresence(xmppPresence, evt.getPhotoData());
+		IPresence newPresence = createIPresence(xmppPresence, evt
+				.getPhotoData());
 		XMPPID fromID = createIDFromName(from);
 		if (newPresence.getType().equals(IPresence.Type.SUBSCRIBE)
 				|| newPresence.getType().equals(IPresence.Type.UNSUBSCRIBE)
@@ -487,16 +496,17 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			return IMessageListener.Type.NORMAL;
 	}
 
-	protected IPresence createIPresence(Presence xmppPresence, byte [] photoData) {
+	protected IPresence createIPresence(Presence xmppPresence, byte[] photoData) {
 		return new org.eclipse.ecf.presence.Presence(
 				createIPresenceType(xmppPresence), xmppPresence.getStatus(),
-				createIPresenceMode(xmppPresence), getPropertiesFromPresence(xmppPresence), photoData);
+				createIPresenceMode(xmppPresence),
+				getPropertiesFromPresence(xmppPresence), photoData);
 	}
 
 	private Map getPropertiesFromPresence(Presence xmppPresence) {
 		Map result = new HashMap();
 		Iterator i = xmppPresence.getPropertyNames();
-		for(  ; i.hasNext(); ) {
+		for (; i.hasNext();) {
 			String name = (String) i.next();
 			result.put(name, xmppPresence.getProperty(name));
 		}
@@ -508,15 +518,24 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 				ipresence.getStatus(), 0, createPresenceMode(ipresence));
 		Map properties = ipresence.getProperties();
 		if (properties != null) {
-			for(Iterator i=properties.keySet().iterator(); i.hasNext(); ) {
-				String key = (String) i.next();
-				Object val = properties.get(key);
-				if (val instanceof Boolean) newPresence.setProperty(key,((Boolean) val).booleanValue());
-				else if (val instanceof Double) newPresence.setProperty(key, ((Double) val).doubleValue());
-				else if (val instanceof Float) newPresence.setProperty(key, ((Float) val).floatValue());
-				else if (val instanceof Integer) newPresence.setProperty(key, ((Integer) val).intValue());
-				else if (val instanceof Long) newPresence.setProperty(key, ((Long) val).floatValue());
-				else if (val instanceof Object) newPresence.setProperty(key, val);
+			for (Iterator i = properties.keySet().iterator(); i.hasNext();) {
+				Object keyo = i.next();
+				Object val = properties.get(keyo);
+				String key = (keyo instanceof String) ? (String) keyo : keyo
+						.toString();
+				if (val instanceof Boolean)
+					newPresence
+							.setProperty(key, ((Boolean) val).booleanValue());
+				else if (val instanceof Double)
+					newPresence.setProperty(key, ((Double) val).doubleValue());
+				else if (val instanceof Float)
+					newPresence.setProperty(key, ((Float) val).floatValue());
+				else if (val instanceof Integer)
+					newPresence.setProperty(key, ((Integer) val).intValue());
+				else if (val instanceof Long)
+					newPresence.setProperty(key, ((Long) val).floatValue());
+				else if (val instanceof Object)
+					newPresence.setProperty(key, val);
 			}
 		}
 		return newPresence;

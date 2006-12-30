@@ -545,15 +545,24 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 				ipresence.getStatus(), 0, createPresenceMode(ipresence));
 		Map properties = ipresence.getProperties();
 		if (properties != null) {
-			for(Iterator i=properties.keySet().iterator(); i.hasNext(); ) {
-				String key = (String) i.next();
-				Object val = properties.get(key);
-				if (val instanceof Boolean) newPresence.setProperty(key,((Boolean) val).booleanValue());
-				else if (val instanceof Double) newPresence.setProperty(key, ((Double) val).doubleValue());
-				else if (val instanceof Float) newPresence.setProperty(key, ((Float) val).floatValue());
-				else if (val instanceof Integer) newPresence.setProperty(key, ((Integer) val).intValue());
-				else if (val instanceof Long) newPresence.setProperty(key, ((Long) val).floatValue());
-				else if (val instanceof Object) newPresence.setProperty(key, val);
+			for (Iterator i = properties.keySet().iterator(); i.hasNext();) {
+				Object keyo = i.next();
+				Object val = properties.get(keyo);
+				String key = (keyo instanceof String) ? (String) keyo : keyo
+						.toString();
+				if (val instanceof Boolean)
+					newPresence
+							.setProperty(key, ((Boolean) val).booleanValue());
+				else if (val instanceof Double)
+					newPresence.setProperty(key, ((Double) val).doubleValue());
+				else if (val instanceof Float)
+					newPresence.setProperty(key, ((Float) val).floatValue());
+				else if (val instanceof Integer)
+					newPresence.setProperty(key, ((Integer) val).intValue());
+				else if (val instanceof Long)
+					newPresence.setProperty(key, ((Long) val).floatValue());
+				else if (val instanceof Object)
+					newPresence.setProperty(key, val);
 			}
 		}
 		return newPresence;
