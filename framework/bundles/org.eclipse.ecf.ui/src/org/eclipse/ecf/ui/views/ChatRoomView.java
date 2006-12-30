@@ -23,7 +23,6 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.presence.IMessageListener;
 import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
@@ -57,8 +56,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
-public class ChatRoomView extends ViewPart implements IMessageListener,
-		IParticipantListener, IChatRoomInvitationListener {
+public class ChatRoomView extends ViewPart implements IParticipantListener, IChatRoomInvitationListener {
 	private static final String USERNAME_HOST_DELIMETER = "@";
 
 	private static final int RATIO_WRITE_PANE = 2;
@@ -285,8 +283,7 @@ public class ChatRoomView extends ViewPart implements IMessageListener,
 		return fromID.getName() + ": " + text + "\n";
 	}
 
-	public void handleMessage(final ID fromID, final ID toID, final Type type,
-			final String subject, final String messageBody) {
+	public void handleMessage(final ID fromID, final String messageBody) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if (disposed)

@@ -26,13 +26,16 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IIMMessageEvent;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.jface.action.Action;
@@ -69,8 +72,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
-public class ChatRoomManagerView extends ViewPart implements IMessageListener,
-		IChatRoomInvitationListener {
+public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitationListener {
 	private static final String COMMAND_PREFIX = "/";
 
 	private static final String COMMAND_DELIM = " ";
@@ -396,16 +398,17 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 				final ChatRoom chatroomview = new ChatRoom(chatRoomContainer,
 						new Manager(tabFolder, target));
 				// setup message listener
-				chatRoomContainer.addMessageListener(new IMessageListener() {
-					public void handleMessage(ID fromID, ID toID, Type type,
-							String subject, String messageBody) {
-						chatroomview.handleMessage(fromID, toID, type, subject,
-								messageBody);
+				chatRoomContainer.addMessageListener(new IIMMessageListener() {
+					public void handleMessageEvent(IIMMessageEvent messageEvent) {
+						if (messageEvent instanceof IChatRoomMessageEvent) {
+							IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
+							chatroomview.handleMessage(m.getFromID(), m.getMessage());
+						}
 					}
 				});
 				// setup participant listener
 				chatRoomContainer
-						.addChatParticipantListener(new IChatRoomParticipantListener() {
+						.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
 							public void handlePresence(ID fromID,
 									IPresence presence) {
 								chatroomview.handlePresence(fromID, presence);
@@ -442,7 +445,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 		}
 	}
 
-	class ChatRoom implements IMessageListener, IChatRoomInvitationListener,
+	class ChatRoom implements IChatRoomInvitationListener,
 			IParticipantListener, KeyListener {
 		IChatRoomContainer container;
 
@@ -524,7 +527,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 
 		ChatRoom(IChatRoomContainer container, Manager tabItem) {
 			this.container = container;
-			this.channelMessageSender = container.getChatMessageSender();
+			this.channelMessageSender = container.getChatRoomMessageSender();
 			this.tabUI = tabItem;
 			inputText = this.tabUI.getTextInput();
 			outputText = this.tabUI.getTextOutput();
@@ -533,8 +536,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 			this.tabUI.setKeyListener(this);
 		}
 
-		public void handleMessage(final ID fromID, final ID toID,
-				final Type type, final String subject, final String messageBody) {
+		public void handleMessage(final ID fromID, final String messageBody) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					if (disposed)
@@ -913,8 +915,7 @@ public class ChatRoomManagerView extends ViewPart implements IMessageListener,
 		return fromID.getName() + ": " + text + "\n";
 	}
 
-	public void handleMessage(final ID fromID, final ID toID, final Type type,
-			final String subject, final String messageBody) {
+	public void handleMessage(final ID fromID, final String messageBody) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if (disposed)

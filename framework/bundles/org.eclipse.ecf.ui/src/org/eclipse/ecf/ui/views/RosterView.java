@@ -39,7 +39,8 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.Constants;
 import org.eclipse.ecf.presence.IAccountManager;
-import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IIMMessageEvent;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
@@ -48,6 +49,8 @@ import org.eclipse.ecf.presence.RosterEntry;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.im.IChatID;
@@ -85,7 +88,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
+public class RosterView extends ViewPart implements IIMMessageListener, IChatRoomViewCloseListener {
 	private static final String CHAT_ROOM_VIEW_CLASS = "org.eclipse.ecf.ui.views.ChatRoomView";
 
 	public static final String UNFILED_GROUP_NAME = "Buddies";
@@ -602,7 +605,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		}
 		// Get the chat message sender callback so that we can send
 		// messages to chat room
-		IChatRoomMessageSender sender = chatRoom.getChatMessageSender();
+		IChatRoomMessageSender sender = chatRoom.getChatRoomMessageSender();
 		IViewPart view = null;
 		try {
 			IViewReference ref = wp.findViewReference(CHAT_ROOM_VIEW_CLASS,
@@ -620,14 +623,17 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 					selectedInfo, sender);
 			// Add listeners so that the new chat room gets
 			// asynch notifications of various relevant chat room events
-			chatRoom.addMessageListener(new IMessageListener() {
-				public void handleMessage(ID fromID, ID toID, Type type,
-						String subject, String messageBody) {
-					chatroomview.handleMessage(fromID, toID, type, subject,
-							messageBody);
+			chatRoom.addMessageListener(new IIMMessageListener() {
+				
+				public void handleMessageEvent(IIMMessageEvent messageEvent) {
+					if (messageEvent instanceof IChatRoomMessageEvent) {
+						IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
+						chatroomview.handleMessage(m.getFromID(), m.getMessage());
+					}
+					
 				}
 			});
-			chatRoom.addChatParticipantListener(new IChatRoomParticipantListener() {
+			chatRoom.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
 				public void handlePresence(ID fromID, IPresence presence) {
 					chatroomview.handlePresence(fromID, presence);
 				}
@@ -878,7 +884,7 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			};
 		else if (clazz.equals(IPresenceListener.class))
 			return this;
-		else if (clazz.equals(IMessageListener.class))
+		else if (clazz.equals(IIMMessageListener.class))
 			return this;
 		else
 			return null;
@@ -895,12 +901,26 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 		return sdf.format(new Date());
 	}
 
+	/*
 	public void handleMessage(ID groupID, ID fromID, ID toID,
 			IMessageListener.Type type, String subject, String message) {
 		ChatWindow window = openChatWindowForTarget(fromID);
 		// finally, show message
 		if (window != null) {
 			window.handleMessage(fromID, toID, type, subject, message);
+			window.setStatus("last message received at "
+					+ (new SimpleDateFormat("hh:mm:ss").format(new Date())));
+		}
+	}
+*/
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.IIMMessageListener#handleMessageEvent(org.eclipse.ecf.presence.IIMMessageEvent)
+	 */
+	public void handleMessageEvent(IIMMessageEvent messageEvent) {
+		ChatWindow window = openChatWindowForTarget(messageEvent.getFromID());
+		// finally, show message
+		if (window != null) {
+			window.handleMessageEvent(messageEvent);
 			window.setStatus("last message received at "
 					+ (new SimpleDateFormat("hh:mm:ss").format(new Date())));
 		}
@@ -1051,4 +1071,5 @@ public class RosterView extends ViewPart implements IChatRoomViewCloseListener {
 			window.setStatus(name+" is typing");
 		}
 	}
+
 }

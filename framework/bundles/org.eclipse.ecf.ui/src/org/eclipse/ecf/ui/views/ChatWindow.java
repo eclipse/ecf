@@ -14,11 +14,13 @@ package org.eclipse.ecf.ui.views;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.Constants;
-import org.eclipse.ecf.presence.IMessageListener;
+import org.eclipse.ecf.presence.IIMMessageEvent;
+import org.eclipse.ecf.presence.IIMMessageListener;
+import org.eclipse.ecf.presence.im.IChatMessage;
+import org.eclipse.ecf.presence.im.IChatMessageEvent;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -38,11 +40,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
-/**
- * @author pnehrer
- * 
- */
-public class ChatWindow extends ApplicationWindow implements IMessageListener {
+public class ChatWindow extends ApplicationWindow implements IIMMessageListener {
 
 	private static final long FLASH_INTERVAL = 600;
 
@@ -305,14 +303,20 @@ public class ChatWindow extends ApplicationWindow implements IMessageListener {
 		}
 	}
 
-	public void handleMessage(final ID fromID, ID toID, Type type,
-			String subject, final String message) {
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				if (!disposed && chat != null) {
-					chat.appendText(new ChatLine(message, getRemoteUser()));
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.IIMMessageListener#handleMessageEvent(org.eclipse.ecf.presence.IIMMessageEvent)
+	 */
+	public void handleMessageEvent(IIMMessageEvent messageEvent) {
+		if (messageEvent instanceof IChatMessageEvent) {
+			final IChatMessage m = ((IChatMessageEvent) messageEvent).getChatMessage();
+			Display.getDefault().syncExec(new Runnable() {
+				public void run() {
+					if (!disposed && chat != null) {
+						chat.appendText(new ChatLine(m.getBody(), getRemoteUser()));
+					}
 				}
-			}
-		});
+			});
+		}
+		
 	}
 }
