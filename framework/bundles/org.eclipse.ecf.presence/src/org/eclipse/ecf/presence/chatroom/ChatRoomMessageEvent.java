@@ -43,4 +43,11 @@ public class ChatRoomMessageEvent implements IChatRoomMessageEvent {
 		return fromID;
 	}
 
+	public String toString() {
+		StringBuffer buf = new StringBuffer("ChatRoomMessageEvent[");
+		buf.append("fromID=").append(getFromID());
+		buf.append(";chatMessage=").append(chatMessage).append("]");
+		return buf.toString();
+	}
+
 }

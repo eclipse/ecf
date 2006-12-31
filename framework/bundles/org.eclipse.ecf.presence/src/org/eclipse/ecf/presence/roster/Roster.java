@@ -105,4 +105,10 @@ public class Roster implements IRoster {
 		return null;
 	}
 
+	public String toString() {
+		StringBuffer buf = new StringBuffer("Roster[");
+		buf.append("user=").append(getUser());
+		buf.append("items=").append(getItems()).append("]");
+		return buf.toString();
+	}
 }

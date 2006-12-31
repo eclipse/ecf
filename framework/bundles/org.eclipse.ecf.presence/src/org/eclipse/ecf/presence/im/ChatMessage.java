@@ -107,4 +107,16 @@ public class ChatMessage extends IMMessage implements IChatMessage {
 		return properties;
 	}
 
+	public String toString() {
+		StringBuffer buf = new StringBuffer("ChatMessage[");
+		buf.append("fromID=").append(getFromID());
+		buf.append(";threadID=").append(getThreadID());
+		buf.append(";type=").append(getType());
+		buf.append(";subject=").append(getSubject());
+		buf.append(";body=").append(getBody());
+		buf.append(";props=").append(getProperties());
+		buf.append("]");
+		return buf.toString();
+	}
+
 }

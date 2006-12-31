@@ -39,4 +39,11 @@ public class ChatRoomMessage extends IMMessage implements IChatRoomMessage {
 		return message;
 	}
 
+	public String toString() {
+		StringBuffer buf = new StringBuffer("ChatRoomMessage[");
+		buf.append("fromID=").append(getFromID());
+		buf.append(";message=").append(message).append("]");
+		return buf.toString();
+	}
+
 }
