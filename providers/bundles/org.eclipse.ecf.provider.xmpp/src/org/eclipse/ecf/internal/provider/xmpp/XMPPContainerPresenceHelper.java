@@ -196,6 +196,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		}
 
 		org.eclipse.ecf.presence.roster.IRosterSubscriptionSender rosterSubscriptionSender = new org.eclipse.ecf.presence.roster.IRosterSubscriptionSender() {
+			/* (non-Javadoc)
+			 * @see org.eclipse.ecf.presence.roster.IRosterSubscriptionSender#sendRosterAdd(java.lang.String, java.lang.String, java.lang.String[])
+			 */
 			public void sendRosterAdd(String user, String name, String[] groups)
 					throws ECFException {
 				try {
@@ -206,6 +209,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 				}
 			}
 
+			/* (non-Javadoc)
+			 * @see org.eclipse.ecf.presence.roster.IRosterSubscriptionSender#sendRosterRemove(org.eclipse.ecf.core.identity.ID)
+			 */
 			public void sendRosterRemove(ID userID) throws ECFException {
 				try {
 					if (!(userID instanceof XMPPID))
@@ -249,10 +255,16 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	}
 
+	/**
+	 * @return IRosterManager roster manager.  Will not return <code>null</code>.
+	 */
 	public IRosterManager getRosterManager() {
 		return rosterManager;
 	}
 
+	/**
+	 * @param user set the user for this presence helper.  
+	 */
 	public void setUser(IUser user) {
 		rosterManager.setUser(user);
 	}
