@@ -124,17 +124,6 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 		sharedObjectMessageListeners.remove(listener);
 	}
 
-	protected String canonicalizePresenceFrom(String from) {
-		if (from == null)
-			return null;
-		else
-			return from;
-		/*
-		 * int index = from.indexOf("/"); if (index > 0) { return
-		 * from.substring(0, index); } else return from;
-		 */
-	}
-
 	protected void debug(String msg) {
 	}
 
@@ -158,24 +147,11 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 	protected void dumpStack(String msg, Throwable e) {
 	}
 
-	protected void firePresence(ID fromID, IPresence presence) {
+	protected void firePresenceListeners(ID fromID, IPresence presence) {
 		for (Iterator i = presenceListeners.iterator(); i.hasNext();) {
 			IPresenceListener l = (IPresenceListener) i.next();
 			l.handlePresence(fromID, presence);
 		}
-	}
-
-	protected void fireSubscribe(ID fromID, IPresence presence) {
-		/*
-		 * for (Iterator i = subscribeListeners.iterator(); i.hasNext();) {
-		 * IRosterSubscriptionListener l = (IRosterSubscriptionListener) i
-		 * .next(); if (presence.getType().equals(IPresence.Type.SUBSCRIBE)) {
-		 * l.handleSubscribeRequest(fromID); } else if
-		 * (presence.getType().equals(IPresence.Type.SUBSCRIBED)) {
-		 * l.handleSubscribed(fromID); } else if
-		 * (presence.getType().equals(IPresence.Type.UNSUBSCRIBED)) {
-		 * l.handleUnsubscribed(fromID); } }
-		 */
 	}
 
 	protected void fireSetRosterEntry(boolean remove, IRosterEntry entry) {
@@ -387,7 +363,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 
 	protected void handlePresenceEvent(PresenceEvent evt) {
 		Presence xmppPresence = evt.getPresence();
-		String from = canonicalizePresenceFrom(xmppPresence.getFrom());
+		String from = xmppPresence.getFrom();
 		IPresence newPresence = createIPresence(xmppPresence, evt
 				.getPhotoData());
 		ID fromID = createIDFromName(from);
@@ -397,7 +373,7 @@ public class XMPPPresenceSharedObject implements ISharedObject, IAccountManager 
 				|| newPresence.getType().equals(IPresence.Type.UNSUBSCRIBED)) {
 			rosterManager.notifySubscriptionListener(fromID, newPresence);
 		} else
-			firePresence(fromID, newPresence);
+			firePresenceListeners(fromID, newPresence);
 	}
 
 	protected void handleRoster(Roster roster) {

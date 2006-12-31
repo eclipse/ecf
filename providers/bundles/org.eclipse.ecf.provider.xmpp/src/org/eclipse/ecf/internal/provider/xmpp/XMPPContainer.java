@@ -131,14 +131,7 @@ public class XMPPContainer extends ClientSOContainer {
 		}
 
 		public Object getAdapter(Class clazz) {
-			// XXX this is being used to distinguish between this, more modern
-			// version of
-			// IPresenceContainerAdapter implementation and the older one.
-			// This should be eventually removed
-			if (clazz.equals(IPresenceContainerAdapter.class))
-				return this;
-			else
-				return null;
+			return null;
 		}
 
 		public IChatManager getChatManager() {
