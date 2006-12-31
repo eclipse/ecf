@@ -33,7 +33,6 @@ import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.im.ITypingMessageEvent;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
-import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
@@ -275,13 +274,11 @@ public class PresenceContainerUI {
 
 		pc.getRosterManager().addPresenceListener(new IPresenceListener() {
 
-			public void handleRosterEntryAdd(final IRosterItem entry) {
+			public void handleRosterEntryAdd(final IRosterEntry entry) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						if (entry instanceof IRosterEntry)
-							rosterView.handleRosterEntryAdd(
-									PresenceContainerUI.this.groupID,
-									(IRosterEntry) entry);
+						rosterView.handleRosterEntryAdd(
+								PresenceContainerUI.this.groupID, entry);
 					}
 				});
 			}
@@ -296,24 +293,20 @@ public class PresenceContainerUI {
 				});
 			}
 
-			public void handleRosterEntryUpdate(final IRosterItem entry) {
+			public void handleRosterEntryUpdate(final IRosterEntry entry) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						if (entry instanceof IRosterEntry)
-							rosterView.handleRosterEntryAdd(
-									PresenceContainerUI.this.groupID,
-									(IRosterEntry) entry);
+						rosterView.handleRosterEntryAdd(
+								PresenceContainerUI.this.groupID, entry);
 					}
 				});
 			}
 
-			public void handleRosterEntryRemove(final IRosterItem entry) {
+			public void handleRosterEntryRemove(final IRosterEntry entry) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						if (entry instanceof IRosterEntry)
-							rosterView.handleRosterEntryRemove(
-									PresenceContainerUI.this.groupID,
-									(IRosterEntry) entry);
+						rosterView.handleRosterEntryRemove(
+								PresenceContainerUI.this.groupID, entry);
 					}
 				});
 			}
