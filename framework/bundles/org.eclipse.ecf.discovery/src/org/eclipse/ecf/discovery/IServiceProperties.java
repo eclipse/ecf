@@ -16,7 +16,7 @@ public interface IServiceProperties {
 	 * Get property names. This should return an Enumeration of String objects
 	 * that identify all of the names in this IServiceProperties instance
 	 * 
-	 * @return Enumeration of all service property names as Strings
+	 * @return Enumeration of all service property names as Strings.  Will not be <code>null</code>.
 	 */
 	public Enumeration getPropertyNames();
 
@@ -26,8 +26,9 @@ public interface IServiceProperties {
 	 * name, or if the property has some other type than String.
 	 * 
 	 * @param name
-	 *            the name of the property to return
-	 * @return the property as a String
+	 *            the name of the property to return.  Must not be <code>null</code>.
+	 * @return the property as a String.  Will be <code>null</code> if property does
+	 * not exist.
 	 */
 	public String getPropertyString(String name);
 
@@ -37,19 +38,21 @@ public interface IServiceProperties {
 	 * name, or if the property has some other type than byte[].
 	 * 
 	 * @param name
-	 *            the name of the property to return
-	 * @return the property as a byte[]
+	 *            the name of the property to return.  Must not be <code>null</code>.
+	 * @return the property as a byte[].  Will be <code>null</code> if property does
+	 * not exist.
 	 */
 	public byte[] getPropertyBytes(String name);
 
 	/**
 	 * Get property as an Object. Returns a non-null Object if there is a
-	 * property of the given name. Returns null if there is no property by that
+	 * property of the given name. Returns <code>null</code> if there is no property by that
 	 * name.
 	 * 
 	 * @param name
-	 *            the name of the property to return
-	 * @return the property as an Object
+	 *            the name of the property to return. Must not be <code>null</code>.
+	 * @return the property as an Object.  Returns <code>null</code> if there is no
+	 * property of given name.
 	 */
 	public Object getProperty(String name);
 
@@ -57,12 +60,12 @@ public interface IServiceProperties {
 	 * Set property as String.
 	 * 
 	 * @param name
-	 *            the property name of the property. Must not be null.
+	 *            the property name of the property. Must not be <code>null</code>.
 	 * @param value
 	 *            the property value to associated with the name. Must not be
-	 *            null
-	 * @return Object that was previous value associated with given name. Null
-	 *         if not previously in properties
+	 *            <code>null</code>.
+	 * @return Object that was previous value associated with given name. May be <code>null</code>
+	 *         if not previously in properties.
 	 */
 	public Object setPropertyString(String name, String value);
 

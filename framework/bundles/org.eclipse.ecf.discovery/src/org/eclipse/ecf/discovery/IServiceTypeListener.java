@@ -16,7 +16,7 @@ public interface IServiceTypeListener {
 	/**
 	 * Notification that a service type has been added
 	 * 
-	 * @param event
+	 * @param event  Must not be <code>null</code>.
 	 */
 	public void serviceTypeAdded(IServiceEvent event);
 }

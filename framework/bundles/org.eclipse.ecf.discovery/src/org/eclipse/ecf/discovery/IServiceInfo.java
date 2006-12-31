@@ -22,7 +22,7 @@ public interface IServiceInfo {
 	/**
 	 * Get InetAddress for service
 	 * 
-	 * @return InetAddress the address for the service. May be null if address
+	 * @return InetAddress the address for the service. May be <code>null</code> if address
 	 *         is not known.
 	 */
 	public InetAddress getAddress();
@@ -30,7 +30,7 @@ public interface IServiceInfo {
 	/**
 	 * Get ServiceID for service.
 	 * 
-	 * @return ServiceID the serviceID for the service. Must not be null.
+	 * @return ServiceID the serviceID for the service. Will not be <code>null</code>.
 	 */
 	public ServiceID getServiceID();
 
@@ -59,7 +59,7 @@ public interface IServiceInfo {
 	 * Map with any/all properties associated with the service. Properties are
 	 * assumed to be name/value pairs, both of type String.
 	 * 
-	 * @return Map the properties associated with this service
+	 * @return Map the properties associated with this service.  Will not be <code>null</code>.
 	 */
 	public IServiceProperties getServiceProperties();
 

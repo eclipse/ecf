@@ -34,9 +34,9 @@ public interface IDiscoveryContainerAdapter {
 	 * is discovered.
 	 * 
 	 * @param type
-	 *            the ServiceID of the desired type to listen for
+	 *            the ServiceID of the desired type to listen for.  Should not be <code>null</code>.
 	 * @param listener
-	 *            the listener to be notified
+	 *            the listener to be notified.  Should not be <code>null</code>.
 	 */
 	public void addServiceListener(ServiceID type, IServiceListener listener);
 

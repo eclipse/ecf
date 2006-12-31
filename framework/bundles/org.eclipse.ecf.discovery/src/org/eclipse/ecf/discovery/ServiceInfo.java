@@ -15,7 +15,8 @@ import java.net.InetAddress;
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
 /**
- * Information provided by discovery protocol about a remote service
+ * Base implementation of {@link IServiceInfo}.  Subclasses
+ * may be created as appropriate.
  */
 public class ServiceInfo implements IServiceInfo, Serializable {
 
@@ -52,6 +53,9 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		this.properties = props;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceInfo#getAddress()
+	 */
 	public InetAddress getAddress() {
 		return addr;
 	}
@@ -60,30 +64,51 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		this.addr = address;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceInfo#getServiceID()
+	 */
 	public ServiceID getServiceID() {
 		return serviceID;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceInfo#getPort()
+	 */
 	public int getPort() {
 		return port;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceInfo#getPriority()
+	 */
 	public int getPriority() {
 		return priority;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceInfo#getWeight()
+	 */
 	public int getWeight() {
 		return weight;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceInfo#getServiceProperties()
+	 */
 	public IServiceProperties getServiceProperties() {
 		return properties;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceInfo#isResolved()
+	 */
 	public boolean isResolved() {
 		return (addr != null);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ServiceInfo[");
 		buf.append("addr=").append(addr).append(";id=").append(serviceID)

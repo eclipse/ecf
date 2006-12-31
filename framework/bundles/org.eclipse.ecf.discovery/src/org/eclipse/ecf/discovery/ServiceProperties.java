@@ -11,6 +11,10 @@ package org.eclipse.ecf.discovery;
 import java.util.Enumeration;
 import java.util.Properties;
 
+/**
+ * Service properties implementation class for {@link IServiceProperties}.  Subclasses
+ * may be created as appropriate.
+ */
 public class ServiceProperties implements IServiceProperties {
 
 	Properties props = new Properties();

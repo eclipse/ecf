@@ -12,7 +12,8 @@ import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
 
 /**
- * Identity type to represent discovered service
+ * Service identity type.  ServiceIDs are IDs that uniquely identify
+ * a remote service.  Subclasses may be created as appropriate.
  * 
  */
 public class ServiceID extends BaseID {
@@ -42,6 +43,9 @@ public class ServiceID extends BaseID {
 			return type + name;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceCompareTo(org.eclipse.ecf.core.identity.BaseID)
+	 */
 	protected int namespaceCompareTo(BaseID o) {
 		if (o instanceof ServiceID) {
 			ServiceID other = (ServiceID) o;
@@ -52,6 +56,9 @@ public class ServiceID extends BaseID {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceEquals(org.eclipse.ecf.core.identity.BaseID)
+	 */
 	protected boolean namespaceEquals(BaseID o) {
 		if (o == null)
 			return false;
@@ -64,22 +71,40 @@ public class ServiceID extends BaseID {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceGetName()
+	 */
 	protected String namespaceGetName() {
 		return getFullyQualifiedName();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceHashCode()
+	 */
 	protected int namespaceHashCode() {
 		return getFullyQualifiedName().hashCode();
 	}
 
+	/**
+	 * Get service type for this ID.
+	 * @return String service type.  Will not be <code>null</code>.
+	 */
 	public String getServiceType() {
 		return type;
 	}
 
+	/**
+	 * Get service name for this ID.  
+	 * 
+	 * @return String service name.  Will not be <code>null</code>.
+	 */
 	public String getServiceName() {
 		return name;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ServiceID[");
 		buf.append("type=").append(type).append(";name=").append(name).append(

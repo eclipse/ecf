@@ -17,14 +17,14 @@ public interface IServiceListener {
 	/**
 	 * Notification that a service has been added.
 	 * 
-	 * @param event
+	 * @param event  Will not be <code>null</code>.
 	 */
 	public void serviceAdded(IServiceEvent event);
 
 	/**
 	 * Notification that a service has been removed.
 	 * 
-	 * @param event
+	 * @param event  Will not be <code>null</code>.
 	 */
 	public void serviceRemoved(IServiceEvent event);
 
@@ -32,7 +32,7 @@ public interface IServiceListener {
 	 * Notification that a service has been resolved (that complete service info
 	 * is now available).
 	 * 
-	 * @param event
+	 * @param event  Will not be <code>null</code>.
 	 */
 	public void serviceResolved(IServiceEvent event);
 }

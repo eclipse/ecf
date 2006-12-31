@@ -12,7 +12,8 @@ package org.eclipse.ecf.discovery;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Event implementation of IServiceEvent interface
+ * Base event implementation of {@link IServiceEvent}.  Subclasses
+ * may be created as appropriate.
  */
 public class ServiceContainerEvent implements IServiceEvent {
 
@@ -27,14 +28,23 @@ public class ServiceContainerEvent implements IServiceEvent {
 		this.containerID = containerID;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceEvent#getServiceInfo()
+	 */
 	public IServiceInfo getServiceInfo() {
 		return info;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.events.IContainerEvent#getLocalContainerID()
+	 */
 	public ID getLocalContainerID() {
 		return containerID;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ServiceContainerEvent[");
 		buf.append("serviceinfo=").append(info).append("]");
