@@ -10,7 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence;
 
-import org.eclipse.ecf.presence.roster.IRosterItem;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
 
 /**
  * Listener for receiving and processing presence and roster update events.
@@ -24,7 +24,7 @@ public interface IPresenceListener extends IParticipantListener {
 	 * @param entry
 	 *            the roster entry that has changed
 	 */
-	public void handleRosterEntryAdd(IRosterItem entry);
+	public void handleRosterEntryAdd(IRosterEntry entry);
 
 	/**
 	 * Notification that a roster entry has been changed
@@ -32,7 +32,7 @@ public interface IPresenceListener extends IParticipantListener {
 	 * @param entry
 	 *            the entry that has changed
 	 */
-	public void handleRosterEntryUpdate(IRosterItem entry);
+	public void handleRosterEntryUpdate(IRosterEntry entry);
 
 	/**
 	 * Notification that a roster entry has been renived
@@ -40,6 +40,6 @@ public interface IPresenceListener extends IParticipantListener {
 	 * @param entry
 	 *            the entry that has been removed
 	 */
-	public void handleRosterEntryRemove(IRosterItem entry);
+	public void handleRosterEntryRemove(IRosterEntry entry);
 
 }

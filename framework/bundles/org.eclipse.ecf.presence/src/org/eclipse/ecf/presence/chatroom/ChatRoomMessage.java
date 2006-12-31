@@ -22,23 +22,32 @@ public class ChatRoomMessage extends IMMessage implements IChatRoomMessage {
 	private static final long serialVersionUID = -5099099538044060019L;
 
 	protected String message;
-	
+
 	/**
-	 * @param fromID the sender ID
-	 * @param message the message sent.
+	 * @param fromID
+	 *            the sender ID
+	 * @param message
+	 *            the message sent.
 	 */
 	public ChatRoomMessage(ID fromID, String message) {
 		super(fromID);
 		this.message = message;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomMessage#getMessage()
 	 */
 	public String getMessage() {
 		return message;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ChatRoomMessage[");
 		buf.append("fromID=").append(getFromID());

@@ -18,7 +18,8 @@ import java.util.List;
 import org.eclipse.ecf.core.user.IUser;
 
 /**
- * Base implementation of IRoster.
+ * Base class implementation of {@link IRoster}. Subclasses may be created as
+ * appropriate.
  * 
  */
 public class Roster implements IRoster {
@@ -105,6 +106,9 @@ public class Roster implements IRoster {
 		return null;
 	}
 
+	/**
+	 * @return String this object as String
+	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer("Roster[");
 		buf.append("user=").append(getUser());

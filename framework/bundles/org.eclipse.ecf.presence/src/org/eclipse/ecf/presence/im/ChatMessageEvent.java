@@ -46,12 +46,16 @@ public class ChatMessageEvent implements IChatMessageEvent {
 		return message;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ChatMessageEvent[");
 		buf.append("fromID=").append(getFromID());
 		buf.append(";message=").append(message).append("]");
 		return buf.toString();
 	}
-
 
 }

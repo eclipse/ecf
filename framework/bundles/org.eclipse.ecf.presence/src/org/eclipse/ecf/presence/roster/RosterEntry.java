@@ -22,7 +22,7 @@ import org.eclipse.ecf.presence.IPresence;
 
 /**
  * Roster entry base class implementing {@link IRosterEntry}. Subclasses may be
- * created as appropriate
+ * created as appropriate.
  * 
  */
 public class RosterEntry extends RosterItem implements IRosterEntry {

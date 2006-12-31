@@ -22,7 +22,8 @@ public interface IRosterSubscriptionListener {
 	 * Receive subscribe request.
 	 * 
 	 * @param fromID
-	 *            the sender of the subscribe request
+	 *            the sender of the subscribe request. Will not be
+	 *            <code>null</code>.
 	 */
 	public void handleSubscribeRequest(ID fromID);
 
@@ -30,7 +31,8 @@ public interface IRosterSubscriptionListener {
 	 * Receive subscribed notification.
 	 * 
 	 * @param fromID
-	 *            the sender of the subscribed notification
+	 *            the sender of the subscribed notification. Will not be
+	 *            <code>null</code>.
 	 */
 	public void handleSubscribed(ID fromID);
 
@@ -38,7 +40,8 @@ public interface IRosterSubscriptionListener {
 	 * Receive unsubscribed notification.
 	 * 
 	 * @param fromID
-	 *            the sender of the unsubscribed notification
+	 *            the sender of the unsubscribed notification. Will not be
+	 *            <code>null</code>.
 	 */
 	public void handleUnsubscribed(ID fromID);
 }

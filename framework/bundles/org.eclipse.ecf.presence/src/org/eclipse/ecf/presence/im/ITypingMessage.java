@@ -14,8 +14,8 @@ package org.eclipse.ecf.presence.im;
 import org.eclipse.ecf.presence.IIMMessage;
 
 /**
- * Typing message.  This object represents information
- * about a using typing during chat.
+ * Typing message. This object represents information about a using typing
+ * during chat.
  */
 public interface ITypingMessage extends IIMMessage {
 
@@ -25,13 +25,12 @@ public interface ITypingMessage extends IIMMessage {
 	 * @return true if currently typing, false if currently stopped.
 	 */
 	public boolean isTyping();
-	
+
 	/**
 	 * Get the contents of the typing
 	 * 
-	 * @return String contents of the typing.  Will return empty String if
-	 * no contents
+	 * @return String contents of the typing. May return <code>null</code>.
 	 */
 	public String getBody();
-	
+
 }

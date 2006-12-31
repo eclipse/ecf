@@ -17,14 +17,14 @@ import org.eclipse.ecf.core.util.ECFException;
  * {@link IChatRoomContainer}. Access to instances implementing this interface
  * is provided via the {@link IChatRoomContainer#getChatRoomMessageSender()}
  * 
- * @see IChatRoomContainer
+ * @see IChatRoomManager
  */
 public interface IChatRoomMessageSender {
 	/**
 	 * Send a message to chat room
 	 * 
 	 * @param message
-	 *            the message to send
+	 *            the message to send. Must not be <code>null</code>.
 	 * @throws ECFException
 	 *             thrown if message cannot be sent (e.g. because of previous
 	 *             disconnect)

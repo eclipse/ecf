@@ -13,16 +13,16 @@ package org.eclipse.ecf.presence.chatroom;
 
 import org.eclipse.ecf.presence.IIMMessageEvent;
 
-
 /**
- * Chat message event.
+ * Chat room message event.
  */
 public interface IChatRoomMessageEvent extends IIMMessageEvent {
 
 	/**
 	 * Get chat room message sent.
 	 * 
-	 * @return IChatRoomMessage sent to this receiver
+	 * @return IChatRoomMessage sent to this receiver. Will not be
+	 *         <code>null</code>.
 	 */
 	public IChatRoomMessage getChatRoomMessage();
 

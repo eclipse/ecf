@@ -26,7 +26,7 @@ public interface IChatRoomManager extends IAdaptable {
 	 * Add invitation listener
 	 * 
 	 * @param listener
-	 *            the invitation listener to add
+	 *            the invitation listener to add. Must not be <code>null</code>.
 	 */
 	public void addInvitationListener(IChatRoomInvitationListener listener);
 
@@ -34,16 +34,17 @@ public interface IChatRoomManager extends IAdaptable {
 	 * Remove invitation listener
 	 * 
 	 * @param listener
-	 *            the invitation listener to remove
+	 *            the invitation listener to remove. Must not be
+	 *            <code>null</code>.
 	 */
 	public void removeInvitationListener(IChatRoomInvitationListener listener);
 
 	/**
 	 * Get parent IChatRoomManager. If this manager is the root, then this
-	 * method returns null.
+	 * method returns <code>null</code>.
 	 * 
 	 * @return IChatRoomManager instance if this manager has a parent. Returns
-	 *         null if this manager is the root of the hierarchy
+	 *         <code>null</code> if this manager is the root of the hierarchy.
 	 */
 	public IChatRoomManager getParent();
 
@@ -54,8 +55,8 @@ public interface IChatRoomManager extends IAdaptable {
 	 * then a zero-length array will be returned.
 	 * 
 	 * @return IChatRoomManager[] of children for this chat room manager. If no
-	 *         children, a zero-length array will be returned. Null will not be
-	 *         returned.
+	 *         children, a zero-length array will be returned. <code>null</code>
+	 *         will not be returned.
 	 */
 	public IChatRoomManager[] getChildren();
 
@@ -68,8 +69,9 @@ public interface IChatRoomManager extends IAdaptable {
 	 *            room manager instance itself. For example, for IRC, the chat
 	 *            room manager is also a chat room where message can be
 	 *            sent/received
-	 * @return IChatRoomInfo an instance that provides the given info. Null if
-	 *         no chat room info associated with given name or null
+	 * @return IChatRoomInfo an instance that provides the given info. Returns
+	 *         <code>null</code> if no chat room info associated with given
+	 *         name or null
 	 */
 	public IChatRoomInfo getChatRoomInfo(String roomname);
 
@@ -77,26 +79,29 @@ public interface IChatRoomManager extends IAdaptable {
 	 * Get detailed room info for all chat rooms associated with this manager
 	 * 
 	 * @return IChatRoomInfo an array of instances that provide info for all
-	 *         chat rooms
+	 *         chat rooms. Will return empty array if there are no available
+	 *         chat rooms. Will not return <code>null</code>.
 	 */
 	public IChatRoomInfo[] getChatRoomInfos();
 
-	// XXX these two methods should ultimately be added to IChatRoomManager
-	// public void addInvitationListener(IChatRoomInvitationListener listener);
-	// public IChatRoomContainer createChatRoomContainer() throws
-	// ContainerCreateException;
-	
 	/**
 	 * 
 	 * Create a chat room with the given roomname and properties.
 	 * 
-	 * @param roomname the name of the room.  Must not be null.
-	 * @param properties properties associated with the room's creation.  May be null.
-	 * @return IChatRoomInfo room info suitable for creating a chat room container and connecting.  Will not
-	 * be null.
-	 * @throws ChatRoomCreateException if roomname is null, or if chat room creation cannot occur (e.g. server 
-	 * refuses, name collision occurs, user has insufficient rights to perform creation operation, etc).
+	 * @param roomname
+	 *            the name of the room. Must not be <code>null</code>.
+	 * @param properties
+	 *            properties associated with the room's creation. May be
+	 *            <code>null</code>.
+	 * @return IChatRoomInfo room info suitable for creating a chat room
+	 *         container and connecting. Will not be <code>null</code>.
+	 * @throws ChatRoomCreateException
+	 *             if roomname is <code>null</code>, or if chat room creation
+	 *             cannot occur (e.g. server refuses, name collision occurs,
+	 *             user has insufficient rights to perform creation operation,
+	 *             etc).
 	 */
-	public IChatRoomInfo createChatRoom(String roomname, Map properties) throws ChatRoomCreateException;
-	
+	public IChatRoomInfo createChatRoom(String roomname, Map properties)
+			throws ChatRoomCreateException;
+
 }

@@ -22,9 +22,11 @@ public interface IParticipantListener {
 	 * Notification that a presence update has been received
 	 * 
 	 * @param fromID
-	 *            the ID of the sender of the presence update
+	 *            the ID of the sender of the presence update. Will not be
+	 *            <code>null</code>.
 	 * @param presence
-	 *            the presence information for the sender
+	 *            the presence information for the sender. Will not be
+	 *            <code>null</code>.
 	 */
 	public void handlePresence(ID fromID, IPresence presence);
 }

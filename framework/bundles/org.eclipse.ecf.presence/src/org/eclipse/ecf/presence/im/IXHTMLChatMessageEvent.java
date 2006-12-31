@@ -13,7 +13,6 @@ package org.eclipse.ecf.presence.im;
 
 import org.eclipse.ecf.presence.IIMMessageEvent;
 
-
 /**
  * Chat message event.
  */
@@ -22,7 +21,8 @@ public interface IXHTMLChatMessageEvent extends IIMMessageEvent {
 	/**
 	 * Get XHTML chat message sent.
 	 * 
-	 * @return IXHTMLChatMessage sent to this receiver
+	 * @return IXHTMLChatMessage sent to the receiver. Will not be
+	 *         <code>null</code>.
 	 */
 	public IXHTMLChatMessage getXHTMLChatMessage();
 

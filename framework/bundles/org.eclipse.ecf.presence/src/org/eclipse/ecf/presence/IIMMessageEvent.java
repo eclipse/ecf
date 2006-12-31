@@ -15,14 +15,15 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 
 /**
- * Message event
+ * Message event class. This event interface provides a wrapper for
+ * {@link IIMMessage}s received from remotes.
  */
 public interface IIMMessageEvent extends Event {
-	
+
 	/**
-	 * Get the ID of the sender of the chat message
+	 * Get the ID of the sender of the chat message.
 	 * 
-	 * @return ID of the sender of the message. Will not be null.
+	 * @return ID of the sender of the message. Will not be <code>null</code>.
 	 */
 	public ID getFromID();
 

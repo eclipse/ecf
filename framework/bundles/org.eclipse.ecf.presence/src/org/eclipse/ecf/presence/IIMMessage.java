@@ -17,10 +17,17 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Super interface for chat and typing messages
+ * Super interface for messages. Sub interfaces define specific types of
+ * messages...for example chat, user keyboard activity/typing and chat room
+ * messages.
  */
 public interface IIMMessage extends IAdaptable, Serializable {
 
+	/**
+	 * Get ID of originator of message.
+	 * 
+	 * @return ID of originator of message. Will not be <code>null</code>.
+	 */
 	public ID getFromID();
-	
+
 }

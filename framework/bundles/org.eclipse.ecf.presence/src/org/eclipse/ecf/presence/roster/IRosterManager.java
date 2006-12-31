@@ -21,9 +21,9 @@ import org.eclipse.ecf.presence.IPresenceSender;
 public interface IRosterManager extends IAdaptable {
 
 	/**
-	 * Get roster for this account. Will not be null.
+	 * Get roster for this account.
 	 * 
-	 * @return IRoster for this roster manager. Will not be null.
+	 * @return IRoster for this roster manager. Will not be <code>null</code>.
 	 */
 	public IRoster getRoster();
 
@@ -32,7 +32,7 @@ public interface IRosterManager extends IAdaptable {
 	 * roster manager
 	 * 
 	 * @param listener
-	 *            the listener to add. Will not be null.
+	 *            the listener to add. Must not be <code>null</code>.
 	 */
 	public void addRosterUpdateListener(IRosterUpdateListener listener);
 
@@ -40,7 +40,7 @@ public interface IRosterManager extends IAdaptable {
 	 * Remove roster update listener
 	 * 
 	 * @param listener
-	 *            the listener to remove. Will not be null.
+	 *            the listener to remove. Must not be <code>null</code>.
 	 */
 	public void removeRosterUpdateListener(IRosterUpdateListener listener);
 
@@ -50,7 +50,8 @@ public interface IRosterManager extends IAdaptable {
 	 * received by this connected account.
 	 * 
 	 * @param listener
-	 *            for receiving subscription requests. Will not be null.
+	 *            for receiving subscription requests. Must not be
+	 *            <code>null</code>.
 	 */
 	public void addRosterSubscriptionListener(
 			IRosterSubscriptionListener listener);
@@ -59,29 +60,29 @@ public interface IRosterManager extends IAdaptable {
 	 * Remove listener for roster subscription requests.
 	 * 
 	 * @param listener
-	 *            the listener to remove. Will not be null.
+	 *            the listener to remove. Will not be <code>null</code>.
 	 */
 	public void removeRosterSubscriptionListener(
 			IRosterSubscriptionListener listener);
 
 	/**
 	 * Get roster subscription sender. The roster subscription sender returned
-	 * by this method, if not null, may be used to send roster subscribe and
-	 * unsubscribe requests
+	 * by this method, if not <code>null</code>, may be used to send roster
+	 * subscribe and unsubscribe requests
 	 * 
-	 * @return IRosterSubscriptionSender the sender to use. If null, sending
-	 *         requests for roster updates are not supported.
+	 * @return IRosterSubscriptionSender the sender to use. If <code>null</code>,
+	 *         sending requests for roster updates are not supported.
 	 */
 	public IRosterSubscriptionSender getRosterSubscriptionSender();
 
 	/**
 	 * Retrieve interface for sending presence updates. The returned
-	 * IPresenceSender (if not null) can be used to send presence change
-	 * messages to remote users that have access to the presence information for
-	 * the connected account.
+	 * IPresenceSender (if not <code>null</code>) can be used to send
+	 * presence change messages to remote users that have access to the presence
+	 * information for the connected account.
 	 * 
-	 * @return IPresenceSender. Null if no presence sender available for this
-	 *         provider.
+	 * @return IPresenceSender. <code>null</code> if no presence sender
+	 *         available for this provider.
 	 */
 	public IPresenceSender getPresenceSender();
 
@@ -91,7 +92,8 @@ public interface IRosterManager extends IAdaptable {
 	 * connected account.
 	 * 
 	 * @param listener
-	 *            for receiving presence notifications. Must not be null.
+	 *            for receiving presence notifications. Must not be
+	 *            <code>null</code>.
 	 * 
 	 */
 	public void addPresenceListener(IPresenceListener listener);
@@ -100,10 +102,9 @@ public interface IRosterManager extends IAdaptable {
 	 * Remove listener for presence events.
 	 * 
 	 * @param listener
-	 *            the listener to remove.  Must not be null.
+	 *            the listener to remove. Must not be <code>null</code>.
 	 * 
 	 */
 	public void removePresenceListener(IPresenceListener listener);
-
 
 }

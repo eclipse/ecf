@@ -18,26 +18,42 @@ public class TypingMessageEvent implements ITypingMessageEvent {
 	private static final long serialVersionUID = 6612754945575950442L;
 
 	protected ID fromID;
-	
+
 	protected ITypingMessage typingMessage;
-	
+
 	public TypingMessageEvent(ID fromID, ITypingMessage message) {
 		this.fromID = fromID;
 		this.typingMessage = message;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.im.ITypingMessageEvent#getTypingMessage()
 	 */
 	public ITypingMessage getTypingMessage() {
 		return typingMessage;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.im.IIMMessageEvent#getFromID()
 	 */
 	public ID getFromID() {
 		return fromID;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer buf = new StringBuffer("TypingMessage[");
+		buf.append("fromID=").append(getFromID());
+		buf.append(";typingMessage=").append(getTypingMessage()).append("]");
+		return buf.toString();
 	}
 
 }

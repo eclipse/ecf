@@ -24,19 +24,20 @@ public interface ITypingMessageSender {
 	 * 
 	 * @param toID
 	 *            the ID of the receiver of the typing message. Must not be
-	 *            null.
+	 *            <code>null</code>.
 	 * 
 	 * @param isTyping
-	 *            true if user is typing, false otherwise
+	 *            true if user is typing, false if they've stopped typing.
 	 * 
 	 * @param body
-	 * 		      the content of what has been/is being typed
-     *
+	 *            the content of what has been/is being typed. May be
+	 *            <code>null</code>.
+	 * 
 	 * @throws ECFException
-	 *             thrown if toID or typingMessage parameters are null, or if
-	 *             provider not currently connected.
+	 *             thrown if toID or typingMessage parameters are
+	 *             <code>null</code>, or if provider not currently connected.
 	 */
 	public void sendTypingMessage(ID toID, boolean isTyping, String body)
 			throws ECFException;
-	
+
 }

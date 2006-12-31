@@ -19,6 +19,8 @@ public interface IRosterUpdateListener {
 	/**
 	 * Handle roster update notification.
 	 * 
+	 * @param roster
+	 *            the roster updated. Will not be <code>null</code>.
 	 * @param changedValue
 	 *            the roster item that changed
 	 */

@@ -19,12 +19,12 @@ import java.util.List;
 public interface IXHTMLChatMessage extends IChatMessage {
 
 	/**
-	 * Get List of html bodies.  Each element of this list will be a String
+	 * Get List of html bodies. Each element of this list will be a String
 	 * minimally containing the html <body></body> elements and contents.
 	 * 
-	 * @return List of HTML bodies.  Will not return null, but may return 
-	 * empty list
+	 * @return List of HTML bodies. Will not return <code>null</code>, but
+	 *         may return empty list.
 	 */
 	public List getXTHMLBodies();
-	
+
 }

@@ -25,21 +25,21 @@ public interface IChatRoomInfo extends IAdaptable {
 	/**
 	 * Get a description for this room
 	 * 
-	 * @return String description
+	 * @return String description for this chat room. May be <code>null</code>.
 	 */
 	public String getDescription();
 
 	/**
 	 * Get subject/topic for room
 	 * 
-	 * @return String topic
+	 * @return String topic. May be <code>null</code>.
 	 */
 	public String getSubject();
 
 	/**
 	 * Get the ID associated with this room
 	 * 
-	 * @return ID for room
+	 * @return ID for room. Will not be <code>null</code>.
 	 */
 	public ID getRoomID();
 
@@ -53,7 +53,7 @@ public interface IChatRoomInfo extends IAdaptable {
 	/**
 	 * Get a long name for room
 	 * 
-	 * @return String name
+	 * @return String name. May be <code>null</code>.
 	 */
 	public String getName();
 
@@ -82,9 +82,12 @@ public interface IChatRoomInfo extends IAdaptable {
 	public ID getConnectedID();
 
 	/**
-	 * Create a new IChatRoomContainer instance
+	 * Create a new IChatRoomContainer instance. This method can be used to
+	 * create and connect a container to the chat room identified by this chat
+	 * room info object.
 	 * 
-	 * @return non-null IChatRoomContainer instance. Will not return null.
+	 * @return non-null IChatRoomContainer instance. Will not return
+	 *         <code>null</code>.
 	 * @throws ContainerCreateException
 	 *             if chat room container cannot be made
 	 */

@@ -26,11 +26,26 @@ public class XHTMLChatMessageEvent extends ChatMessageEvent implements
 		super(fromID, message);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.im.IXHTMLChatMessageEvent#getXHTMLChatMessage()
 	 */
 	public IXHTMLChatMessage getXHTMLChatMessage() {
 		return (IXHTMLChatMessage) super.getChatMessage();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer buf = new StringBuffer("XHTMLChatMessageEvent[");
+		buf.append("fromID=").append(getFromID());
+		buf.append(";xhtmlchatmessage=").append(getXHTMLChatMessage()).append(
+				"]");
+		return buf.toString();
 	}
 
 }

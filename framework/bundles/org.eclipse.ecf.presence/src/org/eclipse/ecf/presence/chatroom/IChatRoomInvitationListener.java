@@ -27,13 +27,14 @@ public interface IChatRoomInvitationListener {
 	 * this user account to join a chat room
 	 * 
 	 * @param roomID
-	 *            the room id associated with the invitation
+	 *            the room id associated with the invitation. Will not be
+	 *            <code>null</code>.
 	 * @param from
-	 *            the id of the sender
+	 *            the id of the sender. Will not be <code>null</code>.
 	 * @param subject
-	 *            a subject for the invitation
+	 *            a subject for the invitation. May be <code>null</code>.
 	 * @param body
-	 *            a message body for the invitation
+	 *            a message body for the invitation. May be <code>null</code>.
 	 */
 	public void handleInvitationReceived(ID roomID, ID from, String subject,
 			String body);

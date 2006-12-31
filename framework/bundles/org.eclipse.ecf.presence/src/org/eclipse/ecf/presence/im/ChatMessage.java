@@ -23,32 +23,35 @@ import org.eclipse.ecf.presence.IMMessage;
 public class ChatMessage extends IMMessage implements IChatMessage {
 
 	private static final long serialVersionUID = 483032454041915204L;
-	
+
 	protected ID threadID;
-	
+
 	protected IChatMessage.Type type;
-	
+
 	protected String subject;
-	
+
 	protected String body;
 
 	protected Map properties;
-	
-	public ChatMessage(ID fromID, ID threadID, IChatMessage.Type type, String subject,
-			String body, Map properties) {
+
+	public ChatMessage(ID fromID, ID threadID, IChatMessage.Type type,
+			String subject, String body, Map properties) {
 		super(fromID);
 		this.threadID = threadID;
 		this.type = type;
 		this.subject = subject;
-		this.body = (body == null)?"":body;
-		this.properties = (properties == null)?new HashMap():properties;
+		this.body = (body == null) ? "" : body;
+		this.properties = (properties == null) ? new HashMap() : properties;
 	}
 
-	public ChatMessage(ID fromID, ID threadID, String subject, String body, Map properties) {
-		this(fromID, threadID, IChatMessage.Type.CHAT, subject, body, properties);
+	public ChatMessage(ID fromID, ID threadID, String subject, String body,
+			Map properties) {
+		this(fromID, threadID, IChatMessage.Type.CHAT, subject, body,
+				properties);
 	}
 
-	public ChatMessage(ID fromID, IChatMessage.Type type, String subject, String body, Map properties) {
+	public ChatMessage(ID fromID, IChatMessage.Type type, String subject,
+			String body, Map properties) {
 		this(fromID, null, type, subject, body, properties);
 	}
 
@@ -63,7 +66,7 @@ public class ChatMessage extends IMMessage implements IChatMessage {
 	public ChatMessage(ID fromID, String body) {
 		this(fromID, body, null);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -100,13 +103,20 @@ public class ChatMessage extends IMMessage implements IChatMessage {
 		return type;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.im.IIMMessage#getProperties()
 	 */
 	public Map getProperties() {
 		return properties;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ChatMessage[");
 		buf.append("fromID=").append(getFromID());

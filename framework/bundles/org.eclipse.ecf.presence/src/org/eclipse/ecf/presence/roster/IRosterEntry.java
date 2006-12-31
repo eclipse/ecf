@@ -24,9 +24,10 @@ import org.eclipse.ecf.presence.IPresence;
 public interface IRosterEntry extends IRosterItem {
 
 	/**
-	 * Get user for this roster entry.
+	 * Get user for this roster entry. Will not be <code>null</code>.
 	 * 
-	 * @return IUser that represents user associated with this roster entry
+	 * @return IUser that represents user associated with this roster entry.
+	 *         Will not be <code>null</code>.
 	 */
 	public IUser getUser();
 
@@ -35,14 +36,15 @@ public interface IRosterEntry extends IRosterItem {
 	 * type {@link IRosterGroup}
 	 * 
 	 * @return Iterator of groups that this roster entry belongs to. Will not
-	 *         return null.
+	 *         return <code>null</code>.
 	 */
 	public Collection getGroups();
 
 	/**
 	 * Get presence state for this roster entry.
 	 * 
-	 * @return IPresence information for this roster entry. May be null.
+	 * @return IPresence information for this roster entry. May be
+	 *         <code>null</code>.
 	 */
 	public IPresence getPresence();
 

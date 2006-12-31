@@ -17,6 +17,12 @@ import org.eclipse.ecf.presence.IIMMessageEvent;
  * Typing message event.
  */
 public interface ITypingMessageEvent extends IIMMessageEvent {
-	
+
+	/**
+	 * Get the typing message ffrom this event object.
+	 * 
+	 * @return ITypingMessage that is the message associated with this event.
+	 *         Will not be <code>null</code>.
+	 */
 	public ITypingMessage getTypingMessage();
 }

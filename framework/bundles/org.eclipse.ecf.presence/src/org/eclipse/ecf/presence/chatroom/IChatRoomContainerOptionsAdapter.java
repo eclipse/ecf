@@ -20,6 +20,7 @@ public interface IChatRoomContainerOptionsAdapter {
 	 * Set encoding for chat room manager that supports IChatRoomOptions
 	 * 
 	 * @param encoding
+	 *            Must not be <code>null</code>.
 	 * @return true if encoding set properly, false if encoding cannot be
 	 *         set/reset
 	 */

@@ -15,31 +15,33 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
- * Exception class thrown by {@link IChatRoomManager#createChatRoom(String, java.util.Map)}
+ * Exception class thrown by
+ * {@link IChatRoomManager#createChatRoom(String, java.util.Map)}
  */
 public class ChatRoomCreateException extends ECFException {
 
 	private static final long serialVersionUID = -2605728854430323369L;
-	
+
 	protected String roomname;
-	
+
 	public ChatRoomCreateException() {
 	}
 
 	public String getRoomName() {
 		return roomname;
 	}
-	
+
 	/**
 	 * @param roomname
 	 * @param message
 	 * @param cause
 	 */
-	public ChatRoomCreateException(String roomname, String message, Throwable cause) {
-		super(message,cause);
+	public ChatRoomCreateException(String roomname, String message,
+			Throwable cause) {
+		super(message, cause);
 		this.roomname = roomname;
 	}
-	
+
 	/**
 	 * @param roomname
 	 * @param message
@@ -53,7 +55,7 @@ public class ChatRoomCreateException extends ECFException {
 	 * @param cause
 	 */
 	public ChatRoomCreateException(String roomname, Throwable cause) {
-		this(roomname,null, cause);
+		this(roomname, null, cause);
 	}
 
 	/**

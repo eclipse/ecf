@@ -12,6 +12,10 @@ package org.eclipse.ecf.presence.roster;
 
 import org.eclipse.core.runtime.Assert;
 
+/**
+ * Base class implmentation of {@link IRosterItem} super interface. This class
+ * is a superclass for the {@link RosterEntry} and {@link RosterGroup} classes.
+ */
 public class RosterItem implements IRosterItem {
 
 	protected String name;
@@ -26,14 +30,29 @@ public class RosterItem implements IRosterItem {
 		this.name = name;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.roster.IRosterItem#getName()
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.roster.IRosterItem#getParent()
+	 */
 	public Object getParent() {
 		return parent;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
 	public Object getAdapter(Class adapter) {
 		return null;
 	}

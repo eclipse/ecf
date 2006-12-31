@@ -13,19 +13,29 @@ package org.eclipse.ecf.presence;
 
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Abstract superclass for different types of messages.
+ */
 public abstract class IMMessage implements IIMMessage {
 
 	protected ID fromID;
-	
+
 	public IMMessage(ID fromID) {
 		this.fromID = fromID;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.IIMMessage#getFromID()
+	 */
 	public ID getFromID() {
 		return fromID;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {

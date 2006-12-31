@@ -19,10 +19,11 @@ public interface IRosterSubscriptionSender {
 	 * Send a roster add request (subscribe) to a remote
 	 * 
 	 * @param user
-	 *            the account name of the target user. Should not be null.
+	 *            the account name of the target user. Should not be
+	 *            <code>null</code>.
 	 * @param groups
 	 *            an array of group names that this use will belong to on the
-	 *            roster entry. Should not be null.
+	 *            roster entry. Should not be <code>null</code>.
 	 * 
 	 * @exception ECFException
 	 *                thrown if request cannot be sent (e.g. because of previous
@@ -35,7 +36,8 @@ public interface IRosterSubscriptionSender {
 	 * Send roster remove request (unsubscribe) to a remote
 	 * 
 	 * @param userID
-	 *            the user id the request it is intended for. Should not be null
+	 *            the user id the request it is intended for. Should not be
+	 *            <code>null</code>
 	 * 
 	 * @exception ECFException
 	 *                thrown if request cannot be sent (e.g. because of previous

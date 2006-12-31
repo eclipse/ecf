@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * Base roster group class implementing {@link IRosterGroup}. Subclasses may be
- * created as appropriate
+ * created as appropriate.
  * 
  */
 public class RosterGroup extends RosterItem implements IRosterGroup {

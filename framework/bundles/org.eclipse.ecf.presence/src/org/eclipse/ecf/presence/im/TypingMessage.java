@@ -22,15 +22,15 @@ public class TypingMessage extends IMMessage implements ITypingMessage {
 	private static final long serialVersionUID = 6534377119279656830L;
 
 	protected boolean typing = false;
-	
-	protected String body = "";
-	
+
+	protected String body = null;
+
 	public TypingMessage(ID fromID, boolean typing, String body) {
 		super(fromID);
 		this.typing = typing;
 		this.body = body;
 	}
-	
+
 	public TypingMessage(ID fromID, String body) {
 		super(fromID);
 		if (body != null) {
@@ -40,30 +40,47 @@ public class TypingMessage extends IMMessage implements ITypingMessage {
 			this.typing = false;
 		}
 	}
-	
+
 	public TypingMessage(ID fromID) {
-		this(fromID,"");
+		this(fromID, "");
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.im.ITypingMessage#getBody()
 	 */
 	public String getBody() {
 		return body;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.im.ITypingMessage#isTyping()
 	 */
 	public boolean isTyping() {
 		return typing;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		StringBuffer buf = new StringBuffer("TypingMessage[");
+		buf.append("fromID=").append(getFromID());
+		buf.append(";body=").append(getBody()).append("]");
+		return buf.toString();
+	}
 }

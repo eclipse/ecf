@@ -23,9 +23,9 @@ public interface IPresenceSender {
 	 * Send a presence update to a remote user
 	 * 
 	 * @param toID
-	 *            the target user. Should not be null.
+	 *            the target user. Should not be <code>null</code>.
 	 * @param presence
-	 *            the presence information. Should not be null.
+	 *            the presence information. Should not be <code>null</code>.
 	 * 
 	 * @exception ECFException
 	 *                thrown if request cannot be sent (e.g. because of previous

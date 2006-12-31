@@ -15,8 +15,9 @@ import java.util.Map;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
- * Presence account management. Access to instances implementing this interface
- * is provided by calling {@link IPresenceContainerAdapter#getAccountManager()}
+ * Presence account management interface. Access to instances implementing this
+ * interface is provided by calling
+ * {@link IPresenceContainerAdapter#getAccountManager()}
  * 
  * @see IPresenceContainerAdapter#getAccountManager()
  */
@@ -27,7 +28,8 @@ public interface IAccountManager {
 	 * login, new password will be required for accessing account
 	 * 
 	 * @param newpassword
-	 *            new password to use for this account
+	 *            new password to use for this account. Must not be
+	 *            <code>null</code>.
 	 * @return true if password changed, false if not changed
 	 * @throws ECFException
 	 *             thrown if not connected, or if password change fails due to
@@ -52,11 +54,13 @@ public interface IAccountManager {
 	 * thrown
 	 * 
 	 * @param username
-	 *            the fully qualified username to use for the new account
+	 *            the fully qualified username to use for the new account. Must
+	 *            not be <code>null</code>.
 	 * @param password
-	 *            the password to use with the new account
+	 *            the password to use with the new account. Must not be
+	 *            <code>null</code>.
 	 * @param attributes
-	 *            attributes to associate with the new account
+	 *            attributes to associate with the new account. May be null.
 	 * @return true if account created, false if not created
 	 * @throws ECFException
 	 *             thrown if account creation is not supported, or if fails for
@@ -81,7 +85,7 @@ public interface IAccountManager {
 	/**
 	 * Get any instructions for account
 	 * 
-	 * @return instructions for account
+	 * @return instructions for account. May be <code>null</code>.
 	 * @throws ECFException
 	 *             thrown if account account instructions not supported, or if
 	 *             fails for some reason (network failure or server failure)
@@ -103,8 +107,10 @@ public interface IAccountManager {
 	 * Get the value of given
 	 * 
 	 * @param attributeName
-	 *            the attribute name to return the value for
-	 * @return Object value for the given attribute
+	 *            the attribute name to return the value for. Should not be
+	 *            <code>null</code>.
+	 * @return Object value for the given attribute. Will be <code>null</code>
+	 *         if attribute name is not found.
 	 * @throws ECFException
 	 *             thrown if get account attribute not supported, or if fails
 	 *             for some reason (network failure or server failure)

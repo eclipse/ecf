@@ -24,12 +24,12 @@ import org.eclipse.ecf.presence.roster.IRosterManager;
  * To use this adapter:
  * 
  * <pre>
- *           IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
- *           if (presenceContainer != null) {
- *              ...use presenceContainer
- *           } else {
- *              ...presence not supported by provider
- *           }
+ *               IPresenceContainerAdapter presenceContainer = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
+ *               if (presenceContainer != null) {
+ *                  ...use presenceContainer
+ *               } else {
+ *                  ...presence not supported by provider
+ *               }
  * </pre>
  * 
  */
@@ -39,23 +39,26 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * Get roster manager for access to roster model. If null is returned roster
 	 * manager unavailable for this adapter.
 	 * 
-	 * @return IRosterManager if available for this adapter. Null if not
-	 *         available for for the implementing provider.
+	 * @return IRosterManager if available for this adapter. Will be
+	 *         <code>null</code> if not available for for the implementing
+	 *         provider.
 	 */
 	public IRosterManager getRosterManager();
 
 	/**
 	 * Get chat manager for sending and receiving chat messages
 	 * 
-	 * @return IChatManager for this presence container adapter. Null if no chat
-	 *         manager available for given provider.
+	 * @return IChatManager for this presence container adapter. Will be
+	 *         <code>null</code> if no chat manager available for given
+	 *         provider.
 	 */
 	public IChatManager getChatManager();
 
 	/**
 	 * Get interface for managing account
 	 * 
-	 * @return IAccountManger. Null if no account manager available
+	 * @return IAccountManger. Will be <code>null</code> if no account manager
+	 *         available
 	 */
 	public IAccountManager getAccountManager();
 
@@ -65,7 +68,7 @@ public interface IPresenceContainerAdapter extends IAdaptable {
 	 * 
 	 * @return a chat room manager instance if chat room facilities are
 	 *         available for this presence container If no such facilities are
-	 *         available, returns null
+	 *         available, returns <code>null</code>.
 	 */
 	public IChatRoomManager getChatRoomManager();
 }

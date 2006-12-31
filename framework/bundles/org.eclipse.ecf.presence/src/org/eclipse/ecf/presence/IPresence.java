@@ -29,7 +29,7 @@ public interface IPresence extends IAdaptable, Serializable {
 	 * Get the presence mode for this presence
 	 * 
 	 * @return Mode the mode information for this presence. Will not return
-	 *         null.
+	 *         <code>null</code>.
 	 */
 	public Mode getMode();
 
@@ -37,7 +37,7 @@ public interface IPresence extends IAdaptable, Serializable {
 	 * Get properties for this presence
 	 * 
 	 * @return Map of properties for this presence information. Will not return
-	 *         null.
+	 *         <code>null</code>.
 	 */
 	public Map getProperties();
 
@@ -45,24 +45,25 @@ public interface IPresence extends IAdaptable, Serializable {
 	 * Get status information for this presence information.
 	 * 
 	 * @return String status information for this presence info. May return
-	 *         null.
+	 *         <code>null</code>.
 	 */
 	public String getStatus();
 
 	/**
 	 * Get presence type information for this presence.
 	 * 
-	 * @return Type the type of presence. Will not return null.
+	 * @return Type the type of presence. Will not return <code>null</code>.
 	 */
 	public Type getType();
 
 	/**
 	 * Get picture data for this presence
 	 * 
-	 * @return byte [] image data
+	 * @return byte [] image data. Empty array will be returned if not picture
+	 *         data.
 	 */
-	public byte [] getPictureData();
-	
+	public byte[] getPictureData();
+
 	/**
 	 * A type-safe enum class to represent the presence type information
 	 * 

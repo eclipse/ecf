@@ -17,16 +17,17 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IIMMessage;
 
 /**
- * Chat message
+ * Chat message. This is the message class received in when another user sends a
+ * chat message to us.
  */
 public interface IChatMessage extends IIMMessage {
 
 	/**
-	 * Get thread ID for this message. If thread IDs are not supported, null
-	 * will be returned.
+	 * Get thread ID for this message. If thread IDs are not supported,
+	 * <code>null</code> will be returned.
 	 * 
 	 * @return ID that identifies thread for this message. If threads are not
-	 *         supported by provider, will return null.
+	 *         supported by provider, will return <code>null</code>.
 	 */
 	public ID getThreadID();
 
@@ -56,7 +57,7 @@ public interface IChatMessage extends IIMMessage {
 	/**
 	 * Get properties associated with this chat message
 	 * 
-	 * @return Map of properties.  Will not be null.
+	 * @return Map of properties. Will not be null.
 	 */
 	public Map getProperties();
 

@@ -18,11 +18,11 @@ import org.eclipse.ecf.presence.IIMMessage;
  */
 public interface IChatRoomMessage extends IIMMessage {
 
-	/** 
+	/**
 	 * Get the actual message sent to the chat room
 	 * 
-	 * @return String message sent to chat room.
+	 * @return String message sent to chat room. Will not be <code>null</code>.
 	 */
 	public String getMessage();
-	
+
 }

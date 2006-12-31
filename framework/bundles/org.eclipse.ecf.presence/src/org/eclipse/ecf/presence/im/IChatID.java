@@ -15,11 +15,11 @@ package org.eclipse.ecf.presence.im;
  * follows:
  * 
  * <pre>
- *     ID myID = ...
- *     IChatID chatID = (IChatID) myID.getAdapter(IChatID.class);
- *     if (chatID != null) {
- *       ...use chatID here
- *     }
+ *      ID myID = ...
+ *      IChatID chatID = (IChatID) myID.getAdapter(IChatID.class);
+ *      if (chatID != null) {
+ *        ...use chatID here
+ *      }
  * </pre>
  * 
  */
@@ -27,7 +27,8 @@ public interface IChatID {
 	/**
 	 * Get username for this IChatID
 	 * 
-	 * @return String username for the implementing IChatID. May return null.
+	 * @return String username for the implementing IChatID. May return
+	 *         <code>null</code>.
 	 */
 	public String getUsername();
 }

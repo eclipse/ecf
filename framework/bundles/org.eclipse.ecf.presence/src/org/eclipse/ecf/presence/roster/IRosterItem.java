@@ -16,14 +16,14 @@ public interface IRosterItem extends IAdaptable {
 	/**
 	 * Return name of item.
 	 * 
-	 * @return String name of item. May return null.
+	 * @return String name of item. May return <code>null</code>.
 	 */
 	public String getName();
 
 	/**
 	 * Return parent of item
 	 * 
-	 * @return Object parent of roster item
+	 * @return Object parent of roster item. May be <code>null</code>.
 	 */
 	public Object getParent();
 }

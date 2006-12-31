@@ -24,10 +24,11 @@ public interface IRoster extends IAdaptable, Serializable {
 
 	/**
 	 * Get local user for this roster. This is the user that owns this roster.
-	 * If null, this means that the user is not yet logged in.
+	 * If <code>null</code>, this means that the user is not yet logged in.
 	 * 
-	 * @return IUser local user associated with this roster. If null, this means
-	 *         that the user is not yet logged in.
+	 * @return IUser local user associated with this roster. If
+	 *         <code>null</code>, this means that the user is not yet logged
+	 *         in.
 	 */
 	public IUser getUser();
 
@@ -36,7 +37,8 @@ public interface IRoster extends IAdaptable, Serializable {
 	 * null, and will contain IRosterItems. The IRosterItems may be either
 	 * IRosterGroups and/or IRosterEntries.
 	 * 
-	 * @return Collection of IRosterItems. Will not be null.
+	 * @return Collection of IRosterItems. Will not be <code>null</code>. May
+	 *         return an empty collection of items.
 	 */
 	public Collection getItems();
 

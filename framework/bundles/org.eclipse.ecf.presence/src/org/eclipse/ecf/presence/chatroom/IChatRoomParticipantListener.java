@@ -23,7 +23,8 @@ public interface IChatRoomParticipantListener extends IParticipantListener {
 	 * Notification that participant arrived in associated chat room
 	 * 
 	 * @param participant
-	 *            the ID of the arrived participant
+	 *            Will not be <code>null</code>. the ID of the arrived
+	 *            participant
 	 */
 	public void handleArrivedInChat(ID participant);
 
@@ -31,7 +32,8 @@ public interface IChatRoomParticipantListener extends IParticipantListener {
 	 * Notification that participant departed the associated chat room
 	 * 
 	 * @param participant
-	 *            the ID of the departed participant
+	 *            Will not be <code>null</code>. the ID of the departed
+	 *            participant
 	 */
 	public void handleDepartedFromChat(ID participant);
 }

@@ -12,7 +12,7 @@
 package org.eclipse.ecf.presence;
 
 /**
- * IM message listener.  This listener receives IIMMessageEvents.
+ * IM message listener. This listener receives {@link IIMMessageEvent}s.
  */
 public interface IIMMessageListener {
 
@@ -20,7 +20,7 @@ public interface IIMMessageListener {
 	 * Handle message event (reception of chat, typing, or object message).
 	 * 
 	 * @param messageEvent
-	 *            the event instance to handle. Will not be null.
+	 *            the event instance to handle. Will not be <code>null</code>.
 	 */
 	public void handleMessageEvent(IIMMessageEvent messageEvent);
 
