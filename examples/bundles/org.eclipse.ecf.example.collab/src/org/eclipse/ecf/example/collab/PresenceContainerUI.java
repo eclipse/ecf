@@ -33,6 +33,7 @@ import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.im.ITypingMessageEvent;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
@@ -56,7 +57,7 @@ public class PresenceContainerUI {
 	protected IAccountManager accountManager = null;
 
 	protected IRosterSubscriptionSender rosterSubscriptionSender = null;
-	
+
 	protected IPresenceContainerAdapter pc = null;
 
 	protected ISharedObjectContainer soContainer = null;
@@ -66,17 +67,18 @@ public class PresenceContainerUI {
 	protected ID groupID = null;
 
 	protected IContainer container;
-	
+
 	protected IChatManager chatManager;
 
 	protected IChatMessageSender chatMessageSender;
-	
+
 	protected ITypingMessageSender typingMessageSender;
-	
+
 	public PresenceContainerUI(IPresenceContainerAdapter pc) {
 		this.pc = pc;
 		this.presenceSender = pc.getRosterManager().getPresenceSender();
-		this.rosterSubscriptionSender = pc.getRosterManager().getRosterSubscriptionSender();
+		this.rosterSubscriptionSender = pc.getRosterManager()
+				.getRosterSubscriptionSender();
 		this.accountManager = pc.getAccountManager();
 		this.chatManager = pc.getChatManager();
 		this.chatMessageSender = this.chatManager.getChatMessageSender();
@@ -94,12 +96,12 @@ public class PresenceContainerUI {
 					IWorkbenchWindow ww = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow();
 					IWorkbenchPage wp = ww.getActivePage();
-					
+
 					if (pc.getAdapter(IPresenceContainerAdapter.class) == null) {
 						IViewPart view = wp
 								.showView("org.eclipse.ecf.ui.view.rosterview");
 						rosterView = (RosterView) view;
-						
+
 						String nickname = null;
 						if (nick != null) {
 							nickname = nick;
@@ -110,10 +112,11 @@ public class PresenceContainerUI {
 						PresenceContainerUI.this.localUser = new org.eclipse.ecf.core.user.User(
 								localUser, nickname);
 					} else {
-						MultiRosterView rv = (MultiRosterView) wp.showView("org.eclipse.ecf.presence.ui.view1");
+						MultiRosterView rv = (MultiRosterView) wp
+								.showView("org.eclipse.ecf.presence.ui.view1");
 						rv.addContainer(container);
 					}
-					
+
 				} catch (Exception e) {
 					ClientPlugin.getDefault().getLog().log(
 							new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID,
@@ -131,11 +134,13 @@ public class PresenceContainerUI {
 						if (chatMessageEvent instanceof IChatMessageEvent) {
 							rosterView.handleMessageEvent(chatMessageEvent);
 						} else if (chatMessageEvent instanceof ITypingMessageEvent) {
-							rosterView.handleTyping(chatMessageEvent.getFromID());
+							rosterView.handleTyping(chatMessageEvent
+									.getFromID());
 						}
 					}
 				});
-			}});
+			}
+		});
 
 		container.addListener(new IContainerListener() {
 			public void handleEvent(IContainerEvent event) {
@@ -147,29 +152,43 @@ public class PresenceContainerUI {
 							ILocalInputHandler handler = new ILocalInputHandler() {
 								public void inputText(ID userID, String text) {
 									try {
-										chatMessageSender.sendChatMessage(userID, text);
+										chatMessageSender.sendChatMessage(
+												userID, text);
 									} catch (ECFException e) {
-										ClientPlugin.getDefault().getLog().log(
-												new Status(IStatus.ERROR,
-														ClientPlugin.getDefault()
-																.getBundle()
-																.getSymbolicName(),
-														SEND_ERRORCODE,
-														"Error in sendMessage", e));
+										ClientPlugin
+												.getDefault()
+												.getLog()
+												.log(
+														new Status(
+																IStatus.ERROR,
+																ClientPlugin
+																		.getDefault()
+																		.getBundle()
+																		.getSymbolicName(),
+																SEND_ERRORCODE,
+																"Error in sendMessage",
+																e));
 									}
 								}
 
 								public void startTyping(ID userID) {
 									try {
-										typingMessageSender.sendTypingMessage(userID, true, "");
+										typingMessageSender.sendTypingMessage(
+												userID, true, "");
 									} catch (ECFException e) {
-										ClientPlugin.getDefault().getLog().log(
-												new Status(IStatus.ERROR,
-														ClientPlugin.getDefault()
-																.getBundle()
-																.getSymbolicName(),
-														SEND_ERRORCODE,
-														"Error in startTyping", e));
+										ClientPlugin
+												.getDefault()
+												.getLog()
+												.log(
+														new Status(
+																IStatus.ERROR,
+																ClientPlugin
+																		.getDefault()
+																		.getBundle()
+																		.getSymbolicName(),
+																SEND_ERRORCODE,
+																"Error in startTyping",
+																e));
 									}
 								}
 
@@ -199,11 +218,12 @@ public class PresenceContainerUI {
 									}
 								}
 
-								public void sendRosterAdd(String user, String name,
-										String[] groups) {
+								public void sendRosterAdd(String user,
+										String name, String[] groups) {
 									// Send roster add
 									try {
-										rosterSubscriptionSender.sendRosterAdd(user, name, groups);
+										rosterSubscriptionSender.sendRosterAdd(
+												user, name, groups);
 									} catch (ECFException e) {
 										ClientPlugin
 												.getDefault()
@@ -223,7 +243,8 @@ public class PresenceContainerUI {
 
 								public void sendRosterRemove(ID userID) {
 									try {
-										rosterSubscriptionSender.sendRosterRemove(userID);
+										rosterSubscriptionSender
+												.sendRosterRemove(userID);
 									} catch (ECFException e) {
 										ClientPlugin
 												.getDefault()
@@ -243,21 +264,24 @@ public class PresenceContainerUI {
 							};
 							PresenceContainerUI.this.groupID = joinedContainer;
 							rosterView.addAccount(joinedContainer,
-									PresenceContainerUI.this.localUser, handler,
-									pc, soContainer);
+									PresenceContainerUI.this.localUser,
+									handler, pc, soContainer);
 						}
 					});
-					
-				}			
-			}});
-		
+
+				}
+			}
+		});
+
 		pc.getRosterManager().addPresenceListener(new IPresenceListener() {
 
-			public void handleRosterEntryAdd(final IRosterEntry entry) {
+			public void handleRosterEntryAdd(final IRosterItem entry) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						rosterView.handleRosterEntryAdd(
-								PresenceContainerUI.this.groupID, entry);
+						if (entry instanceof IRosterEntry)
+							rosterView.handleRosterEntryAdd(
+									PresenceContainerUI.this.groupID,
+									(IRosterEntry) entry);
 					}
 				});
 			}
@@ -272,85 +296,97 @@ public class PresenceContainerUI {
 				});
 			}
 
-			public void handleRosterEntryUpdate(final IRosterEntry entry) {
+			public void handleRosterEntryUpdate(final IRosterItem entry) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						rosterView.handleRosterEntryAdd(
-								PresenceContainerUI.this.groupID, entry);
+						if (entry instanceof IRosterEntry)
+							rosterView.handleRosterEntryAdd(
+									PresenceContainerUI.this.groupID,
+									(IRosterEntry) entry);
 					}
 				});
 			}
 
-			public void handleRosterEntryRemove(final IRosterEntry entry) {
+			public void handleRosterEntryRemove(final IRosterItem entry) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						rosterView.handleRosterEntryRemove(
-								PresenceContainerUI.this.groupID, entry);
+						if (entry instanceof IRosterEntry)
+							rosterView.handleRosterEntryRemove(
+									PresenceContainerUI.this.groupID,
+									(IRosterEntry) entry);
 					}
 				});
 			}
 
 		});
-		
-		pc.getRosterManager().addRosterSubscriptionListener(new IRosterSubscriptionListener() {
 
-			public void handleSubscribeRequest(final ID fromID) {
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						try {
-							IWorkbenchWindow ww = PlatformUI.getWorkbench()
-									.getActiveWorkbenchWindow();
-							ReceiveAuthorizeRequestDialog authRequest = new ReceiveAuthorizeRequestDialog(
-									ww.getShell(), fromID.getName(), localUser
-											.getName());
-							authRequest.setBlockOnOpen(true);
-							authRequest.open();
-							int res = authRequest.getButtonPressed();
-							if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_AND_ADD) {
-								if (presenceSender != null) {
-									presenceSender.sendPresenceUpdate(
-											fromID, new Presence(
-													IPresence.Type.SUBSCRIBED));
-									if (rosterView != null)
-										rosterView.sendRosterAdd(localUser,
-												fromID.getName(), null);
+		pc.getRosterManager().addRosterSubscriptionListener(
+				new IRosterSubscriptionListener() {
+
+					public void handleSubscribeRequest(final ID fromID) {
+						Display.getDefault().syncExec(new Runnable() {
+							public void run() {
+								try {
+									IWorkbenchWindow ww = PlatformUI
+											.getWorkbench()
+											.getActiveWorkbenchWindow();
+									ReceiveAuthorizeRequestDialog authRequest = new ReceiveAuthorizeRequestDialog(
+											ww.getShell(), fromID.getName(),
+											localUser.getName());
+									authRequest.setBlockOnOpen(true);
+									authRequest.open();
+									int res = authRequest.getButtonPressed();
+									if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_AND_ADD) {
+										if (presenceSender != null) {
+											presenceSender
+													.sendPresenceUpdate(
+															fromID,
+															new Presence(
+																	IPresence.Type.SUBSCRIBED));
+											if (rosterView != null)
+												rosterView.sendRosterAdd(
+														localUser, fromID
+																.getName(),
+														null);
+										}
+									} else if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_ID) {
+										if (presenceSender != null) {
+											presenceSender
+													.sendPresenceUpdate(
+															fromID,
+															new Presence(
+																	IPresence.Type.SUBSCRIBED));
+										}
+									} else if (res == ReceiveAuthorizeRequestDialog.REFUSE_ID) {
+										// do nothing
+									} else {
+										// do nothing
+									}
+								} catch (Exception e) {
+									ClientPlugin
+											.getDefault()
+											.getLog()
+											.log(
+													new Status(
+															IStatus.ERROR,
+															ClientPlugin.PLUGIN_ID,
+															SEND_ERRORCODE,
+															"Exception showing authorization dialog",
+															e));
 								}
-							} else if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_ID) {
-								if (presenceSender != null) {
-									presenceSender.sendPresenceUpdate(
-											fromID, new Presence(
-													IPresence.Type.SUBSCRIBED));
-								}
-							} else if (res == ReceiveAuthorizeRequestDialog.REFUSE_ID) {
-								// do nothing
-							} else {
-								// do nothing
 							}
-						} catch (Exception e) {
-							ClientPlugin
-									.getDefault()
-									.getLog()
-									.log(
-											new Status(
-													IStatus.ERROR,
-													ClientPlugin.PLUGIN_ID,
-													SEND_ERRORCODE,
-													"Exception showing authorization dialog",
-													e));
-						}
+						});
+					}
+
+					public void handleSubscribed(ID fromID) {
+						// System.out.println("subscribed from "+fromID);
+					}
+
+					public void handleUnsubscribed(ID fromID) {
+						// System.out.println("unsubscribed from "+fromID);
 					}
 				});
-			}
 
-			public void handleSubscribed(ID fromID) {
-				// System.out.println("subscribed from "+fromID);
-			}
-
-			public void handleUnsubscribed(ID fromID) {
-				// System.out.println("unsubscribed from "+fromID);
-			}
-			});
-		
 	}
 
 }
