@@ -14,6 +14,9 @@ package org.eclipse.ecf.presence;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Event;
 
+/**
+ * Message event
+ */
 public interface IIMMessageEvent extends Event {
 	
 	/**
