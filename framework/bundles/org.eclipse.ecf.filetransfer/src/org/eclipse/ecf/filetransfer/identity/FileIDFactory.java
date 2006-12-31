@@ -32,7 +32,7 @@ public class FileIDFactory {
 	/**
 	 * Get singleton instance
 	 * 
-	 * @return FileIDFactory singleton instance
+	 * @return FileIDFactory singleton instance.  Will not be <code>null</code>.
 	 */
 	public static FileIDFactory getDefault() {
 		return instance;
@@ -44,10 +44,10 @@ public class FileIDFactory {
 	 * @param namespace
 	 *            the namespace to use to create the IFileID. Can use
 	 *            {@link IRetrieveFileTransferContainerAdapter#getRetrieveNamespace()}.
-	 *            Must not be null.
+	 *            Must not be <code>null</code>.
 	 * @param remoteFile
-	 *            the remote filename to use. Must not be null.
-	 * @return IFileID instance. Will not return null.
+	 *            the remote filename to use. Must not be <code>null</code>.
+	 * @return IFileID instance. Will not return <code>null</code>.
 	 * @throws FileCreateException
 	 *             thrown if some problem creating IFileID from given namespace
 	 *             and filename
@@ -65,8 +65,8 @@ public class FileIDFactory {
 	 *            {@link IRetrieveFileTransferContainerAdapter#getRetrieveNamespace()}.
 	 *            Must not be null.
 	 * @param remoteFile
-	 *            the remote filename to use. Must not be null.
-	 * @return IFileID instance. Will not return null.
+	 *            the remote filename to use. Must not be <code>null</code>.
+	 * @return IFileID instance. Will not return <code>null</code>.
 	 * @throws FileCreateException
 	 *             thrown if some problem creating IFileID from given namespace
 	 *             and filename
@@ -82,12 +82,12 @@ public class FileIDFactory {
 	 * @param namespace
 	 *            the namespace to use to create the IFileID. Can use
 	 *            {@link IRetrieveFileTransferContainerAdapter#getRetrieveNamespace()}.
-	 *            Must not be null.
+	 *            Must not be <code>null</code>.
 	 * @param arguments
 	 *            Object [] of arguments to use to create file ID.  These arguments
 	 *            will be passed to the {@link Namespace#createInstance(Object[])}
 	 *            method of the appropriate Namespace setup by the provider
-	 * @return IFileID instance. Will not return null.
+	 * @return IFileID instance. Will not return <code>null</code>.
 	 * @throws FileCreateException
 	 *             thrown if some problem creating IFileID from given namespace
 	 *             and filename

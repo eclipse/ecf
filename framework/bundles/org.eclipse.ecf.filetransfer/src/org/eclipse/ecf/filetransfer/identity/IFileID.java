@@ -22,7 +22,7 @@ public interface IFileID extends ID {
 	 * with value &quot;http://www.composent.com/index.html&quot;
 	 * 
 	 * @return String just the file name and extension (if any) for this given
-	 *         IFileID
+	 *         IFileID.  Will not be <code>null</code>.
 	 */
 	public String getFilename();
 }
