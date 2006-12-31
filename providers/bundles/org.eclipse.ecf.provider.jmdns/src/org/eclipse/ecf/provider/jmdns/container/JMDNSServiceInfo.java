@@ -22,13 +22,15 @@ public class JMDNSServiceInfo extends ServiceInfo {
 	public static final String PROP_PROTOCOL_NAME = "protocol";
 	public static final String PROP_PATH_NAME = "path";
 	public static final String SLASH = "/";
-	
-	public JMDNSServiceInfo(InetAddress address, ServiceID id, int port, int priority, int weight, IServiceProperties props) {
+
+	public JMDNSServiceInfo(InetAddress address, ServiceID id, int port,
+			int priority, int weight, IServiceProperties props) {
 		super(address, id, port, priority, weight, props);
 	}
-	
-	public JMDNSServiceInfo(InetAddress address, String type, int port, int priority, int weight, IServiceProperties props) {
-		super(address,type,port,priority,weight,props);
+
+	public JMDNSServiceInfo(InetAddress address, String type, int port,
+			int priority, int weight, IServiceProperties props) {
+		super(address, type, port, priority, weight, props);
 	}
 
 }

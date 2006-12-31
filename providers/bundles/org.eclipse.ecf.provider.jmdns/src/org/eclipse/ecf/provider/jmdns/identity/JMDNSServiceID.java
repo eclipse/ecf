@@ -26,7 +26,7 @@ public class JMDNSServiceID extends ServiceID {
 		if (name == null)
 			return type;
 		else
-			return name+DELIMITER+type;
+			return name + DELIMITER + type;
 	}
 
 }

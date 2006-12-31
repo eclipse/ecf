@@ -17,18 +17,19 @@ import java.util.*;
 /**
  * The main plugin class to be used in the desktop.
  */
-public class JmdnsPlugin extends Plugin {
-	//The shared instance.
-	private static JmdnsPlugin plugin;
-	//Resource bundle.
+public class JMDNSPlugin extends Plugin {
+	// The shared instance.
+	private static JMDNSPlugin plugin;
+	// Resource bundle.
 	private ResourceBundle resourceBundle;
-	
-    public static final String NAMESPACE_IDENTIFIER = Messages.getString("JmdnsPlugin.namespace.identifier"); //$NON-NLS-1$
+
+	public static final String NAMESPACE_IDENTIFIER = Messages
+			.getString("JMDNSPlugin.namespace.identifier"); //$NON-NLS-1$
 
 	/**
 	 * The constructor.
 	 */
-	public JmdnsPlugin() {
+	public JMDNSPlugin() {
 		super();
 		plugin = this;
 	}
@@ -52,16 +53,16 @@ public class JmdnsPlugin extends Plugin {
 	/**
 	 * Returns the shared instance.
 	 */
-	public static JmdnsPlugin getDefault() {
+	public static JMDNSPlugin getDefault() {
 		return plugin;
 	}
 
 	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
+	 * Returns the string from the plugin's resource bundle, or 'key' if not
+	 * found.
 	 */
 	public static String getResourceString(String key) {
-		ResourceBundle bundle = JmdnsPlugin.getDefault().getResourceBundle();
+		ResourceBundle bundle = JMDNSPlugin.getDefault().getResourceBundle();
 		try {
 			return (bundle != null) ? bundle.getString(key) : key;
 		} catch (MissingResourceException e) {
@@ -75,15 +76,16 @@ public class JmdnsPlugin extends Plugin {
 	public ResourceBundle getResourceBundle() {
 		try {
 			if (resourceBundle == null)
-				resourceBundle = ResourceBundle.getBundle("org.eclipse.ecf.internal.provider.jmdns.JmdnsPluginResources"); //$NON-NLS-1$
+				resourceBundle = ResourceBundle
+						.getBundle("org.eclipse.ecf.internal.provider.jmdns.JmdnsPluginResources"); //$NON-NLS-1$
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}
 		return resourceBundle;
 	}
 
-    public String getNamespaceIdentifier() {
-    	return NAMESPACE_IDENTIFIER;
-    }
+	public String getNamespaceIdentifier() {
+		return NAMESPACE_IDENTIFIER;
+	}
 
 }
