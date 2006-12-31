@@ -11,7 +11,6 @@
 package org.eclipse.ecf.ui.views;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
-import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -87,10 +85,12 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		obj.setPresence(presence);
 		obj.removeChildren();
 		obj.addChild(new RosterObject("XMPPID: " + obj.getID().getName()));
-		obj.addChild(new RosterObject("Type: "
-				+ presence.getType().toString()));
-		obj.addChild(new RosterObject("Mode: "
-				+ presence.getMode().toString()));
+		obj
+				.addChild(new RosterObject("Type: "
+						+ presence.getType().toString()));
+		obj
+				.addChild(new RosterObject("Mode: "
+						+ presence.getMode().toString()));
 		String status = presence.getStatus();
 		if (status != null && !status.equals(""))
 			obj.addChild(new RosterObject("Status: " + status));
@@ -104,15 +104,16 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		return obj;
 	}
 
-	public RosterBuddy createBuddy(ID svcID, RosterBuddy oldBuddy, IRosterEntry entry) {
+	public RosterBuddy createBuddy(ID svcID, RosterBuddy oldBuddy,
+			IRosterEntry entry) {
 		String name = entry.getName();
 		if (name == null)
 			name = this.rosterView.getUserNameFromID(entry.getUser().getID());
 		IPresence presence = entry.getPresence();
 		RosterBuddy newBuddy = null;
 		if (oldBuddy == null)
-			newBuddy = new RosterBuddy(svcID, name, entry
-					.getUser().getID(), presence);
+			newBuddy = new RosterBuddy(svcID, name, entry.getUser().getID(),
+					presence);
 		else {
 			newBuddy = oldBuddy;
 			if (entry.getName() != null)
@@ -195,62 +196,52 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		return null;
 	}
 
-	public void replaceEntry(ID svcID, RosterParent parent, IRosterItem item) {
-		if (item instanceof IRosterGroup) {
-			IRosterGroup group = (IRosterGroup) item;
-			Collection entries = group.getEntries();
-			for(Iterator i=entries.iterator(); i.hasNext(); ) {
-				Object o = i.next();
-				if (o instanceof IRosterEntry) replaceEntry(svcID, parent, (IRosterEntry) o);
-			}
-		} else if (item instanceof IRosterEntry) {
-			IRosterEntry entry = (IRosterEntry) item;
-			RosterBuddy tb = findBuddy(parent, entry);
-			RosterParent tp = null;
-			// If entry already in tree, remove it from current position
-			if (tb != null) {
-				tp = tb.getParent();
-				if (tp != null) {
-					tp.removeChild(tb);
-					if (tp.getName().equals(RosterView.UNFILED_GROUP_NAME)) {
-						if (!tp.hasChildren()) {
-							RosterParent tpp = tp.getParent();
-							tpp.removeChild(tp);
-						}
-					}
-				}
-			}
-			// Create new buddy
-			RosterBuddy newBuddy = createBuddy(svcID, tb, entry);
-			// If it's a replacement for an existing buddy with group (tg), then
-			// simply add as child
+	public void replaceEntry(ID svcID, RosterParent parent, IRosterEntry entry) {
+		RosterBuddy tb = findBuddy(parent, entry);
+		RosterParent tp = null;
+		// If entry already in tree, remove it from current position
+		if (tb != null) {
+			tp = tb.getParent();
 			if (tp != null) {
-				tp.addChild(newBuddy);
-			} else {
-				// The parent group is not there
-				Iterator groups = entry.getGroups().iterator();
-				// If the entry has any group, then take first one
-				if (groups.hasNext()) {
-					// There's a group associated with entry
-					String groupName = ((IRosterGroup) groups.next()).getName();
-					// Check to see if group already there
-					RosterGroup oldgrp = findGroup(parent, groupName);
-					// If so, simply add new buddy structure to existing group
-					if (oldgrp != null)
-						oldgrp.addChild(newBuddy);
-					else {
-						// There is a group name, but check to make sure it's
-						// valid
-						if (groupName.equals(""))
-							groupName = RosterView.UNFILED_GROUP_NAME;
-						addBuddyWithGroupName(parent, parent.getID(),
-								groupName, newBuddy);
+				tp.removeChild(tb);
+				if (tp.getName().equals(RosterView.UNFILED_GROUP_NAME)) {
+					if (!tp.hasChildren()) {
+						RosterParent tpp = tp.getParent();
+						tpp.removeChild(tp);
 					}
-				} else {
-					// No group name, so we add under UNFILED_GROUP_NAME
-					addBuddyWithGroupName(parent, parent.getID(),
-							RosterView.UNFILED_GROUP_NAME, newBuddy);
 				}
+			}
+		}
+		// Create new buddy
+		RosterBuddy newBuddy = createBuddy(svcID, tb, entry);
+		// If it's a replacement for an existing buddy with group (tg), then
+		// simply add as child
+		if (tp != null) {
+			tp.addChild(newBuddy);
+		} else {
+			// The parent group is not there
+			Iterator groups = entry.getGroups().iterator();
+			// If the entry has any group, then take first one
+			if (groups.hasNext()) {
+				// There's a group associated with entry
+				String groupName = ((IRosterGroup) groups.next()).getName();
+				// Check to see if group already there
+				RosterGroup oldgrp = findGroup(parent, groupName);
+				// If so, simply add new buddy structure to existing group
+				if (oldgrp != null)
+					oldgrp.addChild(newBuddy);
+				else {
+					// There is a group name, but check to make sure it's
+					// valid
+					if (groupName.equals(""))
+						groupName = RosterView.UNFILED_GROUP_NAME;
+					addBuddyWithGroupName(parent, parent.getID(), groupName,
+							newBuddy);
+				}
+			} else {
+				// No group name, so we add under UNFILED_GROUP_NAME
+				addBuddyWithGroupName(parent, parent.getID(),
+						RosterView.UNFILED_GROUP_NAME, newBuddy);
 			}
 		}
 	}
@@ -315,7 +306,7 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		removeGroup(root, name);
 	}
 
-	public void replaceEntry(ID serviceID, IRosterItem entry) {
+	public void replaceEntry(ID serviceID, IRosterEntry entry) {
 		if (entry == null)
 			return;
 		RosterGroup tg = findAccount(serviceID.getName());

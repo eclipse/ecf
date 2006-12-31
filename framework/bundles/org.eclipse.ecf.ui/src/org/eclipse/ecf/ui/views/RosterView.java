@@ -53,7 +53,6 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
-import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.RosterEntry;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ChangePasswordDialog;
@@ -799,7 +798,7 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		viewer.getControl().setFocus();
 	}
 
-	public void handleRosterEntryAdd(ID groupID, IRosterItem entry) {
+	public void handleRosterEntryAdd(ID groupID, IRosterEntry entry) {
 		if (entry == null)
 			return;
 		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
