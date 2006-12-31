@@ -14,7 +14,7 @@ import org.eclipse.ecf.example.clients.IMessageReceiver;
 import org.eclipse.ecf.example.clients.XMPPClient;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceListener;
-import org.eclipse.ecf.presence.roster.IRosterItem;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
@@ -38,13 +38,13 @@ public class Client4 extends XMPPClient {
 			public void handlePresence(ID fromID, IPresence presence) {
 				System.out.println("handlePresence("+fromID+","+presence+")");
 			}
-			public void handleRosterEntryAdd(IRosterItem entry) {
+			public void handleRosterEntryAdd(IRosterEntry entry) {
 				System.out.println("handleRosterEntryAdd("+entry+")");
 			}
-			public void handleRosterEntryRemove(IRosterItem entry) {
+			public void handleRosterEntryRemove(IRosterEntry entry) {
 				System.out.println("handleRosterEntryRemove("+entry+")");
 			}
-			public void handleRosterEntryUpdate(IRosterItem entry) {
+			public void handleRosterEntryUpdate(IRosterEntry entry) {
 				System.out.println("handleRosterEntryUpdate("+entry+")");
 			}});
 	}
