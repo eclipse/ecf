@@ -53,6 +53,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.RosterEntry;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ChangePasswordDialog;
@@ -798,7 +799,7 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		viewer.getControl().setFocus();
 	}
 
-	public void handleRosterEntryAdd(ID groupID, IRosterEntry entry) {
+	public void handleRosterEntryAdd(ID groupID, IRosterItem entry) {
 		if (entry == null)
 			return;
 		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
@@ -810,7 +811,11 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 	}
 
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
-		handleRosterEntryAdd(groupID, new RosterEntry(new Object(), new User(userID), presence));
+		IChatID chatID = (IChatID) userID.getAdapter(IChatID.class);
+		String name = null;
+		if (chatID != null) name = chatID.getUsername();
+		else name = userID.toString();
+		handleRosterEntryAdd(groupID, new RosterEntry(new Object(), new User(userID, name), presence));
 	}
 
 	protected RosterUserAccount getAccountForUser(ID userID) {
