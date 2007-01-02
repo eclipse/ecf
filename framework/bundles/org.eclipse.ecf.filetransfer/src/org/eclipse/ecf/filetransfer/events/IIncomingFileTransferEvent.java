@@ -18,7 +18,8 @@ public interface IIncomingFileTransferEvent extends IFileTransferEvent {
 	/**
 	 * Get {@link IIncomingFileTransfer} associated with this event
 	 * 
-	 * @return IIncomingFileTransfer that is source of this event
+	 * @return IIncomingFileTransfer that is source of this event. Will not be
+	 *         <code>null</code>.
 	 */
 	public IIncomingFileTransfer getSource();
 }

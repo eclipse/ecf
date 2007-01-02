@@ -15,13 +15,13 @@ package org.eclipse.ecf.filetransfer;
  * clients should do the following:
  * 
  * <pre>
- *  IFileTransfer fileTransfer;
- *  IFileTransferRateControl rateController = (IFileTransferRateControl) fileTransfer.getAdapter(IFileTransferRateControl.class);
- *  if (rateController !=null) {
- *     ... use it
- *  } else {
- *     ... does not support rate control
- *  }
+ *   IFileTransfer fileTransfer;
+ *   IFileTransferRateControl rateController = (IFileTransferRateControl) fileTransfer.getAdapter(IFileTransferRateControl.class);
+ *   if (rateController !=null) {
+ *      ... use it
+ *   } else {
+ *      ... does not support rate control
+ *   }
  * </pre>
  * 
  */

@@ -32,28 +32,28 @@ import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDoneEvent;
  * To request and initiate sending a local file to a remote user:
  * 
  * <pre>
- *     // Get IOutgoingFileTransferContainerAdapter adapter
- *      IOutgoingFileTransferContainerAdapter ftc = (IOutgoingFileTransferContainerAdapter) container.getAdapter(IOutgoingFileTransferContainerAdapter.class);
- *      if (ftc != null) {
- *        // Create listener for receiving/responding to asynchronous file transfer events
- *    	     IFileTransferListener listener = new IFileTransferListener() {
- *    		     public void handleTransferEvent(IFileTransferEvent event) {
- *                  // If this event is a response to the transfer request, check if file transfer rejected
- *                  if (event instanceof IOutgoingFileTransferResponseEvent) {
- *                      IOutgoingFileTransferResponseEvent oftr = (IOutgoingFileTransferResponseEvent) event;
- *                      if (!oftr.requestAccepted()) {
- *                          // request rejected...tell user
- *                      }
- *                  }
- *    		     }
- *    	     };
- *          // Specify the target user to receive file being sent
- *          ID userID = target user id to receive file;
- *          // Specify the local file to send
- *          File localFileToSend = new File(&quot;filename&quot;);
- *          // Actually send outgoing file request to remote user.  
- *          ftc.sendOutgoingRequest(userID, localFileToSend, listener, null);
- *      }
+ *      // Get IOutgoingFileTransferContainerAdapter adapter
+ *       IOutgoingFileTransferContainerAdapter ftc = (IOutgoingFileTransferContainerAdapter) container.getAdapter(IOutgoingFileTransferContainerAdapter.class);
+ *       if (ftc != null) {
+ *         // Create listener for receiving/responding to asynchronous file transfer events
+ *     	     IFileTransferListener listener = new IFileTransferListener() {
+ *     		     public void handleTransferEvent(IFileTransferEvent event) {
+ *                   // If this event is a response to the transfer request, check if file transfer rejected
+ *                   if (event instanceof IOutgoingFileTransferResponseEvent) {
+ *                       IOutgoingFileTransferResponseEvent oftr = (IOutgoingFileTransferResponseEvent) event;
+ *                       if (!oftr.requestAccepted()) {
+ *                           // request rejected...tell user
+ *                       }
+ *                   }
+ *     		     }
+ *     	     };
+ *           // Specify the target user to receive file being sent
+ *           ID userID = target user id to receive file;
+ *           // Specify the local file to send
+ *           File localFileToSend = new File(&quot;filename&quot;);
+ *           // Actually send outgoing file request to remote user.  
+ *           ftc.sendOutgoingRequest(userID, localFileToSend, listener, null);
+ *       }
  * </pre>
  * 
  * <b>For the sender</b> the delivered events will be:
@@ -79,19 +79,20 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 * 
 	 * @param targetReceiver
 	 *            the ID of the remote to receive the file transfer request.
-	 *            Must not be null
+	 *            Must not be should not be <code>null</code>.
 	 * @param localFileToSend
 	 *            the {@link IFileTransferInfo} for the local file to send. Must
-	 *            not be null
+	 *            not be should not be <code>null</code>.
 	 * @param transferListener
 	 *            a {@link IFileTransferListener} for responding to file
-	 *            transfer events. Must not be null. If the target receiver
-	 *            responds then an {@link IOutgoingFileTransferResponseEvent}
-	 *            will be delivered to the listener
+	 *            transfer events. Must not be should not be <code>null</code>..
+	 *            If the target receiver responds then an
+	 *            {@link IOutgoingFileTransferResponseEvent} will be delivered
+	 *            to the listener
 	 * @param options
 	 *            a Map of options associated with sendOutgoingRequest. The
 	 *            particular name/value pairs will be unique to the individual
-	 *            providers. May be null.
+	 *            providers. May be should not be <code>null</code>..
 	 * @throws OutgoingFileTransferException
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
@@ -108,18 +109,20 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 * asynchronously delivered to the file transferListener (third parameter)
 	 * 
 	 * @param targetReceiver
-	 *            the ID of the remote to receive the file transfer request
+	 *            the ID of the remote to receive the file transfer request.
+	 *            Must not be <code>null</code>.
 	 * @param localFileToSend
-	 *            the {@link File} for the local file to send. Must not be null
+	 *            the {@link File} for the local file to send. Must not be
+	 *            <code>null</code>.
 	 * @param transferListener
 	 *            a {@link IFileTransferListener} for responding to file
-	 *            transfer events. Must not be null. If the target receiver
-	 *            responds then an IOutgoingFileTransfer will be delivered to
-	 *            the listener
+	 *            transfer events. Must not be <code>null</code>. If the
+	 *            target receiver responds then an IOutgoingFileTransfer will be
+	 *            delivered to the listener
 	 * @param options
 	 *            a Map of options associated with sendOutgoingRequest. The
 	 *            particular name/value pairs will be unique to the individual
-	 *            providers. May be null.
+	 *            providers. May be <code>null</code>.
 	 * @throws OutgoingFileTransferException
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
@@ -134,7 +137,7 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 * 
 	 * @param listener
 	 *            to receive incoming file transfer request events. Must not be
-	 *            null
+	 *            <code>null</code>.
 	 */
 	public void addListener(IIncomingFileTransferRequestListener listener);
 
@@ -142,7 +145,7 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 * Remove incoming file transfer listener
 	 * 
 	 * @param listener
-	 *            the listener to remove. Must not be null
+	 *            the listener to remove. Must not be <code>null</code>.
 	 * @return true if listener actually removed, false otherwise
 	 */
 	public boolean removeListener(IIncomingFileTransferRequestListener listener);

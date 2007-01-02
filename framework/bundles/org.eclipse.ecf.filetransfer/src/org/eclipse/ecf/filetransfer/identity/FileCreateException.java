@@ -11,8 +11,9 @@ package org.eclipse.ecf.filetransfer.identity;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
- * Exception class for creation of {@link IFileID} instances via {@link FileIDFactory}
- *
+ * Exception class for creation of {@link IFileID} instances via
+ * {@link FileIDFactory}
+ * 
  */
 public class FileCreateException extends ECFException {
 

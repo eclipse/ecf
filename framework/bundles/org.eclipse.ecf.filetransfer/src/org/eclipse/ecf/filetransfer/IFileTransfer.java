@@ -57,10 +57,10 @@ public interface IFileTransfer extends IAdaptable, IIdentifiable {
 	 * {@link #isDone()} will return true, and this method will return a
 	 * non-null Exception instance that occurred.
 	 * 
-	 * @return Exception associated with this file transfer. Null if transfer
-	 *         completed successfully, non-null if transfer completed with some
-	 *         exception. Only valid <b>after</b> {@link #isDone()} returns
-	 *         true.
+	 * @return Exception associated with this file transfer. <code>null</code>
+	 *         if transfer completed successfully, non-null if transfer
+	 *         completed with some exception. Only valid <b>after</b>
+	 *         {@link #isDone()} returns true.
 	 */
 	public Exception getException();
 

@@ -18,13 +18,14 @@ public interface IIncomingFileTransferReceiveDoneEvent extends
 
 	/**
 	 * Get any exception associated with this file transfer. If the file
-	 * transfer completed successfully, this method will return null. If the
-	 * file transfer completed unsuccessfully (some exception occurred), then
-	 * this method will return a non-null Exception instance that occurred.
+	 * transfer completed successfully, this method will return
+	 * <code>null</code>. If the file transfer completed unsuccessfully (some
+	 * exception occurred), then this method will return a non-<code>null</code>
+	 * Exception instance that occurred.
 	 * 
-	 * @return Exception associated with this file transfer. Null if transfer
-	 *         completed successfully, non-null if transfer completed with some
-	 *         exception.
+	 * @return Exception associated with this file transfer. <code>null</code>
+	 *         if transfer completed successfully, non-null if transfer
+	 *         completed with some exception.
 	 */
 	public Exception getException();
 

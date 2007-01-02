@@ -24,23 +24,24 @@ public interface IFileTransferInfo extends IAdaptable {
 	/**
 	 * Get the file for the proposed file transfer
 	 * 
-	 * @return the proposed file. Will not return null.
+	 * @return the proposed file. Will not return <code>null</code>.
 	 */
 	public File getFile();
-	
+
 	/**
 	 * Get any properties associated with this file transfer. The map keys and
 	 * values are assumed to be Strings.
 	 * 
 	 * @return Map of properties associated with this file transfer info. Will
-	 *         not return null.
+	 *         not return <code>null</code>.
 	 */
 	public Map getProperties();
 
 	/**
 	 * Get any description associated with this file transfer info.
 	 * 
-	 * @return String description. May be null if no description provided.
+	 * @return String description. May be <code>null</code> if no description
+	 *         provided.
 	 */
 	public String getDescription();
 

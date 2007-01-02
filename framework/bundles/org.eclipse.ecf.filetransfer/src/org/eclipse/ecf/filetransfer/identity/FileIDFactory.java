@@ -32,7 +32,7 @@ public class FileIDFactory {
 	/**
 	 * Get singleton instance
 	 * 
-	 * @return FileIDFactory singleton instance.  Will not be <code>null</code>.
+	 * @return FileIDFactory singleton instance. Will not be <code>null</code>.
 	 */
 	public static FileIDFactory getDefault() {
 		return instance;
@@ -54,7 +54,7 @@ public class FileIDFactory {
 	 */
 	public IFileID createFileID(Namespace namespace, URL remoteFile)
 			throws FileCreateException {
-		return createFileID(namespace, new Object [] { remoteFile });
+		return createFileID(namespace, new Object[] { remoteFile });
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class FileIDFactory {
 	 */
 	public IFileID createFileID(Namespace namespace, String remoteFile)
 			throws FileCreateException {
-		return createFileID(namespace, new Object [] { remoteFile });
+		return createFileID(namespace, new Object[] { remoteFile });
 	}
 
 	/**
@@ -84,9 +84,10 @@ public class FileIDFactory {
 	 *            {@link IRetrieveFileTransferContainerAdapter#getRetrieveNamespace()}.
 	 *            Must not be <code>null</code>.
 	 * @param arguments
-	 *            Object [] of arguments to use to create file ID.  These arguments
-	 *            will be passed to the {@link Namespace#createInstance(Object[])}
-	 *            method of the appropriate Namespace setup by the provider
+	 *            Object [] of arguments to use to create file ID. These
+	 *            arguments will be passed to the
+	 *            {@link Namespace#createInstance(Object[])} method of the
+	 *            appropriate Namespace setup by the provider
 	 * @return IFileID instance. Will not return <code>null</code>.
 	 * @throws FileCreateException
 	 *             thrown if some problem creating IFileID from given namespace

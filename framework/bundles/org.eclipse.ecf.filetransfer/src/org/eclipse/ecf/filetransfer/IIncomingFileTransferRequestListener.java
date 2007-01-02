@@ -23,7 +23,7 @@ public interface IIncomingFileTransferRequestListener {
 	 * 
 	 * @param event
 	 *            the {@link IFileTransferRequestEvent} that represents the file
-	 *            transfer request
+	 *            transfer request. Will not be should not be <code>null</code>.
 	 */
 	public void handleFileTransferRequest(IFileTransferRequestEvent event);
 }

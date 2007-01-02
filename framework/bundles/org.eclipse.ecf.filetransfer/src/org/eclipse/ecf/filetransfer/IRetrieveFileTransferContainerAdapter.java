@@ -84,19 +84,21 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 *            required format of the scheme-specific information. If a
 	 *            protocol is specified that is not supported, or the
 	 *            scheme-specific information is not well-formed, then an
-	 *            IncomingFileTransferException will be thrown.  Typically,
+	 *            IncomingFileTransferException will be thrown. Typically,
 	 *            callers will create IFileID instances via calls such as:
-	 *            <pre>
-     *                IFileID remoteFileID = FileIDFactory.getDefault().createID(
-     *                    ftc.getRetrieveNamespace(), &quot;http://www.composent.com/index.html&quot;);
-	 *            </pre>
-	 *            Must not be null.
+	 * 
+	 * <pre>
+	 * IFileID remoteFileID = FileIDFactory.getDefault().createID(
+	 * 		ftc.getRetrieveNamespace(), &quot;http://www.composent.com/index.html&quot;);
+	 * </pre>
+	 * 
+	 * Must not be <code>null</code>.
 	 * @param transferListener
 	 *            a listener for file transfer events. Must not be null
 	 * @param options
 	 *            a Map of options associated with sendRetrieveRequest. The
 	 *            particular name/value pairs will be unique to the individual
-	 *            providers. May be null.
+	 *            providers. May be <code>null</code>.
 	 * @throws IncomingFileTransferException
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
@@ -112,27 +114,39 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 * {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}
 	 * 
 	 * @return Namespace to use for ID creation via
-	 *         {@link IDFactory#createID(Namespace, String)}. Will not be null.
+	 *         {@link IDFactory#createID(Namespace, String)}. Will not be
+	 *         <code>null</code>.
 	 */
 	public Namespace getRetrieveNamespace();
 
 	/**
-	 * Set connect context for authentication upon subsequent {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.  This
-	 * method should be called with a non-null connectContext in order to allow authentication to occur during
-	 * call to {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
+	 * Set connect context for authentication upon subsequent
+	 * {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}. This
+	 * method should be called with a non-null connectContext in order to allow
+	 * authentication to occur during call to
+	 * {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
 	 * 
-	 * @param connectContext the connect context to use for authenticating during subsequent call to {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
-	 * If null, then no authentication will be attempted.
+	 * @param connectContext
+	 *            the connect context to use for authenticating during
+	 *            subsequent call to
+	 *            {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
+	 *            If <code>null</code>, then no authentication will be
+	 *            attempted.
 	 */
-	public void setConnectContextForAuthentication(IConnectContext connectContext);
-	
+	public void setConnectContextForAuthentication(
+			IConnectContext connectContext);
+
 	/**
-	 * Set proxy for use upon subsequent {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
-	 * This method should be called with a non-null proxy to allow the given proxy to be used in subsequent
-	 * calls to {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
+	 * Set proxy for use upon subsequent
+	 * {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}. This
+	 * method should be called with a non-null proxy to allow the given proxy to
+	 * be used in subsequent calls to
+	 * {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
 	 * 
-	 * @param proxy the proxy to use for subsequent calls to {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.  If
-	 * null, then no proxy will be used.
+	 * @param proxy
+	 *            the proxy to use for subsequent calls to
+	 *            {@link #sendRetrieveRequest(IFileID, IFileTransferListener, Map)}.
+	 *            If <code>null</code>, then no proxy will be used.
 	 */
 	public void setProxy(Proxy proxy);
 }

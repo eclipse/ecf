@@ -15,13 +15,13 @@ package org.eclipse.ecf.filetransfer;
  * clients should do the following:
  * 
  * <pre>
- *  IFileTransfer fileTransfer;
- *  IFileTransferPausable pausable = (IFileTransferPausable) fileTransfer.getAdapter(IFileTransferPausable.class);
- *  if (pausable !=null) {
- *     ... use it
- *  } else {
- *     ... does not support pausing
- *  }
+ *   IFileTransfer fileTransfer;
+ *   IFileTransferPausable pausable = (IFileTransferPausable) fileTransfer.getAdapter(IFileTransferPausable.class);
+ *   if (pausable !=null) {
+ *      ... use it
+ *   } else {
+ *      ... does not support pausing
+ *   }
  * </pre>
  * 
  */

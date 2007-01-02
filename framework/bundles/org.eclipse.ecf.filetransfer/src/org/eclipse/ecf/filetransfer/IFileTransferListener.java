@@ -22,7 +22,7 @@ public interface IFileTransferListener {
 	 * Handle file transfer events
 	 * 
 	 * @param event
-	 *            the event to be handled
+	 *            the event to be handled. should not be <code>null</code>.
 	 */
 	public void handleTransferEvent(IFileTransferEvent event);
 }

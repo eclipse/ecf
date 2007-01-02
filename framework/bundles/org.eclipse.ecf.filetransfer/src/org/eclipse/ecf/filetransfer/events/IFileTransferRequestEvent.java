@@ -26,25 +26,27 @@ public interface IFileTransferRequestEvent extends IFileTransferEvent {
 	/**
 	 * Get ID of remote requester
 	 * 
-	 * @return ID of remote requester
+	 * @return ID of remote requester. Will not be <code>null</code>.
 	 */
 	public ID getRequesterID();
 
 	/**
 	 * Get file transfer info associated with this file transfer request even
 	 * 
-	 * @return IFileTransfer info. Will not return null.
+	 * @return IFileTransfer info. Will not be <code>null</code>.
 	 */
 	public IFileTransferInfo getFileTransferInfo();
 
 	/**
 	 * Accept the file transfer request. This method should be called if the
 	 * receiver of the IFileTransferRequestEvent would like to accept the file
-	 * transfer request. Will not return null
+	 * transfer request. Will not return <code>null</code>.
 	 * 
 	 * @param localFileToSave
-	 *            the file on the local file system to receive the remote file
-	 * @return IIncomingFileTransfer to receive file
+	 *            the file on the local file system to receive the remote file.
+	 *            Must not be <code>null</code>.
+	 * @return IIncomingFileTransfer to receive file. Will not be
+	 *         <code>null</code>.
 	 * @throws IncomingFileTransferException
 	 *             if accept message cannot be delivered back to requester
 	 */

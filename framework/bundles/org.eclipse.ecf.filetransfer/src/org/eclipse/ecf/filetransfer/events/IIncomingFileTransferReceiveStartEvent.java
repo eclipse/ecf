@@ -25,7 +25,8 @@ public interface IIncomingFileTransferReceiveStartEvent extends
 	/**
 	 * Get IFileID for incoming file
 	 * 
-	 * @return IFileID for this file transfer event.  Will not be null.
+	 * @return IFileID for this file transfer event. Will not be
+	 *         <code>null</code>.
 	 */
 	public IFileID getFileID();
 
@@ -34,8 +35,9 @@ public interface IIncomingFileTransferReceiveStartEvent extends
 	 * 
 	 * @param localFileToSave
 	 *            the file on the local file system to receive and save the
-	 *            remote file
-	 * @return IIncomingFileTransfer the incoming file transfer object
+	 *            remote file. Must not be <code>null</code>.
+	 * @return IIncomingFileTransfer the incoming file transfer object. Will not
+	 *         be <code>null</code>.
 	 * @throws IOException
 	 *             if localFileToSave cannot be opened for writing
 	 */
@@ -51,8 +53,9 @@ public interface IIncomingFileTransferReceiveStartEvent extends
 	 * @throws IOException
 	 *             if streamToStore cannot be opened for writing
 	 */
-	public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException;
-	
+	public IIncomingFileTransfer receive(OutputStream streamToStore)
+			throws IOException;
+
 	/**
 	 * Cancel incoming file transfer
 	 */
