@@ -65,10 +65,10 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 			throws ECFException, Exception, InterruptedException {
 		XMPPChatClient client = new XMPPChatClient(this);
 		client.connect(userName + "@" + hostName, password);
-		
+
 		IChatRoomContainer room = client.createChatRoom(roomName);
 		room.connect(client.getChatRoomInfo().getRoomID(), null);
-		
+
 		System.out.println(room.getConnectedID().getName());
 		room.addMessageListener(this);
 		sender = room.getChatRoomMessageSender();
@@ -99,9 +99,9 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 		}
 		try {
 			if (messageBody.indexOf("e") != -1) {
-					sender.sendMessage("kewl");
+				sender.sendMessage("kewl");
 			} else if (messageBody.indexOf("s") != -1) {
-					sender.sendMessage(";-)");
+				sender.sendMessage(";-)");
 			} else {
 				sender.sendMessage("'s up?");
 			}
@@ -110,12 +110,15 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.IIMMessageListener#handleMessageEvent(org.eclipse.ecf.presence.IIMMessageEvent)
 	 */
 	public void handleMessageEvent(IIMMessageEvent messageEvent) {
 		if (messageEvent instanceof IChatRoomMessageEvent) {
-			IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
+			IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
+					.getChatRoomMessage();
 			handleMessage(m.getFromID(), m.getMessage());
 		}
 	}

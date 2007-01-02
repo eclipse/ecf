@@ -25,84 +25,102 @@ import org.eclipse.ecf.presence.im.IChatMessageEvent;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 
 public class XMPPClient {
-	
+
 	protected static String CONTAINER_TYPE = "ecf.xmpp.smack";
-	
+
 	Namespace namespace = null;
 	IContainer container = null;
 	IPresenceContainerAdapter presence = null;
 	IChatMessageSender sender = null;
 	ID userID = null;
-	
+
 	// Interface for receiving messages
 	IMessageReceiver receiver = null;
 	IPresenceListener presenceListener = null;
-	
+
 	public XMPPClient() {
 		this(null);
 	}
-	
+
 	public XMPPClient(IMessageReceiver receiver) {
 		super();
 		setMessageReceiver(receiver);
 	}
-	public XMPPClient(IMessageReceiver receiver, IPresenceListener presenceListener) {
+
+	public XMPPClient(IMessageReceiver receiver,
+			IPresenceListener presenceListener) {
 		this(receiver);
 		setPresenceListener(presenceListener);
 	}
+
 	protected void setMessageReceiver(IMessageReceiver receiver) {
 		this.receiver = receiver;
 	}
+
 	protected void setPresenceListener(IPresenceListener listener) {
 		this.presenceListener = listener;
 	}
+
 	protected IContainer setupContainer() throws ECFException {
 		if (container == null) {
-			container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE);
+			container = ContainerFactory.getDefault().createContainer(
+					CONTAINER_TYPE);
 			namespace = container.getConnectNamespace();
 		}
 		return container;
 	}
+
 	protected IContainer getContainer() {
 		return container;
 	}
+
 	protected Namespace getConnectNamespace() {
 		return namespace;
 	}
+
 	protected void setupPresence() throws ECFException {
 		if (presence == null) {
 			presence = (IPresenceContainerAdapter) container
 					.getAdapter(IPresenceContainerAdapter.class);
 			sender = presence.getChatManager().getChatMessageSender();
-			presence.getChatManager().addMessageListener(new IIMMessageListener() {
-				public void handleMessageEvent(IIMMessageEvent messageEvent) {
-					if (messageEvent instanceof IChatMessageEvent) {
-						IChatMessage m = ((IChatMessageEvent) messageEvent).getChatMessage();
-						if (receiver != null) {
-							receiver.handleMessage(m.getFromID().getName(), m.getBody());
+			presence.getChatManager().addMessageListener(
+					new IIMMessageListener() {
+						public void handleMessageEvent(
+								IIMMessageEvent messageEvent) {
+							if (messageEvent instanceof IChatMessageEvent) {
+								IChatMessage m = ((IChatMessageEvent) messageEvent)
+										.getChatMessage();
+								if (receiver != null) {
+									receiver.handleMessage(m.getFromID()
+											.getName(), m.getBody());
+								}
+							}
+
 						}
-					}
-					
-				}
-			});
+					});
 			if (presenceListener != null) {
-				presence.getRosterManager().addPresenceListener(presenceListener);
+				presence.getRosterManager().addPresenceListener(
+						presenceListener);
 			}
 		}
 	}
+
 	public void connect(String account, String password) throws ECFException {
 		setupContainer();
 		setupPresence();
-		doConnect(account,password);
+		doConnect(account, password);
 	}
-	
-	protected void doConnect(String account, String password) throws ECFException  {
+
+	protected void doConnect(String account, String password)
+			throws ECFException {
 		// Now connect
 		ID targetID = IDFactory.getDefault().createID(namespace, account);
-		container.connect(targetID,ConnectContextFactory.createPasswordConnectContext(password));
-		userID = getID(account);
+		container.connect(targetID, ConnectContextFactory
+				.createPasswordConnectContext(password));
+		userID = createID(account);
 	}
-	public ID getID(String name) {
+
+	public ID createID(String name) {
 		try {
 			return IDFactory.getDefault().createID(namespace, name);
 		} catch (IDCreateException e) {
@@ -110,20 +128,24 @@ public class XMPPClient {
 			return null;
 		}
 	}
+
 	public void sendMessage(String jid, String msg) {
 		if (sender != null) {
 			try {
-				sender.sendChatMessage(getID(jid), msg);
+				sender.sendChatMessage(createID(jid), msg);
 			} catch (ECFException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
+
 	public synchronized boolean isConnected() {
-		if (container == null) return false;
+		if (container == null)
+			return false;
 		return (container.getConnectedID() != null);
 	}
+
 	public synchronized void close() {
 		if (container != null) {
 			container.dispose();

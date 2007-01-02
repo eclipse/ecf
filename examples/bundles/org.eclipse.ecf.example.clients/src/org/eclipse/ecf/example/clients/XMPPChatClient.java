@@ -27,9 +27,9 @@ import org.eclipse.ecf.presence.im.IChatMessageEvent;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 
 public class XMPPChatClient {
-	
+
 	protected static String CONTAINER_TYPE = "ecf.xmpp.smack";
-	
+
 	Namespace namespace = null;
 	IContainer container = null;
 	IPresenceContainerAdapter presence = null;
@@ -38,29 +38,35 @@ public class XMPPChatClient {
 	IChatRoomManager chatmanager = null;
 	IChatRoomContainer chatroom = null;
 	IChatRoomInfo roomInfo = null;
-	
+
 	// Interface for receiving messages
 	IMessageReceiver receiver = null;
-	
+
 	public XMPPChatClient() {
 		this(null);
 	}
+
 	public XMPPChatClient(IMessageReceiver receiver) {
 		super();
 		this.receiver = receiver;
 	}
+
 	protected IContainer createContainer() throws ECFException {
 		// Create container
-		container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE);
+		container = ContainerFactory.getDefault().createContainer(
+				CONTAINER_TYPE);
 		namespace = container.getConnectNamespace();
 		return container;
 	}
+
 	protected IContainer getContainer() {
 		return container;
 	}
+
 	protected Namespace getNamespace() {
 		return namespace;
 	}
+
 	protected void setupPresenceAdapter() {
 		// Get presence adapter off of container
 		presence = (IPresenceContainerAdapter) container
@@ -71,12 +77,15 @@ public class XMPPChatClient {
 		presence.getChatManager().addMessageListener(new IIMMessageListener() {
 			public void handleMessageEvent(IIMMessageEvent messageEvent) {
 				if (messageEvent instanceof IChatMessageEvent) {
-					IChatMessage m = ((IChatMessageEvent) messageEvent).getChatMessage();
-					receiver.handleMessage(m.getFromID().getName(), m.getBody());
+					IChatMessage m = ((IChatMessageEvent) messageEvent)
+							.getChatMessage();
+					receiver
+							.handleMessage(m.getFromID().getName(), m.getBody());
 				}
 			}
 		});
 	}
+
 	protected IPresenceContainerAdapter getPresenceContainer() {
 		return presence;
 	}
@@ -87,19 +96,24 @@ public class XMPPChatClient {
 		// create target id
 		ID targetID = IDFactory.getDefault().createID(getNamespace(), account);
 		// Now connect
-		getContainer().connect(targetID,ConnectContextFactory.createPasswordConnectContext(password));
+		getContainer().connect(targetID,
+				ConnectContextFactory.createPasswordConnectContext(password));
 		// Get a local ID for user account
 		userID = getID(account);
 	}
-	public IChatRoomContainer createChatRoom(String chatRoomName) throws Exception {
+
+	public IChatRoomContainer createChatRoom(String chatRoomName)
+			throws Exception {
 		// Create chat room container from manager
 		roomInfo = presence.getChatRoomManager().getChatRoomInfo(chatRoomName);
 		chatroom = roomInfo.createChatRoomContainer();
 		return chatroom;
 	}
+
 	public IChatRoomInfo getChatRoomInfo() {
 		return roomInfo;
 	}
+
 	private ID getID(String name) {
 		try {
 			return IDFactory.getDefault().createID(namespace, name);
@@ -108,6 +122,7 @@ public class XMPPChatClient {
 			return null;
 		}
 	}
+
 	public void sendMessage(String jid, String msg) {
 		if (sender != null) {
 			try {
@@ -117,10 +132,13 @@ public class XMPPChatClient {
 			}
 		}
 	}
+
 	public synchronized boolean isConnected() {
-		if (container == null) return false;
+		if (container == null)
+			return false;
 		return (container.getConnectedID() != null);
 	}
+
 	public synchronized void close() {
 		if (container != null) {
 			container.dispose();

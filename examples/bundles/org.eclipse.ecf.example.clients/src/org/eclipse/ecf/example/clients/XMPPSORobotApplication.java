@@ -6,14 +6,15 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.util.ECFException;
 
-public class XMPPSORobotApplication implements IPlatformRunnable, IMessageReceiver {
+public class XMPPSORobotApplication implements IPlatformRunnable,
+		IMessageReceiver {
 
 	private boolean running = false;
 	private String userName;
 	private XMPPClient client;
 	private String targetIMUser;
 	private TrivialSharedObject sharedObject = null;
-	
+
 	public synchronized Object run(Object args) throws Exception {
 		if (args instanceof Object[]) {
 			Object[] arguments = (Object[]) args;
@@ -48,48 +49,53 @@ public class XMPPSORobotApplication implements IPlatformRunnable, IMessageReceiv
 		client = new XMPPClient(this);
 		client.setupContainer();
 		client.setupPresence();
-		
+
 		// Get ISharedObjectContainer adapter
-		ISharedObjectContainer socontainer = (ISharedObjectContainer) client.getContainer().getAdapter(ISharedObjectContainer.class);
+		ISharedObjectContainer socontainer = (ISharedObjectContainer) client
+				.getContainer().getAdapter(ISharedObjectContainer.class);
 		// Create TrivialSharedObject instance and add to container
 		createTrivialSharedObjectForContainer(socontainer);
 
 		// Then connect
 		client.doConnect(userName + "@" + hostName, password);
-		
+
 		this.targetIMUser = targetIMUser;
 		// Send initial message for room
-		client.sendMessage(targetIMUser,"Hi, I'm an IM robot");
-		
+		client.sendMessage(targetIMUser, "Hi, I'm an IM robot");
+
 		running = true;
 		int count = 0;
 		// Loop ten times and send ten 'hello there' so messages to targetIMUser
 		while (running && count++ < 10) {
-			sendSOMessage(count+" hello there");
+			sendSOMessage(count + " hello there");
 			wait(10000);
 		}
 	}
 
-    protected void sendSOMessage(String msg) {
-    	if (sharedObject != null) {
-    		sharedObject.sendMessageTo(client.getID(targetIMUser),msg);
-    	}
-    }
-	protected void createTrivialSharedObjectForContainer(ISharedObjectContainer soContainer) throws ECFException {
+	protected void sendSOMessage(String msg) {
+		if (sharedObject != null) {
+			sharedObject.sendMessageTo(client.createID(targetIMUser), msg);
+		}
+	}
+
+	protected void createTrivialSharedObjectForContainer(
+			ISharedObjectContainer soContainer) throws ECFException {
 		if (soContainer != null) {
 			// Create a new GUID for new TrivialSharedObject instance
-			ID newID = IDFactory.getDefault().createStringID(TrivialSharedObject.class.getName());
+			ID newID = IDFactory.getDefault().createStringID(
+					TrivialSharedObject.class.getName());
 			// Create TrivialSharedObject
 			sharedObject = new TrivialSharedObject();
 			// Add shared object to container
-			soContainer.getSharedObjectManager().addSharedObject(newID, sharedObject, null);
+			soContainer.getSharedObjectManager().addSharedObject(newID,
+					sharedObject, null);
 		}
 	}
-	
+
 	public synchronized void handleMessage(String from, String msg) {
 		// direct message
-		//client.sendMessage(from,"gotta run");
-		//running = false;
+		// client.sendMessage(from,"gotta run");
+		// running = false;
 		notifyAll();
 	}
 
