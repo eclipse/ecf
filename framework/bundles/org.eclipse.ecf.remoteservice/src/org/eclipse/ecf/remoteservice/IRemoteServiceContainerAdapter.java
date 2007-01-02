@@ -29,7 +29,8 @@ public interface IRemoteServiceContainerAdapter {
 	 * container
 	 * 
 	 * @param listener
-	 *            notified of service registration/unregistration events
+	 *            notified of service registration/unregistration events. Must
+	 *            not be <code>null</code> .
 	 */
 	public void addRemoteServiceListener(IRemoteServiceListener listener);
 
@@ -38,6 +39,7 @@ public interface IRemoteServiceContainerAdapter {
 	 * container.
 	 * 
 	 * @param listener
+	 *            to remove. Must not be <code>null</code> .
 	 */
 	public void removeRemoteServiceListener(IRemoteServiceListener listener);
 
@@ -48,14 +50,15 @@ public interface IRemoteServiceContainerAdapter {
 	 * 
 	 * @param clazzes
 	 *            the interface classes that the service exposes to remote
-	 *            clients. Must not be null and must not be an empty array.
+	 *            clients. Must not be <code>null</code> and must not be an
+	 *            empty array.
 	 * @param service
 	 *            the service object itself. This object must implement all of
 	 *            the classes specified by the first parameter
 	 * @param properties
 	 *            to be associated with service
 	 * @return IRemoteServiceRegistration the service registration. Will not
-	 *         return null.
+	 *         return <code>null</code> .
 	 */
 	public IRemoteServiceRegistration registerRemoteService(String[] clazzes,
 			Object service, Dictionary properties);
@@ -95,13 +98,13 @@ public interface IRemoteServiceContainerAdapter {
 	 *            an array of ID instances that will restrict the search for
 	 *            matching container ids If null, all remote containers will be
 	 *            considered in search for matching IRemoteServiceReference
-	 *            instances
+	 *            instances. May be <code>null</code> .
 	 * 
 	 * @param clazz
 	 *            the fully qualified name of the interface class that describes
-	 *            the desired service
+	 *            the desired service. Must not be <code>null</code> .
 	 * @param filter
-	 *            The filter criteria.
+	 *            The filter criteria. May be <code>null</code> .
 	 * @return IRemoteServiceReference [] the matching IRemoteServiceReferences
 	 */
 	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter,
@@ -114,9 +117,11 @@ public interface IRemoteServiceContainerAdapter {
 	 * when the IRemoteService will no longer be used.
 	 * 
 	 * @param reference
-	 *            the IRemoteServiceReference for the desired service
+	 *            the IRemoteServiceReference for the desired service. Must not
+	 *            be <code>null</code> .
 	 * @return IRemoteService representing the remote service. If remote service
-	 *         no longer exists for reference, then null is returned.
+	 *         no longer exists for reference, then <code>null</code> is
+	 *         returned.
 	 * 
 	 * @see #ungetRemoteService(IRemoteServiceReference)
 	 */
@@ -126,15 +131,16 @@ public interface IRemoteServiceContainerAdapter {
 	 * Unget IRemoteServiceReference. Release all resources associated with the
 	 * given IRemoteServiceReference. This method should be called by users of
 	 * the IRemoteServiceReference that have previously called
-	 * {@link IRemoteServiceContainerAdapter#getRemoteService(IRemoteServiceReference)}.  If
-	 * this method returns true, then the previously used IRemoteService will no 
-	 * longer be usable.
+	 * {@link IRemoteServiceContainerAdapter#getRemoteService(IRemoteServiceReference)}.
+	 * If this method returns true, then the previously used IRemoteService will
+	 * no longer be usable.
 	 * 
 	 * @param reference
 	 *            the IRemoteServiceReference to unget
-	 * @return true if unget successful, false if not.  If this method returns true, then
-	 * the IRemoteService instance previously retrieved via the given IRemoteServiceReference
-	 * instance provided will no longer be usable.
+	 * @return true if unget successful, false if not. If this method returns
+	 *         true, then the IRemoteService instance previously retrieved via
+	 *         the given IRemoteServiceReference instance provided will no
+	 *         longer be usable.
 	 * 
 	 * @see #getRemoteService(IRemoteServiceReference)
 	 */

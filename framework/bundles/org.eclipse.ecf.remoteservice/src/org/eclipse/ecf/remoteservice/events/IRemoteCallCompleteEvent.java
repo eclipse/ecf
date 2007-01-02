@@ -11,11 +11,33 @@
 
 package org.eclipse.ecf.remoteservice.events;
 
+/**
+ * Event received when remote call is complete.
+ */
 public interface IRemoteCallCompleteEvent extends IRemoteCallEvent {
-	
+
+	/**
+	 * Get response object.
+	 * 
+	 * @return Object that is response to remmote call. May be null.
+	 */
 	public Object getResponse();
 
+	/**
+	 * Whether remote call resulted in exception. If returns true, then remote
+	 * call ended in exception, false if no exception.
+	 * 
+	 * @return true if remote call ended in exception, false if no exception.
+	 */
 	public boolean hadException();
 
+	/**
+	 * @return Throwable that was exception thrown during remote call. Will
+	 *         return <code>null</code> if {@link #hadException()} returns
+	 *         false. Will be non-<code>null</code> if
+	 *         {@link #hadException()} returns true.
+	 * 
+	 * @return Throwable exception that occurred with remote call.
+	 */
 	public Throwable getException();
 }
