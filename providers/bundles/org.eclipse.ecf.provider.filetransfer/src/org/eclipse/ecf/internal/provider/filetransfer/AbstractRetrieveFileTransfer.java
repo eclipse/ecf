@@ -58,7 +58,7 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 
 	protected OutputStream localFileContents;
 	protected boolean closeOutputStream = true;
-	
+
 	protected Exception exception;
 
 	protected long fileLength = -1;
@@ -78,7 +78,7 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 	protected void setCloseOutputStream(boolean close) {
 		closeOutputStream = close;
 	}
-	
+
 	protected void setFileLength(long length) {
 		fileLength = length;
 	}
@@ -183,8 +183,10 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 						StringBuffer sb = new StringBuffer(
 								"IIncomingFileTransferReceiveDataEvent[");
 						sb.append("isDone=").append(done).append(";");
-						sb.append("bytesReceived=").append(bytesReceived).append(";");
-						sb.append("percentComplete=").append(getPercentComplete()*100).append("]");
+						sb.append("bytesReceived=").append(bytesReceived)
+								.append(";");
+						sb.append("percentComplete=").append(
+								getPercentComplete() * 100).append("]");
 						return sb.toString();
 					}
 				});

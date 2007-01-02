@@ -19,13 +19,15 @@ import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 public class HttpClientFileTransferAdapterFactory extends
 		AbstractSharedObjectContainerAdapterFactory {
 
-	private HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
-	
+	private HttpClient httpClient = new HttpClient(
+			new MultiThreadedHttpConnectionManager());
+
 	protected ISharedObject createAdapter(ISharedObjectContainer container,
 			Class adapterType, ID adapterID) {
 		if (adapterType.equals(IRetrieveFileTransferContainerAdapter.class)) {
 			return new HttpClientRetrieveFileTransfer(httpClient);
-		} else return null;
+		} else
+			return null;
 	}
 
 	public Class[] getAdapterList() {

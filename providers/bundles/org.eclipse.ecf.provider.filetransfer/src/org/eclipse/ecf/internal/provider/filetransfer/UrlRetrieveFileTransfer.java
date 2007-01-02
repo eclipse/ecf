@@ -45,7 +45,8 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 								File localFileToSave) throws IOException {
 							setOutputStream(new BufferedOutputStream(
 									new FileOutputStream(localFileToSave)));
-							job = new FileTransferJob(getRemoteFileURL().toString());
+							job = new FileTransferJob(getRemoteFileURL()
+									.toString());
 							job.schedule();
 							return UrlRetrieveFileTransfer.this;
 						}
@@ -63,10 +64,13 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 							hardClose();
 						}
 
-						public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
-							setOutputStream(new BufferedOutputStream(streamToStore));
+						public IIncomingFileTransfer receive(
+								OutputStream streamToStore) throws IOException {
+							setOutputStream(new BufferedOutputStream(
+									streamToStore));
 							setCloseOutputStream(false);
-							job = new FileTransferJob(getRemoteFileURL().toString());
+							job = new FileTransferJob(getRemoteFileURL()
+									.toString());
 							job.schedule();
 							return UrlRetrieveFileTransfer.this;
 						}
@@ -79,18 +83,21 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void setConnectContextForAuthentication(
 			IConnectContext connectContext) {
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
 	 */
 	public void setProxy(Proxy proxy) {
 	}
-
 
 }

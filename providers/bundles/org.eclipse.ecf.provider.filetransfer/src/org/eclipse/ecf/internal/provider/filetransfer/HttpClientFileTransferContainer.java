@@ -26,8 +26,8 @@ import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 /**
  * HttpClient container implementation.
  */
-public class HttpClientFileTransferContainer extends AbstractContainer implements
-		IContainer {
+public class HttpClientFileTransferContainer extends AbstractContainer
+		implements IContainer {
 
 	ID id = null;
 

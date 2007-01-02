@@ -21,7 +21,8 @@ public class UrlFileTransferAdapterFactory extends
 			Class adapterType, ID adapterID) {
 		if (adapterType.equals(IRetrieveFileTransferContainerAdapter.class)) {
 			return new UrlRetrieveFileTransfer();
-		} else return null;
+		} else
+			return null;
 	}
 
 	public Class[] getAdapterList() {

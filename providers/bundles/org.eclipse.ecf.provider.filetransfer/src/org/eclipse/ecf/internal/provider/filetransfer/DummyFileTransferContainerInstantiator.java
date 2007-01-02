@@ -21,7 +21,8 @@ public class DummyFileTransferContainerInstantiator implements
 		throw new ContainerCreateException("can't create an instance of dummy");
 	}
 
-	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
+	public String[] getSupportedAdapterTypes(
+			ContainerTypeDescription description) {
 		return null;
 	}
 
