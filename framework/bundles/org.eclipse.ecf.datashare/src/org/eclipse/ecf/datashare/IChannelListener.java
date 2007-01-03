@@ -26,7 +26,7 @@ public interface IChannelListener {
 	 * Handle events sent to the channel.
 	 * 
 	 * @param event
-	 *            the event received
+	 *            the event received. Will not be <code>null</code>.
 	 */
 	public void handleChannelEvent(IChannelEvent event);
 }

@@ -16,8 +16,8 @@ public interface IItem extends IIdentifiable {
 	/**
 	 * Get the description associated with this item
 	 * 
-	 * @return String description. May be null if no description (or null
-	 *         description) has been set
+	 * @return String description. May be <code>null</code> if no description
+	 *         (or null description) has been set
 	 */
 	public String getDescription();
 
@@ -33,7 +33,7 @@ public interface IItem extends IIdentifiable {
 	 * Get history for this item
 	 * 
 	 * @return IHistory instacne that describes history for this item. Will not
-	 *         return null, but may return empty List
+	 *         return <code>null</code>, but may return empty List
 	 */
 	public IItemHistory getHistory();
 
@@ -41,7 +41,8 @@ public interface IItem extends IIdentifiable {
 	 * Get conflicts for this item
 	 * 
 	 * @return List of IConflict instances that describe conflicts for this
-	 *         item. Will not return null, but may return empty List
+	 *         item. Will not return <code>null</code>, but may return empty
+	 *         List
 	 */
 	public List getConflicts();
 }

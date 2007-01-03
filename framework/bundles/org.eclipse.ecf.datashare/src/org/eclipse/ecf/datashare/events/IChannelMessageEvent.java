@@ -19,7 +19,7 @@ public interface IChannelMessageEvent extends IChannelEvent {
 	/**
 	 * Get ID of sender container
 	 * 
-	 * @return ID of sender's container
+	 * @return ID of sender's container. Will not be <code>null</code>.
 	 */
 	public ID getFromContainerID();
 
@@ -27,7 +27,8 @@ public interface IChannelMessageEvent extends IChannelEvent {
 	 * Get data associated with message. This method returns the data actually
 	 * included in the IChannel.sendMessage(<data>).
 	 * 
-	 * @return byte [] data associated with channel message
+	 * @return byte [] data associated with channel message. Will not be
+	 *         <code>null</code>, but may be empty array byte[0].
 	 */
 	public byte[] getData();
 }

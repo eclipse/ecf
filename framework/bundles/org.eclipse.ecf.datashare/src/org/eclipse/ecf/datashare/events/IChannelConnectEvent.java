@@ -19,7 +19,7 @@ public interface IChannelConnectEvent extends IChannelEvent {
 	/**
 	 * Get ID of target group joined
 	 * 
-	 * @return ID of target group joined
+	 * @return ID of target group joined. Will not be <code>null</code>.
 	 */
 	public ID getTargetID();
 }

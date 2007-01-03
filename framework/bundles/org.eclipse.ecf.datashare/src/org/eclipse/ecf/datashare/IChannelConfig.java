@@ -22,12 +22,15 @@ public interface IChannelConfig extends IAdaptable, IIdentifiable {
 	/**
 	 * Get listener for channel being created. Typically, provider will call
 	 * this method during the implementation of createChannel. If this method
-	 * returns a non-null IChannelListener instance, the newly created channel
-	 * must notify the given listener when channel events occur. If this method
-	 * returns null, then no listener will be notified of channel events
+	 * returns a non-<code>null</code> IChannelListener instance, the newly
+	 * created channel must notify the given listener when channel events occur.
+	 * If this method returns <code>null</code>, then no listener will be
+	 * notified of channel events
 	 * 
 	 * @return IChannelListener to use for notification of received channel
-	 *         events
+	 *         events. If <code>null</code>, then no listener will be
+	 *         notified of channel events.
+	 * 
 	 */
 	public IChannelListener getListener();
 

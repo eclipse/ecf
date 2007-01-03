@@ -18,8 +18,9 @@ public interface IItemFactory {
 	 * 
 	 * @param description
 	 *            the description to add to the item. The description represents
-	 *            the actual data associated with an item
-	 * @return IItem result
+	 *            the actual data associated with an item. Should not be
+	 *            <code>null</code>.
+	 * @return IItem result. Will not be <code>null</code>.
 	 */
 	public IItem createItem(String description);
 }

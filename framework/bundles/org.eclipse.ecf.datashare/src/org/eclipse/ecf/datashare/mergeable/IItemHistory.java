@@ -15,7 +15,7 @@ public interface IItemHistory extends IUpdateInfo {
 	 * Get updates previously applied as part of this item history
 	 * 
 	 * @return List of IUpdateInfo instances of previous updates. Will not
-	 *         return null.
+	 *         return <code>null</code>, but may be empty List.
 	 */
 	public List getUpdates();
 }

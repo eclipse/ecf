@@ -20,7 +20,7 @@ public interface IChannel extends IAbstractChannel {
 	 * Send message to remote instances of this channel
 	 * 
 	 * @param message
-	 *            the byte [] message to send
+	 *            the byte [] message to send. Must not be <code>null</code>.
 	 * @throws ECFException
 	 *             if some problem sending message
 	 */
@@ -30,10 +30,11 @@ public interface IChannel extends IAbstractChannel {
 	 * Send message to remote instances of this channel
 	 * 
 	 * @param receiver
-	 *            the ID of the container to receive message. If null, message
-	 *            sent to all current members of group
+	 *            the ID of the container to receive message. If
+	 *            <code>null</code>, message sent to all current members of
+	 *            group
 	 * @param message
-	 *            the byte [] message to send
+	 *            the byte [] message to send. Must not be <code>null</code>.
 	 * @throws ECFException
 	 *             if some problem sending message
 	 */

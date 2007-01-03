@@ -13,7 +13,8 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * Channel configuration
+ * Base class implementation of {@link IChannelConfig}. Subclasses may be
+ * created as appropriate.
  * 
  */
 public class BaseChannelConfig implements IChannelConfig {
@@ -35,18 +36,38 @@ public class BaseChannelConfig implements IChannelConfig {
 		this.properties = properties;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.datashare.IChannelConfig#getListener()
+	 */
 	public IChannelListener getListener() {
 		return listener;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
+	 */
 	public ID getID() {
 		return id;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.datashare.IChannelConfig#getProperties()
+	 */
 	public Map getProperties() {
 		return properties;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
 	public Object getAdapter(Class adapter) {
 		return null;
 	}

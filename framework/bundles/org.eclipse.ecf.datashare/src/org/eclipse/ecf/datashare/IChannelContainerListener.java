@@ -26,7 +26,7 @@ public interface IChannelContainerListener {
 	 * Handle channel container events.
 	 * 
 	 * @param event
-	 *            IChannelContainerAdapter event
+	 *            IChannelContainerAdapter event. Will not be <code>null</code>.
 	 */
 	public void handleChannelContainerEvent(IChannelContainerEvent event);
 }

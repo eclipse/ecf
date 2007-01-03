@@ -19,7 +19,7 @@ public interface IChannelDisconnectEvent extends IChannelEvent {
 	/**
 	 * Get ID of target group that departed
 	 * 
-	 * @return ID of target group that departed
+	 * @return ID of target group that departed. Will not be <code>null</code>.
 	 */
 	public ID getTargetID();
 }

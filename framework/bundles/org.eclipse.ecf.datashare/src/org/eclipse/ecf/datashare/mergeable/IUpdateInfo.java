@@ -19,7 +19,7 @@ public interface IUpdateInfo extends IIdentifiable {
 	/**
 	 * Get date of when update was applied.
 	 * 
-	 * @return Date the date when applied. Will not be null.
+	 * @return Date the date when applied. Will not be <code>null</code>.
 	 */
 	public Date getWhen();
 }

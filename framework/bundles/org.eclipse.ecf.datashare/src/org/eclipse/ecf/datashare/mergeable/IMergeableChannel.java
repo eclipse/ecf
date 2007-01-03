@@ -24,8 +24,8 @@ public interface IMergeableChannel extends IIdentifiable, IAdaptable {
 	/**
 	 * Get list of IItems
 	 * 
-	 * @return List of items. Will not return null. List contents will be of
-	 *         type IItem.
+	 * @return List of items. Will not return <code>null</code>. List
+	 *         contents will be of type IItem.
 	 */
 	public List getItems();
 
@@ -41,7 +41,7 @@ public interface IMergeableChannel extends IIdentifiable, IAdaptable {
 	 * Add item to set managed by this channel
 	 * 
 	 * @param item
-	 *            the IItem to add
+	 *            the IItem to add. Should not be <code>null</code>.
 	 * @return true if added successfully, false if item already exists in set
 	 *         known to this channel
 	 */
@@ -51,9 +51,11 @@ public interface IMergeableChannel extends IIdentifiable, IAdaptable {
 	 * Change the description of the item identified by the given itemID
 	 * 
 	 * @param itemID
-	 *            the itemID of the IItem to change
+	 *            the itemID of the IItem to change. Should not be
+	 *            <code>null</code>.
 	 * @param description
-	 *            the new description to change in the IItem
+	 *            the new description to change in the IItem. May be
+	 *            <code>null</code>.
 	 * @return true if item found and description changes, false if item not
 	 *         found
 	 */
@@ -63,7 +65,7 @@ public interface IMergeableChannel extends IIdentifiable, IAdaptable {
 	 * Remove item from channel
 	 * 
 	 * @param item
-	 *            the item to remove
+	 *            the item to remove. Should not be <code>null</code>.
 	 * @return true if item removed, false if item not found.
 	 */
 	public boolean removeItem(IItem item);
@@ -80,14 +82,15 @@ public interface IMergeableChannel extends IIdentifiable, IAdaptable {
 	/**
 	 * Get the item factory for this channel for creating new items
 	 * 
-	 * @return IItemFactory for this channel
+	 * @return IItemFactory for this channel. Will not be <code>null</code>.
 	 */
 	public IItemFactory getItemFactory();
 
 	/**
 	 * Get the channel header info (title, link, description) for this channel
 	 * 
-	 * @return IChannelHeader that contains this info
+	 * @return IChannelHeader that contains this info. Will not be
+	 *         <code>null</code>.
 	 */
 	public IChannelHeader getHeaderInfo();
 }

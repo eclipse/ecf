@@ -21,13 +21,13 @@ import org.eclipse.ecf.datashare.IChannelListener;
  * <p>
  * 
  * <pre>
- *  IMergeableChannelContainerAdapter channelcontainer = (IMergeableChannelContainerAdapter) container.getAdapter(IMergeableChannelContainerAdapter.class);
- *  if (channelcontainer != null) {
- *     // use channelcontainer
- *     ...
- *  } else {
- *     // container does not support channel container functionality
- *  }
+ *   IMergeableChannelContainerAdapter channelcontainer = (IMergeableChannelContainerAdapter) container.getAdapter(IMergeableChannelContainerAdapter.class);
+ *   if (channelcontainer != null) {
+ *      // use channelcontainer
+ *      ...
+ *   } else {
+ *      // container does not support channel container functionality
+ *   }
  * </pre>
  * 
  */
@@ -37,13 +37,17 @@ public interface IMergeableChannelContainerAdapter extends
 	 * Create a mergeable channel within this container
 	 * 
 	 * @param channelID
-	 *            the ID of the mergeable channel created
+	 *            the ID of the mergeable channel created. Should not be
+	 *            <code>null</code>.
 	 * @param listener
 	 *            the channel listener associated with this channel to receive
-	 *            asynchronous events
+	 *            asynchronous events. If <code>null</code>, no events will
+	 *            be delivered.
 	 * @param properties
-	 *            a Map of properties to provide to the channel.
-	 * @return IMergeableChannel the mergeable channel created
+	 *            a Map of properties to provide to the channel. May be
+	 *            <code>null</code>.
+	 * @return IMergeableChannel the mergeable channel created. Will not be
+	 *         <code>null</code>.
 	 * @throws ECFException
 	 *             thrown if mergeable channel cannot be created
 	 */

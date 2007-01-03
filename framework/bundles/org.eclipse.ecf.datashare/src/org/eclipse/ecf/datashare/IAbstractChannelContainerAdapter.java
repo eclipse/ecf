@@ -13,7 +13,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 
 /**
- * Abstract channel container adapter
+ * Super interface for {@link IChannelContainerAdapter}. Defines basic
+ * semantics for IChannelContainerAdapters.
  * 
  */
 public interface IAbstractChannelContainerAdapter extends IAdaptable {
@@ -21,7 +22,7 @@ public interface IAbstractChannelContainerAdapter extends IAdaptable {
 	 * Add listener for IChannelContainerAdapter events.
 	 * 
 	 * @param listener
-	 *            to be added
+	 *            to be added. Must not be <code>null</code>.
 	 */
 	public void addListener(IChannelContainerListener listener);
 
@@ -29,7 +30,7 @@ public interface IAbstractChannelContainerAdapter extends IAdaptable {
 	 * Remove listener for IChannelContainerAdapter events
 	 * 
 	 * @param listener
-	 *            to be removed.
+	 *            to be removed. Must not be <code>null</code>.
 	 */
 	public void removeListener(IChannelContainerListener listener);
 
@@ -37,7 +38,7 @@ public interface IAbstractChannelContainerAdapter extends IAdaptable {
 	 * Get expected Namespace for channel ID creation
 	 * 
 	 * @return Namespace that can be used to create channel ID instances for
-	 *         this channel container
+	 *         this channel container. Will not be <code>null</code>.
 	 */
 	public Namespace getChannelNamespace();
 
@@ -45,9 +46,9 @@ public interface IAbstractChannelContainerAdapter extends IAdaptable {
 	 * Get IChannel with given channelID.
 	 * 
 	 * @param channelID
-	 *            the ID of the channel to get
-	 * @return IChannel of channel within container with given ID. Returns null
-	 *         if channel not found.
+	 *            the ID of the channel to get. Must not be <code>null</code>.
+	 * @return IChannel of channel within container with given ID. Returns
+	 *         <code>null</code> if channel not found.
 	 */
 	public IChannel getChannel(ID channelID);
 
@@ -55,7 +56,8 @@ public interface IAbstractChannelContainerAdapter extends IAdaptable {
 	 * Remove channel with given ID
 	 * 
 	 * @param channelID
-	 *            the ID of the channel to Remove within this container
+	 *            the ID of the channel to remove within this container. Must
+	 *            not be <code>null</code>.
 	 * @return true if channel found and Removed. False if channel not found
 	 *         within container.
 	 */

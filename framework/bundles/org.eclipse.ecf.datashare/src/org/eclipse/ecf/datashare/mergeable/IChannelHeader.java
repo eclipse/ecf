@@ -16,21 +16,21 @@ public interface IChannelHeader {
 	/**
 	 * Get title
 	 * 
-	 * @return String title. May be null.
+	 * @return String title. May be <code>null</code>.
 	 */
 	public String getTitle();
 
 	/**
 	 * Get link
 	 * 
-	 * @return String link. May be null.
+	 * @return String link. May be <code>null</code>.
 	 */
 	public String getLink();
 
 	/**
 	 * Get description
 	 * 
-	 * @return String description. May be null.
+	 * @return String description. May be <code>null</code>.
 	 */
 	public String getDescription();
 }
