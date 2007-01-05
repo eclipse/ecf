@@ -50,27 +50,26 @@ public interface IContainerInstantiator {
 
 	/**
 	 * Get array of supported adapters for the given container type description.
-	 * Providers can implement this method to allow clients to inspect the
-	 * adapter types implemented by the container described by the given
-	 * description. The returned array entries will be the fully qualified names
-	 * of the adapter classes.
+	 * Providers implement this method to allow clients to inspect the adapter
+	 * types exposed by the container described by the given description.
+	 * 
+	 * The returned array entries will be the fully qualified names of the
+	 * adapter classes.
 	 * 
 	 * Note that the returned types do not guarantee that a subsequent call to
 	 * {@link IContainer#getAdapter(Class)} with the same type name as a
-	 * returned value will return a non-null result. In other words, even if the
-	 * class name is in the returned array, subsequent calls to
-	 * {@link IContainer#getAdapter(Class)} may still return <code>null</code>.
-	 * 
-	 * This method should not return null, but rather an empty String[] if no
-	 * adapters are exposed.
+	 * returned value will return a non-<code>null</code> result. In other
+	 * words, even if the class name is in the returned array, subsequent calls
+	 * to {@link IContainer#getAdapter(Class)} may still return
+	 * <code>null</code>.
 	 * 
 	 * @param description
 	 *            the ContainerTypeDescription to report adapters for. Must not
-	 *            be null
+	 *            be <code>null</code>.
 	 * @return String[] of supported adapters. The entries in the returned array
 	 *         will be the fully qualified class names of adapters supported by
-	 *         the given description. Null returned if no adapters are supported
-	 *         for given description.
+	 *         the given description. <code>null</code> will be returned by
+	 *         the provider if no adapters are supported for this description.
 	 */
 	public String[] getSupportedAdapterTypes(
 			ContainerTypeDescription description);
@@ -94,7 +93,7 @@ public interface IContainerInstantiator {
 	 * 
 	 * <pre>
 	 * public Class[][] getSupportedParameterTypes() {
-	 * 	  return new Class[][] { { String.class }, { String.class, String.class } };
+	 * 	return new Class[][] { { String.class }, { String.class, String.class } };
 	 * }
 	 * </pre>
 	 * 
@@ -120,8 +119,8 @@ public interface IContainerInstantiator {
 	 *         a Class[] that describes the types of Objects in Object[] for
 	 *         second parameter to
 	 *         {@link #createInstance(ContainerTypeDescription, Object[])}.
-	 *         Null returned if no parameter types supported for given
-	 *         description.
+	 *         <code>null</code> returned if no parameter types supported for
+	 *         given description.
 	 */
 	public Class[][] getSupportedParameterTypes(
 			ContainerTypeDescription description);

@@ -193,15 +193,13 @@ public class ContainerTypeDescription {
 	}
 
 	/**
-	 * Get array of supported adapters for the given container type description.
-	 * Providers can implement this method to allow clients to inspect the
-	 * adapter types implemented by the container described by the given
-	 * description. The returned array entries will be the fully qualified names
-	 * of the adapter classes.
+	 * Get array of supported adapters for this container type description. The
+	 * returned array entries will be the fully qualified names of the adapter
+	 * classes.
 	 * 
 	 * Note that the returned types do not guarantee that a subsequent call to
 	 * {@link IContainer#getAdapter(Class)} with the same type name as a
-	 * returned value will return a non-null result. In other words, even if the
+	 * returned value will return a non-<code>null</code result. In other words, even if the
 	 * class name is in the returned array, subsequent calls to
 	 * {@link IContainer#getAdapter(Class)} may still return <code>null</code>.
 	 * 
@@ -216,7 +214,8 @@ public class ContainerTypeDescription {
 				ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		String[] result = new String[0];
 		try {
-			result = getInstantiator().getSupportedAdapterTypes(this);
+			String [] r = getInstantiator().getSupportedAdapterTypes(this);
+			if (r != null) result = r;
 		} catch (Exception e) {
 			traceAndLogException(GET_SUPPORTED_ADAPTERS_ERROR_CODE, method, e);
 		}
@@ -261,7 +260,8 @@ public class ContainerTypeDescription {
 				ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		Class[][] result = new Class[0][0];
 		try {
-			result = getInstantiator().getSupportedParameterTypes(this);
+			Class [][] r = getInstantiator().getSupportedParameterTypes(this);
+			if (r != null) result = r;
 		} catch (Exception e) {
 			traceAndLogException(GET_PARAMETER_TYPES_ERROR_CODE, method, e);
 		}
