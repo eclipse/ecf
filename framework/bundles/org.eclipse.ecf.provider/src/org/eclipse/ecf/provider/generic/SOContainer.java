@@ -398,7 +398,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		if (adapter.isInstance(this)) {
 			return this;
 		} else {
-			return Platform.getAdapterManager().getAdapter(this, adapter);
+			return Platform.getAdapterManager().loadAdapter(this, adapter.getName());
 		}
 	}
 	/**
