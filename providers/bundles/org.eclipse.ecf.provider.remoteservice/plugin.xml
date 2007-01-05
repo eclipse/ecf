@@ -9,13 +9,5 @@
          <adapter type="org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter"/>
       </factory>
    </extension>
-   <extension
-         name="ecf.generic.remoteservice"
-         point="org.eclipse.ecf.containerFactory">
-      <containerFactory
-            class="org.eclipse.ecf.provider.remoteservice.generic.RemoteServiceContainerFactory"
-            name="ecf.generic.remoteservice"
-            description="Dummy Remoteservice" />
-   </extension>
 
 </plugin>
