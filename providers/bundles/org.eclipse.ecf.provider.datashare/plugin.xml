@@ -2,13 +2,6 @@
 <?eclipse version="3.1"?>
 <plugin>
    <extension
-         point="org.eclipse.ecf.containerFactory">
-      <containerFactory
-            class="org.eclipse.ecf.provider.datashare.DatashareContainerInstantiator"
-            description="Dummy Datashare"
-            name="ecf.generic.channel"/>
-   </extension>
-   <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
             adaptableType="org.eclipse.ecf.provider.generic.TCPClientSOContainer"
