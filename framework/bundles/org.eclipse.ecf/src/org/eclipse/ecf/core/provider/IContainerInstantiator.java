@@ -68,7 +68,7 @@ public interface IContainerInstantiator {
 	 *            be <code>null</code>.
 	 * @return String[] of supported adapters. The entries in the returned array
 	 *         will be the fully qualified class names of adapters supported by
-	 *         the given description. <code>null</code> will be returned by
+	 *         the given description. <code>null</code> may be returned by
 	 *         the provider if no adapters are supported for this description.
 	 */
 	public String[] getSupportedAdapterTypes(
