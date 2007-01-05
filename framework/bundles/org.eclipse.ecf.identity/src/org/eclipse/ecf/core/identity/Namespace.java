@@ -10,6 +10,8 @@ package org.eclipse.ecf.core.identity;
 
 import java.io.Serializable;
 
+import org.eclipse.core.runtime.Assert;
+
 /**
  * Namespace base class
  * <p>
@@ -54,9 +56,7 @@ public abstract class Namespace implements Serializable {
 	}
 
 	public final boolean initialize(String name, String desc) {
-		if (name == null)
-			throw new NullPointerException(
-					"Namespace<init> name cannot be null");
+		Assert.isNotNull(name,"Namespace<init> name cannot be null");
 		if (!isInitialized) {
 			this.name = name;
 			this.description = desc;
@@ -114,7 +114,7 @@ public abstract class Namespace implements Serializable {
 	}
 
 	/**
-	 * Get the name of this namespace. May not return null.
+	 * Get the name of this namespace. Must not return null.
 	 * 
 	 * @return String name of Namespace instance
 	 * 
