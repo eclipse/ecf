@@ -2,13 +2,6 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="org.eclipse.ecf.containerFactory">
-      <containerFactory
-            class="org.eclipse.ecf.internal.provider.filetransfer.DummyFileTransferContainerInstantiator"
-            description="Dummy Filetransfer"
-            name="ecf.dummy.filetransfer"/>
-   </extension>
-   <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
             adaptableType="org.eclipse.ecf.provider.generic.TCPClientSOContainer"
