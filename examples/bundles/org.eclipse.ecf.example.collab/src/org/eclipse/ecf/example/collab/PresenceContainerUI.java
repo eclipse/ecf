@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
@@ -35,7 +36,6 @@ import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
-import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
 import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.ecf.ui.views.RosterView;
@@ -96,25 +96,19 @@ public class PresenceContainerUI {
 							.getActiveWorkbenchWindow();
 					IWorkbenchPage wp = ww.getActivePage();
 
-					if (pc.getAdapter(IPresenceContainerAdapter.class) == null) {
-						IViewPart view = wp
-								.showView("org.eclipse.ecf.ui.view.rosterview");
-						rosterView = (RosterView) view;
+					IViewPart view = wp
+							.showView("org.eclipse.ecf.ui.view.rosterview");
+					rosterView = (RosterView) view;
 
-						String nickname = null;
-						if (nick != null) {
-							nickname = nick;
-						} else {
-							String name = localUser.getName();
-							nickname = name.substring(0, name.indexOf("@"));
-						}
-						PresenceContainerUI.this.localUser = new org.eclipse.ecf.core.user.User(
-								localUser, nickname);
+					String nickname = null;
+					if (nick != null) {
+						nickname = nick;
 					} else {
-						MultiRosterView rv = (MultiRosterView) wp
-								.showView("org.eclipse.ecf.presence.ui.view1");
-						rv.addContainer(container);
+						String name = localUser.getName();
+						nickname = name.substring(0, name.indexOf("@"));
 					}
+					PresenceContainerUI.this.localUser = new org.eclipse.ecf.core.user.User(
+							localUser, nickname);
 
 				} catch (Exception e) {
 					ClientPlugin.getDefault().getLog().log(
@@ -268,6 +262,13 @@ public class PresenceContainerUI {
 						}
 					});
 
+				} else if (event instanceof IContainerDisconnectedEvent) {
+					final IContainerDisconnectedEvent de = (IContainerDisconnectedEvent) event;
+					Display.getDefault().syncExec(new Runnable() {
+						public void run() {
+							rosterView.accountDisconnected(de.getTargetID());
+						}
+					});
 				}
 			}
 		});
