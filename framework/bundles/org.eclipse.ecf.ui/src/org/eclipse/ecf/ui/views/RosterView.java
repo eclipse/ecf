@@ -938,7 +938,7 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		openChatRoomAction.setEnabled(enabled);
 	}
 
-	public void accountDeparted(ID serviceID) {
+	public void accountDisconnected(ID serviceID) {
 		RosterUserAccount account = getAccount(serviceID);
 		if (account != null) {
 			handleAccountDisconnected(account);
