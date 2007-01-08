@@ -53,13 +53,15 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 	 * @param adaptableObject
 	 *            the {@link ISharedObjectContainer}. If not an instance of
 	 *            {@link ISharedObjectContainer} then null is returned
-	 * @param Class
-	 *            the adapterType to return as a result
+	 * @param adapterType
+	 *            the type to return as a result. The return value must
+	 *            implement this interface
 	 * @return Object result. Null if the adaptableObject is not of type
 	 *         {@link ISharedObjectContainer}, or if
 	 *         {@link #getSharedObjectAdapter(ISharedObjectContainer, Class)}
 	 *         returns null
 	 */
+	
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (ISharedObjectContainer.class.isInstance(adaptableObject))
 			return getSharedObjectAdapter(
@@ -67,7 +69,8 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 		else
 			return null;
 	}
-
+	
+	
 	/**
 	 * Get the {@link ISharedObject} adapter for given
 	 * {@link ISharedObjectContainer}. The resulting {@link ISharedObject} must
