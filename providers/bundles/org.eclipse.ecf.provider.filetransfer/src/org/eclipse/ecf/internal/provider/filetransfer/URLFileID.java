@@ -2,6 +2,7 @@ package org.eclipse.ecf.internal.provider.filetransfer;
 
 import java.net.URL;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
@@ -14,8 +15,7 @@ public class URLFileID extends BaseID implements IFileID {
 
 	public URLFileID(Namespace namespace, URL url) {
 		super(namespace);
-		if (url == null)
-			throw new NullPointerException("url cannot be null");
+		Assert.isNotNull(url,"url cannot be null");
 		this.fileURL = url;
 	}
 

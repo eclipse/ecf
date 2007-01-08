@@ -30,6 +30,9 @@ public class HttpClientFileTransferAdapterFactory extends
 			return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory#getAdapterList()
+	 */
 	public Class[] getAdapterList() {
 		return new Class[] { IRetrieveFileTransferContainerAdapter.class };
 	}
