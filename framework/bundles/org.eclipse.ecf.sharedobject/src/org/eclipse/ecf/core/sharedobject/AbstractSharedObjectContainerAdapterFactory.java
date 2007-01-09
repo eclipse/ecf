@@ -13,6 +13,8 @@ import java.util.Map;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ecf.core.AbstractContainerAdapterFactory;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
@@ -31,8 +33,7 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
  * @see #getSharedObjectAdapter(ISharedObjectContainer, Class)
  * 
  */
-public abstract class AbstractSharedObjectContainerAdapterFactory implements
-		IAdapterFactory {
+public abstract class AbstractSharedObjectContainerAdapterFactory extends AbstractContainerAdapterFactory {
 
 	protected static final int ADD_ADAPTER_ERROR_CODE = 300001;
 
@@ -42,34 +43,16 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 
 	private static final String CREATE_ADAPTER_ID_ERROR_MESSAGE = null;
 
-	/**
-	 * Get an adapter for a given adaptableObject and given adapterType. If the
-	 * adaptableObject is an instance of {@link ISharedObjectContainer}, then
-	 * this calls the
-	 * {@link #getSharedObjectAdapter(ISharedObjectContainer, Class)} method
-	 * with the adaptableObject cast to be the container parameter of
-	 * {@link #getSharedObjectAdapter(ISharedObjectContainer, Class)}
-	 * 
-	 * @param adaptableObject
-	 *            the {@link ISharedObjectContainer}. If not an instance of
-	 *            {@link ISharedObjectContainer} then null is returned
-	 * @param adapterType
-	 *            the type to return as a result. The return value must
-	 *            implement this interface
-	 * @return Object result. Null if the adaptableObject is not of type
-	 *         {@link ISharedObjectContainer}, or if
-	 *         {@link #getSharedObjectAdapter(ISharedObjectContainer, Class)}
-	 *         returns null
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.AbstractContainerAdapterFactory#getContainerAdapter(org.eclipse.ecf.core.IContainer, java.lang.Class)
 	 */
-	
-	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if (ISharedObjectContainer.class.isInstance(adaptableObject))
+	protected Object getContainerAdapter(IContainer container, Class adapterType) {
+		if (ISharedObjectContainer.class.isInstance(container))
 			return getSharedObjectAdapter(
-					(ISharedObjectContainer) adaptableObject, adapterType);
+					(ISharedObjectContainer) container, adapterType);
 		else
 			return null;
 	}
-	
 	
 	/**
 	 * Get the {@link ISharedObject} adapter for given
@@ -78,7 +61,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 	 * method will call the following methods in order:
 	 * <p>
 	 * </p>
-	 * {@link #getAdapterID(ISharedObjectContainer, Class)}
+	 * {@link #createAdapterID(ISharedObjectContainer, Class)}
 	 * <p>
 	 * </p>
 	 * {@link #createAdapter(ISharedObjectContainer, Class, ID)}
@@ -98,7 +81,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 	protected synchronized ISharedObject getSharedObjectAdapter(
 			ISharedObjectContainer container, Class adapterType) {
 		// Get adapter ID for given adapter type
-		ID adapterID = getAdapterID(container, adapterType);
+		ID adapterID = createAdapterID(container, adapterType);
 		if (adapterID == null)
 			return null;
 		// Check to see if the container already has the given shared object
@@ -165,7 +148,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory implements
 	 *         {@link #getSharedObjectAdapter(ISharedObjectContainer, Class)}
 	 *         will also return null
 	 */
-	protected ID getAdapterID(ISharedObjectContainer container,
+	protected ID createAdapterID(ISharedObjectContainer container,
 			Class adapterType) {
 		String singletonName = adapterType.getClass().getName();
 		try {
