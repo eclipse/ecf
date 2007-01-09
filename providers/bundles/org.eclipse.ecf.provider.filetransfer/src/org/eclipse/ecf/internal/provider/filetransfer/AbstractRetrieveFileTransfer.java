@@ -31,7 +31,7 @@ import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.internal.provider.filetransfer.identity.HttpFileNamespace;
+import org.eclipse.ecf.internal.provider.filetransfer.identity.FileTransferNamespace;
 
 public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 		implements IIncomingFileTransfer,
@@ -250,7 +250,7 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 
 	public Namespace getRetrieveNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(
-				HttpFileNamespace.NAMESPACE_NAME);
+				FileTransferNamespace.PROTOCOL);
 	}
 
 	public boolean isPaused() {

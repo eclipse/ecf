@@ -7,13 +7,13 @@ import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 
-public class HttpFileID extends BaseID implements IFileID {
+public class FileTransferID extends BaseID implements IFileID {
 
 	private static final long serialVersionUID = 1274308869502156992L;
 
 	URL fileURL;
 
-	public HttpFileID(Namespace namespace, URL url) {
+	public FileTransferID(Namespace namespace, URL url) {
 		super(namespace);
 		Assert.isNotNull(url,"url cannot be null");
 		this.fileURL = url;
@@ -21,11 +21,11 @@ public class HttpFileID extends BaseID implements IFileID {
 
 	protected int namespaceCompareTo(BaseID o) {
 		return this.fileURL.toExternalForm().compareTo(
-				((HttpFileID) o).toExternalForm());
+				((FileTransferID) o).toExternalForm());
 	}
 
 	protected boolean namespaceEquals(BaseID o) {
-		return this.fileURL.equals(((HttpFileID) o).fileURL);
+		return this.fileURL.equals(((FileTransferID) o).fileURL);
 	}
 
 	protected String namespaceGetName() {
@@ -47,7 +47,7 @@ public class HttpFileID extends BaseID implements IFileID {
 	}
 
 	public String toString() {
-		StringBuffer b = new StringBuffer("HttpFileID[");
+		StringBuffer b = new StringBuffer("FileTransferID[");
 		b.append(toExternalForm());
 		b.append("]");
 		return b.toString();

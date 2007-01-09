@@ -12,19 +12,18 @@ import java.net.URL;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.INamespaceAdapter;
 import org.eclipse.ecf.core.identity.Namespace;
 
 /**
  * URL file namespace class. This defines a namespace that understands how to
  * create IFileID instances from arbitary URLs
  */
-public class HttpFileNamespace extends Namespace {
+public class FileTransferNamespace extends Namespace {
 
 	private static final long serialVersionUID = 8204058147686930765L;
 
-	public static final String PROTOCOL = "ecf.provider.filetransfer.url";
-
-	public static final String NAMESPACE_NAME = PROTOCOL;
+	public static final String PROTOCOL = "ecf.provider.filetransfer";
 
 	/*
 	 * (non-Javadoc)
@@ -32,18 +31,36 @@ public class HttpFileNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
 	public ID createInstance(Object[] args) throws IDCreateException {
-		if (args == null || args.length == 0)
-			throw new IDCreateException("arguments is null or empty");
-		try {
-			if (args[0] instanceof URL)
-				return new HttpFileID(this, (URL) args[0]);
-			if (args[0] instanceof String)
-				return new HttpFileID(this, new URL((String) args[0]));
-		} catch (Exception e) {
-			throw new IDCreateException("Exception in createInstance", e);
+		INamespaceAdapter adapter = (INamespaceAdapter) getAdapter(INamespaceAdapter.class);
+		if (adapter != null)
+			return adapter.createInstance(this, args);
+		else {
+			if (args == null || args.length == 0)
+				throw new IDCreateException("arguments is null or empty");
+			try {
+				if (args[0] instanceof URL)
+					return new FileTransferID(this, (URL) args[0]);
+				if (args[0] instanceof String)
+					return new FileTransferID(this, new URL((String) args[0]));
+			} catch (Exception e) {
+				throw new IDCreateException("Exception in createInstance", e);
+			}
+			throw new IDCreateException(
+					"arguments not correct to create instance of FileTransferNamespace");
 		}
-		throw new IDCreateException(
-				"arguments not correct to create instance of HttpFileNamespace");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedSchemes()
+	 */
+	public String[] getSupportedSchemes() {
+		INamespaceAdapter adapter = (INamespaceAdapter) getAdapter(INamespaceAdapter.class);
+		if (adapter != null)
+			return adapter.getSupportedSchemes(this);
+		else
+			return super.getSupportedSchemes();
 	}
 
 	/*
@@ -61,7 +78,11 @@ public class HttpFileNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { { URL.class }, { String.class } };
+		INamespaceAdapter adapter = (INamespaceAdapter) getAdapter(INamespaceAdapter.class);
+		if (adapter != null)
+			return adapter.getSupportedParameterTypes(this);
+		else
+			return new Class[][] { { URL.class }, { String.class } };
 	}
 
 }
