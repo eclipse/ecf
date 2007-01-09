@@ -16,7 +16,7 @@ import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 
-public class HttpClientFileTransferAdapterFactory extends
+public class RetrieveFileTransferContainerAdapterFactory extends
 		AbstractSharedObjectContainerAdapterFactory {
 
 	private HttpClient httpClient = new HttpClient(
