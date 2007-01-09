@@ -29,12 +29,12 @@ import org.eclipse.core.runtime.Assert;
  * ECF extension registry:
  * 
  * <pre>
- *       &lt;extension
- *            point=&quot;org.eclipse.ecf.namespace&quot;&gt;
- *         &lt;namespace
- *               class=&quot;XMPPNamespace&quot;
- *               name=&quot;ecf.xmpp&quot;/&gt;
- *       &lt;/extension&gt;
+ *        &lt;extension
+ *             point=&quot;org.eclipse.ecf.namespace&quot;&gt;
+ *          &lt;namespace
+ *                class=&quot;XMPPNamespace&quot;
+ *                name=&quot;ecf.xmpp&quot;/&gt;
+ *        &lt;/extension&gt;
  * </pre>
  * 
  * @see ID
@@ -56,7 +56,7 @@ public abstract class Namespace implements Serializable {
 	}
 
 	public final boolean initialize(String name, String desc) {
-		Assert.isNotNull(name,"Namespace<init> name cannot be null");
+		Assert.isNotNull(name, "Namespace<init> name cannot be null");
 		if (!isInitialized) {
 			this.name = name;
 			this.description = desc;
@@ -114,7 +114,7 @@ public abstract class Namespace implements Serializable {
 	}
 
 	/**
-	 * Get the name of this namespace. Must not return null.
+	 * Get the name of this namespace. Must not return <code>null</code>.
 	 * 
 	 * @return String name of Namespace instance
 	 * 
@@ -157,22 +157,20 @@ public abstract class Namespace implements Serializable {
 			throws IDCreateException;
 
 	/**
-	 * Get the scheme associated with this namespace instance. For example, a
-	 * namespace with name "ecf.http" would have an associated scheme identifier
-	 * of "http". Subclasses must provide an implementation that returns a valid
-	 * non-null scheme identifier.
+	 * Get the primary scheme associated with this namespace. Subclasses must
+	 * provide an implementation that returns a non-<code>null</code> scheme
+	 * identifier.
 	 * 
-	 * @return a String scheme identifier
+	 * @return a String scheme identifier. Must not be <code>null</code>.
 	 */
 	public abstract String getScheme();
 
 	/**
-	 * Get an array of schemes supported by this Namespace instance. By default,
-	 * this returns an array with the value returned from {@link #getScheme()}.
-	 * Subclasses are free to override to support multiple schemes.
+	 * Get an array of schemes supported by this Namespace instance. Subclasses
+	 * may override to support multiple schemes.
 	 * 
 	 * @return String[] of schemes supported by this Namespace. Will not be
-	 *         null, and should always be of length >= 1.
+	 *         <code>null</code>, but returned array may be of length 0.
 	 */
 	public String[] getSupportedSchemes() {
 		return new String[] { getScheme() };
@@ -212,8 +210,8 @@ public abstract class Namespace implements Serializable {
 	 * createInstance:
 	 * 
 	 * <pre>
-	 *       ID newID1 = namespace.createInstance(new Object[] { &quot;Hello&quot; });
-	 *       ID newID2 = namespace.createInstance(new Object[] { &quot;Hello&quot;, &quot;There&quot;}};
+	 *        ID newID1 = namespace.createInstance(new Object[] { &quot;Hello&quot; });
+	 *        ID newID2 = namespace.createInstance(new Object[] { &quot;Hello&quot;, &quot;There&quot;}};
 	 * </pre>
 	 * 
 	 * @return Class [][] an array of class []s. Rows of the returned
