@@ -71,12 +71,18 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * group) via expected protocol.
 	 * 
 	 * @param targetID
-	 *            the ID of the remote server or group to connect to
+	 *            the ID of the remote server or group to connect to. See
+	 *            {@link #getConnectNamespace()} for a explanation of the
+	 *            constraints upon this parameter.
 	 * @param connectContext
-	 *            any required context to allow this container to authenticate
+	 *            any required context to allow this container to authenticate.
+	 *            May be <code>null</code> if underlying provider does not
+	 *            have any authentication requirements for connection.
 	 * @exception ContainerConnectException
 	 *                thrown if communication cannot be established with remote
-	 *                service
+	 *                service. Causes can include network connection failure,
+	 *                authentication failure, server error, or if container is
+	 *                already connected.
 	 */
 	public void connect(ID targetID, IConnectContext connectContext)
 			throws ContainerConnectException;
@@ -85,23 +91,35 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * Get the target ID that this container instance has connected to. Returns
 	 * null if not connected.
 	 * 
-	 * @return ID of the target we are connected to. Null if currently not
-	 *         connected.
+	 * @return ID of the target we are connected to. Returns <code>null</code>
+	 *         if container not connected.
 	 */
 	public ID getConnectedID();
 
 	/**
-	 * Get the Namespace expected by the remote target container. Must not
-	 * return null.
+	 * Get the Namespace for creating a targetID suitable for use as the first
+	 * parameter in subsequent calls to {@link #connect(ID, IConnectContext)}.
+	 * If this method returns <code>null</code>, then it means that
+	 * <code>null</code> is expected as a valid parameter in subsequent calls
+	 * to {@link #connect(ID, IConnectContext)}. If this method returns a non-<code>null</code>
+	 * Namespace, then the <code>targetID</code> parameter in
+	 * {@link #connect(ID, IConnectContext)} must be non-<code>null</code>
+	 * instance created of the returned Namespace.
 	 * 
-	 * @return Namespace the namespace by the target for a call to connect()
+	 * @return Namespace the namespace associated with subsequent calls to
+	 *         {@link #connect(ID, IConnectContext)}. If <code>null</code>,
+	 *         then the <code>targetID</code> instances passed to
+	 *         {@link #connect(ID, IConnectContext)} may be <code>null</code>.
+	 *         If not <code>null</code>, then <code>targetID</code>
+	 *         instances passed to {@link #connect(ID, IConnectContext)} must be
+	 *         instances of the returned Namespace.
 	 */
 	public Namespace getConnectNamespace();
 
 	/**
 	 * Disconnect. This operation will disconnect the local container instance
 	 * from any previously joined target or group. Subsequent calls to
-	 * getConnectedID() will return null.
+	 * getConnectedID() will return <code>null</code>.
 	 */
 	public void disconnect();
 
@@ -145,7 +163,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	/**
 	 * Dispose this IContainer instance. The container instance will be made
 	 * inactive after the completion of this method and will be unavailable for
-	 * subsequent usage. 
+	 * subsequent usage.
 	 * 
 	 */
 	public void dispose();
