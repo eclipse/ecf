@@ -11,6 +11,8 @@ package org.eclipse.ecf.core.identity;
 import java.io.Serializable;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.Platform;
 
 /**
  * Namespace base class
@@ -39,7 +41,8 @@ import org.eclipse.core.runtime.Assert;
  * 
  * @see ID
  */
-public abstract class Namespace implements Serializable {
+public abstract class Namespace implements Serializable, IAdaptable {
+	
 	private static final long serialVersionUID = 3976740272094720312L;
 
 	public static final String SCHEME_SEPARATOR = ":";
@@ -173,7 +176,7 @@ public abstract class Namespace implements Serializable {
 	 *         <code>null</code>, but returned array may be of length 0.
 	 */
 	public String[] getSupportedSchemes() {
-		return new String[] { getScheme() };
+		return new String[0];
 	}
 
 	/**
@@ -224,6 +227,17 @@ public abstract class Namespace implements Serializable {
 		return new Class[][] { {} };
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		if (adapter.isInstance(this)) {
+			return this;
+		} else {
+			return Platform.getAdapterManager().loadAdapter(this, adapter.getName());
+		}
+	}
+	
 	public String toString() {
 		StringBuffer b = new StringBuffer("Namespace[");
 		b.append("name=").append(name).append(";");
