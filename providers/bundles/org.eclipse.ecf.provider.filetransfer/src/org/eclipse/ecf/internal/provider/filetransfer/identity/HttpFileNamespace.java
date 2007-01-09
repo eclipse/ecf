@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.provider.filetransfer;
+package org.eclipse.ecf.internal.provider.filetransfer.identity;
 
 import java.net.URL;
 
@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.identity.Namespace;
  * URL file namespace class. This defines a namespace that understands how to
  * create IFileID instances from arbitary URLs
  */
-public class URLFileNamespace extends Namespace {
+public class HttpFileNamespace extends Namespace {
 
 	private static final long serialVersionUID = 8204058147686930765L;
 
@@ -36,14 +36,14 @@ public class URLFileNamespace extends Namespace {
 			throw new IDCreateException("arguments is null or empty");
 		try {
 			if (args[0] instanceof URL)
-				return new URLFileID(this, (URL) args[0]);
+				return new HttpFileID(this, (URL) args[0]);
 			if (args[0] instanceof String)
-				return new URLFileID(this, new URL((String) args[0]));
+				return new HttpFileID(this, new URL((String) args[0]));
 		} catch (Exception e) {
 			throw new IDCreateException("Exception in createInstance", e);
 		}
 		throw new IDCreateException(
-				"arguments not correct to create instance of URLFileNamespace");
+				"arguments not correct to create instance of HttpFileNamespace");
 	}
 
 	/*
