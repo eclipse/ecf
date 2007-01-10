@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provider.filetransfer;
+package org.eclipse.ecf.internal.provider.filetransfer.retrieve;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -30,6 +30,7 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Proxy;
+import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 
 public class SslProtocolSocketFactory implements ProtocolSocketFactory {
 

@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.provider.filetransfer;
+package org.eclipse.ecf.internal.provider.filetransfer.retrieve;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.util.Map;
 
 import javax.security.auth.login.LoginException;
 
@@ -24,6 +25,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -35,6 +37,7 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.internal.provider.filetransfer.identity.FileTransferID;
 
 public class HttpClientRetrieveFileTransfer extends
 		AbstractRetrieveFileTransfer {
@@ -55,6 +58,10 @@ public class HttpClientRetrieveFileTransfer extends
 
 	protected static final String HTTPS = "https";
 
+	protected static final String HTTP = "http";
+
+	protected static final String[] supportedProtocols = { HTTP, HTTPS };
+
 	private GetMethod getMethod = null;
 
 	private HttpClient httpClient = null;
@@ -74,11 +81,11 @@ public class HttpClientRetrieveFileTransfer extends
 	}
 
 	protected void hardClose() {
-		super.hardClose();
 		if (getMethod != null) {
 			getMethod.releaseConnection();
 			getMethod = null;
 		}
+		super.hardClose();
 	}
 
 	protected Credentials getFileRequestCredentials()
@@ -164,7 +171,7 @@ public class HttpClientRetrieveFileTransfer extends
 		}
 	}
 
-	protected void openStreams() throws IncomingFileTransferException {
+	protected void openStreams(Map options) throws IncomingFileTransferException {
 		String urlString = getRemoteFileURL().toString();
 
 		try {
@@ -318,6 +325,25 @@ public class HttpClientRetrieveFileTransfer extends
 
 	protected static boolean urlUsesHttps(String url) {
 		return url.matches(HTTPS + ".*"); //$NON-NLS-1$
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.internal.provider.filetransfer.AbstractRetrieveFileTransfer#supportsProtocol(java.lang.String)
+	 */
+	public boolean supportsProtocol(String protocolString) {
+		for (int i = 0; i < supportedProtocols.length; i++)
+			if (supportedProtocols[i].equalsIgnoreCase(protocolString))
+				return true;
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
+	 */
+	public ID getID() {
+		return new FileTransferID(getRetrieveNamespace(),getRemoteFileURL());
 	}
 
 }

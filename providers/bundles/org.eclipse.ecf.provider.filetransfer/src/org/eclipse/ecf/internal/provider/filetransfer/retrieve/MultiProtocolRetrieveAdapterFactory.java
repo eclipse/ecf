@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provider.filetransfer;
+package org.eclipse.ecf.internal.provider.filetransfer.retrieve;
 
 import org.eclipse.ecf.core.AbstractContainerAdapterFactory;
 import org.eclipse.ecf.core.IContainer;
@@ -18,7 +18,7 @@ import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 /**
  *
  */
-public class MultiProtocolRetrieveFTCAdapterFactory extends AbstractContainerAdapterFactory {
+public class MultiProtocolRetrieveAdapterFactory extends AbstractContainerAdapterFactory {
 
 	IRetrieveFileTransferContainerAdapter multiProtocolAdapter = new MultiProtocolRetrieveAdapter();
 	

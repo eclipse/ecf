@@ -6,24 +6,36 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.provider.filetransfer;
+package org.eclipse.ecf.internal.provider.filetransfer.retrieve;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
 
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.internal.provider.filetransfer.identity.FileTransferID;
 
-public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
+public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
 	URLConnection urlConnection;
-
-	protected void openStreams() throws IncomingFileTransferException {
+	
+    // XXX currently unused
+	IConnectContext connectContext;
+	// XXX currently unused
+	Proxy proxy;
+	
+	protected void openStreams(Map options) throws IncomingFileTransferException {
 		URL theURL = null;
 
 		try {
@@ -31,7 +43,7 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 			theURL = getRemoteFileURL();
 			urlConnection = theURL.openConnection();
 			setInputStream(urlConnection.getInputStream());
-			setFileLength(fileLength = urlConnection.getContentLength());
+			setFileLength(urlConnection.getContentLength());
 
 			listener
 					.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
@@ -48,7 +60,7 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 							job = new FileTransferJob(getRemoteFileURL()
 									.toString());
 							job.schedule();
-							return UrlRetrieveFileTransfer.this;
+							return UrlConnectionRetrieveFileTransfer.this;
 						}
 
 						public String toString() {
@@ -72,7 +84,7 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 							job = new FileTransferJob(getRemoteFileURL()
 									.toString());
 							job.schedule();
-							return UrlRetrieveFileTransfer.this;
+							return UrlConnectionRetrieveFileTransfer.this;
 						}
 
 					});
@@ -83,6 +95,13 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.internal.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
+	 */
+	protected void hardClose() {
+		super.hardClose();
+		urlConnection = null;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -90,6 +109,7 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 	 */
 	public void setConnectContextForAuthentication(
 			IConnectContext connectContext) {
+		this.connectContext = connectContext;
 	}
 
 	/*
@@ -98,6 +118,22 @@ public class UrlRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
 	 */
 	public void setProxy(Proxy proxy) {
+		this.proxy = proxy;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.internal.provider.filetransfer.AbstractRetrieveFileTransfer#supportsProtocol(java.lang.String)
+	 */
+	public boolean supportsProtocol(String protocolString) {
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
+	 */
+	public ID getID() {
+		return new FileTransferID(getRetrieveNamespace(),getRemoteFileURL());
+	}
+
 
 }

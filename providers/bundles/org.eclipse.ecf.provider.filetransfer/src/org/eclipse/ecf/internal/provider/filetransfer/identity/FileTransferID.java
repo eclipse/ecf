@@ -40,6 +40,10 @@ public class FileTransferID extends BaseID implements IFileID {
 		return getFileNameOnly();
 	}
 
+	public URL getURL() {
+		return this.fileURL;
+	}
+	
 	protected String getFileNameOnly() {
 		String path = this.fileURL.getPath();
 		String fileName = path.substring(path.lastIndexOf("/") + 1);

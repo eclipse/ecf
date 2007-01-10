@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.provider.filetransfer;
+package org.eclipse.ecf.internal.provider.filetransfer.retrieve;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,13 +15,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.sharedobject.BaseSharedObject;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
@@ -31,10 +31,10 @@ import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.identity.FileTransferNamespace;
 
-public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
-		implements IIncomingFileTransfer,
+public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTransfer,
 		IRetrieveFileTransferContainerAdapter, IFileTransferPausable {
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
@@ -58,6 +58,7 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 	protected InputStream remoteFileContents;
 
 	protected OutputStream localFileContents;
+	
 	protected boolean closeOutputStream = true;
 
 	protected Exception exception;
@@ -136,14 +137,17 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 
 	protected void hardClose() {
 		try {
-			remoteFileContents.close();
+			if (remoteFileContents != null) remoteFileContents.close();
 		} catch (IOException e) {
 		}
 		try {
-			if (closeOutputStream)
+			if (closeOutputStream && localFileContents != null)
 				localFileContents.close();
 		} catch (IOException e) {
 		}
+		job = null;
+		remoteFileContents = null;
+		localFileContents = null;
 	}
 
 	protected void fireTransferReceiveDoneEvent() {
@@ -222,7 +226,7 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 	 * 
 	 * @throws IncomingFileTransferException
 	 */
-	protected abstract void openStreams() throws IncomingFileTransferException;
+	protected abstract void openStreams(Map options) throws IncomingFileTransferException;
 
 	/*
 	 * (non-Javadoc)
@@ -233,10 +237,13 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 	public void sendRetrieveRequest(final IFileID remoteFileID,
 			IFileTransferListener transferListener, Map options)
 			throws IncomingFileTransferException {
-		if (remoteFileID == null)
-			throw new NullPointerException("remoteFileID cannot be null");
-		if (transferListener == null)
-			throw new NullPointerException("transferListener cannot be null");
+		Assert.isNotNull(remoteFileID,"remoteFileID cannot be null");
+		Assert.isNotNull(transferListener,"transferListener cannot be null");
+		done = false;
+		bytesReceived = 0;
+		exception = null;
+		fileLength = 0;
+		
 		try {
 			this.remoteFileID = remoteFileID;
 			this.remoteFileURL = new URL(remoteFileID.getName());
@@ -245,7 +252,7 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 					"Exception creating URI for " + remoteFileID, e);
 		}
 		this.listener = transferListener;
-		openStreams();
+		openStreams(options);
 	}
 
 	public Namespace getRetrieveNamespace() {
@@ -286,4 +293,6 @@ public abstract class AbstractRetrieveFileTransfer extends BaseSharedObject
 			}
 	}
 
+	public abstract boolean supportsProtocol(String protocolString);
+	
 }
