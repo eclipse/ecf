@@ -43,7 +43,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
  * 			if (event instanceof IIncomingFileTransferReceiveStartEvent) {
  * 				IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
  * 				try {
- * 					rse.receive(new File(&quot;eclipse.org.main.page.html&quot;));
+ * 					rse.receive(new File(&quot;composent.main.page.html&quot;));
  * 				} catch (IOException e) {
  * 					// Handle exception appropriately 
  * 				}
