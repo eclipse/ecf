@@ -293,6 +293,4 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			}
 	}
 
-	public abstract boolean supportsProtocol(String protocolString);
-	
 }

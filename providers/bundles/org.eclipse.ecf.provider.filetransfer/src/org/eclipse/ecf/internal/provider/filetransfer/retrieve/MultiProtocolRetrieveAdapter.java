@@ -35,11 +35,6 @@ import org.eclipse.ecf.internal.provider.filetransfer.identity.FileTransferNames
 public class MultiProtocolRetrieveAdapter implements
 		IRetrieveFileTransferContainerAdapter {
 
-	HttpClientRetrieveFileTransfer httpClient = new HttpClientRetrieveFileTransfer(
-			new HttpClient(new MultiThreadedHttpConnectionManager()));
-
-	UrlConnectionRetrieveFileTransfer urlClient = new UrlConnectionRetrieveFileTransfer();
-	
 	IConnectContext connectContext = null;
 	Proxy proxy = null;
 
@@ -85,10 +80,11 @@ public class MultiProtocolRetrieveAdapter implements
 		if (remoteFileID instanceof FileTransferID) {
 			URL url = ((FileTransferID) remoteFileID).getURL();
 			IRetrieveFileTransferContainerAdapter fileTransfer = null;
-			if (httpClient.supportsProtocol(url.getProtocol()))
-				fileTransfer = httpClient;
+			if (HttpClientRetrieveFileTransfer.supportsProtocol(url.getProtocol()))
+				fileTransfer = new HttpClientRetrieveFileTransfer(
+						new HttpClient(new MultiThreadedHttpConnectionManager()));
 			else
-				fileTransfer =  urlClient;
+				fileTransfer =  new UrlConnectionRetrieveFileTransfer();
 
 			// Set connect context
 			fileTransfer.setConnectContextForAuthentication(connectContext);

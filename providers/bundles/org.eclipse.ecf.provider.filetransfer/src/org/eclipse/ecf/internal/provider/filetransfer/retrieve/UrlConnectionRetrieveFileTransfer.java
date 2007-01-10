@@ -122,13 +122,6 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.internal.provider.filetransfer.AbstractRetrieveFileTransfer#supportsProtocol(java.lang.String)
-	 */
-	public boolean supportsProtocol(String protocolString) {
-		return true;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
 	 */
 	public ID getID() {

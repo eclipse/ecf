@@ -332,7 +332,7 @@ public class HttpClientRetrieveFileTransfer extends
 	 * 
 	 * @see org.eclipse.ecf.internal.provider.filetransfer.AbstractRetrieveFileTransfer#supportsProtocol(java.lang.String)
 	 */
-	public boolean supportsProtocol(String protocolString) {
+	public static boolean supportsProtocol(String protocolString) {
 		for (int i = 0; i < supportedProtocols.length; i++)
 			if (supportedProtocols[i].equalsIgnoreCase(protocolString))
 				return true;
