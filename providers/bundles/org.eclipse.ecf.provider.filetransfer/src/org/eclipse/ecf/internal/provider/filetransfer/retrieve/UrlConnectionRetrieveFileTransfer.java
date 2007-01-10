@@ -35,6 +35,8 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	// XXX currently unused
 	Proxy proxy;
 	
+	IFileID id = null;
+	
 	protected void openStreams(Map options) throws IncomingFileTransferException {
 		URL theURL = null;
 
@@ -45,6 +47,8 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			setInputStream(urlConnection.getInputStream());
 			setFileLength(urlConnection.getContentLength());
 
+			id = new FileTransferID(getRetrieveNamespace(),theURL);
+			
 			listener
 					.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
 						private static final long serialVersionUID = -59096575294481755L;
@@ -125,7 +129,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
 	 */
 	public ID getID() {
-		return new FileTransferID(getRetrieveNamespace(),getRemoteFileURL());
+		return id;
 	}
 
 
