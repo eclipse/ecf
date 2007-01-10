@@ -6,8 +6,7 @@ Bundle-Version: 0.9.6
 Bundle-Activator: org.eclipse.ecf.internal.provider.filetransfer.Activator
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.ecf,
- org.eclipse.ecf.filetransfer,
- org.eclipse.ecf.sharedobject
+ org.eclipse.ecf.filetransfer
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
