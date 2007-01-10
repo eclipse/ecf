@@ -12,7 +12,6 @@ import java.net.URL;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.INamespaceAdapter;
 import org.eclipse.ecf.core.identity.Namespace;
 
 /**
@@ -31,10 +30,6 @@ public class FileTransferNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
 	public ID createInstance(Object[] args) throws IDCreateException {
-		INamespaceAdapter adapter = (INamespaceAdapter) getAdapter(INamespaceAdapter.class);
-		if (adapter != null)
-			return adapter.createInstance(this, args);
-		else {
 			if (args == null || args.length == 0)
 				throw new IDCreateException("arguments is null or empty");
 			try {
@@ -47,7 +42,6 @@ public class FileTransferNamespace extends Namespace {
 			}
 			throw new IDCreateException(
 					"arguments not correct to create instance of FileTransferNamespace");
-		}
 	}
 
 	/*
@@ -56,11 +50,7 @@ public class FileTransferNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedSchemes()
 	 */
 	public String[] getSupportedSchemes() {
-		INamespaceAdapter adapter = (INamespaceAdapter) getAdapter(INamespaceAdapter.class);
-		if (adapter != null)
-			return adapter.getSupportedSchemes(this);
-		else
-			return super.getSupportedSchemes();
+		return new String [] { "http", "https", "ftp", "file" };
 	}
 
 	/*
@@ -78,11 +68,7 @@ public class FileTransferNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		INamespaceAdapter adapter = (INamespaceAdapter) getAdapter(INamespaceAdapter.class);
-		if (adapter != null)
-			return adapter.getSupportedParameterTypes(this);
-		else
-			return new Class[][] { { URL.class }, { String.class } };
+		return new Class[][] { { URL.class }, { String.class } };
 	}
 
 }
