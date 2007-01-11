@@ -8,8 +8,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.ui.views;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,11 +70,14 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
-public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitationListener {
+public class ChatRoomManagerView extends ViewPart implements
+		IChatRoomInvitationListener {
 	private static final String COMMAND_PREFIX = "/";
 
 	private static final String COMMAND_DELIM = " ";
@@ -118,6 +123,9 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 	private CTabFolder tabFolder = null;
 
 	private Manager rootChatRoomTabItem = null;
+
+	private IWorkbenchBrowserSupport browserSupport = PlatformUI.getWorkbench()
+			.getBrowserSupport();
 
 	IChatRoomViewCloseListener closeListener = null;
 
@@ -382,7 +390,8 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 	}
 
 	protected void doJoin(String target, String key) {
-		// With manager, first thing we do is get the IChatRoomInfo for the target
+		// With manager, first thing we do is get the IChatRoomInfo for the
+		// target
 		// channel
 		IChatRoomInfo roomInfo = chatRoomManager.getChatRoomInfo(target);
 		// If it's null, we give up
@@ -401,8 +410,10 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				chatRoomContainer.addMessageListener(new IIMMessageListener() {
 					public void handleMessageEvent(IIMMessageEvent messageEvent) {
 						if (messageEvent instanceof IChatRoomMessageEvent) {
-							IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
-							chatroomview.handleMessage(m.getFromID(), m.getMessage());
+							IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
+									.getChatRoomMessage();
+							chatroomview.handleMessage(m.getFromID(), m
+									.getMessage());
 						}
 					}
 				});
@@ -547,8 +558,8 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			});
 		}
 
-		public void handleInvitationReceived(ID roomID, ID from, String subject,
-				String body) {
+		public void handleInvitationReceived(ID roomID, ID from,
+				String subject, String body) {
 			System.out.println("invitation room=" + roomID + ",from=" + from
 					+ ",subject=" + subject + ",body=" + body);
 		}
@@ -1031,10 +1042,198 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				+ ",subject=" + subject + ",body=" + body);
 	}
 
+	private boolean intelligentAppend(SimpleLinkTextViewer readText,
+			StyledText st, ChatLine text) {
+		String line = text.getText();
+		// check to see if a link exists in this line
+		int index = line.indexOf("http://"); //$NON-NLS-1$
+		if (index == -1) {
+			index = line.indexOf("https://"); //$NON-NLS-1$
+			if (index == -1) {
+				index = line.indexOf("www."); //$NON-NLS-1$
+				if (index == -1) {
+					return false;
+				}
+			}
+		} else {
+			int nextIndex = line.indexOf("https://"); //$NON-NLS-1$
+			if (nextIndex != -1 && nextIndex < index) {
+				index = nextIndex;
+			}
+
+			nextIndex = line.indexOf("www."); //$NON-NLS-1$
+			if (nextIndex != -1 && nextIndex < index) {
+				index = nextIndex;
+			}
+		}
+
+		int startRange = st.getText().length();
+		StringBuffer sb = new StringBuffer();
+		// check to see if the message has the user's name contained within
+		boolean nickContained = text.getText().indexOf(userName) != -1;
+		if (text.getOriginator() != null) {
+			// check to make sure that the person referring to the user's name
+			// is not the user himself, no highlighting is required in this case
+			// as the user is already aware that his name is being referenced
+			nickContained = !text.getOriginator().getName().equals(userName)
+					&& nickContained;
+			sb.append('(').append(getCurrentDate(DEFAULT_TIME_FORMAT)).append(
+					") "); //$NON-NLS-1$
+			StyleRange dateStyle = new StyleRange();
+			dateStyle.start = startRange;
+			dateStyle.length = sb.length();
+			dateStyle.foreground = dateColor;
+			dateStyle.fontStyle = SWT.NORMAL;
+			st.append(sb.toString());
+			st.setStyleRange(dateStyle);
+			sb = new StringBuffer();
+			sb.append(text.getOriginator().getName()).append(": "); //$NON-NLS-1$
+			StyleRange sr = new StyleRange();
+			sr.start = startRange + dateStyle.length;
+			sr.length = sb.length();
+			sr.fontStyle = SWT.BOLD;
+			// check to see which color should be used
+			sr.foreground = nickContained ? highlightColor : otherColor;
+			st.append(sb.toString());
+			st.setStyleRange(sr);
+		}
+
+		while (index != -1) {
+			String front = line.substring(0, index);
+			line = line.substring(index);
+			int beforeMessageIndex = st.getText().length();
+			st.append(front);
+			if (text.getOriginator() == null) {
+				StyleRange sr = new StyleRange();
+				sr.start = beforeMessageIndex;
+				sr.length = front.length();
+				sr.foreground = systemColor;
+				sr.fontStyle = SWT.BOLD;
+				st.setStyleRange(sr);
+			} else if (nickContained) {
+				// highlight the message itself as necessary
+				StyleRange sr = new StyleRange();
+				sr.start = beforeMessageIndex;
+				sr.length = front.length();
+				sr.foreground = highlightColor;
+				st.setStyleRange(sr);
+			}
+
+			int spaceIndex = line.indexOf(' ');
+			if (spaceIndex != -1) {
+				String url = line.substring(0, spaceIndex);
+				if (!url.startsWith("http")) { //$NON-NLS-1$
+					readText.appendLink(url, createLinkRunnable("http://" //$NON-NLS-1$
+							+ url));
+				} else {
+					readText.appendLink(url, createLinkRunnable(url));
+				}
+				line = line.substring(spaceIndex);
+				index = line.indexOf("http://"); //$NON-NLS-1$
+				if (index == -1) {
+					index = line.indexOf("https://"); //$NON-NLS-1$
+					if (index == -1) {
+						index = line.indexOf("www."); //$NON-NLS-1$
+						if (index == -1) {
+							return false;
+						}
+					}
+				} else {
+					int nextIndex = line.indexOf("https://"); //$NON-NLS-1$
+					if (nextIndex != -1 && nextIndex < index) {
+						index = nextIndex;
+					}
+
+					nextIndex = line.indexOf("www."); //$NON-NLS-1$
+					if (nextIndex != -1 && nextIndex < index) {
+						index = nextIndex;
+					}
+				}
+			} else {
+				if (!line.startsWith("http")) { //$NON-NLS-1$
+					readText.appendLink(line, createLinkRunnable("http://" //$NON-NLS-1$
+							+ line));
+				} else {
+					readText.appendLink(line, createLinkRunnable(line));
+				}
+				line = null;
+				break;
+			}
+		}
+
+		if (line != null && !line.equals("")) { //$NON-NLS-1$
+			int beforeMessageIndex = st.getText().length();
+			st.append(line);
+			if (text.getOriginator() == null) {
+				StyleRange sr = new StyleRange();
+				sr.start = beforeMessageIndex;
+				sr.length = line.length();
+				sr.foreground = systemColor;
+				sr.fontStyle = SWT.BOLD;
+				st.setStyleRange(sr);
+			} else if (nickContained) {
+				// highlight the message itself as necessary
+				StyleRange sr = new StyleRange();
+				sr.start = beforeMessageIndex;
+				sr.length = line.length();
+				sr.foreground = highlightColor;
+				st.setStyleRange(sr);
+			}
+		}
+
+		if (!text.isNoCRLF()) {
+			st.append("\n"); //$NON-NLS-1$
+		}
+
+		return true;
+	}
+
+	private Runnable createLinkRunnable(final String url) {
+		return new Runnable() {
+			public void run() {
+				URL link = null;
+				try {
+					link = new URL(url);
+				} catch (MalformedURLException e) {
+					MessageDialog.openError(getSite().getShell(), "Link Error",
+							"The link is not of a proper form");
+					return;
+				}
+				if (browserSupport.isInternalWebBrowserAvailable()) {
+					try {
+						browserSupport.createBrowser(
+								IWorkbenchBrowserSupport.AS_VIEW,
+								"org.eclipse.ecf", url, url).openURL(link);
+					} catch (PartInitException e) {
+						try {
+							browserSupport.getExternalBrowser().openURL(link);
+						} catch (PartInitException ex) {
+							MessageDialog.openError(getSite().getShell(),
+									"Browser Error",
+									"Could not open a browser instance.");
+						}
+					}
+				} else {
+					try {
+						browserSupport.getExternalBrowser().openURL(link);
+					} catch (PartInitException e) {
+						MessageDialog.openError(getSite().getShell(),
+								"Browser Error",
+								"Could not open a browser instance.");
+					}
+				}
+			}
+		};
+	}
+
 	protected void appendText(SimpleLinkTextViewer readText, ChatLine text) {
-		StyledText st = readText.getTextWidget();
-		if (text == null || readText == null || st == null)
+		if (readText == null || text == null) {
 			return;
+		}
+		StyledText st = readText.getTextWidget();
+		if (st == null || intelligentAppend(readText, st, text)) {
+			return;
+		}
 		int startRange = st.getText().length();
 		StringBuffer sb = new StringBuffer();
 		// check to see if the message has the user's name contained within
