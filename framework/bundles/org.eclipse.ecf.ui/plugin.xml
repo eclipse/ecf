@@ -59,6 +59,20 @@
             name="ECF Generic Server">
       </wizard>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.eclipse.ecf.ui.ChatPreferencePage"
+            id="org.eclipse.ecf.example.collab.ui.preferences.chat"
+            name="ECF Chat">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.ecf.internal.ui.UIPreferenceInitializer">
+      </initializer>
+   </extension>
    <!--
    <extension
          point="org.eclipse.ui.actionSets">

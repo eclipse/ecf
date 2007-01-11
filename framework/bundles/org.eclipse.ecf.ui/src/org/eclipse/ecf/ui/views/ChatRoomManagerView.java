@@ -1,10 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: Composent, Inc. - initial API and implementation
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.ui.views;
 
@@ -28,6 +30,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IParticipantListener;
@@ -40,6 +43,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.ecf.ui.ChatPreferencePage;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -1200,10 +1204,29 @@ public class ChatRoomManagerView extends ViewPart implements
 					return;
 				}
 				if (browserSupport.isInternalWebBrowserAvailable()) {
+					String pref = Activator
+							.getDefault()
+							.getPreferenceStore()
+							.getString(ChatPreferencePage.PREF_BROWSER_FOR_CHAT);
 					try {
-						browserSupport.createBrowser(
-								IWorkbenchBrowserSupport.AS_VIEW,
-								"org.eclipse.ecf", url, url).openURL(link);
+						if (pref.equals(ChatPreferencePage.VIEW)) {
+							browserSupport.createBrowser(
+									IWorkbenchBrowserSupport.AS_VIEW,
+									"org.eclipse.ecf", url, url).openURL(link);
+						} else if (pref.equals(ChatPreferencePage.EDITOR)) {
+							browserSupport.createBrowser(
+									IWorkbenchBrowserSupport.AS_EDITOR,
+									"org.eclipse.ecf", url, url).openURL(link);
+						} else {
+							try {
+								browserSupport.getExternalBrowser().openURL(
+										link);
+							} catch (PartInitException ex) {
+								MessageDialog.openError(getSite().getShell(),
+										"Browser Error",
+										"Could not open a browser instance.");
+							}
+						}
 					} catch (PartInitException e) {
 						try {
 							browserSupport.getExternalBrowser().openURL(link);
