@@ -91,6 +91,8 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 
 	protected ID unknownID = null;
 	protected ReplyHandler replyHandler = new ReplyHandler();
+
+	private ArrayList invitationListeners;
 	
 	protected void fireContainerEvent(IContainerEvent event) {
 		synchronized (listeners) {
@@ -122,6 +124,7 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 		super();
 		this.localID = localID;
 		this.unknownID = IDFactory.getDefault().createStringID("system.unknown");
+		invitationListeners = new ArrayList();
 	}
 	protected IRCEventListener getIRCEventListener() {
 		return new IRCEventListener() {
@@ -498,7 +501,15 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 		isJoined(arg0,arg1);
 	}
 	protected void handleOnInvite(String arg0, IRCUser arg1, String arg2) {
-		trace("handleOnInvite("+arg0+","+arg1+","+arg2+")");
+		ID channelID = createIDFromString(arg0);
+		ID fromID = createIDFromString(arg1.getNick());
+		synchronized (invitationListeners) {
+			for (int i = 0; i < invitationListeners.size(); i++) {
+				IChatRoomInvitationListener icril = (IChatRoomInvitationListener) invitationListeners
+						.get(i);
+				icril.handleInvitationReceived(channelID, fromID, null, null);
+			}
+		}
 	}
 	protected void handleOnError(int arg0, String arg1) {
 		trace("handleOnError("+arg0+","+arg1+")");
@@ -768,10 +779,20 @@ public class IRCContainer implements IContainer, IChatRoomManager, IChatRoomCont
 		}
 	}
 	public void addInvitationListener(IChatRoomInvitationListener listener) {
-		// TODO Auto-generated method stub
+		if (listener != null) {
+			synchronized (invitationListeners) {
+				if (!invitationListeners.contains(listener)) {
+					invitationListeners.add(listener);
+				}
+			}
+		}
 	}
 	public void removeInvitationListener(IChatRoomInvitationListener listener) {
-		// TODO Auto-generated method stub
+		if (listener != null) {
+			synchronized (invitationListeners) {
+				invitationListeners.remove(listener);
+			}
+		}
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#createChatRoom(java.lang.String, java.util.Map)

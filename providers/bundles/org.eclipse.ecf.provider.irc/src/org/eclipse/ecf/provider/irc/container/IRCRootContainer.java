@@ -11,6 +11,7 @@
 package org.eclipse.ecf.provider.irc.container;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -63,10 +64,13 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 	protected String encoding = null;
 
+	private ArrayList invitationListeners;
+
 	public IRCRootContainer(ID localID) throws IDCreateException {
 		this.localID = localID;
 		this.unknownID = IDFactory.getDefault().createStringID("host");
 		this.replyHandler = new ReplyHandler();
+		invitationListeners = new ArrayList();
 	}
 
 	/*
@@ -153,7 +157,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			}
 
 			public void onInvite(String arg0, IRCUser arg1, String arg2) {
-				trace("handleOnInvite(" + arg0 + "," + arg1 + "," + arg2 + ")");
+				handleInvite(createIDFromString(arg0), createIDFromString(arg1
+						.getNick()));
 			}
 
 			public void onJoin(String arg0, IRCUser arg1) {
@@ -189,7 +194,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 			public void onPart(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnPart(" + arg0 + "," + arg1 + "," + arg2 + ")");
-				IRCChannelContainer channel = (IRCChannelContainer) channels.get(arg0);
+				IRCChannelContainer channel = (IRCChannelContainer) channels
+						.get(arg0);
 				if (channel != null) {
 					channel.firePresenceListeners(false, getIRCUserName(arg1));
 				}
@@ -509,6 +515,16 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		}
 	}
 
+	private void handleInvite(ID channelID, ID fromID) {
+		synchronized (invitationListeners) {
+			for (int i = 0; i < invitationListeners.size(); i++) {
+				IChatRoomInvitationListener icril = (IChatRoomInvitationListener) invitationListeners
+						.get(i);
+				icril.handleInvitationReceived(channelID, fromID, null, null);
+			}
+		}
+	}
+
 	protected IRCChannelContainer getChannel(String channel) {
 		if (channel == null)
 			return null;
@@ -641,18 +657,32 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	}
 
 	public void addInvitationListener(IChatRoomInvitationListener listener) {
-		// TODO Auto-generated method stub
+		if (listener != null) {
+			synchronized (invitationListeners) {
+				if (!invitationListeners.contains(listener)) {
+					invitationListeners.add(listener);
+				}
+			}
+		}
 	}
 
 	public void removeInvitationListener(IChatRoomInvitationListener listener) {
-		// TODO Auto-generated method stub
+		if (listener != null) {
+			synchronized (invitationListeners) {
+				invitationListeners.remove(listener);
+			}
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#createChatRoom(java.lang.String, java.util.Map)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#createChatRoom(java.lang.String,
+	 *      java.util.Map)
 	 */
 	public IChatRoomInfo createChatRoom(String roomname, Map properties)
 			throws ChatRoomCreateException {
-		throw new ChatRoomCreateException(roomname,"creation not supported", null);
+		throw new ChatRoomCreateException(roomname, "creation not supported",
+				null);
 	}
 }
