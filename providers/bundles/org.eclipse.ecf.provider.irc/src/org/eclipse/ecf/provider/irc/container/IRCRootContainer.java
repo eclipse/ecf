@@ -1,5 +1,5 @@
-/****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+/*******************************************************************************
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
- *****************************************************************************/
+ ******************************************************************************/
 package org.eclipse.ecf.provider.irc.container;
 
 import java.io.IOException;
@@ -145,13 +145,11 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			public void onError(String arg0) {
 				trace("handleOnError(" + arg0 + ")");
 				showMessage(null, "ERROR: " + arg0);
-				handleDisconnected();
 			}
 
 			public void onError(int arg0, String arg1) {
 				trace("handleOnError(" + arg0 + "," + arg1 + ")");
 				showMessage(null, "ERROR: " + arg0 + "," + arg1);
-				handleDisconnected();
 			}
 
 			public void onInvite(String arg0, IRCUser arg1, String arg2) {
