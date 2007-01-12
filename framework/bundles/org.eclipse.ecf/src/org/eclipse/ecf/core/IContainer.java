@@ -1,10 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: Composent, Inc. - initial API and implementation
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
@@ -169,7 +171,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	public void dispose();
 
 	/**
-	 * Add listener to IContainer. Listener's handleEvent method will be
+	 * Add listener to IContainer. The listener's handleEvent method will be
 	 * synchronously called when container methods are called. Minimally, the
 	 * events delivered to the listener are as follows <br>
 	 * <table BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
@@ -187,7 +189,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * </tr>
 	 * <tr>
 	 * <td>disconnect start</td>
-	 * <td>IContainerDiscnnectingEvent</td>
+	 * <td>IContainerDisconnectingEvent</td>
 	 * </tr>
 	 * <tr>
 	 * <td>disconnect complete</td>
