@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF XMPP Provide UI
+Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp.ui
+Bundle-Version: 0.9.6
+Bundle-Activator: org.eclipse.ecf.internal.provider.xmpp.ui.Activator
+Bundle-Vendor: Eclipse.org
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Eclipse-AutoStart: true
