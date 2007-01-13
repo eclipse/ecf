@@ -6,5 +6,7 @@ Bundle-Version: 0.9.6
 Bundle-Activator: org.eclipse.ecf.internal.provider.xmpp.ui.Activator
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ecf.ui
 Eclipse-AutoStart: true
