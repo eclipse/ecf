@@ -89,9 +89,11 @@ public class ECFConnection implements ISynchAsynchConnection {
 		this.namespace = ns;
 		this.google = google;
 		this.secure = secure;
+		/*
 		if (Platform.inDebugMode()) {
 			XMPPConnection.DEBUG_ENABLED = true;
 		}
+		*/
 	}
 
 	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h) {
