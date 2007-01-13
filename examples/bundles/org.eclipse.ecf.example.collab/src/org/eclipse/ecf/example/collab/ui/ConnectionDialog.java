@@ -387,8 +387,10 @@ public class ConnectionDialog extends TitleAreaDialog {
 					.getSelection();
 			ContainerTypeDescription desc = (ContainerTypeDescription) selection
 					.getFirstElement();
-			containerType = desc.getName();
-			createPropertyComposite(paramComp, desc.getProperties());
+			if (desc != null) {
+				containerType = desc.getName();
+				createPropertyComposite(paramComp, desc.getProperties());
+			}
 		}
 
 		protected void createPropertyComposite(Composite parent, Map properties) {
