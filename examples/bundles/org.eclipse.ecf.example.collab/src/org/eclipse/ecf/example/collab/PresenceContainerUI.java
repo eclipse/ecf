@@ -99,7 +99,11 @@ public class PresenceContainerUI {
 					IViewPart view = wp
 							.showView("org.eclipse.ecf.ui.view.rosterview");
 					rosterView = (RosterView) view;
-
+					
+					// MultiRosterViewTesting
+					//MultiRosterView mrv = (MultiRosterView) wp.showView("org.eclipse.ecf.presence.ui.MultiRosterView");
+					//mrv.addContainer(PresenceContainerUI.this.container);
+					
 					String nickname = null;
 					if (nick != null) {
 						nickname = nick;
@@ -380,7 +384,6 @@ public class PresenceContainerUI {
 						// System.out.println("unsubscribed from "+fromID);
 					}
 				});
-
 	}
 
 }
