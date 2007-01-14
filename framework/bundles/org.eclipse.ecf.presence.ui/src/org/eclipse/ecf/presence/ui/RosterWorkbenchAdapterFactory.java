@@ -20,9 +20,10 @@ import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.IImageFiles;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.roster.Roster;
-import org.eclipse.ecf.presence.roster.RosterEntry;
-import org.eclipse.ecf.presence.roster.RosterGroup;
+import org.eclipse.ecf.presence.roster.IRoster;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.presence.roster.IRosterGroup;
+import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.RosterItem;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
@@ -61,7 +62,7 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 				iconFile);
 	}
 
-	protected String getRosterLabel(Roster roster) {
+	protected String getRosterLabel(IRoster roster) {
 		IUser user = roster.getUser();
 		if (user == null)
 			return ROSTER_DISCONNECTED_NAME;
@@ -69,7 +70,7 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 			return user.getName();
 	}
 
-	protected ImageDescriptor getRosterImageDescriptor(Roster roster) {
+	protected ImageDescriptor getRosterImageDescriptor(IRoster roster) {
 		IUser user = roster.getUser();
 		if (user == null)
 			return getImageDescriptor(IImageFiles.USER_UNAVAILABLE_ICON);
@@ -80,16 +81,16 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	private IWorkbenchAdapter rosterAdapter = new IWorkbenchAdapter() {
 
 		public Object[] getChildren(Object o) {
-			Roster roster = (Roster) o;
+			IRoster roster = (IRoster) o;
 			return roster.getItems().toArray();
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {
-			return getRosterImageDescriptor((Roster) object);
+			return getRosterImageDescriptor((IRoster) object);
 		}
 
 		public String getLabel(Object o) {
-			return getRosterLabel((Roster) o);
+			return getRosterLabel((IRoster) o);
 		}
 
 		public Object getParent(Object o) {
@@ -101,10 +102,10 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 		int count = 0;
 		for (Iterator i = entries.iterator(); i.hasNext();) {
 			Object o = i.next();
-			if (o instanceof RosterEntry) {
-				RosterEntry entry = (RosterEntry) o;
-				if (entry.getPresence().getMode().equals(
-						IPresence.Mode.AVAILABLE))
+			if (o instanceof IRosterEntry) {
+				IRosterEntry entry = (IRosterEntry) o;
+				if (entry.getPresence().getType().equals(
+						IPresence.Type.AVAILABLE))
 					count++;
 			}
 		}
@@ -115,13 +116,13 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 		int count = 0;
 		for (Iterator i = entries.iterator(); i.hasNext();) {
 			Object o = i.next();
-			if (o instanceof RosterEntry)
+			if (o instanceof IRosterEntry)
 				count++;
 		}
 		return count;
 	}
 
-	protected String getRosterGroupLabel(RosterGroup group) {
+	protected String getRosterGroupLabel(IRosterGroup group) {
 		Collection entries = group.getEntries();
 		StringBuffer buf = new StringBuffer(group.getName()).append(Messages.getString("RosterWorkbenchAdapterFactory.7")); //$NON-NLS-1$
 		buf.append(LEFT_PAREN).append(getEntriesAvailableCount(entries))
@@ -130,35 +131,35 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 		return buf.toString();
 	}
 
-	protected ImageDescriptor getRosterGroupImageDescriptor(RosterGroup group) {
+	protected ImageDescriptor getRosterGroupImageDescriptor(IRosterGroup group) {
 		return getImageDescriptor(IImageFiles.GROUP_ICON);
 	}
 
 	private IWorkbenchAdapter rosterGroupAdapter = new IWorkbenchAdapter() {
 
 		public Object[] getChildren(Object o) {
-			return ((RosterGroup) o).getEntries().toArray();
+			return ((IRosterGroup) o).getEntries().toArray();
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {
-			return getRosterGroupImageDescriptor((RosterGroup) object);
+			return getRosterGroupImageDescriptor((IRosterGroup) object);
 		}
 
 		public String getLabel(Object o) {
-			return getRosterGroupLabel((RosterGroup) o);
+			return getRosterGroupLabel((IRosterGroup) o);
 		}
 
 		public Object getParent(Object o) {
-			return ((RosterGroup) o).getParent();
+			return ((IRosterGroup) o).getParent();
 		}
 
 	};
 
-	protected String getRosterItemLabel(RosterItem item) {
+	protected String getRosterItemLabel(IRosterItem item) {
 		return item.getName();
 	}
 
-	protected ImageDescriptor getRosterItemImageDescriptor(RosterItem item) {
+	protected ImageDescriptor getRosterItemImageDescriptor(IRosterItem item) {
 		return null;
 	}
 
@@ -169,20 +170,20 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {
-			return getRosterItemImageDescriptor((RosterItem) object);
+			return getRosterItemImageDescriptor((IRosterItem) object);
 		}
 
 		public String getLabel(Object o) {
-			return getRosterItemLabel((RosterItem) o);
+			return getRosterItemLabel((IRosterItem) o);
 		}
 
 		public Object getParent(Object o) {
-			return ((RosterItem) o).getParent();
+			return ((IRosterItem) o).getParent();
 		}
 
 	};
 
-	protected Object[] getRosterEntryChildrenFromPresence(RosterEntry entry) {
+	protected Object[] getRosterEntryChildrenFromPresence(IRosterEntry entry) {
 		IPresence presence = entry.getPresence();
 		Map properties = presence.getProperties();
 		int fixedEntries = 3;
@@ -199,11 +200,11 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 		return children;
 	}
 
-	protected String getRosterEntryLabel(RosterEntry entry) {
+	protected String getRosterEntryLabel(IRosterEntry entry) {
 		return entry.getName();
 	}
 
-	protected ImageDescriptor getRosterEntryImageDescriptor(RosterEntry entry) {
+	protected ImageDescriptor getRosterEntryImageDescriptor(IRosterEntry entry) {
 		IPresence p = entry.getPresence();
 		if (p != null) {
 			IPresence.Type pType = p.getType();
@@ -228,19 +229,19 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	private IWorkbenchAdapter rosterEntryAdapter = new IWorkbenchAdapter() {
 
 		public Object[] getChildren(Object o) {
-			return getRosterEntryChildrenFromPresence((RosterEntry) o);
+			return getRosterEntryChildrenFromPresence((IRosterEntry) o);
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {
-			return getRosterEntryImageDescriptor((RosterEntry) object);
+			return getRosterEntryImageDescriptor((IRosterEntry) object);
 		}
 
 		public String getLabel(Object o) {
-			return getRosterEntryLabel((RosterEntry) o);
+			return getRosterEntryLabel((IRosterEntry) o);
 		}
 
 		public Object getParent(Object o) {
-			return ((RosterEntry) o).getParent();
+			return ((IRosterEntry) o).getParent();
 		}
 
 	};
@@ -250,13 +251,13 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	 */
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType.equals(IWorkbenchAdapter.class)) {
-			if (adaptableObject instanceof Roster)
+			if (adaptableObject instanceof IRoster)
 				return rosterAdapter;
-			if (adaptableObject instanceof RosterGroup)
+			if (adaptableObject instanceof IRosterGroup)
 				return rosterGroupAdapter;
-			if (adaptableObject instanceof RosterEntry)
+			if (adaptableObject instanceof IRosterEntry)
 				return rosterEntryAdapter;
-			if (adaptableObject instanceof RosterItem)
+			if (adaptableObject instanceof IRosterItem)
 				return rosterItemAdapter;
 		}
 		return null;

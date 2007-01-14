@@ -11,10 +11,10 @@
 package org.eclipse.ecf.presence.ui;
 
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.ecf.presence.roster.Roster;
-import org.eclipse.ecf.presence.roster.RosterEntry;
-import org.eclipse.ecf.presence.roster.RosterGroup;
-import org.eclipse.ecf.presence.roster.RosterItem;
+import org.eclipse.ecf.presence.roster.IRoster;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.presence.roster.IRosterGroup;
+import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.model.IWorkbenchAdapter2;
@@ -28,15 +28,15 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	private IWorkbenchAdapter2 rosterAdapter = new IWorkbenchAdapter2() {
 
 		public RGB getBackground(Object element) {
-			return getBackgroundForRoster((Roster) element);
+			return getBackgroundForRoster((IRoster) element);
 		}
 
 		public FontData getFont(Object element) {
-			return getFontForRoster((Roster) element);
+			return getFontForRoster((IRoster) element);
 		}
 
 		public RGB getForeground(Object element) {
-			return getForegroundForRoster((Roster) element);
+			return getForegroundForRoster((IRoster) element);
 		}
 
 	};
@@ -44,15 +44,15 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	private IWorkbenchAdapter2 rosterGroupAdapter = new IWorkbenchAdapter2() {
 
 		public RGB getBackground(Object element) {
-			return getBackgroundForRosterGroup((RosterGroup) element);
+			return getBackgroundForRosterGroup((IRosterGroup) element);
 		}
 
 		public FontData getFont(Object element) {
-			return getFontForRosterGroup((RosterGroup) element);
+			return getFontForRosterGroup((IRosterGroup) element);
 		}
 
 		public RGB getForeground(Object element) {
-			return getForegroundForRosterGroup((RosterGroup) element);
+			return getForegroundForRosterGroup((IRosterGroup) element);
 		}
 
 	};
@@ -60,15 +60,15 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	private IWorkbenchAdapter2 rosterItemAdapter = new IWorkbenchAdapter2() {
 
 		public RGB getBackground(Object element) {
-			return getBackgroundForRosterItem((RosterItem) element);
+			return getBackgroundForRosterItem((IRosterItem) element);
 		}
 
 		public FontData getFont(Object element) {
-			return getFontForRosterItem((RosterItem) element);
+			return getFontForRosterItem((IRosterItem) element);
 		}
 
 		public RGB getForeground(Object element) {
-			return getForegroundForRosterItem((RosterItem) element);
+			return getForegroundForRosterItem((IRosterItem) element);
 		}
 
 	};
@@ -76,28 +76,28 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	private IWorkbenchAdapter2 rosterEntryAdapter = new IWorkbenchAdapter2() {
 
 		public RGB getBackground(Object element) {
-			return getBackgroundForRosterEntry((RosterEntry) element);
+			return getBackgroundForRosterEntry((IRosterEntry) element);
 		}
 
 		public FontData getFont(Object element) {
-			return getFontForRosterEntry((RosterEntry) element);
+			return getFontForRosterEntry((IRosterEntry) element);
 		}
 
 		public RGB getForeground(Object element) {
-			return getForegroundForRosterEntry((RosterEntry) element);
+			return getForegroundForRosterEntry((IRosterEntry) element);
 		}
 
 	};
 
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType.equals(IWorkbenchAdapter2.class)) {
-			if (adaptableObject instanceof Roster)
+			if (adaptableObject instanceof IRoster)
 				return rosterAdapter;
-			if (adaptableObject instanceof RosterGroup)
+			if (adaptableObject instanceof IRosterGroup)
 				return rosterGroupAdapter;
-			if (adaptableObject instanceof RosterEntry)
+			if (adaptableObject instanceof IRosterEntry)
 				return rosterEntryAdapter;
-			if (adaptableObject instanceof RosterItem)
+			if (adaptableObject instanceof IRosterItem)
 				return rosterItemAdapter;
 		}
 		return null;
@@ -111,7 +111,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return RGB to use as foreground color. If <code>null</code> use
 	 *         default color
 	 */
-	protected RGB getForegroundForRosterEntry(RosterEntry element) {
+	protected RGB getForegroundForRosterEntry(IRosterEntry element) {
 		return null;
 	}
 
@@ -123,7 +123,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return FontData to use for rendering given element. If <code>null</code>
 	 *         use default FontData
 	 */
-	protected FontData getFontForRosterEntry(RosterEntry element) {
+	protected FontData getFontForRosterEntry(IRosterEntry element) {
 		return null;
 	}
 
@@ -135,7 +135,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return RGB to use as background color. If <code>null</code> use
 	 *         default color
 	 */
-	protected RGB getBackgroundForRosterEntry(RosterEntry element) {
+	protected RGB getBackgroundForRosterEntry(IRosterEntry element) {
 		return null;
 	}
 
@@ -147,7 +147,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return RGB to use as foreground color. If <code>null</code> use
 	 *         default color
 	 */
-	protected RGB getForegroundForRosterItem(RosterItem element) {
+	protected RGB getForegroundForRosterItem(IRosterItem element) {
 		return null;
 	}
 
@@ -159,7 +159,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return FontData to use for rendering given element. If <code>null</code>
 	 *         use default FontData
 	 */
-	protected FontData getFontForRosterItem(RosterItem element) {
+	protected FontData getFontForRosterItem(IRosterItem element) {
 		return null;
 	}
 
@@ -171,7 +171,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return RGB to use as background color. If <code>null</code> use
 	 *         default color
 	 */
-	protected RGB getBackgroundForRosterItem(RosterItem element) {
+	protected RGB getBackgroundForRosterItem(IRosterItem element) {
 		return null;
 	}
 
@@ -183,7 +183,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return RGB to use as foreground color. If <code>null</code> use
 	 *         default color
 	 */
-	protected RGB getForegroundForRosterGroup(RosterGroup element) {
+	protected RGB getForegroundForRosterGroup(IRosterGroup element) {
 		return null;
 	}
 
@@ -195,7 +195,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return FontData to use for rendering given element. If <code>null</code>
 	 *         use default FontData
 	 */
-	protected FontData getFontForRosterGroup(RosterGroup element) {
+	protected FontData getFontForRosterGroup(IRosterGroup element) {
 		return null;
 	}
 
@@ -205,7 +205,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return RGB to use as background color. If <code>null</code> use
 	 *         default color
 	 */
-	protected RGB getBackgroundForRosterGroup(RosterGroup element) {
+	protected RGB getBackgroundForRosterGroup(IRosterGroup element) {
 		return null;
 	}
 
@@ -215,7 +215,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return RGB to use as foreground color. If <code>null</code> use
 	 *         default color
 	 */
-	protected RGB getForegroundForRoster(Roster element) {
+	protected RGB getForegroundForRoster(IRoster element) {
 		return null;
 	}
 
@@ -227,7 +227,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return FontData to use for rendering given element. If <code>null</code>
 	 *         use default FontData
 	 */
-	protected FontData getFontForRoster(Roster element) {
+	protected FontData getFontForRoster(IRoster element) {
 		return null;
 	}
 
@@ -239,7 +239,7 @@ public class RosterWorkbenchAdapter2Factory implements IAdapterFactory {
 	 * @return RGB to use as background color. If <code>null</code> use
 	 *         default color
 	 */
-	protected RGB getBackgroundForRoster(Roster element) {
+	protected RGB getBackgroundForRoster(IRoster element) {
 		return null;
 	}
 
