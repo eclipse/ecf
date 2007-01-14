@@ -32,8 +32,8 @@ public class RosterGroup extends RosterParent {
 				RosterBuddy tb = (RosterBuddy) childs[i];
 				IPresence presence = tb.getPresence();
 				if (presence != null
-						&& presence.getMode().equals(
-								IPresence.Mode.AVAILABLE))
+						&& presence.getType().equals(
+								IPresence.Type.AVAILABLE))
 					totCount++;
 			}
 		}

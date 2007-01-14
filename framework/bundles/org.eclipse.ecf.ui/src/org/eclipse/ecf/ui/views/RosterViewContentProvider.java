@@ -84,7 +84,7 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 	public RosterBuddy fillPresence(RosterBuddy obj, IPresence presence) {
 		obj.setPresence(presence);
 		obj.removeChildren();
-		obj.addChild(new RosterObject("XMPPID: " + obj.getID().getName()));
+		obj.addChild(new RosterObject("ID: " + obj.getID().getName()));
 		obj
 				.addChild(new RosterObject("Type: "
 						+ presence.getType().toString()));

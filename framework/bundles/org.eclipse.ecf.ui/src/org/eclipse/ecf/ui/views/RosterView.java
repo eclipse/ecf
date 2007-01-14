@@ -17,10 +17,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
@@ -136,10 +138,10 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 			ID accountID = account.getServiceID();
 			if (accountID != null) {
 				vcp.addAccount(accountID, accountID.getName());
+				accounts.put(accountID, account);
 				refreshView();
 			}
 		}
-		accounts.put(account.getServiceID(), account);
 	}
 
 	protected RosterUserAccount getAccount(ID serviceID) {
@@ -147,7 +149,12 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 	}
 
 	protected void removeAccount(ID serviceID) {
-		accounts.remove(serviceID);
+		synchronized (accounts) {
+			for(Iterator i=accounts.keySet().iterator(); i.hasNext(); ) {
+				ID key = (ID) i.next();
+				if (key.equals(serviceID)) i.remove();
+			}
+		}
 	}
 
 	protected String getUserNameFromID(ID userID) {
@@ -236,10 +243,6 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(disconnectAction);
 		manager.add(openChatRoomAction);
-	}
-
-	protected void disconnectAccount(RosterUserAccount acct) {
-		acct.getInputHandler().disconnect();
 	}
 
 	/**
@@ -342,7 +345,7 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 							if (MessageDialog.openConfirm(RosterView.this
 									.getViewSite().getShell(), "Disconnect",
 									"Disconnect from account?")) {
-								disconnectAccount(ua);
+								ua.getInputHandler().disconnect();
 							}
 						}
 					};
@@ -452,7 +455,7 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 
 	protected ID inputIMTarget() {
 		InputDialog dlg = new InputDialog(getSite().getShell(), "Send IM",
-				"Please enter the XMPP ID of the person you would like to IM",
+				"Please enter the ID of the person you would like to IM",
 				"", null);
 		dlg.setBlockOnOpen(true);
 		int res = dlg.open();
@@ -693,11 +696,13 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 				if (MessageDialog.openConfirm(RosterView.this.getViewSite()
 						.getShell(), "Disconnect", "Disconnect all accounts?")) {
 					// Disconnect all accounts
-					for (Iterator i = accounts.entrySet().iterator(); i
-							.hasNext();) {
+					Set entrySet = new HashSet();
+					entrySet.addAll(accounts.entrySet());
+					for (Iterator i = entrySet.iterator(); i.hasNext();) {
 						Map.Entry entry = (Map.Entry) i.next();
-						RosterUserAccount account = (RosterUserAccount) entry.getValue();
-						disconnectAccount(account);
+						RosterUserAccount account = (RosterUserAccount) entry
+								.getValue();
+						account.getInputHandler().disconnect();
 					}
 					setToolbarEnabled(false);
 					this.setEnabled(false);
@@ -1023,7 +1028,7 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		removeAllRosterEntriesForAccount(account);
 		disposeAllChatWindowsForAccount(account,
 				"Disconnected from server.  Chat is inactive");
-		accounts.remove(account.getServiceID());
+		removeAccount(account.getServiceID());
 		if (accounts.size() == 0)
 			setToolbarEnabled(false);
 	}
