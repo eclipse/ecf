@@ -42,7 +42,7 @@ import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCEventListener;
 import org.schwering.irc.lib.IRCModeParser;
 import org.schwering.irc.lib.IRCUser;
-import org.schwering.irc.lib.SSLIRCConnection;
+import org.schwering.irc.lib.ssl.SSLIRCConnection;
 
 /**
  * IRC 'root' container implementation. This class implements the
@@ -169,10 +169,29 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 			}
 
-			public void onKick(String arg0, IRCUser arg1, String arg2,
-					String arg3) {
-				trace("handleOnKick(" + arg0 + "," + arg1 + "," + arg2 + ","
-						+ arg3 + ")");
+			public void onKick(String channelName, IRCUser kicker,
+					String kicked, String kickerName) {
+				trace("handleOnKick(" + channelName + "," + kicker + ","
+						+ kicked + "," + kickerName + ")");
+				// retrieve the channel that this kick is happening at
+				IRCChannelContainer channel = getChannel(channelName);
+				if (channel != null) {
+					// display a message to indicate the kicking
+					showMessage(channelName, kickerName + " has kicked "
+							+ kicked + " from " + channelName + ".");
+					// check if we are the ones that have been kicked
+					if (kicked.equals(((IRCID) targetID).getUsername())) {
+						// fire disconnection events for this channel container
+						channel.fireContainerDisconnectingEvent();
+						// FIXME: we don't fire presence listeners for ourselves
+						// to prevent hanging the Eclipse workbench with
+						// org.eclipse.ecf.examples.collab, this is a HACK
+						// channel.firePresenceListeners(false, kicked);
+						channel.fireContainerDisconnectedEvent();
+					} else {
+						channel.firePresenceListeners(false, kicked);
+					}
+				}
 			}
 
 			public void onMode(String arg0, IRCUser arg1, IRCModeParser arg2) {
@@ -302,7 +321,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 
 				public String getDescription() {
-					return "";
+					return ""; //$NON-NLS-1$
 				}
 
 				public String getName() {
@@ -318,7 +337,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 
 				public String getSubject() {
-					return "";
+					return ""; //$NON-NLS-1$
 				}
 
 				public boolean isModerated() {
@@ -358,7 +377,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 
 				public String getDescription() {
-					return "";
+					return ""; //$NON-NLS-1$
 				}
 
 				public String getName() {
@@ -374,7 +393,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 
 				public String getSubject() {
-					return "";
+					return ""; //$NON-NLS-1$
 				}
 
 				public boolean isModerated() {
@@ -615,10 +634,11 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 	protected void doJoinChannel(String channelName, String key) {
 		if (connection != null) {
-			if (key == null || key.equals(""))
+			if (key == null || key.equals("")) { //$NON-NLS-1$
 				connection.doJoin(channelName);
-			else
+			} else {
 				connection.doJoin(channelName, key);
+			}
 		}
 	}
 

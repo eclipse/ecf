@@ -19,6 +19,7 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -168,9 +169,19 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	 * @see org.eclipse.ecf.core.IContainer#disconnect()
 	 */
 	public void disconnect() {
+		fireContainerDisconnectingEvent();
 		rootContainer.doPartChannel(targetID.getName());
+		fireContainerDisconnectedEvent();
+	}
+	
+	void fireContainerDisconnectingEvent() {
+		fireContainerEvent(new ContainerDisconnectingEvent(getID(), targetID));
+	}
+	
+	void fireContainerDisconnectedEvent() {
 		fireContainerEvent(new ContainerDisconnectedEvent(getID(), targetID));
 	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
