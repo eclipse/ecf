@@ -226,9 +226,6 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					if (kicked.equals(((IRCID) targetID).getUsername())) {
 						// fire disconnection events for this channel container
 						channel.fireContainerDisconnectingEvent();
-						// FIXME: we don't fire presence listeners for ourselves
-						// to prevent hanging the Eclipse workbench with
-						// org.eclipse.ecf.examples.collab, this is a HACK
 						channel.firePresenceListeners(false, kicked);
 						channel.fireContainerDisconnectedEvent();
 					} else {
