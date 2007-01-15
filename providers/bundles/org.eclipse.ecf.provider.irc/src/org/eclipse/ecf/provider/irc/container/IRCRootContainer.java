@@ -186,7 +186,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						// FIXME: we don't fire presence listeners for ourselves
 						// to prevent hanging the Eclipse workbench with
 						// org.eclipse.ecf.examples.collab, this is a HACK
-						// channel.firePresenceListeners(false, kicked);
+						channel.firePresenceListeners(false, kicked);
 						channel.fireContainerDisconnectedEvent();
 					} else {
 						channel.firePresenceListeners(false, kicked);
