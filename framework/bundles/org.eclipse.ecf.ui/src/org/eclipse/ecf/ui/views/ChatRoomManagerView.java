@@ -755,7 +755,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		}
 
 		public void handlePresence(final ID fromID, final IPresence presence) {
-			Display.getDefault().syncExec(new Runnable() {
+			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					if (disposed)
 						return;
