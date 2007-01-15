@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF IRC Bot Plug-in
+Bundle-SymbolicName: org.eclipse.ecf.provider.irc.bot;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.eclipse.ecf.provider.irc.bot.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf.provider.irc,
+ org.eclipse.ecf;visibility:=reexport,
+ org.eclipse.ecf.presence;visibility:=reexport
+Eclipse-LazyStart: true
+Export-Package: org.eclipse.ecf.provider.irc.bot.handler
