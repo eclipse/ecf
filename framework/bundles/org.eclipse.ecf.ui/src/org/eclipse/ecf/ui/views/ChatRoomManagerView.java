@@ -732,8 +732,9 @@ public class ChatRoomManagerView extends ViewPart implements
 				doQuit();
 			} else if (command.equalsIgnoreCase("PART")) {
 				doPartChannel();
-			} else
+			} else {
 				sendMessageLine(line);
+			}
 		}
 
 		protected void doPartChannel() {
@@ -742,7 +743,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		}
 
 		protected void clearInput() {
-			inputText.setText("");
+			inputText.setText(""); //$NON-NLS-1$
 		}
 
 		protected void sendMessageLine(String line) {
@@ -769,8 +770,6 @@ public class ChatRoomManagerView extends ViewPart implements
 						addParticipant(p);
 					} else {
 						removeParticipant(p);
-						if (isLocalUser(fromID))
-							removeLocalUser();
 					}
 				}
 			});
@@ -824,8 +823,6 @@ public class ChatRoomManagerView extends ViewPart implements
 						appendText(outputText, new ChatLine("(" + getDateTime()
 								+ ") " + trimUserID(id) + " left", null));
 					memberViewer.remove(p);
-					if (isLocalUser(id))
-						removeLocalUser();
 				}
 			}
 		}
