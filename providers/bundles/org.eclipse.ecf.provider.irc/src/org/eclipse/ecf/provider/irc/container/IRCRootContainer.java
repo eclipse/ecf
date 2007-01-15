@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.irc.container;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,6 +27,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.internal.provider.irc.Activator;
 import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
@@ -54,6 +54,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		IContainer, IChatRoomManager, IChatRoomContainer, IRCMessageChannel,
 		IChatRoomContainerOptionsAdapter {
 
+	private static final long CONNECT_TIMEOUT = 30000;
+
 	protected IRCConnection connection = null;
 
 	protected ReplyHandler replyHandler = null;
@@ -65,6 +67,10 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	protected String encoding = null;
 
 	private ArrayList invitationListeners;
+
+	private Object connectLock = new Object();
+	private boolean connectWaiting = false;
+	private Exception connectException = null;
 
 	public IRCRootContainer(ID localID) throws IDCreateException {
 		this.localID = localID;
@@ -115,12 +121,26 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		if (encoding != null)
 			connection.setEncoding(encoding);
 		trace("connecting to " + targetID);
-		try {
-			connection.connect();
-		} catch (IOException e) {
-			throw new ContainerConnectException("IRC connect exception", e);
-		}
 		this.targetID = tID;
+
+		synchronized (connectLock) {
+			connectWaiting = true;
+			connectException = null;
+			try {
+				connection.connect();
+				while (connectWaiting) {
+					connectLock.wait(CONNECT_TIMEOUT);
+					if (connectWaiting)
+						throw new TimeoutException(CONNECT_TIMEOUT, "Timeout");
+					if (connectException != null)
+						throw connectException;
+				}
+			} catch (Exception e) {
+				this.targetID = null;
+				throw new ContainerConnectException("Connect failed to "
+						+ targetID.getName(), e);
+			}
+		}
 	}
 
 	protected void handleDisconnected() {
@@ -132,16 +152,36 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		channels.clear();
 	}
 
+	protected void handleIfConnectError(String message) {
+		synchronized (connectLock) {
+			if (connectWaiting)
+				this.connectException = new Exception(message);
+		}
+	}
+
 	protected IRCEventListener getIRCEventListener() {
 		return new IRCEventListener() {
 			public void onRegistered() {
 				trace("handleOnRegistered()");
 				fireContainerEvent(new ContainerConnectedEvent(
 						IRCRootContainer.this.getID(), targetID));
+				synchronized (connectLock) {
+					connectWaiting = false;
+					connectLock.notify();
+				}
 			}
 
 			public void onDisconnected() {
 				trace("handleOnDisconnected()");
+				synchronized (connectLock) {
+					if (connectWaiting) {
+						if (connectException == null)
+							connectException = new Exception(
+									"Unexplained disconnection");
+						connectWaiting = false;
+						connectLock.notify();
+					}
+				}
 				showMessage(null, "Disconnected");
 				handleDisconnected();
 			}
@@ -149,11 +189,14 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			public void onError(String arg0) {
 				trace("handleOnError(" + arg0 + ")");
 				showMessage(null, "ERROR: " + arg0);
+				handleIfConnectError(arg0);
 			}
 
 			public void onError(int arg0, String arg1) {
-				trace("handleOnError(" + arg0 + "," + arg1 + ")");
-				showMessage(null, "ERROR: " + arg0 + "," + arg1);
+				String msg = arg0 + "," + arg1;
+				trace("handleOnError(" + msg + ")");
+				showMessage(null, "ERROR: " + msg);
+				handleIfConnectError(arg0 + msg);
 			}
 
 			public void onInvite(String arg0, IRCUser arg1, String arg2) {
