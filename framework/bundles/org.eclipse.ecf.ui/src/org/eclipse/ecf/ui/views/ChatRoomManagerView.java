@@ -52,6 +52,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -62,17 +63,26 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -226,6 +236,10 @@ public class ChatRoomManagerView extends ViewPart implements
 			parent.setSelection(tabItem);
 		}
 
+		protected String getTabName() {
+			return tabItem.getText();
+		}
+		
 		protected void setTabName(String name) {
 			tabItem.setText(name);
 		}
@@ -393,7 +407,23 @@ public class ChatRoomManagerView extends ViewPart implements
 		cleanUp();
 	}
 
-	protected void doJoin(String target, String key) {
+	protected CTabItem getTabItem(String targetName) {
+		CTabItem [] items = tabFolder.getItems();
+		for(int i=0; i < items.length; i++) {
+			if (items[i].getText().equals(targetName)) {
+				return items[i];
+			}
+		}
+		return null;
+	}
+	
+	protected void doJoin(final String target, final String key) {
+		//first, check to see if we already have it open.  If so just activate
+		CTabItem item = getTabItem(target);
+		if (item != null) {
+			tabFolder.setSelection(item);
+			return;
+		}
 		// With manager, first thing we do is get the IChatRoomInfo for the
 		// target
 		// channel
@@ -403,10 +433,11 @@ public class ChatRoomManagerView extends ViewPart implements
 			// no room info for given target...give error message and skip
 			return;
 		else {
-			IChatRoomContainer chatRoomContainer = null;
+			// Then we create a new container from the roomInfo
 			try {
-				// Then we create a new container from the roomInfo
-				chatRoomContainer = roomInfo.createChatRoomContainer();
+				final IChatRoomContainer chatRoomContainer = roomInfo
+						.createChatRoomContainer();
+				
 				// Setup new user interface (new tab)
 				final ChatRoom chatroomview = new ChatRoom(chatRoomContainer,
 						new Manager(tabFolder, target));
@@ -424,15 +455,14 @@ public class ChatRoomManagerView extends ViewPart implements
 				// setup participant listener
 				chatRoomContainer
 						.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-							public void handlePresence(ID fromID,
-									IPresence presence) {
+							public void handlePresence(ID fromID, IPresence presence) {
 								chatroomview.handlePresence(fromID, presence);
 							}
-
+	
 							public void handleArrivedInChat(ID participant) {
 								chatroomview.handleJoin(participant);
 							}
-
+	
 							public void handleDepartedFromChat(ID participant) {
 								chatroomview.handleLeave(participant);
 							}
@@ -445,17 +475,21 @@ public class ChatRoomManagerView extends ViewPart implements
 					}
 				});
 				// Now connect/join
-				chatRoomContainer
-						.connect(
-								IDFactory.getDefault()
-										.createID(
-												chatRoomContainer
-														.getConnectNamespace(),
-												target), ConnectContextFactory
-										.createPasswordConnectContext(key));
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						try {
+							chatRoomContainer.connect(
+									IDFactory.getDefault()
+											.createID(
+													chatRoomContainer
+															.getConnectNamespace(),
+													target), ConnectContextFactory
+											.createPasswordConnectContext(key));
+						} catch (Exception e) {}
+					}
+				});
 			} catch (Exception e) {
-				// TODO: handle exception properly
-				e.printStackTrace();
+				
 			}
 		}
 	}
@@ -540,6 +574,8 @@ public class ChatRoomManagerView extends ViewPart implements
 		 */
 		private boolean isAtStart = false;
 
+		private CTabItem itemSelected = null;
+		
 		ChatRoom(IChatRoomContainer container, Manager tabItem) {
 			this.container = container;
 			this.channelMessageSender = container.getChatRoomMessageSender();
@@ -549,8 +585,31 @@ public class ChatRoomManagerView extends ViewPart implements
 			memberViewer = this.tabUI.getListViewer();
 			options = new ArrayList();
 			this.tabUI.setKeyListener(this);
+			tabFolder.addSelectionListener(new SelectionListener() {
+
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+
+				public void widgetSelected(SelectionEvent e) {
+					itemSelected = (CTabItem) e.item;
+					if (itemSelected == tabUI.tabItem) makeTabItemNormal();
+				}});
 		}
 
+		protected void makeTabItemBold() {
+			changeTabItem(true);
+		}
+		protected void makeTabItemNormal() {
+			changeTabItem(false);
+		}
+		
+		protected void changeTabItem(boolean bold) {
+			CTabItem item = tabUI.tabItem;
+			Font oldFont = item.getFont();
+			FontData [] fd = oldFont.getFontData();
+			item.setFont(new Font(oldFont.getDevice(),fd[0].getName(),fd[0].getHeight(),(bold)?SWT.BOLD:SWT.NORMAL));
+		}
+		
 		public void handleMessage(final ID fromID, final String messageBody) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
@@ -558,6 +617,8 @@ public class ChatRoomManagerView extends ViewPart implements
 						return;
 					appendText(outputText, new ChatLine(messageBody,
 							new Participant(fromID)));
+					CTabItem item = tabFolder.getSelection();
+					if (item != tabUI.tabItem) makeTabItemBold();
 				}
 			});
 		}
@@ -847,6 +908,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				return;
 			otherUsers.remove(user);
 		}
+
 	}
 
 	protected void handleInputLine(String line) {
@@ -907,7 +969,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	public void joinRoom(final String room) {
-		Display.getDefault().asyncExec(new Runnable() {
+		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				if (disposed)
 					return;
