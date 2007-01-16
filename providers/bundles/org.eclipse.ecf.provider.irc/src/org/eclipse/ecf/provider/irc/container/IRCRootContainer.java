@@ -21,6 +21,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -54,7 +55,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		IContainer, IChatRoomManager, IChatRoomContainer, IRCMessageChannel,
 		IChatRoomContainerOptionsAdapter {
 
-	private static final long CONNECT_TIMEOUT = 30000;
+	private static final long CONNECT_TIMEOUT = 20000;
 
 	protected IRCConnection connection = null;
 
@@ -94,6 +95,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		if (!(targetID instanceof IRCID))
 			throw new ContainerConnectException("targetID " + targetID
 					+ " not instance of IRCID");
+		if (connectWaiting) throw new ContainerConnectException("Connecting");
+		
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
 				connectContext));
 		// Get password via callback in connectContext
@@ -121,24 +124,29 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		if (encoding != null)
 			connection.setEncoding(encoding);
 		trace("connecting to " + targetID);
-		this.targetID = tID;
-
 		synchronized (connectLock) {
 			connectWaiting = true;
 			connectException = null;
 			try {
 				connection.connect();
-				while (connectWaiting) {
-					connectLock.wait(CONNECT_TIMEOUT);
-					if (connectWaiting)
-						throw new TimeoutException(CONNECT_TIMEOUT, "Timeout");
-					if (connectException != null)
-						throw connectException;
+				long timeout = CONNECT_TIMEOUT + System.currentTimeMillis();
+				while (connectWaiting && (timeout > System.currentTimeMillis())) {
+					connectLock.wait(2000);
 				}
+				if (connectWaiting)
+					throw new TimeoutException(CONNECT_TIMEOUT, "Timeout connecting to "+targetID.getName());
+				if (connectException != null)
+						throw connectException;
+				this.targetID = tID;
+				fireContainerEvent(new ContainerConnectedEvent(
+						getID(), this.targetID));
 			} catch (Exception e) {
 				this.targetID = null;
 				throw new ContainerConnectException("Connect failed to "
 						+ targetID.getName(), e);
+			} finally {
+				connectWaiting = false;
+				connectException = null;
 			}
 		}
 	}
@@ -152,9 +160,9 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		channels.clear();
 	}
 
-	protected void handleIfConnectError(String message) {
+	protected void handleErrorIfConnecting(String message) {
 		synchronized (connectLock) {
-			if (connectWaiting)
+			if (connectWaiting) 
 				this.connectException = new Exception(message);
 		}
 	}
@@ -163,8 +171,6 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		return new IRCEventListener() {
 			public void onRegistered() {
 				trace("handleOnRegistered()");
-				fireContainerEvent(new ContainerConnectedEvent(
-						IRCRootContainer.this.getID(), targetID));
 				synchronized (connectLock) {
 					connectWaiting = false;
 					connectLock.notify();
@@ -189,14 +195,14 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			public void onError(String arg0) {
 				trace("handleOnError(" + arg0 + ")");
 				showMessage(null, "ERROR: " + arg0);
-				handleIfConnectError(arg0);
+				handleErrorIfConnecting(arg0);
 			}
 
 			public void onError(int arg0, String arg1) {
 				String msg = arg0 + "," + arg1;
 				trace("handleOnError(" + msg + ")");
 				showMessage(null, "ERROR: " + msg);
-				handleIfConnectError(arg0 + msg);
+				handleErrorIfConnecting(arg0 + msg);
 			}
 
 			public void onInvite(String arg0, IRCUser arg1, String arg2) {
@@ -225,11 +231,11 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					// check if we are the ones that have been kicked
 					if (kicked.equals(((IRCID) targetID).getUsername())) {
 						// fire disconnection events for this channel container
-						channel.fireContainerDisconnectingEvent();
-						channel.firePresenceListeners(false, kicked);
-						channel.fireContainerDisconnectedEvent();
+						channel.fireContainerEvent(new ContainerDisconnectingEvent(channel.getID(), channel.targetID));
+						channel.firePresenceListeners(false, new String[] { kicked });
+						channel.fireContainerEvent(new ContainerDisconnectedEvent(channel.getID(), channel.targetID));
 					} else {
-						channel.firePresenceListeners(false, kicked);
+						channel.firePresenceListeners(false, new String[] { kicked });
 					}
 				}
 			}
@@ -256,7 +262,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				IRCChannelContainer channel = (IRCChannelContainer) channels
 						.get(arg0);
 				if (channel != null) {
-					channel.firePresenceListeners(false, getIRCUserName(arg1));
+					channel.firePresenceListeners(false, new String[] { getIRCUserName(arg1) });
 				}
 			}
 
@@ -320,6 +326,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		if (connection != null) {
 			connection.close();
 			connection = null;
+			targetID = null;
 		}
 	}
 

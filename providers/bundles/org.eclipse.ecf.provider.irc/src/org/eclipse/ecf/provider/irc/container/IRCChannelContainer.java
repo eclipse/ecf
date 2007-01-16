@@ -20,12 +20,14 @@ import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
+import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
@@ -38,15 +40,29 @@ import org.schwering.irc.lib.IRCUser;
  */
 public class IRCChannelContainer extends IRCAbstractContainer implements
 		IChatRoomContainer {
+	
+	private static final long CONNECT_TIMEOUT = 10000;
+
 	protected List participantListeners = new ArrayList();
 	protected IRCRootContainer rootContainer;
 	protected  IRCUser ircUser = null;
 	protected boolean channelOperator = false;
 	
+	protected Object connectLock = new Object();
+	protected boolean connectWaiting = false;
+	
+	protected IChatRoomMessageSender sender = new IChatRoomMessageSender() {
+		public void sendMessage(String message) throws ECFException {
+			rootContainer.doSendChannelMessage(targetID.getName(), ircUser
+			.toString(), message);
+		}
+	};
+	
 	public IRCChannelContainer(IRCRootContainer root, ID localID) {
 		this.rootContainer = root;
 		this.localID = localID;
 	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -60,11 +76,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 			IChatRoomParticipantListener participantListener) {
 		participantListeners.remove(participantListener);
 	}
-	protected void firePresenceListeners(boolean joined, String name) {
-		firePresenceListeners(joined, new String[] { name });
-	}
 	protected void handleUserQuit(String name) {
-		firePresenceListeners(false, name);
+		firePresenceListeners(false, new String[] { name });
 	}
 	private IPresence createPresence(final boolean available) {
 		return new IPresence() {
@@ -100,6 +113,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 		if (user.equals(localUserName)) return true;
 		return false;
 	}
+	
 	protected void firePresenceListeners(boolean joined, String[] users) {
 		for(Iterator i=participantListeners.iterator(); i.hasNext(); ) {
 			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
@@ -119,26 +133,34 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#getChatMessageSender()
 	 */
 	public IChatRoomMessageSender getChatRoomMessageSender() {
-		return new IChatRoomMessageSender() {
-			public void sendMessage(String message) throws ECFException {
-				doSendChannelMessage(message);
-			}
-		};
+		return sender;
 	}
+	
 	protected String getIRCUserName(IRCUser user) {
 		if (user == null)
 			return null;
 		else
 			return user.toString();
 	}
+	
 	protected void setIRCUser(IRCUser user) {
-		if (this.ircUser == null) this.ircUser = user;
-		else firePresenceListeners(true, getIRCUserName(user));
+		if (this.ircUser == null) {
+			this.ircUser = user;
+			synchronized (connectLock) {
+				if (connectWaiting) {
+					connectWaiting = false;
+					connectLock.notify();
+				}
+			}
+		}
+		else
+			firePresenceListeners(true, new String[] { getIRCUserName(user) });
 	}
-	protected void doSendChannelMessage(String message) {
-		rootContainer.doSendChannelMessage(targetID.getName(), ircUser
-				.toString(), message);
+	
+	protected void fireContainerEvent(IContainerEvent event) {
+		super.fireContainerEvent(event);
 	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -150,35 +172,42 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 		// Actually do join here
 		if (targetID == null)
 			throw new ContainerConnectException("targetID cannot be null");
+		if (connectWaiting) throw new ContainerConnectException("Connecting");
 		// Get channel name
 		String channelName = targetID.getName();
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
 				connectContext));
 		// Get password via callback in connectContext
 		String pw = getPasswordFromConnectContext(connectContext);
-		doJoinChannel(channelName, pw);
-		this.targetID = targetID;
-		fireContainerEvent(new ContainerConnectedEvent(this.getID(), targetID));
+		synchronized (connectLock) {
+			connectWaiting = true;
+			try {
+				rootContainer.doJoinChannel(channelName, pw);
+				long timeout = CONNECT_TIMEOUT + System.currentTimeMillis();
+				while (connectWaiting && timeout > System.currentTimeMillis()) {
+					connectLock.wait(2000);
+				}
+				if (connectWaiting)
+					throw new TimeoutException(CONNECT_TIMEOUT, "Timeout connecting to "+targetID.getName());
+				this.targetID = targetID;
+				fireContainerEvent(new ContainerConnectedEvent(this.getID(), this.targetID));
+			} catch (Exception e){
+				throw new ContainerConnectException("Connect failed to "
+						+ targetID.getName(), e);
+			} finally {
+				connectWaiting = false;
+			}
+		}
 	}
-	protected void doJoinChannel(String channelName, String key) {
-		rootContainer.doJoinChannel(channelName, key);
-	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.IContainer#disconnect()
 	 */
 	public void disconnect() {
-		fireContainerDisconnectingEvent();
-		rootContainer.doPartChannel(targetID.getName());
-		fireContainerDisconnectedEvent();
-	}
-	
-	void fireContainerDisconnectingEvent() {
 		fireContainerEvent(new ContainerDisconnectingEvent(getID(), targetID));
-	}
-	
-	void fireContainerDisconnectedEvent() {
+		rootContainer.doPartChannel(targetID.getName());
 		fireContainerEvent(new ContainerDisconnectedEvent(getID(), targetID));
 	}
 	
