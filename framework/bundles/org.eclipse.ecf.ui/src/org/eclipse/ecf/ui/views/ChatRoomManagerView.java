@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -175,6 +176,8 @@ public class ChatRoomManagerView extends ViewPart implements
 
 	private boolean enabled = false;
 
+	private Hashtable rooms = new Hashtable();
+	
 	class Manager {
 		SashForm fullChat;
 
@@ -419,11 +422,13 @@ public class ChatRoomManagerView extends ViewPart implements
 	
 	protected void doJoin(final String target, final String key) {
 		//first, check to see if we already have it open.  If so just activate
-		CTabItem item = getTabItem(target);
-		if (item != null) {
-			tabFolder.setSelection(item);
+		ChatRoom room = (ChatRoom) rooms.get(target);
+		
+		if (room != null && room.isConnected()) {
+			room.setSelected();
 			return;
 		}
+		
 		// With manager, first thing we do is get the IChatRoomInfo for the
 		// target
 		// channel
@@ -485,11 +490,16 @@ public class ChatRoomManagerView extends ViewPart implements
 															.getConnectNamespace(),
 													target), ConnectContextFactory
 											.createPasswordConnectContext(key));
-						} catch (Exception e) {}
+							rooms.put(target, chatroomview);
+						} catch (Exception e) {
+							// XXX handle properly
+							e.printStackTrace();
+						}
 					}
 				});
 			} catch (Exception e) {
-				
+				// XXX handle properly
+				e.printStackTrace();
 			}
 		}
 	}
@@ -811,8 +821,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			try {
 				channelMessageSender.sendMessage(line);
 			} catch (ECFException e) {
-				// XXX handle gracefully
-				e.printStackTrace();
+				disconnected();
 			}
 		}
 
@@ -847,6 +856,14 @@ public class ChatRoomManagerView extends ViewPart implements
 			});
 		}
 
+		protected boolean isConnected() {
+			return !inputText.isDisposed() && inputText.isEnabled();
+		}
+		
+		protected void setSelected() {
+			tabFolder.setSelection(tabUI.tabItem);
+		}
+		
 		protected void addParticipant(IUser p) {
 			if (p != null) {
 				ID id = p.getID();
