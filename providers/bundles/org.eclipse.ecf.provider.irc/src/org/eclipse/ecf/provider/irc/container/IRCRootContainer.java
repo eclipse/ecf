@@ -95,8 +95,9 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		if (!(targetID instanceof IRCID))
 			throw new ContainerConnectException("targetID " + targetID
 					+ " not instance of IRCID");
-		if (connectWaiting) throw new ContainerConnectException("Connecting");
-		
+		if (connectWaiting)
+			throw new ContainerConnectException("Connecting");
+
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
 				connectContext));
 		// Get password via callback in connectContext
@@ -134,12 +135,13 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					connectLock.wait(2000);
 				}
 				if (connectWaiting)
-					throw new TimeoutException(CONNECT_TIMEOUT, "Timeout connecting to "+targetID.getName());
+					throw new TimeoutException(CONNECT_TIMEOUT,
+							"Timeout connecting to " + targetID.getName());
 				if (connectException != null)
-						throw connectException;
+					throw connectException;
 				this.targetID = tID;
-				fireContainerEvent(new ContainerConnectedEvent(
-						getID(), this.targetID));
+				fireContainerEvent(new ContainerConnectedEvent(getID(),
+						this.targetID));
 			} catch (Exception e) {
 				this.targetID = null;
 				throw new ContainerConnectException("Connect failed to "
@@ -162,7 +164,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 	protected void handleErrorIfConnecting(String message) {
 		synchronized (connectLock) {
-			if (connectWaiting) 
+			if (connectWaiting)
 				this.connectException = new Exception(message);
 		}
 	}
@@ -219,23 +221,30 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			}
 
 			public void onKick(String channelName, IRCUser kicker,
-					String kicked, String kickerName) {
+					String kicked, String reason) {
 				trace("handleOnKick(" + channelName + "," + kicker + ","
-						+ kicked + "," + kickerName + ")");
+						+ kicked + "," + reason + ")");
 				// retrieve the channel that this kick is happening at
 				IRCChannelContainer channel = getChannel(channelName);
 				if (channel != null) {
 					// display a message to indicate the kicking
-					showMessage(channelName, kickerName + " has kicked "
-							+ kicked + " from " + channelName + ".");
+					showMessage(channelName, kicker.getNick() + " has kicked "
+							+ kicked + " from " + channelName + " (" + reason
+							+ ")");
 					// check if we are the ones that have been kicked
 					if (kicked.equals(((IRCID) targetID).getUsername())) {
 						// fire disconnection events for this channel container
-						channel.fireContainerEvent(new ContainerDisconnectingEvent(channel.getID(), channel.targetID));
-						channel.firePresenceListeners(false, new String[] { kicked });
-						channel.fireContainerEvent(new ContainerDisconnectedEvent(channel.getID(), channel.targetID));
+						channel
+								.fireContainerEvent(new ContainerDisconnectingEvent(
+										channel.getID(), channel.targetID));
+						channel.firePresenceListeners(false,
+								new String[] { kicked });
+						channel
+								.fireContainerEvent(new ContainerDisconnectedEvent(
+										channel.getID(), channel.targetID));
 					} else {
-						channel.firePresenceListeners(false, new String[] { kicked });
+						channel.firePresenceListeners(false,
+								new String[] { kicked });
 					}
 				}
 			}
@@ -262,7 +271,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				IRCChannelContainer channel = (IRCChannelContainer) channels
 						.get(arg0);
 				if (channel != null) {
-					channel.firePresenceListeners(false, new String[] { getIRCUserName(arg1) });
+					channel.firePresenceListeners(false,
+							new String[] { getIRCUserName(arg1) });
 				}
 			}
 
