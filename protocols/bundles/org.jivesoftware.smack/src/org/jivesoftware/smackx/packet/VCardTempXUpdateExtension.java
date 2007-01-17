@@ -36,6 +36,7 @@ public class VCardTempXUpdateExtension implements PacketExtension {
     }
     
     public byte[] getPhotoDataAsBytes() {
+    	if (photoData == null) return new byte[0];
     	return StringUtils.decodeBase64(photoData);
     }
     
