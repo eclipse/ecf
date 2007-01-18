@@ -29,6 +29,7 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 		super();
 		setTitle("XMPPS Connection Wizard");
 		setDescription("Specify a nickname and XMPPS server to connect to.");
+		setPageComplete(false);
 	}
 
 	public void createControl(Composite parent) {

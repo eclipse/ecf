@@ -30,6 +30,7 @@ public class XMPPConnectWizardPage extends WizardPage {
 		super("");
 		setTitle("XMPP Connection Wizard");
 		setDescription("Specify a nickname and XMPP server to connect to.");
+		setPageComplete(false);
 	}
 
 	public void createControl(Composite parent) {
