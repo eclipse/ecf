@@ -30,6 +30,7 @@ final class IRCConnectWizardPage extends WizardPage {
 		super("");
 		setTitle("IRC Connection Wizard");
 		setDescription("Specify a nickname and IRC server to connect to.");
+		setPageComplete(false);
 	}
 
 	public void createControl(Composite parent) {
