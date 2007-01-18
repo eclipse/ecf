@@ -73,7 +73,6 @@
             class="org.eclipse.ecf.internal.ui.UIPreferenceInitializer">
       </initializer>
    </extension>
-   <!--
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
@@ -88,15 +87,15 @@
             </separator>
          </menu>
          <action
-               class="org.eclipse.ecf.ui.tests.actions.SampleAction"
+               class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
                icon="icons/sample.gif"
                id="org.eclipse.ecf.ui.actions.SampleAction"
-               label="&amp;ECF Test Wizard"
+               label="Connect to Providers"
                menubarPath="sampleMenu/sampleGroup"
+               style="pulldown"
                toolbarPath="sampleGroup"
                tooltip="ECF Test Wizard">
          </action>
       </actionSet>
    </extension>
-   -->
 </plugin>
