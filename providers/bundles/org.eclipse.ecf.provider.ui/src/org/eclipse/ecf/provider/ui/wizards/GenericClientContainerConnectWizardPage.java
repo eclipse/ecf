@@ -23,7 +23,7 @@ public class GenericClientContainerConnectWizardPage extends AbstractConnectWiza
 	}
 
 	public String getExampleID() {
-		return "<protocol>://<machinename>:<port>/<servicename>";
+		return "ecftcp://<server>:<port>/<groupname>";
 	}
 
 	protected String getProviderTitle() {
