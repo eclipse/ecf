@@ -53,16 +53,13 @@ public class XMPPConnectWizardPage extends WizardPage {
 		});
 
 		label = new Label(parent, SWT.RIGHT);
-		label.setText("xmpp://<user>@<xmppserver>[:port][/<#channel>]");
+		label.setText("xmpp://<user>@<xmppserver>[:port]");
 		label.setLayoutData(endData);
 
 		label = new Label(parent, SWT.LEFT);
 		label.setText("Password:");
 		passwordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD | SWT.BORDER);
 		passwordText.setLayoutData(fillData);
-		label = new Label(parent, SWT.RIGHT | SWT.WRAP);
-		label.setText("This password is for password-protected XMPP servers.");
-		label.setLayoutData(endData);
 
 		setControl(parent);
 	}
