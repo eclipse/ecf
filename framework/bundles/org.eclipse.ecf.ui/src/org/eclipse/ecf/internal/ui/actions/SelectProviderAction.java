@@ -31,6 +31,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
@@ -59,8 +60,8 @@ public class SelectProviderAction implements IWorkbenchWindowActionDelegate,
 							.getAttribute("containerFactoryName");
 					final IConfigurationWizard wizard = getWizard(
 							configurationWizards, factoryName);
+					final IConfigurationElement ice = ices[j];
 					if (wizard == null) {
-						final IConfigurationElement ice = ices[j];
 						map.put(ices[j].getAttribute("name"),
 								new SelectionAdapter() {
 									public void widgetSelected(SelectionEvent e) {
@@ -68,7 +69,13 @@ public class SelectProviderAction implements IWorkbenchWindowActionDelegate,
 									}
 								});
 					} else {
-						System.out.println(wizard.getClass() + ":" + wizard);
+						map.put(ices[j].getAttribute("name"),
+								new SelectionAdapter() {
+									public void widgetSelected(SelectionEvent e) {
+										openConnectWizard(wizard, ice,
+												factoryName);
+									}
+								});
 					}
 				}
 			}
@@ -86,6 +93,25 @@ public class SelectProviderAction implements IWorkbenchWindowActionDelegate,
 					.createExecutableExtension("class");
 			icw.init(window.getWorkbench(), container);
 			new WizardDialog(window.getShell(), icw).open();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void openConnectWizard(IConfigurationWizard wizard,
+			IConfigurationElement element, String factoryName) {
+		try {
+			IWorkbench workbench = window.getWorkbench();
+			wizard.init(workbench, ContainerFactory.getDefault()
+					.getDescriptionByName(factoryName));
+			if (new WizardDialog(window.getShell(), wizard).open() == WizardDialog.OK) {
+				IContainer container = ContainerFactory.getDefault()
+						.createContainer(factoryName);
+				IConnectWizard icw = (IConnectWizard) element
+						.createExecutableExtension("class");
+				icw.init(workbench, container);
+				new WizardDialog(window.getShell(), icw).open();
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
