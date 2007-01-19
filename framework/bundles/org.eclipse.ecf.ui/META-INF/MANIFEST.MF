@@ -11,6 +11,7 @@ Provide-Package: org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.views,
  org.eclipse.ecf.ui.wizards
 Export-Package: org.eclipse.ecf.internal.ui;x-internal:=true,
+ org.eclipse.ecf.internal.ui.actions;x-internal:=true,
  org.eclipse.ecf.internal.ui.wizards;x-internal:=true,
  org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.actions,
