@@ -6,6 +6,7 @@ Bundle-Activator: org.eclipse.ecf.internal.ui.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Eclipse-AutoStart: true
+Eclipse-LazyStart: true
 Provide-Package: org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.dialogs,
  org.eclipse.ecf.ui.views,

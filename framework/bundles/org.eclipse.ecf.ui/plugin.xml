@@ -8,9 +8,6 @@
       <category
             name="ECF"
             id="org.eclipse.ecf.ui.viewcategory"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.views">
       <view
             icon="icons/epresence16/buddy_available.gif"
             class="org.eclipse.ecf.ui.views.RosterView"
@@ -42,22 +39,6 @@
             id="org.eclipse.ecf.ui.servercategory"
             name="Servers">
       </category>
-      <wizard
-            category="org.eclipse.ecf.ui.clientcategory"
-            class="org.eclipse.ecf.ui.wizards.EmptyConfigurationWizard"
-            containerFactoryName="ecf.generic.client"
-            icon="icons/epresence16/buddy_available.gif"
-            id="org.eclipse.ecf.ui.wizard1"
-            name="ECF Generic Client">
-      </wizard>
-      <wizard
-            category="org.eclipse.ecf.ui.servercategory"
-            class="org.eclipse.ecf.ui.wizards.EmptyConfigurationWizard"
-            containerFactoryName="ecf.generic.server"
-            icon="icons/epresence16/buddy_unavailable.gif"
-            id="org.eclipse.ecf.ui.wizard2"
-            name="ECF Generic Server">
-      </wizard>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -91,10 +72,9 @@
                icon="icons/sample.gif"
                id="org.eclipse.ecf.ui.actions.SampleAction"
                label="Connect to Providers"
-               menubarPath="sampleMenu/sampleGroup"
                style="pulldown"
                toolbarPath="sampleGroup"
-               tooltip="ECF Test Wizard">
+               tooltip="Connect to Providers">
          </action>
       </actionSet>
    </extension>

@@ -21,7 +21,6 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.ui.IConfigurationWizard;
 import org.eclipse.ecf.ui.IConnectWizard;
-import org.eclipse.ecf.ui.wizards.EmptyConfigurationWizard;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -60,9 +59,7 @@ public class SelectProviderAction implements IWorkbenchWindowActionDelegate,
 							.getAttribute("containerFactoryName");
 					final IConfigurationWizard wizard = getWizard(
 							configurationWizards, factoryName);
-					if (wizard == null
-							|| wizard.getClass().equals(
-									EmptyConfigurationWizard.class)) {
+					if (wizard == null) {
 						final IConfigurationElement ice = ices[j];
 						map.put(ices[j].getAttribute("name"),
 								new SelectionAdapter() {
