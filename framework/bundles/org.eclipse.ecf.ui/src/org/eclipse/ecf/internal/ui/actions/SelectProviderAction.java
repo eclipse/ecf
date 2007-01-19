@@ -105,11 +105,10 @@ public class SelectProviderAction implements IWorkbenchWindowActionDelegate,
 			wizard.init(workbench, ContainerFactory.getDefault()
 					.getDescriptionByName(factoryName));
 			if (new WizardDialog(window.getShell(), wizard).open() == WizardDialog.OK) {
-				IContainer container = ContainerFactory.getDefault()
-						.createContainer(factoryName);
 				IConnectWizard icw = (IConnectWizard) element
 						.createExecutableExtension("class");
-				icw.init(workbench, container);
+				icw.init(workbench, wizard.getConfigurationResult()
+						.getContainer());
 				new WizardDialog(window.getShell(), icw).open();
 			}
 		} catch (Exception ex) {
