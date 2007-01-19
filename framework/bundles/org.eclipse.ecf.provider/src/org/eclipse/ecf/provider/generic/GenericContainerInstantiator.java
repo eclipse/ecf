@@ -1,10 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: Composent, Inc. - initial API and implementation
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic;
 
@@ -29,9 +31,9 @@ import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 public class GenericContainerInstantiator implements IContainerInstantiator {
 
-	public static final String TCPCLIENT_NAME = "ecf.generic.client";
+	public static final String TCPCLIENT_NAME = "ecf.generic.client"; //$NON-NLS-1$
 
-	public static final String TCPSERVER_NAME = "ecf.generic.server";
+	public static final String TCPSERVER_NAME = "ecf.generic.server"; //$NON-NLS-1$
 
 	private static final int CREATE_INSTANCE_ERROR_CODE = 4441;
 
@@ -46,10 +48,10 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 			return (ID) arg;
 		if (arg instanceof String) {
 			String val = (String) arg;
-			if (val == null || val.equals("")) {
+			if (val.equals("")) { //$NON-NLS-1$
 				return IDFactory.getDefault().createGUID();
 			} else
-				return IDFactory.getDefault().createStringID((String) arg);
+				return IDFactory.getDefault().createStringID(val);
 		} else if (arg instanceof Integer) {
 			return IDFactory.getDefault()
 					.createGUID(((Integer) arg).intValue());
@@ -62,7 +64,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 			return new Integer(-1);
 		if (arg instanceof Integer)
 			return (Integer) arg;
-		else if (arg != null && arg instanceof String) {
+		else if (arg instanceof String) {
 			return new Integer((String) arg);
 		} else
 			return new Integer(-1);
@@ -164,14 +166,14 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 		} catch (Exception e) {
 			Trace.catching(ProviderPlugin.getDefault(),
 					ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this
-							.getClass(), "createInstance", e);
+							.getClass(), "createInstance", e); //$NON-NLS-1$
 			ProviderPlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID,
-							CREATE_INSTANCE_ERROR_CODE, "createInstance", e));
+							CREATE_INSTANCE_ERROR_CODE, "createInstance", e)); //$NON-NLS-1$
 			Trace.throwing(ProviderPlugin.getDefault(),
 					ECFProviderDebugOptions.EXCEPTIONS_THROWING, this
-							.getClass(), "createInstance", e);
-			throw new ContainerCreateException("createInstance", e);
+							.getClass(), "createInstance", e); //$NON-NLS-1$
+			throw new ContainerCreateException("createInstance", e); //$NON-NLS-1$
 		}
 	}
 
