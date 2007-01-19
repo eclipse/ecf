@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.internal.ui.wizards.IWizardRegistryConstants;
 import org.eclipse.ecf.ui.IConfigurationWizard;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.jface.action.IAction;
@@ -36,8 +37,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
 
-public class SelectProviderAction implements IWorkbenchWindowActionDelegate,
-		IWorkbenchWindowPulldownDelegate {
+public class SelectProviderAction implements IWizardRegistryConstants,
+		IWorkbenchWindowActionDelegate, IWorkbenchWindowPulldownDelegate {
 
 	private IWorkbenchWindow window;
 
@@ -49,27 +50,27 @@ public class SelectProviderAction implements IWorkbenchWindowActionDelegate,
 		try {
 			IExtensionRegistry registry = Platform.getExtensionRegistry();
 			IExtension[] configurationWizards = registry.getExtensionPoint(
-					"org.eclipse.ecf.ui.configurationWizards").getExtensions();
+					CONFIGURE_EPOINT_ID).getExtensions();
 			IExtension[] connectWizards = registry.getExtensionPoint(
-					"org.eclipse.ecf.ui.connectWizards").getExtensions();
+					CONNECT_EPOINT_ID).getExtensions();
 			for (int i = 0; i < connectWizards.length; i++) {
 				final IConfigurationElement[] ices = connectWizards[i]
 						.getConfigurationElements();
 				for (int j = 0; j < ices.length; j++) {
 					final String factoryName = ices[j]
-							.getAttribute("containerFactoryName");
+							.getAttribute(ATT_CONTAINER_TYPE_NAME);
 					final IConfigurationWizard wizard = getWizard(
 							configurationWizards, factoryName);
 					final IConfigurationElement ice = ices[j];
 					if (wizard == null) {
-						map.put(ices[j].getAttribute("name"),
+						map.put(ice.getAttribute(ATT_NAME),
 								new SelectionAdapter() {
 									public void widgetSelected(SelectionEvent e) {
 										openConnectWizard(ice, factoryName);
 									}
 								});
 					} else {
-						map.put(ices[j].getAttribute("name"),
+						map.put(ice.getAttribute(ATT_NAME),
 								new SelectionAdapter() {
 									public void widgetSelected(SelectionEvent e) {
 										openConnectWizard(wizard, ice,
@@ -90,9 +91,10 @@ public class SelectProviderAction implements IWorkbenchWindowActionDelegate,
 			IContainer container = ContainerFactory.getDefault()
 					.createContainer(factoryName);
 			IConnectWizard icw = (IConnectWizard) element
-					.createExecutableExtension("class");
+					.createExecutableExtension(ATT_CLASS);
 			icw.init(window.getWorkbench(), container);
-			new WizardDialog(window.getShell(), icw).open();
+			WizardDialog dialog = new WizardDialog(window.getShell(), icw);
+			dialog.open();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -104,12 +106,14 @@ public class SelectProviderAction implements IWorkbenchWindowActionDelegate,
 			IWorkbench workbench = window.getWorkbench();
 			wizard.init(workbench, ContainerFactory.getDefault()
 					.getDescriptionByName(factoryName));
-			if (new WizardDialog(window.getShell(), wizard).open() == WizardDialog.OK) {
+			WizardDialog dialog = new WizardDialog(window.getShell(), wizard);
+			if (dialog.open() == WizardDialog.OK) {
 				IConnectWizard icw = (IConnectWizard) element
-						.createExecutableExtension("class");
+						.createExecutableExtension(ATT_CLASS);
 				icw.init(workbench, wizard.getConfigurationResult()
 						.getContainer());
-				new WizardDialog(window.getShell(), icw).open();
+				dialog = new WizardDialog(window.getShell(), icw);
+				dialog.open();
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -141,9 +145,9 @@ public class SelectProviderAction implements IWorkbenchWindowActionDelegate,
 					.getConfigurationElements();
 			for (int j = 0; j < elements.length; j++) {
 				if (containerFactoryName.equals(elements[j]
-						.getAttribute("containerFactoryName"))) {
+						.getAttribute(ATT_CONTAINER_TYPE_NAME))) {
 					return (IConfigurationWizard) elements[j]
-							.createExecutableExtension("class");
+							.createExecutableExtension(ATT_CLASS);
 				}
 			}
 		}
