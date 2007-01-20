@@ -4,56 +4,56 @@
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
-            adaptableType="org.eclipse.ecf.presence.roster.Roster"
+            adaptableType="org.eclipse.ecf.presence.roster.IRoster"
             class="org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.presence.roster.RosterGroup"
+            adaptableType="org.eclipse.ecf.presence.roster.IRosterGroup"
             class="org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.presence.roster.RosterEntry"
+            adaptableType="org.eclipse.ecf.presence.roster.IRosterEntry"
             class="org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.presence.roster.RosterItem"
+            adaptableType="org.eclipse.ecf.presence.roster.IRosterItem"
             class="org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.presence.roster.Roster"
+            adaptableType="org.eclipse.ecf.presence.roster.IRoster"
             class="org.eclipse.ecf.presence.ui.RosterWorkbenchAdapter2Factory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter2">
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.presence.roster.RosterGroup"
+            adaptableType="org.eclipse.ecf.presence.roster.IRosterGroup"
             class="org.eclipse.ecf.presence.ui.RosterWorkbenchAdapter2Factory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter2">
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.presence.roster.RosterEntry"
+            adaptableType="org.eclipse.ecf.presence.roster.IRosterEntry"
             class="org.eclipse.ecf.presence.ui.RosterWorkbenchAdapter2Factory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter2">
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipse.ecf.presence.roster.RosterItem"
+            adaptableType="org.eclipse.ecf.presence.roster.IRosterItem"
             class="org.eclipse.ecf.presence.ui.RosterWorkbenchAdapter2Factory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter2">
