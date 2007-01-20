@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,26 +11,19 @@
 
 package org.eclipse.ecf.internal.presence.ui;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import org.eclipse.osgi.util.NLS;
 
-/**
- *
- */
-public class Messages {
-	private static final String BUNDLE_NAME = "org.eclipse.ecf.presence.ui.messages"; //$NON-NLS-1$
+public class Messages extends NLS {
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-			.getBundle(BUNDLE_NAME);
+	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.presence.ui.messages"; //$NON-NLS-1$
 
-	private Messages() {
-	}
+	public static String RosterWorkbenchAdapterFactory_Mode;
+	public static String RosterWorkbenchAdapterFactory_Type;
+	public static String RosterWorkbenchAdapterFactory_Account;
+	public static String RosterWorkbenchAdapterFactory_Disconnected;
+	public static String RosterWorkbenchAdapterFactory_GroupLabel;
 
-	public static String getString(String key) {
-		try {
-			return RESOURCE_BUNDLE.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
+	static {
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 }

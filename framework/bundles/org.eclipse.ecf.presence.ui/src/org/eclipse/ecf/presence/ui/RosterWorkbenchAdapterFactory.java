@@ -26,6 +26,7 @@ import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.RosterItem;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -36,26 +37,18 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  * point. Here is example markup for the
  * 
  * <pre>
- *     &lt;extension point=&quot;org.eclipse.core.runtime.adapters&quot; &gt;
- *          &lt;factory
- *               adaptableType=&quot;org.eclipse.ecf.presence.roster.Roster&quot;
- *               class=&quot;org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory&quot;&gt;
- *            &lt;adapter
- *                  type=&quot;org.eclipse.ui.model.IWorkbenchAdapter&quot;&gt;
- *            &lt;/adapter&gt;
- *         &lt;/factory&gt;
- *     &lt;/extension&gt;
+ *                    &lt;extension point=&quot;org.eclipse.core.runtime.adapters&quot; &gt;
+ *                         &lt;factory
+ *                              adaptableType=&quot;org.eclipse.ecf.presence.roster.Roster&quot;
+ *                              class=&quot;org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory&quot;&gt;
+ *                           &lt;adapter
+ *                                 type=&quot;org.eclipse.ui.model.IWorkbenchAdapter&quot;&gt;
+ *                           &lt;/adapter&gt;
+ *                        &lt;/factory&gt;
+ *                    &lt;/extension&gt;
  * </pre>
  */
 public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
-
-	private static final String MODE_PREFIX = Messages.getString("RosterWorkbenchAdapterFactory.0"); //$NON-NLS-1$
-	private static final String TYPE_PREFIX = Messages.getString("RosterWorkbenchAdapterFactory.1"); //$NON-NLS-1$
-	private static final String ACCOUNT_PREFIX = Messages.getString("RosterWorkbenchAdapterFactory.2"); //$NON-NLS-1$
-	private static final String LEFT_PAREN = Messages.getString("RosterWorkbenchAdapterFactory.3"); //$NON-NLS-1$
-	private static final String RIGHT_PAREN = Messages.getString("RosterWorkbenchAdapterFactory.4"); //$NON-NLS-1$
-	private static final String SLASH = Messages.getString("RosterWorkbenchAdapterFactory.5"); //$NON-NLS-1$
-	private static final String ROSTER_DISCONNECTED_NAME = Messages.getString("RosterWorkbenchAdapterFactory.6"); //$NON-NLS-1$
 
 	protected ImageDescriptor getImageDescriptor(String iconFile) {
 		return AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
@@ -64,10 +57,8 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	protected String getRosterLabel(IRoster roster) {
 		IUser user = roster.getUser();
-		if (user == null)
-			return ROSTER_DISCONNECTED_NAME;
-		else
-			return user.getName();
+		return user == null ? Messages.RosterWorkbenchAdapterFactory_Disconnected
+				: user.getName();
 	}
 
 	protected ImageDescriptor getRosterImageDescriptor(IRoster roster) {
@@ -124,11 +115,10 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	protected String getRosterGroupLabel(IRosterGroup group) {
 		Collection entries = group.getEntries();
-		StringBuffer buf = new StringBuffer(group.getName()).append(Messages.getString("RosterWorkbenchAdapterFactory.7")); //$NON-NLS-1$
-		buf.append(LEFT_PAREN).append(getEntriesAvailableCount(entries))
-				.append(SLASH);
-		buf.append(getEntriesTotalCount(entries)).append(RIGHT_PAREN);
-		return buf.toString();
+		return NLS.bind(Messages.RosterWorkbenchAdapterFactory_GroupLabel,
+				new Object[] { group.getName(),
+						Integer.toString(getEntriesAvailableCount(entries)),
+						Integer.toString(getEntriesTotalCount(entries)) });
 	}
 
 	protected ImageDescriptor getRosterGroupImageDescriptor(IRosterGroup group) {
@@ -188,12 +178,15 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 		Map properties = presence.getProperties();
 		int fixedEntries = 3;
 		Object[] children = new Object[fixedEntries + properties.size()];
-		children[0] = new RosterItem(entry, ACCOUNT_PREFIX
-				+ entry.getUser().getID().getName());
-		children[1] = new RosterItem(entry, TYPE_PREFIX
-				+ presence.getType().toString());
-		children[2] = new RosterItem(entry, MODE_PREFIX
-				+ presence.getMode().toString());
+		children[0] = new RosterItem(entry, NLS.bind(
+				Messages.RosterWorkbenchAdapterFactory_Account, entry.getUser()
+						.getID().getName()));
+		children[1] = new RosterItem(entry, NLS
+				.bind(Messages.RosterWorkbenchAdapterFactory_Type, presence
+						.getType()));
+		children[2] = new RosterItem(entry, NLS.bind(
+				Messages.RosterWorkbenchAdapterFactory_Mode, presence.getMode()
+						.toString()));
 		for (Iterator i = properties.keySet().iterator(); i.hasNext(); fixedEntries++) {
 			children[fixedEntries] = properties.get(i.next());
 		}
@@ -246,8 +239,11 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	};
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object,
+	 *      java.lang.Class)
 	 */
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType.equals(IWorkbenchAdapter.class)) {
@@ -263,7 +259,9 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
 	 */
 	public Class[] getAdapterList() {
