@@ -16,7 +16,9 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.presence.ui.messages"; //$NON-NLS-1$
-
+	
+	public static String MultiRosterView_ShowOffline;
+	
 	public static String RosterWorkbenchAdapterFactory_Mode;
 	public static String RosterWorkbenchAdapterFactory_Type;
 	public static String RosterWorkbenchAdapterFactory_Account;

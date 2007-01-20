@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,18 +8,34 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-
 package org.eclipse.ecf.presence.ui;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.internal.presence.ui.Messages;
+import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
+import org.eclipse.ecf.presence.im.IChatMessageSender;
+import org.eclipse.ecf.presence.roster.IRoster;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.presence.roster.IRosterGroup;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.viewers.IOpenListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -30,9 +46,11 @@ import org.eclipse.ui.part.ViewPart;
  * 
  */
 public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
+	
+	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.MultiRosterView"; //$NON-NLS-1$
 
 	protected static final int DEFAULT_EXPAND_LEVEL = 3;
-	
+
 	protected TreeViewer treeViewer;
 
 	protected MultiRosterLabelProvider multiRosterLabelProvider;
@@ -59,8 +77,85 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		treeViewer.setLabelProvider(multiRosterLabelProvider);
 		treeViewer.setContentProvider(multiRosterContentProvider);
 		treeViewer.setInput(new Object());
+		treeViewer.addOpenListener(new IOpenListener() {
+			public void open(OpenEvent e) {
+				IStructuredSelection iss = (IStructuredSelection) e
+						.getSelection();
+				Object element = iss.getFirstElement();
+				if (element instanceof IRosterEntry) {
+					MultiRosterView.this.open((IRosterEntry) element);
+				}
+			}
+		});
+
+		contributeToActionBars();
 	}
-	
+
+	private boolean find(Collection items, Object entry) {
+		for (Iterator it = items.iterator(); it.hasNext();) {
+			Object item = it.next();
+			if (item instanceof IRosterGroup) {
+				if (find(((IRosterGroup) item).getEntries(), entry)) {
+					return true;
+				}
+			} else if (item == entry) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void open(IRosterEntry entry) {
+		synchronized (rosterAccounts) {
+			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
+				MultiRosterAccount account = (MultiRosterAccount) i.next();
+				IRoster roster = account.getRoster();
+				if (find(roster.getItems(), entry)) {
+					IChatMessageSender icms = account
+							.getPresenceContainerAdapter().getChatManager()
+							.getChatMessageSender();
+					try {
+						MessagesView view = (MessagesView) getSite()
+								.getWorkbenchWindow().getActivePage().showView(
+										MessagesView.VIEW_ID);
+						view.openTab(icms, entry.getUser().getID());
+					} catch (PartInitException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	private void contributeToActionBars() {
+		IActionBars bars = getViewSite().getActionBars();
+		fillLocalPullDown(bars.getMenuManager());
+	}
+
+	private void fillLocalPullDown(IMenuManager manager) {
+		final ViewerFilter filter = new ViewerFilter() {
+			public boolean select(Viewer viewer, Object parentElement,
+					Object element) {
+				if (element instanceof IRosterEntry) {
+					return ((IRosterEntry) element).getPresence().getType() == IPresence.Type.AVAILABLE;
+				} else {
+					return true;
+				}
+			}
+		};
+		IAction filterAction = new Action(Messages.MultiRosterView_ShowOffline,
+				IAction.AS_CHECK_BOX) {
+			public void run() {
+				if (isChecked()) {
+					treeViewer.addFilter(filter);
+				} else {
+					treeViewer.removeFilter(filter);
+				}
+			}
+		};
+		manager.add(filterAction);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -82,28 +177,26 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	protected boolean addRosterAccount(MultiRosterAccount account) {
-		if (account == null)
-			return false;
-		if (rosterAccounts.add(account)) {
+		if (account != null && rosterAccounts.add(account)) {
 			if (multiRosterContentProvider != null) {
 				multiRosterContentProvider.add(account.getRoster());
 			}
 			return true;
-		} else
+		} else {
 			return false;
+		}
 	}
 
 	protected boolean removeRosterAccount(MultiRosterAccount account) {
-		if (account == null)
-			return false;
-		if (rosterAccounts.remove(account)) {
+		if (account != null && rosterAccounts.remove(account)) {
 			if (multiRosterContentProvider != null) {
 				multiRosterContentProvider.remove(account.getRoster());
 			}
 			account.dispose();
 			return true;
-		} else
+		} else {
 			return false;
+		}
 	}
 
 	/*
@@ -117,10 +210,11 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	protected void refreshTreeViewer(Object val, boolean labels) {
 		if (treeViewer != null) {
-			if (val != null)
+			if (val != null) {
 				treeViewer.refresh(val, labels);
-			else
+			} else {
 				treeViewer.refresh(labels);
+			}
 			treeViewer.expandToLevel(DEFAULT_EXPAND_LEVEL);
 		}
 	}
@@ -131,17 +225,19 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	 * @see org.eclipse.ecf.presence.ui.IMultiRosterViewPart#addContainer(org.eclipse.ecf.core.IContainer)
 	 */
 	public boolean addContainer(IContainer container) {
-		if (container == null)
+		if (container == null) {
 			return false;
+		}
 		IPresenceContainerAdapter containerAdapter = (IPresenceContainerAdapter) container
 				.getAdapter(IPresenceContainerAdapter.class);
-		if (containerAdapter == null)
+		if (containerAdapter == null) {
 			return false;
-		if (addRosterAccount(new MultiRosterAccount(this, container,
+		} else if (addRosterAccount(new MultiRosterAccount(this, container,
 				containerAdapter))) {
 			refreshTreeViewer(null, true);
 			return true;
-		} else
+		} else {
 			return false;
+		}
 	}
 }
