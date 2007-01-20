@@ -53,7 +53,6 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -64,8 +63,6 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -78,12 +75,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -363,7 +357,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	protected void clearInput() {
-		writeText.setText("");
+		writeText.setText(""); //$NON-NLS-1$
 	}
 
 	protected void handleCommands(String line, String[] tokens) {
@@ -700,8 +694,9 @@ public class ChatRoomManagerView extends ViewPart implements
 					String prefix = text.substring(count, pos);
 					isAtStart = count == 0;
 					// if what's found was actually whitespace, do nothing
-					if (prefix.trim().equals(""))
+					if (prefix.trim().equals("")) { //$NON-NLS-1$
 						return;
+					}
 					// get all of the users in this room and store them if they
 					// start with the prefix that the user has typed
 					String[] participants = memberViewer.getList().getItems();
@@ -748,7 +743,7 @@ public class ChatRoomManagerView extends ViewPart implements
 						StringBuffer choices = new StringBuffer();
 						synchronized (choices) {
 							for (int i = 0; i < options.size(); i++) {
-								choices.append(options.get(i)).append(" ");
+								choices.append(options.get(i)).append(' ');
 							}
 							choices.delete(choices.length() - 1, choices
 									.length());
@@ -1018,25 +1013,17 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	private String trimUserID(ID userID) {
-		URI aURI = null;
 		try {
-			aURI = new URI(userID.getName());
+			URI uri = new URI(userID.getName());
+			String user = uri.getUserInfo();
+			return user == null ? userID.getName() : user;
 		} catch (URISyntaxException e) {
-			aURI = null;
-		}
-		if (aURI != null) {
-			String user = aURI.getUserInfo();
-			if (user != null)
-				return user;
-			else
-				return userID.getName();
-		} else {
-			String userathost = userID.getName();
-			int atIndex = userathost.lastIndexOf(USERNAME_HOST_DELIMETER);
+			String userAtHost = userID.getName();
+			int atIndex = userAtHost.lastIndexOf(USERNAME_HOST_DELIMETER);
 			if (atIndex != -1) {
-				userathost = userathost.substring(0, atIndex);
+				userAtHost = userAtHost.substring(0, atIndex);
 			}
-			return userathost;
+			return userAtHost;
 		}
 	}
 
@@ -1395,8 +1382,9 @@ public class ChatRoomManagerView extends ViewPart implements
 
 	protected void outputClear() {
 		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
-				"Are you sure you want to clear output?"))
-			readText.getTextWidget().setText("");
+				"Are you sure you want to clear output?")) {
+			readText.getTextWidget().setText(""); //$NON-NLS-1$
+		}
 	}
 
 	protected void outputCopy() {
