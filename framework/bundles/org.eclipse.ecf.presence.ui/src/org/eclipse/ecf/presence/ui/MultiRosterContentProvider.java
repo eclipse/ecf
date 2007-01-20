@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -66,15 +66,14 @@ public class MultiRosterContentProvider implements IMultiRosterContentProvider {
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
 	 */
 	public Object[] getChildren(Object parentElement) {
-		if (parentElement.equals(root))
+		if (parentElement.equals(root)) {
 			return getRootChildren();
-		if (parentElement.equals(invisibleRoot))
+		} else if (parentElement.equals(invisibleRoot)) {
 			return new Object[] { root };
-
+		}
 		IWorkbenchAdapter adapter = getAdapter(parentElement);
-		if (adapter != null)
-			return adapter.getChildren(parentElement);
-		return new Object[0];
+		return adapter == null ? new Object[0] : adapter
+				.getChildren(parentElement);
 	}
 
 	/*
@@ -83,13 +82,13 @@ public class MultiRosterContentProvider implements IMultiRosterContentProvider {
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
 	 */
 	public Object getParent(Object element) {
-		if (element.equals(invisibleRoot))
+		if (element.equals(invisibleRoot)) {
 			return null;
-		if (element.equals(root))
+		} else if (element.equals(root)) {
 			return invisibleRoot;
-		if (element instanceof IRoster)
+		} else if (element instanceof IRoster) {
 			return root;
-
+		}
 		IWorkbenchAdapter adapter = getAdapter(element);
 		if (adapter != null)
 			return adapter.getParent(element);
@@ -142,7 +141,7 @@ public class MultiRosterContentProvider implements IMultiRosterContentProvider {
 		if (viewer instanceof IViewPart)
 			setViewer((IViewPart) viewer);
 		root = newInput;
-		invisibleRoot = "";
+		invisibleRoot = ""; //$NON-NLS-1$
 	}
 
 	/*
@@ -151,9 +150,7 @@ public class MultiRosterContentProvider implements IMultiRosterContentProvider {
 	 * @see org.eclipse.ecf.presence.ui.IMultiRosterContentProvider#add(org.eclipse.ecf.presence.roster.IRoster)
 	 */
 	public boolean add(IRoster roster) {
-		if (roster == null)
-			return false;
-		return rosters.add(roster);
+		return roster == null ? false : rosters.add(roster);
 	}
 
 	/*
@@ -162,9 +159,7 @@ public class MultiRosterContentProvider implements IMultiRosterContentProvider {
 	 * @see org.eclipse.ecf.presence.ui.IMultiRosterContentProvider#remove(org.eclipse.ecf.presence.roster.IRoster)
 	 */
 	public boolean remove(IRoster roster) {
-		if (roster == null)
-			return false;
-		return rosters.remove(roster);
+		return roster == null ? false : rosters.remove(roster);
 	}
 
 }
