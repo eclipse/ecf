@@ -57,6 +57,9 @@ public class SelectProviderAction implements IWizardRegistryConstants,
 				final IConfigurationElement[] ices = connectWizards[i]
 						.getConfigurationElements();
 				for (int j = 0; j < ices.length; j++) {
+					if (ices[j].getName().equals(ELEMENT_CATEGORY)) {
+						continue;
+					}
 					final String factoryName = ices[j]
 							.getAttribute(ATT_CONTAINER_TYPE_NAME);
 					final IConfigurationWizard wizard = getWizard(
