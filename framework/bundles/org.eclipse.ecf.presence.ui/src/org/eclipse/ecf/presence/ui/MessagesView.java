@@ -17,6 +17,9 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
@@ -31,6 +34,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkbenchPreferenceConstants;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class MessagesView extends ViewPart {
@@ -47,6 +52,8 @@ public class MessagesView extends ViewPart {
 
 	private Color blueColor;
 
+	private IPropertyChangeListener listener;
+
 	public MessagesView() {
 		tabs = new HashMap();
 	}
@@ -54,12 +61,18 @@ public class MessagesView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new FillLayout());
 		tabFolder = new CTabFolder(parent, SWT.BOTTOM);
-		tabFolder.setSimple(false);
 		redColor = new Color(parent.getDisplay(), 255, 0, 0);
 		blueColor = new Color(parent.getDisplay(), 0, 0, 255);
+		listener = new PropertyChangeListener();
+		IPreferenceStore store = PlatformUI.getPreferenceStore();
+		store.addPropertyChangeListener(listener);
+		tabFolder
+				.setSimple(store
+						.getBoolean(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS));
 	}
 
 	public void dispose() {
+		PlatformUI.getPreferenceStore().removePropertyChangeListener(listener);
 		redColor.dispose();
 		blueColor.dispose();
 		super.dispose();
@@ -174,6 +187,15 @@ public class MessagesView extends ViewPart {
 
 		private CTabItem getCTab() {
 			return item;
+		}
+	}
+
+	private class PropertyChangeListener implements IPropertyChangeListener {
+		public void propertyChange(PropertyChangeEvent e) {
+			if (e.getProperty().equals(
+					IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS)) {
+				tabFolder.setSimple(((Boolean) e.getNewValue()).booleanValue());
+			}
 		}
 	}
 
