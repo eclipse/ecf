@@ -23,8 +23,11 @@ import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -40,6 +43,10 @@ public class MessagesView extends ViewPart {
 
 	private CTabFolder tabFolder;
 
+	private Color redColor;
+
+	private Color blueColor;
+
 	public MessagesView() {
 		tabs = new HashMap();
 	}
@@ -47,31 +54,33 @@ public class MessagesView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new FillLayout());
 		tabFolder = new CTabFolder(parent, SWT.BOTTOM);
+		tabFolder.setSimple(false);
+		redColor = new Color(parent.getDisplay(), 255, 0, 0);
+		blueColor = new Color(parent.getDisplay(), 0, 0, 255);
 	}
 
-	private ChatTab getTab(IChatMessageSender icms, ID threadID) {
+	public void dispose() {
+		redColor.dispose();
+		blueColor.dispose();
+		super.dispose();
+	}
+
+	private ChatTab getTab(IChatMessageSender icms, ID userID, ID threadID) {
 		ChatTab tab = (ChatTab) tabs.get(threadID);
 		if (tab == null) {
-			tab = new ChatTab(icms, threadID);
+			tab = new ChatTab(icms, userID, threadID);
 			tabs.put(threadID, tab);
 		}
 		return tab;
 	}
 
-	void openTab(IChatMessageSender icms, ID threadID) {
-		ChatTab tab = getTab(icms, threadID);
-		CTabItem[] items = tabFolder.getItems();
-		for (int i = 0; i < items.length; i++) {
-			if (items[i] == tab.getTab()) {
-				tabFolder.setSelection(i);
-				break;
-			}
-		}
+	synchronized void openTab(IChatMessageSender icms, ID userID, ID threadID) {
+		tabFolder.setSelection(getTab(icms, userID, threadID).getCTab());
 	}
 
-	public synchronized void showMessage(IChatMessageSender icms, ID fromID,
-			ID threadID, String body) {
-		getTab(icms, threadID).append(fromID, body);
+	public synchronized void showMessage(IChatMessageSender icms, ID userID,
+			ID fromID, ID threadID, String body) {
+		getTab(icms, userID, threadID).append(fromID, body);
 	}
 
 	private synchronized void removeTab(ChatTab tab) {
@@ -92,17 +101,20 @@ public class MessagesView extends ViewPart {
 
 		private CTabItem item;
 
-		private Text chatText;
+		private StyledText chatText;
 
 		private Text inputText;
 
 		private IChatMessageSender icms;
 
+		private ID userID;
+
 		private ID threadID;
 
-		private ChatTab(IChatMessageSender icms, ID threadID) {
+		private ChatTab(IChatMessageSender icms, ID userID, ID threadID) {
 			this.icms = icms;
 			this.threadID = threadID;
+			this.userID = userID;
 			constructWidgets();
 			addListeners();
 		}
@@ -138,20 +150,29 @@ public class MessagesView extends ViewPart {
 		}
 
 		private void append(ID fromID, String body) {
+			int length = chatText.getCharCount();
+			String name = fromID.getName();
 			chatText.append(fromID.getName() + ": " + body + Text.DELIMITER);
+			if (fromID.equals(userID)) {
+				chatText.setStyleRange(new StyleRange(length,
+						name.length() + 1, blueColor, null, SWT.BOLD));
+			} else {
+				chatText.setStyleRange(new StyleRange(length,
+						name.length() + 1, redColor, null, SWT.BOLD));
+			}
 		}
 
 		private void constructWidgets() {
 			item = new CTabItem(tabFolder, SWT.CLOSE);
 			SashForm form = new SashForm(tabFolder, SWT.VERTICAL);
-			chatText = new Text(form, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL);
+			chatText = new StyledText(form, SWT.MULTI | SWT.READ_ONLY);
 			inputText = new Text(form, SWT.MULTI | SWT.V_SCROLL);
 			form.setWeights(WEIGHTS);
 			item.setControl(form);
 			item.setText(threadID.getName());
 		}
 
-		private CTabItem getTab() {
+		private CTabItem getCTab() {
 			return item;
 		}
 	}

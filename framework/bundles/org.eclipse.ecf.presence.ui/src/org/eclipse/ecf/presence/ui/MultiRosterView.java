@@ -46,7 +46,7 @@ import org.eclipse.ui.part.ViewPart;
  * 
  */
 public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
-	
+
 	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.MultiRosterView"; //$NON-NLS-1$
 
 	protected static final int DEFAULT_EXPAND_LEVEL = 3;
@@ -118,7 +118,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 						MessagesView view = (MessagesView) getSite()
 								.getWorkbenchWindow().getActivePage().showView(
 										MessagesView.VIEW_ID);
-						view.openTab(icms, entry.getUser().getID());
+						view.openTab(icms, roster.getUser().getID(), entry
+								.getUser().getID());
 					} catch (PartInitException e) {
 						e.printStackTrace();
 					}
