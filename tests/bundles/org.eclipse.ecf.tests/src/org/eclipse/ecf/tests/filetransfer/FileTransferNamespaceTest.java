@@ -72,7 +72,6 @@ public class FileTransferNamespaceTest extends ECFAbstractTestCase {
 	
 	public final void testGetSupportedSchemes() throws Exception {
 		String [] supportedSchemes = fixture.getSupportedSchemes();
-		System.out.println("supportedSchemes="+Arrays.asList(supportedSchemes));
 		assertNotNull(supportedSchemes);
 	}
 
