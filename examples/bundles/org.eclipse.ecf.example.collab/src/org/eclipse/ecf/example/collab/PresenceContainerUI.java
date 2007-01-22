@@ -36,6 +36,7 @@ import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
+import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
 import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.ecf.ui.views.RosterView;
@@ -95,7 +96,7 @@ public class PresenceContainerUI {
 					IWorkbenchWindow ww = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow();
 					IWorkbenchPage wp = ww.getActivePage();
-
+					
 					IViewPart view = wp
 							.showView("org.eclipse.ecf.ui.view.rosterview");
 					rosterView = (RosterView) view;
