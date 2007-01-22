@@ -23,7 +23,7 @@ public interface IRosterItem extends IAdaptable {
 	/**
 	 * Return parent of item
 	 * 
-	 * @return Object parent of roster item. May be <code>null</code>.
+	 * @return IRosterItem parent of roster item. May be <code>null</code>.
 	 */
 	public IRosterItem getParent();
 }
