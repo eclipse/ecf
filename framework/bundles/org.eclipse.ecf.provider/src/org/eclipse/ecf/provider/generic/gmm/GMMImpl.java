@@ -1,14 +1,13 @@
-/****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
-
+/*******************************************************************************
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.provider.generic.gmm;
 
 import java.util.Observable;
@@ -64,7 +63,7 @@ public class GMMImpl extends Observable {
         Iterator iter = newSet.iterator();
         int j = 0;
         while (iter.hasNext()) {
-            ids[j++] = (ID) ((Member) iter.next()).getID();
+            ids[j++] = ((Member) iter.next()).getID();
         }
         return ids;
     }
