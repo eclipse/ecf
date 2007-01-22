@@ -9,10 +9,13 @@
 package org.eclipse.ecf.internal.provider.filetransfer.identity;
 
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 
 /**
  * URL file namespace class. This defines a namespace that understands how to
@@ -24,6 +27,8 @@ public class FileTransferNamespace extends Namespace {
 
 	public static final String PROTOCOL = "ecf.provider.filetransfer";
 
+	private static final String [] jvmSchemes = new String [] { "http", "https", "ftp", "file", "jar" };
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -50,7 +55,11 @@ public class FileTransferNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedSchemes()
 	 */
 	public String[] getSupportedSchemes() {
-		return new String [] { "http", "https", "ftp", "file" };
+		Set result = new HashSet();
+		String [] platformSchemes = Activator.getDefault().getPlatformSupportedSchemes();
+		for(int i=0; i < jvmSchemes.length; i++) result.add(jvmSchemes[i]);
+		for(int i=0; i < platformSchemes.length; i++) result.add(platformSchemes[i]);
+		return (String []) result.toArray(new String [] {});
 	}
 
 	/*
