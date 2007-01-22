@@ -20,11 +20,14 @@
 
 package org.jivesoftware.smack;
 
-import java.util.*;
-import java.io.*;
-
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Writes packets to a XMPP server. Packets are sent using a dedicated thread. Packet
@@ -38,18 +41,24 @@ class PacketWriter {
     private Thread writerThread;
     private Writer writer;
     private XMPPConnection connection;
-    private LinkedList queue;
+    final private LinkedList queue;
     private boolean done = false;
     
-    private List listeners = new ArrayList();
+    final private List listeners = new ArrayList();
     private boolean listenersDeleted = false;
+
+    /**
+     * Timestamp when the last stanza was sent to the server. This information is used
+     * by the keep alive process to only send heartbeats when the connection has been idle.
+     */
+    private long lastActive = System.currentTimeMillis();
 
     /**
      * List of PacketInterceptor that will be notified when a new packet is about to be
      * sent to the server. These interceptors may modify the packet before it is being
      * actually sent to the server.
      */
-    private List interceptors = new ArrayList();
+    final private List interceptors = new ArrayList();
     /**
      * Flag that indicates if an interceptor was deleted. This is an optimization flag.
      */
@@ -72,15 +81,6 @@ class PacketWriter {
         };
         writerThread.setName("Smack Packet Writer");
         writerThread.setDaemon(true);
-
-        // Schedule a keep-alive task to run if the feature is enabled. will write
-        // out a space character each time it runs to keep the TCP/IP connection open.
-        int keepAliveInterval = SmackConfiguration.getKeepAliveInterval();
-        if (keepAliveInterval > 0) {
-            Thread keepAliveThread = new Thread(new KeepAliveTask(keepAliveInterval));
-            keepAliveThread.setDaemon(true);
-            keepAliveThread.start();
-        }
     }
 
     /**
@@ -195,6 +195,22 @@ class PacketWriter {
         writerThread.start();
     }
 
+    /**
+     * Starts the keep alive process. A white space (aka heartbeat) is going to be
+     * sent to the server every 30 seconds (by default) since the last stanza was sent
+     * to the server.
+     */
+    void startKeepAliveProcess() {
+        // Schedule a keep-alive task to run if the feature is enabled. will write
+        // out a space character each time it runs to keep the TCP/IP connection open.
+        int keepAliveInterval = SmackConfiguration.getKeepAliveInterval();
+        if (keepAliveInterval > 0) {
+            Thread keepAliveThread = new Thread(new KeepAliveTask(keepAliveInterval));
+            keepAliveThread.setDaemon(true);
+            keepAliveThread.start();
+        }
+    }
+
     void setWriter(Writer writer) {
         this.writer = writer;
     }
@@ -218,7 +234,9 @@ class PacketWriter {
                 try {
                     queue.wait(2000);
                 }
-                catch (InterruptedException ie) { }
+                catch (InterruptedException ie) {
+                    // Do nothing
+                }
             }
             if (queue.size() > 0) {
                 return (Packet)queue.removeLast();
@@ -240,6 +258,8 @@ class PacketWriter {
                     synchronized (writer) {
                         writer.write(packet.toXML());
                         writer.flush();
+                        // Keep track of the last time a stanza was sent to the server
+                        lastActive = System.currentTimeMillis();
                     }
                 }
             }
@@ -248,12 +268,16 @@ class PacketWriter {
                 writer.write("</stream:stream>");
                 writer.flush();
             }
-            catch (Exception e) { }
+            catch (Exception e) {
+                // Do nothing
+            }
             finally {
                 try {
                     writer.close();
                 }
-                catch (Exception e) { }
+                catch (Exception e) {
+                    // Do nothing
+                }
             }
         }
         catch (IOException ioe){
@@ -432,19 +456,34 @@ class PacketWriter {
         }
 
         public void run() {
+            try {
+                // Sleep 15 seconds before sending first heartbeat. This will give time to
+                // properly finish TLS negotiation and then start sending heartbeats.
+                Thread.sleep(15000);
+            }
+            catch (InterruptedException ie) {
+                // Do nothing
+            }
             while (!done) {
                 synchronized (writer) {
-                    try {
-                        writer.write(" ");
-                        writer.flush();
+                    // Send heartbeat if no packet has been sent to the server for a given time
+                    if (System.currentTimeMillis() - lastActive >= delay) {
+                        try {
+                            writer.write(" ");
+                            writer.flush();
+                        }
+                        catch (Exception e) {
+                            // Do nothing
+                        }
                     }
-                    catch (Exception e) { }
                 }
                 try {
                     // Sleep until we should write the next keep-alive.
                     Thread.sleep(delay);
                 }
-                catch (InterruptedException ie) { }
+                catch (InterruptedException ie) {
+                    // Do nothing
+                }
             }
         }
     }

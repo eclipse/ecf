@@ -459,9 +459,6 @@ public class XMPPConnection {
 
         // Indicate that we're now authenticated.
         authenticated = true;
-        
-        packetReader.notifyConnectionAuthenticated();
-        
         anonymous = false;
 
         // If debugging is enabled, change the the debug window title to include the
@@ -519,9 +516,6 @@ public class XMPPConnection {
 
         // Indicate that we're now authenticated.
         authenticated = true;
-        
-        packetReader.notifyConnectionAuthenticated();
-        
         anonymous = true;
 
         // If debugging is enabled, change the the debug window title to include the
@@ -881,6 +875,9 @@ public class XMPPConnection {
 
             // Make note of the fact that we're now connected.
             connected = true;
+
+            // Start keep alive process (after TLS was negotiated - if available)
+            packetWriter.startKeepAliveProcess();
 
             // Notify that a new connection has been established
             connectionEstablished(this);

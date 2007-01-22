@@ -28,9 +28,9 @@ import org.jivesoftware.smack.XMPPException;
 /**
  * Contains the generic file information and progress related to a particular
  * file transfer.
- * 
+ *
  * @author Alexander Wenckus
- * 
+ *
  */
 public abstract class FileTransfer {
 
@@ -42,7 +42,9 @@ public abstract class FileTransfer {
 
 	private String peer;
 
-	private org.jivesoftware.smackx.filetransfer.FileTransfer.Status status;
+	private org.jivesoftware.smackx.filetransfer.FileTransfer.Status status = Status.INITIAL;
+
+    private final Object statusMonitor = new Object();
 
 	protected FileTransferNegotiator negotiator;
 
@@ -54,7 +56,12 @@ public abstract class FileTransfer {
 
 	private Exception exception;
 
-	protected FileTransfer(String peer, String streamID,
+    /**
+     * Buffer size between input and output
+     */
+    private static final int BUFFER_SIZE = 8192;
+
+    protected FileTransfer(String peer, String streamID,
 			FileTransferNegotiator negotiator) {
 		this.peer = peer;
 		this.streamID = streamID;
@@ -74,7 +81,7 @@ public abstract class FileTransfer {
 
 	/**
 	 * Returns the size of the file being transfered.
-	 * 
+	 *
 	 * @return Returns the size of the file being transfered.
 	 */
 	public long getFileSize() {
@@ -83,7 +90,7 @@ public abstract class FileTransfer {
 
 	/**
 	 * Returns the name of the file being transfered.
-	 * 
+	 *
 	 * @return Returns the name of the file being transfered.
 	 */
 	public String getFileName() {
@@ -92,7 +99,7 @@ public abstract class FileTransfer {
 
 	/**
 	 * Returns the local path of the file.
-	 * 
+	 *
 	 * @return Returns the local path of the file.
 	 */
 	public String getFilePath() {
@@ -101,7 +108,7 @@ public abstract class FileTransfer {
 
 	/**
 	 * Returns the JID of the peer for this file transfer.
-	 * 
+	 *
 	 * @return Returns the JID of the peer for this file transfer.
 	 */
 	public String getPeer() {
@@ -110,21 +117,21 @@ public abstract class FileTransfer {
 
 	/**
 	 * Returns the progress of the file transfer as a number between 0 and 1.
-	 * 
+	 *
 	 * @return Returns the progress of the file transfer as a number between 0
 	 *         and 1.
 	 */
 	public double getProgress() {
-        if(amountWritten == 0) {
+        if (amountWritten <= 0 || fileSize <= 0) {
             return 0;
         }
-        return amountWritten / fileSize;
+        return (double) amountWritten / (double) fileSize;
 	}
 
 	/**
 	 * Returns true if the transfer has been cancled, if it has stopped because
 	 * of a an error, or the transfer completed succesfully.
-	 * 
+	 *
 	 * @return Returns true if the transfer has been cancled, if it has stopped
 	 *         because of a an error, or the transfer completed succesfully.
 	 */
@@ -135,7 +142,7 @@ public abstract class FileTransfer {
 
 	/**
 	 * Retuns the current status of the file transfer.
-	 * 
+	 *
 	 * @return Retuns the current status of the file transfer.
 	 */
 	public Status getStatus() {
@@ -150,7 +157,7 @@ public abstract class FileTransfer {
 	 * When {@link #getStatus()} returns that there was an {@link Status#ERROR}
 	 * during the transfer, the type of error can be retrieved through this
 	 * method.
-	 * 
+	 *
 	 * @return Returns the type of error that occured if one has occured.
 	 */
 	public Error getError() {
@@ -160,7 +167,7 @@ public abstract class FileTransfer {
 	/**
 	 * If an exception occurs asynchronously it will be stored for later
 	 * retrival. If there is an error there maybe an exception set.
-	 * 
+	 *
 	 * @return The exception that occured or null if there was no exception.
 	 * @see #getError()
 	 */
@@ -178,24 +185,29 @@ public abstract class FileTransfer {
 	}
 
 	protected final void setStatus(Status status) {
-		this.status = status;
-	}
+        synchronized (statusMonitor) {
+		    this.status = status;
+	    }
+    }
+
+    protected final boolean updateStatus(Status oldStatus, Status newStatus) {
+        synchronized (statusMonitor) {
+            if (oldStatus != status) {
+                return false;
+            }
+            status = newStatus;
+            return true;
+        }
+    }
 
 	protected void writeToStream(final InputStream in, final OutputStream out)
-			throws XMPPException {
-		final byte[] b = new byte[1000];
+			throws XMPPException
+    {
+		final byte[] b = new byte[BUFFER_SIZE];
 		int count = 0;
 		amountWritten = 0;
-		try {
-			count = in.read(b);
-		} catch (IOException e) {
-			throw new XMPPException("error reading from input stream", e);
-		}
-		while (count != -1 && !getStatus().equals(Status.CANCLED)) {
-			if (getStatus().equals(Status.CANCLED)) {
-				return;
-			}
 
+        do {
 			// write to the output stream
 			try {
 				out.write(b, 0, count);
@@ -211,79 +223,95 @@ public abstract class FileTransfer {
 			} catch (IOException e) {
 				throw new XMPPException("error reading from input stream", e);
 			}
-		}
+		} while (count != -1 && !getStatus().equals(Status.CANCLED));
 
-		// the connection was likely terminated abrubtly if these are not
-		// equal
+		// the connection was likely terminated abrubtly if these are not equal
 		if (!getStatus().equals(Status.CANCLED) && getError() == Error.NONE
 				&& amountWritten != fileSize) {
+            setStatus(Status.ERROR);
 			this.error = Error.CONNECTION;
 		}
 	}
 
 	/**
 	 * A class to represent the current status of the file transfer.
-	 * 
+	 *
 	 * @author Alexander Wenckus
-	 * 
+	 *
 	 */
 	public static class Status {
-		/**
-		 * An error occured during the transfer.
-		 * 
-		 * @see FileTransfer#getError()
-		 */
-		public static final Status ERROR = new Status();
 
 		/**
+		 * An error occured during the transfer.
+		 *
+		 * @see FileTransfer#getError()
+		 */
+		public static final Status ERROR = new Status("Error");
+
+		/**
+         * The initial status of the file transfer.
+         */
+        public static final Status INITIAL = new Status("Initial");
+
+        /**
 		 * The file transfer is being negotiated with the peer. The party
 		 * recieving the file has the option to accept or refuse a file transfer
 		 * request. If they accept, then the process of stream negotiation will
 		 * begin. If they refuse the file will not be transfered.
-		 * 
+		 *
 		 * @see #NEGOTIATING_STREAM
 		 */
-		public static final Status NEGOTIATING_TRANSFER = new Status();
+		public static final Status NEGOTIATING_TRANSFER = new Status("Negotiating Transfer");
 
 		/**
 		 * The peer has refused the file transfer request halting the file
 		 * transfer negotiation process.
 		 */
-		public static final Status REFUSED = new Status();
+		public static final Status REFUSED = new Status("Refused");
 
 		/**
 		 * The stream to transfer the file is being negotiated over the chosen
 		 * stream type. After the stream negotiating process is complete the
 		 * status becomes negotiated.
-		 * 
+		 *
 		 * @see #NEGOTIATED
 		 */
-		public static final Status NEGOTIATING_STREAM = new Status();
+		public static final Status NEGOTIATING_STREAM = new Status("Negotiating Stream");
 
 		/**
 		 * After the stream negotitation has completed the intermediate state
 		 * between the time when the negotiation is finished and the actual
 		 * transfer begins.
 		 */
-		public static final Status NEGOTIATED = new Status();
+		public static final Status NEGOTIATED = new Status("Negotiated");
 
 		/**
 		 * The transfer is in progress.
-		 * 
+		 *
 		 * @see FileTransfer#getProgress()
 		 */
-		public static final Status IN_PROGRESS = new Status();
+		public static final Status IN_PROGRESS = new Status("In Progress");
 
 		/**
 		 * The transfer has completed successfully.
 		 */
-		public static final Status COMPLETE = new Status();
+		public static final Status COMPLETE = new Status("Complete");
 
 		/**
 		 * The file transfer was canceled
 		 */
-		public static final Status CANCLED = new Status();
-	}
+		public static final Status CANCLED = new Status("Cancled");
+
+        private String status;
+
+        private Status(String status) {
+            this.status = status;
+        }
+
+        public String toString() {
+            return status;
+        }
+    }
 
     /**
      * Return the length of bytes written out to the stream.
@@ -338,7 +366,7 @@ public abstract class FileTransfer {
 
 		/**
 		 * Returns a String representation of this error.
-		 * 
+		 *
 		 * @return Returns a String representation of this error.
 		 */
 		public String getMessage() {

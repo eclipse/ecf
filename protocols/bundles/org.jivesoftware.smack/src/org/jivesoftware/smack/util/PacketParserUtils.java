@@ -314,7 +314,7 @@ public class PacketParserUtils {
             throws Exception
     {
         // See if a provider is registered to handle the extension.
-        Object provider = ProviderManager.getDefault().getExtensionProvider(elementName, namespace);
+        Object provider = ProviderManager.getExtensionProvider(elementName, namespace);
         if (provider != null) {
             if (provider instanceof PacketExtensionProvider) {
                 return ((PacketExtensionProvider)provider).parseExtension(parser);

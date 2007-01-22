@@ -23,6 +23,7 @@ package org.jivesoftware.smack.provider;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.xmlpull.v1.*;
+import org.xmlpull.mxp1.MXParser;
 
 import java.util.*;
 import java.net.URL;
@@ -108,29 +109,10 @@ import java.net.URL;
  */
 public class ProviderManager {
 
-	private static ProviderManager defaultProvider = null;
+    private static Map extensionProviders = new Hashtable();
+    private static Map iqProviders = new Hashtable();
 
-    private Map extensionProviders = new Hashtable();
-    private Map iqProviders = new Hashtable();
-
-    public static ProviderManager getDefault() {
-    	if (defaultProvider == null)
-    		defaultProvider = new ProviderManager();
-    	return defaultProvider;
-    }
-    
-    public static void setDefault(ProviderManager value) {
-    	if (defaultProvider != null)
-    		throw new IllegalStateException("ProviderManager default already set");
-    	defaultProvider = value;
-    }
-    
-    public ProviderManager() {
-    	super();
-    	initialize();
-    }
-    
-    protected void initialize() {
+    static {
         // Load IQ processing providers.
         try {
             // Get an array of class loaders to try loading the providers files from.
@@ -143,10 +125,8 @@ public class ProviderManager {
                     java.io.InputStream providerStream = null;
                     try {
                         providerStream = url.openStream();
-                        XmlPullParserFactory factory = XmlPullParserFactory.newInstance(
-                                "org.xmlpull.mxp1.MXParserFactory", null);
-                        factory.setNamespaceAware(true);
-                        XmlPullParser parser = factory.newPullParser();
+                        XmlPullParser parser = new MXParser();
+                        parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
                         parser.setInput(providerStream, "UTF-8");
                         int eventType = parser.getEventType();
                         do {
@@ -233,7 +213,9 @@ public class ProviderManager {
                 }
             }
         }
-        catch (Exception e) { }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -256,7 +238,7 @@ public class ProviderManager {
      * @param namespace the XML namespace.
      * @return the IQ provider.
      */
-    public Object getIQProvider(String elementName, String namespace) {
+    public static Object getIQProvider(String elementName, String namespace) {
         String key = getProviderKey(elementName, namespace);
         return iqProviders.get(key);
     }
@@ -266,7 +248,7 @@ public class ProviderManager {
      *
      * @return an Iterator for all IQProvider instances.
      */
-    public Iterator getIQProviders() {
+    public static Iterator getIQProviders() {
         return Collections.unmodifiableCollection(new HashMap(iqProviders).values()).iterator();
     }
 
@@ -279,7 +261,7 @@ public class ProviderManager {
      * @param namespace the XML namespace.
      * @param provider the IQ provider.
      */
-    public void addIQProvider(String elementName, String namespace,
+    public static void addIQProvider(String elementName, String namespace,
             Object provider)
     {
         if (!(provider instanceof IQProvider || (provider instanceof Class &&
@@ -293,12 +275,14 @@ public class ProviderManager {
     }
 
     /**
-     * Removes the IQ provider with the specified element name and name space. 
+     * Removes an IQ provider with the specified element name and namespace. This
+     * method is typically called to cleanup providers that are programatically added
+     * using the {@link #addIQProvider(String, String, Object) addIQProvider} method.
      *
      * @param elementName the XML element name.
      * @param namespace the XML namespace.
      */
-    public void removeIQProvider(String elementName, String namespace) {
+    public static void removeIQProvider(String elementName, String namespace) {
         String key = getProviderKey(elementName, namespace);
         iqProviders.remove(key);
     }
@@ -322,7 +306,7 @@ public class ProviderManager {
      * @param namespace
      * @return the extenion provider.
      */
-    public Object getExtensionProvider(String elementName, String namespace) {
+    public static Object getExtensionProvider(String elementName, String namespace) {
         String key = getProviderKey(elementName, namespace);
         return extensionProviders.get(key);
     }
@@ -336,7 +320,7 @@ public class ProviderManager {
      * @param namespace the XML namespace.
      * @param provider the extension provider.
      */
-    public void addExtensionProvider(String elementName, String namespace,
+    public static void addExtensionProvider(String elementName, String namespace,
             Object provider)
     {
         if (!(provider instanceof PacketExtensionProvider || provider instanceof Class)) {
@@ -348,12 +332,14 @@ public class ProviderManager {
     }
 
     /**
-     * Removes the extension provider with the specified element name and name space. 
+     * Removes an extension provider with the specified element name and namespace. This
+     * method is typically called to cleanup providers that are programatically added
+     * using the {@link #addExtensionProvider(String, String, Object) addExtensionProvider} method.
      *
      * @param elementName the XML element name.
      * @param namespace the XML namespace.
      */
-    public void removeExtensionProvider(String elementName, String namespace) {
+    public static void removeExtensionProvider(String elementName, String namespace) {
         String key = getProviderKey(elementName, namespace);
         extensionProviders.remove(key);
     }
@@ -363,7 +349,7 @@ public class ProviderManager {
      *
      * @return an Iterator for all PacketExtensionProvider instances.
      */
-    public Iterator getExtensionProviders() {
+    public static Iterator getExtensionProviders() {
         return Collections.unmodifiableCollection(
                 new HashMap(extensionProviders).values()).iterator();
     }
@@ -375,7 +361,7 @@ public class ProviderManager {
      * @param namespace the namespace.
      * @return a unique key for the element name and namespace pair.
      */
-    protected static String getProviderKey(String elementName, String namespace) {
+    private static String getProviderKey(String elementName, String namespace) {
         StringBuffer buf = new StringBuffer();
         buf.append("<").append(elementName).append("/><").append(namespace).append("/>");
         return buf.toString();
@@ -387,10 +373,13 @@ public class ProviderManager {
      * @return an array of ClassLoader instances.
      */
     private static ClassLoader[] getClassLoaders() {
-        ClassLoader[] classLoaders = new ClassLoader[3];
-        classLoaders[0] = ProviderManager.class.getClassLoader();
+        ClassLoader[] classLoaders = new ClassLoader[2];
+        classLoaders[0] = new ProviderManager().getClass().getClassLoader();
         classLoaders[1] = Thread.currentThread().getContextClassLoader();
-        classLoaders[2] = ClassLoader.getSystemClassLoader();
         return classLoaders;
+    }
+
+    private ProviderManager() {
+
     }
 }

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jive Software Smack API
 Bundle-SymbolicName: org.jivesoftware.smack;singleton:=true
-Bundle-Version: 2.2.0
+Bundle-Version: 2.2.1
 Bundle-Vendor: Jive Software
 Bundle-Localization: plugin
 Export-Package: org.jivesoftware.smack,
@@ -13,15 +13,15 @@ Export-Package: org.jivesoftware.smack,
  org.jivesoftware.smack.sasl,
  org.jivesoftware.smack.util,
  org.jivesoftware.smackx,
+ org.jivesoftware.smackx.bookmark,
  org.jivesoftware.smackx.debugger,
  org.jivesoftware.smackx.filetransfer,
  org.jivesoftware.smackx.muc,
  org.jivesoftware.smackx.packet,
  org.jivesoftware.smackx.provider,
- org.jivesoftware.smackx.search,
- org.xmlpull.mxp1,
- org.xmlpull.v1
-Bundle-ClassPath: ., jars/xmlpull.v1.jar
+ org.jivesoftware.smackx.search
+Bundle-ClassPath: .,
+ jars/xpp.jar
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
 Eclipse-ExtensibleAPI: true

@@ -23,6 +23,7 @@ import org.jivesoftware.smack.PacketCollector;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
@@ -143,6 +144,9 @@ public class IBBTransferNegotiator extends StreamNegotiator {
     public void cleanup() {
     }
 
+    public void cancel() {
+    }
+
     private class IBBOutputStream extends OutputStream {
 
         protected byte[] buffer;
@@ -152,8 +156,6 @@ public class IBBTransferNegotiator extends StreamNegotiator {
         protected int seq = 0;
 
         final String userID;
-
-        private final int options = Base64.DONT_BREAK_LINES;
 
         final private IQ closePacket;
 
@@ -191,9 +193,16 @@ public class IBBTransferNegotiator extends StreamNegotiator {
         public synchronized void write(byte b[], int off, int len)
                 throws IOException {
             if (len >= buffer.length) {
-                throw new IllegalArgumentException(
-                        "byte size exceeds blocksize");
+                // "byte" off the first chunck to write out
+                writeOut(b, off, buffer.length);
+                // recursivly call this method again with the lesser amount subtracted.
+                write(b, off + buffer.length, len - buffer.length);
+            } else {
+                writeOut(b, off, len);
             }
+        }
+
+        private void writeOut(byte b[], int off, int len) {
             if (len > buffer.length - count) {
                 flushBuffer();
             }
@@ -212,15 +221,16 @@ public class IBBTransferNegotiator extends StreamNegotiator {
             IBBExtensions.Data ext = new IBBExtensions.Data(sid);
             template.addExtension(ext);
 
-            String enc = Base64.encodeBytes(buffer, offset, len, options);
+            String enc = StringUtils.encodeBase64(buffer, offset, len, false);
 
             ext.setData(enc);
             ext.setSeq(seq);
-            synchronized(this) {
+            synchronized (this) {
                 try {
                     this.wait(100);
                 }
                 catch (InterruptedException e) {
+                    /* Do Nothing */
                 }
             }
 
@@ -333,9 +343,9 @@ public class IBBTransferNegotiator extends StreamNegotiator {
             data = (IBBExtensions.Data) mess.getExtension(
                     IBBExtensions.Data.ELEMENT_NAME,
                     IBBExtensions.NAMESPACE);
-            
+
             checkSequence(mess, (int) data.getSeq());
-            buffer = Base64.decode(data.getData());
+            buffer = StringUtils.decodeBase64(data.getData());
             bufferPointer = 0;
             return true;
         }
@@ -394,7 +404,7 @@ public class IBBTransferNegotiator extends StreamNegotiator {
             if (isEOF) {
                 sendCloseConfirmation();
             }
-            else if(lastMess != null) {
+            else if (lastMess != null) {
                 sendCancelMessage(lastMess);
             }
             isClosed = true;

@@ -1,4 +1,4 @@
-package org.jivesoftware.smackx.filetransfer;
+package org.jivesoftware.smack.util;
 
 /**
  * Encodes and decodes to and from Base64 notation. <p/> <p/> Change Log:
@@ -359,19 +359,23 @@ class Base64 {
 			try {
 				oos.close();
 			} catch (Exception e) {
-			}
+                /* Do Nothing */
+            }
 			try {
 				gzos.close();
 			} catch (Exception e) {
-			}
+                /* Do Nothing */
+            }
 			try {
 				b64os.close();
 			} catch (Exception e) {
-			}
+                /* Do Nothing */
+            }
 			try {
 				baos.close();
 			} catch (Exception e) {
-			}
+                /* Do Nothing */
+            }
 		} // end finally
 
 		// Return value according to relevant encoding.
@@ -489,15 +493,18 @@ class Base64 {
 				try {
 					gzos.close();
 				} catch (Exception e) {
-				}
+                    /* Do Nothing */
+                }
 				try {
 					b64os.close();
 				} catch (Exception e) {
-				}
+                    /* Do Nothing */
+                }
 				try {
 					baos.close();
 				} catch (Exception e) {
-				}
+                    /* Do Nothing */
+                }
 			} // end finally
 
 			// Return value according to relevant encoding.
@@ -661,9 +668,9 @@ class Base64 {
 
 		byte[] b4 = new byte[4];
 		int b4Posn = 0;
-		int i = 0;
-		byte sbiCrop = 0;
-		byte sbiDecode = 0;
+		int i;
+		byte sbiCrop;
+		byte sbiDecode;
 		for (i = off; i < off + len; i++) {
 			sbiCrop = (byte) (source[i] & 0x7f); // Only the low seven bits
 			sbiDecode = DECODABET[sbiCrop];
@@ -730,7 +737,7 @@ class Base64 {
 				java.util.zip.GZIPInputStream gzis = null;
 				java.io.ByteArrayOutputStream baos = null;
 				byte[] buffer = new byte[2048];
-				int length = 0;
+				int length;
 
 				try {
 					baos = new java.io.ByteArrayOutputStream();
@@ -752,15 +759,18 @@ class Base64 {
 					try {
 						baos.close();
 					} catch (Exception e) {
-					}
+                        /* Do Nothing */
+                    }
 					try {
 						gzis.close();
 					} catch (Exception e) {
-					}
+                        /* Do Nothing */
+                    }
 					try {
 						bais.close();
 					} catch (Exception e) {
-					}
+                        /* Do Nothing */
+                    }
 				} // end finally
 
 			} // end if: gzipped
@@ -802,13 +812,19 @@ class Base64 {
 		} // end catch
 		finally {
 			try {
-				bais.close();
-			} catch (Exception e) {
-			}
+                if(bais != null) {
+                    bais.close();
+                }
+            } catch (Exception e) {
+                /* Do Nothing */
+            }
 			try {
-				ois.close();
-			} catch (Exception e) {
-			}
+                if(ois != null) {
+                    ois.close();
+                }
+            } catch (Exception e) {
+                /* Do Nothing */
+            }
 		} // end finally
 
 		return obj;
@@ -839,9 +855,12 @@ class Base64 {
 		} // end catch: IOException
 		finally {
 			try {
-				bos.close();
-			} catch (Exception e) {
-			}
+                if(bos != null) {
+                    bos.close();
+                }
+            } catch (Exception e) {
+                /* Do Nothing */
+            }
 		} // end finally
 
 		return success;
@@ -871,9 +890,12 @@ class Base64 {
 		} // end catch: IOException
 		finally {
 			try {
-				bos.close();
-			} catch (Exception e) {
-			}
+                if(bos != null) {
+                    bos.close();
+                }
+            } catch (Exception e) {
+                /* Do Nothing */
+            }
 		} // end finally
 
 		return success;
@@ -893,9 +915,9 @@ class Base64 {
 		try {
 			// Set up some useful variables
 			java.io.File file = new java.io.File(filename);
-			byte[] buffer = null;
+			byte[] buffer;
 			int length = 0;
-			int numBytes = 0;
+			int numBytes;
 
 			// Check for size of file
 			if (file.length() > Integer.MAX_VALUE) {
@@ -925,8 +947,11 @@ class Base64 {
 		} // end catch: IOException
 		finally {
 			try {
-				bis.close();
-			} catch (Exception e) {
+                if(bis != null) {
+                    bis.close();
+                }
+            } catch (Exception e) {
+                /* Do Nothing */
 			}
 		} // end finally
 
@@ -949,7 +974,7 @@ class Base64 {
 			java.io.File file = new java.io.File(filename);
 			byte[] buffer = new byte[(int) (file.length() * 1.4)];
 			int length = 0;
-			int numBytes = 0;
+			int numBytes;
 
 			// Open a stream
 			bis = new Base64.InputStream(new java.io.BufferedInputStream(
@@ -970,9 +995,12 @@ class Base64 {
 		} // end catch: IOException
 		finally {
 			try {
-				bis.close();
-			} catch (Exception e) {
-			}
+                if(bis != null) {
+                    bis.close();
+                }
+            } catch (Exception e) {
+                /* Do Nothing */
+            }
 		} // end finally
 
 		return encodedData;
@@ -1095,10 +1123,10 @@ class Base64 {
 				// Else decoding
 				else {
 					byte[] b4 = new byte[4];
-					int i = 0;
+					int i;
 					for (i = 0; i < 4; i++) {
 						// Read four "meaningful" bytes:
-						int b = 0;
+						int b;
 						do {
 							b = in.read();
 						} while (b >= 0

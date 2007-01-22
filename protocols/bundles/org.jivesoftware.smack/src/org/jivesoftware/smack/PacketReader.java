@@ -215,6 +215,11 @@ class PacketReader {
                 listener.connectionClosedOnError(e);
             }
         }
+				
+        // Make sure that the listenerThread is awake to shutdown properly
+        synchronized (listenerThread) {
+            listenerThread.notify();
+        }
     }
 
     /**
@@ -499,37 +504,14 @@ class PacketReader {
             releaseConnectionIDLock();
         }
     }
+
     /**
-	 * Sends out a notification that there was an error with the connection and
-	 * closes the connection.
-	 * 
-	 * @param e
-	 *            the exception that causes the connection close event.
-	 */
-	void notifyConnectionAuthenticated() {
-		ArrayList listenersCopy;
-		synchronized (connectionListeners) {
-			// Make a copy since it's possible that a listener will be removed
-			// from the list
-			listenersCopy = new ArrayList(connectionListeners);
-			for (Iterator i = listenersCopy.iterator(); i.hasNext();) {
-				ConnectionListener listener = (ConnectionListener) i.next();
-				if (listener instanceof ConnectionListener2)
-					((ConnectionListener2) listener).connectionAuthenticated();
-			}
-		}
-	} 
-    /**
-	 * Returns a collection of Stings with the mechanisms included in the
-	 * mechanisms stanza.
-	 * 
-	 * @param parser
-	 *            the XML parser, positioned at the start of an IQ packet.
-	 * @return a collection of Stings with the mechanisms included in the
-	 *         mechanisms stanza.
-	 * @throws Exception
-	 *             if an exception occurs while parsing the stanza.
-	 */
+     * Returns a collection of Stings with the mechanisms included in the mechanisms stanza.
+     *
+     * @param parser the XML parser, positioned at the start of an IQ packet.
+     * @return a collection of Stings with the mechanisms included in the mechanisms stanza.
+     * @throws Exception if an exception occurs while parsing the stanza.
+     */
     private Collection parseMechanisms(XmlPullParser parser) throws Exception {
         List mechanisms = new ArrayList();
         boolean done = false;
@@ -615,7 +597,7 @@ class PacketReader {
                 // Otherwise, see if there is a registered provider for
                 // this element name and namespace.
                 else {
-                    Object provider = ProviderManager.getDefault().getIQProvider(elementName, namespace);
+                    Object provider = ProviderManager.getIQProvider(elementName, namespace);
                     if (provider != null) {
                         if (provider instanceof IQProvider) {
                             iqPacket = ((IQProvider)provider).parseIQ(parser);
