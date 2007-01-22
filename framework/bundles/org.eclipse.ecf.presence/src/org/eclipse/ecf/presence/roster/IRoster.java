@@ -20,7 +20,7 @@ import org.eclipse.ecf.core.user.IUser;
  * Roster (aka contacts list or buddy list)
  * 
  */
-public interface IRoster extends IAdaptable, Serializable {
+public interface IRoster extends IAdaptable, Serializable, IRosterItem {
 
 	/**
 	 * Get local user for this roster. This is the user that owns this roster.

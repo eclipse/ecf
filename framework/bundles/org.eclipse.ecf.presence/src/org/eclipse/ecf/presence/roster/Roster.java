@@ -22,7 +22,7 @@ import org.eclipse.ecf.core.user.IUser;
  * appropriate.
  * 
  */
-public class Roster implements IRoster {
+public class Roster extends RosterItem implements IRoster {
 
 	private static final long serialVersionUID = 5600691290032864241L;
 
@@ -31,6 +31,9 @@ public class Roster implements IRoster {
 	protected IUser rosterUser;
 
 	public Roster(IUser user) {
+		super(null, (user == null) ? "<unknown>"
+				: ((user.getName() == null) ? user.getID().getName() : user
+						.getName()));
 		this.rosterUser = user;
 		this.rosteritems = Collections.synchronizedList(new ArrayList());
 	}

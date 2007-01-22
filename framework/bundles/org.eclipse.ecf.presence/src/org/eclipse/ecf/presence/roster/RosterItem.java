@@ -20,13 +20,14 @@ public class RosterItem implements IRosterItem {
 
 	protected String name;
 
-	protected Object parent;
+	protected IRosterItem parent;
 
 	protected RosterItem() {
 	}
 
-	public RosterItem(Object parent, String name) {
+	public RosterItem(IRosterItem parent, String name) {
 		Assert.isNotNull(name);
+		this.parent = parent;
 		this.name = name;
 	}
 
@@ -44,7 +45,7 @@ public class RosterItem implements IRosterItem {
 	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRosterItem#getParent()
 	 */
-	public Object getParent() {
+	public IRosterItem getParent() {
 		return parent;
 	}
 

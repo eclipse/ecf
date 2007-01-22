@@ -26,7 +26,7 @@ public class RosterGroup extends RosterItem implements IRosterGroup {
 
 	protected List entries;
 
-	public RosterGroup(Object parent, String name,
+	public RosterGroup(IRosterItem parent, String name,
 			Collection /* <IRosterEntry> */existingEntries) {
 		super(parent, name);
 		entries = Collections.synchronizedList(new ArrayList());
@@ -34,7 +34,7 @@ public class RosterGroup extends RosterItem implements IRosterGroup {
 			addAll(existingEntries);
 	}
 
-	public RosterGroup(Object parent, String name) {
+	public RosterGroup(IRosterItem parent, String name) {
 		this(parent, name, null);
 	}
 
