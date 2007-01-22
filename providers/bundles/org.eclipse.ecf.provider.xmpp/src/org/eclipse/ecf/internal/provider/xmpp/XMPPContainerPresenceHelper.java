@@ -613,7 +613,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 				createIDFromName(entry.getUser()), entry.getName()));
 	}
 
-	private IRosterItem[] createRosterEntries(Iterator grps, Object parent,
+	private IRosterItem[] createRosterEntries(Iterator grps, IRosterItem parent,
 			IUser user) {
 		List result = new ArrayList();
 		if (grps.hasNext()) {
@@ -676,7 +676,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		return newEntry;
 	}
 	
-	private void createRosterEntries(Object parent, IUser user, List result) {
+	private void createRosterEntries(IRosterItem parent, IUser user, List result) {
 		org.eclipse.ecf.presence.roster.RosterEntry oldEntry = findRosterEntry(
 				(org.eclipse.ecf.presence.roster.RosterGroup) null, user);
 		if (oldEntry == null) {
