@@ -1,10 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: Composent, Inc. - initial API and implementation
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
  ******************************************************************************/
 package org.eclipse.ecf.core.sharedobject;
 
@@ -33,7 +35,8 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
  * @see #getSharedObjectAdapter(ISharedObjectContainer, Class)
  * 
  */
-public abstract class AbstractSharedObjectContainerAdapterFactory extends AbstractContainerAdapterFactory {
+public abstract class AbstractSharedObjectContainerAdapterFactory extends
+		AbstractContainerAdapterFactory {
 
 	protected static final int ADD_ADAPTER_ERROR_CODE = 300001;
 
@@ -43,17 +46,20 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends Abstra
 
 	private static final String CREATE_ADAPTER_ID_ERROR_MESSAGE = null;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.AbstractContainerAdapterFactory#getContainerAdapter(org.eclipse.ecf.core.IContainer, java.lang.Class)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.AbstractContainerAdapterFactory#getContainerAdapter(org.eclipse.ecf.core.IContainer,
+	 *      java.lang.Class)
 	 */
 	protected Object getContainerAdapter(IContainer container, Class adapterType) {
 		if (ISharedObjectContainer.class.isInstance(container))
-			return getSharedObjectAdapter(
-					(ISharedObjectContainer) container, adapterType);
+			return getSharedObjectAdapter((ISharedObjectContainer) container,
+					adapterType);
 		else
 			return null;
 	}
-	
+
 	/**
 	 * Get the {@link ISharedObject} adapter for given
 	 * {@link ISharedObjectContainer}. The resulting {@link ISharedObject} must
@@ -87,11 +93,9 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends Abstra
 		// Check to see if the container already has the given shared object
 		// If so then return it
 		ISharedObjectManager manager = container.getSharedObjectManager();
-		if (adapterID != null) {
-			ISharedObject so = manager.getSharedObject(adapterID);
-			if (so != null)
-				return so;
-		}
+		ISharedObject so = manager.getSharedObject(adapterID);
+		if (so != null)
+			return so;
 		// Now create adapter instance since it's not already there
 		ISharedObject adapter = createAdapter(container, adapterType, adapterID);
 		if (adapter == null)
