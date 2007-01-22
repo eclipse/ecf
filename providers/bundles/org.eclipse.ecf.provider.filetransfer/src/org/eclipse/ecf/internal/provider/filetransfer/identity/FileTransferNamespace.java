@@ -27,7 +27,9 @@ public class FileTransferNamespace extends Namespace {
 
 	public static final String PROTOCOL = "ecf.provider.filetransfer";
 
-	private static final String [] jvmSchemes = new String [] { "http", "https", "ftp", "file", "jar" };
+	public static final String [] jvmSchemes = new String [] { "http", "ftp", "file", "jar" };
+	
+	public static final String [] localSchemes = new String [] { "http", "https" };
 	
 	/*
 	 * (non-Javadoc)
@@ -59,6 +61,7 @@ public class FileTransferNamespace extends Namespace {
 		String [] platformSchemes = Activator.getDefault().getPlatformSupportedSchemes();
 		for(int i=0; i < jvmSchemes.length; i++) result.add(jvmSchemes[i]);
 		for(int i=0; i < platformSchemes.length; i++) result.add(platformSchemes[i]);
+		for(int i=0; i < localSchemes.length; i++) result.add(localSchemes[i]);
 		return (String []) result.toArray(new String [] {});
 	}
 
