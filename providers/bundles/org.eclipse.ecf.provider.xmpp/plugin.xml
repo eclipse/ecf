@@ -30,7 +30,7 @@
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.internal.provider.xmpp.XMPPContainerInstantiator"
+            class="org.eclipse.ecf.internal.provider.xmpp.XMPPSContainerInstantiator"
             description="XMPP SSL (Jabber SSL)"
             name="ecf.xmpps.smack">
          <property

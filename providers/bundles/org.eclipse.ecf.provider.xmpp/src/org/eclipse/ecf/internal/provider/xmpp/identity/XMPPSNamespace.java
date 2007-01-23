@@ -16,20 +16,21 @@ import org.eclipse.ecf.core.identity.Namespace;
 
 public class XMPPSNamespace extends Namespace {
 
-	private static final long serialVersionUID = 390139788867091795L;
-	private static final String XMPP_PROTOCOL = "xmpps";
+	private static final long serialVersionUID = -820087396161230667L;
+	
+	private static final String XMPPS_PROTOCOL = "xmpps"; //$NON-NLS-1$
 	
 	public ID createInstance(Object[] args)
 			throws IDCreateException {
 		try {
-			return new XMPPID(this, (String) args[0]);
+			return new XMPPSID(this, (String) args[0]);
 		} catch (Exception e) {
 			throw new IDCreateException("XMPP ID creation exception", e);
 		}
 	}
 
 	public String getScheme() {
-		return XMPP_PROTOCOL;
+		return XMPPS_PROTOCOL;
 	}
 
 	/* (non-Javadoc)
