@@ -54,7 +54,7 @@ public class XMPPConnectWizardPage extends WizardPage {
 		});
 
 		label = new Label(parent, SWT.RIGHT);
-		label.setText("xmpp://<user>@<xmppserver>[:port]");
+		label.setText("<user>@<xmppserver>[:port]");
 		label.setLayoutData(endData);
 
 		label = new Label(parent, SWT.LEFT);

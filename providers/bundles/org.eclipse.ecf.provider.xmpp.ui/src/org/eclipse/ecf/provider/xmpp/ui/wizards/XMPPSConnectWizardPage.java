@@ -49,7 +49,7 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 		});
 
 		label = new Label(parent, SWT.RIGHT);
-		label.setText("xmpps://<user>@<xmppserver>[:port]");
+		label.setText("<user>@<xmppserver>[:port]");
 		label.setLayoutData(endData);
 
 		label = new Label(parent, SWT.LEFT);
