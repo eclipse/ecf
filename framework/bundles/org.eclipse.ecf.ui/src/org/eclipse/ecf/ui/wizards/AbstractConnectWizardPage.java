@@ -45,6 +45,7 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 		super(PAGE_NAME);
 		setTitle(getProviderTitle());
 		setDescription(getProviderDescription());
+		setPageComplete(false);
 	}
 
 	public void createControl(Composite parent) {
@@ -132,11 +133,20 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 	boolean shouldAutoLogin() {
 		return autoLoginBtn.getSelection();
 	}
+	
+	public void updateStatus(String message) {
+		setErrorMessage(message);
+		setPageComplete(message == null);
+	}
 
 	private class InputVerifier implements ModifyListener {
 
 		public void modifyText(ModifyEvent e) {
-
+			if (connectText.getText().equals("")) { //$NON-NLS-1$
+				updateStatus("A connect ID must be specified.");
+			} else {
+				updateStatus(null);
+			}
 		}
 
 	}
