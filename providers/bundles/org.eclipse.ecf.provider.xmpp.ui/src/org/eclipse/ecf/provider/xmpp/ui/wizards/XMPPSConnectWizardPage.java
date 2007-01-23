@@ -21,10 +21,6 @@ import org.eclipse.swt.widgets.Text;
 
 final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 
-	private Text connectText;
-
-	private Text passwordText;
-
 	XMPPSConnectWizardPage() {
 		super();
 		setTitle("XMPPS Connection Wizard");

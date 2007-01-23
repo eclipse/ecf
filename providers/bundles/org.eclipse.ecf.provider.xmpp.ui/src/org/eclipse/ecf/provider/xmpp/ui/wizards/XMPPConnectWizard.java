@@ -32,9 +32,9 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 
 	private static final int CONNECT_ERROR_CODE = 7777;
 
-	private Shell shell;
+	XMPPConnectWizardPage page;
 
-	private XMPPConnectWizardPage page;
+	private Shell shell;
 
 	private IContainer container;
 

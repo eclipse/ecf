@@ -22,9 +22,9 @@ import org.eclipse.swt.widgets.Text;
 
 public class XMPPConnectWizardPage extends WizardPage {
 
-	private Text connectText;
+	Text connectText;
 
-	private Text passwordText;
+	Text passwordText;
 
 	XMPPConnectWizardPage() {
 		super("");

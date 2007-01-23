@@ -14,7 +14,8 @@ package org.eclipse.ecf.provider.xmpp.ui.wizards;
 public final class XMPPSConnectWizard extends XMPPConnectWizard {
 
 	public void addPages() {
-		addPage(new XMPPSConnectWizardPage());
+		page = new XMPPSConnectWizardPage();
+		addPage(page);
 	}
 
 }
