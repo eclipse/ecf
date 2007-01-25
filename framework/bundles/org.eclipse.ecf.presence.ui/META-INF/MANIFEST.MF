@@ -8,7 +8,8 @@ Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ui,
- org.eclipse.ecf.presence
+ org.eclipse.ecf.presence,
+ org.eclipse.ecf.ui
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.presence.ui;x-internal:=true,
  org.eclipse.ecf.presence.ui

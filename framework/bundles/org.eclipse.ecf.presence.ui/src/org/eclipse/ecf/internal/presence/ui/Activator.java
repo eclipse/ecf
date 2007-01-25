@@ -52,34 +52,4 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#createImageRegistry()
-	 */
-	protected ImageRegistry createImageRegistry() {
-		registry = super.createImageRegistry();
-
-		registry.put(IImageFiles.DECORATION_USER_AVAILABLE, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID,
-						IImageFiles.USER_AVAILABLE_ICON).createImage());
-
-		registry.put(IImageFiles.DECORATION_USER_UNAVAILABLE, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID,
-						IImageFiles.USER_UNAVAILABLE_ICON).createImage());
-
-		registry.put(IImageFiles.DECORATION_USER_AWAY, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID,
-						IImageFiles.USER_AWAY_ICON).createImage());
-
-		registry.put(IImageFiles.DECORATION_USER_DND,
-				AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID,
-						IImageFiles.USER_DND_ICON).createImage());
-
-		registry.put(IImageFiles.DECORATION_GROUP, AbstractUIPlugin
-				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.GROUP_ICON)
-				.createImage());
-		return registry;
-	}
-
 }

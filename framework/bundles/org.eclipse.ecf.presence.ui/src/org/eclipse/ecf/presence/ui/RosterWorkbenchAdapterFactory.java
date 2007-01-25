@@ -16,8 +16,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ecf.core.user.IUser;
-import org.eclipse.ecf.internal.presence.ui.Activator;
-import org.eclipse.ecf.internal.presence.ui.IImageFiles;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.roster.IRoster;
@@ -25,10 +23,10 @@ import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.RosterItem;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.model.IWorkbenchAdapter;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * Adapter factory for adapter to IWorkbenchAdapter (labels and images).
@@ -51,8 +49,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	protected ImageDescriptor getImageDescriptor(String iconFile) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
-				iconFile);
+		return SharedImages.getImageDescriptor(iconFile);
 	}
 
 	protected String getRosterLabel(IRoster roster) {
@@ -64,9 +61,9 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	protected ImageDescriptor getRosterImageDescriptor(IRoster roster) {
 		IUser user = roster.getUser();
 		if (user == null)
-			return getImageDescriptor(IImageFiles.USER_UNAVAILABLE_ICON);
+			return getImageDescriptor(SharedImages.IMG_USER_UNAVAILABLE);
 		else
-			return getImageDescriptor(IImageFiles.USER_AVAILABLE_ICON);
+			return getImageDescriptor(SharedImages.IMG_USER_AVAILABLE);
 	}
 
 	private IWorkbenchAdapter rosterAdapter = new IWorkbenchAdapter() {
@@ -122,7 +119,7 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	}
 
 	protected ImageDescriptor getRosterGroupImageDescriptor(IRosterGroup group) {
-		return getImageDescriptor(IImageFiles.GROUP_ICON);
+		return getImageDescriptor(SharedImages.IMG_GROUP);
 	}
 
 	private IWorkbenchAdapter rosterGroupAdapter = new IWorkbenchAdapter() {
@@ -207,16 +204,16 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 				// if type and mode are both 'available' then we're actually
 				// available
 				if (pMode.equals(IPresence.Mode.AVAILABLE))
-					return getImageDescriptor(IImageFiles.USER_AVAILABLE_ICON);
+					return getImageDescriptor(SharedImages.IMG_USER_AVAILABLE);
 				// If mode is away then we're away
 				else if (pMode.equals(IPresence.Mode.AWAY)
 						|| pMode.equals(IPresence.Mode.EXTENDED_AWAY))
-					return getImageDescriptor(IImageFiles.USER_AWAY_ICON);
+					return getImageDescriptor(SharedImages.IMG_USER_AWAY);
 				else if (pMode.equals(IPresence.Mode.DND))
-					return getImageDescriptor(IImageFiles.USER_DND_ICON);
+					return getImageDescriptor(SharedImages.IMG_USER_DND);
 			}
 		}
-		return getImageDescriptor(IImageFiles.USER_UNAVAILABLE_ICON);
+		return getImageDescriptor(SharedImages.IMG_USER_UNAVAILABLE);
 	}
 
 	private IWorkbenchAdapter rosterEntryAdapter = new IWorkbenchAdapter() {
