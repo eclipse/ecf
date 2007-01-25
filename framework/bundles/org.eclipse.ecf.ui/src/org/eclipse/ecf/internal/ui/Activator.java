@@ -123,6 +123,9 @@ public class Activator extends AbstractUIPlugin {
 		registry.put(SharedImages.IMG_USER_AWAY, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.USER_AWAY)
 				.createImage());
+		registry.put(SharedImages.IMG_USER_DND, AbstractUIPlugin
+				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.USER_DND)
+				.createImage());
 		registry.put(SharedImages.IMG_GROUP, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.GROUP)
 				.createImage());

@@ -20,6 +20,8 @@ public final class SharedImages {
 
 	public static final String IMG_USER_UNAVAILABLE = "IMG_USER_UNAVAILABLE"; //$NON-NLS-1$
 
+	public static final String IMG_USER_DND = "IMG_USER_DND"; //$NON-NLS-1$
+
 	public static final String IMG_USER_AWAY = "IMG_USER_AWAY"; //$NON-NLS-1$
 
 	public static final String IMG_GROUP = "IMG_GROUP"; //$NON-NLS-1$

@@ -17,6 +17,8 @@ public interface IImageFiles {
 
 	public static final String USER_AWAY = "icons/epresence16/buddy_away.gif";
 
+	public static final String USER_DND = "icons/epresence16/buddy_dnd.gif";
+
 	public static final String USER_UNAVAILABLE = "icons/epresence16/buddy_unavailable.gif";
 
 	public static final String GROUP = "icons/epresence16/group.gif";
