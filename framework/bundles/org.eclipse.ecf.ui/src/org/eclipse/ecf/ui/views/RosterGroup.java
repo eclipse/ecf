@@ -11,16 +11,14 @@
 package org.eclipse.ecf.ui.views;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.internal.ui.Activator;
-import org.eclipse.ecf.internal.ui.Constants;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.swt.graphics.Image;
 
 public class RosterGroup extends RosterParent {
 	public RosterGroup(String name, ID svcID) {
 		super(name, svcID);
-		if (name == null || name.equals(""))
+		if (name == null || name.equals("")) //$NON-NLS-1$
 			setName(RosterView.UNFILED_GROUP_NAME);
 	}
 
@@ -41,8 +39,7 @@ public class RosterGroup extends RosterParent {
 	}
 
 	public Image getImage() {
-		ImageRegistry registry = Activator.getDefault().getImageRegistry();
-		return registry.get(Constants.DECORATION_GROUP);
+		return SharedImages.getImage(SharedImages.IMG_GROUP);
 	}
 
 	public int getTotalCount() {

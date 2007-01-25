@@ -39,7 +39,6 @@ import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.ui.Activator;
-import org.eclipse.ecf.internal.ui.Constants;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
@@ -57,6 +56,7 @@ import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.RosterEntry;
 import org.eclipse.ecf.presence.roster.RosterItem;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ChangePasswordDialog;
 import org.eclipse.ecf.ui.dialogs.ChatRoomSelectionDialog;
@@ -68,7 +68,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -91,7 +90,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-public class RosterView extends ViewPart implements IIMMessageListener, IChatRoomViewCloseListener {
+public class RosterView extends ViewPart implements IIMMessageListener,
+		IChatRoomViewCloseListener {
 	private static final String CHAT_ROOM_VIEW_CLASS = "org.eclipse.ecf.ui.views.ChatRoomView";
 
 	public static final String UNFILED_GROUP_NAME = "Buddies";
@@ -151,9 +151,10 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 
 	protected void removeAccount(ID serviceID) {
 		synchronized (accounts) {
-			for(Iterator i=accounts.keySet().iterator(); i.hasNext(); ) {
+			for (Iterator i = accounts.keySet().iterator(); i.hasNext();) {
 				ID key = (ID) i.next();
-				if (key.equals(serviceID)) i.remove();
+				if (key.equals(serviceID))
+					i.remove();
 			}
 		}
 	}
@@ -269,10 +270,8 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 				};
 				selectedChatAction.setText("Send IM to "
 						+ rosterObject.getID().getName());
-				selectedChatAction.setImageDescriptor(ImageDescriptor
-						.createFromImage(Activator.getDefault()
-								.getImageRegistry().get(
-										Constants.DECORATION_MESSAGE)));
+				selectedChatAction.setImageDescriptor(SharedImages
+						.getImageDescriptor(SharedImages.IMG_MESSAGE));
 				manager.add(selectedChatAction);
 				RosterObject parent = rosterObject.getParent();
 				RosterGroup tg = null;
@@ -289,7 +288,8 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 					removeUserAction.setText("Remove " + rosterObject.getName()
 							+ " from " + rosterGroup.getName() + " group");
 				} else {
-					removeUserAction.setText("Remove " + rosterObject.getName());
+					removeUserAction
+							.setText("Remove " + rosterObject.getName());
 				}
 				removeUserAction.setImageDescriptor(PlatformUI.getWorkbench()
 						.getSharedImages().getImageDescriptor(
@@ -306,10 +306,8 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 							sendRosterAdd(accountID, null);
 						}
 					};
-					addBuddyToGroupAction.setImageDescriptor(ImageDescriptor
-							.createFromImage(Activator.getDefault()
-									.getImageRegistry().get(
-											Constants.DECORATION_ADD_BUDDY)));
+					addBuddyToGroupAction.setImageDescriptor(SharedImages
+							.getImageDescriptor(SharedImages.IMG_ADD_BUDDY));
 					addBuddyToGroupAction.setText("Add Buddy");
 					addBuddyToGroupAction.setEnabled(true);
 
@@ -322,11 +320,8 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 					openChatRoomAccountAction
 							.setText("Show chat rooms for account");
 					openChatRoomAccountAction.setEnabled(true);
-					openChatRoomAccountAction
-							.setImageDescriptor(ImageDescriptor
-									.createFromImage(Activator.getDefault()
-											.getImageRegistry()
-											.get(Constants.DECORATION_ADD_CHAT)));
+					openChatRoomAccountAction.setImageDescriptor(SharedImages
+							.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
 
 					manager.add(openChatRoomAccountAction);
 
@@ -352,13 +347,8 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 					};
 					disconnectAccountAction.setText("Disconnect from account");
 					disconnectAccountAction.setEnabled(true);
-					disconnectAccountAction
-							.setImageDescriptor(ImageDescriptor
-									.createFromImage(Activator
-											.getDefault()
-											.getImageRegistry()
-											.get(
-													Constants.DECORATION_DISCONNECT_ENABLED)));
+					disconnectAccountAction.setImageDescriptor(SharedImages
+							.getImageDescriptor(SharedImages.IMG_DISCONNECT));
 					manager.add(disconnectAccountAction);
 
 				}
@@ -456,8 +446,8 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 
 	protected ID inputIMTarget() {
 		InputDialog dlg = new InputDialog(getSite().getShell(), "Send IM",
-				"Please enter the ID of the person you would like to IM",
-				"", null);
+				"Please enter the ID of the person you would like to IM", "",
+				null);
 		dlg.setBlockOnOpen(true);
 		int res = dlg.open();
 		if (res == Window.OK) {
@@ -628,28 +618,31 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 			// Add listeners so that the new chat room gets
 			// asynch notifications of various relevant chat room events
 			chatRoom.addMessageListener(new IIMMessageListener() {
-				
+
 				public void handleMessageEvent(IIMMessageEvent messageEvent) {
 					if (messageEvent instanceof IChatRoomMessageEvent) {
-						IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
-						chatroomview.handleMessage(m.getFromID(), m.getMessage());
+						IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
+								.getChatRoomMessage();
+						chatroomview.handleMessage(m.getFromID(), m
+								.getMessage());
 					}
-					
+
 				}
 			});
-			chatRoom.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-				public void handlePresence(ID fromID, IPresence presence) {
-					chatroomview.handlePresence(fromID, presence);
-				}
+			chatRoom
+					.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
+						public void handlePresence(ID fromID, IPresence presence) {
+							chatroomview.handlePresence(fromID, presence);
+						}
 
-				public void handleArrivedInChat(ID participant) {
-					chatroomview.handleJoin(participant);
-				}
+						public void handleArrivedInChat(ID participant) {
+							chatroomview.handleJoin(participant);
+						}
 
-				public void handleDepartedFromChat(ID participant) {
-					chatroomview.handleLeave(participant);
-				}
-			});
+						public void handleDepartedFromChat(ID participant) {
+							chatroomview.handleLeave(participant);
+						}
+					});
 		} catch (PartInitException e) {
 			Activator.log(
 					"Exception in chat room view initialization for chat room "
@@ -713,12 +706,10 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		disconnectAction.setText("Disconnect");
 		disconnectAction.setToolTipText("Disconnect from all accounts");
 		disconnectAction.setEnabled(false);
-		disconnectAction.setImageDescriptor(ImageDescriptor
-				.createFromImage(Activator.getDefault().getImageRegistry().get(
-						Constants.DECORATION_DISCONNECT_ENABLED)));
-		disconnectAction.setDisabledImageDescriptor(ImageDescriptor
-				.createFromImage(Activator.getDefault().getImageRegistry().get(
-						Constants.DECORATION_DISCONNECT_DISABLED)));
+		disconnectAction.setImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_DISCONNECT));
+		disconnectAction.setDisabledImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_DISCONNECT_DISABLED));
 		openChatRoomAction = new Action() {
 			public void run() {
 				// Get managers for all accounts currently connected to
@@ -737,9 +728,8 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		};
 		openChatRoomAction.setText("Enter Chatroom");
 		openChatRoomAction.setToolTipText("Show chat rooms for all accounts");
-		openChatRoomAction.setImageDescriptor(ImageDescriptor
-				.createFromImage(Activator.getDefault().getImageRegistry().get(
-						Constants.DECORATION_ADD_CHAT)));
+		openChatRoomAction.setImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
 		openChatRoomAction.setEnabled(false);
 
 	}
@@ -818,9 +808,12 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
 		IChatID chatID = (IChatID) userID.getAdapter(IChatID.class);
 		String name = null;
-		if (chatID != null) name = chatID.getUsername();
-		else name = userID.toString();
-		handleRosterEntryAdd(groupID, new RosterEntry(new RosterItem(null,name), new User(userID, name), presence));
+		if (chatID != null)
+			name = chatID.getUsername();
+		else
+			name = userID.toString();
+		handleRosterEntryAdd(groupID, new RosterEntry(
+				new RosterItem(null, name), new User(userID, name), presence));
 	}
 
 	protected RosterUserAccount getAccountForUser(ID userID) {
@@ -907,18 +900,16 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 	}
 
 	/*
-	public void handleMessage(ID groupID, ID fromID, ID toID,
-			IMessageListener.Type type, String subject, String message) {
-		ChatWindow window = openChatWindowForTarget(fromID);
-		// finally, show message
-		if (window != null) {
-			window.handleMessage(fromID, toID, type, subject, message);
-			window.setStatus("last message received at "
-					+ (new SimpleDateFormat("hh:mm:ss").format(new Date())));
-		}
-	}
-*/
-	/* (non-Javadoc)
+	 * public void handleMessage(ID groupID, ID fromID, ID toID,
+	 * IMessageListener.Type type, String subject, String message) { ChatWindow
+	 * window = openChatWindowForTarget(fromID); // finally, show message if
+	 * (window != null) { window.handleMessage(fromID, toID, type, subject,
+	 * message); window.setStatus("last message received at " + (new
+	 * SimpleDateFormat("hh:mm:ss").format(new Date()))); } }
+	 */
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.IIMMessageListener#handleMessageEvent(org.eclipse.ecf.presence.IIMMessageEvent)
 	 */
 	public void handleMessageEvent(IIMMessageEvent messageEvent) {
@@ -934,8 +925,8 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 	public void addAccount(ID account, IUser user, ILocalInputHandler handler,
 			IPresenceContainerAdapter container,
 			ISharedObjectContainer soContainer) {
-		addAccount(new RosterUserAccount(this, account, user, handler, container,
-				soContainer));
+		addAccount(new RosterUserAccount(this, account, user, handler,
+				container, soContainer));
 		setToolbarEnabled(true);
 	}
 
@@ -1072,8 +1063,9 @@ public class RosterView extends ViewPart implements IIMMessageListener, IChatRoo
 		if (window != null) {
 			IChatID chatID = (IChatID) fromID.getAdapter(IChatID.class);
 			String name = fromID.getName();
-			if (chatID != null) name = chatID.getUsername();
-			window.setStatus(name+" is typing");
+			if (chatID != null)
+				name = chatID.getUsername();
+			window.setStatus(name + " is typing");
 		}
 	}
 

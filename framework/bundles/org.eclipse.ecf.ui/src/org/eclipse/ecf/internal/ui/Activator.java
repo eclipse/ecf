@@ -11,14 +11,17 @@
 
 package org.eclipse.ecf.internal.ui;
 
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.plugin.*;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import java.util.*;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -114,58 +117,45 @@ public class Activator extends AbstractUIPlugin {
 	protected ImageRegistry createImageRegistry() {
 		registry = super.createImageRegistry();
 
-		registry.put(Constants.DECORATION_PROJECT, PlatformUI.getWorkbench()
-				.getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
-		registry.put(Constants.DECORATION_USER_AVAILABLE, AbstractUIPlugin
+		registry.put(SharedImages.IMG_USER_AVAILABLE, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID,
 						IImageFiles.USER_AVAILABLE).createImage());
-		registry.put(Constants.DECORATION_USER_AWAY, AbstractUIPlugin
+		registry.put(SharedImages.IMG_USER_AWAY, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.USER_AWAY)
 				.createImage());
-		registry.put(Constants.DECORATION_GROUP, AbstractUIPlugin
+		registry.put(SharedImages.IMG_GROUP, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.GROUP)
 				.createImage());
-		registry.put(Constants.DECORATION_USER_UNAVAILABLE, AbstractUIPlugin
+		registry.put(SharedImages.IMG_USER_UNAVAILABLE, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID,
 						IImageFiles.USER_UNAVAILABLE).createImage());
-		registry.put(Constants.DECORATION_TIME, PlatformUI.getWorkbench()
-				.getSharedImages().getImage(ISharedImages.IMG_TOOL_FORWARD));
-		registry.put(Constants.DECORATION_TASK, PlatformUI.getWorkbench()
-				.getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT));
 
-		registry.put(Constants.DECORATION_SEND, PlatformUI.getWorkbench()
+		registry.put(SharedImages.IMG_SEND, PlatformUI.getWorkbench()
 				.getSharedImages().getImage(ISharedImages.IMG_TOOL_UNDO));
-		registry.put(Constants.DECORATION_RECEIVE, PlatformUI.getWorkbench()
-				.getSharedImages().getImage(ISharedImages.IMG_TOOL_REDO));
-		registry.put(Constants.DECORATION_PRIVATE, PlatformUI.getWorkbench()
-				.getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK));
-		registry.put(Constants.DECORATION_SYSTEM_MESSAGE, PlatformUI
-				.getWorkbench().getSharedImages().getImage(
-						ISharedImages.IMG_OBJS_INFO_TSK));
 
-		registry.put(Constants.DECORATION_DISCONNECT_DISABLED, AbstractUIPlugin
+		registry.put(SharedImages.IMG_DISCONNECT_DISABLED, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID,
 						IImageFiles.DISCONNECT_DISABLED).createImage());
-		registry.put(Constants.DECORATION_DISCONNECT_ENABLED, AbstractUIPlugin
+		registry.put(SharedImages.IMG_DISCONNECT, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID,
 						IImageFiles.DISCONNECT_ENABLED).createImage());
 
-		registry.put(Constants.DECORATION_ADD_GROUP, AbstractUIPlugin
+		registry.put(SharedImages.IMG_ADD_GROUP, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD_GROUP)
 				.createImage());
-		registry.put(Constants.DECORATION_ADD_BUDDY, AbstractUIPlugin
+		registry.put(SharedImages.IMG_ADD_BUDDY, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD_BUDDY)
 				.createImage());
 
-		registry.put(Constants.DECORATION_ADD_CHAT, AbstractUIPlugin
+		registry.put(SharedImages.IMG_ADD_CHAT, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD_CHAT)
 				.createImage());
 
-		registry.put(Constants.DECORATION_MESSAGE, AbstractUIPlugin
+		registry.put(SharedImages.IMG_MESSAGE, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.SEND_MESSAGE)
 				.createImage());
 
-		registry.put(Constants.DECORATION_ADD, AbstractUIPlugin
+		registry.put(SharedImages.IMG_ADD, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.ADD)
 				.createImage());
 

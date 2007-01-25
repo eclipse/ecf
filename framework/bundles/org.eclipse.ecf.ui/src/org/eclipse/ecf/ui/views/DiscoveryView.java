@@ -22,8 +22,7 @@ import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.ServiceID;
-import org.eclipse.ecf.internal.ui.Activator;
-import org.eclipse.ecf.internal.ui.Constants;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -31,7 +30,6 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -357,8 +355,7 @@ public class DiscoveryView extends ViewPart {
 						String keys = (String) key;
 						String val = props.getPropertyString(keys);
 						if (val != null) {
-							TreeObject prop = new TreeObject(keys + "="
-									+ val);
+							TreeObject prop = new TreeObject(keys + "=" + val);
 							newEntry.addChild(prop);
 						}
 					}
@@ -610,12 +607,10 @@ public class DiscoveryView extends ViewPart {
 		disconnectContainerAction.setText("Stop discovery");
 		disconnectContainerAction
 				.setToolTipText("Stop network service discovery");
-		disconnectContainerAction.setImageDescriptor(ImageDescriptor
-				.createFromImage(Activator.getDefault().getImageRegistry().get(
-						Constants.DECORATION_DISCONNECT_ENABLED)));
-		disconnectContainerAction.setDisabledImageDescriptor(ImageDescriptor
-				.createFromImage(Activator.getDefault().getImageRegistry().get(
-						Constants.DECORATION_DISCONNECT_DISABLED)));
+		disconnectContainerAction.setImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_DISCONNECT));
+		disconnectContainerAction.setDisabledImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_DISCONNECT_DISABLED));
 		IDiscoveryController c = getController();
 		if (c == null)
 			disconnectContainerAction.setEnabled(false);
@@ -642,12 +637,13 @@ public class DiscoveryView extends ViewPart {
 		connectContainerAction.setText("Start discovery");
 		connectContainerAction
 				.setToolTipText("Start network service discovery");
-		if (c == null)
+		if (c == null) {
 			connectContainerAction.setEnabled(false);
-		connectContainerAction.setEnabled(!c.isDiscoveryStarted());
-		connectContainerAction.setImageDescriptor(ImageDescriptor
-				.createFromImage(Activator.getDefault().getImageRegistry().get(
-						Constants.DECORATION_ADD)));
+		} else {
+			connectContainerAction.setEnabled(!c.isDiscoveryStarted());
+		}
+		connectContainerAction.setImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_ADD));
 	}
 
 	private void fillContextMenu(IMenuManager manager) {

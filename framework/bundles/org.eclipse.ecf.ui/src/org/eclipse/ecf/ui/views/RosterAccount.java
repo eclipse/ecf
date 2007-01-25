@@ -11,13 +11,11 @@
 package org.eclipse.ecf.ui.views;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.internal.ui.Activator;
-import org.eclipse.ecf.internal.ui.Constants;
-import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.swt.graphics.Image;
 
 public class RosterAccount extends RosterGroup {
-	
+
 	public RosterAccount(String name, ID id) {
 		super(name, id);
 	}
@@ -27,8 +25,7 @@ public class RosterAccount extends RosterGroup {
 	}
 
 	public Image getImage() {
-		ImageRegistry registry = Activator.getDefault().getImageRegistry();
-		return registry.get(Constants.DECORATION_USER_AVAILABLE);
+		return SharedImages.getImage(SharedImages.IMG_USER_AVAILABLE);
 	}
 
 }

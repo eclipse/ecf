@@ -15,12 +15,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.user.IUser;
-import org.eclipse.ecf.internal.ui.Activator;
-import org.eclipse.ecf.internal.ui.Constants;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageEvent;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -109,8 +108,7 @@ public class ChatWindow extends ApplicationWindow implements IIMMessageListener 
 		}
 		titleBarText = shellTitlePrefix + titleBarText;
 		newShell.setText(titleBarText);
-		image = Activator.getDefault().getImageRegistry().get(
-				Constants.DECORATION_USER_AVAILABLE);
+		image = SharedImages.getImage(SharedImages.IMG_USER_AVAILABLE);
 		newShell.setImage(image);
 		RGB[] colors = new RGB[2];
 		colors[0] = new RGB(0, 0, 0);

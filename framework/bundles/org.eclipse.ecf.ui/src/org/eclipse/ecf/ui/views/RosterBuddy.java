@@ -11,10 +11,8 @@
 package org.eclipse.ecf.ui.views;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.internal.ui.Activator;
-import org.eclipse.ecf.internal.ui.Constants;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.swt.graphics.Image;
 
 public class RosterBuddy extends RosterParent {
@@ -42,7 +40,6 @@ public class RosterBuddy extends RosterParent {
 
 	public Image getImage() {
 		IPresence p = getPresence();
-		ImageRegistry registry = Activator.getDefault().getImageRegistry();
 		if (p != null) {
 			IPresence.Type pType = p.getType();
 			IPresence.Mode pMode = p.getMode();
@@ -51,14 +48,14 @@ public class RosterBuddy extends RosterParent {
 				// if type and mode are both 'available' then we're actually
 				// available
 				if (pMode.equals(IPresence.Mode.AVAILABLE))
-					return registry
-							.get(Constants.DECORATION_USER_AVAILABLE);
+					return SharedImages
+							.getImage(SharedImages.IMG_USER_AVAILABLE);
 				// If mode is away then we're away
 				else if (pMode.equals(IPresence.Mode.AWAY)
 						|| pMode.equals(IPresence.Mode.EXTENDED_AWAY))
-					return registry.get(Constants.DECORATION_USER_AWAY);
+					return SharedImages.getImage(SharedImages.IMG_USER_AWAY);
 			}
 		}
-		return registry.get(Constants.DECORATION_USER_UNAVAILABLE);
+		return SharedImages.getImage(SharedImages.IMG_USER_UNAVAILABLE);
 	}
 }
