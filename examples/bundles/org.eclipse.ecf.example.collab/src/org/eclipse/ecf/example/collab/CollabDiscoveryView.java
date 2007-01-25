@@ -15,8 +15,8 @@ import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.identity.ServiceID;
-import org.eclipse.ecf.ui.views.DiscoveryView;
-import org.eclipse.ecf.ui.views.IDiscoveryController;
+import org.eclipse.ecf.discovery.ui.views.DiscoveryView;
+import org.eclipse.ecf.discovery.ui.views.IDiscoveryController;
 
 public class CollabDiscoveryView extends DiscoveryView {
 	protected static final int SERVICE_REQUEST_TIMEOUT = 3000;
