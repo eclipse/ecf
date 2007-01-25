@@ -11,9 +11,6 @@
 
 package org.eclipse.ecf.internal.ui;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.ui.SharedImages;
@@ -30,15 +27,10 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.ui";
 
-	private ImageRegistry registry = null;
-
 	public static final String PREF_DISPLAY_TIMESTAMP = "TextChatComposite.displaytimestamp";
 
 	// The shared instance.
 	private static Activator plugin;
-
-	// Resource bundle.
-	private ResourceBundle resourceBundle;
 
 	public static void log(String message) {
 		getDefault().getLog().log(
@@ -72,7 +64,6 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
-		resourceBundle = null;
 	}
 
 	/**
@@ -82,40 +73,13 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
-	/**
-	 * Returns the string from the plugin's resource bundle, or 'key' if not
-	 * found.
-	 */
-	public static String getResourceString(String key) {
-		ResourceBundle bundle = Activator.getDefault().getResourceBundle();
-		try {
-			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e) {
-			return key;
-		}
-	}
-
-	/**
-	 * Returns the plugin's resource bundle,
-	 */
-	public ResourceBundle getResourceBundle() {
-		try {
-			if (resourceBundle == null)
-				resourceBundle = ResourceBundle
-						.getBundle("org.eclipse.ecf.ui.UiPluginResources");
-		} catch (MissingResourceException x) {
-			resourceBundle = null;
-		}
-		return resourceBundle;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#createImageRegistry()
 	 */
 	protected ImageRegistry createImageRegistry() {
-		registry = super.createImageRegistry();
+		ImageRegistry registry = super.createImageRegistry();
 
 		registry.put(SharedImages.IMG_USER_AVAILABLE, AbstractUIPlugin
 				.imageDescriptorFromPlugin(PLUGIN_ID,
