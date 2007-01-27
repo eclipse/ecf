@@ -168,10 +168,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		if (index >= 0) {
 			username = uname.substring(0, index);
 		}
-		if (username.equals(""))
-			return uname;
-		else
-			return username;
+		return username.equals("") ? uname : username; // $NON-NLS-1$
 	}
 
 	public void dispose() {
@@ -259,8 +256,8 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	 */
 	protected void fillContextMenu(IMenuManager manager) {
 		final RosterObject rosterObject = getSelectedTreeObject();
-		final ID targetID = rosterObject.getID();
 		if (rosterObject != null) {
+			final ID targetID = rosterObject.getID();
 			if (rosterObject instanceof RosterBuddy) {
 				final RosterBuddy tb = (RosterBuddy) rosterObject;
 				selectedChatAction = new Action() {
@@ -413,10 +410,8 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 			String user = sg.getUser();
 			String nickname = sg.getNickname();
 			sg.close();
-			String[] sendGroups = null;
-			if (group != null) {
-				sendGroups = (group == null) ? null : new String[] { group };
-			}
+			String[] sendGroups = (group == null) ? null
+					: new String[] { group };
 			// Finally, send the information and request subscription
 			getAccount(svcID).getInputHandler().sendRosterAdd(user, nickname,
 					sendGroups);
@@ -434,8 +429,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	protected RosterObject getSelectedTreeObject() {
 		ISelection selection = viewer.getSelection();
 		Object obj = ((IStructuredSelection) selection).getFirstElement();
-		RosterObject rosterObject = (RosterObject) obj;
-		return rosterObject;
+		return (RosterObject) obj;
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
@@ -452,16 +446,14 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		int res = dlg.open();
 		if (res == Window.OK) {
 			String strres = dlg.getValue();
-			if (strres != null && !strres.equals("")) {
-				ID target = null;
+			if (strres != null && !strres.equals("")) { //$NON-NLS-1$
 				try {
-					target = IDFactory.getDefault().createStringID(strres);
+					return IDFactory.getDefault().createStringID(strres);
 				} catch (Exception e) {
 					MessageDialog.openError(getSite().getShell(), "Error",
 							"Error in IM target");
 					return null;
 				}
-				return target;
 			}
 		}
 		return null;
