@@ -5,7 +5,7 @@
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.provider.irc.container.IRCContainerInstantiator"
+            class="org.eclipse.ecf.internal.provider.irc.container.IRCContainerInstantiator"
             description="IRC"
             name="ecf.irc.irclib">
                      <property
@@ -23,7 +23,7 @@
    <extension
          point="org.eclipse.ecf.identity.namespace">
       <namespace
-            class="org.eclipse.ecf.provider.irc.identity.IRCNamespace"
+            class="org.eclipse.ecf.internal.provider.irc.identity.IRCNamespace"
             name="ecfircid"/>
    </extension>
 

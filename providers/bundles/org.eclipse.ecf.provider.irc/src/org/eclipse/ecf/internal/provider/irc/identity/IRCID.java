@@ -9,7 +9,7 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.provider.irc.identity;
+package org.eclipse.ecf.internal.provider.irc.identity;
 
 import java.net.URI;
 import java.net.URISyntaxException;

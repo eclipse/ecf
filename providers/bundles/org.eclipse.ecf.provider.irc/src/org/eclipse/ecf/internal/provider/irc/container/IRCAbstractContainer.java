@@ -9,7 +9,7 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.provider.irc.container;
+package org.eclipse.ecf.internal.provider.irc.container;
 
 import java.util.ArrayList;
 import java.util.Iterator;

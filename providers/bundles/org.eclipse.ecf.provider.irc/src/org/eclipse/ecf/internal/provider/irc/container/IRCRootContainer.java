@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.provider.irc.container;
+package org.eclipse.ecf.internal.provider.irc.container;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +30,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.internal.provider.irc.Activator;
+import org.eclipse.ecf.internal.provider.irc.identity.IRCID;
 import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainerOptionsAdapter;
@@ -38,7 +39,6 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
-import org.eclipse.ecf.provider.irc.identity.IRCID;
 import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCEventListener;
 import org.schwering.irc.lib.IRCModeParser;
