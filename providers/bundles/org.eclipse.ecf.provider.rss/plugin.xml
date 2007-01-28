@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.provider.rss.container.RssContainerInstantiator"
+            description="ECF RSS Client"
+            name="org.eclipse.ecf.provider.rss.Client">
+         <defaultargument
+               name="userhost"
+               type="java.lang.String"/>
+         <defaultargument
+               name="keepAlive"
+               type="java.lang.Integer"
+               value="30000"/>
+      </containerFactory>
+   </extension>
+</plugin>
