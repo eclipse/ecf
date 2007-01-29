@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ECF RSS Provider
 Bundle-SymbolicName: org.eclipse.ecf.provider.rss; singleton:=true
 Bundle-Version: 0.1.0
-Bundle-Activator: org.eclipse.ecf.provider.rss.RssPlugin
+Bundle-Activator: org.eclipse.ecf.internal.provider.rss.RssPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.provider,
@@ -11,9 +11,9 @@ Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.sharedobject
 Eclipse-AutoStart: true
 Bundle-Vendor: Eclipse.org
-Export-Package: org.eclipse.ecf.provider.rss,
- org.eclipse.ecf.provider.rss.container,
- org.eclipse.ecf.provider.rss.http
+Export-Package: org.eclipse.ecf.internal.provider.rss;x-internal:=true,
+ org.eclipse.ecf.internal.provider.rss.container;x-internal:=true,
+ org.eclipse.ecf.internal.provider.rss.http;x-internal:=true
 Bundle-ClassPath: .,
  lib/rss-sse.jar
 Import-Package: org.eclipse.core.runtime,

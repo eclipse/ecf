@@ -1,0 +1,16 @@
+# Debugging options for the org.eclipse.ecf.provider.rss plug-in
+
+# Turn on general debugging for the org.eclipse.ecf plug-in
+org.eclipse.ecf.provider.rss/debug=true
+org.eclipse.ecf.provider.rss/debug/filter = *
+org.eclipse.ecf.provider.rss/debug/flag = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.provider.rss/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.provider.rss/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.provider.rss/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.provider.rss/debug/methods/exiting=false

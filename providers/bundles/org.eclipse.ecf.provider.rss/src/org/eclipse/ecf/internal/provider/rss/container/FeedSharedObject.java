@@ -8,7 +8,7 @@
  * Contributors:
  *     Sergey Yakovlev - initial API and implementation
  */
-package org.eclipse.ecf.provider.rss.container;
+package org.eclipse.ecf.internal.provider.rss.container;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +26,7 @@ import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.datashare.IChannelListener;
 import org.eclipse.ecf.datashare.events.IChannelConnectEvent;
 import org.eclipse.ecf.datashare.events.IChannelDisconnectEvent;
@@ -37,138 +38,175 @@ import org.eclipse.ecf.datashare.mergeable.IMergeableChannel;
 import org.eclipse.ecf.datashare.mergeable.IMergeableChannelContainerAdapter;
 import org.eclipse.ecf.datashare.mergeable.MergeException;
 import org.eclipse.ecf.datashare.mergeable.PublishException;
-import org.eclipse.ecf.provider.rss.Trace;
+import org.eclipse.ecf.internal.provider.rss.RssDebugOptions;
+import org.eclipse.ecf.internal.provider.rss.RssPlugin;
 import org.eclipse.higgins.rsse.RssFeed;
 import org.eclipse.higgins.rsse.RssItem;
 
 /**
- * @author Sergey Yakovlev
- *
+ * 
  */
-public class FeedSharedObject implements ISharedObject, IIdentifiable, IMergeableChannel {
-	
-	public static Trace trace = Trace.create("feedSharedObject");
-	public static String PUBLISH_PROPERTY_NAME = FeedSharedObject.class.getPackage().getName()+".publishPathName";
+public class FeedSharedObject implements ISharedObject, IIdentifiable,
+		IMergeableChannel {
+
+	public static String PUBLISH_PROPERTY_NAME = FeedSharedObject.class
+			.getPackage().getName()
+			+ ".publishPathName";
 
 	protected ISharedObjectConfig config;
 	protected RssFeed feed;
 	protected IChannelListener listener;
 	protected String publishPathName;
-	
+
 	public FeedSharedObject(IChannelListener listener) {
 		setListener(listener);
 	}
-	
-	protected void trace(String msg) {
-        if(Trace.ON && trace != null) {
-            trace.msg(getID() + ":" + msg);
-        }
-    }
-    
-	protected void dumpStack(String msg, Throwable e) {
-        if(Trace.ON && trace != null) {
-            trace.dumpStack(e, getID() + ":" + msg);
-        }
-    }
-	
-	public RssFeed getFeed() { return feed; }
 
-	public void setListener(IChannelListener listener) { this.listener = listener; }
-	
-	/* (non-Javadoc)
+	protected void trace(String msg) {
+		Trace.trace(RssPlugin.getDefault(), RssDebugOptions.DEBUG, msg);
+	}
+
+	protected void dumpStack(String msg, Throwable e) {
+		Trace.catching(RssPlugin.getDefault(),
+				RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
+	}
+
+	public RssFeed getFeed() {
+		return feed;
+	}
+
+	public void setListener(IChannelListener listener) {
+		this.listener = listener;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.ISharedObject#init(org.eclipse.ecf.core.ISharedObjectConfig)
 	 */
-	public void init(ISharedObjectConfig initData) throws SharedObjectInitException {
-		if(config == null) {
+	public void init(ISharedObjectConfig initData)
+			throws SharedObjectInitException {
+		if (config == null) {
 			config = initData;
 		} else {
 			throw new SharedObjectInitException("Already initialized.");
 		}
-    	trace("init("+ initData +")");
-    	// get local publish path
-    	publishPathName = (String)initData.getProperties().get(PUBLISH_PROPERTY_NAME);
-    	publishPathName = publishPathName == null ? "feed.xml" : publishPathName;
+		trace("init(" + initData + ")");
+		// get local publish path
+		publishPathName = (String) initData.getProperties().get(
+				PUBLISH_PROPERTY_NAME);
+		publishPathName = publishPathName == null ? "feed.xml"
+				: publishPathName;
 		// get local channel container first...throw if we can't get it
-		IMergeableChannelContainerAdapter container = (IMergeableChannelContainerAdapter) config.getContext().getAdapter(IMergeableChannelContainerAdapter.class);
-		if(container == null) {
-			throw new SharedObjectInitException("Channel container is null/not available");
+		IMergeableChannelContainerAdapter container = (IMergeableChannelContainerAdapter) config
+				.getContext().getAdapter(
+						IMergeableChannelContainerAdapter.class);
+		if (container == null) {
+			throw new SharedObjectInitException(
+					"Channel container is null/not available");
 		}
-		if(container instanceof RssClientSOContainer) {
+		if (container instanceof RssClientSOContainer) {
 			// get rss feed
 			try {
-				feed = ((RssClientSOContainer)container).receiveFeed(getID().getName());
+				feed = ((RssClientSOContainer) container).receiveFeed(getID()
+						.getName());
 			} catch (IOException ioe) {
 				throw new SharedObjectInitException(ioe);
 			}
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
 	 */
 	public void dispose(ID containerID) {
-    	trace("dispose("+ containerID +")");
+		trace("dispose(" + containerID + ")");
 		config = null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
-		if(adapter.equals(IMergeableChannel.class)) {
+		if (adapter.equals(IMergeableChannel.class)) {
 			return this;
 		} else {
 			return null;
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.util.IEventHandler#handleEvents(org.eclipse.ecf.core.util.Event[])
 	 */
 	public void handleEvents(Event[] events) {
-		for(int i = 0; i < events.length; ++i) {
+		for (int i = 0; i < events.length; ++i) {
 			handleEvent(events[i]);
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.util.IEventHandler#handleEvent(org.eclipse.ecf.core.util.Event)
 	 */
 	public void handleEvent(Event event) {
-    	trace("handleEvent("+ event +")");
-		if(event instanceof ISharedObjectMessageEvent) {
+		trace("handleEvent(" + event + ")");
+		if (event instanceof ISharedObjectMessageEvent) {
 			ISharedObjectMessageEvent e = (ISharedObjectMessageEvent) event;
 			handleMessage(e);
-		} else if(event instanceof IContainerConnectedEvent) {
+		} else if (event instanceof IContainerConnectedEvent) {
 			IContainerConnectedEvent e = (IContainerConnectedEvent) event;
-			if(e.getTargetID().equals(config.getContext().getLocalContainerID())) {
+			if (e.getTargetID().equals(
+					config.getContext().getLocalContainerID())) {
 				// this container joined
-//				handleJoined();
-			} else if(config.getContext().isGroupManager()) {
+				// handleJoined();
+			} else if (config.getContext().isGroupManager()) {
 				// some other container joined and we're the server
 				handleJoined(e.getTargetID());
 			}
-		} else if(event instanceof IContainerDisconnectedEvent) {
+		} else if (event instanceof IContainerDisconnectedEvent) {
 			IContainerDisconnectedEvent e = (IContainerDisconnectedEvent) event;
 			// some other container departed -- same as peer deactivation
-			if(!e.getTargetID().equals(config.getContext().getLocalContainerID())) {
+			if (!e.getTargetID().equals(
+					config.getContext().getLocalContainerID())) {
 				handleLeave(e.getTargetID());
 			}
-		} else if(event instanceof ISharedObjectActivatedEvent) {/*
-			ISharedObjectActivatedEvent e = (ISharedObjectActivatedEvent) event;
-			if(e.getActivatedID().equals(config.getSharedObjectID())) {
-				// we're being activated
-				handleActivated();
-			}*/
-		} else if(event instanceof ISharedObjectDeactivatedEvent) {/*
-			ISharedObjectDeactivatedEvent e = (ISharedObjectDeactivatedEvent) event;
-			if(e.getDeactivatedID().equals(config.getSharedObjectID())) {
-				// we're being deactivated
-				handleDeactivated();
-			} else if(table.contains(e.getDeactivatedID())) {
-				// a local graph we track is being deactivated
-				handleRemoved(e.getDeactivatedID());
-			}*/
+		} else if (event instanceof ISharedObjectActivatedEvent) {/*
+																	 * ISharedObjectActivatedEvent
+																	 * e =
+																	 * (ISharedObjectActivatedEvent)
+																	 * event;
+																	 * if(e.getActivatedID().equals(config.getSharedObjectID())) { //
+																	 * we're
+																	 * being
+																	 * activated
+																	 * handleActivated(); }
+																	 */
+		} else if (event instanceof ISharedObjectDeactivatedEvent) {/*
+																	 * ISharedObjectDeactivatedEvent
+																	 * e =
+																	 * (ISharedObjectDeactivatedEvent)
+																	 * event;
+																	 * if(e.getDeactivatedID().equals(config.getSharedObjectID())) { //
+																	 * we're
+																	 * being
+																	 * deactivated
+																	 * handleDeactivated(); }
+																	 * else
+																	 * if(table.contains(e.getDeactivatedID())) { //
+																	 * a local
+																	 * graph we
+																	 * track is
+																	 * being
+																	 * deactivated
+																	 * handleRemoved(e.getDeactivatedID()); }
+																	 */
 		}
 	}
 
@@ -177,16 +215,19 @@ public class FeedSharedObject implements ISharedObject, IIdentifiable, IMergeabl
 			public ID getTargetID() {
 				return targetID;
 			}
+
 			public ID getChannelID() {
 				return getID();
 			}
+
 			public String toString() {
 				StringBuffer buf = new StringBuffer("ChannelGroupJoinEvent[");
-				buf.append("chid=").append(getChannelID()).append(";targetid=").append(getTargetID()).append("]");
+				buf.append("chid=").append(getChannelID()).append(";targetid=")
+						.append(getTargetID()).append("]");
 				return buf.toString();
 			}
 		});
-		
+
 	}
 
 	private void handleMessage(final ISharedObjectMessageEvent event) {
@@ -194,15 +235,20 @@ public class FeedSharedObject implements ISharedObject, IIdentifiable, IMergeabl
 			public ID getFromContainerID() {
 				return event.getRemoteContainerID();
 			}
+
 			public byte[] getData() {
 				return (byte[]) event.getData();
 			}
+
 			public ID getChannelID() {
 				return getID();
 			}
+
 			public String toString() {
 				StringBuffer buf = new StringBuffer("ChannelMessageEvent[");
-				buf.append("chid=").append(getChannelID()).append(";fromid=").append(getFromContainerID()).append(";data=").append(getData()).append("]");
+				buf.append("chid=").append(getChannelID()).append(";fromid=")
+						.append(getFromContainerID()).append(";data=").append(
+								getData()).append("]");
 				return buf.toString();
 			}
 		});
@@ -213,12 +259,16 @@ public class FeedSharedObject implements ISharedObject, IIdentifiable, IMergeabl
 			public ID getTargetID() {
 				return targetID;
 			}
+
 			public ID getChannelID() {
 				return getID();
 			}
+
 			public String toString() {
-				StringBuffer buf = new StringBuffer("ChannelGroupDepartedEvent[");
-				buf.append("chid=").append(getChannelID()).append(";targetid=").append(getTargetID()).append("]");
+				StringBuffer buf = new StringBuffer(
+						"ChannelGroupDepartedEvent[");
+				buf.append("chid=").append(getChannelID()).append(";targetid=")
+						.append(getTargetID()).append("]");
 				return buf.toString();
 			}
 		});
@@ -227,21 +277,20 @@ public class FeedSharedObject implements ISharedObject, IIdentifiable, IMergeabl
 	public ID getID() {
 		return config != null ? config.getSharedObjectID() : null;
 	}
-/*	
-	public void sendMessage(byte[] message) throws ECFException {
-		sendMessage(null, message);
-	}
 
-	public void sendMessage(ID receiver, byte[] message) throws ECFException {
-		throw new ECFException("Async message isn't allowed");
-	}
-*/
+	/*
+	 * public void sendMessage(byte[] message) throws ECFException {
+	 * sendMessage(null, message); }
+	 * 
+	 * public void sendMessage(ID receiver, byte[] message) throws ECFException {
+	 * throw new ECFException("Async message isn't allowed"); }
+	 */
 	public IChannelListener getListener() {
 		return listener;
 	}
 
 	public List getItems() {
-		if(feed != null) {
+		if (feed != null) {
 			return feed.getItems();
 		}
 		return null;
@@ -249,25 +298,25 @@ public class FeedSharedObject implements ISharedObject, IIdentifiable, IMergeabl
 
 	public void merge() throws MergeException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public boolean addItem(IItem item) {
-		if(feed != null) {
-			if(item instanceof RssItem) {
-				return feed.addItem((RssItem)item);
+		if (feed != null) {
+			if (item instanceof RssItem) {
+				return feed.addItem((RssItem) item);
 			}
 		}
 		return false;
 	}
 
 	public boolean changeItem(ID itemID, String description) {
-		if(feed != null) {
+		if (feed != null) {
 			List items = feed.getItems();
-			for(int i = 0; i < items.size(); i++) {
-				RssItem rssItem = (RssItem)items.get(i);
+			for (int i = 0; i < items.size(); i++) {
+				RssItem rssItem = (RssItem) items.get(i);
 				ID id = createID(rssItem.getSync().getId());
-				if(id != null && id.equals(itemID)) {
+				if (id != null && id.equals(itemID)) {
 					rssItem.setDescription(description);
 					return true;
 				}
@@ -286,12 +335,12 @@ public class FeedSharedObject implements ISharedObject, IIdentifiable, IMergeabl
 	}
 
 	public boolean removeItem(IItem item) {
-		if(feed != null) {
-			if(item instanceof RssItem) {
+		if (feed != null) {
+			if (item instanceof RssItem) {
 				List items = feed.getItems();
-				for(int i = 0; i < items.size(); i++) {
-					RssItem rssItem = (RssItem)items.get(i);
-					if(rssItem.equals(item)) {
+				for (int i = 0; i < items.size(); i++) {
+					RssItem rssItem = (RssItem) items.get(i);
+					if (rssItem.equals(item)) {
 						items.remove(i);
 						return true;
 					}
@@ -302,9 +351,9 @@ public class FeedSharedObject implements ISharedObject, IIdentifiable, IMergeabl
 	}
 
 	public void publish() throws PublishException {
-		if(feed != null) {
+		if (feed != null) {
 			// TODO Auto-generated method stub
-		}		
+		}
 	}
 
 	public IItemFactory getItemFactory() {

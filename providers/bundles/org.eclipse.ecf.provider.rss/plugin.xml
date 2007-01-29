@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
-            class="org.eclipse.ecf.provider.rss.container.RssContainerInstantiator"
+            class="org.eclipse.ecf.internal.provider.rss.container.RssContainerInstantiator"
             description="ECF RSS Client"
             name="org.eclipse.ecf.provider.rss.Client">
          <defaultargument
