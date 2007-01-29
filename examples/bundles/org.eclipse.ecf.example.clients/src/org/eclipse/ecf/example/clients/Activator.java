@@ -18,6 +18,8 @@ public class Activator extends AbstractUIPlugin {
 
 	private static Activator instance = null;
 	
+	public static final int CLIENT_ERROR_CODE = 121;
+	
 	public static final String PLUGIN_ID = "org.eclipse.ecf.example.clients"; //$NON-NLS-1$
 	public Activator() {
 		super();
@@ -29,7 +31,7 @@ public class Activator extends AbstractUIPlugin {
 	}
 	
 	public void log(int status, String message, Throwable exception) {
-		getLog().log(new Status(status,PLUGIN_ID,message,exception));
+		getLog().log(new Status(status,PLUGIN_ID,CLIENT_ERROR_CODE,message,exception));
 	}
 	/**
 	 * This method is called upon plug-in activation
