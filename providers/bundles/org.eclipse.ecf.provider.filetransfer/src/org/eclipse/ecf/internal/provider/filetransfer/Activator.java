@@ -13,14 +13,8 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class Activator extends Plugin {
 
-	/**
-	 * 
-	 */
 	private static final String URL_HANDLER_PROTOCOL_NAME = "url.handler.protocol";
 
-	/**
-	 * 
-	 */
 	private static final String URLSTREAM_HANDLER_SERVICE_NAME = "org.osgi.service.url.URLStreamHandlerService";
 
 	// The plug-in ID
@@ -30,7 +24,7 @@ public class Activator extends Plugin {
 	private static Activator plugin;
 
 	BundleContext context;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -76,7 +70,8 @@ public class Activator extends Plugin {
 		Set protocols = new HashSet();
 		if (refs != null)
 			for (int i = 0; i < refs.length; i++) {
-				Object protocol = refs[i].getProperty(URL_HANDLER_PROTOCOL_NAME);
+				Object protocol = refs[i]
+						.getProperty(URL_HANDLER_PROTOCOL_NAME);
 				if (protocol instanceof String)
 					protocols.add(protocol);
 				else if (protocol instanceof String[]) {

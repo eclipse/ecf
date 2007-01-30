@@ -13,8 +13,12 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.4,
 Import-Package: org.eclipse.core.runtime,
  org.eclipse.core.runtime.jobs,
  org.osgi.framework;version="1.3.0",
+ org.osgi.service.url;version="1.0.0",
  org.osgi.util.tracker;version="1.3.2"
 Bundle-ClassPath: lib/commons-logging-1.1.jar,
  lib/commons-codec-1.3.jar,
  lib/commons-httpclient-3.0.1.jar,
  .
+Export-Package: org.eclipse.ecf.internal.provider.filetransfer;x-internal:=true,
+ org.eclipse.ecf.internal.provider.filetransfer.identity;x-internal:=true,
+ org.eclipse.ecf.internal.provider.filetransfer.retrieve;x-internal:=true
