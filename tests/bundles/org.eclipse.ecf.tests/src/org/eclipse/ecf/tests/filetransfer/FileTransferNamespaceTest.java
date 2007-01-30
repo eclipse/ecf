@@ -14,7 +14,8 @@ package org.eclipse.ecf.tests.filetransfer;
 import java.io.ByteArrayOutputStream;
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
+import java.net.URL;
+import java.net.URLConnection;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -75,4 +76,9 @@ public class FileTransferNamespaceTest extends ECFAbstractTestCase {
 		assertNotNull(supportedSchemes);
 	}
 
+	public final void testGetURLConnection() throws Exception {
+		URL anURL = new URL("org.eclipse.ecf.tests://lala");
+		URLConnection connection = anURL.openConnection();
+		assertNotNull(connection);
+	}
 }
