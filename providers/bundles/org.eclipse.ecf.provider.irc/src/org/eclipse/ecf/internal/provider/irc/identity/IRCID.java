@@ -1,14 +1,13 @@
-/****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
-
+/*******************************************************************************
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.ecf.internal.provider.irc.identity;
 
 import java.net.URI;
@@ -75,12 +74,12 @@ public class IRCID extends BaseID implements IChatID {
 	}
 	public String getChannel() {
 		String frag = uri.getFragment();
-		if (frag != null && !frag.equals("")) return "#"+frag;
+		if (frag != null && !frag.equals("")) return "#"+frag; //$NON-NLS-1$ //$NON-NLS-2$
 		else return null;
 	}
 	public String toString() {
-		StringBuffer sb = new StringBuffer("IRCID[");
-		sb.append(uri.toString()).append("]");
+		StringBuffer sb = new StringBuffer("IRCID["); //$NON-NLS-1$
+		sb.append(uri.toString()).append(']');
 		return sb.toString();
 	}
 	public String getUsername() {

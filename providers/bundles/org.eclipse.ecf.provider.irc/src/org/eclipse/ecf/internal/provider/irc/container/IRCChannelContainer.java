@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
+* Copyright (c) 2004, 2007 Composent, Inc. and others.
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
@@ -91,7 +91,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 				return null;
 			}
 			public String getStatus() {
-				return "";
+				return ""; //$NON-NLS-1$
 			}
 			public Type getType() {
 				return (available ? IPresence.Type.AVAILABLE
@@ -137,10 +137,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	}
 	
 	protected String getIRCUserName(IRCUser user) {
-		if (user == null)
-			return null;
-		else
-			return user.toString();
+		return user == null ? null : user.toString();
 	}
 	
 	protected void setIRCUser(IRCUser user) {

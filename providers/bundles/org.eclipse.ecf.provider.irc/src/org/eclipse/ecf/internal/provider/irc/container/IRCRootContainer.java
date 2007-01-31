@@ -30,6 +30,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.internal.provider.irc.Activator;
+import org.eclipse.ecf.internal.provider.irc.Messages;
 import org.eclipse.ecf.internal.provider.irc.identity.IRCID;
 import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
@@ -39,6 +40,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.osgi.util.NLS;
 import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCEventListener;
 import org.schwering.irc.lib.IRCModeParser;
@@ -227,10 +229,12 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				// retrieve the channel that this kick is happening at
 				IRCChannelContainer channel = getChannel(channelName);
 				if (channel != null) {
-					// display a message to indicate the kicking
-					showMessage(channelName, kicker.getNick() + " has kicked "
-							+ kicked + " from " + channelName + " (" + reason
-							+ ")");
+					// display a message to indicate that a user has been kicked
+					// from the channel
+					showMessage(channelName, NLS.bind(
+							Messages.IRCRootContainer_UserKicked, new Object[] {
+									kicker.getNick(), kicked, channelName,
+									reason }));
 					// check if we are the ones that have been kicked
 					if (kicked.equals(((IRCID) targetID).getUsername())) {
 						// fire disconnection events for this channel container
@@ -306,8 +310,9 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 			public void onTopic(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnTopic(" + arg0 + "," + arg1 + "," + arg2 + ")");
-				showMessage(arg0, arg1.getNick()
-						+ " has changed the topic to: " + arg2);
+				showMessage(arg0, NLS.bind(
+						Messages.IRCRootContainer_TopicChange, new Object[] {
+								arg1.getNick(), arg2 }));
 			}
 
 			public void unknown(String arg0, String arg1, String arg2,
@@ -321,10 +326,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	}
 
 	protected String getIRCUserName(IRCUser user) {
-		if (user == null)
-			return null;
-		else
-			return user.toString();
+		return user == null ? null : user.toString();
 	}
 
 	/*

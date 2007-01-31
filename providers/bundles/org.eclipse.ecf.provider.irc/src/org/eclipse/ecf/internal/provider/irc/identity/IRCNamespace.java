@@ -1,5 +1,5 @@
-/****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+/*******************************************************************************
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,8 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
- *****************************************************************************/
-
+ ******************************************************************************/
 package org.eclipse.ecf.internal.provider.irc.identity;
 
 import java.net.URI;
@@ -20,7 +19,7 @@ public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 
 	private static final long serialVersionUID = 1005111581522377553L;
 
-	public static final String IRC_PROTOCOL = "irc";
+	public static final String IRC_PROTOCOL = "irc"; //$NON-NLS-1$
 
 	public ID createInstance(Object[] args) throws IDCreateException {
 		URI newURI = null;

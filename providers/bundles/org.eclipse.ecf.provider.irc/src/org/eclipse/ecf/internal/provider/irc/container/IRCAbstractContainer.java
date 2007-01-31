@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
+* Copyright (c) 2004, 2007 Composent, Inc. and others.
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
@@ -8,7 +8,6 @@
 * Contributors:
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
-
 package org.eclipse.ecf.internal.provider.irc.container;
 
 import java.util.ArrayList;
@@ -32,21 +31,21 @@ import org.eclipse.ecf.presence.chatroom.ChatRoomMessageEvent;
  */
 public abstract class IRCAbstractContainer extends AbstractContainer {
 
-	protected static final String ROOT_ROOMNAME = "/";
-	protected static final String COMMAND_PREFIX = "/";
-	protected static final String COMMAND_DELIM = " ";
-	protected static final String JOIN_COMMAND = "JOIN";
-	protected static final String LIST_COMMAND = "LIST";
-	protected static final String PART_COMMAND = "PART";
-	protected static final String NICK_COMMAND = "NICK";
-	protected static final String MSG_COMMAND = "MSG";
-	protected static final String NOTICE_COMMAND = "NOTICE";
-	protected static final String WHOIS_COMMAND = "WHOIS";
-	protected static final String QUIT_COMMAND = "QUIT";
-	protected static final String AWAY_COMMAND = "AWAY";
-	protected static final String TOPIC_COMMAND = "TOPIC";
-	protected static final String INVITE_COMMAND = "INVITE";
-	protected static final String OPERATOR_PREFIX = "@";
+	protected static final String ROOT_ROOMNAME = "/"; //$NON-NLS-1$
+	protected static final String COMMAND_PREFIX = "/"; //$NON-NLS-1$
+	protected static final String COMMAND_DELIM = " "; //$NON-NLS-1$
+	protected static final String JOIN_COMMAND = "JOIN"; //$NON-NLS-1$
+	protected static final String LIST_COMMAND = "LIST"; //$NON-NLS-1$
+	protected static final String PART_COMMAND = "PART"; //$NON-NLS-1$
+	protected static final String NICK_COMMAND = "NICK"; //$NON-NLS-1$
+	protected static final String MSG_COMMAND = "MSG"; //$NON-NLS-1$
+	protected static final String NOTICE_COMMAND = "NOTICE"; //$NON-NLS-1$
+	protected static final String WHOIS_COMMAND = "WHOIS"; //$NON-NLS-1$
+	protected static final String QUIT_COMMAND = "QUIT"; //$NON-NLS-1$
+	protected static final String AWAY_COMMAND = "AWAY"; //$NON-NLS-1$
+	protected static final String TOPIC_COMMAND = "TOPIC"; //$NON-NLS-1$
+	protected static final String INVITE_COMMAND = "INVITE"; //$NON-NLS-1$
+	protected static final String OPERATOR_PREFIX = "@"; //$NON-NLS-1$
 
 	Trace trace = Trace.create("ircrootcontainer");
 	protected ID localID = null;
@@ -105,9 +104,9 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	}
 
 	protected String concat(String [] args, int start, String suffix) {
-		StringBuffer result = new StringBuffer("");
+		StringBuffer result = new StringBuffer();
 		for(int i=start; i < args.length; i++) {
-			result.append(args[i]).append(" ");
+			result.append(args[i]).append(' ');
 		}
 		result.append(suffix);
 		return result.toString();
