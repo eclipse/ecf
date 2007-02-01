@@ -504,10 +504,27 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 	protected void parseMessageAndSend(String message) {
 		if (isCommand(message)) {
-			String[] tokens = parseCommandTokens(message);
 			synchronized (this) {
 				if (connection != null) {
-					handleCommandMessage(tokens);
+					String lowerCase = message.toLowerCase();
+					if (lowerCase.startsWith("/msg ")) { //$NON-NLS-1$
+						message = message.substring(5);
+						int index = message.indexOf(COMMAND_DELIM);
+						if (index != -1) {
+							connection.doPrivmsg(message.substring(0, index),
+									message.substring(index + 1));
+						}
+					} else if (lowerCase.startsWith("/privmsg ")) { //$NON-NLS-1$
+						message = message.substring(9);
+						int index = message.indexOf(COMMAND_DELIM);
+						if (index != -1) {
+							connection.doPrivmsg(message.substring(0, index),
+									message.substring(index + 1));
+						}
+					} else {
+						String[] tokens = parseCommandTokens(message);
+						handleCommandMessage(tokens);
+					}
 				} else {
 					trace("parseMessageAndSend(" + message
 							+ ") Not connected for IRCContainer " + getID());
@@ -545,10 +562,6 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		} else if (command.equalsIgnoreCase(NICK_COMMAND)) {
 			if (args.length > 0) {
 				connection.doNick(args[0]);
-			}
-		} else if (command.equalsIgnoreCase(MSG_COMMAND)) {
-			if (args.length > 1) {
-				connection.doPrivmsg(args[0], args[1]);
 			}
 		} else if (command.equalsIgnoreCase(NOTICE_COMMAND)) {
 			if (args.length > 1) {
