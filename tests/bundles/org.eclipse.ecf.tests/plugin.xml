@@ -5,7 +5,7 @@
          point="org.eclipse.ecf.filetransfer.urlConnectionFactory">
       <urlConnectionFactory
             class="org.eclipse.ecf.tests.filetransfer.URLConnectionFactory"
-            protocol="org.eclipse.ecf.tests">
+            protocol="foobar">
       </urlConnectionFactory>
    </extension>
 
