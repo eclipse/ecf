@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer.identity;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.ecf.core.identity.ID;
@@ -32,6 +33,7 @@ public interface IFileID extends ID {
 	 * Get the url associated with the file identified by this IFileID.
 	 * 
 	 * @return URL associated with this IFileID.  Will not be null.
+	 * @exception MalformedURLException thrown if URL cannot be created for this IFileID
 	 */
-	public URL getURL();
+	public URL getURL() throws MalformedURLException;
 }
