@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Date;
 import java.util.Map;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -36,11 +37,20 @@ import org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer;
 import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
 import org.eclipse.ecf.example.collab.ui.ChatLine;
 import org.eclipse.ecf.example.collab.ui.FileReceiverUI;
+import org.eclipse.ecf.example.collab.ui.ImageWrapper;
 import org.eclipse.ecf.example.collab.ui.LineChatClientView;
 import org.eclipse.ecf.example.collab.ui.LineChatHandler;
 import org.eclipse.ecf.example.collab.ui.LineChatView;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
@@ -677,6 +687,39 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		} catch (Exception e) {
 			debugdump(e, "Exception on sendMessageToUser to " + user);
 		}
+	}
+	public void sendImage(ImageWrapper wrapper) {
+		try {
+			trace("sendImage(" + wrapper + ")");
+			forwardMsgTo(null, SharedObjectMsg.createMsg(EclipseCollabSharedObject.class.getName(),
+					"handleShowImage", getUniqueID(), wrapper));
+		} catch (Exception e) {
+			e.printStackTrace();
+			debugdump(e, "Exception on sendShowTextMsg to remote clients");
+		}
+	}
+	protected void handleShowImage(ID id, ImageWrapper wrapper) {
+		final Display display = localGUI.getTextControl().getDisplay();
+		final Image image = new Image(display, wrapper.createImageData());
+		display.asyncExec(new Runnable() {
+			public void run() {
+				Shell shell = new Shell(display);
+				shell.setBounds(image.getBounds());
+				shell.addDisposeListener(new DisposeListener() {
+					public void widgetDisposed(DisposeEvent e) {
+						image.dispose();
+					}
+				});
+				
+				shell.addPaintListener(new PaintListener() {
+					public void paintControl(PaintEvent e) {
+						e.gc.drawImage(image, 0, 0);
+					}
+				});
+				
+				shell.open();	
+			}
+		});
 	}
 	public void sendShowTextMsg(String msg) {
 		try {

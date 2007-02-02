@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
+* Copyright (c) 2004, 2007 Composent, Inc. and others.
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
@@ -19,10 +19,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.example.collab.ClientPlugin;
@@ -56,16 +58,23 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
@@ -74,6 +83,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
+import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.views.IViewCategory;
 import org.eclipse.ui.views.IViewDescriptor;
 import org.eclipse.ui.views.IViewRegistry;
@@ -419,6 +429,84 @@ public class ChatComposite extends Composite {
 			fillContextMenu(manager);
 		}
 	}
+	
+	private class ScreenCaptureJob extends UIJob {
+		
+		private boolean isDragging = false;
+		
+		private int downX = -1;
+		
+		private int downY = -1;
+		
+		public ScreenCaptureJob(Display display) {
+			super(display, "Screen capturing...");
+		}
+
+		public IStatus runInUIThread(IProgressMonitor monitor) {
+			final Display display = getDisplay();
+			GC context = new GC(display);
+			final Image image = new Image(display, display.getBounds());
+			context.copyArea(image, 0, 0);
+			context.dispose();
+			final Color color = new Color(display, 255, 255, 255);
+		
+			final Shell shell = new Shell(display, SWT.NO_TRIM);
+			shell.setLayout(new FillLayout());
+			shell.setBounds(display.getBounds());
+			final GC gc = new GC(shell);
+			gc.setForeground(color);
+			shell.addPaintListener(new PaintListener() {
+				public void paintControl(PaintEvent e) {
+					gc.drawImage(image, 0, 0);
+				}
+			});
+		
+			shell.addMouseListener(new MouseAdapter() {
+				public void mouseDown(MouseEvent e) {
+					isDragging = true;
+					downX = e.x;
+					downY = e.y;
+				}
+		
+				public void mouseUp(MouseEvent e) {
+					isDragging = false;
+					int width = Math.max(downX, e.x) - Math.min(downX, e.x);
+					int height = Math.max(downY, e.y) - Math.min(downY, e.y);
+					if (width != 0 && height != 0) {
+						final Image copy = new Image(display, width, height);
+						gc.copyArea(copy, Math.min(downX, e.x), Math.min(downY, e.y));
+						shell.close();
+						view.lch.sendImage(new ImageWrapper(copy.getImageData()));
+						copy.dispose();
+						image.dispose();
+					}
+				}
+			});
+		
+			shell.addMouseMoveListener(new MouseMoveListener() {
+				public void mouseMove(MouseEvent e) {
+					if (isDragging) {
+						gc.drawImage(image, 0, 0);
+						gc.drawRectangle(downX, downY, e.x - downX, e.y - downY);
+					}
+				}
+			});
+		
+			shell.open();
+			while (!shell.isDisposed()) {
+				if (!display.readAndDispatch()) {
+					display.sleep();
+				}
+			}
+			return null;
+		}
+	}
+	
+	private void sendImage() {
+		final Display display = getDisplay();
+		Job job = new ScreenCaptureJob(display);
+		job.schedule(5000);
+	}
 
 	private void fillTreeContextMenuUser(IMenuManager man, final User user) {
 		boolean toUs = false;
@@ -429,6 +517,17 @@ public class ChatComposite extends Composite {
 			}
 		}
 		if (!toUs) {
+			Action sendImageToUser = new Action() {
+				public void run() {
+					sendImage();
+				}
+			};
+			sendImageToUser.setText("Send Screen Capture to " + user.getNickname());
+			sendImageToUser.setImageDescriptor(PlatformUI.getWorkbench()
+					.getSharedImages().getImageDescriptor(
+							ISharedImages.IMG_OBJ_FILE));
+			man.add(sendImageToUser);
+			
 			Action sendFileToUser = new Action() {
 				public void run() {
 					sendFileToUser(user,false);
