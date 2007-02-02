@@ -91,6 +91,11 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 				}, DESCRIPTION, defaultParameters, defaultProperties);
 	}
 	
+	public void testCreateContainer0() throws Exception {
+		IContainer container = ContainerFactory.getDefault().createContainer();
+		assertNotNull(container);
+	}
+	
 	public void testCreateContainer1() throws Exception {
 		IContainer container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE_NAME);
 		assertNotNull(container);
