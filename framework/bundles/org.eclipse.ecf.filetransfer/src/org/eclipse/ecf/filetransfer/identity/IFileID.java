@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer.identity;
 
+import java.net.URL;
+
 import org.eclipse.ecf.core.identity.ID;
 
 /**
@@ -25,4 +27,11 @@ public interface IFileID extends ID {
 	 *         IFileID. Will not be <code>null</code>.
 	 */
 	public String getFilename();
+	
+	/**
+	 * Get the url associated with the file identified by this IFileID.
+	 * 
+	 * @return URL associated with this IFileID.  Will not be null.
+	 */
+	public URL getURL();
 }

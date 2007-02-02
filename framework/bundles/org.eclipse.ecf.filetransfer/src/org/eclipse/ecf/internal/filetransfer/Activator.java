@@ -10,13 +10,14 @@ package org.eclipse.ecf.internal.filetransfer;
 
 import java.util.Hashtable;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipse.ecf.filetransfer.urlservice.UrlStreamHandlerService;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.url.AbstractURLStreamHandlerService;
 import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
 
@@ -29,9 +30,11 @@ public class Activator extends Plugin {
 	public static final String PLUGIN_ID = "org.eclipse.ecf.filetransfer";
 
 	private static final String URLCONNECTION_FACTORY_EPOINT = PLUGIN_ID + "."
-	+ "urlConnectionFactory";
+			+ "urlStreamHandlerService";
 
 	private static final String PROTOCOL_ATTRIBUTE = "protocol";
+
+	private static final String SERVICE_CLASS_ATTRIBUTE = "serviceClass";
 
 	// The shared instance
 	private static Activator plugin;
@@ -53,9 +56,6 @@ public class Activator extends Plugin {
 		setupProtocolHandlers(context);
 	}
 
-	/**
-	 * 
-	 */
 	private void setupProtocolHandlers(BundleContext context) {
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = reg
@@ -67,17 +67,26 @@ public class Activator extends Plugin {
 				.getConfigurationElements();
 
 		for (int i = 0; i < configurationElements.length; i++) {
-			UrlStreamHandlerService svc = new UrlStreamHandlerService(
-					configurationElements[i]);
-			Hashtable properties = new Hashtable();
-			properties.put(URLConstants.URL_HANDLER_PROTOCOL,
-					new String[] { configurationElements[i]
-							.getAttribute(PROTOCOL_ATTRIBUTE) });
-			context.registerService(URLStreamHandlerService.class
-					.getName(), svc, properties);
+			AbstractURLStreamHandlerService svc = null;
+			String protocol = null;
+			try {
+				svc = (AbstractURLStreamHandlerService) configurationElements[i]
+						.createExecutableExtension(SERVICE_CLASS_ATTRIBUTE);
+				protocol = configurationElements[i]
+						.getAttribute(PROTOCOL_ATTRIBUTE);
+			} catch (CoreException e) {
+				getLog().log(e.getStatus());
+			}
+			if (svc != null && protocol != null) {
+				Hashtable properties = new Hashtable();
+				properties.put(URLConstants.URL_HANDLER_PROTOCOL,
+						new String[] { protocol });
+				context.registerService(
+						URLStreamHandlerService.class.getName(), svc,
+						properties);
+			}
 		}
 	}
-
 
 	/*
 	 * (non-Javadoc)
