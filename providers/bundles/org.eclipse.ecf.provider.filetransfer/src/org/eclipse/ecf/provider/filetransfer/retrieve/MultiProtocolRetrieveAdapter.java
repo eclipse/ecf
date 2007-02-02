@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.provider.filetransfer.retrieve;
 
+import java.net.MalformedURLException;
 import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -75,8 +76,14 @@ public class MultiProtocolRetrieveAdapter implements
 			IFileTransferListener transferListener, Map options)
 			throws IncomingFileTransferException {
 
+			String protocol = null;
+			try {
+				protocol = remoteFileID.getURL().getProtocol();
+			} catch (MalformedURLException e) {
+				throw new IncomingFileTransferException("Invalid remoteFileID");
+			}
 			IRetrieveFileTransferContainerAdapter fileTransfer = null;
-			if (HttpClientRetrieveFileTransfer.supportsProtocol(remoteFileID.getURL().getProtocol()))
+			if (HttpClientRetrieveFileTransfer.supportsProtocol(protocol))
 				fileTransfer = new HttpClientRetrieveFileTransfer(
 						new HttpClient(new MultiThreadedHttpConnectionManager()));
 			else
