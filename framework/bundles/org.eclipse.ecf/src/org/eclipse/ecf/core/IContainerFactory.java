@@ -56,6 +56,14 @@ public interface IContainerFactory {
 	public ContainerTypeDescription getDescriptionByName(String name);
 
 	/**
+	 * Make a base IContainer instance.
+	 * 
+	 * @return IContainer instance.  A non-null instance will be returned.
+	 * @throws ContainerCreateException if some problem creating a base IContainer instance.
+	 */
+	public IContainer createContainer() throws ContainerCreateException;
+	
+	/**
 	 * Make IContainer instance. Given a ContainerTypeDescription object, a
 	 * String [] of argument types, and an Object [] of parameters, this method
 	 * will

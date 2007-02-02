@@ -3,4 +3,12 @@
 <plugin>
    <extension-point id="containerFactory" name="ECF Container Factory" schema="schema/containerFactory.exsd"/>
    <extension-point id="startup" name="ECF Start Up" schema="schema/startup.exsd"/>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.core.BaseContainer$Instantiator"
+            description="ECF Base Container"
+            name="ecf.root">
+      </containerFactory>
+   </extension>
 </plugin>

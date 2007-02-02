@@ -55,6 +55,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
  * 
  */
 public interface IContainer extends IAdaptable, IIdentifiable {
+	
 	/**
 	 * Connect to a target remote process or process group. The target
 	 * identified by the first parameter (targetID) is connected the

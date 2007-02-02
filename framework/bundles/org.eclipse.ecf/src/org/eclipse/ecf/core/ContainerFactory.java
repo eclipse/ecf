@@ -47,6 +47,8 @@ import org.eclipse.ecf.internal.core.IDisposable;
  */
 public class ContainerFactory implements IContainerFactory {
 
+	public static final String BASE_CONTAINER_NAME = "ecf.root";
+	
 	private static final int PROPERTY_INITIALIZE_ERRORCODE = 1001;
 
 	private static final int DISPOSE_ERROR_CODE = 100;
@@ -210,6 +212,13 @@ public class ContainerFactory implements IContainerFactory {
 		throw except;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer()
+	 */
+	public IContainer createContainer() throws ContainerCreateException {
+		return createContainer(BASE_CONTAINER_NAME);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
