@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provider.filetransfer.retrieve;
+package org.eclipse.ecf.provider.filetransfer.retrieve;
 
 import org.eclipse.ecf.core.AbstractContainerAdapterFactory;
 import org.eclipse.ecf.core.IContainer;

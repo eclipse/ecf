@@ -5,14 +5,14 @@
          point="org.eclipse.core.runtime.adapters">
       <factory
             adaptableType="org.eclipse.ecf.provider.generic.TCPClientSOContainer"
-            class="org.eclipse.ecf.internal.provider.filetransfer.retrieve.MultiProtocolRetrieveAdapterFactory">
+            class="org.eclipse.ecf.provider.filetransfer.retrieve.MultiProtocolRetrieveAdapterFactory">
          <adapter type="org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter"/>
       </factory>
    </extension>
    <extension
          point="org.eclipse.ecf.identity.namespace">
       <namespace
-            class="org.eclipse.ecf.internal.provider.filetransfer.identity.FileTransferNamespace"
+            class="org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace"
             description="ECF File Transfer Provider Namespace"
             name="ecf.provider.filetransfer">
       </namespace>

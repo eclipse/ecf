@@ -9,9 +9,8 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provider.filetransfer.retrieve;
+package org.eclipse.ecf.provider.filetransfer.retrieve;
 
-import java.net.URL;
 import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -24,8 +23,7 @@ import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.internal.provider.filetransfer.identity.FileTransferID;
-import org.eclipse.ecf.internal.provider.filetransfer.identity.FileTransferNamespace;
+import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 
 /**
  * Multi protocol handler for retrieve file transfer. Multiplexes between Apache
@@ -77,10 +75,8 @@ public class MultiProtocolRetrieveAdapter implements
 			IFileTransferListener transferListener, Map options)
 			throws IncomingFileTransferException {
 
-		if (remoteFileID instanceof FileTransferID) {
-			URL url = ((FileTransferID) remoteFileID).getURL();
 			IRetrieveFileTransferContainerAdapter fileTransfer = null;
-			if (HttpClientRetrieveFileTransfer.supportsProtocol(url.getProtocol()))
+			if (HttpClientRetrieveFileTransfer.supportsProtocol(remoteFileID.getURL().getProtocol()))
 				fileTransfer = new HttpClientRetrieveFileTransfer(
 						new HttpClient(new MultiThreadedHttpConnectionManager()));
 			else
@@ -96,8 +92,6 @@ public class MultiProtocolRetrieveAdapter implements
 			fileTransfer.sendRetrieveRequest(remoteFileID, transferListener,
 					options);
 
-		} else
-			throw new IncomingFileTransferException("invalid remoteFileID");
 	}
 
 }

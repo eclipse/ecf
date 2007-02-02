@@ -20,5 +20,5 @@ Bundle-ClassPath: lib/commons-logging-1.1.jar,
  lib/commons-httpclient-3.0.1.jar,
  .
 Export-Package: org.eclipse.ecf.internal.provider.filetransfer;x-internal:=true,
- org.eclipse.ecf.internal.provider.filetransfer.identity;x-internal:=true,
- org.eclipse.ecf.internal.provider.filetransfer.retrieve;x-internal:=true
+ org.eclipse.ecf.provider.filetransfer.identity;x-internal:=false,
+ org.eclipse.ecf.provider.filetransfer.retrieve;x-internal:=false

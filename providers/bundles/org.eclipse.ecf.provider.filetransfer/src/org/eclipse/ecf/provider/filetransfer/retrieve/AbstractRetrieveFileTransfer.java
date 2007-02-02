@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.provider.filetransfer.retrieve;
+package org.eclipse.ecf.provider.filetransfer.retrieve;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +32,7 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
-import org.eclipse.ecf.internal.provider.filetransfer.identity.FileTransferNamespace;
+import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 
 public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTransfer,
 		IRetrieveFileTransferContainerAdapter, IFileTransferPausable {

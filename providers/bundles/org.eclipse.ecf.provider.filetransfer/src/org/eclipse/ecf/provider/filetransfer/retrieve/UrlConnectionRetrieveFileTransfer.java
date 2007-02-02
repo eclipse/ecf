@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.provider.filetransfer.retrieve;
+package org.eclipse.ecf.provider.filetransfer.retrieve;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -24,7 +24,7 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.internal.provider.filetransfer.identity.FileTransferID;
+import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 
 public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
@@ -100,7 +100,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.internal.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
 	 */
 	protected void hardClose() {
 		super.hardClose();

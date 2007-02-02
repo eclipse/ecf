@@ -6,7 +6,7 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.provider.filetransfer.retrieve;
+package org.eclipse.ecf.provider.filetransfer.retrieve;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -37,7 +37,7 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.internal.provider.filetransfer.identity.FileTransferID;
+import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 
 public class HttpClientRetrieveFileTransfer extends
 		AbstractRetrieveFileTransfer {
@@ -230,8 +230,7 @@ public class HttpClientRetrieveFileTransfer extends
 							public IIncomingFileTransfer receive(
 									OutputStream streamToStore)
 									throws IOException {
-								setOutputStream(new BufferedOutputStream(
-										streamToStore));
+								setOutputStream(streamToStore);
 								setCloseOutputStream(false);
 								job = new FileTransferJob(getRemoteFileURL()
 										.toString());
