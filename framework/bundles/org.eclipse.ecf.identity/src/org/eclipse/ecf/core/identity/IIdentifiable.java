@@ -9,15 +9,15 @@
 package org.eclipse.ecf.core.identity;
 
 /**
- * Defines implementing classes as being identifiable with an ECF identity.
+ * Defines implementing classes as being identifiable with an ECF ID.
  * 
  */
 public interface IIdentifiable {
 	/**
 	 * Return the ID for this 'identifiable' object. The returned ID should be
-	 * unique within its namespace.
+	 * unique within its namespace.  May return null.
 	 * 
-	 * @return the ID for this identifiable object
+	 * @return the ID for this identifiable object.  May return null.
 	 */
 	public ID getID();
 }
