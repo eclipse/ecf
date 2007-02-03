@@ -432,6 +432,10 @@ public class ChatComposite extends Composite {
 	
 	private class ScreenCaptureJob extends UIJob {
 		
+		private Color blackColor;
+		
+		private Color whiteColor;
+		
 		private boolean isDragging = false;
 		
 		private int downX = -1;
@@ -440,6 +444,8 @@ public class ChatComposite extends Composite {
 		
 		public ScreenCaptureJob(Display display) {
 			super(display, "Screen capturing...");
+			blackColor = new Color(display, 0, 0, 0);
+			whiteColor = new Color(display, 255, 255, 255);
 		}
 
 		public IStatus runInUIThread(IProgressMonitor monitor) {
@@ -448,13 +454,11 @@ public class ChatComposite extends Composite {
 			final Image image = new Image(display, display.getBounds());
 			context.copyArea(image, 0, 0);
 			context.dispose();
-			final Color color = new Color(display, 255, 255, 255);
 		
 			final Shell shell = new Shell(display, SWT.NO_TRIM);
 			shell.setLayout(new FillLayout());
 			shell.setBounds(display.getBounds());
 			final GC gc = new GC(shell);
-			gc.setForeground(color);
 			shell.addPaintListener(new PaintListener() {
 				public void paintControl(PaintEvent e) {
 					gc.drawImage(image, 0, 0);
@@ -479,6 +483,8 @@ public class ChatComposite extends Composite {
 						view.lch.sendImage(new ImageWrapper(copy.getImageData()));
 						copy.dispose();
 						image.dispose();
+						blackColor.dispose();
+						whiteColor.dispose();
 					}
 				}
 			});
@@ -487,7 +493,10 @@ public class ChatComposite extends Composite {
 				public void mouseMove(MouseEvent e) {
 					if (isDragging) {
 						gc.drawImage(image, 0, 0);
+						gc.setForeground(blackColor);
 						gc.drawRectangle(downX, downY, e.x - downX, e.y - downY);
+						gc.setForeground(whiteColor);
+						gc.drawRectangle(downX - 1, downY - 1, e.x - downX + 2, e.y - downY + 2);
 					}
 				}
 			});
