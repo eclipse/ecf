@@ -507,7 +507,7 @@ public class ChatComposite extends Composite {
 					display.sleep();
 				}
 			}
-			return null;
+			return Status.OK_STATUS;
 		}
 	}
 	
