@@ -36,6 +36,8 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -68,7 +70,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -480,11 +484,11 @@ public class ChatComposite extends Composite {
 						final Image copy = new Image(display, width, height);
 						gc.copyArea(copy, Math.min(downX, e.x), Math.min(downY, e.y));
 						shell.close();
-						view.lch.sendImage(new ImageWrapper(copy.getImageData()));
-						copy.dispose();
 						image.dispose();
 						blackColor.dispose();
 						whiteColor.dispose();
+						Dialog dialog = new ConfirmationDialog(getShell(), copy, width, height);
+						dialog.open();
 					}
 				}
 			});
@@ -509,6 +513,65 @@ public class ChatComposite extends Composite {
 			}
 			return Status.OK_STATUS;
 		}
+	}
+	
+	private class ConfirmationDialog extends Dialog {
+		
+		private Image image;
+		
+		private int width;
+		
+		private int height;
+		
+		private ConfirmationDialog(Shell shell, Image image, int width, int height) {
+			super(shell);
+			this.image = image;
+			this.width = width;
+			this.height = height;
+		}
+		
+		protected void buttonPressed(int buttonId) {
+			if (buttonId == IDialogConstants.OK_ID) {
+				view.lch.sendImage(new ImageWrapper(image.getImageData()));
+			}
+			super.buttonPressed(buttonId);
+		}
+		
+		protected Control createDialogArea(Composite parent) {
+			parent = (Composite) super.createDialogArea(parent);
+			Composite composite = new Composite(parent, SWT.NONE);
+			composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			composite.setLayout(new FillLayout());
+			composite.addPaintListener(new PaintListener() {
+				public void paintControl(PaintEvent e) {
+					e.gc.drawImage(image, 0, 0);
+				}
+			});
+			return parent;
+		}
+		
+		protected Point getInitialSize() {
+			Point point = super.getInitialSize();
+			if (point.x < width) {
+				if (point .y < height) {
+					return new Point(width, height);
+				} else {
+					return new Point(width, point.y);
+				}
+			} else {
+				if (point .y < height) {
+					return new Point(point.x, height);
+				} else {
+					return new Point(point.x, point.y);
+				}
+			}
+		}
+		
+		public boolean close() {
+			image.dispose();
+			return super.close();
+		}
+		
 	}
 	
 	private void sendImage() {
