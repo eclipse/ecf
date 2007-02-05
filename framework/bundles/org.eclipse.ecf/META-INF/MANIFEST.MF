@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: ECF Core API
 Bundle-SymbolicName: org.eclipse.ecf;singleton:=true
-Bundle-Version: 0.9.7
+Bundle-Version: 1.0.0.M5
 Bundle-Activator: org.eclipse.ecf.internal.core.ECFPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
