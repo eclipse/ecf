@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Tutorial Plug-in
 Bundle-SymbolicName: org.eclipse.ecf.tutorial;singleton:=true
-Bundle-Version: 0.9.7
+Bundle-Version: 1.0.0.M5
 Bundle-Activator: org.eclipse.ecf.tutorial.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
