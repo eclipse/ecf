@@ -61,7 +61,7 @@ public class ChatWindow extends ApplicationWindow implements IIMMessageListener 
 
 	protected boolean disposed = false;
 
-	protected IUser getLocalUser() {
+	public IUser getLocalUser() {
 		return localUser;
 	}
 
