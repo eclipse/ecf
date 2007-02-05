@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
@@ -31,7 +33,11 @@ public class AuthenticatedFileTransferRetrieveTest extends ContainerAbstractTest
 	private static final String HTTPS_RETRIEVE = "https://bugs.eclipse.org/bugs";
 	
 	File tmpFile = null;
-	
+
+	protected IContainer createClient(int index) throws Exception {
+		return ContainerFactory.getDefault().createContainer();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
