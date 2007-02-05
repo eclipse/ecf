@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF IRC
 Bundle-SymbolicName: org.eclipse.ecf.provider.irc.ui;singleton:=true
-Bundle-Version: 1.0.0.M5
+Bundle-Version: 1.0.0.M5v20070205
 Bundle-Activator: org.eclipse.ecf.internal.irc.ui.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
