@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Filetransfer Provider
 Bundle-SymbolicName: org.eclipse.ecf.provider.filetransfer;singleton:=true
-Bundle-Version: 0.9.7
+Bundle-Version: 1.0.0.M5
 Bundle-Activator: org.eclipse.ecf.internal.provider.filetransfer.Activator
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.ecf,
