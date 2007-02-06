@@ -98,9 +98,8 @@ public class ContainerTypeDescription {
 		this.name = name;
 		this.hashCode = name.hashCode();
 		if (inst == null)
-			throw new RuntimeException(
-					new InstantiationException(
-							"ContainerTypeDescription<init> instantiator instance cannot be null"));
+			throw new NullPointerException(
+					"ContainerTypeDescription<init> instantiator instance cannot be null");
 		this.instantiator = inst;
 		this.classLoader = this.instantiator.getClass().getClassLoader();
 		this.description = desc;
