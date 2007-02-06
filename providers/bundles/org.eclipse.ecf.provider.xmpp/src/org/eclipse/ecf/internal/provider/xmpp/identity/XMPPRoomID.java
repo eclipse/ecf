@@ -10,113 +10,148 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.xmpp.identity;
 
-import java.net.URI;
 import java.net.URISyntaxException;
+
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.presence.im.IChatID;
 import org.jivesoftware.smack.XMPPConnection;
 
 public class XMPPRoomID extends BaseID implements IChatID {
-	
+
 	private static final long serialVersionUID = -4843967090539640622L;
 	public static final String DOMAIN_DEFAULT = "conference";
 	public static final String NICKNAME = "nickname";
-	
-	URI uri = null;
-	String longName = null;
-	
+
+	String domain;
+	String host;
+	String username;
+	String roomname;
+	String nickname = "";
+	String longName;
+
 	protected String fixHostname(String host, String domain) {
-		if (domain == null) domain = DOMAIN_DEFAULT;
-		return domain+"."+host;
+		if (domain == null)
+			domain = DOMAIN_DEFAULT;
+		return domain + "." + host;
 	}
-	
+
 	protected String fixUsername(String connUsername) {
 		int atIndex = connUsername.indexOf('@');
-		if (atIndex == -1) return connUsername;
-		else return connUsername.substring(0,atIndex);
+		if (atIndex == -1)
+			return connUsername;
+		else
+			return connUsername.substring(0, atIndex);
 	}
+
 	protected String[] getRoomAndHost(String roomatconfhost) {
 		int atIndex = roomatconfhost.indexOf('@');
-		if (atIndex == -1) return new String[] { "", ""};
-		String room = roomatconfhost.substring(0,atIndex);
-		String fullHost = roomatconfhost.substring(atIndex+1);
+		if (atIndex == -1)
+			return new String[] { "", "" };
+		String room = roomatconfhost.substring(0, atIndex);
+		String fullHost = roomatconfhost.substring(atIndex + 1);
 		int dotIndex = fullHost.indexOf('.');
-		String domain = fullHost.substring(0,dotIndex);
-		String host = fullHost.substring(dotIndex+1);
-		return new String [] { room, host, domain };
+		String domain = fullHost.substring(0, dotIndex);
+		String host = fullHost.substring(dotIndex + 1);
+		return new String[] { room, host, domain };
 	}
-	public XMPPRoomID(Namespace namespace, String username, String host, String domain, String groupname, String nickname) throws URISyntaxException {
+
+	public XMPPRoomID(Namespace namespace, String username, String host,
+			String domain, String roomname, String nickname)
+			throws URISyntaxException {
 		super(namespace);
-		String hostname = fixHostname(host,domain);
-		String query = NICKNAME+"="+((nickname==null)?username:nickname);
-		uri = new URI(namespace.getScheme(),username,hostname,-1,"/"+groupname,query,null);
+		this.domain = domain;
+		this.host = host;
+		this.username = username;
+		this.roomname = roomname;
+		this.nickname = ((nickname == null) ? username : nickname);
 	}
-	public XMPPRoomID(Namespace namespace, XMPPID userid, String domain, String groupname, String nickname) throws URISyntaxException {
-		this(namespace,userid.getUsername(),userid.getHostname(),domain,groupname,nickname);
+
+	public XMPPRoomID(Namespace namespace, XMPPID userid, String domain,
+			String groupname, String nickname) throws URISyntaxException {
+		this(namespace, userid.getUsername(), userid.getHostname(), domain,
+				groupname, nickname);
 	}
-	public XMPPRoomID(Namespace namespace, XMPPConnection conn, String roomid, String longName) throws URISyntaxException {
+
+	public XMPPRoomID(Namespace namespace, XMPPConnection conn, String roomid,
+			String longName) throws URISyntaxException {
 		super(namespace);
-		String username = fixUsername(conn.getUser());
-		String [] roomandhost = getRoomAndHost(roomid);
-		String room = roomandhost[0];
-		String hostname = fixHostname(roomandhost[1],roomandhost[2]);
-		String query = NICKNAME+"="+username;
-		this.uri = new URI(namespace.getScheme(),username,hostname,-1,"/"+room,query,null);
+		this.username = fixUsername(conn.getUser());
+		String[] roomandhost = getRoomAndHost(roomid);
+		this.roomname = roomandhost[0];
+		this.host = roomandhost[1];
+		this.domain = roomandhost[2];
+		this.nickname = this.username;
 		this.longName = longName;
 	}
-	public XMPPRoomID(Namespace namespace, XMPPConnection conn, String roomid) throws URISyntaxException {
-		this(namespace,conn,roomid,null);
+
+	public XMPPRoomID(Namespace namespace, XMPPConnection conn, String roomid)
+			throws URISyntaxException {
+		this(namespace, conn, roomid, null);
 	}
+
 	protected int namespaceCompareTo(BaseID o) {
-        return getName().compareTo(o.getName());
+		return getName().compareTo(o.getName());
 	}
+
+	protected boolean fieldEquals(XMPPRoomID o) {
+		return (this.domain.equals(o.domain) && (this.host.equals(o.host))
+				&& (this.nickname.equals(o.nickname))
+				&& (this.roomname.equals(o.roomname)) && (this.username
+				.equals(o.username)));
+	}
+
 	protected boolean namespaceEquals(BaseID o) {
 		if (!(o instanceof XMPPRoomID)) {
 			return false;
 		}
 		XMPPRoomID other = (XMPPRoomID) o;
-		return uri.equals(other.uri);
+		return fieldEquals(other);
 	}
+
 	protected String fixPath(String path) {
 		while (path.startsWith("/")) {
 			path = path.substring(1);
 		}
 		return path;
 	}
+
 	protected String namespaceGetName() {
-		String path = uri.getPath();
-		return fixPath(path);
+		return this.roomname;
 	}
+
 	protected int namespaceHashCode() {
-		return uri.hashCode();
+		return this.domain.hashCode() ^ this.host.hashCode()
+				^ this.nickname.hashCode() ^ this.roomname.hashCode()
+				^ this.username.hashCode();
 	}
+
 	public String getMucString() {
-		String host = uri.getHost();
-		String group = fixPath(uri.getPath());
-		String res = group + "@" + host;
-		return res;
+		return this.roomname + "@" + this.domain + "." + this.host;
 	}
+
 	public String getNickname() {
-		String query = uri.getQuery();
-		if (query == null) {
-			return uri.getUserInfo();
-		} else {
-			return query.substring(query.indexOf('=')+1);
-		}
+		return nickname;
 	}
+
 	public String getLongName() {
 		return longName;
 	}
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer("XMPPRoomID[");
-		sb.append(uri).append("]");
+		sb.append(
+				getNamespace().getScheme() + "://" + getUsername() + "@"
+						+ this.domain + "." + this.host + "/" + this.roomname)
+				.append("]");
 		return sb.toString();
 	}
+
 	public Object getAdapter(Class clazz) {
-	    if (clazz.isInstance(this)) {
-	    	return this;
-	    } else return super.getAdapter(clazz);
+		if (clazz.isInstance(this)) {
+			return this;
+		} else
+			return super.getAdapter(clazz);
 	}
 
 	public String getUsername() {
