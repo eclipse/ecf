@@ -63,6 +63,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -216,6 +218,13 @@ public class ChatRoomManagerView extends ViewPart implements
 			textOutput.getTextWidget().setEditable(false);
 			textOutput.getTextWidget().setLayoutData(
 					new GridData(GridData.FILL_BOTH));
+			textOutput.getTextWidget().addFocusListener(new FocusListener() {
+				public void focusGained(FocusEvent e) {
+					textInput.setFocus();
+				}
+				public void focusLost(FocusEvent e) {
+				}});
+			
 			Composite writeComp = new Composite(rightSash, SWT.NONE);
 			writeComp.setLayout(new FillLayout());
 			textInput = new Text(writeComp, SWT.BORDER | SWT.MULTI | SWT.WRAP
