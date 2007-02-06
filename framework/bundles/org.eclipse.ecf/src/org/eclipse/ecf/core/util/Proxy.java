@@ -13,7 +13,6 @@ package org.eclipse.ecf.core.util;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.net.SocketAddress;
 
 public class Proxy implements Serializable {
 
@@ -58,14 +57,6 @@ public class Proxy implements Serializable {
 			return name;
 		}
 
-		public final boolean equals(Object that) {
-			return super.equals(that);
-		}
-
-		public final int hashCode() {
-			return super.hashCode();
-		}
-
 		// For serialization
 		private static int nextOrdinal = 0;
 
@@ -78,7 +69,7 @@ public class Proxy implements Serializable {
 		}
 	}
 
-	SocketAddress address;
+	ProxyAddress address;
 
 	Type type;
 
@@ -93,7 +84,7 @@ public class Proxy implements Serializable {
 		this.address = null;
 	}
 
-	public Proxy(Type type, SocketAddress address, String username,
+	public Proxy(Type type, ProxyAddress address, String username,
 			String password) {
 		this.type = type;
 		this.address = address;
@@ -101,7 +92,7 @@ public class Proxy implements Serializable {
 		this.password = password;
 	}
 
-	public Proxy(Type type, SocketAddress address) {
+	public Proxy(Type type, ProxyAddress address) {
 		this(type, address, null, null);
 	}
 
@@ -109,7 +100,7 @@ public class Proxy implements Serializable {
 		return type;
 	}
 
-	public SocketAddress getAddress() {
+	public ProxyAddress getAddress() {
 		return address;
 	}
 
