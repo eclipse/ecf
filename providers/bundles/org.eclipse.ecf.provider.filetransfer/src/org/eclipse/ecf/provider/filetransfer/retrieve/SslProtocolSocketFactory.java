@@ -30,6 +30,7 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Proxy;
+import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 
 public class SslProtocolSocketFactory implements ProtocolSocketFactory {
@@ -79,10 +80,10 @@ public class SslProtocolSocketFactory implements ProtocolSocketFactory {
 					remotePort, clientHost, clientPort);
 
 		if (proxy != null && !Proxy.NO_PROXY.equals(proxy)
-				&& proxy.getAddress() instanceof InetSocketAddress) {
+				&& proxy.getAddress() instanceof ProxyAddress) {
 			ProxyClient proxyClient = new ProxyClient();
 
-			InetSocketAddress address = (InetSocketAddress) proxy.getAddress();
+			ProxyAddress address = (ProxyAddress) proxy.getAddress();
 			proxyClient.getHostConfiguration().setProxy(address.getHostName(),
 					address.getPort());
 			proxyClient.getHostConfiguration().setHost(remoteHost, remotePort);

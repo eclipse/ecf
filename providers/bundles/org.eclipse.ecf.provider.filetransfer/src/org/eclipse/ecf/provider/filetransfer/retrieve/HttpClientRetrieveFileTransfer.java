@@ -14,7 +14,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
 import java.util.Map;
 
 import javax.security.auth.login.LoginException;
@@ -33,6 +32,7 @@ import org.eclipse.ecf.core.security.NameCallback;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.util.Proxy;
+import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
@@ -117,7 +117,7 @@ public class HttpClientRetrieveFileTransfer extends
 		}
 		if (systemHttpProxyHost == null || systemHttpProxyHost.equals(""))
 			return null;
-		return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
+		return new Proxy(Proxy.Type.HTTP, new ProxyAddress(
 				systemHttpProxyHost, port));
 	}
 
@@ -126,8 +126,8 @@ public class HttpClientRetrieveFileTransfer extends
 			proxy = getSystemProxy();
 		if (proxy != null && !Proxy.NO_PROXY.equals(proxy)
 				&& !urlUsesHttps(urlString)
-				&& proxy.getAddress() instanceof InetSocketAddress) {
-			InetSocketAddress address = (InetSocketAddress) proxy.getAddress();
+				&& proxy.getAddress() instanceof ProxyAddress) {
+			ProxyAddress address = (ProxyAddress) proxy.getAddress();
 			httpClient.getHostConfiguration().setProxy(
 					getHostFromURL(address.getHostName()), address.getPort());
 			String proxyUsername = proxy.getUsername();
