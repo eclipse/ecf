@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: ECF Collaboration Example
 Bundle-SymbolicName: org.eclipse.ecf.example.collab;singleton:=true
-Bundle-Version: 1.0.0.M5v20070205
+Bundle-Version: 1.0.0.v20070206
 Bundle-Activator: org.eclipse.ecf.example.collab.ClientPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
