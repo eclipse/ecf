@@ -173,7 +173,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	private boolean enabled = false;
 
 	private Hashtable rooms = new Hashtable();
-	
+
 	class Manager {
 		SashForm fullChat;
 
@@ -222,9 +222,11 @@ public class ChatRoomManagerView extends ViewPart implements
 				public void focusGained(FocusEvent e) {
 					textInput.setFocus();
 				}
+
 				public void focusLost(FocusEvent e) {
-				}});
-			
+				}
+			});
+
 			Composite writeComp = new Composite(rightSash, SWT.NONE);
 			writeComp.setLayout(new FillLayout());
 			textInput = new Text(writeComp, SWT.BORDER | SWT.MULTI | SWT.WRAP
@@ -245,7 +247,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		protected String getTabName() {
 			return tabItem.getText();
 		}
-		
+
 		protected void setTabName(String name) {
 			tabItem.setText(name);
 		}
@@ -352,10 +354,23 @@ public class ChatRoomManagerView extends ViewPart implements
 				+ hostName);
 		ChatRoomManagerView.this.setTitleToolTip("IRC Host: " + hostName);
 		ChatRoomManagerView.this.rootChatRoomTabItem.setTabName(hostName);
-		setEnabled(true);
+		if (container.getConnectedID() == null)
+			initializeControls(targetID);
+		setEnabled(false);
 	}
 
-	protected void setEnabled(boolean enabled) {
+	private void initializeControls(ID targetID) {
+		// clear text output area
+		if (!readText.getControl().isDisposed())
+			readText.getTextWidget().setText(
+					new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z")
+					.format(new Date())
+					+ "\nConnecting to "
+					+ targetID.getName()
+					+ "\n\n");
+	}
+
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 		if (!writeText.isDisposed())
 			writeText.setEnabled(enabled);
@@ -414,24 +429,24 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	protected CTabItem getTabItem(String targetName) {
-		CTabItem [] items = tabFolder.getItems();
-		for(int i=0; i < items.length; i++) {
+		CTabItem[] items = tabFolder.getItems();
+		for (int i = 0; i < items.length; i++) {
 			if (items[i].getText().equals(targetName)) {
 				return items[i];
 			}
 		}
 		return null;
 	}
-	
+
 	protected void doJoin(final String target, final String key) {
-		//first, check to see if we already have it open.  If so just activate
+		// first, check to see if we already have it open. If so just activate
 		ChatRoom room = (ChatRoom) rooms.get(target);
-		
+
 		if (room != null && room.isConnected()) {
 			room.setSelected();
 			return;
 		}
-		
+
 		// With manager, first thing we do is get the IChatRoomInfo for the
 		// target
 		// channel
@@ -445,7 +460,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			try {
 				final IChatRoomContainer chatRoomContainer = roomInfo
 						.createChatRoomContainer();
-				
+
 				// Setup new user interface (new tab)
 				final ChatRoom chatroomview = new ChatRoom(chatRoomContainer,
 						new Manager(tabFolder, target));
@@ -463,14 +478,15 @@ public class ChatRoomManagerView extends ViewPart implements
 				// setup participant listener
 				chatRoomContainer
 						.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-							public void handlePresence(ID fromID, IPresence presence) {
+							public void handlePresence(ID fromID,
+									IPresence presence) {
 								chatroomview.handlePresence(fromID, presence);
 							}
-	
+
 							public void handleArrivedInChat(ID participant) {
 								chatroomview.handleJoin(participant);
 							}
-	
+
 							public void handleDepartedFromChat(ID participant) {
 								chatroomview.handleLeave(participant);
 							}
@@ -486,13 +502,12 @@ public class ChatRoomManagerView extends ViewPart implements
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						try {
-							chatRoomContainer.connect(
-									IDFactory.getDefault()
-											.createID(
-													chatRoomContainer
-															.getConnectNamespace(),
-													target), ConnectContextFactory
-											.createPasswordConnectContext(key));
+							chatRoomContainer.connect(IDFactory.getDefault()
+									.createID(
+											chatRoomContainer
+													.getConnectNamespace(),
+											target), ConnectContextFactory
+									.createPasswordConnectContext(key));
 							rooms.put(target, chatroomview);
 						} catch (Exception e) {
 							// XXX handle properly
@@ -588,7 +603,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		private boolean isAtStart = false;
 
 		private CTabItem itemSelected = null;
-		
+
 		ChatRoom(IChatRoomContainer container, Manager tabItem) {
 			this.container = container;
 			this.channelMessageSender = container.getChatRoomMessageSender();
@@ -605,24 +620,28 @@ public class ChatRoomManagerView extends ViewPart implements
 
 				public void widgetSelected(SelectionEvent e) {
 					itemSelected = (CTabItem) e.item;
-					if (itemSelected == tabUI.tabItem) makeTabItemNormal();
-				}});
+					if (itemSelected == tabUI.tabItem)
+						makeTabItemNormal();
+				}
+			});
 		}
 
 		protected void makeTabItemBold() {
 			changeTabItem(true);
 		}
+
 		protected void makeTabItemNormal() {
 			changeTabItem(false);
 		}
-		
+
 		protected void changeTabItem(boolean bold) {
 			CTabItem item = tabUI.tabItem;
 			Font oldFont = item.getFont();
-			FontData [] fd = oldFont.getFontData();
-			item.setFont(new Font(oldFont.getDevice(),fd[0].getName(),fd[0].getHeight(),(bold)?SWT.BOLD:SWT.NORMAL));
+			FontData[] fd = oldFont.getFontData();
+			item.setFont(new Font(oldFont.getDevice(), fd[0].getName(), fd[0]
+					.getHeight(), (bold) ? SWT.BOLD : SWT.NORMAL));
 		}
-		
+
 		public void handleMessage(final ID fromID, final String messageBody) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
@@ -631,7 +650,8 @@ public class ChatRoomManagerView extends ViewPart implements
 					appendText(outputText, new ChatLine(messageBody,
 							new Participant(fromID)));
 					CTabItem item = tabFolder.getSelection();
-					if (item != tabUI.tabItem) makeTabItemBold();
+					if (item != tabUI.tabItem)
+						makeTabItemBold();
 				}
 			});
 		}
@@ -863,11 +883,11 @@ public class ChatRoomManagerView extends ViewPart implements
 		protected boolean isConnected() {
 			return !inputText.isDisposed() && inputText.isEnabled();
 		}
-		
+
 		protected void setSelected() {
 			tabFolder.setSelection(tabUI.tabItem);
 		}
-		
+
 		protected void addParticipant(IUser p) {
 			if (p != null) {
 				ID id = p.getID();
