@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.core"
       label="ECF Core"
-      version="1.0.0.M5v20070205"
+      version="1.0.0.v20070206"
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
