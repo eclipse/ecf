@@ -33,12 +33,24 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smackx.Form;
+import org.jivesoftware.smackx.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.RoomInfo;
+import org.jivesoftware.smackx.packet.DiscoverItems;
 
 public class XMPPChatRoomManager implements IChatRoomManager {
+
+	/**
+	 * 
+	 */
+	private static final String PROP_XMPP_SUBJECT = "subject";
+
+	// key in the create room configuration in order to find the please to find
+	// the conference rooms on the XMPP server
+	public static final String PROP_XMPP_CONFERENCE = "conference";
 
 	ID containerID = null;
 
@@ -345,12 +357,76 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#createChatRoom(java.lang.String, java.util.Map)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#createChatRoom(java.lang.String,
+	 *      java.util.Map)
 	 */
 	public IChatRoomInfo createChatRoom(String roomname, Map properties)
 			throws ChatRoomCreateException {
-		throw new ChatRoomCreateException(roomname,"creation not supported", null);
+		if (roomname == null) throw new ChatRoomCreateException(roomname,"roomname cannot be null");
+		try {
+			String nickname = ecfConnection.getXMPPConnection().getUser();
+			String server = ecfConnection.getXMPPConnection().getHost();
+			String domain = (properties == null)?XMPPRoomID.DOMAIN_DEFAULT:(String) properties.get(PROP_XMPP_CONFERENCE);
+			String conference = XMPPRoomID.fixConferenceDomain(domain, server);
+			String roomID = roomname + XMPPRoomID.AT_SIGN + conference;
+			// create proxy to the room
+			MultiUserChat muc = new MultiUserChat(ecfConnection
+					.getXMPPConnection(), roomID);
+
+			if (!checkRoom(conference, roomID)) {
+				// otherwise create a new one
+				muc.create(nickname);
+				muc.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
+				String subject = (properties == null)?null:(String)properties.get(PROP_XMPP_SUBJECT);
+				if (subject != null) muc.changeSubject(subject);
+			}
+
+			String longname = muc.getRoom();
+			if (longname == null || longname.length() <= 0) {
+				longname = roomID;
+			}
+
+			RoomInfo info = MultiUserChat.getRoomInfo(ecfConnection
+					.getXMPPConnection(), roomID);
+
+			if (info != null) {
+				XMPPRoomID xid = new XMPPRoomID(connectedID.getNamespace(),
+						ecfConnection.getXMPPConnection(), roomID, longname);
+				return new ECFRoomInfo(xid, info, connectedID);
+			} else throw new XMPPException("No room info for "+roomID);
+		} catch (XMPPException e) {
+			throw new ChatRoomCreateException(roomname, e.getMessage(), e);
+		} catch (URISyntaxException e) {
+			throw new ChatRoomCreateException(roomname, e.getMessage(), e);
+		}
 	}
 
+	/**
+	 * check if the MultiUserChat room is already existing on the XMPP server.
+	 * 
+	 * @param conference
+	 * @param room
+	 *            the name of the room
+	 * @return true, if the room exists, false otherwise
+	 * @throws XMPPException
+	 */
+	protected boolean checkRoom(String conference, String room)
+			throws XMPPException {
+		XMPPConnection conn = ecfConnection.getXMPPConnection();
+		ServiceDiscoveryManager serviceDiscoveryManager = new ServiceDiscoveryManager(
+				conn);
+		DiscoverItems result = serviceDiscoveryManager
+				.discoverItems(conference);
+
+		for (Iterator items = result.getItems(); items.hasNext();) {
+			DiscoverItems.Item item = ((DiscoverItems.Item) items.next());
+			if (room.equals(item.getEntityID())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

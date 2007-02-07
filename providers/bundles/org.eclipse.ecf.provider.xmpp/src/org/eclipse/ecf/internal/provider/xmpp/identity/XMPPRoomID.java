@@ -22,7 +22,9 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	private static final long serialVersionUID = -4843967090539640622L;
 	public static final String DOMAIN_DEFAULT = "conference";
 	public static final String NICKNAME = "nickname";
-
+	public static final String AT_SIGN = "@";
+	public static final String DOT = ".";
+	
 	String domain;
 	String host;
 	String username;
@@ -30,14 +32,14 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	String nickname = "";
 	String longName;
 
-	protected String fixHostname(String host, String domain) {
+	public static String fixConferenceDomain(String domain, String host) {
 		if (domain == null)
 			domain = DOMAIN_DEFAULT;
-		return domain + "." + host;
+		return domain + DOT + host;
 	}
 
 	protected String fixUsername(String connUsername) {
-		int atIndex = connUsername.indexOf('@');
+		int atIndex = connUsername.indexOf(AT_SIGN);
 		if (atIndex == -1)
 			return connUsername;
 		else
@@ -45,7 +47,7 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	}
 
 	protected String[] getRoomAndHost(String roomatconfhost) {
-		int atIndex = roomatconfhost.indexOf('@');
+		int atIndex = roomatconfhost.indexOf(AT_SIGN);
 		if (atIndex == -1)
 			return new String[] { "", "" };
 		String room = roomatconfhost.substring(0, atIndex);
