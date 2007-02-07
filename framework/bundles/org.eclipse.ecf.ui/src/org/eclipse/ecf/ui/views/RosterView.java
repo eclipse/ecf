@@ -668,6 +668,150 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 
 	}
 
+	public void showChatRoom(final IChatRoomInfo selectedInfo) {
+		// Now get the secondary ID from the selected room id
+		final String secondaryID = getChatRoomSecondaryID(selectedInfo
+				.getRoomID());
+		if (secondaryID == null) {
+			MessageDialog.openError(RosterView.this.getViewSite().getShell(),
+					"Could not get identifier for room",
+					"Could not get proper identifier for chat room "
+							+ selectedInfo.getRoomID());
+			return;
+		}
+		// Check to make sure that we are not already connected to the
+		// selected room.
+		// If we are simply activate the existing view for the room and
+		// done
+		final RoomWithAView roomView = getRoomView(secondaryID);
+
+		RosterView.this.getViewSite().getShell().getDisplay().syncExec(
+				new Runnable() {
+					public void run() {
+						IWorkbenchWindow ww = PlatformUI.getWorkbench()
+								.getActiveWorkbenchWindow();
+						IWorkbenchPage wp = ww.getActivePage();
+						if (roomView != null) {
+							// We've already connected to this room
+							// So just show it.
+							final ChatRoomView view = roomView.getView();
+							wp.activate(view);
+							return;
+						}
+						// If we don't already have a connection/view to this
+						// room then
+						// now, create chat room instance
+						IChatRoomContainer chatRoom = null;
+						try {
+							chatRoom = selectedInfo.createChatRoomContainer();
+						} catch (ContainerCreateException e1) {
+							MessageDialog.openError(RosterView.this
+									.getViewSite().getShell(),
+									"Could not create chat room",
+									"Could not create chat room for account");
+						}
+
+						// Get the chat message sender callback so that we can
+						// send
+						// messages to chat room
+						IChatRoomMessageSender sender = chatRoom
+								.getChatRoomMessageSender();
+						IViewPart view = null;
+						try {
+							IViewReference ref = wp.findViewReference(
+									CHAT_ROOM_VIEW_CLASS, secondaryID);
+							if (ref == null) {
+								view = wp.showView(CHAT_ROOM_VIEW_CLASS,
+										secondaryID,
+										IWorkbenchPage.VIEW_ACTIVATE);
+							} else {
+								view = ref.getView(true);
+							}
+							final ChatRoomView chatroomview = (ChatRoomView) view;
+							// initialize the chatroomview with the necessary
+							// information
+							chatroomview
+									.initialize(RosterView.this, secondaryID,
+											chatRoom, selectedInfo, sender);
+							// Add listeners so that the new chat room gets
+							// asynch notifications of various relevant chat
+							// room events
+							chatRoom
+									.addMessageListener(new IIMMessageListener() {
+
+										public void handleMessageEvent(
+												IIMMessageEvent messageEvent) {
+											if (messageEvent instanceof IChatRoomMessageEvent) {
+												IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
+														.getChatRoomMessage();
+												chatroomview.handleMessage(m
+														.getFromID(), m
+														.getMessage());
+											}
+
+										}
+									});
+							chatRoom
+									.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
+										public void handlePresence(ID fromID,
+												IPresence presence) {
+											chatroomview.handlePresence(fromID,
+													presence);
+										}
+
+										public void handleArrivedInChat(
+												ID participant) {
+											chatroomview
+													.handleJoin(participant);
+										}
+
+										public void handleDepartedFromChat(
+												ID participant) {
+											chatroomview
+													.handleLeave(participant);
+										}
+									});
+
+						} catch (PartInitException e) {
+							Activator.log(
+									"Exception in chat room view initialization for chat room "
+											+ selectedInfo.getRoomID(), e);
+							MessageDialog
+									.openError(
+											getViewSite().getShell(),
+											"Can't initialize chat room view",
+											"Unexpected error initializing for chat room: "
+													+ selectedInfo.getName()
+													+ ".  Please see Error Log for details");
+							return;
+						}
+						// Now actually connect to chatroom
+						try {
+							chatRoom.connect(selectedInfo.getRoomID(),
+									null);
+//							getChatJoinContext("Nickname for "
+//									+ selectedInfo.getName())
+						} catch (ContainerConnectException e1) {
+							Activator.log("Exception connecting to chat room "
+									+ selectedInfo.getRoomID(), e1);
+							MessageDialog.openError(RosterView.this
+									.getViewSite().getShell(),
+									"Could not connect",
+									"Cannot connect to chat room "
+											+ selectedInfo.getName()
+											+ ", message: " + e1.getMessage());
+							return;
+						}
+						// If connect successful...we create a room with a view
+						// and add
+						// it to our known set
+						addRoomView(new RoomWithAView(chatRoom,
+								(ChatRoomView) view, secondaryID));
+					}
+				});
+
+	}
+
 	private void makeActions() {
 		selectedDoubleClickAction = new Action() {
 			public void run() {
