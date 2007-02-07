@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Sharedobject API
 Bundle-SymbolicName: org.eclipse.ecf.sharedobject;singleton:=true
-Bundle-Version: 1.0.0.M5v20070205
+Bundle-Version: 1.0.0.v20070206
 Bundle-Activator: org.eclipse.ecf.internal.core.sharedobject.Activator
 Bundle-Vendor: Eclipse.org
 Eclipse-LazyStart: true
