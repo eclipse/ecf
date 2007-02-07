@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF DataShare API
 Bundle-SymbolicName: org.eclipse.ecf.datashare;singleton:=true
-Bundle-Version: 1.0.0.M5v20070205
+Bundle-Version: 1.0.0.v20070206
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Export-Package: org.eclipse.ecf.datashare,
