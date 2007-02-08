@@ -505,43 +505,43 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		};
 	}
 
-	protected void parseCommandAndSend(String message, String channelName) {
+	protected void parseCommandAndSend(String commandMessage, String channelName) {
 			synchronized (this) {
 				if (connection != null) {
 					try {
-						String lowerCase = message.toLowerCase();
+						String lowerCase = commandMessage.toLowerCase();
 						if (lowerCase.startsWith("/msg ")) { //$NON-NLS-1$
-							message = message.substring(5);
-							int index = message.indexOf(COMMAND_DELIM);
+							commandMessage = commandMessage.substring(5);
+							int index = commandMessage.indexOf(COMMAND_DELIM);
 							if (index != -1) {
-								connection.doPrivmsg(message.substring(0, index),
-										message.substring(index + 1));
+								connection.doPrivmsg(commandMessage.substring(0, index),
+										commandMessage.substring(index + 1));
 							}
 						} else if (lowerCase.startsWith("/privmsg ")) { //$NON-NLS-1$
-							message = message.substring(9);
-							int index = message.indexOf(COMMAND_DELIM);
+							commandMessage = commandMessage.substring(9);
+							int index = commandMessage.indexOf(COMMAND_DELIM);
 							if (index != -1) {
-								connection.doPrivmsg(message.substring(0, index),
-										message.substring(index + 1));
+								connection.doPrivmsg(commandMessage.substring(0, index),
+										commandMessage.substring(index + 1));
 							}
 						} else if (lowerCase.startsWith("/op ")) { //$NON-NLS-1$
-							message = message.substring(4);
-							int endmode = message.lastIndexOf(" ",5);
-							String mode = "+o " + message.substring(5,endmode-1);
-							int index = message.indexOf(COMMAND_DELIM);
+							commandMessage = commandMessage.substring(4);
+							int endmode = commandMessage.lastIndexOf(" ",5);
+							String mode = "+o " + commandMessage.substring(5,endmode-1);
+							int index = commandMessage.indexOf(COMMAND_DELIM);
 							if (index != -1) {
 								connection.doMode(channelName,mode);
 							}
 						} else {
-							String[] tokens = parseCommandTokens(message);
+							String[] tokens = parseCommandTokens(commandMessage);
 							handleCommandMessage(tokens,channelName);
 						}
 					} catch (Exception e) {
 						showErrorMessage(channelName,"EXCEPTION PARSING: "+e.getClass().getName() + ".  Message: "+e.getMessage());
-						traceStack(e, "PARSE ERROR: "+message);
+						traceStack(e, "PARSE ERROR: "+commandMessage);
 					} 
 				} else {
-					trace("parseMessageAndSend(" + message
+					trace("parseMessageAndSend(" + commandMessage
 							+ ") Not connected for IRCContainer " + getID());
 				}
 			}
