@@ -533,12 +533,58 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						}
 					} else if (lowerCase.startsWith("/op ")) { //$NON-NLS-1$
 						commandMessage = commandMessage.substring(4);
-						int endmode = commandMessage.lastIndexOf(" ", 5);
+						int endmode = commandMessage.lastIndexOf(COMMAND_DELIM, 5);
 						String mode = "+o "
 								+ commandMessage.substring(5, endmode - 1);
 						int index = commandMessage.indexOf(COMMAND_DELIM);
 						if (index != -1) {
 							connection.doMode(channelName, mode);
+						}
+					} else if (lowerCase.startsWith("/dop ")) { //$NON-NLS-1$
+						commandMessage = commandMessage.substring(5);
+						int endmode = commandMessage.lastIndexOf(COMMAND_DELIM, 6);
+						String mode = "-o "
+								+ commandMessage.substring(6, endmode - 1);
+						int index = commandMessage.indexOf(COMMAND_DELIM);
+						if (index != -1) {
+							connection.doMode(channelName, mode);
+						}
+					} else if (lowerCase.startsWith("/ban ")) { //$NON-NLS-1$
+						commandMessage = commandMessage.substring(5);
+						int endmode = commandMessage.lastIndexOf(COMMAND_DELIM, 6);
+						String mode = "+b "
+								+ commandMessage.substring(6, endmode - 1);
+						int index = commandMessage.indexOf(COMMAND_DELIM);
+						if (index != -1) {
+							connection.doMode(channelName, mode);
+						}
+					} else if (lowerCase.startsWith("/unban ")) { //$NON-NLS-1$
+						commandMessage = commandMessage.substring(7);
+						int endmode = commandMessage.lastIndexOf(COMMAND_DELIM, 8);
+						String mode = "-b "
+								+ commandMessage.substring(8, endmode - 1);
+						int index = commandMessage.indexOf(COMMAND_DELIM);
+						if (index != -1) {
+							connection.doMode(channelName, mode);
+						}
+					} else if (lowerCase.startsWith("/kick ")) { //$NON-NLS-1$
+						commandMessage = commandMessage.substring(6);
+						int endnick = commandMessage.lastIndexOf(COMMAND_DELIM, 7);
+						String nick = commandMessage.substring(7, endnick - 1);
+						String comment = commandMessage.substring(endnick);
+						int index = commandMessage.indexOf(COMMAND_DELIM);
+						if (index != -1) {
+							if (comment.length() > 0) {
+								connection.doKick(channelName, nick, comment);
+							} else {
+								connection.doKick(channelName, nick);
+							}
+						}
+					} else if (lowerCase.startsWith("/mode ")) { //$NON-NLS-1$
+						commandMessage = commandMessage.substring(6);
+						int index = commandMessage.indexOf(COMMAND_DELIM);
+						if (index != -1) {
+							connection.doMode(channelName, commandMessage);
 						}
 					} else {
 						String[] tokens = parseCommandTokens(commandMessage);
