@@ -27,6 +27,7 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.internal.provider.irc.Activator;
@@ -65,7 +66,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 	protected Map channels = new HashMap();
 
-	protected IRCUser ircUser;
+	protected String username;
 
 	protected String encoding = null;
 
@@ -110,6 +111,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		String pass = pw;
 		String nick = tID.getUser();
 		String user = nick;
+		this.username = user;
 		String name = null;
 		boolean ssl = false;
 		if (!ssl) {
@@ -497,47 +499,58 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	public IChatRoomMessageSender getChatRoomMessageSender() {
 		return new IChatRoomMessageSender() {
 			public void sendMessage(String message) throws ECFException {
-				parseMessageAndSend(message);
+				if (isCommand(message)) parseCommandAndSend(message, null);
+				else showErrorMessage(null,"'"+message+"' is not a command.  IRC commands begin with '"+COMMAND_PREFIX+"'. For example, '/help'"); //$NON-NLS-1$
 			}
 		};
 	}
 
-	protected void parseMessageAndSend(String message) {
-		if (isCommand(message)) {
+	protected void parseCommandAndSend(String message, String channelName) {
 			synchronized (this) {
 				if (connection != null) {
-					String lowerCase = message.toLowerCase();
-					if (lowerCase.startsWith("/msg ")) { //$NON-NLS-1$
-						message = message.substring(5);
-						int index = message.indexOf(COMMAND_DELIM);
-						if (index != -1) {
-							connection.doPrivmsg(message.substring(0, index),
-									message.substring(index + 1));
+					try {
+						String lowerCase = message.toLowerCase();
+						if (lowerCase.startsWith("/msg ")) { //$NON-NLS-1$
+							message = message.substring(5);
+							int index = message.indexOf(COMMAND_DELIM);
+							if (index != -1) {
+								connection.doPrivmsg(message.substring(0, index),
+										message.substring(index + 1));
+							}
+						} else if (lowerCase.startsWith("/privmsg ")) { //$NON-NLS-1$
+							message = message.substring(9);
+							int index = message.indexOf(COMMAND_DELIM);
+							if (index != -1) {
+								connection.doPrivmsg(message.substring(0, index),
+										message.substring(index + 1));
+							}
+						} else if (lowerCase.startsWith("/op ")) { //$NON-NLS-1$
+							message = message.substring(4);
+							int endmode = message.lastIndexOf(" ",5);
+							String mode = "+o " + message.substring(5,endmode-1);
+							int index = message.indexOf(COMMAND_DELIM);
+							if (index != -1) {
+								connection.doMode(channelName,mode);
+							}
+						} else {
+							String[] tokens = parseCommandTokens(message);
+							handleCommandMessage(tokens,channelName);
 						}
-					} else if (lowerCase.startsWith("/privmsg ")) { //$NON-NLS-1$
-						message = message.substring(9);
-						int index = message.indexOf(COMMAND_DELIM);
-						if (index != -1) {
-							connection.doPrivmsg(message.substring(0, index),
-									message.substring(index + 1));
-						}
-					} else {
-						String[] tokens = parseCommandTokens(message);
-						handleCommandMessage(tokens);
-					}
+					} catch (Exception e) {
+						showErrorMessage(channelName,"EXCEPTION PARSING: "+e.getClass().getName() + ".  Message: "+e.getMessage());
+						traceStack(e, "PARSE ERROR: "+message);
+					} 
 				} else {
 					trace("parseMessageAndSend(" + message
 							+ ") Not connected for IRCContainer " + getID());
 				}
 			}
-		} else {
-			trace(message + " is not a command");
-		}
 	}
 
-	private synchronized void handleCommandMessage(String[] tokens) {
+	private synchronized void handleCommandMessage(String[] tokens, String channelName) {
 		// Look at first one and switch
-		String command = tokens[0];
+		String origCommand = tokens[0];
+		String command = origCommand;
 		while (command.startsWith(COMMAND_PREFIX))
 			command = command.substring(1);
 		String[] args = new String[tokens.length - 1];
@@ -603,6 +616,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		} else {
 			trace("Unrecognized command '" + command + "' in IRCContainer "
 					+ getID());
+			showErrorMessage(channelName,"UNRECOGNIZED COMMAND: "+origCommand); //$NON-NLS-1$
 		}
 	}
 
@@ -640,6 +654,14 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			msgChannel.fireMessageListeners(createIDFromString(user), msg);
 		else
 			fireMessageListeners(createIDFromString(user), msg);
+	}
+	
+	private void showErrorMessage(String channel, String msg) {
+		IRCChannelContainer msgChannel = getChannel(channel);
+		if (msgChannel != null)
+			msgChannel.fireMessageListeners((username==null)?getSystemID():createIDFromString(username),msg); //$NON-NLS-1$
+		else
+			fireMessageListeners((username==null)?getSystemID():createIDFromString(username), msg); //$NON-NLS-1$
 	}
 
 	private ID getSystemID() {
@@ -723,8 +745,13 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	protected void doSendChannelMessage(String channelName, String ircUser,
 			String msg) {
 		if (connection != null) {
-			connection.doPrivmsg(channelName, msg);
-			showMessage(channelName, ircUser, msg);
+			// If it's a command, 
+			if (isCommand(msg)) {
+				parseCommandAndSend(msg,channelName);
+			} else {
+				connection.doPrivmsg(channelName, msg);
+				showMessage(channelName, ircUser, msg);
+			}
 		}
 	}
 
