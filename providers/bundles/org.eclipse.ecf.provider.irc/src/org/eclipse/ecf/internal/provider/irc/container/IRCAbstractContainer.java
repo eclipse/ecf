@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004, 2007 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 package org.eclipse.ecf.internal.provider.irc.container;
 
 import java.util.ArrayList;
@@ -65,17 +65,18 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 
 	protected void traceStack(Throwable t, String msg) {
 		if (trace != null) {
-			trace.dumpStack(t,msg);
+			trace.dumpStack(t, msg);
 		}
 	}
 
 	public void fireMessageListeners(ID sender, String msg) {
-		for(Iterator i=msgListeners.iterator(); i.hasNext(); ) {
+		for (Iterator i = msgListeners.iterator(); i.hasNext();) {
 			IIMMessageListener l = (IIMMessageListener) i.next();
-			l.handleMessageEvent(new ChatRoomMessageEvent(sender, new ChatRoomMessage(sender, msg)));
+			l.handleMessageEvent(new ChatRoomMessageEvent(sender,
+					new ChatRoomMessage(sender, msg)));
 		}
 	}
-	
+
 	public ID getID() {
 		return localID;
 	}
@@ -84,28 +85,30 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 		return targetID;
 	}
 
-	protected String [] parseUsers(String usergroup) {
-		if (usergroup == null) return null;
-		StringTokenizer t = new StringTokenizer(usergroup,COMMAND_DELIM);
+	protected String[] parseUsers(String usergroup) {
+		if (usergroup == null)
+			return null;
+		StringTokenizer t = new StringTokenizer(usergroup, COMMAND_DELIM);
 		int tok = t.countTokens();
-		String [] res = new String[tok];
-		for(int i=0; i < tok; i++) res[i] = t.nextToken();
+		String[] res = new String[tok];
+		for (int i = 0; i < tok; i++)
+			res[i] = t.nextToken();
 		return res;
 	}
 
-	protected String [] parseUserNames(String list) {
-		StringTokenizer st = new StringTokenizer(list,COMMAND_DELIM);
+	protected String[] parseUserNames(String list) {
+		StringTokenizer st = new StringTokenizer(list, COMMAND_DELIM);
 		int tokens = st.countTokens();
-		String [] res = new String[tokens];
-		for(int i=0; i < tokens; i++) {
+		String[] res = new String[tokens];
+		for (int i = 0; i < tokens; i++) {
 			res[i] = st.nextToken();
 		}
 		return res;
 	}
 
-	protected String concat(String [] args, int start, String suffix) {
+	protected String concat(String[] args, int start, String suffix) {
 		StringBuffer result = new StringBuffer();
-		for(int i=start; i < args.length; i++) {
+		for (int i = start; i < args.length; i++) {
 			result.append(args[i]).append(' ');
 		}
 		result.append(suffix);
@@ -113,14 +116,25 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	}
 
 	protected ID createIDFromString(String str) {
-		if (str == null) return unknownID;
+		if (str == null)
+			return unknownID;
 		try {
 			return IDFactory.getDefault().createStringID(str);
 		} catch (IDCreateException e) {
-			Activator.log("ID creation exception in IRCContainer.getIDForString()",e);
+			Activator
+					.log(
+							"ID creation exception in IRCContainer.getIDForString()",
+							e);
 			return unknownID;
-		} 
+		}
 	}
+
+	protected String trimOperator(String user) {
+		if (user != null && user.startsWith(OPERATOR_PREFIX))
+			return user.substring(OPERATOR_PREFIX.length());
+		return user;
+	}
+
 	public abstract void disconnect();
 
 	public void dispose() {
@@ -129,10 +143,10 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	}
 
 	protected String[] parseCommandTokens(String message) {
-		StringTokenizer st = new StringTokenizer(message,COMMAND_DELIM);
+		StringTokenizer st = new StringTokenizer(message, COMMAND_DELIM);
 		int countTokens = st.countTokens();
-		String toks [] = new String[countTokens];
-		for(int i=0; i < countTokens; i++) {
+		String toks[] = new String[countTokens];
+		for (int i = 0; i < countTokens; i++) {
 			toks[i] = st.nextToken();
 		}
 		return toks;
@@ -145,7 +159,7 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	public void addMessageListener(IIMMessageListener l) {
 		msgListeners.add(l);
 	}
-	
+
 	public void removeMessageListener(IIMMessageListener l) {
 		msgListeners.remove(l);
 	}

@@ -11,6 +11,7 @@
 package org.eclipse.ecf.internal.provider.irc.container;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	protected List participantListeners = new ArrayList();
 	protected IRCRootContainer rootContainer;
 	protected IRCUser ircUser = null;
-	protected boolean channelOperator = false;
+	protected String channelOperator;
 
 	protected Object connectLock = new Object();
 	protected boolean connectWaiting = false;
@@ -82,7 +83,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	}
 
 	protected void handleUserQuit(String name) {
-		if (containsChannelParticipant(createIDFromString(name)))
+		if (containsChannelParticipant(createIDFromString(name)) != null)
 			firePresenceListeners(false, new String[] { name });
 	}
 
@@ -90,17 +91,19 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 		return new IPresence() {
 			private static final long serialVersionUID = 1L;
 
+			Map properties = new HashMap();
+
 			public Mode getMode() {
 				return (available ? IPresence.Mode.AVAILABLE
 						: IPresence.Mode.AWAY);
 			}
 
 			public Map getProperties() {
-				return null;
+				return properties;
 			}
 
 			public String getStatus() {
-				return ""; //$NON-NLS-1$
+				return null;
 			}
 
 			public Type getType() {
@@ -118,54 +121,73 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 		};
 	}
 
-	protected boolean isLocalUserChannelOperator(String user) {
-		if (!user.startsWith(OPERATOR_PREFIX))
-			return false;
-		String localUserName = (ircUser == null) ? null
-				: (OPERATOR_PREFIX + ircUser.getNick());
-		if (localUserName == null)
-			return false;
-		if (user.equals(localUserName))
+	protected boolean addChannelParticipant(ID participantID) {
+		if (containsChannelParticipant(participantID) == null) {
+			channelParticipants.add(participantID);
 			return true;
-		return false;
+		} else
+			return false;
 	}
 
-	protected void addChannelParticipant(ID participantID) {
-		channelParticipants.add(participantID);
+	protected ID removeChannelParticipant(ID participantID) {
+		if (channelParticipants.remove(participantID))
+			return participantID;
+		ID operatorID = createIDFromString(OPERATOR_PREFIX
+				+ participantID.getName());
+		if (channelParticipants.remove(operatorID))
+			return operatorID;
+		return null;
 	}
 
-	protected boolean removeChannelParticipant(ID participantID) {
-		return channelParticipants.remove(participantID);
-	}
-
-	protected boolean containsChannelParticipant(ID participantID) {
-		return channelParticipants.contains(participantID);
+	protected ID containsChannelParticipant(ID participantID) {
+		if (channelParticipants.contains(participantID))
+			return participantID;
+		ID operatorID = createIDFromString(OPERATOR_PREFIX
+				+ participantID.getName());
+		if (channelParticipants.contains(operatorID))
+			return operatorID;
+		return null;
 	}
 
 	protected void firePresenceListeners(boolean joined, String[] users) {
-		// Keep track of the participants in this channel
-		for (int i = 0; i < users.length; i++) {
-			if (joined)
-				addChannelParticipant(createIDFromString(users[i]));
-			else
-				removeChannelParticipant(createIDFromString(users[i]));
-		}
-		// Now notify any listeners
-		for (Iterator i = participantListeners.iterator(); i.hasNext();) {
-			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
-					.next();
-			for (int j = 0; j < users.length; j++) {
-				ID fromID = createIDFromString(users[j]);
-				boolean localUserIsChannelOperator = isLocalUserChannelOperator(users[j]);
-				if (localUserIsChannelOperator)
-					setChannelOperator(true);
-				if (joined)
-					l.handleArrivedInChat(fromID);
-				l.handlePresence(fromID, createPresence(joined));
-				if (!joined)
-					l.handleDepartedFromChat(fromID);
+		for (int j = 0; j < users.length; j++) {
+			if (joined) {
+				if (isChannelOperator(users[j]))
+					setChannelOperator(users[j]);
+				ID participantID = createIDFromString(users[j]);
+				if (addChannelParticipant(participantID)) {
+					// Notify all listeners
+					for (Iterator i = participantListeners.iterator(); i
+							.hasNext();) {
+						IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
+								.next();
+
+						l.handleArrivedInChat(participantID);
+						l.handlePresence(participantID, createPresence(true));
+					}
+				}
+			} else {
+				ID removeID = removeChannelParticipant(createIDFromString(users[j]));
+				if (removeID != null) {
+					// Notify all listeners
+					for (Iterator i = participantListeners.iterator(); i
+							.hasNext();) {
+						IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
+								.next();
+
+						l.handlePresence(removeID, createPresence(false));
+						l.handleDepartedFromChat(removeID);
+					}
+
+				}
 			}
 		}
+	}
+
+	protected boolean isChannelOperator(String user) {
+		if (user != null && user.startsWith(OPERATOR_PREFIX))
+			return true;
+		return false;
 	}
 
 	/*
@@ -270,11 +292,23 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 				StringID.class.getName());
 	}
 
-	protected boolean isChannelOperator() {
-		return channelOperator;
+	protected boolean isLocalUserChannelOperator() {
+		return (channelOperator != null && isLocalUserChannelOperator(channelOperator));
 	}
 
-	protected void setChannelOperator(boolean channelOperator) {
+	protected boolean isLocalUserChannelOperator(String channelOperator) {
+		if (!isChannelOperator(channelOperator))
+			return false;
+		String localUserName = (ircUser == null) ? null
+				: (OPERATOR_PREFIX + ircUser.getNick());
+		if (localUserName == null)
+			return false;
+		if (channelOperator.equals(localUserName))
+			return true;
+		return false;
+	}
+
+	protected void setChannelOperator(String channelOperator) {
 		this.channelOperator = channelOperator;
 	}
 }
