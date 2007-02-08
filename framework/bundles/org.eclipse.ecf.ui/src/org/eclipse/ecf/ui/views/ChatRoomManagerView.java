@@ -16,10 +16,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -484,11 +482,9 @@ public class ChatRoomManagerView extends ViewPart implements
 							}
 
 							public void handleArrivedInChat(ID participant) {
-								chatroomview.handleJoin(participant);
 							}
 
 							public void handleDepartedFromChat(ID participant) {
-								chatroomview.handleLeave(participant);
 							}
 						});
 				chatRoomContainer.addListener(new IContainerListener() {
@@ -534,7 +530,7 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		IChatRoomMessageSender channelMessageSender;
 
-		private List otherUsers = Collections.synchronizedList(new ArrayList());
+		//private List otherUsers = Collections.synchronizedList(new ArrayList());
 
 		IUser localUser;
 
@@ -858,7 +854,7 @@ public class ChatRoomManagerView extends ViewPart implements
 							IPresence.Type.AVAILABLE);
 					Participant p = new Participant(fromID);
 					if (isAdd) {
-						if (localUser == null && !otherUsers.contains(fromID)) {
+						if (localUser == null) {
 							localUser = p;
 						}
 						addParticipant(p);
@@ -921,8 +917,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			if (p != null) {
 				ID id = p.getID();
 				if (id != null) {
-					if (otherUsers.contains(id))
-						appendText(outputText, new ChatLine("(" + getDateTime()
+					appendText(outputText, new ChatLine("(" + getDateTime()
 								+ ") " + trimUserID(id) + " left", null));
 					memberViewer.remove(p);
 				}
@@ -937,19 +932,6 @@ public class ChatRoomManagerView extends ViewPart implements
 					memberViewer.remove(o);
 			}
 		}
-
-		public void handleJoin(ID user) {
-			if (disposed)
-				return;
-			otherUsers.add(user);
-		}
-
-		public void handleLeave(ID user) {
-			if (disposed)
-				return;
-			otherUsers.remove(user);
-		}
-
 	}
 
 	protected void handleInputLine(String line) {
