@@ -1,19 +1,20 @@
 /****************************************************************************
-* Copyright (c) 2004, 2007 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 package org.eclipse.ecf.internal.provider.irc.container;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
@@ -36,33 +37,35 @@ import org.schwering.irc.lib.IRCUser;
 
 /**
  * IContainer class used to represent a specific IRC channel (e.g. #eclipse-dev)
- *
+ * 
  */
 public class IRCChannelContainer extends IRCAbstractContainer implements
 		IChatRoomContainer {
-	
+
 	private static final long CONNECT_TIMEOUT = 10000;
 
 	protected List participantListeners = new ArrayList();
 	protected IRCRootContainer rootContainer;
-	protected  IRCUser ircUser = null;
+	protected IRCUser ircUser = null;
 	protected boolean channelOperator = false;
-	
+
 	protected Object connectLock = new Object();
 	protected boolean connectWaiting = false;
-	
+
+	protected Vector channelParticipants = new Vector();
+
 	protected IChatRoomMessageSender sender = new IChatRoomMessageSender() {
 		public void sendMessage(String message) throws ECFException {
 			rootContainer.doSendChannelMessage(targetID.getName(), ircUser
-			.toString(), message);
+					.toString(), message);
 		}
 	};
-	
+
 	public IRCChannelContainer(IRCRootContainer root, ID localID) {
 		this.rootContainer = root;
 		this.localID = localID;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -72,13 +75,17 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 			IChatRoomParticipantListener participantListener) {
 		participantListeners.add(participantListener);
 	}
+
 	public void removeChatRoomParticipantListener(
 			IChatRoomParticipantListener participantListener) {
 		participantListeners.remove(participantListener);
 	}
+
 	protected void handleUserQuit(String name) {
-		firePresenceListeners(false, new String[] { name });
+		if (containsChannelParticipant(createIDFromString(name)))
+			firePresenceListeners(false, new String[] { name });
 	}
+
 	private IPresence createPresence(final boolean available) {
 		return new IPresence() {
 			private static final long serialVersionUID = 1L;
@@ -87,46 +94,80 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 				return (available ? IPresence.Mode.AVAILABLE
 						: IPresence.Mode.AWAY);
 			}
+
 			public Map getProperties() {
 				return null;
 			}
+
 			public String getStatus() {
 				return ""; //$NON-NLS-1$
 			}
+
 			public Type getType() {
 				return (available ? IPresence.Type.AVAILABLE
 						: IPresence.Type.UNAVAILABLE);
 			}
+
 			public Object getAdapter(Class adapter) {
 				return null;
 			}
+
 			public byte[] getPictureData() {
 				return new byte[0];
 			}
 		};
 	}
-	
+
 	protected boolean isLocalUserChannelOperator(String user) {
-		if (!user.startsWith(OPERATOR_PREFIX)) return false;
-		String localUserName = (ircUser==null)?null:(OPERATOR_PREFIX+ircUser.getNick());
-		if (localUserName==null) return false;
-		if (user.equals(localUserName)) return true;
+		if (!user.startsWith(OPERATOR_PREFIX))
+			return false;
+		String localUserName = (ircUser == null) ? null
+				: (OPERATOR_PREFIX + ircUser.getNick());
+		if (localUserName == null)
+			return false;
+		if (user.equals(localUserName))
+			return true;
 		return false;
 	}
-	
+
+	protected void addChannelParticipant(ID participantID) {
+		channelParticipants.add(participantID);
+	}
+
+	protected boolean removeChannelParticipant(ID participantID) {
+		return channelParticipants.remove(participantID);
+	}
+
+	protected boolean containsChannelParticipant(ID participantID) {
+		return channelParticipants.contains(participantID);
+	}
+
 	protected void firePresenceListeners(boolean joined, String[] users) {
-		for(Iterator i=participantListeners.iterator(); i.hasNext(); ) {
-			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
-			for(int j=0; j < users.length; j++) {
+		// Keep track of the participants in this channel
+		for (int i = 0; i < users.length; i++) {
+			if (joined)
+				addChannelParticipant(createIDFromString(users[i]));
+			else
+				removeChannelParticipant(createIDFromString(users[i]));
+		}
+		// Now notify any listeners
+		for (Iterator i = participantListeners.iterator(); i.hasNext();) {
+			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
+					.next();
+			for (int j = 0; j < users.length; j++) {
 				ID fromID = createIDFromString(users[j]);
 				boolean localUserIsChannelOperator = isLocalUserChannelOperator(users[j]);
-				if (localUserIsChannelOperator) setChannelOperator(true);
-				l.handlePresence(fromID,createPresence(joined));
-				if (joined) l.handleArrivedInChat(fromID);
-				else l.handleDepartedFromChat(fromID);
+				if (localUserIsChannelOperator)
+					setChannelOperator(true);
+				if (joined)
+					l.handleArrivedInChat(fromID);
+				l.handlePresence(fromID, createPresence(joined));
+				if (!joined)
+					l.handleDepartedFromChat(fromID);
 			}
 		}
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -135,11 +176,11 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	public IChatRoomMessageSender getChatRoomMessageSender() {
 		return sender;
 	}
-	
+
 	protected String getIRCUserName(IRCUser user) {
 		return user == null ? null : user.toString();
 	}
-	
+
 	protected void setIRCUser(IRCUser user) {
 		if (this.ircUser == null) {
 			this.ircUser = user;
@@ -149,15 +190,14 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 					connectLock.notify();
 				}
 			}
-		}
-		else
+		} else
 			firePresenceListeners(true, new String[] { getIRCUserName(user) });
 	}
-	
+
 	protected void fireContainerEvent(IContainerEvent event) {
 		super.fireContainerEvent(event);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -169,7 +209,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 		// Actually do join here
 		if (targetID == null)
 			throw new ContainerConnectException("targetID cannot be null");
-		if (connectWaiting) throw new ContainerConnectException("Connecting");
+		if (connectWaiting)
+			throw new ContainerConnectException("Connecting");
 		// Get channel name
 		String channelName = targetID.getName();
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
@@ -185,10 +226,12 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 					connectLock.wait(2000);
 				}
 				if (connectWaiting)
-					throw new TimeoutException(CONNECT_TIMEOUT, "Timeout connecting to "+targetID.getName());
+					throw new TimeoutException(CONNECT_TIMEOUT,
+							"Timeout connecting to " + targetID.getName());
 				this.targetID = targetID;
-				fireContainerEvent(new ContainerConnectedEvent(this.getID(), this.targetID));
-			} catch (Exception e){
+				fireContainerEvent(new ContainerConnectedEvent(this.getID(),
+						this.targetID));
+			} catch (Exception e) {
 				throw new ContainerConnectException("Connect failed to "
 						+ targetID.getName(), e);
 			} finally {
@@ -196,7 +239,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 			}
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -207,7 +250,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 		rootContainer.doPartChannel(targetID.getName());
 		fireContainerEvent(new ContainerDisconnectedEvent(getID(), targetID));
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -216,6 +259,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	public Object getAdapter(Class serviceType) {
 		return null;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -225,9 +269,11 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 		return IDFactory.getDefault().getNamespaceByName(
 				StringID.class.getName());
 	}
+
 	protected boolean isChannelOperator() {
 		return channelOperator;
 	}
+
 	protected void setChannelOperator(boolean channelOperator) {
 		this.channelOperator = channelOperator;
 	}
