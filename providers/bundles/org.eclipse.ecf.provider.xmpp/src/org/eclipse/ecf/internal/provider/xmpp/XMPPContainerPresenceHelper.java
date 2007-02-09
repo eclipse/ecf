@@ -488,9 +488,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		rosterManager.notifyRosterUpdate(null);
 	}
 
-	protected XMPPID createIDFromName(String name) {
+	protected XMPPID createIDFromName(String uname) {
 		try {
-			return new XMPPID(container.getConnectNamespace(), name);
+			return new XMPPID(container.getConnectNamespace(), uname);
 		} catch (Exception e) {
 			traceStack("Exception in createIDFromName", e);
 			return null;

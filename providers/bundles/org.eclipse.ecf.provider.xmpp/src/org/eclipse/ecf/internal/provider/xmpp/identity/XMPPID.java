@@ -34,6 +34,7 @@ public class XMPPID extends BaseID implements IChatID {
 		if (src == null) return null;
 		return src.replaceAll("%","%25");
 	}
+	
 	public XMPPID(Namespace namespace, String unamehost) throws URISyntaxException {
 		super(namespace);
 		unamehost = fixEscape(unamehost);
