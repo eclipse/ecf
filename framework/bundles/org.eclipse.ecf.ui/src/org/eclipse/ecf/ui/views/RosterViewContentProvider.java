@@ -314,10 +314,8 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 	}
 	
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
-		RosterGroup tg = findAccount(groupID.getName());
-		RosterBuddy buddy = findBuddy(tg, userID);
-		if (buddy == null) return;
-		buddy.setPresence(presence);
+		RosterBuddy buddy = findBuddy(findAccount(groupID.getName()), userID);
+		if (buddy != null) buddy.setPresence(presence);
 	}
 	
 	public void handleRosterEntryAdd(ID serviceID, IRosterEntry entry) {
