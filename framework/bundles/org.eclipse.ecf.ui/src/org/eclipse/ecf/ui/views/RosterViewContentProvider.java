@@ -306,14 +306,25 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		removeGroup(root, name);
 	}
 
-	public void replaceEntry(ID serviceID, IRosterEntry entry) {
+	public void handleRosterEntryUpdate(ID serviceID, IRosterEntry entry) {
 		if (entry == null)
 			return;
 		RosterGroup tg = findAccount(serviceID.getName());
-		replaceEntry(serviceID, tg, entry);
+		replaceEntry(serviceID, tg, entry);		
+	}
+	
+	public void handlePresence(ID groupID, ID userID, IPresence presence) {
+		RosterGroup tg = findAccount(groupID.getName());
+		RosterBuddy buddy = findBuddy(tg, userID);
+		if (buddy == null) return;
+		buddy.setPresence(presence);
+	}
+	
+	public void handleRosterEntryAdd(ID serviceID, IRosterEntry entry) {
+		handleRosterEntryUpdate(serviceID,entry);
 	}
 
-	public void removeRosterEntry(ID entry) {
+	public void handleRosterEntryRemove(ID entry) {
 		if (entry == null)
 			return;
 		RosterUserAccount ua = this.rosterView.getAccountForUser(entry);

@@ -930,27 +930,6 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		viewer.getControl().setFocus();
 	}
 
-	public void handleRosterEntryAdd(ID groupID, IRosterEntry entry) {
-		if (entry == null)
-			return;
-		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
-				.getContentProvider();
-		if (vcp != null) {
-			vcp.replaceEntry(groupID, entry);
-			refreshView();
-		}
-	}
-
-	public void handlePresence(ID groupID, ID userID, IPresence presence) {
-		IChatID chatID = (IChatID) userID.getAdapter(IChatID.class);
-		String name = null;
-		if (chatID != null)
-			name = chatID.getUsername();
-		else
-			name = userID.toString();
-		handleRosterEntryAdd(groupID, new RosterEntry(
-				new RosterItem(null, name), new User(userID, name), presence));
-	}
 
 	protected RosterUserAccount getAccountForUser(ID userID) {
 		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
@@ -1147,7 +1126,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null) {
-			vcp.removeRosterEntry(id);
+			vcp.handleRosterEntryRemove(id);
 			refreshView();
 		}
 	}
@@ -1161,13 +1140,45 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 			setToolbarEnabled(false);
 	}
 
+	public void handleRosterEntryAdd(ID groupID, IRosterEntry entry) {
+		if (entry == null)
+			return;
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
+				.getContentProvider();
+		if (vcp != null) {
+			vcp.handleRosterEntryAdd(groupID, entry);
+			refreshView();
+		}
+	}
+
+	public void handlePresence(ID groupID, ID userID, IPresence presence) {
+		/*
+		IChatID chatID = (IChatID) userID.getAdapter(IChatID.class);
+		String name = null;
+		if (chatID != null)
+			name = chatID.getUsername();
+		else
+			name = userID.toString();
+		handleRosterEntryAdd(groupID, new RosterEntry(
+				new RosterItem(null, name), new User(userID, name), presence));
+				*/
+		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
+				.getContentProvider();
+		if (vcp != null) {
+			vcp.handlePresence(groupID, userID, presence);
+			refreshView();
+		}
+		
+	}
+
+
 	public void handleRosterEntryUpdate(ID groupID, IRosterEntry entry) {
 		if (groupID == null || entry == null)
 			return;
 		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null) {
-			vcp.replaceEntry(groupID, entry);
+			vcp.handleRosterEntryUpdate(groupID, entry);
 			refreshView();
 		}
 	}
@@ -1178,15 +1189,14 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null)
-			vcp.removeRosterEntry(entry.getUser().getID());
+			vcp.handleRosterEntryRemove(entry.getUser().getID());
 		refreshView();
 	}
 
 	public void chatRoomViewClosing(String secondaryID) {
 		RoomWithAView roomView = (RoomWithAView) chatRooms.get(secondaryID);
 		if (roomView != null) {
-			IChatRoomContainer container = roomView.getContainer();
-			container.dispose();
+			roomView.getContainer().dispose();
 			removeRoomView(roomView);
 		}
 	}
