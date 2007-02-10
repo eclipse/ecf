@@ -84,13 +84,10 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 	public RosterBuddy fillPresence(RosterBuddy obj, IPresence presence) {
 		obj.setPresence(presence);
 		obj.removeChildren();
-		obj.addChild(new RosterObject("ID: " + obj.getID().getName()));
+		obj.addChild(new RosterObject("User: " + obj.getID().getName()));
 		obj
 				.addChild(new RosterObject("Type: "
 						+ presence.getType().toString()));
-		obj
-				.addChild(new RosterObject("Mode: "
-						+ presence.getMode().toString()));
 		String status = presence.getStatus();
 		if (status != null && !status.equals(""))
 			obj.addChild(new RosterObject("Status: " + status));
@@ -315,7 +312,7 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 	
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
 		RosterBuddy buddy = findBuddy(findAccount(groupID.getName()), userID);
-		if (buddy != null) buddy.setPresence(presence);
+		if (buddy != null) fillPresence(buddy,presence);
 	}
 	
 	public void handleRosterEntryAdd(ID serviceID, IRosterEntry entry) {
