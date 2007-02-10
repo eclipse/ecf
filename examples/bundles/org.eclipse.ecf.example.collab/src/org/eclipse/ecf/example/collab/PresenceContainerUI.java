@@ -302,7 +302,7 @@ public class PresenceContainerUI {
 			public void handleRosterEntryUpdate(final IRosterEntry entry) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						rosterView.handleRosterEntryAdd(
+						rosterView.handleRosterEntryUpdate(
 								PresenceContainerUI.this.groupID, entry);
 					}
 				});
