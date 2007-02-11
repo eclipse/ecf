@@ -1152,16 +1152,6 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
-		/*
-		IChatID chatID = (IChatID) userID.getAdapter(IChatID.class);
-		String name = null;
-		if (chatID != null)
-			name = chatID.getUsername();
-		else
-			name = userID.toString();
-		handleRosterEntryAdd(groupID, new RosterEntry(
-				new RosterItem(null, name), new User(userID, name), presence));
-				*/
 		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
 				.getContentProvider();
 		if (vcp != null) {
