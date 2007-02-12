@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Remoteservice Provider
 Bundle-SymbolicName: org.eclipse.ecf.provider.remoteservice;singleton:=true
-Bundle-Version: 1.0.0.v20070206
+Bundle-Version: 1.0.0.v20070212
 Bundle-Activator: org.eclipse.ecf.internal.provider.remoteservice.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
