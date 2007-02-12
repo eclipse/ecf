@@ -1,4 +1,4 @@
-# Debugging options for the org.eclipse.ecf plug-in
+# Debugging options for the org.eclipse.ecf.provider plug-in
 
 # Turn on general debugging for the org.eclipse.ecf.provider plug-in
 org.eclipse.ecf.provider/debug=true
