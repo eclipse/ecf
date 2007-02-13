@@ -42,7 +42,7 @@ public class TypingMessage extends IMMessage implements ITypingMessage {
 	}
 
 	public TypingMessage(ID fromID) {
-		this(fromID, "");
+		this(fromID, ""); //$NON-NLS-1$
 	}
 
 	/*
@@ -78,9 +78,9 @@ public class TypingMessage extends IMMessage implements ITypingMessage {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("TypingMessage[");
-		buf.append("fromID=").append(getFromID());
-		buf.append(";body=").append(getBody()).append("]");
+		StringBuffer buf = new StringBuffer("TypingMessage["); //$NON-NLS-1$
+		buf.append("fromID=").append(getFromID()); //$NON-NLS-1$
+		buf.append(";body=").append(getBody()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 }

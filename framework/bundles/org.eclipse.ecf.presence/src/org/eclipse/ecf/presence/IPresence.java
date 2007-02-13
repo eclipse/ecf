@@ -72,21 +72,21 @@ public interface IPresence extends IAdaptable, Serializable {
 
 		private static final long serialVersionUID = 3546921402750743089L;
 
-		private static final String AVAILABLE_NAME = "available";
+		private static final String AVAILABLE_NAME = "available"; //$NON-NLS-1$
 
-		private static final String ERROR_NAME = "error";
+		private static final String ERROR_NAME = "error"; //$NON-NLS-1$
 
-		private static final String SUBSCRIBE_NAME = "subscribe";
+		private static final String SUBSCRIBE_NAME = "subscribe"; //$NON-NLS-1$
 
-		private static final String SUBSCRIBED_NAME = "subscribed";
+		private static final String SUBSCRIBED_NAME = "subscribed"; //$NON-NLS-1$
 
-		private static final String UNAVAILABLE_NAME = "unavailable";
+		private static final String UNAVAILABLE_NAME = "unavailable"; //$NON-NLS-1$
 
-		private static final String UNSUBSCRIBE_NAME = "unsubscribe";
+		private static final String UNSUBSCRIBE_NAME = "unsubscribe"; //$NON-NLS-1$
 
-		private static final String UNSUBSCRIBED_NAME = "unsubscribed";
+		private static final String UNSUBSCRIBED_NAME = "unsubscribed"; //$NON-NLS-1$
 
-		private static final String UNKWOWN_NAME = "unknown";
+		private static final String UNKWOWN_NAME = "unknown"; //$NON-NLS-1$
 
 		private final transient String name;
 
@@ -169,17 +169,17 @@ public interface IPresence extends IAdaptable, Serializable {
 
 		private static final long serialVersionUID = 3834588811853640499L;
 
-		private static final String AVAILABLE_NAME = "available";
+		private static final String AVAILABLE_NAME = "available"; //$NON-NLS-1$
 
-		private static final String AWAY_NAME = "away";
+		private static final String AWAY_NAME = "away"; //$NON-NLS-1$
 
-		private static final String CHAT_NAME = "chat";
+		private static final String CHAT_NAME = "chat"; //$NON-NLS-1$
 
-		private static final String DND_NAME = "do not disturb";
+		private static final String DND_NAME = "do not disturb"; //$NON-NLS-1$
 
-		private static final String EXTENDED_AWAY_NAME = "extended away";
+		private static final String EXTENDED_AWAY_NAME = "extended away"; //$NON-NLS-1$
 
-		private static final String INVISIBLE_NAME = "unsubscribed";
+		private static final String INVISIBLE_NAME = "unsubscribed"; //$NON-NLS-1$
 
 		private final transient String name;
 

@@ -41,10 +41,10 @@ public class XHTMLChatMessageEvent extends ChatMessageEvent implements
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("XHTMLChatMessageEvent[");
-		buf.append("fromID=").append(getFromID());
-		buf.append(";xhtmlchatmessage=").append(getXHTMLChatMessage()).append(
-				"]");
+		StringBuffer buf = new StringBuffer("XHTMLChatMessageEvent["); //$NON-NLS-1$
+		buf.append("fromID=").append(getFromID()); //$NON-NLS-1$
+		buf.append(";xhtmlchatmessage=").append(getXHTMLChatMessage()).append( //$NON-NLS-1$
+				"]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 

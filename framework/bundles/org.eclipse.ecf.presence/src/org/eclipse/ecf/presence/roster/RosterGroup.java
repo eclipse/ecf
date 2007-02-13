@@ -76,10 +76,10 @@ public class RosterGroup extends RosterItem implements IRosterGroup {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("RosterGroup[");
-		sb.append("name=").append(name).append(";");
-		sb.append("entries=").append(entries).append(";");
-		sb.append("]");
+		StringBuffer sb = new StringBuffer("RosterGroup["); //$NON-NLS-1$
+		sb.append("name=").append(name).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("entries=").append(entries).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 

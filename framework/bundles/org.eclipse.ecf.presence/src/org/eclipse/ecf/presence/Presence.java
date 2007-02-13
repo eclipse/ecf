@@ -38,7 +38,7 @@ public class Presence implements IPresence {
 	}
 
 	public Presence(Type type) {
-		this(type, "", Mode.AVAILABLE);
+		this(type, "", Mode.AVAILABLE); //$NON-NLS-1$
 	}
 
 	public Presence(Type type, String status, Mode mode, Map props,
@@ -118,12 +118,12 @@ public class Presence implements IPresence {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer sb = new StringBuffer("Presence[");
-		sb.append("type=").append(type).append(";");
-		sb.append("mode=").append(mode).append(";");
-		sb.append("status=").append(status).append(";");
-		sb.append("props=").append(properties).append(";");
-		sb.append("picture=").append(pictureData).append("]");
+		StringBuffer sb = new StringBuffer("Presence["); //$NON-NLS-1$
+		sb.append("type=").append(type).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("mode=").append(mode).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("status=").append(status).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("props=").append(properties).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("picture=").append(pictureData).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
 }

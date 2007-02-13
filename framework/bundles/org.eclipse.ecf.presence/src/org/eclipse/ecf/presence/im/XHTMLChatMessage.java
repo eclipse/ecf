@@ -78,15 +78,15 @@ public class XHTMLChatMessage extends ChatMessage implements IXHTMLChatMessage {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ChatMessage[");
-		buf.append("fromID=").append(getFromID());
-		buf.append(";threadID=").append(getThreadID());
-		buf.append(";type=").append(getType());
-		buf.append(";subject=").append(getSubject());
-		buf.append(";body=").append(getBody());
-		buf.append(";props=").append(getProperties());
-		buf.append(";xhtmlbodies=").append(getXTHMLBodies());
-		buf.append("]");
+		StringBuffer buf = new StringBuffer("ChatMessage["); //$NON-NLS-1$
+		buf.append("fromID=").append(getFromID()); //$NON-NLS-1$
+		buf.append(";threadID=").append(getThreadID()); //$NON-NLS-1$
+		buf.append(";type=").append(getType()); //$NON-NLS-1$
+		buf.append(";subject=").append(getSubject()); //$NON-NLS-1$
+		buf.append(";body=").append(getBody()); //$NON-NLS-1$
+		buf.append(";props=").append(getProperties()); //$NON-NLS-1$
+		buf.append(";xhtmlbodies=").append(getXTHMLBodies()); //$NON-NLS-1$
+		buf.append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }

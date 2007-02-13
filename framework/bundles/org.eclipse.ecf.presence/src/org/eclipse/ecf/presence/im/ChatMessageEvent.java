@@ -52,9 +52,9 @@ public class ChatMessageEvent implements IChatMessageEvent {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ChatMessageEvent[");
-		buf.append("fromID=").append(getFromID());
-		buf.append(";message=").append(message).append("]");
+		StringBuffer buf = new StringBuffer("ChatMessageEvent["); //$NON-NLS-1$
+		buf.append("fromID=").append(getFromID()); //$NON-NLS-1$
+		buf.append(";message=").append(message).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 

@@ -54,9 +54,9 @@ public class ChatRoomMessageEvent implements IChatRoomMessageEvent {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ChatRoomMessageEvent[");
-		buf.append("fromID=").append(getFromID());
-		buf.append(";chatMessage=").append(chatMessage).append("]");
+		StringBuffer buf = new StringBuffer("ChatRoomMessageEvent["); //$NON-NLS-1$
+		buf.append("fromID=").append(getFromID()); //$NON-NLS-1$
+		buf.append(";chatMessage=").append(chatMessage).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 

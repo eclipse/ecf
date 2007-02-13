@@ -63,11 +63,11 @@ public interface IChatMessage extends IIMMessage {
 
 	public static class Type {
 
-		private static final String CHAT_NAME = "chat";
+		private static final String CHAT_NAME = "chat"; //$NON-NLS-1$
 
-		private static final String SYSTEM_NAME = "system";
+		private static final String SYSTEM_NAME = "system"; //$NON-NLS-1$
 
-		private static final String ERROR_NAME = "error";
+		private static final String ERROR_NAME = "error"; //$NON-NLS-1$
 
 		private final transient String name;
 

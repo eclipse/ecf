@@ -31,7 +31,7 @@ public class Roster extends RosterItem implements IRoster {
 	protected IUser rosterUser;
 
 	public Roster(IUser user) {
-		super(null, (user == null) ? "<unknown>"
+		super(null, (user == null) ? "<unknown>" //$NON-NLS-1$
 				: ((user.getName() == null) ? user.getID().getName() : user
 						.getName()));
 		this.rosterUser = user;
@@ -113,9 +113,9 @@ public class Roster extends RosterItem implements IRoster {
 	 * @return String this object as String
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("Roster[");
-		buf.append("user=").append(getUser());
-		buf.append("items=").append(getItems()).append("]");
+		StringBuffer buf = new StringBuffer("Roster["); //$NON-NLS-1$
+		buf.append("user=").append(getUser()); //$NON-NLS-1$
+		buf.append("items=").append(getItems()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 }
