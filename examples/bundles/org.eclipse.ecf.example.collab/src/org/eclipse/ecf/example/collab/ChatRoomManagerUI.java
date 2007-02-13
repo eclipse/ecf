@@ -87,15 +87,15 @@ public class ChatRoomManagerUI {
 						public void handlePresence(ID fromID, IPresence presence) {
 							chatroomview.handlePresence(fromID, presence);
 						}
-						public void handleArrivedInChat(IUser participant) {
+						public void handleArrived(IUser participant) {
 							chatroomview.handleJoin(participant);
 						}
 						
-						public void handleUpdatedInChat(IUser updatedParticipant) {
+						public void handleUpdated(IUser updatedParticipant) {
 							chatroomview.handleUpdated(updatedParticipant);
 						}
 
-						public void handleDepartedFromChat(IUser participant) {
+						public void handleDeparted(IUser participant) {
 							chatroomview.handleLeave(participant);
 						}
 					});
