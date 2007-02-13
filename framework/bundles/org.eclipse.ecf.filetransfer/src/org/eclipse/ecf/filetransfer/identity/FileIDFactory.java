@@ -15,6 +15,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.filetransfer.Activator;
 import org.eclipse.ecf.internal.filetransfer.FileTransferDebugOptions;
+import org.eclipse.ecf.internal.filetransfer.Messages;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 
 /**
@@ -97,19 +98,19 @@ public class FileIDFactory {
 			throws FileCreateException {
 		Trace.entering(Activator.getDefault(),
 				FileTransferDebugOptions.METHODS_ENTERING, this.getClass(),
-				"createFileID", new Object[] { namespace, arguments });
+				"createFileID", new Object[] { namespace, arguments }); //$NON-NLS-1$
 		try {
 			IFileID result = (IFileID) IDFactory.getDefault().createID(
 					namespace, arguments);
 			Trace.exiting(Activator.getDefault(),
 					FileTransferDebugOptions.METHODS_EXITING, this.getClass(),
-					"createFileID", result);
+					"createFileID", result); //$NON-NLS-1$
 			return result;
 		} catch (Exception e) {
 			Trace.throwing(Activator.getDefault(),
 					FileTransferDebugOptions.EXCEPTIONS_THROWING,
-					FileIDFactory.class, "createFileID", e);
-			throw new FileCreateException("Exception in createFileID", e);
+					FileIDFactory.class, "createFileID", e); //$NON-NLS-1$
+			throw new FileCreateException(Messages.FileIDFactory_Exception_File_Create, e);
 		}
 	}
 

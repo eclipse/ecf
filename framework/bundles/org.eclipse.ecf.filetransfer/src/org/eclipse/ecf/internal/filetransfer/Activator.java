@@ -27,14 +27,14 @@ import org.osgi.service.url.URLStreamHandlerService;
 public class Activator extends Plugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipse.ecf.filetransfer";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.filetransfer"; //$NON-NLS-1$
 
-	private static final String URLCONNECTION_FACTORY_EPOINT = PLUGIN_ID + "."
-			+ "urlStreamHandlerService";
+	private static final String URLCONNECTION_FACTORY_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
+			+ "urlStreamHandlerService"; //$NON-NLS-1$
 
-	private static final String PROTOCOL_ATTRIBUTE = "protocol";
+	private static final String PROTOCOL_ATTRIBUTE = "protocol"; //$NON-NLS-1$
 
-	private static final String SERVICE_CLASS_ATTRIBUTE = "serviceClass";
+	private static final String SERVICE_CLASS_ATTRIBUTE = "serviceClass"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
