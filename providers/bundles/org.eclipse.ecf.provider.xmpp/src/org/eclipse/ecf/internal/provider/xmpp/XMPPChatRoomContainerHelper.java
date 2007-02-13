@@ -223,9 +223,9 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		for (Iterator i = participantListeners.iterator(); i.hasNext();) {
 			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
 			if (join) {
-				l.handleArrivedInChat(new User(fromID));
+				l.handleArrived(new User(fromID));
 			} else {
-				l.handleDepartedFromChat(new User(fromID));
+				l.handleDeparted(new User(fromID));
 			}
 		}
 	}
