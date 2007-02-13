@@ -632,6 +632,10 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 						public void handleDepartedFromChat(IUser participant) {
 							chatroomview.handleLeave(participant);
 						}
+
+						public void handleUpdatedInChat(IUser updatedParticipant) {
+							chatroomview.handleUpdated(updatedParticipant);
+						}
 					});
 		} catch (PartInitException e) {
 			Activator.log(
@@ -761,6 +765,10 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 												IUser participant) {
 											chatroomview
 													.handleJoin(participant);
+										}
+										
+										public void handleUpdatedInChat(IUser updatedParticipant) {
+											chatroomview.handleUpdated(updatedParticipant);
 										}
 
 										public void handleDepartedFromChat(

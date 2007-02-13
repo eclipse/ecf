@@ -572,6 +572,10 @@ public class ChatRoomView extends ViewPart implements IParticipantListener, ICha
 		otherUsers.remove(user.getID());
 	}
 
+	public void handleUpdated(IUser user) {
+		// XXX todo
+	}
+	
 	protected void outputSelectAll() {
 		readText.getTextWidget().selectAll();
 	}

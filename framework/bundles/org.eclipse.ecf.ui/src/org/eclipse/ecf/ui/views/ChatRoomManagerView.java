@@ -484,6 +484,9 @@ public class ChatRoomManagerView extends ViewPart implements
 							public void handleArrivedInChat(IUser participant) {
 							}
 
+							public void handleUpdatedInChat(IUser updatedParticipant) {
+							}
+
 							public void handleDepartedFromChat(IUser participant) {
 							}
 						});
