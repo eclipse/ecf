@@ -20,6 +20,7 @@ import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
 import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
+import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.internal.provider.xmpp.events.ChatMembershipEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
@@ -222,9 +223,9 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		for (Iterator i = participantListeners.iterator(); i.hasNext();) {
 			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
 			if (join) {
-				l.handleArrivedInChat(fromID);
+				l.handleArrivedInChat(new User(fromID));
 			} else {
-				l.handleDepartedFromChat(fromID);
+				l.handleDepartedFromChat(new User(fromID));
 			}
 		}
 	}
