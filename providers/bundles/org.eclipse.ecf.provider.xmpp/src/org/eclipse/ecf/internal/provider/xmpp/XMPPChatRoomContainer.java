@@ -46,6 +46,7 @@ import org.eclipse.ecf.provider.generic.SOConfig;
 import org.eclipse.ecf.provider.generic.SOContainerConfig;
 import org.eclipse.ecf.provider.generic.SOContext;
 import org.eclipse.ecf.provider.generic.SOWrapper;
+import org.eclipse.osgi.util.NLS;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.IQ;
@@ -61,7 +62,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 
 	private static final String CONTAINER_HELPER_ID = XMPPContainer.class
 			.getName()
-			+ ".xmppgroupchathandler";
+			+ ".xmppgroupchathandler"; //$NON-NLS-1$
 
 	protected ID containerHelperID;
 
@@ -126,7 +127,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 	protected void handleContainerMessage(ContainerMessage mess)
 			throws IOException {
 		if (mess == null) {
-			debug("got null container message...ignoring");
+			debug("got null container message...ignoring"); //$NON-NLS-1$
 			return;
 		}
 		Object data = mess.getData();
@@ -139,7 +140,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 		} else if (data instanceof ContainerMessage.SharedObjectDisposeMessage) {
 			handleSharedObjectDisposeMessage(mess);
 		} else {
-			debug("got unrecognized container message...ignoring: " + mess);
+			debug("got unrecognized container message...ignoring: " + mess); //$NON-NLS-1$
 		}
 	}
 
@@ -174,10 +175,10 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 				handlePresenceMessage((Presence) aPacket);
 			} else {
 				// unexpected message
-				debug("got unexpected packet " + aPacket);
+				debug("got unexpected packet " + aPacket); //$NON-NLS-1$
 			}
 		} catch (IOException e) {
-			logException("Exception in handleXMPPMessage", e);
+			logException("Exception in handleXMPPMessage", e); //$NON-NLS-1$
 		}
 	}
 
@@ -209,8 +210,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 	public void connect(ID remote, IConnectContext connectContext)
 			throws ContainerConnectException {
 		if (!(remote instanceof XMPPRoomID)) {
-			throw new ContainerConnectException("remote " + remote
-					+ " is not of room id type");
+			throw new ContainerConnectException(NLS.bind(Messages.XMPPChatRoomContainer_Exception_Connect_Wrong_Type,remote));
 		}
 		XMPPRoomID roomID = (XMPPRoomID) remote;
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), remote,
@@ -340,14 +340,14 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 							public void banned(String arg0, String arg1,
 									String arg2) {
 								// TODO Auto-generated method stub
-								System.out.println("kicked(" + arg0 + ","
+								System.out.println("banned(" + arg0 + ","
 										+ arg1 + "," + arg2 + ")");
 
 							}
 
 							public void nicknameChanged(String arg0, String arg1) {
 								// TODO Auto-generated method stub
-								System.out.println("kicked(" + arg0 + ","
+								System.out.println("nicknameChanged(" + arg0 + ","
 										+ arg1 + ")");
 
 							}
