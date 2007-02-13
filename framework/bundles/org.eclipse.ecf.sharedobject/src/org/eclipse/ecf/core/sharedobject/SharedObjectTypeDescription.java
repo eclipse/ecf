@@ -69,11 +69,11 @@ public class SharedObjectTypeDescription implements Serializable {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("SharedObjectTypeDescription[");
-		buf.append("name=").append(name).append(";");
-		buf.append("instantiator=").append(instantiator).append(";");
-		buf.append("className=").append(className).append(";");
-		buf.append("typeProperties=").append(typeProperties).append("]");
+		StringBuffer buf = new StringBuffer("SharedObjectTypeDescription["); //$NON-NLS-1$
+		buf.append("name=").append(name).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("instantiator=").append(instantiator).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("className=").append(className).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("typeProperties=").append(typeProperties).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 }

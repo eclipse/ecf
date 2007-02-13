@@ -28,22 +28,22 @@ import org.osgi.framework.BundleContext;
 public class Activator extends Plugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipse.ecf.sharedobject";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.sharedobject"; //$NON-NLS-1$
 
-	protected static final String CLASS_ATTRIBUTE = "class";
+	protected static final String CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
 
-	protected static final String NAME_ATTRIBUTE = "name";
+	protected static final String NAME_ATTRIBUTE = "name"; //$NON-NLS-1$
 
-	protected static final String PROPERTY_ELEMENT_NAME = "property";
+	protected static final String PROPERTY_ELEMENT_NAME = "property"; //$NON-NLS-1$
 
-	protected static final String VALUE_ATTRIBUTE = "value";
+	protected static final String VALUE_ATTRIBUTE = "value"; //$NON-NLS-1$
 
-	protected static final String NAMESPACE_NAME = "sharedObjectFactory";
+	protected static final String NAMESPACE_NAME = "sharedObjectFactory"; //$NON-NLS-1$
 
-	protected static final String SHAREDOBJECT_FACTORY_EPOINT = PLUGIN_ID + "."
+	protected static final String SHAREDOBJECT_FACTORY_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
 			+ NAMESPACE_NAME;
 
-	protected static final String DESCRIPTION_ATTRIBUTE = "description";
+	protected static final String DESCRIPTION_ATTRIBUTE = "description"; //$NON-NLS-1$
 
 	private static final int REMOVE_SHAREDOBJECT_ERRORCODE = 1001;
 
@@ -74,7 +74,7 @@ public class Activator extends Plugin {
 				registryManager);
 		Trace.exiting(Activator.getDefault(),
 				SharedObjectDebugOptions.METHODS_ENTERING, Activator.class,
-				"start");
+				"start"); //$NON-NLS-1$
 	}
 
 	/*
@@ -85,7 +85,7 @@ public class Activator extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		Trace.entering(Activator.getDefault(),
 				SharedObjectDebugOptions.METHODS_EXITING, Activator.class,
-				"stop");
+				"stop"); //$NON-NLS-1$
 		Platform.getExtensionRegistry().removeRegistryChangeListener(
 				registryManager);
 		registryManager = null;
@@ -129,13 +129,13 @@ public class Activator extends Plugin {
 				factory.removeDescription(sd);
 				org.eclipse.ecf.core.util.Trace.trace(Activator.getDefault(),
 						SharedObjectDebugOptions.DEBUG,
-						"removeSharedObjectExtensions.removedDescription(" + sd
-								+ ")");
+						"removeSharedObjectExtensions.removedDescription(" + sd //$NON-NLS-1$
+								+ ")"); //$NON-NLS-1$
 			} catch (Exception e) {
 				org.eclipse.ecf.core.util.Trace.catching(
 						Activator.getDefault(),
 						SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
-						Activator.class, "removeSharedObjectExtensions", e);
+						Activator.class, "removeSharedObjectExtensions", e); //$NON-NLS-1$
 				getDefault()
 						.getLog()
 						.log(
@@ -143,7 +143,7 @@ public class Activator extends Plugin {
 										IStatus.ERROR,
 										Activator.PLUGIN_ID,
 										REMOVE_SHAREDOBJECT_ERRORCODE,
-										"Exception removing sharedobject extension",
+										Messages.Activator_Exception_Removing_Extension,
 										e));
 			}
 		}
@@ -175,7 +175,7 @@ public class Activator extends Plugin {
 				// Get description, if present
 				String description = member.getAttribute(DESCRIPTION_ATTRIBUTE);
 				if (description == null) {
-					description = "";
+					description = ""; //$NON-NLS-1$
 				}
 				// Get any property elements
 				Map properties = getProperties(member
@@ -185,8 +185,8 @@ public class Activator extends Plugin {
 						name, exten, description, properties);
 				org.eclipse.ecf.core.util.Trace.trace(Activator.getDefault(),
 						SharedObjectDebugOptions.DEBUG,
-						"setupSharedObjectExtensionPoint:createdDescription("
-								+ scd + ")");
+						"setupSharedObjectExtensionPoint:createdDescription(" //$NON-NLS-1$
+								+ scd + ")"); //$NON-NLS-1$
 				ISharedObjectFactory factory = SharedObjectFactory.getDefault();
 				if (factory.containsDescription(scd))
 					throw new CoreException(
@@ -194,9 +194,9 @@ public class Activator extends Plugin {
 									Status.ERROR,
 									bundleName,
 									FACTORY_NAME_COLLISION_ERRORCODE,
-									"name="
+									"name=" //$NON-NLS-1$
 											+ name
-											+ ";extension point id="
+											+ ";extension point id=" //$NON-NLS-1$
 											+ extension
 													.getExtensionPointUniqueIdentifier(),
 									null));
@@ -205,14 +205,14 @@ public class Activator extends Plugin {
 				factory.addDescription(scd);
 				org.eclipse.ecf.core.util.Trace.trace(Activator.getDefault(),
 						SharedObjectDebugOptions.DEBUG,
-						"setupSharedObjectExtensionPoint.addedDescriptionToFactory("
-								+ scd + ")");
+						"setupSharedObjectExtensionPoint.addedDescriptionToFactory(" //$NON-NLS-1$
+								+ scd + ")"); //$NON-NLS-1$
 			} catch (CoreException e) {
 				getDefault().getLog().log(e.getStatus());
 				org.eclipse.ecf.core.util.Trace.catching(
 						Activator.getDefault(),
 						SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
-						Activator.class, "addSharedObjectExtensions", e);
+						Activator.class, "addSharedObjectExtensions", e); //$NON-NLS-1$
 			} catch (Exception e) {
 				getDefault()
 						.getLog()
@@ -221,16 +221,16 @@ public class Activator extends Plugin {
 										Status.ERROR,
 										bundleName,
 										FACTORY_NAME_COLLISION_ERRORCODE,
-										"name="
+										"name=" //$NON-NLS-1$
 												+ name
-												+ ";extension point id="
+												+ ";extension point id=" //$NON-NLS-1$
 												+ extension
 														.getExtensionPointUniqueIdentifier(),
 										null));
 				org.eclipse.ecf.core.util.Trace.catching(
 						Activator.getDefault(),
 						SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
-						Activator.class, "addSharedObjectExtensions", e);
+						Activator.class, "addSharedObjectExtensions", e); //$NON-NLS-1$
 			}
 		}
 	}
@@ -260,8 +260,8 @@ public class Activator extends Plugin {
 							.getAttribute(NAME_ATTRIBUTE);
 					String value = propertyElements[i]
 							.getAttribute(VALUE_ATTRIBUTE);
-					if (name != null && !name.equals("") && value != null
-							&& !value.equals("")) {
+					if (name != null && !name.equals("") && value != null //$NON-NLS-1$
+							&& !value.equals("")) { //$NON-NLS-1$
 						props.setProperty(name, value);
 					}
 				}

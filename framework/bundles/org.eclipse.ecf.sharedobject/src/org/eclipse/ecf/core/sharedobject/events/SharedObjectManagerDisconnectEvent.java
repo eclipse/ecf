@@ -62,10 +62,10 @@ public class SharedObjectManagerDisconnectEvent implements
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer(
-				"SharedObjectManagerDisconnectEvent[");
-		buf.append(getLocalContainerID()).append(";");
-		buf.append(getSharedObjectID()).append(";");
-		buf.append(getConnector()).append("]");
+				"SharedObjectManagerDisconnectEvent["); //$NON-NLS-1$
+		buf.append(getLocalContainerID()).append(";"); //$NON-NLS-1$
+		buf.append(getSharedObjectID()).append(";"); //$NON-NLS-1$
+		buf.append(getConnector()).append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }

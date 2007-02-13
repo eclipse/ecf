@@ -110,8 +110,8 @@ public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("SimpleFIFOQueue[");
-		sb.append(list).append("]");
+		StringBuffer sb = new StringBuffer("SimpleFIFOQueue["); //$NON-NLS-1$
+		sb.append(list).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

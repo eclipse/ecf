@@ -22,6 +22,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.sharedobject.Activator;
+import org.eclipse.ecf.internal.core.sharedobject.Messages;
 import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
 
 /**
@@ -40,7 +41,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 
 	protected static final int ADD_ADAPTER_ERROR_CODE = 300001;
 
-	protected static final String ADD_ADAPTER_ERROR_MESSAGE = "Exception adding shared object adapter";
+	protected static final String ADD_ADAPTER_ERROR_MESSAGE = Messages.AbstractSharedObjectContainerAdapterFactory_Exception_Adding_Adapter;
 
 	private static final int CREATE_ADAPTER_ID_ERROR_CODE = 300002;
 
@@ -108,7 +109,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 			Trace.catching(Activator.getDefault(),
 					SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 					AbstractSharedObjectContainerAdapterFactory.class,
-					"getSharedObjectAdapter", e);
+					"getSharedObjectAdapter", e); //$NON-NLS-1$
 			Activator.getDefault().getLog().log(
 					new Status(IStatus.ERROR, Activator.getDefault()
 							.getBundle().getSymbolicName(),
@@ -161,7 +162,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 			Trace.catching(Activator.getDefault(),
 					SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 					AbstractSharedObjectContainerAdapterFactory.class,
-					"getAdapterID", e);
+					"getAdapterID", e); //$NON-NLS-1$
 			Activator.getDefault().getLog().log(
 					new Status(IStatus.ERROR, Activator.getDefault()
 							.getBundle().getSymbolicName(),

@@ -51,10 +51,10 @@ public class RemoteSharedObjectEvent implements ISharedObjectMessageEvent,
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("RemoteSharedObjectEvent[");
-		sb.append(getSenderSharedObjectID()).append(";");
-		sb.append(getRemoteContainerID()).append(";");
-		sb.append(getData()).append("]");
+		StringBuffer sb = new StringBuffer("RemoteSharedObjectEvent["); //$NON-NLS-1$
+		sb.append(getSenderSharedObjectID()).append(";"); //$NON-NLS-1$
+		sb.append(getRemoteContainerID()).append(";"); //$NON-NLS-1$
+		sb.append(getData()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

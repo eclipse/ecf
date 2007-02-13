@@ -14,6 +14,7 @@ import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.sharedobject.Activator;
+import org.eclipse.ecf.internal.core.sharedobject.Messages;
 
 /**
  * Factory for creating {@link ISharedObjectContainer} instances. This class
@@ -59,11 +60,11 @@ public class SharedObjectContainerFactory implements
 	public ISharedObjectContainer createSharedObjectContainer(
 			ContainerTypeDescription desc, Object[] args)
 			throws ContainerCreateException {
-		trace("createSharedObjectContainer(" + desc + ","
-				+ Trace.getArgumentsString(args) + ")");
+		trace("createSharedObjectContainer(" + desc + "," //$NON-NLS-1$ //$NON-NLS-2$
+				+ Trace.getArgumentsString(args) + ")"); //$NON-NLS-1$
 		if (desc == null)
 			throw new ContainerCreateException(
-					"ContainerTypeDescription cannot be null");
+					Messages.SharedObjectContainerFactory_Exception_Description_Not_Null);
 		IContainer newContainer = ContainerFactory.getDefault()
 				.createContainer(desc, args);
 		ISharedObjectContainer soContainer = (ISharedObjectContainer) newContainer
@@ -71,7 +72,7 @@ public class SharedObjectContainerFactory implements
 		if (soContainer == null) {
 			newContainer.dispose();
 			throw new ContainerCreateException(
-					"new container is not a shared object container");
+					Messages.SharedObjectContainerFactory_Exception_Container_Wrong_Type);
 		}
 		return soContainer;
 	}

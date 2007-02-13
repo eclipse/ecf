@@ -35,7 +35,7 @@ public class OptimisticSharedObject extends BaseSharedObject {
 		super.initialize();
 		Trace.entering(Activator.getDefault(),
 				SharedObjectDebugOptions.METHODS_ENTERING,
-				OptimisticSharedObject.class, "initialize");
+				OptimisticSharedObject.class, "initialize"); //$NON-NLS-1$
 		addEventProcessor(new IEventProcessor() {
 			public boolean processEvent(Event event) {
 				if (event instanceof ISharedObjectActivatedEvent) {
@@ -60,6 +60,6 @@ public class OptimisticSharedObject extends BaseSharedObject {
 		});
 		Trace.exiting(Activator.getDefault(),
 				SharedObjectDebugOptions.METHODS_EXITING,
-				OptimisticSharedObject.class, "initialize");
+				OptimisticSharedObject.class, "initialize"); //$NON-NLS-1$
 	}
 }

@@ -37,9 +37,9 @@ public class SharedObjectCommitEvent implements ISharedObjectCommitEvent {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("SharedObjectCommitEvent[");
-		sb.append(getSenderSharedObjectID()).append(";");
-		sb.append(getEvent()).append("]");
+		StringBuffer sb = new StringBuffer("SharedObjectCommitEvent["); //$NON-NLS-1$
+		sb.append(getSenderSharedObjectID()).append(";"); //$NON-NLS-1$
+		sb.append(getEvent()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

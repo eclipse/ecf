@@ -27,6 +27,7 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.sharedobject.Activator;
+import org.eclipse.ecf.internal.core.sharedobject.Messages;
 import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
 
 /**
@@ -74,7 +75,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	protected void traceStack(String msg, Throwable t) {
 		Trace.catching(Activator.getDefault(),
 				SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
-				TwoPhaseCommitEventProcessor.class, "traceStack", t);
+				TwoPhaseCommitEventProcessor.class, "traceStack", t); //$NON-NLS-1$
 		;
 	}
 
@@ -101,7 +102,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	protected void addParticipants(ID[] ids) {
 		if (ids != null) {
 			for (int i = 0; i < ids.length; i++) {
-				trace("addParticipant(" + ids[i] + ")");
+				trace("addParticipant(" + ids[i] + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 				if (!getHomeID().equals(ids[i]))
 					participants.add(ids[i]);
 			}
@@ -110,14 +111,14 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 
 	protected void removeParticipant(ID id) {
 		if (id != null) {
-			trace("removeParticipant(" + id + ")");
+			trace("removeParticipant(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 			participants.remove(id);
 		}
 	}
 
 	protected void addFailed(ID remote, Throwable failure) {
 		if (remote != null && failure != null) {
-			trace("addFailed(" + remote + "," + failure + ")");
+			trace("addFailed(" + remote + "," + failure + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			failed.put(remote, failure);
 		}
 	}
@@ -155,7 +156,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	}
 
 	protected void handleActivated(ISharedObjectActivatedEvent event) {
-		trace("handleActivated(" + event + ")");
+		trace("handleActivated(" + event + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		// No other state changes while this is going on
 		synchronized (lock) {
 			if (isPrimary()) {
@@ -174,7 +175,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	}
 
 	protected void handlePrimaryActivated(ISharedObjectActivatedEvent event) {
-		trace("handlePrimaryActivated(" + event + ")");
+		trace("handlePrimaryActivated(" + event + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		// First get current group membership
 		if (getContext().getConnectedID() != null) {
 			ID[] groupMembers = getContext().getGroupMemberIDs();
@@ -213,7 +214,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	}
 
 	protected void handleReplicaActivated(ISharedObjectActivatedEvent event) {
-		trace("handleReplicaActivated(" + event + ")");
+		trace("handleReplicaActivated(" + event + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		try {
 			// Try to respond with create success message back to host
 			getContext().sendCreateResponse(getHomeID(), null,
@@ -222,13 +223,13 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			setTransactionState(ISharedObjectContainerTransaction.PREPARED);
 		} catch (Exception except) {
 			// If throws exception, we're doomed
-			traceStack("handleReplicaActivated(" + event + ")", except);
+			traceStack("handleReplicaActivated(" + event + ")", except); //$NON-NLS-1$ //$NON-NLS-2$
 			setTransactionState(ISharedObjectContainerTransaction.ABORTED);
 		}
 	}
 
 	protected void handleJoined(IContainerConnectedEvent event) {
-		trace("handleJoined(" + event + ")");
+		trace("handleJoined(" + event + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		// If we are primary then this event matters to us
 		if (isPrimary()) {
 			// If transactionstate is VOTING then we replicate ourselves to
@@ -246,7 +247,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	}
 
 	protected void handleCreateResponse(ISharedObjectCreateResponseEvent event) {
-		trace("handleCreateResponse(" + event + ")");
+		trace("handleCreateResponse(" + event + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (isPrimary()) {
 			synchronized (lock) {
 				Throwable except = event.getException();
@@ -269,13 +270,13 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	}
 
 	protected void handleDeparted(IContainerDisconnectedEvent event) {
-		trace("handleDeparted(" + event + ")");
+		trace("handleDeparted(" + event + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (isPrimary()) {
 			ID remoteID = event.getTargetID();
 			synchronized (lock) {
 				if (getTransactionState() == ISharedObjectContainerTransaction.VOTING) {
-					addFailed(remoteID, new Exception("Container " + remoteID
-							+ " left"));
+					addFailed(remoteID, new Exception("Container " + remoteID //$NON-NLS-1$
+							+ " left")); //$NON-NLS-1$
 				}
 				lock.notifyAll();
 			}
@@ -286,15 +287,15 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 
 	protected void handleVotingCompletedCreateResponse(ID fromID, Throwable e,
 			long identifier) {
-		trace("handleVotingCompletedCreateResponse(" + fromID + "," + e + ","
-				+ identifier + ")");
+		trace("handleVotingCompletedCreateResponse(" + fromID + "," + e + "," //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				+ identifier + ")"); //$NON-NLS-1$
 		// If remote creation was successful, simply send commit message back.
 		if (e == null) {
 			try {
 				getSharedObject().getContext().sendMessage(fromID,
 						new SharedObjectCommitEvent(getSharedObject().getID()));
 			} catch (Exception e2) {
-				traceStack("Exception in sendCommit to " + fromID, e2);
+				traceStack("Exception in sendCommit to " + fromID, e2); //$NON-NLS-1$
 			}
 		} else {
 			// Too late to vote no
@@ -305,8 +306,8 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	protected void handlePostCommitFailure(ID fromID, Throwable e,
 			long identifier) {
 		// Do nothing but report
-		trace("handlePostCommitFailure(" + fromID + "," + e + "," + identifier
-				+ ")");
+		trace("handlePostCommitFailure(" + fromID + "," + e + "," + identifier //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				+ ")"); //$NON-NLS-1$
 	}
 
 	protected void sendCommit() throws SharedObjectAddAbortException {
@@ -315,7 +316,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 					new SharedObjectCommitEvent(getSharedObject().getID()));
 		} catch (Exception e2) {
 			doTMAbort(new SharedObjectAddAbortException(
-					"Exception sending commit message", e2, getTimeout()));
+					Messages.TwoPhaseCommitEventProcessor_Exception_Shared_Object_Add_Abort, e2, getTimeout()));
 		}
 	}
 
@@ -339,12 +340,12 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			try {
 				while (!isVotingCompleted()) {
 					long wait = end - System.currentTimeMillis();
-					trace("waitForFinish waiting " + wait + "ms on "
+					trace("waitForFinish waiting " + wait + "ms on " //$NON-NLS-1$ //$NON-NLS-2$
 							+ getSharedObject().getID());
 					if (wait <= 0L)
 						throw new SharedObjectAddAbortException(
-								"Timeout adding " + getSharedObject().getID()
-										+ " to " + getHomeID(),
+								Messages.TwoPhaseCommitEventProcessor_Exception_Commit_Timeout + getSharedObject().getID()
+										+ Messages.TwoPhaseCommitEventProcessor_Exception_Timeout_Adding_To + getHomeID(),
 								(Throwable) null, getTimeout());
 					// Wait right here
 					lock.wait(wait);
@@ -360,7 +361,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 
 	protected void doTMAbort(Throwable except)
 			throws SharedObjectAddAbortException {
-		trace("doTMAbort:" + except);
+		trace("doTMAbort:" + except); //$NON-NLS-1$
 		// Set our own state variable to ABORTED
 		setTransactionState(ISharedObjectContainerTransaction.ABORTED);
 		// Send destroy message here so all remotes get destroyed, and we remove
@@ -370,12 +371,12 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 		if (except instanceof SharedObjectAddAbortException)
 			throw (SharedObjectAddAbortException) except;
 		else
-			throw new SharedObjectAddAbortException("Aborted", except,
+			throw new SharedObjectAddAbortException(Messages.TwoPhaseCommitEventProcessor_Exception_Shared_Object_Add_Abort, except,
 					getTimeout());
 	}
 
 	protected void doTMCommit() throws SharedObjectAddAbortException {
-		trace("doTMCommit");
+		trace("doTMCommit"); //$NON-NLS-1$
 		// Make sure we are connected. If so then send commit message
 		if (getSharedObject().getGroupID() != null) {
 			sendCommit();
@@ -385,7 +386,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	}
 
 	protected void localCommitted() {
-		trace("localCommitted()");
+		trace("localCommitted()"); //$NON-NLS-1$
 		// Set state variable to committed.
 		setTransactionState(ISharedObjectContainerTransaction.COMMITTED);
 		getSharedObject().creationCompleted();
@@ -398,20 +399,20 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 			return true;
 		if (failed.size() > getMinFailedToAbort()) {
 			// Abort!
-			trace("isVotingCompleted:aborting:failed>" + getMinFailedToAbort()
-					+ ":failed=" + failed);
-			throw new SharedObjectAddAbortException("Abort received",
+			trace("isVotingCompleted:aborting:failed>" + getMinFailedToAbort() //$NON-NLS-1$
+					+ ":failed=" + failed); //$NON-NLS-1$
+			throw new SharedObjectAddAbortException(Messages.TwoPhaseCommitEventProcessor_Exception_Shared_Object_Add_Abort,
 					participants, failed, getTimeout());
 			// If no problems, and the number of participants to here from is 0,
 			// then we're done
 		} else if (getTransactionState() == ISharedObjectContainerTransaction.VOTING
 				&& participants.size() == 0) {
 			// Success!
-			trace("isVotingCompleted() returning true");
+			trace("isVotingCompleted() returning true"); //$NON-NLS-1$
 			return true;
 		}
 		// Else continue waiting
-		trace("isVotingCompleted:false");
+		trace("isVotingCompleted:false"); //$NON-NLS-1$
 		return false;
 	}
 }

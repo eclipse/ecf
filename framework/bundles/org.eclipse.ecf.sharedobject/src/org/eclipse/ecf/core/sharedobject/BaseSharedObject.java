@@ -29,6 +29,7 @@ import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.sharedobject.Activator;
+import org.eclipse.ecf.internal.core.sharedobject.Messages;
 import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
 
 /**
@@ -70,10 +71,10 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	public final void init(ISharedObjectConfig initData)
 			throws SharedObjectInitException {
 		this.config = initData;
-		traceEntering("init", initData);
+		traceEntering("init", initData); //$NON-NLS-1$
 		addEventProcessor(new SharedObjectMsgEventProcessor(this));
 		initialize();
-		traceExiting("init");
+		traceExiting("init"); //$NON-NLS-1$
 	}
 
 	/**
@@ -87,7 +88,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 *             if initialization should throw
 	 */
 	protected void initialize() throws SharedObjectInitException {
-		traceEntering("initialize");
+		traceEntering("initialize"); //$NON-NLS-1$
 	}
 
 	/**
@@ -98,11 +99,11 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 * 
 	 */
 	protected void creationCompleted() {
-		traceEntering("creationCompleted", null);
+		traceEntering("creationCompleted", null); //$NON-NLS-1$
 	}
 
 	public void dispose(ID containerID) {
-		traceEntering("dispose", containerID);
+		traceEntering("dispose", containerID); //$NON-NLS-1$
 		eventProcessors.clear();
 		config = null;
 	}
@@ -112,11 +113,11 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	}
 
 	public void handleEvent(Event event) {
-		traceEntering("handleEvent", event);
+		traceEntering("handleEvent", event); //$NON-NLS-1$
 		synchronized (eventProcessors) {
 			fireEventProcessors(event);
 		}
-		traceExiting("handleEvent");
+		traceExiting("handleEvent"); //$NON-NLS-1$
 	}
 
 	public boolean addEventProcessor(IEventProcessor proc) {
@@ -132,7 +133,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	}
 
 	protected void handleUnhandledEvent(Event event) {
-		traceEntering("handleUnhandledEvent", event);
+		traceEntering("handleUnhandledEvent", event); //$NON-NLS-1$
 	}
 
 	protected void fireEventProcessors(Event event) {
@@ -151,13 +152,13 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	}
 
 	public void handleEvents(Event[] events) {
-		traceEntering("handleEvents", events);
+		traceEntering("handleEvents", events); //$NON-NLS-1$
 		if (events == null)
 			return;
 		for (int i = 0; i < events.length; i++) {
 			handleEvent(events[i]);
 		}
-		traceExiting("handleEvents");
+		traceExiting("handleEvents"); //$NON-NLS-1$
 	}
 
 	public ID getID() {
@@ -202,23 +203,23 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	}
 
 	protected void destroySelf() {
-		traceEntering("destroySelf");
+		traceEntering("destroySelf"); //$NON-NLS-1$
 		if (isPrimary()) {
 			try {
 				// Send destroy message to all known remotes
 				destroyRemote(null);
 			} catch (IOException e) {
-				traceCatching("destroySelf", e);
-				logError(DESTROYREMOTE_CODE, "destroySelf", e);
+				traceCatching("destroySelf", e); //$NON-NLS-1$
+				logError(DESTROYREMOTE_CODE, "destroySelf", e); //$NON-NLS-1$
 			}
 		}
 		// Now destroy self locally
 		destroySelfLocal();
-		traceExiting("destroySelf");
+		traceExiting("destroySelf"); //$NON-NLS-1$
 	}
 
 	protected void destroySelfLocal() {
-		traceEntering("destroySelfLocal");
+		traceEntering("destroySelfLocal"); //$NON-NLS-1$
 		try {
 			ISharedObjectManager manager = getContext()
 					.getSharedObjectManager();
@@ -226,10 +227,10 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 				manager.removeSharedObject(getID());
 			}
 		} catch (Exception e) {
-			traceCatching("destroySelfLocal", e);
-			logError(DESTROYSELFLOCAL_CODE, "destroySelfLocal", e);
+			traceCatching("destroySelfLocal", e); //$NON-NLS-1$
+			logError(DESTROYSELFLOCAL_CODE, "destroySelfLocal", e); //$NON-NLS-1$
 		}
-		traceExiting("destroySelfLocal");
+		traceExiting("destroySelfLocal"); //$NON-NLS-1$
 	}
 
 	protected void destroyRemote(ID remoteID) throws IOException {
@@ -254,8 +255,8 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	protected void sendSharedObjectMsgTo(ID toID, SharedObjectMsg msg)
 			throws IOException {
 		if (msg == null)
-			throw new NullPointerException("msg cannot be null");
-		String method = "sendSharedObjectMsgTo";
+			throw new NullPointerException(Messages.BaseSharedObject_Message_Not_Null);
+		String method = "sendSharedObjectMsgTo"; //$NON-NLS-1$
 		traceEntering(method, new Object[] { toID, msg });
 		getContext().sendMessage(toID,
 				new SharedObjectMsgEvent(getID(), toID, msg));
@@ -285,7 +286,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	protected void sendSharedObjectMsgToSelf(SharedObjectMsg msg) {
 		if (msg == null)
-			throw new NullPointerException("msg cannot be null");
+			throw new NullPointerException(Messages.BaseSharedObject_Message_Not_Null);
 		ISharedObjectContext context = getContext();
 		if (context == null)
 			return;
@@ -294,8 +295,8 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 			queue.enqueue(new SharedObjectMsgEvent(getID(), getContext()
 					.getLocalContainerID(), msg));
 		} catch (QueueException e) {
-			traceCatching("sendSharedObjectMsgToSelf", e);
-			logError(DESTROYREMOTE_CODE, "sendSharedObjectMsgToSelf", e);
+			traceCatching("sendSharedObjectMsgToSelf", e); //$NON-NLS-1$
+			logError(DESTROYREMOTE_CODE, "sendSharedObjectMsgToSelf", e); //$NON-NLS-1$
 		}
 	}
 
@@ -313,7 +314,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	protected SharedObjectMsg getSharedObjectMsgFromEvent(
 			ISharedObjectMessageEvent event) {
-		traceEntering("getSharedObjectMsgFromEvent", event);
+		traceEntering("getSharedObjectMsgFromEvent", event); //$NON-NLS-1$
 		Object eventData = event.getData();
 		Object msgData = null;
 		// If eventData is not null and instanceof RemoteSharedObjectEvent
@@ -328,10 +329,10 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 			msgData = eventData;
 
 		if (msgData != null && msgData instanceof SharedObjectMsg) {
-			traceExiting("getSharedObjectMsgFromEvent", msgData);
+			traceExiting("getSharedObjectMsgFromEvent", msgData); //$NON-NLS-1$
 			return (SharedObjectMsg) msgData;
 		} else {
-			traceExiting("getSharedObjectMsgFromEvent", null);
+			traceExiting("getSharedObjectMsgFromEvent", null); //$NON-NLS-1$
 			return null;
 		}
 	}
@@ -349,7 +350,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 *         processors.
 	 */
 	protected boolean handleSharedObjectMsgEvent(ISharedObjectMessageEvent event) {
-		traceEntering("handleSharedObjectMsgEvent", event);
+		traceEntering("handleSharedObjectMsgEvent", event); //$NON-NLS-1$
 		boolean result = false;
 		if (event instanceof ISharedObjectCreateResponseEvent)
 			result = handleSharedObjectCreateResponseEvent((ISharedObjectCreateResponseEvent) event);
@@ -358,7 +359,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 			if (msg != null)
 				result = handleSharedObjectMsg(msg);
 		}
-		traceExiting("handleSharedObjectMsgEvent", new Boolean(result));
+		traceExiting("handleSharedObjectMsgEvent", new Boolean(result)); //$NON-NLS-1$
 		return result;
 	}
 
@@ -409,11 +410,11 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 *         be returned.
 	 */
 	protected ReplicaSharedObjectDescription getReplicaDescription(ID receiver) {
-		traceEntering("getReplicaDescription", receiver);
+		traceEntering("getReplicaDescription", receiver); //$NON-NLS-1$
 		ReplicaSharedObjectDescription result = new ReplicaSharedObjectDescription(
 				getClass(), getID(), getConfig().getHomeContainerID(),
 				getConfig().getProperties());
-		traceExiting("getReplicaDescription", result);
+		traceExiting("getReplicaDescription", result); //$NON-NLS-1$
 		return result;
 	}
 
@@ -446,7 +447,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	protected ReplicaSharedObjectDescription[] getReplicaDescriptions(
 			ID[] receivers) {
-		traceEntering("getReplicaDescriptions", receivers);
+		traceEntering("getReplicaDescriptions", receivers); //$NON-NLS-1$
 		ReplicaSharedObjectDescription[] descriptions = null;
 		if (receivers == null || receivers.length == 1) {
 			descriptions = new ReplicaSharedObjectDescription[1];
@@ -458,7 +459,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 				descriptions[i] = getReplicaDescription(receivers[i]);
 			}
 		}
-		traceExiting("getReplicaDescriptions", descriptions);
+		traceExiting("getReplicaDescriptions", descriptions); //$NON-NLS-1$
 		return descriptions;
 	}
 
@@ -487,7 +488,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 *            replica of this shared object.
 	 */
 	protected void replicateToRemoteContainers(ID[] remoteContainers) {
-		traceEntering("replicateToRemoteContainers", remoteContainers);
+		traceEntering("replicateToRemoteContainers", remoteContainers); //$NON-NLS-1$
 		try {
 			// Get current group membership
 			ReplicaSharedObjectDescription[] createInfos = getReplicaDescriptions(remoteContainers);
@@ -504,9 +505,9 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 				}
 			}
 		} catch (IOException e) {
-			traceCatching("replicateToRemoteContainers." + DESTROYREMOTE_CODE,
+			traceCatching("replicateToRemoteContainers." + DESTROYREMOTE_CODE, //$NON-NLS-1$
 					e);
-			logError(DESTROYREMOTE_CODE, "replicateToRemoteContainers", e);
+			logError(DESTROYREMOTE_CODE, "replicateToRemoteContainers", e); //$NON-NLS-1$
 		}
 	}
 
@@ -518,7 +519,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 
 	private String getSharedObjectAsString(String suffix) {
 		StringBuffer buf = new StringBuffer(String.valueOf(getID()));
-		buf.append(((isPrimary()) ? ".p." : ".r."));
+		buf.append(((isPrimary()) ? ".p." : ".r.")); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append(suffix);
 		return buf.toString();
 	}

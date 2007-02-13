@@ -36,11 +36,11 @@ public class SharedObjectMsgEvent extends RemoteSharedObjectEvent {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("SharedObjectMsgEvent[");
-		buf.append(getSenderSharedObjectID()).append(";").append(
-				getRemoteContainerID()).append(";")
+		StringBuffer buf = new StringBuffer("SharedObjectMsgEvent["); //$NON-NLS-1$
+		buf.append(getSenderSharedObjectID()).append(";").append( //$NON-NLS-1$
+				getRemoteContainerID()).append(";") //$NON-NLS-1$
 				.append(getSharedObjectMsg());
-		buf.append("]");
+		buf.append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }

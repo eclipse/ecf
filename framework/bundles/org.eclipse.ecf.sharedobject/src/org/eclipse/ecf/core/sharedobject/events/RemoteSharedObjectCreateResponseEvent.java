@@ -42,11 +42,11 @@ public class RemoteSharedObjectCreateResponseEvent extends
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer(
-				"RemoteSharedObjectCreateResponseEvent[");
-		sb.append(getSenderSharedObjectID()).append(";");
-		sb.append(getRemoteContainerID()).append(";");
-		sb.append(getSequence()).append(";");
-		sb.append(getException()).append("]");
+				"RemoteSharedObjectCreateResponseEvent["); //$NON-NLS-1$
+		sb.append(getSenderSharedObjectID()).append(";"); //$NON-NLS-1$
+		sb.append(getRemoteContainerID()).append(";"); //$NON-NLS-1$
+		sb.append(getSequence()).append(";"); //$NON-NLS-1$
+		sb.append(getException()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

@@ -101,12 +101,12 @@ public class ReplicaSharedObjectDescription extends SharedObjectDescription
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("ReplicaSharedObjectDescription[");
-		sb.append("type=").append(typeDescription).append(";");
-		sb.append("id=").append(id).append(";");
-		sb.append("homeID=").append(homeID).append(";");
-		sb.append("props=").append(properties).append(";");
-		sb.append("ident=").append(identifier).append("]");
+		StringBuffer sb = new StringBuffer("ReplicaSharedObjectDescription["); //$NON-NLS-1$
+		sb.append("type=").append(typeDescription).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("id=").append(id).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("homeID=").append(homeID).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("props=").append(properties).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("ident=").append(identifier).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
 }

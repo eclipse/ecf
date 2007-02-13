@@ -72,11 +72,11 @@ public class ContainerSharedObjectMessageReceivingEvent implements
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer(
-				"ContainerSharedObjectMessageReceivingEvent[");
-		buf.append("localContainerID=").append(localContainerID);
-		buf.append(";sendingContainerID=").append(sendingContainerID);
-		buf.append(";sharedObjectID=").append(sharedObjectID);
-		buf.append(";message=").append(message).append("]");
+				"ContainerSharedObjectMessageReceivingEvent["); //$NON-NLS-1$
+		buf.append("localContainerID=").append(localContainerID); //$NON-NLS-1$
+		buf.append(";sendingContainerID=").append(sendingContainerID); //$NON-NLS-1$
+		buf.append(";sharedObjectID=").append(sharedObjectID); //$NON-NLS-1$
+		buf.append(";message=").append(message).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 

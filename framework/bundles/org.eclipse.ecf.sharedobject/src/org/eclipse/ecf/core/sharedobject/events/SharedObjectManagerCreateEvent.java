@@ -48,9 +48,9 @@ public class SharedObjectManagerCreateEvent implements
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("SharedObjectManagerCreateEvent[");
-		buf.append(getLocalContainerID()).append(";");
-		buf.append(getSharedObjectID()).append("]");
+		StringBuffer buf = new StringBuffer("SharedObjectManagerCreateEvent["); //$NON-NLS-1$
+		buf.append(getLocalContainerID()).append(";"); //$NON-NLS-1$
+		buf.append(getSharedObjectID()).append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }

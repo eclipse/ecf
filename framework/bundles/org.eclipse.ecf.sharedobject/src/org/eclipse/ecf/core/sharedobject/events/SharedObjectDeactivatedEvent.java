@@ -33,9 +33,9 @@ public class SharedObjectDeactivatedEvent implements
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("SharedObjectDeactivatedEvent[");
-		sb.append(getLocalContainerID()).append(";");
-		sb.append(getDeactivatedID()).append("]");
+		StringBuffer sb = new StringBuffer("SharedObjectDeactivatedEvent["); //$NON-NLS-1$
+		sb.append(getLocalContainerID()).append(";"); //$NON-NLS-1$
+		sb.append(getDeactivatedID()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

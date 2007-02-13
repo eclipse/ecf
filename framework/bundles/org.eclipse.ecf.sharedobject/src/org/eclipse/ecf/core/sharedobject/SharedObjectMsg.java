@@ -18,6 +18,8 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 
+import org.eclipse.ecf.internal.core.sharedobject.Messages;
+
 /**
  * Shared Object Message. Instances may be used for sending/receiving messages
  * among shared object replicas. This class can be used to create
@@ -38,7 +40,7 @@ public class SharedObjectMsg implements Serializable {
 			String methodName, Object[] param) {
 		if (methodName == null || param == null) {
 			throw new NullPointerException(
-					"Invalid SharedObjectMsg construction");
+					Messages.SharedObjectMsg_Excepton_Invalid_Shared_Object_Msg);
 		}
 		return new SharedObjectMsg(className, methodName, param);
 	}
@@ -231,8 +233,8 @@ public class SharedObjectMsg implements Serializable {
 		Object args[] = aMsg.getParameters();
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] != null && !(args[i] instanceof Serializable))
-				throw new NotSerializableException("Parameter " + i
-						+ " not Serializable");
+				throw new NotSerializableException(Messages.SharedObjectMsg_Exception_Param + i
+						+ Messages.SharedObjectMsg_Exception_Not_Serializable);
 		}
 	}
 
@@ -267,7 +269,7 @@ public class SharedObjectMsg implements Serializable {
 	public final void setMethod(String name) {
 		checkAlterMsg();
 		if (name == null)
-			throw new NullPointerException("methodname cannot be null");
+			throw new NullPointerException(Messages.SharedObjectMsg_Exception_Methodname_Not_Null);
 		method = name;
 	}
 
@@ -317,7 +319,7 @@ public class SharedObjectMsg implements Serializable {
 	Object doInvoke(final Object target) // package scope for security
 			throws Exception {
 		if (target == null)
-			throw new NoSuchMethodException("Null target");
+			throw new NoSuchMethodException(Messages.SharedObjectMsg_Exception_Null_Target);
 		Method meth = null;
 		if (clazz == null) {
 			// If not specific class is specified by SharedObjectMsg instance,
@@ -346,11 +348,11 @@ public class SharedObjectMsg implements Serializable {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("SharedObjectMsg[");
-		sb.append("class=").append(clazz).append(";");
-		sb.append("method=").append(method)
-				.append(";");
-		sb.append("params=").append(Arrays.asList(parameters)).append("]");
+		StringBuffer sb = new StringBuffer("SharedObjectMsg["); //$NON-NLS-1$
+		sb.append("class=").append(clazz).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("method=").append(method) //$NON-NLS-1$
+				.append(";"); //$NON-NLS-1$
+		sb.append("params=").append(Arrays.asList(parameters)).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
 }

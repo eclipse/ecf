@@ -32,9 +32,9 @@ public class SharedObjectActivatedEvent implements ISharedObjectActivatedEvent {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("SharedObjectActivatedEvent[");
-		sb.append(getLocalContainerID()).append(";");
-		sb.append(getActivatedID()).append("]");
+		StringBuffer sb = new StringBuffer("SharedObjectActivatedEvent["); //$NON-NLS-1$
+		sb.append(getLocalContainerID()).append(";"); //$NON-NLS-1$
+		sb.append(getActivatedID()).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

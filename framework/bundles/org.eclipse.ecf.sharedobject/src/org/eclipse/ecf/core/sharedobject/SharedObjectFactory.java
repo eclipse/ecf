@@ -15,6 +15,7 @@ import java.util.List;
 import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.sharedobject.Activator;
+import org.eclipse.ecf.internal.core.sharedobject.Messages;
 import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
 
 /**
@@ -45,7 +46,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	private static void dumpStack(String msg, Throwable e) {
 		Trace.catching(Activator.getDefault(),
 				SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
-				SharedObjectFactory.class, "dumpStack", e);
+				SharedObjectFactory.class, "dumpStack", e); //$NON-NLS-1$
 	}
 
 	/*
@@ -55,7 +56,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 */
 	public SharedObjectTypeDescription addDescription(
 			SharedObjectTypeDescription description) {
-		trace("addDescription(" + description + ")");
+		trace("addDescription(" + description + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		return addDescription0(description);
 	}
 
@@ -116,12 +117,12 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 */
 	public SharedObjectTypeDescription getDescriptionByName(String name)
 			throws SharedObjectCreateException {
-		trace("getDescriptionByName(" + name + ")");
+		trace("getDescriptionByName(" + name + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		SharedObjectTypeDescription res = getDescription0(name);
 		if (res == null) {
 			throw new SharedObjectCreateException(
-					"SharedObjectCreateException named '" + name
-							+ "' not found");
+					Messages.SharedObjectFactory_Exception_Create_Shared_Object + name
+							+ Messages.SharedObjectFactory_Exception_Create_Shared_Object_Not_Found);
 		}
 		return res;
 	}
@@ -134,32 +135,32 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 */
 	public ISharedObject createSharedObject(SharedObjectTypeDescription desc,
 			Object[] args) throws SharedObjectCreateException {
-		trace("createSharedObject(" + desc + ","
-				+ Trace.getArgumentsString(args) + ")");
+		trace("createSharedObject(" + desc + "," //$NON-NLS-1$ //$NON-NLS-2$
+				+ Trace.getArgumentsString(args) + ")"); //$NON-NLS-1$
 		if (desc == null)
 			throw new SharedObjectCreateException(
-					"SharedObjectDescription cannot be null");
+					Messages.SharedObjectFactory_Description_Not_Null);
 		SharedObjectTypeDescription cd = getDescription0(desc);
 		if (cd == null)
 			throw new SharedObjectCreateException(
-					"SharedObjectDescription named '" + desc.getName()
-							+ "' not found");
+					Messages.SharedObjectFactory_Exception_Create_Shared_Objec + desc.getName()
+							+ Messages.SharedObjectFactory_Exception_Create_Shared_Object_Not_Found);
 		ISharedObjectInstantiator instantiator = null;
 		try {
 			instantiator = cd.getInstantiator();
 		} catch (Exception e) {
 			SharedObjectCreateException newexcept = new SharedObjectCreateException(
-					"createSharedObject exception with description: " + desc
-							+ ": " + e.getClass().getName() + ": "
+					Messages.SharedObjectFactory_Exception_Create_With_Description + desc
+							+ ": " + e.getClass().getName() + ": " //$NON-NLS-1$ //$NON-NLS-2$
 							+ e.getMessage());
 			newexcept.setStackTrace(e.getStackTrace());
-			dumpStack("Exception in createSharedObject", newexcept);
+			dumpStack("Exception in createSharedObject", newexcept); //$NON-NLS-1$
 			throw newexcept;
 		}
 		if (instantiator == null)
 			throw new SharedObjectCreateException(
-					"Instantiator for SharedObjectDescription " + cd.getName()
-							+ " is null");
+					Messages.SharedObjectFactory_Exception_Create_Instantiator + cd.getName()
+							+ Messages.SharedObjectFactory_Exception_Create_Instantiator_Null);
 		// Ask instantiator to actually create instance
 		return instantiator.createInstance(desc, args);
 	}
@@ -192,7 +193,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	 */
 	public SharedObjectTypeDescription removeDescription(
 			SharedObjectTypeDescription scd) {
-		trace("removeDescription(" + scd + ")");
+		trace("removeDescription(" + scd + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		return removeDescription0(scd);
 	}
 
