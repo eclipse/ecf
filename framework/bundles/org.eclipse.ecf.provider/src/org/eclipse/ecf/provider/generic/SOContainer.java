@@ -51,8 +51,6 @@ import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.core.sharedobject.Activator;
-import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
