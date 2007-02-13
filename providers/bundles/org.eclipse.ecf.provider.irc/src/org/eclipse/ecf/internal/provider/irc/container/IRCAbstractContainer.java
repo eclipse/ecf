@@ -20,15 +20,13 @@ import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.irc.Activator;
-import org.eclipse.ecf.internal.provider.irc.Trace;
+import org.eclipse.ecf.internal.provider.irc.IRCDebugOptions;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.chatroom.ChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.ChatRoomMessageEvent;
 
-/**
- * 
- */
 public abstract class IRCAbstractContainer extends AbstractContainer {
 
 	protected static final String ROOT_ROOMNAME = "/"; //$NON-NLS-1$
@@ -47,7 +45,6 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	protected static final String INVITE_COMMAND = "INVITE"; //$NON-NLS-1$
 	protected static final String OPERATOR_PREFIX = "@"; //$NON-NLS-1$
 
-	Trace trace = Trace.create("ircrootcontainer");
 	protected ID localID = null;
 	protected ID targetID = null;
 	protected List msgListeners = new ArrayList();
@@ -58,15 +55,11 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	}
 
 	protected void trace(String msg) {
-		if (trace != null) {
-			trace.msg(msg);
-		}
+		Trace.trace(Activator.getDefault(), msg);
 	}
 
 	protected void traceStack(Throwable t, String msg) {
-		if (trace != null) {
-			trace.dumpStack(t, msg);
-		}
+		Trace.catching(Activator.getDefault(), IRCDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), msg, t);
 	}
 
 	public void fireMessageListeners(ID sender, String msg) {
@@ -123,7 +116,7 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 		} catch (IDCreateException e) {
 			Activator
 					.log(
-							"ID creation exception in IRCContainer.getIDForString()",
+							"ID creation exception in IRCContainer.getIDForString()", //$NON-NLS-1$
 							e);
 			return unknownID;
 		}

@@ -1,5 +1,16 @@
-org.eclipse.ecf.provider.irc/debug = true
+# Debugging options for the org.eclipse.ecf.provider.irc plug-in
+
+# Turn on general debugging for the org.eclipse.ecf plug-in
+org.eclipse.ecf.provider.irc/debug=true
 org.eclipse.ecf.provider.irc/debug/filter = *
 org.eclipse.ecf.provider.irc/debug/flag = true
-org.eclipse.ecf.provider.irc/debug/irccontainer = true
-org.eclipse.ecf.provider.irc/debug/ircrootcontainer = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.provider.irc/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.provider.irc/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.provider.irc/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.provider.irc/debug/methods/exiting=false

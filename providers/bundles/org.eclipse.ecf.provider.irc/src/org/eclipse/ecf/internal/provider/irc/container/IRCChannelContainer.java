@@ -31,10 +31,12 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.TimeoutException;
+import org.eclipse.ecf.internal.provider.irc.Messages;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.osgi.util.NLS;
 import org.schwering.irc.lib.IRCUser;
 
 /**
@@ -231,9 +233,11 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 			throws ContainerConnectException {
 		// Actually do join here
 		if (targetID == null)
-			throw new ContainerConnectException("targetID cannot be null");
+			throw new ContainerConnectException(
+					Messages.IRCChannelContainer_Exception_TargetID_Null);
 		if (connectWaiting)
-			throw new ContainerConnectException("Connecting");
+			throw new ContainerConnectException(
+					Messages.IRCChannelContainer_Exception_Connecting);
 		// Get channel name
 		String channelName = targetID.getName();
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
@@ -249,14 +253,19 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 					connectLock.wait(2000);
 				}
 				if (connectWaiting)
-					throw new TimeoutException(CONNECT_TIMEOUT,
-							"Timeout connecting to " + targetID.getName());
+					throw new TimeoutException(
+							CONNECT_TIMEOUT,
+							NLS
+									.bind(
+											Messages.IRCChannelContainer_Exception_Connect_Timeout,
+											targetID.getName()));
 				this.targetID = targetID;
 				fireContainerEvent(new ContainerConnectedEvent(this.getID(),
 						this.targetID));
 			} catch (Exception e) {
-				throw new ContainerConnectException("Connect failed to "
-						+ targetID.getName(), e);
+				throw new ContainerConnectException(NLS.bind(
+						Messages.IRCChannelContainer_Exception_Connect_Failed,
+						targetID.getName()), e);
 			} finally {
 				connectWaiting = false;
 			}

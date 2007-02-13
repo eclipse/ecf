@@ -16,6 +16,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
+import org.eclipse.ecf.internal.provider.irc.Messages;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainerOptionsAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
@@ -33,7 +34,7 @@ public class IRCContainerInstantiator implements IContainerInstantiator {
 		try {
 			return new IRCRootContainer(IDFactory.getDefault().createGUID());
 		} catch (IDCreateException e) {
-			throw new ContainerCreateException("Exception creating ID", e);
+			throw new ContainerCreateException(Messages.IRCContainerInstantiator_Exception_CreateID_Failed, e);
 		}
 	}
 

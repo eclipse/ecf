@@ -22,6 +22,8 @@ public class Activator extends Plugin {
 
     public static final String NAMESPACE_IDENTIFIER = "ecfircid"; //$NON-NLS-1$
     
+    public static final String PLUGIN_ID = "org.eclipse.ecf.provider.irc"; //$NON-NLS-1$
+    
 	//The shared instance.
 	private static Activator plugin;
 	
@@ -33,7 +35,7 @@ public class Activator extends Plugin {
 	public static void log(String message, Throwable e) {
 		getDefault().getLog().log(
 				new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), IStatus.OK,
-						"Caught exception", e));
+						"Caught exception", e)); //$NON-NLS-1$
 	}
 
 	/**
