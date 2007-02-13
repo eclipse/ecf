@@ -42,7 +42,7 @@ public class ECFException extends CoreException {
 	 */
 	public ECFException(String message, Throwable cause) {
 		this(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0,
-				((message == null) ? "" : message), cause));
+				((message == null) ? "" : message), cause)); //$NON-NLS-1$
 	}
 
 	/**

@@ -14,15 +14,15 @@ import java.security.Permission;
 public class NamespacePermission extends BasicPermission {
 	private static final long serialVersionUID = 3257004371500806969L;
 
-	public static final String ADD_NAMESPACE = "add";
+	public static final String ADD_NAMESPACE = "add"; //$NON-NLS-1$
 
-	public static final String ALL_NAMESPACE = "all";
+	public static final String ALL_NAMESPACE = "all"; //$NON-NLS-1$
 
-	public static final String CONTAINS_NAMESPACE = "contains";
+	public static final String CONTAINS_NAMESPACE = "contains"; //$NON-NLS-1$
 
-	public static final String GET_NAMESPACE = "get";
+	public static final String GET_NAMESPACE = "get"; //$NON-NLS-1$
 
-	public static final String REMOVE_NAMESPACE = "remove";
+	public static final String REMOVE_NAMESPACE = "remove"; //$NON-NLS-1$
 
 	protected String actions;
 

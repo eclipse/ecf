@@ -13,6 +13,7 @@ import java.io.Serializable;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ecf.internal.core.identity.Messages;
 
 /**
  * Namespace base class
@@ -45,7 +46,7 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	
 	private static final long serialVersionUID = 3976740272094720312L;
 
-	public static final String SCHEME_SEPARATOR = ":";
+	public static final String SCHEME_SEPARATOR = ":"; //$NON-NLS-1$
 
 	private String name;
 
@@ -59,7 +60,7 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 
 	public final boolean initialize(String name, String desc) {
-		Assert.isNotNull(name, "Namespace<init> name cannot be null");
+		Assert.isNotNull(name, Messages.Namespace_Namespace_Name_Not_Null);
 		if (!isInitialized) {
 			this.name = name;
 			this.description = desc;
@@ -239,10 +240,10 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	}
 	
 	public String toString() {
-		StringBuffer b = new StringBuffer("Namespace[");
-		b.append("name=").append(name).append(";");
-		b.append("scheme=").append(getScheme()).append(";");
-		b.append("description=").append("]");
+		StringBuffer b = new StringBuffer("Namespace["); //$NON-NLS-1$
+		b.append("name=").append(name).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		b.append("scheme=").append(getScheme()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		b.append("description=").append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return b.toString();
 	}
 }

@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
+import org.eclipse.ecf.internal.core.identity.Messages;
+
 /**
  * A string-based identity
  * 
@@ -23,12 +25,12 @@ public class StringID extends BaseID {
 		}
 
 		public StringIDNamespace() {
-			super(StringID.class.getName(), "StringID Namespace");
+			super(StringID.class.getName(), Messages.StringID_StringID_Namespace_Description);
 		}
 
 		public ID createInstance(Object[] parameters) throws IDCreateException {
 			if (parameters == null || parameters.length == 0) {
-				throw new IDCreateException("StringID name cannot be null");
+				throw new IDCreateException(Messages.StringID_StringID_Name_Not_Null);
 			} else
 				return new StringID(this, (String) parameters[0]);
 		}
@@ -97,7 +99,7 @@ public class StringID extends BaseID {
 		setEmptyNamespace();
 		int strlen = value.length();
 		StringBuffer sb = new StringBuffer(strlen + 10);
-		sb.insert(0, "StringID[").insert(9, value).insert(strlen + 9, ']');
+		sb.insert(0, "StringID[").insert(9, value).insert(strlen + 9, ']'); //$NON-NLS-1$
 		return sb.toString();
 	}
 

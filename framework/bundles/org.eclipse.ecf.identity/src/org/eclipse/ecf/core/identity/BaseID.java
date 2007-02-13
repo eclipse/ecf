@@ -28,7 +28,7 @@ public abstract class BaseID implements ID {
 	}
 
 	protected BaseID(Namespace namespace) {
-		Assert.isNotNull(namespace, "namespace cannot be null");
+		Assert.isNotNull(namespace, "namespace cannot be null"); //$NON-NLS-1$
 		this.namespace = namespace;
 	}
 
@@ -39,7 +39,7 @@ public abstract class BaseID implements ID {
 	 */
 	public int compareTo(Object o) {
 		Assert.isTrue(o != null && o instanceof BaseID,
-				"incompatible types for compare");
+				"incompatible types for compare"); //$NON-NLS-1$
 		return namespace.getCompareToForObject(this, (BaseID) o);
 	}
 

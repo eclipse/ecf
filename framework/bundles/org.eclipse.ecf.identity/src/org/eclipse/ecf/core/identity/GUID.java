@@ -11,6 +11,7 @@ package org.eclipse.ecf.core.identity;
 import java.security.SecureRandom;
 
 import org.eclipse.ecf.core.util.Base64;
+import org.eclipse.ecf.internal.core.identity.Messages;
 
 /**
  * Globally unique ID implementation class. Uses
@@ -25,7 +26,7 @@ public class GUID extends StringID {
 		private static final long serialVersionUID = -8546568877571886386L;
 
 		public GUIDNamespace() {
-			super(GUID.class.getName(), "GUID Namespace");
+			super(GUID.class.getName(), Messages.GUID_GUID_Namespace_Description_Default);
 		}
 
 		public ID createInstance(Object[] args) throws IDCreateException {
@@ -73,12 +74,12 @@ public class GUID extends StringID {
 	 */
 	protected GUID(Namespace n, String algo, String provider, int byteLength)
 			throws IDCreateException {
-		super(n, "");
+		super(n, ""); //$NON-NLS-1$
 		// Get SecureRandom instance for class
 		try {
 			getRandom(algo, provider);
 		} catch (Exception e) {
-			throw new IDCreateException("GUID creation failure: "
+			throw new IDCreateException(Messages.GUID_GUID_Creation_Failure
 					+ e.getMessage());
 		}
 		// make sure we have reasonable byteLength
@@ -126,9 +127,9 @@ public class GUID extends StringID {
 		if (provider == null) {
 			if (algo == null) {
 				try {
-					random = SecureRandom.getInstance("IBMSECURERANDOM");
+					random = SecureRandom.getInstance(Messages.GUID_IBM_SECURE_RANDOM);
 				} catch (Exception e) {
-					random = SecureRandom.getInstance("SHA1PRNG");
+					random = SecureRandom.getInstance(Messages.GUID_SHA1);
 				}
 			} else
 				random = SecureRandom.getInstance(algo);
@@ -138,8 +139,8 @@ public class GUID extends StringID {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("GUID[");
-		sb.append(value).append("]");
+		StringBuffer sb = new StringBuffer("GUID["); //$NON-NLS-1$
+		sb.append(value).append("]"); //$NON-NLS-1$
 		return sb.toString();
 	}
 }

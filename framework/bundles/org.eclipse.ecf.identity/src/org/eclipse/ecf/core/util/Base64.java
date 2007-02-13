@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.util;
 
+import org.eclipse.ecf.internal.core.identity.Messages;
+
 /**
  * 
  * Encode/decode byte arrays into base64 strings. Code originally acquired from
@@ -30,7 +32,7 @@ public final class Base64 {
 	 */
 	public static String encode(byte[] raw) {
 		if (raw == null)
-			throw new NumberFormatException("Input data cannot be null");
+			throw new NumberFormatException(Messages.Base64_Input_Data_Not_Null);
 		StringBuffer encoded = new StringBuffer();
 		for (int i = 0; i < raw.length; i += 3) {
 			encoded.append(encodeBlock(raw, i));
@@ -118,7 +120,7 @@ public final class Base64 {
 		// modify to use '-' instead of '='
 		if (c == '-')
 			return 0;
-		throw new NumberFormatException("Invalid value '" + c
-				+ "' in base64 string");
+		throw new NumberFormatException(Messages.Base64_Invalid_Value + c
+				+ Messages.Base64_In_Base64);
 	}
 }

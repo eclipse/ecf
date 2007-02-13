@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.ecf.internal.core.identity.Messages;
 
 /**
  * A utility for tracing debug information. Provides a simple interface for
@@ -177,7 +178,7 @@ public class Trace {
 	 */
 	public static String getArgumentString(Object argument) {
 		if (argument == null)
-			return "null";
+			return "null"; //$NON-NLS-1$
 		if (argument.getClass().isArray())
 			return getArgumentsString((Object[]) argument);
 		else
@@ -194,8 +195,8 @@ public class Trace {
 	 */
 	public static String getArgumentsString(Object[] arguments) {
 		if (arguments == null)
-			return "[]";
-		StringBuffer buffer = new StringBuffer("[");
+			return "[]"; //$NON-NLS-1$
+		StringBuffer buffer = new StringBuffer("["); //$NON-NLS-1$
 
 		for (int i = 0; i < arguments.length; i++) {
 			buffer.append(getArgumentString(arguments[i]));
@@ -203,7 +204,7 @@ public class Trace {
 			if (i < arguments.length - 1)
 				buffer.append(SEPARATOR_PARAMETER);
 		}
-		buffer.append("]");
+		buffer.append("]"); //$NON-NLS-1$
 		return buffer.toString();
 	}
 
@@ -228,7 +229,7 @@ public class Trace {
 	 */
 	protected static String getTimeString() {
 		Date d = new Date();
-		SimpleDateFormat df = new SimpleDateFormat("[MM/dd/yy;HH:mm:ss:SSS]");
+		SimpleDateFormat df = new SimpleDateFormat(Messages.Trace_Date_Time_Format);
 		return df.format(d);
 	}
 
