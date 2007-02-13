@@ -11,16 +11,21 @@
 package org.eclipse.ecf.core.user;
 
 import java.util.Map;
+
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 
 public class User implements IUser {
+	
 	private static final long serialVersionUID = 3978709484518586169L;
 
 	protected ID id;
 
 	protected String name;
 
+	protected String nickname;
+	
 	protected Map properties;
 
 	public User(ID userID) {
@@ -32,11 +37,16 @@ public class User implements IUser {
 	}
 
 	public User(ID userID, String name, Map properties) {
-		this.id = userID;
-		this.name = name;
-		this.properties = properties;
+		this(userID, name, null, properties);
 	}
 
+	public User(ID userID, String name, String nickname, Map properties) {
+		this.id = userID;
+		this.name = name;
+		this.nickname = nickname;
+		this.properties = properties;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -64,17 +74,37 @@ public class User implements IUser {
 		return name;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.user.IUser#getNickname()
+	 */
+	public String getNickname() {
+		return nickname;
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Object getAdapter(Class clazz) {
-		return null;
+	
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+	
+	public Object getAdapter(Class adapter) {
+		if (adapter.isInstance(this)) {
+			return this;
+		} else {
+			return Platform.getAdapterManager().loadAdapter(this,
+					adapter.getName());
+		}
 	}
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("User[");
-		sb.append("id=" + getID()).append(";name=" + getName()).append(
+		sb.append("id=" + getID()).append(";name=" + getName());
+		sb.append(";nickname=").append(getNickname());
+		sb.append(
 				";props=" + getProperties()).append("]");
 		return sb.toString();
 	}
+
 }
