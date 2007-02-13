@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresence;
@@ -86,10 +87,10 @@ public class ChatRoomManagerUI {
 						public void handlePresence(ID fromID, IPresence presence) {
 							chatroomview.handlePresence(fromID, presence);
 						}
-						public void handleArrivedInChat(ID participant) {
+						public void handleArrivedInChat(IUser participant) {
 							chatroomview.handleJoin(participant);
 						}
-						public void handleDepartedFromChat(ID participant) {
+						public void handleDepartedFromChat(IUser participant) {
 							chatroomview.handleLeave(participant);
 						}
 					});
