@@ -54,8 +54,6 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
-import org.eclipse.ecf.presence.roster.RosterEntry;
-import org.eclipse.ecf.presence.roster.RosterItem;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ChangePasswordDialog;
@@ -627,11 +625,11 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 							chatroomview.handlePresence(fromID, presence);
 						}
 
-						public void handleArrivedInChat(ID participant) {
+						public void handleArrivedInChat(IUser participant) {
 							chatroomview.handleJoin(participant);
 						}
 
-						public void handleDepartedFromChat(ID participant) {
+						public void handleDepartedFromChat(IUser participant) {
 							chatroomview.handleLeave(participant);
 						}
 					});
@@ -760,13 +758,13 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 										}
 
 										public void handleArrivedInChat(
-												ID participant) {
+												IUser participant) {
 											chatroomview
 													.handleJoin(participant);
 										}
 
 										public void handleDepartedFromChat(
-												ID participant) {
+												IUser participant) {
 											chatroomview
 													.handleLeave(participant);
 										}

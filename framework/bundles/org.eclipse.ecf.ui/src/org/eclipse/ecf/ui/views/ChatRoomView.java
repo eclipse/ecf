@@ -325,7 +325,7 @@ public class ChatRoomView extends ViewPart implements IParticipantListener, ICha
 		private static final long serialVersionUID = 2008114088656711572L;
 
 		ID id;
-
+		
 		public Participant(ID id) {
 			this.id = id;
 		}
@@ -361,6 +361,13 @@ public class ChatRoomView extends ViewPart implements IParticipantListener, ICha
 
 		public Object getAdapter(Class adapter) {
 			return null;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.core.user.IUser#getNickname()
+		 */
+		public String getNickname() {
+			return getName();
 		}
 	}
 
@@ -553,16 +560,16 @@ public class ChatRoomView extends ViewPart implements IParticipantListener, ICha
 		writeText.paste();
 	}
 
-	public void handleJoin(ID user) {
+	public void handleJoin(IUser user) {
 		if (disposed)
 			return;
-		otherUsers.add(user);
+		otherUsers.add(user.getID());
 	}
 
-	public void handleLeave(ID user) {
+	public void handleLeave(IUser user) {
 		if (disposed)
 			return;
-		otherUsers.remove(user);
+		otherUsers.remove(user.getID());
 	}
 
 	protected void outputSelectAll() {

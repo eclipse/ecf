@@ -481,10 +481,10 @@ public class ChatRoomManagerView extends ViewPart implements
 								chatroomview.handlePresence(fromID, presence);
 							}
 
-							public void handleArrivedInChat(ID participant) {
+							public void handleArrivedInChat(IUser participant) {
 							}
 
-							public void handleDepartedFromChat(ID participant) {
+							public void handleDepartedFromChat(IUser participant) {
 							}
 						});
 				chatRoomContainer.addListener(new IContainerListener() {
@@ -1042,7 +1042,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		private static final long serialVersionUID = 2008114088656711572L;
 
 		ID id;
-
+		
 		public Participant(ID id) {
 			this.id = id;
 		}
@@ -1078,6 +1078,13 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		public Object getAdapter(Class adapter) {
 			return null;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.core.user.IUser#getNickname()
+		 */
+		public String getNickname() {
+			return getName();
 		}
 	}
 
