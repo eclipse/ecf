@@ -29,17 +29,21 @@ public interface IChatRoomParticipantListener extends IParticipantListener {
 	public void handleArrived(IUser participant);
 
 	/**
-	 * Notification that user information (e.g. name, nickname, or properties) have
-	 * changed for chat participant.  The ID of the changedParticipant (via changedParticipant.getID())
-	 * will match the ID of the previous notification {@link #handleArrived(IUser)}.
+	 * Notification that user information (e.g. name, nickname, or properties)
+	 * have changed for chat participant. The ID of the changedParticipant (via
+	 * changedParticipant.getID()) will match the ID of the previous
+	 * notification {@link #handleArrived(IUser)}.
 	 * 
-	 * @param changedParticipant Will not be <code>null</code>.  The ID of the changedParticipant
-	 * will be the same as the ID previously specified, but the name {@link IUser#getName()} and/or
-	 * the nickname {@link IUser#getNickname()} and/or the properties {@link IUser#getProperties()}
-	 * may be different.
+	 * @param updatedParticipant
+	 *            Will not be <code>null</code>. The ID of the
+	 *            updatedParticipant will be the same as the ID previously
+	 *            specified via handleArrived, but the name
+	 *            {@link IUser#getName()} and/or the nickname
+	 *            {@link IUser#getNickname()} and/or the properties
+	 *            {@link IUser#getProperties()} may be different.
 	 */
 	public void handleUpdated(IUser updatedParticipant);
-	
+
 	/**
 	 * Notification that participant departed the associated chat room
 	 * 
