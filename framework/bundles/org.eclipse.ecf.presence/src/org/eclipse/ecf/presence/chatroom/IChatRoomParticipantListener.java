@@ -10,7 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.chatroom;
 
-import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IParticipantListener;
 
 /**
@@ -23,10 +23,10 @@ public interface IChatRoomParticipantListener extends IParticipantListener {
 	 * Notification that participant arrived in associated chat room
 	 * 
 	 * @param participant
-	 *            Will not be <code>null</code>. the ID of the arrived
+	 *            Will not be <code>null</code>. the IUser of the arrived
 	 *            participant
 	 */
-	public void handleArrivedInChat(ID participant);
+	public void handleArrivedInChat(IUser participant);
 
 	/**
 	 * Notification that participant departed the associated chat room
@@ -35,5 +35,5 @@ public interface IChatRoomParticipantListener extends IParticipantListener {
 	 *            Will not be <code>null</code>. the ID of the departed
 	 *            participant
 	 */
-	public void handleDepartedFromChat(ID participant);
+	public void handleDepartedFromChat(IUser participant);
 }
