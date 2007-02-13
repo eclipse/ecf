@@ -28,6 +28,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.presence.IPresence;
@@ -162,7 +163,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 						IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
 								.next();
 
-						l.handleArrivedInChat(participantID);
+						l.handleArrivedInChat(new User(participantID));
 						l.handlePresence(participantID, createPresence(true));
 					}
 				}
@@ -176,7 +177,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 								.next();
 
 						l.handlePresence(removeID, createPresence(false));
-						l.handleDepartedFromChat(removeID);
+						l.handleDepartedFromChat(new User(removeID));
 					}
 
 				}
