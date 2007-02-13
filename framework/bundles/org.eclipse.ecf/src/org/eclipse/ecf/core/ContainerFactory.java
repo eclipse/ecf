@@ -25,6 +25,7 @@ import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.ECFDebugOptions;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 import org.eclipse.ecf.internal.core.IDisposable;
+import org.eclipse.ecf.internal.core.Messages;
 
 /**
  * Factory for creating {@link IContainer} instances. This class provides ECF
@@ -47,7 +48,7 @@ import org.eclipse.ecf.internal.core.IDisposable;
  */
 public class ContainerFactory implements IContainerFactory {
 
-	public static final String BASE_CONTAINER_NAME = "ecf.root";
+	public static final String BASE_CONTAINER_NAME = Messages.ContainerFactory_Base_Container_Name;
 	
 	private static final int PROPERTY_INITIALIZE_ERRORCODE = 1001;
 
@@ -67,11 +68,11 @@ public class ContainerFactory implements IContainerFactory {
 		} catch (Exception e) {
 			Trace.catching(ECFPlugin.getDefault(),
 					ECFDebugOptions.EXCEPTIONS_CATCHING,
-					ContainerFactory.class, "staticinitializer", e);
+					ContainerFactory.class, "staticinitializer", e); //$NON-NLS-1$
 			ECFPlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID,
 							PROPERTY_INITIALIZE_ERRORCODE,
-							"Exception determining if platform is running", e));
+							Messages.ContainerFactory_Exception_Platform_Running, e));
 		}
 		instance = new ContainerFactory();
 	}
@@ -84,7 +85,7 @@ public class ContainerFactory implements IContainerFactory {
 				}
 			});
 		} else {
-			System.out.println("WARNING:  ContainerFactory running standalone");
+			System.out.println(Messages.ContainerFactory_Warning_Running_Standalone);
 		}
 
 	}
@@ -111,10 +112,10 @@ public class ContainerFactory implements IContainerFactory {
 					// Log exception
 					ECFPlugin.log(new Status(Status.ERROR, ECFPlugin
 							.getDefault().getBundle().getSymbolicName(),
-							DISPOSE_ERROR_CODE, "container dispose error", e));
+							DISPOSE_ERROR_CODE, "container dispose error", e)); //$NON-NLS-1$
 					Trace.catching(ECFPlugin.getDefault(),
 							ECFDebugOptions.EXCEPTIONS_CATCHING,
-							ContainerFactory.class, "doDispose", e);
+							ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
 				}
 			}
 		}
@@ -129,10 +130,10 @@ public class ContainerFactory implements IContainerFactory {
 	public ContainerTypeDescription addDescription(ContainerTypeDescription scd) {
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
-				"addDescription", scd);
+				"addDescription", scd); //$NON-NLS-1$
 		ContainerTypeDescription result = addDescription0(scd);
 		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
-				ContainerFactory.class, "addDescription", result);
+				ContainerFactory.class, "addDescription", result); //$NON-NLS-1$
 		return result;
 	}
 
@@ -194,10 +195,10 @@ public class ContainerFactory implements IContainerFactory {
 	public ContainerTypeDescription getDescriptionByName(String name) {
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
-				"getDescriptionByName", name);
+				"getDescriptionByName", name); //$NON-NLS-1$
 		ContainerTypeDescription res = getDescription0(name);
 		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
-				ContainerFactory.class, "getDescriptionByName", res);
+				ContainerFactory.class, "getDescriptionByName", res); //$NON-NLS-1$
 		return res;
 	}
 
@@ -227,32 +228,32 @@ public class ContainerFactory implements IContainerFactory {
 	 */
 	public IContainer createContainer(ContainerTypeDescription description,
 			Object[] parameters) throws ContainerCreateException {
-		String method = "createContainer";
+		String method = "createContainer"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
 				method, new Object[] { description,
 						Trace.getArgumentsString(parameters) });
 		if (description == null)
 			throwContainerCreateException(
-					"ContainerTypeDescription cannot be null", null, method);
+					Messages.ContainerFactory_Exception_Create_Container, null, method);
 		ContainerTypeDescription cd = getDescription0(description);
 		if (cd == null)
-			throwContainerCreateException("ContainerTypeDescription '"
-					+ description.getName() + "' not found", null, method);
+			throwContainerCreateException("ContainerTypeDescription '" //$NON-NLS-1$
+					+ description.getName() + "' not found", null, method); //$NON-NLS-1$
 		IContainerInstantiator instantiator = null;
 		try {
 			instantiator = cd.getInstantiator();
 		} catch (Exception e) {
 			throwContainerCreateException(
-					"createContainer cannot get IContainerInstantiator for description : "
+					"createContainer cannot get IContainerInstantiator for description : " //$NON-NLS-1$
 							+ description, e, method);
 		}
 		// Ask instantiator to actually create instance
 		IContainer container = instantiator.createInstance(description,
 				parameters);
 		if (container == null)
-			throwContainerCreateException("Instantiator returned null for '"
-					+ cd.getName() + "'", null, method);
+			throwContainerCreateException("Instantiator returned null for '" //$NON-NLS-1$
+					+ cd.getName() + "'", null, method); //$NON-NLS-1$
 		// Add to containers map
 		addContainer(container);
 		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
@@ -291,10 +292,10 @@ public class ContainerFactory implements IContainerFactory {
 			ContainerTypeDescription scd) {
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
-				"removeDescription", scd);
+				"removeDescription", scd); //$NON-NLS-1$
 		ContainerTypeDescription description = removeDescription0(scd);
 		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
-				ContainerFactory.class, "removeDescription", description);
+				ContainerFactory.class, "removeDescription", description); //$NON-NLS-1$
 		return description;
 
 	}
@@ -315,7 +316,7 @@ public class ContainerFactory implements IContainerFactory {
 	public ContainerTypeDescription[] getDescriptionsForContainerAdapter(
 			Class containerAdapter) {
 		if (containerAdapter == null)
-			throw new NullPointerException("containerAdapter cannot be null");
+			throw new NullPointerException(Messages.ContainerFactory_Exception_Adapter_Not_Null);
 		List result = new ArrayList();
 		List descriptions = getDescriptions();
 		for (Iterator i = descriptions.iterator(); i.hasNext();) {

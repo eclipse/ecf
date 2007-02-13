@@ -46,9 +46,9 @@ public class ContainerConnectedEvent implements IContainerConnectedEvent {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ContainerConnectedEvent[");
-		buf.append(getTargetID()).append(";");
-		buf.append(getLocalContainerID()).append("]");
+		StringBuffer buf = new StringBuffer("ContainerConnectedEvent["); //$NON-NLS-1$
+		buf.append(getTargetID()).append(";"); //$NON-NLS-1$
+		buf.append(getLocalContainerID()).append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }

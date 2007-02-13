@@ -22,11 +22,11 @@ public class Proxy implements Serializable {
 
 		private static final long serialVersionUID = 361071073081975271L;
 
-		private static final String DIRECT_NAME = "direct";
+		private static final String DIRECT_NAME = "direct"; //$NON-NLS-1$
 
-		private static final String HTTP_NAME = "http";
+		private static final String HTTP_NAME = "http"; //$NON-NLS-1$
 
-		private static final String SOCKS_NAME = "socks";
+		private static final String SOCKS_NAME = "socks"; //$NON-NLS-1$
 
 		private final transient String name;
 
@@ -113,12 +113,12 @@ public class Proxy implements Serializable {
 	}
 
 	public boolean hasCredentials() {
-		return (username != null && !username.equals(""));
+		return (username != null && !username.equals("")); //$NON-NLS-1$
 	}
 
 	public String toString() {
 		if (getType() == Type.DIRECT)
-			return "DIRECT";
+			return "DIRECT"; //$NON-NLS-1$
 		return getType() + " @ " + getAddress();  //$NON-NLS-1$
 	}
 

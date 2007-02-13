@@ -99,11 +99,11 @@ public class User implements IUser {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("User[");
-		sb.append("id=" + getID()).append(";name=" + getName());
-		sb.append(";nickname=").append(getNickname());
+		StringBuffer sb = new StringBuffer("User["); //$NON-NLS-1$
+		sb.append("id=" + getID()).append(";name=" + getName()); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append(";nickname=").append(getNickname()); //$NON-NLS-1$
 		sb.append(
-				";props=" + getProperties()).append("]");
+				";props=" + getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
 

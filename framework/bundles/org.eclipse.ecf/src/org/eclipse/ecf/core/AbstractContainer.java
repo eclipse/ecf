@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
+import org.eclipse.ecf.internal.core.Messages;
 
 /**
  * Abstract implementation of IContainer. Provides implementations of listener
@@ -72,7 +73,7 @@ public abstract class AbstractContainer implements IContainer {
 			pw = (String) cb.getObject();
 		} catch (Exception e) {
 			throw new ContainerConnectException(
-					"Exception in CallbackHandler.handle(<callbacks>)", e);
+					Messages.AbstractContainer_Exception_Callback_Handler, e);
 		}
 		return pw;
 	}

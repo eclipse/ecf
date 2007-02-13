@@ -23,7 +23,7 @@ public class ProxyAddress implements Serializable {
 	protected static final int DEFAULT_PORT = -1;
 
 	protected int port = -1;
-	protected String hostname = "";
+	protected String hostname = ""; //$NON-NLS-1$
 
 	public ProxyAddress(String hostname, int port) {
 		this.hostname = hostname;

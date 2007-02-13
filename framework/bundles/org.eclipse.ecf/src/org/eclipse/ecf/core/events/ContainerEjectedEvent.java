@@ -45,10 +45,10 @@ public class ContainerEjectedEvent implements IContainerEjectedEvent {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ContainerEjectedEvent[");
-		buf.append(getLocalContainerID()).append(";");
-		buf.append(getTargetID()).append(";");
-		buf.append(getReason()).append("]");
+		StringBuffer buf = new StringBuffer("ContainerEjectedEvent["); //$NON-NLS-1$
+		buf.append(getLocalContainerID()).append(";"); //$NON-NLS-1$
+		buf.append(getTargetID()).append(";"); //$NON-NLS-1$
+		buf.append(getReason()).append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }

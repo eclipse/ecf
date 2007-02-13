@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.ECFDebugOptions;
 import org.eclipse.ecf.internal.core.ECFPlugin;
+import org.eclipse.ecf.internal.core.Messages;
 
 /**
  * Description of an {@link IContainer} type.
@@ -68,12 +69,12 @@ public class ContainerTypeDescription {
 		this.classLoader = loader;
 		if (name == null)
 			throw new NullPointerException(
-					"ContainerTypeDescription<init> name cannot be null");
+					Messages.ContainerTypeDescription_Name_Not_Null);
 		this.name = name;
 		this.hashCode = name.hashCode();
 		if (instantiatorClass == null)
 			throw new NullPointerException(
-					"ContainerTypeDescription<init> instantiatorClass cannot be null");
+					Messages.ContainerTypeDescription_Instantiator_Class_Not_Null);
 		this.instantiatorClass = instantiatorClass;
 		this.description = desc;
 		this.parameterDefaults = parameterDefaults;
@@ -94,12 +95,12 @@ public class ContainerTypeDescription {
 			String desc, String[] parameterDefaults, Map props) {
 		if (name == null)
 			throw new NullPointerException(
-					"ContainerTypeDescription<init> name cannot be null");
+					Messages.ContainerTypeDescription_Name_Not_Null);
 		this.name = name;
 		this.hashCode = name.hashCode();
 		if (inst == null)
 			throw new NullPointerException(
-					"ContainerTypeDescription<init> instantiator instance cannot be null");
+					Messages.ContainerTypeDescription_Instantiator_Instance_Not_Null);
 		this.instantiator = inst;
 		this.classLoader = this.instantiator.getClass().getClassLoader();
 		this.description = desc;
@@ -137,17 +138,17 @@ public class ContainerTypeDescription {
 	}
 
 	public String toString() {
-		StringBuffer b = new StringBuffer("ContainerTypeDescription[");
-		b.append("name=").append(name).append(";");
+		StringBuffer b = new StringBuffer("ContainerTypeDescription["); //$NON-NLS-1$
+		b.append("name=").append(name).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (instantiator == null)
-			b.append("instantiatorClass=").append(instantiatorClass)
-					.append(";");
+			b.append("instantiatorClass=").append(instantiatorClass) //$NON-NLS-1$
+					.append(";"); //$NON-NLS-1$
 		else
-			b.append("instantiator=").append(instantiator).append(";");
-		b.append("desc=").append(description).append(";");
-		b.append("argdefaults=").append(Arrays.asList(parameterDefaults))
-				.append(";");
-		b.append("properties=").append(properties).append(";");
+			b.append("instantiator=").append(instantiator).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		b.append("desc=").append(description).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		b.append("argdefaults=").append(Arrays.asList(parameterDefaults)) //$NON-NLS-1$
+				.append(";"); //$NON-NLS-1$
+		b.append("properties=").append(properties).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		return b.toString();
 	}
 
@@ -208,7 +209,7 @@ public class ContainerTypeDescription {
 	 *         returned if no adapters are supported.
 	 */
 	public String[] getSupportedAdapterTypes() {
-		String method = "getSupportedAdapterTypes";
+		String method = "getSupportedAdapterTypes"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		String[] result = new String[0];
@@ -254,7 +255,7 @@ public class ContainerTypeDescription {
 	 *         array will be returned
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		String method = "getParameterTypes";
+		String method = "getParameterTypes"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		Class[][] result = new Class[0][0];

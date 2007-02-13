@@ -35,8 +35,8 @@ public class ContainerDisposeEvent implements IContainerDisposeEvent {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ContainerDisposeEvent[");
-		buf.append(getLocalContainerID()).append("]");
+		StringBuffer buf = new StringBuffer("ContainerDisposeEvent["); //$NON-NLS-1$
+		buf.append(getLocalContainerID()).append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }

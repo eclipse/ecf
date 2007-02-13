@@ -39,33 +39,33 @@ import org.osgi.framework.BundleContext;
 
 public class ECFPlugin extends Plugin {
 
-	public static final String PLUGIN_ID = "org.eclipse.ecf";
+	public static final String PLUGIN_ID = "org.eclipse.ecf"; //$NON-NLS-1$
 
 	private static final String ECFNAMESPACE = PLUGIN_ID;
 
-	private static final String CONTAINER_FACTORY_NAME = "containerFactory";
+	private static final String CONTAINER_FACTORY_NAME = "containerFactory"; //$NON-NLS-1$
 
 	private static final String CONTAINER_FACTORY_EPOINT = ECFNAMESPACE
-			+ "." + CONTAINER_FACTORY_NAME;
+			+ "." + CONTAINER_FACTORY_NAME; //$NON-NLS-1$
 
-	private static final String STARTUP_NAME = "startup";
+	private static final String STARTUP_NAME = "startup"; //$NON-NLS-1$
 
-	public static final String START_EPOINT = ECFNAMESPACE + "." + STARTUP_NAME;
+	public static final String START_EPOINT = ECFNAMESPACE + "." + STARTUP_NAME; //$NON-NLS-1$
 
 	public static final String PLUGIN_RESOURCE_BUNDLE = ECFNAMESPACE
-			+ ".ECFPluginResources";
+			+ ".ECFPluginResources"; //$NON-NLS-1$
 
-	public static final String CLASS_ATTRIBUTE = "class";
+	public static final String CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
 
-	public static final String NAME_ATTRIBUTE = "name";
+	public static final String NAME_ATTRIBUTE = "name"; //$NON-NLS-1$
 
-	public static final String DESCRIPTION_ATTRIBUTE = "description";
+	public static final String DESCRIPTION_ATTRIBUTE = "description"; //$NON-NLS-1$
 	
-	public static final String ARG_ELEMENT_NAME = "defaultargument";
+	public static final String ARG_ELEMENT_NAME = "defaultargument"; //$NON-NLS-1$
 
-	public static final String VALUE_ATTRIBUTE = "value";
+	public static final String VALUE_ATTRIBUTE = "value"; //$NON-NLS-1$
 
-	public static final String PROPERTY_ELEMENT_NAME = "property";
+	public static final String PROPERTY_ELEMENT_NAME = "property"; //$NON-NLS-1$
 
 	public static final int FACTORY_DOES_NOT_IMPLEMENT_ERRORCODE = 10;
 
@@ -126,7 +126,7 @@ public class ECFPlugin extends Plugin {
 		if (log != null)
 			log.log(status);
 		else
-			System.err.println("No log output.  Status Message: "
+			System.err.println("No log output.  Status Message: " //$NON-NLS-1$
 					+ status.getMessage());
 	}
 
@@ -152,8 +152,8 @@ public class ECFPlugin extends Plugin {
 							.getAttribute(NAME_ATTRIBUTE);
 					String value = propertyElements[i]
 							.getAttribute(VALUE_ATTRIBUTE);
-					if (name != null && !name.equals("") && value != null
-							&& !value.equals("")) {
+					if (name != null && !name.equals("") && value != null //$NON-NLS-1$
+							&& !value.equals("")) { //$NON-NLS-1$
 						props.setProperty(name, value);
 					}
 				}
@@ -178,7 +178,7 @@ public class ECFPlugin extends Plugin {
 	 */
 	protected void removeContainerFactoryExtensions(
 			IConfigurationElement[] members) {
-		String method = "removeContainerFactoryExtensions";
+		String method = "removeContainerFactoryExtensions"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method,
 				members);
@@ -203,16 +203,16 @@ public class ECFPlugin extends Plugin {
 				// remove
 				factory.removeDescription(cd);
 				Trace.trace(ECFPlugin.getDefault(), ECFDebugOptions.DEBUG,
-						method + ".removed " + cd + " from factory");
+						method + ".removed " + cd + " from factory"); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (Exception e) {
 				logException(
 						new Status(
 								Status.ERROR,
 								getDefault().getBundle().getSymbolicName(),
 								FACTORY_NAME_COLLISION_ERRORCODE,
-								getResourceString("ExtPointError.ContainerNameCollisionPrefix")
+								getResourceString("ExtPointError.ContainerNameCollisionPrefix") //$NON-NLS-1$
 										+ name
-										+ getResourceString("ExtPointError.ContainerNameCollisionSuffix")
+										+ getResourceString("ExtPointError.ContainerNameCollisionSuffix") //$NON-NLS-1$
 										+ extension
 												.getExtensionPointUniqueIdentifier(),
 								null), method, e);
@@ -227,7 +227,7 @@ public class ECFPlugin extends Plugin {
 	 *            to add
 	 */
 	protected void addContainerFactoryExtensions(IConfigurationElement[] members) {
-		String method = "addContainerFactoryExtensions";
+		String method = "addContainerFactoryExtensions"; //$NON-NLS-1$
 		Trace.entering(ECFPlugin.getDefault(),
 				ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method,
 				members);
@@ -250,7 +250,7 @@ public class ECFPlugin extends Plugin {
 				// Get description, if present
 				String description = member.getAttribute(DESCRIPTION_ATTRIBUTE);
 				if (description == null) {
-					description = "";
+					description = ""; //$NON-NLS-1$
 				}
 				
 				// Get any arguments
@@ -270,9 +270,9 @@ public class ECFPlugin extends Plugin {
 									Status.ERROR,
 									getDefault().getBundle().getSymbolicName(),
 									FACTORY_NAME_COLLISION_ERRORCODE,
-									getResourceString("ExtPointError.ContainerNameCollisionPrefix")
+									getResourceString("ExtPointError.ContainerNameCollisionPrefix") //$NON-NLS-1$
 											+ name
-											+ getResourceString("ExtPointError.ContainerNameCollisionSuffix")
+											+ getResourceString("ExtPointError.ContainerNameCollisionSuffix") //$NON-NLS-1$
 											+ extension
 													.getExtensionPointUniqueIdentifier(),
 									null));
@@ -280,7 +280,7 @@ public class ECFPlugin extends Plugin {
 				// Now add the description and we're ready to go.
 				factory.addDescription(scd);
 				Trace.trace(ECFPlugin.getDefault(), ECFDebugOptions.DEBUG,
-						method + ".added " + scd + " to factory " + factory);
+						method + ".added " + scd + " to factory " + factory); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (CoreException e) {
 				logException(e.getStatus(), method, e);
 			} catch (Exception e) {
@@ -289,9 +289,9 @@ public class ECFPlugin extends Plugin {
 								Status.ERROR,
 								getDefault().getBundle().getSymbolicName(),
 								FACTORY_NAME_COLLISION_ERRORCODE,
-								getResourceString("ExtPointError.ContainerNameCollisionPrefix")
+								getResourceString("ExtPointError.ContainerNameCollisionPrefix") //$NON-NLS-1$
 										+ name
-										+ getResourceString("ExtPointError.ContainerNameCollisionSuffix")
+										+ getResourceString("ExtPointError.ContainerNameCollisionSuffix") //$NON-NLS-1$
 										+ extension
 												.getExtensionPointUniqueIdentifier(),
 								null), method, e);
@@ -332,7 +332,7 @@ public class ECFPlugin extends Plugin {
 
 	protected void runStartExtensions(
 			IConfigurationElement[] configurationElements) {
-		String method = "runStartExtensions";
+		String method = "runStartExtensions"; //$NON-NLS-1$
 		// For each configuration element
 		for (int m = 0; m < configurationElements.length; m++) {
 			IConfigurationElement member = configurationElements[m];
@@ -352,7 +352,7 @@ public class ECFPlugin extends Plugin {
 			} catch (Exception e) {
 				logException(new Status(Status.ERROR, getDefault().getBundle()
 						.getSymbolicName(), START_ERRORCODE,
-						"Unknown start exception", e), method, e);
+						"Unknown start exception", e), method, e); //$NON-NLS-1$
 			}
 		}
 	}
@@ -422,9 +422,9 @@ public class ECFPlugin extends Plugin {
 	public static String getResourceString(String key) {
 		ResourceBundle bundle = ECFPlugin.getDefault().getResourceBundle();
 		try {
-			return (bundle != null) ? bundle.getString(key) : "!" + key + "!";
+			return (bundle != null) ? bundle.getString(key) : "!" + key + "!"; //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (MissingResourceException e) {
-			return "!" + key + "!";
+			return "!" + key + "!"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

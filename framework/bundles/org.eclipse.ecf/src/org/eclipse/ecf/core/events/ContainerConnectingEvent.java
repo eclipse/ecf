@@ -52,10 +52,10 @@ public class ContainerConnectingEvent implements IContainerConnectingEvent {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ContainerConnectingEvent[");
-		buf.append(getLocalContainerID()).append(";");
-		buf.append(getTargetID()).append(";");
-		buf.append(getData()).append("]");
+		StringBuffer buf = new StringBuffer("ContainerConnectingEvent["); //$NON-NLS-1$
+		buf.append(getLocalContainerID()).append(";"); //$NON-NLS-1$
+		buf.append(getTargetID()).append(";"); //$NON-NLS-1$
+		buf.append(getData()).append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }

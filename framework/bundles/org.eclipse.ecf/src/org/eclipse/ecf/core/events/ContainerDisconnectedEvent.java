@@ -46,9 +46,9 @@ public class ContainerDisconnectedEvent implements IContainerDisconnectedEvent {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ContainerDisconnectedEvent[");
-		buf.append(getTargetID()).append(";");
-		buf.append(getLocalContainerID()).append(";").append("]");
+		StringBuffer buf = new StringBuffer("ContainerDisconnectedEvent["); //$NON-NLS-1$
+		buf.append(getTargetID()).append(";"); //$NON-NLS-1$
+		buf.append(getLocalContainerID()).append(";").append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 }
