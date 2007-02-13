@@ -90,6 +90,11 @@ public class ChatRoomManagerUI {
 						public void handleArrivedInChat(IUser participant) {
 							chatroomview.handleJoin(participant);
 						}
+						
+						public void handleUpdatedInChat(IUser updatedParticipant) {
+							chatroomview.handleUpdated(updatedParticipant);
+						}
+
 						public void handleDepartedFromChat(IUser participant) {
 							chatroomview.handleLeave(participant);
 						}
