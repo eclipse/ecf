@@ -481,13 +481,13 @@ public class ChatRoomManagerView extends ViewPart implements
 								chatroomview.handlePresence(fromID, presence);
 							}
 
-							public void handleArrivedInChat(IUser participant) {
+							public void handleArrived(IUser participant) {
 							}
 
-							public void handleUpdatedInChat(IUser updatedParticipant) {
+							public void handleUpdated(IUser updatedParticipant) {
 							}
 
-							public void handleDepartedFromChat(IUser participant) {
+							public void handleDeparted(IUser participant) {
 							}
 						});
 				chatRoomContainer.addListener(new IContainerListener() {

@@ -625,15 +625,15 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 							chatroomview.handlePresence(fromID, presence);
 						}
 
-						public void handleArrivedInChat(IUser participant) {
+						public void handleArrived(IUser participant) {
 							chatroomview.handleJoin(participant);
 						}
 
-						public void handleDepartedFromChat(IUser participant) {
+						public void handleDeparted(IUser participant) {
 							chatroomview.handleLeave(participant);
 						}
 
-						public void handleUpdatedInChat(IUser updatedParticipant) {
+						public void handleUpdated(IUser updatedParticipant) {
 							chatroomview.handleUpdated(updatedParticipant);
 						}
 					});
@@ -761,17 +761,17 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 													presence);
 										}
 
-										public void handleArrivedInChat(
+										public void handleArrived(
 												IUser participant) {
 											chatroomview
 													.handleJoin(participant);
 										}
 										
-										public void handleUpdatedInChat(IUser updatedParticipant) {
+										public void handleUpdated(IUser updatedParticipant) {
 											chatroomview.handleUpdated(updatedParticipant);
 										}
 
-										public void handleDepartedFromChat(
+										public void handleDeparted(
 												IUser participant) {
 											chatroomview
 													.handleLeave(participant);
