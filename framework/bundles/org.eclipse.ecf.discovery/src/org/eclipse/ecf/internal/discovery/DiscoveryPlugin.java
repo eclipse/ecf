@@ -77,7 +77,7 @@ public class DiscoveryPlugin extends Plugin {
 		try {
 			if (resourceBundle == null)
 				resourceBundle = ResourceBundle
-						.getBundle("org.eclipse.ecf.discovery.DiscoveryPluginResources");
+						.getBundle("org.eclipse.ecf.discovery.DiscoveryPluginResources"); //$NON-NLS-1$
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}

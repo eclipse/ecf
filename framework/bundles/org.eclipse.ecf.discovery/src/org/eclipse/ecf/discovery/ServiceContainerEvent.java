@@ -46,8 +46,8 @@ public class ServiceContainerEvent implements IServiceEvent {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ServiceContainerEvent[");
-		buf.append("serviceinfo=").append(info).append("]");
+		StringBuffer buf = new StringBuffer("ServiceContainerEvent["); //$NON-NLS-1$
+		buf.append("serviceinfo=").append(info).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 }

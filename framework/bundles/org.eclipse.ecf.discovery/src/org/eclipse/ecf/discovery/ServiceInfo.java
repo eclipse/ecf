@@ -110,11 +110,11 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ServiceInfo[");
-		buf.append("addr=").append(addr).append(";id=").append(serviceID)
-				.append(";port=").append(port).append(";priority=").append(
-						priority).append(";weight=").append(weight).append(
-						";props=").append(properties).append("]");
+		StringBuffer buf = new StringBuffer("ServiceInfo["); //$NON-NLS-1$
+		buf.append("addr=").append(addr).append(";id=").append(serviceID) //$NON-NLS-1$ //$NON-NLS-2$
+				.append(";port=").append(port).append(";priority=").append( //$NON-NLS-1$ //$NON-NLS-2$
+						priority).append(";weight=").append(weight).append( //$NON-NLS-1$
+						";props=").append(properties).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 

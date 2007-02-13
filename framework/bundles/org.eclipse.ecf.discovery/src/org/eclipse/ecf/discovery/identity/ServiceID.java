@@ -10,6 +10,7 @@ package org.eclipse.ecf.discovery.identity;
 
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.internal.discovery.Messages;
 
 /**
  * Service identity type.  ServiceIDs are IDs that uniquely identify
@@ -26,7 +27,7 @@ public class ServiceID extends BaseID {
 	protected ServiceID(Namespace namespace, String type, String name) {
 		super(namespace);
 		if (type == null)
-			throw new NullPointerException("ServiceID type cannot be null");
+			throw new NullPointerException(Messages.getString("ServiceID.ServiceID_Not_Null")); //$NON-NLS-1$
 		this.type = type;
 		this.name = name;
 	}
@@ -106,9 +107,9 @@ public class ServiceID extends BaseID {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ServiceID[");
-		buf.append("type=").append(type).append(";name=").append(name).append(
-				";full=" + getFullyQualifiedName()).append("]");
+		StringBuffer buf = new StringBuffer("ServiceID["); //$NON-NLS-1$
+		buf.append("type=").append(type).append(";name=").append(name).append( //$NON-NLS-1$ //$NON-NLS-2$
+				";full=" + getFullyQualifiedName()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 }
