@@ -20,7 +20,7 @@ import org.osgi.framework.BundleContext;
 public class Activator extends Plugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipse.ecf.remoteservice";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.remoteservice"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
