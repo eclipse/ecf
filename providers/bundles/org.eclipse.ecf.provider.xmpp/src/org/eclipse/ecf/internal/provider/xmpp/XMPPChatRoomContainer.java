@@ -38,6 +38,7 @@ import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
@@ -473,6 +474,24 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 	 */
 	public void removeMessageListener(IIMMessageListener listener) {
 		containerHelper.removeChatRoomMessageListener(listener);		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
+	 */
+	public void addChatRoomSubjectListener(
+			IChatRoomAdminListener subjectListener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#removeChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
+	 */
+	public void removeChatRoomSubjectListener(
+			IChatRoomAdminListener subjectListener) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
