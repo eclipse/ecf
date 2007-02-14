@@ -14,7 +14,6 @@ package org.eclipse.ecf.tests.core;
 import java.util.List;
 
 import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 
 public class ContainerFactoryDescriptionsTest extends
 		ContainerFactoryAbstractTestCase {
@@ -77,13 +76,6 @@ public class ContainerFactoryDescriptionsTest extends
 		ContainerTypeDescription desc = getFixture().getDescriptionByName(
 				getDescription().getName());
 		assertNotNull(desc);
-	}
-
-	public void testGetDescriptionsForAdapter() {
-		ContainerTypeDescription[] descs = getFixture()
-				.getDescriptionsForContainerAdapter(
-						IPresenceContainerAdapter.class);
-		assertNotNull(descs);
 	}
 
 	public void testCreateContainer() {

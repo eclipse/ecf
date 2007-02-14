@@ -7,12 +7,7 @@ Bundle-Activator: org.eclipse.ecf.internal.tests.Activator
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.junit,
  org.eclipse.core.runtime,
- org.eclipse.ecf,
- org.eclipse.ecf.presence,
- org.eclipse.ecf.sharedobject,
- org.eclipse.ecf.filetransfer,
- org.eclipse.ecf.discovery,
- org.eclipse.ecf.datashare
+ org.eclipse.ecf
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.tests;x-internal:=true,
  org.eclipse.ecf.tests,
