@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Discovery Provider
 Bundle-SymbolicName: org.eclipse.ecf.provider.jmdns;singleton:=true
-Bundle-Version: 1.0.0.v20070212
+Bundle-Version: 1.0.0.v20070214
 Bundle-Activator: org.eclipse.ecf.internal.provider.jmdns.JMDNSPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
