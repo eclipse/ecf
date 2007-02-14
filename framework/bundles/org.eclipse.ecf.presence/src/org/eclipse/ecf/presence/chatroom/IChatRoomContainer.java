@@ -63,17 +63,17 @@ public interface IChatRoomContainer extends IContainer {
 			IChatRoomParticipantListener participantListener);
 	
 	/**
-	 * Add chat room subject listener to listen for subject/topic changes.
+	 * Add chat room admin listener to listen for room admin changes.
 	 * 
 	 * @param subjectListener the listener to add.  Must not be <code>null</code>.
 	 */
-	public void addChatRoomSubjectListener(IChatRoomAdminListener subjectListener);
+	public void addChatRoomAdminListener(IChatRoomAdminListener adminListener);
 	
 	/**
-	 * Remove chat room subject listener.
+	 * Remove chat room admin listener.
 	 * 
 	 * @param subjectListener the listener to remove.  Must not be <code>null</code>.
 	 */
-	public void removeChatRoomSubjectListener(IChatRoomAdminListener subjectListener);
+	public void removeChatRoomAdminListener(IChatRoomAdminListener adminListener);
 	
 }

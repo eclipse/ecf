@@ -21,7 +21,14 @@ public interface IChatRoomAdminListener {
 	/**
 	 * Handle notification of new subject set for the associated chat room.
 	 * 
-	 * @param newSubject the new Subject
+	 * @param from
+	 *            the ID of the user the subject change is from. May be
+	 *            <code>null</code> if user is not known, or change is not
+	 *            from any particular user (i.e. the system).
+	 * 
+	 * @param newSubject
+	 *            the new subject for the chat room. Will not be
+	 *            <code>null</code>, but may be empty String.
 	 */
 	public void handleSubjectChange(ID from, String newSubject);
 }
