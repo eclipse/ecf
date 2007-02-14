@@ -17,6 +17,7 @@ import java.io.ObjectInputStream;
 
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 public class ExObjectInputStream extends ObjectInputStream {
@@ -32,10 +33,10 @@ public class ExObjectInputStream extends ObjectInputStream {
         if (backwardCompatibility) {
             try {
                 super.enableResolveObject(true);
-                debug("resolveObject");
+                debug("resolveObject"); //$NON-NLS-1$
             } catch (Exception e) {
                 throw new IOException(
-                        "Could not setup backward compatibility object replacers for ExObjectInputStream");
+                        Messages.ExObjectInputStream_Exception_Could_Not_Setup_Object_Replacers);
             }
         }
     }

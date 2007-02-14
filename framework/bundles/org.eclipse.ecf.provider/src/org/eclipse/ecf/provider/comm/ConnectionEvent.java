@@ -37,10 +37,10 @@ public class ConnectionEvent implements Event {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ConnectionEvent[");
-		buf.append("conn=").append(getConnection()).append(";").append("data=")
+		StringBuffer buf = new StringBuffer("ConnectionEvent["); //$NON-NLS-1$
+		buf.append("conn=").append(getConnection()).append(";").append("data=") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				.append(getData());
-		buf.append("]");
+		buf.append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 

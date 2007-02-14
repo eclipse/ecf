@@ -39,7 +39,7 @@ public class TCPClientSOContainer extends ClientSOContainer {
 	}
     protected ISynchAsynchConnection createConnection(ID remoteSpace,
             Object data) throws ConnectionCreateException {
-        debug("createClientConnection:" + remoteSpace + ":" + data);
+        debug("createClientConnection:" + remoteSpace + ":" + data); //$NON-NLS-1$ //$NON-NLS-2$
         ISynchAsynchConnection conn = new Client(receiver,keepAlive);
         return conn;
     }

@@ -29,14 +29,14 @@ public class Connector {
 	List groups = new ArrayList();
 	
 	public Connector(String protocol, String host, int port, int timeout) {
-		if (protocol != null && !protocol.equals("")) this.protocol = protocol;
-		if (host != null && !host.equals("")) this.hostname = host;
+		if (protocol != null && !protocol.equals("")) this.protocol = protocol; //$NON-NLS-1$
+		if (host != null && !host.equals("")) this.hostname = host; //$NON-NLS-1$
 		else {
 			try {
 				InetAddress addr = InetAddress.getLocalHost();
 				this.hostname = addr.getCanonicalHostName();
 			} catch (Exception e) {
-				this.hostname = "localhost";
+				this.hostname = "localhost"; //$NON-NLS-1$
 			}
 		}
 		this.port = port;
@@ -61,6 +61,6 @@ public class Connector {
 		return groups;
 	}
 	public String getID() {
-		return getProtocol()+"://"+getHostname()+":"+getPort();
+		return getProtocol()+"://"+getHostname()+":"+getPort(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

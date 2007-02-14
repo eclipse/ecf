@@ -20,7 +20,7 @@ import java.util.*;
  */
 public class ProviderPlugin extends Plugin {
 	
-	public static final String PLUGIN_ID = "org.eclipse.ecf.provider";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider"; //$NON-NLS-1$
 	
     //The shared instance.
     private static ProviderPlugin plugin;
@@ -36,7 +36,7 @@ public class ProviderPlugin extends Plugin {
         plugin = this;
         try {
             resourceBundle = ResourceBundle
-                    .getBundle("org.eclipse.ecf.provider.ProviderPluginResources");
+                    .getBundle("org.eclipse.ecf.provider.ProviderPluginResources"); //$NON-NLS-1$
         } catch (MissingResourceException x) {
             resourceBundle = null;
         }

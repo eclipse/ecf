@@ -54,8 +54,8 @@ public class Member implements Comparable {
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("Member[").append(member).append(";").append(data)
-                .append("]");
+        sb.append("Member[").append(member).append(";").append(data) //$NON-NLS-1$ //$NON-NLS-2$
+                .append("]"); //$NON-NLS-1$
         return sb.toString();
     }
 }

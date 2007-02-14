@@ -23,15 +23,15 @@ import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 
 public class TCPServerSOContainer extends ServerSOContainer implements
 		IConnectRequestHandler {
-	public static final String DEFAULT_PROTOCOL = "ecftcp";
+	public static final String DEFAULT_PROTOCOL = "ecftcp"; //$NON-NLS-1$
 
 	public static final int DEFAULT_PORT = 3282;
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
 
-	public static final String DEFAULT_NAME = "/server";
+	public static final String DEFAULT_NAME = "/server"; //$NON-NLS-1$
 
-	public static final String DEFAULT_HOST = "localhost";
+	public static final String DEFAULT_HOST = "localhost"; //$NON-NLS-1$
 
 	// Keep alive value
 	protected int keepAlive;
@@ -45,11 +45,11 @@ public class TCPServerSOContainer extends ServerSOContainer implements
 	}
 
 	public static String getServerURL(String host, String name) {
-		return DEFAULT_PROTOCOL + "://" + host + ":" + DEFAULT_PORT + name;
+		return DEFAULT_PROTOCOL + "://" + host + ":" + DEFAULT_PORT + name; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public static String getDefaultServerURL() {
-		return getServerURL("localhost", DEFAULT_NAME);
+		return getServerURL("localhost", DEFAULT_NAME); //$NON-NLS-1$
 	}
 
 	public TCPServerSOContainer(ISharedObjectContainerConfig config,

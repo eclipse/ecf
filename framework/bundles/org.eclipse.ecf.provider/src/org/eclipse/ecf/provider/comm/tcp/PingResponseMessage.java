@@ -20,7 +20,7 @@ public class PingResponseMessage implements Serializable {
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer("PingResponseMessage");
+        StringBuffer buf = new StringBuffer("PingResponseMessage[]"); //$NON-NLS-1$
         return buf.toString();
     }
 }

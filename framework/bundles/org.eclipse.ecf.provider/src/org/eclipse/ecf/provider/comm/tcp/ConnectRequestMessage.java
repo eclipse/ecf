@@ -33,8 +33,8 @@ public class ConnectRequestMessage implements Serializable {
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer("ConnectRequestMessage[");
-        buf.append(target).append(";").append(data).append("]");
+        StringBuffer buf = new StringBuffer("ConnectRequestMessage["); //$NON-NLS-1$
+        buf.append(target).append(";").append(data).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return buf.toString();
     }
 }

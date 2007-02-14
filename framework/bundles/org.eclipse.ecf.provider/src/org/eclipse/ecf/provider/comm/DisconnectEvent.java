@@ -29,10 +29,10 @@ public class DisconnectEvent extends ConnectionEvent {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("DisconnectEvent[");
-		buf.append("conn=").append(getConnection()).append(";").append("e=")
+		StringBuffer buf = new StringBuffer("DisconnectEvent["); //$NON-NLS-1$
+		buf.append("conn=").append(getConnection()).append(";").append("e=") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				.append(getException());
-		buf.append("data=").append(getData()).append("]");
+		buf.append("data=").append(getData()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 }

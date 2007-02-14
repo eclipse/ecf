@@ -62,7 +62,7 @@ public class SOWrapper {
     }
 
     protected void init() throws SharedObjectInitException {
-        debug("init()");
+        debug("init()"); //$NON-NLS-1$
         sharedObjectConfig.makeActive(new QueueEnqueueImpl(queue));
         sharedObject.init(sharedObjectConfig);
     }
@@ -79,7 +79,7 @@ public class SOWrapper {
         return sharedObjectConfig;
     }
     protected void activated() {
-        debug("activated");
+        debug("activated"); //$NON-NLS-1$
         thread = (Thread) AccessController.doPrivileged(new PrivilegedAction() {
             public Object run() {
                 Thread aThread = getThread();
@@ -95,7 +95,7 @@ public class SOWrapper {
     }
 
     protected void deactivated() {
-        debug("deactivated()");
+        debug("deactivated()"); //$NON-NLS-1$
         container.notifySharedObjectDeactivated(sharedObjectID);
         send(new SharedObjectDeactivatedEvent(containerID, sharedObjectID));
         destroyed();
@@ -110,7 +110,7 @@ public class SOWrapper {
     }
 
     protected void otherChanged(ID otherID, boolean activated) {
-        debug("otherChanged(" + otherID + "," + activated);
+        debug("otherChanged(" + otherID + "," + activated); //$NON-NLS-1$ //$NON-NLS-2$
         if (activated && thread != null) {
             send(new SharedObjectActivatedEvent(containerID, otherID));
         } else {
@@ -119,7 +119,7 @@ public class SOWrapper {
     }
 
     protected void memberChanged(Member m, boolean add) {
-        debug("memberChanged(" + m + "," + add);
+        debug("memberChanged(" + m + "," + add); //$NON-NLS-1$ //$NON-NLS-2$
         if (thread != null) {
             if (add) {
                 send(new ContainerConnectedEvent(containerID, m
@@ -135,7 +135,7 @@ public class SOWrapper {
         return container.getNewSharedObjectThread(sharedObjectID,
                 new Runnable() {
                     public void run() {
-                        debug("runner(" + sharedObjectID + ")");
+                        debug("runner(" + sharedObjectID + ")"); //$NON-NLS-1$ //$NON-NLS-2$
                         Event evt = null;
                         for (;;) {
                             if (Thread.currentThread().isInterrupted())
@@ -158,18 +158,18 @@ public class SOWrapper {
                             }
                         }
                         if (Thread.currentThread().isInterrupted()) {
-                            debug("runner(" + sharedObjectID
-                                    + ") terminating interrupted");
+                            debug("runner(" + sharedObjectID //$NON-NLS-1$
+                                    + ") terminating interrupted"); //$NON-NLS-1$
                         } else {
-                            debug("runner(" + sharedObjectID
-                                    + ") terminating normally");
+                            debug("runner(" + sharedObjectID //$NON-NLS-1$
+                                    + ") terminating normally"); //$NON-NLS-1$
                         }
                     }
                 });
     }
 
     private void send(Event evt) {
-    	debug("queue("+evt+")");
+    	debug("queue("+evt+")"); //$NON-NLS-1$ //$NON-NLS-2$
         queue.enqueue(new ProcEvent(evt));
     }
 
@@ -217,31 +217,31 @@ public class SOWrapper {
         send(evt);
     }
     protected void destroySelf() {
-        debug("destroySelf()");
+        debug("destroySelf()"); //$NON-NLS-1$
         send(new DisposeEvent());
     }
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("SharedObjectWrapper[").append(getObjID()).append("]");
+        sb.append("SharedObjectWrapper[").append(getObjID()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return sb.toString();
     }
 
 	protected void debug(String msg) {
 		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
-				msg + ":" + container.getID());
+				msg + ":" + container.getID()); //$NON-NLS-1$
 	}
 	
 	protected void traceStack(String msg, Throwable e) {
 		Trace.catching(ProviderPlugin.getDefault(),
 				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainerGMM.class,
-				container.getID() + ":" + msg, e);
+				container.getID() + ":" + msg, e); //$NON-NLS-1$
 	}
 
     protected void handleRuntimeException(Throwable except) {
         except.printStackTrace(System.err);
         traceStack(
-                "runner:handleRuntimeException(" + sharedObjectID.getName() + ")",
+                "runner:handleRuntimeException(" + sharedObjectID.getName() + ")", //$NON-NLS-1$ //$NON-NLS-2$
                 except);
     }
 

@@ -17,6 +17,7 @@ import java.net.Socket;
 
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 public class Server extends ServerSocket {
@@ -42,7 +43,7 @@ public class Server extends ServerSocket {
             throws IOException {
         super(port,DEFAULT_BACKLOG);
         if (handler == null)
-            throw new InstantiationError("Listener cannot be null");
+            throw new InstantiationError(Messages.Server_Listener_Not_Null);
         acceptHandler = handler;
         threadGroup = group;
         listenerThread = setupListener();
@@ -60,25 +61,25 @@ public class Server extends ServerSocket {
                     try {
                         handleAccept(accept());
                     } catch (Exception e) {
-                            traceStack("Exception in accept", e);
+                            traceStack("Exception in accept", e); //$NON-NLS-1$
                         // If we get an exception on accept(), we should just
                         // exit
                         break;
                     }
                 }
-                debug("Closing listener normally.");
+                debug("Closing listener normally."); //$NON-NLS-1$
             }
-        }, "ServerApplication(" + getLocalPort() + ")");
+        }, "ServerApplication(" + getLocalPort() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     protected void handleAccept(final Socket aSocket) {
         new Thread(threadGroup, new Runnable() {
             public void run() {
                 try {
-                    debug("accept:" + aSocket.getInetAddress());
+                    debug("accept:" + aSocket.getInetAddress()); //$NON-NLS-1$
                     acceptHandler.handleAccept(aSocket);
                 } catch (Exception e) {
-                    traceStack("Unexpected exception in handleAccept...closing",
+                    traceStack("Unexpected exception in handleAccept...closing", //$NON-NLS-1$
                             e);
                     try {
                         aSocket.close();

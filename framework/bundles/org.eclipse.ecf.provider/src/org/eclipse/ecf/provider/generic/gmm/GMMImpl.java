@@ -82,7 +82,7 @@ public class GMMImpl extends Observable {
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("GMM").append(mySet);
+        sb.append("GMM").append(mySet); //$NON-NLS-1$
         return sb.toString();
     }
 }

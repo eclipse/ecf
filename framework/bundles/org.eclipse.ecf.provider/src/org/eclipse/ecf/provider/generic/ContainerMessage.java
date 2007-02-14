@@ -128,10 +128,10 @@ public class ContainerMessage implements Serializable {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer("ContainerMessage[");
-        sb.append(fromContainerID).append(";").append(toContainerID)
-                .append(";");
-        sb.append(sequence).append(";").append(data).append("]");
+        StringBuffer sb = new StringBuffer("ContainerMessage["); //$NON-NLS-1$
+        sb.append(fromContainerID).append(";").append(toContainerID) //$NON-NLS-1$
+                .append(";"); //$NON-NLS-1$
+        sb.append(sequence).append(";").append(data).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return sb.toString();
     }
 
@@ -149,20 +149,20 @@ public class ContainerMessage implements Serializable {
 
         protected String printChangeIDs() {
             if (changeIDs == null)
-                return "null";
+                return "null"; //$NON-NLS-1$
             StringBuffer buf = new StringBuffer();
             for (int i = 0; i < changeIDs.length; i++) {
                 buf.append(changeIDs[i]);
                 if (i != (changeIDs.length - 1))
-                    buf.append(",");
+                    buf.append(","); //$NON-NLS-1$
             }
             return buf.toString();
         }
 
         public String toString() {
-            StringBuffer sb = new StringBuffer("ViewChangeMessage[");
-            sb.append(printChangeIDs()).append(";").append(add).append(";")
-                    .append(data).append("]");
+            StringBuffer sb = new StringBuffer("ViewChangeMessage["); //$NON-NLS-1$
+            sb.append(printChangeIDs()).append(";").append(add).append(";") //$NON-NLS-1$ //$NON-NLS-2$
+                    .append(data).append("]"); //$NON-NLS-1$
             return sb.toString();
         }
 
@@ -201,8 +201,8 @@ public class ContainerMessage implements Serializable {
         }
 
         public String toString() {
-            StringBuffer sb = new StringBuffer("CreateMessage[");
-            sb.append(data).append("]");
+            StringBuffer sb = new StringBuffer("CreateMessage["); //$NON-NLS-1$
+            sb.append(data).append("]"); //$NON-NLS-1$
             return sb.toString();
         }
     }
@@ -220,9 +220,9 @@ public class ContainerMessage implements Serializable {
         }
 
         public String toString() {
-            StringBuffer sb = new StringBuffer("CreateResponseMessage[");
-            sb.append(sharedObjectID).append(";").append(exception).append(";")
-                    .append(sequence).append("]");
+            StringBuffer sb = new StringBuffer("CreateResponseMessage["); //$NON-NLS-1$
+            sb.append(sharedObjectID).append(";").append(exception).append(";") //$NON-NLS-1$ //$NON-NLS-2$
+                    .append(sequence).append("]"); //$NON-NLS-1$
             return sb.toString();
         }
 
@@ -259,8 +259,8 @@ public class ContainerMessage implements Serializable {
         }
 
         public String toString() {
-            StringBuffer sb = new StringBuffer("SharedObjectMessage[");
-            sb.append(fromSharedObjectID).append(";").append(data).append("]");
+            StringBuffer sb = new StringBuffer("SharedObjectMessage["); //$NON-NLS-1$
+            sb.append(fromSharedObjectID).append(";").append(data).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
             return sb.toString();
         }
 
@@ -289,8 +289,8 @@ public class ContainerMessage implements Serializable {
         }
 
         public String toString() {
-            StringBuffer sb = new StringBuffer("SharedObjectDisposeMessage[");
-            sb.append(sharedObjectID).append("]");
+            StringBuffer sb = new StringBuffer("SharedObjectDisposeMessage["); //$NON-NLS-1$
+            sb.append(sharedObjectID).append("]"); //$NON-NLS-1$
             return sb.toString();
         }
 
@@ -315,8 +315,8 @@ public class ContainerMessage implements Serializable {
         }
 
         public String toString() {
-            StringBuffer sb = new StringBuffer("JoinGroupMessage[");
-            sb.append(data).append("]");
+            StringBuffer sb = new StringBuffer("JoinGroupMessage["); //$NON-NLS-1$
+            sb.append(data).append("]"); //$NON-NLS-1$
             return sb.toString();
         }
     }
@@ -334,8 +334,8 @@ public class ContainerMessage implements Serializable {
         }
 
         public String toString() {
-            StringBuffer sb = new StringBuffer("LeaveGroupMessage[");
-            sb.append(data).append("]");
+            StringBuffer sb = new StringBuffer("LeaveGroupMessage["); //$NON-NLS-1$
+            sb.append(data).append("]"); //$NON-NLS-1$
             return sb.toString();
         }
     }

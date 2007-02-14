@@ -28,15 +28,15 @@ import org.xml.sax.SAXException;
 
 public class ServerConfigParser {
 
-	public static final String SERVER_ELEMENT = "server";
-	public static final String CONNECTOR_ELEMENT = "connector";
-	public static final String GROUP_ELEMENT = "group";
+	public static final String SERVER_ELEMENT = "server"; //$NON-NLS-1$
+	public static final String CONNECTOR_ELEMENT = "connector"; //$NON-NLS-1$
+	public static final String GROUP_ELEMENT = "group"; //$NON-NLS-1$
 	
-	public static final String PROTOCOL_ATTR = "protocol";
-	public static final String HOSTNAME_ATTR = "hostname";
-	public static final String PORT_ATTR = "port";
-	public static final String TIMEOUT_ATTR = "timeout";
-	public static final String NAME_ATTR = "name";
+	public static final String PROTOCOL_ATTR = "protocol"; //$NON-NLS-1$
+	public static final String HOSTNAME_ATTR = "hostname"; //$NON-NLS-1$
+	public static final String PORT_ATTR = "port"; //$NON-NLS-1$
+	public static final String TIMEOUT_ATTR = "timeout"; //$NON-NLS-1$
+	public static final String NAME_ATTR = "name"; //$NON-NLS-1$
 	
 	protected void findElementsNamed(Node top, String name, List aList) {
         int type = top.getNodeType();
@@ -99,7 +99,7 @@ public class ServerConfigParser {
 		for(Iterator i=groupList.iterator(); i.hasNext(); ) {
 			Node node = (Node) i.next();
 			String name = getAttributeValue(node,NAME_ATTR);
-			if (name != null && !name.equals("")) {
+			if (name != null && !name.equals("")) { //$NON-NLS-1$
 				NamedGroup g = new NamedGroup(name);
 				c.addGroup(g);
 				g.setParent(c);
@@ -117,7 +117,7 @@ public class ServerConfigParser {
         if (attrNode != null) {
             return attrNode.getNodeValue();
         } else
-            return "";
+            return ""; //$NON-NLS-1$
     }
 	public List load(InputStream ins) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -130,6 +130,6 @@ public class ServerConfigParser {
 		InputStream ins = new FileInputStream(args[0]);
 		ServerConfigParser configParser = new ServerConfigParser();
 		List res = configParser.load(ins);
-		System.out.println("result is "+res);
+		System.out.println("result is "+res); //$NON-NLS-1$
 	}
 }

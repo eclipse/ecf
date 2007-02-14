@@ -25,7 +25,7 @@ public class NamedGroup {
 		return parent.getID()+getName();
 	}
 	protected String cleanGroupName(String n) {
-		String res = ((n.startsWith("/"))?n:"/"+n);
+		String res = ((n.startsWith("/"))?n:"/"+n); //$NON-NLS-1$ //$NON-NLS-2$
 		return res;
 	}
 }

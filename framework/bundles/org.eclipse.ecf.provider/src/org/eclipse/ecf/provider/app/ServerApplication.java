@@ -46,24 +46,24 @@ public class ServerApplication {
 
     static class JoinListener implements IConnectHandlerPolicy {
 		public PermissionCollection checkConnect(Object addr, ID fromID, ID targetID, String targetGroup, Object joinData) throws Exception {
-			System.out.println("JOIN Addr="+addr+";From="+fromID+";Target Group="+targetGroup+";Data="+joinData);
+			System.out.println("JOIN Addr="+addr+";From="+fromID+";Target Group="+targetGroup+";Data="+joinData); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			return null;
 		}
 
 		public void refresh() {
-			System.out.println("joinpolicy.refresh()");
+			System.out.println("joinpolicy.refresh()"); //$NON-NLS-1$
 		}
     	
     }
     static class SharedObjectAddListener implements ISharedObjectPolicy {
 
 		public PermissionCollection checkAddSharedObject(ID fromID, ID toID, ID localID, ReplicaSharedObjectDescription newObject) throws SecurityException {
-			System.out.println("CHECKADDSHAREDOBJECT From="+fromID+";To="+toID+";SharedObject="+newObject);
+			System.out.println("CHECKADDSHAREDOBJECT From="+fromID+";To="+toID+";SharedObject="+newObject); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return null;
 		}
 
 		public void refresh() {
-			System.out.println("joinpolicy.refresh()");
+			System.out.println("joinpolicy.refresh()"); //$NON-NLS-1$
 		}
     	
     }
@@ -72,10 +72,10 @@ public class ServerApplication {
         String serverName = null;
 		List connectors = null;
         if (args.length > 0) {
-			if (args[0].equals("-c")) {
+			if (args[0].equals("-c")) { //$NON-NLS-1$
 				ServerConfigParser parser = new ServerConfigParser();
 				connectors = parser.load(new FileInputStream(args[1]));
-			} else if (!args[0].equals("-"))
+			} else if (!args[0].equals("-")) //$NON-NLS-1$
                 serverName = args[0];
         }
 		if (connectors != null) {
@@ -93,10 +93,10 @@ public class ServerApplication {
 			        ((ISharedObjectContainerGroupManager)cont).setConnectPolicy(new JoinListener());
 					servers.add(cont);
 				}
-				System.out.println("Putting server "+connect.getHostname()+" on the air");
+				System.out.println("Putting server "+connect.getHostname()+" on the air"); //$NON-NLS-1$ //$NON-NLS-2$
 				serverGroups[j].putOnTheAir();
 				j++;
-		        System.out.println("<ctrl>-c to stop server");			
+		        System.out.println("<ctrl>-c to stop server");			 //$NON-NLS-1$
 			}
 		} else {
 	        if (serverName == null) {
@@ -119,7 +119,7 @@ public class ServerApplication {
 	        // Create server config object with identity and default timeout
 	        SOContainerConfig config = new SOContainerConfig(id);
 	        // Make server instance
-	        System.out.print("Creating ECF server container...");
+	        System.out.print("Creating ECF server container..."); //$NON-NLS-1$
 	        TCPServerSOContainer server = new TCPServerSOContainer(config, serverGroups[0], name,
 	                TCPServerSOContainer.DEFAULT_KEEPALIVE);
 	        // Setup join policy
@@ -130,20 +130,20 @@ public class ServerApplication {
 
 	        serverGroups[0].putOnTheAir();
 			servers.add(server);
-	        System.out.println("success!");
+	        System.out.println("success!"); //$NON-NLS-1$
 	        System.out
-	                .println("Waiting for JOIN requests at '" + id.getName() + "'...");
-	        System.out.println("<ctrl>-c to stop server");			
+	                .println("Waiting for JOIN requests at '" + id.getName() + "'..."); //$NON-NLS-1$ //$NON-NLS-2$
+	        System.out.println("<ctrl>-c to stop server");			 //$NON-NLS-1$
 		}
     }
 	
 	protected static TCPServerSOContainerGroup createServerGroup(String name, int port) {
-		System.out.println("Creating server group named "+name+" to listen on port "+port);
+		System.out.println("Creating server group named "+name+" to listen on port "+port); //$NON-NLS-1$ //$NON-NLS-2$
 		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,port);
 		return group;
 	}
 	protected static TCPServerSOContainer createServerContainer(String id, TCPServerSOContainerGroup group, String path, int keepAlive) throws IDCreateException {
-		System.out.println("  Creating container with id="+id+", group="+path+" keepAlive="+keepAlive);
+		System.out.println("  Creating container with id="+id+", group="+path+" keepAlive="+keepAlive); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		ID newServerID = IDFactory.getDefault().createStringID(id);
 		SOContainerConfig config = new SOContainerConfig(newServerID);
 		return new TCPServerSOContainer(config,group,path,keepAlive);

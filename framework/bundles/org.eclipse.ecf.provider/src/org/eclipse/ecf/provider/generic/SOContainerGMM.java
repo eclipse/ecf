@@ -40,18 +40,18 @@ class SOContainerGMM implements Observer {
         active = new TreeMap();
         localMember = local;
         addMember(local);
-        debug("<init>");
+        debug("<init>"); //$NON-NLS-1$
     }
 
 	protected void debug(String msg) {
 		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
-				msg + ":" + container.getID());
+				msg + ":" + container.getID()); //$NON-NLS-1$
 	}
 	
 	protected void traceStack(String msg, Throwable e) {
 		Trace.catching(ProviderPlugin.getDefault(),
 				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainerGMM.class,
-				container.getID() + ":" + msg, e);
+				container.getID() + ":" + msg, e); //$NON-NLS-1$
 	}
 
     ID[] getSharedObjectIDs() {
@@ -59,7 +59,7 @@ class SOContainerGMM implements Observer {
     }
 
     synchronized boolean addMember(Member m) {
-        debug("addMember(" + m.getID() + ")");
+        debug("addMember(" + m.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         if (maxMembers > 0 && getSize() > maxMembers) {
             return false;
         } else {
@@ -68,7 +68,7 @@ class SOContainerGMM implements Observer {
     }
 
     synchronized int setMaxMembers(int max) {
-        debug("setMaxMembers(" + max + ")");
+        debug("setMaxMembers(" + max + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         int old = maxMembers;
         maxMembers = max;
         return old;
@@ -87,7 +87,7 @@ class SOContainerGMM implements Observer {
     }
 
     synchronized boolean removeMember(ID id) {
-        debug("removeMember(" + id + ")");
+        debug("removeMember(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         Member m = getMemberForID(id);
         if (m == null)
             return false;
@@ -104,9 +104,9 @@ class SOContainerGMM implements Observer {
 
     synchronized void removeAllMembers(Member exception) {
         if (exception == null) {
-            debug("removeAllMembers()");
+            debug("removeAllMembers()"); //$NON-NLS-1$
         } else {
-            debug("removeAllMembers(" + exception.getID() + ")");
+            debug("removeAllMembers(" + exception.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         Object m[] = getMembers();
         for (int i = 0; i < m.length; i++) {
@@ -144,7 +144,7 @@ class SOContainerGMM implements Observer {
 
     synchronized boolean containsMember(Member m) {
         if (m != null) {
-            debug("containsMember(" + m.getID() + ")");
+            debug("containsMember(" + m.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return groupManager.containsMember(m);
     }
@@ -156,7 +156,7 @@ class SOContainerGMM implements Observer {
     // End group membership change methods
     synchronized boolean addSharedObject(SOWrapper ro) {
         if (ro != null)
-            debug("addSharedObject(" + ro.getObjID() + ")");
+            debug("addSharedObject(" + ro.getObjID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         if (getFromAny(ro.getObjID()) != null)
             return false;
         addSharedObjectToActive(ro);
@@ -166,7 +166,7 @@ class SOContainerGMM implements Observer {
     synchronized boolean addLoadingSharedObject(
             SOContainer.LoadingSharedObject lso) {
         if (lso != null)
-            debug("addLoadingSharedObject(" + lso.getID() + ")");
+            debug("addLoadingSharedObject(" + lso.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         if (getFromAny(lso.getID()) != null)
             return false;
         loading.put(lso.getID(), new SOWrapper(lso, container));
@@ -177,13 +177,13 @@ class SOContainerGMM implements Observer {
 
     synchronized void moveSharedObjectFromLoadingToActive(SOWrapper ro) {
         if (ro != null)
-            debug("moveSharedObjectFromLoadingToActive(" + ro.getObjID() + ")");
+            debug("moveSharedObjectFromLoadingToActive(" + ro.getObjID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         if (removeSharedObjectFromLoading(ro.getObjID()))
             addSharedObjectToActive(ro);
     }
 
     boolean removeSharedObjectFromLoading(ID id) {
-        debug("removeSharedObjectFromLoading(" + id + ")");
+        debug("removeSharedObjectFromLoading(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         if (loading.remove(id) != null) {
             return true;
         } else
@@ -196,18 +196,18 @@ class SOContainerGMM implements Observer {
 
     void addSharedObjectToActive(SOWrapper so) {
         if (so != null)
-            debug("addSharedObjectToActive(" + so.getObjID() + ")");
+            debug("addSharedObjectToActive(" + so.getObjID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         active.put(so.getObjID(), so);
         so.activated();
     }
 
     synchronized void notifyOthersActivated(ID id) {
-        debug("notifyOthersActivated(" + id + ")");
+        debug("notifyOthersActivated(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         notifyOtherChanged(id, active, true);
     }
 
     synchronized void notifyOthersDeactivated(ID id) {
-        debug("notifyOthersDeactivated(" + id + ")");
+        debug("notifyOthersDeactivated(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         notifyOtherChanged(id, active, false);
     }
 
@@ -221,7 +221,7 @@ class SOContainerGMM implements Observer {
     }
 
     synchronized boolean removeSharedObject(ID id) {
-        debug("removeSharedObject(" + id + ")");
+        debug("removeSharedObject(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         SOWrapper ro = removeFromMap(id, active);
         if (ro == null)
             return false;
@@ -271,7 +271,7 @@ class SOContainerGMM implements Observer {
     }
 
     synchronized void clear() {
-        debug("clear()");
+        debug("clear()"); //$NON-NLS-1$
         removeSharedObjects(null, true);
     }
 
@@ -311,10 +311,10 @@ class SOContainerGMM implements Observer {
 
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("SOContainerGMM[");
+        sb.append("SOContainerGMM["); //$NON-NLS-1$
         sb.append(groupManager);
-        sb.append(";load:").append(loading);
-        sb.append(";active:").append(active).append("]");
+        sb.append(";load:").append(loading); //$NON-NLS-1$
+        sb.append(";active:").append(active).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
         return sb.toString();
     }
 }

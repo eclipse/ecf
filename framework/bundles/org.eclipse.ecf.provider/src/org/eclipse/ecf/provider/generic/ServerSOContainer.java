@@ -26,6 +26,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.IConnectHandlerPolicy;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerGroupManager;
+import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.provider.comm.IAsynchConnection;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.comm.ISynchConnection;
@@ -86,8 +87,8 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                                             getNextSequenceNumber(), data
                                                     .getData())));
                         } catch (IOException e) {
-                            logException("Exception in forwardExcluding from "
-                                    + from + " with oldID " + oldID, e);
+                            logException("Exception in forwardExcluding from " //$NON-NLS-1$
+                                    + from + " with oldID " + oldID, e); //$NON-NLS-1$
                             e.printStackTrace();
                         }
                     }
@@ -99,7 +100,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
     protected void handleViewChangeMessage(ContainerMessage mess)
             throws IOException {
         // ServerApplication should never receive change messages
-    	debug("handleViewChangeMessage("+mess+")");
+    	debug("handleViewChangeMessage("+mess+")"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public void disconnect() {
@@ -108,23 +109,23 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 
     protected ContainerMessage acceptNewClient(Socket socket, String target,
             Serializable data, ISynchAsynchConnection conn) {
-    	debug("acceptNewClient("+socket+","+target+","+data+","+conn+")");
+    	debug("acceptNewClient("+socket+","+target+","+data+","+conn+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
     	ContainerMessage connectMessage = null;
     	ID remoteID = null;
         try {
         	connectMessage = (ContainerMessage) data;
-       		if (connectMessage == null) throw new NullPointerException("connect request message is null");
+       		if (connectMessage == null) throw new NullPointerException(Messages.ServerSOContainer_Connect_Request_Null);
         	remoteID = connectMessage.getFromContainerID();
-        	if (remoteID == null) throw new NullPointerException("fromID is null");
+        	if (remoteID == null) throw new NullPointerException(Messages.ServerSOContainer_FromID_Null);
             ContainerMessage.JoinGroupMessage jgm = (ContainerMessage.JoinGroupMessage) connectMessage
                     .getData();
             if (jgm == null)
-                throw new NullPointerException("connect request message is null");
+                throw new NullPointerException(Messages.ServerSOContainer_Connect_Request_Null);
             ID memberIDs[] = null;
             synchronized (getGroupMembershipLock()) {
                 if (isClosing) {
                     Exception e = new IllegalStateException(
-                            "server is closing");
+                            Messages.ServerSOContainer_Server_Closing);
                     throw e;
                 }
                 // Now check to see if this request is going to be allowed
@@ -145,7 +146,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                                         getNextSequenceNumber(),
                                         new ID[] { remoteID }, true, null));
                     } catch (IOException e) {
-                    	traceStack("Exception in acceptNewClient sending view change message",e);
+                    	traceStack("Exception in acceptNewClient sending view change message",e); //$NON-NLS-1$
                     }
                     // Get current membership
                     memberIDs = groupManager.getMemberIDs();
@@ -153,7 +154,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                     conn.start();
                 } else {
                     ConnectException e = new ConnectException(
-                            "server refused connection");
+                            Messages.ServerSOContainer_Exception_Server_Refused);
                     throw e;
                 }
             }
@@ -163,8 +164,8 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
             return ContainerMessage.createViewChangeMessage(getID(), remoteID,
                     getNextSequenceNumber(), memberIDs, true, null);
         } catch (Exception e) {
-            logException("Exception in acceptNewClient(" + socket + ","
-                    + target + "," + data + "," + conn, e);
+            logException("Exception in acceptNewClient(" + socket + "," //$NON-NLS-1$ //$NON-NLS-2$
+                    + target + "," + data + "," + conn, e); //$NON-NLS-1$ //$NON-NLS-2$
             // And then return leave group message...which means refusal
             return ContainerMessage.createViewChangeMessage(getID(), remoteID, getNextSequenceNumber(), null, false, e);
         }
@@ -200,7 +201,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                         .createLeaveGroupMessage(getID(), memberID,
                                 getNextSequenceNumber(), reason)));
             } catch (Exception e) {
-                logException("Exception in ejectGroupMember.sendAsynch()",e);
+                logException("Exception in ejectGroupMember.sendAsynch()",e); //$NON-NLS-1$
             }
             memberLeave(memberID, conn);
         }
@@ -253,7 +254,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                     conn.sendAsynch(message.getToContainerID(),
                             serializeObject(message));
                 } catch (IOException e) {
-                    logException("Exception in queueToAll for ContainerMessage "+message,e);
+                    logException("Exception in queueToAll for ContainerMessage "+message,e); //$NON-NLS-1$
                 }
             }
         }
@@ -267,7 +268,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 
 	public void connect(ID groupID, IConnectContext joinContext) throws ContainerConnectException {
         ContainerConnectException e = new ContainerConnectException(
-                "ServerApplication cannot connect to " + groupID.getName());
+                Messages.ServerSOContainer_Server_Application_Cannot_Connect + groupID.getName());
         throw e;
 	}
 

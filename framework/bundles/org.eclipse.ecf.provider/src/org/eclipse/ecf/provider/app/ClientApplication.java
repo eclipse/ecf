@@ -60,7 +60,7 @@ public class ClientApplication {
 	public void init(String [] args) throws Exception {
 		serverName = TCPServerSOContainer.getDefaultServerURL();
 		if (args.length > 0) {
-			if (!args[0].equals("-")) serverName = args[0];
+			if (!args[0].equals("-")) serverName = args[0]; //$NON-NLS-1$
 		}
 		if (args.length > 1) {
 			sharedObjectClassNames = new String[args.length - 1];
@@ -85,17 +85,17 @@ public class ClientApplication {
 	
 	public void connect(ID server) throws Exception {
 		for(int i = 0; i < clientCount; i++) {
-			System.out.print("ClientApplication "+sm[i].getID().getName()+" joining "+server.getName()+"...");
+			System.out.print("ClientApplication "+sm[i].getID().getName()+" joining "+server.getName()+"..."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			sm[i].connect(server,null);
-			System.out.println("completed.");
+			System.out.println("completed."); //$NON-NLS-1$
 		}
 	}
 
 	public void disconnect() {
 		for(int i = 0; i < clientCount; i++) {
-			System.out.print("ClientApplication "+sm[i].getID().getName()+" leaving...");
+			System.out.print("ClientApplication "+sm[i].getID().getName()+" leaving..."); //$NON-NLS-1$ //$NON-NLS-2$
 			sm[i].disconnect();
-			System.out.println("completed.");
+			System.out.println("completed."); //$NON-NLS-1$
 		}
 	}
 	
@@ -105,11 +105,11 @@ public class ClientApplication {
 				ISharedObjectContainer scg = sm[j];
 				sharedObjects = new ID[sharedObjectClassNames.length];
 				for(int i=0; i < sharedObjectClassNames.length; i++) {
-					System.out.println("Creating sharedObject: "+sharedObjectClassNames[i]+" for client "+scg.getID().getName());
+					System.out.println("Creating sharedObject: "+sharedObjectClassNames[i]+" for client "+scg.getID().getName()); //$NON-NLS-1$ //$NON-NLS-2$
 					ISharedObject so = (ISharedObject) Class.forName(sharedObjectClassNames[i]).newInstance();
-					sharedObjects[i] = IDFactory.getDefault().createStringID(sharedObjectClassNames[i] + "_" +  i);
+					sharedObjects[i] = IDFactory.getDefault().createStringID(sharedObjectClassNames[i] + "_" +  i); //$NON-NLS-1$
 					scg.getSharedObjectManager().addSharedObject(sharedObjects[i], so, new HashMap());
-					System.out.println("Created sharedObject for client "+scg.getID().getName());
+					System.out.println("Created sharedObject for client "+scg.getID().getName()); //$NON-NLS-1$
 				}
 			}
 		}
@@ -119,7 +119,7 @@ public class ClientApplication {
 		if (sharedObjects == null) return;
 		for(int j=0; j < clientCount; j++) {
 			for(int i=0; i < sharedObjects.length; i++) {
-				System.out.println("Removing sharedObject: "+sharedObjects[i].getName()+" for client "+sm[j].getID().getName());
+				System.out.println("Removing sharedObject: "+sharedObjects[i].getName()+" for client "+sm[j].getID().getName()); //$NON-NLS-1$ //$NON-NLS-2$
 				sm[j].getSharedObjectManager().removeSharedObject(sharedObjects[i]);
 			}
 		}
@@ -140,11 +140,11 @@ public class ClientApplication {
 		ID serverID = IDFactory.getDefault().createStringID(st.serverName);
 		st.connect(serverID);
 		st.createSharedObjects();
-		System.out.println("Waiting "+DEFAULT_WAITTIME+" ms...");
+		System.out.println("Waiting "+DEFAULT_WAITTIME+" ms..."); //$NON-NLS-1$ //$NON-NLS-2$
 		Thread.sleep(DEFAULT_WAITTIME);
 		st.removeSharedObjects();
 		st.disconnect();
-		System.out.println("Exiting.");
+		System.out.println("Exiting."); //$NON-NLS-1$
 	}
 
 }

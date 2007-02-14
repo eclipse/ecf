@@ -47,6 +47,7 @@ import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerRemoveEvent;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 /**
@@ -67,13 +68,13 @@ public class SOManager implements ISharedObjectManager {
 
 	protected void debug(String msg) {
 		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
-				msg + ":" + container.getID());
+				msg + ":" + container.getID()); //$NON-NLS-1$
 	}
 	
 	protected void traceStack(String msg, Throwable e) {
 		Trace.catching(ProviderPlugin.getDefault(),
 				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOManager.class,
-				container.getID() + ":" + msg, e);
+				container.getID() + ":" + msg, e); //$NON-NLS-1$
 	}
 
 	protected void addConnector(ISharedObjectConnector conn) {
@@ -116,15 +117,15 @@ public class SOManager implements ISharedObjectManager {
 		if (newSharedObject instanceof ISharedObject)
 			return (ISharedObject) newSharedObject;
 		else
-			throw new ClassCastException("Object " + newSharedObject.toString()
-					+ " does not implement " + ISharedObject.class.getName());
+			throw new ClassCastException(Messages.SOManager_Object + newSharedObject.toString()
+					+ Messages.SOManager_Does_Not_Implement + ISharedObject.class.getName());
 	}
 
 	protected ISharedObject loadSharedObject(SharedObjectDescription sd)
 			throws Exception {
 		if (sd == null)
 			throw new NullPointerException(
-					"SharedObjectDescription cannot be null");
+					Messages.SOManager_Exception_Shared_Object_Description_Not_Null);
 		// Then get args array from properties
 		Object[] args = container.getArgsFromProperties(sd);
 		// And arg types
@@ -163,11 +164,11 @@ public class SOManager implements ISharedObjectManager {
 	 */
 	public ID createSharedObject(SharedObjectDescription sd)
 			throws SharedObjectCreateException {
-		debug("createSharedObject(" + sd + ")");
+		debug("createSharedObject(" + sd + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		// notify listeners
 		if (sd == null)
 			throw new SharedObjectCreateException(
-					"SharedObjectDescription cannot be null");
+					Messages.SOManager_Exception_Shared_Object_Description_Not_Null);
 		ISharedObject newObject = null;
 		ID result = null;
 		try {
@@ -177,11 +178,11 @@ public class SOManager implements ISharedObjectManager {
 					container.getID(), newID));
 			result = addSharedObject(newID, newObject, sd.getProperties());
 		} catch (Exception e) {
-			traceStack("Exception in createSharedObject", e);
+			traceStack("Exception in createSharedObject", e); //$NON-NLS-1$
 			SharedObjectCreateException newExcept = new SharedObjectCreateException(
-					"Container " + container.getID()
-							+ " had exception creating shared object "
-							+ sd.getID() + ": " + e.getClass().getName() + ": "
+					Messages.SOManager_Container + container.getID()
+							+ Messages.SOManager_Exception_Creating_Shared_Object
+							+ sd.getID() + ": " + e.getClass().getName() + ": " //$NON-NLS-1$ //$NON-NLS-2$
 							+ e.getMessage());
 			newExcept.setStackTrace(e.getStackTrace());
 			throw newExcept;
@@ -207,8 +208,8 @@ public class SOManager implements ISharedObjectManager {
 	 */
 	public ID addSharedObject(ID sharedObjectID, ISharedObject sharedObject,
 			Map properties) throws SharedObjectAddException {
-		debug("addSharedObject(" + sharedObjectID + "," + sharedObject + ","
-				+ properties + ")");
+		debug("addSharedObject(" + sharedObjectID + "," + sharedObject + "," //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				+ properties + ")"); //$NON-NLS-1$
 		// notify listeners
 		container.fireContainerEvent(new SharedObjectManagerAddEvent(container
 				.getID(), sharedObjectID));
@@ -217,12 +218,12 @@ public class SOManager implements ISharedObjectManager {
 			ISharedObject so = sharedObject;
 			container.addSharedObjectAndWait(sharedObjectID, so, properties);
 		} catch (Exception e) {
-			traceStack("Exception in addSharedObject", e);
+			traceStack("Exception in addSharedObject", e); //$NON-NLS-1$
 			SharedObjectAddException newExcept = new SharedObjectAddException(
-					"Container " + container.getID()
-							+ " had exception adding shared object "
-							+ sharedObjectID + ": " + e.getClass().getName()
-							+ ": " + e.getMessage());
+					Messages.SOManager_Container + container.getID()
+							+ Messages.SOManager_Exception_Adding_Shared_Object
+							+ sharedObjectID + ": " + e.getClass().getName() //$NON-NLS-1$
+							+ ": " + e.getMessage()); //$NON-NLS-1$
 			newExcept.setStackTrace(e.getStackTrace());
 			throw newExcept;
 		}
@@ -244,7 +245,7 @@ public class SOManager implements ISharedObjectManager {
 	 * @see org.eclipse.ecf.core.ISharedObjectManager#removeSharedObject(org.eclipse.ecf.core.identity.ID)
 	 */
 	public ISharedObject removeSharedObject(ID sharedObjectID) {
-		debug("removeSharedObject(" + sharedObjectID + ")");
+		debug("removeSharedObject(" + sharedObjectID + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		// notify listeners
 		container.fireContainerEvent(new SharedObjectManagerRemoveEvent(
 				container.getID(), sharedObjectID));
@@ -259,26 +260,26 @@ public class SOManager implements ISharedObjectManager {
 	 */
 	public ISharedObjectConnector connectSharedObjects(ID sharedObjectFrom,
 			ID[] sharedObjectsTo) throws SharedObjectConnectException {
-		debug("connectSharedObjects(" + sharedObjectFrom + ","
-				+ sharedObjectsTo + ")");
+		debug("connectSharedObjects(" + sharedObjectFrom + "," //$NON-NLS-1$ //$NON-NLS-2$
+				+ sharedObjectsTo + ")"); //$NON-NLS-1$
 		if (sharedObjectFrom == null)
-			throw new SharedObjectConnectException("sender cannot be null");
+			throw new SharedObjectConnectException(Messages.SOManager_Exception_Sender_Not_Null);
 		if (sharedObjectsTo == null)
-			throw new SharedObjectConnectException("receivers cannot be null");
+			throw new SharedObjectConnectException(Messages.SOManager_Exception_Receivers_Not_Null);
 		ISharedObjectConnector result = null;
 		synchronized (container.getGroupMembershipLock()) {
 			// Get from to create sure it's there
 			SOWrapper wrap = container.getSharedObjectWrapper(sharedObjectFrom);
 			if (wrap == null)
-				throw new SharedObjectConnectException("sender object "
-						+ sharedObjectFrom.getName() + " not found");
+				throw new SharedObjectConnectException(Messages.SOManager_Sender_Object
+						+ sharedObjectFrom.getName() + Messages.SOManager_Not_Found);
 			IQueueEnqueue[] queues = new IQueueEnqueue[sharedObjectsTo.length];
 			for (int i = 0; i < sharedObjectsTo.length; i++) {
 				SOWrapper w = container
 						.getSharedObjectWrapper(sharedObjectsTo[i]);
 				if (w == null)
-					throw new SharedObjectConnectException("receiver object "
-							+ sharedObjectsTo[i].getName() + " not found");
+					throw new SharedObjectConnectException(Messages.SOManager_Receiver_Object
+							+ sharedObjectsTo[i].getName() + Messages.SOManager_Not_Found);
 				queues[i] = new QueueEnqueueImpl(w.getQueue());
 			}
 			// OK now we've got ids and wrappers, create a connector
@@ -299,11 +300,11 @@ public class SOManager implements ISharedObjectManager {
 	public void disconnectSharedObjects(ISharedObjectConnector connector)
 			throws SharedObjectDisconnectException {
 		if (connector == null)
-			throw new SharedObjectDisconnectException("connector cannot be null");
-		debug("disconnectSharedObjects(" + connector.getSenderID() + ")");
+			throw new SharedObjectDisconnectException(Messages.SOManager_Exception_Connector_Not_Null);
+		debug("disconnectSharedObjects(" + connector.getSenderID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (!removeConnector(connector)) {
-			throw new SharedObjectDisconnectException("connector " + connector
-					+ " not found");
+			throw new SharedObjectDisconnectException(Messages.SOManager_Connector + connector
+					+ Messages.SOManager_Not_Found);
 		}
 		connector.dispose();
 		container.fireContainerEvent(new SharedObjectManagerDisconnectEvent(
@@ -311,7 +312,7 @@ public class SOManager implements ISharedObjectManager {
 	}
 
 	protected void dispose() {
-		debug("dispose()");
+		debug("dispose()"); //$NON-NLS-1$
 		for (Enumeration e = connectors.elements(); e.hasMoreElements();) {
 			ISharedObjectConnector conn = (ISharedObjectConnector) e
 					.nextElement();
@@ -326,7 +327,7 @@ public class SOManager implements ISharedObjectManager {
 	 * @see org.eclipse.ecf.core.ISharedObjectManager#getSharedObjectConnectors(org.eclipse.ecf.core.identity.ID)
 	 */
 	public List getSharedObjectConnectors(ID sharedObjectFrom) {
-		debug("getSharedObjectConnectors(" + sharedObjectFrom + ")");
+		debug("getSharedObjectConnectors(" + sharedObjectFrom + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		List results = new ArrayList();
 		for (Enumeration e = connectors.elements(); e.hasMoreElements();) {
 			ISharedObjectConnector conn = (ISharedObjectConnector) e

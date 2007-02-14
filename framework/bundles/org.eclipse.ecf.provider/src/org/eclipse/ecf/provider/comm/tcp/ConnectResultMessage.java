@@ -26,8 +26,8 @@ public class ConnectResultMessage implements Serializable {
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer("ConnectResultMessage[");
-        buf.append(data).append("]");
+        StringBuffer buf = new StringBuffer("ConnectResultMessage["); //$NON-NLS-1$
+        buf.append(data).append("]"); //$NON-NLS-1$
         return buf.toString();
     }
 }

@@ -22,9 +22,9 @@ public class SynchEvent extends ConnectionEvent {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("SynchEvent[");
-		buf.append("conn=").append(getConnection()).append(";");
-		buf.append("data=").append(getData()).append("]");
+		StringBuffer buf = new StringBuffer("SynchEvent["); //$NON-NLS-1$
+		buf.append("conn=").append(getConnection()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("data=").append(getData()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 

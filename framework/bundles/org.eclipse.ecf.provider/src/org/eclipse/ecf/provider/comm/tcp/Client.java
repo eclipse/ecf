@@ -31,6 +31,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.util.SimpleFIFOQueue;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
 import org.eclipse.ecf.provider.comm.DisconnectEvent;
@@ -40,7 +41,7 @@ import org.eclipse.ecf.provider.comm.ISynchAsynchEventHandler;
 import org.eclipse.ecf.provider.comm.SynchEvent;
 
 public final class Client implements ISynchAsynchConnection {
-	public static final String PROTOCOL = "ecftcp";
+	public static final String PROTOCOL = "ecftcp"; //$NON-NLS-1$
 	public static final int DEFAULT_SNDR_PRIORITY = Thread.NORM_PRIORITY;
 	public static final int DEFAULT_RCVR_PRIORITY = Thread.NORM_PRIORITY;
 	// Default close timeout is 2 seconds
@@ -49,7 +50,7 @@ public final class Client implements ISynchAsynchConnection {
 	public static final int DEFAULT_MAX_BUFFER_MSG = 50;
 	public static final int DEFAULT_WAIT_INTERVAL = 10;
 	protected Socket socket;
-	private String addressPort = "-1:<no endpoint>:-1";
+	private String addressPort = "-1:<no endpoint>:-1"; //$NON-NLS-1$
 	// Underlying streams
 	protected ObjectOutputStream outputStream;
 	protected ObjectInputStream inputStream;
@@ -84,17 +85,17 @@ public final class Client implements ISynchAsynchConnection {
 	private void setSocket(Socket s) throws SocketException {
 		socket = s;
 		if (s != null)
-			addressPort = s.getLocalPort() + ":"
-					+ s.getInetAddress().getHostName() + ":" + s.getPort();
+			addressPort = s.getLocalPort() + ":" //$NON-NLS-1$
+					+ s.getInetAddress().getHostName() + ":" + s.getPort(); //$NON-NLS-1$
 		else
-			addressPort = "-1:<no endpoint>:-1";
+			addressPort = "-1:<no endpoint>:-1"; //$NON-NLS-1$
 	}
 	public Client(Socket aSocket, ObjectInputStream iStream,
 			ObjectOutputStream oStream,
 			ISynchAsynchEventHandler handler, int keepAlive,
 			int maxmsgs) throws IOException {
 		if (handler == null)
-			throw new NullPointerException("event handler cannot be null");
+			throw new NullPointerException(Messages.Client_Event_Handler_Not_Null);
 		this.keepAlive = keepAlive;
 		setSocket(aSocket);
 		inputStream = iStream;
@@ -114,7 +115,7 @@ public final class Client implements ISynchAsynchConnection {
 	public Client(ISynchAsynchEventHandler handler, int keepAlive,
 			int maxmsgs) {
 		if (handler == null)
-			throw new NullPointerException("event handler cannot be null");
+			throw new NullPointerException(Messages.Client_Event_Handler_Not_Null);
 		this.handler = handler;
 		containerID = handler.getEventHandlerID();
 		this.keepAlive = keepAlive;
@@ -129,10 +130,10 @@ public final class Client implements ISynchAsynchConnection {
 		ID retID = null;
 		try {
 			retID = IDFactory.getDefault().createStringID(
-					PROTOCOL + "://" + socket.getLocalAddress().getHostName()
-							+ ":" + socket.getLocalPort());
+					PROTOCOL + "://" + socket.getLocalAddress().getHostName() //$NON-NLS-1$
+							+ ":" + socket.getLocalPort()); //$NON-NLS-1$
 		} catch (Exception e) {
-			traceStack("Exception in getLocalID()", e);
+			traceStack("Exception in getLocalID()", e); //$NON-NLS-1$
 			return null;
 		}
 		return retID;
@@ -166,16 +167,16 @@ public final class Client implements ISynchAsynchConnection {
 	}
 	public synchronized Object connect(ID remote, Object data, int timeout)
 			throws IOException {
-		debug("connect(" + remote + "," + data + "," + timeout + ")");
+		debug("connect(" + remote + "," + data + "," + timeout + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		if (socket != null)
-			throw new ConnectException("Already connected to "
+			throw new ConnectException(Messages.Client_Already_Connected
 					+ getAddressPort());
 		// parse URI
 		URI anURI = null;
 		try {
 			anURI = new URI(remote.getName());
 		} catch (URISyntaxException e) {
-			IOException except = new IOException("Invalid URI for remote "
+			IOException except = new IOException(Messages.Client_Invalid_URI
 					+ remote);
 			except.setStackTrace(e.getStackTrace());
 			throw except;
@@ -192,22 +193,22 @@ public final class Client implements ISynchAsynchConnection {
 		outputStream = new ObjectOutputStream(s.getOutputStream());
 		outputStream.flush();
 		inputStream = new ObjectInputStream(s.getInputStream());
-		debug("connect;" + anURI);
+		debug("connect;" + anURI); //$NON-NLS-1$
 		// send connect data and get syncronous response
 		send(new ConnectRequestMessage(anURI, (Serializable) data));
 		ConnectResultMessage res = null;
 		res = (ConnectResultMessage) readObject();
-		debug("connect;rcv:" + res);
+		debug("connect;rcv:" + res); //$NON-NLS-1$
 		// Setup threads
 		setupThreads();
 		// Return results.
 		Object ret = res.getData();
-		debug("connect;returning:" + ret);
+		debug("connect;returning:" + ret); //$NON-NLS-1$
 		return ret;
 	}
 	private void setupThreads() {
 		// Setup threads
-		debug("setupThreads()");
+		debug("setupThreads()"); //$NON-NLS-1$
 		sendThread = (Thread) AccessController
 				.doPrivileged(new PrivilegedAction() {
 					public Object run() {
@@ -252,9 +253,9 @@ public final class Client implements ISynchAsynchConnection {
 					}
 				}
 				handleException(null);
-				debug("SENDER TERMINATING");
+				debug("SENDER TERMINATING"); //$NON-NLS-1$
 			}
-		}, getLocalID() + ":sndr:" + getAddressPort());
+		}, getLocalID() + ":sndr:" + getAddressPort()); //$NON-NLS-1$
 		// Set priority for new thread
 		aThread.setPriority(DEFAULT_SNDR_PRIORITY);
 		return aThread;
@@ -264,7 +265,7 @@ public final class Client implements ISynchAsynchConnection {
 			if (!disconnectHandled) {
 				disconnectHandled = true;
 				if (e != null)
-					traceStack("handleException in thread="
+					traceStack("handleException in thread=" //$NON-NLS-1$
 							+ Thread.currentThread().getName(), e);
 					handler
 							.handleDisconnectEvent(new DisconnectEvent(
@@ -282,11 +283,11 @@ public final class Client implements ISynchAsynchConnection {
 				setSocket(null);
 			}
 		} catch (IOException e) {
-			traceStack("closeSocket Exception", e);
+			traceStack("closeSocket Exception", e); //$NON-NLS-1$
 		}
 	}
 	private void send(Serializable snd) throws IOException {
-		debug("send(" + snd + ")");
+		debug("send(" + snd + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		outputStream.writeObject(snd);
 		outputStream.flush();
 	}
@@ -300,7 +301,7 @@ public final class Client implements ISynchAsynchConnection {
 	}
 	private void sendClose(Serializable snd) throws IOException {
 		isClosing = true;
-		debug("sendClose(" + snd + ")");
+		debug("sendClose(" + snd + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		send(snd);
 		int count = 0;
 		int interval = DEFAULT_WAIT_INTERVAL;
@@ -309,7 +310,7 @@ public final class Client implements ISynchAsynchConnection {
 				wait(closeTimeout / interval);
 				count++;
 			} catch (InterruptedException e) {
-				traceStack("sendClose wait", e);
+				traceStack("sendClose wait", e); //$NON-NLS-1$
 				return;
 			}
 		}
@@ -330,9 +331,9 @@ public final class Client implements ISynchAsynchConnection {
 					}
 				}
 				handleException(null);
-				debug("RCVR TERMINATING");
+				debug("RCVR TERMINATING"); //$NON-NLS-1$
 			}
-		}, getLocalID() + ":rcvr:" + getAddressPort());
+		}, getLocalID() + ":rcvr:" + getAddressPort()); //$NON-NLS-1$
 		// Set priority and return
 		aThread.setPriority(DEFAULT_RCVR_PRIORITY);
 		return aThread;
@@ -340,7 +341,7 @@ public final class Client implements ISynchAsynchConnection {
 	// private int rcvCount = 0;
 	private void handleRcv(Serializable rcv) throws IOException {
 		try {
-			debug("recv(" + rcv + ")");
+			debug("recv(" + rcv + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 			// Handle all messages
 			if (rcv instanceof SynchMessage) {
 				// Handle synch message. The only valid synch message is
@@ -358,14 +359,14 @@ public final class Client implements ISynchAsynchConnection {
 				// Handle ping response
 				handlePingResp();
 			} else
-				throw new IOException("Invalid message received.");
+				throw new IOException(Messages.Client_Invalid_Message);
 		} catch (IOException e) {
 			disconnect();
 			throw e;
 		}
 	}
 	public synchronized void start() {
-		debug("start()");
+		debug("start()"); //$NON-NLS-1$
 		if (sendThread != null)
 			sendThread.start();
 		if (rcvThread != null)
@@ -377,10 +378,10 @@ public final class Client implements ISynchAsynchConnection {
 			keepAliveThread.start();
 	}
 	public void stop() {
-		debug("stop()");
+		debug("stop()"); //$NON-NLS-1$
 	}
 	private Thread setupPing() {
-		debug("setupPing()");
+		debug("setupPing()"); //$NON-NLS-1$
 		final int pingStartWait = (new Random()).nextInt(keepAlive / 2);
 		return new Thread(new Runnable() {
 			public void run() {
@@ -421,7 +422,7 @@ public final class Client implements ISynchAsynchConnection {
 							// the remote is not reachable and throw
 							if (waitForPing)
 								throw new IOException(getAddressPort()
-										+ " remote not reachable with ping");
+										+ Messages.Client_Remote_No_Ping);
 						}
 					} catch (Exception e) {
 						handleException(e);
@@ -429,12 +430,12 @@ public final class Client implements ISynchAsynchConnection {
 					}
 				}
 				handleException(null);
-				debug("PING TERMINATING");
+				debug("PING TERMINATING"); //$NON-NLS-1$
 			}
-		}, getLocalID() + ":ping:" + getAddressPort());
+		}, getLocalID() + ":ping:" + getAddressPort()); //$NON-NLS-1$
 	}
 	public synchronized void disconnect() throws IOException {
-		debug("disconnect()");
+		debug("disconnect()"); //$NON-NLS-1$
 		// Close send queue and socket
 		queue.close();
 		closeSocket();
@@ -461,24 +462,24 @@ public final class Client implements ISynchAsynchConnection {
 	public synchronized void queueObject(ID recipient, Serializable obj)
 			throws IOException {
 		if (queue.isStopped() || isClosing)
-			throw new ConnectException("Not connected");
-		debug("queueObject(" + recipient + "," + obj + ")");
+			throw new ConnectException(Messages.Client_Exception_Not_Connected);
+		debug("queueObject(" + recipient + "," + obj + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		queue.enqueue(new AsynchMessage(obj));
 	}
 	public synchronized Serializable sendObject(ID recipient, Serializable obj)
 			throws IOException {
 		if (queue.isStopped() || isClosing)
-			throw new ConnectException("Not connected");
-		debug("sendObject(" + recipient + "," + obj + ")");
+			throw new ConnectException(Messages.Client_Exception_Not_Connected);
+		debug("sendObject(" + recipient + "," + obj + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		sendClose(new SynchMessage(obj));
 		return null;
 	}
 	public Object sendSynch(ID rec, Object obj) throws IOException {
-		debug("sendSynch(" + rec + "," + obj + ")");
+		debug("sendSynch(" + rec + "," + obj + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		return sendObject(rec, (Serializable) obj);
 	}
 	public Object sendSynch(ID rec, byte[] obj) throws IOException {
-		debug("sendSynch(" + rec + "," + obj + ")");
+		debug("sendSynch(" + rec + "," + obj + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		return sendObject(rec, obj);
 	}
 	private Serializable readObject() throws IOException {
@@ -486,9 +487,9 @@ public final class Client implements ISynchAsynchConnection {
 		try {
 			ret = (Serializable) inputStream.readObject();
 		} catch (ClassNotFoundException e) {
-			traceStack("readObject;classnotfoundexception", e);
+			traceStack("readObject;classnotfoundexception", e); //$NON-NLS-1$
 			IOException except = new IOException(
-					"Protocol violation due to class load failure.  "
+					Messages.Client_Class_Load_Failure_Protocol_Violation
 							+ e.getMessage());
 			except.setStackTrace(e.getStackTrace());
 			throw except;

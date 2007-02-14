@@ -56,13 +56,13 @@ public class SOContext implements ISharedObjectContext {
     
 	protected void trace(String msg) {
 		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
-				msg + ":" + container.getID());
+				msg + ":" + container.getID()); //$NON-NLS-1$
 	}
 	
 	protected void traceStack(String msg, Throwable e) {
 		Trace.catching(ProviderPlugin.getDefault(),
 				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContext.class,
-				container.getID() + ":" + msg, e);
+				container.getID() + ":" + msg, e); //$NON-NLS-1$
 	}
 
 
@@ -128,10 +128,10 @@ public class SOContext implements ISharedObjectContext {
      */
     public void disconnect() {
         if (isInactive()) {
-            trace("leaveGroup() CONTEXT INACTIVE");
+            trace("leaveGroup() CONTEXT INACTIVE"); //$NON-NLS-1$
             return;
         } else {
-            trace("leaveGroup()");
+            trace("leaveGroup()"); //$NON-NLS-1$
             container.disconnect();
         }
     }
@@ -193,10 +193,10 @@ public class SOContext implements ISharedObjectContext {
     public void sendCreate(ID toContainerID,
     		ReplicaSharedObjectDescription sd) throws IOException {
         if (isInactive()) {
-            trace("sendCreate("+toContainerID+","+sd+") CONTEXT INACTIVE");
+            trace("sendCreate("+toContainerID+","+sd+") CONTEXT INACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             return;
         } else {
-            trace("sendCreate("+toContainerID+","+sd+")");
+            trace("sendCreate("+toContainerID+","+sd+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             container.sendCreate(sharedObjectID, toContainerID, sd);
         }
     }
@@ -206,10 +206,10 @@ public class SOContext implements ISharedObjectContext {
      */
     public void sendCreateResponse(ID toContainerID, Throwable throwable, long identifier) throws IOException {
         if (isInactive()) {
-            trace("sendCreateResponse("+toContainerID+","+throwable+","+identifier+") CONTEXT INACTIVE");
+            trace("sendCreateResponse("+toContainerID+","+throwable+","+identifier+") CONTEXT INACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             return;
         } else {
-            trace("sendCreateResponse("+toContainerID+","+throwable+","+identifier+")");
+            trace("sendCreateResponse("+toContainerID+","+throwable+","+identifier+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             container.sendCreateResponse(toContainerID, sharedObjectID, throwable, identifier);
         }        
     }
@@ -221,10 +221,10 @@ public class SOContext implements ISharedObjectContext {
      */
     public void sendDispose(ID toContainerID) throws IOException {
         if (isInactive()) {
-            trace("sendDispose("+toContainerID+") CONTEXT INACTIVE");
+            trace("sendDispose("+toContainerID+") CONTEXT INACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$
             return;
         } else {
-            trace("sendDispose("+toContainerID+")");
+            trace("sendDispose("+toContainerID+")"); //$NON-NLS-1$ //$NON-NLS-2$
             container.sendDispose(toContainerID, sharedObjectID);
         }
     }
@@ -237,10 +237,10 @@ public class SOContext implements ISharedObjectContext {
      */
     public void sendMessage(ID toContainerID, Object data) throws IOException {
         if (isInactive()) {
-            trace("sendMessage("+toContainerID+","+data+") CONTEXT INACTIVE");
+            trace("sendMessage("+toContainerID+","+data+") CONTEXT INACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             return;
         } else {
-            trace("sendMessage("+toContainerID+","+data+") CONTEXT ACTIVE");
+            trace("sendMessage("+toContainerID+","+data+") CONTEXT ACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             container.sendMessage(toContainerID, sharedObjectID, data);
         }
     }

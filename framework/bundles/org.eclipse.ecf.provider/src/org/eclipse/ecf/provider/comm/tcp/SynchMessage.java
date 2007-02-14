@@ -25,8 +25,8 @@ public class SynchMessage extends AsynchMessage {
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer("SynchMessage[");
-        buf.append(data).append("]");
+        StringBuffer buf = new StringBuffer("SynchMessage["); //$NON-NLS-1$
+        buf.append(data).append("]"); //$NON-NLS-1$
         return buf.toString();
     }
 }

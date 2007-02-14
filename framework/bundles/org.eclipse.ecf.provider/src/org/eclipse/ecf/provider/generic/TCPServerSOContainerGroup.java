@@ -21,6 +21,7 @@ import java.net.URI;
 
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.comm.tcp.Client;
 import org.eclipse.ecf.provider.comm.tcp.ConnectRequestMessage;
@@ -32,7 +33,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 		ISocketAcceptHandler {
 
 	public static final int DEFAULT_SOCKET_KEEPALIVE = 30000;
-	public static final String INVALID_CONNECT = "Invalid connect request.  ";
+	public static final String INVALID_CONNECT = Messages.TCPServerSOContainerGroup_Invalid_Connect_Request;
 	public static final String DEFAULT_GROUP_NAME = TCPServerSOContainerGroup.class
 			.getName();
 	protected int port;
@@ -75,7 +76,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 	}
 
 	public synchronized void putOnTheAir() throws IOException {
-		debug("group at port " + port + " on the air");
+		debug("group at port " + port + " on the air"); //$NON-NLS-1$ //$NON-NLS-2$
 		listener = new Server(threadGroup, port, this);
 		port = listener.getLocalPort();
 		isOnTheAir = true;
@@ -103,23 +104,23 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 				.getInputStream());
 		ConnectRequestMessage req = (ConnectRequestMessage) iStream
 				.readObject();
-		debug("serverrecv:" + req);
+		debug("serverrecv:" + req); //$NON-NLS-1$
 		if (req == null)
 			throw new InvalidObjectException(INVALID_CONNECT
-					+ "ConnectRequestMessage is null");
+					+ Messages.TCPServerSOContainerGroup_Exception_Connect_Request_Null);
 		URI uri = req.getTarget();
 		if (uri == null)
 			throw new InvalidObjectException(INVALID_CONNECT
-					+ "Target URI is null");
+					+ Messages.TCPServerSOContainerGroup_Target_Null);
 		String path = uri.getPath();
 		if (path == null)
 			throw new InvalidObjectException(INVALID_CONNECT
-					+ "Target path is null");
+					+ Messages.TCPServerSOContainerGroup_Target_Path_Null);
 		TCPServerSOContainer srs = (TCPServerSOContainer) get(path);
 		if (srs == null)
-			throw new InvalidObjectException("Container for target " + path
-					+ " not found!");
-		debug("found container:" + srs.getID().getName() + " for target " + uri);
+			throw new InvalidObjectException(Messages.TCPServerSOContainerGroup_Container_For_Target + path
+					+ Messages.TCPServerSOContainerGroup_Not_Found);
+		debug("found container:" + srs.getID().getName() + " for target " + uri); //$NON-NLS-1$ //$NON-NLS-2$
 		// Create our local messaging interface
 		Client newClient = new Client(aSocket, iStream, oStream, srs
 				.getReceiver(), srs.keepAlive);
@@ -138,11 +139,11 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 
 	public synchronized void takeOffTheAir() {
 		if (listener != null) {
-			debug("Taking " + getName() + " off the air.");
+			debug("Taking " + getName() + " off the air."); //$NON-NLS-1$ //$NON-NLS-2$
 			try {
 				listener.close();
 			} catch (IOException e) {
-				traceStack("Exception in closeListener", e);
+				traceStack("Exception in closeListener", e); //$NON-NLS-1$
 			}
 			listener = null;
 		}
@@ -154,6 +155,6 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 	}
 
 	public String toString() {
-		return super.toString() + ";port:" + port;
+		return super.toString() + ";port:" + port; //$NON-NLS-1$
 	}
 }
