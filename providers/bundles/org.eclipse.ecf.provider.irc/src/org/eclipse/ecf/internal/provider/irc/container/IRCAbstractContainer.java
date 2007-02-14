@@ -26,6 +26,7 @@ import org.eclipse.ecf.internal.provider.irc.IRCDebugOptions;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.chatroom.ChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.ChatRoomMessageEvent;
+import org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener;
 
 public abstract class IRCAbstractContainer extends AbstractContainer {
 
@@ -49,7 +50,8 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	protected ID targetID = null;
 	protected List msgListeners = new ArrayList();
 	protected ID unknownID = null;
-
+	private ArrayList subjectListeners = new ArrayList();
+	
 	public IRCAbstractContainer() {
 		super();
 	}
@@ -156,4 +158,32 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	public void removeMessageListener(IIMMessageListener l) {
 		msgListeners.remove(l);
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
+	 */
+	public void addChatRoomSubjectListener(
+			IChatRoomAdminListener subjectListener) {
+		subjectListeners.add(subjectListener);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#removeChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
+	 */
+	public void removeChatRoomSubjectListener(
+			IChatRoomAdminListener subjectListener) {
+		subjectListeners.remove(subjectListener);
+	}
+
+	/**
+	 * @param fromID
+	 * @param arg2
+	 */
+	public void fireSubjectListeners(ID fromID, String newSubject) {
+		for(Iterator i=subjectListeners.iterator(); i.hasNext(); ) {
+			IChatRoomAdminListener l = (IChatRoomAdminListener) i.next();
+			l.handleSubjectChange(fromID, newSubject);
+		}
+	}
+
 }

@@ -321,4 +321,5 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	protected void setChannelOperator(String channelOperator) {
 		this.channelOperator = channelOperator;
 	}
+
 }

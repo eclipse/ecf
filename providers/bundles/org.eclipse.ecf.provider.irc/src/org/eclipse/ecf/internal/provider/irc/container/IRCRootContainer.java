@@ -40,6 +40,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener;
 import org.eclipse.osgi.util.NLS;
 import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCEventListener;
@@ -322,6 +323,11 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				showMessage(arg0, NLS.bind(
 						Messages.IRCRootContainer_TopicChange, new Object[] {
 								arg1.getNick(), arg2 }));
+				IRCChannelContainer channel = (IRCChannelContainer) channels
+						.get(arg0);
+				if (channel != null) {
+					channel.fireSubjectListeners(createIDFromString(getIRCUserName(arg1)), arg2);
+				} fireSubjectListeners(createIDFromString(getIRCUserName(arg1)), arg2);
 			}
 
 			public void unknown(String arg0, String arg1, String arg2,
@@ -886,4 +892,5 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		throw new ChatRoomCreateException(roomname, Messages.IRCRootContainer_Exception_Create_Not_Supported,
 				null);
 	}
+
 }
