@@ -40,7 +40,6 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
-import org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener;
 import org.eclipse.osgi.util.NLS;
 import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCEventListener;
@@ -69,7 +68,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	protected String username;
 
 	protected String encoding = null;
-
+	
 	private ArrayList invitationListeners;
 
 	private Object connectLock = new Object();
@@ -320,14 +319,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 			public void onTopic(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnTopic(" + arg0 + "," + arg1 + "," + arg2 + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				showMessage(arg0, NLS.bind(
-						Messages.IRCRootContainer_TopicChange, new Object[] {
-								arg1.getNick(), arg2 }));
-				IRCChannelContainer channel = (IRCChannelContainer) channels
-						.get(arg0);
-				if (channel != null) {
-					channel.fireSubjectListeners(createIDFromString(getIRCUserName(arg1)), arg2);
-				} fireSubjectListeners(createIDFromString(getIRCUserName(arg1)), arg2);
+				handleSetSubject(arg0,arg1,arg2);
 			}
 
 			public void unknown(String arg0, String arg1, String arg2,
@@ -412,7 +404,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 
 				public String getSubject() {
-					return ""; //$NON-NLS-1$
+					return "";  //$NON-NLS-1$
 				}
 
 				public boolean isModerated() {
@@ -798,6 +790,13 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				break;
 			case 320:
 				break;
+			case 331:
+			case 332:
+				// Subject changes
+				String [] args = parseCommandTokens(arg1);
+				String channel = (args.length == 2)?args[1]:((args.length == 1)?args[0]:null);
+				handleSetSubject(channel,null,arg2);
+				break;
 			default:
 				// first user always expected to be us
 				if (users.length < 2)
@@ -814,6 +813,25 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		}
 	}
 
+	protected void handleSetSubject(String channelName, IRCUser user, String newSubject) {
+		IRCChannelContainer channel = (IRCChannelContainer) channels
+		.get(channelName);
+		if (channel == null) {
+			showMessage(null, newSubject);
+			fireSubjectListeners(null, newSubject);
+		} else {
+			String nickname = (user==null)?null:user.getNick(); 
+			ID fromID = (user==null)?null:createIDFromString(getIRCUserName(user));
+			// Put out message to channel
+			if (nickname == null) showMessage(channelName, newSubject);
+			else showMessage(channelName, NLS.bind(
+						Messages.IRCRootContainer_TopicChange, new Object[] {
+								nickname, newSubject }));
+			// Also notify subject listeners
+			channel.fireSubjectListeners(fromID, newSubject);
+		}
+	}
+	
 	protected void doJoinChannel(String channelName, String key) {
 		if (connection != null) {
 			if (key == null || key.equals("")) { //$NON-NLS-1$

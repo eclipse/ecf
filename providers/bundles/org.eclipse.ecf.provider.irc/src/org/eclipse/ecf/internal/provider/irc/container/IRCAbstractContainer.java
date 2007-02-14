@@ -162,7 +162,7 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
 	 */
-	public void addChatRoomSubjectListener(
+	public void addChatRoomAdminListener(
 			IChatRoomAdminListener subjectListener) {
 		subjectListeners.add(subjectListener);
 	}
@@ -170,7 +170,7 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#removeChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
 	 */
-	public void removeChatRoomSubjectListener(
+	public void removeChatRoomAdminListener(
 			IChatRoomAdminListener subjectListener) {
 		subjectListeners.remove(subjectListener);
 	}
