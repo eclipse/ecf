@@ -479,7 +479,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
 	 */
-	public void addChatRoomSubjectListener(
+	public void addChatRoomAdminListener(
 			IChatRoomAdminListener subjectListener) {
 		// TODO Auto-generated method stub
 		
@@ -488,7 +488,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#removeChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
 	 */
-	public void removeChatRoomSubjectListener(
+	public void removeChatRoomAdminListener(
 			IChatRoomAdminListener subjectListener) {
 		// TODO Auto-generated method stub
 		
