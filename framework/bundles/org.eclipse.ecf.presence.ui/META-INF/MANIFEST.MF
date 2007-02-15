@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Presence UI Plugin
 Bundle-SymbolicName: org.eclipse.ecf.presence.ui;singleton:=true
-Bundle-Version: 1.0.0.v20070214
+Bundle-Version: 1.0.0.v20070215
 Bundle-Activator: org.eclipse.ecf.internal.presence.ui.Activator
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.core.runtime,
