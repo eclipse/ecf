@@ -42,7 +42,6 @@ public class Messages extends NLS {
 	public static String IRCRootContainer_Exception_Already_Connected;
 	public static String IRCRootContainer_Exception_TargetID_Null;
 	public static String IRCRootContainer_Exception_TargetID_Wrong_Type;
-	public static String IRCRootContainer_Exception_Connecting;
 	
 	public static String IRCRootContainer_Exception_Connect_Failed;
 	
