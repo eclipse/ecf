@@ -197,10 +197,12 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						connectLock.notify();
 					}
 				}
-				showMessage(null, NLS.bind(
-						Messages.IRCRootContainer_Disconnected, targetID
-								.getName()));
-				handleDisconnected();
+				if (targetID != null) {
+					showMessage(null, NLS.bind(
+							Messages.IRCRootContainer_Disconnected, targetID
+									.getName()));
+					handleDisconnected();
+				}
 			}
 
 			public void onError(String arg0) {
