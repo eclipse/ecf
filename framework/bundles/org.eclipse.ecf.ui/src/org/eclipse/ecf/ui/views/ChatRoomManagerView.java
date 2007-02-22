@@ -34,7 +34,6 @@ import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
@@ -363,10 +362,8 @@ public class ChatRoomManagerView extends ViewPart implements
 		if (!readText.getControl().isDisposed())
 			readText.getTextWidget().setText(
 					new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z")
-					.format(new Date())
-					+ "\nConnecting to "
-					+ targetID.getName()
-					+ "\n\n");
+							.format(new Date())
+							+ "\nConnecting to " + targetID.getName() + "\n\n");
 	}
 
 	public void setEnabled(boolean enabled) {
@@ -534,7 +531,8 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		IChatRoomMessageSender channelMessageSender;
 
-		//private List otherUsers = Collections.synchronizedList(new ArrayList());
+		// private List otherUsers = Collections.synchronizedList(new
+		// ArrayList());
 
 		IUser localUser;
 
@@ -922,7 +920,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				ID id = p.getID();
 				if (id != null) {
 					appendText(outputText, new ChatLine("(" + getDateTime()
-								+ ") " + trimUserID(id) + " left", null));
+							+ ") " + trimUserID(id) + " left", null));
 					memberViewer.remove(p);
 				}
 			}
@@ -1046,7 +1044,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		private static final long serialVersionUID = 2008114088656711572L;
 
 		ID id;
-		
+
 		public Participant(ID id) {
 			this.id = id;
 		}
@@ -1084,7 +1082,9 @@ public class ChatRoomManagerView extends ViewPart implements
 			return null;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see org.eclipse.ecf.core.user.IUser#getNickname()
 		 */
 		public String getNickname() {
@@ -1211,11 +1211,35 @@ public class ChatRoomManagerView extends ViewPart implements
 			int spaceIndex = line.indexOf(' ');
 			if (spaceIndex != -1) {
 				String url = line.substring(0, spaceIndex);
+				int symbols = 0;
+				for (int i = url.length() - 1; i != 0; i--) {
+					char ch = url.charAt(i);
+					if (!Character.isLetterOrDigit(ch)) {
+						symbols++;
+					} else {
+						break;
+					}
+				}
 				if (!url.startsWith("http")) { //$NON-NLS-1$
-					readText.appendLink(url, createLinkRunnable("http://" //$NON-NLS-1$
-							+ url));
+					if (symbols == 0) {
+						readText.appendLink(url, createLinkRunnable("http://" //$NON-NLS-1$
+								+ url));
+					} else {
+						int symbolIndex = url.length() - symbols;
+						String link = url.substring(0, symbolIndex);
+						readText.appendLink(link, createLinkRunnable("http://" //$NON-NLS-1$
+								+ link));
+						st.append(url.substring(symbolIndex));
+					}
 				} else {
-					readText.appendLink(url, createLinkRunnable(url));
+					if (symbols == 0) {
+						readText.appendLink(url, createLinkRunnable(url));
+					} else {
+						int symbolIndex = url.length() - symbols;
+						String link = url.substring(0, symbolIndex);
+						readText.appendLink(link, createLinkRunnable(link));
+						st.append(url.substring(symbolIndex));
+					}
 				}
 				line = line.substring(spaceIndex);
 				index = line.indexOf("http://"); //$NON-NLS-1$
@@ -1224,7 +1248,7 @@ public class ChatRoomManagerView extends ViewPart implements
 					if (index == -1) {
 						index = line.indexOf("www."); //$NON-NLS-1$
 						if (index == -1) {
-							return false;
+							break;
 						}
 					}
 				} else {
@@ -1239,11 +1263,35 @@ public class ChatRoomManagerView extends ViewPart implements
 					}
 				}
 			} else {
+				int symbols = 0;
+				for (int i = line.length() - 1; i != 0; i--) {
+					char ch = line.charAt(i);
+					if (!Character.isLetterOrDigit(ch)) {
+						symbols++;
+					} else {
+						break;
+					}
+				}
 				if (!line.startsWith("http")) { //$NON-NLS-1$
-					readText.appendLink(line, createLinkRunnable("http://" //$NON-NLS-1$
-							+ line));
+					if (symbols == 0) {
+						readText.appendLink(line, createLinkRunnable("http://" //$NON-NLS-1$
+								+ line));
+					} else {
+						int symbolIndex = line.length() - symbols;
+						String link = line.substring(0, symbolIndex);
+						readText.appendLink(link, createLinkRunnable("http://" //$NON-NLS-1$
+								+ link));
+						st.append(line.substring(symbolIndex));
+					}
 				} else {
-					readText.appendLink(line, createLinkRunnable(line));
+					if (symbols == 0) {
+						readText.appendLink(line, createLinkRunnable(line));
+					} else {
+						int symbolIndex = line.length() - symbols;
+						String link = line.substring(0, symbolIndex);
+						readText.appendLink(link, createLinkRunnable(link));
+						st.append(line.substring(symbolIndex));
+					}
 				}
 				line = null;
 				break;
