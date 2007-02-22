@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="commandHandler" name="commandHandler" schema="schema/commandHandler.exsd"/>
+   <extension-point id="robot" name="robot" schema="schema/robot.exsd"/>
+   <extension
+         id="robot"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.eclipse.ecf.presence.bot.IRCBotApplication">
+         </run>
+      </application>
+   </extension>
+
+</plugin>
