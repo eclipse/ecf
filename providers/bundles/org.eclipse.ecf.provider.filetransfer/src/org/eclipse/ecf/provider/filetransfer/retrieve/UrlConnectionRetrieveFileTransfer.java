@@ -26,18 +26,23 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 
-public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
+public class UrlConnectionRetrieveFileTransfer extends
+		AbstractRetrieveFileTransfer {
 
-	URLConnection urlConnection;
-	
-    // XXX currently unused
-	IConnectContext connectContext;
+	protected URLConnection urlConnection;
+
 	// XXX currently unused
-	Proxy proxy;
-	
-	IFileID id = null;
-	
-	protected void openStreams(Map options) throws IncomingFileTransferException {
+	protected IConnectContext connectContext;
+	// XXX currently unused
+	protected Proxy proxy;
+
+	protected IFileID fileid = null;
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams(java.util.Map)
+	 */
+	protected void openStreams(Map options)
+			throws IncomingFileTransferException {
 		URL theURL = null;
 
 		try {
@@ -47,8 +52,8 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			setInputStream(urlConnection.getInputStream());
 			setFileLength(urlConnection.getContentLength());
 
-			id = new FileTransferID(getRetrieveNamespace(),theURL);
-			
+			fileid = new FileTransferID(getRetrieveNamespace(), theURL);
+
 			listener
 					.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
 						private static final long serialVersionUID = -59096575294481755L;
@@ -69,10 +74,10 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 						public String toString() {
 							StringBuffer sb = new StringBuffer(
-									"IIncomingFileTransferReceiveStartEvent[");
-							sb.append("isdone=").append(done).append(";");
-							sb.append("bytesReceived=").append(bytesReceived)
-									.append("]");
+									"IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
+							sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+							sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+									.append("]"); //$NON-NLS-1$
 							return sb.toString();
 						}
 
@@ -93,19 +98,22 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 					});
 		} catch (Exception e) {
-			throw new IncomingFileTransferException("Exception connecting to "
+			throw new IncomingFileTransferException("Exception connecting to " //$NON-NLS-1$
 					+ theURL.toString(), e);
 		}
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
 	 */
 	protected void hardClose() {
 		super.hardClose();
 		urlConnection = null;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -125,12 +133,13 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		this.proxy = proxy;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
 	 */
 	public ID getID() {
-		return id;
+		return fileid;
 	}
-
 
 }

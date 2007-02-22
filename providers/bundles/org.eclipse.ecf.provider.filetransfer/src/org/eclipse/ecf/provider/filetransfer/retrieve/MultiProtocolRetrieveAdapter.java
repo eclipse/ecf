@@ -24,6 +24,7 @@ import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 
 /**
@@ -76,28 +77,29 @@ public class MultiProtocolRetrieveAdapter implements
 			IFileTransferListener transferListener, Map options)
 			throws IncomingFileTransferException {
 
-			String protocol = null;
-			try {
-				protocol = remoteFileID.getURL().getProtocol();
-			} catch (MalformedURLException e) {
-				throw new IncomingFileTransferException("Invalid remoteFileID");
-			}
-			IRetrieveFileTransferContainerAdapter fileTransfer = null;
-			if (HttpClientRetrieveFileTransfer.supportsProtocol(protocol))
-				fileTransfer = new HttpClientRetrieveFileTransfer(
-						new HttpClient(new MultiThreadedHttpConnectionManager()));
-			else
-				fileTransfer =  new UrlConnectionRetrieveFileTransfer();
+		String protocol = null;
+		try {
+			protocol = remoteFileID.getURL().getProtocol();
+		} catch (MalformedURLException e) {
+			throw new IncomingFileTransferException(
+					Messages.AbstractRetrieveFileTransfer_MalformedURLException);
+		}
+		IRetrieveFileTransferContainerAdapter fileTransfer = null;
+		if (HttpClientRetrieveFileTransfer.supportsProtocol(protocol))
+			fileTransfer = new HttpClientRetrieveFileTransfer(new HttpClient(
+					new MultiThreadedHttpConnectionManager()));
+		else
+			fileTransfer = new UrlConnectionRetrieveFileTransfer();
 
-			// Set connect context
-			fileTransfer.setConnectContextForAuthentication(connectContext);
-			// Set Proxy
-			fileTransfer.setProxy(proxy);
+		// Set connect context
+		fileTransfer.setConnectContextForAuthentication(connectContext);
+		// Set Proxy
+		fileTransfer.setProxy(proxy);
 
-			// send request using given file transfer protocol
+		// send request using given file transfer protocol
 
-			fileTransfer.sendRetrieveRequest(remoteFileID, transferListener,
-					options);
+		fileTransfer.sendRetrieveRequest(remoteFileID, transferListener,
+				options);
 
 	}
 

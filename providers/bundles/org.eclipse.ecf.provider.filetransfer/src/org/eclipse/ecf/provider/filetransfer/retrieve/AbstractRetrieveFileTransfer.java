@@ -32,10 +32,13 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
+import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
+import org.eclipse.osgi.util.NLS;
 
-public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTransfer,
-		IRetrieveFileTransferContainerAdapter, IFileTransferPausable {
+public abstract class AbstractRetrieveFileTransfer implements
+		IIncomingFileTransfer, IRetrieveFileTransferContainerAdapter,
+		IFileTransferPausable {
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
 
@@ -58,7 +61,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	protected InputStream remoteFileContents;
 
 	protected OutputStream localFileContents;
-	
+
 	protected boolean closeOutputStream = true;
 
 	protected Exception exception;
@@ -97,12 +100,14 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		protected IStatus run(IProgressMonitor monitor) {
 			byte[] buf = new byte[buff_length];
 			int totalWork = ((fileLength == -1) ? 100 : (int) fileLength);
-			monitor.beginTask(getRemoteFileURL().toString() + " - data ",
+			monitor.beginTask(getRemoteFileURL().toString()
+					+ Messages.AbstractRetrieveFileTransfer_Progress_Data,
 					totalWork);
 			try {
 				while (!isDone()) {
 					if (monitor.isCanceled())
-						throw new UserCancelledException("cancelled by user");
+						throw new UserCancelledException(
+								Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
 					int bytes = remoteFileContents.read(buf);
 					if (bytes != -1) {
 						bytesReceived += bytes;
@@ -126,18 +131,24 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	}
 
 	protected IStatus getFinalStatus(Throwable exception) {
-		if (exception == null)
-			return new Status(IStatus.OK, Activator.getDefault().getBundle()
-					.getSymbolicName(), 0, "Transfer Completed OK", null);
-		else
-			return new Status(IStatus.ERROR, Activator.getDefault().getBundle()
-					.getSymbolicName(), FILETRANSFER_ERRORCODE,
-					"Transfer Exception", exception);
+		return (exception == null) ? new Status(
+				IStatus.OK,
+				Activator.getDefault().getBundle().getSymbolicName(),
+				0,
+				Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK,
+				null)
+				: new Status(
+						IStatus.ERROR,
+						Activator.getDefault().getBundle().getSymbolicName(),
+						FILETRANSFER_ERRORCODE,
+						Messages.AbstractRetrieveFileTransfer_Status_Transfer_Exception,
+						exception);
 	}
 
 	protected void hardClose() {
 		try {
-			if (remoteFileContents != null) remoteFileContents.close();
+			if (remoteFileContents != null)
+				remoteFileContents.close();
 		} catch (IOException e) {
 		}
 		try {
@@ -166,10 +177,10 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 					public String toString() {
 						StringBuffer sb = new StringBuffer(
-								"IIncomingFileTransferReceiveDoneEvent[");
-						sb.append("isDone=").append(done).append(";");
-						sb.append("bytesReceived=").append(bytesReceived)
-								.append("]");
+								"IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
+						sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+						sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+								.append("]"); //$NON-NLS-1$
 						return sb.toString();
 					}
 				});
@@ -186,12 +197,12 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 					public String toString() {
 						StringBuffer sb = new StringBuffer(
-								"IIncomingFileTransferReceiveDataEvent[");
-						sb.append("isDone=").append(done).append(";");
-						sb.append("bytesReceived=").append(bytesReceived)
-								.append(";");
-						sb.append("percentComplete=").append(
-								getPercentComplete() * 100).append("]");
+								"IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
+						sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+						sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+								.append(";"); //$NON-NLS-1$
+						sb.append("percentComplete=").append( //$NON-NLS-1$
+								getPercentComplete() * 100).append("]"); //$NON-NLS-1$
 						return sb.toString();
 					}
 				});
@@ -226,7 +237,8 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 * 
 	 * @throws IncomingFileTransferException
 	 */
-	protected abstract void openStreams(Map options) throws IncomingFileTransferException;
+	protected abstract void openStreams(Map options)
+			throws IncomingFileTransferException;
 
 	/*
 	 * (non-Javadoc)
@@ -237,19 +249,26 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	public void sendRetrieveRequest(final IFileID remoteFileID,
 			IFileTransferListener transferListener, Map options)
 			throws IncomingFileTransferException {
-		Assert.isNotNull(remoteFileID,"remoteFileID cannot be null");
-		Assert.isNotNull(transferListener,"transferListener cannot be null");
-		done = false;
-		bytesReceived = 0;
-		exception = null;
-		fileLength = 0;
-		
+		Assert.isNotNull(remoteFileID,
+				Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
+		Assert
+				.isNotNull(
+						transferListener,
+						Messages.AbstractRetrieveFileTransfer_TransferListener_Not_Null);
+		this.done = false;
+		this.bytesReceived = 0;
+		this.exception = null;
+		this.fileLength = 0;
+		this.remoteFileID = remoteFileID;
+
 		try {
-			this.remoteFileID = remoteFileID;
-			this.remoteFileURL = new URL(remoteFileID.getName());
+			this.remoteFileURL = remoteFileID.getURL();
 		} catch (MalformedURLException e) {
 			throw new IncomingFileTransferException(
-					"Exception creating URI for " + remoteFileID, e);
+					NLS
+							.bind(
+									Messages.AbstractRetrieveFileTransfer_MalformedURLException,
+									remoteFileID), e); //$NON-NLS-1$
 		}
 		this.listener = transferListener;
 		openStreams(options);

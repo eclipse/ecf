@@ -12,6 +12,7 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
 Import-Package: org.eclipse.core.runtime,
  org.eclipse.core.runtime.jobs,
+ org.eclipse.osgi.util;version="1.0.0",
  org.osgi.framework;version="1.3.0",
  org.osgi.service.url;version="1.0.0",
  org.osgi.util.tracker;version="1.3.2"

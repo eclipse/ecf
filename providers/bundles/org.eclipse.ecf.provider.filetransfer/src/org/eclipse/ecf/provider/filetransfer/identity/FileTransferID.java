@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 
 public class FileTransferID extends BaseID implements IFileID {
 
@@ -15,7 +16,7 @@ public class FileTransferID extends BaseID implements IFileID {
 
 	public FileTransferID(Namespace namespace, URL url) {
 		super(namespace);
-		Assert.isNotNull(url,"url cannot be null");
+		Assert.isNotNull(url, Messages.FileTransferID_Exception_Url_Not_Null); //$NON-NLS-1$
 		this.fileURL = url;
 	}
 
@@ -43,17 +44,16 @@ public class FileTransferID extends BaseID implements IFileID {
 	public URL getURL() {
 		return this.fileURL;
 	}
-	
+
 	protected String getFileNameOnly() {
 		String path = this.fileURL.getPath();
-		String fileName = path.substring(path.lastIndexOf("/") + 1);
-		return fileName;
+		return path.substring(path.lastIndexOf("/") + 1); //$NON-NLS-1$;
 	}
 
 	public String toString() {
-		StringBuffer b = new StringBuffer("FileTransferID[");
+		StringBuffer b = new StringBuffer("FileTransferID["); //$NON-NLS-1$
 		b.append(toExternalForm());
-		b.append("]");
+		b.append("]"); //$NON-NLS-1$
 		return b.toString();
 	}
 }

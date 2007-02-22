@@ -37,16 +37,17 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 
 public class HttpClientRetrieveFileTransfer extends
 		AbstractRetrieveFileTransfer {
 
-	private static final String HTTP_PROXY_PORT = "http.proxyPort";
+	private static final String HTTP_PROXY_PORT = Messages.HttpClientRetrieveFileTransfer_Http_ProxyPort_Prop;
 
-	private static final String HTTP_PROXY_HOST = "http.proxyHost";
+	private static final String HTTP_PROXY_HOST = Messages.HttpClientRetrieveFileTransfer_Http_ProxyHost_Prop;
 
-	private static final String USERNAME_PREFIX = "Username:";
+	private static final String USERNAME_PREFIX = Messages.HttpClientRetrieveFileTransfer_Username_Prefix;
 
 	protected static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
 
@@ -56,9 +57,9 @@ public class HttpClientRetrieveFileTransfer extends
 
 	protected static final int MAX_RETRY = 2;
 
-	protected static final String HTTPS = "https";
+	protected static final String HTTPS = Messages.FileTransferNamespace_Https_Protocol;
 
-	protected static final String HTTP = "http";
+	protected static final String HTTP = Messages.FileTransferNamespace_Http_Protocol;
 
 	protected static final String[] supportedProtocols = { HTTP, HTTPS };
 
@@ -107,7 +108,7 @@ public class HttpClientRetrieveFileTransfer extends
 
 	private Proxy getSystemProxy() {
 		String systemHttpProxyHost = System.getProperty(HTTP_PROXY_HOST, null);
-		String systemHttpProxyPort = System.getProperty(HTTP_PROXY_PORT, ""
+		String systemHttpProxyPort = System.getProperty(HTTP_PROXY_PORT, "" //$NON-NLS-1$
 				+ HTTP_PORT);
 		int port = -1;
 		try {
@@ -115,10 +116,10 @@ public class HttpClientRetrieveFileTransfer extends
 		} catch (Exception e) {
 
 		}
-		if (systemHttpProxyHost == null || systemHttpProxyHost.equals(""))
+		if (systemHttpProxyHost == null || systemHttpProxyHost.equals("")) //$NON-NLS-1$
 			return null;
-		return new Proxy(Proxy.Type.HTTP, new ProxyAddress(
-				systemHttpProxyHost, port));
+		return new Proxy(Proxy.Type.HTTP, new ProxyAddress(systemHttpProxyHost,
+				port));
 	}
 
 	protected void setupProxy(String urlString) {
@@ -171,7 +172,8 @@ public class HttpClientRetrieveFileTransfer extends
 		}
 	}
 
-	protected void openStreams(Map options) throws IncomingFileTransferException {
+	protected void openStreams(Map options)
+			throws IncomingFileTransferException {
 		String urlString = getRemoteFileURL().toString();
 
 		try {
@@ -216,10 +218,10 @@ public class HttpClientRetrieveFileTransfer extends
 
 							public String toString() {
 								StringBuffer sb = new StringBuffer(
-										"IIncomingFileTransferReceiveStartEvent[");
-								sb.append("isdone=").append(done).append(";");
-								sb.append("bytesReceived=").append(
-										bytesReceived).append("]");
+										"IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
+								sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+								sb.append("bytesReceived=").append( //$NON-NLS-1$
+										bytesReceived).append("]"); //$NON-NLS-1$
 								return sb.toString();
 							}
 
@@ -244,15 +246,17 @@ public class HttpClientRetrieveFileTransfer extends
 				getMethod.getResponseBody();
 				// login or reauthenticate due to an expired session
 				getMethod.releaseConnection();
-				throw new IncomingFileTransferException("Unauthorized");
+				throw new IncomingFileTransferException(
+						Messages.HttpClientRetrieveFileTransfer_Unauthorized);
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
-				throw new LoginException("Proxy Authentication Required");
+				throw new LoginException(
+						Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
 			} else {
 				throw new IOException(
-						"HttpClient connection error response code: " + code);
+						"HttpClient connection error response code: " + code); //$NON-NLS-1$
 			}
 		} catch (Exception e) {
-			throw new IncomingFileTransferException("Could not connect to "
+			throw new IncomingFileTransferException("Could not connect to " //$NON-NLS-1$
 					+ urlString, e);
 		}
 
@@ -338,11 +342,13 @@ public class HttpClientRetrieveFileTransfer extends
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
 	 */
 	public ID getID() {
-		return new FileTransferID(getRetrieveNamespace(),getRemoteFileURL());
+		return new FileTransferID(getRetrieveNamespace(), getRemoteFileURL());
 	}
 
 }

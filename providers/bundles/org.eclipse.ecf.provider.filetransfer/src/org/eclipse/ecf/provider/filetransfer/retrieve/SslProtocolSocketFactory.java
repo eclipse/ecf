@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
+import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 
 public class SslProtocolSocketFactory implements ProtocolSocketFactory {
 
@@ -46,14 +47,22 @@ public class SslProtocolSocketFactory implements ProtocolSocketFactory {
 	private SSLContext getSslContext() {
 		if (sslContext == null) {
 			try {
-				sslContext = SSLContext.getInstance("SSL");
+				sslContext = SSLContext
+						.getInstance(Messages.SslProtocolSocketFactory_SSLContext_Instance);
 				sslContext.init(null,
 						new TrustManager[] { new HttpClientSslTrustManager() },
 						null);
 			} catch (Exception e) {
-				Activator.getDefault().getLog().log(
-						new Status(IStatus.ERROR, Activator.PLUGIN_ID, 1111,
-								"SslProtocolSocketFactory", e));
+				Activator
+						.getDefault()
+						.getLog()
+						.log(
+								new Status(
+										IStatus.ERROR,
+										Activator.PLUGIN_ID,
+										1111,
+										Messages.SslProtocolSocketFactory_Status_Create_Error,
+										e));
 			}
 		}
 		return sslContext;
@@ -89,7 +98,7 @@ public class SslProtocolSocketFactory implements ProtocolSocketFactory {
 			proxyClient.getHostConfiguration().setHost(remoteHost, remotePort);
 			String proxyUsername = proxy.getUsername();
 			String proxyPassword = proxy.getPassword();
-			if (proxyUsername != null && !proxyUsername.equals("")) {
+			if (proxyUsername != null && !proxyUsername.equals("")) { //$NON-NLS-1$
 				Credentials credentials = new UsernamePasswordCredentials(
 						proxyUsername, proxyPassword);
 				AuthScope proxyAuthScope = new AuthScope(address.getHostName(),
