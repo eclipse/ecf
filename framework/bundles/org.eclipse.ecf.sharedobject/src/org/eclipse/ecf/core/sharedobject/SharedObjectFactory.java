@@ -152,8 +152,7 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 			SharedObjectCreateException newexcept = new SharedObjectCreateException(
 					Messages.SharedObjectFactory_Exception_Create_With_Description + desc
 							+ ": " + e.getClass().getName() + ": " //$NON-NLS-1$ //$NON-NLS-2$
-							+ e.getMessage());
-			newexcept.setStackTrace(e.getStackTrace());
+							+ e.getMessage(), e);
 			dumpStack("Exception in createSharedObject", newexcept); //$NON-NLS-1$
 			throw newexcept;
 		}
