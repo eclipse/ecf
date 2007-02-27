@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF phpBB Provider
+Bundle-SymbolicName: org.eclipse.ecf.provider.phpbb;singleton:=true
+Bundle-Version: 0.1.0
+Bundle-Vendor: Erkki Lindpere
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ecf,
+ org.eclipse.ecf.bulletinboard,
+ org.eclipse.core.runtime,
+ org.eclipse.ecf.bulletinboard.commons
+Bundle-Activator: org.eclipse.ecf.internal.provider.phpbb.PHPBBPlugin
+Eclipse-LazyStart: false
+Import-Package: org.apache.commons.httpclient,
+ org.apache.commons.httpclient.methods,
+ org.apache.commons.httpclient.methods.multipart
+Export-Package: 
+ org.eclipse.ecf.internal.provider.phpbb;x-internal:=true,
+ org.eclipse.ecf.internal.provider.phpbb.container;x-internal:=true,
+ org.eclipse.ecf.internal.provider.phpbb.identity;x-internal:=true
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
