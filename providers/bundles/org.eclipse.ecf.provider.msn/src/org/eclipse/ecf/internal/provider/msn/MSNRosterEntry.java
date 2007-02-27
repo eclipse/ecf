@@ -123,4 +123,8 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 		return id;
 	}
 
+	public String getNickname() {
+		return contact.getDisplayName();
+	}
+
 }

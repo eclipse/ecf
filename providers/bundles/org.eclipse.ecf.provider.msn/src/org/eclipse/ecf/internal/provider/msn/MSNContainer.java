@@ -575,6 +575,10 @@ final class MSNContainer implements IContainer, IChatManager,
 			return client.getDisplayName();
 		}
 
+		public String getNickname() {
+			return client.getDisplayName();
+		}
+
 	}
 
 	public void sendRosterAdd(String user, String name, String[] groups)
