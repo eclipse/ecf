@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF vBulletin Provider
+Bundle-SymbolicName: org.eclipse.ecf.provider.vbulletin;singleton:=true
+Bundle-Version: 0.1.0
+Bundle-Activator: org.eclipse.ecf.internal.provider.vbulletin.Activator
+Bundle-Vendor: Erkki Lindpere
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ecf.bulletinboard,
+ org.eclipse.ecf.bulletinboard.commons
+Eclipse-LazyStart: false
+Import-Package: org.apache.commons.httpclient
+Export-Package: org.eclipse.ecf.internal.provider.vbulletin;x-internal:=true,
+ org.eclipse.ecf.internal.provider.vbulletin.container;x-internal:=true,
+ org.eclipse.ecf.internal.provider.vbulletin.identity;x-internal:=true,
+ org.eclipse.ecf.internal.provider.vbulletin.internal;x-internal:=true
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

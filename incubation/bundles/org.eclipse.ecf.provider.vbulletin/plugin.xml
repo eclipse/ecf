@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.identity.namespace">
+      <namespace
+            class="org.eclipse.ecf.internal.provider.vbulletin.identity.VBNamespace"
+            description="vBulletin Namespace"
+            name="ecf.vbulletin"/>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.internal.provider.vbulletin.container.ContainerInstantiator"
+            description="vBulletin HTTP Client"
+            name="ecf.vbulletin.http">
+         <property
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usenickname"
+               value="true"/>
+         <property
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"
+               value="true"/>
+         <property
+               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.groupIDLabel"
+               value="URL:"/>
+            </containerFactory>
+   </extension>
+
+</plugin>
