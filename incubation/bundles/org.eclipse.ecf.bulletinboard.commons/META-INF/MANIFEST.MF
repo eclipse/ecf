@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: BBAPI Implementation Commons
+Bundle-SymbolicName: org.eclipse.ecf.bulletinboard.commons
+Bundle-Version: 0.1.0
+Bundle-Vendor: Erkki Lindpere
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ecf,
+ org.eclipse.ecf.bulletinboard,
+ org.eclipse.core.runtime
+Export-Package: org.eclipse.ecf.internal.bulletinboard.commons;x-internal:=true,
+ org.eclipse.ecf.internal.bulletinboard.commons.parsing;x-internal:=true,
+ org.eclipse.ecf.internal.bulletinboard.commons.util;x-internal:=true,
+ org.eclipse.ecf.internal.bulletinboard.commons.webapp;x-internal:=true
+Import-Package: org.apache.commons.httpclient,
+ org.apache.commons.httpclient.methods,
+ org.apache.commons.httpclient.methods.multipart
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
