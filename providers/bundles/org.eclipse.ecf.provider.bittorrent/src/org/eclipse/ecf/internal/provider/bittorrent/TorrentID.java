@@ -11,6 +11,8 @@
 package org.eclipse.ecf.internal.provider.bittorrent;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
@@ -73,6 +75,10 @@ public final class TorrentID implements IFileID {
 
 	public File getFile() {
 		return file;
+	}
+
+	public URL getURL() throws MalformedURLException {
+		return file.toURL();
 	}
 
 }
