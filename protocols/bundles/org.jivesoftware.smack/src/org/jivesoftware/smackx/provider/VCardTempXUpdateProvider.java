@@ -3,7 +3,6 @@ package org.jivesoftware.smackx.provider;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.provider.PacketExtensionProvider;
 import org.jivesoftware.smackx.packet.VCardTempXUpdateExtension;
-import org.jivesoftware.smackx.packet.XHTMLExtension;
 import org.xmlpull.v1.XmlPullParser;
 
 /**
