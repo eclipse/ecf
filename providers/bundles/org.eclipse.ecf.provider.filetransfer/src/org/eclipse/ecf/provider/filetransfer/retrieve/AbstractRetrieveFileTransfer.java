@@ -147,8 +147,9 @@ public abstract class AbstractRetrieveFileTransfer implements
 
 	protected void hardClose() {
 		try {
-			if (remoteFileContents != null)
+			if (remoteFileContents != null) {
 				remoteFileContents.close();
+			}
 		} catch (IOException e) {
 		}
 		try {
