@@ -31,11 +31,14 @@ public interface IIncomingFileTransferReceiveStartEvent extends
 	public IFileID getFileID();
 
 	/**
-	 * Get incoming file transfer.
+	 * Get incoming file transfer object by specifying a local File instance to
+	 * save the received contents to.
 	 * 
 	 * @param localFileToSave
 	 *            the file on the local file system to receive and save the
-	 *            remote file. Must not be <code>null</code>.
+	 *            remote file. Must not be <code>null</code>. If the file
+	 *            already exists, its content will be overwritten by any data
+	 *            received.
 	 * @return IIncomingFileTransfer the incoming file transfer object. Will not
 	 *         be <code>null</code>.
 	 * @throws IOException
@@ -45,11 +48,23 @@ public interface IIncomingFileTransferReceiveStartEvent extends
 			throws IOException;
 
 	/**
-	 * Get incoming file transfer.
+	 * Get incoming file transfer by specifying an OutputStream instance to save
+	 * the received contents to. NOTE: the caller is responsible for calling
+	 * {@link OutputStream#close()} on the OutputStream provided. If the stream
+	 * provided is buffered, then {@link BufferedOutputStream#flush()} should be
+	 * called to guaranteed that the data received is actually written to the
+	 * given OutputStream.
 	 * 
 	 * @param streamToStore
-	 *            the output stream to store the incoming file
-	 * @return IIncomingFileTransfer the incoming file transfer object
+	 *            the output stream to store the incoming file. Must not be
+	 *            <code>null</code>.
+	 * @return IIncomingFileTransfer the incoming file transfer object. NOTE:
+	 *         the caller is responsible for calling
+	 *         {@link OutputStream#close()} on the OutputStream provided. If the
+	 *         stream provided is buffered, then
+	 *         {@link BufferedOutputStream#flush()} should be called to
+	 *         guaranteed that the data received is actually written to the
+	 *         given OutputStream.
 	 * @throws IOException
 	 *             if streamToStore cannot be opened for writing
 	 */
