@@ -114,8 +114,12 @@ public abstract class AbstractRetrieveFileTransfer implements
 						localFileContents.write(buf, 0, bytes);
 						fireTransferReceiveDataEvent();
 						monitor.worked(bytes);
-					} else
+					} else {
 						done = true;
+						if (closeOutputStream) {
+							localFileContents.close();
+						}
+					}
 				}
 			} catch (Exception e) {
 				exception = e;
@@ -153,8 +157,9 @@ public abstract class AbstractRetrieveFileTransfer implements
 		} catch (IOException e) {
 		}
 		try {
-			if (closeOutputStream && localFileContents != null)
+			if (localFileContents != null && closeOutputStream) {
 				localFileContents.close();
+			}
 		} catch (IOException e) {
 		}
 		job = null;

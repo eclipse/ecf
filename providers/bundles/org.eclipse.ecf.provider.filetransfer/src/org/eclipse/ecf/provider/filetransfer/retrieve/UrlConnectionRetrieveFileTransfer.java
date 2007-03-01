@@ -87,8 +87,7 @@ public class UrlConnectionRetrieveFileTransfer extends
 
 						public IIncomingFileTransfer receive(
 								OutputStream streamToStore) throws IOException {
-							setOutputStream(new BufferedOutputStream(
-									streamToStore));
+							setOutputStream(streamToStore);
 							setCloseOutputStream(false);
 							job = new FileTransferJob(getRemoteFileURL()
 									.toString());
