@@ -58,7 +58,10 @@ public class MultiFileTransferRetrieveTest extends ContainerAbstractTestCase {
 		Enumeration files = Activator.getDefault().getBundle().getEntryPaths(TESTSRCPATH);
 		for( ; files.hasMoreElements(); ) {
 			URL url = Activator.getDefault().getBundle().getEntry((String) files.nextElement());
-			srcFiles.add(url.toExternalForm());
+			String file = url.getFile();
+			if (file != null && !file.equals("") && !file.endsWith("/")) {
+				srcFiles.add(url.toExternalForm());
+			}
 		}
 		// Make target directory if it's not there
 		File targetDir = new File(TESTTARGETPATH);
@@ -104,8 +107,14 @@ public class MultiFileTransferRetrieveTest extends ContainerAbstractTestCase {
 				} else if (event instanceof IIncomingFileTransferReceiveDataEvent) {
 					printFileInfo("DATA",event,targetFile);
 				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
-					printFileInfo("DONE",event,targetFile);
-					assertTrue(srcFile.length()==targetFile.length());
+					try {
+						bufferedStream.flush();
+						printFileInfo("DONE",event,targetFile);
+						assertTrue(srcFile.length()==targetFile.length());
+					} catch (IOException e) {
+						e.printStackTrace();
+						fail(e.getLocalizedMessage());
+					}
 				} else {
 					printFileInfo("OTHER",event,targetFile);
 				}
