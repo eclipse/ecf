@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Bittorrent Provider Plug-in
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.bittorrent;singleton:=true
 Bundle-Version: 0.1.0
 Bundle-Activator: org.eclipse.ecf.internal.provider.bittorrent.BitTorrentProviderPlugin
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.provider.bittorrent;x-internal:=true
