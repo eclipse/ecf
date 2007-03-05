@@ -73,7 +73,7 @@ public final class TorrentID implements IFileID {
 		return null;
 	}
 
-	public File getFile() {
+	File getFile() {
 		return file;
 	}
 
