@@ -55,8 +55,8 @@ public final class TorrentNamespace extends Namespace {
 	public String getScheme() {
 		return SCHEME;
 	}
-
-	public Class[][] getSupportedParamterTypes() {
+	
+	public Class[][] getSupportedParameterTypes() {
 		return new Class[][] { { String.class }, { File.class } };
 	}
 
