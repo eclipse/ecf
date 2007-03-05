@@ -66,10 +66,6 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 		}
 	}
 
-	public int getPriority() {
-		return 0;
-	}
-
 	public Map getProperties() {
 		return Collections.EMPTY_MAP;
 	}
