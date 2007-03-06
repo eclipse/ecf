@@ -4,8 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
+import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory;
+import org.eclipse.ecf.provider.filetransfer.retrieve.MultiProtocolRetrieveAdapter;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -13,17 +17,19 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class Activator extends Plugin {
 
-	private static final String URL_HANDLER_PROTOCOL_NAME = "url.handler.protocol";
+	private static final String URL_HANDLER_PROTOCOL_NAME = "url.handler.protocol"; //$NON-NLS-1$
 
-	private static final String URLSTREAM_HANDLER_SERVICE_NAME = "org.osgi.service.url.URLStreamHandlerService";
+	private static final String URLSTREAM_HANDLER_SERVICE_NAME = "org.osgi.service.url.URLStreamHandlerService"; //$NON-NLS-1$
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.filetransfer";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.filetransfer"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
 
-	BundleContext context;
+	private BundleContext context;
+
+	private ServiceRegistration fileTransferServiceRegistration;
 
 	/**
 	 * The constructor
@@ -40,6 +46,13 @@ public class Activator extends Plugin {
 		super.start(context);
 		plugin = this;
 		this.context = context;
+		fileTransferServiceRegistration = context.registerService(
+				IRetrieveFileTransferFactory.class.getName(),
+				new IRetrieveFileTransferFactory() {
+					public IRetrieveFileTransfer newInstance() {
+						return new MultiProtocolRetrieveAdapter();
+					}
+				}, null);
 	}
 
 	/*
@@ -49,8 +62,12 @@ public class Activator extends Plugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
-		super.stop(context);
 		this.context = null;
+		if (fileTransferServiceRegistration != null) {
+			fileTransferServiceRegistration.unregister();
+			fileTransferServiceRegistration = null;
+		}
+		super.stop(context);
 	}
 
 	/**

@@ -14,7 +14,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.util.Map;
 
 import javax.security.auth.login.LoginException;
 
@@ -172,7 +171,10 @@ public class HttpClientRetrieveFileTransfer extends
 		}
 	}
 
-	protected void openStreams(Map options)
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
+	 */
+	protected void openStreams()
 			throws IncomingFileTransferException {
 		String urlString = getRemoteFileURL().toString();
 

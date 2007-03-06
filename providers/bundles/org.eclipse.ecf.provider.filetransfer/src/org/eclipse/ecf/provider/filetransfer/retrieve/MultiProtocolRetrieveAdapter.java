@@ -24,6 +24,7 @@ import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 
@@ -33,7 +34,7 @@ import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
  * retriever.
  */
 public class MultiProtocolRetrieveAdapter implements
-		IRetrieveFileTransferContainerAdapter {
+		IRetrieveFileTransfer {
 
 	IConnectContext connectContext = null;
 	Proxy proxy = null;

@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -39,14 +38,13 @@ public class UrlConnectionRetrieveFileTransfer extends
 	protected IFileID fileid = null;
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams(java.util.Map)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
-	protected void openStreams(Map options)
+	protected void openStreams()
 			throws IncomingFileTransferException {
 		URL theURL = null;
 
 		try {
-
 			theURL = getRemoteFileURL();
 			urlConnection = theURL.openConnection();
 			setInputStream(urlConnection.getInputStream());
