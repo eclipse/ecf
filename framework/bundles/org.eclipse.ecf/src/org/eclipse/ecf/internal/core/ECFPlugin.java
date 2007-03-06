@@ -36,6 +36,7 @@ import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.Trace;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 public class ECFPlugin extends Plugin {
 
@@ -93,6 +94,8 @@ public class ECFPlugin extends Plugin {
 
 	private IRegistryChangeListener registryManager = null;
 
+	private ServiceRegistration containerFactoryServiceRegistration;
+	
 	public ECFPlugin() {
 		super();
 		plugin = this;
@@ -374,6 +377,7 @@ public class ECFPlugin extends Plugin {
 				registryManager);
 		setupContainerFactoryExtensionPoint(context);
 		setupStartExtensionPoint(context);
+		containerFactoryServiceRegistration = context.registerService(IContainerFactory.class.getName(), ContainerFactory.getDefault(), null);
 	}
 
 	protected class ECFRegistryManager implements IRegistryChangeListener {
@@ -399,13 +403,17 @@ public class ECFPlugin extends Plugin {
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
 		fireDisposables();
 		this.disposables = null;
 		this.bundlecontext = null;
 		Platform.getExtensionRegistry().removeRegistryChangeListener(
 				registryManager);
 		this.registryManager = null;
+		if (containerFactoryServiceRegistration != null) {
+			containerFactoryServiceRegistration.unregister();
+			containerFactoryServiceRegistration = null;
+		}
+		super.stop(context);
 	}
 
 	/**
