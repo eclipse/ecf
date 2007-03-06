@@ -25,6 +25,7 @@ import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -54,6 +55,8 @@ public class Activator extends Plugin {
 
 	private IRegistryChangeListener registryManager = null;
 
+	private ServiceRegistration idFactoryServiceRegistration = null;
+
 	/**
 	 * The constructor
 	 */
@@ -76,6 +79,9 @@ public class Activator extends Plugin {
 				.exiting(Activator.getDefault(),
 						IdentityDebugOptions.METHODS_ENTERING, Activator.class,
 						"start"); //$NON-NLS-1$
+		// Register IIDFactory service
+		idFactoryServiceRegistration = context.registerService(IIDFactory.class
+				.getName(), IDFactory.getDefault(), null);
 	}
 
 	protected class IdentityRegistryManager implements IRegistryChangeListener {
@@ -124,11 +130,10 @@ public class Activator extends Plugin {
 				}
 				// remove
 				factory.removeNamespace(n);
-				org.eclipse.ecf.core.util.Trace
-						.trace(Activator.getDefault(),
-								IdentityDebugOptions.DEBUG,
-								"removeNamespaceExtensions.removedNamespace(" //$NON-NLS-1$
-										+ n + ")"); //$NON-NLS-1$
+				org.eclipse.ecf.core.util.Trace.trace(Activator.getDefault(),
+						IdentityDebugOptions.DEBUG,
+						"removeNamespaceExtensions.removedNamespace(" //$NON-NLS-1$
+								+ n + ")"); //$NON-NLS-1$
 			} catch (Exception e) {
 				org.eclipse.ecf.core.util.Trace.catching(
 						Activator.getDefault(),
@@ -253,6 +258,8 @@ public class Activator extends Plugin {
 				registryManager);
 		registryManager = null;
 		plugin = null;
+		if (idFactoryServiceRegistration != null)
+			idFactoryServiceRegistration.unregister();
 		super.stop(context);
 	}
 
