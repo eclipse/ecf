@@ -14,13 +14,11 @@ package org.eclipse.ecf.tests.core;
 import junit.framework.TestCase;
 
 import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.internal.tests.Activator;
-import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class ContainerFactoryServiceAbstractTestCase extends TestCase {
 
