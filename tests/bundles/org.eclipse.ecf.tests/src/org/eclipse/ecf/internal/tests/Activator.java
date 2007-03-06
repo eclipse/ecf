@@ -1,6 +1,7 @@
 package org.eclipse.ecf.internal.tests;
 
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.identity.IIDFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -16,8 +17,11 @@ public class Activator extends Plugin {
 	// The shared instance
 	private static Activator plugin;
 	
-	private static ServiceTracker serviceTracker;
+	private static ServiceTracker idFactoryServiceTracker;
 	private static IIDFactory idFactory;
+	
+	private static ServiceTracker containerFactoryServiceTracker;
+	private static IContainerFactory containerFactory;
 	
 	/**
 	 * The constructor
@@ -31,9 +35,12 @@ public class Activator extends Plugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		serviceTracker = new ServiceTracker(context,IIDFactory.class.getName(), null);
-		serviceTracker.open();
-		idFactory = (IIDFactory) serviceTracker.getService();
+		idFactoryServiceTracker = new ServiceTracker(context,IIDFactory.class.getName(), null);
+		idFactoryServiceTracker.open();
+		idFactory = (IIDFactory) idFactoryServiceTracker.getService();
+		containerFactoryServiceTracker = new ServiceTracker(context,IContainerFactory.class.getName(),null);
+		containerFactoryServiceTracker.open();
+		containerFactory = (IContainerFactory) containerFactoryServiceTracker.getService();
 		plugin = this;
 	}
 
@@ -44,9 +51,13 @@ public class Activator extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		idFactory = null;
-		if (serviceTracker != null) {
-			serviceTracker.close();
-			serviceTracker = null;
+		if (idFactoryServiceTracker != null) {
+			idFactoryServiceTracker.close();
+			idFactoryServiceTracker = null;
+		}
+		if (containerFactoryServiceTracker != null) {
+			containerFactoryServiceTracker.close();
+			containerFactoryServiceTracker = null;
 		}
 		super.stop(context);
 	}
@@ -62,5 +73,9 @@ public class Activator extends Plugin {
 
 	public IIDFactory getIDFactory() {
 		return idFactory;
+	}
+	
+	public IContainerFactory getContainerFactory() {
+		return containerFactory;
 	}
 }
