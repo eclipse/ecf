@@ -16,28 +16,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
+import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
-public class AuthenticatedFileTransferRetrieveTest extends ContainerAbstractTestCase {
+public class AuthenticatedRetrieveFileTransferTest extends ContainerAbstractTestCase {
 
 	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
 	private static final String HTTPS_RETRIEVE = "https://bugs.eclipse.org/bugs";
 	
 	File tmpFile = null;
 
-	protected IContainer createClient(int index) throws Exception {
-		return ContainerFactory.getDefault().createContainer();
+	private IRetrieveFileTransfer transferInstance;
+	
+	protected IRetrieveFileTransfer getTransferInstance() {
+		return Activator.getDefault().getRetrieveFileTransferFactory().newInstance();
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -45,7 +45,7 @@ public class AuthenticatedFileTransferRetrieveTest extends ContainerAbstractTest
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		clients = createClients();
+		transferInstance = getTransferInstance();
 		tmpFile = File.createTempFile("ECFTest", "");
 	}
 
@@ -55,7 +55,6 @@ public class AuthenticatedFileTransferRetrieveTest extends ContainerAbstractTest
 	 * @see junit.framework.TestCase#tearDown()
 	 */
 	protected void tearDown() throws Exception {
-		cleanUpClients();
 		super.tearDown();
 		tmpFile = null;
 	}
@@ -67,9 +66,7 @@ public class AuthenticatedFileTransferRetrieveTest extends ContainerAbstractTest
 	List receiveDoneEvents = new ArrayList();
 
 	protected void testReceiveHttp(String url) throws Exception {
-		IRetrieveFileTransferContainerAdapter retrieveAdapter = (IRetrieveFileTransferContainerAdapter) getClients()[0]
-				.getAdapter(IRetrieveFileTransferContainerAdapter.class);
-		assertNotNull(retrieveAdapter);
+		assertNotNull(transferInstance);
 		IFileTransferListener listener = new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
 				if (event instanceof IIncomingFileTransferReceiveStartEvent) {
@@ -93,11 +90,11 @@ public class AuthenticatedFileTransferRetrieveTest extends ContainerAbstractTest
 		// XXX Setup authentication here
 		// retrieveAdapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext("username", "password"));
 
-		retrieveAdapter.sendRetrieveRequest(FileIDFactory.getDefault()
-				.createFileID(retrieveAdapter.getRetrieveNamespace(),
+		transferInstance.sendRetrieveRequest(FileIDFactory.getDefault()
+				.createFileID(transferInstance.getRetrieveNamespace(),
 						url), listener, null);
 		// Wait for 5 seconds
-		sleep(5000, "Starting 5 second wait", "Ending 5 second wait");
+		Thread.sleep(5000);
 
 		assertHasEvent(receiveStartEvents,
 				IIncomingFileTransferReceiveStartEvent.class);

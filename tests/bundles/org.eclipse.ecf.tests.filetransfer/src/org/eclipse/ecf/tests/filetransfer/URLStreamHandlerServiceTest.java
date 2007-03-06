@@ -21,7 +21,7 @@ import org.osgi.service.url.AbstractURLStreamHandlerService;
 /**
  *
  */
-public class TestURLStreamHandlerService extends
+public class URLStreamHandlerServiceTest extends
 		AbstractURLStreamHandlerService {
 
 	class TestHttpURLConnection extends HttpURLConnection {

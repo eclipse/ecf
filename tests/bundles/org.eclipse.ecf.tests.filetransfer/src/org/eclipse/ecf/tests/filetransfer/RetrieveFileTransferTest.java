@@ -11,14 +11,9 @@
 
 package org.eclipse.ecf.tests.filetransfer;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.ecf.core.ContainerFactory;
@@ -32,12 +27,12 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
-public class MultiFileTransferRetrieveTest extends ContainerAbstractTestCase {
+public class RetrieveFileTransferTest extends ContainerAbstractTestCase {
 
-	private static final String TESTSRCPATH = "test.src";
-	private static final String TESTTARGETPATH = "test.target";
+	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
+	private static final String HTTPS_RETRIEVE = "https://bugs.eclipse.org/bugs";
 	
-	private static List srcFiles = new ArrayList();
+	File tmpFile = null;
 	
 	protected IContainer createClient(int index) throws Exception {
 		return ContainerFactory.getDefault().createContainer();
@@ -55,17 +50,7 @@ public class MultiFileTransferRetrieveTest extends ContainerAbstractTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		clients = createClients();
-		Enumeration files = Activator.getDefault().getBundle().getEntryPaths(TESTSRCPATH);
-		for( ; files.hasMoreElements(); ) {
-			URL url = Activator.getDefault().getBundle().getEntry((String) files.nextElement());
-			String file = url.getFile();
-			if (file != null && !file.equals("") && !file.endsWith("/")) {
-				srcFiles.add(url.toExternalForm());
-			}
-		}
-		// Make target directory if it's not there
-		File targetDir = new File(TESTTARGETPATH);
-		targetDir.mkdirs();
+		tmpFile = File.createTempFile("ECFTest", "");
 	}
 
 	/*
@@ -76,61 +61,61 @@ public class MultiFileTransferRetrieveTest extends ContainerAbstractTestCase {
 	protected void tearDown() throws Exception {
 		cleanUpClients();
 		super.tearDown();
+		tmpFile = null;
 	}
 
-	protected void printFileInfo(String prefix, IFileTransferEvent event, File targetFile) {
-		System.out.println(prefix+";" + event
-				+ ";length="+targetFile.length()
-				+ ";file=" + targetFile.getAbsolutePath());
-	}
-	
-	protected void testReceive(String url) throws Exception {
-		final File srcFile = new File(url);
+	List receiveStartEvents = new ArrayList();
+
+	List receiveDataEvents = new ArrayList();
+
+	List receiveDoneEvents = new ArrayList();
+
+	protected void testReceiveHttp(String url) throws Exception {
 		IRetrieveFileTransferContainerAdapter retrieveAdapter = (IRetrieveFileTransferContainerAdapter) getClients()[0]
 				.getAdapter(IRetrieveFileTransferContainerAdapter.class);
 		assertNotNull(retrieveAdapter);
 		IFileTransferListener listener = new IFileTransferListener() {
-			File targetFile = null;
-			BufferedOutputStream bufferedStream = null;
 			public void handleTransferEvent(IFileTransferEvent event) {
 				if (event instanceof IIncomingFileTransferReceiveStartEvent) {
 					IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
-					targetFile = new File(TESTTARGETPATH,rse.getFileID().getFilename());
-					printFileInfo("START",event,targetFile);
+					receiveStartEvents.add(rse);
+					assertNotNull(rse.getFileID());
+					assertNotNull(rse.getFileID().getFilename());
 					try {
-						bufferedStream = new BufferedOutputStream(new FileOutputStream(targetFile));
-						rse.receive(bufferedStream);
+						rse.receive(tmpFile);
 					} catch (IOException e) {
-						e.printStackTrace();
 						fail(e.getLocalizedMessage());
 					}
 				} else if (event instanceof IIncomingFileTransferReceiveDataEvent) {
-					printFileInfo("DATA",event,targetFile);
+					receiveDataEvents.add(event);
 				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
-					try {
-						bufferedStream.flush();
-						printFileInfo("DONE",event,targetFile);
-						assertTrue(srcFile.length()==targetFile.length());
-					} catch (IOException e) {
-						e.printStackTrace();
-						fail(e.getLocalizedMessage());
-					}
-				} else {
-					printFileInfo("OTHER",event,targetFile);
+					receiveDoneEvents.add(event);
 				}
 			}
 		};
 
 		retrieveAdapter.sendRetrieveRequest(FileIDFactory.getDefault()
-				.createFileID(retrieveAdapter.getRetrieveNamespace(), url),
-				listener, null);
+				.createFileID(retrieveAdapter.getRetrieveNamespace(),
+						url), listener, null);
+		// Wait for 5 seconds
+		sleep(5000, "Starting 5 second wait", "Ending 5 second wait");
+
+		assertHasEvent(receiveStartEvents,
+				IIncomingFileTransferReceiveStartEvent.class);
+		assertHasMoreThanEventCount(receiveDataEvents,
+				IIncomingFileTransferReceiveDataEvent.class, 0);
+		assertHasEvent(receiveDoneEvents,
+				IIncomingFileTransferReceiveDoneEvent.class);
+		
+		assertTrue(tmpFile.exists());
+		assertTrue(tmpFile.length() > 0);
 	}
 
-	public void testReceives() throws Exception {
-		for (Iterator i = srcFiles.iterator(); i.hasNext(); ) {
-			testReceive((String) i.next());
-		}
-		sleep(50000, "Starting sleeping", "Ending sleeping");
+	public void testReceiveFile() throws Exception {
+		testReceiveHttp(HTTP_RETRIEVE);
 	}
 
+	public void testHttpsReceiveFile() throws Exception {
+		testReceiveHttp(HTTPS_RETRIEVE);
+	}
 }

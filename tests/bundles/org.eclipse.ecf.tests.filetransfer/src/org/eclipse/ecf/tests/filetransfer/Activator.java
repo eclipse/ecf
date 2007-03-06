@@ -1,7 +1,9 @@
 package org.eclipse.ecf.tests.filetransfer;
 
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -13,6 +15,8 @@ public class Activator extends Plugin {
 
 	// The shared instance
 	private static Activator plugin;
+	
+	private ServiceTracker tracker = null;
 	
 	/**
 	 * The constructor
@@ -27,6 +31,8 @@ public class Activator extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		tracker = new ServiceTracker(context,IRetrieveFileTransferFactory.class.getName(),null);
+		tracker.open();
 	}
 
 	/*
@@ -35,6 +41,10 @@ public class Activator extends Plugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
+		if (tracker != null) {
+			tracker.close();
+			tracker = null;
+		}
 		super.stop(context);
 	}
 
@@ -45,6 +55,13 @@ public class Activator extends Plugin {
 	 */
 	public static Activator getDefault() {
 		return plugin;
+	}
+
+	/**
+	 * @return IRetrieveFileTransferFactory retrieve file transfer factory
+	 */
+	public IRetrieveFileTransferFactory getRetrieveFileTransferFactory() {
+		return (IRetrieveFileTransferFactory) tracker.getService();
 	}
 
 }
