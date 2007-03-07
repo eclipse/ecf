@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Identity API
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.identity;singleton:=true
 Bundle-Version: 1.0.0.v20070215
 Bundle-Activator: org.eclipse.ecf.internal.core.identity.Activator
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %plugin.provider
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.core.identity,
  org.eclipse.ecf.core.util,
