@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-SymbolicName: org.eclipse.ecf.provider;singleton:=true
 Bundle-Version: 1.0.0.v20070215
-Bundle-Name: ECF Provider API
-Bundle-Vendor: Eclipse.org
+Bundle-Name: %plugin.name
+Bundle-Vendor: %plugin.provider
 Bundle-Activator: org.eclipse.ecf.internal.provider.ProviderPlugin
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
