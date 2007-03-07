@@ -26,7 +26,7 @@ public interface IReliableContainer extends IContainer {
 
 	/**
 	 * @return true if this IReliableContainer instance is in the 'manager' role
-	 *         for the group, false otherwise
+	 *         for the group, false otherwise.
 	 */
 	public boolean isGroupManager();
 }
