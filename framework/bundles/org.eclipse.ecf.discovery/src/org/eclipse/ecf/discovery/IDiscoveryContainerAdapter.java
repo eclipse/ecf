@@ -11,6 +11,7 @@ package org.eclipse.ecf.discovery;
 
 import java.io.IOException;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
 /**
@@ -27,7 +28,7 @@ import org.eclipse.ecf.discovery.identity.ServiceID;
  * implementation.
  * 
  */
-public interface IDiscoveryContainerAdapter {
+public interface IDiscoveryContainerAdapter extends IAdaptable {
 	/**
 	 * Add a service listener. The given listener will have its method called
 	 * when a service with a type matching that specified by the first parameter
