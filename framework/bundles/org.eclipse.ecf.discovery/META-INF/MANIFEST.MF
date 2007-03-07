@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Discovery API
+Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.eclipse.ecf.discovery;singleton:=true
 Bundle-Version: 1.0.0.v20070215
 Bundle-Activator: org.eclipse.ecf.internal.discovery.DiscoveryPlugin
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Eclipse-AutoStart: true
