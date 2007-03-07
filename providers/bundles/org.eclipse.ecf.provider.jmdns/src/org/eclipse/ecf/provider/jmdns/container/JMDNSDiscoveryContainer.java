@@ -45,7 +45,6 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceProperties;
@@ -53,13 +52,14 @@ import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceContainerEvent;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.ServiceID;
+import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.provider.jmdns.JMDNSDebugOptions;
 import org.eclipse.ecf.internal.provider.jmdns.JMDNSPlugin;
 import org.eclipse.ecf.internal.provider.jmdns.Messages;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceID;
 
 public class JMDNSDiscoveryContainer implements IContainer,
-		IDiscoveryContainerAdapter, ServiceListener, ServiceTypeListener {
+		IDiscoveryService, ServiceListener, ServiceTypeListener {
 	public static final int DEFAULT_REQUEST_TIMEOUT = 3000;
 	protected static String JMDNS_NAMESPACE_ID = Messages
 			.getString("JMDNSPlugin.namespace.identifier"); //$NON-NLS-1$;

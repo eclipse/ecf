@@ -10,9 +10,14 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.jmdns;
 
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.eclipse.ecf.provider.jmdns.container.JMDNSDiscoveryContainer;
 import org.osgi.framework.BundleContext;
-import java.util.*;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -26,6 +31,8 @@ public class JMDNSPlugin extends Plugin {
 	public static final String NAMESPACE_IDENTIFIER = Messages
 			.getString("JMDNSPlugin.namespace.identifier"); //$NON-NLS-1$
 
+	private ServiceRegistration serviceRegistration = null;
+	
 	/**
 	 * The constructor.
 	 */
@@ -39,15 +46,23 @@ public class JMDNSPlugin extends Plugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		JMDNSDiscoveryContainer container = new JMDNSDiscoveryContainer();
+		container.connect(null, null);
+		serviceRegistration = context.registerService(IDiscoveryService.class
+				.getName(), container, null);
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
 		plugin = null;
 		resourceBundle = null;
+		if (serviceRegistration != null) {
+			serviceRegistration.unregister();
+			serviceRegistration = null;
+		}
+		super.stop(context);
 	}
 
 	/**
