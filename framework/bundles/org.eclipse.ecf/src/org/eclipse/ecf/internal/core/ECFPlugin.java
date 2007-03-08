@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IRegistryChangeEvent;
 import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
@@ -37,6 +36,7 @@ import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.Trace;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
 public class ECFPlugin extends Plugin {
 
@@ -61,7 +61,7 @@ public class ECFPlugin extends Plugin {
 	public static final String NAME_ATTRIBUTE = "name"; //$NON-NLS-1$
 
 	public static final String DESCRIPTION_ATTRIBUTE = "description"; //$NON-NLS-1$
-	
+
 	public static final String ARG_ELEMENT_NAME = "defaultargument"; //$NON-NLS-1$
 
 	public static final String VALUE_ATTRIBUTE = "value"; //$NON-NLS-1$
@@ -88,14 +88,14 @@ public class ECFPlugin extends Plugin {
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
 
-	BundleContext bundlecontext = null;
+	private ServiceTracker extensionRegistryTracker = null;
 
 	private Map disposables = new WeakHashMap();
 
 	private IRegistryChangeListener registryManager = null;
 
 	private ServiceRegistration containerFactoryServiceRegistration;
-	
+
 	public ECFPlugin() {
 		super();
 		plugin = this;
@@ -255,7 +255,7 @@ public class ECFPlugin extends Plugin {
 				if (description == null) {
 					description = ""; //$NON-NLS-1$
 				}
-				
+
 				// Get any arguments
 				String[] defaults = getDefaultArgs(member
 						.getChildren(ARG_ELEMENT_NAME));
@@ -309,13 +309,20 @@ public class ECFPlugin extends Plugin {
 	 *            the BundleContext for this bundle
 	 */
 	protected void setupContainerFactoryExtensionPoint(BundleContext bc) {
-		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = reg
-				.getExtensionPoint(CONTAINER_FACTORY_EPOINT);
-		if (extensionPoint == null) {
-			return;
+		IExtensionRegistry reg = getExtensionRegistry();
+		if (reg != null) {
+			IExtensionPoint extensionPoint = reg
+					.getExtensionPoint(CONTAINER_FACTORY_EPOINT);
+			if (extensionPoint == null) {
+				return;
+			}
+			addContainerFactoryExtensions(extensionPoint
+					.getConfigurationElements());
 		}
-		addContainerFactoryExtensions(extensionPoint.getConfigurationElements());
+	}
+
+	public IExtensionRegistry getExtensionRegistry() {
+		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
 	/**
@@ -325,12 +332,15 @@ public class ECFPlugin extends Plugin {
 	 *            the BundleContext fro this bundle
 	 */
 	protected void setupStartExtensionPoint(BundleContext bc) {
-		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = reg.getExtensionPoint(START_EPOINT);
-		if (extensionPoint == null) {
-			return;
+		IExtensionRegistry reg = getExtensionRegistry();
+		if (reg != null) {
+			IExtensionPoint extensionPoint = reg
+					.getExtensionPoint(START_EPOINT);
+			if (extensionPoint == null) {
+				return;
+			}
+			runStartExtensions(extensionPoint.getConfigurationElements());
 		}
-		runStartExtensions(extensionPoint.getConfigurationElements());
 	}
 
 	protected void runStartExtensions(
@@ -371,13 +381,19 @@ public class ECFPlugin extends Plugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		this.bundlecontext = context;
-		this.registryManager = new ECFRegistryManager();
-		Platform.getExtensionRegistry().addRegistryChangeListener(
-				registryManager);
+		this.extensionRegistryTracker = new ServiceTracker(context,
+				IExtensionRegistry.class.getName(), null);
+		this.extensionRegistryTracker.open();
+		IExtensionRegistry registry = getExtensionRegistry();
+		if (registry != null) {
+			this.registryManager = new ECFRegistryManager();
+			registry.addRegistryChangeListener(registryManager);
+		}
 		setupContainerFactoryExtensionPoint(context);
 		setupStartExtensionPoint(context);
-		containerFactoryServiceRegistration = context.registerService(IContainerFactory.class.getName(), ContainerFactory.getDefault(), null);
+		containerFactoryServiceRegistration = context.registerService(
+				IContainerFactory.class.getName(), ContainerFactory
+						.getDefault(), null);
 	}
 
 	protected class ECFRegistryManager implements IRegistryChangeListener {
@@ -405,10 +421,14 @@ public class ECFPlugin extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		fireDisposables();
 		this.disposables = null;
-		this.bundlecontext = null;
-		Platform.getExtensionRegistry().removeRegistryChangeListener(
-				registryManager);
+		IExtensionRegistry reg = getExtensionRegistry();
+		if (reg != null)
+			reg.removeRegistryChangeListener(registryManager);
 		this.registryManager = null;
+		if (extensionRegistryTracker != null) {
+			extensionRegistryTracker.close();
+			extensionRegistryTracker = null;
+		}
 		if (containerFactoryServiceRegistration != null) {
 			containerFactoryServiceRegistration.unregister();
 			containerFactoryServiceRegistration = null;
