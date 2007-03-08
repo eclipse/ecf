@@ -7,10 +7,11 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.ecf.presence.bot.handler.ICommandHandler;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -28,6 +29,8 @@ public class Activator extends Plugin {
 	// The shared instance
 	private static Activator plugin;
 	
+	private ServiceTracker extensionRegistryTracker = null;
+
 	private Map bots = new HashMap();
 	private Map commands = new HashMap();
 
@@ -37,6 +40,10 @@ public class Activator extends Plugin {
 	public Activator() {
 	}
 
+	public IExtensionRegistry getExtensionRegistry() {
+		return (IExtensionRegistry) extensionRegistryTracker.getService();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
@@ -44,6 +51,9 @@ public class Activator extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		this.extensionRegistryTracker = new ServiceTracker(context,
+				IExtensionRegistry.class.getName(), null);
+		this.extensionRegistryTracker.open();
 		loadExtensions();
 	}
 
@@ -52,6 +62,10 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		if (extensionRegistryTracker != null) {
+			extensionRegistryTracker.close();
+			extensionRegistryTracker = null;
+		}
 		plugin = null;
 		super.stop(context);
 	}
@@ -71,36 +85,38 @@ public class Activator extends Plugin {
 
 
 	private void loadExtensions() throws CoreException {
-
 		// load the command handlers
-		IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(COMMAND_HANDLER_EPOINT);
-		for(int i = 0; i < elements.length; i++) {
-			String id = elements[i].getAttribute("botId");
-			String expression = elements[i].getAttribute("expression");
-			ICommandHandler handler = (ICommandHandler) elements[i].createExecutableExtension("class");
-			List c = (List) commands.get(id);
-			if(c == null) {
-				c = new ArrayList();
-				c.add(new CommandEntry(expression, handler));
-				commands.put(id, c);
-			} else {
-				c.add(new CommandEntry(expression, handler));
-				commands.put(id, c);
+		IExtensionRegistry reg = getExtensionRegistry();
+		if (reg != null) {
+			IConfigurationElement[] elements = reg.getConfigurationElementsFor(COMMAND_HANDLER_EPOINT);
+			for(int i = 0; i < elements.length; i++) {
+				String id = elements[i].getAttribute("botId");
+				String expression = elements[i].getAttribute("expression");
+				ICommandHandler handler = (ICommandHandler) elements[i].createExecutableExtension("class");
+				List c = (List) commands.get(id);
+				if(c == null) {
+					c = new ArrayList();
+					c.add(new CommandEntry(expression, handler));
+					commands.put(id, c);
+				} else {
+					c.add(new CommandEntry(expression, handler));
+					commands.put(id, c);
+				}
 			}
-		}
-
-		// load the bots
-		elements = Platform.getExtensionRegistry().getConfigurationElementsFor(BOT_EPOINT);
-		for(int i = 0; i < elements.length; i++) {
-			String id = elements[i].getAttribute("id");
-			String name = elements[i].getAttribute("name");
-			String server = elements[i].getAttribute("server");
-			String channel = elements[i].getAttribute("channel");
-			List c = (List) commands.get(id);
-			if(c == null)
-				c = new ArrayList();
-			IBotEntry bot = new BotEntry(id, name, server, channel, c);
-			bots.put(id, bot);
+	
+			// load the bots
+			elements = reg.getConfigurationElementsFor(BOT_EPOINT);
+			for(int i = 0; i < elements.length; i++) {
+				String id = elements[i].getAttribute("id");
+				String name = elements[i].getAttribute("name");
+				String server = elements[i].getAttribute("server");
+				String channel = elements[i].getAttribute("channel");
+				List c = (List) commands.get(id);
+				if(c == null)
+					c = new ArrayList();
+				IBotEntry bot = new BotEntry(id, name, server, channel, c);
+				bots.put(id, bot);
+			}
 		}
 
 	}

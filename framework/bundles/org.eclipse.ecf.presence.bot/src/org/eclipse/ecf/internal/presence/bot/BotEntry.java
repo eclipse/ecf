@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.internal.presence.bot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BotEntry implements IBotEntry {
