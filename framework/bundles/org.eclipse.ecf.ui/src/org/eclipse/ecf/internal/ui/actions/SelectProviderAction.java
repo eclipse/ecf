@@ -16,9 +16,9 @@ import java.util.Iterator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.wizards.IWizardRegistryConstants;
 import org.eclipse.ecf.ui.IConfigurationWizard;
 import org.eclipse.ecf.ui.IConnectWizard;
@@ -48,38 +48,40 @@ public class SelectProviderAction implements IWizardRegistryConstants,
 
 	public SelectProviderAction() {
 		try {
-			IExtensionRegistry registry = Platform.getExtensionRegistry();
-			IExtension[] configurationWizards = registry.getExtensionPoint(
-					CONFIGURE_EPOINT_ID).getExtensions();
-			IExtension[] connectWizards = registry.getExtensionPoint(
-					CONNECT_EPOINT_ID).getExtensions();
-			for (int i = 0; i < connectWizards.length; i++) {
-				final IConfigurationElement[] ices = connectWizards[i]
-						.getConfigurationElements();
-				for (int j = 0; j < ices.length; j++) {
-					if (ices[j].getName().equals(ELEMENT_CATEGORY)) {
-						continue;
-					}
-					final String factoryName = ices[j]
-							.getAttribute(ATT_CONTAINER_TYPE_NAME);
-					final IConfigurationWizard wizard = getWizard(
-							configurationWizards, factoryName);
-					final IConfigurationElement ice = ices[j];
-					if (wizard == null) {
-						map.put(ice.getAttribute(ATT_NAME),
-								new SelectionAdapter() {
-									public void widgetSelected(SelectionEvent e) {
-										openConnectWizard(ice, factoryName);
-									}
-								});
-					} else {
-						map.put(ice.getAttribute(ATT_NAME),
-								new SelectionAdapter() {
-									public void widgetSelected(SelectionEvent e) {
-										openConnectWizard(wizard, ice,
-												factoryName);
-									}
-								});
+			IExtensionRegistry registry = Activator.getDefault().getExtensionRegistry();
+			if (registry != null) {
+				IExtension[] configurationWizards = registry.getExtensionPoint(
+						CONFIGURE_EPOINT_ID).getExtensions();
+				IExtension[] connectWizards = registry.getExtensionPoint(
+						CONNECT_EPOINT_ID).getExtensions();
+				for (int i = 0; i < connectWizards.length; i++) {
+					final IConfigurationElement[] ices = connectWizards[i]
+							.getConfigurationElements();
+					for (int j = 0; j < ices.length; j++) {
+						if (ices[j].getName().equals(ELEMENT_CATEGORY)) {
+							continue;
+						}
+						final String factoryName = ices[j]
+								.getAttribute(ATT_CONTAINER_TYPE_NAME);
+						final IConfigurationWizard wizard = getWizard(
+								configurationWizards, factoryName);
+						final IConfigurationElement ice = ices[j];
+						if (wizard == null) {
+							map.put(ice.getAttribute(ATT_NAME),
+									new SelectionAdapter() {
+										public void widgetSelected(SelectionEvent e) {
+											openConnectWizard(ice, factoryName);
+										}
+									});
+						} else {
+							map.put(ice.getAttribute(ATT_NAME),
+									new SelectionAdapter() {
+										public void widgetSelected(SelectionEvent e) {
+											openConnectWizard(wizard, ice,
+													factoryName);
+										}
+									});
+						}
 					}
 				}
 			}

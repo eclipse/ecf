@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.internal.ui;
 
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.ui.SharedImages;
@@ -19,6 +20,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -31,6 +33,12 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance.
 	private static Activator plugin;
+
+	private ServiceTracker extensionRegistryTracker = null;
+
+	public IExtensionRegistry getExtensionRegistry() {
+		return (IExtensionRegistry) extensionRegistryTracker.getService();
+	}
 
 	public static void log(String message) {
 		getDefault().getLog().log(
@@ -56,14 +64,21 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		this.extensionRegistryTracker = new ServiceTracker(context,
+				IExtensionRegistry.class.getName(), null);
+		this.extensionRegistryTracker.open();
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
+		if (extensionRegistryTracker != null) {
+			extensionRegistryTracker.close();
+			extensionRegistryTracker = null;
+		}
 		plugin = null;
+		super.stop(context);
 	}
 
 	/**

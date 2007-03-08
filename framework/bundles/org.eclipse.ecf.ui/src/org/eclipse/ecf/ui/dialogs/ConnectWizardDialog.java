@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.wizards.IWizardRegistryConstants;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.IContainerHolder;
@@ -52,23 +52,25 @@ public class ConnectWizardDialog extends WizardDialog {
 	public static IConfigurationElement[] findConnectWizardConfigurationElements(
 			IContainerHolder containerHolder) {
 		List result = new ArrayList();
-		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = reg
-				.getExtensionPoint(IWizardRegistryConstants.CONNECT_EPOINT_ID);
-		if (extensionPoint == null) {
-			return null;
-		}
-		IConfigurationElement[] ce = extensionPoint.getConfigurationElements();
-		for (int i = 0; i < ce.length; i++) {
-			String value = ce[i]
-					.getAttribute(IWizardRegistryConstants.ATT_CONTAINER_TYPE_NAME);
-			if (value != null
-					&& value.equals(containerHolder
-							.getContainerTypeDescription().getName()))
-				result.add(ce[i]);
-		}
-		return (IConfigurationElement[]) result
-				.toArray(new IConfigurationElement[] {});
+		IExtensionRegistry reg = Activator.getDefault().getExtensionRegistry();
+		if (reg != null) {
+			IExtensionPoint extensionPoint = reg
+					.getExtensionPoint(IWizardRegistryConstants.CONNECT_EPOINT_ID);
+			if (extensionPoint == null) {
+				return null;
+			}
+			IConfigurationElement[] ce = extensionPoint.getConfigurationElements();
+			for (int i = 0; i < ce.length; i++) {
+				String value = ce[i]
+						.getAttribute(IWizardRegistryConstants.ATT_CONTAINER_TYPE_NAME);
+				if (value != null
+						&& value.equals(containerHolder
+								.getContainerTypeDescription().getName()))
+					result.add(ce[i]);
+			}
+			return (IConfigurationElement[]) result
+					.toArray(new IConfigurationElement[] {});
+		} else return new IConfigurationElement[0];
 	}
 
 	public boolean hasConnectWizard(IContainerHolder containerHolder) {

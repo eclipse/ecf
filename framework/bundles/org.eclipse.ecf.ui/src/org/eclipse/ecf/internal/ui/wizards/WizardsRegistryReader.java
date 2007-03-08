@@ -22,7 +22,6 @@ import java.util.StringTokenizer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.internal.ui.Activator;
 
 /**
@@ -468,8 +467,8 @@ public class WizardsRegistryReader extends RegistryReader {
 		if (readAll) {
 			if (!areWizardsRead()) {
 				createEmptyWizardCollection();
-				IExtensionRegistry registry = Platform.getExtensionRegistry();
-				readRegistry(registry, plugin, pluginPoint);
+				IExtensionRegistry registry = Activator.getDefault().getExtensionRegistry();
+				if (registry != null) readRegistry(registry, plugin, pluginPoint);
 			}
 		}
 		finishCategories();
