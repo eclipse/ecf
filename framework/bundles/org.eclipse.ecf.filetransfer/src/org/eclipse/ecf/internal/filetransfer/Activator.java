@@ -14,12 +14,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -35,6 +35,8 @@ public class Activator extends Plugin {
 	private static final String PROTOCOL_ATTRIBUTE = "protocol"; //$NON-NLS-1$
 
 	private static final String SERVICE_CLASS_ATTRIBUTE = "serviceClass"; //$NON-NLS-1$
+
+	private ServiceTracker extensionRegistryTracker = null;
 
 	// The shared instance
 	private static Activator plugin;
@@ -53,37 +55,45 @@ public class Activator extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		this.extensionRegistryTracker = new ServiceTracker(context,
+				IExtensionRegistry.class.getName(), null);
+		this.extensionRegistryTracker.open();
 		setupProtocolHandlers(context);
 	}
 
-	private void setupProtocolHandlers(BundleContext context) {
-		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = reg
-				.getExtensionPoint(URLCONNECTION_FACTORY_EPOINT);
-		if (extensionPoint == null) {
-			return;
-		}
-		IConfigurationElement[] configurationElements = extensionPoint
-				.getConfigurationElements();
+	public IExtensionRegistry getExtensionRegistry() {
+		return (IExtensionRegistry) extensionRegistryTracker.getService();
+	}
 
-		for (int i = 0; i < configurationElements.length; i++) {
-			AbstractURLStreamHandlerService svc = null;
-			String protocol = null;
-			try {
-				svc = (AbstractURLStreamHandlerService) configurationElements[i]
-						.createExecutableExtension(SERVICE_CLASS_ATTRIBUTE);
-				protocol = configurationElements[i]
-						.getAttribute(PROTOCOL_ATTRIBUTE);
-			} catch (CoreException e) {
-				getLog().log(e.getStatus());
+	private void setupProtocolHandlers(BundleContext context) {
+		IExtensionRegistry reg = getExtensionRegistry();
+		if (reg != null) {
+			IExtensionPoint extensionPoint = reg
+					.getExtensionPoint(URLCONNECTION_FACTORY_EPOINT);
+			if (extensionPoint == null) {
+				return;
 			}
-			if (svc != null && protocol != null) {
-				Hashtable properties = new Hashtable();
-				properties.put(URLConstants.URL_HANDLER_PROTOCOL,
-						new String[] { protocol });
-				context.registerService(
-						URLStreamHandlerService.class.getName(), svc,
-						properties);
+			IConfigurationElement[] configurationElements = extensionPoint
+					.getConfigurationElements();
+
+			for (int i = 0; i < configurationElements.length; i++) {
+				AbstractURLStreamHandlerService svc = null;
+				String protocol = null;
+				try {
+					svc = (AbstractURLStreamHandlerService) configurationElements[i]
+							.createExecutableExtension(SERVICE_CLASS_ATTRIBUTE);
+					protocol = configurationElements[i]
+							.getAttribute(PROTOCOL_ATTRIBUTE);
+				} catch (CoreException e) {
+					getLog().log(e.getStatus());
+				}
+				if (svc != null && protocol != null) {
+					Hashtable properties = new Hashtable();
+					properties.put(URLConstants.URL_HANDLER_PROTOCOL,
+							new String[] { protocol });
+					context.registerService(URLStreamHandlerService.class
+							.getName(), svc, properties);
+				}
 			}
 		}
 	}
@@ -94,6 +104,10 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		if (extensionRegistryTracker != null) {
+			extensionRegistryTracker.close();
+			extensionRegistryTracker = null;
+		}
 		plugin = null;
 		super.stop(context);
 	}
