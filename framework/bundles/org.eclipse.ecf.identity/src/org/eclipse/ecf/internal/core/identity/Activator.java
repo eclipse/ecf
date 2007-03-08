@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IRegistryChangeEvent;
 import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -26,6 +25,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.Trace;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -57,10 +57,16 @@ public class Activator extends Plugin {
 
 	private ServiceRegistration idFactoryServiceRegistration = null;
 
+	private ServiceTracker extensionRegistryTracker = null;
+
 	/**
 	 * The constructor
 	 */
 	public Activator() {
+	}
+
+	public IExtensionRegistry getExtensionRegistry() {
+		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
 	/*
@@ -71,10 +77,15 @@ public class Activator extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		this.extensionRegistryTracker = new ServiceTracker(context,
+				IExtensionRegistry.class.getName(), null);
+		this.extensionRegistryTracker.open();
+		IExtensionRegistry reg = getExtensionRegistry();
+		if (reg != null) {
+			this.registryManager = new IdentityRegistryManager();
+			reg.addRegistryChangeListener(registryManager);
+		}
 		this.setupNamespaceExtensionPoint();
-		this.registryManager = new IdentityRegistryManager();
-		Platform.getExtensionRegistry().addRegistryChangeListener(
-				registryManager);
 		Trace
 				.exiting(Activator.getDefault(),
 						IdentityDebugOptions.METHODS_ENTERING, Activator.class,
@@ -237,13 +248,15 @@ public class Activator extends Plugin {
 	 */
 	public void setupNamespaceExtensionPoint() {
 		// Process extension points
-		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = reg
-				.getExtensionPoint(NAMESPACE_EPOINT);
-		if (extensionPoint == null) {
-			return;
+		IExtensionRegistry reg = getExtensionRegistry();
+		if (reg != null) {
+			IExtensionPoint extensionPoint = reg
+					.getExtensionPoint(NAMESPACE_EPOINT);
+			if (extensionPoint == null) {
+				return;
+			}
+			addNamespaceExtensions(extensionPoint.getConfigurationElements());
 		}
-		addNamespaceExtensions(extensionPoint.getConfigurationElements());
 	}
 
 	/*
@@ -254,12 +267,19 @@ public class Activator extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		Trace.entering(Activator.getDefault(),
 				IdentityDebugOptions.METHODS_EXITING, Activator.class, "stop"); //$NON-NLS-1$
-		Platform.getExtensionRegistry().removeRegistryChangeListener(
-				registryManager);
+		IExtensionRegistry reg = getExtensionRegistry();
+		if (reg != null)
+			reg.removeRegistryChangeListener(registryManager);
 		registryManager = null;
 		plugin = null;
-		if (idFactoryServiceRegistration != null)
+		if (extensionRegistryTracker != null) {
+			extensionRegistryTracker.close();
+			extensionRegistryTracker = null;
+		}
+		if (idFactoryServiceRegistration != null) {
 			idFactoryServiceRegistration.unregister();
+			idFactoryServiceRegistration = null;
+		}
 		super.stop(context);
 	}
 
