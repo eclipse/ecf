@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IRegistryChangeEvent;
 import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectFactory;
@@ -21,6 +20,7 @@ import org.eclipse.ecf.core.sharedobject.SharedObjectTypeDescription;
 import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
 import org.eclipse.ecf.core.util.Trace;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -54,10 +54,16 @@ public class Activator extends Plugin {
 
 	private IRegistryChangeListener registryManager = null;
 
+	private ServiceTracker extensionRegistryTracker = null;
+
 	/**
 	 * The constructor
 	 */
 	public Activator() {
+	}
+
+	public IExtensionRegistry getExtensionRegistry() {
+		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
 	/*
@@ -68,10 +74,15 @@ public class Activator extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		this.extensionRegistryTracker = new ServiceTracker(context,
+				IExtensionRegistry.class.getName(), null);
+		this.extensionRegistryTracker.open();
+		IExtensionRegistry registry = getExtensionRegistry();
+		if (registry != null) {
+			this.registryManager = new SharedObjectRegistryManager();
+			registry.addRegistryChangeListener(registryManager);
+		}
 		setupSharedObjectExtensionPoint(context);
-		this.registryManager = new SharedObjectRegistryManager();
-		Platform.getExtensionRegistry().addRegistryChangeListener(
-				registryManager);
 		Trace.exiting(Activator.getDefault(),
 				SharedObjectDebugOptions.METHODS_ENTERING, Activator.class,
 				"start"); //$NON-NLS-1$
@@ -86,9 +97,14 @@ public class Activator extends Plugin {
 		Trace.entering(Activator.getDefault(),
 				SharedObjectDebugOptions.METHODS_EXITING, Activator.class,
 				"stop"); //$NON-NLS-1$
-		Platform.getExtensionRegistry().removeRegistryChangeListener(
-				registryManager);
-		registryManager = null;
+		IExtensionRegistry reg = getExtensionRegistry();
+		if (reg != null)
+			reg.removeRegistryChangeListener(registryManager);
+		this.registryManager = null;
+		if (extensionRegistryTracker != null) {
+			extensionRegistryTracker.close();
+			extensionRegistryTracker = null;
+		}
 		plugin = null;
 		super.stop(context);
 	}
@@ -242,13 +258,15 @@ public class Activator extends Plugin {
 	 *            the BundleContext for this bundle
 	 */
 	protected void setupSharedObjectExtensionPoint(BundleContext bc) {
-		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = reg
-				.getExtensionPoint(SHAREDOBJECT_FACTORY_EPOINT);
-		if (extensionPoint == null) {
-			return;
+		IExtensionRegistry reg = getExtensionRegistry();
+		if (reg != null) {
+			IExtensionPoint extensionPoint = reg
+					.getExtensionPoint(SHAREDOBJECT_FACTORY_EPOINT);
+			if (extensionPoint == null) {
+				return;
+			}
+			addSharedObjectExtensions(extensionPoint.getConfigurationElements());
 		}
-		addSharedObjectExtensions(extensionPoint.getConfigurationElements());
 	}
 
 	protected Map getProperties(IConfigurationElement[] propertyElements) {
