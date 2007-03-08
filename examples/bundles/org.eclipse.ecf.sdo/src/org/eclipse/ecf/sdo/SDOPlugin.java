@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author pnehrer
@@ -76,52 +77,64 @@ public class SDOPlugin {
 
         private IRegistryChangeListener registryChangeListener;
 
+    	private ServiceTracker extensionRegistryTracker = null;
+
         public EclipsePlugin() {
             plugin = this;
             tracingEnabled = Platform.inDebugMode();
         }
+
+    	public IExtensionRegistry getExtensionRegistry() {
+    		return (IExtensionRegistry) extensionRegistryTracker.getService();
+    	}
 
         /**
          * This method is called upon plug-in activation
          */
         public void start(BundleContext context) throws Exception {
             super.start(context);
-            registryChangeListener = new IRegistryChangeListener() {
-                public void registryChanged(IRegistryChangeEvent event) {
-                    IExtensionDelta[] deltas = event.getExtensionDeltas(
-                            getBundle().getSymbolicName(),
-                            MANAGER_EXTENSION_POINT);
-                    for (int i = 0; i < deltas.length; ++i) {
-                        switch (deltas[i].getKind()) {
-                        case IExtensionDelta.ADDED:
-                            registerManagers(deltas[i].getExtension()
-                                    .getConfigurationElements());
-                            break;
+    		this.extensionRegistryTracker = new ServiceTracker(context,
+    				IExtensionRegistry.class.getName(), null);
+    		this.extensionRegistryTracker.open();
+            IExtensionRegistry reg = getExtensionRegistry();
 
-                        case IExtensionDelta.REMOVED:
-                            IConfigurationElement[] elems = deltas[i]
-                                    .getExtension().getConfigurationElements();
-                            for (int j = 0; j < elems.length; ++j) {
-                                if (!MANAGER_EXTENSION.equals(elems[j]
-                                        .getName()))
-                                    continue;
-
-                                String name = elems[j].getAttribute(ATTR_NAME);
-                                if (name != null && name.length() > 0)
-                                    DataGraphSharingFactory
-                                            .unregisterManager(name);
-                            }
-
-                            break;
-                        }
-                    }
-                }
-            };
-
-            IExtensionRegistry reg = Platform.getExtensionRegistry();
-            IConfigurationElement[] elems = reg.getConfigurationElementsFor(
-                    getBundle().getSymbolicName(), MANAGER_EXTENSION_POINT);
-            registerManagers(elems);
+            if (reg != null) {
+	            registryChangeListener = new IRegistryChangeListener() {
+	                public void registryChanged(IRegistryChangeEvent event) {
+	                    IExtensionDelta[] deltas = event.getExtensionDeltas(
+	                            getBundle().getSymbolicName(),
+	                            MANAGER_EXTENSION_POINT);
+	                    for (int i = 0; i < deltas.length; ++i) {
+	                        switch (deltas[i].getKind()) {
+	                        case IExtensionDelta.ADDED:
+	                            registerManagers(deltas[i].getExtension()
+	                                    .getConfigurationElements());
+	                            break;
+	
+	                        case IExtensionDelta.REMOVED:
+	                            IConfigurationElement[] elems = deltas[i]
+	                                    .getExtension().getConfigurationElements();
+	                            for (int j = 0; j < elems.length; ++j) {
+	                                if (!MANAGER_EXTENSION.equals(elems[j]
+	                                        .getName()))
+	                                    continue;
+	
+	                                String name = elems[j].getAttribute(ATTR_NAME);
+	                                if (name != null && name.length() > 0)
+	                                    DataGraphSharingFactory
+	                                            .unregisterManager(name);
+	                            }
+	
+	                            break;
+	                        }
+	                    }
+	                }
+	            };
+	
+	            IConfigurationElement[] elems = reg.getConfigurationElementsFor(
+	                    getBundle().getSymbolicName(), MANAGER_EXTENSION_POINT);
+	            registerManagers(elems);
+            }
         }
 
         private void registerManagers(IConfigurationElement[] elems) {
@@ -149,11 +162,16 @@ public class SDOPlugin {
          * This method is called when the plug-in is stopped
          */
         public void stop(BundleContext context) throws Exception {
-            if (registryChangeListener != null)
-                Platform.getExtensionRegistry().removeRegistryChangeListener(
+        	IExtensionRegistry reg = getExtensionRegistry();
+            if (reg != null && registryChangeListener != null)
+                reg.removeRegistryChangeListener(
                         registryChangeListener);
 
             DataGraphSharingFactory.unregisterAllManagers();
+    		if (extensionRegistryTracker != null) {
+    			extensionRegistryTracker.close();
+    			extensionRegistryTracker = null;
+    		}
             super.stop(context);
         }
 
