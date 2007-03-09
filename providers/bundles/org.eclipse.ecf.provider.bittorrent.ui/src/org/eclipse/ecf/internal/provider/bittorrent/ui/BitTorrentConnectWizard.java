@@ -8,7 +8,7 @@
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.internal.provider.msn.ui;
+package org.eclipse.ecf.internal.provider.bittorrent.ui;
 
 import java.io.File;
 import java.io.IOException;
