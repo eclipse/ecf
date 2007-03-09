@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ecf.ui.connectWizards">
       <wizard
-            class="org.eclipse.ecf.internal.provider.msn.ui.BitTorrentConnectWizard"
+            class="org.eclipse.ecf.internal.provider.bittorrent.ui.BitTorrentConnectWizard"
             containerFactoryName="ecf.filetransfer.bittorrent"
             id="org.eclipse.ecf.provider.ui.bittorrent.connectWizard"
             name="BitTorrent"/>
