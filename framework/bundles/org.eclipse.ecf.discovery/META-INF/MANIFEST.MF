@@ -7,7 +7,6 @@ Bundle-Activator: org.eclipse.ecf.internal.discovery.DiscoveryPlugin
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
-Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.discovery,
  org.eclipse.ecf.discovery.identity,
  org.eclipse.ecf.discovery.service,
