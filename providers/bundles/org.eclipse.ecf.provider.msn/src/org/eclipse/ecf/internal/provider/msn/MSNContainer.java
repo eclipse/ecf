@@ -199,7 +199,7 @@ final class MSNContainer implements IContainer, IChatManager,
 					});
 
 			fireContainerEvent(new ContainerConnectingEvent(guid, connectID));
-			client.connect(targetID.getName(), (String) cb[0].getObject());
+			client.connect(connectID.getName(), (String) cb[0].getObject());
 			fireContainerEvent(new ContainerConnectedEvent(guid, connectID));
 		} catch (UnsupportedCallbackException e) {
 			e.printStackTrace();
@@ -319,8 +319,8 @@ final class MSNContainer implements IContainer, IChatManager,
 	}
 
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault()
-				.getNamespaceByName(Activator.NAMESPACE_ID);
+		return IDFactory.getDefault().getNamespaceByName(
+				StringID.class.getName());
 	}
 
 	public ID getConnectedID() {

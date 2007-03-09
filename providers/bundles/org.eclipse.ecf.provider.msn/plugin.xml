@@ -8,12 +8,5 @@
             description="MSN"
             name="ecf.msn.gokigenyou"/>
    </extension>
-   <extension
-         point="org.eclipse.ecf.identity.namespace">
-      <namespace
-            class="org.eclipse.ecf.internal.provider.msn.MSNNamespace"
-            description="MSN Namespace"
-            name="ecf.msn"/>
-   </extension>
 
 </plugin>
