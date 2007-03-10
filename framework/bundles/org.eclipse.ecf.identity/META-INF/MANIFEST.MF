@@ -4,6 +4,7 @@ Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.identity;singleton:=true
 Bundle-Version: 1.0.0.v20070215
 Bundle-Activator: org.eclipse.ecf.internal.core.identity.Activator
+Bundle-Localization: plugin
 Bundle-Vendor: %plugin.provider
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.core.identity,
