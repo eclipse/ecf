@@ -117,7 +117,7 @@ public interface IIDFactory {
 	 * constructor parameters, return a new instance of an ID belonging to the
 	 * given Namespace
 	 * 
-	 * @param namespacename
+	 * @param namespaceName
 	 *            the name of the Namespace to which the ID will belong
 	 * @param args
 	 *            an Object [] of the parameters for the ID instance constructor
@@ -126,7 +126,7 @@ public interface IIDFactory {
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createID(String namespacename, Object[] args)
+	public ID createID(String namespaceName, Object[] args)
 			throws IDCreateException;
 
 	/**

@@ -9,6 +9,7 @@
 package org.eclipse.ecf.core.util;
 
 import org.eclipse.ecf.internal.core.identity.Messages;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * 
@@ -120,7 +121,7 @@ public final class Base64 {
 		// modify to use '-' instead of '='
 		if (c == '-')
 			return 0;
-		throw new NumberFormatException(Messages.Base64_Invalid_Value + c
-				+ Messages.Base64_In_Base64);
+		throw new NumberFormatException(NLS.bind(Messages.Base64_Invalid_Value,
+				String.valueOf(c)));
 	}
 }

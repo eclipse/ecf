@@ -19,11 +19,12 @@ import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.identity.Activator;
 import org.eclipse.ecf.internal.core.identity.IdentityDebugOptions;
 import org.eclipse.ecf.internal.core.identity.Messages;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * A factory class for creating ID instances. This is the factory for plugins to
- * manufacture ID instances. 
- *  
+ * manufacture ID instances.
+ * 
  */
 public class IDFactory implements IIDFactory {
 	public static final String SECURITY_PROPERTY = IDFactory.class.getName()
@@ -232,7 +233,8 @@ public class IDFactory implements IIDFactory {
 		// throw...we don't create any instances that we don't know about!
 		Namespace ns = getNamespace0(n);
 		if (ns == null)
-			logAndThrow(Messages.IDFactory_0 + n.getName() + Messages.IDFactory_1, null);
+			logAndThrow(NLS.bind(Messages.IDFactory_Namespace_Not_Found, n
+					.getName()), null);
 		// We're OK, go ahead and setup array of classes for call to
 		// instantiator
 		// Ask instantiator to actually create instance
@@ -249,12 +251,12 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(java.lang.String,
 	 *      java.lang.Object[])
 	 */
-	public ID createID(String namespacename, Object[] args)
+	public ID createID(String namespaceName, Object[] args)
 			throws IDCreateException {
-		Namespace n = getNamespaceByName(namespacename);
+		Namespace n = getNamespaceByName(namespaceName);
 		if (n == null)
-			throw new IDCreateException(Messages.IDFactory_2 + namespacename
-					+ Messages.IDFactory_3);
+			throw new IDCreateException(NLS.bind(
+					Messages.IDFactory_Namespace_Not_Found, namespaceName));
 		return createID(n, args);
 	}
 
