@@ -10,9 +10,7 @@ package org.eclipse.ecf.internal.core;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.WeakHashMap;
 
 import org.eclipse.core.runtime.CoreException;
@@ -34,6 +32,7 @@ import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -85,9 +84,6 @@ public class ECFPlugin extends Plugin {
 	// The shared instance.
 	private static ECFPlugin plugin;
 
-	// Resource bundle.
-	private ResourceBundle resourceBundle;
-
 	private ServiceTracker extensionRegistryTracker = null;
 
 	private Map disposables = new WeakHashMap();
@@ -99,11 +95,6 @@ public class ECFPlugin extends Plugin {
 	public ECFPlugin() {
 		super();
 		plugin = this;
-		try {
-			resourceBundle = ResourceBundle.getBundle(PLUGIN_RESOURCE_BUNDLE);
-		} catch (MissingResourceException x) {
-			resourceBundle = null;
-		}
 	}
 
 	public void addDisposable(IDisposable disposable) {
@@ -213,11 +204,12 @@ public class ECFPlugin extends Plugin {
 								Status.ERROR,
 								getDefault().getBundle().getSymbolicName(),
 								FACTORY_NAME_COLLISION_ERRORCODE,
-								getResourceString("ExtPointError.ContainerNameCollisionPrefix") //$NON-NLS-1$
-										+ name
-										+ getResourceString("ExtPointError.ContainerNameCollisionSuffix") //$NON-NLS-1$
-										+ extension
-												.getExtensionPointUniqueIdentifier(),
+								NLS
+										.bind(
+												Messages.ECFPlugin_Container_Name_Collision_Prefix,
+												name,
+												extension
+														.getExtensionPointUniqueIdentifier()),
 								null), method, e);
 			}
 		}
@@ -273,11 +265,12 @@ public class ECFPlugin extends Plugin {
 									Status.ERROR,
 									getDefault().getBundle().getSymbolicName(),
 									FACTORY_NAME_COLLISION_ERRORCODE,
-									getResourceString("ExtPointError.ContainerNameCollisionPrefix") //$NON-NLS-1$
-											+ name
-											+ getResourceString("ExtPointError.ContainerNameCollisionSuffix") //$NON-NLS-1$
-											+ extension
-													.getExtensionPointUniqueIdentifier(),
+									NLS
+											.bind(
+													Messages.ECFPlugin_Container_Name_Collision_Prefix,
+													name,
+													extension
+															.getExtensionPointUniqueIdentifier()),
 									null));
 				}
 				// Now add the description and we're ready to go.
@@ -292,11 +285,12 @@ public class ECFPlugin extends Plugin {
 								Status.ERROR,
 								getDefault().getBundle().getSymbolicName(),
 								FACTORY_NAME_COLLISION_ERRORCODE,
-								getResourceString("ExtPointError.ContainerNameCollisionPrefix") //$NON-NLS-1$
-										+ name
-										+ getResourceString("ExtPointError.ContainerNameCollisionSuffix") //$NON-NLS-1$
-										+ extension
-												.getExtensionPointUniqueIdentifier(),
+								NLS
+										.bind(
+												Messages.ECFPlugin_Container_Name_Collision_Prefix,
+												name,
+												extension
+														.getExtensionPointUniqueIdentifier()),
 								null), method, e);
 			}
 		}
@@ -441,25 +435,5 @@ public class ECFPlugin extends Plugin {
 	 */
 	public static ECFPlugin getDefault() {
 		return plugin;
-	}
-
-	/**
-	 * Returns the string from the plugin's resource bundle, or 'key' if not
-	 * found.
-	 */
-	public static String getResourceString(String key) {
-		ResourceBundle bundle = ECFPlugin.getDefault().getResourceBundle();
-		try {
-			return (bundle != null) ? bundle.getString(key) : "!" + key + "!"; //$NON-NLS-1$ //$NON-NLS-2$
-		} catch (MissingResourceException e) {
-			return "!" + key + "!"; //$NON-NLS-1$ //$NON-NLS-2$
-		}
-	}
-
-	/**
-	 * Returns the plugin's resource bundle,
-	 */
-	public ResourceBundle getResourceBundle() {
-		return resourceBundle;
 	}
 }

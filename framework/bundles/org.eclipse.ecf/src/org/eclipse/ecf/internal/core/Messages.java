@@ -24,6 +24,7 @@ public class Messages extends NLS {
 	public static String ContainerTypeDescription_Instantiator_Class_Not_Null;
 	public static String ContainerTypeDescription_Instantiator_Instance_Not_Null;
 	public static String ContainerTypeDescription_Name_Not_Null;
+	public static String ECFPlugin_Container_Name_Collision_Prefix;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
