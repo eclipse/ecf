@@ -145,27 +145,27 @@ public interface IIDFactory {
 			throws IDCreateException;
 
 	/**
-	 * Make a new identity instance from a namespacename and idvalue. The
-	 * namespacename is first used to lookup the namespace with
-	 * getNamespaceByName(), and then the result is passed into
-	 * createID(Namespace,String).
+	 * Make a new identity instance from a namespaceName and idValue. The
+	 * namespaceName is first used to lookup the namespace with
+	 * {@link #getNamespaceByName()}, and then the result is passed into
+	 * {@link #createID(Namespace,String)}.
 	 * 
-	 * @param namespacename
-	 *            the namespacename to use to create the ID
+	 * @param namespaceName
+	 *            the name of the namespace that should be used to create the ID
 	 * @param idvalue
-	 *            the String idvalue to use to create the ID
+	 *            the String value to use to create the ID
 	 * @exception IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createID(String namespacename, String idvalue)
+	public ID createID(String namespaceName, String idValue)
 			throws IDCreateException;
 
 	/**
 	 * Make a an ID from a String
 	 * 
-	 * @param idstring
+	 * @param idString
 	 *            the String to use as this ID's unique value. Note: It is
 	 *            incumbent upon the caller of this method to be sure that the
 	 *            given string allows the resulting ID to satisfy the ID
@@ -177,7 +177,7 @@ public interface IIDFactory {
 	 *             thrown if class for instantiator or ID instance can't be
 	 *             loaded, if something goes wrong during instance construction
 	 */
-	public ID createStringID(String idstring) throws IDCreateException;
+	public ID createStringID(String idString) throws IDCreateException;
 
 	/**
 	 * Make a an ID from a long
