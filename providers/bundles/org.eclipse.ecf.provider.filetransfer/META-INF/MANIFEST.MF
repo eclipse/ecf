@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.eclipse.ecf.provider.filetransfer;singleton:=true
 Bundle-Version: 1.0.0.v20070215
 Bundle-Activator: org.eclipse.ecf.internal.provider.filetransfer.Activator
 Bundle-Vendor: %plugin.provider
+Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.filetransfer
 Eclipse-LazyStart: true
