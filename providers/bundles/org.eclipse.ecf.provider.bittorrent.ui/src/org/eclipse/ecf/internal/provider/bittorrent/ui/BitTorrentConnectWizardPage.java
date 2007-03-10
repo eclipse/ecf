@@ -60,6 +60,17 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 				}
 			}
 		});
+		
+		targetText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				String target = torrentText.getText().trim();
+				if (target.equals("")) { //$NON-NLS-1$
+					setErrorMessage("A destination must be set.");
+				} else {
+					setErrorMessage(null);
+				}
+			}
+		});
 
 		browseTorrentBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
