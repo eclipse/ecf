@@ -140,7 +140,7 @@ public class FileTransfersView extends ViewPart {
 		table.setSize(1000, 1000);
 	}
 
-	public void add(IFileTransfer transfer) {
+	private void add(IFileTransfer transfer) {
 		if (table != null && !table.isDisposed()) {
 			viewer.add(transfer);
 		}
