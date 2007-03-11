@@ -9,12 +9,14 @@
 *    Composent, Inc. - initial API and implementation
 *****************************************************************************/
 
-package org.eclipse.ecf.server;
+package org.eclipse.ecf.internal.server;
 
 import java.net.URL;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.server.Config;
+import org.eclipse.ecf.server.ECFTCPServerStartup;
 import org.osgi.framework.BundleContext;
 
 /**

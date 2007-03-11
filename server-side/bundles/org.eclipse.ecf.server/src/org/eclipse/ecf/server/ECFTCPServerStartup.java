@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.internal.server.Activator;
 import org.eclipse.ecf.provider.app.Connector;
 import org.eclipse.ecf.provider.app.NamedGroup;
 import org.eclipse.ecf.provider.app.ServerConfigParser;
@@ -42,7 +43,7 @@ public class ECFTCPServerStartup {
 	protected boolean isActive() {
 		return (servers.size() > 0);
 	}
-	protected synchronized void destroyServers() {
+	public synchronized void destroyServers() {
 		for (Iterator i = servers.iterator(); i.hasNext();) {
 			TCPServerSOContainer s = (TCPServerSOContainer) i.next();
 			if (s != null) {
