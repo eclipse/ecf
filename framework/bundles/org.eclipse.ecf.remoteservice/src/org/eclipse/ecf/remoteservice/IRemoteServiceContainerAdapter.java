@@ -13,6 +13,7 @@ package org.eclipse.ecf.remoteservice;
 
 import java.util.Dictionary;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
@@ -22,7 +23,7 @@ import org.osgi.framework.InvalidSyntaxException;
  * innterface for accessing remote services through ECF containers.
  * 
  */
-public interface IRemoteServiceContainerAdapter {
+public interface IRemoteServiceContainerAdapter extends IAdaptable {
 
 	/**
 	 * Add listener for remote service registration/unregistration for this
