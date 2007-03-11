@@ -35,6 +35,10 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	
 	protected ID serverID;
 	
+	protected void setClientCount(int count) {
+		this.clientCount = count;
+	}
+	
 	protected IContainer getServer() {
 		return server;
 	}
