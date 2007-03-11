@@ -1,12 +1,11 @@
 Manifest-Version: 1.0
-Bundle-Name: ECF Presence API
+Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.eclipse.ecf.presence;singleton:=true
 Bundle-Version: 1.0.0.v20070215
 Bundle-Activator: org.eclipse.ecf.internal.presence.PresencePlugin
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
-Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.internal.presence;x-internal:=true,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.presence.chatroom,
