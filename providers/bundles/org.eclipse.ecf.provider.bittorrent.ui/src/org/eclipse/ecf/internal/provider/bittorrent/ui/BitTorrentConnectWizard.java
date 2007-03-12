@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.filetransfer.IFileTransfer;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
@@ -22,6 +21,8 @@ import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
+import org.eclipse.ecf.filetransfer.identity.FileCreateException;
+import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.filetransfer.ui.FileTransfersView;
 import org.eclipse.ecf.ui.IConnectWizard;
@@ -57,9 +58,9 @@ public class BitTorrentConnectWizard extends Wizard implements IConnectWizard {
 		IRetrieveFileTransferContainerAdapter irftca = (IRetrieveFileTransferContainerAdapter) container
 				.getAdapter(IRetrieveFileTransferContainerAdapter.class);
 		try {
-			targetID = (IFileID) irftca.getRetrieveNamespace().createInstance(
-					new Object[] { page.getTorrentName() });
-		} catch (IDCreateException e) {
+			targetID = FileIDFactory.getDefault().createFileID(
+					irftca.getRetrieveNamespace(), page.getTorrentName());
+		} catch (FileCreateException e) {
 			new ContainerConnectErrorDialog(workbench
 					.getActiveWorkbenchWindow().getShell(), 1,
 					"The target ID to connect to could not be created", page
