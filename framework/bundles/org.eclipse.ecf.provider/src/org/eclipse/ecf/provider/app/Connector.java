@@ -10,6 +10,7 @@ package org.eclipse.ecf.provider.app;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
@@ -42,8 +43,15 @@ public class Connector {
 		this.port = port;
 		this.timeout = timeout;
 	}
-	public void addGroup(NamedGroup grp) {
+	public boolean addGroup(NamedGroup grp) {
+		if (grp == null) return false;
+		for(Iterator i=groups.iterator(); i.hasNext(); ) {
+			NamedGroup namedGroup = (NamedGroup) i.next();
+			if (namedGroup.getName().equals(grp.getName())) return false;
+		}
 		groups.add(grp);
+		grp.setParent(this);
+		return true;
 	}
 	public String getProtocol() {
 		return protocol;
