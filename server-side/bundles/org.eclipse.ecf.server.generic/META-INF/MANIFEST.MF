@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %plugin.name
+Bundle-SymbolicName: org.eclipse.ecf.server.generic
+Bundle-Version: 1.0.0.v20070215
+Bundle-Activator: org.eclipse.ecf.internal.server.generic.Activator
+Bundle-Vendor: %plugin.provider
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ecf.sharedobject,
+ org.eclipse.ecf.provider
+Eclipse-LazyStart: true
