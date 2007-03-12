@@ -7,7 +7,7 @@
       <connector
             hostname="localhost"
             keepAlive="30000"
-            port="3282">
+            port="3283">
          <group
                name="server">
          </group>
