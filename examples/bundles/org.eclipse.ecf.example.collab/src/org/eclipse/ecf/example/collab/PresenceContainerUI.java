@@ -36,7 +36,6 @@ import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
-import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.dialogs.ReceiveAuthorizeRequestDialog;
 import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.ecf.ui.views.RosterView;
@@ -96,15 +95,16 @@ public class PresenceContainerUI {
 					IWorkbenchWindow ww = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow();
 					IWorkbenchPage wp = ww.getActivePage();
-					
+
 					IViewPart view = wp
 							.showView("org.eclipse.ecf.ui.view.rosterview");
 					rosterView = (RosterView) view;
-					
+
 					// MultiRosterViewTesting
-					//MultiRosterView mrv = (MultiRosterView) wp.showView("org.eclipse.ecf.presence.ui.MultiRosterView");
-					//mrv.addContainer(PresenceContainerUI.this.container);
-					
+					// MultiRosterView mrv = (MultiRosterView)
+					// wp.showView("org.eclipse.ecf.presence.ui.MultiRosterView");
+					// mrv.addContainer(PresenceContainerUI.this.container);
+
 					String nickname = null;
 					if (nick != null) {
 						nickname = nick;
@@ -150,8 +150,9 @@ public class PresenceContainerUI {
 							ILocalInputHandler handler = new ILocalInputHandler() {
 								public void inputText(ID userID, String text) {
 									try {
-										chatMessageSender.sendChatMessage(
-												userID, text);
+										if (chatMessageSender != null)
+											chatMessageSender.sendChatMessage(
+													userID, text);
 									} catch (ECFException e) {
 										ClientPlugin
 												.getDefault()
@@ -171,8 +172,10 @@ public class PresenceContainerUI {
 
 								public void startTyping(ID userID) {
 									try {
-										typingMessageSender.sendTypingMessage(
-												userID, true, "");
+										if (typingMessageSender != null)
+											typingMessageSender
+													.sendTypingMessage(userID,
+															true, "");
 									} catch (ECFException e) {
 										ClientPlugin
 												.getDefault()
@@ -197,8 +200,9 @@ public class PresenceContainerUI {
 								public void updatePresence(ID userID,
 										IPresence presence) {
 									try {
-										presenceSender.sendPresenceUpdate(
-												userID, presence);
+										if (presenceSender != null)
+											presenceSender.sendPresenceUpdate(
+													userID, presence);
 									} catch (ECFException e) {
 										ClientPlugin
 												.getDefault()
@@ -241,8 +245,9 @@ public class PresenceContainerUI {
 
 								public void sendRosterRemove(ID userID) {
 									try {
-										rosterSubscriptionSender
-												.sendRosterRemove(userID);
+										if (rosterSubscriptionSender != null)
+											rosterSubscriptionSender
+													.sendRosterRemove(userID);
 									} catch (ECFException e) {
 										ClientPlugin
 												.getDefault()
