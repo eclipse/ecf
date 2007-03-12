@@ -31,6 +31,13 @@
 		</antcall>
 	</target>
 
+	<target name="org.eclipse.ecf.server.generic">
+		<eclipse.convertPath property="org.eclipse.ecf.server.generic.manifest" resourcePath="/org.eclipse.ecf.server.generic/plugin.xml"/>
+		<antcall target="_plugin">
+			<param name="manifest.path" value="${org.eclipse.ecf.server.generic.manifest}"/>
+		</antcall>
+	</target>
+
 	<target name="org.eclipse.ecf.ui">
 		<eclipse.convertPath property="org.eclipse.ecf.ui.manifest" resourcePath="/org.eclipse.ecf.ui/plugin.xml"/>
 		<antcall target="_plugin">
@@ -38,7 +45,7 @@
 		</antcall>
 	</target>
 
-	<target name="schema" depends="org.eclipse.ecf,org.eclipse.ecf.identity,org.eclipse.ecf.sharedobject,org.eclipse.ecf.provider,org.eclipse.ecf.ui">
+	<target name="schema" depends="org.eclipse.ecf,org.eclipse.ecf.identity,org.eclipse.ecf.sharedobject,org.eclipse.ecf.provider,org.eclipse.ecf.server.generic,org.eclipse.ecf.ui">
 		<!-- unfortunately, the task generates local filesystem references... fix them! -->
 		<property name="cssurl" value="${osgi.install.area}plugins/org.eclipse.platform.doc.isv_3.1.0"/>
 		<replace dir="${dest.path}" token="${cssurl}" value="../../../../org.eclipse.platform.doc.isv" includes="*.html"/>
