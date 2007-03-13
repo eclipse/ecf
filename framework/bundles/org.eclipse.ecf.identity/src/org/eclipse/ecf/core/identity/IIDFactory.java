@@ -147,12 +147,12 @@ public interface IIDFactory {
 	/**
 	 * Make a new identity instance from a namespaceName and idValue. The
 	 * namespaceName is first used to lookup the namespace with
-	 * {@link #getNamespaceByName()}, and then the result is passed into
+	 * {@link #getNamespaceByName(String)}, and then the result is passed into
 	 * {@link #createID(Namespace,String)}.
 	 * 
 	 * @param namespaceName
 	 *            the name of the namespace that should be used to create the ID
-	 * @param idvalue
+	 * @param idValue
 	 *            the String value to use to create the ID
 	 * @exception IDCreateException
 	 *                thrown if class for instantiator or ID instance can't be
