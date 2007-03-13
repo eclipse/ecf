@@ -14,7 +14,7 @@ import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
-import org.eclipse.ecf.discovery.identity.ServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.ui.views.DiscoveryView;
 import org.eclipse.ecf.discovery.ui.views.IDiscoveryController;
 
@@ -34,7 +34,7 @@ public class CollabDiscoveryView extends DiscoveryView {
 				// setup listeners
 				dc.addServiceTypeListener(new IServiceTypeListener() {
 					public void serviceTypeAdded(IServiceEvent event) {
-						ServiceID svcID = event.getServiceInfo().getServiceID();
+						IServiceID svcID = event.getServiceInfo().getServiceID();
 						addServiceTypeInfo(svcID.getServiceType());
 						dc.addServiceListener(event.getServiceInfo()
 								.getServiceID().getServiceType(), new IServiceListener() {
