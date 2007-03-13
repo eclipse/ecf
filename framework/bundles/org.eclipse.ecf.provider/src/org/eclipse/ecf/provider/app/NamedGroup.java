@@ -24,9 +24,14 @@ public class NamedGroup {
 		return parent;
 	}
 	
+	public String getRawName() {
+		return name;
+	}
+	
 	public String getName() {
 		return cleanGroupName(name);
 	}
+	
 	public String getIDForGroup() {
 		return parent.getID()+getName();
 	}

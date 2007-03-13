@@ -27,9 +27,10 @@ public class Connector {
 	int timeout = DEFAULT_TIMEOUT;
 	String protocol = DEFAULT_PROTOCOL;
 	String hostname = DEFAULT_HOSTNAME;
+	boolean discovery = false;
 	List groups = new ArrayList();
 	
-	public Connector(String protocol, String host, int port, int timeout) {
+	public Connector(String protocol, String host, int port, int timeout, boolean discovery) {
 		if (protocol != null && !protocol.equals("")) this.protocol = protocol; //$NON-NLS-1$
 		if (host != null && !host.equals("")) this.hostname = host; //$NON-NLS-1$
 		else {
@@ -42,6 +43,15 @@ public class Connector {
 		}
 		this.port = port;
 		this.timeout = timeout;
+		this.discovery = discovery;
+	}
+
+	public Connector(String protocol, String host, int port, int timeout) {
+		this(protocol,host,port,timeout,false);
+	}
+	
+	public boolean shouldRegisterForDiscovery() {
+		return discovery;
 	}
 	public boolean addGroup(NamedGroup grp) {
 		if (grp == null) return false;
