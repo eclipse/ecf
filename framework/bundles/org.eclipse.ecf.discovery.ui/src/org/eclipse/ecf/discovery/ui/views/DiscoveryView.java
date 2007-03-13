@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.identity.ServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -165,11 +165,11 @@ public class DiscoveryView extends ViewPart {
 	class TreeParent extends TreeObject {
 		private ArrayList children;
 
-		private ServiceID id;
+		private IServiceID id;
 
 		private IServiceInfo serviceInfo;
 
-		public TreeParent(ServiceID id, String name, IServiceInfo svcInfo) {
+		public TreeParent(IServiceID id, String name, IServiceInfo svcInfo) {
 			super(name);
 			this.id = id;
 			children = new ArrayList();
@@ -180,7 +180,7 @@ public class DiscoveryView extends ViewPart {
 			return serviceInfo;
 		}
 
-		public ServiceID getID() {
+		public IServiceID getID() {
 			return id;
 		}
 
@@ -270,7 +270,7 @@ public class DiscoveryView extends ViewPart {
 			TreeObject[] childs = top.getChildren();
 			for (int i = 0; i < childs.length; i++) {
 				if (childs[i] instanceof TreeParent) {
-					ServiceID childID = ((TreeParent) childs[i]).getID();
+					IServiceID childID = ((TreeParent) childs[i]).getID();
 					if (childID.equals(newEntry.getID())) {
 						// It's already there...replace
 						top.removeChild(childs[i]);
@@ -300,7 +300,7 @@ public class DiscoveryView extends ViewPart {
 			return null;
 		}
 
-		void addServiceInfo(ServiceID id) {
+		void addServiceInfo(IServiceID id) {
 			TreeParent typenode = findServiceTypeNode(id.getServiceType());
 			if (typenode == null) {
 				typenode = new TreeParent(null, id.getServiceType(), null);
@@ -313,7 +313,7 @@ public class DiscoveryView extends ViewPart {
 		void addServiceInfo(IServiceInfo serviceInfo) {
 			if (serviceInfo == null)
 				return;
-			ServiceID svcID = serviceInfo.getServiceID();
+			IServiceID svcID = serviceInfo.getServiceID();
 			TreeParent typenode = findServiceTypeNode(svcID.getServiceType());
 			URI uri = null;
 			try {
@@ -367,7 +367,7 @@ public class DiscoveryView extends ViewPart {
 		void removeServiceInfo(IServiceInfo serviceInfo) {
 			if (serviceInfo == null)
 				return;
-			ServiceID svcID = serviceInfo.getServiceID();
+			IServiceID svcID = serviceInfo.getServiceID();
 			TreeParent typenode = findServiceTypeNode(svcID.getServiceType());
 			if (typenode == null)
 				return;
@@ -375,7 +375,7 @@ public class DiscoveryView extends ViewPart {
 			for (int i = 0; i < childs.length; i++) {
 				if (childs[i] instanceof TreeParent) {
 					TreeParent parent = (TreeParent) childs[i];
-					ServiceID existingID = parent.getID();
+					IServiceID existingID = parent.getID();
 					if (existingID.equals(svcID)) {
 						typenode.removeChild(parent);
 						if (typenode.getChildren().length == 0) {
@@ -407,7 +407,7 @@ public class DiscoveryView extends ViewPart {
 		public String getText(Object obj) {
 			if (obj != null && obj instanceof TreeParent) {
 				TreeParent tp = (TreeParent) obj;
-				ServiceID svcID = tp.getID();
+				IServiceID svcID = tp.getID();
 				if (svcID == null)
 					return cleanTypeName(tp.getName());
 			}
@@ -482,7 +482,7 @@ public class DiscoveryView extends ViewPart {
 		});
 	}
 
-	public void addServiceInfo(final ServiceID id) {
+	public void addServiceInfo(final IServiceID id) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
@@ -542,7 +542,7 @@ public class DiscoveryView extends ViewPart {
 				TreeObject treeObject = getSelectedTreeObject();
 				if (treeObject instanceof TreeParent) {
 					TreeParent p = (TreeParent) treeObject;
-					final ServiceID targetID = p.getID();
+					final IServiceID targetID = p.getID();
 					IDiscoveryContainerAdapter dcontainer = getDiscoveryContainer();
 					if (dcontainer != null) {
 						dcontainer.requestServiceInfo(targetID,
@@ -655,7 +655,7 @@ public class DiscoveryView extends ViewPart {
 			if (vcp != null && vcp.isRoot(tp)) {
 				// If it's root, show nothing.
 			} else {
-				ServiceID svcID = tp.getID();
+				IServiceID svcID = tp.getID();
 				if (svcID != null) {
 					IServiceInfo svcInfo = tp.getServiceInfo();
 					connectToAction.setText("Connect to '"
