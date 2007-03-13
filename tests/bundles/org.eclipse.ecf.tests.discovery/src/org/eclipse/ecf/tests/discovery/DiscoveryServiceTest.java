@@ -91,9 +91,9 @@ public class DiscoveryServiceTest extends TestCase {
 		public void serviceTypeAdded(IServiceEvent event) {
 			System.out.println("serviceTypeAdded(" + event + ")");
 			ServiceID svcID = event.getServiceInfo().getServiceID();
-			discoveryInstance.addServiceListener(svcID,
+			discoveryInstance.addServiceListener(svcID.getServiceType(),
 					new CollabServiceListener());
-			discoveryInstance.registerServiceType(svcID);
+			discoveryInstance.registerServiceType(svcID.getServiceType());
 		}
 	}
 	class CollabServiceListener implements IServiceListener {
