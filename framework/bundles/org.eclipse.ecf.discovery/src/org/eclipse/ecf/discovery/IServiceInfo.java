@@ -11,7 +11,7 @@ package org.eclipse.ecf.discovery;
 
 import java.net.InetAddress;
 
-import org.eclipse.ecf.discovery.identity.ServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 
 /**
  * Service information contrace. Defines the information associated with a
@@ -32,7 +32,7 @@ public interface IServiceInfo {
 	 * 
 	 * @return ServiceID the serviceID for the service. Will not be <code>null</code>.
 	 */
-	public ServiceID getServiceID();
+	public IServiceID getServiceID();
 
 	/**
 	 * The port for the service

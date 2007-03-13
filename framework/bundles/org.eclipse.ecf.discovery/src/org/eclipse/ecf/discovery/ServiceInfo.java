@@ -12,6 +12,7 @@ package org.eclipse.ecf.discovery;
 import java.io.Serializable;
 import java.net.InetAddress;
 
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
 /**
@@ -24,7 +25,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 
 	InetAddress addr = null;
 
-	ServiceID serviceID;
+	IServiceID serviceID;
 
 	int port;
 
@@ -43,10 +44,10 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		this.properties = props;
 	}
 
-	public ServiceInfo(InetAddress address, ServiceID id, int port,
+	public ServiceInfo(InetAddress address, IServiceID serviceID, int port,
 			int priority, int weight, IServiceProperties props) {
 		this.addr = address;
-		this.serviceID = id;
+		this.serviceID = serviceID;
 		this.port = port;
 		this.priority = priority;
 		this.weight = weight;
@@ -67,7 +68,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IServiceInfo#getServiceID()
 	 */
-	public ServiceID getServiceID() {
+	public IServiceID getServiceID() {
 		return serviceID;
 	}
 

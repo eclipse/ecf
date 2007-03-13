@@ -17,7 +17,7 @@ import org.eclipse.ecf.internal.discovery.Messages;
  * a remote service.  Subclasses may be created as appropriate.
  * 
  */
-public class ServiceID extends BaseID {
+public class ServiceID extends BaseID implements IServiceID {
 	private static final long serialVersionUID = 1L;
 
 	protected String type;
@@ -97,7 +97,7 @@ public class ServiceID extends BaseID {
 	/**
 	 * Get service name for this ID.  
 	 * 
-	 * @return String service name.  Will not be <code>null</code>.
+	 * @return String service name.  May be <code>null</code>.
 	 */
 	public String getServiceName() {
 		return name;

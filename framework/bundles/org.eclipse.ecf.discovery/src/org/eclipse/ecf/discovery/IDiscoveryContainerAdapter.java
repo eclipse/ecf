@@ -12,7 +12,7 @@ package org.eclipse.ecf.discovery;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.discovery.identity.ServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 
 /**
  * Entry point discovery container adapter. This interface exposes the ability
@@ -97,14 +97,14 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * defined by the first parameter.
 	 * 
 	 * @param service
-	 *            ServiceID of the service to get info about. Must not be
+	 *            IServiceID of the service to get info about. Must not be
 	 *            <code>null</code>.
 	 * @param timeout
 	 *            int time to wait for a response (in ms)
 	 * @return IServiceInfo the service info retrieved. <code>null</code> if
 	 *         no information retrieved within timeout.
 	 */
-	public IServiceInfo getServiceInfo(ServiceID service, int timeout);
+	public IServiceInfo getServiceInfo(IServiceID service, int timeout);
 
 	/**
 	 * Asynchronously (within given timeout) retrieve info about the service
@@ -118,7 +118,7 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * @param timeout
 	 *            int time to wait for a response (in ms)
 	 */
-	public void requestServiceInfo(ServiceID service, int timeout);
+	public void requestServiceInfo(IServiceID service, int timeout);
 
 	/**
 	 * Unregister service defined by serviceInfo.
