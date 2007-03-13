@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.filetransfer;singleton:=true
-Bundle-Version: 1.0.0.v20070215
+Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.internal.filetransfer.Activator
 Bundle-Vendor: %plugin.provider
 Eclipse-LazyStart: true
