@@ -41,9 +41,9 @@ public class Discovery {
 		public void serviceTypeAdded(IServiceEvent event) {
 			System.out.println("serviceTypeAdded(" + event + ")");
 			ServiceID svcID = event.getServiceInfo().getServiceID();
-			discoveryContainer.addServiceListener(svcID,
+			discoveryContainer.addServiceListener(svcID.getServiceType(),
 					new CollabServiceListener());
-			discoveryContainer.registerServiceType(svcID);
+			discoveryContainer.registerServiceType(svcID.getServiceType());
 		}
 	}
 	class CollabServiceListener implements IServiceListener {

@@ -37,7 +37,7 @@ public class CollabDiscoveryView extends DiscoveryView {
 						ServiceID svcID = event.getServiceInfo().getServiceID();
 						addServiceTypeInfo(svcID.getServiceType());
 						dc.addServiceListener(event.getServiceInfo()
-								.getServiceID(), new IServiceListener() {
+								.getServiceID().getServiceType(), new IServiceListener() {
 							public void serviceAdded(IServiceEvent evt) {
 								addServiceInfo(evt.getServiceInfo()
 										.getServiceID());
@@ -52,7 +52,7 @@ public class CollabDiscoveryView extends DiscoveryView {
 								addServiceInfo(evt.getServiceInfo());
 							}
 						});
-						dc.registerServiceType(svcID);
+						dc.registerServiceType(svcID.getServiceType());
 					}
 				});
 			}
