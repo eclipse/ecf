@@ -15,9 +15,15 @@ public class NamedGroup {
 	public NamedGroup(String name) {
 		this.name = name;
 	}
+	
 	protected void setParent(Connector c) {
 		this.parent = c;
 	}
+	
+	public Connector getConnector() {
+		return parent;
+	}
+	
 	public String getName() {
 		return cleanGroupName(name);
 	}

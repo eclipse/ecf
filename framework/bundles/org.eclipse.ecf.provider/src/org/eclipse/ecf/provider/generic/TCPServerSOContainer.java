@@ -33,6 +33,8 @@ public class TCPServerSOContainer extends ServerSOContainer implements
 
 	public static final String DEFAULT_HOST = "localhost"; //$NON-NLS-1$
 
+	public static final String SERVICE_TYPE = "_" + DEFAULT_PROTOCOL + "._tcp.local.";
+	
 	// Keep alive value
 	protected int keepAlive;
 
