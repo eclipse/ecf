@@ -21,6 +21,7 @@ import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceID;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 
@@ -90,7 +91,7 @@ public class DiscoveryServiceTest extends TestCase {
 	class CollabServiceTypeListener implements IServiceTypeListener {
 		public void serviceTypeAdded(IServiceEvent event) {
 			System.out.println("serviceTypeAdded(" + event + ")");
-			ServiceID svcID = event.getServiceInfo().getServiceID();
+			IServiceID svcID = event.getServiceInfo().getServiceID();
 			discoveryInstance.addServiceListener(svcID.getServiceType(),
 					new CollabServiceListener());
 			discoveryInstance.registerServiceType(svcID.getServiceType());
