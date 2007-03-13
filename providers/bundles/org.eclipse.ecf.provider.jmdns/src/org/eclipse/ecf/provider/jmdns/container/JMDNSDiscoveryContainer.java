@@ -51,6 +51,7 @@ import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceContainerEvent;
 import org.eclipse.ecf.discovery.ServiceProperties;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceID;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.provider.jmdns.JMDNSDebugOptions;
@@ -203,9 +204,9 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServiceInfo(org.eclipse.ecf.discovery.identity.ServiceID, int)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServiceInfo(org.eclipse.ecf.discovery.identity.IServiceID, int)
 	 */
-	public IServiceInfo getServiceInfo(ServiceID service, int timeout) {
+	public IServiceInfo getServiceInfo(IServiceID service, int timeout) {
 		Trace.entering(JMDNSPlugin.getDefault(),
 				JMDNSDebugOptions.METHODS_ENTERING, this.getClass(),
 				"getServiceInfo",
@@ -368,7 +369,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 			IServiceInfo serviceInfo) {
 		if (serviceInfo == null)
 			return null;
-		ServiceID sID = serviceInfo.getServiceID();
+		IServiceID sID = serviceInfo.getServiceID();
 		Hashtable props = new Hashtable();
 		IServiceProperties svcProps = serviceInfo.getServiceProperties();
 		if (svcProps != null) {
@@ -443,9 +444,9 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#requestServiceInfo(org.eclipse.ecf.discovery.identity.ServiceID, int)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#requestServiceInfo(org.eclipse.ecf.discovery.identity.IServiceID, int)
 	 */
-	public void requestServiceInfo(ServiceID service, int timeout) {
+	public void requestServiceInfo(IServiceID service, int timeout) {
 		if (jmdns != null) {
 			jmdns.requestServiceInfo(service.getServiceType(), service
 					.getServiceName(), timeout);
