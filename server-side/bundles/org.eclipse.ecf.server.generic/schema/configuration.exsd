@@ -73,6 +73,13 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="discovery" type="boolean">
+            <annotation>
+               <documentation>
+                  The discovery flag determines if the given service is published for discovery via the IDiscoveryService
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 

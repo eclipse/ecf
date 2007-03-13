@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.server.generic.ServerManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -23,6 +24,8 @@ public class Activator extends Plugin {
 	
 	private ServiceTracker extensionRegistryTracker = null;
 
+	private ServiceTracker discoveryTracker = null;
+	
 	/**
 	 * The constructor
 	 */
@@ -33,6 +36,10 @@ public class Activator extends Plugin {
 		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
+	public IDiscoveryService getDiscovery() {
+		return (IDiscoveryService) discoveryTracker.getService();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
@@ -43,6 +50,8 @@ public class Activator extends Plugin {
 		this.extensionRegistryTracker = new ServiceTracker(context,
 				IExtensionRegistry.class.getName(), null);
 		this.extensionRegistryTracker.open();
+		this.discoveryTracker = new ServiceTracker(context, IDiscoveryService.class.getName(), null);
+		this.discoveryTracker.open();
 		serverManager = new ServerManager();
 	}
 
@@ -59,6 +68,10 @@ public class Activator extends Plugin {
 		if (extensionRegistryTracker != null) {
 			extensionRegistryTracker.close();
 			extensionRegistryTracker = null;
+		}
+		if (discoveryTracker != null) {
+			discoveryTracker.close();
+			discoveryTracker = null;
 		}
 		super.stop(context);
 	}

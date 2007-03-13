@@ -5,6 +5,7 @@
    <extension
          point="org.eclipse.ecf.server.generic.configuration">
       <connector
+            discovery="true"
             hostname="localhost"
             keepAlive="30000"
             port="3283">

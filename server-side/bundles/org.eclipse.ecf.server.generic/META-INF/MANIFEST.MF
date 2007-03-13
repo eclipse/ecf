@@ -8,5 +8,8 @@ Bundle-Vendor: %plugin.provider
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.sharedobject,
- org.eclipse.ecf.provider
+ org.eclipse.ecf.provider,
+ org.eclipse.ecf.discovery
 Eclipse-LazyStart: true
+Export-Package: org.eclipse.ecf.internal.server.generic;x-internal:=true,
+ org.eclipse.ecf.server.generic

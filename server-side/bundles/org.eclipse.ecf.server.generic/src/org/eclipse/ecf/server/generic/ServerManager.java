@@ -13,11 +13,14 @@ package org.eclipse.ecf.server.generic;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -26,6 +29,10 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
+import org.eclipse.ecf.discovery.ServiceInfo;
+import org.eclipse.ecf.discovery.ServiceProperties;
+import org.eclipse.ecf.discovery.identity.ServiceID;
+import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.server.generic.Activator;
 import org.eclipse.ecf.internal.server.generic.Messages;
 import org.eclipse.ecf.provider.app.Connector;
@@ -38,24 +45,34 @@ import org.eclipse.osgi.util.NLS;
 
 public class ServerManager {
 
+	private static final String GROUP_PROPERTY_NAME = "group"; //$NON-NLS-1$
+
+	private static final String PWREQUIRED_PROPERTY_NAME = "pwrequired"; //$NON-NLS-1$
+
+	private static final String PROTOCOL_PROPERTY_NAME = "protocol"; //$NON-NLS-1$
+
+	private static final String SERVICE_TYPE = Messages.ServerManager_SERVICE_TYPE;
+
 	static TCPServerSOContainerGroup serverGroups[] = null;
 
 	static Map servers = new HashMap();
 
-	public static final String EXTENSION_POINT_NAME = "configuration";
+	public static final String EXTENSION_POINT_NAME = "configuration"; //$NON-NLS-1$
 
-	public static final String EXTENSION_POINT = Activator.PLUGIN_ID + "."
+	public static final String EXTENSION_POINT = Activator.PLUGIN_ID + "." //$NON-NLS-1$
 			+ EXTENSION_POINT_NAME;
 
-	public static final String CONFIGURATION_ELEMENT = "configuration";
-	public static final String CONNECTOR_ELEMENT = "connector";
-	public static final String GROUP_ELEMENT = "group";
+	public static final String CONFIGURATION_ELEMENT = "configuration"; //$NON-NLS-1$
+	public static final String CONNECTOR_ELEMENT = "connector"; //$NON-NLS-1$
+	public static final String GROUP_ELEMENT = GROUP_PROPERTY_NAME;
 
-	public static final String HOSTNAME_ATTR = "hostname";
-	public static final String PORT_ATTR = "port";
-	public static final String KEEPALIVE_ATTR = "keepAlive";
-	public static final String NAME_ATTR = "name";
+	public static final String HOSTNAME_ATTR = "hostname"; //$NON-NLS-1$
+	public static final String PORT_ATTR = "port"; //$NON-NLS-1$
+	public static final String KEEPALIVE_ATTR = "keepAlive"; //$NON-NLS-1$
+	public static final String NAME_ATTR = "name"; //$NON-NLS-1$
 
+	public static final String DISCOVERY_ATTR = "discovery"; //$NON-NLS-1$
+	
 	public ServerManager() {
 		IExtensionRegistry reg = Activator.getDefault().getExtensionRegistry();
 		try {
@@ -96,8 +113,11 @@ public class ServerManager {
 			String keepAliveString = element.getAttribute(KEEPALIVE_ATTR);
 			if (keepAliveString != null)
 				keepAlive = Integer.parseInt(keepAliveString);
+			boolean discovery = false;
+			String discoveryString = element.getAttribute(DISCOVERY_ATTR);
+			if (discoveryString != null) discovery = Boolean.parseBoolean(discoveryString);
 			Connector connector = new Connector(null, element
-					.getAttribute(HOSTNAME_ATTR), port, keepAlive);
+					.getAttribute(HOSTNAME_ATTR), port, keepAlive, discovery);
 			IConfigurationElement[] groupElements = element
 					.getChildren(GROUP_ELEMENT);
 			for (int j = 0; j < groupElements.length; j++) {
@@ -151,6 +171,7 @@ public class ServerManager {
 				TCPServerSOContainer cont = createServerContainer(group
 						.getIDForGroup(), serverGroups[j], group.getName(),
 						connect.getTimeout());
+				if (connect.shouldRegisterForDiscovery()) registerServerForDiscovery(group, false);
 				servers.put(cont.getID(), cont);
 				Activator.log(NLS.bind(Messages.ServerStarter_STARTING_SERVER,
 						cont.getID().getName())); //$NON-NLS-1$
@@ -180,5 +201,27 @@ public class ServerManager {
 		ID newServerID = IDFactory.getDefault().createStringID(id);
 		return new TCPServerSOContainer(new SOContainerConfig(newServerID),
 				group, path, keepAlive);
+	}
+	
+	private void registerServerForDiscovery(NamedGroup group, boolean pwrequired) {
+		IDiscoveryService discovery = Activator.getDefault().getDiscovery();
+		if (discovery != null) {
+			discovery.registerServiceType(SERVICE_TYPE);
+			String rawGroupName = group.getRawName();
+			ServiceID serviceID = new ServiceID(SERVICE_TYPE,rawGroupName);
+			Connector connector = group.getConnector();
+			Properties props = new Properties();
+			props.put(PROTOCOL_PROPERTY_NAME,TCPServerSOContainer.DEFAULT_PROTOCOL);
+			props.put(PWREQUIRED_PROPERTY_NAME, new Boolean(pwrequired).toString());
+			props.put(GROUP_PROPERTY_NAME,rawGroupName);
+			try {
+				InetAddress host = InetAddress.getByName(connector.getHostname());
+				ServiceInfo svcInfo = new ServiceInfo(host, serviceID, connector.getPort(),
+						0, 0, new ServiceProperties(props));
+				discovery.registerService(svcInfo);
+			} catch (Exception e) {
+				Activator.log(Messages.ServerManager_EXCEPTION_DISCOVERY_REGISTRATION,e);
+			}
+		}
 	}
 }
