@@ -26,7 +26,7 @@ import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
-public class JMDNSDiscoveryTest extends TestCase {
+public class DiscoveryTest extends TestCase {
 	
 	static IContainer container = null;
 	static IDiscoveryContainerAdapter discoveryContainer = null;
