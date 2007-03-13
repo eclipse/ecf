@@ -35,29 +35,31 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * is discovered.
 	 * 
 	 * @param type
-	 *            the ServiceID of the desired type to listen for.  Should not be <code>null</code>.
+	 *            String type to listen for. Must not be <code>null</code>.
 	 * @param listener
-	 *            the listener to be notified.  Should not be <code>null</code>.
+	 *            IServiceListener to be notified. Must not be <code>null</code>.
 	 */
-	public void addServiceListener(ServiceID type, IServiceListener listener);
+	public void addServiceListener(String type, IServiceListener listener);
 
 	/**
 	 * Remove a service listener. Remove the listener associated with the type
 	 * specified by the first parameter.
 	 * 
 	 * @param type
-	 *            the ServiceID of the desired type to remove the listener
+	 *            String of the desired type to remove the listener. Must not be
+	 *            <code>null</code>.
 	 * @param listener
-	 *            the listener to be removed
+	 *            IServiceListener listener to be removed. Must not be
+	 *            <code>null</code>.
 	 */
-	public void removeServiceListener(ServiceID type, IServiceListener listener);
+	public void removeServiceListener(String type, IServiceListener listener);
 
 	/**
 	 * Add a service type listener. The given listener will have its method
 	 * called when a service type is discovered.
 	 * 
 	 * @param listener
-	 *            the listener to be notified
+	 *            the listener to be notified. Must not be <code>null</code>.
 	 */
 	public void addServiceTypeListener(IServiceTypeListener listener);
 
@@ -65,7 +67,8 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * Remove a service type listener. Remove the type listener.
 	 * 
 	 * @param listener
-	 *            the listener to be removed
+	 *            IServiceTypeListener to be removed. Must not be
+	 *            <code>null</code>.
 	 */
 	public void removeServiceTypeListener(IServiceTypeListener listener);
 
@@ -74,16 +77,8 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * the underlying publishing mechanism
 	 * 
 	 * @param serviceType
-	 *            the ServiceID of the type to be published
-	 */
-	public void registerServiceType(ServiceID serviceType);
-
-	/**
-	 * Register the given service type. This publishes the given service type to
-	 * the underlying publishing mechanism
-	 * 
-	 * @param serviceType
-	 *            the String of the type to be published
+	 *            String of the serviceType to be published. Must not be
+	 *            <code>null</code>.
 	 */
 	public void registerServiceType(String serviceType);
 
@@ -92,7 +87,8 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * first parameter to the underlying publishing mechanism
 	 * 
 	 * @param serviceInfo
-	 *            the IServiceInfo of the service to be published
+	 *            IServiceInfo of the service to be published. Must not be
+	 *            <code>null</code>.
 	 */
 	public void registerService(IServiceInfo serviceInfo) throws IOException;
 
@@ -101,11 +97,12 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * defined by the first parameter.
 	 * 
 	 * @param service
-	 *            the ServiceID of the service to get info about
+	 *            ServiceID of the service to get info about. Must not be
+	 *            <code>null</code>.
 	 * @param timeout
-	 *            the time to wait for a response (in ms)
-	 * @return IServiceInfo the service info retrieved. Null if no information
-	 *         retrieved within timeout.
+	 *            int time to wait for a response (in ms)
+	 * @return IServiceInfo the service info retrieved. <code>null</code> if
+	 *         no information retrieved within timeout.
 	 */
 	public IServiceInfo getServiceInfo(ServiceID service, int timeout);
 
@@ -116,9 +113,10 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * IServiceListener.resolveService() method.
 	 * 
 	 * @param service
-	 *            the ServiceID of the service to get info about
+	 *            ServiceID of the service to get info about. Must not be
+	 *            <code>null</code>.
 	 * @param timeout
-	 *            the time to wait for a response (in ms)
+	 *            int time to wait for a response (in ms)
 	 */
 	public void requestServiceInfo(ServiceID service, int timeout);
 
@@ -126,7 +124,8 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * Unregister service defined by serviceInfo.
 	 * 
 	 * @param serviceInfo
-	 *            the info defining the service to unregister
+	 *            IServiceInfo defining the service to unregister. Must not be
+	 *            <code>null</code>.
 	 */
 	public void unregisterService(IServiceInfo serviceInfo);
 
@@ -134,9 +133,10 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * Get service info about all known services of given service type
 	 * 
 	 * @param type
-	 *            the ServiceID defining the type of service we are interested
-	 *            in getting service info about
-	 * @return IServiceInfo[] the resulting array of service info instances
+	 *            String defining the type of service we are interested in
+	 *            getting service info about. Must not be <code>null</code>
+	 * @return IServiceInfo[] the resulting array of service info instances.
+	 *         Will not be <code>null</code>. May be of length 0.
 	 */
-	public IServiceInfo[] getServices(ServiceID type);
+	public IServiceInfo[] getServices(String type);
 }
