@@ -55,7 +55,7 @@ public class DatashareContainerAdapter implements IChannelContainerAdapter {
 			this.container.getSharedObjectManager().addSharedObject(delegateID,
 					delegate, null);
 		} catch (Exception e) {
-			Trace.catching(Activator.getDefault(),
+			Trace.catching(Activator.PLUGIN_ID,
 					DatashareProviderDebugOptions.EXCEPTIONS_CATCHING,
 					DatashareContainerAdapter.class,
 					"DatashareContainerAdapter.initialize", e);

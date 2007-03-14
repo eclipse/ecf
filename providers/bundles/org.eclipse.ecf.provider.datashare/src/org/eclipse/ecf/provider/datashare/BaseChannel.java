@@ -80,7 +80,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		this.listener = l;
 	}
 	protected void trace(String msg) {
-		Trace.trace(Activator.getDefault(), msg);
+		Trace.trace(Activator.PLUGIN_ID, msg);
 	}
 	/**
 	 * Override of TransasctionSharedObject.initialize(). This method is called
