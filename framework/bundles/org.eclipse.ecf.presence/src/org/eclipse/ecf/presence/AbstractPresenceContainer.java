@@ -10,7 +10,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence;
 
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.ecf.internal.presence.PresencePlugin;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 
 /**
@@ -24,7 +25,9 @@ public abstract class AbstractPresenceContainer implements
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
-		return Platform.getAdapterManager().getAdapter(this, adapter);
+		IAdapterManager adapterManager = PresencePlugin.getDefault().getAdapterManager();
+		if (adapterManager == null) return null;
+		return adapterManager.getAdapter(this, adapter);
 	}
 
 	/*
