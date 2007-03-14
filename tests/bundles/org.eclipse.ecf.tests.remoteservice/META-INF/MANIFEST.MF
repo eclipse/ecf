@@ -5,10 +5,11 @@ Bundle-SymbolicName: org.eclipse.ecf.tests.remoteservice
 Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.tests.remoteservice.Activator
 Bundle-Vendor: eclipse.org
-Require-Bundle: org.eclipse.core.runtime,
- org.junit,
+Require-Bundle: org.junit,
  org.eclipse.ecf.tests,
  org.eclipse.ecf.remoteservice,
- org.eclipse.ecf
+ org.eclipse.ecf,
+ org.eclipse.equinox.common
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.tests.remoteservice
+Import-Package: org.osgi.framework;version="1.4.0"
