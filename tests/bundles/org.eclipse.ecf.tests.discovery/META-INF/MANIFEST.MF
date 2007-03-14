@@ -5,8 +5,10 @@ Bundle-SymbolicName: org.eclipse.ecf.tests.discovery
 Bundle-Version: 1.0.0.20070212
 Bundle-Activator: org.eclipse.ecf.tests.discovery.Activator
 Bundle-Vendor: eclipse.org
-Require-Bundle: org.eclipse.core.runtime,
- org.junit,
+Require-Bundle: org.junit,
  org.eclipse.ecf,
- org.eclipse.ecf.discovery
+ org.eclipse.ecf.discovery,
+ org.eclipse.equinox.common
 Eclipse-LazyStart: true
+Import-Package: org.osgi.framework;version="1.4.0",
+ org.osgi.util.tracker;version="1.3.2"

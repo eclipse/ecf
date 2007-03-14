@@ -1,14 +1,14 @@
 package org.eclipse.ecf.tests.discovery;
 
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class Activator implements BundleActivator {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.tests.discovery";
@@ -29,7 +29,6 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
 		plugin = this;
 		tracker = new ServiceTracker(context,IDiscoveryService.class.getName(),null);
 		tracker.open();
@@ -45,7 +44,6 @@ public class Activator extends Plugin {
 			tracker.close();
 			tracker = null;
 		}
-		super.stop(context);
 	}
 
 	/**
