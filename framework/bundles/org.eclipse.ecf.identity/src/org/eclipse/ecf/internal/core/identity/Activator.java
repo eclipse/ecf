@@ -321,6 +321,10 @@ public class Activator implements BundleActivator {
 			reg.removeRegistryChangeListener(registryManager);
 		registryManager = null;
 		plugin = null;
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+		}
 		if (debugOptionsTracker != null) {
 			debugOptionsTracker.close();
 			debugOptionsTracker = null;
@@ -333,6 +337,7 @@ public class Activator implements BundleActivator {
 			idFactoryServiceRegistration.unregister();
 			idFactoryServiceRegistration = null;
 		}
+		context = null;
 	}
 
 	/**
