@@ -83,7 +83,7 @@ public class Activator extends Plugin {
 			registry.addRegistryChangeListener(registryManager);
 		}
 		setupSharedObjectExtensionPoint(context);
-		Trace.exiting(Activator.getDefault(),
+		Trace.exiting(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.METHODS_ENTERING, Activator.class,
 				"start"); //$NON-NLS-1$
 	}
@@ -94,7 +94,7 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		Trace.entering(Activator.getDefault(),
+		Trace.entering(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.METHODS_EXITING, Activator.class,
 				"stop"); //$NON-NLS-1$
 		IExtensionRegistry reg = getExtensionRegistry();
@@ -143,13 +143,13 @@ public class Activator extends Plugin {
 				}
 				// remove
 				factory.removeDescription(sd);
-				org.eclipse.ecf.core.util.Trace.trace(Activator.getDefault(),
+				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID,
 						SharedObjectDebugOptions.DEBUG,
 						"removeSharedObjectExtensions.removedDescription(" + sd //$NON-NLS-1$
 								+ ")"); //$NON-NLS-1$
 			} catch (Exception e) {
 				org.eclipse.ecf.core.util.Trace.catching(
-						Activator.getDefault(),
+						Activator.PLUGIN_ID,
 						SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 						Activator.class, "removeSharedObjectExtensions", e); //$NON-NLS-1$
 				getDefault()
@@ -199,7 +199,7 @@ public class Activator extends Plugin {
 				// Now make description instance
 				SharedObjectTypeDescription scd = new SharedObjectTypeDescription(
 						name, exten, description, properties);
-				org.eclipse.ecf.core.util.Trace.trace(Activator.getDefault(),
+				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID,
 						SharedObjectDebugOptions.DEBUG,
 						"setupSharedObjectExtensionPoint:createdDescription(" //$NON-NLS-1$
 								+ scd + ")"); //$NON-NLS-1$
@@ -219,14 +219,14 @@ public class Activator extends Plugin {
 
 				// Now add the description and we're ready to go.
 				factory.addDescription(scd);
-				org.eclipse.ecf.core.util.Trace.trace(Activator.getDefault(),
+				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID,
 						SharedObjectDebugOptions.DEBUG,
 						"setupSharedObjectExtensionPoint.addedDescriptionToFactory(" //$NON-NLS-1$
 								+ scd + ")"); //$NON-NLS-1$
 			} catch (CoreException e) {
 				getDefault().getLog().log(e.getStatus());
 				org.eclipse.ecf.core.util.Trace.catching(
-						Activator.getDefault(),
+						Activator.PLUGIN_ID,
 						SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 						Activator.class, "addSharedObjectExtensions", e); //$NON-NLS-1$
 			} catch (Exception e) {
@@ -244,7 +244,7 @@ public class Activator extends Plugin {
 														.getExtensionPointUniqueIdentifier(),
 										null));
 				org.eclipse.ecf.core.util.Trace.catching(
-						Activator.getDefault(),
+						Activator.PLUGIN_ID,
 						SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 						Activator.class, "addSharedObjectExtensions", e); //$NON-NLS-1$
 			}

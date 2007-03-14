@@ -69,11 +69,11 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor,
 	}
 
 	protected void trace(String msg) {
-		Trace.trace(Activator.getDefault(), msg);
+		Trace.trace(Activator.PLUGIN_ID, msg);
 	}
 
 	protected void traceStack(String msg, Throwable t) {
-		Trace.catching(Activator.getDefault(),
+		Trace.catching(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 				TwoPhaseCommitEventProcessor.class, "traceStack", t); //$NON-NLS-1$
 		;

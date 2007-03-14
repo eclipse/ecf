@@ -33,7 +33,7 @@ public class OptimisticSharedObject extends BaseSharedObject {
 
 	protected void initialize() throws SharedObjectInitException {
 		super.initialize();
-		Trace.entering(Activator.getDefault(),
+		Trace.entering(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.METHODS_ENTERING,
 				OptimisticSharedObject.class, "initialize"); //$NON-NLS-1$
 		addEventProcessor(new IEventProcessor() {
@@ -58,7 +58,7 @@ public class OptimisticSharedObject extends BaseSharedObject {
 				return false;
 			}
 		});
-		Trace.exiting(Activator.getDefault(),
+		Trace.exiting(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.METHODS_EXITING,
 				OptimisticSharedObject.class, "initialize"); //$NON-NLS-1$
 	}

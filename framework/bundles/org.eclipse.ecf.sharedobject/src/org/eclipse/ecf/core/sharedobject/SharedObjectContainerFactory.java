@@ -48,7 +48,7 @@ public class SharedObjectContainerFactory implements
 	}
 
 	private static void trace(String msg) {
-		Trace.trace(Activator.getDefault(), msg);
+		Trace.trace(Activator.PLUGIN_ID, msg);
 	}
 
 	/*

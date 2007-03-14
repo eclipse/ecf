@@ -106,7 +106,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 		try {
 			manager.addSharedObject(adapterID, adapter, adapterProperties);
 		} catch (SharedObjectAddException e) {
-			Trace.catching(Activator.getDefault(),
+			Trace.catching(Activator.PLUGIN_ID,
 					SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 					AbstractSharedObjectContainerAdapterFactory.class,
 					"getSharedObjectAdapter", e); //$NON-NLS-1$
@@ -159,7 +159,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 		try {
 			return IDFactory.getDefault().createStringID(singletonName);
 		} catch (IDCreateException e) {
-			Trace.catching(Activator.getDefault(),
+			Trace.catching(Activator.PLUGIN_ID,
 					SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 					AbstractSharedObjectContainerAdapterFactory.class,
 					"getAdapterID", e); //$NON-NLS-1$

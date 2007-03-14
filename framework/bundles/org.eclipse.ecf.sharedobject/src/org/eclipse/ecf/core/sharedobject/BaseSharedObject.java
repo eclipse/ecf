@@ -525,37 +525,37 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	}
 
 	protected void traceEntering(String methodName) {
-		Trace.entering(Activator.getDefault(),
+		Trace.entering(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.METHODS_ENTERING, this.getClass(),
 				getSharedObjectAsString(methodName));
 	}
 
 	protected void traceEntering(String methodName, Object[] params) {
-		Trace.entering(Activator.getDefault(),
+		Trace.entering(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.METHODS_ENTERING, this.getClass(),
 				getSharedObjectAsString(methodName));
 	}
 
 	protected void traceEntering(String methodName, Object param) {
-		Trace.entering(Activator.getDefault(),
+		Trace.entering(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.METHODS_ENTERING, this.getClass(),
 				getSharedObjectAsString(methodName));
 	}
 
 	protected void traceExiting(String methodName) {
-		Trace.entering(Activator.getDefault(),
+		Trace.entering(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.METHODS_EXITING, this.getClass(),
 				getSharedObjectAsString(methodName));
 	}
 
 	protected void traceExiting(String methodName, Object result) {
-		Trace.entering(Activator.getDefault(),
+		Trace.entering(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.METHODS_EXITING, this.getClass(),
 				getSharedObjectAsString(methodName));
 	}
 
 	protected void traceCatching(String method, Throwable t) {
-		Trace.catching(Activator.getDefault(),
+		Trace.catching(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.EXCEPTIONS_CATCHING, this.getClass(),
 				getSharedObjectAsString(method), t);
 	}

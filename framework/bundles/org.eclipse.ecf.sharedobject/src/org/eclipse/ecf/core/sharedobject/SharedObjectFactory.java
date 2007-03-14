@@ -40,11 +40,11 @@ public class SharedObjectFactory implements ISharedObjectFactory {
 	}
 
 	private static void trace(String msg) {
-		Trace.trace(Activator.getDefault(), msg);
+		Trace.trace(Activator.PLUGIN_ID, msg);
 	}
 
 	private static void dumpStack(String msg, Throwable e) {
-		Trace.catching(Activator.getDefault(),
+		Trace.catching(Activator.PLUGIN_ID,
 				SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 				SharedObjectFactory.class, "dumpStack", e); //$NON-NLS-1$
 	}
