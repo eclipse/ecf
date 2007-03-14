@@ -19,9 +19,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
@@ -29,7 +26,7 @@ import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.ServiceTypeListener;
 
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
@@ -192,7 +189,9 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		if (adapter.isInstance(this)) {
 			return this;
 		} else {
-			return Platform.getAdapterManager().getAdapter(this, adapter);
+			IAdapterManager adapterManager = JMDNSPlugin.getDefault().getAdapterManager();
+			if (adapterManager == null) return null;
+			return adapterManager.getAdapter(this, adapter);
 		}
 	}
 
@@ -249,13 +248,6 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), groupID,
 				joinContext));
 		try {
-			if (Platform.inDebugMode()) {
-				Logger logger = Logger.getLogger(JmDNS.class.toString());
-				ConsoleHandler handler = new ConsoleHandler();
-				logger.addHandler(handler);
-				logger.setLevel(Level.FINER);
-				handler.setLevel(Level.FINER);
-			}
 			this.jmdns = new JmDNS(intf);
 			jmdns.addServiceTypeListener(this);
 			if (groupID != null && groupID instanceof JMDNSServiceID) {
@@ -265,7 +257,6 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		} catch (IOException e) {
 			ContainerConnectException soe = new ContainerConnectException(
 					"Exception creating JmDNS instance");
-			soe.setStackTrace(e.getStackTrace());
 			throw soe;
 		}
 		fireContainerEvent(new ContainerConnectedEvent(this.getID(), groupID));

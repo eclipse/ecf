@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Discovery Provider
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.jmdns;singleton:=true
 Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.internal.provider.jmdns.JMDNSPlugin
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Eclipse-AutoStart: true
-Require-Bundle: org.eclipse.ecf,
+Require-Bundle: org.eclipse.equinox.common,
+ org.eclipse.ecf,
  org.eclipse.ecf.discovery
 Eclipse-LazyStart: true
 Bundle-ClassPath: ., lib/jmdns-1.0.3.jar
