@@ -97,7 +97,7 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 		}
 
 		public IStatus run(IProgressMonitor monitor) {
-			Trace.entering(Activator.getDefault(),
+			Trace.entering(Activator.PLUGIN_ID,
 					UIDebugOptions.METHODS_ENTERING, this.getClass(),
 					RUN_METHOD);
 			monitor.beginTask("Connecting", 100);
@@ -113,14 +113,14 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 				monitor.worked(90);
 				return status;
 			} catch (ContainerConnectException e) {
-				Trace.catching(Activator.getDefault(),
+				Trace.catching(Activator.PLUGIN_ID,
 						UIDebugOptions.METHODS_ENTERING, this.getClass(),
 						RUN_METHOD, e);
 				IStatus status = handleException(e);
 				return status;
 			} finally {
 				monitor.done();
-				Trace.exiting(Activator.getDefault(),
+				Trace.exiting(Activator.PLUGIN_ID,
 						UIDebugOptions.METHODS_EXITING, this.getClass(),
 						RUN_METHOD);
 			}
