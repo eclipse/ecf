@@ -130,16 +130,15 @@ public class Trace {
 	 * 
 	 */
 	protected static boolean shouldTrace(String pluginId) {
-		return shouldTrace0(pluginId,"/debug"); //$NON-NLS-1$
+		return shouldTrace0(pluginId+"/debug"); //$NON-NLS-1$
 	}
 
-	protected static boolean shouldTrace0(String pluginId, String option) {
-		if (pluginId == null || option == null)
+	protected static boolean shouldTrace0(String option) {
+		if (option == null)
 			return false;
 		DebugOptions debugOptions = Activator.getDefault().getDebugOptions();
 		if (debugOptions == null) return false;
-		String key = pluginId + (option.startsWith("/")?option:("/"+option));  //$NON-NLS-1$
-		String result = debugOptions.getOption(key);
+		String result = debugOptions.getOption(option);
 		return (result == null)?false:result.equalsIgnoreCase("true"); //$NON-NLS-1$
 	}
 	
@@ -164,7 +163,7 @@ public class Trace {
 				value = (Boolean) cachedOptions.get(option);
 
 				if (null == value) {
-					value = new Boolean(shouldTrace0(pluginId, option));
+					value = new Boolean(shouldTrace0(option));
 
 					cachedOptions.put(option, value);
 				}
