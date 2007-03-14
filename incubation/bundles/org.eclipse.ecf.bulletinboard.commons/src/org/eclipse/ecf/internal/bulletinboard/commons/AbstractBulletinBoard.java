@@ -12,7 +12,7 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.bulletinboard.BBException;
 import org.eclipse.ecf.bulletinboard.IBulletinBoardContainerAdapter;
 import org.eclipse.ecf.bulletinboard.IMember;
@@ -94,7 +94,9 @@ public abstract class AbstractBulletinBoard implements
 	}
 
 	public Object getAdapter(Class adapter) {
-		return Platform.getAdapterManager().getAdapter(this, adapter);
+		IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
+		if (adapterManager == null) return null;
+		return adapterManager.getAdapter(this, adapter);
 	}
 
 	public URL getURL() {
