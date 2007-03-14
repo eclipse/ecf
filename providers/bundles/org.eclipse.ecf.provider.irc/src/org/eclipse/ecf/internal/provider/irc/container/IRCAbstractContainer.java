@@ -57,11 +57,11 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	}
 
 	protected void trace(String msg) {
-		Trace.trace(Activator.getDefault(), msg);
+		Trace.trace(Activator.PLUGIN_ID, msg);
 	}
 
 	protected void traceStack(Throwable t, String msg) {
-		Trace.catching(Activator.getDefault(), IRCDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), msg, t);
+		Trace.catching(Activator.PLUGIN_ID, IRCDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), msg, t);
 	}
 
 	public void fireMessageListeners(ID sender, String msg) {
