@@ -8,35 +8,38 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.xmpp;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.util.LogHelper;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.log.LogService;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class XmppPlugin extends Plugin {
-	public static final String ID = "org.eclipse.ecf.provider.xmpp";
-    protected static final String NAMESPACE_IDENTIFIER = "ecf.xmpp";
-    protected static final String SECURE_NAMESPACE_IDENTIFIER = "ecf.xmpps";
-    protected static final String ROOM_NAMESPACE_IDENTIFIER = "xmpp.room.jive";
+public class XmppPlugin implements BundleActivator {
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.xmpp"; //$NON-NLS-1$
+    protected static final String NAMESPACE_IDENTIFIER = "ecf.xmpp"; //$NON-NLS-1$
+    protected static final String SECURE_NAMESPACE_IDENTIFIER = "ecf.xmpps"; //$NON-NLS-1$
+    protected static final String ROOM_NAMESPACE_IDENTIFIER = "xmpp.room.jive"; //$NON-NLS-1$
 	//The shared instance.
 	private static XmppPlugin plugin;
-	//Resource bundle.
-	private ResourceBundle resourceBundle;
 	
+	private BundleContext context = null;
+	
+	private ServiceTracker logServiceTracker = null;
+
 	public static void log(String message) {
-		getDefault().getLog().log(
-				new Status(IStatus.OK, XmppPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK, message, null));
+		getDefault().log(
+				new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
 	}
 
 	public static void log(String message, Throwable e) {
-		getDefault().getLog().log(
-				new Status(IStatus.ERROR, XmppPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK,
-						"Caught exception", e));
+		getDefault().log(
+				new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK,
+						"Caught exception", e)); //$NON-NLS-1$
 	}
 
 	/**
@@ -45,25 +48,43 @@ public class XmppPlugin extends Plugin {
 	public XmppPlugin() {
 		super();
 		plugin = this;
-		try {
-			resourceBundle = ResourceBundle.getBundle("org.eclipse.ecf.provider.xmpp.XmppPluginResources");
-		} catch (MissingResourceException x) {
-			resourceBundle = null;
+	}
+
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context,
+					LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		return (LogService) logServiceTracker.getService();
+	}
+
+	public void log(IStatus status) {
+		LogService logService = getLogService();
+		if (logService != null) {
+			logService.log(LogHelper.getLogCode(status), LogHelper
+					.getLogMessage(status), status.getException());
 		}
 	}
+
 
 	/**
 	 * This method is called upon plug-in activation
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
+		this.context = context;
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+		}
+		this.context = null;
+		plugin = null;
 	}
 
 	/**
@@ -73,25 +94,6 @@ public class XmppPlugin extends Plugin {
 		return plugin;
 	}
 
-	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
-	 */
-	public static String getResourceString(String key) {
-		ResourceBundle bundle = XmppPlugin.getDefault().getResourceBundle();
-		try {
-			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e) {
-			return key;
-		}
-	}
-
-	/**
-	 * Returns the plugin's resource bundle,
-	 */
-	public ResourceBundle getResourceBundle() {
-		return resourceBundle;
-	}
     public String getNamespaceIdentifier() {
     	return NAMESPACE_IDENTIFIER;
     }
