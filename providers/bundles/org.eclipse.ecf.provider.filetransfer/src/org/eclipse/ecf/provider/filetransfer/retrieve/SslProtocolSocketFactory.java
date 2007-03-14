@@ -54,9 +54,7 @@ public class SslProtocolSocketFactory implements ProtocolSocketFactory {
 						null);
 			} catch (Exception e) {
 				Activator
-						.getDefault()
-						.getLog()
-						.log(
+						.getDefault().log(
 								new Status(
 										IStatus.ERROR,
 										Activator.PLUGIN_ID,
