@@ -210,7 +210,7 @@ public class IDFactory implements IIDFactory {
 		Trace.throwing(Activator.PLUGIN_ID,
 				IdentityDebugOptions.EXCEPTIONS_THROWING, IDFactory.class,
 				"logAndThrow", e); //$NON-NLS-1$
-		Activator.getDefault().getLog().log(
+		Activator.getDefault().log(
 				new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 						IDENTITY_CREATION_ERRORCODE, s, e));
 		throw e;

@@ -9,6 +9,7 @@
 package org.eclipse.ecf.internal.core.identity;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionDelta;
@@ -17,21 +18,25 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IRegistryChangeEvent;
 import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.osgi.service.debug.DebugOptions;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class Activator implements BundleActivator {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.identity"; //$NON-NLS-1$
@@ -54,6 +59,8 @@ public class Activator extends Plugin {
 	// The shared instance
 	private static Activator plugin;
 
+	private BundleContext context = null;
+
 	private IRegistryChangeListener registryManager = null;
 
 	private ServiceRegistration idFactoryServiceRegistration = null;
@@ -61,7 +68,9 @@ public class Activator extends Plugin {
 	private ServiceTracker extensionRegistryTracker = null;
 
 	private ServiceTracker debugOptionsTracker = null;
-	
+
+	private ServiceTracker logServiceTracker = null;
+
 	/**
 	 * The constructor
 	 */
@@ -69,32 +78,36 @@ public class Activator extends Plugin {
 	}
 
 	public IExtensionRegistry getExtensionRegistry() {
+		if (extensionRegistryTracker == null) {
+			extensionRegistryTracker = new ServiceTracker(context,
+					IExtensionRegistry.class.getName(), null);
+			extensionRegistryTracker.open();
+		}
 		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
 	public DebugOptions getDebugOptions() {
+		if (debugOptionsTracker == null) {
+			debugOptionsTracker = new ServiceTracker(context,
+					DebugOptions.class.getName(), null);
+			debugOptionsTracker.open();
+		}
 		return (DebugOptions) debugOptionsTracker.getService();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
 		plugin = this;
-		this.extensionRegistryTracker = new ServiceTracker(context,
-				IExtensionRegistry.class.getName(), null);
-		this.extensionRegistryTracker.open();
+		this.context = context;
 		IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
 			this.registryManager = new IdentityRegistryManager();
 			reg.addRegistryChangeListener(registryManager);
 		}
-		this.debugOptionsTracker = new ServiceTracker(context,
-				DebugOptions.class.getName(), null);
-		this.debugOptionsTracker.open();
 		this.setupNamespaceExtensionPoint();
 		Trace
 				.exiting(Activator.PLUGIN_ID,
@@ -156,11 +169,10 @@ public class Activator extends Plugin {
 						"removeNamespaceExtensions.removedNamespace(" //$NON-NLS-1$
 								+ n + ")"); //$NON-NLS-1$
 			} catch (Exception e) {
-				org.eclipse.ecf.core.util.Trace.catching(
-						Activator.PLUGIN_ID,
+				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID,
 						IdentityDebugOptions.EXCEPTIONS_CATCHING,
 						Activator.class, "removeNamespaceExtensions", e); //$NON-NLS-1$
-				getDefault().getLog().log(
+				getDefault().log(
 						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 								REMOVE_NAMESPACE_ERRORCODE,
 								"Exception removing namespace", e)); //$NON-NLS-1$
@@ -169,6 +181,36 @@ public class Activator extends Plugin {
 		org.eclipse.ecf.core.util.Trace.exiting(Activator.PLUGIN_ID,
 				IdentityDebugOptions.METHODS_EXITING, Activator.class,
 				"removeNamespaceExtensions", members); //$NON-NLS-1$
+	}
+
+	public Bundle getBundle() {
+		if (context == null)
+			return null;
+		else
+			return context.getBundle();
+	}
+
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context,
+					LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		return (LogService) logServiceTracker.getService();
+	}
+
+	public void log(IStatus status) {
+		LogService logService = getLogService();
+		if (logService != null) {
+			logService.log(LogHelper.getLogCode(status), LogHelper
+					.getLogMessage(status), status.getException());
+		}
+	}
+
+	public IAdapterManager getAdapterManager() {
+		// XXX todo...replace with new adaptermanager service
+		return Platform.getAdapterManager();
+		//return null;
 	}
 
 	/**
@@ -222,14 +264,12 @@ public class Activator extends Plugin {
 						"addNamespaceExtensions.addedNamespaceToFactory(" + ns //$NON-NLS-1$
 								+ ")"); //$NON-NLS-1$
 			} catch (CoreException e) {
-				getDefault().getLog().log(e.getStatus());
-				org.eclipse.ecf.core.util.Trace.catching(
-						Activator.PLUGIN_ID,
+				getDefault().log(e.getStatus());
+				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID,
 						IdentityDebugOptions.EXCEPTIONS_CATCHING,
 						Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
 			} catch (Exception e) {
 				getDefault()
-						.getLog()
 						.log(
 								new Status(
 										Status.ERROR,
@@ -241,8 +281,7 @@ public class Activator extends Plugin {
 												+ extension
 														.getExtensionPointUniqueIdentifier(),
 										null));
-				org.eclipse.ecf.core.util.Trace.catching(
-						Activator.PLUGIN_ID,
+				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID,
 						IdentityDebugOptions.EXCEPTIONS_CATCHING,
 						Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
 			}
@@ -294,7 +333,6 @@ public class Activator extends Plugin {
 			idFactoryServiceRegistration.unregister();
 			idFactoryServiceRegistration = null;
 		}
-		super.stop(context);
 	}
 
 	/**

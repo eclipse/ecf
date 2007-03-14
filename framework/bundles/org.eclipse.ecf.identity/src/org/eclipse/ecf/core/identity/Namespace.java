@@ -12,7 +12,8 @@ import java.io.Serializable;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.ecf.internal.core.identity.Activator;
 import org.eclipse.ecf.internal.core.identity.Messages;
 
 /**
@@ -235,7 +236,9 @@ public abstract class Namespace implements Serializable, IAdaptable {
 		if (adapter.isInstance(this)) {
 			return this;
 		} else {
-			return Platform.getAdapterManager().loadAdapter(this, adapter.getName());
+			IAdapterManager manager = Activator.getDefault().getAdapterManager();
+			if (manager == null) return null;
+			else return manager.loadAdapter(this, adapter.getName());
 		}
 	}
 	
