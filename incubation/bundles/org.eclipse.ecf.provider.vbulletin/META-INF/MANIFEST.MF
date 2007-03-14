@@ -6,12 +6,13 @@ Bundle-Version: 0.1.0
 Bundle-Activator: org.eclipse.ecf.internal.provider.vbulletin.Activator
 Bundle-Vendor: Erkki Lindpere
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ecf,
+Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.bulletinboard,
- org.eclipse.ecf.bulletinboard.commons
+ org.eclipse.ecf.bulletinboard.commons,
+ org.eclipse.equinox.common
 Eclipse-LazyStart: false
-Import-Package: org.apache.commons.httpclient
+Import-Package: org.apache.commons.httpclient,
+ org.osgi.framework;version="1.4.0"
 Export-Package: org.eclipse.ecf.internal.provider.vbulletin;x-internal:=true,
  org.eclipse.ecf.internal.provider.vbulletin.container;x-internal:=true,
  org.eclipse.ecf.internal.provider.vbulletin.identity;x-internal:=true,

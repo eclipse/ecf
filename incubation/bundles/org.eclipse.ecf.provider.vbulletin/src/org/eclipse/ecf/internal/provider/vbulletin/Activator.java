@@ -1,12 +1,12 @@
 package org.eclipse.ecf.internal.provider.vbulletin;
 
-import org.eclipse.core.runtime.Plugin;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class Activator implements BundleActivator {
 
     public static final String NAMESPACE_IDENTIFIER = "ecf.vbulletin";
 
@@ -28,7 +28,6 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
 	}
 
 	/*
@@ -37,7 +36,6 @@ public class Activator extends Plugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
-		super.stop(context);
 	}
 
 	/**
