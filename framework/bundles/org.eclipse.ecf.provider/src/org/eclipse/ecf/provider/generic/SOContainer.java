@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
@@ -438,7 +438,9 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		if (adapter.isInstance(this)) {
 			return this;
 		} else {
-			return Platform.getAdapterManager().loadAdapter(this,
+			IAdapterManager adapterManager = ProviderPlugin.getDefault().getAdapterManager();
+			if (adapterManager == null) return null;
+			return adapterManager.loadAdapter(this,
 					adapter.getName());
 		}
 	}

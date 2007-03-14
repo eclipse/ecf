@@ -18,9 +18,12 @@ Eclipse-BuddyPolicy: global
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
-Require-Bundle: org.eclipse.ecf,
+Require-Bundle: org.eclipse.equinox.common,
+ org.eclipse.ecf,
  org.eclipse.ecf.sharedobject
 Import-Package: org.eclipse.core.runtime,
  org.eclipse.osgi.util;version="1.0.0",
- org.osgi.framework;version="1.3.0"
+ org.osgi.framework;version="1.3.0",
+ org.osgi.service.log;version="1.3.0",
+ org.osgi.util.tracker;version="1.3.2"
 

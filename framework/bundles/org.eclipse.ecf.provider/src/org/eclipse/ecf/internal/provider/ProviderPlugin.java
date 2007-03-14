@@ -11,50 +11,78 @@
 
 package org.eclipse.ecf.internal.provider;
 
-import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.ecf.core.util.LogHelper;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import java.util.*;
+import org.osgi.service.log.LogService;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class ProviderPlugin extends Plugin {
+public class ProviderPlugin implements BundleActivator {
 	
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider"; //$NON-NLS-1$
 	
     //The shared instance.
     private static ProviderPlugin plugin;
-    //Resource bundle.
-    private ResourceBundle resourceBundle;
 
     public static final String NAMESPACE_IDENTIFIER = org.eclipse.ecf.core.identity.StringID.class.getName();
+    
+	private BundleContext context = null;
+
+	private ServiceTracker logServiceTracker = null;
+
     /**
      * The constructor.
      */
     public ProviderPlugin() {
         super();
         plugin = this;
-        try {
-            resourceBundle = ResourceBundle
-                    .getBundle("org.eclipse.ecf.provider.ProviderPluginResources"); //$NON-NLS-1$
-        } catch (MissingResourceException x) {
-            resourceBundle = null;
-        }
     }
 
     /**
      * This method is called upon plug-in activation
      */
     public void start(BundleContext context) throws Exception {
-        super.start(context);
     }
 
     /**
      * This method is called when the plug-in is stopped
      */
     public void stop(BundleContext context) throws Exception {
-        super.stop(context);
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+		}
+		this.context = null;
     }
+
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context,
+					LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		return (LogService) logServiceTracker.getService();
+	}
+
+	public void log(IStatus status) {
+		LogService logService = getLogService();
+		if (logService != null) {
+			logService.log(LogHelper.getLogCode(status), LogHelper
+					.getLogMessage(status), status.getException());
+		}
+	}
+
+	public IAdapterManager getAdapterManager() {
+		// XXX todo...replace with new adaptermanager service
+		return Platform.getAdapterManager();
+		//return null;
+	}
 
     /**
      * Returns the shared instance.
@@ -63,26 +91,6 @@ public class ProviderPlugin extends Plugin {
         return plugin;
     }
 
-    /**
-     * Returns the string from the plugin's resource bundle, or 'key' if not
-     * found.
-     */
-    public static String getResourceString(String key) {
-        ResourceBundle bundle = ProviderPlugin.getDefault().getResourceBundle();
-        try {
-            return (bundle != null) ? bundle.getString(key) : key;
-        } catch (MissingResourceException e) {
-            return key;
-        }
-    }
-
-    /**
-     * Returns the plugin's resource bundle,
-     */
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
-    }
-    
     public String getNamespaceIdentifier() {
     	return NAMESPACE_IDENTIFIER;
     }

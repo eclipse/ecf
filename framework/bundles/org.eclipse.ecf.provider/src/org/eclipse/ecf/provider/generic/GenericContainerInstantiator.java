@@ -15,8 +15,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
@@ -43,7 +43,9 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 
 	protected ID getIDFromArg(Object arg) throws IDCreateException {
 		if (arg == null)
-			throw new IDCreateException(Messages.getString("GenericContainerInstantiator.ID_Cannot_Be_Null")); //$NON-NLS-1$
+			throw new IDCreateException(
+					Messages
+							.getString("GenericContainerInstantiator.ID_Cannot_Be_Null")); //$NON-NLS-1$
 		if (arg instanceof ID)
 			return (ID) arg;
 		if (arg instanceof String) {
@@ -167,7 +169,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 			Trace.catching(ProviderPlugin.PLUGIN_ID,
 					ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this
 							.getClass(), "createInstance", e); //$NON-NLS-1$
-			ProviderPlugin.getDefault().getLog().log(
+			ProviderPlugin.getDefault().log(
 					new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID,
 							CREATE_INSTANCE_ERROR_CODE, "createInstance", e)); //$NON-NLS-1$
 			Trace.throwing(ProviderPlugin.PLUGIN_ID,
@@ -179,8 +181,11 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 
 	protected Set getAdaptersForClass(Class clazz) {
 		Set result = new HashSet();
-		result.addAll(Arrays.asList(Platform.getAdapterManager()
-				.computeAdapterTypes(clazz)));
+		IAdapterManager adapterManager = ProviderPlugin.getDefault()
+				.getAdapterManager();
+		if (adapterManager != null)
+			result.addAll(Arrays.asList(adapterManager
+					.computeAdapterTypes(clazz)));
 		return result;
 	}
 
