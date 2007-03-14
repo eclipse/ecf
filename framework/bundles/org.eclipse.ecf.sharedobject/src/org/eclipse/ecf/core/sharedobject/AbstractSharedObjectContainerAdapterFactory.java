@@ -110,7 +110,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 					SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 					AbstractSharedObjectContainerAdapterFactory.class,
 					"getSharedObjectAdapter", e); //$NON-NLS-1$
-			Activator.getDefault().getLog().log(
+			Activator.getDefault().log(
 					new Status(IStatus.ERROR, Activator.getDefault()
 							.getBundle().getSymbolicName(),
 							ADD_ADAPTER_ERROR_CODE, ADD_ADAPTER_ERROR_MESSAGE,
@@ -163,7 +163,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 					SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 					AbstractSharedObjectContainerAdapterFactory.class,
 					"getAdapterID", e); //$NON-NLS-1$
-			Activator.getDefault().getLog().log(
+			Activator.getDefault().log(
 					new Status(IStatus.ERROR, Activator.getDefault()
 							.getBundle().getSymbolicName(),
 							CREATE_ADAPTER_ID_ERROR_CODE,

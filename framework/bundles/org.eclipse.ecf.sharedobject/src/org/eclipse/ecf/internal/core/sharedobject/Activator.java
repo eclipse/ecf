@@ -12,20 +12,23 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IRegistryChangeEvent;
 import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectFactory;
 import org.eclipse.ecf.core.sharedobject.SharedObjectFactory;
 import org.eclipse.ecf.core.sharedobject.SharedObjectTypeDescription;
 import org.eclipse.ecf.core.sharedobject.provider.ISharedObjectInstantiator;
+import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.Trace;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class Activator implements BundleActivator {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.sharedobject"; //$NON-NLS-1$
@@ -51,10 +54,14 @@ public class Activator extends Plugin {
 
 	// The shared instance
 	private static Activator plugin;
+	
+	private BundleContext context = null;
 
 	private IRegistryChangeListener registryManager = null;
 
 	private ServiceTracker extensionRegistryTracker = null;
+
+	private ServiceTracker logServiceTracker = null;
 
 	/**
 	 * The constructor
@@ -72,7 +79,7 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
+		this.context = context;
 		plugin = this;
 		this.extensionRegistryTracker = new ServiceTracker(context,
 				IExtensionRegistry.class.getName(), null);
@@ -106,7 +113,7 @@ public class Activator extends Plugin {
 			extensionRegistryTracker = null;
 		}
 		plugin = null;
-		super.stop(context);
+		this.context = null;
 	}
 
 	/**
@@ -116,6 +123,30 @@ public class Activator extends Plugin {
 	 */
 	public static Activator getDefault() {
 		return plugin;
+	}
+
+	public Bundle getBundle() {
+		if (context == null)
+			return null;
+		else
+			return context.getBundle();
+	}
+
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context,
+					LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		return (LogService) logServiceTracker.getService();
+	}
+
+	public void log(IStatus status) {
+		LogService logService = getLogService();
+		if (logService != null) {
+			logService.log(LogHelper.getLogCode(status), LogHelper
+					.getLogMessage(status), status.getException());
+		}
 	}
 
 	/**
@@ -152,9 +183,7 @@ public class Activator extends Plugin {
 						Activator.PLUGIN_ID,
 						SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 						Activator.class, "removeSharedObjectExtensions", e); //$NON-NLS-1$
-				getDefault()
-						.getLog()
-						.log(
+				getDefault().log(
 								new Status(
 										IStatus.ERROR,
 										Activator.PLUGIN_ID,
@@ -224,15 +253,13 @@ public class Activator extends Plugin {
 						"setupSharedObjectExtensionPoint.addedDescriptionToFactory(" //$NON-NLS-1$
 								+ scd + ")"); //$NON-NLS-1$
 			} catch (CoreException e) {
-				getDefault().getLog().log(e.getStatus());
+				getDefault().log(e.getStatus());
 				org.eclipse.ecf.core.util.Trace.catching(
 						Activator.PLUGIN_ID,
 						SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
 						Activator.class, "addSharedObjectExtensions", e); //$NON-NLS-1$
 			} catch (Exception e) {
-				getDefault()
-						.getLog()
-						.log(
+				getDefault().log(
 								new Status(
 										Status.ERROR,
 										bundleName,

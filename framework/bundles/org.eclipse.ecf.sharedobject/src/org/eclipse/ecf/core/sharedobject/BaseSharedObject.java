@@ -512,7 +512,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	}
 
 	protected void logError(int code, String method, Throwable e) {
-		Activator.getDefault().getLog().log(
+		Activator.getDefault().log(
 				new Status(IStatus.ERROR, Activator.PLUGIN_ID, code,
 						getSharedObjectAsString(method), e));
 	}
