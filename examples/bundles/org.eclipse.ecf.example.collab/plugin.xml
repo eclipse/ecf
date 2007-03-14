@@ -49,11 +49,6 @@
                style="push"
                menubarPath="org.eclipse.ecf.example.collab.topmenu/org.eclipse.ecf.example.collab.topseparator"
                id="org.eclipse.ecf.example.collab.joingroupaction"/>
-         <menu
-               label="ECF"
-               id="org.eclipse.ecf.example.collab.topmenu">
-            <separator name="org.eclipse.ecf.example.collab.topseparator"/>
-         </menu>
       </actionSet>
    </extension>
    <extension
