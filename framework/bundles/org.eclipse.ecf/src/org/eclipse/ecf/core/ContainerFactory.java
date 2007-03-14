@@ -66,7 +66,7 @@ public class ContainerFactory implements IContainerFactory {
 		try {
 			standAlone = !Platform.isRunning();
 		} catch (Exception e) {
-			Trace.catching(ECFPlugin.getDefault(),
+			Trace.catching(ECFPlugin.PLUGIN_ID,
 					ECFDebugOptions.EXCEPTIONS_CATCHING,
 					ContainerFactory.class, "staticinitializer", e); //$NON-NLS-1$
 			ECFPlugin.getDefault().getLog().log(
@@ -113,7 +113,7 @@ public class ContainerFactory implements IContainerFactory {
 					ECFPlugin.log(new Status(Status.ERROR, ECFPlugin
 							.getDefault().getBundle().getSymbolicName(),
 							DISPOSE_ERROR_CODE, "container dispose error", e)); //$NON-NLS-1$
-					Trace.catching(ECFPlugin.getDefault(),
+					Trace.catching(ECFPlugin.PLUGIN_ID,
 							ECFDebugOptions.EXCEPTIONS_CATCHING,
 							ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
 				}
@@ -128,11 +128,11 @@ public class ContainerFactory implements IContainerFactory {
 	 * @see org.eclipse.ecf.core.IContainerFactory#addDescription(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
 	public ContainerTypeDescription addDescription(ContainerTypeDescription scd) {
-		Trace.entering(ECFPlugin.getDefault(),
+		Trace.entering(ECFPlugin.PLUGIN_ID,
 				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
 				"addDescription", scd); //$NON-NLS-1$
 		ContainerTypeDescription result = addDescription0(scd);
-		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
 				ContainerFactory.class, "addDescription", result); //$NON-NLS-1$
 		return result;
 	}
@@ -193,11 +193,11 @@ public class ContainerFactory implements IContainerFactory {
 	 * @see org.eclipse.ecf.core.IContainerFactory#getDescriptionByName(java.lang.String)
 	 */
 	public ContainerTypeDescription getDescriptionByName(String name) {
-		Trace.entering(ECFPlugin.getDefault(),
+		Trace.entering(ECFPlugin.PLUGIN_ID,
 				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
 				"getDescriptionByName", name); //$NON-NLS-1$
 		ContainerTypeDescription res = getDescription0(name);
-		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
 				ContainerFactory.class, "getDescriptionByName", res); //$NON-NLS-1$
 		return res;
 	}
@@ -207,7 +207,7 @@ public class ContainerFactory implements IContainerFactory {
 		ContainerCreateException except = (cause == null) ? new ContainerCreateException(
 				message)
 				: new ContainerCreateException(message, cause);
-		Trace.throwing(ECFPlugin.getDefault(),
+		Trace.throwing(ECFPlugin.PLUGIN_ID,
 				ECFDebugOptions.EXCEPTIONS_THROWING, ContainerFactory.class,
 				method, except);
 		throw except;
@@ -229,7 +229,7 @@ public class ContainerFactory implements IContainerFactory {
 	public IContainer createContainer(ContainerTypeDescription description,
 			Object[] parameters) throws ContainerCreateException {
 		String method = "createContainer"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.getDefault(),
+		Trace.entering(ECFPlugin.PLUGIN_ID,
 				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
 				method, new Object[] { description,
 						Trace.getArgumentsString(parameters) });
@@ -256,7 +256,7 @@ public class ContainerFactory implements IContainerFactory {
 					+ cd.getName() + "'", null, method); //$NON-NLS-1$
 		// Add to containers map
 		addContainer(container);
-		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
 				ContainerFactory.class, method, container);
 		return container;
 	}
@@ -290,11 +290,11 @@ public class ContainerFactory implements IContainerFactory {
 	 */
 	public ContainerTypeDescription removeDescription(
 			ContainerTypeDescription scd) {
-		Trace.entering(ECFPlugin.getDefault(),
+		Trace.entering(ECFPlugin.PLUGIN_ID,
 				ECFDebugOptions.METHODS_ENTERING, ContainerFactory.class,
 				"removeDescription", scd); //$NON-NLS-1$
 		ContainerTypeDescription description = removeDescription0(scd);
-		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
 				ContainerFactory.class, "removeDescription", description); //$NON-NLS-1$
 		return description;
 

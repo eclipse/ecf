@@ -210,7 +210,7 @@ public class ContainerTypeDescription {
 	 */
 	public String[] getSupportedAdapterTypes() {
 		String method = "getSupportedAdapterTypes"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.getDefault(),
+		Trace.entering(ECFPlugin.PLUGIN_ID,
 				ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		String[] result = new String[0];
 		try {
@@ -219,14 +219,14 @@ public class ContainerTypeDescription {
 		} catch (Exception e) {
 			traceAndLogException(GET_SUPPORTED_ADAPTERS_ERROR_CODE, method, e);
 		}
-		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
 				this.getClass(), method, result);
 		return result;
 	}
 
 	protected void traceAndLogException(int code, String method, Throwable e) {
 		Trace
-				.catching(ECFPlugin.getDefault(),
+				.catching(ECFPlugin.PLUGIN_ID,
 						ECFDebugOptions.EXCEPTIONS_CATCHING, this.getClass(),
 						method, e);
 		ECFPlugin.getDefault().getLog()
@@ -256,7 +256,7 @@ public class ContainerTypeDescription {
 	 */
 	public Class[][] getSupportedParameterTypes() {
 		String method = "getParameterTypes"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.getDefault(),
+		Trace.entering(ECFPlugin.PLUGIN_ID,
 				ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		Class[][] result = new Class[0][0];
 		try {
@@ -265,7 +265,7 @@ public class ContainerTypeDescription {
 		} catch (Exception e) {
 			traceAndLogException(GET_PARAMETER_TYPES_ERROR_CODE, method, e);
 		}
-		Trace.exiting(ECFPlugin.getDefault(), ECFDebugOptions.METHODS_EXITING,
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
 				this.getClass(), method, result);
 		return result;
 	}

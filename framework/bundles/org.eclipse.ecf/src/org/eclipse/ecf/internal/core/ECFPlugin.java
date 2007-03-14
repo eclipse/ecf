@@ -159,7 +159,7 @@ public class ECFPlugin extends Plugin {
 	protected void logException(IStatus status, String method,
 			Throwable exception) {
 		log(status);
-		Trace.catching(ECFPlugin.getDefault(),
+		Trace.catching(ECFPlugin.PLUGIN_ID,
 				ECFDebugOptions.EXCEPTIONS_CATCHING, ECFPlugin.class, method,
 				exception);
 	}
@@ -173,7 +173,7 @@ public class ECFPlugin extends Plugin {
 	protected void removeContainerFactoryExtensions(
 			IConfigurationElement[] members) {
 		String method = "removeContainerFactoryExtensions"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.getDefault(),
+		Trace.entering(ECFPlugin.PLUGIN_ID,
 				ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method,
 				members);
 		// For each configuration element
@@ -196,7 +196,7 @@ public class ECFPlugin extends Plugin {
 				}
 				// remove
 				factory.removeDescription(cd);
-				Trace.trace(ECFPlugin.getDefault(), ECFDebugOptions.DEBUG,
+				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG,
 						method + ".removed " + cd + " from factory"); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (Exception e) {
 				logException(
@@ -223,7 +223,7 @@ public class ECFPlugin extends Plugin {
 	 */
 	protected void addContainerFactoryExtensions(IConfigurationElement[] members) {
 		String method = "addContainerFactoryExtensions"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.getDefault(),
+		Trace.entering(ECFPlugin.PLUGIN_ID,
 				ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method,
 				members);
 		// For each configuration element
@@ -275,7 +275,7 @@ public class ECFPlugin extends Plugin {
 				}
 				// Now add the description and we're ready to go.
 				factory.addDescription(scd);
-				Trace.trace(ECFPlugin.getDefault(), ECFDebugOptions.DEBUG,
+				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG,
 						method + ".added " + scd + " to factory " + factory); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (CoreException e) {
 				logException(e.getStatus(), method, e);
