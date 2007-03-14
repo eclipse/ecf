@@ -207,7 +207,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServiceInfo(org.eclipse.ecf.discovery.identity.IServiceID, int)
 	 */
 	public IServiceInfo getServiceInfo(IServiceID service, int timeout) {
-		Trace.entering(JMDNSPlugin.getDefault(),
+		Trace.entering(JMDNSPlugin.PLUGIN_ID,
 				JMDNSDebugOptions.METHODS_ENTERING, this.getClass(),
 				"getServiceInfo",
 				new Object[] { service, new Integer(timeout) });
@@ -216,7 +216,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 			result = createIServiceInfoFromServiceInfo(jmdns
 					.getServiceInfo(service.getServiceType(), service
 							.getServiceName(), timeout));
-		Trace.exiting(JMDNSPlugin.getDefault(),
+		Trace.exiting(JMDNSPlugin.PLUGIN_ID,
 				JMDNSDebugOptions.METHODS_ENTERING, this.getClass(),
 				"getServiceInfo", result);
 		return result;
@@ -358,7 +358,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 					JMDNS_NAMESPACE_ID, new Object[] { type, name });
 		} catch (IDCreateException e) {
 			// Should never happen
-			Trace.catching(JMDNSPlugin.getDefault(),
+			Trace.catching(JMDNSPlugin.PLUGIN_ID,
 					JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(),
 					"createServiceID", e);
 		}
@@ -458,7 +458,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 			try {
 				fireServiceAdded(arg0);
 			} catch (Exception e) {
-				Trace.catching(JMDNSPlugin.getDefault(),
+				Trace.catching(JMDNSPlugin.PLUGIN_ID,
 						JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(),
 						"serviceAdded", e);
 			}
@@ -470,7 +470,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 			try {
 				fireServiceRemoved(arg0);
 			} catch (Exception e) {
-				Trace.catching(JMDNSPlugin.getDefault(),
+				Trace.catching(JMDNSPlugin.PLUGIN_ID,
 						JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(),
 						"serviceRemoved", e);
 			}
@@ -482,7 +482,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 			try {
 				fireServiceResolved(arg0);
 			} catch (Exception e) {
-				Trace.catching(JMDNSPlugin.getDefault(),
+				Trace.catching(JMDNSPlugin.PLUGIN_ID,
 						JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(),
 						"serviceResolved", e);
 			}
@@ -494,7 +494,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 			try {
 				fireServiceTypeAdded(arg0);
 			} catch (Exception e) {
-				Trace.catching(JMDNSPlugin.getDefault(),
+				Trace.catching(JMDNSPlugin.PLUGIN_ID,
 						JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(),
 						"serviceResolved", e);
 			}

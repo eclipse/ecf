@@ -28,6 +28,8 @@ public class JMDNSPlugin extends Plugin {
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
 
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.jmdns";
+	
 	public static final String NAMESPACE_IDENTIFIER = Messages
 			.getString("JMDNSPlugin.namespace.identifier"); //$NON-NLS-1$
 
