@@ -12,16 +12,20 @@ package org.eclipse.ecf.internal.provider.rss;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.util.LogHelper;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.log.LogService;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The main plugin class to be used in the desktop.
  * 
  */
-public class RssPlugin extends Plugin {
+public class RssPlugin implements BundleActivator {
 
 	// public static final String NAMESPACE_IDENTIFIER = "ecf.rss";
 	public static final String PLUGIN_ID = "org.eclipse.ecf.internal.provider.rss";
@@ -29,8 +33,12 @@ public class RssPlugin extends Plugin {
 	// The shared instance.
 	private static RssPlugin plugin;
 
+	private BundleContext context = null;
+	
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
+
+	private ServiceTracker logServiceTracker = null;
 
 	/**
 	 * Logs the given message.
@@ -39,9 +47,8 @@ public class RssPlugin extends Plugin {
 	 *            a human-readable message, localized to the current locale.
 	 */
 	public static void log(String message) {
-		getDefault().getLog().log(
-				new Status(IStatus.OK, getDefault().getBundle()
-						.getSymbolicName(), IStatus.OK, message, null));
+		getDefault().log(
+				new Status(IStatus.OK, getDefault().PLUGIN_ID, IStatus.OK, message, null));
 	}
 
 	/**
@@ -54,9 +61,8 @@ public class RssPlugin extends Plugin {
 	 *            applicable.
 	 */
 	public static void log(String message, Throwable e) {
-		getDefault().getLog().log(
-				new Status(IStatus.ERROR, RssPlugin.getDefault().getBundle()
-						.getSymbolicName(), IStatus.OK, "Caught exception", e));
+		getDefault().log(
+				new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "Caught exception", e));
 	}
 
 	/**
@@ -73,13 +79,30 @@ public class RssPlugin extends Plugin {
 		}
 	}
 
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context,
+					LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		return (LogService) logServiceTracker.getService();
+	}
+
+	public void log(IStatus status) {
+		LogService logService = getLogService();
+		if (logService != null) {
+			logService.log(LogHelper.getLogCode(status), LogHelper
+					.getLogMessage(status), status.getException());
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
+		this.context = context;
 	}
 
 	/*
@@ -88,7 +111,11 @@ public class RssPlugin extends Plugin {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+		}
+		this.context = null;
 		plugin = null;
 	}
 
