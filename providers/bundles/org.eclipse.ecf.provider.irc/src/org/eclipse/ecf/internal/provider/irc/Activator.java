@@ -11,14 +11,17 @@
 package org.eclipse.ecf.internal.provider.irc;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.util.LogHelper;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.log.LogService;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class Activator extends Plugin {
+public class Activator implements BundleActivator {
 
     public static final String NAMESPACE_IDENTIFIER = "ecfircid"; //$NON-NLS-1$
     
@@ -27,16 +30,38 @@ public class Activator extends Plugin {
 	//The shared instance.
 	private static Activator plugin;
 	
+	private BundleContext context = null;
+	
+	private ServiceTracker logServiceTracker = null;
+
 	public static void log(String message) {
-		getDefault().getLog().log(
-				new Status(IStatus.OK, Activator.getDefault().getBundle().getSymbolicName(), IStatus.OK, message, null));
+		getDefault().log(
+				new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
 	}
 
 	public static void log(String message, Throwable e) {
-		getDefault().getLog().log(
-				new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), IStatus.OK,
+		getDefault().log(
+				new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK,
 						"Caught exception", e)); //$NON-NLS-1$
 	}
+
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context,
+					LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		return (LogService) logServiceTracker.getService();
+	}
+
+	public void log(IStatus status) {
+		LogService logService = getLogService();
+		if (logService != null) {
+			logService.log(LogHelper.getLogCode(status), LogHelper
+					.getLogMessage(status), status.getException());
+		}
+	}
+
 
 	/**
 	 * The constructor.
@@ -49,14 +74,18 @@ public class Activator extends Plugin {
 	 * This method is called upon plug-in activation
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
+		this.context = context;
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+		}
+		this.context = null;
 		plugin = null;
 	}
 
