@@ -80,11 +80,11 @@ public class RssServerSOContainer extends ServerSOContainer {
 	}
 
 	protected void trace(String msg) {
-		Trace.trace(RssPlugin.getDefault(), RssDebugOptions.DEBUG, msg);
+		Trace.trace(RssPlugin.PLUGIN_ID, RssDebugOptions.DEBUG, msg);
 	}
 
 	protected void dumpStack(String msg, Throwable e) {
-		Trace.catching(RssPlugin.getDefault(),
+		Trace.catching(RssPlugin.PLUGIN_ID,
 				RssDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", e);
 	}
 

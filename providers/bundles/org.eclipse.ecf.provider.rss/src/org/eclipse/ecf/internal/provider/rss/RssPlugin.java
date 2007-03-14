@@ -40,7 +40,7 @@ public class RssPlugin extends Plugin {
 	 */
 	public static void log(String message) {
 		getDefault().getLog().log(
-				new Status(IStatus.OK, RssPlugin.getDefault().getBundle()
+				new Status(IStatus.OK, getDefault().getBundle()
 						.getSymbolicName(), IStatus.OK, message, null));
 	}
 
