@@ -1,20 +1,23 @@
 package org.eclipse.ecf.tests.filetransfer;
 
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class Activator implements BundleActivator {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.tests.filetransfer";
 
 	// The shared instance
 	private static Activator plugin;
+	
+	private BundleContext context = null;
 	
 	private ServiceTracker tracker = null;
 	
@@ -24,12 +27,16 @@ public class Activator extends Plugin {
 	public Activator() {
 	}
 
+	public Bundle getBundle() {
+		if (context == null) return null;
+		else return context.getBundle();
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
+		this.context = context;
 		plugin = this;
 		tracker = new ServiceTracker(context,IRetrieveFileTransferFactory.class.getName(),null);
 		tracker.open();
@@ -40,12 +47,12 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		plugin = null;
 		if (tracker != null) {
 			tracker.close();
 			tracker = null;
 		}
-		super.stop(context);
+		this.context = null;
+		plugin = null;
 	}
 
 	/**
