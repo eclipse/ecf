@@ -96,18 +96,18 @@ public class FileIDFactory {
 	 */
 	public IFileID createFileID(Namespace namespace, Object[] arguments)
 			throws FileCreateException {
-		Trace.entering(Activator.getDefault(),
+		Trace.entering(Activator.PLUGIN_ID,
 				FileTransferDebugOptions.METHODS_ENTERING, this.getClass(),
 				"createFileID", new Object[] { namespace, arguments }); //$NON-NLS-1$
 		try {
 			IFileID result = (IFileID) IDFactory.getDefault().createID(
 					namespace, arguments);
-			Trace.exiting(Activator.getDefault(),
+			Trace.exiting(Activator.PLUGIN_ID,
 					FileTransferDebugOptions.METHODS_EXITING, this.getClass(),
 					"createFileID", result); //$NON-NLS-1$
 			return result;
 		} catch (Exception e) {
-			Trace.throwing(Activator.getDefault(),
+			Trace.throwing(Activator.PLUGIN_ID,
 					FileTransferDebugOptions.EXCEPTIONS_THROWING,
 					FileIDFactory.class, "createFileID", e); //$NON-NLS-1$
 			throw new FileCreateException(Messages.FileIDFactory_Exception_File_Create, e);
