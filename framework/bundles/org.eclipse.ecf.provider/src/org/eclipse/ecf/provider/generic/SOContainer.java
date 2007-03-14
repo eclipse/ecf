@@ -366,12 +366,12 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	}
 
 	protected void debug(String msg) {
-		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG,
 				msg + ":" + config.getID()); //$NON-NLS-1$
 	}
 
 	protected void traceStack(String msg, Throwable e) {
-		Trace.catching(ProviderPlugin.getDefault(),
+		Trace.catching(ProviderPlugin.PLUGIN_ID,
 				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainer.class,
 				config.getID() + ":" + msg, e); //$NON-NLS-1$
 	}
@@ -770,7 +770,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 							"Exception in handleSharedObjectMessage:" + resp, e); //$NON-NLS-1$
 					Trace
 							.catching(
-									ProviderPlugin.getDefault(),
+									ProviderPlugin.PLUGIN_ID,
 									ECFProviderDebugOptions.EXCEPTIONS_CATCHING,
 									this.getClass(),
 									"handleSharedObjectMessage", e); //$NON-NLS-1$

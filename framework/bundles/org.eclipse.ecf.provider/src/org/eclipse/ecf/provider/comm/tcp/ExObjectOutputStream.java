@@ -41,12 +41,12 @@ public class ExObjectOutputStream extends ObjectOutputStream {
     }
 
 	protected void debug(String msg) {
-		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG,
 				msg);
 	}
 	
 	protected void traceStack(String msg, Throwable e) {
-		Trace.catching(ProviderPlugin.getDefault(),
+		Trace.catching(ProviderPlugin.PLUGIN_ID,
 				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, ExObjectOutputStream.class,
 				msg, e);
 	}

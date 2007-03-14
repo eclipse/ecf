@@ -55,12 +55,12 @@ public class SOContext implements ISharedObjectContext {
     }
     
 	protected void trace(String msg) {
-		Trace.trace(ProviderPlugin.getDefault(), ECFProviderDebugOptions.DEBUG,
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG,
 				msg + ":" + container.getID()); //$NON-NLS-1$
 	}
 	
 	protected void traceStack(String msg, Throwable e) {
-		Trace.catching(ProviderPlugin.getDefault(),
+		Trace.catching(ProviderPlugin.PLUGIN_ID,
 				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContext.class,
 				container.getID() + ":" + msg, e); //$NON-NLS-1$
 	}

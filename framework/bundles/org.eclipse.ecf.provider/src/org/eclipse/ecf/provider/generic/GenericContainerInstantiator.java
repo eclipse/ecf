@@ -164,13 +164,13 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 						.getID()), gcargs.getKeepAlive().intValue());
 			}
 		} catch (Exception e) {
-			Trace.catching(ProviderPlugin.getDefault(),
+			Trace.catching(ProviderPlugin.PLUGIN_ID,
 					ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this
 							.getClass(), "createInstance", e); //$NON-NLS-1$
 			ProviderPlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID,
 							CREATE_INSTANCE_ERROR_CODE, "createInstance", e)); //$NON-NLS-1$
-			Trace.throwing(ProviderPlugin.getDefault(),
+			Trace.throwing(ProviderPlugin.PLUGIN_ID,
 					ECFProviderDebugOptions.EXCEPTIONS_THROWING, this
 							.getClass(), "createInstance", e); //$NON-NLS-1$
 			throw new ContainerCreateException("createInstance", e); //$NON-NLS-1$
