@@ -7,13 +7,14 @@ Bundle-Vendor: Erkki Lindpere
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.bulletinboard,
- org.eclipse.core.runtime,
- org.eclipse.ecf.bulletinboard.commons
+ org.eclipse.ecf.bulletinboard.commons,
+ org.eclipse.equinox.common
 Bundle-Activator: org.eclipse.ecf.internal.provider.phpbb.PHPBBPlugin
 Eclipse-LazyStart: false
 Import-Package: org.apache.commons.httpclient,
  org.apache.commons.httpclient.methods,
- org.apache.commons.httpclient.methods.multipart
+ org.apache.commons.httpclient.methods.multipart,
+ org.osgi.framework;version="1.4.0"
 Export-Package: 
  org.eclipse.ecf.internal.provider.phpbb;x-internal:=true,
  org.eclipse.ecf.internal.provider.phpbb.container;x-internal:=true,
