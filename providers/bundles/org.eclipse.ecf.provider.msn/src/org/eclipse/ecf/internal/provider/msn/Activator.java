@@ -10,10 +10,10 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.msn;
 
-import org.eclipse.core.runtime.Plugin;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public final class Activator extends Plugin {
+public final class Activator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.msn"; //$NON-NLS-1$
 
@@ -26,12 +26,10 @@ public final class Activator extends Plugin {
 	}
 
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
 	}
 
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
-		super.stop(context);
 	}
 
 	public static Activator getDefault() {
