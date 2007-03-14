@@ -60,9 +60,7 @@ public class DatashareContainerAdapter implements IChannelContainerAdapter {
 					DatashareContainerAdapter.class,
 					"DatashareContainerAdapter.initialize", e);
 			Activator
-					.getDefault()
-					.getLog()
-					.log(
+					.getDefault().log(
 							new Status(
 									IStatus.ERROR,
 									Activator.PLUGIN_ID,
