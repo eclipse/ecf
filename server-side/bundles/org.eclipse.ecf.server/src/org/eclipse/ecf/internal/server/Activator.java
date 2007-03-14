@@ -11,15 +11,13 @@
 
 package org.eclipse.ecf.internal.server;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Plugin;
-import org.eclipse.core.runtime.Status;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class Activator extends Plugin {
+public class Activator implements BundleActivator {
 
 	//The shared instance.
 	private static Activator plugin;
@@ -35,14 +33,12 @@ public class Activator extends Plugin {
 	 * This method is called upon plug-in activation
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
 		plugin = null;
 	}
 
@@ -53,16 +49,6 @@ public class Activator extends Plugin {
 	 */
 	public static Activator getDefault() {
 		return plugin;
-	}
-
-	public static void log(String message) {
-		getDefault().getLog().log(
-				new Status(IStatus.OK, Activator.getDefault().getBundle().getSymbolicName(), IStatus.OK, message, null));
-	}
-	public static void log(String message, Throwable e) {
-		getDefault().getLog().log(
-				new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), IStatus.OK,
-						message, e));
 	}
 
 }
