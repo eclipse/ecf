@@ -2,17 +2,20 @@ package org.eclipse.ecf.internal.server.generic;
 
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.server.generic.ServerManager;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class Activator implements BundleActivator {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.server.generic"; //$NON-NLS-1$
@@ -20,12 +23,16 @@ public class Activator extends Plugin {
 	// The shared instance
 	private static Activator plugin;
 	
-	private ServerManager serverManager;
+	private BundleContext context = null;
+	
+	private ServerManager serverManager = null;
 	
 	private ServiceTracker extensionRegistryTracker = null;
 
 	private ServiceTracker discoveryTracker = null;
 	
+	private ServiceTracker logServiceTracker = null;
+
 	/**
 	 * The constructor
 	 */
@@ -40,12 +47,36 @@ public class Activator extends Plugin {
 		return (IDiscoveryService) discoveryTracker.getService();
 	}
 	
+	public Bundle getBundle() {
+		if (context == null)
+			return null;
+		else
+			return context.getBundle();
+	}
+
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context,
+					LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		return (LogService) logServiceTracker.getService();
+	}
+
+	public void log(IStatus status) {
+		LogService logService = getLogService();
+		if (logService != null) {
+			logService.log(LogHelper.getLogCode(status), LogHelper
+					.getLogMessage(status), status.getException());
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
+		this.context = context;
 		plugin = this;
 		this.extensionRegistryTracker = new ServiceTracker(context,
 				IExtensionRegistry.class.getName(), null);
@@ -65,6 +96,10 @@ public class Activator extends Plugin {
 			serverManager.closeServers();
 			serverManager = null;
 		}
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+		}
 		if (extensionRegistryTracker != null) {
 			extensionRegistryTracker.close();
 			extensionRegistryTracker = null;
@@ -73,7 +108,7 @@ public class Activator extends Plugin {
 			discoveryTracker.close();
 			discoveryTracker = null;
 		}
-		super.stop(context);
+		this.context = null;
 	}
 
 	/**
@@ -86,11 +121,11 @@ public class Activator extends Plugin {
 	}
 
 	public static void log(String message) {
-		getDefault().getLog().log(
+		getDefault().log(
 				new Status(IStatus.INFO, getDefault().getBundle().getSymbolicName(), IStatus.INFO, message, null));
 	}
 	public static void log(String message, Throwable e) {
-		getDefault().getLog().log(
+		getDefault().log(
 				new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), IStatus.ERROR,
 						message, e));
 	}
