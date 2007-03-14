@@ -18,18 +18,18 @@ import java.util.Map;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.ecf.provider.irc.bot.handler.ICommandHandler;
 import org.eclipse.ecf.provider.irc.internal.bot.BotEntry;
 import org.eclipse.ecf.provider.irc.internal.bot.CommandEntry;
 import org.eclipse.ecf.provider.irc.internal.bot.IBotEntry;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class Activator implements BundleActivator {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.irc.bot";
@@ -57,7 +57,6 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
 		plugin = this;
 		this.extensionRegistryTracker = new ServiceTracker(context,
 				IExtensionRegistry.class.getName(), null);
@@ -75,7 +74,6 @@ public class Activator extends Plugin {
 			extensionRegistryTracker = null;
 		}
 		plugin = null;
-		super.stop(context);
 	}
 
 	/**
