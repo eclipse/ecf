@@ -18,12 +18,12 @@ public abstract class ECFAbstractTestCase extends TestCase {
 	 * @param endMessage
 	 */
 	protected void sleep(long sleepTime, String startMessage, String endMessage) {
-		if (startMessage != null) Trace.trace(Activator.getDefault(), startMessage);
+		if (startMessage != null) Trace.trace(Activator.PLUGIN_ID, startMessage);
 		try {
 			Thread.sleep(sleepTime);
 		} catch (InterruptedException e) {
 		}
-		if (endMessage != null) Trace.trace(Activator.getDefault(), endMessage);
+		if (endMessage != null) Trace.trace(Activator.PLUGIN_ID, endMessage);
 	}
 	
 	/**
