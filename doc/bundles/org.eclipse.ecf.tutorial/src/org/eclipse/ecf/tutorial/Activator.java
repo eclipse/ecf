@@ -8,16 +8,19 @@
  ******************************************************************************/
 package org.eclipse.ecf.tutorial;
 
-import org.eclipse.core.runtime.Plugin;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class Activator extends Plugin {
+public class Activator implements BundleActivator {
 
 	//The shared instance.
 	private static Activator plugin;
+	
+	private BundleContext context = null;
 	
 	/**
 	 * The constructor.
@@ -30,14 +33,18 @@ public class Activator extends Plugin {
 	 * This method is called upon plug-in activation
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
+		this.context = context;
 	}
 
+	public Bundle getBundle() {
+		if (context == null) return null;
+		else return context.getBundle();
+	}
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
+		this.context = null;
 		plugin = null;
 	}
 
