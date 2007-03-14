@@ -229,8 +229,7 @@ public class ContainerTypeDescription {
 				.catching(ECFPlugin.PLUGIN_ID,
 						ECFDebugOptions.EXCEPTIONS_CATCHING, this.getClass(),
 						method, e);
-		ECFPlugin.getDefault().getLog()
-				.log(
+		ECFPlugin.getDefault().log(
 						new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, code,
 								method, e));
 	}

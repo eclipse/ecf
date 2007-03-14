@@ -13,13 +13,14 @@ package org.eclipse.ecf.core;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.provider.BaseContainerInstantiator;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.internal.core.ECFPlugin;
 
 /**
  * Base implementation of IContainer.  Subclasses may be created to fill out the behavior
@@ -91,7 +92,9 @@ public class BaseContainer implements IContainer {
 		if (serviceType.isInstance(this)) {
 			return this;
 		} else {
-			return Platform.getAdapterManager().loadAdapter(this, serviceType.getName());
+			IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
+			if (adapterManager == null) return null;
+			return adapterManager.loadAdapter(this, serviceType.getName());
 		}
 	}
 

@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
@@ -50,9 +48,7 @@ public class ContainerFactory implements IContainerFactory {
 
 	public static final String BASE_CONTAINER_NAME = Messages.ContainerFactory_Base_Container_Name;
 	
-	private static final int PROPERTY_INITIALIZE_ERRORCODE = 1001;
-
-	private static final int DISPOSE_ERROR_CODE = 100;
+	private static final int DISPOSE_ERROR_CODE = 10001;
 
 	private static Hashtable containerdescriptions = new Hashtable();
 
@@ -60,34 +56,16 @@ public class ContainerFactory implements IContainerFactory {
 
 	protected static Map containers = new WeakHashMap();
 
-	private static boolean standAlone = false;
-
 	static {
-		try {
-			standAlone = !Platform.isRunning();
-		} catch (Exception e) {
-			Trace.catching(ECFPlugin.PLUGIN_ID,
-					ECFDebugOptions.EXCEPTIONS_CATCHING,
-					ContainerFactory.class, "staticinitializer", e); //$NON-NLS-1$
-			ECFPlugin.getDefault().getLog().log(
-					new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID,
-							PROPERTY_INITIALIZE_ERRORCODE,
-							Messages.ContainerFactory_Exception_Platform_Running, e));
-		}
 		instance = new ContainerFactory();
 	}
 
 	protected ContainerFactory() {
-		if (!standAlone) {
-			ECFPlugin.getDefault().addDisposable(new IDisposable() {
-				public void dispose() {
-					doDispose();
-				}
-			});
-		} else {
-			System.out.println(Messages.ContainerFactory_Warning_Running_Standalone);
-		}
-
+		ECFPlugin.getDefault().addDisposable(new IDisposable() {
+			public void dispose() {
+				doDispose();
+			}
+		});
 	}
 
 	public static IContainerFactory getDefault() {
@@ -110,7 +88,7 @@ public class ContainerFactory implements IContainerFactory {
 					c.dispose();
 				} catch (Exception e) {
 					// Log exception
-					ECFPlugin.log(new Status(Status.ERROR, ECFPlugin
+					ECFPlugin.getDefault().log(new Status(Status.ERROR, ECFPlugin
 							.getDefault().getBundle().getSymbolicName(),
 							DISPOSE_ERROR_CODE, "container dispose error", e)); //$NON-NLS-1$
 					Trace.catching(ECFPlugin.PLUGIN_ID,

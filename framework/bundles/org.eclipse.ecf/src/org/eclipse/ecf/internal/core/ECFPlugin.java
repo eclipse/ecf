@@ -14,16 +14,16 @@ import java.util.Properties;
 import java.util.WeakHashMap;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionDelta;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IRegistryChangeEvent;
 import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
@@ -31,13 +31,17 @@ import org.eclipse.ecf.core.IContainerFactory;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
+import org.eclipse.ecf.core.util.LogHelper;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.osgi.util.NLS;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class ECFPlugin extends Plugin {
+public class ECFPlugin implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf"; //$NON-NLS-1$
 
@@ -83,6 +87,8 @@ public class ECFPlugin extends Plugin {
 
 	// The shared instance.
 	private static ECFPlugin plugin;
+	
+	private BundleContext context = null;
 
 	private ServiceTracker extensionRegistryTracker = null;
 
@@ -92,9 +98,9 @@ public class ECFPlugin extends Plugin {
 
 	private ServiceRegistration containerFactoryServiceRegistration;
 
+	private ServiceTracker logServiceTracker = null;
+
 	public ECFPlugin() {
-		super();
-		plugin = this;
 	}
 
 	public void addDisposable(IDisposable disposable) {
@@ -113,16 +119,34 @@ public class ECFPlugin extends Plugin {
 		}
 	}
 
-	public static void log(IStatus status) {
-		if (status == null)
-			return;
-		ILog log = plugin.getLog();
-		if (log != null)
-			log.log(status);
-		else
-			System.err.println("No log output.  Status Message: " //$NON-NLS-1$
-					+ status.getMessage());
+	public Bundle getBundle() {
+		if (context == null) return null;
+		return context.getBundle();
 	}
+	
+	protected LogService getLogService() {
+		if (logServiceTracker == null) {
+			logServiceTracker = new ServiceTracker(this.context,
+					LogService.class.getName(), null);
+			logServiceTracker.open();
+		}
+		return (LogService) logServiceTracker.getService();
+	}
+
+	public void log(IStatus status) {
+		LogService logService = getLogService();
+		if (logService != null) {
+			logService.log(LogHelper.getLogCode(status), LogHelper
+					.getLogMessage(status), status.getException());
+		}
+	}
+
+	public IAdapterManager getAdapterManager() {
+		// XXX todo...replace with new adaptermanager service
+		return Platform.getAdapterManager();
+		//return null;
+	}
+
 
 	protected String[] getDefaultArgs(IConfigurationElement[] argElements) {
 		String[] argDefaults = new String[0];
@@ -374,7 +398,8 @@ public class ECFPlugin extends Plugin {
 	 * This method is called upon plug-in activation
 	 */
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
+		plugin = this;
+		this.context = context;
 		this.extensionRegistryTracker = new ServiceTracker(context,
 				IExtensionRegistry.class.getName(), null);
 		this.extensionRegistryTracker.open();
@@ -419,6 +444,10 @@ public class ECFPlugin extends Plugin {
 		if (reg != null)
 			reg.removeRegistryChangeListener(registryManager);
 		this.registryManager = null;
+		if (logServiceTracker != null) {
+			logServiceTracker.close();
+			logServiceTracker = null;
+		}
 		if (extensionRegistryTracker != null) {
 			extensionRegistryTracker.close();
 			extensionRegistryTracker = null;
@@ -427,7 +456,7 @@ public class ECFPlugin extends Plugin {
 			containerFactoryServiceRegistration.unregister();
 			containerFactoryServiceRegistration = null;
 		}
-		super.stop(context);
+		this.context = null;
 	}
 
 	/**

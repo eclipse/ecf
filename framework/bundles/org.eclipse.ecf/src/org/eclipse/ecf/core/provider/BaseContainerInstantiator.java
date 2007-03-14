@@ -16,10 +16,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.internal.core.ECFPlugin;
 
 /**
  *
@@ -31,7 +32,8 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	
 	protected Set getAdaptersForClass(Class clazz) {
 		Set result = new HashSet();
-		result.addAll(Arrays.asList(Platform.getAdapterManager()
+		IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
+		if (adapterManager != null)	result.addAll(Arrays.asList(adapterManager
 				.computeAdapterTypes(clazz)));
 		return result;
 	}

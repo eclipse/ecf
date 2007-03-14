@@ -150,7 +150,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 * 
 	 * <p>
 	 * Implementations of this method should delegate to
-	 * <code>Platform.getAdapterManager().getAdapter()</code> if the service
+	 * <code>IAdapterManager.loadAdapter()</code> if the service
 	 * cannot be provided directly to ensure extensibility by third-party
 	 * plug-ins.
 	 * </p>

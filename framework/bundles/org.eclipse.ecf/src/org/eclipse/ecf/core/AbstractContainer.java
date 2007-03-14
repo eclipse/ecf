@@ -12,12 +12,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
+import org.eclipse.ecf.internal.core.ECFPlugin;
 import org.eclipse.ecf.internal.core.Messages;
 
 /**
@@ -54,7 +55,9 @@ public abstract class AbstractContainer implements IContainer {
 	}
 
 	public Object getAdapter(Class serviceType) {
-		return Platform.getAdapterManager().getAdapter(this, serviceType);
+		IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
+		if (adapterManager == null) return null;
+		return adapterManager.getAdapter(this, serviceType);
 	}
 
 	protected String getPasswordFromConnectContext(
