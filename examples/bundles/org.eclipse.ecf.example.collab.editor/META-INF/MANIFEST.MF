@@ -1,11 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Shared Editor Example
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.example.collab.editor; singleton:=true
 Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.example.collab.editor.Activator
 Bundle-Localization: plugin
-Eclipse-AutoStart: true
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.jface.text,
@@ -22,6 +21,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.ui,
  org.eclipse.ui.ide
 Eclipse-LazyStart: true
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %plugin.provider
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
