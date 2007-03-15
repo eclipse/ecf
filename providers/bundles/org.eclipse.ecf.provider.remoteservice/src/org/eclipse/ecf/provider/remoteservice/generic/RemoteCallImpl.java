@@ -45,10 +45,6 @@ public class RemoteCallImpl extends SharedObjectMsg implements IRemoteCall,
 		this.timeout = timeout;
 	}
 
-	private RemoteCallImpl() {
-		super();
-	}
-
 	public long getTimeout() {
 		return timeout;
 	}
