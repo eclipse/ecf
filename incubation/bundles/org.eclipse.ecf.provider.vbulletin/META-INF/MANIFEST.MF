@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF vBulletin Provider
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.vbulletin;singleton:=true
 Bundle-Version: 0.1.0
 Bundle-Activator: org.eclipse.ecf.internal.provider.vbulletin.Activator
-Bundle-Vendor: Erkki Lindpere
+Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.bulletinboard,
