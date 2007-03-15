@@ -1,10 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Tests
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests;singleton:=true
-Bundle-Version: 0.9.5
+Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.internal.tests.Activator
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %plugin.provider
+Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common,
  org.junit,
  org.eclipse.ecf

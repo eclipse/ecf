@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-   <extension
-         point="org.eclipse.ecf.filetransfer.urlStreamHandlerService">
-      <urlStreamHandlerService
-            protocol="foobar"
-            serviceClass="org.eclipse.ecf.tests.filetransfer.TestURLStreamHandlerService">
-      </urlStreamHandlerService>
-   </extension>
-
 </plugin>
