@@ -1,10 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Discovery Tests Plug-in
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.tests.discovery
-Bundle-Version: 1.0.0.20070212
+Bundle-Version: 1.0.0.v20070213
 Bundle-Activator: org.eclipse.ecf.tests.discovery.Activator
-Bundle-Vendor: eclipse.org
+Bundle-Vendor: %plugin.provider
+Bundle-Localization: plugin
 Require-Bundle: org.junit,
  org.eclipse.ecf,
  org.eclipse.ecf.discovery,
