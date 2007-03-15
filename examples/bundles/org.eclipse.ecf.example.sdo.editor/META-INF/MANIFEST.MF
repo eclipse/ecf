@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
-Bundle-Name: ECF SDO Editor Example
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.example.sdo.editor;singleton:=true
 Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.example.sdo.editor.EditorPlugin
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -13,7 +13,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.emf.ecore.sdo.editor,
  org.eclipse.ecf.example.collab,
  org.eclipse.ecf.sharedobject
-Eclipse-AutoStart: true
 Provide-Package: org.eclipse.ecf.example.sdo.editor
 Export-Package: org.eclipse.ecf.example.sdo.editor
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
