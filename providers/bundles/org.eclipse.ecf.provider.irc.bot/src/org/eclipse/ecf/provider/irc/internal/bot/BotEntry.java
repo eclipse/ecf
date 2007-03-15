@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ecf.provider.irc.internal.bot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BotEntry implements IBotEntry {
