@@ -1,10 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Chat Bot Plug-in
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.presence.bot;singleton:=true
 Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.internal.presence.bot.Activator
-Bundle-Vendor: eclipse.org
+Bundle-Vendor: %plugin.provider
+Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.equinox.registry,
  org.eclipse.ecf,
