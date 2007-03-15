@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF IRC
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.irc.ui;singleton:=true
 Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.internal.irc.ui.Activator
@@ -14,3 +14,4 @@ Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.irc.ui;x-internal:=true,
  org.eclipse.ecf.internal.irc.ui.wizards;x-internal:=true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-Vendor: %plugin.provider
