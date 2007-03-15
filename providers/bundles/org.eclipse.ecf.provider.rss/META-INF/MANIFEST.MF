@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF RSS Provider
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.rss; singleton:=true
 Bundle-Version: 0.1.0
 Bundle-Activator: org.eclipse.ecf.internal.provider.rss.RssPlugin
@@ -10,8 +10,7 @@ Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.datashare,
  org.eclipse.ecf.sharedobject,
  org.eclipse.equinox.common
-Eclipse-AutoStart: true
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %providerName
 Export-Package: org.eclipse.ecf.internal.provider.rss;x-internal:=true,
  org.eclipse.ecf.internal.provider.rss.container;x-internal:=true,
  org.eclipse.ecf.internal.provider.rss.http;x-internal:=true

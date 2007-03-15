@@ -48,7 +48,7 @@ public class RssPlugin implements BundleActivator {
 	 */
 	public static void log(String message) {
 		getDefault().log(
-				new Status(IStatus.OK, getDefault().PLUGIN_ID, IStatus.OK, message, null));
+				new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
 	}
 
 	/**
