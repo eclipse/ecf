@@ -130,7 +130,7 @@ public class ChannelTest extends ContainerAbstractTestCase {
 		return new IChannelListener() {
 			public void handleChannelEvent(IChannelEvent event) {
 				if (event instanceof IChannelMessageEvent) {
-					IChannelMessageEvent cme = (IChannelMessageEvent) event;
+					//IChannelMessageEvent cme = (IChannelMessageEvent) event;
 					messageEvents.put(id,event);
 				}
 			}};
