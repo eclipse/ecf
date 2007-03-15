@@ -1,11 +1,10 @@
 Manifest-Version: 1.0
-Bundle-Name: ECF Collaboration Example
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.example.collab;singleton:=true
 Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.example.collab.ClientPlugin
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
-Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.example.collab, org.eclipse.ecf.example.collab.share, org.eclipse.ecf.example.collab.share.url, org.eclipse.ecf.example.collab.share.io
 Eclipse-LazyStart: true
 Provide-Package: org.eclipse.ecf.example.collab
