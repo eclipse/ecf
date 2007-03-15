@@ -1,13 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Datashare Provider
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.datashare;singleton:=true
 Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.internal.provider.datashare.Activator
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
-Eclipse-AutoStart: true
 Eclipse-RegisterBuddy: org.eclipse.ecf
 Eclipse-BuddyPolicy: global
 Export-Package: org.eclipse.ecf.internal.provider.datashare;x-internal:=true,
