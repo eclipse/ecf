@@ -74,6 +74,8 @@ final class MSNContainer implements IContainer, IChatManager,
 		IRoster, IRosterManager, IRosterSubscriptionSender,
 		ITypingMessageSender {
 
+	private static final long serialVersionUID = 1676711994010767942L;
+
 	private final Map chatSessions;
 
 	private final List containerListeners;
@@ -558,6 +560,8 @@ final class MSNContainer implements IContainer, IChatManager,
 	}
 
 	private class Account implements IUser {
+
+		private static final long serialVersionUID = 7497082891662391996L;
 
 		public Object getAdapter(Class adapter) {
 			return null;

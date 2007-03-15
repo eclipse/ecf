@@ -27,6 +27,8 @@ import org.hantsuki.gokigenyou.Status;
 
 final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 
+	private static final long serialVersionUID = 5358415024505371809L;
+
 	private Collection groups;
 
 	private MSNRosterGroup parent;
