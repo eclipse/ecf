@@ -1,11 +1,10 @@
 Manifest-Version: 1.0
-Bundle-Name: ECF UI API
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.ui;singleton:=true
 Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.internal.ui.Activator
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
-Eclipse-AutoStart: true
 Eclipse-LazyStart: true
 Provide-Package: org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.dialogs,

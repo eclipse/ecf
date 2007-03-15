@@ -8,15 +8,9 @@ import org.eclipse.swt.graphics.Image;
 
 public class RosterViewLabelProvider extends LabelProvider {
 	/**
-	 * 
-	 */
-	private final RosterView rosterView;
-
-	/**
 	 * @param rosterView
 	 */
 	RosterViewLabelProvider(RosterView rosterView) {
-		this.rosterView = rosterView;
 	}
 
 	public String getText(Object obj) {
