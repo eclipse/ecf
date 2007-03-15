@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
-Bundle-Name: ECF XMPP Provider
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.xmpp;singleton:=true
 Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.internal.provider.xmpp.XmppPlugin
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf,
@@ -13,7 +13,6 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.provider,
  org.jivesoftware.smack
 Eclipse-LazyStart: true
-Eclipse-AutoStart: true
 Export-Package: org.eclipse.ecf.internal.provider.xmpp;x-internal:=true,
  org.eclipse.ecf.internal.provider.xmpp.events;x-internal:=true,
  org.eclipse.ecf.internal.provider.xmpp.filetransfer;x-internal:=true,
