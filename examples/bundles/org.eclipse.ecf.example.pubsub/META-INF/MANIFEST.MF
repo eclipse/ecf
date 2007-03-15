@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ECF Publish/Subscribe Example Plug-in
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.example.pubsub;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.0.v20070313
 Bundle-Activator: org.eclipse.ecf.example.pubsub.Activator
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -12,7 +12,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.ecf.example.collab,
  org.eclipse.ecf.sharedobject
-Eclipse-AutoStart: true
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
