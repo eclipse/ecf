@@ -20,7 +20,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.provider.generic.GenericContainerInstantiator"
-            description="ECF Generic Client"
+            description="ECF Generic"
             name="ecf.generic.client"
             >
          <defaultargument
