@@ -5,7 +5,7 @@
          point="org.eclipse.ecf.containerFactory">
       <containerFactory
             class="org.eclipse.ecf.internal.provider.rss.container.RssContainerInstantiator"
-            description="ECF RSS Client"
+            description="ECF RSS"
             name="org.eclipse.ecf.provider.rss.Client">
          <defaultargument
                name="userhost"
