@@ -11,13 +11,14 @@
 package org.eclipse.ecf.internal.provider.jmdns;
 
 import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.ecf.core.util.PlatformHelper;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.provider.jmdns.container.JMDNSDiscoveryContainer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -43,10 +44,22 @@ public class JMDNSPlugin implements BundleActivator {
 		plugin = this;
 	}
 
+	private ServiceTracker adapterManagerTracker = null;
+
 	public IAdapterManager getAdapterManager() {
-		// XXX todo...replace with new adaptermanager service
-		return Platform.getAdapterManager();
-		//return null;
+		// First, try to get the adapter manager via
+		if (adapterManagerTracker == null) {
+			adapterManagerTracker = new ServiceTracker(this.context,
+					IAdapterManager.class.getName(), null);
+			adapterManagerTracker.open();
+		}
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker
+				.getService();
+		// Then, if the service isn't there, try to get from Platform class via
+		// PlatformHelper class
+		if (adapterManager == null)
+			adapterManager = PlatformHelper.getPlatformAdapterManager();
+		return adapterManager;
 	}
 
 	/**
@@ -71,6 +84,10 @@ public class JMDNSPlugin implements BundleActivator {
 		if (serviceRegistration != null) {
 			serviceRegistration.unregister();
 			serviceRegistration = null;
+		}
+		if (adapterManagerTracker != null) {
+			adapterManagerTracker.close();
+			adapterManagerTracker = null;
 		}
 		this.context = context;
 		plugin = null;
