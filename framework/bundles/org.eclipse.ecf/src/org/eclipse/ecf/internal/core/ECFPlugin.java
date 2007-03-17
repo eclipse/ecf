@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IRegistryChangeEvent;
 import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
@@ -32,6 +31,7 @@ import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.PlatformHelper;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
@@ -87,7 +87,7 @@ public class ECFPlugin implements BundleActivator {
 
 	// The shared instance.
 	private static ECFPlugin plugin;
-	
+
 	private BundleContext context = null;
 
 	private ServiceTracker extensionRegistryTracker = null;
@@ -99,6 +99,28 @@ public class ECFPlugin implements BundleActivator {
 	private ServiceRegistration containerFactoryServiceRegistration;
 
 	private ServiceTracker logServiceTracker = null;
+
+	private ServiceTracker adapterManagerTracker = null;
+
+	public IAdapterManager getAdapterManager() {
+		// First, try to get the adapter manager via
+		if (adapterManagerTracker == null) {
+			adapterManagerTracker = new ServiceTracker(this.context,
+					IAdapterManager.class.getName(), null);
+			adapterManagerTracker.open();
+		}
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker
+				.getService();
+		// Then, if the service isn't there, try to get from Platform class via
+		// PlatformHelper class
+		if (adapterManager == null)
+			adapterManager = PlatformHelper.getPlatformAdapterManager();
+		if (adapterManager == null)
+			getDefault().log(
+					new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR,
+							"Cannot get adapter manager", null)); //$NON-NLS-1$
+		return adapterManager;
+	}
 
 	public ECFPlugin() {
 	}
@@ -120,10 +142,11 @@ public class ECFPlugin implements BundleActivator {
 	}
 
 	public Bundle getBundle() {
-		if (context == null) return null;
+		if (context == null)
+			return null;
 		return context.getBundle();
 	}
-	
+
 	protected LogService getLogService() {
 		if (logServiceTracker == null) {
 			logServiceTracker = new ServiceTracker(this.context,
@@ -140,13 +163,6 @@ public class ECFPlugin implements BundleActivator {
 					.getLogMessage(status), status.getException());
 		}
 	}
-
-	public IAdapterManager getAdapterManager() {
-		// XXX todo...replace with new adaptermanager service
-		return Platform.getAdapterManager();
-		//return null;
-	}
-
 
 	protected String[] getDefaultArgs(IConfigurationElement[] argElements) {
 		String[] argDefaults = new String[0];
@@ -197,9 +213,8 @@ public class ECFPlugin implements BundleActivator {
 	protected void removeContainerFactoryExtensions(
 			IConfigurationElement[] members) {
 		String method = "removeContainerFactoryExtensions"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID,
-				ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method,
-				members);
+		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING,
+				ECFPlugin.class, method, members);
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
 			IConfigurationElement member = members[m];
@@ -220,8 +235,8 @@ public class ECFPlugin implements BundleActivator {
 				}
 				// remove
 				factory.removeDescription(cd);
-				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG,
-						method + ".removed " + cd + " from factory"); //$NON-NLS-1$ //$NON-NLS-2$
+				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG, method
+						+ ".removed " + cd + " from factory"); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (Exception e) {
 				logException(
 						new Status(
@@ -247,9 +262,8 @@ public class ECFPlugin implements BundleActivator {
 	 */
 	protected void addContainerFactoryExtensions(IConfigurationElement[] members) {
 		String method = "addContainerFactoryExtensions"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID,
-				ECFDebugOptions.METHODS_ENTERING, ECFPlugin.class, method,
-				members);
+		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING,
+				ECFPlugin.class, method, members);
 		// For each configuration element
 		for (int m = 0; m < members.length; m++) {
 			IConfigurationElement member = members[m];
@@ -299,8 +313,8 @@ public class ECFPlugin implements BundleActivator {
 				}
 				// Now add the description and we're ready to go.
 				factory.addDescription(scd);
-				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG,
-						method + ".added " + scd + " to factory " + factory); //$NON-NLS-1$ //$NON-NLS-2$
+				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG, method
+						+ ".added " + scd + " to factory " + factory); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (CoreException e) {
 				logException(e.getStatus(), method, e);
 			} catch (Exception e) {
@@ -413,6 +427,8 @@ public class ECFPlugin implements BundleActivator {
 		containerFactoryServiceRegistration = context.registerService(
 				IContainerFactory.class.getName(), ContainerFactory
 						.getDefault(), null);
+
+		IAdapterManager manager = getAdapterManager();
 	}
 
 	protected class ECFRegistryManager implements IRegistryChangeListener {
@@ -455,6 +471,10 @@ public class ECFPlugin implements BundleActivator {
 		if (containerFactoryServiceRegistration != null) {
 			containerFactoryServiceRegistration.unregister();
 			containerFactoryServiceRegistration = null;
+		}
+		if (adapterManagerTracker != null) {
+			adapterManagerTracker.close();
+			adapterManagerTracker = null;
 		}
 		this.context = null;
 	}
