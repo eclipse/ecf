@@ -427,8 +427,6 @@ public class ECFPlugin implements BundleActivator {
 		containerFactoryServiceRegistration = context.registerService(
 				IContainerFactory.class.getName(), ContainerFactory
 						.getDefault(), null);
-
-		IAdapterManager manager = getAdapterManager();
 	}
 
 	protected class ECFRegistryManager implements IRegistryChangeListener {
