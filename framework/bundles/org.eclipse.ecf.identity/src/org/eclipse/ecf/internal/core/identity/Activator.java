@@ -18,12 +18,12 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IRegistryChangeEvent;
 import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IIDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.PlatformHelper;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.osgi.framework.Bundle;
@@ -70,6 +70,28 @@ public class Activator implements BundleActivator {
 	private ServiceTracker debugOptionsTracker = null;
 
 	private ServiceTracker logServiceTracker = null;
+
+	private ServiceTracker adapterManagerTracker = null;
+
+	public IAdapterManager getAdapterManager() {
+		// First, try to get the adapter manager via
+		if (adapterManagerTracker == null) {
+			adapterManagerTracker = new ServiceTracker(this.context,
+					IAdapterManager.class.getName(), null);
+			adapterManagerTracker.open();
+		}
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker
+				.getService();
+		// Then, if the service isn't there, try to get from Platform class via
+		// PlatformHelper class
+		if (adapterManager == null)
+			adapterManager = PlatformHelper.getPlatformAdapterManager();
+		if (adapterManager == null)
+			getDefault().log(
+					new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR,
+							"Cannot get adapter manager", null)); //$NON-NLS-1$
+		return adapterManager;
+	}
 
 	/**
 	 * The constructor
@@ -207,12 +229,6 @@ public class Activator implements BundleActivator {
 		}
 	}
 
-	public IAdapterManager getAdapterManager() {
-		// XXX todo...replace with new adaptermanager service
-		return Platform.getAdapterManager();
-		//return null;
-	}
-
 	/**
 	 * Add identity namespace extension point extensions
 	 * 
@@ -336,6 +352,10 @@ public class Activator implements BundleActivator {
 		if (idFactoryServiceRegistration != null) {
 			idFactoryServiceRegistration.unregister();
 			idFactoryServiceRegistration = null;
+		}
+		if (adapterManagerTracker != null) {
+			adapterManagerTracker.close();
+			adapterManagerTracker = null;
 		}
 		context = null;
 	}
