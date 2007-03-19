@@ -72,6 +72,7 @@ public class ProviderPlugin implements BundleActivator {
      * This method is called upon plug-in activation
      */
     public void start(BundleContext context) throws Exception {
+    	this.context = context;
     }
 
     /**
