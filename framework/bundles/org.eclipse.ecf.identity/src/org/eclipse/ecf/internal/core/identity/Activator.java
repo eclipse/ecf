@@ -336,7 +336,6 @@ public class Activator implements BundleActivator {
 		if (reg != null)
 			reg.removeRegistryChangeListener(registryManager);
 		registryManager = null;
-		plugin = null;
 		if (logServiceTracker != null) {
 			logServiceTracker.close();
 			logServiceTracker = null;
@@ -358,6 +357,7 @@ public class Activator implements BundleActivator {
 			adapterManagerTracker = null;
 		}
 		context = null;
+		plugin = null;
 	}
 
 	/**

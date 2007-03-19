@@ -136,7 +136,9 @@ public class Trace {
 	protected static boolean shouldTrace0(String option) {
 		if (option == null)
 			return false;
-		DebugOptions debugOptions = Activator.getDefault().getDebugOptions();
+		Activator activator = Activator.getDefault();
+		if (activator == null) return false;
+		DebugOptions debugOptions = activator.getDebugOptions();
 		if (debugOptions == null) return false;
 		String result = debugOptions.getOption(option);
 		return (result == null)?false:result.equalsIgnoreCase("true"); //$NON-NLS-1$
