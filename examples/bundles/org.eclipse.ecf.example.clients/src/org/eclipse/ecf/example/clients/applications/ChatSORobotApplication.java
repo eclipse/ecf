@@ -24,7 +24,7 @@ public class ChatSORobotApplication implements IPlatformRunnable,
 
 	public static final int WAIT_TIME = 10000;
 	public static final int WAIT_COUNT = 10;
-	
+
 	private boolean running = false;
 	private String userName;
 	private XMPPChatClient client;
@@ -34,14 +34,14 @@ public class ChatSORobotApplication implements IPlatformRunnable,
 		if (args instanceof Object[]) {
 			Object[] arguments = (Object[]) args;
 			int l = arguments.length;
-			if (arguments[l-1] instanceof String
-					&& arguments[l-2] instanceof String
-					&& arguments[l-3] instanceof String
-					&& arguments[l-4] instanceof String) {
-				userName = (String) arguments[l-4];
-				String hostName = (String) arguments[l-3];
-				String password = (String) arguments[l-2];
-				String targetName = (String) arguments[l-1];
+			if (arguments[l - 1] instanceof String
+					&& arguments[l - 2] instanceof String
+					&& arguments[l - 3] instanceof String
+					&& arguments[l - 4] instanceof String) {
+				userName = (String) arguments[l - 4];
+				String hostName = (String) arguments[l - 3];
+				String password = (String) arguments[l - 2];
+				String targetName = (String) arguments[l - 1];
 				runRobot(hostName, password, targetName);
 				return new Integer(0);
 			}
@@ -64,7 +64,11 @@ public class ChatSORobotApplication implements IPlatformRunnable,
 		createSharedObject();
 
 		// Then connect
-		client.doConnect(userName + "@" + hostName, password);
+		String connectTarget = userName + "@" + hostName;
+
+		client.doConnect(connectTarget, password);
+
+		System.out.println("ECF chat robot connected to: " + connectTarget);
 
 		// Send initial message to target user
 		client.sendChat(targetIMUser, "Hi, I'm an IM robot");
@@ -75,24 +79,26 @@ public class ChatSORobotApplication implements IPlatformRunnable,
 		// out-of-band via shared object
 		while (running && count++ < WAIT_COUNT) {
 			// Send shared object message
-			sharedObject.sendMessageTo(client.createID(targetIMUser), count + " hello there");
+			sharedObject.sendMessageTo(client.createID(targetIMUser), count
+					+ " hello there");
 			wait(WAIT_TIME);
 		}
 	}
 
 	protected void createSharedObject() throws ECFException {
 		ISharedObjectContainer socontainer = (ISharedObjectContainer) client
-		.getContainer().getAdapter(ISharedObjectContainer.class);
-			// Create TrivialSharedObject
-			sharedObject = new TrivialSharedObject();
-			// Add shared object to container
-			socontainer.getSharedObjectManager().addSharedObject(IDFactory.getDefault().createStringID(
-					TrivialSharedObject.class.getName()),
-					sharedObject, null);
+				.getContainer().getAdapter(ISharedObjectContainer.class);
+		// Create TrivialSharedObject
+		sharedObject = new TrivialSharedObject();
+		// Add shared object to container
+		socontainer.getSharedObjectManager().addSharedObject(
+				IDFactory.getDefault().createStringID(
+						TrivialSharedObject.class.getName()), sharedObject,
+				null);
 	}
 
 	public synchronized void handleMessage(IChatMessage chatMessage) {
-		System.out.println("handleMessage("+chatMessage+")");
+		System.out.println("handleMessage(" + chatMessage + ")");
 	}
 
 }

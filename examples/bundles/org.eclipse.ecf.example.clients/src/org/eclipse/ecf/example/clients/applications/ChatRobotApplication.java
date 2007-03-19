@@ -59,12 +59,15 @@ public class ChatRobotApplication implements IPlatformRunnable,
 		client.setupPresence();
 
 		// Then connect
-		client.doConnect(userName + "@" + hostName, password);
+		String connectTarget = userName + "@" + hostName;
 
+		client.doConnect(connectTarget, password);
+
+		System.out.println("ECF chat robot ("+connectTarget+")");
 		// Send initial message to target user
 		client
 				.sendChat(targetIMUser,
-						"Hi, I'm an IM robot.  You probably don't want to talk with me.");
+						"Hi, I'm an ECF chat robot.");
 
 		running = true;
 		int count = 0;

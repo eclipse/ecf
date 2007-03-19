@@ -27,8 +27,8 @@ import org.eclipse.ecf.presence.im.IChatMessage;
  * and make sure you have all required plug-ins.
  * 
  */
-public class ChatRoomRobotApplication implements IPlatformRunnable, IMessageReceiver,
-		IIMMessageListener {
+public class ChatRoomRobotApplication implements IPlatformRunnable,
+		IMessageReceiver, IIMMessageListener {
 
 	private IChatRoomMessageSender sender;
 
@@ -40,14 +40,14 @@ public class ChatRoomRobotApplication implements IPlatformRunnable, IMessageRece
 		if (args instanceof Object[]) {
 			Object[] arguments = (Object[]) args;
 			int l = arguments.length;
-			if (arguments[l-1] instanceof String
-					&& arguments[l-2] instanceof String
-					&& arguments[l-3] instanceof String
-					&& arguments[l-4] instanceof String) {
-				userName = (String) arguments[l-4];
-				String hostName = (String) arguments[l-3];
-				String password = (String) arguments[l-2];
-				String roomName = (String) arguments[l-1];
+			if (arguments[l - 1] instanceof String
+					&& arguments[l - 2] instanceof String
+					&& arguments[l - 3] instanceof String
+					&& arguments[l - 4] instanceof String) {
+				userName = (String) arguments[l - 4];
+				String hostName = (String) arguments[l - 3];
+				String password = (String) arguments[l - 2];
+				String roomName = (String) arguments[l - 1];
 				runRobot(hostName, password, roomName);
 				return new Integer(0);
 			}
@@ -60,12 +60,19 @@ public class ChatRoomRobotApplication implements IPlatformRunnable, IMessageRece
 	private void runRobot(String hostName, String password, String roomName)
 			throws ECFException, Exception, InterruptedException {
 		XMPPChatRoomClient client = new XMPPChatRoomClient(this);
-		client.connect(userName + "@" + hostName, password);
+
+		// Then connect
+		String connectTarget = userName + "@" + hostName;
+
+		client.connect(connectTarget, password);
 
 		IChatRoomContainer room = client.createChatRoom(roomName);
 		room.connect(client.getChatRoomInfo().getRoomID(), null);
 
-		System.out.println(room.getConnectedID().getName());
+		System.out.println("ECF chat room robot (" + connectTarget
+				+ ").  Connected to room: "
+				+ client.getChatRoomInfo().getRoomID().getName());
+
 		room.addMessageListener(this);
 		sender = room.getChatRoomMessageSender();
 		running = true;
@@ -87,7 +94,7 @@ public class ChatRoomRobotApplication implements IPlatformRunnable, IMessageRece
 		notifyAll();
 	}
 
-	public void handleMessage(ID fromID, String messageBody) {
+	public void handleChatRoomMessage(ID fromID, String messageBody) {
 		// message in chat room
 		if (fromID.getName().startsWith(userName + "@")) {
 			// my own message, don't respond
@@ -115,7 +122,7 @@ public class ChatRoomRobotApplication implements IPlatformRunnable, IMessageRece
 		if (messageEvent instanceof IChatRoomMessageEvent) {
 			IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
 					.getChatRoomMessage();
-			handleMessage(m.getFromID(), m.getMessage());
+			handleChatRoomMessage(m.getFromID(), m.getMessage());
 		}
 	}
 
