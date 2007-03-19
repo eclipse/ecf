@@ -68,7 +68,7 @@ public class ChatSORobotApplication implements IPlatformRunnable,
 
 		this.targetIMUser = targetIMUser;
 		// Send initial message to target user
-		client.sendChatMessage(targetIMUser, "Hi, I'm an IM robot");
+		client.sendChat(targetIMUser, "Hi, I'm an IM robot");
 
 		running = true;
 		int count = 0;

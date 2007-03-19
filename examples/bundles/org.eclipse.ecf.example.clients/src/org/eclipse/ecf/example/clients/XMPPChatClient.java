@@ -130,7 +130,7 @@ public class XMPPChatClient {
 		}
 	}
 
-	public void sendChatMessage(String jid, String msg) {
+	public void sendChat(String jid, String msg) {
 		if (sender != null) {
 			try {
 				sender.sendChatMessage(createID(jid), msg);
@@ -141,7 +141,7 @@ public class XMPPChatClient {
 		}
 	}
 
-	public void sendChatMessage(String jid, Map properties) {
+	public void sendProperties(String jid, Map properties) {
 		if (sender != null) {
 			try {
 				sender.sendChatMessage(createID(jid), null, IChatMessage.Type.CHAT, null, null, properties);

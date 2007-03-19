@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.example.clients.applications;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.example.clients.IMessageReceiver;
@@ -58,23 +61,28 @@ public class ChatRobotApplication implements IPlatformRunnable,
 
 		this.targetIMUser = targetIMUser;
 		// Send initial message to target user
-		client.sendChatMessage(targetIMUser, "Hi, I'm an IM robot");
+		client.sendChat(targetIMUser, "Hi, I'm an IM robot.  You probably don't want to talk with me.");
 
 		running = true;
 		int count = 0;
 		// Loop ten times and send ten 'hello there' so messages to targetIMUser
 		while (running && count++ < 10) {
 			wait(10000);
+			Map properties = new HashMap();
+			properties.put("message","howdy");
+			client.sendProperties(this.targetIMUser,properties);
 		}
 	}
 
 	public synchronized void handleMessage(IChatMessage chatMessage) {
 		// direct message
 		String msg = chatMessage.getBody();
-		if (msg != null && msg.equalsIgnoreCase("bye")) {
+		if (msg.equalsIgnoreCase("bye")) {
 			running = false;
 			notifyAll();
-		} else client.sendChatMessage(targetIMUser,"'"+msg+"' is confusing.  Please rephrase.");
+		} else if (msg.equals("")) {
+			System.out.println("Got properties: "+chatMessage.getProperties());
+		} else client.sendChat(targetIMUser,"'"+msg+"' is confusing.  Please rephrase.");
 	}
 
 }
