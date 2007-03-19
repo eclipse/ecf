@@ -101,7 +101,7 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 	public void testGetConnectedID() throws Exception {
 		IContainer client = getClients()[0];
 		assertNull(client.getConnectedID());
-		client.connect(getServerID(), null);
+		client.connect(createServerID(), null);
 		assertNotNull(client.getConnectedID());
 		client.disconnect();
 		assertNull(client.getConnectedID());
@@ -110,7 +110,7 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 	public void testClientDispose() throws Exception {
 		IContainer client = getClients()[0];
 		assertNull(client.getConnectedID());
-		client.connect(getServerID(), null);
+		client.connect(createServerID(), null);
 		assertNotNull(client.getConnectedID());
 		client.dispose();
 		assertNull(client.getConnectedID());
@@ -138,7 +138,7 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 		client.addListener(createListener());
 		assertTrue(clientConnectingEvents.size() == 0);
 		assertTrue(clientConnectedEvents.size() == 0);
-		client.connect(getServerID(), null);
+		client.connect(createServerID(), null);
 		assertTrue(clientConnectingEvents.size() == 1);
 		assertTrue(clientConnectedEvents.size() == 1);
 		assertTrue(clientDisconnectingEvents.size() == 0);
@@ -151,48 +151,48 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 	public void testListenerConnecting() throws Exception {
 		IContainer client = getClients()[0];
 		client.addListener(createListener());
-		client.connect(getServerID(), null);
+		client.connect(createServerID(), null);
 		Object o = clientConnectingEvents.get(0);
 		assertTrue(o instanceof IContainerConnectingEvent);
 		IContainerConnectingEvent cco = (IContainerConnectingEvent) o;
 		assertTrue(cco.getLocalContainerID().equals(client.getID()));
-		assertTrue(cco.getTargetID().equals(getServerID()));
+		assertTrue(cco.getTargetID().equals(createServerID()));
 		assertTrue(cco.getData() == null);
 	}
 
 	public void testListenerConnected() throws Exception {
 		IContainer client = getClients()[0];
 		client.addListener(createListener());
-		client.connect(getServerID(), null);
+		client.connect(createServerID(), null);
 		Object o = clientConnectedEvents.get(0);
 		assertTrue(o instanceof IContainerConnectedEvent);
 		IContainerConnectedEvent cco = (IContainerConnectedEvent) o;
 		assertTrue(cco.getLocalContainerID().equals(client.getID()));
-		assertTrue(cco.getTargetID().equals(getServerID()));
+		assertTrue(cco.getTargetID().equals(createServerID()));
 	}
 
 	public void testListenerDisconnecting() throws Exception {
 		IContainer client = getClients()[0];
 		client.addListener(createListener());
-		client.connect(getServerID(), null);
+		client.connect(createServerID(), null);
 		client.disconnect();
 		Object o = clientDisconnectingEvents.get(0);
 		assertTrue(o instanceof IContainerDisconnectingEvent);
 		IContainerDisconnectingEvent cco = (IContainerDisconnectingEvent) o;
 		assertTrue(cco.getLocalContainerID().equals(client.getID()));
-		assertTrue(cco.getTargetID().equals(getServerID()));
+		assertTrue(cco.getTargetID().equals(createServerID()));
 	}
 
 	public void testListenerDisconnected() throws Exception {
 		IContainer client = getClients()[0];
 		client.addListener(createListener());
-		client.connect(getServerID(), null);
+		client.connect(createServerID(), null);
 		client.disconnect();
 		Object o = clientDisconnectedEvents.get(0);
 		assertTrue(o instanceof IContainerDisconnectedEvent);
 		IContainerDisconnectedEvent cco = (IContainerDisconnectedEvent) o;
 		assertTrue(cco.getLocalContainerID().equals(client.getID()));
-		assertTrue(cco.getTargetID().equals(getServerID()));
+		assertTrue(cco.getTargetID().equals(createServerID()));
 	}
 	
 	public void testRemoveListener() throws Exception {
@@ -200,7 +200,7 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 		IContainerListener l = createListener();
 		client.addListener(l);
 		client.removeListener(l);
-		client.connect(getServerID(), null);
+		client.connect(createServerID(), null);
 		assertTrue(clientConnectingEvents.size() == 0);
 	}
 
