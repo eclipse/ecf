@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.example.clients;
+package org.eclipse.ecf.example.clients.applications;
 
 import java.io.IOException;
 

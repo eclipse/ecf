@@ -6,17 +6,20 @@
  * 
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.example.clients;
+package org.eclipse.ecf.example.clients.applications;
 
 import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.example.clients.IMessageReceiver;
+import org.eclipse.ecf.example.clients.XMPPChatRoomClient;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
+import org.eclipse.ecf.presence.im.IChatMessage;
 
 /**
  * To be started as an application. Go to Run->Run..., create a new Eclipse
@@ -24,7 +27,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
  * and make sure you have all required plug-ins.
  * 
  */
-public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
+public class ChatRoomRobotApplication implements IPlatformRunnable, IMessageReceiver,
 		IIMMessageListener {
 
 	private IChatRoomMessageSender sender;
@@ -36,24 +39,17 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 	public synchronized Object run(Object args) throws Exception {
 		if (args instanceof Object[]) {
 			Object[] arguments = (Object[]) args;
-			while (arguments.length > 0 && arguments[0] instanceof String
-					&& ((String) arguments[0]).startsWith("-")) {
-				System.arraycopy(arguments, 1,
-						arguments = new Object[arguments.length - 1], 0,
-						arguments.length);
-			}
-			if (arguments.length == 4) {
-				if (arguments[0] instanceof String
-						&& arguments[1] instanceof String
-						&& arguments[2] instanceof String
-						&& arguments[3] instanceof String) {
-					userName = (String) arguments[0];
-					String hostName = (String) arguments[1];
-					String password = (String) arguments[2];
-					String roomName = (String) arguments[3];
-					runRobot(hostName, password, roomName);
-					return new Integer(0);
-				}
+			int l = arguments.length;
+			if (arguments[l-1] instanceof String
+					&& arguments[l-2] instanceof String
+					&& arguments[l-3] instanceof String
+					&& arguments[l-4] instanceof String) {
+				userName = (String) arguments[l-4];
+				String hostName = (String) arguments[l-3];
+				String password = (String) arguments[l-2];
+				String roomName = (String) arguments[l-1];
+				runRobot(hostName, password, roomName);
+				return new Integer(0);
 			}
 		}
 		System.out
@@ -63,7 +59,7 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 
 	private void runRobot(String hostName, String password, String roomName)
 			throws ECFException, Exception, InterruptedException {
-		XMPPChatClient client = new XMPPChatClient(this);
+		XMPPChatRoomClient client = new XMPPChatRoomClient(this);
 		client.connect(userName + "@" + hostName, password);
 
 		IChatRoomContainer room = client.createChatRoom(roomName);
@@ -80,7 +76,7 @@ public class RobotApplication implements IPlatformRunnable, IMessageReceiver,
 		}
 	}
 
-	public synchronized void handleMessage(String from, String msg) {
+	public synchronized void handleMessage(IChatMessage chatMessage) {
 		// direct message
 		try {
 			sender.sendMessage("gotta run");

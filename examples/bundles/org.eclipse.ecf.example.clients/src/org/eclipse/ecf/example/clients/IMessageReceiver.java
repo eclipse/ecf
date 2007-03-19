@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.example.clients;
 
+import org.eclipse.ecf.presence.im.IChatMessage;
+
 public interface IMessageReceiver {
-	public void handleMessage(String from, String msg);
+	public void handleMessage(IChatMessage chatMessage);
 }

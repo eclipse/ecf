@@ -8,46 +8,43 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.example.clients;
+package org.eclipse.ecf.example.clients.applications;
 
 import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.example.clients.IMessageReceiver;
+import org.eclipse.ecf.example.clients.XMPPChatClient;
+import org.eclipse.ecf.presence.im.IChatMessage;
 
-public class XMPPSORobotApplication implements IPlatformRunnable,
+public class ChatSORobotApplication implements IPlatformRunnable,
 		IMessageReceiver {
 
 	private boolean running = false;
 	private String userName;
-	private XMPPClient client;
+	private XMPPChatClient client;
 	private String targetIMUser;
 	private TrivialSharedObject sharedObject = null;
 
 	public synchronized Object run(Object args) throws Exception {
 		if (args instanceof Object[]) {
 			Object[] arguments = (Object[]) args;
-			while (arguments.length > 0 && arguments[0] instanceof String
-					&& ((String) arguments[0]).startsWith("-")) {
-				System.arraycopy(arguments, 1,
-						arguments = new Object[arguments.length - 1], 0,
-						arguments.length);
-			}
-			if (arguments.length == 4) {
-				if (arguments[0] instanceof String
-						&& arguments[1] instanceof String
-						&& arguments[2] instanceof String
-						&& arguments[3] instanceof String) {
-					userName = (String) arguments[0];
-					String hostName = (String) arguments[1];
-					String password = (String) arguments[2];
-					String targetName = (String) arguments[3];
-					runRobot(hostName, password, targetName);
-					return new Integer(0);
-				}
+			int l = arguments.length;
+			if (arguments[l-1] instanceof String
+					&& arguments[l-2] instanceof String
+					&& arguments[l-3] instanceof String
+					&& arguments[l-4] instanceof String) {
+				userName = (String) arguments[l-4];
+				String hostName = (String) arguments[l-3];
+				String password = (String) arguments[l-2];
+				String targetName = (String) arguments[l-1];
+				runRobot(hostName, password, targetName);
+				return new Integer(0);
 			}
 		}
+
 		System.out
 				.println("Usage: pass in four arguments (username, hostname, password, targetIMUser)");
 		return new Integer(-1);
@@ -56,7 +53,7 @@ public class XMPPSORobotApplication implements IPlatformRunnable,
 	private void runRobot(String hostName, String password, String targetIMUser)
 			throws ECFException, Exception, InterruptedException {
 		// Create client and connect to host
-		client = new XMPPClient(this);
+		client = new XMPPChatClient(this);
 		client.setupContainer();
 		client.setupPresence();
 
@@ -70,8 +67,8 @@ public class XMPPSORobotApplication implements IPlatformRunnable,
 		client.doConnect(userName + "@" + hostName, password);
 
 		this.targetIMUser = targetIMUser;
-		// Send initial message for room
-		client.sendMessage(targetIMUser, "Hi, I'm an IM robot");
+		// Send initial message to target user
+		client.sendChatMessage(targetIMUser, "Hi, I'm an IM robot");
 
 		running = true;
 		int count = 0;
@@ -102,7 +99,7 @@ public class XMPPSORobotApplication implements IPlatformRunnable,
 		}
 	}
 
-	public synchronized void handleMessage(String from, String msg) {
+	public synchronized void handleMessage(IChatMessage chatMessage) {
 		// direct message
 		// client.sendMessage(from,"gotta run");
 		// running = false;
