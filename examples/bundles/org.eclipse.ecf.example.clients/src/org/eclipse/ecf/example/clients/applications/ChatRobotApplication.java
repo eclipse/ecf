@@ -22,23 +22,25 @@ import org.eclipse.ecf.presence.im.IChatMessage;
 public class ChatRobotApplication implements IPlatformRunnable,
 		IMessageReceiver {
 
+	public static final int WAIT_TIME = 10000;
+	public static final int WAIT_COUNT = 10;
+	
 	private boolean running = false;
 	private String userName;
 	private XMPPChatClient client;
-	private String targetIMUser;
 
 	public synchronized Object run(Object args) throws Exception {
 		if (args instanceof Object[]) {
 			Object[] arguments = (Object[]) args;
 			int l = arguments.length;
-			if (arguments[l-1] instanceof String
-					&& arguments[l-2] instanceof String
-					&& arguments[l-3] instanceof String
-					&& arguments[l-4] instanceof String) {
-				userName = (String) arguments[l-4];
-				String hostName = (String) arguments[l-3];
-				String password = (String) arguments[l-2];
-				String targetName = (String) arguments[l-1];
+			if (arguments[l - 1] instanceof String
+					&& arguments[l - 2] instanceof String
+					&& arguments[l - 3] instanceof String
+					&& arguments[l - 4] instanceof String) {
+				userName = (String) arguments[l - 4];
+				String hostName = (String) arguments[l - 3];
+				String password = (String) arguments[l - 2];
+				String targetName = (String) arguments[l - 1];
 				runRobot(hostName, password, targetName);
 				return new Integer(0);
 			}
@@ -51,7 +53,7 @@ public class ChatRobotApplication implements IPlatformRunnable,
 
 	private void runRobot(String hostName, String password, String targetIMUser)
 			throws ECFException, Exception, InterruptedException {
-		// Create client and connect to host
+		// Create client
 		client = new XMPPChatClient(this);
 		client.setupContainer();
 		client.setupPresence();
@@ -59,30 +61,25 @@ public class ChatRobotApplication implements IPlatformRunnable,
 		// Then connect
 		client.doConnect(userName + "@" + hostName, password);
 
-		this.targetIMUser = targetIMUser;
 		// Send initial message to target user
-		client.sendChat(targetIMUser, "Hi, I'm an IM robot.  You probably don't want to talk with me.");
+		client
+				.sendChat(targetIMUser,
+						"Hi, I'm an IM robot.  You probably don't want to talk with me.");
 
 		running = true;
 		int count = 0;
-		// Loop ten times and send ten 'hello there' so messages to targetIMUser
-		while (running && count++ < 10) {
-			wait(10000);
+		// Loop ten times and send ten 'hello there' messages to targetIMUser
+		// out-of-band via XMPP message properties
+		while (running && count++ < WAIT_COUNT) {
+			wait(WAIT_TIME);
 			Map properties = new HashMap();
-			properties.put("message","howdy");
-			client.sendProperties(this.targetIMUser,properties);
+			properties.put("message", "howdy");
+			client.sendProperties(targetIMUser, properties);
 		}
 	}
 
 	public synchronized void handleMessage(IChatMessage chatMessage) {
-		// direct message
-		String msg = chatMessage.getBody();
-		if (msg.equalsIgnoreCase("bye")) {
-			running = false;
-			notifyAll();
-		} else if (msg.equals("")) {
-			System.out.println("Got properties: "+chatMessage.getProperties());
-		} else client.sendChat(targetIMUser,"'"+msg+"' is confusing.  Please rephrase.");
+		System.out.println("handleMessage(" + chatMessage + ")");
 	}
 
 }
