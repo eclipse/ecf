@@ -38,22 +38,18 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 
 	protected ID serverID;
 
-	protected String username = System.getProperty("user.name");
+	protected String[] usernames = null;
 
-	protected String password = null;
+	protected String[] passwords = null;
 
-	protected String getUsername() {
-		String uname = System.getProperty("username");
-		if (uname != null)
-			username = uname;
-		return username;
+	protected String getUsername(int client) {
+		if (usernames == null || usernames.length <= client) return null;
+		return usernames[client];
 	}
 
-	protected String getPassword() {
-		String uname = System.getProperty("password");
-		if (uname != null)
-			password = uname;
-		return password;
+	protected String getPassword(int client) {
+		if (passwords == null || passwords.length <= client) return null;
+		return passwords[client];
 	}
 
 	protected IConnectContext createUsernamePasswordConnectContext(
@@ -78,6 +74,11 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 		return clients;
 	}
 
+	protected IContainer getClient(int index) {
+		if (clients == null || clients.length <= index) return null;
+		return clients[index];
+	}
+	
 	protected String getServerContainerName() {
 		return genericServerName;
 	}
@@ -90,7 +91,7 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 		return genericServerIdentity;
 	}
 
-	protected ID getServerConnectID(IContainer container) {
+	protected ID getServerConnectID(int client) {
 		return serverID;
 	}
 
@@ -113,8 +114,18 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 
 	protected IContainer[] createClients() throws Exception {
 		IContainer[] result = new IContainer[getClientCount()];
+		usernames = new String[getClientCount()];
+		passwords = new String[getClientCount()];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = createClient(i);
+			String uname = System.getProperty("username"+i);
+			if (uname == null && i == 0) uname = System.getProperty("username");
+			if (uname != null)
+				usernames[i] = uname;
+			String pword = System.getProperty("password"+i);
+			if (pword == null && i == 0) pword = System.getProperty("password");
+			if (pword != null)
+				passwords[i] = pword;
 		}
 		return result;
 	}
@@ -152,13 +163,13 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	protected void connectClients() throws Exception {
 		IContainer[] clients = getClients();
 		for (int i = 0; i < clients.length; i++)
-			connectClient(clients[i], getServerConnectID(clients[i]),
-					getConnectContext(clients[i]));
+			connectClient(clients[i], getServerConnectID(i),
+					getConnectContext(i));
 	}
 
-	protected IConnectContext getConnectContext(IContainer container) {
-		return createUsernamePasswordConnectContext(getUsername(),
-				getPassword());
+	protected IConnectContext getConnectContext(int client) {
+		return createUsernamePasswordConnectContext(getUsername(client),
+				getPassword(client));
 	}
 
 	protected void connectClient(IContainer containerToConnect, ID connectID,
