@@ -24,6 +24,8 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	public static final String NICKNAME = "nickname";
 	public static final String AT_SIGN = "@";
 	public static final String DOT = ".";
+	public static final String SLASH = "/";
+	public static final char DOT_CHAR = DOT.charAt(0);
 	
 	String domain;
 	String host;
@@ -36,26 +38,6 @@ public class XMPPRoomID extends BaseID implements IChatID {
 		if (domain == null)
 			domain = DOMAIN_DEFAULT;
 		return domain + DOT + host;
-	}
-
-	protected String fixUsername(String connUsername) {
-		int atIndex = connUsername.indexOf(AT_SIGN);
-		if (atIndex == -1)
-			return connUsername;
-		else
-			return connUsername.substring(0, atIndex);
-	}
-
-	protected String[] getRoomAndHost(String roomatconfhost) {
-		int atIndex = roomatconfhost.indexOf(AT_SIGN);
-		if (atIndex == -1)
-			return new String[] { "", "" };
-		String room = roomatconfhost.substring(0, atIndex);
-		String fullHost = roomatconfhost.substring(atIndex + 1);
-		int dotIndex = fullHost.indexOf('.');
-		String domain = fullHost.substring(0, dotIndex);
-		String host = fullHost.substring(dotIndex + 1);
-		return new String[] { room, host, domain };
 	}
 
 	public XMPPRoomID(Namespace namespace, String username, String host,
@@ -78,13 +60,23 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	public XMPPRoomID(Namespace namespace, XMPPConnection conn, String roomid,
 			String longName) throws URISyntaxException {
 		super(namespace);
-		this.username = fixUsername(conn.getUser());
-		String[] roomandhost = getRoomAndHost(roomid);
-		this.roomname = roomandhost[0];
-		this.host = roomandhost[1];
-		this.domain = roomandhost[2];
+		String connUsername = conn.getUser();
+		int atIndex = connUsername.indexOf(AT_SIGN);
+		this.username = (atIndex == -1)?connUsername:connUsername.substring(0, atIndex);
+		atIndex = roomid.indexOf(AT_SIGN);
+		if (atIndex == -1) {
+			this.roomname = roomid;
+			this.host = conn.getHost();
+			this.domain = DOMAIN_DEFAULT;
+		} else {
+			this.roomname = roomid.substring(0, atIndex);
+			String fullHost = roomid.substring(atIndex + 1);
+			int dotIndex = fullHost.indexOf(DOT_CHAR);
+			this.domain = fullHost.substring(0, dotIndex);
+			this.host = fullHost.substring(dotIndex + 1);
+		}
 		this.nickname = this.username;
-		this.longName = longName;
+		this.longName = (longName==null)?this.roomname+AT_SIGN+this.domain+DOT+this.host:longName;
 	}
 
 	public XMPPRoomID(Namespace namespace, XMPPConnection conn, String roomid)
@@ -112,7 +104,7 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	}
 
 	protected String fixPath(String path) {
-		while (path.startsWith("/")) {
+		while (path.startsWith(SLASH)) {
 			path = path.substring(1);
 		}
 		return path;
@@ -129,7 +121,7 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	}
 
 	public String getMucString() {
-		return this.roomname + "@" + this.domain + "." + this.host;
+		return this.roomname + AT_SIGN + this.domain + DOT + this.host;
 	}
 
 	public String getNickname() {
@@ -139,12 +131,12 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	public String getLongName() {
 		return longName;
 	}
-
+	
 	public String toString() {
 		StringBuffer sb = new StringBuffer("XMPPRoomID[");
 		sb.append(
-				getNamespace().getScheme() + "://" + getUsername() + "@"
-						+ this.domain + "." + this.host + "/" + this.roomname)
+				getNamespace().getScheme() + "://" + getUsername() + AT_SIGN
+						+ this.domain + DOT + this.host + SLASH + this.roomname)
 				.append("]");
 		return sb.toString();
 	}
