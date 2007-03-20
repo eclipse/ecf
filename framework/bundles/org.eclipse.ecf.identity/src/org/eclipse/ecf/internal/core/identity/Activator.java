@@ -138,8 +138,13 @@ public class Activator implements BundleActivator {
 		// Register IIDFactory service
 		idFactoryServiceRegistration = context.registerService(IIDFactory.class
 				.getName(), IDFactory.getDefault(), null);
+		
 	}
 
+	public BundleContext getBundleContext() {
+		return context;
+	}
+	
 	protected class IdentityRegistryManager implements IRegistryChangeListener {
 		public void registryChanged(IRegistryChangeEvent event) {
 			IExtensionDelta delta[] = event.getExtensionDeltas(PLUGIN_ID,

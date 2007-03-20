@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.internal.core.identity.Activator;
+import org.osgi.framework.Bundle;
 
 /**
  * Helper class for eliminating direct references to Platform static methods
@@ -36,9 +37,29 @@ public class PlatformHelper {
 
 	static {
 		try {
-			platformClass = Class.forName("org.eclipse.core.runtime.Platform"); //$NON-NLS-1$
+			Bundle[] bundles = Activator.getDefault().getBundleContext().getBundles();
+			Bundle coreRuntime = null;
+			for (int i = 0; i < bundles.length; i++)
+				if (bundles[i].getSymbolicName().equals(
+						"org.eclipse.core.runtime")) //$NON-NLS-1$
+					coreRuntime = bundles[i];
+				platformClass = coreRuntime
+						.loadClass("org.eclipse.core.runtime.Platform"); //$NON-NLS-1$
 		} catch (Exception e) {
-			// Platform not available...just leave platformClass == null
+			// Platform not available...just leave platformClass == null and log
+			// as error
+			try {
+				Activator
+						.getDefault()
+						.log(
+								new Status(
+										IStatus.ERROR,
+										Activator.PLUGIN_ID,
+										IStatus.ERROR,
+										"Cannot load Platform class.  No adapter manager available", //$NON-NLS-1$
+										e));
+			} catch (Throwable t) {
+			}
 		}
 	}
 
@@ -49,18 +70,7 @@ public class PlatformHelper {
 	public synchronized static IAdapterManager getPlatformAdapterManager() {
 		if (adapterManagerCache != null)
 			return adapterManagerCache;
-		if (!isPlatformAvailable()) {
-			Activator
-					.getDefault()
-					.log(
-							new Status(
-									IStatus.ERROR,
-									Activator.PLUGIN_ID,
-									IStatus.ERROR,
-									"org.eclipse.core.runtime.Platform class not available", //$NON-NLS-1$
-									null));
-			return null;
-		} else {
+		if (isPlatformAvailable()) {
 			try {
 				Method m = platformClass.getMethod("getAdapterManager", null); //$NON-NLS-1$
 				adapterManagerCache = (IAdapterManager) m.invoke(null, null);
@@ -69,27 +79,16 @@ public class PlatformHelper {
 				Activator.getDefault().log(
 						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 								IStatus.ERROR,
-								"exception in getPlatformAdapterManager", e)); //$NON-NLS-1$
+								"Exception in PlatformHelper.getPlatformAdapterManager()", e)); //$NON-NLS-1$
 				return null;
 			}
-		}
+		} else return null;
 	}
 
 	public synchronized static IExtensionRegistry getExtensionRegistry() {
 		if (extensionRegistryCache != null)
 			return extensionRegistryCache;
-		if (!isPlatformAvailable()) {
-			Activator
-					.getDefault()
-					.log(
-							new Status(
-									IStatus.ERROR,
-									Activator.PLUGIN_ID,
-									IStatus.ERROR,
-									"org.eclipse.core.runtime.Platform class not available", //$NON-NLS-1$
-									null));
-			return null;
-		} else {
+		if (isPlatformAvailable()) {
 			try {
 				Method m = platformClass
 						.getMethod("getExtensionRegistry", null); //$NON-NLS-1$
@@ -100,10 +99,10 @@ public class PlatformHelper {
 				Activator.getDefault().log(
 						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 								IStatus.ERROR,
-								"exception in getExtensionRegistry", e)); //$NON-NLS-1$
+								"Exception in PlatformHelper.getExtensionRegistry()", e)); //$NON-NLS-1$
 				return null;
 			}
-		}
+			
+		} else return null;
 	}
-
 }
