@@ -27,10 +27,10 @@ public class TrivialSharedObject extends BaseSharedObject {
 		super.initialize();
 	}
 
-	public void sendMessageTo(ID targetID, String message) {
+	public void sendMessageTo(String from, ID targetID, String message) {
 		try {
 			super.sendSharedObjectMsgTo(targetID, SharedObjectMsg.createMsg(
-					null, "handleMessage", message));
+					null, "handleMessage", from, message));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -45,11 +45,9 @@ public class TrivialSharedObject extends BaseSharedObject {
 		return false;
 	}
 
-	protected void handleMessage(String message) {
-		// XXX this should call the view back to display the message/do other
-		// things, etc
-		System.out
-				.println("TrivialSharedObject.handleMessage(" + message + ")");
+	protected void handleMessage(String from, String message) {
+		System.out.println("SharedObject.handleMessage(from="
+				+ from + ",msg=" + message + ")");
 	}
 
 }

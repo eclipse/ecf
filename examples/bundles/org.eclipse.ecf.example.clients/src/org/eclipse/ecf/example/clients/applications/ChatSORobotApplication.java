@@ -11,7 +11,6 @@
 package org.eclipse.ecf.example.clients.applications;
 
 import org.eclipse.core.runtime.IPlatformRunnable;
-import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.util.ECFException;
@@ -68,7 +67,7 @@ public class ChatSORobotApplication implements IPlatformRunnable,
 
 		client.doConnect(connectTarget, password);
 
-		System.out.println("ECF chat robot connected to: " + connectTarget);
+		System.out.println("ECF so chat robot ("+connectTarget+")");
 
 		// Send initial message to target user
 		client.sendChat(targetIMUser, "Hi, I'm an IM robot");
@@ -79,8 +78,7 @@ public class ChatSORobotApplication implements IPlatformRunnable,
 		// out-of-band via shared object
 		while (running && count++ < WAIT_COUNT) {
 			// Send shared object message
-			sharedObject.sendMessageTo(client.createID(targetIMUser), count
-					+ " hello there");
+			sharedObject.sendMessageTo(connectTarget, client.createID(targetIMUser), "hello");
 			wait(WAIT_TIME);
 		}
 	}
