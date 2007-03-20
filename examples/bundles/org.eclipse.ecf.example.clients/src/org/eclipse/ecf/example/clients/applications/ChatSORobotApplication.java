@@ -67,7 +67,7 @@ public class ChatSORobotApplication implements IPlatformRunnable,
 
 		client.doConnect(connectTarget, password);
 
-		System.out.println("ECF so chat robot ("+connectTarget+")");
+		System.out.println("ECF so chat robot (" + connectTarget + ")");
 
 		// Send initial message to target user
 		client.sendChat(targetIMUser, "Hi, I'm an IM robot");
@@ -78,7 +78,8 @@ public class ChatSORobotApplication implements IPlatformRunnable,
 		// out-of-band via shared object
 		while (running && count++ < WAIT_COUNT) {
 			// Send shared object message
-			sharedObject.sendMessageTo(connectTarget, client.createID(targetIMUser), "hello");
+			sharedObject.sendMessageTo(client.createID(targetIMUser),
+					"hello from " + userName);
 			wait(WAIT_TIME);
 		}
 	}

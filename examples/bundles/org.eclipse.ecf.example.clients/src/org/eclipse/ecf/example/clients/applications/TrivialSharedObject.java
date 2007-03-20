@@ -27,10 +27,10 @@ public class TrivialSharedObject extends BaseSharedObject {
 		super.initialize();
 	}
 
-	public void sendMessageTo(String from, ID targetID, String message) {
+	public void sendMessageTo(ID targetID, String message) {
 		try {
 			super.sendSharedObjectMsgTo(targetID, SharedObjectMsg.createMsg(
-					null, "handleMessage", from, message));
+					null, "handleMessage", message));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -45,9 +45,8 @@ public class TrivialSharedObject extends BaseSharedObject {
 		return false;
 	}
 
-	protected void handleMessage(String from, String message) {
-		System.out.println("SharedObject.handleMessage(from="
-				+ from + ",msg=" + message + ")");
+	protected void handleMessage(String message) {
+		System.out.println("SharedObject.handleMessage(" + message + ")");
 	}
 
 }
