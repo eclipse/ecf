@@ -150,7 +150,7 @@ public class XMPPChatManager implements IChatManager {
 
 	protected void fireChatMessage(ID fromID, ID threadID, Type type,
 			String subject, String body, Map properties) {
-		fireMessageEvent(new ChatMessageEvent(fromID, new ChatMessage(threadID,
+		fireMessageEvent(new ChatMessageEvent(fromID, new ChatMessage(fromID, threadID,
 				createMessageType(type), subject, body, properties)));
 	}
 
