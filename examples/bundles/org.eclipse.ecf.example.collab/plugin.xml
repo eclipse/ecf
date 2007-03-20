@@ -29,25 +29,14 @@
             label="ECF"
             visible="true"
             id="org.eclipse.ecf.example.collab.actionSet">
-            <!--
-         <action
-               toolbarPath="org.eclipse.ecf.example.collab.topseparator"
-               label="Connect Workspace..."
-               class="org.eclipse.ecf.example.collab.actions.WorkbenchAction"
-               tooltip="Connect Workspace to ECF Group"
-               icon="icons/person.gif"
-               style="push"
-               menubarPath="org.eclipse.ecf.example.collab.topmenu/org.eclipse.ecf.example.collab.topseparator"
-               id="org.eclipse.ecf.example.collab.joingroupaction"/>
-               -->
                <action
                toolbarPath="org.eclipse.ecf.example.collab.topseparator"
-               label="Connect Workspace (new dialog)..."
+               label="Connect to ECF Provider..."
                class="org.eclipse.ecf.example.collab.actions.NewWorkbenchAction"
-               tooltip="Connect Workspace to ECF Group"
+               tooltip="Connect to ECF Provider"
                icon="icons/group.gif"
                style="push"
-               menubarPath="org.eclipse.ecf.example.collab.topmenu/org.eclipse.ecf.example.collab.topseparator"
+               menubarPath="file/#additions"
                id="org.eclipse.ecf.example.collab.joingroupaction"/>
       </actionSet>
    </extension>
