@@ -70,13 +70,8 @@ public class AddBuddyDialog extends Dialog {
 		gridLayout_2.numColumns = 2;
 		composite.setLayout(gridLayout_2);
 
-		// final Label l = new Label(composite, SWT.NONE);
-
-		final Label label_4 = new Label(composite, SWT.NONE);
-		label_4.setText("<user>@<jabberserver>");
-
 		final Label label_3 = new Label(composite, SWT.NONE);
-		label_3.setText("Jabber User ID:");
+		label_3.setText("User ID:");
 
 		usertext = new Text(composite, SWT.BORDER);
 		usertext.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
@@ -96,18 +91,12 @@ public class AddBuddyDialog extends Dialog {
 				}
 			}
 		});
-		/*
-		 * final Label label_1 = new Label(composite, SWT.NONE);
-		 * label_1.setText("Group:");
-		 * 
-		 * groups = new Combo(composite, SWT.NONE);
-		 * groups.setToolTipText("Select group or enter new group"); final
-		 * GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		 * gridData.widthHint = 141; groups.setLayoutData(gridData); if
-		 * (existing != null) { for(int i=0; i < existing.length; i++) {
-		 * groups.add(existing[i]); } if (selectedGroup != -1)
-		 * groups.select(selectedGroup); else groups.select(0); }
-		 */
+
+		new Label(composite, SWT.NONE);
+
+		final Label label_4 = new Label(composite, SWT.NONE);
+		label_4.setText("example: user@jabberserver.com");
+
 		final Label label_2 = new Label(composite, SWT.NONE);
 		label_2.setText("Nickname:");
 
