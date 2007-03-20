@@ -54,5 +54,11 @@ public interface IChatManager {
 	 *         typing messages not supported by this provider.
 	 */
 	public ITypingMessageSender getTypingMessageSender();
+	
+	/**
+	 * Get the history manager for this chat manager.
+	 * @return IHistoryManager the history manager instance.  Will not be <code>null</code>.
+	 */
+	public IHistoryManager getHistoryManager();
 
 }
