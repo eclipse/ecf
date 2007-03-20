@@ -106,6 +106,19 @@ public class XMPPChatManager implements IChatManager {
 		public Object getAdapter(Class adapter) {
 			return null;
 		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.presence.im.IHistoryManager#isActive()
+		 */
+		public boolean isActive() {
+			return false;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.presence.im.IHistoryManager#makeActive(boolean, java.util.Map)
+		 */
+		public void makeActive(boolean active, Map options) {
+		}
 	};
 	
 	public XMPPChatManager(XMPPContainerPresenceHelper presenceHelper) {
