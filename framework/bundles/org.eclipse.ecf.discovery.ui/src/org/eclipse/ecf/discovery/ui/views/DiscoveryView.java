@@ -315,12 +315,6 @@ public class DiscoveryView extends ViewPart {
 				return;
 			IServiceID svcID = serviceInfo.getServiceID();
 			TreeParent typenode = findServiceTypeNode(svcID.getServiceType());
-			URI uri = null;
-			try {
-				uri = new URI(serviceInfo.getServiceID().getName());
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
 			if (typenode == null) {
 				typenode = new TreeParent(null, svcID.getServiceType(),
 						serviceInfo);
@@ -344,8 +338,6 @@ public class DiscoveryView extends ViewPart {
 			TreeObject weighto = new TreeObject("Weight: "
 					+ serviceInfo.getWeight());
 			newEntry.addChild(weighto);
-			TreeObject urio = new TreeObject("URI: " + uri);
-			newEntry.addChild(urio);
 			IServiceProperties props = serviceInfo.getServiceProperties();
 			if (props != null) {
 				for (Enumeration e = props.getPropertyNames(); e
