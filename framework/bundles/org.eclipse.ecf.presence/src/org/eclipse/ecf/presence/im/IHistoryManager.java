@@ -24,11 +24,33 @@ public interface IHistoryManager extends IAdaptable {
 	/**
 	 * Get history for given partnerID.
 	 * 
-	 * @param partnerID the ID of the partner we want history for.  May not be <code>null</code>.
-	 * @param options any options associated with getting history info.  May be <code>null</code>.
-	 * @return IHistory for given partnerID.  Will return <code>null</code> if not history exists (with given
-	 * options) for the given partnerID.
+	 * @param partnerID
+	 *            the ID of the partner we want history for. May not be
+	 *            <code>null</code>.
+	 * @param options
+	 *            any options associated with getting history info. May be
+	 *            <code>null</code>.
+	 * @return IHistory for given partnerID. Will return <code>null</code> if
+	 *         not history exists (with given options) for the given partnerID.
 	 */
 	public IHistory getHistory(ID partnerID, Map options);
-	
+
+	/**
+	 * 
+	 * @return <code>true</code> if history manager is active (recording
+	 *         history at all).
+	 */
+	public boolean isActive();
+
+	/**
+	 * Make this history manager active or inactive.
+	 * 
+	 * @param active
+	 *            <code>true</code> to make this history manager active,
+	 *            <code>false</code> to make it inactive.
+	 * @param options
+	 *            any options associated with the history manager being made
+	 *            active or inactive.
+	 */
+	public void makeActive(boolean active, Map options);
 }
