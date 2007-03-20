@@ -177,6 +177,10 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 		containerToConnect.connect(connectID, context);
 	}
 
+	protected void connectClient(int client) throws ContainerConnectException {
+		connectClient(getClient(client), getServerConnectID(client), getConnectContext(client));
+	}
+	
 	protected void disconnectClients() throws Exception {
 		IContainer[] clients = getClients();
 		for (int i = 0; i < clients.length; i++) {
