@@ -69,12 +69,12 @@
          </menu>
          <action
                class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
-               icon="icons/sample.gif"
+               icon="icons/group.gif"
                id="org.eclipse.ecf.ui.actions.SampleAction"
-               label="Connect to Providers"
+               label="Connect to ECF Provider"
                style="pulldown"
                toolbarPath="sampleGroup"
-               tooltip="Connect to Providers">
+               tooltip="Connect to ECF Provider">
          </action>
       </actionSet>
    </extension>
