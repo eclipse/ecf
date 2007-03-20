@@ -116,6 +116,13 @@ final class MSNContainer implements IContainer, IChatManager,
 		public Object getAdapter(Class adapter) {
 			return null;
 		}
+
+		public boolean isActive() {
+			return false;
+		}
+
+		public void makeActive(boolean active, Map options) {
+		}
 	};
 	
 
