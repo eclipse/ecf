@@ -36,9 +36,8 @@ public class PlatformHelper {
 
 	static {
 		try {
-			platformClass = Class.forName(
-					"org.eclipse.core.runtime.Platform"); //$NON-NLS-1$
-		} catch (ClassNotFoundException e) {
+			platformClass = Class.forName("org.eclipse.core.runtime.Platform"); //$NON-NLS-1$
+		} catch (Exception e) {
 			// Platform not available...just leave platformClass == null
 		}
 	}
