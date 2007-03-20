@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.ID;
 /**
  * 
  */
-public class PresenceContainerConnectTest extends PresenceAbstractTestCase {
+public class ConnectTest extends PresenceAbstractTestCase {
 
 	public static final int CLIENT_COUNT = 2;
 	public static final int WAITTIME= 3000;

@@ -47,8 +47,9 @@ public abstract class PresenceAbstractTestCase extends ContainerAbstractTestCase
 		}
 	}
 
-	protected IPresenceContainerAdapter getPresenceAdapter() {
-		return (IPresenceContainerAdapter) getClients()[0].getAdapter(IPresenceContainerAdapter.class);
+	protected IPresenceContainerAdapter getPresenceAdapter(int client) {
+		IContainer c = getClient(client);
+		if (c == null) return null;
+		return (IPresenceContainerAdapter) c.getAdapter(IPresenceContainerAdapter.class);
 	}
-
 }

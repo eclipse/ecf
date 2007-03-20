@@ -23,7 +23,7 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 /**
  *
  */
-public class PresenceContainerTest extends ContainerAbstractTestCase {
+public class AdapterAccessTest extends ContainerAbstractTestCase {
 
 	private static final String XMPP_CONTAINER = "ecf.xmpp.smack";
 
