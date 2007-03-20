@@ -12,12 +12,9 @@ package org.eclipse.ecf.internal.provider.jmdns;
 
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.util.PlatformHelper;
-import org.eclipse.ecf.discovery.service.IDiscoveryService;
-import org.eclipse.ecf.provider.jmdns.container.JMDNSDiscoveryContainer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -34,8 +31,6 @@ public class JMDNSPlugin implements BundleActivator {
 	public static final String NAMESPACE_IDENTIFIER = Messages
 			.getString("JMDNSPlugin.namespace.identifier"); //$NON-NLS-1$
 
-	private ServiceRegistration serviceRegistration = null;
-	
 	/**
 	 * The constructor.
 	 */
@@ -67,10 +62,6 @@ public class JMDNSPlugin implements BundleActivator {
 	 */
 	public void start(BundleContext context) throws Exception {
 		this.context = context;
-		JMDNSDiscoveryContainer container = new JMDNSDiscoveryContainer();
-		container.connect(null, null);
-		serviceRegistration = context.registerService(IDiscoveryService.class
-				.getName(), container, null);
 	}
 
 	protected Bundle getBundle() {
@@ -81,10 +72,6 @@ public class JMDNSPlugin implements BundleActivator {
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
-		if (serviceRegistration != null) {
-			serviceRegistration.unregister();
-			serviceRegistration = null;
-		}
 		if (adapterManagerTracker != null) {
 			adapterManagerTracker.close();
 			adapterManagerTracker = null;
