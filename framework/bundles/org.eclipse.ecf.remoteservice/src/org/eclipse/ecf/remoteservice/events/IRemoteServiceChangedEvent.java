@@ -8,14 +8,12 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
+
 package org.eclipse.ecf.remoteservice.events;
 
-
 /**
- * Remote service registered event. Instances of this class will be received
- * when a remote service has been registered.
- * 
+ * Remote service changed event.
  */
-public interface IRemoteServiceRegisteredEvent extends IRemoteServiceEvent {
+public interface IRemoteServiceChangedEvent extends IRemoteServiceEvent {
 
 }
