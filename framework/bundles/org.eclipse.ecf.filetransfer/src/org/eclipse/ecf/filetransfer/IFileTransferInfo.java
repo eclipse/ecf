@@ -29,6 +29,13 @@ public interface IFileTransferInfo extends IAdaptable {
 	public File getFile();
 
 	/**
+	 * Get the file size (in bytes).
+	 * 
+	 * @return long file size (in bytes).  If file size is unknown, will return -1.
+	 */
+	public long getFileSize();
+	
+	/**
 	 * Get any properties associated with this file transfer. The map keys and
 	 * values are assumed to be Strings.
 	 * 
@@ -45,4 +52,10 @@ public interface IFileTransferInfo extends IAdaptable {
 	 */
 	public String getDescription();
 
+	/**
+	 * Get the mime type string for this file transfer info.
+	 * 
+	 * @return String mime type.  May return <code>null</code> if mime type is not known.
+	 */
+	public String getMimeType();
 }

@@ -10,6 +10,7 @@ package org.eclipse.ecf.filetransfer;
 
 import java.io.File;
 import java.io.Serializable;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ import org.eclipse.ecf.internal.filetransfer.Messages;
  * {@link IFileTransferRequestEvent#getFileTransferInfo()}
  * 
  */
-public class BaseFileTransferInfo implements IFileTransferInfo, Serializable {
+public class FileTransferInfo implements IFileTransferInfo, Serializable {
 
 	private static final long serialVersionUID = 8354226751625912190L;
 
@@ -32,20 +33,27 @@ public class BaseFileTransferInfo implements IFileTransferInfo, Serializable {
 
 	protected String description;
 
-	public BaseFileTransferInfo(File file) {
+	protected String mimeType = null;
+	
+	public FileTransferInfo(File file) {
 		this(file, null);
 	}
 
-	public BaseFileTransferInfo(File file, Map properties) {
+	public FileTransferInfo(File file, Map properties) {
 		this(file, properties, null);
 	}
 
-	public BaseFileTransferInfo(File file, Map properties, String description) {
+	public FileTransferInfo(File file, Map properties, String description) {
+		this(file,properties,description,null);
+	}
+
+	public FileTransferInfo(File file, Map properties, String description, String mimeType) {
 		if (file == null)
 			throw new NullPointerException(Messages.BaseFileTransferInfo_File_Not_Null);
 		this.file = file;
 		this.properties = (properties == null) ? new HashMap() : properties;
 		this.description = description;
+		this.mimeType = mimeType;
 	}
 
 	/*
@@ -82,5 +90,21 @@ public class BaseFileTransferInfo implements IFileTransferInfo, Serializable {
 	 */
 	public Object getAdapter(Class adapter) {
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IFileTransferInfo#getFileSize()
+	 */
+	public long getFileSize() {
+		return file.length();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IFileTransferInfo#getMimeType()
+	 */
+	public String getMimeType() {
+		if (mimeType == null)
+			return URLConnection.guessContentTypeFromName(file.getAbsolutePath());
+		return mimeType;
 	}
 }
