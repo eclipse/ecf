@@ -25,4 +25,12 @@ public interface IIncomingFileTransfer extends IFileTransfer {
 	 *         support reporting of number of bytes received during transfer
 	 */
 	public long getBytesReceived();
+	
+	/**
+	 * Get listener assigned to this incoming file transfer.  May be <code>null</code> if no listener 
+	 * has been provided.
+	 * 
+	 * @param listener the IFileTransferListener provided for this incoming file transfer.
+	 */
+	public IFileTransferListener getListener();
 }

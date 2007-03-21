@@ -9,9 +9,11 @@
 package org.eclipse.ecf.filetransfer.events;
 
 import java.io.File;
+import java.io.OutputStream;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
+import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
@@ -40,7 +42,11 @@ public interface IFileTransferRequestEvent extends IFileTransferEvent {
 	/**
 	 * Accept the file transfer request. This method should be called if the
 	 * receiver of the IFileTransferRequestEvent would like to accept the file
-	 * transfer request. Will not return <code>null</code>.
+	 * transfer request. Will not return <code>null</code>. Once called
+	 * successfully, then {@link #requestAccepted()} will return true, and
+	 * further calls to {@link #accept(File)} or
+	 * {@link #accept(OutputStream, IFileTransferListener)} will throw
+	 * IncomingFileTransferExceptions.
 	 * 
 	 * @param localFileToSave
 	 *            the file on the local file system to receive the remote file.
@@ -54,6 +60,30 @@ public interface IFileTransferRequestEvent extends IFileTransferEvent {
 			throws IncomingFileTransferException;
 
 	/**
+	 * Accept the file transfer request. This method should be called if the
+	 * receiver of the IFileTransferRequestEvent would like to accept the file
+	 * transfer request. Will not return <code>null</code>. Once called
+	 * successfully, then {@link #requestAccepted()} will return true, and
+	 * further calls to {@link #accept(File)} or
+	 * {@link #accept(OutputStream, IFileTransferListener)} will throw
+	 * IncomingFileTransferExceptions.
+	 * 
+	 * @param outputStream
+	 *            the output stream to receive the accepted file contents. Must
+	 *            not be <code>null</code>.
+	 * @param listener
+	 *            for file transfer events during file reception. May be
+	 *            <code>null</code>.
+	 * @return IIncomingFileTransfer to receive file. Will not be
+	 *         <code>null</code>.
+	 * @throws IncomingFileTransferException
+	 *             if accept message cannot be delivered back to requester
+	 */
+	public IIncomingFileTransfer accept(OutputStream outputStream,
+			IFileTransferListener listener)
+			throws IncomingFileTransferException;
+
+	/**
 	 * Reject the file transfer request. This method should be called if the
 	 * receiver of the IFileTransferRequestEvent would like to reject the file
 	 * transfer request
@@ -62,8 +92,9 @@ public interface IFileTransferRequestEvent extends IFileTransferEvent {
 	public void reject();
 
 	/**
-	 * If request was accepted from remote target this method will return true,
-	 * if rejected or failed returns false.
+	 * If request was accepted from remote target (via successful call to
+	 * {@link #accept(File)}this method will return true, if rejected or failed
+	 * returns false.
 	 * 
 	 * @return true if request was accepted, false if rejected or failed
 	 */
