@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: org.eclipse.ecf.provider.msn.ui;singleton:=true
+Bundle-SymbolicName: org.eclipse.ecf.provider.bittorrent.ui;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.eclipse.ecf.internal.provider.bittorrent.ui.Activator
 Bundle-Localization: plugin
