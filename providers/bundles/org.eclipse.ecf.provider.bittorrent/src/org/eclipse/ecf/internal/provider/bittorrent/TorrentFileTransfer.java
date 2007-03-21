@@ -183,4 +183,11 @@ final class TorrentFileTransfer implements IFileTransferPausable,
 		return paused;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getListener()
+	 */
+	public IFileTransferListener getListener() {
+		return listener;
+	}
+
 }
