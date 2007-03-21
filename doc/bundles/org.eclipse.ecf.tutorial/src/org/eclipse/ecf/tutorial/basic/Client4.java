@@ -11,14 +11,15 @@ package org.eclipse.ecf.tutorial.basic;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.example.clients.IMessageReceiver;
-import org.eclipse.ecf.example.clients.XMPPClient;
+import org.eclipse.ecf.example.clients.XMPPChatClient;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceListener;
+import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-public class Client4 extends XMPPClient {
+public class Client4 extends XMPPChatClient {
 	
 	private static final String DEFAULT_PASSWORD = "eclipsecon";
 	private static final String DEFAULT_USERNAME = "eclipsecon@ecf.eclipse.org";
@@ -26,11 +27,11 @@ public class Client4 extends XMPPClient {
 	public Client4() {
 		super();
 		setMessageReceiver(new IMessageReceiver() {
-			public void handleMessage(final String from, final String msg) {
+			public void handleMessage(final IChatMessage chatMessage) {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						MessageDialog.openInformation(null, "XMPP message from "
-								+ from, msg);
+								+ chatMessage.getFromID().getName(), chatMessage.getBody());
 					}
 				});
 			}});
