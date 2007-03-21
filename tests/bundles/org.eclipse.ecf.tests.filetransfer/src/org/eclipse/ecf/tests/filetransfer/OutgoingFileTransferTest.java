@@ -12,6 +12,7 @@
 package org.eclipse.ecf.tests.filetransfer;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -21,7 +22,6 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
-import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
@@ -54,42 +54,33 @@ public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
 			return null;
 	}
 
-	protected IIncomingFileTransferRequestListener incomingListener = new IIncomingFileTransferRequestListener() {
+	protected IFileTransferListener getFileTransferListener(final String prefix) {
+		return new IFileTransferListener() {
+			public void handleTransferEvent(IFileTransferEvent event) {
+				System.out.println(prefix+".handleTransferEvent("+event+")");
+			}};
+	}
+	
+	protected IIncomingFileTransferRequestListener requestListener = new IIncomingFileTransferRequestListener() {
 
 		public void handleFileTransferRequest(IFileTransferRequestEvent event) {
-			System.out.println("handleFileTransferRequest(" + event + ")");
+			System.out.println("receiver.handleFileTransferRequest(" + event + ")");
 			try {
-				event.accept(new File(TESTTARGETPATH, event
-						.getFileTransferInfo().getFile().getName()));
-			} catch (IncomingFileTransferException e) {
+				File f = new File(TESTTARGETPATH, event
+						.getFileTransferInfo().getFile().getName());
+				FileOutputStream fos = new FileOutputStream(f);
+				event.accept(fos,receiverTransferListener);
+				//event.accept(f);
+			} catch (Exception e) {
 				fail("exception calling accept for receive file transfer");
 			}
 		}
 
 	};
 
-	protected IFileTransferListener transferListener = new IFileTransferListener() {
-		public void handleTransferEvent(IFileTransferEvent event) {
-			System.out.println("handleTransferEvent(" + event + ")");
-		}
-	};
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.tests.presence.PresenceAbstractTestCase#setUp()
-	 */
-	protected void setUp() throws Exception {
-		setClientCount(2);
-		clients = createClients();
-		adapter0 = getOutgoingFileTransfer(0);
-		adapter0.addListener(incomingListener);
-		adapter1 = getOutgoingFileTransfer(1);
-		for (int i = 0; i < 2; i++) {
-			connectClient(i);
-		}
-	}
-
+	protected IFileTransferListener senderTransferListener = getFileTransferListener("sender");
+	protected IFileTransferListener receiverTransferListener = getFileTransferListener("receiver");
+	
 	protected ID getServerConnectID(int client) {
 		IContainer container = getClient(client);
 		Namespace connectNamespace = container.getConnectNamespace();
@@ -105,6 +96,22 @@ public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see org.eclipse.ecf.tests.presence.PresenceAbstractTestCase#setUp()
+	 */
+	protected void setUp() throws Exception {
+		setClientCount(2);
+		clients = createClients();
+		adapter0 = getOutgoingFileTransfer(0);
+		adapter0.addListener(requestListener);
+		adapter1 = getOutgoingFileTransfer(1);
+		for (int i = 0; i < 2; i++) {
+			connectClient(i);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see junit.framework.TestCase#tearDown()
 	 */
 	protected void tearDown() throws Exception {
@@ -113,7 +120,7 @@ public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
 
 	public void testSendRequest() throws Exception {
 		adapter1.sendOutgoingRequest(getServerConnectID(0), new File(
-				TESTSRCFILE), transferListener, null);
+				TESTSRCFILE), senderTransferListener, null);
 		sleep(20000);
 	}
 }
