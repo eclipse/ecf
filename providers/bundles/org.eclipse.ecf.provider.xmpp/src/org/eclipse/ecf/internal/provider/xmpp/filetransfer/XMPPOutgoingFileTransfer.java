@@ -210,7 +210,7 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 					});
 				}
 			}
-		}, "XMPP file send");
+		}, "ECF XMPP file send");
 
 		transferThread.start();
 	}
