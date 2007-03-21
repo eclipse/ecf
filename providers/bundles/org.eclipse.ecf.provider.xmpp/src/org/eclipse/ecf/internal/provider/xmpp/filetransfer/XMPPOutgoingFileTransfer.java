@@ -148,9 +148,7 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 								StringBuffer buf = new StringBuffer(
 										"OutgoingFileTransferResponseEvent[");
 								buf.append("requestAccepted=").append(
-										requestAccepted());
-								buf.append(";source=").append(getSource())
-										.append("]");
+										requestAccepted()).append("]");
 								return buf.toString();
 							}
 						});
@@ -202,9 +200,8 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 						public String toString() {
 							StringBuffer buf = new StringBuffer(
 									"IOutgoingFileTransferSendDoneEvent[");
-							buf.append("source=").append(getSource());
-							buf.append(";percentComplete=").append(
-									getSource().getPercentComplete()).append(
+							buf.append(";bytesSent=").append(
+									getSource().getBytesSent()).append(
 									"]");
 							return buf.toString();
 						}
@@ -276,8 +273,7 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 					public String toString() {
 						StringBuffer buf = new StringBuffer(
 								"IOutgoingFileTransferSendDataEvent[");
-						buf.append("source=").append(getSource());
-						buf.append(";bytesSent=").append(getSource().getBytesSent());
+						buf.append("bytesSent=").append(getSource().getBytesSent());
 						buf.append(";percentComplete=").append(
 								getSource().getPercentComplete()).append("]");
 						return buf.toString();
