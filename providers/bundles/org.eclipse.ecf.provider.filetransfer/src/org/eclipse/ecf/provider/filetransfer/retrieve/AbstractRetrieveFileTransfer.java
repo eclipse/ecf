@@ -225,7 +225,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 	}
 
 	public void cancel() {
-		job.cancel();
+		if (job != null) job.cancel();
 	}
 
 	public Exception getException() {
@@ -323,6 +323,10 @@ public abstract class AbstractRetrieveFileTransfer implements
 				} else
 					return false;
 			}
+	}
+	
+	public IFileTransferListener getListener() {
+		return listener;
 	}
 
 }
