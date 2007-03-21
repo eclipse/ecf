@@ -30,7 +30,7 @@ public interface IIncomingFileTransfer extends IFileTransfer {
 	 * Get listener assigned to this incoming file transfer.  May be <code>null</code> if no listener 
 	 * has been provided.
 	 * 
-	 * @param listener the IFileTransferListener provided for this incoming file transfer.
+	 * @return listener the IFileTransferListener provided for this incoming file transfer.
 	 */
 	public IFileTransferListener getListener();
 }
