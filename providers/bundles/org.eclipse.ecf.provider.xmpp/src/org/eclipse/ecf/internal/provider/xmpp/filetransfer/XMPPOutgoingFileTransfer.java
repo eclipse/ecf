@@ -200,6 +200,7 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 						public String toString() {
 							StringBuffer buf = new StringBuffer(
 									"IOutgoingFileTransferSendDoneEvent[");
+							buf.append("isDone="+getSource().isDone());
 							buf.append(";bytesSent=").append(
 									getSource().getBytesSent()).append(
 									"]");

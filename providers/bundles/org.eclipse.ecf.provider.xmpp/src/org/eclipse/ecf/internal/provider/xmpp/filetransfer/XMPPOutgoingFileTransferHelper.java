@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provider.xmpp;
+package org.eclipse.ecf.internal.provider.xmpp.filetransfer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
-import org.eclipse.ecf.internal.provider.xmpp.filetransfer.XMPPOutgoingFileTransfer;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPContainer;
 import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPID;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;

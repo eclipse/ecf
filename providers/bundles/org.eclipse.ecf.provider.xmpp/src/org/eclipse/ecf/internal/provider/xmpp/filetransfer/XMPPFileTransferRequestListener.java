@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provider.xmpp;
+package org.eclipse.ecf.internal.provider.xmpp.filetransfer;
 
 import java.io.File;
 import java.io.FileNotFoundException;

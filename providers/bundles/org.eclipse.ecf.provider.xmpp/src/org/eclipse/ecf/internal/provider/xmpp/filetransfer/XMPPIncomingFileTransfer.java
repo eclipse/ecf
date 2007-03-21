@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.internal.provider.xmpp;
+package org.eclipse.ecf.internal.provider.xmpp.filetransfer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +25,8 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
+import org.eclipse.ecf.internal.provider.xmpp.Messages;
+import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
 
 public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 
