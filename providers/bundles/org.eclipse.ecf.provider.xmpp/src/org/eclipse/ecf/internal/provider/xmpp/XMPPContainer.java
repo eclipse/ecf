@@ -201,6 +201,7 @@ public class XMPPContainer extends ClientSOContainer {
 			remoteServerID = null;
 			accountManager.setConnection(null);
 			chatRoomManager.setConnection(null, null, null);
+			outgoingFileTransferContainerAdapter.setConnection(null);
 		}
 		// notify listeners
 		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), groupID));
@@ -253,7 +254,7 @@ public class XMPPContainer extends ClientSOContainer {
 			chatRoomManager.setConnection(getConnectNamespace(),
 					originalTarget, conn);
 			presenceHelper.setUser(new User(originalTarget));
-
+			outgoingFileTransferContainerAdapter.setConnection(conn.getXMPPConnection());
 			// notify listeners
 			fireContainerEvent(new ContainerConnectedEvent(this.getID(),
 					originalTarget));

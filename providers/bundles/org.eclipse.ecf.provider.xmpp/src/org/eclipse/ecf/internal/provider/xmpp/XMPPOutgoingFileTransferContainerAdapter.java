@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.filetransfer.BaseFileTransferInfo;
+import org.eclipse.ecf.filetransfer.FileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
@@ -28,7 +28,6 @@ import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.internal.provider.xmpp.filetransfer.XMPPOutgoingFileTransfer;
 import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPID;
-import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
@@ -38,10 +37,12 @@ public class XMPPOutgoingFileTransferContainerAdapter implements
 
 	List transferListeners = new ArrayList();
 
-	List incomingTransferListeners = new ArrayList();
-
+	List incomingListeners = new ArrayList();
+	
 	XMPPContainer container = null;
 
+	FileTransferManager manager = null;
+	
 	public XMPPOutgoingFileTransferContainerAdapter(XMPPContainer container) {
 		this.container = container;
 	}
@@ -51,10 +52,8 @@ public class XMPPOutgoingFileTransferContainerAdapter implements
 			transferListeners.clear();
 		transferListeners = null;
 
-		if (incomingTransferListeners != null)
-			incomingTransferListeners.clear();
-		incomingTransferListeners = null;
 		container = null;
+		manager = null;
 	}
 
 	protected void addFileTransferListener(IFileTransferListener listener) {
@@ -66,19 +65,19 @@ public class XMPPOutgoingFileTransferContainerAdapter implements
 	}
 
 	public void addListener(IIncomingFileTransferRequestListener listener) {
-		incomingTransferListeners.add(listener);
+		if (listener == null) return;
+		XMPPFileTransferListener xmppListener = new XMPPFileTransferListener(container,listener);
+		incomingListeners.add(xmppListener);
+		if (this.manager != null) this.manager.addFileTransferListener(xmppListener);
 	}
 
 	public void sendOutgoingRequest(ID targetReceiver,
 			IFileTransferInfo localFileToSend,
 			IFileTransferListener progressListener, Map options)
 			throws OutgoingFileTransferException {
-		ECFConnection ecfConnection = container.getECFConnection();
-		if (ecfConnection == null || !ecfConnection.isConnected())
-			throw new OutgoingFileTransferException("not connected");
-		XMPPConnection xmppConnection = ecfConnection.getXMPPConnection();
-		FileTransferManager manager = new FileTransferManager(xmppConnection);
 
+		if (manager == null) throw new OutgoingFileTransferException("not connected");
+		
 		XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(
 				manager, (XMPPID) targetReceiver, localFileToSend,
 				progressListener);
@@ -104,14 +103,34 @@ public class XMPPOutgoingFileTransferContainerAdapter implements
 	}
 
 	public boolean removeListener(IIncomingFileTransferRequestListener listener) {
-		return incomingTransferListeners.remove(listener);
+		return true;
 	}
 
 	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend,
 			IFileTransferListener transferListener, Map options)
 			throws OutgoingFileTransferException {
-		sendOutgoingRequest(targetReceiver, new BaseFileTransferInfo(
+		sendOutgoingRequest(targetReceiver, new FileTransferInfo(
 				localFileToSend), transferListener, options);
+	}
+
+	/**
+	 * @param connection
+	 */
+	public void setConnection(XMPPConnection connection) {
+		if (connection != null) {
+			this.manager = new FileTransferManager(connection);
+			for(Iterator i=incomingListeners.iterator(); i.hasNext(); ) {
+				XMPPFileTransferListener ftl = (XMPPFileTransferListener) i.next();
+				this.manager.addFileTransferListener(ftl);
+			}
+		}
+		else {
+			for(Iterator i=incomingListeners.iterator(); i.hasNext(); ) {
+				XMPPFileTransferListener ftl = (XMPPFileTransferListener) i.next();
+				this.manager.removeFileTransferListener(ftl);
+			}
+			this.manager = null;
+		}
 	}
 
 }
