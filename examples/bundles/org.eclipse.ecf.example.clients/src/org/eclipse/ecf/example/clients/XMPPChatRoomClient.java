@@ -73,7 +73,7 @@ public class XMPPChatRoomClient {
 				.getAdapter(IPresenceContainerAdapter.class);
 		// Get sender interface
 		sender = presence.getChatManager().getChatMessageSender();
-		// Setup message listener to handle incoming messages
+		// Setup message requestListener to handle incoming messages
 		presence.getChatManager().addMessageListener(new IIMMessageListener() {
 			public void handleMessageEvent(IIMMessageEvent messageEvent) {
 				if (messageEvent instanceof IChatMessageEvent) {
