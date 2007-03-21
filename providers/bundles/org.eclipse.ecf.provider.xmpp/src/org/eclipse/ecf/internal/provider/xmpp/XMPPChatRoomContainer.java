@@ -211,7 +211,11 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 	public void connect(ID remote, IConnectContext connectContext)
 			throws ContainerConnectException {
 		if (!(remote instanceof XMPPRoomID)) {
-			throw new ContainerConnectException(NLS.bind(Messages.XMPPChatRoomContainer_Exception_Connect_Wrong_Type,remote));
+			throw new ContainerConnectException(
+					NLS
+							.bind(
+									Messages.XMPPChatRoomContainer_Exception_Connect_Wrong_Type,
+									remote));
 		}
 		XMPPRoomID roomID = (XMPPRoomID) remote;
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), remote,
@@ -348,8 +352,8 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 
 							public void nicknameChanged(String arg0, String arg1) {
 								// TODO Auto-generated method stub
-								System.out.println("nicknameChanged(" + arg0 + ","
-										+ arg1 + ")");
+								System.out.println("nicknameChanged(" + arg0
+										+ "," + arg1 + ")");
 
 							}
 						});
@@ -462,36 +466,43 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addMessageListener(org.eclipse.ecf.presence.IIMMessageListener)
 	 */
 	public void addMessageListener(IIMMessageListener listener) {
 		containerHelper.addChatRoomMessageListener(listener);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#removeMessageListener(org.eclipse.ecf.presence.IIMMessageListener)
 	 */
 	public void removeMessageListener(IIMMessageListener listener) {
-		containerHelper.removeChatRoomMessageListener(listener);		
+		containerHelper.removeChatRoomMessageListener(listener);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
 	 */
-	public void addChatRoomAdminListener(
-			IChatRoomAdminListener subjectListener) {
+	public void addChatRoomAdminListener(IChatRoomAdminListener subjectListener) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#removeChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
 	 */
 	public void removeChatRoomAdminListener(
 			IChatRoomAdminListener subjectListener) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

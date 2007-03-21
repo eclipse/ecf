@@ -32,43 +32,48 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 
-public class XMPPOutgoingFileTransferContainerAdapter implements
+public class XMPPOutgoingFileTransferHelper implements
 		IOutgoingFileTransferContainerAdapter {
 
 	List transferListeners = new ArrayList();
 
 	List incomingListeners = new ArrayList();
-	
+
 	XMPPContainer container = null;
 
 	FileTransferManager manager = null;
-	
-	public XMPPOutgoingFileTransferContainerAdapter(XMPPContainer container) {
+
+	public XMPPOutgoingFileTransferHelper(XMPPContainer container) {
 		this.container = container;
 	}
 
 	public void dispose() {
-		if (transferListeners != null)
-			transferListeners.clear();
-		transferListeners = null;
+		transferListeners.clear();
+		incomingListeners.clear();
 
-		container = null;
 		manager = null;
 	}
 
 	protected void addFileTransferListener(IFileTransferListener listener) {
-		transferListeners.add(listener);
+		synchronized (transferListeners) {
+			transferListeners.add(listener);
+		}
 	}
 
 	protected void removeFileTransferListener(IFileTransferListener listener) {
-		transferListeners.remove(listener);
+		synchronized (transferListeners) {
+			transferListeners.remove(listener);
+		}
 	}
 
 	public void addListener(IIncomingFileTransferRequestListener listener) {
-		if (listener == null) return;
-		XMPPFileTransferListener xmppListener = new XMPPFileTransferListener(container,listener);
+		if (listener == null)
+			return;
+		XMPPFileTransferRequestListener xmppListener = new XMPPFileTransferRequestListener(
+				container, listener);
 		incomingListeners.add(xmppListener);
-		if (this.manager != null) this.manager.addFileTransferListener(xmppListener);
+		if (this.manager != null)
+			this.manager.addFileTransferListener(xmppListener);
 	}
 
 	public void sendOutgoingRequest(ID targetReceiver,
@@ -76,8 +81,9 @@ public class XMPPOutgoingFileTransferContainerAdapter implements
 			IFileTransferListener progressListener, Map options)
 			throws OutgoingFileTransferException {
 
-		if (manager == null) throw new OutgoingFileTransferException("not connected");
-		
+		if (manager == null)
+			throw new OutgoingFileTransferException("not connected");
+
 		XMPPOutgoingFileTransfer fileTransfer = new XMPPOutgoingFileTransfer(
 				manager, (XMPPID) targetReceiver, localFileToSend,
 				progressListener);
@@ -87,14 +93,16 @@ public class XMPPOutgoingFileTransferContainerAdapter implements
 					.getDescription());
 		} catch (XMPPException e) {
 			throw new OutgoingFileTransferException(
-					"Exception sending start request", e);
+					"Exception sending outgoing file transfer request", e);
 		}
 	}
 
 	protected void fireFileTransferEvent(IFileTransferEvent event) {
-		for (Iterator i = transferListeners.iterator(); i.hasNext();) {
-			IFileTransferListener l = (IFileTransferListener) i.next();
-			l.handleTransferEvent(event);
+		synchronized (transferListeners) {
+			for (Iterator i = transferListeners.iterator(); i.hasNext();) {
+				IFileTransferListener l = (IFileTransferListener) i.next();
+				l.handleTransferEvent(event);
+			}
 		}
 	}
 
@@ -103,6 +111,19 @@ public class XMPPOutgoingFileTransferContainerAdapter implements
 	}
 
 	public boolean removeListener(IIncomingFileTransferRequestListener listener) {
+		if (listener == null)
+			return false;
+		synchronized (incomingListeners) {
+			for (Iterator i = incomingListeners.iterator(); i.hasNext();) {
+				XMPPFileTransferRequestListener ftl = (XMPPFileTransferRequestListener) i
+						.next();
+				if (ftl.hasListener(listener)) {
+					this.manager.removeFileTransferListener(ftl);
+					i.remove();
+				}
+			}
+
+		}
 		return true;
 	}
 
@@ -118,18 +139,23 @@ public class XMPPOutgoingFileTransferContainerAdapter implements
 	 */
 	public void setConnection(XMPPConnection connection) {
 		if (connection != null) {
-			this.manager = new FileTransferManager(connection);
-			for(Iterator i=incomingListeners.iterator(); i.hasNext(); ) {
-				XMPPFileTransferListener ftl = (XMPPFileTransferListener) i.next();
-				this.manager.addFileTransferListener(ftl);
+			synchronized (incomingListeners) {
+				this.manager = new FileTransferManager(connection);
+				for (Iterator i = incomingListeners.iterator(); i.hasNext();) {
+					XMPPFileTransferRequestListener ftl = (XMPPFileTransferRequestListener) i
+							.next();
+					this.manager.addFileTransferListener(ftl);
+				}
 			}
-		}
-		else {
-			for(Iterator i=incomingListeners.iterator(); i.hasNext(); ) {
-				XMPPFileTransferListener ftl = (XMPPFileTransferListener) i.next();
-				this.manager.removeFileTransferListener(ftl);
+		} else {
+			synchronized (incomingListeners) {
+				for (Iterator i = incomingListeners.iterator(); i.hasNext();) {
+					XMPPFileTransferRequestListener ftl = (XMPPFileTransferRequestListener) i
+							.next();
+					this.manager.removeFileTransferListener(ftl);
+				}
+				this.manager = null;
 			}
-			this.manager = null;
 		}
 	}
 

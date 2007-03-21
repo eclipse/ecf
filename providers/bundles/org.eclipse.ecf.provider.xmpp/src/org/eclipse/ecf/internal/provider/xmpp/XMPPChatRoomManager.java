@@ -101,7 +101,7 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 		this.connectedID = connectedID;
 		this.ecfConnection = connection;
 		if (connection != null) {
-			// Setup invitation listener
+			// Setup invitation requestListener
 			MultiUserChat.addInvitationListener(ecfConnection
 					.getXMPPConnection(), new InvitationListener() {
 				public void invitationReceived(XMPPConnection arg0,
@@ -365,11 +365,14 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	 */
 	public IChatRoomInfo createChatRoom(String roomname, Map properties)
 			throws ChatRoomCreateException {
-		if (roomname == null) throw new ChatRoomCreateException(roomname,"roomname cannot be null");
+		if (roomname == null)
+			throw new ChatRoomCreateException(roomname,
+					"roomname cannot be null");
 		try {
 			String nickname = ecfConnection.getXMPPConnection().getUser();
 			String server = ecfConnection.getXMPPConnection().getHost();
-			String domain = (properties == null)?XMPPRoomID.DOMAIN_DEFAULT:(String) properties.get(PROP_XMPP_CONFERENCE);
+			String domain = (properties == null) ? XMPPRoomID.DOMAIN_DEFAULT
+					: (String) properties.get(PROP_XMPP_CONFERENCE);
 			String conference = XMPPRoomID.fixConferenceDomain(domain, server);
 			String roomID = roomname + XMPPRoomID.AT_SIGN + conference;
 			// create proxy to the room
@@ -380,8 +383,10 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 				// otherwise create a new one
 				muc.create(nickname);
 				muc.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));
-				String subject = (properties == null)?null:(String)properties.get(PROP_XMPP_SUBJECT);
-				if (subject != null) muc.changeSubject(subject);
+				String subject = (properties == null) ? null
+						: (String) properties.get(PROP_XMPP_SUBJECT);
+				if (subject != null)
+					muc.changeSubject(subject);
 			}
 
 			String longname = muc.getRoom();
@@ -396,7 +401,8 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 				XMPPRoomID xid = new XMPPRoomID(connectedID.getNamespace(),
 						ecfConnection.getXMPPConnection(), roomID, longname);
 				return new ECFRoomInfo(xid, info, connectedID);
-			} else throw new XMPPException("No room info for "+roomID);
+			} else
+				throw new XMPPException("No room info for " + roomID);
 		} catch (XMPPException e) {
 			throw new ChatRoomCreateException(roomname, e.getMessage(), e);
 		} catch (URISyntaxException e) {

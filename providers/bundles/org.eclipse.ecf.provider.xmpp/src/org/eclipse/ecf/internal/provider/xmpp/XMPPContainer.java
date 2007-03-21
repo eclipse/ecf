@@ -80,7 +80,7 @@ public class XMPPContainer extends ClientSOContainer {
 
 	protected XMPPChatRoomManager chatRoomManager = null;
 
-	protected XMPPOutgoingFileTransferContainerAdapter outgoingFileTransferContainerAdapter = null;
+	protected XMPPOutgoingFileTransferHelper outgoingFileTransferContainerAdapter = null;
 
 	protected XMPPContainerPresenceHelper presenceHelper = null;
 
@@ -95,7 +95,7 @@ public class XMPPContainer extends ClientSOContainer {
 		this.presenceHelperID = IDFactory.getDefault().createStringID(
 				CONTAINER_HELPER_ID);
 		presenceHelper = new XMPPContainerPresenceHelper(this);
-		outgoingFileTransferContainerAdapter = new XMPPOutgoingFileTransferContainerAdapter(
+		outgoingFileTransferContainerAdapter = new XMPPOutgoingFileTransferHelper(
 				this);
 	}
 
@@ -254,7 +254,8 @@ public class XMPPContainer extends ClientSOContainer {
 			chatRoomManager.setConnection(getConnectNamespace(),
 					originalTarget, conn);
 			presenceHelper.setUser(new User(originalTarget));
-			outgoingFileTransferContainerAdapter.setConnection(conn.getXMPPConnection());
+			outgoingFileTransferContainerAdapter.setConnection(conn
+					.getXMPPConnection());
 			// notify listeners
 			fireContainerEvent(new ContainerConnectedEvent(this.getID(),
 					originalTarget));
@@ -368,11 +369,13 @@ public class XMPPContainer extends ClientSOContainer {
 			Object extension = i.next();
 			if (extension instanceof VCardTempXUpdateExtension) {
 				VCardTempXUpdateExtension photoExtension = (VCardTempXUpdateExtension) extension;
-				deliverEvent(new PresenceEvent((Presence) packet, photoExtension.getPhotoDataAsBytes()));
+				deliverEvent(new PresenceEvent((Presence) packet,
+						photoExtension.getPhotoDataAsBytes()));
 				return true;
 			} else if (extension instanceof XHTMLExtension) {
 				XHTMLExtension xhtmlExtension = (XHTMLExtension) extension;
-				deliverEvent(new MessageEvent((Message) packet, xhtmlExtension.getBodies()));
+				deliverEvent(new MessageEvent((Message) packet, xhtmlExtension
+						.getBodies()));
 				return true;
 			}
 			trace("XMPPContainer.handleAsExtension(ext=" + extension

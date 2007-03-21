@@ -182,12 +182,16 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 						if (inputStream != null) {
 							inputStream.close();
 						}
-
+					} catch (IOException e) {
+						/* Do Nothing */
+					}
+					try {
 						outs.flush();
 						outs.close();
 					} catch (IOException e) {
 						/* Do Nothing */
 					}
+					// Then notify that the sending is done
 					fireTransferListenerEvent(new IOutgoingFileTransferSendDoneEvent() {
 						private static final long serialVersionUID = -6315336868737148845L;
 
@@ -208,7 +212,7 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 					});
 				}
 			}
-		}, "ecf xmpp provider file send");
+		}, "XMPP file send");
 
 		transferThread.start();
 	}

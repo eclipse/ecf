@@ -196,8 +196,11 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		}
 
 		org.eclipse.ecf.presence.roster.IRosterSubscriptionSender rosterSubscriptionSender = new org.eclipse.ecf.presence.roster.IRosterSubscriptionSender() {
-			/* (non-Javadoc)
-			 * @see org.eclipse.ecf.presence.roster.IRosterSubscriptionSender#sendRosterAdd(java.lang.String, java.lang.String, java.lang.String[])
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see org.eclipse.ecf.presence.roster.IRosterSubscriptionSender#sendRosterAdd(java.lang.String,
+			 *      java.lang.String, java.lang.String[])
 			 */
 			public void sendRosterAdd(String user, String name, String[] groups)
 					throws ECFException {
@@ -209,7 +212,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 				}
 			}
 
-			/* (non-Javadoc)
+			/*
+			 * (non-Javadoc)
+			 * 
 			 * @see org.eclipse.ecf.presence.roster.IRosterSubscriptionSender#sendRosterRemove(org.eclipse.ecf.core.identity.ID)
 			 */
 			public void sendRosterRemove(ID userID) throws ECFException {
@@ -256,14 +261,15 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	/**
-	 * @return IRosterManager roster manager.  Will not return <code>null</code>.
+	 * @return IRosterManager roster manager. Will not return <code>null</code>.
 	 */
 	public IRosterManager getRosterManager() {
 		return rosterManager;
 	}
 
 	/**
-	 * @param user set the user for this presence helper.  
+	 * @param user
+	 *            set the user for this presence helper.
 	 */
 	public void setUser(IUser user) {
 		rosterManager.setUser(user);
@@ -318,13 +324,14 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	protected IRosterEntry createRosterEntry(RosterEntry entry) {
-		return createRosterEntry(createIDFromName(entry.getUser()), entry.getName(), entry.getGroups());
+		return createRosterEntry(createIDFromName(entry.getUser()), entry
+				.getName(), entry.getGroups());
 	}
 
 	protected IRosterEntry createRosterEntry(RosterPacket.Item entry) {
-		return createRosterEntry(createIDFromName(entry.getUser()), entry.getName(), entry.getGroupNames());
+		return createRosterEntry(createIDFromName(entry.getUser()), entry
+				.getName(), entry.getGroupNames());
 	}
-
 
 	protected void handleIQEvent(IQEvent evt) {
 		IQ iq = evt.getIQ();
@@ -613,8 +620,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 				createIDFromName(entry.getUser()), entry.getName()));
 	}
 
-	private IRosterItem[] createRosterEntries(Iterator grps, IRosterItem parent,
-			IUser user) {
+	private IRosterItem[] createRosterEntries(Iterator grps,
+			IRosterItem parent, IUser user) {
 		List result = new ArrayList();
 		if (grps.hasNext()) {
 			for (; grps.hasNext();) {
@@ -654,28 +661,36 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		return (IRosterItem[]) result.toArray(new IRosterItem[] {});
 	}
 
-	protected IRosterEntry createRosterEntry(ID userID, String name, Iterator grps) {
+	protected IRosterEntry createRosterEntry(ID userID, String name,
+			Iterator grps) {
 		List groups = new ArrayList();
 		for (; grps.hasNext();) {
 			Object o = grps.next();
-			String groupName = (o instanceof String)?(String) o:((RosterGroup) o).getName();
-			IRosterGroup localGrp = new org.eclipse.ecf.presence.roster.RosterGroup(roster,groupName);
+			String groupName = (o instanceof String) ? (String) o
+					: ((RosterGroup) o).getName();
+			IRosterGroup localGrp = new org.eclipse.ecf.presence.roster.RosterGroup(
+					roster, groupName);
 			groups.add(localGrp);
 		}
 		IUser user = new User(userID, name);
 		IRosterEntry newEntry = null;
-		if (groups.size() == 0) return new org.eclipse.ecf.presence.roster.RosterEntry(roster,user,null);
-		else for(int i=0; i < groups.size(); i++) {
-			IRosterGroup grp = (IRosterGroup) groups.get(i);
-			if (i == 0) newEntry = new org.eclipse.ecf.presence.roster.RosterEntry(grp,user, null);
-			else {
-				grp.getEntries().add(newEntry);
-				newEntry.getGroups().add(grp);
+		if (groups.size() == 0)
+			return new org.eclipse.ecf.presence.roster.RosterEntry(roster,
+					user, null);
+		else
+			for (int i = 0; i < groups.size(); i++) {
+				IRosterGroup grp = (IRosterGroup) groups.get(i);
+				if (i == 0)
+					newEntry = new org.eclipse.ecf.presence.roster.RosterEntry(
+							grp, user, null);
+				else {
+					grp.getEntries().add(newEntry);
+					newEntry.getGroups().add(grp);
+				}
 			}
-		}
 		return newEntry;
 	}
-	
+
 	private void createRosterEntries(IRosterItem parent, IUser user, List result) {
 		org.eclipse.ecf.presence.roster.RosterEntry oldEntry = findRosterEntry(
 				(org.eclipse.ecf.presence.roster.RosterGroup) null, user);

@@ -47,12 +47,18 @@ public class XMPPChatManager implements IChatManager {
 
 	protected IChatMessageSender chatMessageSender = new IChatMessageSender() {
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.presence.im.IChatMessageSender#sendChatMessage(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.presence.im.IChatMessage.Type, java.lang.String, java.lang.String)
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.presence.im.IChatMessageSender#sendChatMessage(org.eclipse.ecf.core.identity.ID,
+		 *      org.eclipse.ecf.core.identity.ID,
+		 *      org.eclipse.ecf.presence.im.IChatMessage.Type, java.lang.String,
+		 *      java.lang.String)
 		 */
 		public void sendChatMessage(ID toID, ID threadID,
 				org.eclipse.ecf.presence.im.IChatMessage.Type type,
-				String subject, String body, Map properties) throws ECFException {
+				String subject, String body, Map properties)
+				throws ECFException {
 			if (toID == null)
 				throw new ECFException("receiver cannot be null");
 			try {
@@ -65,15 +71,18 @@ public class XMPPChatManager implements IChatManager {
 
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.presence.im.IChatMessageSender#sendChatMessage(org.eclipse.ecf.core.identity.ID, java.lang.String)
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.presence.im.IChatMessageSender#sendChatMessage(org.eclipse.ecf.core.identity.ID,
+		 *      java.lang.String)
 		 */
 		public void sendChatMessage(ID toID, String body) throws ECFException {
-			sendChatMessage(toID, null, IChatMessage.Type.CHAT, null, body, null);
+			sendChatMessage(toID, null, IChatMessage.Type.CHAT, null, body,
+					null);
 		}
 
 	};
-
 
 	protected ITypingMessageSender typingMessageSender = new ITypingMessageSender() {
 
@@ -92,35 +101,45 @@ public class XMPPChatManager implements IChatManager {
 
 	protected IHistoryManager historyManager = new IHistoryManager() {
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.presence.im.IHistoryManager#getHistory(org.eclipse.ecf.core.identity.ID, java.util.Map)
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.presence.im.IHistoryManager#getHistory(org.eclipse.ecf.core.identity.ID,
+		 *      java.util.Map)
 		 */
 		public IHistory getHistory(ID partnerID, Map options) {
-			// XXX TODO provide local storage (with some 
+			// XXX TODO provide local storage (with some
 			return null;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 		 */
 		public Object getAdapter(Class adapter) {
 			return null;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see org.eclipse.ecf.presence.im.IHistoryManager#isActive()
 		 */
 		public boolean isActive() {
 			return false;
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.presence.im.IHistoryManager#makeActive(boolean, java.util.Map)
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.presence.im.IHistoryManager#makeActive(boolean,
+		 *      java.util.Map)
 		 */
 		public void makeActive(boolean active, Map options) {
 		}
 	};
-	
+
 	public XMPPChatManager(XMPPContainerPresenceHelper presenceHelper) {
 		this.presenceHelper = presenceHelper;
 	}
@@ -183,14 +202,14 @@ public class XMPPChatManager implements IChatManager {
 
 	protected void fireChatMessage(ID fromID, ID threadID, Type type,
 			String subject, String body, Map properties) {
-		fireMessageEvent(new ChatMessageEvent(fromID, new ChatMessage(fromID, threadID,
-				createMessageType(type), subject, body, properties)));
+		fireMessageEvent(new ChatMessageEvent(fromID, new ChatMessage(fromID,
+				threadID, createMessageType(type), subject, body, properties)));
 	}
 
 	protected void fireTypingMessage(ID fromID, ITypingMessage typingMessage) {
 		fireMessageEvent(new TypingMessageEvent(fromID, typingMessage));
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -21,14 +21,14 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class XmppPlugin implements BundleActivator {
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.xmpp"; //$NON-NLS-1$
-    protected static final String NAMESPACE_IDENTIFIER = "ecf.xmpp"; //$NON-NLS-1$
-    protected static final String SECURE_NAMESPACE_IDENTIFIER = "ecf.xmpps"; //$NON-NLS-1$
-    protected static final String ROOM_NAMESPACE_IDENTIFIER = "xmpp.room.jive"; //$NON-NLS-1$
-	//The shared instance.
+	protected static final String NAMESPACE_IDENTIFIER = "ecf.xmpp"; //$NON-NLS-1$
+	protected static final String SECURE_NAMESPACE_IDENTIFIER = "ecf.xmpps"; //$NON-NLS-1$
+	protected static final String ROOM_NAMESPACE_IDENTIFIER = "xmpp.room.jive"; //$NON-NLS-1$
+	// The shared instance.
 	private static XmppPlugin plugin;
-	
+
 	private BundleContext context = null;
-	
+
 	private ServiceTracker logServiceTracker = null;
 
 	public static void log(String message) {
@@ -67,7 +67,6 @@ public class XmppPlugin implements BundleActivator {
 		}
 	}
 
-
 	/**
 	 * This method is called upon plug-in activation
 	 */
@@ -94,13 +93,15 @@ public class XmppPlugin implements BundleActivator {
 		return plugin;
 	}
 
-    public String getNamespaceIdentifier() {
-    	return NAMESPACE_IDENTIFIER;
-    }
-    public String getSecureNamespaceIdentifier() {
-    	return SECURE_NAMESPACE_IDENTIFIER;
-    }
-    public String getRoomNamespaceIdentifier() {
-    	return ROOM_NAMESPACE_IDENTIFIER;
-    }
+	public String getNamespaceIdentifier() {
+		return NAMESPACE_IDENTIFIER;
+	}
+
+	public String getSecureNamespaceIdentifier() {
+		return SECURE_NAMESPACE_IDENTIFIER;
+	}
+
+	public String getRoomNamespaceIdentifier() {
+		return ROOM_NAMESPACE_IDENTIFIER;
+	}
 }

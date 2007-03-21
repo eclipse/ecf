@@ -51,7 +51,8 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 
 	}
 
-	protected void addChatParticipantListener(IChatRoomParticipantListener listener) {
+	protected void addChatParticipantListener(
+			IChatRoomParticipantListener listener) {
 		participantListeners.add(listener);
 	}
 
@@ -120,7 +121,8 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	protected void fireMessageListeners(ID from, String body) {
 		for (Iterator i = messageListeners.iterator(); i.hasNext();) {
 			IIMMessageListener l = (IIMMessageListener) i.next();
-			l.handleMessageEvent(new ChatRoomMessageEvent(from,new ChatRoomMessage(from,body)));
+			l.handleMessageEvent(new ChatRoomMessageEvent(from,
+					new ChatRoomMessage(from, body)));
 		}
 	}
 
@@ -145,7 +147,8 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	protected void handleMessageEvent(MessageEvent evt) {
 		Message msg = filterMessageType(evt.getMessage());
 		if (msg != null)
-			fireMessageListeners(createUserIDFromName(canonicalizeRoomFrom(msg.getFrom())), msg.getBody());
+			fireMessageListeners(createUserIDFromName(canonicalizeRoomFrom(msg
+					.getFrom())), msg.getBody());
 	}
 
 	protected IPresence.Type createIPresenceType(Presence xmppPresence) {
@@ -169,7 +172,7 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		}
 		return IPresence.Type.AVAILABLE;
 	}
-	
+
 	protected IPresence.Mode createIPresenceMode(Presence xmppPresence) {
 		if (xmppPresence == null)
 			return IPresence.Mode.AVAILABLE;
@@ -214,14 +217,16 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 
 	protected void fireParticipant(ID fromID, IPresence presence) {
 		for (Iterator i = participantListeners.iterator(); i.hasNext();) {
-			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
+			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
+					.next();
 			l.handlePresence(fromID, presence);
 		}
 	}
 
 	protected void fireChatParticipant(ID fromID, boolean join) {
 		for (Iterator i = participantListeners.iterator(); i.hasNext();) {
-			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
+			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
+					.next();
 			if (join) {
 				l.handleArrived(new User(fromID));
 			} else {
@@ -290,8 +295,7 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	/**
 	 * @param msgListener
 	 */
-	public void removeChatRoomMessageListener(
-			IIMMessageListener msgListener) {
+	public void removeChatRoomMessageListener(IIMMessageListener msgListener) {
 		messageListeners.remove(msgListener);
 	}
 }
