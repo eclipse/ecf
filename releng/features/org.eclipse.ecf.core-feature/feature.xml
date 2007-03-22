@@ -45,17 +45,15 @@ obtained at http://www.eclipse.org.
    </license>
 
    <requires>
-      <import plugin="org.eclipse.help"/>
-      <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.osgi"/>
       <import plugin="org.eclipse.core.jobs"/>
-      <import plugin="org.eclipse.swt"/>
-      <import plugin="org.eclipse.jface"/>
-      <import plugin="org.eclipse.core.commands"/>
+      <import plugin="org.eclipse.help"/>
       <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.ui.browser"/>
-      <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.equinox.common"/>
+      <import plugin="org.eclipse.equinox.registry"/>
+      <import plugin="org.eclipse.osgi.services"/>
+      <import plugin="org.eclipse.ui"/>
    </requires>
 
    <plugin
