@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.provider.irc.bot;singleton:=true
-Bundle-Version: 1.0.0.v20070321-2014
+Bundle-Version: 1.0.0.v20070322-1329
 Bundle-Activator: org.eclipse.ecf.provider.irc.bot.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common,
