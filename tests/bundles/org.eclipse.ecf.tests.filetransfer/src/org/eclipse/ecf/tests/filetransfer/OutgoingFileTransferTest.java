@@ -93,12 +93,27 @@ public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.tests.presence.PresenceAbstractTestCase#setUp()
-	 */
-	protected void setUp() throws Exception {
+/*
+	public void testOneClientToSend() throws Exception {
+		// Setup one client.  Client 0 is the sender
+		setClientCount(2);
+		clients = createClients();
+		adapter0 = getOutgoingFileTransfer(0);
+		for (int i = 0; i < 1; i++) {
+			// Only connect client 0 (not client 1)
+			connectClient(i);
+		}
+
+		adapter0.sendOutgoingRequest(getServerConnectID(1), new File(
+				TESTSRCFILE), senderTransferListener, null);
+		sleep(200000);
+		
+		disconnectClients();
+
+	}
+*/
+	public void testTwoClientsToSendAndReceive() throws Exception {
+		// Setup two clients.  Client 0 is the receiver, client 1 is the sender
 		setClientCount(2);
 		clients = createClients();
 		adapter0 = getOutgoingFileTransfer(0);
@@ -107,20 +122,14 @@ public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
 		for (int i = 0; i < 2; i++) {
 			connectClient(i);
 		}
-	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	protected void tearDown() throws Exception {
-		disconnectClients();
-	}
-
-	public void testSendRequest() throws Exception {
 		adapter1.sendOutgoingRequest(getServerConnectID(0), new File(
 				TESTSRCFILE), senderTransferListener, null);
-		sleep(20000);
+		
+		sleep(200000);
+		
+		disconnectClients();
+
 	}
+	
 }
