@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.example.pubsub;singleton:=true
-Bundle-Version: 1.0.0.v200703211937
+Bundle-Version: 1.0.0.v20070321-2014
 Bundle-Activator: org.eclipse.ecf.example.pubsub.Activator
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
