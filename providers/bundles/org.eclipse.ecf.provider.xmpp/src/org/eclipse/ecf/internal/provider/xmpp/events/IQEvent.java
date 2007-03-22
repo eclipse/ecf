@@ -28,8 +28,7 @@ public class IQEvent implements Event {
         return iq;
     }
     public String toString() {
-        StringBuffer buf = new StringBuffer("IQEvent[");
-        buf.append(iq).append(";").append((iq==null)?"":iq.toXML()).append("]");
+        StringBuffer buf = new StringBuffer("IQEvent[]");
         return buf.toString();
     }
 }

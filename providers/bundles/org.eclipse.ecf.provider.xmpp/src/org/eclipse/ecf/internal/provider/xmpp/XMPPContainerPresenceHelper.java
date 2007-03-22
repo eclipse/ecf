@@ -360,7 +360,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 				}
 			}
 		} else {
-			trace("Received non rosterpacket IQ message: " + iq.toXML());
+			trace("Received non rosterpacket IQ message");
 		}
 	}
 
