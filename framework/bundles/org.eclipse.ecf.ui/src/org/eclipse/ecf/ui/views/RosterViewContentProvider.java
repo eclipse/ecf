@@ -106,6 +106,7 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		String name = entry.getName();
 		if (name == null)
 			name = this.rosterView.getUserNameFromID(entry.getUser().getID());
+		name = name.replace('?','\'');
 		IPresence presence = entry.getPresence();
 		RosterBuddy newBuddy = null;
 		if (oldBuddy == null)

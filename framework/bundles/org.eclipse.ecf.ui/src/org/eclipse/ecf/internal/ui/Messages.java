@@ -23,6 +23,30 @@ public class Messages extends NLS {
 
 	public static String ConnectWizard_title;
 
+	public static String RosterView_ReceiveFile_title;
+
+	public static String RosterView_ReceiveFile_message;
+
+	public static String RosterView_ReceiveFile_filesavetitle;
+	
+	public static String RosterView_ReceiveFile_acceptexception_title;
+	
+	public static String RosterView_ReceiveFile_acceptexception_message;
+	
+	public static String RosterView_SendFile_title;
+	
+	public static String RosterView_SendFile_response_title;
+	
+	public static String RosterView_SendFile_response_message;
+	
+	public static String RosterView_SendFile_requestexception_title;
+	
+	public static String RosterView_SendFile_requestexception_message;
+	
+	public static String RosterView_SendIM_menutext;
+	
+	public static String RosterView_SendFile_menutext;
+	
 	static {
 		// load message values from bundle file
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

@@ -10,6 +10,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.ui.views;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,6 +28,7 @@ import java.util.Set;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.Callback;
@@ -38,7 +41,17 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.filetransfer.IFileTransferInfo;
+import org.eclipse.ecf.filetransfer.IFileTransferListener;
+import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
+import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
+import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
+import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
+import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
+import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
 import org.eclipse.ecf.internal.ui.Activator;
+import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
@@ -73,9 +86,11 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
@@ -110,11 +125,95 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 
 	private Action openChatRoomAccountAction;
 
+	private Action fileSendAction;
+
 	protected Hashtable chatThreads = new Hashtable();
 
 	protected Hashtable accounts = new Hashtable();
 
 	protected Hashtable chatRooms = new Hashtable();
+
+	protected IIncomingFileTransferRequestListener requestListener = new IIncomingFileTransferRequestListener() {
+		public void handleFileTransferRequest(
+				final IFileTransferRequestEvent event) {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					String username = event.getRequesterID().getName();
+					IFileTransferInfo transferInfo = event
+							.getFileTransferInfo();
+					String fileName = transferInfo.getFile().getName();
+					Object[] bindings = new Object[] {
+							username,
+							fileName,
+							((transferInfo.getFileSize() == -1) ? "unknown"
+									: (transferInfo.getFileSize() + " bytes")),
+							(transferInfo.getDescription() == null) ? "none"
+									: transferInfo.getDescription() };
+					if (MessageDialog.openQuestion(getSite().getShell(), NLS
+							.bind(Messages.RosterView_ReceiveFile_title,
+									username), NLS.bind(
+							Messages.RosterView_ReceiveFile_message, bindings))) {
+						FileDialog fd = new FileDialog(getSite().getShell(),
+								SWT.OPEN);
+						// XXX this should be some default path gotten from
+						// preference. For now we'll have it be the user.home
+						// system property
+						fd.setFilterPath(System.getProperty("user.home"));
+						fd.setFileName(fileName);
+						int suffixLoc = fileName.lastIndexOf('.');
+						if (suffixLoc != -1) {
+							String ext = fileName.substring(fileName.lastIndexOf('.'));
+							fd.setFilterExtensions(new String[] { ext });
+						}
+						fd.setText(NLS.bind(
+								Messages.RosterView_ReceiveFile_filesavetitle,
+								username));
+						final String res = fd.open();
+						if (res == null)
+							event.reject();
+						else {
+							try {
+								final FileOutputStream fos = new FileOutputStream(new File(res));
+								event.accept(
+										fos,
+										new IFileTransferListener() {
+											public void handleTransferEvent(
+													IFileTransferEvent event) {
+												// XXX Should have some some UI
+												// for transfer events
+												System.out
+														.println("handleTransferEvent("
+																+ event + ")");
+												if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
+													try {
+														fos.close();
+													} catch (IOException e) {
+													}
+												}
+											}
+										});
+							} catch (Exception e) {
+								MessageDialog
+										.openError(
+												getSite().getShell(),
+												Messages.RosterView_ReceiveFile_acceptexception_title,
+												NLS
+														.bind(
+																Messages.RosterView_ReceiveFile_acceptexception_message,
+																new Object[] {
+																		fileName,
+																		username,
+																		e
+																				.getLocalizedMessage() }));
+							}
+						}
+					} else
+						event.reject();
+				}
+			});
+		}
+
+	};
 
 	/**
 	 * Called when an account is added to a RosterView. By default, this method
@@ -137,6 +236,10 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 			ID accountID = account.getServiceID();
 			if (accountID != null) {
 				vcp.addAccount(accountID, accountID.getName());
+				IOutgoingFileTransferContainerAdapter ft = getFileTransferAdapterForContainer(account
+						.getContainer());
+				if (ft != null)
+					ft.addListener(requestListener);
 				accounts.put(accountID, account);
 				refreshView();
 			}
@@ -145,6 +248,20 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 
 	protected RosterUserAccount getAccount(ID serviceID) {
 		return (RosterUserAccount) accounts.get(serviceID);
+	}
+
+	protected IOutgoingFileTransferContainerAdapter getFileTransferAdapterForContainer(
+			IContainer container) {
+		return (IOutgoingFileTransferContainerAdapter) container
+				.getAdapter(IOutgoingFileTransferContainerAdapter.class);
+	}
+
+	protected IOutgoingFileTransferContainerAdapter getFileTransferAdapterForAccount(
+			ID accountID) {
+		RosterUserAccount account = getAccount(accountID);
+		if (account == null)
+			return null;
+		return getFileTransferAdapterForContainer(account.getContainer());
 	}
 
 	protected void removeAccount(ID serviceID) {
@@ -177,7 +294,7 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 				handlers.add(account.getInputHandler());
 			}
 		}
-		for(Iterator i=handlers.iterator(); i.hasNext(); ) {
+		for (Iterator i = handlers.iterator(); i.hasNext();) {
 			ILocalInputHandler handler = (ILocalInputHandler) i.next();
 			handler.disconnect();
 		}
@@ -240,6 +357,60 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		manager.add(openChatRoomAction);
 	}
 
+	private void sendFileToTarget(
+			IOutgoingFileTransferContainerAdapter fileTransfer,
+			final ID targetID) {
+		FileDialog fd = new FileDialog(getSite().getShell(), SWT.OPEN);
+		// XXX this should be some default path set by preferences
+		fd.setFilterPath(System.getProperty("user.home"));
+		fd.setText(NLS.bind(Messages.RosterView_SendFile_title, targetID
+				.getName()));
+		final String res = fd.open();
+		if (res != null) {
+			File aFile = new File(res);
+			try {
+				fileTransfer.sendOutgoingRequest(targetID, aFile,
+						new IFileTransferListener() {
+							public void handleTransferEvent(
+									final IFileTransferEvent event) {
+								Display.getDefault().asyncExec(new Runnable() {
+									public void run() {
+										// XXX This should be handled more
+										// gracefully/with better UI (progress
+										// bar?)
+										if (event instanceof IOutgoingFileTransferResponseEvent) {
+											if (!((IOutgoingFileTransferResponseEvent) event)
+													.requestAccepted())
+												MessageDialog
+														.openInformation(
+																getSite()
+																		.getShell(),
+																Messages.RosterView_SendFile_response_title,
+																NLS
+																		.bind(
+																				Messages.RosterView_SendFile_response_message,
+																				res,
+																				targetID
+																						.getName()));
+										}
+									}
+								});
+							}
+						}, null);
+			} catch (OutgoingFileTransferException e) {
+				MessageDialog
+						.openError(
+								getSite().getShell(),
+								Messages.RosterView_SendFile_requestexception_title,
+								NLS
+										.bind(
+												Messages.RosterView_SendFile_requestexception_message,
+												new Object[] { res,
+														e.getLocalizedMessage() }));
+			}
+		}
+	}
+
 	/**
 	 * Called when time to fill the context menu. First allows super class to
 	 * fill menu, then adds on test action that simply sends shared object
@@ -261,11 +432,39 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 						openChatWindowForTarget(targetID);
 					}
 				};
-				selectedChatAction.setText("Send IM to "
-						+ rosterObject.getID().getName());
+				selectedChatAction.setText(NLS.bind(
+						Messages.RosterView_SendIM_menutext, rosterObject
+								.getID().getName()));
 				selectedChatAction.setImageDescriptor(SharedImages
 						.getImageDescriptor(SharedImages.IMG_MESSAGE));
 				manager.add(selectedChatAction);
+				manager.add(new Separator());
+
+				final IOutgoingFileTransferContainerAdapter fileTransfer = getFileTransferAdapterForAccount(tb
+						.getServiceID());
+
+				fileSendAction = new Action() {
+					public void run() {
+						sendFileToTarget(fileTransfer, targetID);
+					}
+				};
+				fileSendAction.setText(NLS.bind(
+						Messages.RosterView_SendFile_menutext, rosterObject
+								.getID().getName()));
+				fileSendAction.setImageDescriptor(PlatformUI.getWorkbench()
+						.getSharedImages().getImageDescriptor(
+								ISharedImages.IMG_OBJ_FILE));
+				manager.add(fileSendAction);
+				manager.add(new Separator());
+				IPresence presence = tb.getPresence();
+				boolean type =  (presence == null)?false:presence.getType().equals(
+						IPresence.Type.AVAILABLE);
+				boolean mode = (presence == null)?false:presence.getMode().equals(
+						IPresence.Mode.AVAILABLE);
+				fileSendAction.setEnabled(fileTransfer != null
+						&& type
+						&& mode);
+
 				RosterObject parent = rosterObject.getParent();
 				RosterGroup tg = null;
 				if (parent != null && parent instanceof RosterGroup) {
@@ -764,9 +963,11 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 											chatroomview
 													.handleJoin(participant);
 										}
-										
-										public void handleUpdated(IUser updatedParticipant) {
-											chatroomview.handleUpdated(updatedParticipant);
+
+										public void handleUpdated(
+												IUser updatedParticipant) {
+											chatroomview
+													.handleUpdated(updatedParticipant);
 										}
 
 										public void handleDeparted(
@@ -791,10 +992,9 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 						}
 						// Now actually connect to chatroom
 						try {
-							chatRoom.connect(selectedInfo.getRoomID(),
-									null);
-//							getChatJoinContext("Nickname for "
-//									+ selectedInfo.getName())
+							chatRoom.connect(selectedInfo.getRoomID(), null);
+							// getChatJoinContext("Nickname for "
+							// + selectedInfo.getName())
 						} catch (ContainerConnectException e1) {
 							Activator.log("Exception connecting to chat room "
 									+ selectedInfo.getRoomID(), e1);
@@ -934,7 +1134,6 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 		viewer.getControl().setFocus();
 	}
 
-
 	protected RosterUserAccount getAccountForUser(ID userID) {
 		RosterViewContentProvider vcp = (RosterViewContentProvider) viewer
 				.getContentProvider();
@@ -1019,14 +1218,6 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	/*
-	 * public void handleMessage(ID groupID, ID fromID, ID toID,
-	 * IMessageListener.Type type, String subject, String message) { ChatWindow
-	 * window = openChatWindowForTarget(fromID); // finally, show message if
-	 * (window != null) { window.handleMessage(fromID, toID, type, subject,
-	 * message); window.setStatus("last message received at " + (new
-	 * SimpleDateFormat("hh:mm:ss").format(new Date()))); } }
-	 */
-	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.presence.IIMMessageListener#handleMessageEvent(org.eclipse.ecf.presence.IIMMessageEvent)
@@ -1042,10 +1233,10 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	public void addAccount(ID account, IUser user, ILocalInputHandler handler,
-			IPresenceContainerAdapter container,
+			IContainer container, IPresenceContainerAdapter presenceContainer,
 			ISharedObjectContainer soContainer) {
 		addAccount(new RosterUserAccount(this, account, user, handler,
-				container, soContainer));
+				container, presenceContainer, soContainer));
 		setToolbarEnabled(true);
 	}
 
@@ -1162,9 +1353,8 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 			vcp.handlePresence(groupID, userID, presence);
 			refreshView();
 		}
-		
-	}
 
+	}
 
 	public void handleRosterEntryUpdate(ID groupID, IRosterEntry entry) {
 		if (groupID == null || entry == null)
