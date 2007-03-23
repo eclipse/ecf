@@ -54,28 +54,4 @@
             class="org.eclipse.ecf.internal.ui.UIPreferenceInitializer">
       </initializer>
    </extension>
-   <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            id="org.eclipse.ecf.ui.actionSet"
-            label="Sample Action Set"
-            visible="true">
-         <menu
-               id="sampleMenu"
-               label="ECF Wizards">
-            <separator
-                  name="sampleGroup">
-            </separator>
-         </menu>
-         <action
-               class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
-               icon="icons/group.gif"
-               id="org.eclipse.ecf.ui.actions.SampleAction"
-               label="Connect to ECF Provider"
-               style="pulldown"
-               toolbarPath="sampleGroup"
-               tooltip="Connect to ECF Provider">
-         </action>
-      </actionSet>
-   </extension>
 </plugin>
