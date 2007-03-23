@@ -170,18 +170,16 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 	}
 
 	public void dispose() {
+		List handlers = new ArrayList();
 		synchronized (accounts) {
 			for (Iterator i = accounts.keySet().iterator(); i.hasNext();) {
-				ID serviceID = (ID) i.next();
-				RosterUserAccount account = getAccount(serviceID);
-				if (account != null) {
-					ILocalInputHandler handler = account.getInputHandler();
-					if (handler != null) {
-						handler.disconnect();
-					}
-				}
+				RosterUserAccount account = getAccount((ID) i.next());
+				handlers.add(account.getInputHandler());
 			}
-			accounts.clear();
+		}
+		for(Iterator i=handlers.iterator(); i.hasNext(); ) {
+			ILocalInputHandler handler = (ILocalInputHandler) i.next();
+			handler.disconnect();
 		}
 		super.dispose();
 	}
