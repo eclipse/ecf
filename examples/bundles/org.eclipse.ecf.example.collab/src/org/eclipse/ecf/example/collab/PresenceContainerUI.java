@@ -268,7 +268,7 @@ public class PresenceContainerUI {
 							PresenceContainerUI.this.groupID = joinedContainer;
 							rosterView.addAccount(joinedContainer,
 									PresenceContainerUI.this.localUser,
-									handler, pc, soContainer);
+									handler, container, pc, soContainer);
 						}
 					});
 
