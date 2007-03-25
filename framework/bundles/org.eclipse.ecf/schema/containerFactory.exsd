@@ -49,7 +49,6 @@
       <complexType>
          <sequence>
             <element ref="defaultargument" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="property" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="class" type="string" use="required">
             <annotation>
@@ -95,30 +94,6 @@
       </complexType>
    </element>
 
-   <element name="property">
-      <annotation>
-         <documentation>
-            Property (name,value) associated with SharedDescription
-         </documentation>
-      </annotation>
-      <complexType>
-         <attribute name="name" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The name of the property
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="value" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The value of the property
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
    <annotation>
       <appInfo>
          <meta.section type="since"/>
@@ -138,7 +113,7 @@
 &lt;pre&gt;
 &lt;extension point=&quot;org.eclipse.ecf.containerFactory&quot;&gt;
     &lt;containerFactory name=&quot;foo&quot; class=&quot;org.eclipse.ecf.test.FooInstantiator&quot; description=&quot;My container factory&quot;/&gt;
-    &lt;defaultargument type=&quot;java.lang.String&quot; value=&quot;defaultvalue&quot; name=&quot;variablename&quot;/&gt;
+    &lt;defaultargument value=&quot;defaultvalue&quot;/&gt;
 &lt;/extension&gt;
 &lt;/pre&gt;
 
