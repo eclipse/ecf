@@ -6,14 +6,8 @@
       <containerFactory
             class="org.eclipse.ecf.provider.generic.GenericContainerInstantiator"
             description="Generic Server Container Instantiator"
-            name="ecf.generic.server">
-         <defaultargument
-               value="ecftcp://localhost:3282/server"/>
-         <defaultargument
-               value="30000"/>
-         <property
-               value="true"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.isServer"/>
+            name="ecf.generic.server"
+            server="true">
       </containerFactory>
    </extension>
    <extension
@@ -23,17 +17,6 @@
             description="ECF Generic"
             name="ecf.generic.client"
             >
-         <defaultargument
-               value="30000"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"
-               value="ecftcp://&lt;server&gt;:&lt;port&gt;/&lt;groupname&gt;"/>
-         <property
-               value="ecftcp://ecf.eclipse.org:3282/server"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"/>
-         <property
-               value="true"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usenickname"/>
       </containerFactory>
    </extension>
 </plugin>
