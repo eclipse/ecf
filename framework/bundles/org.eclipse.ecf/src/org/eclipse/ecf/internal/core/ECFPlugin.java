@@ -10,7 +10,6 @@ package org.eclipse.ecf.internal.core;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.WeakHashMap;
 
 import org.eclipse.core.runtime.CoreException;
@@ -65,26 +64,12 @@ public class ECFPlugin implements BundleActivator {
 
 	public static final String DESCRIPTION_ATTRIBUTE = "description"; //$NON-NLS-1$
 
-	public static final String ARG_ELEMENT_NAME = "defaultargument"; //$NON-NLS-1$
-
 	public static final String VALUE_ATTRIBUTE = "value"; //$NON-NLS-1$
 
-	public static final String PROPERTY_ELEMENT_NAME = "property"; //$NON-NLS-1$
-
-	public static final int FACTORY_DOES_NOT_IMPLEMENT_ERRORCODE = 10;
-
-	public static final int FACTORY_NAME_COLLISION_ERRORCODE = 20;
-
-	public static final int INSTANTIATOR_DOES_NOT_IMPLEMENT_ERRORCODE = 30;
-
-	public static final int INSTANTIATOR_NAME_COLLISION_ERRORCODE = 50;
-
-	public static final int INSTANTIATOR_NAMESPACE_LOAD_ERRORCODE = 60;
-
-	public static final int START_ERRORCODE = 70;
-
-	protected static final int REMOVE_NAMESPACE_ERRORCODE = 80;
-
+	public static final String SERVER_ATTRIBUTE = "server"; //$NON-NLS-1$
+	
+	public static final String HIDDEN_ATTRIBUTE = "hidden"; //$NON-NLS-1$
+	
 	// The shared instance.
 	private static ECFPlugin plugin;
 
@@ -164,38 +149,6 @@ public class ECFPlugin implements BundleActivator {
 		}
 	}
 
-	protected String[] getDefaultArgs(IConfigurationElement[] argElements) {
-		String[] argDefaults = new String[0];
-		if (argElements != null) {
-			if (argElements.length > 0) {
-				argDefaults = new String[argElements.length];
-				for (int i = 0; i < argElements.length; i++)
-					argDefaults[i] = argElements[i]
-							.getAttribute(VALUE_ATTRIBUTE);
-			}
-		}
-		return argDefaults;
-	}
-
-	protected Map getProperties(IConfigurationElement[] propertyElements) {
-		Properties props = new Properties();
-		if (propertyElements != null) {
-			if (propertyElements.length > 0) {
-				for (int i = 0; i < propertyElements.length; i++) {
-					String name = propertyElements[i]
-							.getAttribute(NAME_ATTRIBUTE);
-					String value = propertyElements[i]
-							.getAttribute(VALUE_ATTRIBUTE);
-					if (name != null && !name.equals("") && value != null //$NON-NLS-1$
-							&& !value.equals("")) { //$NON-NLS-1$
-						props.setProperty(name, value);
-					}
-				}
-			}
-		}
-		return props;
-	}
-
 	protected void logException(IStatus status, String method,
 			Throwable exception) {
 		log(status);
@@ -242,7 +195,7 @@ public class ECFPlugin implements BundleActivator {
 						new Status(
 								Status.ERROR,
 								getDefault().getBundle().getSymbolicName(),
-								FACTORY_NAME_COLLISION_ERRORCODE,
+								IStatus.ERROR,
 								NLS
 										.bind(
 												Messages.ECFPlugin_Container_Name_Collision_Prefix,
@@ -286,23 +239,21 @@ public class ECFPlugin implements BundleActivator {
 					description = ""; //$NON-NLS-1$
 				}
 
-				// Get any arguments
-				String[] defaults = getDefaultArgs(member
-						.getChildren(ARG_ELEMENT_NAME));
-				// Get any property elements
-				Map properties = getProperties(member
-						.getChildren(PROPERTY_ELEMENT_NAME));
+				boolean server = Boolean.parseBoolean(member.getAttribute(SERVER_ATTRIBUTE));
+				boolean hidden = Boolean.parseBoolean(member.getAttribute(HIDDEN_ATTRIBUTE));
+				
 				// Now make description instance
 				ContainerTypeDescription scd = new ContainerTypeDescription(
-						name, (IContainerInstantiator) exten, description,
-						defaults, properties);
+						name, (IContainerInstantiator) exten, description, server, hidden);
+				
 				IContainerFactory factory = ContainerFactory.getDefault();
+				
 				if (factory.containsDescription(scd)) {
 					throw new CoreException(
 							new Status(
 									Status.ERROR,
 									getDefault().getBundle().getSymbolicName(),
-									FACTORY_NAME_COLLISION_ERRORCODE,
+									IStatus.ERROR,
 									NLS
 											.bind(
 													Messages.ECFPlugin_Container_Name_Collision_Prefix,
@@ -322,7 +273,7 @@ public class ECFPlugin implements BundleActivator {
 						new Status(
 								Status.ERROR,
 								getDefault().getBundle().getSymbolicName(),
-								FACTORY_NAME_COLLISION_ERRORCODE,
+								IStatus.ERROR,
 								NLS
 										.bind(
 												Messages.ECFPlugin_Container_Name_Collision_Prefix,
@@ -396,7 +347,7 @@ public class ECFPlugin implements BundleActivator {
 				logException(e.getStatus(), method, e);
 			} catch (Exception e) {
 				logException(new Status(Status.ERROR, getDefault().getBundle()
-						.getSymbolicName(), START_ERRORCODE,
+						.getSymbolicName(), IStatus.ERROR,
 						"Unknown start exception", e), method, e); //$NON-NLS-1$
 			}
 		}

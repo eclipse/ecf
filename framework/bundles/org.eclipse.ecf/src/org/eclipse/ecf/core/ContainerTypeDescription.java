@@ -8,10 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
@@ -21,91 +18,59 @@ import org.eclipse.ecf.internal.core.ECFPlugin;
 import org.eclipse.ecf.internal.core.Messages;
 
 /**
- * Description of an {@link IContainer} type.
+ * Description of an {@link IContainer} type.  Instances of this class are used to represent {@link IContainerInstantiator}s
+ * in the {@link ContainerFactory}
  * 
- * @see ContainerFactory
+ * @see ContainerFactory IContainerInstantiator
  */
 public class ContainerTypeDescription {
-	protected String name;
+	
+	protected String name = null;
 
-	protected String instantiatorClass;
+	protected String instantiatorClass = null;
 
-	protected ClassLoader classLoader;
+	protected IContainerInstantiator instantiator = null;
 
-	protected IContainerInstantiator instantiator;
-
-	protected String description;
-
-	protected String[] parameterDefaults;
+	protected String description = null;
 
 	protected int hashCode = 0;
+	
+	protected boolean server;
+	
+	protected boolean hidden;
 
-	protected static final String[] EMPTY = new String[0];
-
-	private static final int GET_PARAMETER_TYPES_ERROR_CODE = 2672;
-
-	private static final int GET_SUPPORTED_ADAPTERS_ERROR_CODE = 2673;
-
-	protected Map properties = null;
-
-	public ContainerTypeDescription(ClassLoader loader, String name,
-			String instantiatorClass, String desc) {
-		this(loader, name, instantiatorClass, desc, EMPTY);
+	public ContainerTypeDescription(String name,
+			String instantiatorClass, String description) {
+		this(name,instantiatorClass,description,false,false);
 	}
 
-	public ContainerTypeDescription(String name, String instantiatorClass,
-			String desc) {
-		this(null, name, instantiatorClass, desc);
-	}
-
-	public ContainerTypeDescription(ClassLoader loader, String name,
-			String instantiatorClass, String desc, String[] parameterDefaults) {
-		this(loader, name, instantiatorClass, desc, parameterDefaults, null);
-	}
-
-	public ContainerTypeDescription(ClassLoader loader, String name,
-			String instantiatorClass, String desc, String[] parameterDefaults,
-			Map props) {
-		this.classLoader = loader;
-		if (name == null)
-			throw new NullPointerException(
-					Messages.ContainerTypeDescription_Name_Not_Null);
+	public ContainerTypeDescription(String name,
+			String instantiatorClass, String description, boolean server, boolean hidden) {
+		Assert.isNotNull(name,Messages.ContainerTypeDescription_Name_Not_Null);
 		this.name = name;
 		this.hashCode = name.hashCode();
-		if (instantiatorClass == null)
-			throw new NullPointerException(
-					Messages.ContainerTypeDescription_Instantiator_Class_Not_Null);
+		Assert.isNotNull(instantiatorClass,Messages.ContainerTypeDescription_Instantiator_Class_Not_Null);
 		this.instantiatorClass = instantiatorClass;
-		this.description = desc;
-		this.parameterDefaults = parameterDefaults;
-		this.properties = (props == null) ? new HashMap() : props;
+		this.description = description;
+		this.server = server;
+		this.hidden = hidden;
+	}
+
+	public ContainerTypeDescription(String name, IContainerInstantiator instantiator,
+			String description) {
+		this(name,instantiator,description,false,false);
 	}
 
 	public ContainerTypeDescription(String name, IContainerInstantiator inst,
-			String desc) {
-		this(name, inst, desc, EMPTY);
-	}
-
-	public ContainerTypeDescription(String name, IContainerInstantiator inst,
-			String desc, String[] parameterDefaults) {
-		this(name, inst, desc, parameterDefaults, null);
-	}
-
-	public ContainerTypeDescription(String name, IContainerInstantiator inst,
-			String desc, String[] parameterDefaults, Map props) {
-		if (name == null)
-			throw new NullPointerException(
-					Messages.ContainerTypeDescription_Name_Not_Null);
+			String desc, boolean server, boolean hidden) {
+		Assert.isNotNull(name,Messages.ContainerTypeDescription_Name_Not_Null);
 		this.name = name;
 		this.hashCode = name.hashCode();
-		if (inst == null)
-			throw new NullPointerException(
-					Messages.ContainerTypeDescription_Instantiator_Instance_Not_Null);
+		Assert.isNotNull(inst,Messages.ContainerTypeDescription_Instantiator_Instance_Not_Null);
 		this.instantiator = inst;
-		this.classLoader = this.instantiator.getClass().getClassLoader();
 		this.description = desc;
-		this.parameterDefaults = parameterDefaults;
-		this.properties = (props == null) ? new HashMap() : props;
+		this.server = server;
+		this.hidden = hidden;
 	}
 
 	/**
@@ -115,15 +80,6 @@ public class ContainerTypeDescription {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Get ClassLoader for this ContainerTypeDescription
-	 * 
-	 * @return ClassLoader associated with this ContainerTypeDescription
-	 */
-	public ClassLoader getClassLoader() {
-		return classLoader;
 	}
 
 	public boolean equals(Object other) {
@@ -146,9 +102,6 @@ public class ContainerTypeDescription {
 		else
 			b.append("instantiator=").append(instantiator).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		b.append("desc=").append(description).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-		b.append("argdefaults=").append(Arrays.asList(parameterDefaults)) //$NON-NLS-1$
-				.append(";"); //$NON-NLS-1$
-		b.append("properties=").append(properties).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 		return b.toString();
 	}
 
@@ -157,18 +110,16 @@ public class ContainerTypeDescription {
 			IllegalAccessException {
 		synchronized (this) {
 			if (instantiator == null)
-				initializeInstantiator(classLoader);
+				initializeInstantiator();
 			return instantiator;
 		}
 	}
 
-	private void initializeInstantiator(ClassLoader cl)
+	private void initializeInstantiator()
 			throws ClassNotFoundException, InstantiationException,
 			IllegalAccessException {
-		if (cl == null)
-			cl = this.getClass().getClassLoader();
 		// Load instantiator class
-		Class clazz = Class.forName(instantiatorClass, true, cl);
+		Class clazz = Class.forName(instantiatorClass);
 		// Make new instance
 		instantiator = (IContainerInstantiator) clazz.newInstance();
 	}
@@ -182,14 +133,13 @@ public class ContainerTypeDescription {
 	public String getDescription() {
 		return description;
 	}
-
-	/**
-	 * Get parameter defaults.
-	 * 
-	 * @return String [] default parameters
-	 */
-	public String[] getParameterDefaults() {
-		return parameterDefaults;
+	
+	public boolean isServer() {
+		return server;
+	}
+	
+	public boolean isHidden() {
+		return hidden;
 	}
 
 	/**
@@ -217,7 +167,7 @@ public class ContainerTypeDescription {
 			String [] r = getInstantiator().getSupportedAdapterTypes(this);
 			if (r != null) result = r;
 		} catch (Exception e) {
-			traceAndLogException(GET_SUPPORTED_ADAPTERS_ERROR_CODE, method, e);
+			traceAndLogException(IStatus.ERROR, method, e);
 		}
 		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
 				this.getClass(), method, result);
@@ -262,20 +212,11 @@ public class ContainerTypeDescription {
 			Class [][] r = getInstantiator().getSupportedParameterTypes(this);
 			if (r != null) result = r;
 		} catch (Exception e) {
-			traceAndLogException(GET_PARAMETER_TYPES_ERROR_CODE, method, e);
+			traceAndLogException(IStatus.ERROR, method, e);
 		}
 		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
 				this.getClass(), method, result);
 		return result;
-	}
-
-	/**
-	 * Get properties associated with this ContainerTypeDescription instance
-	 * 
-	 * @return Map the properties. Will not be null.
-	 */
-	public Map getProperties() {
-		return properties;
 	}
 
 }
