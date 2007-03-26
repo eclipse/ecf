@@ -91,6 +91,7 @@ public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
 		try {
 			return IDFactory.getDefault().createID(connectNamespace, username);
 		} catch (IDCreateException e) {
+			e.printStackTrace(System.err);
 			fail("Could not create server connect ID");
 			return null;
 		}
