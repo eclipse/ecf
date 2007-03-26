@@ -34,4 +34,7 @@ public class GenericClientContainerConnectWizardPage extends AbstractConnectWiza
 		return "Creates a connection to the specified ECF Generic Server.";
 	}
 
+	protected String getDefaultConnectText() {
+		return "ecftcp://ecf.eclipse.org:3282/server";
+	}
 }
