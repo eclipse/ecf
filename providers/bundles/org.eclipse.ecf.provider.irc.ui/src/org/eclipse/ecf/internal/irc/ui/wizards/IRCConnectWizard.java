@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
+ *    Scott Lewis <slewis@composent.com>
  *****************************************************************************/
 package org.eclipse.ecf.internal.irc.ui.wizards;
 
@@ -20,6 +21,8 @@ import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.IExceptionHandler;
 import org.eclipse.ecf.internal.irc.ui.Activator;
+import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerUI;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
 import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
@@ -30,8 +33,6 @@ import org.eclipse.ui.IWorkbench;
 
 public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 
-	private static final int CONNECT_ERROR_CODE = 7777;
-
 	private Shell shell;
 
 	private IRCConnectWizardPage page;
@@ -41,6 +42,22 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 	private ID targetID;
 
 	private IConnectContext connectContext;
+
+	private IExceptionHandler exceptionHandler = new IExceptionHandler() {
+		public IStatus handleException(final Throwable exception) {
+			if (exception != null) {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						new ContainerConnectErrorDialog(shell, IStatus.ERROR,
+								"See Details", targetID.getName(), exception)
+								.open();
+					}
+				});
+			}
+			return new Status(IStatus.OK, Activator.PLUGIN_ID, IStatus.OK,
+					"Connected", null);
+		}
+	};
 
 	public void addPages() {
 		page = new IRCConnectWizardPage();
@@ -65,24 +82,24 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 			return false;
 		}
 
-		new AsynchContainerConnectAction(this.container, this.targetID,
-				this.connectContext, new IExceptionHandler() {
-					public IStatus handleException(final Throwable exception) {
-						if (exception != null) {
-							Display.getDefault().asyncExec(new Runnable() {
-								public void run() {
-									new ContainerConnectErrorDialog(shell,
-											CONNECT_ERROR_CODE, "See Details",
-											targetID.getName(), exception)
-											.open();
-								}
-							});
-						}
-						return new Status(IStatus.OK, Activator.PLUGIN_ID, 0,
-								"", null);
-					}
+		IChatRoomManager manager = (IChatRoomManager) this.container
+				.getAdapter(IChatRoomManager.class);
 
-				}).run(null);
+		if (manager == null) {
+			// XXX
+			// Serious error...log, show dialog, freak out, etc
+			return false;
+		} else {
+			ChatRoomManagerUI ui = new ChatRoomManagerUI(this.container,
+					manager, exceptionHandler);
+			ui.showForTarget(targetID);
+			// If it's not already connected, then we connect this new container
+			if (!ui.isContainerConnected()) {
+				new AsynchContainerConnectAction(this.container, this.targetID,
+						this.connectContext, exceptionHandler).run(null);
+
+			}
+		}
 
 		return true;
 	}
