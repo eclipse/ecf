@@ -334,7 +334,6 @@ public class RssClientSOContainer extends ClientSOContainer implements
 			targetURL = args[0];
 		}
 		ContainerTypeDescription contd = new ContainerTypeDescription(
-				RssClientSOContainer.class.getClassLoader(),
 				RssContainerInstantiator.class.getName(),
 				RssContainerInstantiator.class.getName(), null);
 		ContainerFactory.getDefault().addDescription(contd);
