@@ -6,19 +6,8 @@
       <containerFactory
             class="org.eclipse.ecf.provider.jmdns.container.ContainerInstantiator"
             description="Discovery Container"
-            name="ecf.discovery.jmdns">
-         <property
-               value="&lt;rendevous service type&gt;"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"
-               value="_http._tcp.local."/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.namespace"
-               value="jmdns"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.isServer"
-               value="true"/>
+            name="ecf.discovery.jmdns"
+            server="true">
        </containerFactory>
    </extension>
    <extension
