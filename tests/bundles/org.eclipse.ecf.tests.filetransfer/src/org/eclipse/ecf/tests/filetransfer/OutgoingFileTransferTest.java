@@ -66,12 +66,15 @@ public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
 		public void handleFileTransferRequest(IFileTransferRequestEvent event) {
 			System.out.println("receiver.handleFileTransferRequest(" + event + ")");
 			try {
-				File f = new File(TESTTARGETPATH, event
+				File dir = new File(TESTTARGETPATH);
+				dir.mkdirs();
+				File f = new File(dir, event
 						.getFileTransferInfo().getFile().getName());
 				FileOutputStream fos = new FileOutputStream(f);
 				event.accept(fos,receiverTransferListener);
 				//event.accept(f);
 			} catch (Exception e) {
+				e.printStackTrace(System.err);
 				fail("exception calling accept for receive file transfer");
 			}
 		}
@@ -126,7 +129,7 @@ public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
 		adapter1.sendOutgoingRequest(getServerConnectID(0), new File(
 				TESTSRCFILE), senderTransferListener, null);
 		
-		sleep(200000);
+		sleep(20000);
 		
 		disconnectClients();
 
