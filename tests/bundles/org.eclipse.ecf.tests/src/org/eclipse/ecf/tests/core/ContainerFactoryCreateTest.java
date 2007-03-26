@@ -11,8 +11,6 @@
 
 package org.eclipse.ecf.tests.core;
 
-import java.util.Map;
-
 import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.ContainerCreateException;
@@ -27,10 +25,6 @@ import org.eclipse.ecf.core.security.IConnectContext;
 public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase {
 
 	protected static final String CONTAINER_TYPE_NAME = ContainerFactoryCreateTest.class.getName();
-	
-	protected String [] defaultParameters = null;
-	
-	protected Map defaultProperties = null;
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.tests.core.ContainerFactoryAbstractTestCase#setUp()
@@ -88,7 +82,7 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 							ContainerTypeDescription description) {
 						return new Class[][] { { String.class , Class.class }};
 					}
-				}, DESCRIPTION, defaultParameters, defaultProperties);
+				}, DESCRIPTION);
 	}
 	
 	public void testCreateContainer0() throws Exception {
@@ -137,16 +131,6 @@ public class ContainerFactoryCreateTest extends ContainerFactoryAbstractTestCase
 	public void testContainerTypeDescriptionGetDescription() {
 		ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(CONTAINER_TYPE_NAME);
 		assertTrue(desc.getDescription().equals(DESCRIPTION));
-	}
-
-	public void testContainerTypeDescriptionGetParameterDefaults() {
-		ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(CONTAINER_TYPE_NAME);
-		assertNull(desc.getParameterDefaults());
-	}
-
-	public void testContainerTypeDescriptionGetProperties() {
-		ContainerTypeDescription desc = ContainerFactory.getDefault().getDescriptionByName(CONTAINER_TYPE_NAME);
-		assertNotNull(desc.getProperties());
 	}
 
 	public void testContainerTypeDescriptionGetSupportedAdapterTypes() {
