@@ -13,6 +13,7 @@ package org.eclipse.ecf.example.collab.ui;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
@@ -70,14 +71,13 @@ public class JoinGroupWizard extends Wizard {
         String groupName = mainPage.getJoinGroupText();
         String nickName = mainPage.getNicknameText();
         String containerType = mainPage.getContainerType();
-        String password = mainPage.getPasswordText();
         boolean autoLogin = mainPage.getAutoLoginFlag();
         try {
-        	client = new URIClientConnectAction(containerType,groupName,nickName,password,project,autoLogin);
+        	client = new URIClientConnectAction(containerType,groupName,nickName,"",project,autoLogin);
         	client.run(null);
         } catch (Exception e) {
             String id = ClientPlugin.getDefault().getBundle().getSymbolicName();
-            throw new CoreException(new Status(Status.ERROR, id, 100, "Could not connect to "+groupName, e));
+            throw new CoreException(new Status(Status.ERROR, id, IStatus.ERROR, "Could not connect to "+groupName, e));
         }
     }
 }

@@ -217,11 +217,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 			for (Iterator i = rawDescriptions.iterator(); i.hasNext();) {
 				final ContainerTypeDescription desc = (ContainerTypeDescription) i
 						.next();
-				Map props = desc.getProperties();
-				String isServer = (String) props.get(ISSERVER_PROP_NAME);
-				if (isServer == null || !isServer.equalsIgnoreCase("true")) {
-					elements.add(desc);
-				}
+				if (!desc.isServer() && !desc.isHidden()) elements.add(desc);
 			}
 
 			return elements.toArray();
@@ -389,7 +385,9 @@ public class ConnectionDialog extends TitleAreaDialog {
 					.getFirstElement();
 			if (desc != null) {
 				containerType = desc.getName();
-				createPropertyComposite(paramComp, desc.getProperties());
+				// XXX replace with access to desc.getParameters()
+				createPropertyComposite(paramComp, null);
+				//createPropertyComposite(paramComp, desc.getProperties());
 			}
 		}
 

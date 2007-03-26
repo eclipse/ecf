@@ -24,23 +24,6 @@
             name="ECF Collab Roster"/>
    </extension>
    <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            label="ECF"
-            visible="true"
-            id="org.eclipse.ecf.example.collab.actionSet">
-               <action
-               toolbarPath="org.eclipse.ecf.example.collab.topseparator"
-               label="Connect to ECF Provider..."
-               class="org.eclipse.ecf.example.collab.actions.NewWorkbenchAction"
-               tooltip="Connect to ECF Provider"
-               icon="icons/group.gif"
-               style="push"
-               menubarPath="file/#additions"
-               id="org.eclipse.ecf.example.collab.joingroupaction"/>
-      </actionSet>
-   </extension>
-   <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             adaptable="true"
