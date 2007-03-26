@@ -29,7 +29,7 @@ public class XMPPConnectWizardPage extends WizardPage {
 	XMPPConnectWizardPage() {
 		super("");
 		setTitle("XMPP Connection Wizard");
-		setDescription("Specify a nickname and XMPP server to connect to.");
+		setDescription("Specify a XMPP account to connect to.");
 		setPageComplete(false);
 	}
 
@@ -39,7 +39,7 @@ public class XMPPConnectWizardPage extends WizardPage {
 		GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 
 		Label label = new Label(parent, SWT.LEFT);
-		label.setText("Connect ID:");
+		label.setText("User ID:");
 
 		connectText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		connectText.setLayoutData(fillData);

@@ -24,7 +24,7 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 	XMPPSConnectWizardPage() {
 		super();
 		setTitle("XMPPS Connection Wizard");
-		setDescription("Specify a nickname and XMPPS server to connect to.");
+		setDescription("Specify a XMPP account to connect to.");
 		setPageComplete(false);
 	}
 
@@ -34,7 +34,7 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 		GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 
 		Label label = new Label(parent, SWT.LEFT);
-		label.setText("Connect ID:");
+		label.setText("User ID:");
 
 		connectText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		connectText.setLayoutData(fillData);

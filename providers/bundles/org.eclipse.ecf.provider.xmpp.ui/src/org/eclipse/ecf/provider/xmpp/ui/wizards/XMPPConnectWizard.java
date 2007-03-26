@@ -18,8 +18,11 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.IExceptionHandler;
 import org.eclipse.ecf.internal.provider.xmpp.ui.Activator;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
+import org.eclipse.ecf.presence.ui.PresenceUI;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
 import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
@@ -30,8 +33,6 @@ import org.eclipse.ui.IWorkbench;
 
 public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 
-	private static final int CONNECT_ERROR_CODE = 7777;
-
 	XMPPConnectWizardPage page;
 
 	private Shell shell;
@@ -41,6 +42,22 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 	private ID targetID;
 
 	private IConnectContext connectContext;
+
+	private IExceptionHandler exceptionHandler = new IExceptionHandler() {
+		public IStatus handleException(final Throwable exception) {
+			if (exception != null) {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						new ContainerConnectErrorDialog(shell, IStatus.ERROR,
+								"See Details", targetID.getName(), exception)
+								.open();
+					}
+				});
+			}
+			return new Status(IStatus.OK, Activator.PLUGIN_ID, IStatus.OK,
+					"Connected", null);
+		}
+	};
 
 	public void addPages() {
 		page = new XMPPConnectWizardPage();
@@ -64,25 +81,15 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 			e.printStackTrace();
 			return false;
 		}
+		// Get presence container adapter
+		IPresenceContainerAdapter presenceAdapter = (IPresenceContainerAdapter) container
+				.getAdapter(IPresenceContainerAdapter.class);
+		// Create and show roster view user interface
+		new PresenceUI(container, presenceAdapter).showForUser(new User(
+				targetID));
 
 		new AsynchContainerConnectAction(this.container, this.targetID,
-				this.connectContext, new IExceptionHandler() {
-					public IStatus handleException(final Throwable exception) {
-						if (exception != null) {
-							Display.getDefault().asyncExec(new Runnable() {
-								public void run() {
-									new ContainerConnectErrorDialog(shell,
-											CONNECT_ERROR_CODE, "See Details",
-											targetID.getName(), exception)
-											.open();
-								}
-							});
-						}
-						return new Status(IStatus.OK, Activator.PLUGIN_ID, 0,
-								"", null);
-					}
-
-				}).run(null);
+				this.connectContext, exceptionHandler).run(null);
 
 		return true;
 	}
