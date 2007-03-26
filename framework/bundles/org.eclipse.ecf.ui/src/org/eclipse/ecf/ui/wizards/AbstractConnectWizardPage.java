@@ -60,6 +60,11 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 		connectText.setLayoutData(data);
 		connectText.addModifyListener(inputVerifier);
 
+		String defaultConnectText = getDefaultConnectText();
+		if (defaultConnectText != null && !defaultConnectText.equals("")) {
+			connectText.setText(defaultConnectText);
+		}
+		
 		String exampleID = getExampleID();
 		if (exampleID != null && !exampleID.equals("")) { //$NON-NLS-1$
 			label = new Label(parent, SWT.RIGHT);
@@ -110,6 +115,10 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 
 	public abstract String getExampleID();
 
+	protected String getDefaultConnectText(){
+		return "";
+	}
+	
 	protected String getProviderTitle() {
 		return "New Provider Connection";
 	}
