@@ -17,6 +17,10 @@ public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.presence.ui.messages"; //$NON-NLS-1$
 	
+	public static String ChatRoomManagerUI_EXCEPTION_CHAT_ROOM_VIEW_INITIALIZATION;
+
+	public static String ChatRoomManagerUI_EXCEPTION_NO_ROOT_CHAT_ROOM_MANAGER;
+
 	public static String MultiRosterView_ShowOffline;
 	
 	public static String RosterWorkbenchAdapterFactory_Mode;

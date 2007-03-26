@@ -165,7 +165,7 @@ public class MessagesView extends ViewPart {
 		private void append(ID fromID, String body) {
 			int length = chatText.getCharCount();
 			String name = fromID.getName();
-			chatText.append(fromID.getName() + ": " + body + Text.DELIMITER);
+			chatText.append(fromID.getName() + ": " + body + Text.DELIMITER); //$NON-NLS-1$
 			if (fromID.equals(userID)) {
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, blueColor, null, SWT.BOLD));
