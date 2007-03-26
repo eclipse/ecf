@@ -8,16 +8,6 @@
             class="org.eclipse.ecf.internal.provider.irc.container.IRCContainerInstantiator"
             description="IRC"
             name="ecf.irc.irclib">
-                     <property
-                           name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"
-                           value="irc://&lt;user&gt;@&lt;ircserver&gt;[/&lt;#channel&gt;]"/>
-         <property
-               value="true"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"
-               value="irc://"/>
-            
       </containerFactory>
    </extension>
    <extension
