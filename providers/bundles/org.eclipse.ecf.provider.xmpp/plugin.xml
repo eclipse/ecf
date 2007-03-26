@@ -7,24 +7,6 @@
             class="org.eclipse.ecf.internal.provider.xmpp.XMPPContainerInstantiator"
             description="XMPP (Jabber)"
             name="ecf.xmpp.smack">
-         <property
-               value="true"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>
-         <property
-               value="&lt;user&gt;@&lt;jabberserver&gt;[:port]"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"
-               value=""/>
-         <property
-               value="xmpp:"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.urlprefix"/>
-         <property
-               value="Account:"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.groupIDLabel"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.namespace"
-               value="ecf.xmpp.smack"/>
       </containerFactory>
    </extension>
    <extension
@@ -33,24 +15,6 @@
             class="org.eclipse.ecf.internal.provider.xmpp.XMPPSContainerInstantiator"
             description="XMPP SSL (Jabber SSL)"
             name="ecf.xmpps.smack">
-         <property
-               value="true"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"/>
-         <property
-               value="&lt;user&gt;@&lt;jabberserver&gt;[:port]"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.examplegroupid"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.defaultgroupid"
-               value=""/>
-         <property
-               value="xmpp:"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.urlprefix"/>
-         <property
-               value="Account:"
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.groupIDLabel"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.namespace"
-               value="ecf.xmpps.smack"/>
       </containerFactory>
    </extension>
    <extension
