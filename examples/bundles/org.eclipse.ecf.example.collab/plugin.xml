@@ -5,7 +5,7 @@
          id="org.eclipse.ecf.example.collab.ui.ClientPreferencePage"
          point="org.eclipse.ui.views">
       <view
-            icon="icons/group.gif"
+            icon="icons/person.gif"
             class="org.eclipse.ecf.example.collab.ui.LineChatView"
             category="org.eclipse.ecf.ui.viewcategory"
             name="ECF Collaboration"
@@ -16,12 +16,6 @@
             icon="icons/default_provider_image.gif"
             id="org.eclipse.ecf.example.collab.discoveryview"
             name="ECF Service Discovery"/>
-      <view
-            category="org.eclipse.ecf.ui.viewcategory"
-            class="org.eclipse.ecf.example.collab.ui.CollabRosterView"
-            icon="icons/group.gif"
-            id="org.eclipse.ecf.example.collab.ui.CollabRosterView"
-            name="ECF Collab Roster"/>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -37,10 +31,11 @@
             <separator name="group2"/>
          </menu>
          <action
-               label="Connect Project..."
                class="org.eclipse.ecf.example.collab.actions.JoinGroupWizardAction"
-               menubarPath="org.eclipse.ecf.example.collab.menu1/group1"
-               id="org.eclipse.ecf.client.joingroupwizardaction"/>
+               icon="icons/person.gif"
+               id="org.eclipse.ecf.client.joingroupwizardaction"
+               label="Connect Project..."
+               menubarPath="org.eclipse.ecf.example.collab.menu1/group1"/>
       </objectContribution>
       <objectContribution
             adaptable="true"
@@ -122,7 +117,7 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="org.eclipse.ecf.ui.actionSet"
-            label="Sample Action Set"
+            label="sampleActionSet"
             visible="true">
          <menu
                id="sampleMenu"
@@ -139,6 +134,27 @@
                style="pulldown"
                toolbarPath="sampleGroup"
                tooltip="Connect to ECF Provider">
+         </action>
+      </actionSet>
+      <actionSet
+            id="org.eclipse.ecf.example.collab.actionSet2"
+            label="sampleActionSet2"
+            visible="true">
+         <menu
+               id="org.eclipse.ecf.example.collab.menu1"
+               label="collabMenu">
+            <separator
+                  name="sampleGroup2">
+            </separator>
+         </menu>
+         <action
+               class="org.eclipse.ecf.example.collab.actions.JoinGroupWizardAction"
+               icon="icons/person.gif"
+               id="org.eclipse.ecf.example.collab.action2"
+               label="Connect Workspace..."
+               style="push"
+               toolbarPath="sampleGroup2"
+               tooltip="Connect to ECF Collaboration Group">
          </action>
       </actionSet>
    </extension>

@@ -25,16 +25,16 @@ import org.eclipse.ui.IWorkbench;
 
 public class JoinGroupWizard extends Wizard {
 	
-	protected static final String PAGE_TITLE = "ECF Connect";
+	protected static final String PAGE_TITLE = "ECF Collaboration Connect";
 
 	private static final String DIALOG_SETTINGS = JoinGroupWizard.class.getName();
 	
     JoinGroupWizardPage mainPage;
-    private IResource project;
+    private IResource resource;
 
-    public JoinGroupWizard(IResource project, IWorkbench workbench) {
+    public JoinGroupWizard(IResource resource, IWorkbench workbench) {
         super();
-        this.project = project;
+        this.resource = resource;
         setWindowTitle(PAGE_TITLE);
         IDialogSettings dialogSettings = ClientPlugin.getDefault().getDialogSettings();
         IDialogSettings wizardSettings = dialogSettings.getSection(DIALOG_SETTINGS);
@@ -45,7 +45,7 @@ public class JoinGroupWizard extends Wizard {
     }
 
     protected ISchedulingRule getSchedulingRule() {
-        return project;
+        return resource;
     }
     public void addPages() {
         super.addPages();
@@ -73,7 +73,7 @@ public class JoinGroupWizard extends Wizard {
         String containerType = mainPage.getContainerType();
         boolean autoLogin = mainPage.getAutoLoginFlag();
         try {
-        	client = new URIClientConnectAction(containerType,groupName,nickName,"",project,autoLogin);
+        	client = new URIClientConnectAction(containerType,groupName,nickName,"",resource,autoLogin);
         	client.run(null);
         } catch (Exception e) {
             String id = ClientPlugin.getDefault().getBundle().getSymbolicName();

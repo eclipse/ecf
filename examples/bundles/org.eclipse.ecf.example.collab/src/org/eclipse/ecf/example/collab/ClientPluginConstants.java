@@ -42,7 +42,7 @@ public interface ClientPluginConstants {
 	/*
 	 * Contstants used to describe decoration images.
 	 */
-	public static final String DECORATION_PROJECT = "project";
+	public static final String DECORATION_PROJECT = "resource";
 	public static final String DECORATION_USER = "user";
 	public static final String DECORATION_TIME = "time";
 	public static final String DECORATION_TASK = "task";

@@ -165,7 +165,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			eclipseDir = Platform.getLocation().toOSString();
 		} catch (Exception e) {
 			debugdump(e,
-					"EclipseCollabSharedObject.  Exception getting local project path");
+					"EclipseCollabSharedObject.  Exception getting local resource path");
 		}
 		if (eclipseDir == null) {
 			eclipseDir = ".";
@@ -551,7 +551,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				localProject.refreshLocal(IResource.DEPTH_INFINITE,
 						new NullProgressMonitor());
 			} catch (Exception e) {
-				debugdump(e, "Exception refreshing project "
+				debugdump(e, "Exception refreshing resource "
 						+ localProject.getName());
 			}
 		}
@@ -665,7 +665,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	protected void handleCVSProjectUpdateRequest(final User fromUser,
 			final String msg) {
 		final IResource proj = getResource();
-		// If project doesn't actually exist, just return silently
+		// If resource doesn't actually exist, just return silently
 		if (!proj.exists() || !isCVSShared())
 			return;
 		doCVSUpdateOperation(proj, fromUser);

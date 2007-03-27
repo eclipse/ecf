@@ -97,7 +97,7 @@ public class PresenceContainerUI {
 					IWorkbenchPage wp = ww.getActivePage();
 
 					IViewPart view = wp
-							.showView("org.eclipse.ecf.ui.view.rosterview");
+							.showView("org.eclipse.ecf.example.collab.ui.CollabRosterView");
 					rosterView = (RosterView) view;
 
 					// MultiRosterViewTesting

@@ -20,7 +20,7 @@ import org.eclipse.ui.part.ViewPart;
 
 
 /**
- * Interface describing access to the Eclipse project that is associated
+ * Interface describing access to the Eclipse resource that is associated
  * with a given collaboration group.
  * 
  * @author slewis

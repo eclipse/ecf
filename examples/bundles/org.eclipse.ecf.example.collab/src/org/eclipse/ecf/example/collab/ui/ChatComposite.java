@@ -610,6 +610,8 @@ public class ChatComposite extends Composite {
 			sendFileToUser.setImageDescriptor(PlatformUI.getWorkbench()
 					.getSharedImages().getImageDescriptor(
 							ISharedImages.IMG_OBJ_FILE));
+			// XXX disabled
+			sendFileToUser.setEnabled(false);
 			man.add(sendFileToUser);
 
 			Action sendFileToUserAndLaunch = new Action() {
@@ -621,6 +623,8 @@ public class ChatComposite extends Composite {
 			sendFileToUserAndLaunch.setImageDescriptor(PlatformUI.getWorkbench()
 					.getSharedImages().getImageDescriptor(
 							ISharedImages.IMG_OBJ_FILE));
+			// XXX disabled
+			sendFileToUserAndLaunch.setEnabled(false);
 			man.add(sendFileToUserAndLaunch);
 
 			Action coBrowseToUser = new Action() {
@@ -885,6 +889,8 @@ public class ChatComposite extends Composite {
 		sendFileToGroup.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(
 						ISharedImages.IMG_OBJ_FILE));
+		// XXX disabled
+		sendFileToGroup.setEnabled(false);
 		/*
 		sendFileToGroupAndLaunch = new Action() {
 			public void run() {
