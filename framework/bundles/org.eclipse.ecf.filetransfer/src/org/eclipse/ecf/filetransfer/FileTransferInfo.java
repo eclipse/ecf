@@ -34,7 +34,7 @@ public class FileTransferInfo implements IFileTransferInfo, Serializable {
 	protected String description;
 
 	protected String mimeType = null;
-	
+
 	public FileTransferInfo(File file) {
 		this(file, null);
 	}
@@ -44,12 +44,14 @@ public class FileTransferInfo implements IFileTransferInfo, Serializable {
 	}
 
 	public FileTransferInfo(File file, Map properties, String description) {
-		this(file,properties,description,null);
+		this(file, properties, description, null);
 	}
 
-	public FileTransferInfo(File file, Map properties, String description, String mimeType) {
+	public FileTransferInfo(File file, Map properties, String description,
+			String mimeType) {
 		if (file == null)
-			throw new NullPointerException(Messages.BaseFileTransferInfo_File_Not_Null);
+			throw new NullPointerException(
+					Messages.BaseFileTransferInfo_File_Not_Null);
 		this.file = file;
 		this.properties = (properties == null) ? new HashMap() : properties;
 		this.description = description;
@@ -92,19 +94,24 @@ public class FileTransferInfo implements IFileTransferInfo, Serializable {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.filetransfer.IFileTransferInfo#getFileSize()
 	 */
 	public long getFileSize() {
 		return file.length();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.filetransfer.IFileTransferInfo#getMimeType()
 	 */
 	public String getMimeType() {
 		if (mimeType == null)
-			return URLConnection.guessContentTypeFromName(file.getAbsolutePath());
+			return URLConnection.getFileNameMap().getContentTypeFor(
+					file.getAbsolutePath());
 		return mimeType;
 	}
 }
