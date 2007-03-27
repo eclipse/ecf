@@ -35,7 +35,7 @@ import org.eclipse.ui.part.ShowInContext;
 public class JoinGroupWizardAction extends ActionDelegate implements
 		IObjectActionDelegate, IWorkbenchWindowActionDelegate {
 
-	private static final String CONNECT_PROJECT_MENU_TEXT = "Connect Project...";
+	private static final String CONNECT_PROJECT_MENU_TEXT = "Connect Project to Collaboration Group...";
 	private static final String DISCONNECT_PROJECT_MENU_TEXT = "Disconnect Project";
 	IResource resource;
 	boolean connected = false;
