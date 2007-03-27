@@ -130,7 +130,7 @@ public class MultiRetrieveFileTransferTest extends ContainerAbstractTestCase {
 		for (Iterator i = srcFiles.iterator(); i.hasNext(); ) {
 			testReceive((String) i.next());
 		}
-		sleep(50000, "Starting sleeping", "Ending sleeping");
+		sleep(10000, "Starting sleeping", "Ending sleeping");
 	}
 
 }

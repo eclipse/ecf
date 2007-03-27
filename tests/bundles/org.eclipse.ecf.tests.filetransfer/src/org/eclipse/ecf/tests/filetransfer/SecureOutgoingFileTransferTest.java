@@ -130,7 +130,7 @@ public class SecureOutgoingFileTransferTest extends ContainerAbstractTestCase {
 		adapter1.sendOutgoingRequest(getServerConnectID(0), new File(
 				TESTSRCFILE), senderTransferListener, null);
 		
-		sleep(20000);
+		sleep(10000);
 		
 		disconnectClients();
 

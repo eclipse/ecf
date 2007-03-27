@@ -97,25 +97,6 @@ public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
 		}
 	}
 
-/*
-	public void testOneClientToSend() throws Exception {
-		// Setup one client.  Client 0 is the sender
-		setClientCount(2);
-		clients = createClients();
-		adapter0 = getOutgoingFileTransfer(0);
-		for (int i = 0; i < 1; i++) {
-			// Only connect client 0 (not client 1)
-			connectClient(i);
-		}
-
-		adapter0.sendOutgoingRequest(getServerConnectID(1), new File(
-				TESTSRCFILE), senderTransferListener, null);
-		sleep(200000);
-		
-		disconnectClients();
-
-	}
-*/
 	public void testTwoClientsToSendAndReceive() throws Exception {
 		// Setup two clients.  Client 0 is the receiver, client 1 is the sender
 		setClientCount(2);

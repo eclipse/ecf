@@ -123,7 +123,7 @@ public class MultiRetrieveFileTransferServiceTest extends TestCase {
 		for (Iterator i = srcFiles.iterator(); i.hasNext(); ) {
 			testReceive((String) i.next());
 		}
-		Thread.sleep(50000);
+		Thread.sleep(10000);
 	}
 
 }
