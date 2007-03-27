@@ -45,7 +45,7 @@
       <page
             class="org.eclipse.ecf.ui.ChatPreferencePage"
             id="org.eclipse.ecf.ui.preferences.chat"
-            name="Chat"
+            name="Browser"
             category="org.eclipse.ecf.ui.category">
       </page>
    </extension>
@@ -58,7 +58,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="org.eclipse.ui.preferences.TopPreferencePage"
+            class="org.eclipse.ecf.ui.CategoryPreferencePage"
             id="org.eclipse.ecf.ui.category"
             name="ECF">
       </page>
