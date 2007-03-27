@@ -203,7 +203,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 						ISharedImages.IMG_OBJ_FOLDER));
 		registry.put(ClientPluginConstants.DECORATION_USER, AbstractUIPlugin
 				.imageDescriptorFromPlugin("org.eclipse.ecf.example.collab",
-						"icons/presence_member.gif").createImage());
+						"icons/buddy_available.gif").createImage());
 		registry.put(ClientPluginConstants.DECORATION_TIME, PlatformUI
 				.getWorkbench().getSharedImages().getImage(
 						ISharedImages.IMG_TOOL_FORWARD));
