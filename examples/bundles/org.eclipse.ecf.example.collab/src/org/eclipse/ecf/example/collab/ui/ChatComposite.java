@@ -405,11 +405,11 @@ public class ChatComposite extends Composite {
 	}
 	/*
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(outputCopy);
-		manager.add(outputPaste);
-		manager.add(outputClear);
+		manager.add(inputCopy);
+		manager.add(inputPaste);
+		manager.add(inputClear);
 		manager.add(new Separator());
-		manager.add(outputSelectAll);
+		manager.add(inputSelectAll);
 		manager.add(new Separator());
 		manager.add(sendFileToGroup);
 		manager.add(coBrowseURL);
