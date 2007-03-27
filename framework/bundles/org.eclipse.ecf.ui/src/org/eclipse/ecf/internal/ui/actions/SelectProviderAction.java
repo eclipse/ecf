@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.wizards.IWizardRegistryConstants;
@@ -66,21 +67,24 @@ public class SelectProviderAction implements IWizardRegistryConstants,
 						final IConfigurationWizard wizard = getWizard(
 								configurationWizards, factoryName);
 						final IConfigurationElement ice = ices[j];
-						if (wizard == null) {
-							map.put(ice.getAttribute(ATT_NAME),
-									new SelectionAdapter() {
-										public void widgetSelected(SelectionEvent e) {
-											openConnectWizard(ice, factoryName);
-										}
-									});
-						} else {
-							map.put(ice.getAttribute(ATT_NAME),
-									new SelectionAdapter() {
-										public void widgetSelected(SelectionEvent e) {
-											openConnectWizard(wizard, ice,
-													factoryName);
-										}
-									});
+						ContainerTypeDescription typeDescription = ContainerFactory.getDefault().getDescriptionByName(factoryName);
+						if (!typeDescription.isHidden()) {
+							if (wizard == null) {
+								map.put(ice.getAttribute(ATT_NAME),
+										new SelectionAdapter() {
+											public void widgetSelected(SelectionEvent e) {
+												openConnectWizard(ice, factoryName);
+											}
+										});
+							} else {
+								map.put(ice.getAttribute(ATT_NAME),
+										new SelectionAdapter() {
+											public void widgetSelected(SelectionEvent e) {
+												openConnectWizard(wizard, ice,
+														factoryName);
+											}
+										});
+							}
 						}
 					}
 				}
