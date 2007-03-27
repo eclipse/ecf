@@ -62,6 +62,8 @@ public class JoinGroupWizardAction extends ActionDelegate implements
 			action.setText(CONNECT_PROJECT_MENU_TEXT);
 			connected = false;
 		}
+		action.setEnabled(true);
+		if (!res.isAccessible()) action.setEnabled(false);
 	}
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
