@@ -20,10 +20,10 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="org.eclipse.team.ui.TeamPreferences"
+            category="org.eclipse.ecf.ui.category"
             class="org.eclipse.ecf.example.collab.editor.preferences.ClientPreferencePage"
             id="org.eclipse.ecf.example.collab.editor.page"
-            name="ECF Editor Sharing"/>
+            name="Editor Sharing"/>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
