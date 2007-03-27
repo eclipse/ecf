@@ -616,7 +616,7 @@ public class ChatRoomView extends ViewPart implements IParticipantListener, ICha
 		};
 		outputPaste.setText("Paste");
 		outputPaste.setToolTipText("Paste");
-		outputCopy.setAccelerator(SWT.CTRL | 'V');
+		outputPaste.setAccelerator(SWT.CTRL | 'V');
 		outputPaste.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(
 						ISharedImages.IMG_TOOL_PASTE));

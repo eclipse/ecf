@@ -186,6 +186,10 @@ public class ChatRoomManagerView extends ViewPart implements
 		Text textInput;
 
 		ListViewer listViewer;
+		
+		Action outputSelectAll;
+		Action outputCopy;
+		Action outputClear;
 
 		Manager(CTabFolder parent, String name) {
 			this(true, parent, name, null);
@@ -240,8 +244,87 @@ public class ChatRoomManagerView extends ViewPart implements
 			} else
 				tabItem.setControl(rightSash);
 			parent.setSelection(tabItem);
+			
+			makeActions();
+			hookContextMenu();
+		}
+		
+		protected void outputClear() {
+			if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
+					"Are you sure you want to clear output?")) {
+				textOutput.getTextWidget().setText(""); //$NON-NLS-1$
+			}
 		}
 
+		protected void outputCopy() {
+			String t = textOutput.getTextWidget().getSelectionText();
+			if (t == null || t.length() == 0) {
+				textOutput.getTextWidget().selectAll();
+			}
+			textOutput.getTextWidget().copy();
+			textOutput.getTextWidget().setSelection(
+					textOutput.getTextWidget().getText().length());
+		}
+
+		protected void outputSelectAll() {
+			textOutput.getTextWidget().selectAll();
+		}
+		
+		private void fillContextMenu(IMenuManager manager) {
+			manager.add(outputCopy);
+			manager.add(outputClear);
+			manager.add(new Separator());
+			manager.add(outputSelectAll);
+			manager.add(new Separator("Additions"));
+		}
+
+		private void hookContextMenu() {
+			MenuManager menuMgr = new MenuManager("#PopupMenu");
+			menuMgr.setRemoveAllWhenShown(true);
+			menuMgr.addMenuListener(new IMenuListener() {
+				public void menuAboutToShow(IMenuManager manager) {
+					fillContextMenu(manager);
+				}
+			});
+			Menu menu = menuMgr.createContextMenu(textOutput.getControl());
+			textOutput.getControl().setMenu(menu);
+			getSite().registerContextMenu(menuMgr, textOutput);
+		}
+
+		private void makeActions() {
+			outputSelectAll = new Action() {
+				public void run() {
+					outputSelectAll();
+				}
+			};
+			outputSelectAll.setText("Select All");
+			outputSelectAll.setToolTipText("Select All");
+			outputSelectAll.setAccelerator(SWT.CTRL | 'A');
+			outputCopy = new Action() {
+				public void run() {
+					outputCopy();
+				}
+			};
+			outputCopy.setText("Copy");
+			outputCopy.setToolTipText("Copy Selected");
+			outputCopy.setAccelerator(SWT.CTRL | 'C');
+			outputCopy.setImageDescriptor(PlatformUI.getWorkbench()
+					.getSharedImages().getImageDescriptor(
+							ISharedImages.IMG_TOOL_COPY));
+			outputClear = new Action() {
+				public void run() {
+					outputClear();
+				}
+			};
+			outputClear.setText("Clear");
+			outputClear.setToolTipText("Clear output window");
+			outputPaste = new Action() {
+				public void run() {
+					outputPaste();
+				}
+			};
+
+		}
 		protected String getTabName() {
 			return tabItem.getText();
 		}
@@ -507,14 +590,20 @@ public class ChatRoomManagerView extends ViewPart implements
 									.createPasswordConnectContext(key));
 							rooms.put(target, chatroomview);
 						} catch (Exception e) {
-							// XXX handle properly
-							e.printStackTrace();
+							MessageDialog.openError(getSite().getShell(),
+									"Connect Error",
+									"Could connect to " + target
+											+ ".\n\nError is " + e.getLocalizedMessage()
+											+ ".");
 						}
 					}
 				});
 			} catch (Exception e) {
-				// XXX handle properly
-				e.printStackTrace();
+				MessageDialog.openError(getSite().getShell(),
+						"Container Create Error",
+						"Could not create container for " + target
+								+ ".\n\nError is " + e.getLocalizedMessage()
+								+ ".");
 			}
 		}
 	}
@@ -1509,7 +1598,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		};
 		outputPaste.setText("Paste");
 		outputPaste.setToolTipText("Paste");
-		outputCopy.setAccelerator(SWT.CTRL | 'V');
+		outputPaste.setAccelerator(SWT.CTRL | 'V');
 		outputPaste.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(
 						ISharedImages.IMG_TOOL_PASTE));
