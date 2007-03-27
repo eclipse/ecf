@@ -8,14 +8,14 @@
             icon="icons/group.gif"
             class="org.eclipse.ecf.example.collab.ui.LineChatView"
             category="org.eclipse.ecf.ui.viewcategory"
-            name="ECF Collaboration"
+            name="Group Collaboration"
             id="org.eclipse.ecf.example.collab.ui.LineChatView"/>
       <view
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.example.collab.CollabDiscoveryView"
             icon="icons/default_provider_image.gif"
             id="org.eclipse.ecf.example.collab.discoveryview"
-            name="ECF Service Discovery"/>
+            name="Service Discovery"/>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -58,17 +58,17 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-      		category="org.eclipse.team.ui.TeamPreferences"
+      		category="org.eclipse.ecf.ui.category"
             class="org.eclipse.ecf.example.collab.ui.ClientPreferencePage"
-            name="ECF Collaboration"
+            name="Collaboration"
             id="org.eclipse.ecf.example.collab.ui.preferences"/>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="org.eclipse.team.ui.TeamPreferences"
+            category="org.eclipse.ecf.ui.category"
             class="org.eclipse.ecf.example.collab.start.AutoLoginPreferencePage"
-            name="ECF Autologin"
+            name="Autologin"
             id="org.eclipse.ecf.example.collab.ui.autologin"/>
    </extension>
 
@@ -130,10 +130,10 @@
                class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
                icon="icons/im.gif"
                id="org.eclipse.ecf.ui.actions.SampleAction"
-               label="Connect to ECF Provider"
+               label="Connect to ECF IM/Chat Provider"
                style="pulldown"
                toolbarPath="sampleGroup"
-               tooltip="Connect to ECF Provider">
+               tooltip="Connect to ECF IM/Chat Provider">
          </action>
       </actionSet>
       <actionSet
@@ -151,7 +151,7 @@
                class="org.eclipse.ecf.example.collab.actions.JoinGroupWizardAction"
                icon="icons/group.gif"
                id="org.eclipse.ecf.example.collab.action2"
-               label="Connect Workspace..."
+               label="Connect to ECF Collaboration Group..."
                style="push"
                toolbarPath="sampleGroup2"
                tooltip="Connect to ECF Collaboration Group">
