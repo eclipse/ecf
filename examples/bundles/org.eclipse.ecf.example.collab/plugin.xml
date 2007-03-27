@@ -5,7 +5,7 @@
          id="org.eclipse.ecf.example.collab.ui.ClientPreferencePage"
          point="org.eclipse.ui.views">
       <view
-            icon="icons/person.gif"
+            icon="icons/group.gif"
             class="org.eclipse.ecf.example.collab.ui.LineChatView"
             category="org.eclipse.ecf.ui.viewcategory"
             name="ECF Collaboration"
@@ -32,9 +32,9 @@
          </menu>
          <action
                class="org.eclipse.ecf.example.collab.actions.JoinGroupWizardAction"
-               icon="icons/person.gif"
+               icon="icons/group.gif"
                id="org.eclipse.ecf.client.joingroupwizardaction"
-               label="Connect Project..."
+               label="Connect Project to ECF Collaboration Group..."
                menubarPath="org.eclipse.ecf.example.collab.menu1/group1"/>
       </objectContribution>
       <objectContribution
@@ -128,7 +128,7 @@
          </menu>
          <action
                class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
-               icon="icons/group.gif"
+               icon="icons/im.gif"
                id="org.eclipse.ecf.ui.actions.SampleAction"
                label="Connect to ECF Provider"
                style="pulldown"
@@ -149,7 +149,7 @@
          </menu>
          <action
                class="org.eclipse.ecf.example.collab.actions.JoinGroupWizardAction"
-               icon="icons/person.gif"
+               icon="icons/group.gif"
                id="org.eclipse.ecf.example.collab.action2"
                label="Connect Workspace..."
                style="push"
