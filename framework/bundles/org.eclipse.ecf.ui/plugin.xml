@@ -27,7 +27,7 @@
             class="org.eclipse.ecf.ui.views.ChatRoomManagerView"
             icon="icons/epresence16/group.gif"
             id="org.eclipse.ecf.ui.views.ChatRoomManagerView"
-            name="Chat Room"/>
+            name="Chat Room Manager"/>
    </extension>
    <extension
          point="org.eclipse.ecf.ui.configurationWizards">
