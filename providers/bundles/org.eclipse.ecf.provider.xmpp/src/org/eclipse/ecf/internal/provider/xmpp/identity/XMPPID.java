@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.presence.im.IChatID;
 
 public class XMPPID extends BaseID implements IChatID {
@@ -27,7 +28,7 @@ public class XMPPID extends BaseID implements IChatID {
 	URI uri;
 	String username;
 	String hostname;
-	String resourcename;
+	String resourcename = ECFConnection.CLIENT_TYPE;
 	int port = -1;
 	
 	protected static String fixEscape(String src) {
@@ -58,6 +59,8 @@ public class XMPPID extends BaseID implements IChatID {
 		if (atIndex != -1) {
 			resourcename = PATH_DELIMITER+hostname.substring(atIndex+1);
 			hostname = hostname.substring(0,atIndex);
+		} else {
+			resourcename = PATH_DELIMITER + ECFConnection.CLIENT_TYPE;
 		}
 		uri = new URI(namespace.getScheme(),username,hostname,port,resourcename,null,null);
 	}
@@ -100,6 +103,10 @@ public class XMPPID extends BaseID implements IChatID {
 	
 	public String getUsernameAtHost() {
 		return getUsername()+"@"+getHostname();
+	}
+	
+	public String getFQName() {
+		return getUsernameAtHost()+getResourceName();
 	}
 	
 	public String toString() {

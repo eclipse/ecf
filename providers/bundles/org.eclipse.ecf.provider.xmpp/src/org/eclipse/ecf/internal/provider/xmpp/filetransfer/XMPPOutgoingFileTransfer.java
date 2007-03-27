@@ -65,9 +65,8 @@ public class XMPPOutgoingFileTransfer implements IOutgoingFileTransfer {
 		this.transferInfo = fileTransferInfo;
 		this.listener = listener;
 		this.sessionID = createSessionID();
-		outgoingFileTransfer = manager.createOutgoingFileTransfer(remoteTarget
-				.getName()
-				+ XMPPID.PATH_DELIMITER + remoteTarget.getResourceName());
+		String fullyQualifiedName = remoteTarget.getFQName();
+		outgoingFileTransfer = manager.createOutgoingFileTransfer(fullyQualifiedName);
 	}
 
 	private ID createSessionID() {
