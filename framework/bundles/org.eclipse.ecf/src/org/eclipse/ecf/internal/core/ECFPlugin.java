@@ -239,8 +239,10 @@ public class ECFPlugin implements BundleActivator {
 					description = ""; //$NON-NLS-1$
 				}
 
-				boolean server = Boolean.parseBoolean(member.getAttribute(SERVER_ATTRIBUTE));
-				boolean hidden = Boolean.parseBoolean(member.getAttribute(HIDDEN_ATTRIBUTE));
+				String s = member.getAttribute(SERVER_ATTRIBUTE);
+				boolean server = (s==null)?false:(new Boolean(s).booleanValue());
+				s = member.getAttribute(HIDDEN_ATTRIBUTE);
+				boolean hidden = (s==null)?false:(new Boolean(s).booleanValue());
 				
 				// Now make description instance
 				ContainerTypeDescription scd = new ContainerTypeDescription(
