@@ -44,8 +44,9 @@
          point="org.eclipse.ui.preferencePages">
       <page
             class="org.eclipse.ecf.ui.ChatPreferencePage"
-            id="org.eclipse.ecf.example.collab.ui.preferences.chat"
-            name="ECF Chat">
+            id="org.eclipse.ecf.ui.preferences.chat"
+            name="Chat"
+            category="org.eclipse.ecf.ui.category">
       </page>
    </extension>
    <extension
@@ -53,5 +54,13 @@
       <initializer
             class="org.eclipse.ecf.internal.ui.UIPreferenceInitializer">
       </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.eclipse.ui.preferences.TopPreferencePage"
+            id="org.eclipse.ecf.ui.category"
+            name="ECF">
+      </page>
    </extension>
 </plugin>
