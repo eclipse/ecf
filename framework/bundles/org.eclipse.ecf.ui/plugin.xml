@@ -12,7 +12,7 @@
             icon="icons/epresence16/buddy_available.gif"
             class="org.eclipse.ecf.ui.views.RosterView"
             category="org.eclipse.ecf.ui.viewcategory"
-            name="ECF Roster"
+            name="Roster"
             id="org.eclipse.ecf.ui.view.rosterview"/>
       <view
             allowMultiple="true"
