@@ -100,11 +100,6 @@ public class PresenceContainerUI {
 							.showView("org.eclipse.ecf.ui.view.rosterview");
 					rosterView = (RosterView) view;
 
-					// MultiRosterViewTesting
-					// MultiRosterView mrv = (MultiRosterView)
-					// wp.showView("org.eclipse.ecf.presence.ui.MultiRosterView");
-					// mrv.addContainer(PresenceUI.this.container);
-
 					String nickname = null;
 					if (nick != null) {
 						nickname = nick;
