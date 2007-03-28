@@ -11,7 +11,7 @@
             thread="main"
             visible="true">
          <run
-               class="org.eclipse.ecf.presence.bot.IRCBotApplication">
+               class="org.eclipse.ecf.presence.bot.ChatBotApplication">
          </run>
       </application>
    </extension>

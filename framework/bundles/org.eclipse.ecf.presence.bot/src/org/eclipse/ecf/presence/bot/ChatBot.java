@@ -17,8 +17,9 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.internal.presence.bot.IBotEntry;
+import org.eclipse.ecf.internal.presence.bot.IChatBotEntry;
 import org.eclipse.ecf.internal.presence.bot.ICommandEntry;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
@@ -29,16 +30,15 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 
-public class Bot implements IIMMessageListener {
+public class ChatBot implements IIMMessageListener {
 
-	private IBotEntry bot;
+	private IChatBotEntry bot;
 	private IContainer container;
 	private IChatRoomManager manager;
 	private Namespace namespace;
 	private IChatRoomMessageSender sender;
-	private static String CONTAINER_TYPE = "ecf.irc.irclib";
 
-	public Bot(IBotEntry bot) {
+	public ChatBot(IChatBotEntry bot) {
 		this.bot = bot;
 		start();
 	}
@@ -55,16 +55,15 @@ public class Bot implements IIMMessageListener {
 
 	protected void setup() throws ECFException {
 		if (container == null) {
-			container = ContainerFactory.getDefault().createContainer(CONTAINER_TYPE);
+			container = ContainerFactory.getDefault().createContainer(bot.getContainerFactoryName());
 			namespace = container.getConnectNamespace();
 		}
 		manager = (IChatRoomManager) container.getAdapter(IChatRoomManager.class);
 
 		ID targetID = IDFactory.getDefault().createID(
-				namespace,
-				"irc://" + bot.getName() + "@" + bot.getServer());
-		container.connect(targetID, null);
-		IChatRoomInfo room = manager.getChatRoomInfo(bot.getChannel());
+				namespace,bot.getConnectID());
+		container.connect(targetID, ConnectContextFactory.createPasswordConnectContext(bot.getPassword()));
+		IChatRoomInfo room = manager.getChatRoomInfo(bot.getChatRoom());
 		IChatRoomContainer roomContainer = room.createChatRoomContainer();
 		roomContainer.connect(room.getRoomID(), null);
 		roomContainer.addMessageListener(this);

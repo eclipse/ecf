@@ -113,12 +113,14 @@ public class Activator implements BundleActivator {
 			for(int i = 0; i < elements.length; i++) {
 				String id = elements[i].getAttribute("id");
 				String name = elements[i].getAttribute("name");
-				String server = elements[i].getAttribute("server");
-				String channel = elements[i].getAttribute("channel");
+				String containerFactoryName = elements[i].getAttribute("containerFactoryName");
+				String connectID = elements[i].getAttribute("connectID");
+				String password = elements[i].getAttribute("password");
+				String chatroom = elements[i].getAttribute("chatroom");
 				List c = (List) commands.get(id);
 				if(c == null)
 					c = new ArrayList();
-				IBotEntry bot = new BotEntry(id, name, server, channel, c);
+				IChatBotEntry bot = new ChatBotEntry(id, name, containerFactoryName, connectID, password, chatroom, c);
 				bots.put(id, bot);
 			}
 		}

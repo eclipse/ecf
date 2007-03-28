@@ -13,7 +13,7 @@
    <element name="extension">
       <complexType>
          <sequence>
-            <element ref="robot" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="chatrobot" minOccurs="1" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -42,7 +42,7 @@
       </complexType>
    </element>
 
-   <element name="robot">
+   <element name="chatrobot">
       <complexType>
          <attribute name="id" type="string">
             <annotation>
@@ -58,14 +58,28 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="server" type="string">
+         <attribute name="containerFactoryName" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="channel" type="string">
+         <attribute name="connectID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="password" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="chatroom" type="string">
             <annotation>
                <documentation>
                   

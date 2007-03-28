@@ -14,19 +14,19 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.ecf.internal.presence.bot.Activator;
-import org.eclipse.ecf.internal.presence.bot.IBotEntry;
+import org.eclipse.ecf.internal.presence.bot.IChatBotEntry;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
-public class IRCBotApplication implements IApplication {
+public class ChatBotApplication implements IApplication {
 	
 	public Object start(IApplicationContext context) throws Exception {
 		
 		Map bots = Activator.getDefault().getBots();
 		
 		for(Iterator it = bots.values().iterator(); it.hasNext();) {
-			IBotEntry entry = (IBotEntry) it.next();
-			new Bot(entry);
+			IChatBotEntry entry = (IChatBotEntry) it.next();
+			new ChatBot(entry);
 		}
 		
 		while (true) {
