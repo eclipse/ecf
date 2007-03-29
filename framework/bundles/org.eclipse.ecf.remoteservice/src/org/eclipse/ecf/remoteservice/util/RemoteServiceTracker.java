@@ -11,9 +11,7 @@
 
 package org.eclipse.ecf.remoteservice.util;
 
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
-import org.osgi.framework.Filter;
 
 public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 
