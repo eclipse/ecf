@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.ViewPart;
 
 public class TextChatComposite extends Composite {
 
@@ -96,11 +97,14 @@ public class TextChatComposite extends Composite {
 	private Action outputPaste = null;
 
 	private Action outputSelectAll = null;
+	
+	private ViewPart view = null;
 
-	public TextChatComposite(Composite parent, int style, String initText,
+	public TextChatComposite(ViewPart view, Composite parent, int style, String initText,
 			ILocalInputHandler handler, IUser localUser, IUser remoteUser) {
 		super(parent, style);
 
+		this.view = view;
 		this.initText = initText;
 		this.inputHandler = handler;
 
@@ -274,10 +278,8 @@ public class TextChatComposite extends Composite {
 		});
 		Menu menu = menuMgr.createContextMenu(textoutput.getControl());
 		textoutput.getControl().setMenu(menu);
-		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-				.getActivePart().getSite().registerContextMenu(menuMgr,
-						textoutput);
-		// registerContextMenu(menuMgr, textoutput);
+		
+		view.getSite().registerContextMenu(menuMgr, textoutput);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {

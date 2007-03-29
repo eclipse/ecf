@@ -178,7 +178,7 @@ public class ChatWindow extends ApplicationWindow implements IIMMessageListener 
 		else if (obj instanceof ILocalInputHandler) {
 			inputHandler = (ILocalInputHandler) obj;
 		}
-		chat = new TextChatComposite(parent, SWT.NORMAL, initText,
+		chat = new TextChatComposite(view,parent, SWT.NORMAL, initText,
 				inputHandler, getLocalUser(), getRemoteUser());
 		chat.setLayoutData(new GridData(GridData.FILL_BOTH));
 		chat.setFont(parent.getFont());
