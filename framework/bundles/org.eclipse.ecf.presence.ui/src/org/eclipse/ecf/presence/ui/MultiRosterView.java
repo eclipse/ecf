@@ -149,13 +149,12 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		Object element = iss.getFirstElement();
 		if (element instanceof IRosterEntry) {
 			IRosterEntry entry = (IRosterEntry) element;
-			// if the selected entry is an IRosterEntry and the person is
-			// online, allow the user to send the person an IM
-			if (entry.getPresence().getType() == IPresence.Type.AVAILABLE) {
-				manager.add(imAction);
-				imAction.setText(NLS.bind(Messages.MultiRosterView_SendIM,
-						entry.getName()));
-			}
+			manager.add(imAction);
+			imAction.setText(NLS.bind(Messages.MultiRosterView_SendIM, entry
+					.getName()));
+			// if the person is not online, we'll disable the action
+			imAction
+					.setEnabled(entry.getPresence().getType() == IPresence.Type.AVAILABLE);
 			manager.add(removeAction);
 		}
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
