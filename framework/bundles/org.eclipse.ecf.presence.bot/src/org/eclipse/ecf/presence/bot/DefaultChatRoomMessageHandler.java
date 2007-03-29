@@ -17,36 +17,42 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 
 /**
- *
+ * Default chaty room message handler that does nothing in response to
+ * notifications.
  */
 public class DefaultChatRoomMessageHandler implements IChatRoomMessageHandler {
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.bot.handler.IChatRoomMessageHandler#handleRoomMessage(org.eclipse.ecf.presence.chatroom.IChatRoomMessage)
 	 */
 	public void handleRoomMessage(IChatRoomMessage message) {
-		System.out.println("handleRoomMessage("+message+")");
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.presence.bot.handler.IChatRoomContainerAdvisor#preChatRoomConnect(org.eclipse.ecf.presence.chatroom.IChatRoomContainer, org.eclipse.ecf.core.identity.ID)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.bot.handler.IChatRoomContainerAdvisor#preChatRoomConnect(org.eclipse.ecf.presence.chatroom.IChatRoomContainer,
+	 *      org.eclipse.ecf.core.identity.ID)
 	 */
 	public void preChatRoomConnect(IChatRoomContainer roomContainer, ID roomID) {
-		System.out.println("preChatRoomConnect("+roomContainer+","+roomID+")");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.bot.handler.IContainerAdvisor#init(org.eclipse.ecf.core.IContainer)
 	 */
 	public void init(IContainer container) {
-		System.out.println("init("+container+")");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.bot.handler.IContainerAdvisor#preContainerConnect(org.eclipse.ecf.core.identity.ID)
 	 */
 	public void preContainerConnect(ID targetID) {
-		System.out.println("preContainerConnect("+targetID+")");
 	}
 
 }
