@@ -29,14 +29,24 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class Activator implements BundleActivator {
 
+	private static final String CHATROOMPASSWORD_ATT = "chatroompassword"; //$NON-NLS-1$
+	private static final String CHATROOM_ATT = "chatroom"; //$NON-NLS-1$
+	private static final String PASSWORD_ATT = "password"; //$NON-NLS-1$
+	private static final String CONNECT_ID_ATT = "connectID"; //$NON-NLS-1$
+	private static final String CONTAINER_FACTORY_NAME_ATT = "containerFactoryName"; //$NON-NLS-1$
+	private static final String NAME_ATT = "name"; //$NON-NLS-1$
+	private static final String ID_ATT = "id"; //$NON-NLS-1$
+	private static final String CLASS_ATT = "class"; //$NON-NLS-1$
+	private static final String FILTEREXPRESSION_ATT = "filterexpression"; //$NON-NLS-1$
+	private static final String CHATROOMROBOTID_ATT = "chatroomrobotid"; //$NON-NLS-1$
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipse.ecf.presence.bot";
-	public static final String COMMAND_HANDLER_EPOINT_NAME = "chatroommessagehandler";
-	public static final String COMMAND_HANDLER_EPOINT = PLUGIN_ID + "."
+	public static final String PLUGIN_ID = "org.eclipse.ecf.presence.bot"; //$NON-NLS-1$
+	public static final String COMMAND_HANDLER_EPOINT_NAME = "chatroommessagehandler"; //$NON-NLS-1$
+	public static final String COMMAND_HANDLER_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
 			+ COMMAND_HANDLER_EPOINT_NAME;
 
-	public static final String BOT_EPOINT_NAME = "chatroomrobot";
-	public static final String BOT_EPOINT = PLUGIN_ID + "." + BOT_EPOINT_NAME;
+	public static final String BOT_EPOINT_NAME = "chatroomrobot"; //$NON-NLS-1$
+	public static final String BOT_EPOINT = PLUGIN_ID + "." + BOT_EPOINT_NAME; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
@@ -108,10 +118,10 @@ public class Activator implements BundleActivator {
 			IConfigurationElement[] elements = reg
 					.getConfigurationElementsFor(COMMAND_HANDLER_EPOINT);
 			for (int i = 0; i < elements.length; i++) {
-				String id = elements[i].getAttribute("chatroomrobotid");
-				String expression = elements[i].getAttribute("filterexpression");
+				String id = elements[i].getAttribute(CHATROOMROBOTID_ATT);
+				String expression = elements[i].getAttribute(FILTEREXPRESSION_ATT);
 				IChatRoomMessageHandler handler = (IChatRoomMessageHandler) elements[i]
-						.createExecutableExtension("class");
+						.createExecutableExtension(CLASS_ATT);
 				List c = (List) commands.get(id);
 				if (c == null) {
 					c = new ArrayList();
@@ -126,15 +136,15 @@ public class Activator implements BundleActivator {
 			// load the chat room bots
 			elements = reg.getConfigurationElementsFor(BOT_EPOINT);
 			for (int i = 0; i < elements.length; i++) {
-				String id = elements[i].getAttribute("id");
-				String name = elements[i].getAttribute("name");
+				String id = elements[i].getAttribute(ID_ATT);
+				String name = elements[i].getAttribute(NAME_ATT);
 				String containerFactoryName = elements[i]
-						.getAttribute("containerFactoryName");
-				String connectID = elements[i].getAttribute("connectID");
-				String password = elements[i].getAttribute("password");
-				String chatroom = elements[i].getAttribute("chatroom");
+						.getAttribute(CONTAINER_FACTORY_NAME_ATT);
+				String connectID = elements[i].getAttribute(CONNECT_ID_ATT);
+				String password = elements[i].getAttribute(PASSWORD_ATT);
+				String chatroom = elements[i].getAttribute(CHATROOM_ATT);
 				String chatroompassword = elements[i]
-						.getAttribute("chatroompassword");
+						.getAttribute(CHATROOMPASSWORD_ATT);
 				List c = (List) commands.get(id);
 				if (c == null)
 					c = new ArrayList();
