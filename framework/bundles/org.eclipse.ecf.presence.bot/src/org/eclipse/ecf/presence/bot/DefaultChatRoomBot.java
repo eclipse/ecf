@@ -113,6 +113,12 @@ public class DefaultChatRoomBot implements IIMMessageListener {
 			roomContainer.connect(roomID, roomContext);
 
 		} catch (ECFException e) {
+			if (container != null) {
+				if (container.getConnectedID() != null) {
+					container.disconnect();
+				}
+				container.dispose();
+			}
 			container = null;
 			throw e;
 		}

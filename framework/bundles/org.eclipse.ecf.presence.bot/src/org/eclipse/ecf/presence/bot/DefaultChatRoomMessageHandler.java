@@ -25,40 +25,28 @@ public class DefaultChatRoomMessageHandler implements IChatRoomMessageHandler {
 	 * @see org.eclipse.ecf.presence.bot.handler.IChatRoomMessageHandler#handleRoomMessage(org.eclipse.ecf.presence.chatroom.IChatRoomMessage)
 	 */
 	public void handleRoomMessage(IChatRoomMessage message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.presence.bot.handler.IChatRoomMessageHandler#preRoomConnect(org.eclipse.ecf.presence.chatroom.IChatRoomContainer, org.eclipse.ecf.core.identity.ID)
-	 */
-	public void preRoomConnect(IChatRoomContainer roomContainer, ID roomID) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("handleRoomMessage("+message+")");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.bot.handler.IChatRoomContainerAdvisor#preChatRoomConnect(org.eclipse.ecf.presence.chatroom.IChatRoomContainer, org.eclipse.ecf.core.identity.ID)
 	 */
 	public void preChatRoomConnect(IChatRoomContainer roomContainer, ID roomID) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("preChatRoomConnect("+roomContainer+","+roomID+")");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.bot.handler.IContainerAdvisor#init(org.eclipse.ecf.core.IContainer)
 	 */
 	public void init(IContainer container) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("init("+container+")");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.bot.handler.IContainerAdvisor#preContainerConnect(org.eclipse.ecf.core.identity.ID)
 	 */
 	public void preContainerConnect(ID targetID) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("preContainerConnect("+targetID+")");
 	}
 
 }
