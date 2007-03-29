@@ -15,5 +15,23 @@
          </run>
       </application>
    </extension>
+   <extension
+         point="org.eclipse.ecf.presence.bot.robot">
+      <chatrobot
+            chatroom="#eclipse-ecf"
+            connectID="irc://slewis2_@irc.freenode.net"
+            containerFactoryName="ecf.irc.irclib"
+            id="slewisbot"
+            name="slewisbot">
+      </chatrobot>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.presence.bot.commandHandler">
+      <handlers
+            chatrobotId="slewisbot"
+            class="org.eclipse.ecf.presence.bot.handler.NullCommandHandler"
+            >
+      </handlers>
+   </extension>
 
 </plugin>

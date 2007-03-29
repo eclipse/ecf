@@ -44,14 +44,14 @@
 
    <element name="handlers">
       <complexType>
-         <attribute name="botId" type="string" use="required">
+         <attribute name="chatrobotId" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="expression" type="string" use="required">
+         <attribute name="expression" type="string">
             <annotation>
                <documentation>
                   

@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.bot.handler.ICommandHandler;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 
 public class CommandEntry implements ICommandEntry {
@@ -36,8 +37,8 @@ public class CommandEntry implements ICommandEntry {
 		return handler;
 	}
 
-	public void execute(String message, IChatRoomMessageSender sender) {
-		if(canExecute(message)) {
+	public void execute(IChatRoomMessage message, IChatRoomMessageSender sender) {
+		if (expression == null || canExecute(message.getMessage())) {
 			try {
 				handler.execute(message, sender);
 			} catch (ECFException e) {

@@ -77,7 +77,7 @@ public class ChatBot implements IIMMessageListener {
 			List commands = bot.getCommands();
 			for(int i = 0; i < commands.size(); i++) {
 				ICommandEntry entry = (ICommandEntry) commands.get(i);
-				entry.execute(message.getMessage(), sender);
+				entry.execute(message, sender);
 			}
 		}
 	}

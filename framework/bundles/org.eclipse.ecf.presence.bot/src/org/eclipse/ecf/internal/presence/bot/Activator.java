@@ -23,7 +23,7 @@ public class Activator implements BundleActivator {
 	public static final String COMMAND_HANDLER_EPOINT_NAME = "commandHandler";
 	public static final String COMMAND_HANDLER_EPOINT = PLUGIN_ID + "." + COMMAND_HANDLER_EPOINT_NAME;
 	
-	public static final String BOT_EPOINT_NAME = "bot";
+	public static final String BOT_EPOINT_NAME = "robot";
 	public static final String BOT_EPOINT = PLUGIN_ID + "." + BOT_EPOINT_NAME;
 	
 	// The shared instance
@@ -94,7 +94,7 @@ public class Activator implements BundleActivator {
 		if (reg != null) {
 			IConfigurationElement[] elements = reg.getConfigurationElementsFor(COMMAND_HANDLER_EPOINT);
 			for(int i = 0; i < elements.length; i++) {
-				String id = elements[i].getAttribute("botId");
+				String id = elements[i].getAttribute("chatrobotId");
 				String expression = elements[i].getAttribute("expression");
 				ICommandHandler handler = (ICommandHandler) elements[i].createExecutableExtension("class");
 				List c = (List) commands.get(id);

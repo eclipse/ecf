@@ -11,6 +11,7 @@
 package org.eclipse.ecf.internal.presence.bot;
 
 import org.eclipse.ecf.presence.bot.handler.ICommandHandler;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 
 public interface ICommandEntry {
@@ -19,6 +20,6 @@ public interface ICommandEntry {
 	
 	public ICommandHandler getHandler();
 	
-	public void execute(String message, IChatRoomMessageSender sender);
+	public void execute(IChatRoomMessage message, IChatRoomMessageSender sender);
 
 }
