@@ -8,14 +8,24 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ecf.presence.bot.handler;
+package org.eclipse.ecf.presence.bot;
 
-import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 
-public interface ICommandHandler {
-	
-	public void execute(IChatRoomMessage command, IChatRoomMessageSender sender) throws ECFException;
+/**
+ * Message handler for receiving a chat room message.
+ */
+public interface IChatRoomMessageHandler extends IChatRoomContainerAdvisor {
+
+	/**
+	 * This method is called when a {@link IChatRoomMessage} is received.
+	 * 
+	 * @param message
+	 *            the {@link IChatRoomMessage} received. Will not be
+	 *            <code>null</code>. Implementers should not block the
+	 *            calling thread. Any methods on the given <code>message</code>
+	 *            parameter may be called.
+	 */
+	public void handleRoomMessage(IChatRoomMessage message);
 
 }

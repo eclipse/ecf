@@ -8,18 +8,26 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ecf.internal.presence.bot;
+package org.eclipse.ecf.presence.bot;
 
-import org.eclipse.ecf.presence.bot.handler.ICommandHandler;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
+import java.util.List;
 
-public interface ICommandEntry {
+public interface IChatRoomBotEntry {
 	
-	public String getExpression();
+	public String getId();
 	
-	public ICommandHandler getHandler();
+	public String getName();
 	
-	public void execute(IChatRoomMessage message, IChatRoomMessageSender sender);
+	public String getContainerFactoryName();
+	
+	public String getConnectID();
+	
+	public String getPassword();
+	
+	public String getChatRoom();
+	
+	public String getChatRoomPassword();
+	
+	public List getCommands();
 
 }

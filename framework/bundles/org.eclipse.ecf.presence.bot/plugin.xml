@@ -1,37 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-   <extension-point id="commandHandler" name="commandHandler" schema="schema/commandHandler.exsd"/>
-   <extension-point id="robot" name="robot" schema="schema/robot.exsd"/>
+   <extension-point id="chatroomrobot" name="Chat Room Robot" schema="schema/chatroomrobot.exsd"/>
+   <extension-point id="chatroommessagehandler" name="Chat Room Message Handler" schema="schema/chatroommessagehandler.exsd"/>
    <extension
-         id="robot"
+         id="chatroomrobot"
          point="org.eclipse.core.runtime.applications">
       <application
             cardinality="singleton-global"
             thread="main"
             visible="true">
          <run
-               class="org.eclipse.ecf.presence.bot.ChatBotApplication">
+               class="org.eclipse.ecf.presence.bot.DefaultChatRoomBotApplication">
          </run>
       </application>
-   </extension>
-   <extension
-         point="org.eclipse.ecf.presence.bot.robot">
-      <chatrobot
-            chatroom="#eclipse-ecf"
-            connectID="irc://slewis2_@irc.freenode.net"
-            containerFactoryName="ecf.irc.irclib"
-            id="slewisbot"
-            name="slewisbot">
-      </chatrobot>
-   </extension>
-   <extension
-         point="org.eclipse.ecf.presence.bot.commandHandler">
-      <handlers
-            chatrobotId="slewisbot"
-            class="org.eclipse.ecf.presence.bot.handler.NullCommandHandler"
-            >
-      </handlers>
    </extension>
 
 </plugin>

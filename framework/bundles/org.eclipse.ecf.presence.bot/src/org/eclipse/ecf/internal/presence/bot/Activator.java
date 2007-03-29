@@ -8,7 +8,8 @@ import java.util.Map;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.ecf.presence.bot.handler.ICommandHandler;
+import org.eclipse.ecf.presence.bot.IChatRoomBotEntry;
+import org.eclipse.ecf.presence.bot.IChatRoomMessageHandler;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -20,17 +21,18 @@ public class Activator implements BundleActivator {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.presence.bot";
-	public static final String COMMAND_HANDLER_EPOINT_NAME = "commandHandler";
-	public static final String COMMAND_HANDLER_EPOINT = PLUGIN_ID + "." + COMMAND_HANDLER_EPOINT_NAME;
-	
-	public static final String BOT_EPOINT_NAME = "robot";
+	public static final String COMMAND_HANDLER_EPOINT_NAME = "chatroommessagehandler";
+	public static final String COMMAND_HANDLER_EPOINT = PLUGIN_ID + "."
+			+ COMMAND_HANDLER_EPOINT_NAME;
+
+	public static final String BOT_EPOINT_NAME = "chatroomrobot";
 	public static final String BOT_EPOINT = PLUGIN_ID + "." + BOT_EPOINT_NAME;
-	
+
 	// The shared instance
 	private static Activator plugin;
-	
+
 	private BundleContext context = null;
-	
+
 	private ServiceTracker extensionRegistryTracker = null;
 
 	private Map bots = new HashMap();
@@ -46,13 +48,14 @@ public class Activator implements BundleActivator {
 		if (extensionRegistryTracker == null) {
 			this.extensionRegistryTracker = new ServiceTracker(context,
 					IExtensionRegistry.class.getName(), null);
-			this.extensionRegistryTracker.open();			
+			this.extensionRegistryTracker.open();
 		}
 		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
@@ -63,6 +66,7 @@ public class Activator implements BundleActivator {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
@@ -76,7 +80,7 @@ public class Activator implements BundleActivator {
 
 	/**
 	 * Returns the shared instance
-	 *
+	 * 
 	 * @return the shared instance
 	 */
 	public static Activator getDefault() {
@@ -87,45 +91,50 @@ public class Activator implements BundleActivator {
 		return this.bots;
 	}
 
-
 	private void loadExtensions() throws CoreException {
 		// load the command handlers
 		IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
-			IConfigurationElement[] elements = reg.getConfigurationElementsFor(COMMAND_HANDLER_EPOINT);
-			for(int i = 0; i < elements.length; i++) {
-				String id = elements[i].getAttribute("chatrobotId");
-				String expression = elements[i].getAttribute("expression");
-				ICommandHandler handler = (ICommandHandler) elements[i].createExecutableExtension("class");
+			IConfigurationElement[] elements = reg
+					.getConfigurationElementsFor(COMMAND_HANDLER_EPOINT);
+			for (int i = 0; i < elements.length; i++) {
+				String id = elements[i].getAttribute("chatroomrobotid");
+				String expression = elements[i].getAttribute("filterexpression");
+				IChatRoomMessageHandler handler = (IChatRoomMessageHandler) elements[i]
+						.createExecutableExtension("class");
 				List c = (List) commands.get(id);
-				if(c == null) {
+				if (c == null) {
 					c = new ArrayList();
-					c.add(new CommandEntry(expression, handler));
+					c.add(new ChatRoomMessageHandlerEntry(expression, handler));
 					commands.put(id, c);
 				} else {
-					c.add(new CommandEntry(expression, handler));
+					c.add(new ChatRoomMessageHandlerEntry(expression, handler));
 					commands.put(id, c);
 				}
 			}
-	
-			// load the bots
+
+			// load the chat room bots
 			elements = reg.getConfigurationElementsFor(BOT_EPOINT);
-			for(int i = 0; i < elements.length; i++) {
+			for (int i = 0; i < elements.length; i++) {
 				String id = elements[i].getAttribute("id");
 				String name = elements[i].getAttribute("name");
-				String containerFactoryName = elements[i].getAttribute("containerFactoryName");
+				String containerFactoryName = elements[i]
+						.getAttribute("containerFactoryName");
 				String connectID = elements[i].getAttribute("connectID");
 				String password = elements[i].getAttribute("password");
 				String chatroom = elements[i].getAttribute("chatroom");
+				String chatroompassword = elements[i]
+						.getAttribute("chatroompassword");
 				List c = (List) commands.get(id);
-				if(c == null)
+				if (c == null)
 					c = new ArrayList();
-				IChatBotEntry bot = new ChatBotEntry(id, name, containerFactoryName, connectID, password, chatroom, c);
+				IChatRoomBotEntry bot = new ChatRoomBotEntry(id, name,
+						containerFactoryName, connectID, password, chatroom,
+						chatroompassword, c);
 				bots.put(id, bot);
 			}
 		}
 
 	}
-
 
 }

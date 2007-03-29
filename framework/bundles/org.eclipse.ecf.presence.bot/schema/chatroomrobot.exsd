@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.ecf.provider.irc.bot">
+<schema targetNamespace="org.eclipse.ecf.presence.bot">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.ecf.provider.irc.bot" id="commandHandler" name="commandHandler"/>
+         <meta.schema plugin="org.eclipse.ecf.presence.bot" id="chatroomrobot" name="Chat Room Robot"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]
@@ -12,8 +12,8 @@
 
    <element name="extension">
       <complexType>
-         <sequence>
-            <element ref="handlers" minOccurs="1" maxOccurs="unbounded"/>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="chatroomrobot"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -42,30 +42,55 @@
       </complexType>
    </element>
 
-   <element name="handlers">
+   <element name="chatroomrobot">
       <complexType>
-         <attribute name="chatrobotId" type="string" use="required">
+         <attribute name="id" type="string">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="expression" type="string">
+         <attribute name="name" type="string">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="class" type="string" use="required">
+         <attribute name="containerFactoryName" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
-               <appInfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.ecf.provider.irc.bot.handler.ICommandHandler"/>
-               </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="connectID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="connectpassword" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="chatroom" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="chatroompassword" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
             </annotation>
          </attribute>
       </complexType>

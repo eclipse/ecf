@@ -13,38 +13,33 @@ package org.eclipse.ecf.internal.presence.bot;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.presence.bot.handler.ICommandHandler;
+import org.eclipse.ecf.presence.bot.IChatRoomMessageHandler;
+import org.eclipse.ecf.presence.bot.IChatRoomMessageHandlerEntry;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 
-public class CommandEntry implements ICommandEntry {
+public class ChatRoomMessageHandlerEntry implements IChatRoomMessageHandlerEntry {
 
 	private String expression;
-	private ICommandHandler handler;
+	private IChatRoomMessageHandler handler;
 	private IChatRoomMessageSender sender;
 
-	public CommandEntry(String expression, ICommandHandler handler) {
+	public ChatRoomMessageHandlerEntry(String expression, IChatRoomMessageHandler handler) {
 		this.expression = expression;
 		this.handler = handler;
 	}
-	
+
 	public String getExpression() {
 		return expression;
 	}
 
-	public ICommandHandler getHandler() {
+	public IChatRoomMessageHandler getHandler() {
 		return handler;
 	}
 
-	public void execute(IChatRoomMessage message, IChatRoomMessageSender sender) {
-		if (expression == null || canExecute(message.getMessage())) {
-			try {
-				handler.execute(message, sender);
-			} catch (ECFException e) {
-				e.printStackTrace();
-			}
-		}
+	public void handleRoomMessage(IChatRoomMessage message) {
+		if (expression == null || canExecute(message.getMessage()))
+			handler.handleRoomMessage(message);
 	}
 
 	public IChatRoomMessageSender getSender() {
@@ -52,7 +47,8 @@ public class CommandEntry implements ICommandEntry {
 	}
 
 	private boolean canExecute(String message) {
-		Pattern pattern = Pattern.compile(getExpression(), Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Pattern pattern = Pattern.compile(getExpression(),
+				Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 		Matcher matcher = pattern.matcher(message);
 		return matcher.matches();
 	}

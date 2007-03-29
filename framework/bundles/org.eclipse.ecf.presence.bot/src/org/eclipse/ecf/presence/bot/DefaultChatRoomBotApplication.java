@@ -14,19 +14,25 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.ecf.internal.presence.bot.Activator;
-import org.eclipse.ecf.internal.presence.bot.IChatBotEntry;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
-public class ChatBotApplication implements IApplication {
+public class DefaultChatRoomBotApplication implements IApplication {
+	
+	protected Map getBotsFromExtensionRegistry() {
+		return Activator.getDefault().getBots();
+	}
 	
 	public Object start(IApplicationContext context) throws Exception {
 		
-		Map bots = Activator.getDefault().getBots();
+		Map bots = getBotsFromExtensionRegistry();
 		
 		for(Iterator it = bots.values().iterator(); it.hasNext();) {
-			IChatBotEntry entry = (IChatBotEntry) it.next();
-			new ChatBot(entry);
+			IChatRoomBotEntry entry = (IChatRoomBotEntry) it.next();
+			// Create default chat room bot
+			DefaultChatRoomBot bot = new DefaultChatRoomBot(entry);
+			// connect
+			bot.connect();
 		}
 		
 		while (true) {
