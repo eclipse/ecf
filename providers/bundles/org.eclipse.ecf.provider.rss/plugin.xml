@@ -7,13 +7,6 @@
             class="org.eclipse.ecf.internal.provider.rss.container.RssContainerInstantiator"
             description="ECF RSS"
             name="org.eclipse.ecf.provider.rss.Client">
-         <defaultargument
-               name="userhost"
-               type="java.lang.String"/>
-         <defaultargument
-               name="keepAlive"
-               type="java.lang.Integer"
-               value="30000"/>
       </containerFactory>
    </extension>
 </plugin>
