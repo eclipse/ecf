@@ -365,13 +365,11 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 	public void sendPresenceUpdate(ID target, Presence presence)
 			throws IOException {
-		if (target == null)
-			throw new IOException("target cannot be null");
 		if (presence == null)
 			throw new IOException("presence cannot be null");
 		debug("sendPresenceUpdate(" + target + "," + presence + ")");
 		presence.setFrom(connection.getUser());
-		presence.setTo(target.getName());
+		if (target != null) presence.setTo(target.getName());
 		synchronized (this) {
 			if (!isConnected())
 				throw new IOException("not connected");
