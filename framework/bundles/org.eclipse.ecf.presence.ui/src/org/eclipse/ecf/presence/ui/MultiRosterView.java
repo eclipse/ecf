@@ -16,6 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
@@ -23,7 +25,9 @@ import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
-import org.eclipse.ecf.ui.views.RosterView;
+import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
+import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
@@ -41,8 +45,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -68,6 +74,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	private IAction imAction;
 
+	private IAction removeAction;
+
+	private IRosterSubscriptionListener subscriptionListener;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -83,6 +93,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		getSite().setSelectionProvider(treeViewer);
 		multiRosterContentProvider = new MultiRosterContentProvider();
 		multiRosterLabelProvider = new MultiRosterLabelProvider();
+		subscriptionListener = new RosterSubscriptionListener();
 		treeViewer.setLabelProvider(multiRosterLabelProvider);
 		treeViewer.setContentProvider(multiRosterContentProvider);
 		treeViewer.setInput(new Object());
@@ -103,6 +114,20 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				message((IStructuredSelection) treeViewer.getSelection());
 			}
 		};
+		imAction.setImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_MESSAGE));
+
+		removeAction = new Action() {
+			public void run() {
+				IStructuredSelection iss = (IStructuredSelection) treeViewer
+						.getSelection();
+				remove((IRosterEntry) iss.getFirstElement());
+			}
+		};
+		removeAction.setText(Messages.MultiRosterView_Remove);
+		removeAction.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(
+						ISharedImages.IMG_TOOL_DELETE));
 	}
 
 	private void hookContextMenu() {
@@ -129,8 +154,9 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			if (entry.getPresence().getType() == IPresence.Type.AVAILABLE) {
 				manager.add(imAction);
 				imAction.setText(NLS.bind(Messages.MultiRosterView_SendIM,
-						((IRosterEntry) element).getName()));
+						entry.getName()));
 			}
+			manager.add(removeAction);
 		}
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
@@ -147,6 +173,42 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		}
 		return false;
+	}
+
+	private IRosterEntry find(Collection items, ID userID) {
+		for (Iterator it = items.iterator(); it.hasNext();) {
+			Object item = it.next();
+			if (item instanceof IRosterGroup) {
+				IRosterEntry entry = find(((IRosterGroup) item).getEntries(),
+						userID);
+				if (entry != null) {
+					return entry;
+				}
+			} else if (userID.equals(((IRosterEntry) item).getUser().getID())) {
+				return (IRosterEntry) item;
+			}
+		}
+		return null;
+	}
+
+	private void remove(IRosterEntry entry) {
+		synchronized (rosterAccounts) {
+			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
+				MultiRosterAccount account = (MultiRosterAccount) i.next();
+				IRoster roster = account.getRoster();
+				if (find(roster.getItems(), entry)) {
+					IRosterSubscriptionSender rss = account
+							.getPresenceContainerAdapter().getRosterManager()
+							.getRosterSubscriptionSender();
+					try {
+						rss.sendRosterRemove(entry.getUser().getID());
+					} catch (ECFException e) {
+						e.printStackTrace();
+					}
+					break;
+				}
+			}
+		}
 	}
 
 	private void message(IStructuredSelection iss) {
@@ -213,11 +275,16 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
 	 */
 	public void dispose() {
-		super.dispose();
 		treeViewer = null;
 		multiRosterLabelProvider = null;
 		multiRosterContentProvider = null;
+		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
+			MultiRosterAccount account = (MultiRosterAccount) i.next();
+			account.getRosterManager().removeRosterSubscriptionListener(
+					subscriptionListener);
+		}
 		rosterAccounts.clear();
+		super.dispose();
 	}
 
 	protected void addRosterAccountsToProviders() {
@@ -285,10 +352,43 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			return false;
 		} else if (addRosterAccount(new MultiRosterAccount(this, container,
 				containerAdapter))) {
+			containerAdapter.getRosterManager().addRosterSubscriptionListener(
+					subscriptionListener);
 			refreshTreeViewer(null, true);
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	private class RosterSubscriptionListener implements
+			IRosterSubscriptionListener {
+
+		public void handleSubscribeRequest(ID fromID) {
+			// TODO Auto-generated method stub
+		}
+
+		public void handleSubscribed(ID fromID) {
+			// TODO Auto-generated method stub
+		}
+
+		public void handleUnsubscribed(ID fromID) {
+			synchronized (rosterAccounts) {
+				for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
+					MultiRosterAccount account = (MultiRosterAccount) i.next();
+					final IRosterEntry entry = find(account.getRoster()
+							.getItems(), fromID);
+					if (entry != null) {
+						treeViewer.getControl().getDisplay().asyncExec(
+								new Runnable() {
+									public void run() {
+										treeViewer.remove(entry);
+									}
+								});
+					}
+				}
+			}
+		}
+
 	}
 }
