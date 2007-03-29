@@ -22,16 +22,19 @@ public interface IPresenceSender {
 	/**
 	 * Send a presence update to a remote user
 	 * 
-	 * @param toID
-	 *            the target user. Should not be <code>null</code>.
+	 * @param targetID
+	 *            the {@link ID} of the target user for the presence update. If
+	 *            <code>null</code>, the presence update is sent to all users
+	 *            in current roster.  If non-<code>null</code> the presence update
+	 *            is sent only to the given <code>targetID</code>.
 	 * @param presence
 	 *            the presence information. Should not be <code>null</code>.
 	 * 
 	 * @exception ECFException
 	 *                thrown if request cannot be sent (e.g. because of previous
-	 *                disconnect
+	 *                disconnect).
 	 */
-	public void sendPresenceUpdate(ID toID, IPresence presence)
+	public void sendPresenceUpdate(ID targetID, IPresence presence)
 			throws ECFException;
 
 }
