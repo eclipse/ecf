@@ -23,18 +23,25 @@ import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
+import org.eclipse.ecf.ui.views.RosterView;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
@@ -59,6 +66,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	protected List rosterAccounts = new ArrayList();
 
+	private IAction imAction;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -69,7 +78,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	protected void setupTreeViewer(Composite parent) {
-		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.MULTI
+		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.SINGLE
 				| SWT.V_SCROLL);
 		getSite().setSelectionProvider(treeViewer);
 		multiRosterContentProvider = new MultiRosterContentProvider();
@@ -79,16 +88,51 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		treeViewer.setInput(new Object());
 		treeViewer.addOpenListener(new IOpenListener() {
 			public void open(OpenEvent e) {
-				IStructuredSelection iss = (IStructuredSelection) e
-						.getSelection();
-				Object element = iss.getFirstElement();
-				if (element instanceof IRosterEntry) {
-					MultiRosterView.this.open((IRosterEntry) element);
-				}
+				message((IStructuredSelection) e.getSelection());
 			}
 		});
 
+		makeActions();
+		hookContextMenu();
 		contributeToActionBars();
+	}
+
+	private void makeActions() {
+		imAction = new Action() {
+			public void run() {
+				message((IStructuredSelection) treeViewer.getSelection());
+			}
+		};
+	}
+
+	private void hookContextMenu() {
+		MenuManager menuMgr = new MenuManager();
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager manager) {
+				fillContextMenu(manager);
+			}
+		});
+		Menu menu = menuMgr.createContextMenu(treeViewer.getControl());
+		treeViewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, treeViewer);
+	}
+
+	private void fillContextMenu(IMenuManager manager) {
+		IStructuredSelection iss = (IStructuredSelection) treeViewer
+				.getSelection();
+		Object element = iss.getFirstElement();
+		if (element instanceof IRosterEntry) {
+			IRosterEntry entry = (IRosterEntry) element;
+			// if the selected entry is an IRosterEntry and the person is
+			// online, allow the user to send the person an IM
+			if (entry.getPresence().getType() == IPresence.Type.AVAILABLE) {
+				manager.add(imAction);
+				imAction.setText(NLS.bind(Messages.MultiRosterView_SendIM,
+						((IRosterEntry) element).getName()));
+			}
+		}
+		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
 	private boolean find(Collection items, Object entry) {
@@ -105,7 +149,12 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		return false;
 	}
 
-	private void open(IRosterEntry entry) {
+	private void message(IStructuredSelection iss) {
+		Object element = iss.getFirstElement();
+		if (!(element instanceof IRosterEntry)) {
+			return;
+		}
+		IRosterEntry entry = (IRosterEntry) element;
 		synchronized (rosterAccounts) {
 			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
 				MultiRosterAccount account = (MultiRosterAccount) i.next();
@@ -123,6 +172,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 					} catch (PartInitException e) {
 						e.printStackTrace();
 					}
+					break;
 				}
 			}
 		}
