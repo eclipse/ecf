@@ -17,5 +17,17 @@
          </run>
       </application>
    </extension>
+   <extension
+         id="imrobot"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.eclipse.ecf.presence.bot.DefaultIMBotApplication">
+         </run>
+      </application>
+   </extension>
 
 </plugin>
