@@ -46,4 +46,10 @@ public class DefaultIMMessageHandler implements IIMMessageHandler {
 	public void preContainerConnect(ID targetID) {
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.bot.IIMMessageHandler#initRobot(org.eclipse.ecf.presence.bot.IIMBotEntry)
+	 */
+	public void initRobot(IIMBotEntry robot) {
+	}
+
 }

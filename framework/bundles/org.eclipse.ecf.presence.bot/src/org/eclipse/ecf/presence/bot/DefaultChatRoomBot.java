@@ -42,6 +42,15 @@ public class DefaultChatRoomBot implements IIMMessageListener {
 		this.bot = bot;
 	}
 
+	protected void fireInitBot() {
+		List commands = bot.getCommands();
+		for (int i = 0; i < commands.size(); i++) {
+			IChatRoomMessageHandlerEntry entry = (IChatRoomMessageHandlerEntry) commands
+					.get(i);
+			entry.getHandler().initRobot(bot);
+		}
+	}
+
 	protected void fireInit() {
 		List commands = bot.getCommands();
 		for (int i = 0; i < commands.size(); i++) {
@@ -70,6 +79,9 @@ public class DefaultChatRoomBot implements IIMMessageListener {
 	}
 
 	public synchronized void connect() throws ECFException {
+		
+		fireInitBot();
+		
 		try {
 			Namespace namespace = null;
 

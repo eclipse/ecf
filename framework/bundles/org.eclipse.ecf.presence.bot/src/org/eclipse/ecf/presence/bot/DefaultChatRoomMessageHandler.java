@@ -55,4 +55,10 @@ public class DefaultChatRoomMessageHandler implements IChatRoomMessageHandler {
 	public void preContainerConnect(ID targetID) {
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.bot.IChatRoomMessageHandler#initRobot(org.eclipse.ecf.presence.bot.IChatRoomBotEntry)
+	 */
+	public void initRobot(IChatRoomBotEntry robot) {
+	}
+
 }

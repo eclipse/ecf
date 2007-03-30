@@ -18,6 +18,13 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 public interface IChatRoomMessageHandler extends IChatRoomContainerAdvisor {
 
 	/**
+	 * Initialize robot with robot entry data.
+	 * 
+	 * @param robot the robot to initialize.  Will not be <code>null</code>.
+	 */
+	public void initRobot(IChatRoomBotEntry robot);
+	
+	/**
 	 * This method is called when a {@link IChatRoomMessage} is received.
 	 * 
 	 * @param message

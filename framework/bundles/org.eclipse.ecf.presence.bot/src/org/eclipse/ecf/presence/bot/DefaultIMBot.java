@@ -38,6 +38,15 @@ public class DefaultIMBot implements IIMMessageListener {
 		this.bot = bot;
 	}
 
+	protected void fireInitBot() {
+		List commands = bot.getCommands();
+		for (int i = 0; i < commands.size(); i++) {
+			IIMMessageHandlerEntry entry = (IIMMessageHandlerEntry) commands
+					.get(i);
+			entry.getHandler().initRobot(bot);
+		}
+	}
+
 	protected void fireInit() {
 		List commands = bot.getCommands();
 		for (int i = 0; i < commands.size(); i++) {
@@ -57,6 +66,9 @@ public class DefaultIMBot implements IIMMessageListener {
 	}
 
 	public synchronized void connect() throws ECFException {
+		
+		fireInitBot();
+		
 		try {
 			Namespace namespace = null;
 

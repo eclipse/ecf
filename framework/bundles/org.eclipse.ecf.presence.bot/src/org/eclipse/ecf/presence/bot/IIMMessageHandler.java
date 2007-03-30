@@ -19,6 +19,14 @@ import org.eclipse.ecf.presence.im.IChatMessage;
 public interface IIMMessageHandler extends IContainerAdvisor {
 
 	/**
+	 * Initialize robot with robot entry data.
+	 * 
+	 * @param robot the robot to initialize.  Will not be <code>null</code>.
+	 */
+	public void initRobot(IIMBotEntry robot);
+	
+
+	/**
 	 * This method is called when a {@link IChatMessage} is received.
 	 * 
 	 * @param message
