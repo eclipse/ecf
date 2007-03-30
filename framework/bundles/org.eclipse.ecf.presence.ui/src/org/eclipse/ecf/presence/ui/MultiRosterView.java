@@ -21,10 +21,13 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
+import org.eclipse.ecf.presence.IPresenceSender;
+import org.eclipse.ecf.presence.Presence;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
+import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.ui.SharedImages;
@@ -75,6 +78,16 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	private IAction imAction;
 
 	private IAction removeAction;
+
+	private IAction setAvailableAction;
+
+	private IAction setAwayAction;
+
+	private IAction setDNDAction;
+
+	private IAction setInvisibleAction;
+
+	private IAction setOfflineAction;
 
 	private IRosterSubscriptionListener subscriptionListener;
 
@@ -128,6 +141,91 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		removeAction.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(
 						ISharedImages.IMG_TOOL_DELETE));
+
+		setAvailableAction = new Action(Messages.MultiRosterView_SetAvailable,
+				IAction.AS_RADIO_BUTTON) {
+			public void run() {
+				if (isChecked()) {
+					setAwayAction.setChecked(false);
+					setDNDAction.setChecked(false);
+					setInvisibleAction.setChecked(false);
+					setOfflineAction.setChecked(false);
+					sendPresence(IPresence.Mode.AVAILABLE);
+				}
+			}
+		};
+
+		setAwayAction = new Action(Messages.MultiRosterView_SetAway,
+				IAction.AS_RADIO_BUTTON) {
+			public void run() {
+				if (isChecked()) {
+					setAvailableAction.setChecked(false);
+					setDNDAction.setChecked(false);
+					setInvisibleAction.setChecked(false);
+					setOfflineAction.setChecked(false);
+					sendPresence(IPresence.Mode.AWAY);
+				}
+			}
+		};
+
+		setDNDAction = new Action(Messages.MultiRosterView_SetDoNotDisturb,
+				IAction.AS_RADIO_BUTTON) {
+			public void run() {
+				if (isChecked()) {
+					setAvailableAction.setChecked(false);
+					setAwayAction.setChecked(false);
+					setInvisibleAction.setChecked(false);
+					setOfflineAction.setChecked(false);
+					sendPresence(IPresence.Mode.DND);
+				}
+			}
+		};
+
+		setInvisibleAction = new Action(Messages.MultiRosterView_SetInvisible,
+				IAction.AS_RADIO_BUTTON) {
+			public void run() {
+				if (isChecked()) {
+					setAvailableAction.setChecked(false);
+					setAwayAction.setChecked(false);
+					setDNDAction.setChecked(false);
+					setOfflineAction.setChecked(false);
+					sendPresence(IPresence.Mode.INVISIBLE);
+				}
+			}
+		};
+
+		setOfflineAction = new Action(Messages.MultiRosterView_SetOffline,
+				IAction.AS_RADIO_BUTTON) {
+			public void run() {
+				if (isChecked()) {
+					setAvailableAction.setChecked(false);
+					setAwayAction.setChecked(false);
+					setDNDAction.setChecked(false);
+					setInvisibleAction.setChecked(false);
+					for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
+						MultiRosterAccount account = (MultiRosterAccount) i
+								.next();
+						account.getContainer().disconnect();
+					}
+				}
+			}
+		};
+		setOfflineAction.setChecked(true);
+	}
+
+	private void sendPresence(IPresence.Mode mode) {
+		try {
+			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
+				MultiRosterAccount account = (MultiRosterAccount) i.next();
+				account.getRosterManager().getPresenceSender()
+						.sendPresenceUpdate(
+								null,
+								new Presence(IPresence.Type.AVAILABLE, null,
+										mode));
+			}
+		} catch (ECFException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void hookContextMenu() {
@@ -245,6 +343,15 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
+		IMenuManager subMenu = new MenuManager(
+				Messages.MultiRosterView_SetStatusAs, null);
+		subMenu.add(setAvailableAction);
+		subMenu.add(setAwayAction);
+		subMenu.add(setDNDAction);
+		subMenu.add(setInvisibleAction);
+		subMenu.add(setOfflineAction);
+		manager.add(subMenu);
+		manager.add(new Separator());
 		final ViewerFilter filter = new ViewerFilter() {
 			public boolean select(Viewer viewer, Object parentElement,
 					Object element) {
@@ -351,6 +458,26 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			return false;
 		} else if (addRosterAccount(new MultiRosterAccount(this, container,
 				containerAdapter))) {
+			IRosterManager manager = containerAdapter.getRosterManager();
+			try {
+				if (setAvailableAction.isChecked() || setOfflineAction.isChecked()) {
+					manager.getPresenceSender().sendPresenceUpdate(null,
+							new Presence(null, null, IPresence.Mode.AVAILABLE));
+					setOfflineAction.setChecked(false);
+					setAvailableAction.setChecked(true);
+				} else if (setAwayAction.isChecked()) {
+					manager.getPresenceSender().sendPresenceUpdate(null,
+							new Presence(null, null, IPresence.Mode.AWAY));
+				} else if (setDNDAction.isChecked()) {
+					manager.getPresenceSender().sendPresenceUpdate(null,
+							new Presence(null, null, IPresence.Mode.DND));
+				} else if (setInvisibleAction.isChecked()) {
+					manager.getPresenceSender().sendPresenceUpdate(null,
+							new Presence(null, null, IPresence.Mode.INVISIBLE));
+				}
+			} catch (ECFException e) {
+				e.printStackTrace();
+			}
 			containerAdapter.getRosterManager().addRosterSubscriptionListener(
 					subscriptionListener);
 			refreshTreeViewer(null, true);
