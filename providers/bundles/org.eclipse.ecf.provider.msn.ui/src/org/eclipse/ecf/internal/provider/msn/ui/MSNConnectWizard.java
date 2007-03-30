@@ -38,6 +38,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class MSNConnectWizard extends Wizard implements IConnectWizard {
 
@@ -80,14 +81,26 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 		final IChatMessage message = e.getChatMessage();
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				try {
-					MessagesView view = (MessagesView) workbench
-							.getActiveWorkbenchWindow().getActivePage()
-							.showView(MessagesView.VIEW_ID);
+				MessagesView view = (MessagesView) workbench
+						.getActiveWorkbenchWindow().getActivePage().findView(
+								MessagesView.VIEW_ID);
+				if (view != null) {
+					IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
+							.getSite().getAdapter(
+									IWorkbenchSiteProgressService.class);
 					view.showMessage(icms, userID, message.getFromID(), message
 							.getThreadID(), message.getBody());
-				} catch (PartInitException ex) {
-					ex.printStackTrace();
+					service.warnOfContentChange();
+				} else {
+					try {
+						view = (MessagesView) workbench
+								.getActiveWorkbenchWindow().getActivePage()
+								.showView(MessagesView.VIEW_ID);
+						view.showMessage(icms, userID, message.getFromID(),
+								message.getThreadID(), message.getBody());
+					} catch (PartInitException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
