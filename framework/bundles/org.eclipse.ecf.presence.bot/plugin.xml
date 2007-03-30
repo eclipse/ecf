@@ -13,7 +13,7 @@
             thread="main"
             visible="true">
          <run
-               class="org.eclipse.ecf.presence.bot.DefaultChatRoomBotApplication">
+               class="org.eclipse.ecf.presence.bot.application.DefaultChatRoomBotApplication">
          </run>
       </application>
    </extension>
@@ -25,7 +25,7 @@
             thread="main"
             visible="true">
          <run
-               class="org.eclipse.ecf.presence.bot.DefaultIMBotApplication">
+               class="org.eclipse.ecf.presence.bot.application.DefaultIMBotApplication">
          </run>
       </application>
    </extension>

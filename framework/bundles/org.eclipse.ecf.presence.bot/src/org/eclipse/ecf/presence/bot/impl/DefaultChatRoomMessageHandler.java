@@ -9,10 +9,12 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.bot;
+package org.eclipse.ecf.presence.bot.impl;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.presence.bot.IChatRoomBotEntry;
+import org.eclipse.ecf.presence.bot.IChatRoomMessageHandler;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 
