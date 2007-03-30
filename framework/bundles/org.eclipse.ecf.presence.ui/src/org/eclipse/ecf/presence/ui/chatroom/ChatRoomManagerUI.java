@@ -41,6 +41,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+/**
+ * Chat room manager user interface.
+ */
 public class ChatRoomManagerUI {
 	private static final String CHAT_ROOM_MANAGER_VIEWID = "org.eclipse.ecf.ui.views.ChatRoomManagerView"; //$NON-NLS-1$
 

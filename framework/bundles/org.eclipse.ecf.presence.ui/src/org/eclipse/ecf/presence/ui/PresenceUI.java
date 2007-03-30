@@ -47,6 +47,9 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
+/**
+ * Presence user interface
+ */
 public class PresenceUI {
 
 	protected static final String ROSTER_VIEW_ID = "org.eclipse.ecf.ui.view.rosterview";
