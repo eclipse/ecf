@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.ecf.presence.bot" id="imrobot" name="IM Robot"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         This extension point allows implementers to define a im bot.
       </documentation>
    </annotation>
 
@@ -108,25 +108,24 @@ for example:  slewis@ecf.eclipse.org
       <documentation>
          &lt;pre&gt;
    &lt;extension
-         point=&quot;org.eclipse.ecf.presence.bot.chatroomrobot&quot;&gt;
-      &lt;chatroomrobot
-            chatroom=&quot;#eclipse-ecf&quot;
-            connectID=&quot;irc://slewis2_@irc.freenode.net&quot;
-            containerFactoryName=&quot;ecf.irc.irclib&quot;
-            id=&quot;org.eclipse.ecf.presence.bot.defaultbot&quot;&gt;
+         point=&quot;org.eclipse.ecf.presence.bot.imrobot&quot;&gt;
+      &lt;imrobot
+            connectID=&quot;slewis@ecf.eclipse.org&quot;
+            containerFactoryName=&quot;ecf.xmpp.smack&quot;
+            id=&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;&gt;
       &lt;/chatroomrobot&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
 
-Note that to have the chatroombot receive chat room messages and process them, that the chatroommessagehandler should also be defined 
-using the id for the chatroomrobot given above.  For example:
+Note that to have the imrobot receive im messages and process them, that the immessagehandler should also be defined 
+using the id for the imrobot given above.  For example:
 
 &lt;pre&gt;
    &lt;extension
-         point=&quot;org.eclipse.ecf.presence.bot.chatroommessagehandler&quot;&gt;
+         point=&quot;org.eclipse.ecf.presence.bot.immessagehandler&quot;&gt;
       &lt;handler
-            chatroomrobotid=&quot;org.eclipse.ecf.presence.bot.defaultbot&quot;
-            class=&quot;org.eclipse.ecf.presence.bot.DefaultChatRoomMessageHandler&quot;&gt;
+            imrobotid=&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;
+            class=&quot;org.eclipse.ecf.presence.imbot.DefaultIMMessageHandler&quot;&gt;
       &lt;/handler&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
@@ -138,7 +137,7 @@ using the id for the chatroomrobot given above.  For example:
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         See the API information for the chatroommessagehandler.
+         See the API information for the immessagehandler.
       </documentation>
    </annotation>
 
