@@ -27,6 +27,7 @@ public class DefaultIMMessageHandler implements IIMMessageHandler {
 	 * @see org.eclipse.ecf.presence.bot.handler.IIMMessageHandler#handleRoomMessage(org.eclipse.ecf.presence.im.IChatMessage)
 	 */
 	public void handleIMMessage(IChatMessage message) {
+		System.out.println("handleIMMessage("+message+")");
 	}
 
 	/*

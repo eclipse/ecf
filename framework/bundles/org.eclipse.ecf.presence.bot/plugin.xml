@@ -29,5 +29,23 @@
          </run>
       </application>
    </extension>
-
+   <!--
+   <extension
+         point="org.eclipse.ecf.presence.bot.imrobot">
+      <imrobot
+            connectID="fliwatuet@ecf.eclipse.org"
+            connectpassword="fliwatuet"
+            containerFactoryName="ecf.xmpp.smack"
+            id="org.eclipse.ecf.presence.bot.imrobot1"
+            name="Fliwatuet">
+      </imrobot>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.presence.bot.immessagehandler">
+      <handler
+            class="org.eclipse.ecf.presence.bot.DefaultIMMessageHandler"
+            imrobotid="org.eclipse.ecf.presence.bot.imrobot1">
+      </handler>
+   </extension>
+ -->
 </plugin>

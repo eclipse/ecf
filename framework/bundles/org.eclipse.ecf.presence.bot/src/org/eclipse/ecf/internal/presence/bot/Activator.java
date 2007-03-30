@@ -33,7 +33,7 @@ public class Activator implements BundleActivator {
 
 	private static final String CHATROOMPASSWORD_ATT = "chatroompassword"; //$NON-NLS-1$
 	private static final String CHATROOM_ATT = "chatroom"; //$NON-NLS-1$
-	private static final String PASSWORD_ATT = "password"; //$NON-NLS-1$
+	private static final String PASSWORD_ATT = "connectpassword"; //$NON-NLS-1$
 	private static final String CONNECT_ID_ATT = "connectID"; //$NON-NLS-1$
 	private static final String CONTAINER_FACTORY_NAME_ATT = "containerFactoryName"; //$NON-NLS-1$
 	private static final String NAME_ATT = "name"; //$NON-NLS-1$
