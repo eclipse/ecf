@@ -10,24 +10,14 @@
  *******************************************************************************/
 package org.eclipse.ecf.presence.bot;
 
-import java.util.List;
+import org.eclipse.ecf.presence.im.IChatMessage;
 
-public interface IChatRoomBotEntry {
+public interface IIMMessageHandlerEntry {
 
-	public String getId();
+	public String getExpression();
 
-	public String getName();
+	public IIMMessageHandler getHandler();
 
-	public String getContainerFactoryName();
-
-	public String getConnectID();
-
-	public String getPassword();
-
-	public String getChatRoom();
-
-	public String getChatRoomPassword();
-
-	public List getCommands();
+	public void handleIMMessage(IChatMessage message);
 
 }

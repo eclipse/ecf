@@ -13,18 +13,16 @@ package org.eclipse.ecf.internal.presence.bot;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.ecf.presence.bot.IChatRoomMessageHandler;
-import org.eclipse.ecf.presence.bot.IChatRoomMessageHandlerEntry;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
+import org.eclipse.ecf.presence.bot.IIMMessageHandler;
+import org.eclipse.ecf.presence.bot.IIMMessageHandlerEntry;
+import org.eclipse.ecf.presence.im.IChatMessage;
 
-public class ChatRoomMessageHandlerEntry implements
-		IChatRoomMessageHandlerEntry {
+public class IMMessageHandlerEntry implements IIMMessageHandlerEntry {
 
 	private String expression;
-	private IChatRoomMessageHandler handler;
+	private IIMMessageHandler handler;
 
-	public ChatRoomMessageHandlerEntry(String expression,
-			IChatRoomMessageHandler handler) {
+	public IMMessageHandlerEntry(String expression, IIMMessageHandler handler) {
 		this.expression = expression;
 		this.handler = handler;
 	}
@@ -33,13 +31,13 @@ public class ChatRoomMessageHandlerEntry implements
 		return expression;
 	}
 
-	public IChatRoomMessageHandler getHandler() {
+	public IIMMessageHandler getHandler() {
 		return handler;
 	}
 
-	public void handleRoomMessage(IChatRoomMessage message) {
-		if (expression == null || canExecute(message.getMessage()))
-			handler.handleRoomMessage(message);
+	public void handleIMMessage(IChatMessage message) {
+		if (expression == null || canExecute(message.getBody()))
+			handler.handleIMMessage(message);
 	}
 
 	private boolean canExecute(String message) {

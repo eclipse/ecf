@@ -12,7 +12,7 @@ package org.eclipse.ecf.presence.bot;
 
 import java.util.List;
 
-public interface IChatRoomBotEntry {
+public interface IIMBotEntry {
 
 	public String getId();
 
@@ -23,10 +23,6 @@ public interface IChatRoomBotEntry {
 	public String getConnectID();
 
 	public String getPassword();
-
-	public String getChatRoom();
-
-	public String getChatRoomPassword();
 
 	public List getCommands();
 

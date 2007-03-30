@@ -3,6 +3,8 @@
 <plugin>
    <extension-point id="chatroomrobot" name="Chat Room Robot" schema="schema/chatroomrobot.exsd"/>
    <extension-point id="chatroommessagehandler" name="Chat Room Message Handler" schema="schema/chatroommessagehandler.exsd"/>
+   <extension-point id="imrobot" name="IM Robot" schema="schema/imrobot.exsd"/>
+   <extension-point id="immessagehandler" name="IM Message Handler" schema="schema/immessagehandler.exsd"/>
    <extension
          id="chatroomrobot"
          point="org.eclipse.core.runtime.applications">

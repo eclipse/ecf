@@ -14,7 +14,7 @@ package org.eclipse.ecf.internal.presence.bot;
 import org.eclipse.osgi.util.NLS;
 
 /**
- *
+ * 
  */
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.presence.bot.messages"; //$NON-NLS-1$

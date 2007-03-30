@@ -13,11 +13,11 @@ package org.eclipse.ecf.presence.bot;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 
 public interface IChatRoomMessageHandlerEntry {
-	
+
 	public String getExpression();
-	
+
 	public IChatRoomMessageHandler getHandler();
-	
+
 	public void handleRoomMessage(IChatRoomMessage message);
 
 }

@@ -17,20 +17,20 @@ import org.eclipse.ecf.internal.presence.bot.Activator;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
-public class DefaultChatRoomBotApplication implements IApplication {
+public class DefaultIMBotApplication implements IApplication {
 
-	protected Map getBotsFromExtensionRegistry() {
-		return Activator.getDefault().getChatRoomBots();
+	protected Map getIMBotsFromExtensionRegistry() {
+		return Activator.getDefault().getIMBots();
 	}
 
 	public Object start(IApplicationContext context) throws Exception {
 
-		Map bots = getBotsFromExtensionRegistry();
+		Map bots = getIMBotsFromExtensionRegistry();
 
 		for (Iterator it = bots.values().iterator(); it.hasNext();) {
-			IChatRoomBotEntry entry = (IChatRoomBotEntry) it.next();
-			// Create default chat room bot
-			DefaultChatRoomBot bot = new DefaultChatRoomBot(entry);
+			IIMBotEntry entry = (IIMBotEntry) it.next();
+			// Create default im bot
+			DefaultIMBot bot = new DefaultIMBot(entry);
 			// connect
 			bot.connect();
 		}

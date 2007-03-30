@@ -12,40 +12,50 @@ package org.eclipse.ecf.internal.presence.bot;
 
 import java.util.List;
 
-import org.eclipse.ecf.presence.bot.IChatRoomBotEntry;
+import org.eclipse.ecf.presence.bot.IIMBotEntry;
 
-public class ChatRoomBotEntry implements IChatRoomBotEntry {
+public class IMBotEntry implements IIMBotEntry {
 
 	private String id;
 	private String name;
 	private String containerFactoryName;
 	private String connectID;
 	private String password;
-	private String chatRoom;
-	private String chatRoomPassword;
 	private List commands;
 
-	public ChatRoomBotEntry(String id, String name,
-			String containerFactoryName, String connectID, String password,
-			String chatRoom, String chatRoomPassword, List commands) {
+	public IMBotEntry(String id, String name, String containerFactoryName,
+			String connectID, String password, List commands) {
 		this.id = id;
 		this.name = name;
 		this.containerFactoryName = containerFactoryName;
 		this.connectID = connectID;
 		this.password = password;
-		this.chatRoom = chatRoom;
-		this.chatRoomPassword = chatRoomPassword;
 		this.commands = commands;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.bot.IIMBotEntry#getCommands()
+	 */
 	public List getCommands() {
 		return commands;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.bot.IIMBotEntry#getId()
+	 */
 	public String getId() {
 		return id;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.bot.IIMBotEntry#getName()
+	 */
 	public String getName() {
 		return name;
 	}
@@ -53,16 +63,7 @@ public class ChatRoomBotEntry implements IChatRoomBotEntry {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.internal.presence.bot.IChatRoomBotEntry#getChatRoom()
-	 */
-	public String getChatRoom() {
-		return chatRoom;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.internal.presence.bot.IChatRoomBotEntry#getConnectID()
+	 * @see org.eclipse.ecf.presence.bot.IIMBotEntry#getConnectID()
 	 */
 	public String getConnectID() {
 		return connectID;
@@ -71,7 +72,7 @@ public class ChatRoomBotEntry implements IChatRoomBotEntry {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.internal.presence.bot.IChatRoomBotEntry#getContainerFactoryName()
+	 * @see org.eclipse.ecf.presence.bot.IIMBotEntry#getContainerFactoryName()
 	 */
 	public String getContainerFactoryName() {
 		return containerFactoryName;
@@ -80,19 +81,10 @@ public class ChatRoomBotEntry implements IChatRoomBotEntry {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.internal.presence.bot.IChatRoomBotEntry#getPassword()
+	 * @see org.eclipse.ecf.presence.bot.IIMBotEntry#getPassword()
 	 */
 	public String getPassword() {
 		return password;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.internal.presence.bot.IChatRoomBotEntry#getChatRoomPassword()
-	 */
-	public String getChatRoomPassword() {
-		return chatRoomPassword;
 	}
 
 }

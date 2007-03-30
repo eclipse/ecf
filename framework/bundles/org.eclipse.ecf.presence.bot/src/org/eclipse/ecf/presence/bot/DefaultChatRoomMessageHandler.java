@@ -17,7 +17,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 
 /**
- * Default chaty room message handler that does nothing in response to
+ * Default chat room message handler that does nothing in response to
  * notifications.
  */
 public class DefaultChatRoomMessageHandler implements IChatRoomMessageHandler {

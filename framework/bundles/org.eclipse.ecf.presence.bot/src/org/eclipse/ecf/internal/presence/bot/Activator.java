@@ -20,6 +20,8 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.ecf.presence.bot.IChatRoomBotEntry;
 import org.eclipse.ecf.presence.bot.IChatRoomMessageHandler;
+import org.eclipse.ecf.presence.bot.IIMBotEntry;
+import org.eclipse.ecf.presence.bot.IIMMessageHandler;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -39,14 +41,25 @@ public class Activator implements BundleActivator {
 	private static final String CLASS_ATT = "class"; //$NON-NLS-1$
 	private static final String FILTEREXPRESSION_ATT = "filterexpression"; //$NON-NLS-1$
 	private static final String CHATROOMROBOTID_ATT = "chatroomrobotid"; //$NON-NLS-1$
+	private static final String IMROBOTID_ATT = "imrobotid"; //$NON-NLS-1$
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.presence.bot"; //$NON-NLS-1$
-	public static final String COMMAND_HANDLER_EPOINT_NAME = "chatroommessagehandler"; //$NON-NLS-1$
-	public static final String COMMAND_HANDLER_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
-			+ COMMAND_HANDLER_EPOINT_NAME;
+	public static final String CHATROOM_COMMAND_HANDLER_EPOINT_NAME = "chatroommessagehandler"; //$NON-NLS-1$
+	public static final String CHATROOM_COMMAND_HANDLER_EPOINT = PLUGIN_ID
+			+ "." //$NON-NLS-1$
+			+ CHATROOM_COMMAND_HANDLER_EPOINT_NAME;
 
-	public static final String BOT_EPOINT_NAME = "chatroomrobot"; //$NON-NLS-1$
-	public static final String BOT_EPOINT = PLUGIN_ID + "." + BOT_EPOINT_NAME; //$NON-NLS-1$
+	public static final String IM_COMMAND_HANDLER_EPOINT_NAME = "immessagehandler"; //$NON-NLS-1$
+	public static final String IM_COMMAND_HANDLER_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
+			+ IM_COMMAND_HANDLER_EPOINT_NAME;
+
+	public static final String CHATROOM_BOT_EPOINT_NAME = "chatroomrobot"; //$NON-NLS-1$
+	public static final String CHATROOM_BOT_EPOINT = PLUGIN_ID
+			+ "." + CHATROOM_BOT_EPOINT_NAME; //$NON-NLS-1$
+
+	public static final String IM_BOT_EPOINT_NAME = "imrobot"; //$NON-NLS-1$
+	public static final String IM_BOT_EPOINT = PLUGIN_ID
+			+ "." + IM_BOT_EPOINT_NAME; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
@@ -55,8 +68,11 @@ public class Activator implements BundleActivator {
 
 	private ServiceTracker extensionRegistryTracker = null;
 
-	private Map bots = new HashMap();
-	private Map commands = new HashMap();
+	private Map chatroombots = new HashMap();
+	private Map chatbotcommands = new HashMap();
+
+	private Map imbots = new HashMap();
+	private Map imbotcommands = new HashMap();
 
 	/**
 	 * The constructor
@@ -81,7 +97,8 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		plugin = this;
 		this.context = context;
-		loadExtensions();
+		loadChatBotExtensions();
+		loadIMBotExtensions();
 	}
 
 	/*
@@ -107,34 +124,39 @@ public class Activator implements BundleActivator {
 		return plugin;
 	}
 
-	public Map getBots() {
-		return this.bots;
+	public Map getChatRoomBots() {
+		return this.chatroombots;
 	}
 
-	private void loadExtensions() throws CoreException {
+	public Map getIMBots() {
+		return this.imbots;
+	}
+
+	private void loadChatBotExtensions() throws CoreException {
 		// load the command handlers
 		IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
 			IConfigurationElement[] elements = reg
-					.getConfigurationElementsFor(COMMAND_HANDLER_EPOINT);
+					.getConfigurationElementsFor(CHATROOM_COMMAND_HANDLER_EPOINT);
 			for (int i = 0; i < elements.length; i++) {
 				String id = elements[i].getAttribute(CHATROOMROBOTID_ATT);
-				String expression = elements[i].getAttribute(FILTEREXPRESSION_ATT);
+				String expression = elements[i]
+						.getAttribute(FILTEREXPRESSION_ATT);
 				IChatRoomMessageHandler handler = (IChatRoomMessageHandler) elements[i]
 						.createExecutableExtension(CLASS_ATT);
-				List c = (List) commands.get(id);
+				List c = (List) chatbotcommands.get(id);
 				if (c == null) {
 					c = new ArrayList();
 					c.add(new ChatRoomMessageHandlerEntry(expression, handler));
-					commands.put(id, c);
+					chatbotcommands.put(id, c);
 				} else {
 					c.add(new ChatRoomMessageHandlerEntry(expression, handler));
-					commands.put(id, c);
+					chatbotcommands.put(id, c);
 				}
 			}
 
 			// load the chat room bots
-			elements = reg.getConfigurationElementsFor(BOT_EPOINT);
+			elements = reg.getConfigurationElementsFor(CHATROOM_BOT_EPOINT);
 			for (int i = 0; i < elements.length; i++) {
 				String id = elements[i].getAttribute(ID_ATT);
 				String name = elements[i].getAttribute(NAME_ATT);
@@ -145,13 +167,56 @@ public class Activator implements BundleActivator {
 				String chatroom = elements[i].getAttribute(CHATROOM_ATT);
 				String chatroompassword = elements[i]
 						.getAttribute(CHATROOMPASSWORD_ATT);
-				List c = (List) commands.get(id);
+				List c = (List) chatbotcommands.get(id);
 				if (c == null)
 					c = new ArrayList();
 				IChatRoomBotEntry bot = new ChatRoomBotEntry(id, name,
 						containerFactoryName, connectID, password, chatroom,
 						chatroompassword, c);
-				bots.put(id, bot);
+				chatroombots.put(id, bot);
+			}
+		}
+
+	}
+
+	private void loadIMBotExtensions() throws CoreException {
+		// load the command handlers
+		IExtensionRegistry reg = getExtensionRegistry();
+		if (reg != null) {
+			IConfigurationElement[] elements = reg
+					.getConfigurationElementsFor(IM_COMMAND_HANDLER_EPOINT);
+			for (int i = 0; i < elements.length; i++) {
+				String id = elements[i].getAttribute(IMROBOTID_ATT);
+				String expression = elements[i]
+						.getAttribute(FILTEREXPRESSION_ATT);
+				IIMMessageHandler handler = (IIMMessageHandler) elements[i]
+						.createExecutableExtension(CLASS_ATT);
+				List c = (List) imbotcommands.get(id);
+				if (c == null) {
+					c = new ArrayList();
+					c.add(new IMMessageHandlerEntry(expression, handler));
+					imbotcommands.put(id, c);
+				} else {
+					c.add(new IMMessageHandlerEntry(expression, handler));
+					imbotcommands.put(id, c);
+				}
+			}
+
+			// load the im bots
+			elements = reg.getConfigurationElementsFor(IM_BOT_EPOINT);
+			for (int i = 0; i < elements.length; i++) {
+				String id = elements[i].getAttribute(ID_ATT);
+				String name = elements[i].getAttribute(NAME_ATT);
+				String containerFactoryName = elements[i]
+						.getAttribute(CONTAINER_FACTORY_NAME_ATT);
+				String connectID = elements[i].getAttribute(CONNECT_ID_ATT);
+				String password = elements[i].getAttribute(PASSWORD_ATT);
+				List c = (List) imbotcommands.get(id);
+				if (c == null)
+					c = new ArrayList();
+				IIMBotEntry bot = new IMBotEntry(id, name,
+						containerFactoryName, connectID, password, c);
+				imbots.put(id, bot);
 			}
 		}
 
