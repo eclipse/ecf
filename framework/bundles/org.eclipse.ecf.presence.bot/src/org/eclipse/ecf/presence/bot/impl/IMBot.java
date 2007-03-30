@@ -30,13 +30,13 @@ import org.eclipse.ecf.presence.bot.IIMMessageHandlerEntry;
 import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageEvent;
 
-public class DefaultIMBot implements IIMMessageListener {
+public class IMBot implements IIMMessageListener {
 
 	protected IIMBotEntry bot;
 	protected IContainer container;
 	protected ID targetID;
 
-	public DefaultIMBot(IIMBotEntry bot) {
+	public IMBot(IIMBotEntry bot) {
 		this.bot = bot;
 	}
 

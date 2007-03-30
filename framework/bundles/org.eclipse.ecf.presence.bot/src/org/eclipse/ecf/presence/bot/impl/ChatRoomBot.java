@@ -32,7 +32,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 
-public class DefaultChatRoomBot implements IIMMessageListener {
+public class ChatRoomBot implements IIMMessageListener {
 
 	protected IChatRoomBotEntry bot;
 	protected IContainer container;
@@ -40,7 +40,7 @@ public class DefaultChatRoomBot implements IIMMessageListener {
 	protected IChatRoomContainer roomContainer;
 	protected ID roomID;
 
-	public DefaultChatRoomBot(IChatRoomBotEntry bot) {
+	public ChatRoomBot(IChatRoomBotEntry bot) {
 		this.bot = bot;
 	}
 

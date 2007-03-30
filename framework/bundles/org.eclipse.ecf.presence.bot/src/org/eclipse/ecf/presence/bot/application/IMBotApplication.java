@@ -14,25 +14,25 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.ecf.internal.presence.bot.Activator;
-import org.eclipse.ecf.presence.bot.IChatRoomBotEntry;
-import org.eclipse.ecf.presence.bot.impl.DefaultChatRoomBot;
+import org.eclipse.ecf.presence.bot.IIMBotEntry;
+import org.eclipse.ecf.presence.bot.impl.IMBot;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
-public class DefaultChatRoomBotApplication implements IApplication {
+public class IMBotApplication implements IApplication {
 
-	protected Map getBotsFromExtensionRegistry() {
-		return Activator.getDefault().getChatRoomBots();
+	protected Map getIMBotsFromExtensionRegistry() {
+		return Activator.getDefault().getIMBots();
 	}
 
 	public Object start(IApplicationContext context) throws Exception {
 
-		Map bots = getBotsFromExtensionRegistry();
+		Map bots = getIMBotsFromExtensionRegistry();
 
 		for (Iterator it = bots.values().iterator(); it.hasNext();) {
-			IChatRoomBotEntry entry = (IChatRoomBotEntry) it.next();
-			// Create default chat room bot
-			DefaultChatRoomBot bot = new DefaultChatRoomBot(entry);
+			IIMBotEntry entry = (IIMBotEntry) it.next();
+			// Create default im bot
+			IMBot bot = new IMBot(entry);
 			// connect
 			bot.connect();
 		}
