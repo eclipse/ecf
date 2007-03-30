@@ -12,6 +12,10 @@ package org.eclipse.ecf.presence.bot;
 
 import org.eclipse.ecf.presence.im.IChatMessage;
 
+/**
+ * Contents for creating a im message handler.
+ * 
+ */
 public interface IIMMessageHandlerEntry {
 
 	public String getExpression();

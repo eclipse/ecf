@@ -22,25 +22,16 @@ import org.eclipse.ecf.core.identity.ID;
 public interface IContainerAdvisor {
 
 	/**
-	 * This method will be called after the <code>container</code> is created,
-	 * but before the container is connected. The given container will not be
-	 * <code>null</code>. The handler for this method should not block in
-	 * response to this method, and should <b>not</b> call the container
+	 * This method will be called prior to calling the container's
 	 * {@link IContainer#connect(ID, org.eclipse.ecf.core.security.IConnectContext)}
 	 * method.
 	 * 
 	 * @param container
-	 *            the container instance for this bot. This parameter will not
-	 *            be <code>null</code>.
+	 *            the container instance created. Will not be <code>null</code>.
+	 * @param targetID
+	 *            the target id instance to connect to. Will not be
+	 *            <code>null</code>.
 	 */
-	public void init(IContainer container);
-
-	/**
-	 * This method will be called after the {@link #init(IContainer)} method,
-	 * but prior to calling the container's
-	 * {@link IContainer#connect(ID, org.eclipse.ecf.core.security.IConnectContext)}
-	 * method. The <code>targetID</code> will not be <code>null</code>.
-	 */
-	public void preContainerConnect(ID targetID);
+	public void preContainerConnect(IContainer container, ID targetID);
 
 }

@@ -30,6 +30,9 @@ import org.eclipse.ecf.presence.bot.IIMMessageHandlerEntry;
 import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageEvent;
 
+/**
+ * Default im robot implementation class.
+ */
 public class IMBot implements IIMMessageListener {
 
 	protected IIMBotEntry bot;
@@ -45,16 +48,7 @@ public class IMBot implements IIMMessageListener {
 		for (int i = 0; i < commands.size(); i++) {
 			IIMMessageHandlerEntry entry = (IIMMessageHandlerEntry) commands
 					.get(i);
-			entry.getHandler().initRobot(bot);
-		}
-	}
-
-	protected void fireInit() {
-		List commands = bot.getCommands();
-		for (int i = 0; i < commands.size(); i++) {
-			IIMMessageHandlerEntry entry = (IIMMessageHandlerEntry) commands
-					.get(i);
-			entry.getHandler().init(container);
+			entry.getHandler().init(bot);
 		}
 	}
 
@@ -63,14 +57,14 @@ public class IMBot implements IIMMessageListener {
 		for (int i = 0; i < commands.size(); i++) {
 			IIMMessageHandlerEntry entry = (IIMMessageHandlerEntry) commands
 					.get(i);
-			entry.getHandler().preContainerConnect(targetID);
+			entry.getHandler().preContainerConnect(container, targetID);
 		}
 	}
 
 	public synchronized void connect() throws ECFException {
-		
+
 		fireInitBot();
-		
+
 		try {
 			Namespace namespace = null;
 
@@ -81,8 +75,6 @@ public class IMBot implements IIMMessageListener {
 			} else
 				throw new ContainerConnectException(
 						Messages.DefaultChatRoomBot_EXCEPTION_ALREADY_CONNECTED);
-
-			fireInit();
 
 			targetID = IDFactory.getDefault().createID(namespace,
 					bot.getConnectID());

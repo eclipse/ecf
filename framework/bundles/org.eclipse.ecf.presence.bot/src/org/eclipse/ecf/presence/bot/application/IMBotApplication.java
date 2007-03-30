@@ -19,6 +19,11 @@ import org.eclipse.ecf.presence.bot.impl.IMBot;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
+/**
+ * Application for getting im bots defined in extension registry and running
+ * them. This application will continue to run indefinitely. Subclasses may be
+ * implemented as desired.
+ */
 public class IMBotApplication implements IApplication {
 
 	protected Map getIMBotsFromExtensionRegistry() {

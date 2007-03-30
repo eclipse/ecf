@@ -20,10 +20,11 @@ public interface IChatRoomMessageHandler extends IChatRoomContainerAdvisor {
 	/**
 	 * Initialize robot with robot entry data.
 	 * 
-	 * @param robot the robot to initialize.  Will not be <code>null</code>.
+	 * @param robot
+	 *            the robot to initialize. Will not be <code>null</code>.
 	 */
-	public void initRobot(IChatRoomBotEntry robot);
-	
+	public void init(IChatRoomBotEntry robot);
+
 	/**
 	 * This method is called when a {@link IChatRoomMessage} is received.
 	 * 

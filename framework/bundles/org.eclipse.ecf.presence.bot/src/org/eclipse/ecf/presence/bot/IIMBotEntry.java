@@ -12,6 +12,9 @@ package org.eclipse.ecf.presence.bot;
 
 import java.util.List;
 
+/**
+ * Contents for creating a im bot
+ */
 public interface IIMBotEntry {
 
 	public String getId();

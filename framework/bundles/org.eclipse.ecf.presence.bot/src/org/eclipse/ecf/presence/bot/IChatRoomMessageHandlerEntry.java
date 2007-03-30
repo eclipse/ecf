@@ -12,6 +12,10 @@ package org.eclipse.ecf.presence.bot;
 
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 
+/**
+ * Contents for creating a chat room message handler.
+ * 
+ */
 public interface IChatRoomMessageHandlerEntry {
 
 	public String getExpression();

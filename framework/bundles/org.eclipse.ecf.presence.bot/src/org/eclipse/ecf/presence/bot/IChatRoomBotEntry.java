@@ -12,6 +12,9 @@ package org.eclipse.ecf.presence.bot;
 
 import java.util.List;
 
+/**
+ * Contents for creating a chat room bot
+ */
 public interface IChatRoomBotEntry {
 
 	public String getId();

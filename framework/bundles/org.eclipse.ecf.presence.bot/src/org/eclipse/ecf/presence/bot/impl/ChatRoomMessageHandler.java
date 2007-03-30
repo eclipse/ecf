@@ -44,23 +44,17 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.presence.bot.handler.IContainerAdvisor#init(org.eclipse.ecf.core.IContainer)
+	 * @see org.eclipse.ecf.presence.bot.handler.IContainerAdvisor#preContainerConnect(org.eclipse.ecf.core.identity.ID)
 	 */
-	public void init(IContainer container) {
+	public void preContainerConnect(IContainer container, ID targetID) {
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.presence.bot.handler.IContainerAdvisor#preContainerConnect(org.eclipse.ecf.core.identity.ID)
-	 */
-	public void preContainerConnect(ID targetID) {
-	}
-
-	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.bot.IChatRoomMessageHandler#initRobot(org.eclipse.ecf.presence.bot.IChatRoomBotEntry)
 	 */
-	public void initRobot(IChatRoomBotEntry robot) {
+	public void init(IChatRoomBotEntry robot) {
 	}
 
 }

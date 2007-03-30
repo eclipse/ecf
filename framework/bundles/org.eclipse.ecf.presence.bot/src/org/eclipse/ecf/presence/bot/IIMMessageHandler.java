@@ -21,10 +21,10 @@ public interface IIMMessageHandler extends IContainerAdvisor {
 	/**
 	 * Initialize robot with robot entry data.
 	 * 
-	 * @param robot the robot to initialize.  Will not be <code>null</code>.
+	 * @param robot
+	 *            the robot to initialize. Will not be <code>null</code>.
 	 */
-	public void initRobot(IIMBotEntry robot);
-	
+	public void init(IIMBotEntry robot);
 
 	/**
 	 * This method is called when a {@link IChatMessage} is received.
