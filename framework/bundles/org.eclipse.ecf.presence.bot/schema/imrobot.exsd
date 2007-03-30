@@ -112,7 +112,7 @@ for example:  slewis@ecf.eclipse.org
       &lt;imrobot
             connectID=&quot;slewis@ecf.eclipse.org&quot;
             containerFactoryName=&quot;ecf.xmpp.smack&quot;
-            id=&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;&gt;
+            id=&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;/&gt;
       &lt;/chatroomrobot&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
