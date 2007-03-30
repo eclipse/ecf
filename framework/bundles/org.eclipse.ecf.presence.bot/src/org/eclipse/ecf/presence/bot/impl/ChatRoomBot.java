@@ -109,7 +109,7 @@ public class ChatRoomBot implements IIMMessageListener {
 			container.connect(targetID, context);
 
 			IChatRoomInfo room = manager.getChatRoomInfo(bot.getChatRoom());
-			IChatRoomContainer roomContainer = room.createChatRoomContainer();
+			roomContainer = room.createChatRoomContainer();
 
 			roomID = room.getRoomID();
 
