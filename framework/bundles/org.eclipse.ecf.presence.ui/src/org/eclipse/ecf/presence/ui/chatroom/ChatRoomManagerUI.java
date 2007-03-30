@@ -137,9 +137,7 @@ public class ChatRoomManagerUI {
 	 * method will return <code>false</code>, indicating that the caller
 	 * should connect the new container to the given target ID.
 	 * 
-	 * @param container
 	 * @param targetID
-	 * @return true if we are already connect
 	 */
 	public void showForTarget(final ID targetID) {
 		Display.getDefault().syncExec(new Runnable() {
