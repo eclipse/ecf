@@ -21,7 +21,6 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.Presence;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.roster.IRoster;
@@ -59,7 +58,6 @@ import org.eclipse.ui.part.ViewPart;
  * implements {@link IMultiRosterViewPart} and provides the ability to display
  * multiple rosters in a single tree viewer. This class may be subclassed as
  * desired to add or customize behavior.
- * 
  */
 public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
@@ -146,10 +144,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
-					setAwayAction.setChecked(false);
-					setDNDAction.setChecked(false);
-					setInvisibleAction.setChecked(false);
-					setOfflineAction.setChecked(false);
 					sendPresence(IPresence.Mode.AVAILABLE);
 				}
 			}
@@ -159,10 +153,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
-					setAvailableAction.setChecked(false);
-					setDNDAction.setChecked(false);
-					setInvisibleAction.setChecked(false);
-					setOfflineAction.setChecked(false);
 					sendPresence(IPresence.Mode.AWAY);
 				}
 			}
@@ -172,10 +162,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
-					setAvailableAction.setChecked(false);
-					setAwayAction.setChecked(false);
-					setInvisibleAction.setChecked(false);
-					setOfflineAction.setChecked(false);
 					sendPresence(IPresence.Mode.DND);
 				}
 			}
@@ -185,10 +171,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
-					setAvailableAction.setChecked(false);
-					setAwayAction.setChecked(false);
-					setDNDAction.setChecked(false);
-					setOfflineAction.setChecked(false);
 					sendPresence(IPresence.Mode.INVISIBLE);
 				}
 			}
@@ -198,14 +180,11 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
-					setAvailableAction.setChecked(false);
-					setAwayAction.setChecked(false);
-					setDNDAction.setChecked(false);
-					setInvisibleAction.setChecked(false);
 					for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
 						MultiRosterAccount account = (MultiRosterAccount) i
 								.next();
 						account.getContainer().disconnect();
+						treeViewer.remove(account.getRoster());
 					}
 				}
 			}
@@ -460,7 +439,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				containerAdapter))) {
 			IRosterManager manager = containerAdapter.getRosterManager();
 			try {
-				if (setAvailableAction.isChecked() || setOfflineAction.isChecked()) {
+				if (setAvailableAction.isChecked()
+						|| setOfflineAction.isChecked()) {
 					manager.getPresenceSender().sendPresenceUpdate(null,
 							new Presence(null, null, IPresence.Mode.AVAILABLE));
 					setOfflineAction.setChecked(false);
