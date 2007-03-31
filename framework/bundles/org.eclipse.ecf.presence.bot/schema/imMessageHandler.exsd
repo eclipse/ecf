@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.ecf.presence.bot">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.ecf.presence.bot" id="immessagehandler" name="IM Message Handler"/>
+         <meta.schema plugin="org.eclipse.ecf.presence.bot" id="imMessageHandler" name="IM Message Handler"/>
       </appInfo>
       <documentation>
          This extension point allows message handler objects to be associated
@@ -50,17 +50,17 @@ with imrobot instances.
          </documentation>
       </annotation>
       <complexType>
-         <attribute name="imrobotid" type="string" use="required">
+         <attribute name="imRobotId" type="string" use="required">
             <annotation>
                <documentation>
-                  Required chatroomrobotid.  The value of this field must match a imrobot id
+                  Required imRobotId.  The value of this field must match a imrobot id
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="filterexpression" type="string">
+         <attribute name="filterExpression" type="string">
             <annotation>
                <documentation>
-                  Optional filter expression.  If filterexpression is provided, then chatroom messages will be filtered via given regular expression.  If match, then the handleChatRoomMessage method will be called.  If not matched, then the received message will be ignored.
+                  Optional filter expression.  If filterExpression is provided, then chatroom messages will be filtered via given regular expression.  If match, then the handleChatRoomMessage method will be called.  If not matched, then the received message will be ignored.
                </documentation>
             </annotation>
          </attribute>
@@ -93,7 +93,7 @@ with imrobot instances.
       <documentation>
          &lt;pre&gt;
    &lt;extension
-         point=&quot;org.eclipse.ecf.presence.bot.immessagehandler&quot;&gt;
+         point=&quot;org.eclipse.ecf.presence.bot.imMessageHandler&quot;&gt;
       &lt;handler
             imrobotid=&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;
             class=&quot;org.eclipse.ecf.presence.imbot.DefaultIMMessageHandler&quot;&gt;
@@ -105,12 +105,12 @@ Note that the given imrobotid=&lt;b&gt;org.eclipse.ecf.presence.imbot.defaultbot
 
 &lt;pre&gt;
    &lt;extension
-         point=&quot;org.eclipse.ecf.presence.bot.imrobot&quot;&gt;
-      &lt;imrobot
+         point=&quot;org.eclipse.ecf.presence.bot.imRobot&quot;&gt;
+      &lt;imRobot
             connectID=&quot;slewis@ecf.eclipse.org&quot;
             containerFactoryName=&quot;ecf.xmpp.smack&quot;
             id=&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;/&gt;
-      &lt;/chatroomrobot&gt;
+      &lt;/imRobot&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
       </documentation>

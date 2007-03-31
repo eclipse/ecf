@@ -31,33 +31,33 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class Activator implements BundleActivator {
 
-	private static final String CHATROOMPASSWORD_ATT = "chatroompassword"; //$NON-NLS-1$
-	private static final String CHATROOM_ATT = "chatroom"; //$NON-NLS-1$
-	private static final String PASSWORD_ATT = "connectpassword"; //$NON-NLS-1$
-	private static final String CONNECT_ID_ATT = "connectID"; //$NON-NLS-1$
+	private static final String CHATROOMPASSWORD_ATT = "chatRoomPassword"; //$NON-NLS-1$
+	private static final String CHATROOM_ATT = "chatRoom"; //$NON-NLS-1$
+	private static final String PASSWORD_ATT = "connectPassword"; //$NON-NLS-1$
+	private static final String CONNECT_ID_ATT = "connectId"; //$NON-NLS-1$
 	private static final String CONTAINER_FACTORY_NAME_ATT = "containerFactoryName"; //$NON-NLS-1$
 	private static final String NAME_ATT = "name"; //$NON-NLS-1$
 	private static final String ID_ATT = "id"; //$NON-NLS-1$
 	private static final String CLASS_ATT = "class"; //$NON-NLS-1$
-	private static final String FILTEREXPRESSION_ATT = "filterexpression"; //$NON-NLS-1$
-	private static final String CHATROOMROBOTID_ATT = "chatroomrobotid"; //$NON-NLS-1$
-	private static final String IMROBOTID_ATT = "imrobotid"; //$NON-NLS-1$
+	private static final String FILTEREXPRESSION_ATT = "filterExpression"; //$NON-NLS-1$
+	private static final String CHATROOMROBOTID_ATT = "chatRoomRobotId"; //$NON-NLS-1$
+	private static final String IMROBOTID_ATT = "imRobotId"; //$NON-NLS-1$
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.presence.bot"; //$NON-NLS-1$
-	public static final String CHATROOM_COMMAND_HANDLER_EPOINT_NAME = "chatroommessagehandler"; //$NON-NLS-1$
+	public static final String CHATROOM_COMMAND_HANDLER_EPOINT_NAME = "chatRoomMessageHandler"; //$NON-NLS-1$
 	public static final String CHATROOM_COMMAND_HANDLER_EPOINT = PLUGIN_ID
 			+ "." //$NON-NLS-1$
 			+ CHATROOM_COMMAND_HANDLER_EPOINT_NAME;
 
-	public static final String IM_COMMAND_HANDLER_EPOINT_NAME = "immessagehandler"; //$NON-NLS-1$
+	public static final String IM_COMMAND_HANDLER_EPOINT_NAME = "imMessageHandler"; //$NON-NLS-1$
 	public static final String IM_COMMAND_HANDLER_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
 			+ IM_COMMAND_HANDLER_EPOINT_NAME;
 
-	public static final String CHATROOM_BOT_EPOINT_NAME = "chatroomrobot"; //$NON-NLS-1$
+	public static final String CHATROOM_BOT_EPOINT_NAME = "chatRoomRobot"; //$NON-NLS-1$
 	public static final String CHATROOM_BOT_EPOINT = PLUGIN_ID
 			+ "." + CHATROOM_BOT_EPOINT_NAME; //$NON-NLS-1$
 
-	public static final String IM_BOT_EPOINT_NAME = "imrobot"; //$NON-NLS-1$
+	public static final String IM_BOT_EPOINT_NAME = "imRobot"; //$NON-NLS-1$
 	public static final String IM_BOT_EPOINT = PLUGIN_ID
 			+ "." + IM_BOT_EPOINT_NAME; //$NON-NLS-1$
 

@@ -20,7 +20,7 @@ import org.eclipse.ecf.presence.im.IChatMessage;
 /**
  * Default im message handler that does nothing in response to notifications.
  */
-public class IMMessageHandler implements IIMMessageHandler {
+public class EmptyIMMessageHandler implements IIMMessageHandler {
 
 	/*
 	 * (non-Javadoc)
@@ -28,6 +28,7 @@ public class IMMessageHandler implements IIMMessageHandler {
 	 * @see org.eclipse.ecf.presence.bot.handler.IIMMessageHandler#handleRoomMessage(org.eclipse.ecf.presence.im.IChatMessage)
 	 */
 	public void handleIMMessage(IChatMessage message) {
+		System.out.println("handleIMMessage(" + message + ")");
 	}
 
 	/*
@@ -36,6 +37,7 @@ public class IMMessageHandler implements IIMMessageHandler {
 	 * @see org.eclipse.ecf.presence.bot.handler.IContainerAdvisor#preContainerConnect(org.eclipse.ecf.core.identity.ID)
 	 */
 	public void preContainerConnect(IContainer container, ID targetID) {
+		System.out.println("preContainerConnect("+container+","+targetID+")");
 	}
 
 	/*
@@ -44,6 +46,7 @@ public class IMMessageHandler implements IIMMessageHandler {
 	 * @see org.eclipse.ecf.presence.bot.IIMMessageHandler#initRobot(org.eclipse.ecf.presence.bot.IIMBotEntry)
 	 */
 	public void init(IIMBotEntry robot) {
+		System.out.println("init("+robot+")");
 	}
 
 }

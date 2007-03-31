@@ -3,17 +3,17 @@
 <schema targetNamespace="org.eclipse.ecf.presence.bot">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.ecf.presence.bot" id="chatroomrobot" name="Chat Room Robot"/>
+         <meta.schema plugin="org.eclipse.ecf.presence.bot" id="imRobot" name="IM Robot"/>
       </appInfo>
       <documentation>
-         This extension point allows implementers to define a chat room bot.
+         This extension point allows implementers to define a im bot.
       </documentation>
    </annotation>
 
    <element name="extension">
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="chatroomrobot"/>
+            <element ref="imRobot"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -42,37 +42,36 @@
       </complexType>
    </element>
 
-   <element name="chatroomrobot">
+   <element name="imRobot">
       <annotation>
          <documentation>
-            The chatroomrobot extension point.
+            The imrobot extension point.
          </documentation>
       </annotation>
       <complexType>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  The required id for the chat room robot.  This must be a unique value relative to all other robots.  For message handlers that are to use this robot, they must provide a chatrobotid that matches this value.
+                  The required id for the im robot.  This must be a unique value relative to all other im robots.  For message handlers that are to use this robot, they must provide a imrobotid that matches this value.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="containerFactoryName" type="string" use="required">
             <annotation>
                <documentation>
-                  The required container factory name.  This should be the container factory name for a given protocol.  For example, for the built in ECF IRC provider the value is &lt;b&gt;ecf.irc.irclib&lt;/b&gt;.
+                  The required container factory name.  This should be the container factory name for a given protocol.  For example, for the built in ECF IRC provider the value is &lt;b&gt;ecf.xmpp.smack&lt;/b&gt;.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="connectID" type="string" use="required">
+         <attribute name="connectId" type="string" use="required">
             <annotation>
                <documentation>
-                  The connect ID for connecting to the given container.  For example, for IRC the expected ID syntax of the connect ID is
+                  The connect ID for connecting to the given container.  For example, for XMPP the expected ID syntax of the connect ID is
 &lt;pre&gt;
-irc://username@host[:port]
+username@host[:port]
 
-for example:  irc://slewis2_@irc.freenode.net
+for example:  slewis@ecf.eclipse.org
 &lt;/pre&gt;
-
                </documentation>
             </annotation>
          </attribute>
@@ -83,25 +82,10 @@ for example:  irc://slewis2_@irc.freenode.net
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="connectpassword" type="string">
+         <attribute name="connectPassword" type="string">
             <annotation>
                <documentation>
                   An optional connect password.  If a password is required to connect to the given container then an appropriate value must be provided.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="chatroom" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The required chatroom to join.  For example, for IRC rooms the chat room name corresponds to the IRC channel (e.g. #eclipse-ecf).
-
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="chatroompassword" type="string">
-            <annotation>
-               <documentation>
-                  An optional chat room password.  If the chat room requires a separate password, and appropriate value must be specified here.
                </documentation>
             </annotation>
          </attribute>
@@ -124,29 +108,27 @@ for example:  irc://slewis2_@irc.freenode.net
       <documentation>
          &lt;pre&gt;
    &lt;extension
-         point=&quot;org.eclipse.ecf.presence.bot.chatroomrobot&quot;&gt;
-      &lt;chatroomrobot
-            chatroom=&quot;#eclipse-ecf&quot;
-            connectID=&quot;irc://slewis2_@irc.freenode.net&quot;
-            containerFactoryName=&quot;ecf.irc.irclib&quot;
-            id=&quot;org.eclipse.ecf.presence.bot.defaultbot&quot;&gt;
-      &lt;/chatroomrobot&gt;
+         point=&quot;org.eclipse.ecf.presence.bot.imRobot&quot;&gt;
+      &lt;imRobot
+            connectID=&quot;slewis@ecf.eclipse.org&quot;
+            containerFactoryName=&quot;ecf.xmpp.smack&quot;
+            id=&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;/&gt;
+      &lt;/imRobot&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
 
-Note that to have the chatroombot receive chat room messages and process them, that the chatroommessagehandler should also be defined 
-using the id for the chatroomrobot given above.  For example:
+Note that to have the imrobot receive im messages and process them, that the immessagehandler should also be defined 
+using the id for the imrobot given above.  For example:
 
 &lt;pre&gt;
    &lt;extension
-         point=&quot;org.eclipse.ecf.presence.bot.chatroommessagehandler&quot;&gt;
+         point=&quot;org.eclipse.ecf.presence.bot.immessagehandler&quot;&gt;
       &lt;handler
-            chatroomrobotid=&quot;org.eclipse.ecf.presence.bot.defaultbot&quot;
-            class=&quot;org.eclipse.ecf.presence.bot.DefaultChatRoomMessageHandler&quot;&gt;
+            imrobotid=&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;
+            class=&quot;org.eclipse.ecf.presence.imbot.DefaultIMMessageHandler&quot;&gt;
       &lt;/handler&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
-
       </documentation>
    </annotation>
 
@@ -155,7 +137,7 @@ using the id for the chatroomrobot given above.  For example:
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         See the API information for the chatroommessagehandler.
+         See the API information for the immessagehandler.
       </documentation>
    </annotation>
 
@@ -174,7 +156,6 @@ using the id for the chatroomrobot given above.  For example:
       </appInfo>
       <documentation>
          Copyright (c) 2007 IBM Corporation and others.  All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
-
       </documentation>
    </annotation>
 

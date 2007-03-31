@@ -22,7 +22,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
  * Default chat room message handler that does nothing in response to
  * notifications.
  */
-public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
+public class EmptyChatRoomMessageHandler implements IChatRoomMessageHandler {
 
 	/*
 	 * (non-Javadoc)
@@ -30,6 +30,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	 * @see org.eclipse.ecf.presence.bot.handler.IChatRoomMessageHandler#handleRoomMessage(org.eclipse.ecf.presence.chatroom.IChatRoomMessage)
 	 */
 	public void handleRoomMessage(IChatRoomMessage message) {
+		System.out.println("handleRoomMessage("+message+")");
 	}
 
 	/*
@@ -39,6 +40,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	 *      org.eclipse.ecf.core.identity.ID)
 	 */
 	public void preChatRoomConnect(IChatRoomContainer roomContainer, ID roomID) {
+		System.out.println("preChatRoomConnect("+roomContainer+","+roomID+")");
 	}
 
 	/*
@@ -47,6 +49,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	 * @see org.eclipse.ecf.presence.bot.handler.IContainerAdvisor#preContainerConnect(org.eclipse.ecf.core.identity.ID)
 	 */
 	public void preContainerConnect(IContainer container, ID targetID) {
+		System.out.println("preContainerConnect("+container+","+targetID+")");
 	}
 
 	/*
@@ -55,6 +58,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	 * @see org.eclipse.ecf.presence.bot.IChatRoomMessageHandler#initRobot(org.eclipse.ecf.presence.bot.IChatRoomBotEntry)
 	 */
 	public void init(IChatRoomBotEntry robot) {
+		System.out.println("init("+robot+")");
 	}
 
 }
