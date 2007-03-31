@@ -10,13 +10,15 @@
  *******************************************************************************/
 package org.eclipse.ecf.bulletinboard;
 
+import org.eclipse.ecf.core.util.ECFException;
+
 /**
  * The base class for all exceptions thrown by the BB API.
  * 
  * @author Erkki
  */
-public class BBException extends Exception {
-	private static final long serialVersionUID = -1739222507295443443L;
+public class BBException extends ECFException {
+	private static final long serialVersionUID = -650452331534579859L;
 
 	public BBException() {
 		super();
