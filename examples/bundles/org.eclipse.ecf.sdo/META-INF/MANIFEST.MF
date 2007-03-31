@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.sdo;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0.v20070330-2111
 Bundle-Activator: org.eclipse.ecf.sdo.SDOPlugin$EclipsePlugin
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
