@@ -67,7 +67,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 	protected Exception exception;
 
 	protected long fileLength = -1;
-	
+
 	protected Map options = null;
 
 	protected URL getRemoteFileURL() {
@@ -89,7 +89,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 	protected void setFileLength(long length) {
 		fileLength = length;
 	}
-	
+
 	protected Map getOptions() {
 		return options;
 	}
@@ -225,7 +225,8 @@ public abstract class AbstractRetrieveFileTransfer implements
 	}
 
 	public void cancel() {
-		if (job != null) job.cancel();
+		if (job != null)
+			job.cancel();
 	}
 
 	public Exception getException() {
@@ -249,8 +250,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 	 * 
 	 * @throws IncomingFileTransferException
 	 */
-	protected abstract void openStreams()
-			throws IncomingFileTransferException;
+	protected abstract void openStreams() throws IncomingFileTransferException;
 
 	/*
 	 * (non-Javadoc)
@@ -273,7 +273,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 		this.fileLength = 0;
 		this.remoteFileID = remoteFileID;
 		this.options = options;
-		
+
 		try {
 			this.remoteFileURL = remoteFileID.getURL();
 		} catch (MalformedURLException e) {
@@ -281,7 +281,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 					NLS
 							.bind(
 									Messages.AbstractRetrieveFileTransfer_MalformedURLException,
-									remoteFileID), e); //$NON-NLS-1$
+									remoteFileID), e);
 		}
 		this.listener = transferListener;
 		openStreams();
@@ -324,7 +324,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 					return false;
 			}
 	}
-	
+
 	public IFileTransferListener getListener() {
 		return listener;
 	}

@@ -16,7 +16,7 @@ public class FileTransferID extends BaseID implements IFileID {
 
 	public FileTransferID(Namespace namespace, URL url) {
 		super(namespace);
-		Assert.isNotNull(url, Messages.FileTransferID_Exception_Url_Not_Null); //$NON-NLS-1$
+		Assert.isNotNull(url, Messages.FileTransferID_Exception_Url_Not_Null);
 		this.fileURL = url;
 	}
 

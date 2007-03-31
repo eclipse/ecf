@@ -86,11 +86,10 @@ public class SslProtocolSocketFactory implements ProtocolSocketFactory {
 			return getSslContext().getSocketFactory().createSocket(remoteHost,
 					remotePort, clientHost, clientPort);
 
-		if (proxy != null && !Proxy.NO_PROXY.equals(proxy)
-				&& proxy.getAddress() instanceof ProxyAddress) {
+		if (proxy != null && !Proxy.NO_PROXY.equals(proxy)) {
 			ProxyClient proxyClient = new ProxyClient();
 
-			ProxyAddress address = (ProxyAddress) proxy.getAddress();
+			ProxyAddress address = proxy.getAddress();
 			proxyClient.getHostConfiguration().setProxy(address.getHostName(),
 					address.getPort());
 			proxyClient.getHostConfiguration().setHost(remoteHost, remotePort);

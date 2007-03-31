@@ -125,9 +125,8 @@ public class HttpClientRetrieveFileTransfer extends
 		if (proxy == null)
 			proxy = getSystemProxy();
 		if (proxy != null && !Proxy.NO_PROXY.equals(proxy)
-				&& !urlUsesHttps(urlString)
-				&& proxy.getAddress() instanceof ProxyAddress) {
-			ProxyAddress address = (ProxyAddress) proxy.getAddress();
+				&& !urlUsesHttps(urlString)) {
+			ProxyAddress address = proxy.getAddress();
 			httpClient.getHostConfiguration().setProxy(
 					getHostFromURL(address.getHostName()), address.getPort());
 			String proxyUsername = proxy.getUsername();
@@ -293,8 +292,8 @@ public class HttpClientRetrieveFileTransfer extends
 			result = url.substring(colonSlashSlash + 3);
 		}
 
-		int colonPort = result.indexOf(':'); //$NON-NLS-1$
-		int requestPath = result.indexOf('/'); //$NON-NLS-1$
+		int colonPort = result.indexOf(':');
+		int requestPath = result.indexOf('/');
 
 		int substringEnd;
 
@@ -313,11 +312,11 @@ public class HttpClientRetrieveFileTransfer extends
 
 	protected static int getPortFromURL(String url) {
 		int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
-		int colonPort = url.indexOf(':', colonSlashSlash + 1); //$NON-NLS-1$
+		int colonPort = url.indexOf(':', colonSlashSlash + 1);
 		if (colonPort < 0)
 			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
 
-		int requestPath = url.indexOf('/', colonPort + 1); //$NON-NLS-1$
+		int requestPath = url.indexOf('/', colonPort + 1);
 
 		int end;
 		if (requestPath < 0)
