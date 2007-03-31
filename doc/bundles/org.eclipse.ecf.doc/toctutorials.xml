@@ -3,4 +3,5 @@
 
 <toc label="Tutorials" link_to="toc.xml#tutorials"> 
 	<topic label="Installating and Running the ScribbleShare Tutorial" href="html/tutorials/installation.html"/>
+	<topic label="Create an IRC bot" href="html/tutorials/bot.html"/>
 </toc>
