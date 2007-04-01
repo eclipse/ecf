@@ -103,10 +103,10 @@ public class MessagesView extends ViewPart {
 		super.dispose();
 	}
 
-	private ChatTab getTab(IChatMessageSender icms, ID userID) {
+	private ChatTab getTab(IChatMessageSender sender, ID userID) {
 		ChatTab tab = (ChatTab) tabs.get(userID);
 		if (tab == null) {
-			tab = new ChatTab(icms, userID);
+			tab = new ChatTab(sender, userID);
 			tabs.put(userID, tab);
 		}
 		return tab;
@@ -122,6 +122,10 @@ public class MessagesView extends ViewPart {
 	 *            the unique ID of the other user
 	 */
 	public synchronized void openTab(IChatMessageSender sender, ID userID) {
+		getTab(sender, userID);
+	}
+	
+	synchronized void selectTab(IChatMessageSender sender, ID userID) {
 		ChatTab tab = getTab(sender, userID);
 		for (int i = 0; i < switchActions.size(); i++) {
 			IAction action = ((ActionContributionItem) switchActions.get(i))
