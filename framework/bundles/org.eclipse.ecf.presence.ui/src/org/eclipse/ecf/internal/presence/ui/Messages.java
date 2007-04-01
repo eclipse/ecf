@@ -31,6 +31,8 @@ public class Messages extends NLS {
 	public static String MultiRosterView_SetInvisible;
 	public static String MultiRosterView_SetOffline;
 	
+	public static String MessagesView_CouldNotSendMessage;
+	
 	public static String RosterWorkbenchAdapterFactory_Mode;
 	public static String RosterWorkbenchAdapterFactory_Type;
 	public static String RosterWorkbenchAdapterFactory_Account;

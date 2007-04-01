@@ -16,14 +16,15 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Adapter;
-import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
@@ -31,11 +32,16 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IWorkbenchPreferenceConstants;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.forms.widgets.Form;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
 
 public class MessagesView extends ViewPart {
@@ -52,27 +58,24 @@ public class MessagesView extends ViewPart {
 
 	private Color blueColor;
 
-	private IPropertyChangeListener listener;
+	private Image image;
+
+	private FormToolkit toolkit;
 
 	public MessagesView() {
 		tabs = new HashMap();
 	}
 
 	public void createPartControl(Composite parent) {
-		parent.setLayout(new FillLayout());
-		tabFolder = new CTabFolder(parent, SWT.BOTTOM);
+		tabFolder = new CTabFolder(parent, SWT.NONE);
+		tabFolder.setTabPosition(SWT.BOTTOM);
+
 		redColor = new Color(parent.getDisplay(), 255, 0, 0);
 		blueColor = new Color(parent.getDisplay(), 0, 0, 255);
-		listener = new PropertyChangeListener();
-		IPreferenceStore store = PlatformUI.getPreferenceStore();
-		store.addPropertyChangeListener(listener);
-		tabFolder
-				.setSimple(store
-						.getBoolean(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS));
 	}
 
 	public void dispose() {
-		PlatformUI.getPreferenceStore().removePropertyChangeListener(listener);
+		toolkit.dispose();
 		redColor.dispose();
 		blueColor.dispose();
 		super.dispose();
@@ -114,6 +117,8 @@ public class MessagesView extends ViewPart {
 
 		private CTabItem item;
 
+		private Form form;
+
 		private StyledText chatText;
 
 		private Text inputText;
@@ -133,26 +138,26 @@ public class MessagesView extends ViewPart {
 		}
 
 		private void addListeners() {
-			tabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
-				public void close(CTabFolderEvent e) {
-					removeTab(ChatTab.this);
-				}
-			});
-
 			inputText.addKeyListener(new KeyAdapter() {
 				public void keyPressed(KeyEvent e) {
 					switch (e.keyCode) {
 					case SWT.CR:
 					case SWT.KEYPAD_CR:
 						if (e.stateMask == 0) {
+							String text = inputText.getText();
+							inputText.setText(""); //$NON-NLS-1$
 							try {
-								String text = inputText.getText();
-								inputText.setText(""); //$NON-NLS-1$
 								if (!text.equals("")) { //$NON-NLS-1$
 									icms.sendChatMessage(threadID, text);
 								}
 							} catch (ECFException ex) {
-								ex.printStackTrace();
+								form
+										.setMessage(
+												NLS
+														.bind(
+																Messages.MessagesView_CouldNotSendMessage,
+																text),
+												IMessageProvider.ERROR);
 							}
 							e.doit = false;
 						}
@@ -176,26 +181,50 @@ public class MessagesView extends ViewPart {
 		}
 
 		private void constructWidgets() {
-			item = new CTabItem(tabFolder, SWT.CLOSE);
-			SashForm form = new SashForm(tabFolder, SWT.VERTICAL);
-			chatText = new StyledText(form, SWT.MULTI | SWT.READ_ONLY);
-			inputText = new Text(form, SWT.MULTI | SWT.V_SCROLL);
-			form.setWeights(WEIGHTS);
+			item = new CTabItem(tabFolder, SWT.NONE);
+			toolkit = new FormToolkit(tabFolder.getDisplay());
+			form = toolkit.createForm(tabFolder);
+			form.setImage(image);
+			toolkit.decorateFormHeading(form);
+			form.setText(threadID.getName());
+
+			form.getBody().setLayout(new GridLayout());
+
+			SashForm sash = new SashForm(form.getBody(), SWT.VERTICAL);
+			sash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+			Composite client = toolkit.createComposite(sash);
+			client.setLayout(new FillLayout());
+
+			chatText = new StyledText(client, SWT.BORDER | SWT.MULTI
+					| SWT.V_SCROLL);
+
+			client = toolkit.createComposite(sash);
+			client.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			client.setLayout(new FillLayout());
+
+			inputText = new Text(client, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+
+			sash.setWeights(WEIGHTS);
+
+			IAction action = new Action(null, IAction.AS_PUSH_BUTTON) {
+				public void run() {
+					item.dispose();
+					removeTab(ChatTab.this);
+				}
+			};
+			action.setImageDescriptor(PlatformUI.getWorkbench()
+					.getSharedImages().getImageDescriptor(
+							ISharedImages.IMG_TOOL_DELETE));
+			form.getToolBarManager().add(action);
+			form.getToolBarManager().update(true);
+
 			item.setControl(form);
 			item.setText(threadID.getName());
 		}
 
 		private CTabItem getCTab() {
 			return item;
-		}
-	}
-
-	private class PropertyChangeListener implements IPropertyChangeListener {
-		public void propertyChange(PropertyChangeEvent e) {
-			if (e.getProperty().equals(
-					IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS)) {
-				tabFolder.setSimple(((Boolean) e.getNewValue()).booleanValue());
-			}
 		}
 	}
 
