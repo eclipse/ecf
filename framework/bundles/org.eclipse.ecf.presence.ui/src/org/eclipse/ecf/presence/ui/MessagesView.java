@@ -179,11 +179,11 @@ public class MessagesView extends ViewPart {
 
 		private IChatMessageSender icms;
 
-		private ID userID;
+		private ID remoteUserID;
 
 		private ChatTab(IChatMessageSender icms, ID userID) {
 			this.icms = icms;
-			this.userID = userID;
+			this.remoteUserID = userID;
 			constructWidgets();
 			addListeners();
 		}
@@ -199,7 +199,7 @@ public class MessagesView extends ViewPart {
 							inputText.setText(""); //$NON-NLS-1$
 							try {
 								if (!text.equals("")) { //$NON-NLS-1$
-									icms.sendChatMessage(userID, text);
+									icms.sendChatMessage(remoteUserID, text);
 								}
 							} catch (ECFException ex) {
 								form
@@ -222,12 +222,12 @@ public class MessagesView extends ViewPart {
 			int length = chatText.getCharCount();
 			String name = fromID.getName();
 			chatText.append(fromID.getName() + ": " + body + Text.DELIMITER); //$NON-NLS-1$
-			if (fromID.equals(userID)) {
-				chatText.setStyleRange(new StyleRange(length,
-						name.length() + 1, blueColor, null, SWT.BOLD));
-			} else {
+			if (fromID.equals(remoteUserID)) {
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, redColor, null, SWT.BOLD));
+			} else {
+				chatText.setStyleRange(new StyleRange(length,
+						name.length() + 1, blueColor, null, SWT.BOLD));
 			}
 		}
 
@@ -236,7 +236,7 @@ public class MessagesView extends ViewPart {
 			form = toolkit.createForm(tabFolder);
 			form.setImage(image);
 			toolkit.decorateFormHeading(form);
-			form.setText(userID.getName());
+			form.setText(remoteUserID.getName());
 
 			form.getBody().setLayout(new GridLayout());
 
@@ -257,7 +257,7 @@ public class MessagesView extends ViewPart {
 
 			sash.setWeights(WEIGHTS);
 
-			IAction action = new Action(userID.getName() + '\t',
+			IAction action = new Action(remoteUserID.getName() + '\t',
 					IAction.AS_RADIO_BUTTON) {
 				public void run() {
 					tabFolder.setSelection(item);
@@ -306,7 +306,7 @@ public class MessagesView extends ViewPart {
 			form.getToolBarManager().update(true);
 
 			item.setControl(form);
-			item.setText(userID.getName());
+			item.setText(remoteUserID.getName());
 
 			toolkit.paintBordersFor(form.getBody());
 		}
