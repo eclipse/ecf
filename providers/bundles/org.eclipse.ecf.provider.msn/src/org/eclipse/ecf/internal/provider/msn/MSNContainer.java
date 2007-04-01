@@ -52,6 +52,8 @@ import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.im.IHistory;
 import org.eclipse.ecf.presence.im.IHistoryManager;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
+import org.eclipse.ecf.presence.im.TypingMessage;
+import org.eclipse.ecf.presence.im.TypingMessageEvent;
 import org.eclipse.ecf.presence.im.IChatMessage.Type;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
@@ -266,6 +268,7 @@ final class MSNContainer implements IContainer, IChatManager,
 			for (Iterator it = chatSessions.values().iterator(); it.hasNext();) {
 				((ChatSession) it.next()).close();
 			}
+			chatSessions.clear();
 			fireContainerEvent(new ContainerDisconnectingEvent(guid, connectID));
 			client.disconnect();
 			fireContainerEvent(new ContainerDisconnectedEvent(guid, connectID));
@@ -295,6 +298,16 @@ final class MSNContainer implements IContainer, IChatManager,
 						.handleMessageEvent(new ChatMessageEvent(fromID,
 								new ChatMessage(fromID, threadID, null,
 										message, Collections.EMPTY_MAP)));
+			}
+		}
+	}
+
+	private void fireTypingMessageEvent(ID fromID) {
+		synchronized (messageListeners) {
+			for (int i = 0; i < messageListeners.size(); i++) {
+				((IIMMessageListener) messageListeners.get(i))
+						.handleMessageEvent(new TypingMessageEvent(fromID,
+								new TypingMessage(fromID, true, null)));
 			}
 		}
 	}
@@ -404,6 +417,7 @@ final class MSNContainer implements IContainer, IChatManager,
 		}
 
 		public void contactIsTyping(Contact contact) {
+			fireTypingMessageEvent(toID);
 		}
 
 		public void contactJoined(Contact contact) {
