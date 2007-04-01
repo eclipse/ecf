@@ -29,6 +29,8 @@ import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageEvent;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
+import org.eclipse.ecf.presence.im.ITypingMessageEvent;
+import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.ui.MessagesView;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.IConnectWizard;
@@ -49,6 +51,8 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 	private IContainer container;
 
 	private IChatMessageSender icms;
+
+	private ITypingMessageSender itms;
 
 	private ID targetID;
 
@@ -86,7 +90,7 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 					IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
 							.getSite().getAdapter(
 									IWorkbenchSiteProgressService.class);
-					view.openTab(icms, message.getThreadID());
+					view.openTab(icms, itms, message.getThreadID());
 					view.showMessage(message.getThreadID(),
 							message.getFromID(), message.getBody());
 					service.warnOfContentChange();
@@ -95,12 +99,25 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 						view = (MessagesView) workbench
 								.getActiveWorkbenchWindow().getActivePage()
 								.showView(MessagesView.VIEW_ID);
-						view.openTab(icms, message.getThreadID());
+						view.openTab(icms, itms, message.getThreadID());
 						view.showMessage(message.getThreadID(), message
 								.getFromID(), message.getBody());
 					} catch (PartInitException e) {
 						e.printStackTrace();
 					}
+				}
+			}
+		});
+	}
+
+	private void displayTypingNotification(final ID fromID) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				MessagesView view = (MessagesView) workbench
+						.getActiveWorkbenchWindow().getActivePage().findView(
+								MessagesView.VIEW_ID);
+				if (view != null) {
+					view.displayTypingNotification(fromID);
 				}
 			}
 		});
@@ -136,11 +153,15 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 
 		IChatManager icm = adapter.getChatManager();
 		icms = icm.getChatMessageSender();
+		itms = icm.getTypingMessageSender();
 
 		icm.addMessageListener(new IIMMessageListener() {
 			public void handleMessageEvent(IIMMessageEvent e) {
 				if (e instanceof IChatMessageEvent) {
 					displayMessage((IChatMessageEvent) e);
+				} else if (e instanceof ITypingMessageEvent) {
+					displayTypingNotification(((ITypingMessageEvent) e)
+							.getFromID());
 				}
 			}
 		});
