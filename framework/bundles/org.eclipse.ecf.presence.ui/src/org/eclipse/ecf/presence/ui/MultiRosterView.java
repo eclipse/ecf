@@ -24,7 +24,9 @@ import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.Presence;
+import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
+import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
@@ -345,14 +347,15 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				MultiRosterAccount account = (MultiRosterAccount) i.next();
 				IRoster roster = account.getRoster();
 				if (find(roster.getItems(), entry)) {
-					IChatMessageSender icms = account
-							.getPresenceContainerAdapter().getChatManager()
-							.getChatMessageSender();
+					IChatManager icm = account.getPresenceContainerAdapter()
+							.getChatManager();
+					IChatMessageSender icms = icm.getChatMessageSender();
+					ITypingMessageSender itms = icm.getTypingMessageSender();
 					try {
 						MessagesView view = (MessagesView) getSite()
 								.getWorkbenchWindow().getActivePage().showView(
 										MessagesView.VIEW_ID);
-						view.selectTab(icms, entry.getUser().getID());
+						view.selectTab(icms, itms, entry.getUser().getID());
 					} catch (PartInitException e) {
 						e.printStackTrace();
 					}

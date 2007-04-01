@@ -20,6 +20,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
+import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
@@ -34,6 +35,8 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -103,30 +106,47 @@ public class MessagesView extends ViewPart {
 		super.dispose();
 	}
 
-	private ChatTab getTab(IChatMessageSender sender, ID userID) {
+	private ChatTab getTab(IChatMessageSender messageSender,
+			ITypingMessageSender typingSender, ID userID) {
 		ChatTab tab = (ChatTab) tabs.get(userID);
 		if (tab == null) {
-			tab = new ChatTab(sender, userID);
+			tab = new ChatTab(messageSender, typingSender, userID);
 			tabs.put(userID, tab);
 		}
 		return tab;
 	}
 
+	public void displayTypingNotification(ID fromID) {
+		ChatTab tab = null;
+		synchronized (tabs) {
+			tab = (ChatTab) tabs.get(fromID);
+		}
+		if (tab != null) {
+			tab.showIsTyping();
+		}
+	}
+
 	/**
 	 * Opens a new tab for conversing with a user.
 	 * 
-	 * @param sender
+	 * @param messageSender
 	 *            the <tt>IChatMessageSender</tt> interface that can be used
 	 *            to send messages to the other user
+	 * @param typingSender
+	 *            the <tt>ITypingMessageSender</tt> interface to notify the
+	 *            other user that the current user is typing a message,
+	 *            <tt>null</tt> if unsupported
 	 * @param userID
 	 *            the unique ID of the other user
 	 */
-	public synchronized void openTab(IChatMessageSender sender, ID userID) {
-		getTab(sender, userID);
+	public synchronized void openTab(IChatMessageSender messageSender,
+			ITypingMessageSender typingSender, ID userID) {
+		getTab(messageSender, typingSender, userID);
 	}
-	
-	synchronized void selectTab(IChatMessageSender sender, ID userID) {
-		ChatTab tab = getTab(sender, userID);
+
+	synchronized void selectTab(IChatMessageSender messageSender,
+			ITypingMessageSender typingSender, ID userID) {
+		ChatTab tab = getTab(messageSender, typingSender, userID);
 		for (int i = 0; i < switchActions.size(); i++) {
 			IAction action = ((ActionContributionItem) switchActions.get(i))
 					.getAction();
@@ -183,11 +203,17 @@ public class MessagesView extends ViewPart {
 
 		private IChatMessageSender icms;
 
-		private ID remoteUserID;
+		private ITypingMessageSender itms;
 
-		private ChatTab(IChatMessageSender icms, ID userID) {
+		private boolean sendTyping = false;
+
+		private ID remoteID;
+
+		private ChatTab(IChatMessageSender icms, ITypingMessageSender itms,
+				ID userID) {
 			this.icms = icms;
-			this.remoteUserID = userID;
+			this.itms = itms;
+			this.remoteID = userID;
 			constructWidgets();
 			addListeners();
 		}
@@ -203,7 +229,7 @@ public class MessagesView extends ViewPart {
 							inputText.setText(""); //$NON-NLS-1$
 							try {
 								if (!text.equals("")) { //$NON-NLS-1$
-									icms.sendChatMessage(remoteUserID, text);
+									icms.sendChatMessage(remoteID, text);
 								}
 							} catch (ECFException ex) {
 								form
@@ -215,8 +241,23 @@ public class MessagesView extends ViewPart {
 												IMessageProvider.ERROR);
 							}
 							e.doit = false;
+							sendTyping = false;
 						}
 						break;
+					}
+				}
+			});
+
+			inputText.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					if (!sendTyping && itms != null) {
+						sendTyping = true;
+						try {
+							itms.sendTypingMessage(remoteID, true, null);
+						} catch (ECFException ex) {
+							// ignored since this is not really that important
+							return;
+						}
 					}
 				}
 			});
@@ -226,9 +267,10 @@ public class MessagesView extends ViewPart {
 			int length = chatText.getCharCount();
 			String name = fromID.getName();
 			chatText.append(fromID.getName() + ": " + body + Text.DELIMITER); //$NON-NLS-1$
-			if (fromID.equals(remoteUserID)) {
+			if (fromID.equals(remoteID)) {
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, redColor, null, SWT.BOLD));
+				form.setMessage(null);
 			} else {
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, blueColor, null, SWT.BOLD));
@@ -240,7 +282,7 @@ public class MessagesView extends ViewPart {
 			form = toolkit.createForm(tabFolder);
 			form.setImage(image);
 			toolkit.decorateFormHeading(form);
-			form.setText(remoteUserID.getName());
+			form.setText(remoteID.getName());
 
 			form.getBody().setLayout(new GridLayout());
 
@@ -261,7 +303,7 @@ public class MessagesView extends ViewPart {
 
 			sash.setWeights(WEIGHTS);
 
-			IAction action = new Action(remoteUserID.getName() + '\t',
+			IAction action = new Action(remoteID.getName() + '\t',
 					IAction.AS_RADIO_BUTTON) {
 				public void run() {
 					tabFolder.setSelection(item);
@@ -310,13 +352,18 @@ public class MessagesView extends ViewPart {
 			form.getToolBarManager().update(true);
 
 			item.setControl(form);
-			item.setText(remoteUserID.getName());
+			item.setText(remoteID.getName());
 
 			toolkit.paintBordersFor(form.getBody());
 		}
 
 		private CTabItem getCTab() {
 			return item;
+		}
+
+		private void showIsTyping() {
+			form.setMessage(NLS.bind(Messages.MessagesView_TypingNotification,
+					remoteID.getName()));
 		}
 	}
 
