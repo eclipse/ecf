@@ -103,17 +103,26 @@ public class MessagesView extends ViewPart {
 		super.dispose();
 	}
 
-	private ChatTab getTab(IChatMessageSender icms, ID userID, ID threadID) {
-		ChatTab tab = (ChatTab) tabs.get(threadID);
+	private ChatTab getTab(IChatMessageSender icms, ID userID) {
+		ChatTab tab = (ChatTab) tabs.get(userID);
 		if (tab == null) {
-			tab = new ChatTab(icms, userID, threadID);
-			tabs.put(threadID, tab);
+			tab = new ChatTab(icms, userID);
+			tabs.put(userID, tab);
 		}
 		return tab;
 	}
 
-	synchronized void openTab(IChatMessageSender icms, ID userID, ID threadID) {
-		ChatTab tab = getTab(icms, userID, threadID);
+	/**
+	 * Opens a new tab for conversing with a user.
+	 * 
+	 * @param sender
+	 *            the <tt>IChatMessageSender</tt> interface that can be used
+	 *            to send messages to the other user
+	 * @param userID
+	 *            the unique ID of the other user
+	 */
+	public synchronized void openTab(IChatMessageSender sender, ID userID) {
+		ChatTab tab = getTab(sender, userID);
 		for (int i = 0; i < switchActions.size(); i++) {
 			IAction action = ((ActionContributionItem) switchActions.get(i))
 					.getAction();
@@ -123,9 +132,21 @@ public class MessagesView extends ViewPart {
 		tabFolder.setSelection(tab.getCTab());
 	}
 
-	public synchronized void showMessage(IChatMessageSender icms, ID userID,
-			ID fromID, ID threadID, String body) {
-		getTab(icms, userID, threadID).append(fromID, body);
+	/**
+	 * Display a message from a user in the chatbox.
+	 * 
+	 * @param userID
+	 *            the ID of the user that the conversation is with
+	 * @param fromID
+	 *            the ID of the user that sent the message
+	 * @param body
+	 *            the body of the message
+	 */
+	public synchronized void showMessage(ID userID, ID fromID, String body) {
+		ChatTab tab = (ChatTab) tabs.get(userID);
+		if (tab != null) {
+			tab.append(fromID, body);
+		}
 	}
 
 	private synchronized void removeTab(ChatTab tab) {
@@ -160,11 +181,8 @@ public class MessagesView extends ViewPart {
 
 		private ID userID;
 
-		private ID threadID;
-
-		private ChatTab(IChatMessageSender icms, ID userID, ID threadID) {
+		private ChatTab(IChatMessageSender icms, ID userID) {
 			this.icms = icms;
-			this.threadID = threadID;
 			this.userID = userID;
 			constructWidgets();
 			addListeners();
@@ -181,7 +199,7 @@ public class MessagesView extends ViewPart {
 							inputText.setText(""); //$NON-NLS-1$
 							try {
 								if (!text.equals("")) { //$NON-NLS-1$
-									icms.sendChatMessage(threadID, text);
+									icms.sendChatMessage(userID, text);
 								}
 							} catch (ECFException ex) {
 								form
@@ -218,7 +236,7 @@ public class MessagesView extends ViewPart {
 			form = toolkit.createForm(tabFolder);
 			form.setImage(image);
 			toolkit.decorateFormHeading(form);
-			form.setText(threadID.getName());
+			form.setText(userID.getName());
 
 			form.getBody().setLayout(new GridLayout());
 
@@ -239,7 +257,7 @@ public class MessagesView extends ViewPart {
 
 			sash.setWeights(WEIGHTS);
 
-			IAction action = new Action(threadID.getName() + '\t',
+			IAction action = new Action(userID.getName() + '\t',
 					IAction.AS_RADIO_BUTTON) {
 				public void run() {
 					tabFolder.setSelection(item);
@@ -288,7 +306,7 @@ public class MessagesView extends ViewPart {
 			form.getToolBarManager().update(true);
 
 			item.setControl(form);
-			item.setText(threadID.getName());
+			item.setText(userID.getName());
 
 			toolkit.paintBordersFor(form.getBody());
 		}

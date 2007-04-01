@@ -352,8 +352,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 						MessagesView view = (MessagesView) getSite()
 								.getWorkbenchWindow().getActivePage().showView(
 										MessagesView.VIEW_ID);
-						view.openTab(icms, roster.getUser().getID(), entry
-								.getUser().getID());
+						view.openTab(icms, entry.getUser().getID());
 					} catch (PartInitException e) {
 						e.printStackTrace();
 					}
