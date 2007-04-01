@@ -17,14 +17,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.osgi.util.NLS;
@@ -34,8 +32,6 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -117,7 +113,14 @@ public class MessagesView extends ViewPart {
 	}
 
 	synchronized void openTab(IChatMessageSender icms, ID userID, ID threadID) {
-		tabFolder.setSelection(getTab(icms, userID, threadID).getCTab());
+		ChatTab tab = getTab(icms, userID, threadID);
+		for (int i = 0; i < switchActions.size(); i++) {
+			IAction action = ((ActionContributionItem) switchActions.get(i))
+					.getAction();
+			action.setChecked(false);
+		}
+		tab.switchItem.getAction().setChecked(true);
+		tabFolder.setSelection(tab.getCTab());
 	}
 
 	public synchronized void showMessage(IChatMessageSender icms, ID userID,
