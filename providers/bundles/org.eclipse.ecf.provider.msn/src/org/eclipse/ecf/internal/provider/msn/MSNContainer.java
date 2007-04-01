@@ -102,15 +102,20 @@ final class MSNContainer implements IContainer, IChatManager,
 
 	protected IHistoryManager historyManager = new IHistoryManager() {
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.presence.im.IHistoryManager#getHistory(org.eclipse.ecf.core.identity.ID, java.util.Map)
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.presence.im.IHistoryManager#getHistory(org.eclipse.ecf.core.identity.ID,
+		 *      java.util.Map)
 		 */
 		public IHistory getHistory(ID partnerID, Map options) {
-			// XXX TODO provide local storage (with some 
+			// XXX TODO provide local storage (with some
 			return null;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 		 */
 		public Object getAdapter(Class adapter) {
@@ -124,7 +129,6 @@ final class MSNContainer implements IContainer, IChatManager,
 		public void makeActive(boolean active, Map options) {
 		}
 	};
-	
 
 	MSNContainer() throws IDCreateException {
 		guid = IDFactory.getDefault().createGUID();
@@ -284,13 +288,13 @@ final class MSNContainer implements IContainer, IChatManager,
 		}
 	}
 
-	private void fireMessageEvent(ID fromID, ID toID, String message) {
+	private void fireMessageEvent(ID fromID, ID threadID, String message) {
 		synchronized (messageListeners) {
 			for (int i = 0; i < messageListeners.size(); i++) {
 				((IIMMessageListener) messageListeners.get(i))
 						.handleMessageEvent(new ChatMessageEvent(fromID,
-								new ChatMessage(fromID, toID, null, message,
-										Collections.EMPTY_MAP)));
+								new ChatMessage(fromID, threadID, null,
+										message, Collections.EMPTY_MAP)));
 			}
 		}
 	}
@@ -410,7 +414,7 @@ final class MSNContainer implements IContainer, IChatManager,
 		}
 
 		public void messageReceived(Contact contact, String message) {
-			fireMessageEvent(toID, connectID, message);
+			fireMessageEvent(toID, toID, message);
 		}
 
 		public void sessionTimedOut() {
@@ -639,7 +643,9 @@ final class MSNContainer implements IContainer, IChatManager,
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.im.IChatManager#getHistoryManager()
 	 */
 	public IHistoryManager getHistoryManager() {
