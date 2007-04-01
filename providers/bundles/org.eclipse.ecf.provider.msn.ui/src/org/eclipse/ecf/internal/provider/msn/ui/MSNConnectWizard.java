@@ -54,8 +54,6 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 
 	private IConnectContext connectContext;
 
-	private ID userID;
-
 	public void addPages() {
 		page = new MSNConnectWizardPage();
 		addPage(page);
@@ -88,16 +86,18 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 					IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
 							.getSite().getAdapter(
 									IWorkbenchSiteProgressService.class);
-					view.showMessage(userID, message.getFromID(), message
-							.getBody());
+					view.openTab(icms, message.getThreadID());
+					view.showMessage(message.getThreadID(),
+							message.getFromID(), message.getBody());
 					service.warnOfContentChange();
 				} else {
 					try {
 						view = (MessagesView) workbench
 								.getActiveWorkbenchWindow().getActivePage()
 								.showView(MessagesView.VIEW_ID);
-						view.showMessage(userID, message.getFromID(), message
-								.getBody());
+						view.openTab(icms, message.getThreadID());
+						view.showMessage(message.getThreadID(), message
+								.getFromID(), message.getBody());
 					} catch (PartInitException e) {
 						e.printStackTrace();
 					}
@@ -125,8 +125,6 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 		container.addListener(new IContainerListener() {
 			public void handleEvent(IContainerEvent event) {
 				if (event instanceof IContainerConnectedEvent) {
-					userID = adapter.getRosterManager().getRoster().getUser()
-							.getID();
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							openView();
