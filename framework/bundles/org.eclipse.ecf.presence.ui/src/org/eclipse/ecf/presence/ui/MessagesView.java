@@ -141,7 +141,10 @@ public class MessagesView extends ViewPart {
 	 */
 	public synchronized void openTab(IChatMessageSender messageSender,
 			ITypingMessageSender typingSender, ID userID) {
-		getTab(messageSender, typingSender, userID);
+		ChatTab tab = getTab(messageSender, typingSender, userID);
+		if (tabs.size() == 1) {
+			tabFolder.setSelection(tab.item);
+		}
 	}
 
 	synchronized void selectTab(IChatMessageSender messageSender,
