@@ -14,10 +14,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
@@ -36,16 +38,28 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -98,6 +112,27 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		setupTreeViewer(parent);
 	}
 
+	protected String getRosterEntryChildrenFromPresence(IRosterEntry entry) {
+		IPresence presence = entry.getPresence();
+		Map properties = presence.getProperties();
+		int fixedEntries = 3;
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Account,
+				entry.getUser().getID().getName()));
+		buffer.append(Text.DELIMITER);
+		buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Type,
+				presence.getType()));
+		buffer.append(Text.DELIMITER);
+		buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Mode,
+				presence.getMode().toString()));
+		for (Iterator i = properties.keySet().iterator(); i.hasNext(); fixedEntries++) {
+			buffer.append(Text.DELIMITER);
+			Object key = i.next();
+			buffer.append(key).append(": ").append(properties.get(key)); //$NON-NLS-1$
+		}
+		return buffer.toString();
+	}
+
 	protected void setupTreeViewer(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.SINGLE
 				| SWT.V_SCROLL);
@@ -105,14 +140,26 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		multiRosterContentProvider = new MultiRosterContentProvider();
 		multiRosterLabelProvider = new MultiRosterLabelProvider();
 		subscriptionListener = new RosterSubscriptionListener();
-		treeViewer.setLabelProvider(multiRosterLabelProvider);
 		treeViewer.setContentProvider(multiRosterContentProvider);
+		treeViewer.setLabelProvider(multiRosterLabelProvider);
 		treeViewer.setInput(new Object());
 		treeViewer.addOpenListener(new IOpenListener() {
 			public void open(OpenEvent e) {
 				message((IStructuredSelection) e.getSelection());
 			}
 		});
+
+		JFaceResources.getColorRegistry().put(ViewerToolTip.HEADER_BG_COLOR,
+				new RGB(255, 255, 255));
+		JFaceResources.getFontRegistry().put(
+				ViewerToolTip.HEADER_FONT,
+				JFaceResources.getFontRegistry().getBold(
+						JFaceResources.getDefaultFont().getFontData()[0]
+								.getName()).getFontData());
+
+		ToolTip toolTip = new ViewerToolTip(treeViewer.getControl());
+		toolTip.setShift(new Point(-5, -5));
+		toolTip.setHideOnMouseDown(false);
 
 		makeActions();
 		hookContextMenu();
@@ -496,5 +543,85 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		}
 
+	}
+
+	private class ViewerToolTip extends ToolTip {
+
+		public static final String HEADER_BG_COLOR = Activator.PLUGIN_ID
+				+ ".TOOLTIP_HEAD_BG_COLOR"; //$NON-NLS-1$
+
+		public static final String HEADER_FONT = Activator.PLUGIN_ID
+				+ ".TOOLTIP_HEAD_FONT"; //$NON-NLS-1$
+
+		public ViewerToolTip(Control control) {
+			super(control);
+		}
+
+		protected Composite createToolTipContentArea(Event event,
+				Composite parent) {
+			TreeItem item = treeViewer.getTree().getItem(
+					new Point(event.x, event.y));
+			IRosterEntry entry = (IRosterEntry) item.getData();
+
+			GridLayout gl = new GridLayout();
+			gl.marginBottom = 0;
+			gl.marginTop = 0;
+			gl.marginHeight = 0;
+			gl.marginWidth = 0;
+			gl.marginLeft = 0;
+			gl.marginRight = 0;
+			gl.verticalSpacing = 1;
+			parent.setLayout(gl);
+
+			Composite topArea = new Composite(parent, SWT.NONE);
+			GridData data = new GridData(SWT.FILL, SWT.FILL, true, false);
+			data.widthHint = 200;
+			topArea.setLayoutData(data);
+			topArea.setBackground(JFaceResources.getColorRegistry().get(
+					HEADER_BG_COLOR));
+
+			gl = new GridLayout();
+			gl.marginBottom = 2;
+			gl.marginTop = 2;
+			gl.marginHeight = 0;
+			gl.marginWidth = 0;
+			gl.marginLeft = 5;
+			gl.marginRight = 2;
+
+			topArea.setLayout(gl);
+
+			Label l = new Label(topArea, SWT.NONE);
+			l.setText(entry.getName());
+			l.setBackground(JFaceResources.getColorRegistry().get(
+					HEADER_BG_COLOR));
+			l.setFont(JFaceResources.getFontRegistry().get(HEADER_FONT));
+			l.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+			createContentArea(parent, entry).setLayoutData(
+					new GridData(GridData.FILL_BOTH));
+
+			return parent;
+		}
+
+		protected Composite createContentArea(Composite parent,
+				IRosterEntry entry) {
+			Composite comp = new Composite(parent, SWT.NONE);
+			comp.setBackground(parent.getDisplay().getSystemColor(
+					SWT.COLOR_INFO_BACKGROUND));
+			comp.setLayout(new FillLayout());
+			Label label = new Label(comp, SWT.NONE);
+			label.setText(getRosterEntryChildrenFromPresence(entry));
+			return comp;
+		}
+
+		protected boolean shouldCreateToolTip(Event e) {
+			if (super.shouldCreateToolTip(e)) {
+				TreeItem item = treeViewer.getTree().getItem(
+						new Point(e.x, e.y));
+				return item != null && item.getData() instanceof IRosterEntry;
+			} else {
+				return false;
+			}
+		}
 	}
 }

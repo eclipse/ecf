@@ -12,7 +12,6 @@ package org.eclipse.ecf.presence.ui;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ecf.core.user.IUser;
@@ -22,7 +21,6 @@ import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
-import org.eclipse.ecf.presence.roster.RosterItem;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
@@ -35,15 +33,13 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
  * point. Here is example markup for the
  * 
  * <pre>
- *                    &lt;extension point=&quot;org.eclipse.core.runtime.adapters&quot; &gt;
- *                         &lt;factory
- *                              adaptableType=&quot;org.eclipse.ecf.presence.roster.Roster&quot;
- *                              class=&quot;org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory&quot;&gt;
- *                           &lt;adapter
- *                                 type=&quot;org.eclipse.ui.model.IWorkbenchAdapter&quot;&gt;
- *                           &lt;/adapter&gt;
- *                        &lt;/factory&gt;
- *                    &lt;/extension&gt;
+ * &lt;extension point=&quot;org.eclipse.core.runtime.adapters&quot; &gt;
+ *      &lt;factory adaptableType=&quot;org.eclipse.ecf.presence.roster.Roster&quot;
+ *                class=&quot;org.eclipse.ecf.presence.ui.RosterWorkbenchAdapterFactory&quot;&gt;
+ *           &lt;adapter type=&quot;org.eclipse.ui.model.IWorkbenchAdapter&quot;&gt;
+ *           &lt;/adapter&gt;
+ *      &lt;/factory&gt;
+ * &lt;/extension&gt;
  * </pre>
  */
 public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
@@ -170,26 +166,6 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	};
 
-	protected Object[] getRosterEntryChildrenFromPresence(IRosterEntry entry) {
-		IPresence presence = entry.getPresence();
-		Map properties = presence.getProperties();
-		int fixedEntries = 3;
-		Object[] children = new Object[fixedEntries + properties.size()];
-		children[0] = new RosterItem(entry, NLS.bind(
-				Messages.RosterWorkbenchAdapterFactory_Account, entry.getUser()
-						.getID().getName()));
-		children[1] = new RosterItem(entry, NLS
-				.bind(Messages.RosterWorkbenchAdapterFactory_Type, presence
-						.getType()));
-		children[2] = new RosterItem(entry, NLS.bind(
-				Messages.RosterWorkbenchAdapterFactory_Mode, presence.getMode()
-						.toString()));
-		for (Iterator i = properties.keySet().iterator(); i.hasNext(); fixedEntries++) {
-			children[fixedEntries] = properties.get(i.next());
-		}
-		return children;
-	}
-
 	protected String getRosterEntryLabel(IRosterEntry entry) {
 		return entry.getName();
 	}
@@ -219,7 +195,7 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	private IWorkbenchAdapter rosterEntryAdapter = new IWorkbenchAdapter() {
 
 		public Object[] getChildren(Object o) {
-			return getRosterEntryChildrenFromPresence((IRosterEntry) o);
+			return new Object[0];
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {
