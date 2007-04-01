@@ -10,16 +10,21 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.ui;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.osgi.util.NLS;
@@ -29,8 +34,12 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -50,8 +59,6 @@ public class MessagesView extends ViewPart {
 
 	private static final int[] WEIGHTS = { 75, 25 };
 
-	private Map tabs;
-
 	private CTabFolder tabFolder;
 
 	private Color redColor;
@@ -62,13 +69,32 @@ public class MessagesView extends ViewPart {
 
 	private FormToolkit toolkit;
 
+	private List switchActions;
+
+	private List menuManagers;
+
+	private Map tabs;
+
 	public MessagesView() {
+		menuManagers = new ArrayList();
+		switchActions = new ArrayList();
 		tabs = new HashMap();
 	}
 
 	public void createPartControl(Composite parent) {
 		tabFolder = new CTabFolder(parent, SWT.NONE);
 		tabFolder.setTabPosition(SWT.BOTTOM);
+		toolkit = new FormToolkit(tabFolder.getDisplay());
+
+		tabFolder.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Iterator it = tabs.values().iterator();
+				while (it.hasNext()) {
+					ChatTab tab = (ChatTab) it.next();
+					tab.switchItem.getAction().setChecked(tab.item == e.item);
+				}
+			}
+		});
 
 		redColor = new Color(parent.getDisplay(), 255, 0, 0);
 		blueColor = new Color(parent.getDisplay(), 0, 0, 255);
@@ -122,6 +148,10 @@ public class MessagesView extends ViewPart {
 		private StyledText chatText;
 
 		private Text inputText;
+
+		private IMenuManager manager;
+
+		private ActionContributionItem switchItem;
 
 		private IChatMessageSender icms;
 
@@ -182,7 +212,6 @@ public class MessagesView extends ViewPart {
 
 		private void constructWidgets() {
 			item = new CTabItem(tabFolder, SWT.NONE);
-			toolkit = new FormToolkit(tabFolder.getDisplay());
 			form = toolkit.createForm(tabFolder);
 			form.setImage(image);
 			toolkit.decorateFormHeading(form);
@@ -207,20 +236,58 @@ public class MessagesView extends ViewPart {
 
 			sash.setWeights(WEIGHTS);
 
-			IAction action = new Action(null, IAction.AS_PUSH_BUTTON) {
+			IAction action = new Action(threadID.getName() + '\t',
+					IAction.AS_RADIO_BUTTON) {
+				public void run() {
+					tabFolder.setSelection(item);
+				}
+			};
+			switchItem = new ActionContributionItem(action);
+
+			manager = form.getMenuManager();
+
+			switchActions.add(switchItem);
+			menuManagers.add(manager);
+
+			for (int i = menuManagers.size() - 1; i > -1; i--) {
+				IMenuManager manager = (IMenuManager) menuManagers.get(i);
+				manager.removeAll();
+				for (int j = 0; j < switchActions.size(); j++) {
+					IAction switchAction = ((ActionContributionItem) switchActions
+							.get(j)).getAction();
+					switchAction.setChecked(false);
+					manager.add(new ActionContributionItem(switchAction));
+				}
+				manager.update();
+			}
+			action.setChecked(true);
+
+			action = new Action() {
 				public void run() {
 					item.dispose();
 					removeTab(ChatTab.this);
+					switchActions.remove(switchItem);
+					menuManagers.remove(manager);
+
+					for (int i = 0; i < menuManagers.size(); i++) {
+						IMenuManager manager = (IMenuManager) menuManagers
+								.get(i);
+						manager.remove(switchItem);
+						manager.update(true);
+					}
 				}
 			};
 			action.setImageDescriptor(PlatformUI.getWorkbench()
 					.getSharedImages().getImageDescriptor(
 							ISharedImages.IMG_TOOL_DELETE));
+
 			form.getToolBarManager().add(action);
 			form.getToolBarManager().update(true);
 
 			item.setControl(form);
 			item.setText(threadID.getName());
+
+			toolkit.paintBordersFor(form.getBody());
 		}
 
 		private CTabItem getCTab() {
