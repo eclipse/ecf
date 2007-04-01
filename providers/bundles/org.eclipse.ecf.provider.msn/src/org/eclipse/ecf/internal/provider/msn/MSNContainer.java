@@ -410,7 +410,7 @@ final class MSNContainer implements IContainer, IChatManager,
 		}
 
 		public void messageReceived(Contact contact, String message) {
-			fireMessageEvent(toID, toID, message);
+			fireMessageEvent(toID, connectID, message);
 		}
 
 		public void sessionTimedOut() {
