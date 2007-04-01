@@ -144,7 +144,7 @@ final class MSNContainer implements IContainer, IChatManager,
 		entries = new ArrayList();
 	}
 
-	public synchronized void connect(ID targetID, IConnectContext connectContext)
+	public void connect(ID targetID, IConnectContext connectContext)
 			throws ContainerConnectException {
 		if (!(targetID instanceof StringID)) {
 			throw new ContainerConnectException();
@@ -263,15 +263,15 @@ final class MSNContainer implements IContainer, IChatManager,
 		return null;
 	}
 
-	public synchronized void disconnect() {
+	public void disconnect() {
 		if (client != null) {
+			fireContainerEvent(new ContainerDisconnectingEvent(guid, connectID));
+			client.disconnect();
+			fireContainerEvent(new ContainerDisconnectedEvent(guid, connectID));
 			for (Iterator it = chatSessions.values().iterator(); it.hasNext();) {
 				((ChatSession) it.next()).close();
 			}
 			chatSessions.clear();
-			fireContainerEvent(new ContainerDisconnectingEvent(guid, connectID));
-			client.disconnect();
-			fireContainerEvent(new ContainerDisconnectedEvent(guid, connectID));
 			connectID = null;
 			client = null;
 		}
