@@ -88,16 +88,16 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 					IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
 							.getSite().getAdapter(
 									IWorkbenchSiteProgressService.class);
-					view.showMessage(icms, userID, message.getFromID(), message
-							.getThreadID(), message.getBody());
+					view.showMessage(userID, message.getFromID(), message
+							.getBody());
 					service.warnOfContentChange();
 				} else {
 					try {
 						view = (MessagesView) workbench
 								.getActiveWorkbenchWindow().getActivePage()
 								.showView(MessagesView.VIEW_ID);
-						view.showMessage(icms, userID, message.getFromID(),
-								message.getThreadID(), message.getBody());
+						view.showMessage(userID, message.getFromID(), message
+								.getBody());
 					} catch (PartInitException e) {
 						e.printStackTrace();
 					}
