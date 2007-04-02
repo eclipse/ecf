@@ -36,9 +36,7 @@ public interface IHistoryLine extends IAdaptable {
 	public ID getReceiverID();
 	
 	/**
-	 * Get the Date this history line was sent or received.  If {@link #isIncoming()}
-	 * is true, it is the Date that the message was received.  If false, it is the
-	 * Date the message was sent.
+	 * Get the Date this history line was sent or received.  
 	 * 
 	 * @return Date associated with this history line.  Will not be <code>null</code>.
 	 */
