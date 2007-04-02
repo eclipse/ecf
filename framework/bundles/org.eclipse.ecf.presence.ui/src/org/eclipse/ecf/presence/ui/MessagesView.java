@@ -296,7 +296,7 @@ public class MessagesView extends ViewPart {
 			client.setLayout(new FillLayout());
 
 			chatText = new StyledText(client, SWT.BORDER | SWT.MULTI
-					| SWT.V_SCROLL);
+					| SWT.V_SCROLL | SWT.READ_ONLY);
 
 			client = toolkit.createComposite(sash);
 			client.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
