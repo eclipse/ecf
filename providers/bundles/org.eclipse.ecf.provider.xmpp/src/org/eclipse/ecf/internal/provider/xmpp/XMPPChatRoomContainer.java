@@ -369,6 +369,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 				multiuserchat.join(nickname);
 				connectionState = CONNECTED;
 				remoteServerID = roomID;
+				containerHelper.setRoomID(remoteServerID);
 				fireContainerEvent(new ContainerConnectedEvent(this.getID(),
 						roomID));
 			} catch (Exception e) {
@@ -396,6 +397,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 			}
 			connectionState = DISCONNECTED;
 			remoteServerID = null;
+			containerHelper.setRoomID(null);
 			this.connection = null;
 		}
 		// notify listeners

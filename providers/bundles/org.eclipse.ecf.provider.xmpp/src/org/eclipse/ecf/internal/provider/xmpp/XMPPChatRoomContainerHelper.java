@@ -46,7 +46,8 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	Namespace usernamespace = null;
 	XMPPConnection connection = null;
 	Vector participantListeners = new Vector();
-
+	ID roomID = null;
+	
 	protected void trace(String message) {
 
 	}
@@ -122,7 +123,7 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		for (Iterator i = messageListeners.iterator(); i.hasNext();) {
 			IIMMessageListener l = (IIMMessageListener) i.next();
 			l.handleMessageEvent(new ChatRoomMessageEvent(from,
-					new ChatRoomMessage(from, body)));
+					new ChatRoomMessage(from, roomID, body)));
 		}
 	}
 
@@ -297,5 +298,12 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	 */
 	public void removeChatRoomMessageListener(IIMMessageListener msgListener) {
 		messageListeners.remove(msgListener);
+	}
+
+	/**
+	 * @param remoteServerID
+	 */
+	protected void setRoomID(ID roomID) {
+		this.roomID = roomID;
 	}
 }

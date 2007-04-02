@@ -21,13 +21,13 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
+import org.eclipse.ecf.presence.history.IHistoryManager;
+import org.eclipse.ecf.presence.history.IHistory;
 import org.eclipse.ecf.presence.im.ChatMessage;
 import org.eclipse.ecf.presence.im.ChatMessageEvent;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
-import org.eclipse.ecf.presence.im.IHistory;
-import org.eclipse.ecf.presence.im.IHistoryManager;
 import org.eclipse.ecf.presence.im.ITypingMessage;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.im.TypingMessageEvent;
@@ -101,44 +101,31 @@ public class XMPPChatManager implements IChatManager {
 
 	protected IHistoryManager historyManager = new IHistoryManager() {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ecf.presence.im.IHistoryManager#getHistory(org.eclipse.ecf.core.identity.ID,
-		 *      java.util.Map)
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.presence.im.IChatHistoryManager#getHistory(org.eclipse.ecf.core.identity.ID, java.util.Map)
 		 */
 		public IHistory getHistory(ID partnerID, Map options) {
-			// XXX TODO provide local storage (with some
+			// XXX TODO provide local storage (with some 
 			return null;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
+		/* (non-Javadoc)
 		 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 		 */
 		public Object getAdapter(Class adapter) {
 			return null;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ecf.presence.im.IHistoryManager#isActive()
-		 */
 		public boolean isActive() {
 			return false;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ecf.presence.im.IHistoryManager#makeActive(boolean,
-		 *      java.util.Map)
-		 */
-		public void makeActive(boolean active, Map options) {
+		public void setActive(boolean active) {
+			// TODO Auto-generated method stub
+			
 		}
 	};
+	
 
 	public XMPPChatManager(XMPPContainerPresenceHelper presenceHelper) {
 		this.presenceHelper = presenceHelper;
