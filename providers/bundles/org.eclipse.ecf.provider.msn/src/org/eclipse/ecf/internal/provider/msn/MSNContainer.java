@@ -45,12 +45,12 @@ import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.history.IHistoryManager;
+import org.eclipse.ecf.presence.history.IHistory;
 import org.eclipse.ecf.presence.im.ChatMessage;
 import org.eclipse.ecf.presence.im.ChatMessageEvent;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
-import org.eclipse.ecf.presence.im.IHistory;
-import org.eclipse.ecf.presence.im.IHistoryManager;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.im.TypingMessage;
 import org.eclipse.ecf.presence.im.TypingMessageEvent;
@@ -104,32 +104,26 @@ final class MSNContainer implements IContainer, IChatManager,
 
 	protected IHistoryManager historyManager = new IHistoryManager() {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ecf.presence.im.IHistoryManager#getHistory(org.eclipse.ecf.core.identity.ID,
-		 *      java.util.Map)
-		 */
 		public IHistory getHistory(ID partnerID, Map options) {
-			// XXX TODO provide local storage (with some
-			return null;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-		 */
-		public Object getAdapter(Class adapter) {
+			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public boolean isActive() {
+			// TODO Auto-generated method stub
 			return false;
 		}
 
-		public void makeActive(boolean active, Map options) {
+		public void setActive(boolean active) {
+			// TODO Auto-generated method stub
+			
 		}
+
+		public Object getAdapter(Class adapter) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
 	};
 
 	MSNContainer() throws IDCreateException {
@@ -657,12 +651,11 @@ final class MSNContainer implements IContainer, IChatManager,
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.im.IChatManager#getHistoryManager()
 	 */
 	public IHistoryManager getHistoryManager() {
+		// TODO Auto-generated method stub
 		return historyManager;
 	}
 
