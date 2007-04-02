@@ -39,6 +39,7 @@ import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
@@ -96,9 +97,18 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 					service.warnOfContentChange();
 				} else {
 					try {
-						view = (MessagesView) workbench
-								.getActiveWorkbenchWindow().getActivePage()
-								.showView(MessagesView.VIEW_ID);
+						IWorkbenchPage page = workbench
+								.getActiveWorkbenchWindow().getActivePage();
+						view = (MessagesView) page.showView(
+								MessagesView.VIEW_ID, null,
+								IWorkbenchPage.VIEW_CREATE);
+						if (!page.isPartVisible(view)) {
+							IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
+									.getSite()
+									.getAdapter(
+											IWorkbenchSiteProgressService.class);
+							service.warnOfContentChange();
+						}
 						view.openTab(icms, itms, message.getThreadID());
 						view.showMessage(message.getThreadID(), message
 								.getFromID(), message.getBody());
