@@ -68,7 +68,7 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 		for (Iterator i = msgListeners.iterator(); i.hasNext();) {
 			IIMMessageListener l = (IIMMessageListener) i.next();
 			l.handleMessageEvent(new ChatRoomMessageEvent(sender,
-					new ChatRoomMessage(sender, msg)));
+					new ChatRoomMessage(sender, targetID, msg)));
 		}
 	}
 

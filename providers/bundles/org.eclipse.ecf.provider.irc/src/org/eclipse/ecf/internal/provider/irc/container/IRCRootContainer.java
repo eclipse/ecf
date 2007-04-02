@@ -40,6 +40,8 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.ecf.presence.history.IHistory;
+import org.eclipse.ecf.presence.history.IHistoryManager;
 import org.eclipse.osgi.util.NLS;
 import org.schwering.irc.lib.IRCConnection;
 import org.schwering.irc.lib.IRCEventListener;
@@ -911,6 +913,34 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			throws ChatRoomCreateException {
 		throw new ChatRoomCreateException(roomname, Messages.IRCRootContainer_Exception_Create_Not_Supported,
 				null);
+	}
+
+	protected IHistoryManager chatRoomHistoryManager = new IHistoryManager() {
+
+		public IHistory getHistory(ID chatRoomID, Map options) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public boolean isActive() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public void setActive(boolean active) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public Object getAdapter(Class adapter) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	};
+	
+	public IHistoryManager getHistoryManager() {
+		return chatRoomHistoryManager;
 	}
 
 }
