@@ -9,17 +9,32 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.im;
+package org.eclipse.ecf.presence.history;
 
 import java.util.Date;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.core.identity.ID;
 
 /**
  * A single chat line from history.
  */
 public interface IHistoryLine extends IAdaptable {
 
+	/**
+	 * Get ID of sender for this history line.  ID returned will not be <code>null</code>.
+	 * 
+	 * @return ID of sender for this history line.  Will not be <code>null</code>.
+	 */
+	public ID getSenderID();
+	
+	/**
+	 * Get ID of sender for this history line.  ID returned will not be <code>null</code>.
+	 * 
+	 * @return ID of sender for this history line.  Will not be <code>null</code>.
+	 */
+	public ID getReceiverID();
+	
 	/**
 	 * Get the Date this history line was sent or received.  If {@link #isIncoming()}
 	 * is true, it is the Date that the message was received.  If false, it is the
@@ -29,14 +44,10 @@ public interface IHistoryLine extends IAdaptable {
 	 */
 	public Date getDate();
 	/**
-	 * 
-	 * @return <code>true</code> if history line was incoming (we received it), <code>false</code> if we sent it.
-	 */
-	public boolean isIncoming();
-	/**
 	 * Get the actual text of the line.
 	 * 
 	 * @return String text of the message.
 	 */
 	public String getText();
+	
 }

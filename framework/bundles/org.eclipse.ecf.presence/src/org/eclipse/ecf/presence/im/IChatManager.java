@@ -12,6 +12,7 @@
 package org.eclipse.ecf.presence.im;
 
 import org.eclipse.ecf.presence.IIMMessageListener;
+import org.eclipse.ecf.presence.history.IHistoryManager;
 
 /**
  * Chat manager access entry interface. The chat manager supports the sending
@@ -57,7 +58,7 @@ public interface IChatManager {
 	
 	/**
 	 * Get the history manager for this chat manager.
-	 * @return IHistoryManager the history manager instance.  Will not be <code>null</code>.
+	 * @return IChatRoomHistoryManager the history manager instance.  Will not be <code>null</code>.
 	 */
 	public IHistoryManager getHistoryManager();
 

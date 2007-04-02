@@ -23,14 +23,19 @@ public class ChatRoomMessage extends IMMessage implements IChatRoomMessage {
 
 	protected String message;
 
+	protected ID chatRoomID;
+	
 	/**
 	 * @param fromID
 	 *            the sender ID
+	 * @param roomID
+	 *            the chat room ID for the chat room
 	 * @param message
 	 *            the message sent.
 	 */
-	public ChatRoomMessage(ID fromID, String message) {
+	public ChatRoomMessage(ID fromID, ID roomID, String message) {
 		super(fromID);
+		this.chatRoomID = roomID;
 		this.message = message;
 	}
 
@@ -43,6 +48,13 @@ public class ChatRoomMessage extends IMMessage implements IChatRoomMessage {
 		return message;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomMessage#getChatRoomID()
+	 */
+	public ID getChatRoomID() {
+		return chatRoomID;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -51,6 +63,7 @@ public class ChatRoomMessage extends IMMessage implements IChatRoomMessage {
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ChatRoomMessage["); //$NON-NLS-1$
 		buf.append("fromID=").append(getFromID()); //$NON-NLS-1$
+		buf.append("chatRoomID=").append(getChatRoomID()); //$NON-NLS-1$
 		buf.append(";message=").append(message).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}

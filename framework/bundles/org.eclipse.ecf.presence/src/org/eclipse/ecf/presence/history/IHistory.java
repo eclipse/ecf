@@ -9,12 +9,11 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.im;
+package org.eclipse.ecf.presence.history;
 
 import java.util.Date;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.ecf.core.identity.ID;
 
 /**
  * Chat history information.
@@ -38,9 +37,4 @@ public interface IHistory extends IAdaptable {
 	 */
 	public IHistoryLine[] getHistoryLines(Date start, Date end);
 	
-	/**
-	 * Get the partner ID for this history.
-	 * @return ID of the partner for this history.  Will not return <code>null</code>.
-	 */
-	public ID getPartnerID();
 }

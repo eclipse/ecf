@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
+import org.eclipse.ecf.presence.history.IHistoryManager;
 
 /**
  * Chat room manager. Entry point for getting access to chat rooms managed by
@@ -104,4 +105,11 @@ public interface IChatRoomManager extends IAdaptable {
 	public IChatRoomInfo createChatRoom(String roomname, Map properties)
 			throws ChatRoomCreateException;
 
+	/**
+	 * Get chat room history manager.  Will not return <code>null</code>.
+	 * 
+	 * @return IHistoryManager.  Will not return <code>null</code>.
+	 */
+	public IHistoryManager getHistoryManager();
+	
 }

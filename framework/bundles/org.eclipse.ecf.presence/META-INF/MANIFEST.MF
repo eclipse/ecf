@@ -9,8 +9,8 @@ Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.presence;x-internal:=true,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.presence.chatroom,
+ org.eclipse.ecf.presence.history,
  org.eclipse.ecf.presence.im,
- org.eclipse.ecf.presence.provider,
  org.eclipse.ecf.presence.roster
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.3,

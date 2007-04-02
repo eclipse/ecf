@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.im;
+package org.eclipse.ecf.presence.history;
 
 import java.util.Map;
 
@@ -17,23 +17,26 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 
 /**
- * History manager.
+ * History manager for chat history.
  */
 public interface IHistoryManager extends IAdaptable {
 
 	/**
-	 * Get history for given partnerID.
+	 * Get history for given targetID.
 	 * 
-	 * @param partnerID
-	 *            the ID of the partner we want history for. May not be
-	 *            <code>null</code>.
+	 * @param targetID
+	 *            the ID of the targetID we want history for. May not be
+	 *            <code>null</code>.  If being used for chat rooms, the
+	 *            targetID is the <b>roomID</b> for the desired history.
+	 *            if being used for IM/chat, the targetID is the ID of the
+	 *            chat partner.
 	 * @param options
 	 *            any options associated with getting history info. May be
 	 *            <code>null</code>.
 	 * @return IHistory for given partnerID. Will return <code>null</code> if
-	 *         not history exists (with given options) for the given partnerID.
+	 *         no history exists (with given options) for the given targetID.
 	 */
-	public IHistory getHistory(ID partnerID, Map options);
+	public IHistory getHistory(ID targetID, Map options);
 
 	/**
 	 * 
@@ -48,9 +51,6 @@ public interface IHistoryManager extends IAdaptable {
 	 * @param active
 	 *            <code>true</code> to make this history manager active,
 	 *            <code>false</code> to make it inactive.
-	 * @param options
-	 *            any options associated with the history manager being made
-	 *            active or inactive.
 	 */
-	public void makeActive(boolean active, Map options);
+	public void setActive(boolean active);
 }

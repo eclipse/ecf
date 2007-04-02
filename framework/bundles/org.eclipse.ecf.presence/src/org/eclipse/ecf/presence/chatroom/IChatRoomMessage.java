@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.presence.chatroom;
 
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IIMMessage;
 
 /**
@@ -18,6 +19,13 @@ import org.eclipse.ecf.presence.IIMMessage;
  */
 public interface IChatRoomMessage extends IIMMessage {
 
+	/** 
+	 * Get the room ID for the room of this message.
+	 * 
+	 * @return ID of chat room associated with this message.
+	 */
+	public ID getChatRoomID();
+	
 	/**
 	 * Get the actual message sent to the chat room
 	 * 
