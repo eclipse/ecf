@@ -96,10 +96,12 @@ example, I will assume that your class's name is 'Geir2Bot' under the
     &lt;extension
           point=&quot;org.eclipse.ecf.presence.bot.chatRoomRobot&quot;&gt;
        &lt;chatRoomRobot
-             chatRoom=&quot;#eclipse&quot;
              connectId=&quot;irc://geir2@irc.freenode.net&quot;
              containerFactoryName=&quot;ecf.irc.irclib&quot;
              id=&quot;org.eclipse.ecf.example.bot.geir2&quot;&gt;
+          &lt;chatRooms
+		        name=&quot;#eclipse&quot;&lt;
+          &gt;/chatRooms&lt;
        &lt;/chatRoomRobot&gt;
     &lt;/extension&gt;
  &lt;/plugin&gt;</pre>
