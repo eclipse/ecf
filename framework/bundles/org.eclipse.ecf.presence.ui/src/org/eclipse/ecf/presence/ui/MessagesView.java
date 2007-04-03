@@ -31,6 +31,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.ST;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -298,6 +299,7 @@ public class MessagesView extends ViewPart {
 						name.length() + 1, blueColor, null, SWT.BOLD));
 			}
 			isFirstMessage = false;
+			chatText.invokeAction(ST.PAGE_DOWN);
 		}
 
 		private void constructWidgets() {
