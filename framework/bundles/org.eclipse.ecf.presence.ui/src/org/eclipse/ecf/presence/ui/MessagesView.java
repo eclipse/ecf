@@ -93,7 +93,12 @@ public class MessagesView extends ViewPart {
 				Iterator it = tabs.values().iterator();
 				while (it.hasNext()) {
 					ChatTab tab = (ChatTab) it.next();
-					tab.switchItem.getAction().setChecked(tab.item == e.item);
+					if (tab.item == e.item) {
+						tab.switchItem.getAction().setChecked(true);
+						tab.inputText.setFocus();
+					} else {
+						tab.switchItem.getAction().setChecked(false);
+					}
 				}
 			}
 		});
@@ -165,7 +170,8 @@ public class MessagesView extends ViewPart {
 			action.setChecked(false);
 		}
 		tab.switchItem.getAction().setChecked(true);
-		tabFolder.setSelection(tab.getCTab());
+		tabFolder.setSelection(tab.item);
+		tab.inputText.setFocus();		
 	}
 
 	/**
@@ -195,8 +201,16 @@ public class MessagesView extends ViewPart {
 	}
 
 	public void setFocus() {
-		// TODO:check when this method is invoked
-		tabFolder.setFocus();
+		CTabItem item = tabFolder.getSelection();
+		if (item != null) {
+			for (Iterator it = tabs.values().iterator(); it.hasNext();) {
+				ChatTab tab = (ChatTab) it.next();
+				if (tab.item == item) {
+					tab.inputText.setFocus();
+					break;
+				}
+			}
+		}
 	}
 
 	private class ChatTab {
@@ -381,10 +395,6 @@ public class MessagesView extends ViewPart {
 			item.setText(remoteID.getName());
 
 			toolkit.paintBordersFor(form.getBody());
-		}
-
-		private CTabItem getCTab() {
-			return item;
 		}
 
 		private void showIsTyping(boolean isTyping) {
