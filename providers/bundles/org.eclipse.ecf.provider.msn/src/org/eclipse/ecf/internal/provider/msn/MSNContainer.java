@@ -116,7 +116,7 @@ final class MSNContainer implements IContainer, IChatManager,
 
 		public void setActive(boolean active) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public Object getAdapter(Class adapter) {
@@ -285,13 +285,12 @@ final class MSNContainer implements IContainer, IChatManager,
 		}
 	}
 
-	private void fireMessageEvent(ID fromID, ID threadID, String message) {
+	private void fireMessageEvent(ID fromID, String message) {
 		synchronized (messageListeners) {
 			for (int i = 0; i < messageListeners.size(); i++) {
 				((IIMMessageListener) messageListeners.get(i))
 						.handleMessageEvent(new ChatMessageEvent(fromID,
-								new ChatMessage(fromID, threadID, null,
-										message, Collections.EMPTY_MAP)));
+								new ChatMessage(fromID, message)));
 			}
 		}
 	}
@@ -422,7 +421,7 @@ final class MSNContainer implements IContainer, IChatManager,
 		}
 
 		public void messageReceived(Contact contact, String message) {
-			fireMessageEvent(toID, toID, message);
+			fireMessageEvent(toID, message);
 		}
 
 		public void sessionTimedOut() {
@@ -558,7 +557,6 @@ final class MSNContainer implements IContainer, IChatManager,
 				chatSessions.put(toID, cs);
 			}
 			cs.sendMessage(body);
-			fireMessageEvent(connectID, toID, body);
 		} catch (IOException e) {
 			throw new ECFException(e);
 		}
@@ -651,7 +649,9 @@ final class MSNContainer implements IContainer, IChatManager,
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.im.IChatManager#getHistoryManager()
 	 */
 	public IHistoryManager getHistoryManager() {
