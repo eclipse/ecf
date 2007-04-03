@@ -120,14 +120,14 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 		});
 	}
 
-	private void displayTypingNotification(final ID fromID) {
+	private void displayTypingNotification(final ITypingMessageEvent e) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				MessagesView view = (MessagesView) workbench
 						.getActiveWorkbenchWindow().getActivePage().findView(
 								MessagesView.VIEW_ID);
 				if (view != null) {
-					view.displayTypingNotification(fromID);
+					view.displayTypingNotification(e);
 				}
 			}
 		});
@@ -170,8 +170,7 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 				if (e instanceof IChatMessageEvent) {
 					displayMessage((IChatMessageEvent) e);
 				} else if (e instanceof ITypingMessageEvent) {
-					displayTypingNotification(((ITypingMessageEvent) e)
-							.getFromID());
+					displayTypingNotification((ITypingMessageEvent) e);
 				}
 			}
 		});
