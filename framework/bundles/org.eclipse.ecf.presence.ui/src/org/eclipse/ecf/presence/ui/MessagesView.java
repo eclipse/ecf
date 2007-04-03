@@ -21,6 +21,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
+import org.eclipse.ecf.presence.im.ITypingMessageEvent;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -119,13 +120,13 @@ public class MessagesView extends ViewPart {
 	}
 
 	// TODO:javadoc
-	public void displayTypingNotification(ID fromID) {
+	public void displayTypingNotification(ITypingMessageEvent event) {
 		ChatTab tab = null;
 		synchronized (tabs) {
-			tab = (ChatTab) tabs.get(fromID);
+			tab = (ChatTab) tabs.get(event.getFromID());
 		}
 		if (tab != null) {
-			tab.showIsTyping();
+			tab.showIsTyping(event.getTypingMessage().isTyping());
 		}
 	}
 
@@ -386,9 +387,10 @@ public class MessagesView extends ViewPart {
 			return item;
 		}
 
-		private void showIsTyping() {
-			form.setMessage(NLS.bind(Messages.MessagesView_TypingNotification,
-					remoteID.getName()));
+		private void showIsTyping(boolean isTyping) {
+			form.setMessage(isTyping ? NLS.bind(
+					Messages.MessagesView_TypingNotification, remoteID
+							.getName()) : null);
 		}
 	}
 
