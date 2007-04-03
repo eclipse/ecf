@@ -414,18 +414,29 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		ID threadID = createThreadID(msg.getThread());
 		msg = filterMessageType(msg);
 		if (msg != null) {
-			Iterator xhtmlbodies = evt.getXHTMLBodies();
-			if (xhtmlbodies != null) {
-				List xhtmlbodylist = new ArrayList();
-				for (; xhtmlbodies.hasNext();)
-					xhtmlbodylist.add(xhtmlbodies.next());
-				chatManager.fireXHTMLChatMessage(fromID, threadID, msg
-						.getType(), subject, body, ECFConnection
-						.getPropertiesFromPacket(msg), xhtmlbodylist);
-			} else
-				chatManager.fireChatMessage(fromID, threadID, msg.getType(),
-						subject, body, ECFConnection
-								.getPropertiesFromPacket(msg));
+			if (msg.getExtension("composing", //$NON-NLS-1$
+					"http://jabber.org/protocol/chatstates") != null) { //$NON-NLS-1$
+				chatManager.fireTypingMessage(fromID, new TypingMessage(fromID,
+						true, body));
+			} else if (msg.getExtension("paused", //$NON-NLS-1$
+					"http://jabber.org/protocol/chatstates") != null) { //$NON-NLS-1$
+				chatManager.fireTypingMessage(fromID, new TypingMessage(fromID,
+						false, body));
+			} else {
+				Iterator xhtmlbodies = evt.getXHTMLBodies();
+				if (xhtmlbodies != null) {
+					List xhtmlbodylist = new ArrayList();
+					for (; xhtmlbodies.hasNext();)
+						xhtmlbodylist.add(xhtmlbodies.next());
+					chatManager.fireXHTMLChatMessage(fromID, threadID, msg
+							.getType(), subject, body, ECFConnection
+							.getPropertiesFromPacket(msg), xhtmlbodylist);
+				} else if (body != null) {
+					chatManager.fireChatMessage(fromID, threadID,
+							msg.getType(), subject, body, ECFConnection
+									.getPropertiesFromPacket(msg));
+				}
+			}
 		}
 	}
 
