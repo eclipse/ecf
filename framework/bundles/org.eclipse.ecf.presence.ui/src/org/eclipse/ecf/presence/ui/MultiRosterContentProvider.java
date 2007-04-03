@@ -16,9 +16,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ecf.presence.roster.IRoster;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
 /**
@@ -28,22 +27,11 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
  * customize the behavior/display of other content providers.
  * 
  */
-public class MultiRosterContentProvider implements IMultiRosterContentProvider {
+public class MultiRosterContentProvider implements ITreeContentProvider {
 
 	protected List rosters = Collections.synchronizedList(new ArrayList());
 
-	private Object root;
-	private Object invisibleRoot;
-
-	private IViewPart viewer = null;
-
-	protected void setViewer(IViewPart viewer) {
-		this.viewer = viewer;
-	}
-
-	protected IViewPart getViewer() {
-		return viewer;
-	}
+	protected Object input;
 
 	protected IWorkbenchAdapter getAdapter(Object element) {
 		IWorkbenchAdapter adapter = null;
@@ -56,21 +44,12 @@ public class MultiRosterContentProvider implements IMultiRosterContentProvider {
 		return adapter;
 	}
 
-	protected Object[] getRootChildren() {
-		return rosters.toArray();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
 	 */
 	public Object[] getChildren(Object parentElement) {
-		if (parentElement.equals(root)) {
-			return getRootChildren();
-		} else if (parentElement.equals(invisibleRoot)) {
-			return new Object[] { root };
-		}
 		IWorkbenchAdapter adapter = getAdapter(parentElement);
 		return adapter == null ? new Object[0] : adapter
 				.getChildren(parentElement);
@@ -82,17 +61,8 @@ public class MultiRosterContentProvider implements IMultiRosterContentProvider {
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
 	 */
 	public Object getParent(Object element) {
-		if (element.equals(invisibleRoot)) {
-			return null;
-		} else if (element.equals(root)) {
-			return invisibleRoot;
-		} else if (element instanceof IRoster) {
-			return root;
-		}
 		IWorkbenchAdapter adapter = getAdapter(element);
-		if (adapter != null)
-			return adapter.getParent(element);
-		return null;
+		return adapter != null ? adapter.getParent(element) : input;
 	}
 
 	/*
@@ -110,10 +80,12 @@ public class MultiRosterContentProvider implements IMultiRosterContentProvider {
 	 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
 	 */
 	public Object[] getElements(Object inputElement) {
-		if (inputElement instanceof IViewPart
-				&& inputElement.equals(getViewer().getViewSite()))
-			return getChildren(root);
-		return getChildren(inputElement);
+		if (inputElement instanceof List) {
+			input = inputElement;
+			return ((List) inputElement).toArray();
+		} else {
+			return new Object[0];
+		}
 	}
 
 	/*
@@ -122,13 +94,6 @@ public class MultiRosterContentProvider implements IMultiRosterContentProvider {
 	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 	 */
 	public void dispose() {
-		if (rosters != null) {
-			rosters.clear();
-			rosters = null;
-		}
-		setViewer(null);
-		root = null;
-		invisibleRoot = null;
 	}
 
 	/*
@@ -138,28 +103,6 @@ public class MultiRosterContentProvider implements IMultiRosterContentProvider {
 	 *      java.lang.Object, java.lang.Object)
 	 */
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		if (viewer instanceof IViewPart)
-			setViewer((IViewPart) viewer);
-		root = newInput;
-		invisibleRoot = ""; //$NON-NLS-1$
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.presence.ui.IMultiRosterContentProvider#add(org.eclipse.ecf.presence.roster.IRoster)
-	 */
-	public boolean add(IRoster roster) {
-		return roster == null ? false : rosters.add(roster);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.presence.ui.IMultiRosterContentProvider#remove(org.eclipse.ecf.presence.roster.IRoster)
-	 */
-	public boolean remove(IRoster roster) {
-		return roster == null ? false : rosters.remove(roster);
 	}
 
 }

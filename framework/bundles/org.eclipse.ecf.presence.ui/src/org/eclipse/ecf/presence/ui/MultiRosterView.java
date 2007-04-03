@@ -83,10 +83,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	protected TreeViewer treeViewer;
 
-	protected MultiRosterLabelProvider multiRosterLabelProvider;
-
-	protected MultiRosterContentProvider multiRosterContentProvider;
-
 	protected List rosterAccounts = new ArrayList();
 
 	private IAction imAction;
@@ -139,12 +135,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.SINGLE
 				| SWT.V_SCROLL);
 		getSite().setSelectionProvider(treeViewer);
-		multiRosterContentProvider = new MultiRosterContentProvider();
-		multiRosterLabelProvider = new MultiRosterLabelProvider();
 		subscriptionListener = new RosterSubscriptionListener();
-		treeViewer.setContentProvider(multiRosterContentProvider);
-		treeViewer.setLabelProvider(multiRosterLabelProvider);
-		treeViewer.setInput(new Object());
+		treeViewer.setContentProvider(new MultiRosterContentProvider());
+		treeViewer.setLabelProvider(new MultiRosterLabelProvider());
+		treeViewer.setInput(rosterAccounts);
 		treeViewer.addOpenListener(new IOpenListener() {
 			public void open(OpenEvent e) {
 				message((IStructuredSelection) e.getSelection());
@@ -231,11 +225,11 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				if (isChecked()) {
 					while (!rosterAccounts.isEmpty()) {
 						MultiRosterAccount account = (MultiRosterAccount) rosterAccounts
-								.get(0);
+								.remove(0);
 						account.getRosterManager()
 								.removeRosterSubscriptionListener(
 										subscriptionListener);
-						removeRosterAccount(account);
+						treeViewer.remove(account);
 					}
 					refreshTreeViewer(null, false);
 				}
@@ -414,8 +408,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	 */
 	public void dispose() {
 		treeViewer = null;
-		multiRosterLabelProvider = null;
-		multiRosterContentProvider = null;
 		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
 			MultiRosterAccount account = (MultiRosterAccount) i.next();
 			account.getRosterManager().removeRosterSubscriptionListener(
@@ -425,34 +417,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		super.dispose();
 	}
 
-	protected void addRosterAccountsToProviders() {
-		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
-			MultiRosterAccount account = (MultiRosterAccount) i.next();
-			multiRosterContentProvider.add(account.getRoster());
-		}
-	}
-
 	protected boolean addRosterAccount(MultiRosterAccount account) {
-		if (account != null && rosterAccounts.add(account)) {
-			if (multiRosterContentProvider != null) {
-				multiRosterContentProvider.add(account.getRoster());
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	protected boolean removeRosterAccount(MultiRosterAccount account) {
-		if (account != null && rosterAccounts.remove(account)) {
-			if (multiRosterContentProvider != null) {
-				multiRosterContentProvider.remove(account.getRoster());
-			}
-			account.dispose();
-			return true;
-		} else {
-			return false;
-		}
+		return account != null && rosterAccounts.add(account);
 	}
 
 	/*
@@ -488,8 +454,13 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				.getAdapter(IPresenceContainerAdapter.class);
 		if (containerAdapter == null) {
 			return false;
-		} else if (addRosterAccount(new MultiRosterAccount(this, container,
-				containerAdapter))) {
+		} else {
+			MultiRosterAccount account = new MultiRosterAccount(this,
+					container, containerAdapter);
+			if (!addRosterAccount(account)) {
+				return false;
+			}
+
 			IRosterManager manager = containerAdapter.getRosterManager();
 			try {
 				if (setAvailableAction.isChecked()
@@ -513,10 +484,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 			containerAdapter.getRosterManager().addRosterSubscriptionListener(
 					subscriptionListener);
-			refreshTreeViewer(null, true);
+			treeViewer.add(treeViewer.getInput(), account.getRoster());
 			return true;
-		} else {
-			return false;
 		}
 	}
 
