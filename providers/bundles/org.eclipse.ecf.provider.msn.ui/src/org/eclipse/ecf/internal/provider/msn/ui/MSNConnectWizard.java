@@ -91,9 +91,8 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 					IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
 							.getSite().getAdapter(
 									IWorkbenchSiteProgressService.class);
-					view.openTab(icms, itms, message.getThreadID());
-					view.showMessage(message.getThreadID(),
-							message.getFromID(), message.getBody());
+					view.openTab(icms, itms, targetID, message.getFromID());
+					view.showMessage(message.getFromID(), message.getBody());
 					service.warnOfContentChange();
 				} else {
 					try {
@@ -109,9 +108,10 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 											IWorkbenchSiteProgressService.class);
 							service.warnOfContentChange();
 						}
-						view.openTab(icms, itms, message.getThreadID());
-						view.showMessage(message.getThreadID(), message
-								.getFromID(), message.getBody());
+						view.openTab(icms, itms, targetID, message.getFromID());
+						view
+								.showMessage(message.getFromID(), message
+										.getBody());
 					} catch (PartInitException e) {
 						e.printStackTrace();
 					}
