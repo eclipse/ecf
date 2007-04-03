@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Messages;
@@ -107,15 +108,16 @@ public class MessagesView extends ViewPart {
 	}
 
 	private ChatTab getTab(IChatMessageSender messageSender,
-			ITypingMessageSender typingSender, ID userID) {
+			ITypingMessageSender typingSender, ID localID, ID userID) {
 		ChatTab tab = (ChatTab) tabs.get(userID);
 		if (tab == null) {
-			tab = new ChatTab(messageSender, typingSender, userID);
+			tab = new ChatTab(messageSender, typingSender, localID, userID);
 			tabs.put(userID, tab);
 		}
 		return tab;
 	}
 
+	// TODO:javadoc
 	public void displayTypingNotification(ID fromID) {
 		ChatTab tab = null;
 		synchronized (tabs) {
@@ -136,20 +138,25 @@ public class MessagesView extends ViewPart {
 	 *            the <tt>ITypingMessageSender</tt> interface to notify the
 	 *            other user that the current user is typing a message,
 	 *            <tt>null</tt> if unsupported
-	 * @param userID
-	 *            the unique ID of the other user
+	 * @param localID
+	 *            the ID of the local user
+	 * @param remoteID
+	 *            the ID of the remote user
 	 */
 	public synchronized void openTab(IChatMessageSender messageSender,
-			ITypingMessageSender typingSender, ID userID) {
-		ChatTab tab = getTab(messageSender, typingSender, userID);
+			ITypingMessageSender typingSender, ID localID, ID remoteID) {
+		Assert.isNotNull(messageSender);
+		Assert.isNotNull(localID);
+		Assert.isNotNull(remoteID);
+		ChatTab tab = getTab(messageSender, typingSender, localID, remoteID);
 		if (tabs.size() == 1) {
 			tabFolder.setSelection(tab.item);
 		}
 	}
 
 	synchronized void selectTab(IChatMessageSender messageSender,
-			ITypingMessageSender typingSender, ID userID) {
-		ChatTab tab = getTab(messageSender, typingSender, userID);
+			ITypingMessageSender typingSender, ID localID, ID userID) {
+		ChatTab tab = getTab(messageSender, typingSender, localID, userID);
 		for (int i = 0; i < switchActions.size(); i++) {
 			IAction action = ((ActionContributionItem) switchActions.get(i))
 					.getAction();
@@ -160,19 +167,18 @@ public class MessagesView extends ViewPart {
 	}
 
 	/**
-	 * Display a message from a user in the chatbox.
+	 * Display a message from a remote user in the chatbox.
 	 * 
-	 * @param userID
-	 *            the ID of the user that the conversation is with
-	 * @param fromID
-	 *            the ID of the user that sent the message
+	 * @param remoteID
+	 *            the ID of the remote user
 	 * @param body
 	 *            the body of the message
 	 */
-	public synchronized void showMessage(ID userID, ID fromID, String body) {
-		ChatTab tab = (ChatTab) tabs.get(userID);
+	public synchronized void showMessage(ID remoteID, String body) {
+		Assert.isNotNull(remoteID);
+		ChatTab tab = (ChatTab) tabs.get(remoteID);
 		if (tab != null) {
-			tab.append(fromID, body);
+			tab.append(remoteID, body);
 		}
 	}
 
@@ -187,6 +193,7 @@ public class MessagesView extends ViewPart {
 	}
 
 	public void setFocus() {
+		// TODO:check when this method is invoked
 		tabFolder.setFocus();
 	}
 
@@ -208,15 +215,19 @@ public class MessagesView extends ViewPart {
 
 		private ITypingMessageSender itms;
 
-		private boolean sendTyping = false;
-
+		private ID localID;
 		private ID remoteID;
 
+		private boolean sendTyping = false;
+
+		private boolean isFirstMessage = true;
+
 		private ChatTab(IChatMessageSender icms, ITypingMessageSender itms,
-				ID userID) {
+				ID localID, ID remoteID) {
 			this.icms = icms;
 			this.itms = itms;
-			this.remoteID = userID;
+			this.localID = localID;
+			this.remoteID = remoteID;
 			constructWidgets();
 			addListeners();
 		}
@@ -234,6 +245,7 @@ public class MessagesView extends ViewPart {
 								if (!text.equals("")) { //$NON-NLS-1$
 									icms.sendChatMessage(remoteID, text);
 								}
+								append(localID, text);
 							} catch (ECFException ex) {
 								form
 										.setMessage(
@@ -274,10 +286,18 @@ public class MessagesView extends ViewPart {
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, redColor, null, SWT.BOLD));
 				form.setMessage(null);
+				if (isFirstMessage) {
+					MessageNotificationPopup popup = new MessageNotificationPopup(
+							getSite().getWorkbenchWindow(), tabFolder
+									.getShell(), remoteID);
+					popup.setContent(name, body);
+					popup.open();
+				}
 			} else {
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, blueColor, null, SWT.BOLD));
 			}
+			isFirstMessage = false;
 		}
 
 		private void constructWidgets() {

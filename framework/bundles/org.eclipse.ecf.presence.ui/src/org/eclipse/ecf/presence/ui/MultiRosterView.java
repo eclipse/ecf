@@ -235,6 +235,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 						account.getContainer().disconnect();
 						treeViewer.remove(account.getRoster());
 					}
+					rosterAccounts.clear();
 				}
 			}
 		};
@@ -355,7 +356,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 						MessagesView view = (MessagesView) getSite()
 								.getWorkbenchWindow().getActivePage().showView(
 										MessagesView.VIEW_ID);
-						view.selectTab(icms, itms, entry.getUser().getID());
+						view.selectTab(icms, itms, roster.getUser().getID(),
+								entry.getUser().getID());
 					} catch (PartInitException e) {
 						e.printStackTrace();
 					}
