@@ -229,13 +229,15 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
-					for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
-						MultiRosterAccount account = (MultiRosterAccount) i
-								.next();
-						account.getContainer().disconnect();
-						treeViewer.remove(account.getRoster());
+					while (!rosterAccounts.isEmpty()) {
+						MultiRosterAccount account = (MultiRosterAccount) rosterAccounts
+								.get(0);
+						account.getRosterManager()
+								.removeRosterSubscriptionListener(
+										subscriptionListener);
+						removeRosterAccount(account);
 					}
-					rosterAccounts.clear();
+					refreshTreeViewer(null, false);
 				}
 			}
 		};
