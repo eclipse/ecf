@@ -21,20 +21,20 @@ public class ChatRoomBotEntry implements IChatRoomBotEntry {
 	private String containerFactoryName;
 	private String connectID;
 	private String password;
-	private String chatRoom;
-	private String chatRoomPassword;
+	private String[] chatRoomNames;
+	private String[] chatRoomPasswords;
 	private List commands;
 
 	public ChatRoomBotEntry(String id, String name,
 			String containerFactoryName, String connectID, String password,
-			String chatRoom, String chatRoomPassword, List commands) {
+			String[] chatRoomNames, String[] chatRoomPasswords, List commands) {
 		this.id = id;
 		this.name = name;
 		this.containerFactoryName = containerFactoryName;
 		this.connectID = connectID;
 		this.password = password;
-		this.chatRoom = chatRoom;
-		this.chatRoomPassword = chatRoomPassword;
+		this.chatRoomNames = chatRoomNames;
+		this.chatRoomPasswords = chatRoomPasswords;
 		this.commands = commands;
 	}
 
@@ -55,8 +55,8 @@ public class ChatRoomBotEntry implements IChatRoomBotEntry {
 	 * 
 	 * @see org.eclipse.ecf.internal.presence.bot.IChatRoomBotEntry#getChatRoom()
 	 */
-	public String getChatRoom() {
-		return chatRoom;
+	public String[] getChatRooms() {
+		return chatRoomNames;
 	}
 
 	/*
@@ -91,8 +91,8 @@ public class ChatRoomBotEntry implements IChatRoomBotEntry {
 	 * 
 	 * @see org.eclipse.ecf.internal.presence.bot.IChatRoomBotEntry#getChatRoomPassword()
 	 */
-	public String getChatRoomPassword() {
-		return chatRoomPassword;
+	public String[] getChatRoomPasswords() {
+		return chatRoomPasswords;
 	}
 
 }

@@ -31,8 +31,9 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class Activator implements BundleActivator {
 
-	private static final String CHATROOMPASSWORD_ATT = "chatRoomPassword"; //$NON-NLS-1$
-	private static final String CHATROOM_ATT = "chatRoom"; //$NON-NLS-1$
+	private static final String CHATROOMPASSWORD_ATT = "password"; //$NON-NLS-1$
+	private static final String CHATROOMNAME_ATT = "name"; //$NON-NLS-1$
+	private static final String CHATROOM_ELEMENT = "chatRooms"; //$NON-NLS-1$
 	private static final String PASSWORD_ATT = "connectPassword"; //$NON-NLS-1$
 	private static final String CONNECT_ID_ATT = "connectId"; //$NON-NLS-1$
 	private static final String CONTAINER_FACTORY_NAME_ATT = "containerFactoryName"; //$NON-NLS-1$
@@ -164,15 +165,25 @@ public class Activator implements BundleActivator {
 						.getAttribute(CONTAINER_FACTORY_NAME_ATT);
 				String connectID = elements[i].getAttribute(CONNECT_ID_ATT);
 				String password = elements[i].getAttribute(PASSWORD_ATT);
-				String chatroom = elements[i].getAttribute(CHATROOM_ATT);
-				String chatroompassword = elements[i]
-						.getAttribute(CHATROOMPASSWORD_ATT);
+
+				IConfigurationElement[] chatRoomElements = elements[i]
+						.getChildren(CHATROOM_ELEMENT);
+				int length = chatRoomElements.length;
+				String[] chatRoomNames = new String[length];
+				String[] chatRoomPasswords = new String[length];
+				for (int j = 0; j < chatRoomElements.length; j++) {
+					chatRoomNames[j] = chatRoomElements[j]
+							.getAttribute(CHATROOMNAME_ATT);
+					chatRoomPasswords[j] = chatRoomElements[j]
+							.getAttribute(CHATROOMPASSWORD_ATT);
+				}
+
 				List c = (List) chatbotcommands.get(id);
 				if (c == null)
 					c = new ArrayList();
 				IChatRoomBotEntry bot = new ChatRoomBotEntry(id, name,
-						containerFactoryName, connectID, password, chatroom,
-						chatroompassword, c);
+						containerFactoryName, connectID, password,
+						chatRoomNames, chatRoomPasswords, c);
 				chatroombots.put(id, bot);
 			}
 		}

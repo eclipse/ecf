@@ -1,0 +1,277 @@
+Index: src/org/eclipse/ecf/presence/bot/impl/ChatRoomBot.java
+===================================================================
+RCS file: /cvsroot/technology/org.eclipse.ecf/plugins/org.eclipse.ecf.presence.bot/src/org/eclipse/ecf/presence/bot/impl/ChatRoomBot.java,v
+retrieving revision 1.3
+diff -u -r1.3 ChatRoomBot.java
+--- src/org/eclipse/ecf/presence/bot/impl/ChatRoomBot.java	30 Mar 2007 22:56:48 -0000	1.3
++++ src/org/eclipse/ecf/presence/bot/impl/ChatRoomBot.java	2 Apr 2007 01:13:05 -0000
+@@ -108,21 +108,23 @@
+ 
+ 			container.connect(targetID, context);
+ 
+-			IChatRoomInfo room = manager.getChatRoomInfo(bot.getChatRoom());
+-			roomContainer = room.createChatRoomContainer();
+-
+-			roomID = room.getRoomID();
+-
+-			firePreRoomConnect();
+-
+-			roomContainer.addMessageListener(this);
+-
+-			String roomPassword = bot.getChatRoomPassword();
+-			IConnectContext roomContext = (roomPassword == null) ? null
+-					: ConnectContextFactory
+-							.createPasswordConnectContext(roomPassword);
+-			roomContainer.connect(roomID, roomContext);
+-
++			String[] roomNames = bot.getChatRooms();
++			String[] roomPasswords = bot.getChatRoomPasswords();
++			for (int i = 0; i < roomNames.length; i++) {
++				IChatRoomInfo room = manager.getChatRoomInfo(roomNames[i]);
++				roomContainer = room.createChatRoomContainer();
++
++				roomID = room.getRoomID();
++
++				firePreRoomConnect();
++
++				roomContainer.addMessageListener(this);
++				
++				IConnectContext roomContext = (roomPasswords[i] == null) ? null
++						: ConnectContextFactory
++								.createPasswordConnectContext(roomPasswords[i]);
++				roomContainer.connect(roomID, roomContext);
++			}
+ 		} catch (ECFException e) {
+ 			if (container != null) {
+ 				if (container.getConnectedID() != null) {
+Index: src/org/eclipse/ecf/presence/bot/IChatRoomBotEntry.java
+===================================================================
+RCS file: /cvsroot/technology/org.eclipse.ecf/plugins/org.eclipse.ecf.presence.bot/src/org/eclipse/ecf/presence/bot/IChatRoomBotEntry.java,v
+retrieving revision 1.3
+diff -u -r1.3 IChatRoomBotEntry.java
+--- src/org/eclipse/ecf/presence/bot/IChatRoomBotEntry.java	30 Mar 2007 18:24:26 -0000	1.3
++++ src/org/eclipse/ecf/presence/bot/IChatRoomBotEntry.java	2 Apr 2007 01:13:05 -0000
+@@ -27,9 +27,9 @@
+ 
+ 	public String getPassword();
+ 
+-	public String getChatRoom();
++	public String[] getChatRooms();
+ 
+-	public String getChatRoomPassword();
++	public String[] getChatRoomPasswords();
+ 
+ 	public List getCommands();
+ 
+Index: src/org/eclipse/ecf/internal/presence/bot/Activator.java
+===================================================================
+RCS file: /cvsroot/technology/org.eclipse.ecf/plugins/org.eclipse.ecf.presence.bot/src/org/eclipse/ecf/internal/presence/bot/Activator.java,v
+retrieving revision 1.11
+diff -u -r1.11 Activator.java
+--- src/org/eclipse/ecf/internal/presence/bot/Activator.java	31 Mar 2007 02:59:58 -0000	1.11
++++ src/org/eclipse/ecf/internal/presence/bot/Activator.java	2 Apr 2007 01:13:05 -0000
+@@ -31,8 +31,9 @@
+  */
+ public class Activator implements BundleActivator {
+ 
+-	private static final String CHATROOMPASSWORD_ATT = "chatRoomPassword"; //$NON-NLS-1$
+-	private static final String CHATROOM_ATT = "chatRoom"; //$NON-NLS-1$
++	private static final String CHATROOMPASSWORD_ATT = "password"; //$NON-NLS-1$
++	private static final String CHATROOMNAME_ATT = "name"; //$NON-NLS-1$
++	private static final String CHATROOM_ELEMENT = "chatRooms"; //$NON-NLS-1$
+ 	private static final String PASSWORD_ATT = "connectPassword"; //$NON-NLS-1$
+ 	private static final String CONNECT_ID_ATT = "connectId"; //$NON-NLS-1$
+ 	private static final String CONTAINER_FACTORY_NAME_ATT = "containerFactoryName"; //$NON-NLS-1$
+@@ -164,15 +165,25 @@
+ 						.getAttribute(CONTAINER_FACTORY_NAME_ATT);
+ 				String connectID = elements[i].getAttribute(CONNECT_ID_ATT);
+ 				String password = elements[i].getAttribute(PASSWORD_ATT);
+-				String chatroom = elements[i].getAttribute(CHATROOM_ATT);
+-				String chatroompassword = elements[i]
+-						.getAttribute(CHATROOMPASSWORD_ATT);
++
++				IConfigurationElement[] chatRoomElements = elements[i]
++						.getChildren(CHATROOM_ELEMENT);
++				int length = chatRoomElements.length;
++				String[] chatRoomNames = new String[length];
++				String[] chatRoomPasswords = new String[length];
++				for (int j = 0; j < chatRoomElements.length; j++) {
++					chatRoomNames[j] = chatRoomElements[j]
++							.getAttribute(CHATROOMNAME_ATT);
++					chatRoomPasswords[j] = chatRoomElements[j]
++							.getAttribute(CHATROOMPASSWORD_ATT);
++				}
++
+ 				List c = (List) chatbotcommands.get(id);
+ 				if (c == null)
+ 					c = new ArrayList();
+ 				IChatRoomBotEntry bot = new ChatRoomBotEntry(id, name,
+-						containerFactoryName, connectID, password, chatroom,
+-						chatroompassword, c);
++						containerFactoryName, connectID, password,
++						chatRoomNames, chatRoomPasswords, c);
+ 				chatroombots.put(id, bot);
+ 			}
+ 		}
+Index: src/org/eclipse/ecf/internal/presence/bot/ChatRoomBotEntry.java
+===================================================================
+RCS file: /cvsroot/technology/org.eclipse.ecf/plugins/org.eclipse.ecf.presence.bot/src/org/eclipse/ecf/internal/presence/bot/ChatRoomBotEntry.java,v
+retrieving revision 1.2
+diff -u -r1.2 ChatRoomBotEntry.java
+--- src/org/eclipse/ecf/internal/presence/bot/ChatRoomBotEntry.java	30 Mar 2007 05:25:20 -0000	1.2
++++ src/org/eclipse/ecf/internal/presence/bot/ChatRoomBotEntry.java	2 Apr 2007 01:13:05 -0000
+@@ -21,20 +21,20 @@
+ 	private String containerFactoryName;
+ 	private String connectID;
+ 	private String password;
+-	private String chatRoom;
+-	private String chatRoomPassword;
++	private String[] chatRoomNames;
++	private String[] chatRoomPasswords;
+ 	private List commands;
+ 
+ 	public ChatRoomBotEntry(String id, String name,
+ 			String containerFactoryName, String connectID, String password,
+-			String chatRoom, String chatRoomPassword, List commands) {
++			String[] chatRoomNames, String[] chatRoomPasswords, List commands) {
+ 		this.id = id;
+ 		this.name = name;
+ 		this.containerFactoryName = containerFactoryName;
+ 		this.connectID = connectID;
+ 		this.password = password;
+-		this.chatRoom = chatRoom;
+-		this.chatRoomPassword = chatRoomPassword;
++		this.chatRoomNames = chatRoomNames;
++		this.chatRoomPasswords = chatRoomPasswords;
+ 		this.commands = commands;
+ 	}
+ 
+@@ -55,8 +55,8 @@
+ 	 * 
+ 	 * @see org.eclipse.ecf.internal.presence.bot.IChatRoomBotEntry#getChatRoom()
+ 	 */
+-	public String getChatRoom() {
+-		return chatRoom;
++	public String[] getChatRooms() {
++		return chatRoomNames;
+ 	}
+ 
+ 	/*
+@@ -91,8 +91,8 @@
+ 	 * 
+ 	 * @see org.eclipse.ecf.internal.presence.bot.IChatRoomBotEntry#getChatRoomPassword()
+ 	 */
+-	public String getChatRoomPassword() {
+-		return chatRoomPassword;
++	public String[] getChatRoomPasswords() {
++		return chatRoomPasswords;
+ 	}
+ 
+ }
+Index: schema/chatRoomRobot.exsd
+===================================================================
+RCS file: /cvsroot/technology/org.eclipse.ecf/plugins/org.eclipse.ecf.presence.bot/schema/chatRoomRobot.exsd,v
+retrieving revision 1.1
+diff -u -r1.1 chatRoomRobot.exsd
+--- schema/chatRoomRobot.exsd	31 Mar 2007 02:59:58 -0000	1.1
++++ schema/chatRoomRobot.exsd	2 Apr 2007 01:13:05 -0000
+@@ -49,6 +49,9 @@
+          </documentation>
+       </annotation>
+       <complexType>
++         <sequence>
++            <element ref="chatRooms" minOccurs="1" maxOccurs="unbounded"/>
++         </sequence>
+          <attribute name="id" type="string" use="required">
+             <annotation>
+                <documentation>
+@@ -72,36 +75,39 @@
+ 
+ for example:  irc://slewis2_@irc.freenode.net
+ &lt;/pre&gt;
+-
+                </documentation>
+             </annotation>
+          </attribute>
+-         <attribute name="name" type="string">
++         <attribute name="connectPassword" type="string">
+             <annotation>
+                <documentation>
+-                  An optional name for the bot.
++                  An optional connect password.  If a password is required to connect to the given container then an appropriate value must be provided.
+                </documentation>
+             </annotation>
+          </attribute>
+-         <attribute name="connectPassword" type="string">
++         <attribute name="name" type="string">
+             <annotation>
+                <documentation>
+-                  An optional connect password.  If a password is required to connect to the given container then an appropriate value must be provided.
++                  An optional name for the bot.
+                </documentation>
+             </annotation>
+          </attribute>
+-         <attribute name="chatRoom" type="string" use="required">
++      </complexType>
++   </element>
++
++   <element name="chatRooms">
++      <complexType>
++         <attribute name="name" type="string" use="required">
+             <annotation>
+                <documentation>
+-                  The required chatroom to join.  For example, for IRC rooms the chat room name corresponds to the IRC channel (e.g. #eclipse-ecf).
+-
++                  The name of the chat room that the robot should join.
+                </documentation>
+             </annotation>
+          </attribute>
+-         <attribute name="chatRoomPassword" type="string">
++         <attribute name="password" type="string">
+             <annotation>
+                <documentation>
+-                  An optional chat room password.  If the chat room requires a separate password, and appropriate value must be specified here.
++                  The password required to join the chat room.
+                </documentation>
+             </annotation>
+          </attribute>
+@@ -126,10 +132,16 @@
+    &lt;extension
+          point=&quot;org.eclipse.ecf.presence.bot.chatRoomRobot&quot;&gt;
+       &lt;chatRoomRobot
+-            chatroom=&quot;#eclipse-ecf&quot;
+             connectId=&quot;irc://slewis2_@irc.freenode.net&quot;
+             containerFactoryName=&quot;ecf.irc.irclib&quot;
+             id=&quot;org.eclipse.ecf.presence.bot.defaultbot&quot;&gt;
++          &lt;chatRooms
++                name=&quot;#eclipse-ecf&quot;&gt;
++          &lt;/chatRooms&gt;
++          &lt;chatRooms
++                name=&quot;#secret-channel&quot;
++                password=&quot;secret-password&quot;&gt;
++          &lt;/chatRooms&gt;
+       &lt;/chatRoomRobot&gt;
+    &lt;/extension&gt;
+ &lt;/pre&gt;
+@@ -141,12 +153,11 @@
+    &lt;extension
+          point=&quot;org.eclipse.ecf.presence.bot.chatRoomMessageHandler&quot;&gt;
+       &lt;handler
+-            chatroomrobotid=&quot;org.eclipse.ecf.presence.bot.defaultbot&quot;
++            chatRoomRobotId=&quot;org.eclipse.ecf.presence.bot.defaultbot&quot;
+             class=&quot;org.eclipse.ecf.presence.bot.DefaultChatRoomMessageHandler&quot;&gt;
+       &lt;/handler&gt;
+    &lt;/extension&gt;
+ &lt;/pre&gt;
+-
+       </documentation>
+    </annotation>
+ 
+@@ -174,7 +185,6 @@
+       </appInfo>
+       <documentation>
+          Copyright (c) 2007 IBM Corporation and others.  All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+-
+       </documentation>
+    </annotation>
+ 

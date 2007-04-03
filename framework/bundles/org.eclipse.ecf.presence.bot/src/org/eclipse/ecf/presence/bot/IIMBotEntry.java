@@ -13,7 +13,9 @@ package org.eclipse.ecf.presence.bot;
 import java.util.List;
 
 /**
- * Contents for creating a im bot
+ * Contents for creating a instant messaging bot.
+ * 
+ * "This interface is not intended to be implemented by clients.
  */
 public interface IIMBotEntry {
 

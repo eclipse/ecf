@@ -14,6 +14,8 @@ import java.util.List;
 
 /**
  * Contents for creating a chat room bot
+ * 
+ * This interface is not intended to be implemented by clients.
  */
 public interface IChatRoomBotEntry {
 
@@ -27,9 +29,9 @@ public interface IChatRoomBotEntry {
 
 	public String getPassword();
 
-	public String getChatRoom();
+	public String[] getChatRooms();
 
-	public String getChatRoomPassword();
+	public String[] getChatRoomPasswords();
 
 	public List getCommands();
 

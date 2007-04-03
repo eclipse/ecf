@@ -108,21 +108,23 @@ public class ChatRoomBot implements IIMMessageListener {
 
 			container.connect(targetID, context);
 
-			IChatRoomInfo room = manager.getChatRoomInfo(bot.getChatRoom());
-			roomContainer = room.createChatRoomContainer();
+			String[] roomNames = bot.getChatRooms();
+			String[] roomPasswords = bot.getChatRoomPasswords();
+			for (int i = 0; i < roomNames.length; i++) {
+				IChatRoomInfo room = manager.getChatRoomInfo(roomNames[i]);
+				roomContainer = room.createChatRoomContainer();
 
-			roomID = room.getRoomID();
+				roomID = room.getRoomID();
 
-			firePreRoomConnect();
+				firePreRoomConnect();
 
-			roomContainer.addMessageListener(this);
-
-			String roomPassword = bot.getChatRoomPassword();
-			IConnectContext roomContext = (roomPassword == null) ? null
-					: ConnectContextFactory
-							.createPasswordConnectContext(roomPassword);
-			roomContainer.connect(roomID, roomContext);
-
+				roomContainer.addMessageListener(this);
+				
+				IConnectContext roomContext = (roomPasswords[i] == null) ? null
+						: ConnectContextFactory
+								.createPasswordConnectContext(roomPasswords[i]);
+				roomContainer.connect(roomID, roomContext);
+			}
 		} catch (ECFException e) {
 			if (container != null) {
 				if (container.getConnectedID() != null) {
