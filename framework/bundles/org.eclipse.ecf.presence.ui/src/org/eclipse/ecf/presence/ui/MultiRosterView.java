@@ -85,6 +85,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	protected List rosterAccounts = new ArrayList();
 
+	private IMenuManager setStatusMenu;
+
 	private IAction imAction;
 
 	private IAction removeAction;
@@ -232,6 +234,9 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 						treeViewer.remove(account);
 					}
 					refreshTreeViewer(null, false);
+					setStatusMenu.setVisible(false);
+					getViewSite().getActionBars().getMenuManager()
+							.update(false);
 				}
 			}
 		};
@@ -369,14 +374,15 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		IMenuManager subMenu = new MenuManager(
-				Messages.MultiRosterView_SetStatusAs, null);
-		subMenu.add(setAvailableAction);
-		subMenu.add(setAwayAction);
-		subMenu.add(setDNDAction);
-		subMenu.add(setInvisibleAction);
-		subMenu.add(setOfflineAction);
-		manager.add(subMenu);
+		setStatusMenu = new MenuManager(Messages.MultiRosterView_SetStatusAs,
+				null);
+		setStatusMenu.add(setAvailableAction);
+		setStatusMenu.add(setAwayAction);
+		setStatusMenu.add(setDNDAction);
+		setStatusMenu.add(setInvisibleAction);
+		setStatusMenu.add(setOfflineAction);
+		setStatusMenu.setVisible(false);
+		manager.add(setStatusMenu);
 		manager.add(new Separator());
 		final ViewerFilter filter = new ViewerFilter() {
 			public boolean select(Viewer viewer, Object parentElement,
@@ -484,6 +490,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 			containerAdapter.getRosterManager().addRosterSubscriptionListener(
 					subscriptionListener);
+			setStatusMenu.setVisible(true);
+			getViewSite().getActionBars().getMenuManager().update(true);
 			treeViewer.add(treeViewer.getInput(), account.getRoster());
 			return true;
 		}
