@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Messages;
@@ -54,6 +57,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.UIJob;
 
 public class MessagesView extends ViewPart {
 
@@ -171,7 +175,7 @@ public class MessagesView extends ViewPart {
 		}
 		tab.switchItem.getAction().setChecked(true);
 		tabFolder.setSelection(tab.item);
-		tab.inputText.setFocus();		
+		tab.inputText.setFocus();
 	}
 
 	/**
@@ -303,11 +307,18 @@ public class MessagesView extends ViewPart {
 						name.length() + 1, redColor, null, SWT.BOLD));
 				form.setMessage(null);
 				if (isFirstMessage) {
-					MessageNotificationPopup popup = new MessageNotificationPopup(
+					final MessageNotificationPopup popup = new MessageNotificationPopup(
 							getSite().getWorkbenchWindow(), tabFolder
 									.getShell(), remoteID);
 					popup.setContent(name, body);
 					popup.open();
+
+					new UIJob(tabFolder.getDisplay(), "Close Popup Job") { //$NON-NLS-1$
+						public IStatus runInUIThread(IProgressMonitor monitor) {
+							popup.close();
+							return Status.OK_STATUS;
+						}
+					}.schedule(5000);
 				}
 			} else {
 				chatText.setStyleRange(new StyleRange(length,
