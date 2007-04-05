@@ -10,7 +10,9 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.ui;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -61,6 +63,9 @@ import org.eclipse.ui.progress.UIJob;
 
 public class MessagesView extends ViewPart {
 
+	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat(
+			"(hh:mm:ss a)"); //$NON-NLS-1$
+
 	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.MessagesView"; //$NON-NLS-1$
 
 	private static final int[] WEIGHTS = { 75, 25 };
@@ -80,6 +85,8 @@ public class MessagesView extends ViewPart {
 	private List menuManagers;
 
 	private Map tabs;
+
+	private boolean showTimestamps = true;
 
 	public MessagesView() {
 		menuManagers = new ArrayList();
@@ -106,6 +113,16 @@ public class MessagesView extends ViewPart {
 				}
 			}
 		});
+
+		IMenuManager manager = getViewSite().getActionBars().getMenuManager();
+		IAction timestampAction = new Action("Show Timestamps",
+				IAction.AS_CHECK_BOX) {
+			public void run() {
+				showTimestamps = !showTimestamps;
+			}
+		};
+		timestampAction.setChecked(true);
+		manager.add(timestampAction);
 
 		redColor = new Color(parent.getDisplay(), 255, 0, 0);
 		blueColor = new Color(parent.getDisplay(), 0, 0, 255);
@@ -308,8 +325,15 @@ public class MessagesView extends ViewPart {
 		private void append(ID fromID, String body) {
 			int length = chatText.getCharCount();
 			String name = fromID.getName();
-			chatText.append(fromID.getName() + ": " + body + Text.DELIMITER); //$NON-NLS-1$
 			if (fromID.equals(remoteID)) {
+				if (showTimestamps) {
+					chatText.append(FORMATTER.format(new Date(System
+							.currentTimeMillis())) + ' ');
+					chatText.setStyleRange(new StyleRange(length, 13, redColor,
+							null));
+					length = chatText.getCharCount();
+				}
+				chatText.append(name + ": " + body + Text.DELIMITER); //$NON-NLS-1$
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, redColor, null, SWT.BOLD));
 				form.setMessage(null);
@@ -328,6 +352,14 @@ public class MessagesView extends ViewPart {
 					}.schedule(5000);
 				}
 			} else {
+				if (showTimestamps) {
+					chatText.append(FORMATTER.format(new Date(System
+							.currentTimeMillis())) + ' ');
+					chatText.setStyleRange(new StyleRange(length, 13,
+							blueColor, null));
+					length = chatText.getCharCount();
+				}
+				chatText.append(name + ": " + body + Text.DELIMITER); //$NON-NLS-1$
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, blueColor, null, SWT.BOLD));
 			}
