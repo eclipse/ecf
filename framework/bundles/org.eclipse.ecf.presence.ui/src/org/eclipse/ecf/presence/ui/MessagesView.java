@@ -128,7 +128,13 @@ public class MessagesView extends ViewPart {
 		return tab;
 	}
 
-	// TODO:javadoc
+	/**
+	 * Display a message to notify the current user that a typing event has
+	 * occurred.
+	 * 
+	 * @param event
+	 *            the typing message event
+	 */
 	public void displayTypingNotification(ITypingMessageEvent event) {
 		ChatTab tab = null;
 		synchronized (tabs) {
@@ -160,6 +166,7 @@ public class MessagesView extends ViewPart {
 		Assert.isNotNull(localID);
 		Assert.isNotNull(remoteID);
 		ChatTab tab = getTab(messageSender, typingSender, localID, remoteID);
+		// if there is only one tab, select this tab
 		if (tabs.size() == 1) {
 			tabFolder.setSelection(tab.item);
 		}
