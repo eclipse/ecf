@@ -37,10 +37,11 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 	private final Contact contact;
 
 	private ID id;
-	
+
 	private IRoster roster;
 
 	MSNRosterEntry(IRoster roster, Contact contact) {
+		this.roster = roster;
 		this.contact = contact;
 		groups = Collections.EMPTY_LIST;
 		try {
@@ -128,9 +129,6 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 		return contact.getDisplayName();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.presence.roster.IRosterItem#getRoster()
-	 */
 	public IRoster getRoster() {
 		return roster;
 	}
