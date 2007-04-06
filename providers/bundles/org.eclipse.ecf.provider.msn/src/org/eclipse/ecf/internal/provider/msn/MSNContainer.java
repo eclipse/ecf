@@ -167,7 +167,7 @@ final class MSNContainer implements IContainer, IChatManager,
 					new IContactListListener() {
 
 						public void contactAdded(Contact contact) {
-							final MSNRosterEntry entry = new MSNRosterEntry(
+							final MSNRosterEntry entry = new MSNRosterEntry(MSNContainer.this,
 									contact);
 							contact.addContactListener(new IContactListener() {
 
@@ -657,6 +657,13 @@ final class MSNContainer implements IContainer, IChatManager,
 	public IHistoryManager getHistoryManager() {
 		// TODO Auto-generated method stub
 		return historyManager;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.roster.IRoster#getPresenceContainerAdapter()
+	 */
+	public IPresenceContainerAdapter getPresenceContainerAdapter() {
+		return this;
 	}
 
 }

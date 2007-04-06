@@ -59,4 +59,11 @@ final class MSNRosterGroup implements IRosterGroup {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.roster.IRosterItem#getRoster()
+	 */
+	public IRoster getRoster() {
+		return roster;
+	}
+
 }

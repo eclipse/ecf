@@ -20,6 +20,7 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IPresence;
+import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.hantsuki.gokigenyou.Contact;
@@ -36,8 +37,10 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 	private final Contact contact;
 
 	private ID id;
+	
+	private IRoster roster;
 
-	MSNRosterEntry(Contact contact) {
+	MSNRosterEntry(IRoster roster, Contact contact) {
 		this.contact = contact;
 		groups = Collections.EMPTY_LIST;
 		try {
@@ -123,6 +126,13 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 
 	public String getNickname() {
 		return contact.getDisplayName();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.roster.IRosterItem#getRoster()
+	 */
+	public IRoster getRoster() {
+		return roster;
 	}
 
 }
