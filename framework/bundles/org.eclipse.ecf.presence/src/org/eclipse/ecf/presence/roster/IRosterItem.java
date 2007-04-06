@@ -26,4 +26,12 @@ public interface IRosterItem extends IAdaptable {
 	 * @return IRosterItem parent of roster item. May be <code>null</code>.
 	 */
 	public IRosterItem getParent();
+	
+	/**
+	 * Get the roster associated with this item.
+	 * 
+	 * @return IRoster instance associated with this item.  Will return <code>null</code> if
+	 * this IRosterItem is not associated with any roster.
+	 */
+	public IRoster getRoster();
 }

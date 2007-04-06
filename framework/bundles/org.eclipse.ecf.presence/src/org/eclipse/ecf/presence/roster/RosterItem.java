@@ -58,4 +58,10 @@ public class RosterItem implements IRosterItem {
 		return null;
 	}
 
+	public IRoster getRoster() {
+		if (this instanceof IRoster) return (IRoster) this;
+		IRosterItem parent = getParent();
+		while (parent != null && !(parent instanceof IRoster)) parent = parent.getParent();
+		return (IRoster) parent;
+	}
 }

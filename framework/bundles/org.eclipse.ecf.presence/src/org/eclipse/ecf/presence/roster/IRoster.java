@@ -10,17 +10,16 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.roster;
 
-import java.io.Serializable;
 import java.util.Collection;
 
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.user.IUser;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 
 /**
  * Roster (aka contacts list or buddy list)
  * 
  */
-public interface IRoster extends IAdaptable, Serializable, IRosterItem {
+public interface IRoster extends IRosterItem {
 
 	/**
 	 * Get local user for this roster. This is the user that owns this roster.
@@ -41,5 +40,14 @@ public interface IRoster extends IAdaptable, Serializable, IRosterItem {
 	 *         return an empty collection of items.
 	 */
 	public Collection getItems();
+
+	/**
+	 * Get the IPresenceContainerAdapter associated with this roster.  The
+	 * result will not be <code>null</code>.
+	 * 
+	 * @return IPresenceContainerAdapter the presence container adapter associated
+	 * with this roster.
+	 */
+	public IPresenceContainerAdapter getPresenceContainerAdapter();
 
 }

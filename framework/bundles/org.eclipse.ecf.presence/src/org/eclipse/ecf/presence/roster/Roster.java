@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.ecf.core.user.IUser;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 
 /**
  * Base class implementation of {@link IRoster}. Subclasses may be created as
@@ -30,16 +31,19 @@ public class Roster extends RosterItem implements IRoster {
 
 	protected IUser rosterUser;
 
-	public Roster(IUser user) {
+	protected IPresenceContainerAdapter presenceContainer;
+	
+	public Roster(IPresenceContainerAdapter pc, IUser user) {
 		super(null, (user == null) ? "<unknown>" //$NON-NLS-1$
 				: ((user.getName() == null) ? user.getID().getName() : user
 						.getName()));
+		this.presenceContainer = pc;
 		this.rosterUser = user;
 		this.rosteritems = Collections.synchronizedList(new ArrayList());
 	}
 
-	public Roster() {
-		this(null);
+	public Roster(IPresenceContainerAdapter presenceContainer) {
+		this(presenceContainer, null);
 	}
 
 	/*
@@ -114,8 +118,16 @@ public class Roster extends RosterItem implements IRoster {
 	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer("Roster["); //$NON-NLS-1$
-		buf.append("user=").append(getUser()); //$NON-NLS-1$
-		buf.append("items=").append(getItems()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("pc=").append(getPresenceContainerAdapter()); //$NON-NLS-1$
+		buf.append(";user=").append(getUser()); //$NON-NLS-1$
+		buf.append(";items=").append(getItems()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.roster.IRoster#getPresenceContainerAdapter()
+	 */
+	public IPresenceContainerAdapter getPresenceContainerAdapter() {
+		return presenceContainer;
 	}
 }
