@@ -62,7 +62,7 @@ import org.jivesoftware.smackx.packet.MUCUser;
 import org.jivesoftware.smackx.packet.VCardTempXUpdateExtension;
 import org.jivesoftware.smackx.packet.XHTMLExtension;
 
-public class XMPPContainer extends ClientSOContainer {
+public class XMPPContainer extends ClientSOContainer implements IPresenceContainerAdapter {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
 
@@ -113,33 +113,21 @@ public class XMPPContainer extends ClientSOContainer {
 				userhost)), ka);
 	}
 
-	protected IRosterManager getRosterManager() {
+	public IRosterManager getRosterManager() {
 		return presenceHelper.getRosterManager();
 	}
 
-	IPresenceContainerAdapter presenceContainerAdapter = new IPresenceContainerAdapter() {
+	public IAccountManager getAccountManager() {
+		return accountManager;
+	}
 
-		public IRosterManager getRosterManager() {
-			return presenceHelper.getRosterManager();
-		}
+	public IChatRoomManager getChatRoomManager() {
+		return chatRoomManager;
+	}
 
-		public IAccountManager getAccountManager() {
-			return accountManager;
-		}
-
-		public IChatRoomManager getChatRoomManager() {
-			return chatRoomManager;
-		}
-
-		public Object getAdapter(Class clazz) {
-			return null;
-		}
-
-		public IChatManager getChatManager() {
-			return presenceHelper.getChatManager();
-		}
-
-	};
+	public IChatManager getChatManager() {
+		return presenceHelper.getChatManager();
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -238,7 +226,7 @@ public class XMPPContainer extends ClientSOContainer {
 	 */
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(IPresenceContainerAdapter.class))
-			return presenceContainerAdapter;
+			return this;
 		if (clazz.equals(IOutgoingFileTransferContainerAdapter.class))
 			return outgoingFileTransferContainerAdapter;
 		else

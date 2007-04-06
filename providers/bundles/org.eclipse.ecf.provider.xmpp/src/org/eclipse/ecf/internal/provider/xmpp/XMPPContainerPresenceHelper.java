@@ -146,7 +146,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	// end ISharedObject implementation
 
-	protected org.eclipse.ecf.presence.roster.Roster roster = new org.eclipse.ecf.presence.roster.Roster();
+	protected org.eclipse.ecf.presence.roster.Roster roster = new org.eclipse.ecf.presence.roster.Roster(container);
 
 	protected PresenceRosterManager rosterManager = new PresenceRosterManager(
 			roster);
