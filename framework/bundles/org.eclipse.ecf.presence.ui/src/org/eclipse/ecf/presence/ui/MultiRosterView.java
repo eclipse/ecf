@@ -319,14 +319,25 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	private void remove(IRosterEntry entry) {
+		/*
+		try {
+			entry.getRoster().getPresenceContainerAdapter().getRosterManager()
+					.getRosterSubscriptionSender().sendRosterRemove(
+							entry.getUser().getID());
+		} catch (ECFException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		*/
+		
 		synchronized (rosterAccounts) {
 			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
 				MultiRosterAccount account = (MultiRosterAccount) i.next();
 				IRoster roster = account.getRoster();
 				if (find(roster.getItems(), entry)) {
 					IRosterSubscriptionSender rss = account
-							.getPresenceContainerAdapter().getRosterManager()
-							.getRosterSubscriptionSender();
+					.getPresenceContainerAdapter().getRosterManager()
+					.getRosterSubscriptionSender();
 					try {
 						rss.sendRosterRemove(entry.getUser().getID());
 					} catch (ECFException e) {
