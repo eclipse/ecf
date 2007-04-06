@@ -116,35 +116,35 @@
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
-            id="org.eclipse.ecf.ui.actionSet"
-            label="sampleActionSet"
+            id="org.eclipse.ecf.example.collab.ui.actionSet"
+            label="collabActionSet"
             visible="true">
          <menu
-               id="sampleMenu"
-               label="ECF Wizards">
+               id="org.eclipse.ecf.example.collab.ui.connectMenu"
+               label="connectMenu">
             <separator
-                  name="sampleGroup">
+                  name="connectSeparator">
             </separator>
          </menu>
          <action
                class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
                icon="icons/im.gif"
-               id="org.eclipse.ecf.ui.actions.SampleAction"
+               id="org.eclipse.ecf.example.collab.ui.connectAction"
                label="Connect to ECF IM/Chat Provider"
                style="pulldown"
-               toolbarPath="sampleGroup"
+               toolbarPath="connectSeparator"
                tooltip="Connect to ECF IM/Chat Provider">
          </action>
       </actionSet>
       <actionSet
-            id="org.eclipse.ecf.example.collab.actionSet2"
-            label="sampleActionSet2"
+            id="org.eclipse.ecf.example.collab.ui.actionSet2"
+            label="collabActionSet2"
             visible="true">
          <menu
-               id="org.eclipse.ecf.example.collab.menu1"
-               label="collabMenu">
+               id="org.eclipse.ecf.example.collab.ui.connectMenu2"
+               label="connectMenu2">
             <separator
-                  name="sampleGroup2">
+                  name="connectSeparator2">
             </separator>
          </menu>
          <action
@@ -153,7 +153,7 @@
                id="org.eclipse.ecf.example.collab.action2"
                label="Connect to ECF Collaboration Group..."
                style="push"
-               toolbarPath="sampleGroup2"
+               toolbarPath="connectSeparator2"
                tooltip="Connect to ECF Collaboration Group">
          </action>
       </actionSet>
