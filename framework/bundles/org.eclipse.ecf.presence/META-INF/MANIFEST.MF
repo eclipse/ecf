@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.eclipse.ecf.presence;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.presence.PresencePlugin
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin
