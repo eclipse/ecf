@@ -30,7 +30,8 @@ public class Messages extends NLS {
 	public static String MultiRosterView_SetDoNotDisturb;
 	public static String MultiRosterView_SetInvisible;
 	public static String MultiRosterView_SetOffline;
-	
+
+	public static String MessagesView_ShowTimestamps;
 	public static String MessagesView_CouldNotSendMessage;
 	public static String MessagesView_TypingNotification;
 	

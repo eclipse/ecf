@@ -115,8 +115,8 @@ public class MessagesView extends ViewPart {
 		});
 
 		IMenuManager manager = getViewSite().getActionBars().getMenuManager();
-		IAction timestampAction = new Action("Show Timestamps",
-				IAction.AS_CHECK_BOX) {
+		IAction timestampAction = new Action(
+				Messages.MessagesView_ShowTimestamps, IAction.AS_CHECK_BOX) {
 			public void run() {
 				showTimestamps = !showTimestamps;
 			}
