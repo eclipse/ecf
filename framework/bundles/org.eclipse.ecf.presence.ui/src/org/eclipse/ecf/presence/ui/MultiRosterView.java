@@ -288,20 +288,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
-	private boolean find(Collection items, Object entry) {
-		for (Iterator it = items.iterator(); it.hasNext();) {
-			Object item = it.next();
-			if (item instanceof IRosterGroup) {
-				if (find(((IRosterGroup) item).getEntries(), entry)) {
-					return true;
-				}
-			} else if (item == entry) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private IRosterEntry find(Collection items, ID userID) {
 		for (Iterator it = items.iterator(); it.hasNext();) {
 			Object item = it.next();
@@ -319,33 +305,15 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	private void remove(IRosterEntry entry) {
-		/*
 		try {
-			entry.getRoster().getPresenceContainerAdapter().getRosterManager()
-					.getRosterSubscriptionSender().sendRosterRemove(
-							entry.getUser().getID());
-		} catch (ECFException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		*/
-		
-		synchronized (rosterAccounts) {
-			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
-				MultiRosterAccount account = (MultiRosterAccount) i.next();
-				IRoster roster = account.getRoster();
-				if (find(roster.getItems(), entry)) {
-					IRosterSubscriptionSender rss = account
-					.getPresenceContainerAdapter().getRosterManager()
-					.getRosterSubscriptionSender();
-					try {
-						rss.sendRosterRemove(entry.getUser().getID());
-					} catch (ECFException e) {
-						e.printStackTrace();
-					}
-					break;
-				}
+			IRoster roster = entry.getRoster();
+			if (roster != null) {
+				roster.getPresenceContainerAdapter().getRosterManager()
+						.getRosterSubscriptionSender().sendRosterRemove(
+								entry.getUser().getID());
 			}
+		} catch (ECFException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -355,26 +323,20 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			return;
 		}
 		IRosterEntry entry = (IRosterEntry) element;
-		synchronized (rosterAccounts) {
-			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
-				MultiRosterAccount account = (MultiRosterAccount) i.next();
-				IRoster roster = account.getRoster();
-				if (find(roster.getItems(), entry)) {
-					IChatManager icm = account.getPresenceContainerAdapter()
-							.getChatManager();
-					IChatMessageSender icms = icm.getChatMessageSender();
-					ITypingMessageSender itms = icm.getTypingMessageSender();
-					try {
-						MessagesView view = (MessagesView) getSite()
-								.getWorkbenchWindow().getActivePage().showView(
-										MessagesView.VIEW_ID);
-						view.selectTab(icms, itms, roster.getUser().getID(),
-								entry.getUser().getID());
-					} catch (PartInitException e) {
-						e.printStackTrace();
-					}
-					break;
-				}
+		IRoster roster = entry.getRoster();
+		if (roster != null) {
+			IChatManager manager = roster.getPresenceContainerAdapter()
+					.getChatManager();
+			IChatMessageSender icms = manager.getChatMessageSender();
+			ITypingMessageSender itms = manager.getTypingMessageSender();
+			try {
+				MessagesView view = (MessagesView) getSite()
+						.getWorkbenchWindow().getActivePage().showView(
+								MessagesView.VIEW_ID);
+				view.selectTab(icms, itms, roster.getUser().getID(), entry
+						.getUser().getID());
+			} catch (PartInitException e) {
+				e.printStackTrace();
 			}
 		}
 	}
