@@ -53,6 +53,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -346,7 +347,10 @@ public class MessagesView extends ViewPart {
 
 					new UIJob(tabFolder.getDisplay(), "Close Popup Job") { //$NON-NLS-1$
 						public IStatus runInUIThread(IProgressMonitor monitor) {
-							popup.close();
+							Shell shell = popup.getShell();
+							if (shell != null && !shell.isDisposed()) {
+								popup.close();
+							}
 							return Status.OK_STATUS;
 						}
 					}.schedule(5000);
