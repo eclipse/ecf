@@ -475,12 +475,10 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			IRosterItem item = (IRosterItem) i.next();
 			if (item instanceof IRosterGroup) {
 				updatePresenceInGroup((IRosterGroup) item, fromID, newPresence);
-				rosterManager.notifyRosterUpdate(item);
 			} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
 				updatePresenceForMatchingEntry(
 						(org.eclipse.ecf.presence.roster.RosterEntry) item,
 						fromID, newPresence);
-				rosterManager.notifyRosterUpdate(item);
 			}
 		}
 	}
@@ -488,9 +486,11 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	private void updatePresenceForMatchingEntry(
 			org.eclipse.ecf.presence.roster.RosterEntry entry, XMPPID fromID,
 			IPresence newPresence) {
-		User user = (User) entry.getUser();
-		if (fromID.equals(user.getID()))
+		IUser user = entry.getUser();
+		if (fromID.equals(user.getID())) {
 			entry.setPresence(newPresence);
+			rosterManager.notifyRosterUpdate(entry);
+		}
 	}
 
 	private void updatePresenceInGroup(IRosterGroup group, XMPPID fromID,
