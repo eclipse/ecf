@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.provider.msn;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
@@ -40,15 +41,27 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 
 	private IRoster roster;
 
+	private Map properties;
+
 	MSNRosterEntry(IRoster roster, Contact contact, Namespace namespace) {
 		this.roster = roster;
 		this.contact = contact;
 		groups = Collections.EMPTY_LIST;
+		properties = new HashMap(1);
 		try {
 			id = (MSNID) namespace.createInstance(new Object[] {
 					contact.getEmail(), contact.getDisplayName() });
 		} catch (IDCreateException e) {
 			e.printStackTrace();
+		}
+	}
+
+	void updatePersonalMessage() {
+		String message = contact.getPersonalMessage();
+		if (message.equals("")) { //$NON-NLS-1$
+			properties.remove("Message");
+		} else {
+			properties.put("Message", message);	
 		}
 	}
 
@@ -74,7 +87,7 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 	}
 
 	public Map getProperties() {
-		return Collections.EMPTY_MAP;
+		return properties;
 	}
 
 	public String getStatus() {
@@ -105,7 +118,7 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 	public IUser getUser() {
 		return this;
 	}
-	
+
 	void updateUserName() {
 		id.setUserName(contact.getDisplayName());
 	}

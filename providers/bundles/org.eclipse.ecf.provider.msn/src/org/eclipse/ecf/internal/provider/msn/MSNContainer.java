@@ -183,6 +183,7 @@ final class MSNContainer implements IContainer, IChatManager,
 
 								public void personalMessageChanged(
 										String personalMessage) {
+									entry.updatePersonalMessage();
 									fireRosterUpdate(entry);
 									fireRosterEntryUpdated(entry);
 								}
