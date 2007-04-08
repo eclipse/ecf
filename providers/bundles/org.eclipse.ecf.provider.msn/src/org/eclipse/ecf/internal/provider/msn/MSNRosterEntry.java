@@ -17,7 +17,7 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.roster.IRoster;
@@ -36,18 +36,19 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 
 	private final Contact contact;
 
-	private ID id;
+	private MSNID id;
 
 	private IRoster roster;
 
-	MSNRosterEntry(IRoster roster, Contact contact) {
+	MSNRosterEntry(IRoster roster, Contact contact, Namespace namespace) {
 		this.roster = roster;
 		this.contact = contact;
 		groups = Collections.EMPTY_LIST;
 		try {
-			id = IDFactory.getDefault().createStringID(contact.getEmail());
+			id = (MSNID) namespace.createInstance(new Object[] {
+					contact.getEmail(), contact.getDisplayName() });
 		} catch (IDCreateException e) {
-			throw new RuntimeException(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -103,6 +104,10 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 
 	public IUser getUser() {
 		return this;
+	}
+	
+	void updateUserName() {
+		id.setUserName(contact.getDisplayName());
 	}
 
 	void setParent(MSNRosterGroup parent) {

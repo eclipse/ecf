@@ -172,10 +172,11 @@ final class MSNContainer implements IContainer, IChatManager,
 
 						public void contactAdded(Contact contact) {
 							final MSNRosterEntry entry = new MSNRosterEntry(
-									MSNContainer.this, contact);
+									MSNContainer.this, contact, namespace);
 							contact.addContactListener(new IContactListener() {
 
 								public void nameChanged(String name) {
+									entry.updateUserName();
 									fireRosterUpdate(entry);
 									fireRosterEntryUpdated(entry);
 								}
