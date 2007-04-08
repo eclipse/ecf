@@ -53,4 +53,5 @@ public interface IHistoryManager extends IAdaptable {
 	 *            <code>false</code> to make it inactive.
 	 */
 	public void setActive(boolean active);
+	
 }
