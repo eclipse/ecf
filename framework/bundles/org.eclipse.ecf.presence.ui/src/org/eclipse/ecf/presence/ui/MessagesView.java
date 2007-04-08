@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Messages;
+import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.im.ITypingMessageEvent;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
@@ -88,6 +89,11 @@ public class MessagesView extends ViewPart {
 	private Map tabs;
 
 	private boolean showTimestamps = true;
+
+	private static final String getUserName(ID id) {
+		IChatID chatID = (IChatID) id.getAdapter(IChatID.class);
+		return chatID == null ? id.getName() : chatID.getUsername();
+	}
 
 	public MessagesView() {
 		menuManagers = new ArrayList();
@@ -325,7 +331,7 @@ public class MessagesView extends ViewPart {
 
 		private void append(ID fromID, String body) {
 			int length = chatText.getCharCount();
-			String name = fromID.getName();
+			String name = getUserName(fromID);
 			if (fromID.equals(remoteID)) {
 				if (showTimestamps) {
 					chatText.append(FORMATTER.format(new Date(System
@@ -376,7 +382,7 @@ public class MessagesView extends ViewPart {
 			form = toolkit.createForm(tabFolder);
 			form.setImage(image);
 			toolkit.decorateFormHeading(form);
-			form.setText(remoteID.getName());
+			form.setText(getUserName(remoteID));
 
 			form.getBody().setLayout(new GridLayout());
 
@@ -397,7 +403,7 @@ public class MessagesView extends ViewPart {
 
 			sash.setWeights(WEIGHTS);
 
-			IAction action = new Action(remoteID.getName() + '\t',
+			IAction action = new Action(getUserName(remoteID) + '\t',
 					IAction.AS_RADIO_BUTTON) {
 				public void run() {
 					tabFolder.setSelection(item);
@@ -446,15 +452,15 @@ public class MessagesView extends ViewPart {
 			form.getToolBarManager().update(true);
 
 			item.setControl(form);
-			item.setText(remoteID.getName());
+			item.setText(getUserName(remoteID));
 
 			toolkit.paintBordersFor(form.getBody());
 		}
 
 		private void showIsTyping(boolean isTyping) {
 			form.setMessage(isTyping ? NLS.bind(
-					Messages.MessagesView_TypingNotification, remoteID
-							.getName()) : null);
+					Messages.MessagesView_TypingNotification,
+					getUserName(remoteID)) : null);
 		}
 	}
 
