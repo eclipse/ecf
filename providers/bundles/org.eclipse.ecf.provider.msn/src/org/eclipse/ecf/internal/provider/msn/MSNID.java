@@ -19,22 +19,14 @@ class MSNID implements IChatID, ID {
 	private final Namespace namespace;
 
 	private final String email;
-
-	private String userName;
+	
+	private final String userName;
 
 	MSNID(Namespace namespace, String email) {
 		this.namespace = namespace;
 		this.email = email;
-	}
-
-	MSNID(Namespace namespace, String email, String userName) {
-		this.namespace = namespace;
-		this.email = email;
-		this.userName = userName;
-	}
-
-	void setUserName(String userName) {
-		this.userName = userName;
+		int index = email.indexOf('@');
+		userName = email.substring(0, index);
 	}
 
 	public String getName() {
@@ -66,7 +58,7 @@ class MSNID implements IChatID, ID {
 	}
 
 	public String getUsername() {
-		return userName == null ? email : userName;
+		return userName;
 	}
 
 	public int hashCode() {

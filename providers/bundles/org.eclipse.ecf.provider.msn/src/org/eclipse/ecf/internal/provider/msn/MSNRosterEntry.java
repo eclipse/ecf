@@ -49,8 +49,8 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 		groups = Collections.EMPTY_LIST;
 		properties = new HashMap(1);
 		try {
-			id = (MSNID) namespace.createInstance(new Object[] {
-					contact.getEmail(), contact.getDisplayName() });
+			id = (MSNID) namespace.createInstance(new Object[] { contact
+					.getEmail() });
 		} catch (IDCreateException e) {
 			e.printStackTrace();
 		}
@@ -61,7 +61,7 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 		if (message.equals("")) { //$NON-NLS-1$
 			properties.remove("Message");
 		} else {
-			properties.put("Message", message);	
+			properties.put("Message", message);
 		}
 	}
 
@@ -117,10 +117,6 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 
 	public IUser getUser() {
 		return this;
-	}
-
-	void updateUserName() {
-		id.setUserName(contact.getDisplayName());
 	}
 
 	void setParent(MSNRosterGroup parent) {

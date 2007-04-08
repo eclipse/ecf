@@ -176,7 +176,6 @@ final class MSNContainer implements IContainer, IChatManager,
 							contact.addContactListener(new IContactListener() {
 
 								public void nameChanged(String name) {
-									entry.updateUserName();
 									fireRosterUpdate(entry);
 									fireRosterEntryUpdated(entry);
 								}
@@ -237,7 +236,6 @@ final class MSNContainer implements IContainer, IChatManager,
 			fireContainerEvent(new ContainerConnectingEvent(guid, connectID));
 			client.connect(connectID.getName(), (String) cb[0].getObject());
 			fireContainerEvent(new ContainerConnectedEvent(guid, connectID));
-			connectID.setUserName(client.getDisplayName());
 		} catch (UnsupportedCallbackException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

@@ -24,9 +24,6 @@ public class MSNNamespace extends Namespace {
 		switch (parameters.length) {
 		case 1:
 			return new MSNID(this, (String) parameters[0]);
-		case 2:
-			return new MSNID(this, (String) parameters[0],
-					(String) parameters[1]);
 		default:
 			throw new IDCreateException();
 		}
