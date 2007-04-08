@@ -32,7 +32,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.identity.StringID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.security.UnsupportedCallbackException;
@@ -45,8 +44,8 @@ import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.IPresenceSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
-import org.eclipse.ecf.presence.history.IHistoryManager;
 import org.eclipse.ecf.presence.history.IHistory;
+import org.eclipse.ecf.presence.history.IHistoryManager;
 import org.eclipse.ecf.presence.im.ChatMessage;
 import org.eclipse.ecf.presence.im.ChatMessageEvent;
 import org.eclipse.ecf.presence.im.IChatManager;
@@ -96,11 +95,13 @@ final class MSNContainer implements IContainer, IChatManager,
 
 	private final IUser user;
 
-	private MsnClient client;
+	private final Namespace namespace;
 
 	private final ID guid;
 
-	private ID connectID;
+	private MsnClient client;
+
+	private MSNID connectID;
 
 	protected IHistoryManager historyManager = new IHistoryManager() {
 
@@ -128,6 +129,8 @@ final class MSNContainer implements IContainer, IChatManager,
 
 	MSNContainer() throws IDCreateException {
 		guid = IDFactory.getDefault().createGUID();
+		namespace = IDFactory.getDefault().getNamespaceByName(
+				Activator.NAMESPACE_ID);
 		user = new Account();
 		chatSessions = new Hashtable();
 		containerListeners = new ArrayList();
@@ -140,11 +143,11 @@ final class MSNContainer implements IContainer, IChatManager,
 
 	public void connect(ID targetID, IConnectContext connectContext)
 			throws ContainerConnectException {
-		if (!(targetID instanceof StringID)) {
+		if (!(targetID instanceof MSNID)) {
 			throw new ContainerConnectException();
 		}
 
-		connectID = targetID;
+		connectID = (MSNID) targetID;
 		client = new MsnClient();
 		ObjectCallback[] cb = { new ObjectCallback() };
 		try {
@@ -152,8 +155,9 @@ final class MSNContainer implements IContainer, IChatManager,
 			client.addSessionListener(new ISessionListener() {
 				public void sessionConnected(ChatSession session) {
 					try {
-						final ID toID = IDFactory.getDefault().createStringID(
-								session.getParticipants()[0].getEmail());
+						Contact contact = session.getParticipants()[0];
+						final ID toID = namespace.createInstance(new Object[] {
+								contact.getEmail(), contact.getDisplayName() });
 						chatSessions.put(toID, session);
 						session.addChatSessionListener(new ChatSessionListener(
 								toID));
@@ -167,8 +171,8 @@ final class MSNContainer implements IContainer, IChatManager,
 					new IContactListListener() {
 
 						public void contactAdded(Contact contact) {
-							final MSNRosterEntry entry = new MSNRosterEntry(MSNContainer.this,
-									contact);
+							final MSNRosterEntry entry = new MSNRosterEntry(
+									MSNContainer.this, contact);
 							contact.addContactListener(new IContactListener() {
 
 								public void nameChanged(String name) {
@@ -214,8 +218,8 @@ final class MSNContainer implements IContainer, IChatManager,
 
 						public void contactAddedUser(String email) {
 							try {
-								fireHandleSubscriptionRequest(IDFactory
-										.getDefault().createStringID(email));
+								fireHandleSubscriptionRequest(namespace
+										.createInstance(new Object[] { email }));
 							} catch (IDCreateException e) {
 								// ignored
 							}
@@ -231,6 +235,7 @@ final class MSNContainer implements IContainer, IChatManager,
 			fireContainerEvent(new ContainerConnectingEvent(guid, connectID));
 			client.connect(connectID.getName(), (String) cb[0].getObject());
 			fireContainerEvent(new ContainerConnectedEvent(guid, connectID));
+			connectID.setUserName(client.getDisplayName());
 		} catch (UnsupportedCallbackException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -359,8 +364,8 @@ final class MSNContainer implements IContainer, IChatManager,
 	}
 
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(
-				StringID.class.getName());
+		return IDFactory.getDefault()
+				.getNamespaceByName(Activator.NAMESPACE_ID);
 	}
 
 	public ID getConnectedID() {
@@ -659,7 +664,9 @@ final class MSNContainer implements IContainer, IChatManager,
 		return historyManager;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRoster#getPresenceContainerAdapter()
 	 */
 	public IPresenceContainerAdapter getPresenceContainerAdapter() {
