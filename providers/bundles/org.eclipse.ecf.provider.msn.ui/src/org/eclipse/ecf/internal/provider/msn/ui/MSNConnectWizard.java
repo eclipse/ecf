@@ -138,7 +138,8 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 				.createPasswordConnectContext(page.getPassword());
 
 		try {
-			targetID = IDFactory.getDefault().createStringID(page.getEmail());
+			targetID = container.getConnectNamespace().createInstance(
+					new Object[] { page.getEmail() });
 		} catch (IDCreateException e) {
 			new ContainerConnectErrorDialog(workbench
 					.getActiveWorkbenchWindow().getShell(), 1,
