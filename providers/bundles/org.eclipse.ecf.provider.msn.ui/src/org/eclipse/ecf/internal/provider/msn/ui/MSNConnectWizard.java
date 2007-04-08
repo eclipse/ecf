@@ -18,7 +18,6 @@ import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.IExceptionHandler;
@@ -72,9 +71,22 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 	private void openView() {
 		try {
 			MultiRosterView view = (MultiRosterView) workbench
-					.getActiveWorkbenchWindow().getActivePage().showView(
+					.getActiveWorkbenchWindow().getActivePage().findView(
 							MultiRosterView.VIEW_ID);
+			if (view == null) {
+				view = (MultiRosterView) workbench.getActiveWorkbenchWindow()
+						.getActivePage().showView(MultiRosterView.VIEW_ID,
+								null, IWorkbenchPage.VIEW_CREATE);
+			}
 			view.addContainer(container);
+			IWorkbenchPage page = workbench.getActiveWorkbenchWindow()
+					.getActivePage();
+			if (!page.isPartVisible(view)) {
+				IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) view
+						.getSite().getAdapter(
+								IWorkbenchSiteProgressService.class);
+				service.warnOfContentChange();
+			}
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}
