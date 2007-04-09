@@ -13,6 +13,11 @@ package org.eclipse.ecf.discovery.service;
 
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 
+/**
+ * OSGI discovery service interface.  This interface should be registered
+ * by providers when they wish to expose discovery services to OSGI
+ * service clients.
+ */
 public interface IDiscoveryService extends IDiscoveryContainerAdapter {
 
 }
