@@ -14,7 +14,9 @@ package org.eclipse.ecf.remoteservice.service;
 import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
 
 /**
- * Remote Service OSGI service.
+ * OSGI remote service interface.  This interface should be registered
+ * by providers when they wish to expose remote service services to OSGI
+ * service clients.
  */
 public interface IRemoteServiceService extends IRemoteServiceContainerAdapter {
 
