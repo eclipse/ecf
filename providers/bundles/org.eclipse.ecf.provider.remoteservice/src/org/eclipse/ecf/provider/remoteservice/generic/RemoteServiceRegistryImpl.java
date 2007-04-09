@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
@@ -24,11 +25,11 @@ public class RemoteServiceRegistryImpl implements Serializable {
 
 	private static final long serialVersionUID = -291866447335444599L;
 
-	protected static final String REMOTEOBJECTCLASS = "remoteObjectClass";
+	protected static final String REMOTEOBJECTCLASS = Constants.OBJECTCLASS;
 
-	protected static final String REMOTESERVICE_ID = "remote.service.id";
+	protected static final String REMOTESERVICE_ID = Constants.SERVICE_ID;
 
-	protected static final String REMOTESERVICE_RANKING = "remote.service.ranking";
+	protected static final String REMOTESERVICE_RANKING = Constants.SERVICE_RANKING;
 
 	protected ID containerID;
 
