@@ -14,7 +14,9 @@ package org.eclipse.ecf.presence.service;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 
 /**
- *
+ * OSGI presence service interface.  This interface should be registered
+ * by providers when they wish to expose presence services to OSGI
+ * service clients.
  */
 public interface IPresenceService extends IPresenceContainerAdapter {
 
