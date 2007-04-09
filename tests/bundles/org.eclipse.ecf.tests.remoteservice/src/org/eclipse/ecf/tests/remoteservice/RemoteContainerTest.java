@@ -138,7 +138,7 @@ public class RemoteContainerTest extends AbstractRemoteServiceTestCase {
 			service.callSynch(createRemoteCall("concat1",new Object [] { "first", "second" }));
 			fail();
 		} catch (ECFException e) {
-			// Exception should occure
+			// Exception should occur
 		}
 		
 		// Following should throw exception because wrong number of params for concat	
@@ -146,7 +146,7 @@ public class RemoteContainerTest extends AbstractRemoteServiceTestCase {
 			service.callSynch(createRemoteCall("concat",new Object [] { "first" }));
 			fail();
 		} catch (ECFException e) {
-			// Exception should occure
+			// Exception should occur
 		}
 		
 	}
