@@ -31,6 +31,13 @@
 		</antcall>
 	</target>
 
+	<target name="org.eclipse.ecf.provider.filetransfer">
+		<eclipse.convertPath property="org.eclipse.ecf.provider.filetransfer.manifest" resourcePath="/org.eclipse.ecf.provider.filetransfer/plugin.xml"/>
+		<antcall target="_plugin">
+			<param name="manifest.path" value="${org.eclipse.ecf.provider.filetransfer.manifest}"/>
+		</antcall>
+	</target>
+
 	<target name="org.eclipse.ecf.presence.bot">
 		<eclipse.convertPath property="org.eclipse.ecf.provider.manifest" resourcePath="/org.eclipse.ecf.presence.bot/plugin.xml"/>
 		<antcall target="_plugin">
@@ -53,7 +60,7 @@
 		</antcall>
 	</target>
 
-	<target name="schema" depends="org.eclipse.ecf,org.eclipse.ecf.identity,org.eclipse.ecf.sharedobject,org.eclipse.ecf.provider,org.eclipse.ecf.server.generic,org.eclipse.ecf.ui,org.eclipse.ecf.presence.bot">
+	<target name="schema" depends="org.eclipse.ecf,org.eclipse.ecf.identity,org.eclipse.ecf.sharedobject,org.eclipse.ecf.provider,org.eclipse.ecf.provider.filetransfer,org.eclipse.ecf.server.generic,org.eclipse.ecf.ui,org.eclipse.ecf.presence.bot">
 		<!-- unfortunately, the task generates local filesystem references... fix them! -->
 		<property name="cssurl" value="${osgi.install.area}plugins/org.eclipse.platform.doc.isv_3.1.0"/>
 		<replace dir="${dest.path}" token="${cssurl}" value="../../../../org.eclipse.platform.doc.isv" includes="*.html"/>
