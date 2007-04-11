@@ -14,4 +14,5 @@ Bundle-RequiredExecutionEnvironment: CDC-1.0/Foundation-1.0,
  J2SE-1.3
 Bundle-Vendor: %providerName
 Export-Package: org.eclipse.ecf.filetransfer.ui,
+ org.eclipse.ecf.filetransfer.ui.actions,
  org.eclipse.ecf.internal.filetransfer.ui;x-internal:=true
