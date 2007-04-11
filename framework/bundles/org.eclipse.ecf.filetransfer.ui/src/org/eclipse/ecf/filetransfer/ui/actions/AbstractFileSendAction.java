@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.filetransfer.ui.action;
+package org.eclipse.ecf.filetransfer.ui.actions;
 
 import java.io.File;
 import java.util.Map;
