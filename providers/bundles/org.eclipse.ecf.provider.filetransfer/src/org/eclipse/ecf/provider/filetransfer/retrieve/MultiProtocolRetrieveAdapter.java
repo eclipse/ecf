@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,6 @@ package org.eclipse.ecf.provider.filetransfer.retrieve;
 import java.net.MalformedURLException;
 import java.util.Map;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -25,6 +23,7 @@ import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
+import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 
@@ -85,11 +84,12 @@ public class MultiProtocolRetrieveAdapter implements
 			throw new IncomingFileTransferException(
 					Messages.AbstractRetrieveFileTransfer_MalformedURLException);
 		}
+
 		IRetrieveFileTransferContainerAdapter fileTransfer = null;
-		if (HttpClientRetrieveFileTransfer.supportsProtocol(protocol))
-			fileTransfer = new HttpClientRetrieveFileTransfer(new HttpClient(
-					new MultiThreadedHttpConnectionManager()));
-		else
+		fileTransfer = Activator.getDefault().getFileTransfer(protocol);
+		
+		// TODO do we want to default to this?
+		if(fileTransfer == null)
 			fileTransfer = new UrlConnectionRetrieveFileTransfer();
 
 		// Set connect context

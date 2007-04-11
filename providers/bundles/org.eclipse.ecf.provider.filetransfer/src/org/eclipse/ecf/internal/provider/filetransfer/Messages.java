@@ -25,6 +25,7 @@ public class Messages extends NLS {
 	public static String AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK;
 	public static String AbstractRetrieveFileTransfer_Status_Transfer_Exception;
 	public static String AbstractRetrieveFileTransfer_TransferListener_Not_Null;
+	public static String Activator_EXCEPTION_URLConnection_CANNOT_BE_CREATED;
 	public static String FileTransferNamespace_Exception_Args_Null;
 	public static String FileTransferNamespace_Exception_Create_Instance;
 	public static String FileTransferNamespace_Exception_Create_Instance_Failed;
@@ -33,6 +34,8 @@ public class Messages extends NLS {
 	public static String FileTransferNamespace_Http_Protocol;
 	public static String FileTransferNamespace_Https_Protocol;
 	public static String FileTransferNamespace_Jar_Protocol;
+	public static String FileTransferNamespace_Mailto_Protocol;
+	public static String FileTransferNamespace_Gopher_Protocol;
 	public static String FileTransferNamespace_Namespace_Protocol;
 	public static String HttpClientRetrieveFileTransfer_Http_ProxyHost_Prop;
 	public static String HttpClientRetrieveFileTransfer_Http_ProxyPort_Prop;

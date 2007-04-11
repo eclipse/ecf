@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. All rights reserved. This
+ * Copyright (c) 2004, 2007 Composent, Inc. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -27,16 +27,6 @@ public class FileTransferNamespace extends Namespace {
 	private static final long serialVersionUID = 8204058147686930765L;
 
 	public static final String PROTOCOL = Messages.FileTransferNamespace_Namespace_Protocol;
-
-	public static final String[] jvmSchemes = new String[] {
-			Messages.FileTransferNamespace_Http_Protocol,
-			Messages.FileTransferNamespace_Ftp_Protocol,
-			Messages.FileTransferNamespace_File_Protocol,
-			Messages.FileTransferNamespace_Jar_Protocol };
-
-	public static final String[] localSchemes = new String[] {
-			Messages.FileTransferNamespace_Http_Protocol,
-			Messages.FileTransferNamespace_Https_Protocol };
 
 	/*
 	 * (non-Javadoc)
@@ -69,12 +59,8 @@ public class FileTransferNamespace extends Namespace {
 		Set result = new HashSet();
 		String[] platformSchemes = Activator.getDefault()
 				.getPlatformSupportedSchemes();
-		for (int i = 0; i < jvmSchemes.length; i++)
-			result.add(jvmSchemes[i]);
 		for (int i = 0; i < platformSchemes.length; i++)
 			result.add(platformSchemes[i]);
-		for (int i = 0; i < localSchemes.length; i++)
-			result.add(localSchemes[i]);
 		return (String[]) result.toArray(new String[] {});
 	}
 

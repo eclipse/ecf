@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. All rights reserved. This
+ * Copyright (c) 2004, 2007 Composent, Inc. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -25,19 +25,19 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
-import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.eclipse.ecf.internal.provider.filetransfer.Activator;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 import org.eclipse.osgi.util.NLS;
 
 public abstract class AbstractRetrieveFileTransfer implements
-		IIncomingFileTransfer, IRetrieveFileTransferContainerAdapter,
+		IIncomingFileTransfer, IRetrieveFileTransfer,
 		IFileTransferPausable {
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
@@ -97,7 +97,7 @@ public abstract class AbstractRetrieveFileTransfer implements
 	public AbstractRetrieveFileTransfer() {
 	}
 
-	class FileTransferJob extends Job {
+	public class FileTransferJob extends Job {
 
 		public FileTransferJob(String name) {
 			super(name);
