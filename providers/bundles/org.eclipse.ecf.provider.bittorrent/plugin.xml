@@ -15,9 +15,10 @@
             name="ecf.bittorrent"/>
    </extension>
    <extension
-         point="org.eclipse.ecf.filetransfer.urlStreamHandlerService">
-      <urlStreamHandlerService
-            protocol="torrent"
-            serviceClass="org.eclipse.ecf.internal.provider.bittorrent.BitTorrentURLStreamHandlerService"/>
+         point="org.eclipse.ecf.provider.filetransfer.fileTransferProtocolFactory">
+      <fileTransferProtocolFactory
+            class="org.eclipse.ecf.internal.provider.bittorrent.BitTorrentRetrieveFileTransferFactory"
+            protocol="torrent">
+      </fileTransferProtocolFactory>
    </extension>
 </plugin>

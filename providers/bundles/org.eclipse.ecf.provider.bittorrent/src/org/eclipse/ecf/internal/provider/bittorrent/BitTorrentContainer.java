@@ -35,21 +35,21 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
-import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
+import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.eclipse.osgi.util.NLS;
 
-final class BitTorrentContainer implements IContainer,
-		IRetrieveFileTransferContainerAdapter {
+public final class BitTorrentContainer implements IContainer,
+		IRetrieveFileTransfer {
 
 	private final List containerListeners;
 
 	private final ID id;
 
-	BitTorrentContainer() throws IDCreateException {
+	public BitTorrentContainer() throws IDCreateException {
 		id = IDFactory.getDefault().createGUID();
 		containerListeners = new ArrayList();
 		TorrentConfiguration.setConfigurationPath(new File(System
