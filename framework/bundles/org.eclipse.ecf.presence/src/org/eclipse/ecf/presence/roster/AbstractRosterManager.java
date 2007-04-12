@@ -36,38 +36,41 @@ public abstract class AbstractRosterManager implements IRosterManager {
 
 	public synchronized void addRosterSubscriptionListener(
 			IRosterSubscriptionListener listener) {
-		if (listener == null)
-			return;
-		rosterSubscriptionListeners.add(listener);
-	}
-
-	public synchronized void addRosterUpdateListener(
-			IRosterUpdateListener listener) {
-		if (listener == null)
-			return;
-		rosterUpdateListeners.add(listener);
-	}
-
-	protected void fireRosterUpdate(IRosterItem changedItem) {
-		synchronized (this) {
-			for (Iterator i = rosterUpdateListeners.iterator(); i.hasNext();) {
-				IRosterUpdateListener l = (IRosterUpdateListener) i.next();
-				l.handleRosterUpdate(roster, changedItem);
+		if (listener != null) {
+			synchronized (rosterSubscriptionListeners) {
+				rosterSubscriptionListeners.add(listener);
 			}
 		}
 	}
 
-	protected void fireSubscriptionListener(ID fromID, IPresence presence) {
-		synchronized (this) {
+	public synchronized void addRosterUpdateListener(
+			IRosterUpdateListener listener) {
+		if (listener != null) {
+			synchronized (rosterUpdateListeners) {
+				rosterUpdateListeners.add(listener);
+			}
+		}
+	}
+
+	protected void fireRosterUpdate(IRosterItem changedItem) {
+		synchronized (rosterUpdateListeners) {
+			for (Iterator i = rosterUpdateListeners.iterator(); i.hasNext();)
+				((IRosterUpdateListener) i.next()).handleRosterUpdate(roster,
+						changedItem);
+		}
+	}
+
+	protected void fireSubscriptionListener(ID fromID, IPresence.Type presencetype) {
+		synchronized (rosterSubscriptionListeners) {
 			for (Iterator i = rosterSubscriptionListeners.iterator(); i
 					.hasNext();) {
 				IRosterSubscriptionListener l = (IRosterSubscriptionListener) i
 						.next();
-				if (presence.getType().equals(IPresence.Type.SUBSCRIBE)) {
+				if (presencetype.equals(IPresence.Type.SUBSCRIBE)) {
 					l.handleSubscribeRequest(fromID);
-				} else if (presence.getType().equals(IPresence.Type.SUBSCRIBED)) {
+				} else if (presencetype.equals(IPresence.Type.SUBSCRIBED)) {
 					l.handleSubscribed(fromID);
-				} else if (presence.getType().equals(
+				} else if (presencetype.equals(
 						IPresence.Type.UNSUBSCRIBED)) {
 					l.handleUnsubscribed(fromID);
 				}
@@ -85,16 +88,20 @@ public abstract class AbstractRosterManager implements IRosterManager {
 
 	public synchronized void removeRosterSubscriptionListener(
 			IRosterSubscriptionListener listener) {
-		if (listener == null)
-			return;
-		rosterSubscriptionListeners.remove(listener);
+		if (listener != null) {
+			synchronized (rosterSubscriptionListeners) {
+				rosterSubscriptionListeners.remove(listener);				
+			}
+		}
 	}
 
 	public synchronized void removeRosterUpdateListener(
 			IRosterUpdateListener listener) {
-		if (listener == null)
-			return;
-		rosterSubscriptionListeners.remove(listener);
+		if (listener != null) {
+			synchronized (rosterUpdateListeners) {
+				rosterUpdateListeners.remove(listener);				
+			}
+		}
 	}
 
 	public Object getAdapter(Class adapter) {
