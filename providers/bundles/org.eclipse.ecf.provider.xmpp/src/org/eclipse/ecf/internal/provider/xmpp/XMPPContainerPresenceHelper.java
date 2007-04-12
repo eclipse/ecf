@@ -160,7 +160,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		}
 
 		public void notifySubscriptionListener(ID fromID, IPresence presence) {
-			this.fireSubscriptionListener(fromID, presence);
+			this.fireSubscriptionListener(fromID, presence.getType());
 		}
 
 		public void notifyRosterUpdate(IRosterItem changedItem) {
