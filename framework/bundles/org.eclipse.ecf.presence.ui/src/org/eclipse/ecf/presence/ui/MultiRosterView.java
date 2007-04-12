@@ -23,6 +23,7 @@ import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
+import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.Presence;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
@@ -102,6 +103,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	private IRosterSubscriptionListener subscriptionListener;
 
+	private IPresenceListener presenceListener;
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -137,6 +140,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				| SWT.V_SCROLL);
 		getSite().setSelectionProvider(treeViewer);
 		subscriptionListener = new RosterSubscriptionListener();
+		presenceListener = new PresenceListener();
 		treeViewer.setContentProvider(new MultiRosterContentProvider());
 		treeViewer.setLabelProvider(new MultiRosterLabelProvider());
 		treeViewer.setInput(rosterAccounts);
@@ -391,6 +395,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			account.getRosterManager().removeRosterSubscriptionListener(
 					subscriptionListener);
 		}
+		for (Iterator i = rosterAccounts.iterator(); i.hasNext(); ) {
+			MultiRosterAccount account = (MultiRosterAccount) i.next();
+			account.getRosterManager().removePresenceListener(presenceListener);
+		}
 		rosterAccounts.clear();
 		super.dispose();
 	}
@@ -462,6 +470,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 			containerAdapter.getRosterManager().addRosterSubscriptionListener(
 					subscriptionListener);
+			containerAdapter.getRosterManager().addPresenceListener(presenceListener);
 			setStatusMenu.setVisible(true);
 			getViewSite().getActionBars().getMenuManager().update(true);
 			treeViewer.add(treeViewer.getInput(), account.getRoster());
@@ -477,7 +486,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		}
 
 		public void handleSubscribed(ID fromID) {
-			// TODO Auto-generated method stub
 		}
 
 		public void handleUnsubscribed(ID fromID) {
@@ -500,6 +508,35 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	}
 
+	private class PresenceListener implements IPresenceListener {
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.presence.IPresenceListener#handleRosterEntryAdd(org.eclipse.ecf.presence.roster.IRosterEntry)
+		 */
+		public void handleRosterEntryAdd(final IRosterEntry entry) {
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.presence.IPresenceListener#handleRosterEntryRemove(org.eclipse.ecf.presence.roster.IRosterEntry)
+		 */
+		public void handleRosterEntryRemove(IRosterEntry entry) {
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.presence.IPresenceListener#handleRosterEntryUpdate(org.eclipse.ecf.presence.roster.IRosterEntry)
+		 */
+		public void handleRosterEntryUpdate(IRosterEntry entry) {
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.presence.IParticipantListener#handlePresence(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.presence.IPresence)
+		 */
+		public void handlePresence(ID fromID, IPresence presence) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
 	private class ViewerToolTip extends ToolTip {
 
 		public static final String HEADER_BG_COLOR = Activator.PLUGIN_ID
