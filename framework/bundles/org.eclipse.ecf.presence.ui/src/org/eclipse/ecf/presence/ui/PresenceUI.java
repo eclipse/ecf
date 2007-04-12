@@ -94,6 +94,8 @@ public class PresenceUI {
 		this.typingMessageSender = this.chatManager.getTypingMessageSender();
 		this.soContainer = (ISharedObjectContainer) this.container
 				.getAdapter(ISharedObjectContainer.class);
+		
+		this.groupID = container.getConnectedID();
 	}
 
 	public void showForUser(final IUser localUser) {
