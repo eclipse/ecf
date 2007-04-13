@@ -65,12 +65,12 @@
       <view
             class="org.eclipse.ecf.presence.ui.MessagesView"
             id="org.eclipse.ecf.presence.ui.MessagesView"
-            name="Messages">
+            name="%views.messages">
       </view>
       <view
             class="org.eclipse.ecf.presence.ui.MultiRosterView"
             id="org.eclipse.ecf.presence.ui.MultiRosterView"
-            name="Multi Roster View">
+            name="%views.multiRosterView">
       </view>
    </extension>
 
