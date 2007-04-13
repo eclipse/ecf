@@ -34,20 +34,22 @@ public class LogHelper {
 			return IStatus.INFO;
 		}
 	}
-	
+
 	/**
 	 * @param status
 	 * @return String the string version of the status
 	 */
 	public static String getLogMessage(IStatus status) {
-		if (status == null) return "";
-		StringBuffer buf = new StringBuffer(status.getClass().getName()+"[");
-		buf.append("plugin=").append(status.getPlugin());
-		buf.append(";code=").append(status.getCode());
-		buf.append(";message=").append(status.getMessage());
-		buf.append(";severity").append(status.getSeverity());
-		buf.append(";exception=").append(status.getException());
-		buf.append(";children=").append(Arrays.asList(status.getChildren())).append("]");
+		if (status == null)
+			return ""; //$NON-NLS-1$
+		StringBuffer buf = new StringBuffer(status.getClass().getName() + '[');
+		buf.append("plugin=").append(status.getPlugin()); //$NON-NLS-1$
+		buf.append(";code=").append(status.getCode()); //$NON-NLS-1$
+		buf.append(";message=").append(status.getMessage()); //$NON-NLS-1$
+		buf.append(";severity").append(status.getSeverity()); //$NON-NLS-1$
+		buf.append(";exception=").append(status.getException()); //$NON-NLS-1$
+		buf.append(";children=").append(Arrays.asList(status.getChildren())) //$NON-NLS-1$
+				.append(']');
 		return buf.toString();
 	}
 
