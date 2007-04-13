@@ -53,7 +53,25 @@ public class RosterEntry extends RosterItem implements IRosterEntry {
 	public String getName() {
 		return user.getName();
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		if (obj instanceof RosterEntry) {
+			RosterEntry re = (RosterEntry) obj;
+			return re.getUser().getID().equals(getUser().getID());
+		}
+		return false;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		return getUser().getID().hashCode();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
