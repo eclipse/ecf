@@ -27,9 +27,11 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
+import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.ui.PresenceUI;
 
 public class CollabClient {
 	public static final String WORKSPACE_NAME = "<workspace>";
@@ -40,7 +42,7 @@ public class CollabClient {
 
 	static CollabClient collabClient = new CollabClient();
 
-	PresenceContainerUI presenceContainerUI = null;
+	PresenceUI presenceUI = null;
 
 	IRCChatRoomManagerUI ircchatRoomManagerUI = null;
 
@@ -95,8 +97,12 @@ public class CollabClient {
 					.getAdapter(IPresenceContainerAdapter.class);
 			if (pc != null) {
 				// Setup presence UI
-				presenceContainerUI = new PresenceContainerUI(pc);
-				presenceContainerUI.setup(newClient, targetID, username);
+				presenceUI = new PresenceUI(newClient, pc);
+				if (username == null) {
+					String name = targetID.getName();
+					username = name.substring(0, name.indexOf('@'));
+				}
+				presenceUI.showForUser(new User(targetID, username));
 			} else {
 				// Setup sharedobject container if the new instance supports
 				// this
