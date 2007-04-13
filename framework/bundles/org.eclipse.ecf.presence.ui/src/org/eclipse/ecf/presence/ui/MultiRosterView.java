@@ -21,6 +21,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.Messages;
+import org.eclipse.ecf.internal.presence.ui.dialogs.AddContactDialog;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
@@ -33,6 +34,7 @@ import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
+import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -48,6 +50,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -236,6 +239,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 										subscriptionListener);
 						treeViewer.remove(account);
 					}
+					rosterAccounts.clear();
 					refreshTreeViewer(null, false);
 					setStatusMenu.setVisible(false);
 					getViewSite().getActionBars().getMenuManager()
@@ -281,8 +285,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		if (element instanceof IRosterEntry) {
 			IRosterEntry entry = (IRosterEntry) element;
 			manager.add(imAction);
-			imAction.setText(NLS.bind(Messages.MultiRosterView_SendIM, entry
-					.getName()));
+			imAction.setText(Messages.MultiRosterView_SendIM);
 			// if the person is not online, we'll disable the action
 			imAction
 					.setEnabled(entry.getPresence().getType() == IPresence.Type.AVAILABLE);
@@ -359,6 +362,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		setStatusMenu.add(setOfflineAction);
 		setStatusMenu.setVisible(false);
 		manager.add(setStatusMenu);
+
 		manager.add(new Separator());
 		final ViewerFilter filter = new ViewerFilter() {
 			public boolean select(Viewer viewer, Object parentElement,
@@ -370,7 +374,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				}
 			}
 		};
-		IAction filterAction = new Action(Messages.MultiRosterView_ShowOffline,
+		manager.add(new Action(Messages.MultiRosterView_ShowOffline,
 				IAction.AS_CHECK_BOX) {
 			public void run() {
 				if (isChecked()) {
@@ -379,8 +383,27 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 					treeViewer.removeFilter(filter);
 				}
 			}
-		};
-		manager.add(filterAction);
+		});
+
+		manager.add(new Separator());
+		manager.add(new Action(Messages.MultiRosterView_AddContact) {
+			public void run() {
+				AddContactDialog dialog = new AddContactDialog(treeViewer
+						.getControl().getShell());
+				dialog.setInput(rosterAccounts);
+				if (Window.OK == dialog.open()) {
+					IPresenceContainerAdapter ipca = dialog.getSelection();
+					IRosterSubscriptionSender sender = ipca.getRosterManager()
+							.getRosterSubscriptionSender();
+					try {
+						sender.sendRosterAdd(dialog.getAccountID(), dialog
+								.getAlias(), null);
+					} catch (ECFException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 	}
 
 	/*
