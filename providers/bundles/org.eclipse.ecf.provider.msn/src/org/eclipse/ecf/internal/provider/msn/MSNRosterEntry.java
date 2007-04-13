@@ -33,7 +33,7 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 
 	private Collection groups;
 
-	private MSNRosterGroup parent;
+	private IRosterItem parent;
 
 	private final Contact contact;
 
@@ -119,11 +119,15 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 		return this;
 	}
 
-	void setParent(MSNRosterGroup parent) {
+	void setParent(IRosterItem parent) {
 		this.parent = parent;
-		ArrayList list = new ArrayList(1);
-		list.add(parent);
-		groups = Collections.unmodifiableCollection(list);
+		if (parent instanceof IRoster) {
+			groups = Collections.EMPTY_LIST;
+		} else {
+			ArrayList list = new ArrayList(1);
+			list.add(parent);
+			groups = Collections.unmodifiableCollection(list);
+		}
 	}
 
 	public IRosterItem getParent() {

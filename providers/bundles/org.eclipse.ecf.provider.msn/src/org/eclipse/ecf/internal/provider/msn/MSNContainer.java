@@ -169,43 +169,59 @@ final class MSNContainer implements IContainer, IChatManager,
 
 			client.getContactList().addContactListListener(
 					new IContactListListener() {
-
 						public void contactAdded(Contact contact) {
 							final MSNRosterEntry entry = new MSNRosterEntry(
 									MSNContainer.this, contact, namespace);
-							contact.addContactListener(new IContactListener() {
-
-								public void nameChanged(String name) {
-									fireRosterUpdate(entry);
-									fireRosterEntryUpdated(entry);
-								}
-
-								public void personalMessageChanged(
-										String personalMessage) {
-									entry.updatePersonalMessage();
-									fireRosterUpdate(entry);
-									fireRosterEntryUpdated(entry);
-								}
-
-								public void statusChanged(Status status) {
-									fireRosterUpdate(entry);
-									fireRosterEntryUpdated(entry);
-								}
-
-							});
 
 							for (int i = 0; i < entries.size(); i++) {
-								MSNRosterGroup group = (MSNRosterGroup) entries
-										.get(i);
-								if (group.getGroup().contains(contact)) {
-									group.add(entry);
-									fireRosterUpdate(group);
-									fireRosterEntryAdded(entry);
-									return;
+								Object e = entries.get(i);
+								if (e instanceof MSNRosterGroup) {
+									MSNRosterGroup group = (MSNRosterGroup) e;
+									if (group.getGroup().contains(contact)) {
+										MSNRosterEntry check = group
+												.getEntryFor(contact);
+										if (check == null) {
+											check = entry;
+											contact
+													.addContactListener(new IContactListener() {
+														public void nameChanged(
+																String name) {
+															fireRosterUpdate(entry);
+															fireRosterEntryUpdated(entry);
+														}
+
+														public void personalMessageChanged(
+																String personalMessage) {
+															entry
+																	.updatePersonalMessage();
+															fireRosterUpdate(entry);
+															fireRosterEntryUpdated(entry);
+														}
+
+														public void statusChanged(
+																Status status) {
+															fireRosterUpdate(entry);
+															fireRosterEntryUpdated(entry);
+														}
+													});
+											group.add(check);
+										}
+										fireRosterUpdate(group);
+										fireRosterEntryAdded(check);
+										return;
+									}
+								} else {
+									MSNRosterEntry check = (MSNRosterEntry) e;
+									if (entry.getContact().equals(
+											check.getContact())) {
+										fireRosterEntryAdded(check);
+										return;
+									}
 								}
 							}
 
 							entries.add(entry);
+							entry.setParent(MSNContainer.this);
 							fireRosterEntryAdded(entry);
 						}
 
@@ -226,11 +242,14 @@ final class MSNContainer implements IContainer, IChatManager,
 							}
 						}
 
+						public void contactRemovedUser(String email) {
+							// nothing to do
+						}
+
 						public void groupAdded(Group group) {
 							entries.add(new MSNRosterGroup(MSNContainer.this,
 									group));
 						}
-
 					});
 
 			fireContainerEvent(new ContainerConnectingEvent(guid, connectID));
@@ -630,8 +649,11 @@ final class MSNContainer implements IContainer, IChatManager,
 
 	public void sendRosterAdd(String user, String name, String[] groups)
 			throws ECFException {
-		// TODO: implement this when the protocol implementation supports this
-		throw new UnsupportedOperationException();
+		try {
+			client.getContactList().addContact(user, name);
+		} catch (IOException e) {
+			throw new ECFException(e);
+		}
 	}
 
 	public void sendRosterRemove(ID userID) throws ECFException {

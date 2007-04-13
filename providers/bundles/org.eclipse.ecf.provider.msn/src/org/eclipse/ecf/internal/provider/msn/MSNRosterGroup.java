@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
+import org.hantsuki.gokigenyou.Contact;
 import org.hantsuki.gokigenyou.Group;
 
 final class MSNRosterGroup implements IRosterGroup {
@@ -47,6 +48,16 @@ final class MSNRosterGroup implements IRosterGroup {
 		return group;
 	}
 
+	MSNRosterEntry getEntryFor(Contact contact) {
+		for (int i = 0; i < entries.size(); i++) {
+			MSNRosterEntry entry = (MSNRosterEntry) entries.get(i);
+			if (entry.getContact().equals(contact)) {
+				return entry;
+			}
+		}
+		return null;
+	}
+
 	public String getName() {
 		return group.getName();
 	}
@@ -59,7 +70,9 @@ final class MSNRosterGroup implements IRosterGroup {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.roster.IRosterItem#getRoster()
 	 */
 	public IRoster getRoster() {
