@@ -40,6 +40,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		this.addr = address;
 		this.serviceID = new ServiceID(type, null);
 		this.port = port;
+		this.priority = priority;
 		this.weight = weight;
 		this.properties = props;
 	}
