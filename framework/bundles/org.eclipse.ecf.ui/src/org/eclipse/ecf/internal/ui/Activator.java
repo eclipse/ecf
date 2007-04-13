@@ -27,7 +27,7 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class Activator extends AbstractUIPlugin {
 
-	public static final String PLUGIN_ID = "org.eclipse.ecf.ui";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.ui"; //$NON-NLS-1$
 
 	public static final String PREF_DISPLAY_TIMESTAMP = "TextChatComposite.displaytimestamp";
 

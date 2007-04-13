@@ -16,7 +16,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 public class SynchContainerConnectAction implements
 		IWorkbenchWindowActionDelegate {
 
-	private static final String RUN_METHOD = "run";
+	static final String RUN_METHOD = "run"; //$NON-NLS-1$
 
 	protected IWorkbenchWindow window;
 

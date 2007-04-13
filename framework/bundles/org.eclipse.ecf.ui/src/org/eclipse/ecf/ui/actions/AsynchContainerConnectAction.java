@@ -25,8 +25,6 @@ import org.eclipse.jface.action.IAction;
 
 public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 
-	private static final String RUN_METHOD = "run";
-
 	private static final int ERROR_CODE = 999;
 
 	public AsynchContainerConnectAction(IContainer container, ID targetID,
