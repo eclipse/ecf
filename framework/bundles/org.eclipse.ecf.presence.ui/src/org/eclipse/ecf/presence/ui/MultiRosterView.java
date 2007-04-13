@@ -514,6 +514,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		 * @see org.eclipse.ecf.presence.IPresenceListener#handleRosterEntryAdd(org.eclipse.ecf.presence.roster.IRosterEntry)
 		 */
 		public void handleRosterEntryAdd(final IRosterEntry entry) {
+			treeViewer.getControl().getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					treeViewer.add(entry.getParent(), entry);
+				}});
 		}
 
 		/* (non-Javadoc)
