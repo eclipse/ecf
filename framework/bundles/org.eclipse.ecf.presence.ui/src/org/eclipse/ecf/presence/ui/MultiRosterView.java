@@ -104,7 +104,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	private IRosterSubscriptionListener subscriptionListener;
 
 	private IPresenceListener presenceListener;
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -228,9 +228,9 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
-					while (!rosterAccounts.isEmpty()) {
+					for (int i = 0; i < rosterAccounts.size(); i++) {
 						MultiRosterAccount account = (MultiRosterAccount) rosterAccounts
-								.remove(0);
+								.get(i);
 						account.getRosterManager()
 								.removeRosterSubscriptionListener(
 										subscriptionListener);
@@ -395,7 +395,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			account.getRosterManager().removeRosterSubscriptionListener(
 					subscriptionListener);
 		}
-		for (Iterator i = rosterAccounts.iterator(); i.hasNext(); ) {
+		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
 			MultiRosterAccount account = (MultiRosterAccount) i.next();
 			account.getRosterManager().removePresenceListener(presenceListener);
 		}
@@ -470,7 +470,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 			containerAdapter.getRosterManager().addRosterSubscriptionListener(
 					subscriptionListener);
-			containerAdapter.getRosterManager().addPresenceListener(presenceListener);
+			containerAdapter.getRosterManager().addPresenceListener(
+					presenceListener);
 			setStatusMenu.setVisible(true);
 			getViewSite().getActionBars().getMenuManager().update(true);
 			treeViewer.add(treeViewer.getInput(), account.getRoster());
@@ -510,37 +511,48 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	private class PresenceListener implements IPresenceListener {
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see org.eclipse.ecf.presence.IPresenceListener#handleRosterEntryAdd(org.eclipse.ecf.presence.roster.IRosterEntry)
 		 */
 		public void handleRosterEntryAdd(final IRosterEntry entry) {
 			treeViewer.getControl().getDisplay().asyncExec(new Runnable() {
 				public void run() {
 					treeViewer.add(entry.getParent(), entry);
-				}});
+				}
+			});
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see org.eclipse.ecf.presence.IPresenceListener#handleRosterEntryRemove(org.eclipse.ecf.presence.roster.IRosterEntry)
 		 */
 		public void handleRosterEntryRemove(IRosterEntry entry) {
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see org.eclipse.ecf.presence.IPresenceListener#handleRosterEntryUpdate(org.eclipse.ecf.presence.roster.IRosterEntry)
 		 */
 		public void handleRosterEntryUpdate(IRosterEntry entry) {
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.presence.IParticipantListener#handlePresence(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.presence.IPresence)
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.presence.IParticipantListener#handlePresence(org.eclipse.ecf.core.identity.ID,
+		 *      org.eclipse.ecf.presence.IPresence)
 		 */
 		public void handlePresence(ID fromID, IPresence presence) {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 	}
+
 	private class ViewerToolTip extends ToolTip {
 
 		public static final String HEADER_BG_COLOR = Activator.PLUGIN_ID
