@@ -11,7 +11,8 @@ Export-Package: org.eclipse.ecf.internal.presence;x-internal:=true,
  org.eclipse.ecf.presence.chatroom,
  org.eclipse.ecf.presence.history,
  org.eclipse.ecf.presence.im,
- org.eclipse.ecf.presence.roster
+ org.eclipse.ecf.presence.roster,
+ org.eclipse.ecf.presence.service
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.3,
  CDC-1.0/Foundation-1.0
