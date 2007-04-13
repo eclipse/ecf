@@ -21,7 +21,7 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class PresencePlugin implements BundleActivator {
 
-	public static final String PLUGIN_ID = "org.eclipse.ecf.presence";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.presence"; //$NON-NLS-1$
 	
 	// The shared instance.
 	private static PresencePlugin plugin;
