@@ -21,10 +21,9 @@ public class MSNNamespace extends Namespace {
 
 	public ID createInstance(Object[] parameters) throws IDCreateException {
 		Assert.isNotNull(parameters);
-		switch (parameters.length) {
-		case 1:
+		if (parameters.length == 1 && parameters[0] instanceof String) {
 			return new MSNID(this, (String) parameters[0]);
-		default:
+		} else {
 			throw new IDCreateException();
 		}
 	}
