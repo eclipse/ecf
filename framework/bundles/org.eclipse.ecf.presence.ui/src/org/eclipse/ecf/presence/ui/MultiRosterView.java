@@ -362,29 +362,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		setStatusMenu.add(setOfflineAction);
 		setStatusMenu.setVisible(false);
 		manager.add(setStatusMenu);
-
-		manager.add(new Separator());
-		final ViewerFilter filter = new ViewerFilter() {
-			public boolean select(Viewer viewer, Object parentElement,
-					Object element) {
-				if (element instanceof IRosterEntry) {
-					return ((IRosterEntry) element).getPresence().getType() == IPresence.Type.AVAILABLE;
-				} else {
-					return true;
-				}
-			}
-		};
-		manager.add(new Action(Messages.MultiRosterView_ShowOffline,
-				IAction.AS_CHECK_BOX) {
-			public void run() {
-				if (isChecked()) {
-					treeViewer.addFilter(filter);
-				} else {
-					treeViewer.removeFilter(filter);
-				}
-			}
-		});
-
 		manager.add(new Separator());
 		manager.add(new Action(Messages.MultiRosterView_AddContact) {
 			public void run() {
