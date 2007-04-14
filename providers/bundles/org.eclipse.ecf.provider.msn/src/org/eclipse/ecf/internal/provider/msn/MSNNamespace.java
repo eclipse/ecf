@@ -17,14 +17,15 @@ import org.eclipse.ecf.core.identity.Namespace;
 
 public class MSNNamespace extends Namespace {
 
-	private static final String SCHEME_IDENTIFIER = "msn";
+	private static final String SCHEME_IDENTIFIER = "msn"; //$NON-NLS-1$
 
 	public ID createInstance(Object[] parameters) throws IDCreateException {
-		Assert.isNotNull(parameters);
+		Assert.isNotNull(parameters, Messages.MSNNamespace_ParameterIsNull);
 		if (parameters.length == 1 && parameters[0] instanceof String) {
 			return new MSNID(this, (String) parameters[0]);
 		} else {
-			throw new IDCreateException();
+			throw new IDCreateException(
+					Messages.MSNNamespace_ParameterIsInvalid);
 		}
 	}
 

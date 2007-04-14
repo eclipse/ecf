@@ -59,9 +59,9 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 	void updatePersonalMessage() {
 		String message = contact.getPersonalMessage();
 		if (message.equals("")) { //$NON-NLS-1$
-			properties.remove("Message");
+			properties.remove(Messages.MSNRosterEntry_Message);
 		} else {
-			properties.put("Message", message);
+			properties.put(Messages.MSNRosterEntry_Message, message);
 		}
 	}
 
