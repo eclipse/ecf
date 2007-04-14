@@ -82,7 +82,12 @@ public class MultiRosterContentProvider implements ITreeContentProvider {
 	public Object[] getElements(Object inputElement) {
 		if (inputElement instanceof List) {
 			input = inputElement;
-			return ((List) inputElement).toArray();
+			Object[] elements = ((List) inputElement).toArray();
+			for (int i = 0; i < elements.length; i++) {
+				MultiRosterAccount account = (MultiRosterAccount) elements[i];
+				elements[i] = account.getRoster();
+			}
+			return elements;
 		} else {
 			return new Object[0];
 		}

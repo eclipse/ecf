@@ -108,6 +108,28 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	private IPresenceListener presenceListener;
 
+	private ViewerFilter showOfflineFilter = new ViewerFilter() {
+		public boolean select(Viewer viewer, Object parentElement,
+				Object element) {
+			if (element instanceof IRosterEntry) {
+				return ((IRosterEntry) element).getPresence().getType() != IPresence.Type.UNAVAILABLE;
+			} else {
+				return true;
+			}
+		}
+	};
+
+	private ViewerFilter showEmptyGroupsFilter = new ViewerFilter() {
+		public boolean select(Viewer viewer, Object parentElement,
+				Object element) {
+			if (element instanceof IRosterGroup) {
+				return !((IRosterGroup) element).getEntries().isEmpty();
+			} else {
+				return true;
+			}
+		}
+	};
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -146,6 +168,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		presenceListener = new PresenceListener();
 		treeViewer.setContentProvider(new MultiRosterContentProvider());
 		treeViewer.setLabelProvider(new MultiRosterLabelProvider());
+		treeViewer.addFilter(showEmptyGroupsFilter);
 		treeViewer.setInput(rosterAccounts);
 		treeViewer.addOpenListener(new IOpenListener() {
 			public void open(OpenEvent e) {
@@ -362,6 +385,31 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		setStatusMenu.add(setOfflineAction);
 		setStatusMenu.setVisible(false);
 		manager.add(setStatusMenu);
+		manager.add(new Separator());
+
+		manager.add(new Action(Messages.MultiRosterView_ShowOffline,
+				Action.AS_CHECK_BOX) {
+			public void run() {
+				if (isChecked()) {
+					treeViewer.addFilter(showOfflineFilter);
+				} else {
+					treeViewer.removeFilter(showOfflineFilter);
+				}
+			}
+		});
+		IAction showEmptyGroupsAction = new Action(
+				Messages.MultiRosterView_ShowEmptyGroups, Action.AS_CHECK_BOX) {
+			public void run() {
+				if (isChecked()) {
+					treeViewer.addFilter(showEmptyGroupsFilter);
+				} else {
+					treeViewer.removeFilter(showEmptyGroupsFilter);
+				}
+			}
+		};
+		showEmptyGroupsAction.setChecked(true);
+		manager.add(showEmptyGroupsAction);
+
 		manager.add(new Separator());
 		manager.add(new Action(Messages.MultiRosterView_AddContact) {
 			public void run() {
