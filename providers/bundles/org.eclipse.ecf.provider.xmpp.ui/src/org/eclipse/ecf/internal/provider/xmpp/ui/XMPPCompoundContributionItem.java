@@ -42,7 +42,11 @@ public class XMPPCompoundContributionItem extends
 	private Shell shell;
 
 	protected IContributionItem[] getContributionItems() {
-		final IRosterEntry entry = getSelectedRosterEntry();
+		Object selection = getSelection();
+		if (!(selection instanceof IRosterEntry)) {
+			return EMPTY_ARRAY;
+		}
+		final IRosterEntry entry = (IRosterEntry) selection;
 		IContainer container = getContainerForRosterEntry(entry);
 		if (container instanceof XMPPContainer) {
 			shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
