@@ -10,22 +10,43 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.ui;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.ecf.core.ContainerConnectException;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.security.Callback;
+import org.eclipse.ecf.core.security.CallbackHandler;
+import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.security.NameCallback;
+import org.eclipse.ecf.core.security.UnsupportedCallbackException;
+import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.internal.presence.ui.dialogs.AddContactDialog;
+import org.eclipse.ecf.presence.IIMMessageEvent;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
 import org.eclipse.ecf.presence.Presence;
+import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
+import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
+import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
+import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
+import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
@@ -36,12 +57,17 @@ import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.ui.SharedImages;
+import org.eclipse.ecf.ui.dialogs.ChatRoomSelectionDialog;
+import org.eclipse.ecf.ui.views.ChatRoomView;
+import org.eclipse.ecf.ui.views.IChatRoomViewCloseListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -67,7 +93,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -78,7 +108,8 @@ import org.eclipse.ui.part.ViewPart;
  * multiple rosters in a single tree viewer. This class may be subclassed as
  * desired to add or customize behavior.
  */
-public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
+public class MultiRosterView extends ViewPart implements
+		IChatRoomViewCloseListener, IMultiRosterViewPart {
 
 	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.MultiRosterView"; //$NON-NLS-1$
 
@@ -87,6 +118,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	protected TreeViewer treeViewer;
 
 	protected List rosterAccounts = new ArrayList();
+
+	private Hashtable chatRooms = new Hashtable();
 
 	private IMenuManager setStatusMenu;
 
@@ -103,6 +136,9 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	private IAction setInvisibleAction;
 
 	private IAction setOfflineAction;
+
+	private IAction openChatRoomAction;
+	private IAction openAccountChatRoomAction;
 
 	private IRosterSubscriptionListener subscriptionListener;
 
@@ -193,6 +229,194 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		contributeToActionBars();
 	}
 
+	private String getChatRoomSecondaryID(ID roomID) {
+		try {
+			URI aURI = new URI(roomID.getName());
+			String auth = aURI.getAuthority();
+			String path = aURI.getPath();
+			return auth + path;
+		} catch (URISyntaxException e) {
+			return null;
+		}
+	}
+
+	private void showChatRooms(IChatRoomManager[] managers) {
+		// Create chat room selection dialog with managers, open
+		ChatRoomSelectionDialog dialog = new ChatRoomSelectionDialog(
+				getViewSite().getShell(), managers);
+		dialog.open();
+		// If selection cancelled then simply return
+		if (dialog.getReturnCode() != Window.OK)
+			return;
+		// Get selected room, selected manager, and selected IChatRoomInfo
+		ChatRoomSelectionDialog.Room room = dialog.getSelectedRoom();
+		IChatRoomInfo selectedInfo = room.getRoomInfo();
+		// If they are null then we can't proceed
+		if (room == null || selectedInfo == null) {
+			MessageDialog.openInformation(getViewSite().getShell(),
+					"No room selected", "Cannot connect to null room");
+			return;
+		}
+		// Now get the secondary ID from the selected room id
+		String secondaryID = getChatRoomSecondaryID(selectedInfo.getRoomID());
+		if (secondaryID == null) {
+			MessageDialog.openError(getViewSite().getShell(),
+					"Could not get identifier for room",
+					"Could not get proper identifier for chat room "
+							+ selectedInfo.getRoomID());
+			return;
+		}
+		// Check to make sure that we are not already connected to the
+		// selected room.
+		// If we are simply activate the existing view for the room and
+		// done
+		IWorkbenchWindow ww = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		IWorkbenchPage wp = ww.getActivePage();
+		RoomWithAView roomView = getRoomView(secondaryID);
+		if (roomView != null) {
+			// We've already connected to this room
+			// So just show it.
+			ChatRoomView view = roomView.getView();
+			wp.activate(view);
+			return;
+		}
+		// If we don't already have a connection/view to this room then
+		// now, create chat room instance
+		IChatRoomContainer chatRoom = null;
+		try {
+			chatRoom = selectedInfo.createChatRoomContainer();
+		} catch (ContainerCreateException e1) {
+			MessageDialog.openError(getViewSite().getShell(),
+					"Could not create chat room",
+					"Could not create chat room for account");
+		}
+		// Get the chat message sender callback so that we can send
+		// messages to chat room
+		IChatRoomMessageSender sender = chatRoom.getChatRoomMessageSender();
+		IViewPart view = null;
+		try {
+			IViewReference ref = wp.findViewReference(
+					"org.eclipse.ecf.ui.views.ChatRoomView", secondaryID);
+			if (ref == null) {
+				view = wp.showView("org.eclipse.ecf.ui.views.ChatRoomView",
+						secondaryID, IWorkbenchPage.VIEW_ACTIVATE);
+			} else {
+				view = ref.getView(true);
+			}
+			final ChatRoomView chatroomview = (ChatRoomView) view;
+			// initialize the chatroomview with the necessary
+			// information
+			chatroomview.initialize(MultiRosterView.this, secondaryID,
+					chatRoom, selectedInfo, sender);
+			// Add listeners so that the new chat room gets
+			// asynch notifications of various relevant chat room events
+			chatRoom.addMessageListener(new IIMMessageListener() {
+
+				public void handleMessageEvent(IIMMessageEvent messageEvent) {
+					if (messageEvent instanceof IChatRoomMessageEvent) {
+						IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
+								.getChatRoomMessage();
+						chatroomview.handleMessage(m.getFromID(), m
+								.getMessage());
+					}
+
+				}
+			});
+			chatRoom
+					.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
+						public void handlePresence(ID fromID, IPresence presence) {
+							chatroomview.handlePresence(fromID, presence);
+						}
+
+						public void handleArrived(IUser participant) {
+							chatroomview.handleJoin(participant);
+						}
+
+						public void handleDeparted(IUser participant) {
+							chatroomview.handleLeave(participant);
+						}
+
+						public void handleUpdated(IUser updatedParticipant) {
+							chatroomview.handleUpdated(updatedParticipant);
+						}
+					});
+		} catch (PartInitException e) {
+			MessageDialog.openError(getViewSite().getShell(),
+					"Can't initialize chat room view",
+					"Unexpected error initializing for chat room: "
+							+ selectedInfo.getName()
+							+ ".  Please see Error Log for details");
+			return;
+		}
+		// Now actually connect to chatroom
+		try {
+			chatRoom
+					.connect(selectedInfo.getRoomID(),
+							getChatJoinContext("Nickname for "
+									+ selectedInfo.getName()));
+			// If connect successful...we create a room with a view and add
+			// it to our known set
+			addRoomView(new RoomWithAView(chatRoom, (ChatRoomView) view,
+					secondaryID));
+		} catch (ContainerConnectException e1) {
+			MessageDialog.openError(getViewSite().getShell(),
+					"Could not connect", "Cannot connect to chat room "
+							+ selectedInfo.getName() + ", message: "
+							+ e1.getMessage());
+		}
+	}
+
+	private void addRoomView(RoomWithAView roomView) {
+		chatRooms.put(roomView.getID(), roomView);
+	}
+
+	private RoomWithAView getRoomView(String id) {
+		return (RoomWithAView) chatRooms.get(id);
+	}
+
+	private void removeRoomView(RoomWithAView roomView) {
+		chatRooms.remove(roomView.getID());
+	}
+
+	public void chatRoomViewClosing(String secondaryID) {
+		RoomWithAView roomView = (RoomWithAView) chatRooms.get(secondaryID);
+		if (roomView != null) {
+			roomView.getContainer().dispose();
+			removeRoomView(roomView);
+		}
+	}
+
+	private IConnectContext getChatJoinContext(final String windowText) {
+		return new IConnectContext() {
+			public CallbackHandler getCallbackHandler() {
+				return new CallbackHandler() {
+					public void handle(Callback[] callbacks)
+							throws IOException, UnsupportedCallbackException {
+						if (callbacks == null)
+							return;
+						for (int i = 0; i < callbacks.length; i++) {
+							if (callbacks[i] instanceof NameCallback) {
+								NameCallback ncb = (NameCallback) callbacks[i];
+								InputDialog id = new InputDialog(
+										MultiRosterView.this.getViewSite()
+												.getShell(), windowText, ncb
+												.getPrompt(), ncb
+												.getDefaultName(), null);
+								id.setBlockOnOpen(true);
+								id.open();
+								if (id.getReturnCode() != Window.OK)
+									// If user cancels, stop here
+									throw new IOException("User cancelled");
+								ncb.setName(id.getValue());
+							}
+						}
+					}
+				};
+			}
+		};
+	}
+
 	private void makeActions() {
 		imAction = new Action() {
 			public void run() {
@@ -271,6 +495,43 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		};
 		setOfflineAction.setChecked(true);
+
+		openChatRoomAction = new Action() {
+			public void run() {
+				// Get managers for all accounts currently connected to
+				List list = new ArrayList();
+				for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
+					MultiRosterAccount acct = (MultiRosterAccount) i.next();
+					IChatRoomManager man = acct.getPresenceContainerAdapter()
+							.getChatRoomManager();
+					if (man != null) {
+						list.add(man);
+					}
+				}
+				// get chat rooms, allow user to choose desired one and open it
+				showChatRooms((IChatRoomManager[]) list
+						.toArray(new IChatRoomManager[] {}));
+			}
+		};
+		openChatRoomAction.setText("Enter Chatroom");
+		openChatRoomAction.setToolTipText("Show chat rooms for all accounts");
+		openChatRoomAction.setImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
+		openChatRoomAction.setEnabled(true);
+
+		openAccountChatRoomAction = new Action() {
+			public void run() {
+				IStructuredSelection iss = (IStructuredSelection) treeViewer
+						.getSelection();
+				IRoster roster = (IRoster) iss.getFirstElement();
+				showChatRooms(new IChatRoomManager[] { roster
+						.getPresenceContainerAdapter().getChatRoomManager() });
+			}
+		};
+		openAccountChatRoomAction.setText("Show chat rooms for account");
+		openAccountChatRoomAction.setEnabled(true);
+		openAccountChatRoomAction.setImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
 	}
 
 	private void sendPresence(IPresence.Mode mode) {
@@ -312,9 +573,14 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			// if the person is not online, we'll disable the action
 			imAction
 					.setEnabled(entry.getPresence().getType() == IPresence.Type.AVAILABLE);
+			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 			manager.add(removeAction);
+		} else if (element instanceof IRoster) {
+			manager.add(openAccountChatRoomAction);
+			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		} else {
+			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		}
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
 	private IRosterEntry find(Collection items, ID userID) {
@@ -429,6 +695,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				}
 			}
 		});
+		manager.add(new Separator());
+		manager.add(openChatRoomAction);
 	}
 
 	/*
@@ -678,6 +946,33 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			} else {
 				return false;
 			}
+		}
+	}
+
+	class RoomWithAView {
+		IChatRoomContainer container;
+
+		ChatRoomView view;
+
+		String secondaryID;
+
+		RoomWithAView(IChatRoomContainer container, ChatRoomView view,
+				String secondaryID) {
+			this.container = container;
+			this.view = view;
+			this.secondaryID = secondaryID;
+		}
+
+		public IChatRoomContainer getContainer() {
+			return container;
+		}
+
+		public ChatRoomView getView() {
+			return view;
+		}
+
+		public String getID() {
+			return secondaryID;
 		}
 	}
 }
