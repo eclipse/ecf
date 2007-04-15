@@ -22,9 +22,9 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
@@ -73,16 +73,14 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		main.setLayout(new GridLayout());
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		TableViewer viewer = new TableViewer(main, SWT.BORDER
-				| SWT.FULL_SELECTION);
+		TableViewer viewer = new TableViewer(main, SWT.BORDER | SWT.H_SCROLL
+				| SWT.V_SCROLL | SWT.FULL_SELECTION);
 		Table table = viewer.getTable();
 
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		GridData tableGridData = new GridData(GridData.FILL_BOTH);
-		tableGridData.grabExcessHorizontalSpace = true;
+		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		table.setLayoutData(tableGridData);
 		TableColumn tc = new TableColumn(table, SWT.NONE);
 		tc.setText("Room Name");
 		tc.pack();
@@ -138,18 +136,18 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 				}
 			}
 		}
-		Room[] rooms = (Room[]) all.toArray(new Room[] {});
-		viewer.setInput(rooms);
+		viewer.setInput(all.toArray());
 
 		this.setTitle("Chat Room Selection");
 		this.setMessage("Select a Chat Room to Enter");
 
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				StructuredSelection s = (StructuredSelection) event
+			public void selectionChanged(SelectionChangedEvent e) {
+				IStructuredSelection s = (IStructuredSelection) e
 						.getSelection();
-				if (s.getFirstElement() instanceof Room) {
-					selectedRoom = (Room) s.getFirstElement();
+				Object o = s.getFirstElement();
+				if (o instanceof Room) {
+					selectedRoom = (Room) o;
 				}
 			}
 
@@ -171,8 +169,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 	private class ChatRoomContentProvider implements IStructuredContentProvider {
 
 		public Object[] getElements(Object inputElement) {
-
-			return (Room[]) inputElement;
+			return (Object[]) inputElement;
 		}
 
 		public void dispose() {
@@ -231,7 +228,6 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 	}
 
 	protected Control createButtonBar(Composite parent) {
-
 		Control bar = super.createButtonBar(parent);
 		this.getButton(Window.OK).setText("Enter Chat");
 		this.getButton(Window.OK).setEnabled(false);
