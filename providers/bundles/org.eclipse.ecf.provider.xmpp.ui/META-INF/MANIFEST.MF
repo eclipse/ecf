@@ -11,5 +11,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ecf,
  org.eclipse.ecf.ui,
  org.eclipse.ecf.presence,
- org.eclipse.ecf.presence.ui
+ org.eclipse.ecf.presence.ui,
+ org.eclipse.ecf.filetransfer,
+ org.eclipse.ecf.provider.xmpp,
+ org.eclipse.ecf.provider,
+ org.eclipse.ecf.sharedobject
 Eclipse-LazyStart: true
+Export-Package: org.eclipse.ecf.internal.provider.xmpp.ui;x-internal:=true

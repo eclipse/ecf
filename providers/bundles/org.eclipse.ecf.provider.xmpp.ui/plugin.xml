@@ -4,14 +4,24 @@
    <extension
          point="org.eclipse.ecf.ui.connectWizards">
       <wizard
-            class="org.eclipse.ecf.provider.xmpp.ui.wizards.XMPPConnectWizard"
+            class="org.eclipse.ecf.internal.provider.xmpp.ui.XMPPConnectWizard"
             containerFactoryName="ecf.xmpp.smack"
             id="org.eclipse.ecf.provider.ui.xmpp.xmppConnect"
             name="XMPP"/>
       <wizard
-            class="org.eclipse.ecf.provider.xmpp.ui.wizards.XMPPSConnectWizard"
+            class="org.eclipse.ecf.internal.provider.xmpp.ui.XMPPSConnectWizard"
             containerFactoryName="ecf.xmpps.smack"
             id="org.eclipse.ecf.provider.ui.xmpp.xmppsConnect"
             name="XMPPS"/>
+   </extension>
+      <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?after=additions">
+         <dynamic
+               class="org.eclipse.ecf.internal.provider.xmpp.ui.XMPPCompoundContributionItem"
+               id="org.eclipse.ecf.provider.xmpp.ui.dynamicContribution">
+         </dynamic>
+      </menuContribution>
    </extension>
 </plugin>
