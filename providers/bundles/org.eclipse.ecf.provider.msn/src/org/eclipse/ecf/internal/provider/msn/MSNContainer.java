@@ -156,8 +156,9 @@ final class MSNContainer implements IContainer, IChatManager,
 				public void sessionConnected(ChatSession session) {
 					try {
 						Contact contact = session.getParticipants()[0];
-						final ID toID = namespace.createInstance(new Object[] {
-								contact.getEmail(), contact.getDisplayName() });
+						final ID toID = namespace
+								.createInstance(new Object[] { contact
+										.getEmail() });
 						chatSessions.put(toID, session);
 						session.addChatSessionListener(new ChatSessionListener(
 								toID));
@@ -220,6 +221,24 @@ final class MSNContainer implements IContainer, IChatManager,
 								}
 							}
 
+							contact.addContactListener(new IContactListener() {
+								public void nameChanged(String name) {
+									fireRosterUpdate(entry);
+									fireRosterEntryUpdated(entry);
+								}
+
+								public void personalMessageChanged(
+										String personalMessage) {
+									entry.updatePersonalMessage();
+									fireRosterUpdate(entry);
+									fireRosterEntryUpdated(entry);
+								}
+
+								public void statusChanged(Status status) {
+									fireRosterUpdate(entry);
+									fireRosterEntryUpdated(entry);
+								}
+							});
 							entries.add(entry);
 							entry.setParent(MSNContainer.this);
 							fireRosterEntryAdded(entry);
