@@ -378,23 +378,15 @@ public class ECFConnection implements ISynchAsynchConnection {
 	}
 
 	public void sendRosterAdd(String user, String name, String[] groups)
-			throws IOException {
+			throws IOException, XMPPException {
 		Roster r = getRoster();
-		try {
-			r.createEntry(user, name, groups);
-		} catch (XMPPException e) {
-			e.printStackTrace();
-		}
+		r.createEntry(user, name, groups);
 	}
 
-	public void sendRosterRemove(String user) throws IOException {
+	public void sendRosterRemove(String user) throws XMPPException, IOException {
 		Roster r = getRoster();
 		RosterEntry re = r.getEntry(user);
-		try {
-			r.removeEntry(re);
-		} catch (XMPPException e) {
-			e.printStackTrace();
-		}
+		r.removeEntry(re);
 	}
 
 	/*

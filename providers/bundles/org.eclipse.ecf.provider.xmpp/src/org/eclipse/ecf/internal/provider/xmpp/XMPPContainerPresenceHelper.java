@@ -208,7 +208,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 				try {
 					getConnectionOrThrowIfNull().sendRosterAdd(user, name,
 							groups);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					traceAndThrowECFException("sendRosterAdd", e);
 				}
 			}
@@ -225,7 +225,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 					XMPPID xmppID = (XMPPID) userID;
 					getConnectionOrThrowIfNull().sendRosterRemove(
 							xmppID.getUsernameAtHost());
-				} catch (IOException e) {
+				} catch (Exception e) {
 					traceAndThrowECFException("sendRosterRemove", e);
 				}
 			}
@@ -378,37 +378,39 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	private void removeItemFromRoster(Collection rosterItems,
 			XMPPID itemIDToRemove) {
-		synchronized (rosterItems) {
-			for (Iterator i = rosterItems.iterator(); i.hasNext();) {
-				IRosterItem item = (IRosterItem) i.next();
-				if (item instanceof org.eclipse.ecf.presence.roster.RosterGroup) {
-					org.eclipse.ecf.presence.roster.RosterGroup group = (org.eclipse.ecf.presence.roster.RosterGroup) item;
-					removeItemFromRosterGroup(group, itemIDToRemove);
-					if (group.getEntries().size() == 0)
-						roster.removeItem(item);
-					rosterManager.notifyRosterUpdate(roster);
-				} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
-					if (((org.eclipse.ecf.presence.roster.RosterEntry) item)
-							.getUser().getID().equals(itemIDToRemove)) {
-						roster.removeItem(item);
-						rosterManager.notifyRosterUpdate(roster);
-					}
+		boolean removed = false;
+		for (Iterator i = rosterItems.iterator(); i.hasNext();) {
+			IRosterItem item = (IRosterItem) i.next();
+			if (item instanceof org.eclipse.ecf.presence.roster.RosterGroup) {
+				org.eclipse.ecf.presence.roster.RosterGroup group = (org.eclipse.ecf.presence.roster.RosterGroup) item;
+				removed = removeItemFromRosterGroup(group, itemIDToRemove);
+				// If group is empty, remove it too
+				if (group.getEntries().size() == 0)
+					i.remove();
+			} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
+				if (((org.eclipse.ecf.presence.roster.RosterEntry) item)
+						.getUser().getID().equals(itemIDToRemove)) {
+					i.remove();
+					removed = true;
 				}
 			}
 		}
+		if (removed) rosterManager.notifyRosterUpdate(roster);
+
 	}
 
-	private void removeItemFromRosterGroup(
+	private boolean removeItemFromRosterGroup(
 			org.eclipse.ecf.presence.roster.RosterGroup group,
 			XMPPID itemIDToRemove) {
 		for (Iterator i = group.getEntries().iterator(); i.hasNext();) {
 			org.eclipse.ecf.presence.roster.RosterEntry entry = (org.eclipse.ecf.presence.roster.RosterEntry) i
 					.next();
 			if (entry.getUser().getID().equals(itemIDToRemove)) {
-				group.remove(entry);
-				rosterManager.notifyRosterUpdate(group);
+				i.remove();
+				return true;
 			}
 		}
+		return false;
 	}
 
 	protected void handleMessageEvent(MessageEvent evt) {
