@@ -19,6 +19,9 @@ import org.eclipse.ecf.discovery.ui.views.DiscoveryView;
 import org.eclipse.ecf.discovery.ui.views.IDiscoveryController;
 
 public class CollabDiscoveryView extends DiscoveryView {
+	
+	public static final String VIEW_ID = "org.eclipse.ecf.example.collab.discoveryview"; //$NON-NLS-1$
+	
 	protected static final int SERVICE_REQUEST_TIMEOUT = 3000;
 	public CollabDiscoveryView() {
 		super();

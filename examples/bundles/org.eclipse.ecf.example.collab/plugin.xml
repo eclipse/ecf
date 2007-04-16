@@ -118,34 +118,10 @@
       <actionSet
             id="org.eclipse.ecf.example.collab.ui.actionSet"
             label="collabActionSet"
-            visible="true">
+            visible="false">
          <menu
                id="org.eclipse.ecf.example.collab.ui.connectMenu"
                label="connectMenu">
-            <separator
-                  name="connectSeparator">
-            </separator>
-         </menu>
-         <action
-               class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
-               icon="icons/im.gif"
-               id="org.eclipse.ecf.example.collab.ui.connectAction"
-               label="Connect to ECF IM/Chat Provider"
-               style="pulldown"
-               toolbarPath="connectSeparator"
-               tooltip="Connect to ECF IM/Chat Provider">
-         </action>
-      </actionSet>
-      <actionSet
-            id="org.eclipse.ecf.example.collab.ui.actionSet2"
-            label="collabActionSet2"
-            visible="true">
-         <menu
-               id="org.eclipse.ecf.example.collab.ui.connectMenu2"
-               label="connectMenu2">
-            <separator
-                  name="connectSeparator2">
-            </separator>
          </menu>
          <action
                class="org.eclipse.ecf.example.collab.actions.JoinGroupWizardAction"
@@ -155,6 +131,15 @@
                style="push"
                toolbarPath="connectSeparator2"
                tooltip="Connect to ECF Collaboration Group">
+         </action>
+         <action
+               class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
+               icon="icons/im.gif"
+               id="org.eclipse.ecf.example.collab.ui.connectAction"
+               label="Connect to ECF IM/Chat Provider"
+               style="pulldown"
+               toolbarPath="connectSeparator"
+               tooltip="Connect to ECF IM/Chat Provider">
          </action>
       </actionSet>
    </extension>
@@ -170,4 +155,13 @@
             name="Shared Editor"/>
    </extension>
   -->
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.eclipse.collaboration.internal.ui.perspective.CollaborationPerspective"
+            icon="icons/group.gif"
+            id="org.eclipse.collaboration.ui.perspective.collab"
+            name="%perspective.name">
+      </perspective>
+   </extension>
 </plugin>
