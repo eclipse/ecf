@@ -148,13 +148,15 @@ public class XMPPOutgoingFileTransferHelper implements
 				}
 			}
 		} else {
-			synchronized (incomingListeners) {
-				for (Iterator i = incomingListeners.iterator(); i.hasNext();) {
-					XMPPFileTransferRequestListener ftl = (XMPPFileTransferRequestListener) i
-							.next();
-					this.manager.removeFileTransferListener(ftl);
+			if (this.manager != null) {
+				synchronized (incomingListeners) {
+					for (Iterator i = incomingListeners.iterator(); i.hasNext();) {
+						XMPPFileTransferRequestListener ftl = (XMPPFileTransferRequestListener) i
+								.next();
+						this.manager.removeFileTransferListener(ftl);
+					}
+					this.manager = null;
 				}
-				this.manager = null;
 			}
 		}
 	}
