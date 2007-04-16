@@ -36,7 +36,7 @@ public class MultiRosterAccount {
 	IRosterUpdateListener updateListener = new IRosterUpdateListener() {
 		public void handleRosterUpdate(final IRoster roster,
 				final IRosterItem changedValue) {
-			Display.getDefault().syncExec(new Runnable() {
+			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					MultiRosterAccount.this.multiRosterView.refreshTreeViewer(
 							changedValue, true);
