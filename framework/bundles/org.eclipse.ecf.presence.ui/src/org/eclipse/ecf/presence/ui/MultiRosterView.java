@@ -250,9 +250,15 @@ public class MultiRosterView extends ViewPart implements
 			return;
 		// Get selected room, selected manager, and selected IChatRoomInfo
 		ChatRoomSelectionDialog.Room room = dialog.getSelectedRoom();
+		// If null then we can't proceed
+		if (room == null) {
+			MessageDialog.openInformation(getViewSite().getShell(),
+					"No room selected", "Cannot connect to null room");
+			return;
+		}
 		IChatRoomInfo selectedInfo = room.getRoomInfo();
-		// If they are null then we can't proceed
-		if (room == null || selectedInfo == null) {
+		// If null then we can't proceed
+		if (selectedInfo == null) {
 			MessageDialog.openInformation(getViewSite().getShell(),
 					"No room selected", "Cannot connect to null room");
 			return;
@@ -270,15 +276,12 @@ public class MultiRosterView extends ViewPart implements
 		// selected room.
 		// If we are simply activate the existing view for the room and
 		// done
-		IWorkbenchWindow ww = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
+		IWorkbenchWindow ww = getViewSite().getPage().getWorkbenchWindow();
 		IWorkbenchPage wp = ww.getActivePage();
 		RoomWithAView roomView = getRoomView(secondaryID);
 		if (roomView != null) {
-			// We've already connected to this room
-			// So just show it.
-			ChatRoomView view = roomView.getView();
-			wp.activate(view);
+			// We've already connected to this room, so just show it.
+			wp.activate(roomView.getView());
 			return;
 		}
 		// If we don't already have a connection/view to this room then
@@ -290,6 +293,7 @@ public class MultiRosterView extends ViewPart implements
 			MessageDialog.openError(getViewSite().getShell(),
 					"Could not create chat room",
 					"Could not create chat room for account");
+			return;
 		}
 		// Get the chat message sender callback so that we can send
 		// messages to chat room
