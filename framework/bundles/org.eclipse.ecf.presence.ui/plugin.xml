@@ -63,12 +63,16 @@
    <extension
          point="org.eclipse.ui.views">
       <view
+            category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.presence.ui.MessagesView"
+            icon="icons/im.gif"
             id="org.eclipse.ecf.presence.ui.MessagesView"
             name="%views.messages">
       </view>
       <view
+            category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.presence.ui.MultiRosterView"
+            icon="icons/buddy_available.gif"
             id="org.eclipse.ecf.presence.ui.MultiRosterView"
             name="%views.multiRosterView">
       </view>
