@@ -57,6 +57,9 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class ChatRoomView extends ViewPart implements IParticipantListener, IChatRoomInvitationListener {
+	
+	public static final String VIEW_ID = "org.eclipse.ecf.ui.views.ChatRoomView"; //$NON-NLS-1$
+	
 	private static final String USERNAME_HOST_DELIMETER = "@";
 
 	private static final int RATIO_WRITE_PANE = 2;

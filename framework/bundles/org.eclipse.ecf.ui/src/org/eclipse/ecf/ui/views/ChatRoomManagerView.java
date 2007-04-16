@@ -85,6 +85,9 @@ import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class ChatRoomManagerView extends ViewPart implements
 		IChatRoomInvitationListener {
+	
+	public static final String VIEW_ID = "org.eclipse.ecf.ui.views.ChatRoomManagerView";
+	
 	private static final String COMMAND_PREFIX = "/";
 
 	private static final String COMMAND_DELIM = " ";

@@ -105,7 +105,9 @@ import org.eclipse.ui.part.ViewPart;
 
 public class RosterView extends ViewPart implements IIMMessageListener,
 		IChatRoomViewCloseListener {
-	private static final String CHAT_ROOM_VIEW_CLASS = "org.eclipse.ecf.ui.views.ChatRoomView";
+	public static final String VIEW_ID = "org.eclipse.ecf.ui.view.rosterview"; //$NON-NLS-1$
+	
+	private static final String CHAT_ROOM_VIEW_CLASS = "org.eclipse.ecf.ui.views.ChatRoomView"; //$NON-NLS-1$
 
 	public static final String UNFILED_GROUP_NAME = "Buddies";
 
