@@ -344,7 +344,7 @@ public class MultiRosterView extends ViewPart implements
 			});
 			chatRoom
 					.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-						public void handlePresence(ID fromID, IPresence presence) {
+						public void handlePresenceUpdated(ID fromID, IPresence presence) {
 							chatroomview.handlePresence(fromID, presence);
 						}
 
