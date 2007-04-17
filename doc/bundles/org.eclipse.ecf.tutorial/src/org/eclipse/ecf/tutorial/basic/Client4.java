@@ -44,9 +44,6 @@ public class Client4 extends XMPPChatClient {
 			}
 			public void handleRosterEntryRemove(IRosterEntry entry) {
 				System.out.println("handleRosterEntryRemove("+entry+")");
-			}
-			public void handleRosterEntryUpdate(IRosterEntry entry) {
-				System.out.println("handleRosterEntryUpdate("+entry+")");
 			}});
 	}
 	public void createAndConnect() throws ECFException {
