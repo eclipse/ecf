@@ -17,10 +17,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
 
 /**
- * Presence information for a user. Implementers of this interface are provided
- * via the
- * {@link IParticipantListener#handlePresence(org.eclipse.ecf.core.identity.ID, IPresence)}
- * callback
+ * Presence information for a user. 
  * 
  */
 public interface IPresence extends IAdaptable, Serializable {
