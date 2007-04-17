@@ -855,14 +855,6 @@ public class MultiRosterView extends ViewPart implements
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see org.eclipse.ecf.presence.IPresenceListener#handleRosterEntryUpdate(org.eclipse.ecf.presence.roster.IRosterEntry)
-		 */
-		public void handleRosterEntryUpdate(IRosterEntry entry) {
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
 		 * @see org.eclipse.ecf.presence.IParticipantListener#handlePresence(org.eclipse.ecf.core.identity.ID,
 		 *      org.eclipse.ecf.presence.IPresence)
 		 */

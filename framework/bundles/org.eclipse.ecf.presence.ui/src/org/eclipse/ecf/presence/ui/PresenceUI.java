@@ -304,18 +304,7 @@ public class PresenceUI {
 							}
 						});
 					}
-
-					public void handleRosterEntryUpdate(final IRosterEntry entry) {
-						Display.getDefault().syncExec(new Runnable() {
-							public void run() {
-								rosterView
-										.handleRosterEntryUpdate(
-												PresenceUI.this.groupID,
-												entry);
-							}
-						});
-					}
-
+					
 					public void handleRosterEntryRemove(final IRosterEntry entry) {
 						Display.getDefault().syncExec(new Runnable() {
 							public void run() {
