@@ -238,7 +238,7 @@ public class MultiRosterView extends ViewPart implements
 		for (int i = 0; i < services.length; i++) {
 			IContainer container = (IContainer) services[i]
 					.getAdapter(IContainer.class);
-			if (container != null) {
+			if (container != null && container.getConnectedID() != null) {
 				addContainer(container);
 			}
 		}
