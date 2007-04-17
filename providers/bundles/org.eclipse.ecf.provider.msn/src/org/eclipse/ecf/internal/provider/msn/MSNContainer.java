@@ -144,7 +144,8 @@ final class MSNContainer implements IContainer, IChatManager,
 	public void connect(ID targetID, IConnectContext connectContext)
 			throws ContainerConnectException {
 		if (!(targetID instanceof MSNID)) {
-			throw new ContainerConnectException();
+			throw new ContainerConnectException(
+					Messages.MSNContainer_TargetIDNotMSNID);
 		}
 
 		connectID = (MSNID) targetID;
@@ -163,7 +164,7 @@ final class MSNContainer implements IContainer, IChatManager,
 						session.addChatSessionListener(new ChatSessionListener(
 								toID));
 					} catch (IDCreateException e) {
-						e.printStackTrace();
+						// ignored since this should not be possible
 					}
 				}
 			});
