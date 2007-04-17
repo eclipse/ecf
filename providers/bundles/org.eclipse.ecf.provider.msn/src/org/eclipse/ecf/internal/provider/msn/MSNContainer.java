@@ -62,6 +62,7 @@ import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.presence.roster.IRosterUpdateListener;
+import org.eclipse.ecf.presence.service.IPresenceService;
 import org.hantsuki.gokigenyou.ChatSession;
 import org.hantsuki.gokigenyou.Contact;
 import org.hantsuki.gokigenyou.Group;
@@ -73,9 +74,8 @@ import org.hantsuki.gokigenyou.events.IContactListener;
 import org.hantsuki.gokigenyou.events.ISessionListener;
 
 final class MSNContainer implements IContainer, IChatManager,
-		IChatMessageSender, IPresenceSender, IPresenceContainerAdapter,
-		IRoster, IRosterManager, IRosterSubscriptionSender,
-		ITypingMessageSender {
+		IChatMessageSender, IPresenceService, IPresenceSender, IRoster,
+		IRosterManager, IRosterSubscriptionSender, ITypingMessageSender {
 
 	private static final long serialVersionUID = 1676711994010767942L;
 
@@ -289,10 +289,11 @@ final class MSNContainer implements IContainer, IChatManager,
 			fireContainerEvent(new ContainerConnectingEvent(guid, connectID));
 			client.connect(connectID.getName(), (String) cb[0].getObject());
 			fireContainerEvent(new ContainerConnectedEvent(guid, connectID));
+			Activator.getDefault().registerService(this);
 		} catch (UnsupportedCallbackException e) {
-			e.printStackTrace();
+			throw new ContainerConnectException(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new ContainerConnectException(e);
 		}
 	}
 
@@ -326,6 +327,7 @@ final class MSNContainer implements IContainer, IChatManager,
 			chatSessions.clear();
 			connectID = null;
 			client = null;
+			Activator.getDefault().unregisterService(this);
 		}
 	}
 
