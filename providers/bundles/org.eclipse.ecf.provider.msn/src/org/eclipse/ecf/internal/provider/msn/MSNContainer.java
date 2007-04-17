@@ -193,7 +193,6 @@ final class MSNContainer implements IContainer, IChatManager,
 																	entry
 																			.getPresence());
 															fireRosterUpdate(entry);
-															fireRosterEntryUpdated(entry);
 														}
 
 														public void personalMessageChanged(
@@ -206,7 +205,6 @@ final class MSNContainer implements IContainer, IChatManager,
 																	entry
 																			.getPresence());
 															fireRosterUpdate(entry);
-															fireRosterEntryUpdated(entry);
 														}
 
 														public void statusChanged(
@@ -217,7 +215,6 @@ final class MSNContainer implements IContainer, IChatManager,
 																	entry
 																			.getPresence());
 															fireRosterUpdate(entry);
-															fireRosterEntryUpdated(entry);
 														}
 													});
 											group.add(check);
@@ -241,7 +238,6 @@ final class MSNContainer implements IContainer, IChatManager,
 									firePresence(entry.getID(), entry
 											.getPresence());
 									fireRosterUpdate(entry);
-									fireRosterEntryUpdated(entry);
 								}
 
 								public void personalMessageChanged(
@@ -250,14 +246,12 @@ final class MSNContainer implements IContainer, IChatManager,
 									firePresence(entry.getID(), entry
 											.getPresence());
 									fireRosterUpdate(entry);
-									fireRosterEntryUpdated(entry);
 								}
 
 								public void statusChanged(Status status) {
 									firePresence(entry.getID(), entry
 											.getPresence());
 									fireRosterUpdate(entry);
-									fireRosterEntryUpdated(entry);
 								}
 							});
 							entries.add(entry);
@@ -383,15 +377,6 @@ final class MSNContainer implements IContainer, IChatManager,
 			for (int i = 0; i < presenceListeners.size(); i++) {
 				((IPresenceListener) presenceListeners.get(i))
 						.handleRosterEntryAdd(entry);
-			}
-		}
-	}
-
-	private void fireRosterEntryUpdated(IRosterEntry entry) {
-		synchronized (presenceListeners) {
-			for (int i = 0; i < presenceListeners.size(); i++) {
-				((IPresenceListener) presenceListeners.get(i))
-						.handleRosterEntryUpdate(entry);
 			}
 		}
 	}
