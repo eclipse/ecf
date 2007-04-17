@@ -10,8 +10,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.presence.ui;
 
+import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -24,10 +27,25 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 
+	private ServiceTracker tracker;
+
 	/**
 	 * The constructor
 	 */
 	public Activator() {
+	}
+
+	public IPresenceService[] getPresenceServices() {
+		ServiceReference[] references = tracker.getServiceReferences();
+		if (references == null) {
+			return new IPresenceService[0];
+		}
+		int length = references.length;
+		IPresenceService[] services = new IPresenceService[length];
+		for (int i = 0; i < length; i++) {
+			services[i] = (IPresenceService) tracker.getService(references[i]);
+		}
+		return services;
 	}
 
 	/*
@@ -38,6 +56,9 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		tracker = new ServiceTracker(context, IPresenceService.class.getName(),
+				null);
+		tracker.open();
 	}
 
 	/*

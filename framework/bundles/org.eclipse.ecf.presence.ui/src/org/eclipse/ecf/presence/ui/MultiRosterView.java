@@ -56,6 +56,7 @@ import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
+import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.ecf.ui.dialogs.ChatRoomSelectionDialog;
 import org.eclipse.ecf.ui.views.ChatRoomView;
@@ -227,6 +228,20 @@ public class MultiRosterView extends ViewPart implements
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
+		retrieveServices();
+		treeViewer.expandToLevel(DEFAULT_EXPAND_LEVEL);
+	}
+
+	private void retrieveServices() {
+		IPresenceService[] services = Activator.getDefault()
+				.getPresenceServices();
+		for (int i = 0; i < services.length; i++) {
+			IContainer container = (IContainer) services[i]
+					.getAdapter(IContainer.class);
+			if (container != null) {
+				addContainer(container);
+			}
+		}
 	}
 
 	private String getChatRoomSecondaryID(ID roomID) {
