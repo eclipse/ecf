@@ -218,8 +218,8 @@ final class MSNContainer implements IContainer, IChatManager,
 														}
 													});
 											group.add(check);
+											fireRosterEntryAdded(check);
 										}
-										fireRosterEntryAdded(check);
 										fireRosterUpdate(group);
 										return;
 									}
@@ -228,7 +228,7 @@ final class MSNContainer implements IContainer, IChatManager,
 									if (entry.getContact().equals(
 											check.getContact())) {
 										fireRosterEntryAdded(check);
-										fireRosterUpdate(check);
+										fireRosterUpdate(check.getParent());
 										return;
 									}
 								}
@@ -258,16 +258,20 @@ final class MSNContainer implements IContainer, IChatManager,
 							entries.add(entry);
 							entry.setParent(MSNContainer.this);
 							fireRosterEntryAdded(entry);
-							fireRosterUpdate(entry);
+							fireRosterUpdate(MSNContainer.this);
 						}
 
 						public void contactRemoved(Contact contact) {
-							IRosterEntry entry = findEntry(entries, contact
+							MSNRosterEntry entry = findEntry(entries, contact
 									.getEmail());
 							if (entry != null) {
-								fireRosterEntryRemoved(entry);
 								fireHandleUnsubscribed(entry.getUser().getID());
-								fireRosterUpdate(entry);
+								fireRosterEntryRemoved(entry);
+								fireRosterUpdate(entry.getParent());
+								if (entry.getContact().getGroups().isEmpty()) {
+									entry.setParent(MSNContainer.this);
+									fireRosterUpdate(MSNContainer.this);
+								}
 							}
 						}
 
@@ -372,8 +376,8 @@ final class MSNContainer implements IContainer, IChatManager,
 	private void fireRosterUpdate(IRosterItem item) {
 		synchronized (updateListeners) {
 			for (int i = 0; i < updateListeners.size(); i++) {
-				((IRosterListener) updateListeners.get(i))
-						.handleRosterUpdate(this, item);
+				((IRosterListener) updateListeners.get(i)).handleRosterUpdate(
+						this, item);
 			}
 		}
 	}
