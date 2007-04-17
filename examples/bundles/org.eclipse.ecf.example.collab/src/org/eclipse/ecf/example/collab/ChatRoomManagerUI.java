@@ -84,7 +84,7 @@ public class ChatRoomManagerUI {
 						}
 					});
 					chatRoom.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-						public void handlePresence(ID fromID, IPresence presence) {
+						public void handlePresenceUpdated(ID fromID, IPresence presence) {
 							chatroomview.handlePresence(fromID, presence);
 						}
 						public void handleArrived(IUser participant) {
