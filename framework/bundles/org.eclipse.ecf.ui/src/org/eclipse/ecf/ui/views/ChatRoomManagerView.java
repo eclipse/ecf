@@ -32,7 +32,6 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
-import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
@@ -549,7 +548,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				// setup participant listener
 				chatRoomContainer
 						.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-							public void handlePresence(ID fromID,
+							public void handlePresenceUpdated(ID fromID,
 									IPresence presence) {
 								chatroomview.handlePresence(fromID, presence);
 							}
@@ -600,8 +599,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		}
 	}
 
-	class ChatRoom implements IChatRoomInvitationListener,
-			IParticipantListener, KeyListener {
+	class ChatRoom implements IChatRoomInvitationListener, KeyListener {
 		IChatRoomContainer container;
 
 		Manager tabUI;

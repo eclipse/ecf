@@ -23,7 +23,6 @@ import java.util.Map;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.presence.IParticipantListener;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
@@ -56,7 +55,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
-public class ChatRoomView extends ViewPart implements IParticipantListener, IChatRoomInvitationListener {
+public class ChatRoomView extends ViewPart implements IChatRoomInvitationListener {
 	
 	public static final String VIEW_ID = "org.eclipse.ecf.ui.views.ChatRoomView"; //$NON-NLS-1$
 	
