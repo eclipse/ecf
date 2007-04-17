@@ -166,7 +166,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 								.next();
 
 						l.handleArrived(new User(participantID));
-						l.handlePresence(participantID, createPresence(true));
+						l.handlePresenceUpdated(participantID, createPresence(true));
 					}
 				}
 			} else {
@@ -178,7 +178,7 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 						IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
 								.next();
 
-						l.handlePresence(removeID, createPresence(false));
+						l.handlePresenceUpdated(removeID, createPresence(false));
 						l.handleDeparted(new User(removeID));
 					}
 
