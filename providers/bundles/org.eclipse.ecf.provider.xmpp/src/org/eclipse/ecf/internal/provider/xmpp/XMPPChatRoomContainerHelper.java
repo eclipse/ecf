@@ -220,7 +220,7 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		for (Iterator i = participantListeners.iterator(); i.hasNext();) {
 			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
 					.next();
-			l.handlePresence(fromID, presence);
+			l.handlePresenceUpdated(fromID, presence);
 		}
 	}
 
