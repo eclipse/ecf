@@ -43,8 +43,8 @@ public abstract class AbstractRosterManager implements IRosterManager {
 		}
 	}
 
-	public synchronized void addRosterUpdateListener(
-			IRosterUpdateListener listener) {
+	public synchronized void addRosterListener(
+			IRosterListener listener) {
 		if (listener != null) {
 			synchronized (rosterUpdateListeners) {
 				rosterUpdateListeners.add(listener);
@@ -55,11 +55,25 @@ public abstract class AbstractRosterManager implements IRosterManager {
 	protected void fireRosterUpdate(IRosterItem changedItem) {
 		synchronized (rosterUpdateListeners) {
 			for (Iterator i = rosterUpdateListeners.iterator(); i.hasNext();)
-				((IRosterUpdateListener) i.next()).handleRosterUpdate(roster,
+				((IRosterListener) i.next()).handleRosterUpdate(roster,
 						changedItem);
 		}
 	}
 
+	protected void fireRosterAdd(IRosterEntry entry) {
+		synchronized (rosterUpdateListeners) {
+			for (Iterator i = rosterUpdateListeners.iterator(); i.hasNext();)
+				((IRosterListener) i.next()).handleRosterEntryAdd(entry);
+		}
+	}
+	
+	protected void fireRosterRemove(IRosterEntry entry) {
+		synchronized (rosterUpdateListeners) {
+			for (Iterator i = rosterUpdateListeners.iterator(); i.hasNext();)
+				((IRosterListener) i.next()).handleRosterEntryRemove(entry);
+		}
+	}
+	
 	protected void fireSubscriptionListener(ID fromID, IPresence.Type presencetype) {
 		synchronized (rosterSubscriptionListeners) {
 			for (Iterator i = rosterSubscriptionListeners.iterator(); i
@@ -95,8 +109,8 @@ public abstract class AbstractRosterManager implements IRosterManager {
 		}
 	}
 
-	public synchronized void removeRosterUpdateListener(
-			IRosterUpdateListener listener) {
+	public synchronized void removeRosterListener(
+			IRosterListener listener) {
 		if (listener != null) {
 			synchronized (rosterUpdateListeners) {
 				rosterUpdateListeners.remove(listener);				

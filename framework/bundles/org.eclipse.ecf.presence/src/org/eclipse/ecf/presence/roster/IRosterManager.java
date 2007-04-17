@@ -28,21 +28,21 @@ public interface IRosterManager extends IAdaptable {
 	public IRoster getRoster();
 
 	/**
-	 * Add roster update listener to receive roster update events for this
+	 * Add roster listener to receive roster add/update/remove events for this
 	 * roster manager
 	 * 
 	 * @param listener
 	 *            the listener to add. Must not be <code>null</code>.
 	 */
-	public void addRosterUpdateListener(IRosterUpdateListener listener);
+	public void addRosterListener(IRosterListener listener);
 
 	/**
-	 * Remove roster update listener
+	 * Remove roster listener
 	 * 
 	 * @param listener
 	 *            the listener to remove. Must not be <code>null</code>.
 	 */
-	public void removeRosterUpdateListener(IRosterUpdateListener listener);
+	public void removeRosterListener(IRosterListener listener);
 
 	/**
 	 * Setup listener for handling roster subscription requests. The given

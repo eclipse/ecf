@@ -36,7 +36,15 @@ package org.eclipse.ecf.presence.roster;
  * Further, the code in the implementations of these methods should <b>not block</b> via 
  * I/O operations or blocking UI calls.
  */
-public interface IRosterUpdateListener {
+public interface IRosterListener {
+
+	/**
+	 * Notification that a roster entry has been added
+	 * 
+	 * @param entry
+	 *            the roster entry that has changed
+	 */
+	public void handleRosterEntryAdd(IRosterEntry entry);
 
 	/**
 	 * Handle roster update notification.
@@ -47,5 +55,14 @@ public interface IRosterUpdateListener {
 	 *            the roster item that changed
 	 */
 	public void handleRosterUpdate(IRoster roster, IRosterItem changedValue);
+
+	/**
+	 * Notification that a roster entry has been renived
+	 * 
+	 * @param entry
+	 *            the entry that has been removed
+	 */
+	public void handleRosterEntryRemove(IRosterEntry entry);
+
 
 }
