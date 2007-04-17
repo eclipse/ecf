@@ -15,9 +15,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.roster.IRoster;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterManager;
-import org.eclipse.ecf.presence.roster.IRosterUpdateListener;
+import org.eclipse.ecf.presence.roster.IRosterListener;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -33,13 +34,31 @@ public class MultiRosterAccount {
 
 	protected IPresenceContainerAdapter adapter;
 
-	IRosterUpdateListener updateListener = new IRosterUpdateListener() {
+	IRosterListener updateListener = new IRosterListener() {
 		public void handleRosterUpdate(final IRoster roster,
 				final IRosterItem changedValue) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					MultiRosterAccount.this.multiRosterView.refreshTreeViewer(
 							changedValue, true);
+				}
+			});
+		}
+
+		public void handleRosterEntryAdd(final IRosterEntry entry) {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					MultiRosterAccount.this.multiRosterView
+							.addEntryToTreeViewer(entry);
+				}
+			});
+		}
+
+		public void handleRosterEntryRemove(final IRosterEntry entry) {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					MultiRosterAccount.this.multiRosterView
+							.removeEntryFromTreeViewer(entry);
 				}
 			});
 		}
@@ -52,7 +71,7 @@ public class MultiRosterAccount {
 		Assert.isNotNull(adapter);
 		this.container = container;
 		this.adapter = adapter;
-		getRosterManager().addRosterUpdateListener(updateListener);
+		getRosterManager().addRosterListener(updateListener);
 	}
 
 	public IContainer getContainer() {
@@ -72,7 +91,7 @@ public class MultiRosterAccount {
 	}
 
 	public void dispose() {
-		getRosterManager().removeRosterUpdateListener(updateListener);
+		getRosterManager().removeRosterListener(updateListener);
 		container = null;
 		adapter = null;
 	}

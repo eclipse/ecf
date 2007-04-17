@@ -762,6 +762,16 @@ public class MultiRosterView extends ViewPart implements
 		}
 	}
 
+	protected void addEntryToTreeViewer(IRosterEntry entry) {
+		if (treeViewer != null)
+			treeViewer.add(entry.getParent(), entry);
+	}
+
+	protected void removeEntryFromTreeViewer(IRosterEntry entry) {
+		if (treeViewer != null)
+			treeViewer.remove(entry);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -845,27 +855,6 @@ public class MultiRosterView extends ViewPart implements
 	}
 
 	private class PresenceListener implements IPresenceListener {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ecf.presence.IPresenceListener#handleRosterEntryAdd(org.eclipse.ecf.presence.roster.IRosterEntry)
-		 */
-		public void handleRosterEntryAdd(final IRosterEntry entry) {
-			treeViewer.getControl().getDisplay().asyncExec(new Runnable() {
-				public void run() {
-					treeViewer.add(entry.getParent(), entry);
-				}
-			});
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ecf.presence.IPresenceListener#handleRosterEntryRemove(org.eclipse.ecf.presence.roster.IRosterEntry)
-		 */
-		public void handleRosterEntryRemove(IRosterEntry entry) {
-		}
 
 		/*
 		 * (non-Javadoc)
