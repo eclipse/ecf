@@ -167,6 +167,14 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			fireRosterUpdate(changedItem);
 		}
 
+		public void notifyRosterAdd(IRosterEntry entry) {
+			fireRosterAdd(entry);
+		}
+		
+		public void notifyRosterRemove(IRosterEntry entry) {
+			fireRosterRemove(entry);
+		}
+		
 		public void setUser(IUser user) {
 			org.eclipse.ecf.presence.roster.Roster roster = (org.eclipse.ecf.presence.roster.Roster) getRoster();
 			roster.setUser(user);
@@ -367,13 +375,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	protected void fireSetRosterEntry(boolean remove, IRosterEntry entry) {
-		for (Iterator i = presenceListeners.iterator(); i.hasNext();) {
-			IPresenceListener l = (IPresenceListener) i.next();
-			if (remove)
-				l.handleRosterEntryRemove(entry);
-			else
-				l.handleRosterEntryAdd(entry);
-		}
+		if (remove) rosterManager.notifyRosterRemove(entry);
+		else rosterManager.notifyRosterAdd(entry);
 	}
 
 	private void removeItemFromRoster(Collection rosterItems,
