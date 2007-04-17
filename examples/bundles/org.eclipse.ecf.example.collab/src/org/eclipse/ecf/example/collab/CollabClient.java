@@ -27,11 +27,8 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
-import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
-import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
-import org.eclipse.ecf.presence.ui.PresenceUI;
 
 public class CollabClient {
 	public static final String WORKSPACE_NAME = "<workspace>";
@@ -41,8 +38,6 @@ public class CollabClient {
 	static Hashtable clients = new Hashtable();
 
 	static CollabClient collabClient = new CollabClient();
-
-	PresenceUI presenceUI = null;
 
 	IRCChatRoomManagerUI ircchatRoomManagerUI = null;
 
@@ -93,17 +88,6 @@ public class CollabClient {
 		} else {
 			// Check for IPresenceContainerAdapter....if it is, setup presence UI, if
 			// not setup shared object container
-			IPresenceContainerAdapter pc = (IPresenceContainerAdapter) newClient
-					.getAdapter(IPresenceContainerAdapter.class);
-			if (pc != null) {
-				// Setup presence UI
-				presenceUI = new PresenceUI(newClient, pc);
-				if (username == null) {
-					String name = targetID.getName();
-					username = name.substring(0, name.indexOf('@'));
-				}
-				presenceUI.showForUser(new User(targetID, username));
-			} else {
 				// Setup sharedobject container if the new instance supports
 				// this
 				ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient
@@ -114,7 +98,6 @@ public class CollabClient {
 					socui.setup(sharedObjectContainer, newClientEntry,
 							resource, username);
 				}
-			}
 		}
 
 		// Now connect
