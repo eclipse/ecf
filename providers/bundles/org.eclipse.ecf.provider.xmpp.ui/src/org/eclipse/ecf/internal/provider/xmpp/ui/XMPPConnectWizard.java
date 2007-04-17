@@ -264,6 +264,7 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 
 		final IPresenceContainerAdapter adapter = (IPresenceContainerAdapter) container
 				.getAdapter(IPresenceContainerAdapter.class);
+		
 		container.addListener(new IContainerListener() {
 			public void handleEvent(IContainerEvent event) {
 				if (event instanceof IContainerConnectedEvent) {
