@@ -372,7 +372,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			if (remove)
 				l.handleRosterEntryRemove(entry);
 			else
-				l.handleRosterEntryUpdate(entry);
+				l.handleRosterEntryAdd(entry);
 		}
 	}
 
