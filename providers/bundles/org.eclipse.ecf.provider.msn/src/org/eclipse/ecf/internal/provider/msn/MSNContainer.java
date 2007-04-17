@@ -187,6 +187,11 @@ final class MSNContainer implements IContainer, IChatManager,
 													.addContactListener(new IContactListener() {
 														public void nameChanged(
 																String name) {
+															firePresence(
+																	entry
+																			.getID(),
+																	entry
+																			.getPresence());
 															fireRosterUpdate(entry);
 															fireRosterEntryUpdated(entry);
 														}
@@ -195,12 +200,22 @@ final class MSNContainer implements IContainer, IChatManager,
 																String personalMessage) {
 															entry
 																	.updatePersonalMessage();
+															firePresence(
+																	entry
+																			.getID(),
+																	entry
+																			.getPresence());
 															fireRosterUpdate(entry);
 															fireRosterEntryUpdated(entry);
 														}
 
 														public void statusChanged(
 																Status status) {
+															firePresence(
+																	entry
+																			.getID(),
+																	entry
+																			.getPresence());
 															fireRosterUpdate(entry);
 															fireRosterEntryUpdated(entry);
 														}
@@ -223,6 +238,8 @@ final class MSNContainer implements IContainer, IChatManager,
 
 							contact.addContactListener(new IContactListener() {
 								public void nameChanged(String name) {
+									firePresence(entry.getID(), entry
+											.getPresence());
 									fireRosterUpdate(entry);
 									fireRosterEntryUpdated(entry);
 								}
@@ -230,11 +247,15 @@ final class MSNContainer implements IContainer, IChatManager,
 								public void personalMessageChanged(
 										String personalMessage) {
 									entry.updatePersonalMessage();
+									firePresence(entry.getID(), entry
+											.getPresence());
 									fireRosterUpdate(entry);
 									fireRosterEntryUpdated(entry);
 								}
 
 								public void statusChanged(Status status) {
+									firePresence(entry.getID(), entry
+											.getPresence());
 									fireRosterUpdate(entry);
 									fireRosterEntryUpdated(entry);
 								}
@@ -371,6 +392,15 @@ final class MSNContainer implements IContainer, IChatManager,
 			for (int i = 0; i < presenceListeners.size(); i++) {
 				((IPresenceListener) presenceListeners.get(i))
 						.handleRosterEntryUpdate(entry);
+			}
+		}
+	}
+
+	private void firePresence(ID id, IPresence presence) {
+		synchronized (presenceListeners) {
+			for (int i = 0; i < presenceListeners.size(); i++) {
+				((IPresenceListener) presenceListeners.get(i)).handlePresence(
+						id, presence);
 			}
 		}
 	}
