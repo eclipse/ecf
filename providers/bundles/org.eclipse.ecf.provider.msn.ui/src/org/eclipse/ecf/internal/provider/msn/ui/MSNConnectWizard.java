@@ -155,8 +155,8 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 		} catch (IDCreateException e) {
 			new ContainerConnectErrorDialog(workbench
 					.getActiveWorkbenchWindow().getShell(), 1,
-					"The target ID to connect to could not be created",
-					targetID.getName(), e).open();
+					Messages.MSNConnectWizard_CannotCreateTargetID, page
+							.getEmail(), e).open();
 			return true;
 		}
 
@@ -197,9 +197,8 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 								public void run() {
 									new ContainerConnectErrorDialog(workbench
 											.getActiveWorkbenchWindow()
-											.getShell(), 1, "See Details",
-											targetID.getName(), exception)
-											.open();
+											.getShell(), 1, null, targetID
+											.getName(), exception).open();
 								}
 							});
 						}

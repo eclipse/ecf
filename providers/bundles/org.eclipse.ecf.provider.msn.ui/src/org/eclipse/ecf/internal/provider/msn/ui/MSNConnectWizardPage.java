@@ -27,8 +27,8 @@ final class MSNConnectWizardPage extends WizardPage {
 	private Text passwordText;
 
 	MSNConnectWizardPage() {
-		super("");
-		setTitle("MSN Connection Wizard");
+		super(MSNConnectWizardPage.class.getName());
+		setTitle(Messages.MSNConnectWizardPage_Title);
 		setPageComplete(false);
 	}
 
@@ -37,11 +37,11 @@ final class MSNConnectWizardPage extends WizardPage {
 			public void modifyText(ModifyEvent e) {
 				String email = emailText.getText().trim();
 				if (email.equals("")) { //$NON-NLS-1$
-					setErrorMessage("An e-mail address must be entered.");
+					setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressRequired);
 				} else if (email.indexOf('@') == -1) {
-					setErrorMessage("A valid e-mail address must be entered.");
+					setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressInvalid);
 				} else if (passwordText.getText().trim().equals("")) { //$NON-NLS-1$
-					setErrorMessage("A password must be entered.");
+					setErrorMessage(Messages.MSNConnectWizardPage_PasswordRequired);
 				} else {
 					setErrorMessage(null);
 				}
@@ -58,27 +58,27 @@ final class MSNConnectWizardPage extends WizardPage {
 		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
 
 		Label label = new Label(parent, SWT.LEFT);
-		label.setText("E-mail address:");
+		label.setText(Messages.MSNConnectWizardPage_EmailAddressLabel);
 		emailText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		emailText.setLayoutData(data);
 
 		label = new Label(parent, SWT.LEFT);
-		label.setText("Password:");
+		label.setText(Messages.MSNConnectWizardPage_PasswordLabel);
 		passwordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD | SWT.BORDER);
 		passwordText.setLayoutData(data);
 
 		addListeners();
 		setControl(parent);
 	}
-	
+
 	String getEmail() {
 		return emailText.getText();
 	}
-	
+
 	String getPassword() {
 		return passwordText.getText();
 	}
-	
+
 	public void setErrorMessage(String message) {
 		super.setErrorMessage(message);
 		setPageComplete(message == null);
