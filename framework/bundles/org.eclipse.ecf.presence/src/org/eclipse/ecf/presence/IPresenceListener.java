@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.presence;
 
+import org.eclipse.ecf.core.identity.ID;
+
 /**
  * Listener for user presence changes.
  * <p></p>
@@ -35,6 +37,18 @@ package org.eclipse.ecf.presence;
  * Further, the code in the implementations of these methods should <b>not block</b> via 
  * I/O operations or blocking UI calls.
 */
-public interface IPresenceListener extends IParticipantListener {
+public interface IPresenceListener {
+
+	/**
+	 * Notification that a presence update has been received
+	 * 
+	 * @param fromID
+	 *            the ID of the sender of the presence update. Will not be
+	 *            <code>null</code>.
+	 * @param presence
+	 *            the presence information for the sender. Will not be
+	 *            <code>null</code>.
+	 */
+	public void handlePresence(ID fromID, IPresence presence);
 
 }
