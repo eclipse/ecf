@@ -164,4 +164,13 @@
             name="%perspective.name">
       </perspective>
    </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.collaboration.ui.perspective.collab">
+         <actionSet
+               id="org.eclipse.ecf.example.collab.ui.actionSet">
+         </actionSet>
+      </perspectiveExtension>
+   </extension>
 </plugin>
