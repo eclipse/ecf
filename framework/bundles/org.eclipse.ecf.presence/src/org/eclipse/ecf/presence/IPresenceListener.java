@@ -48,14 +48,6 @@ public interface IPresenceListener extends IParticipantListener {
 	public void handleRosterEntryAdd(IRosterEntry entry);
 
 	/**
-	 * Notification that a roster entry has been changed
-	 * 
-	 * @param entry
-	 *            the entry that has changed
-	 */
-	public void handleRosterEntryUpdate(IRosterEntry entry);
-
-	/**
 	 * Notification that a roster entry has been renived
 	 * 
 	 * @param entry
