@@ -301,13 +301,6 @@ More specifically:
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.call"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.datashare"
          download-size="0"
          install-size="0"
@@ -511,13 +504,6 @@ More specifically:
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ecf.call.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.commons.codec"
          download-size="0"
          install-size="0"
@@ -540,6 +526,20 @@ More specifically:
 
    <plugin
          id="org.eclipse.ecf.provider.filetransfer.httpclient"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.telephony.call"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.telephony.call.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"
