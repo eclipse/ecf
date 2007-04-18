@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF Telephony Call UI API
+Bundle-SymbolicName: org.eclipse.ecf.telephony.call.ui
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipse.ecf.internal.telephony.call.ui.Activator
+Bundle-Vendor: Eclipse.org
+Eclipse-LazyStart: true
+Import-Package: org.osgi.framework;version="1.3.0"
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ecf.telephony.call
+Export-Package: org.eclipse.ecf.call.ui.actions,
+ org.eclipse.ecf.internal.telephony.call.ui;x-internal:=true
