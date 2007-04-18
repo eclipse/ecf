@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.provider.filetransfer.fileTransferProtocolFactory">
+      <fileTransferProtocolFactory
+            class="org.eclipse.ecf.internal.provider.filetransfer.efs.EFSRetrieveFileTransferFactory"
+            protocol="efs">
+      </fileTransferProtocolFactory>
+   </extension>
+
+</plugin>
