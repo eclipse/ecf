@@ -1,0 +1,339 @@
+/*******************************************************************************
+ * Copyright (c) 2005, 2007 Remy Suen
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
+ ******************************************************************************/
+package org.eclipse.ecf.protocol.msn;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Iterator;
+
+import org.eclipse.ecf.protocol.msn.events.ISessionListener;
+import org.eclipse.ecf.protocol.msn.internal.encode.ResponseCommand;
+import org.eclipse.ecf.protocol.msn.internal.encode.StringUtils;
+
+/**
+ * <p>
+ * The MsnClient class allows a developer to easily create a client that will
+ * authenticate the user and establish a connection with the MSN servers.
+ * </p>
+ * 
+ * <p>
+ * <b>Note:</b> This class/interface is part of an interim API that is still
+ * under development and expected to change significantly before reaching
+ * stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
+ * </p>
+ */
+public final class MsnClient {
+
+	/**
+	 * The default hostname that will be used to connect to the MSN servers -
+	 * messenger.hotmail.com
+	 */
+	private static final String HOSTNAME = "messenger.hotmail.com"; //$NON-NLS-1$
+
+	/**
+	 * The default port that will be used to connect to the MSN servers - 1863
+	 */
+	private static final int PORT = 1863;
+
+	/**
+	 * The NotificationSession that will be connect to the notification server
+	 * to handle most non-messaging related incoming and outgoing requests.
+	 */
+	private NotificationSession notification;
+
+	/**
+	 * The list of contacts that are on this user's list.
+	 */
+	private final ContactList list;
+
+	/**
+	 * The user's email address.
+	 */
+	private String username;
+
+	/**
+	 * The name the user displays to other contacts.
+	 */
+	private String displayName;
+
+	/**
+	 * The hostname to use to connect to the dispatch server.
+	 */
+	private String hostname;
+
+	/**
+	 * The user's personal message.
+	 */
+	private String personalMessage = ""; //$NON-NLS-1$
+
+	/**
+	 * The media that the user is currently playing.
+	 */
+	private String currentMedia = "";//$NON-NLS-1$
+
+	/**
+	 * The port to use to connect to the dispatch server.
+	 */
+	private int port;
+
+	/**
+	 * The current status of the user.
+	 */
+	private Status status;
+
+	/**
+	 * Instantiate a new MsnClient that defaults to setting the user as being
+	 * online and available when signing in.
+	 * 
+	 * @throws IOException
+	 *             If an I/O error occurred during instantiation of the
+	 *             DispatchSession.
+	 */
+	public MsnClient() {
+		this(Status.ONLINE);
+	}
+
+	/**
+	 * Instantiate a new MsnClient that set the user to the specified status
+	 * when signing in.
+	 * 
+	 * @param initialStatus
+	 *            the status that a user would like to sign on to the servers
+	 *            as, refer to {@link Status#ONLINE} and other static variables
+	 *            for the available options.
+	 */
+	public MsnClient(Status initialStatus) {
+		status = initialStatus;
+		hostname = HOSTNAME;
+		port = PORT;
+		list = new ContactList(this);
+		notification = new NotificationSession(this);
+	}
+
+	/**
+	 * Connects the client to the MSN servers.
+	 * 
+	 * @param username
+	 *            the user's email address that is associated with an MSN
+	 *            account
+	 * @param password
+	 *            the email's corresponding password
+	 * @throws IOException
+	 *             If an I/O error occurred while connecting to the dispatch or
+	 *             notification servers.
+	 */
+	public void connect(String username, String password) throws IOException {
+		this.username = username;
+		DispatchSession dispatch = new DispatchSession(hostname, port);
+		// get the address of the notification server by first authenticating
+		// ourselves
+		String address = dispatch.authenticate(username);
+		// close the session
+		dispatch.close();
+		// connect the notification session to the received address
+		notification.openSocket(address);
+		try {
+			// keep looping until we've connected successfully
+			while (!notification.login(username, password)) {
+				notification.reset();
+			}
+		} catch (RuntimeException e) {
+			if (!notification.isClosed()) {
+				throw e;
+			}
+		} catch (IOException e) {
+			if (!notification.isClosed()) {
+				throw e;
+			}
+		}
+	}
+
+	/**
+	 * Disconnects the user from the MSN servers. Please note that any
+	 * {@link ChatSession}s that may have been created since the client was
+	 * instantiated are not disconnected automatically in this method.
+	 */
+	public void disconnect() {
+		if (notification != null) {
+			try {
+				notification.write("OUT"); //$NON-NLS-1$
+			} catch (Exception e) {
+				// ignored since we're disconnecting anyway
+			}
+			notification.close();
+		}
+		notification = null;
+	}
+
+	/**
+	 * Changes the user's status to the provided status flag.
+	 * 
+	 * @param status
+	 *            the status that the user wishes to change to
+	 */
+	public void setStatus(Status status) throws IOException {
+		if (this.status != status) {
+			if (status == Status.OFFLINE) {
+				disconnect();
+			} else {
+				notification.write("CHG", status.getLiteral() + " 268435488"); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			this.status = status;
+		}
+	}
+
+	/**
+	 * Returns the status that the user is currently in.
+	 * 
+	 * @return the user's current status
+	 */
+	public Status getStatus() {
+		return status;
+	}
+
+	void add(String email, String userName) throws IOException {
+		notification.write("ADC", "FL N=" + email + " F=" + userName); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	}
+
+	void remove(Contact contact) throws IOException {
+		String guid = contact.getGuid();
+		for (Iterator it = contact.getGroups().iterator(); it.hasNext();) {
+			notification.write("REM", "FL " + guid + " " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					+ list.getGuid((Group) it.next()));
+		}
+		notification.write("REM", "FL " + guid); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	void remove(String guid) throws IOException {
+		notification.write("RMG", "FL " + guid); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	/**
+	 * Returns the contact list that is associated with this client.
+	 * 
+	 * @return this client's contact list
+	 */
+	public ContactList getContactList() {
+		return list;
+	}
+
+	/**
+	 * Creates a {@link ChatSession} to connect to the specified contact.
+	 * 
+	 * @param email
+	 *            the contact to connect to
+	 * @return the created ChatSession
+	 * @throws IOException
+	 *             If an I/O error occurred
+	 */
+	public ChatSession createChatSession(String email) throws IOException {
+		ResponseCommand cmd = notification.getChatSession();
+		ChatSession cs = new ChatSession(cmd.getParam(2), this, username, cmd
+				.getParam(4));
+		// reset the ResponseCommand so that the next XFR request won't conflict
+		cmd.process(null);
+		cs.invite(email);
+		return cs;
+	}
+
+	void internalSetDisplayName(String newName) {
+		displayName = newName;
+	}
+
+	/**
+	 * Sets the display name of this user.
+	 * 
+	 * @param newName
+	 *            the new name of this user
+	 */
+	public void setDisplayName(String newName) throws IOException {
+		notification.write("PRP", "MFN " + URLEncoder.encode(newName)); //$NON-NLS-1$ //$NON-NLS-2$
+		displayName = newName;
+	}
+
+	/**
+	 * Returns the displayed name of this user.
+	 * 
+	 * @return the name that this user is using
+	 */
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	/**
+	 * Returns the user's account's email address.
+	 * 
+	 * @return the email address the user is using for MSN login
+	 */
+	public String getUserEmail() {
+		return username;
+	}
+
+	private void sendStatusData() throws IOException {
+		String message = "<Data><PSM>" + personalMessage //$NON-NLS-1$
+				+ "</PSM><CurrentMedia>" + currentMedia //$NON-NLS-1$
+				+ "</CurrentMedia></Data>"; //$NON-NLS-1$
+		notification.write("UUX", message.length() + "\r\n" //$NON-NLS-1$ //$NON-NLS-2$
+				+ message, false);
+	}
+
+	/**
+	 * Sets the user's personal message to the specified string.
+	 * 
+	 * @param personalMessage
+	 *            the new message to use as the user's personal message
+	 * @throws IOException
+	 *             If an I/O error occurred while sending the data to the
+	 *             notification server
+	 */
+	public void setPersonalMessage(String personalMessage) throws IOException {
+		if (personalMessage == null) {
+			personalMessage = ""; //$NON-NLS-1$
+		} else {
+			personalMessage = StringUtils.xmlEncode(personalMessage);
+		}
+		if (!this.personalMessage.equals(personalMessage)) {
+			this.personalMessage = personalMessage;
+			sendStatusData();
+		}
+	}
+
+	/**
+	 * Retrieves the user's current personal message.
+	 * 
+	 * @return the personal message that the user is currently using
+	 */
+	public String getPersonalMessage() {
+		return StringUtils.xmlDecode(personalMessage);
+	}
+
+	/**
+	 * Add an ISessionListener to this client.
+	 * 
+	 * @param listener
+	 *            the listener to be added
+	 */
+	public void addSessionListener(ISessionListener listener) {
+		notification.addSessionListener(listener);
+	}
+
+	/**
+	 * Removes an ISessionListener from this client.
+	 * 
+	 * @param listener
+	 *            the listener to be removed
+	 */
+	public void removeSessionListener(ISessionListener listener) {
+		notification.removeSessionListener(listener);
+	}
+}
