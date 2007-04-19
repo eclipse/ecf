@@ -6,14 +6,15 @@
       <containerFactory
             class="org.eclipse.ecf.internal.provider.msn.MSNContainerInstantiator"
             description="MSN"
-            name="ecf.msn.gokigenyou"/>
+            name="ecf.msn.msnp"
+            server="false"/>
    </extension>
    <extension
          point="org.eclipse.ecf.identity.namespace">
       <namespace
             class="org.eclipse.ecf.internal.provider.msn.MSNNamespace"
             description="MSN Namespace"
-            name="ecf.msn.gokigenyou">
+            name="ecf.msn.msnp">
       </namespace>
    </extension>
 

@@ -22,7 +22,7 @@ public final class Activator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.msn"; //$NON-NLS-1$
 
-	static final String NAMESPACE_ID = "ecf.msn.gokigenyou"; //$NON-NLS-1$
+	static final String NAMESPACE_ID = "ecf.msn.msnp"; //$NON-NLS-1$
 
 	private static Activator plugin;
 

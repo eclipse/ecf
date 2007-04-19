@@ -18,8 +18,8 @@ import java.util.List;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
-import org.hantsuki.gokigenyou.Contact;
-import org.hantsuki.gokigenyou.Group;
+import org.eclipse.ecf.protocol.msn.Contact;
+import org.eclipse.ecf.protocol.msn.Group;
 
 final class MSNRosterGroup implements IRosterGroup {
 

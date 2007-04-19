@@ -24,8 +24,8 @@ import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterItem;
-import org.hantsuki.gokigenyou.Contact;
-import org.hantsuki.gokigenyou.Status;
+import org.eclipse.ecf.protocol.msn.Contact;
+import org.eclipse.ecf.protocol.msn.Status;
 
 final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 

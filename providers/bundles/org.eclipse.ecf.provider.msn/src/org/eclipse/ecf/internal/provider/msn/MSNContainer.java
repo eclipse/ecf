@@ -58,20 +58,20 @@ import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
+import org.eclipse.ecf.presence.roster.IRosterListener;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
-import org.eclipse.ecf.presence.roster.IRosterListener;
 import org.eclipse.ecf.presence.service.IPresenceService;
-import org.hantsuki.gokigenyou.ChatSession;
-import org.hantsuki.gokigenyou.Contact;
-import org.hantsuki.gokigenyou.Group;
-import org.hantsuki.gokigenyou.MsnClient;
-import org.hantsuki.gokigenyou.Status;
-import org.hantsuki.gokigenyou.events.IChatSessionListener;
-import org.hantsuki.gokigenyou.events.IContactListListener;
-import org.hantsuki.gokigenyou.events.IContactListener;
-import org.hantsuki.gokigenyou.events.ISessionListener;
+import org.eclipse.ecf.protocol.msn.ChatSession;
+import org.eclipse.ecf.protocol.msn.Contact;
+import org.eclipse.ecf.protocol.msn.Group;
+import org.eclipse.ecf.protocol.msn.MsnClient;
+import org.eclipse.ecf.protocol.msn.Status;
+import org.eclipse.ecf.protocol.msn.events.IChatSessionListener;
+import org.eclipse.ecf.protocol.msn.events.IContactListListener;
+import org.eclipse.ecf.protocol.msn.events.IContactListener;
+import org.eclipse.ecf.protocol.msn.events.ISessionListener;
 
 final class MSNContainer implements IContainer, IChatManager,
 		IChatMessageSender, IPresenceService, IPresenceSender, IRoster,
