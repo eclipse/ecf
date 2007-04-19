@@ -34,6 +34,7 @@ import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -54,6 +55,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
@@ -129,6 +132,35 @@ public class MessagesView extends ViewPart {
 			}
 		};
 		timestampAction.setChecked(true);
+		IAction clearChatLogAction = new Action(
+				Messages.MessagesView_ClearChatLog) {
+			public void run() {
+				CTabItem item = tabFolder.getSelection();
+				if (item != null) {
+					Iterator iterator = tabs.values().iterator();
+					while (iterator.hasNext()) {
+						ChatTab tab = (ChatTab) iterator.next();
+						if (tab.item == item) {
+							if (MessageDialog
+									.openConfirm(
+											tabFolder.getShell(),
+											Messages.MessagesView_ClearChatLogDialogTitle,
+											NLS
+													.bind(
+															Messages.MessagesView_ClearChatLogDialogMessage,
+															MessagesView
+																	.getUserName(tab.remoteID)))) {
+								synchronized (tab) {
+									tab.chatText.setText(""); //$NON-NLS-1$
+								}
+							}
+							return;
+						}
+					}
+				}
+			}
+		};
+		manager.add(clearChatLogAction);
 		manager.add(timestampAction);
 
 		redColor = new Color(parent.getDisplay(), 255, 0, 0);
@@ -405,6 +437,28 @@ public class MessagesView extends ViewPart {
 			inputText = new Text(client, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 
 			sash.setWeights(WEIGHTS);
+
+			Menu menu = new Menu(chatText);
+			MenuItem mi = new MenuItem(menu, SWT.PUSH);
+			mi.setText(Messages.MessagesView_Copy);
+			mi.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
+					org.eclipse.ui.ISharedImages.IMG_TOOL_COPY));
+			mi.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					String text = chatText.getSelectionText();
+					if (!text.equals("")) { //$NON-NLS-1$
+						chatText.copy();
+					}
+				}
+			});
+			mi = new MenuItem(menu, SWT.PUSH);
+			mi.setText(Messages.MessagesView_SelectAll);
+			mi.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					chatText.selectAll();
+				}
+			});
+			chatText.setMenu(menu);
 
 			IAction action = new Action(getUserName(remoteID) + '\t',
 					IAction.AS_RADIO_BUTTON) {

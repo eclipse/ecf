@@ -32,9 +32,14 @@ public class Messages extends NLS {
 	public static String MultiRosterView_ShowEmptyGroups;
 	public static String MultiRosterView_AddContact;
 
+	public static String MessagesView_ClearChatLog;
+	public static String MessagesView_ClearChatLogDialogTitle;
+	public static String MessagesView_ClearChatLogDialogMessage;
 	public static String MessagesView_ShowTimestamps;
 	public static String MessagesView_CouldNotSendMessage;
 	public static String MessagesView_TypingNotification;
+	public static String MessagesView_Copy;
+	public static String MessagesView_SelectAll;
 	
 	public static String AddContactDialog_DialogTitle;
 	public static String AddContactDialog_UserID;
