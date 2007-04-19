@@ -490,13 +490,6 @@ More specifically:
          unpack="false"/>
 
    <plugin
-         id="org.hantsuki.gokigenyou"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ecf.presence.bot"
          download-size="0"
          install-size="0"
@@ -540,6 +533,13 @@ More specifically:
 
    <plugin
          id="org.eclipse.ecf.telephony.call.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ecf.protocol.msn"
          download-size="0"
          install-size="0"
          version="0.0.0"
