@@ -330,6 +330,9 @@ public class MessagesView extends ViewPart {
 		}
 
 		private void append(ID fromID, String body) {
+			if (!isFirstMessage) {
+				chatText.append(Text.DELIMITER);
+			}
 			int length = chatText.getCharCount();
 			String name = getUserName(fromID);
 			if (fromID.equals(remoteID)) {
@@ -340,7 +343,7 @@ public class MessagesView extends ViewPart {
 							null));
 					length = chatText.getCharCount();
 				}
-				chatText.append(name + ": " + body + Text.DELIMITER); //$NON-NLS-1$
+				chatText.append(name + ": " + body); //$NON-NLS-1$
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, redColor, null, SWT.BOLD));
 				form.setMessage(null);
@@ -369,7 +372,7 @@ public class MessagesView extends ViewPart {
 							blueColor, null));
 					length = chatText.getCharCount();
 				}
-				chatText.append(name + ": " + body + Text.DELIMITER); //$NON-NLS-1$
+				chatText.append(name + ": " + body); //$NON-NLS-1$
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, blueColor, null, SWT.BOLD));
 			}
