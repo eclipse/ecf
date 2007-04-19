@@ -5,7 +5,7 @@
          point="org.eclipse.ecf.ui.connectWizards">
       <wizard
             class="org.eclipse.ecf.internal.provider.msn.ui.MSNConnectWizard"
-            containerFactoryName="ecf.msn.gokigenyou"
+            containerFactoryName="ecf.msn.msnp"
             id="org.eclipse.ecf.provider.ui.msn.connectWizard"
             name="%wizardLabel"/>
    </extension>
