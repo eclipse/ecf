@@ -107,10 +107,6 @@ public class ECFPlugin implements BundleActivator {
 		return adapterManager;
 	}
 
-	static {
-		plugin = new ECFPlugin();
-	}
-	
 	public ECFPlugin() {
 	}
 
@@ -369,6 +365,7 @@ public class ECFPlugin implements BundleActivator {
 	 * This method is called upon plug-in activation
 	 */
 	public void start(BundleContext context) throws Exception {
+		plugin = this;
 		this.context = context;
 		this.extensionRegistryTracker = new ServiceTracker(context,
 				IExtensionRegistry.class.getName(), null);
