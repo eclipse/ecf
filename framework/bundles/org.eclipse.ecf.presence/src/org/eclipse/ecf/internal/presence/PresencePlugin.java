@@ -76,7 +76,10 @@ public class PresencePlugin implements BundleActivator {
 	/**
 	 * Returns the shared instance.
 	 */
-	public static PresencePlugin getDefault() {
+	public synchronized static PresencePlugin getDefault() {
+		if (plugin == null) {
+			plugin = new PresencePlugin();
+		}
 		return plugin;
 	}
 
