@@ -106,7 +106,10 @@ public class ProviderPlugin implements BundleActivator {
     /**
      * Returns the shared instance.
      */
-    public static ProviderPlugin getDefault() {
+    public synchronized static ProviderPlugin getDefault() {
+    	if (plugin == null) {
+    		plugin = new ProviderPlugin();
+    	}
         return plugin;
     }
 
