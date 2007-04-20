@@ -43,7 +43,10 @@ public class DiscoveryPlugin implements BundleActivator {
 	/**
 	 * Returns the shared instance.
 	 */
-	public static DiscoveryPlugin getDefault() {
+	public synchronized static DiscoveryPlugin getDefault() {
+		if (plugin == null) {
+			plugin = new DiscoveryPlugin();
+		}
 		return plugin;
 	}
 
