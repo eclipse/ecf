@@ -61,19 +61,19 @@ public class RemoteServiceTracker implements IRemoteServiceTrackerCustomizer {
 	 * 
 	 * This field is volatile since it is accessed by multiple threads.
 	 */
-	private volatile int				trackingCount	= -1;
+	//private volatile int				trackingCount	= -1;
 	/**
 	 * Cached ServiceReference for getServiceReference.
 	 * 
 	 * This field is volatile since it is accessed by multiple threads.
 	 */
-	private volatile IRemoteServiceReference	cachedReference;
+	//private volatile IRemoteServiceReference	cachedReference;
 	/**
 	 * Cached service object for getService.
 	 * 
 	 * This field is volatile since it is accessed by multiple threads.
 	 */
-	private volatile Object				cachedService;
+	//private volatile Object				cachedService;
 
 	/**
 	 * Inner class to track services. If a <code>ServiceTracker</code> object
