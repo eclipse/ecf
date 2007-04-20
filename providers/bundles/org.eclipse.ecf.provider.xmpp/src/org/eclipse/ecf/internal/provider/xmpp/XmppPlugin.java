@@ -89,7 +89,10 @@ public class XmppPlugin implements BundleActivator {
 	/**
 	 * Returns the shared instance.
 	 */
-	public static XmppPlugin getDefault() {
+	public synchronized static XmppPlugin getDefault() {
+		if (plugin == null) {
+			plugin = new XmppPlugin();
+		}
 		return plugin;
 	}
 
