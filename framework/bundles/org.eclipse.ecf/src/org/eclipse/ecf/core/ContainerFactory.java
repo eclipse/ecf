@@ -61,11 +61,14 @@ public class ContainerFactory implements IContainerFactory {
 	}
 
 	protected ContainerFactory() {
-		ECFPlugin.getDefault().addDisposable(new IDisposable() {
-			public void dispose() {
-				doDispose();
-			}
-		});
+		ECFPlugin ecfplugin = ECFPlugin.getDefault();
+		if (ecfplugin != null) {
+			ecfplugin.addDisposable(new IDisposable() {
+				public void dispose() {
+					doDispose();
+				}
+			});
+		}
 	}
 
 	public static IContainerFactory getDefault() {

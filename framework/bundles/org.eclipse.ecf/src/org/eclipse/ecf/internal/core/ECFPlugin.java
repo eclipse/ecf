@@ -433,7 +433,10 @@ public class ECFPlugin implements BundleActivator {
 	/**
 	 * Returns the shared instance.
 	 */
-	public static ECFPlugin getDefault() {
+	public synchronized static ECFPlugin getDefault() {
+		if (plugin == null) {
+			plugin = new ECFPlugin();
+		}
 		return plugin;
 	}
 }
