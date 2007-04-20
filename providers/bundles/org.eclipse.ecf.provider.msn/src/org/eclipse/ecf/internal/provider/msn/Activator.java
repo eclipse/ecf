@@ -56,7 +56,10 @@ public final class Activator implements BundleActivator {
 		plugin = null;
 	}
 
-	public static Activator getDefault() {
+	public synchronized static Activator getDefault() {
+		if (plugin == null) {
+			plugin = new Activator();
+		}
 		return plugin;
 	}
 
