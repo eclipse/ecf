@@ -16,6 +16,8 @@ import org.eclipse.ecf.presence.im.IChatID;
 
 class MSNID implements IChatID, ID {
 
+	private static final long serialVersionUID = 902162253789728990L;
+
 	private final Namespace namespace;
 
 	private final String email;

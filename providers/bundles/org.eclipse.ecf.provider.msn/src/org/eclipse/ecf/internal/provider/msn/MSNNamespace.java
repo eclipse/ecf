@@ -17,6 +17,7 @@ import org.eclipse.ecf.core.identity.Namespace;
 
 public class MSNNamespace extends Namespace {
 
+	private static final long serialVersionUID = 7302784914405195380L;
 	private static final String SCHEME_IDENTIFIER = "msn"; //$NON-NLS-1$
 
 	public ID createInstance(Object[] parameters) throws IDCreateException {
