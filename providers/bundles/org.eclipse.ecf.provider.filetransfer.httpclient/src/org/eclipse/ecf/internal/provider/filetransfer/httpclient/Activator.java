@@ -52,7 +52,10 @@ public class Activator implements BundleActivator {
 	 *
 	 * @return the shared instance
 	 */
-	public static Activator getDefault() {
+	public synchronized static Activator getDefault() {
+		if (plugin == null) {
+			plugin = new Activator();
+		}
 		return plugin;
 	}
 	
