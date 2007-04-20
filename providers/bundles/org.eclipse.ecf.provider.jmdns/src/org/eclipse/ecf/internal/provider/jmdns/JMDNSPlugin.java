@@ -83,7 +83,10 @@ public class JMDNSPlugin implements BundleActivator {
 	/**
 	 * Returns the shared instance.
 	 */
-	public static JMDNSPlugin getDefault() {
+	public synchronized static JMDNSPlugin getDefault() {
+		if (plugin == null) {
+			plugin = new JMDNSPlugin();
+		}
 		return plugin;
 	}
 
