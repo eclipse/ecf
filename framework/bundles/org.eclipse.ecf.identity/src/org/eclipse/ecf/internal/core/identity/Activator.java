@@ -109,6 +109,7 @@ public class Activator implements BundleActivator {
 	}
 
 	public DebugOptions getDebugOptions() {
+		if (context == null) return null;
 		if (debugOptionsTracker == null) {
 			debugOptionsTracker = new ServiceTracker(context,
 					DebugOptions.class.getName(), null);
