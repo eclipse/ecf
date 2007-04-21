@@ -10,16 +10,16 @@
  ******************************************************************************/
 package org.eclipse.ecf.example.clients.applications;
 
-import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.example.clients.IMessageReceiver;
 import org.eclipse.ecf.example.clients.XMPPChatClient;
 import org.eclipse.ecf.presence.im.IChatMessage;
+import org.eclipse.equinox.app.IApplication;
+import org.eclipse.equinox.app.IApplicationContext;
 
-public class ChatSORobotApplication implements IPlatformRunnable,
-		IMessageReceiver {
+public class ChatSORobotApplication implements IApplication, IMessageReceiver {
 
 	public static final int WAIT_TIME = 10000;
 	public static final int WAIT_COUNT = 10;
@@ -29,26 +29,40 @@ public class ChatSORobotApplication implements IPlatformRunnable,
 	private XMPPChatClient client;
 	private TrivialSharedObject sharedObject = null;
 
-	public synchronized Object run(Object args) throws Exception {
-		if (args instanceof Object[]) {
-			Object[] arguments = (Object[]) args;
-			int l = arguments.length;
-			if (arguments[l - 1] instanceof String
-					&& arguments[l - 2] instanceof String
-					&& arguments[l - 3] instanceof String
-					&& arguments[l - 4] instanceof String) {
-				userName = (String) arguments[l - 4];
-				String hostName = (String) arguments[l - 3];
-				String password = (String) arguments[l - 2];
-				String targetName = (String) arguments[l - 1];
-				runRobot(hostName, password, targetName);
-				return new Integer(0);
-			}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
+	 */
+	public Object start(IApplicationContext context) throws Exception {
+		Object[] args = context.getArguments().values().toArray();
+		while (args[0] instanceof Object[])
+			args = (Object[]) args[0];
+		Object[] arguments = (Object[]) args;
+		int l = arguments.length;
+		if (arguments[l - 1] instanceof String
+				&& arguments[l - 2] instanceof String
+				&& arguments[l - 3] instanceof String
+				&& arguments[l - 4] instanceof String) {
+			userName = (String) arguments[l - 4];
+			String hostName = (String) arguments[l - 3];
+			String password = (String) arguments[l - 2];
+			String targetName = (String) arguments[l - 1];
+			runRobot(hostName, password, targetName);
+			return new Integer(0);
 		}
 
 		System.out
 				.println("Usage: pass in four arguments (username, hostname, password, targetIMUser)");
 		return new Integer(-1);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.equinox.app.IApplication#stop()
+	 */
+	public void stop() {
 	}
 
 	private void runRobot(String hostName, String password, String targetIMUser)

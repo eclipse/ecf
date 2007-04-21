@@ -8,7 +8,6 @@
  ******************************************************************************/
 package org.eclipse.ecf.example.clients.applications;
 
-import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.example.clients.IMessageReceiver;
@@ -20,6 +19,8 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.im.IChatMessage;
+import org.eclipse.equinox.app.IApplication;
+import org.eclipse.equinox.app.IApplicationContext;
 
 /**
  * To be started as an application. Go to Run->Run..., create a new Eclipse
@@ -27,7 +28,7 @@ import org.eclipse.ecf.presence.im.IChatMessage;
  * and make sure you have all required plug-ins.
  * 
  */
-public class ChatRoomRobotApplication implements IPlatformRunnable,
+public class ChatRoomRobotApplication implements IApplication,
 		IMessageReceiver, IIMMessageListener {
 
 	private IChatRoomMessageSender sender;
@@ -36,25 +37,39 @@ public class ChatRoomRobotApplication implements IPlatformRunnable,
 
 	private String userName;
 
-	public synchronized Object run(Object args) throws Exception {
-		if (args instanceof Object[]) {
-			Object[] arguments = (Object[]) args;
-			int l = arguments.length;
-			if (arguments[l - 1] instanceof String
-					&& arguments[l - 2] instanceof String
-					&& arguments[l - 3] instanceof String
-					&& arguments[l - 4] instanceof String) {
-				userName = (String) arguments[l - 4];
-				String hostName = (String) arguments[l - 3];
-				String password = (String) arguments[l - 2];
-				String roomName = (String) arguments[l - 1];
-				runRobot(hostName, password, roomName);
-				return new Integer(0);
-			}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
+	 */
+	public Object start(IApplicationContext context) throws Exception {
+		Object[] args = context.getArguments().values().toArray();
+		while (args[0] instanceof Object[])
+			args = (Object[]) args[0];
+		Object[] arguments = (Object[]) args;
+		int l = arguments.length;
+		if (arguments[l - 1] instanceof String
+				&& arguments[l - 2] instanceof String
+				&& arguments[l - 3] instanceof String
+				&& arguments[l - 4] instanceof String) {
+			userName = (String) arguments[l - 4];
+			String hostName = (String) arguments[l - 3];
+			String password = (String) arguments[l - 2];
+			String roomName = (String) arguments[l - 1];
+			runRobot(hostName, password, roomName);
+			return new Integer(0);
 		}
 		System.out
 				.println("Usage: pass in four arguments (username, hostname, password, roomname)");
 		return new Integer(-1);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.equinox.app.IApplication#stop()
+	 */
+	public void stop() {
 	}
 
 	private void runRobot(String hostName, String password, String roomName)
