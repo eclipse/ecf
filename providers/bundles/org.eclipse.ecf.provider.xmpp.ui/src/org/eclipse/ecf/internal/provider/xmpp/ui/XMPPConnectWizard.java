@@ -80,17 +80,23 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 					IFileTransferInfo transferInfo = event
 							.getFileTransferInfo();
 					String fileName = transferInfo.getFile().getName();
-					Object[] bindings = new Object[] {
-							username,
-							fileName,
+					Object[] bindings = new Object[] { username, fileName,
 							((transferInfo.getFileSize() == -1) ? "unknown" //$NON-NLS-1$
 									: (transferInfo.getFileSize() + " bytes")), //$NON-NLS-1$
 							(transferInfo.getDescription() == null) ? "none" //$NON-NLS-1$
 									: transferInfo.getDescription() };
-					if (MessageDialog.openQuestion(shell, NLS.bind(
-							Messages.getString("XMPPConnectWizard.FILE_RECEIVE_TITLE"), username), //$NON-NLS-1$
-							NLS.bind(Messages.getString("XMPPConnectWizard.FILE_RECEIVE_MESSAGE"), //$NON-NLS-1$
-									bindings))) {
+					if (MessageDialog
+							.openQuestion(
+									shell,
+									NLS
+											.bind(
+													Messages
+															.getString("XMPPConnectWizard.FILE_RECEIVE_TITLE"), username), //$NON-NLS-1$
+									NLS
+											.bind(
+													Messages
+															.getString("XMPPConnectWizard.FILE_RECEIVE_MESSAGE"), //$NON-NLS-1$
+													bindings))) {
 						FileDialog fd = new FileDialog(shell, SWT.OPEN);
 						// XXX this should be some default path gotten from
 						// preference. For now we'll have it be the user.home
@@ -103,9 +109,12 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 									.lastIndexOf('.'));
 							fd.setFilterExtensions(new String[] { ext });
 						}
-						fd.setText(NLS.bind(
-								Messages.getString("XMPPConnectWizard.FILE_SAVE_TITLE"), //$NON-NLS-1$
-								username));
+						fd
+								.setText(NLS
+										.bind(
+												Messages
+														.getString("XMPPConnectWizard.FILE_SAVE_TITLE"), //$NON-NLS-1$
+												username));
 						final String res = fd.open();
 						if (res == null)
 							event.reject();
@@ -133,10 +142,12 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 								MessageDialog
 										.openError(
 												shell,
-												Messages.getString("XMPPConnectWizard.RECEIVE_ERROR_TITLE"), //$NON-NLS-1$
+												Messages
+														.getString("XMPPConnectWizard.RECEIVE_ERROR_TITLE"), //$NON-NLS-1$
 												NLS
 														.bind(
-																Messages.getString("XMPPConnectWizard.RECEIVE_ERROR_MESSAGE"), //$NON-NLS-1$
+																Messages
+																		.getString("XMPPConnectWizard.RECEIVE_ERROR_MESSAGE"), //$NON-NLS-1$
 																new Object[] {
 																		fileName,
 																		username,
@@ -190,7 +201,7 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 							.getSite().getAdapter(
 									IWorkbenchSiteProgressService.class);
 					view.openTab(icms, itms, targetID, message.getFromID());
-					view.showMessage(message.getFromID(), message.getBody());
+					view.showMessage(message);
 					service.warnOfContentChange();
 				} else {
 					try {
@@ -208,9 +219,7 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 							service.warnOfContentChange();
 						}
 						view.openTab(icms, itms, targetID, message.getFromID());
-						view
-								.showMessage(message.getFromID(), message
-										.getBody());
+						view.showMessage(message);
 					} catch (PartInitException e) {
 						e.printStackTrace();
 					}
@@ -247,7 +256,7 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 
 		final IPresenceContainerAdapter adapter = (IPresenceContainerAdapter) container
 				.getAdapter(IPresenceContainerAdapter.class);
-		
+
 		container.addListener(new IContainerListener() {
 			public void handleEvent(IContainerEvent event) {
 				if (event instanceof IContainerConnectedEvent) {
@@ -285,9 +294,13 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 							exception.printStackTrace();
 							Display.getDefault().asyncExec(new Runnable() {
 								public void run() {
-									new ContainerConnectErrorDialog(workbench
-											.getActiveWorkbenchWindow()
-											.getShell(), 1, Messages.getString("XMPPConnectWizard.SEE_DETAILS"), //$NON-NLS-1$
+									new ContainerConnectErrorDialog(
+											workbench
+													.getActiveWorkbenchWindow()
+													.getShell(),
+											1,
+											Messages
+													.getString("XMPPConnectWizard.SEE_DETAILS"), //$NON-NLS-1$
 											targetID.getName(), exception)
 											.open();
 								}
