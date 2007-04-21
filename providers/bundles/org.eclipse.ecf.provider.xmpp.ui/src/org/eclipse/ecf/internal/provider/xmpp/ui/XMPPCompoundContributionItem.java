@@ -1,19 +1,13 @@
 package org.eclipse.ecf.internal.provider.xmpp.ui;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
-import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
 import org.eclipse.ecf.internal.provider.xmpp.XMPPContainer;
 import org.eclipse.ecf.internal.ui.Messages;
