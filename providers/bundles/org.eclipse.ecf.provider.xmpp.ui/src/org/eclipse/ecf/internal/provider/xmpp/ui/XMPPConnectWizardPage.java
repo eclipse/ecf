@@ -27,9 +27,9 @@ public class XMPPConnectWizardPage extends WizardPage {
 	Text passwordText;
 
 	XMPPConnectWizardPage() {
-		super("");
-		setTitle("XMPP Connection Wizard");
-		setDescription("Specify a XMPP account to connect to.");
+		super(""); //$NON-NLS-1$
+		setTitle(Messages.getString("XMPPConnectWizardPage.WIZARD_TITLE")); //$NON-NLS-1$
+		setDescription(Messages.getString("XMPPConnectWizardPage.WIZARD_DESCRIPTION")); //$NON-NLS-1$
 		setPageComplete(false);
 	}
 
@@ -39,7 +39,7 @@ public class XMPPConnectWizardPage extends WizardPage {
 		GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 
 		Label label = new Label(parent, SWT.LEFT);
-		label.setText("User ID:");
+		label.setText(Messages.getString("XMPPConnectWizardPage.LABEL_USERID")); //$NON-NLS-1$
 
 		connectText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		connectText.setLayoutData(fillData);
@@ -48,17 +48,17 @@ public class XMPPConnectWizardPage extends WizardPage {
 				if (!connectText.getText().equals("")) { //$NON-NLS-1$
 					updateStatus(null);
 				} else {
-					updateStatus("An connect ID must be specified.");
+					updateStatus(Messages.getString("XMPPConnectWizardPage.WIZARD_STATUS")); //$NON-NLS-1$
 				}
 			}
 		});
 
 		label = new Label(parent, SWT.RIGHT);
-		label.setText("<user>@<xmppserver>[:port]");
+		label.setText(Messages.getString("XMPPConnectWizardPage.USERID_TEMPLATE")); //$NON-NLS-1$
 		label.setLayoutData(endData);
 
 		label = new Label(parent, SWT.LEFT);
-		label.setText("Password:");
+		label.setText(Messages.getString("XMPPConnectWizardPage.WIZARD_PASSWORD")); //$NON-NLS-1$
 		passwordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD | SWT.BORDER);
 		passwordText.setLayoutData(fillData);
 

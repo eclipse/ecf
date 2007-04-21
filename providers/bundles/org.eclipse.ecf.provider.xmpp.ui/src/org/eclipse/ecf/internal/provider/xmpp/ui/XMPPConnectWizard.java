@@ -33,7 +33,6 @@ import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
-import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
@@ -84,19 +83,19 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 					Object[] bindings = new Object[] {
 							username,
 							fileName,
-							((transferInfo.getFileSize() == -1) ? "unknown"
-									: (transferInfo.getFileSize() + " bytes")),
-							(transferInfo.getDescription() == null) ? "none"
+							((transferInfo.getFileSize() == -1) ? "unknown" //$NON-NLS-1$
+									: (transferInfo.getFileSize() + " bytes")), //$NON-NLS-1$
+							(transferInfo.getDescription() == null) ? "none" //$NON-NLS-1$
 									: transferInfo.getDescription() };
 					if (MessageDialog.openQuestion(shell, NLS.bind(
-							Messages.RosterView_ReceiveFile_title, username),
-							NLS.bind(Messages.RosterView_ReceiveFile_message,
+							Messages.getString("XMPPConnectWizard.FILE_RECEIVE_TITLE"), username), //$NON-NLS-1$
+							NLS.bind(Messages.getString("XMPPConnectWizard.FILE_RECEIVE_MESSAGE"), //$NON-NLS-1$
 									bindings))) {
 						FileDialog fd = new FileDialog(shell, SWT.OPEN);
 						// XXX this should be some default path gotten from
 						// preference. For now we'll have it be the user.home
 						// system property
-						fd.setFilterPath(System.getProperty("user.home"));
+						fd.setFilterPath(System.getProperty("user.home")); //$NON-NLS-1$
 						fd.setFileName(fileName);
 						int suffixLoc = fileName.lastIndexOf('.');
 						if (suffixLoc != -1) {
@@ -105,7 +104,7 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 							fd.setFilterExtensions(new String[] { ext });
 						}
 						fd.setText(NLS.bind(
-								Messages.RosterView_ReceiveFile_filesavetitle,
+								Messages.getString("XMPPConnectWizard.FILE_SAVE_TITLE"), //$NON-NLS-1$
 								username));
 						final String res = fd.open();
 						if (res == null)
@@ -120,8 +119,8 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 										// XXX Should have some some UI
 										// for transfer events
 										System.out
-												.println("handleTransferEvent("
-														+ event + ")");
+												.println("handleTransferEvent(" //$NON-NLS-1$
+														+ event + ")"); //$NON-NLS-1$
 										if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
 											try {
 												fos.close();
@@ -134,10 +133,10 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 								MessageDialog
 										.openError(
 												shell,
-												Messages.RosterView_ReceiveFile_acceptexception_title,
+												Messages.getString("XMPPConnectWizard.RECEIVE_ERROR_TITLE"), //$NON-NLS-1$
 												NLS
 														.bind(
-																Messages.RosterView_ReceiveFile_acceptexception_message,
+																Messages.getString("XMPPConnectWizard.RECEIVE_ERROR_MESSAGE"), //$NON-NLS-1$
 																new Object[] {
 																		fileName,
 																		username,
@@ -288,7 +287,7 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 								public void run() {
 									new ContainerConnectErrorDialog(workbench
 											.getActiveWorkbenchWindow()
-											.getShell(), 1, "See Details",
+											.getShell(), 1, Messages.getString("XMPPConnectWizard.SEE_DETAILS"), //$NON-NLS-1$
 											targetID.getName(), exception)
 											.open();
 								}

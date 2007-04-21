@@ -10,7 +10,6 @@ import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
 import org.eclipse.ecf.internal.provider.xmpp.XMPPContainer;
-import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterEntryContributionItem;
@@ -61,7 +60,7 @@ public class XMPPCompoundContributionItem extends
 					sendFileToTarget(ioftca, entry.getUser().getID());
 				}
 			};
-			fileSendAction.setText("Send File");
+			fileSendAction.setText(Messages.getString("XMPPCompoundContributionItem.SEND_FILE")); //$NON-NLS-1$
 			fileSendAction.setImageDescriptor(PlatformUI.getWorkbench()
 					.getSharedImages().getImageDescriptor(
 							ISharedImages.IMG_OBJ_FILE));
@@ -78,8 +77,8 @@ public class XMPPCompoundContributionItem extends
 			final ID targetID) {
 		FileDialog fd = new FileDialog(shell, SWT.OPEN);
 		// XXX this should be some default path set by preferences
-		fd.setFilterPath(System.getProperty("user.home"));
-		fd.setText(NLS.bind(Messages.RosterView_SendFile_title, targetID
+		fd.setFilterPath(System.getProperty("user.home")); //$NON-NLS-1$
+		fd.setText(NLS.bind(Messages.getString("XMPPCompoundContributionItem.CHOOSE_FILE"), targetID //$NON-NLS-1$
 				.getName()));
 		final String res = fd.open();
 		if (res != null) {
@@ -100,10 +99,10 @@ public class XMPPCompoundContributionItem extends
 												MessageDialog
 														.openInformation(
 																shell,
-																Messages.RosterView_SendFile_response_title,
+																Messages.getString("XMPPCompoundContributionItem.FILE_SEND_REFUSED_TITLE"), //$NON-NLS-1$
 																NLS
 																		.bind(
-																				Messages.RosterView_SendFile_response_message,
+																				Messages.getString("XMPPCompoundContributionItem.FILE_SEND_REFUSED_MESSAGE"), //$NON-NLS-1$
 																				res,
 																				targetID
 																						.getName()));
@@ -116,10 +115,10 @@ public class XMPPCompoundContributionItem extends
 				MessageDialog
 						.openError(
 								shell,
-								Messages.RosterView_SendFile_requestexception_title,
+								Messages.getString("XMPPCompoundContributionItem.SEND_ERROR_TITLE"), //$NON-NLS-1$
 								NLS
 										.bind(
-												Messages.RosterView_SendFile_requestexception_message,
+												Messages.getString("XMPPCompoundContributionItem.SEND_ERROR_MESSAGE"), //$NON-NLS-1$
 												new Object[] { res,
 														e.getLocalizedMessage() }));
 			}
