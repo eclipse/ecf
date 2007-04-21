@@ -153,22 +153,6 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 
 	};
 
-	private IExceptionHandler exceptionHandler = new IExceptionHandler() {
-		public IStatus handleException(final Throwable exception) {
-			if (exception != null) {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						new ContainerConnectErrorDialog(shell, IStatus.ERROR,
-								"See Details", targetID.getName(), exception)
-								.open();
-					}
-				});
-			}
-			return new Status(IStatus.OK, Activator.PLUGIN_ID, IStatus.OK,
-					"Connected", null);
-		}
-	};
-
 	public void addPages() {
 		page = new XMPPConnectWizardPage();
 		addPage(page);
