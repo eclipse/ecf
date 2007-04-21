@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.sharedobject,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.provider,
- org.jivesoftware.smack
+ org.jivesoftware.smack;bundle-version="[2.2.1,2.2.1]"
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.provider.xmpp;x-internal:=true,
  org.eclipse.ecf.internal.provider.xmpp.events;x-internal:=true,
