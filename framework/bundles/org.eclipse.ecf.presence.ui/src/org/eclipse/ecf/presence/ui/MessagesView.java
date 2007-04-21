@@ -26,6 +26,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.im.IChatID;
+import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.im.ITypingMessageEvent;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
@@ -242,18 +243,17 @@ public class MessagesView extends ViewPart {
 	}
 
 	/**
-	 * Display a message from a remote user in the chatbox.
+	 * Display a chat message from a remote user in their designated chat box.
 	 * 
-	 * @param remoteID
-	 *            the ID of the remote user
-	 * @param body
-	 *            the body of the message
+	 * @param message
+	 *            a chat message that has been sent to the local user
 	 */
-	public synchronized void showMessage(ID remoteID, String body) {
-		Assert.isNotNull(remoteID);
+	public synchronized void showMessage(IChatMessage message) {
+		Assert.isNotNull(message);
+		ID remoteID = message.getFromID();
 		ChatTab tab = (ChatTab) tabs.get(remoteID);
 		if (tab != null) {
-			tab.append(remoteID, body);
+			tab.append(remoteID, message.getBody());
 		}
 	}
 
