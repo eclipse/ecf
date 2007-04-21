@@ -19,3 +19,4 @@ Import-Package: org.eclipse.osgi.util,
  org.osgi.framework,
  org.osgi.service.log,
  org.osgi.util.tracker
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
