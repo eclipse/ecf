@@ -8,10 +8,9 @@ Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf,
- org.eclipse.ui,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.ui,
- org.eclipse.ecf.sharedobject,
+ org.eclipse.ui,
  org.eclipse.ui.forms
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.presence.ui;x-internal:=true,
