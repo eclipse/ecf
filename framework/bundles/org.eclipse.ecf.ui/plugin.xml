@@ -9,12 +9,6 @@
             name="ECF"
             id="org.eclipse.ecf.ui.viewcategory"/>
       <view
-            icon="icons/epresence16/buddy_available.gif"
-            class="org.eclipse.ecf.ui.views.RosterView"
-            category="org.eclipse.ecf.ui.viewcategory"
-            name="Roster"
-            id="org.eclipse.ecf.ui.view.rosterview"/>
-      <view
             allowMultiple="true"
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.ui.views.ChatRoomView"
@@ -50,17 +44,17 @@
       </page>
    </extension>
    <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="org.eclipse.ecf.internal.ui.UIPreferenceInitializer">
-      </initializer>
-   </extension>
-   <extension
          point="org.eclipse.ui.preferencePages">
       <page
             class="org.eclipse.ecf.ui.CategoryPreferencePage"
             id="org.eclipse.ecf.ui.category"
             name="ECF">
       </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.ecf.internal.ui.UIPreferenceInitializer">
+      </initializer>
    </extension>
 </plugin>
