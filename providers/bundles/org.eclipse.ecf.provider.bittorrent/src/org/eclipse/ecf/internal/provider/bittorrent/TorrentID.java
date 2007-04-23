@@ -66,7 +66,9 @@ public final class TorrentID implements IFileID {
 	}
 
 	public int compareTo(Object o) {
-		return file.compareTo(o);
+		if (o instanceof TorrentID) {
+			return file.compareTo(((TorrentID)o).file);
+		} else return Integer.MIN_VALUE;
 	}
 
 	public Object getAdapter(Class adapter) {
