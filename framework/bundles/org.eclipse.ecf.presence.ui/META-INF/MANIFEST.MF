@@ -18,3 +18,6 @@ Export-Package: org.eclipse.ecf.internal.presence.ui;x-internal:=true,
  org.eclipse.ecf.presence.ui.chatroom,
  org.eclipse.ecf.presence.ui.roster
 Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Import-Package: org.eclipse.jface.text,
+ org.eclipse.jface.text.source,
+ org.eclipse.ui.editors.text

@@ -36,6 +36,8 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -62,6 +64,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
@@ -427,8 +431,13 @@ public class MessagesView extends ViewPart {
 			Composite client = toolkit.createComposite(sash);
 			client.setLayout(new FillLayout());
 
-			chatText = new StyledText(client, SWT.BORDER | SWT.MULTI
-					| SWT.V_SCROLL | SWT.READ_ONLY);
+			SourceViewer result = new SourceViewer(client, null, null, true,
+					SWT.BORDER | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+			result.configure(new TextSourceViewerConfiguration(EditorsUI
+					.getPreferenceStore()));
+			result.setDocument(new Document());
+
+			chatText = result.getTextWidget();
 
 			client = toolkit.createComposite(sash);
 			client.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
