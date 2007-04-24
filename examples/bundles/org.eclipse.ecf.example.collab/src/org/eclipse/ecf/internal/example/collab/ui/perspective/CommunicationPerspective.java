@@ -16,12 +16,11 @@ import org.eclipse.ecf.presence.ui.MessagesView;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.views.ChatRoomManagerView;
 import org.eclipse.ecf.ui.views.ChatRoomView;
-import org.eclipse.ecf.ui.views.RosterView;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
-public class CommuniationPerspective implements IPerspectiveFactory {
+public class CommunicationPerspective implements IPerspectiveFactory {
 
 	public void createInitialLayout(IPageLayout layout) {
 		defineActions(layout);
@@ -60,7 +59,6 @@ public class CommuniationPerspective implements IPerspectiveFactory {
 				"bottomLeft", IPageLayout.BOTTOM, 0.50f,//$NON-NLS-1$
 				"topLeft");//$NON-NLS-1$
 		bottomLeft.addView(IPageLayout.ID_OUTLINE);
-		bottomLeft.addPlaceholder(RosterView.VIEW_ID);
 		bottomLeft.addPlaceholder(MultiRosterView.VIEW_ID);
 
 		// Bottom right.
