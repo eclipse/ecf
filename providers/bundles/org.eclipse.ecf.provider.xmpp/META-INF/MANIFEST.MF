@@ -7,10 +7,12 @@ Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf,
+ org.eclipse.ecf.provider,
+ org.eclipse.ecf.presence,
  org.eclipse.ecf.filetransfer,
  org.eclipse.ecf.sharedobject,
- org.eclipse.ecf.presence,
- org.eclipse.ecf.provider,
+ org.eclipse.ecf.datashare,
+ org.eclipse.ecf.provider.datashare,
  org.jivesoftware.smack;bundle-version="[2.2.1,2.2.1]"
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.provider.xmpp;x-internal:=true,
