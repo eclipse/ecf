@@ -27,7 +27,7 @@ public class BuildAPITOC {
 		String line;
 		try {
 			while ((line = r.readLine()) != null)
-				System.out.println("<topic label=\"" + line + "\" href=\"html/reference/api/" + line.replace('.', '/') + "/package-summary.html\"/>");
+				System.out.println("<topic label=\"" + line + "\" href=\"http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/" + line.replace('.', '/') + "/package-summary.html\"/>");
 		} finally {
 			r.close();
 		}

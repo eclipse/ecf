@@ -2,7 +2,7 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Reference" link_to="toc.xml#reference"> 
-	<topic label="JavaDoc" href="html/reference/api/overview-summary.html">
+	<topic label="JavaDoc" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/overview-summary.html">
 		<link toc="tocapi.xml"/>
 	</topic>
 	<topic label="Extension Points">
