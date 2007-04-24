@@ -753,12 +753,15 @@ public class MultiRosterView extends ViewPart implements
 
 	protected void refreshTreeViewer(Object val, boolean labels) {
 		if (treeViewer != null) {
-			if (val != null) {
-				treeViewer.refresh(val, labels);
-			} else {
-				treeViewer.refresh(labels);
+			Control c = treeViewer.getControl();
+			if (c != null && !c.isDisposed()) {
+				if (val != null) {
+					treeViewer.refresh(val, labels);
+				} else {
+					treeViewer.refresh(labels);
+				}
+				treeViewer.expandToLevel(DEFAULT_EXPAND_LEVEL);
 			}
-			treeViewer.expandToLevel(DEFAULT_EXPAND_LEVEL);
 		}
 	}
 
