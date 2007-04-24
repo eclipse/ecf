@@ -432,7 +432,8 @@ public class MessagesView extends ViewPart {
 			client.setLayout(new FillLayout());
 
 			SourceViewer result = new SourceViewer(client, null, null, true,
-					SWT.BORDER | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+					SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
+							| SWT.READ_ONLY);
 			result.configure(new TextSourceViewerConfiguration(EditorsUI
 					.getPreferenceStore()));
 			result.setDocument(new Document());
