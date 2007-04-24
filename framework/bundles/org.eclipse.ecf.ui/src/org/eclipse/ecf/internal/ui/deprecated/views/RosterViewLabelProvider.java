@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.eclipse.ecf.ui.views;
+package org.eclipse.ecf.internal.ui.deprecated.views;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;

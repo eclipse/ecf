@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.ui.views;
+package org.eclipse.ecf.internal.ui.deprecated.views;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IPresence;

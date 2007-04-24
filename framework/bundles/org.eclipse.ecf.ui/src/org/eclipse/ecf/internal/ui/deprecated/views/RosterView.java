@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.ui.views;
+package org.eclipse.ecf.internal.ui.deprecated.views;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -71,6 +71,10 @@ import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ChangePasswordDialog;
 import org.eclipse.ecf.ui.dialogs.ChatRoomSelectionDialog;
+import org.eclipse.ecf.ui.views.ChatRoomView;
+import org.eclipse.ecf.ui.views.ChatWindow;
+import org.eclipse.ecf.ui.views.IChatRoomViewCloseListener;
+import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;

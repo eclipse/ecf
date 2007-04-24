@@ -8,11 +8,24 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-
-package org.eclipse.ecf.ui.views;
+package org.eclipse.ecf.internal.ui.deprecated.views;
 
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.ui.SharedImages;
+import org.eclipse.swt.graphics.Image;
 
-public interface IRemoteViewSender {
-	public void sendShowView(ID target, String viewid);
+public class RosterAccount extends RosterGroup {
+
+	public RosterAccount(String name, ID id) {
+		super(name, id);
+	}
+
+	public String getLabel() {
+		return getName();
+	}
+
+	public Image getImage() {
+		return SharedImages.getImage(SharedImages.IMG_USER_AVAILABLE);
+	}
+
 }

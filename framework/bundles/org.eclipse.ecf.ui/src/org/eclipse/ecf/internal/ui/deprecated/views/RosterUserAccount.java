@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.ui.views;
+package org.eclipse.ecf.internal.ui.deprecated.views;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
@@ -16,6 +16,7 @@ import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
+import org.eclipse.ecf.ui.views.ILocalInputHandler;
 
 public class RosterUserAccount {
 	/**
