@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004, 2007 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 
 package org.eclipse.ecf.example.collab.ui;
 
@@ -47,8 +47,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -92,8 +92,6 @@ import org.eclipse.ui.views.IViewCategory;
 import org.eclipse.ui.views.IViewDescriptor;
 import org.eclipse.ui.views.IViewRegistry;
 
-
-
 public class ChatComposite extends Composite {
 	private static final String CHAT_OUTPUT_FONT = "ChatFont";
 	private final LineChatClientView view;
@@ -120,82 +118,93 @@ public class ChatComposite extends Composite {
 	Action startProgram = null;
 	Action closeGroup = null;
 	Action sendCVSUpdateRequest = null;
-	
+
 	Action sendShowViewRequest = null;
-	
+
 	Action showChatWindow;
 
 	protected final String TEXT_INPUT_INIT = MessageLoader
 			.getString("LineChatClientView.textinputinit");
-    protected static final int DEFAULT_INPUT_HEIGHT = 25;
-    protected static final int DEFAULT_INPUT_SEPARATOR = 5;
+	protected static final int DEFAULT_INPUT_HEIGHT = 25;
+	protected static final int DEFAULT_INPUT_SEPARATOR = 5;
 
 	Text textinput = null;
 	SimpleLinkTextViewer textoutput = null;
 	ChatTreeViewer treeView = null;
 	ChatDropTarget chatDropTarget = null;
 	TreeDropTarget treeDropTarget = null;
-	
+
 	ChatWindow chatWindow;
 	boolean typing;
 
-	ChatComposite(LineChatClientView view, Composite parent, ChatTreeViewer tree, int options,
-			String initText) {
+	ChatComposite(LineChatClientView view, Composite parent,
+			ChatTreeViewer tree, int options, String initText) {
 		this(view, parent, tree, options, initText, null);
 	}
-	
-	ChatComposite(LineChatClientView view, Composite parent, ChatTreeViewer tree, int options,
-			String initText, ChatWindow chatWindow) {
+
+	ChatComposite(LineChatClientView view, Composite parent,
+			ChatTreeViewer tree, int options, String initText,
+			ChatWindow chatWindow) {
 		super(parent, options);
 		this.view = view;
 		this.chatWindow = chatWindow;
-		
-		meColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_ME_TEXT_COLOR));
-		otherColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_OTHER_TEXT_COLOR));
-		systemColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_SYSTEM_TEXT_COLOR));
-		ClientPlugin.getDefault().getPluginPreferences().addPropertyChangeListener(new ColorPropertyChangeListener());
-		
+
+		meColor = colorFromRGBString(ClientPlugin.getDefault()
+				.getPluginPreferences().getString(
+						ClientPlugin.PREF_ME_TEXT_COLOR));
+		otherColor = colorFromRGBString(ClientPlugin.getDefault()
+				.getPluginPreferences().getString(
+						ClientPlugin.PREF_OTHER_TEXT_COLOR));
+		systemColor = colorFromRGBString(ClientPlugin.getDefault()
+				.getPluginPreferences().getString(
+						ClientPlugin.PREF_SYSTEM_TEXT_COLOR));
+		ClientPlugin.getDefault().getPluginPreferences()
+				.addPropertyChangeListener(new ColorPropertyChangeListener());
+
 		this.addDisposeListener(new DisposeListener() {
 
 			public void widgetDisposed(DisposeEvent e) {
 				if (meColor != null) {
 					meColor.dispose();
 				}
-				
+
 				if (otherColor != null) {
 					otherColor.dispose();
 				}
-				
+
 				if (systemColor != null) {
 					systemColor.dispose();
 				}
 			}
-			
+
 		});
-		
+
 		cl = new ChatLayout(DEFAULT_INPUT_HEIGHT, DEFAULT_INPUT_SEPARATOR);
 		setLayout(cl);
 		treeView = tree;
 		textoutput = new SimpleLinkTextViewer(this, SWT.V_SCROLL | SWT.H_SCROLL
 				| SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
-		String fontName = ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_CHAT_FONT);
+		String fontName = ClientPlugin.getDefault().getPluginPreferences()
+				.getString(ClientPlugin.PREF_CHAT_FONT);
 		if (!(fontName == null) && !(fontName.equals(""))) {
 			FontRegistry fr = ClientPlugin.getDefault().getFontRegistry();
-			FontData []newFont = {new FontData(fontName)};
-			
+			FontData[] newFont = { new FontData(fontName) };
+
 			fr.put(CHAT_OUTPUT_FONT, newFont);
 			textoutput.getTextWidget().setFont(fr.get(CHAT_OUTPUT_FONT));
 		}
-		
-		ClientPlugin.getDefault().getPluginPreferences().addPropertyChangeListener(new FontPropertyChangeListener());
-		
+
+		ClientPlugin.getDefault().getPluginPreferences()
+				.addPropertyChangeListener(new FontPropertyChangeListener());
+
 		textoutput.append(initText);
-		
+
 		textinput = new Text(this, SWT.SINGLE | SWT.BORDER);
-		cl.setInputTextHeight(textinput.getFont().getFontData()[0]
-				.getHeight() + 2);
+		cl
+				.setInputTextHeight(textinput.getFont().getFontData()[0]
+						.getHeight() + 2);
 		textinput.setText(TEXT_INPUT_INIT);
-		
+
 		textinput.selectAll();
 		textinput.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent evt) {
@@ -232,7 +241,7 @@ public class ChatComposite extends Composite {
 			}
 		});
 		textinput.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {				
+			public void modifyText(ModifyEvent e) {
 				if (typing && textinput.getText().trim().length() == 0)
 					typing = false;
 				else if (!typing) {
@@ -248,51 +257,53 @@ public class ChatComposite extends Composite {
 		initializeDropTargets();
 	}
 
-	ChatComposite(LineChatClientView view, Composite parent, ChatTreeViewer tree, String initText) {
+	ChatComposite(LineChatClientView view, Composite parent,
+			ChatTreeViewer tree, String initText) {
 		this(view, parent, tree, SWT.NULL, initText);
 	}
 
 	public void appendText(ChatLine text) {
 		StyledText st = textoutput.getTextWidget();
-		
-		
+
 		if (text == null || textoutput == null || st == null || st.isDisposed())
 			return;
 
-//		int startRange = st.getText().length();
+		// int startRange = st.getText().length();
 		StringBuffer sb = new StringBuffer();
-		
+
 		if (text.getOriginator() != null) {
 			sb.append(text.getOriginator().getNickname() + ": ");
-//			StyleRange sr = new StyleRange();
-//			sr.start = startRange;
-//			sr.length = sb.length();
-//			if (view.userdata.getUserID().equals(text.getOriginator().getUserID())) { 
-//				sr.foreground = meColor;
-//			} else {
-//				sr.foreground = otherColor;
-//			}
-//			st.append(sb.toString());
-//			st.setStyleRange(sr);
+			// StyleRange sr = new StyleRange();
+			// sr.start = startRange;
+			// sr.length = sb.length();
+			// if
+			// (view.userdata.getUserID().equals(text.getOriginator().getUserID()))
+			// {
+			// sr.foreground = meColor;
+			// } else {
+			// sr.foreground = otherColor;
+			// }
+			// st.append(sb.toString());
+			// st.setStyleRange(sr);
 
 			textoutput.append(sb.toString());
 		}
-		
-//		int beforeMessageIndex = st.getText().length();
-		
-		if(text.getOnClick()==null)
+
+		// int beforeMessageIndex = st.getText().length();
+
+		if (text.getOnClick() == null)
 			textoutput.append(text.getText());
 		else
 			textoutput.appendLink(text.getText(), text.getOnClick());
-		
-//		if (text.getOriginator() == null) {
-//			StyleRange sr = new StyleRange();
-//			sr.start = beforeMessageIndex;
-//			sr.length = text.getText().length();
-//			sr.foreground = systemColor;
-//			st.setStyleRange(sr);
-//		}
-		
+
+		// if (text.getOriginator() == null) {
+		// StyleRange sr = new StyleRange();
+		// sr.start = beforeMessageIndex;
+		// sr.length = text.getText().length();
+		// sr.foreground = systemColor;
+		// st.setStyleRange(sr);
+		// }
+
 		if (!text.isNoCRLF()) {
 			textoutput.append("\n");
 		}
@@ -311,9 +322,9 @@ public class ChatComposite extends Composite {
 	private void contributeToActionBars() {
 		IActionBars bars = this.view.view.getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
-		//fillLocalToolBar(bars.getToolBarManager());
-		//bars.getToolBarManager().markDirty();
-		
+		// fillLocalToolBar(bars.getToolBarManager());
+		// bars.getToolBarManager().markDirty();
+
 	}
 
 	protected void copyFileLocally(String inputFile, String outputFile)
@@ -344,7 +355,7 @@ public class ChatComposite extends Composite {
 			manager.add(showChatWindow);
 			manager.add(new Separator());
 		}
-		
+
 		manager.add(outputCopy);
 		manager.add(outputPaste);
 		manager.add(outputClear);
@@ -352,19 +363,19 @@ public class ChatComposite extends Composite {
 		manager.add(outputSelectAll);
 		manager.add(new Separator());
 		manager.add(sendFileToGroup);
-		//manager.add(sendFileToGroupAndLaunch);
+		// manager.add(sendFileToGroupAndLaunch);
 		manager.add(coBrowseURL);
-		//manager.add(startProgram);
-		//appShare.setEnabled(!LineChatView.appShareActive());
-		//manager.add(appShare);
+		// manager.add(startProgram);
+		// appShare.setEnabled(!LineChatView.appShareActive());
+		// manager.add(appShare);
 		manager.add(new Separator());
 		manager.add(sendMessage);
 		manager.add(sendCVSUpdateRequest);
 		manager.add(sendShowViewRequest);
-		//manager.add(new Separator());
-		//manager.add(sendEclipseComponent);
-		//manager.add(messageEclipseComponent);
-		//manager.add(removeEclipseComponent);
+		// manager.add(new Separator());
+		// manager.add(sendEclipseComponent);
+		// manager.add(messageEclipseComponent);
+		// manager.add(removeEclipseComponent);
 		/*
 		 * manager.add(new Separator()); manager.add(sendComponent);
 		 * manager.add(sendComponentToServer);
@@ -380,7 +391,7 @@ public class ChatComposite extends Composite {
 			manager.add(showChatWindow);
 			manager.add(new Separator());
 		}
-		
+
 		manager.add(outputCopy);
 		manager.add(outputPaste);
 		manager.add(outputClear);
@@ -389,7 +400,7 @@ public class ChatComposite extends Composite {
 		manager.add(new Separator());
 		manager.add(sendFileToGroup);
 		manager.add(coBrowseURL);
-		//manager.add(startProgram);
+		// manager.add(startProgram);
 		manager.add(appShare);
 		manager.add(new Separator());
 		manager.add(sendMessage);
@@ -403,28 +414,20 @@ public class ChatComposite extends Composite {
 		manager.add(new Separator());
 		manager.add(closeGroup);
 	}
+
 	/*
-	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(inputCopy);
-		manager.add(inputPaste);
-		manager.add(inputClear);
-		manager.add(new Separator());
-		manager.add(inputSelectAll);
-		manager.add(new Separator());
-		manager.add(sendFileToGroup);
-		manager.add(coBrowseURL);
-		manager.add(startProgram);
-		manager.add(appShare);
-		manager.add(new Separator());
-		manager.add(sendMessage);
-		//manager.add(new Separator()); manager.add(sendComponent);
-		//manager.add(sendComponentToServer);
-		//manager.add(sendEclipseComponent);
-		manager.add(new Separator());
-		manager.add(closeGroup);
-	}
-	*/
-	
+	 * private void fillLocalToolBar(IToolBarManager manager) {
+	 * manager.add(inputCopy); manager.add(inputPaste); manager.add(inputClear);
+	 * manager.add(new Separator()); manager.add(inputSelectAll);
+	 * manager.add(new Separator()); manager.add(sendFileToGroup);
+	 * manager.add(coBrowseURL); manager.add(startProgram);
+	 * manager.add(appShare); manager.add(new Separator());
+	 * manager.add(sendMessage); //manager.add(new Separator());
+	 * manager.add(sendComponent); //manager.add(sendComponentToServer);
+	 * //manager.add(sendEclipseComponent); manager.add(new Separator());
+	 * manager.add(closeGroup); }
+	 */
+
 	private void fillTreeContextMenu(IMenuManager manager) {
 		User ud = treeView.getSelectionUser();
 		if (ud != null) {
@@ -433,19 +436,19 @@ public class ChatComposite extends Composite {
 			fillContextMenu(manager);
 		}
 	}
-	
+
 	private class ScreenCaptureJob extends UIJob {
-		
+
 		private Color blackColor;
-		
+
 		private Color whiteColor;
-		
+
 		private boolean isDragging = false;
-		
+
 		private int downX = -1;
-		
+
 		private int downY = -1;
-		
+
 		public ScreenCaptureJob(Display display) {
 			super(display, "Screen capturing...");
 			blackColor = new Color(display, 0, 0, 0);
@@ -458,7 +461,7 @@ public class ChatComposite extends Composite {
 			final Image image = new Image(display, display.getBounds());
 			context.copyArea(image, 0, 0);
 			context.dispose();
-		
+
 			final Shell shell = new Shell(display, SWT.NO_TRIM);
 			shell.setLayout(new FillLayout());
 			shell.setBounds(display.getBounds());
@@ -468,43 +471,48 @@ public class ChatComposite extends Composite {
 					gc.drawImage(image, 0, 0);
 				}
 			});
-		
+
 			shell.addMouseListener(new MouseAdapter() {
 				public void mouseDown(MouseEvent e) {
 					isDragging = true;
 					downX = e.x;
 					downY = e.y;
 				}
-		
+
 				public void mouseUp(MouseEvent e) {
 					isDragging = false;
 					int width = Math.max(downX, e.x) - Math.min(downX, e.x);
 					int height = Math.max(downY, e.y) - Math.min(downY, e.y);
 					if (width != 0 && height != 0) {
 						final Image copy = new Image(display, width, height);
-						gc.copyArea(copy, Math.min(downX, e.x), Math.min(downY, e.y));
+						gc.copyArea(copy, Math.min(downX, e.x), Math.min(downY,
+								e.y));
 						shell.close();
 						image.dispose();
 						blackColor.dispose();
 						whiteColor.dispose();
-						Dialog dialog = new ConfirmationDialog(getShell(), copy, width, height);
+						Dialog dialog = new ConfirmationDialog(getShell(),
+								copy, width, height);
 						dialog.open();
 					}
 				}
 			});
-		
+
 			shell.addMouseMoveListener(new MouseMoveListener() {
 				public void mouseMove(MouseEvent e) {
 					if (isDragging) {
 						gc.drawImage(image, 0, 0);
 						gc.setForeground(blackColor);
-						gc.drawRectangle(downX, downY, e.x - downX, e.y - downY);
+						gc
+								.drawRectangle(downX, downY, e.x - downX, e.y
+										- downY);
 						gc.setForeground(whiteColor);
-						gc.drawRectangle(downX - 1, downY - 1, e.x - downX + 2, e.y - downY + 2);
+						gc.drawRectangle(downX - 1, downY - 1, e.x - downX + 2,
+								e.y - downY + 2);
 					}
 				}
 			});
-		
+
 			shell.open();
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch()) {
@@ -514,33 +522,35 @@ public class ChatComposite extends Composite {
 			return Status.OK_STATUS;
 		}
 	}
-	
+
 	private class ConfirmationDialog extends Dialog {
-		
+
 		private Image image;
-		
+
 		private int width;
-		
+
 		private int height;
-		
-		private ConfirmationDialog(Shell shell, Image image, int width, int height) {
+
+		private ConfirmationDialog(Shell shell, Image image, int width,
+				int height) {
 			super(shell);
 			this.image = image;
 			this.width = width;
 			this.height = height;
 		}
-		
+
 		protected void buttonPressed(int buttonId) {
 			if (buttonId == IDialogConstants.OK_ID) {
 				view.lch.sendImage(new ImageWrapper(image.getImageData()));
 			}
 			super.buttonPressed(buttonId);
 		}
-		
+
 		protected Control createDialogArea(Composite parent) {
 			parent = (Composite) super.createDialogArea(parent);
 			Composite composite = new Composite(parent, SWT.NONE);
-			composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			composite
+					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			composite.setLayout(new FillLayout());
 			composite.addPaintListener(new PaintListener() {
 				public void paintControl(PaintEvent e) {
@@ -549,31 +559,31 @@ public class ChatComposite extends Composite {
 			});
 			return parent;
 		}
-		
+
 		protected Point getInitialSize() {
 			Point point = super.getInitialSize();
 			if (point.x < width) {
-				if (point .y < height) {
+				if (point.y < height) {
 					return new Point(width, height);
 				} else {
 					return new Point(width, point.y);
 				}
 			} else {
-				if (point .y < height) {
+				if (point.y < height) {
 					return new Point(point.x, height);
 				} else {
 					return new Point(point.x, point.y);
 				}
 			}
 		}
-		
+
 		public boolean close() {
 			image.dispose();
 			return super.close();
 		}
-		
+
 	}
-	
+
 	private void sendImage() {
 		final Display display = getDisplay();
 		Job job = new ScreenCaptureJob(display);
@@ -594,19 +604,20 @@ public class ChatComposite extends Composite {
 					sendImage();
 				}
 			};
-			sendImageToUser.setText("Send Screen Capture to " + user.getNickname());
+			sendImageToUser.setText("Send Screen Capture to "
+					+ user.getNickname());
 			sendImageToUser.setImageDescriptor(PlatformUI.getWorkbench()
 					.getSharedImages().getImageDescriptor(
 							ISharedImages.IMG_OBJ_FILE));
 			man.add(sendImageToUser);
-			
+
 			Action sendFileToUser = new Action() {
 				public void run() {
-					sendFileToUser(user,false);
+					sendFileToUser(user, false);
 				}
 			};
-			sendFileToUser.setText("Send File to " + user.getNickname()
-					+ "...");
+			sendFileToUser
+					.setText("Send File to " + user.getNickname() + "...");
 			sendFileToUser.setImageDescriptor(PlatformUI.getWorkbench()
 					.getSharedImages().getImageDescriptor(
 							ISharedImages.IMG_OBJ_FILE));
@@ -616,12 +627,13 @@ public class ChatComposite extends Composite {
 
 			Action sendFileToUserAndLaunch = new Action() {
 				public void run() {
-					sendFileToUser(user,true);
+					sendFileToUser(user, true);
 				}
 			};
-			sendFileToUserAndLaunch.setText("Send File to " + user.getNickname()+" and launch...");
-			sendFileToUserAndLaunch.setImageDescriptor(PlatformUI.getWorkbench()
-					.getSharedImages().getImageDescriptor(
+			sendFileToUserAndLaunch.setText("Send File to "
+					+ user.getNickname() + " and launch...");
+			sendFileToUserAndLaunch.setImageDescriptor(PlatformUI
+					.getWorkbench().getSharedImages().getImageDescriptor(
 							ISharedImages.IMG_OBJ_FILE));
 			// XXX disabled
 			sendFileToUserAndLaunch.setEnabled(false);
@@ -632,8 +644,8 @@ public class ChatComposite extends Composite {
 					sendCoBrowseToUser(user);
 				}
 			};
-			coBrowseToUser.setText("Co-Browse Web with "
-					+ user.getNickname() + "...");
+			coBrowseToUser.setText("Co-Browse Web with " + user.getNickname()
+					+ "...");
 			man.add(coBrowseToUser);
 			/*
 			 * Action startProgramToUser = new Action() { public void run() {
@@ -644,17 +656,14 @@ public class ChatComposite extends Composite {
 			man.add(new Separator());
 
 			/*
-			Action startAppShareToUser = new Action() {
-				public void run() {
-					sendAppShare(user.getUserID());
-				}
-			};
-			*/
-			//startAppShareToUser.setText("Start Application Share with "
-			//		+ user.getNickname() + "...");
-			//man.add(startAppShareToUser);
-			//startAppShareToUser.setEnabled(Platform.getOS().equalsIgnoreCase(Platform.OS_WIN32)&& !LineChatView.appShareActive());
-
+			 * Action startAppShareToUser = new Action() { public void run() {
+			 * sendAppShare(user.getUserID()); } };
+			 */
+			// startAppShareToUser.setText("Start Application Share with "
+			// + user.getNickname() + "...");
+			// man.add(startAppShareToUser);
+			// startAppShareToUser.setEnabled(Platform.getOS().equalsIgnoreCase(Platform.OS_WIN32)&&
+			// !LineChatView.appShareActive());
 			man.add(new Separator());
 			Action ringUser = new Action() {
 				public void run() {
@@ -671,55 +680,40 @@ public class ChatComposite extends Composite {
 			sendMessageToUser.setText("Send Private Message to "
 					+ user.getNickname() + "...");
 			man.add(sendMessageToUser);
-			
-			/*
-			Action sendCVSUpdateRequest = new Action() {
-			    public void run() {
-			        sendCVSUpdateRequest(user);
-			    }
-			};
-			*/
-			//sendCVSUpdateRequest.setText("Send CVS Update Request to "+user.getNickname()+"...");
-			//man.add(sendCVSUpdateRequest);
 
+			/*
+			 * Action sendCVSUpdateRequest = new Action() { public void run() {
+			 * sendCVSUpdateRequest(user); } };
+			 */
+			// sendCVSUpdateRequest.setText("Send CVS Update Request to
+			// "+user.getNickname()+"...");
+			// man.add(sendCVSUpdateRequest);
 			Action sendShowViewRequest = new Action() {
-			    public void run() {
-			        sendShowViewRequest(user);
-			    }
+				public void run() {
+					sendShowViewRequest(user);
+				}
 			};
-			sendShowViewRequest.setText("Send Show View Request to "+user.getNickname()+"...");
+			sendShowViewRequest.setText("Send Show View Request to "
+					+ user.getNickname() + "...");
 			man.add(sendShowViewRequest);
 			/*
-			man.add(new Separator());
-			Action createProxy = new Action() {
-				public void run() {
-					sendEclipseComponent(user);
-				}
-			};
-			createProxy.setText("Send EclipseProjectComponent to "
-					+ user.getNickname() + "...");
-			man.add(createProxy);
-
-			Action messageProxy = new Action() {
-				public void run() {
-					messageEclipseComponent(user);
-				}
-			};
-			messageProxy.setText("Message EclipseProjectComponent for "
-					+ user.getNickname() + "...");
-			messageProxy.setEnabled(this.view.proxyObjects.size() > 0);
-
-			man.add(messageProxy);
-			Action removeProxy = new Action() {
-				public void run() {
-					removeEclipseComponent(user);
-				}
-			};
-			removeProxy.setText("Remove EclipseProjectComponent for "
-					+ user.getNickname() + "...");
-			removeProxy.setEnabled(this.view.proxyObjects.size() > 0);
-			man.add(removeProxy);
-            */
+			 * man.add(new Separator()); Action createProxy = new Action() {
+			 * public void run() { sendEclipseComponent(user); } };
+			 * createProxy.setText("Send EclipseProjectComponent to " +
+			 * user.getNickname() + "..."); man.add(createProxy);
+			 * 
+			 * Action messageProxy = new Action() { public void run() {
+			 * messageEclipseComponent(user); } }; messageProxy.setText("Message
+			 * EclipseProjectComponent for " + user.getNickname() + "...");
+			 * messageProxy.setEnabled(this.view.proxyObjects.size() > 0);
+			 * 
+			 * man.add(messageProxy); Action removeProxy = new Action() { public
+			 * void run() { removeEclipseComponent(user); } };
+			 * removeProxy.setText("Remove EclipseProjectComponent for " +
+			 * user.getNickname() + "...");
+			 * removeProxy.setEnabled(this.view.proxyObjects.size() > 0);
+			 * man.add(removeProxy);
+			 */
 			/*
 			 * man.add(new Separator());
 			 * 
@@ -767,8 +761,8 @@ public class ChatComposite extends Composite {
 	}
 
 	private String getID(String title, String message, String initialValue) {
-		InputDialog id = new InputDialog(this.view.view.getSite().getShell(), title,
-				message, initialValue, null);
+		InputDialog id = new InputDialog(this.view.view.getSite().getShell(),
+				title, message, initialValue, null);
 		id.setBlockOnOpen(true);
 		int res = id.open();
 		if (res == InputDialog.OK)
@@ -778,9 +772,9 @@ public class ChatComposite extends Composite {
 	}
 
 	protected void handleEnter() {
-		if(textinput.getText().trim().length() > 0)
+		if (textinput.getText().trim().length() > 0)
 			this.view.handleTextInput(textinput.getText());
-		
+
 		clearInput();
 		typing = false;
 	}
@@ -806,7 +800,8 @@ public class ChatComposite extends Composite {
 		});
 		Menu menu = menuMgr.createContextMenu(textoutput.getTextWidget());
 		textoutput.getTextWidget().setMenu(menu);
-		// TODO this.view.view.getSite().registerContextMenu(menuMgr, textoutput);
+		// TODO this.view.view.getSite().registerContextMenu(menuMgr,
+		// textoutput);
 
 		MenuManager treeMenuMgr = new MenuManager("#PopupMenu");
 		treeMenuMgr.setRemoveAllWhenShown(true);
@@ -815,8 +810,7 @@ public class ChatComposite extends Composite {
 				fillTreeContextMenu(manager);
 			}
 		});
-		Menu treeMenu = treeMenuMgr
-				.createContextMenu(treeView.getControl());
+		Menu treeMenu = treeMenuMgr.createContextMenu(treeView.getControl());
 		treeView.getControl().setMenu(treeMenu);
 		this.view.view.getSite().registerContextMenu(treeMenuMgr, treeView);
 	}
@@ -837,9 +831,8 @@ public class ChatComposite extends Composite {
 		};
 		outputSelectAll.setText(MessageLoader
 				.getString("LineChatClientView.contextmenu.selectall"));
-		outputSelectAll
-				.setToolTipText(MessageLoader
-						.getString("LineChatClientView.contextmenu.selectall.tooltip"));
+		outputSelectAll.setToolTipText(MessageLoader
+				.getString("LineChatClientView.contextmenu.selectall.tooltip"));
 		outputSelectAll.setAccelerator(SWT.CTRL | 'A');
 		outputCopy = new Action() {
 			public void run() {
@@ -892,17 +885,13 @@ public class ChatComposite extends Composite {
 		// XXX disabled
 		sendFileToGroup.setEnabled(false);
 		/*
-		sendFileToGroupAndLaunch = new Action() {
-			public void run() {
-				sendFileToGroup(true);
-			}
-		};
-		sendFileToGroupAndLaunch.setText(MessageLoader
-				.getString("LineChatClientView.contextmenu.sendfileandlaunch"));
-		sendFileToGroupAndLaunch.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_OBJ_FILE));
-        */
+		 * sendFileToGroupAndLaunch = new Action() { public void run() {
+		 * sendFileToGroup(true); } };
+		 * sendFileToGroupAndLaunch.setText(MessageLoader
+		 * .getString("LineChatClientView.contextmenu.sendfileandlaunch"));
+		 * sendFileToGroupAndLaunch.setImageDescriptor(PlatformUI.getWorkbench()
+		 * .getSharedImages().getImageDescriptor( ISharedImages.IMG_OBJ_FILE));
+		 */
 		coBrowseURL = new Action() {
 			public void run() {
 				sendCoBrowseToUser(null);
@@ -926,7 +915,8 @@ public class ChatComposite extends Composite {
 		};
 		appShare.setText(MessageLoader
 				.getString("LineChatClientView.contextmenu.appshare"));
-		appShare.setEnabled(Platform.getOS().equalsIgnoreCase(Platform.OS_WIN32));
+		appShare.setEnabled(Platform.getOS()
+				.equalsIgnoreCase(Platform.OS_WIN32));
 
 		sendMessage = new Action() {
 			public void run() {
@@ -947,9 +937,8 @@ public class ChatComposite extends Composite {
 				sendRepObjectToServer();
 			}
 		};
-		sendComponentToServer
-				.setText(MessageLoader
-						.getString("LineChatClientView.contextmenu.repobjectserver"));
+		sendComponentToServer.setText(MessageLoader
+				.getString("LineChatClientView.contextmenu.repobjectserver"));
 		sendComponentToServer.setEnabled(false);
 
 		sendEclipseComponent = new Action() {
@@ -985,23 +974,27 @@ public class ChatComposite extends Composite {
 		closeGroup.setText(MessageLoader
 				.getString("LineChatClientView.contextmenu.leaveGroup"));
 		closeGroup.setEnabled(true);
-		
+
 		sendCVSUpdateRequest = new Action() {
-		    public void run() {
-		        sendCVSUpdateRequest(null);
-		    }
+			public void run() {
+				sendCVSUpdateRequest(null);
+			}
 		};
-		sendCVSUpdateRequest.setText(MessageLoader.getString("LineChatClientView.contextmenu.sendCVSUpdateRequest"));
+		sendCVSUpdateRequest
+				.setText(MessageLoader
+						.getString("LineChatClientView.contextmenu.sendCVSUpdateRequest"));
 		sendCVSUpdateRequest.setEnabled(this.view.lch.isCVSShared());
-		
+
 		sendShowViewRequest = new Action() {
-		    public void run() {
-		        sendShowViewRequest(null);
-		    }
+			public void run() {
+				sendShowViewRequest(null);
+			}
 		};
-		sendShowViewRequest.setText(MessageLoader.getString("LineChatClientView.contextmenu.sendShowViewRequest"));
+		sendShowViewRequest
+				.setText(MessageLoader
+						.getString("LineChatClientView.contextmenu.sendShowViewRequest"));
 		sendShowViewRequest.setEnabled(true);
-		
+
 		if (chatWindow != null) {
 			showChatWindow = new Action() {
 				public void run() {
@@ -1013,6 +1006,7 @@ public class ChatComposite extends Composite {
 			showChatWindow.setText("Show chat window");
 		}
 	}
+
 	protected void sendShowViewRequest(User touser) {
 		IWorkbenchWindow ww = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
@@ -1021,9 +1015,9 @@ public class ChatComposite extends Composite {
 			return;
 
 		ElementTreeSelectionDialog dlg = new ElementTreeSelectionDialog(
-				getShell(), 
-				new LabelProvider() {
+				getShell(), new LabelProvider() {
 					private HashMap images = new HashMap();
+
 					public Image getImage(Object element) {
 						ImageDescriptor desc = null;
 						if (element instanceof IViewCategory)
@@ -1031,19 +1025,21 @@ public class ChatComposite extends Composite {
 									.getImageDescriptor(
 											ISharedImages.IMG_OBJ_FOLDER);
 						else if (element instanceof IViewDescriptor)
-							desc = ((IViewDescriptor) element).getImageDescriptor();
+							desc = ((IViewDescriptor) element)
+									.getImageDescriptor();
 
 						if (desc == null)
 							return null;
-						
+
 						Image image = (Image) images.get(desc);
 						if (image == null) {
 							image = desc.createImage();
 							images.put(desc, image);
 						}
-						
+
 						return image;
 					}
+
 					public String getText(Object element) {
 						String label;
 						if (element instanceof IViewCategory)
@@ -1052,39 +1048,42 @@ public class ChatComposite extends Composite {
 							label = ((IViewDescriptor) element).getLabel();
 						else
 							label = super.getText(element);
-						
-						for (
-								int i = label.indexOf('&'); 
-								i >= 0 && i < label.length() - 1; 
-								i = label.indexOf('&', i + 1))
+
+						for (int i = label.indexOf('&'); i >= 0
+								&& i < label.length() - 1; i = label.indexOf(
+								'&', i + 1))
 							if (!Character.isWhitespace(label.charAt(i + 1)))
-								return label.substring(0, i) + label.substring(i + 1);
-						
+								return label.substring(0, i)
+										+ label.substring(i + 1);
+
 						return label;
 					}
+
 					public void dispose() {
-						for (Iterator i = images.values().iterator(); i.hasNext();)
+						for (Iterator i = images.values().iterator(); i
+								.hasNext();)
 							((Image) i.next()).dispose();
 
 						images = null;
 						super.dispose();
 					}
-				}, 
-				new ITreeContentProvider() {
+				}, new ITreeContentProvider() {
 					private HashMap parents = new HashMap();
+
 					public Object[] getChildren(Object element) {
 						if (element instanceof IViewRegistry)
 							return ((IViewRegistry) element).getCategories();
 						else if (element instanceof IViewCategory) {
-							IViewDescriptor[] children =
-								((IViewCategory) element).getViews();
+							IViewDescriptor[] children = ((IViewCategory) element)
+									.getViews();
 							for (int i = 0; i < children.length; ++i)
 								parents.put(children[i], element);
-							
-							return children; 
+
+							return children;
 						} else
 							return new Object[0];
 					}
+
 					public Object getParent(Object element) {
 						if (element instanceof IViewCategory)
 							return PlatformUI.getWorkbench().getViewRegistry();
@@ -1093,6 +1092,7 @@ public class ChatComposite extends Composite {
 						else
 							return null;
 					}
+
 					public boolean hasChildren(Object element) {
 						if (element instanceof IViewRegistry
 								|| element instanceof IViewCategory)
@@ -1100,42 +1100,54 @@ public class ChatComposite extends Composite {
 						else
 							return false;
 					}
+
 					public Object[] getElements(Object inputElement) {
 						return getChildren(inputElement);
 					}
+
 					public void dispose() {
 						parents = null;
 					}
-					public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+
+					public void inputChanged(Viewer viewer, Object oldInput,
+							Object newInput) {
 						parents.clear();
 					}
 				});
-		dlg.setTitle(MessageLoader
-				.getString("LineChatClientView.contextmenu.sendShowViewRequest"));
-		dlg.setMessage(MessageLoader
-				.getString("LineChatClientView.contextmenu.sendShowViewRequest.dialog.title"));
+		dlg
+				.setTitle(MessageLoader
+						.getString("LineChatClientView.contextmenu.sendShowViewRequest"));
+		dlg
+				.setMessage(MessageLoader
+						.getString("LineChatClientView.contextmenu.sendShowViewRequest.dialog.title"));
 		dlg.addFilter(new ViewerFilter() {
-			public boolean select(Viewer viewer, Object parentElement, Object element) {
+			public boolean select(Viewer viewer, Object parentElement,
+					Object element) {
 				if (element instanceof IViewDescriptor
-						&& "org.eclipse.ui.internal.introview".equals(
-								((IViewDescriptor) element).getId()))
+						&& "org.eclipse.ui.internal.introview"
+								.equals(((IViewDescriptor) element).getId()))
 					return false;
 				else
 					return true;
-			}});
-		dlg.setSorter(new ViewerSorter());
+			}
+		});
+		dlg.setComparator(new ViewerComparator());
 		dlg.setValidator(new ISelectionStatusValidator() {
 			public IStatus validate(Object[] selection) {
 				for (int i = 0; i < selection.length; ++i)
 					if (!(selection[i] instanceof IViewDescriptor))
-						return new Status(Status.ERROR, ClientPlugin.getDefault().getBundle().getSymbolicName(), 0, "", null);
-				
-				return new Status(Status.OK, ClientPlugin.getDefault().getBundle().getSymbolicName(), 0, "", null);
+						return new Status(Status.ERROR, ClientPlugin
+								.getDefault().getBundle().getSymbolicName(), 0,
+								"", null);
+
+				return new Status(Status.OK, ClientPlugin.getDefault()
+						.getBundle().getSymbolicName(), 0, "", null);
 			}
 		});
-		IViewRegistry reg = PlatformUI.getWorkbench().getViewRegistry(); 
+		IViewRegistry reg = PlatformUI.getWorkbench().getViewRegistry();
 		dlg.setInput(reg);
-		IDialogSettings dlgSettings = ClientPlugin.getDefault().getDialogSettings();
+		IDialogSettings dlgSettings = ClientPlugin.getDefault()
+				.getDialogSettings();
 		final String DIALOG_SETTINGS = "SendShowViewRequestDialog";
 		final String SELECTION_SETTING = "SELECTION";
 		IDialogSettings section = dlgSettings.getSection(DIALOG_SETTINGS);
@@ -1150,7 +1162,7 @@ public class ChatComposite extends Composite {
 					if (desc != null)
 						list.add(desc);
 				}
-				
+
 				dlg.setInitialElementSelections(list);
 			}
 		}
@@ -1162,29 +1174,37 @@ public class ChatComposite extends Composite {
 		Object[] descs = dlg.getResult();
 		if (descs == null)
 			return;
-		
+
 		String[] selectedIDs = new String[descs.length];
 		for (int i = 0; i < descs.length; ++i) {
-			selectedIDs[i] = ((IViewDescriptor)descs[i]).getId();
+			selectedIDs[i] = ((IViewDescriptor) descs[i]).getId();
 			view.lch.sendShowView(touser, selectedIDs[i]);
 		}
-		
+
 		section.put(SELECTION_SETTING, selectedIDs);
 	}
+
 	protected void sendCVSUpdateRequest(User touser) {
-	    //String initStr = MessageLoader.getString("LineChatClientView.contextmenu.sendCVSUpdateRequestInitStr");
-		//String res = getID(MessageLoader.getString("LineChatClientView.contextmenu.sendCVSUpdateRequestTitle"),
-		//        MessageLoader.getString("LineChatClientView.contextmenu.sendCVSUpdateRequestMessage"), initStr);
-		this.view.lch.sendCVSProjectUpdateRequest(touser,null);
+		// String initStr =
+		// MessageLoader.getString("LineChatClientView.contextmenu.sendCVSUpdateRequestInitStr");
+		// String res =
+		// getID(MessageLoader.getString("LineChatClientView.contextmenu.sendCVSUpdateRequestTitle"),
+		// MessageLoader.getString("LineChatClientView.contextmenu.sendCVSUpdateRequestMessage"),
+		// initStr);
+		this.view.lch.sendCVSProjectUpdateRequest(touser, null);
 	}
 
 	protected void closeProjectGroup(User user) {
-		if (MessageDialog.openConfirm(null,
-		        MessageLoader.getString("LineChatClientView.contextmenu.closeMessageTitle"),
-		        MessageLoader.getString("LineChatClientView.contextmenu.closeMessageMessage")+ this.view.name
-						+ "'?")) {
+		if (MessageDialog
+				.openConfirm(
+						null,
+						MessageLoader
+								.getString("LineChatClientView.contextmenu.closeMessageTitle"),
+						MessageLoader
+								.getString("LineChatClientView.contextmenu.closeMessageMessage")
+								+ this.view.name + "'?")) {
 			this.view.lch.chatGUIDestroy();
-			
+
 		}
 
 	}
@@ -1195,7 +1215,8 @@ public class ChatComposite extends Composite {
 
 		String initStr = "";
 		if (this.view.proxyObjects.size() > 0) {
-			initStr = (String) this.view.proxyObjects.get(this.view.proxyObjects.size() - 1);
+			initStr = (String) this.view.proxyObjects
+					.get(this.view.proxyObjects.size() - 1);
 		}
 		res = initStr;
 		if (user != null) {
@@ -1222,7 +1243,8 @@ public class ChatComposite extends Composite {
 					}
 				}
 				// Send message
-				this.view.messageProxyObject(userID, className, meth, actualArgs);
+				this.view.messageProxyObject(userID, className, meth,
+						actualArgs);
 			}
 		}
 	}
@@ -1277,39 +1299,46 @@ public class ChatComposite extends Composite {
 			String fileName, Date startDate, ID target, final boolean launch) {
 		try {
 			ID eclipseStageID = IDFactory
-					.getDefault().createStringID(org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject.ECLIPSEOBJECTNAME);
+					.getDefault()
+					.createStringID(
+							org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject.ECLIPSEOBJECTNAME);
 			java.io.BufferedInputStream ins = new java.io.BufferedInputStream(
 					local);
 			java.io.File remoteFile = new File((new File(fileName)).getName());
 			FileTransferParams sp = new FileTransferParams(remoteFile,
-					getChunkPreference(), getDelayPreference(), null, true,
-					-1, null);
-			final Object[] args = { view, target, ins,
-					sp, eclipseStageID };
+					getChunkPreference(), getDelayPreference(), null, true, -1,
+					null);
+			final Object[] args = { view, target, ins, sp, eclipseStageID };
 			// Do it
 			new Thread(new Runnable() {
 				public void run() {
-				    if (launch) {
-						ChatComposite.this.view.createObject(
-								null,
-								org.eclipse.ecf.example.collab.share.io.EclipseFileTransferAndLaunch.class
-										.getName(), new String[] {
-										FileSenderUI.class.getName(),
-										ID.class.getName(),
-										java.io.InputStream.class.getName(),
-										FileTransferParams.class.getName(),
-										ID.class.getName() }, args);
-				    } else {
-						ChatComposite.this.view.createObject(
-								null,
-								org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer.class
-										.getName(), new String[] {
-										FileSenderUI.class.getName(),
-										ID.class.getName(),
-										java.io.InputStream.class.getName(),
-										FileTransferParams.class.getName(),
-										ID.class.getName() }, args);
-				    }
+					if (launch) {
+						ChatComposite.this.view
+								.createObject(
+										null,
+										org.eclipse.ecf.example.collab.share.io.EclipseFileTransferAndLaunch.class
+												.getName(), new String[] {
+												FileSenderUI.class.getName(),
+												ID.class.getName(),
+												java.io.InputStream.class
+														.getName(),
+												FileTransferParams.class
+														.getName(),
+												ID.class.getName() }, args);
+					} else {
+						ChatComposite.this.view
+								.createObject(
+										null,
+										org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer.class
+												.getName(), new String[] {
+												FileSenderUI.class.getName(),
+												ID.class.getName(),
+												java.io.InputStream.class
+														.getName(),
+												FileTransferParams.class
+														.getName(),
+												ID.class.getName() }, args);
+					}
 				}
 			}, "FileRepObject creator").start();
 		} catch (Exception e) {
@@ -1325,9 +1354,9 @@ public class ChatComposite extends Composite {
 		String res = null;
 		ID userID = null;
 		if (user != null) {
-			res = getID(
-					"Remove EclipseProjectComponent for " + user.getNickname(),
-					"EclipseProjectComponent Class:", initStr);
+			res = getID("Remove EclipseProjectComponent for "
+					+ user.getNickname(), "EclipseProjectComponent Class:",
+					initStr);
 			userID = user.getUserID();
 		} else {
 			res = getID("Remove EclipseProjectComponent",
@@ -1340,47 +1369,32 @@ public class ChatComposite extends Composite {
 	protected void sendAppShare(ID receiver) {
 		if (this.view.lch == null)
 			return;
-        /*
-		try {
-			if (LineChatView.appShareActive()) {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						MessageDialog.openInformation(null,
-						        MessageLoader.getString("LineChatClientView.contextmenu.appshare.activetitle"),
-						        MessageLoader.getString("LineChatClientView.contextmenu.appshare.activemessage"));
-					}
-				});
-				return;
-			}
-			if (MessageDialog.openConfirm(null, MessageLoader.getString("LineChatClientView.contextmenu.appshare.confirmtitle"),
-			        MessageLoader.getString("LineChatClientView.contextmenu.appshare.confirmmessage"))) {
-                
-				VNCParams p = new VNCParams();
-				p.setHostname(this.view.userdata.getNickname());
-				p.setGroupname(this.view.name);
-				Object[] args = new Object[] { receiver, p };
-				HashMap map = new HashMap();
-				map.put("args",args);
-				map.put("types",LineChatClientView.APPSHAREARGTYPES);
-				ID serverID = this.view.lch.createObject(null, LineChatClientView.APPSHARECLASSNAME, map);
-				EclipseAppShareServer server = (EclipseAppShareServer) this.view.lch.getObject(serverID);
-				if (server != null) {
-					LineChatView.setAppShareID(serverID,server);
-					this.view.setAppShareID(serverID);
-				}
-			    
-			}
-		} catch (final Exception e) {
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					MessageDialog.openInformation(null,
-					        MessageLoader.getString("LineChatClientView.contextmenu.appshare.cancelledtitle"),
-					        MessageLoader.getString("LineChatClientView.contextmenu.appshare.cancelledmessage"));
-					ClientPlugin.log("Exception starting application share",e);
-				}
-			});
-		}
-        */
+		/*
+		 * try { if (LineChatView.appShareActive()) {
+		 * Display.getDefault().asyncExec(new Runnable() { public void run() {
+		 * MessageDialog.openInformation(null,
+		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.activetitle"),
+		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.activemessage")); }
+		 * }); return; } if (MessageDialog.openConfirm(null,
+		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.confirmtitle"),
+		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.confirmmessage"))) {
+		 * 
+		 * VNCParams p = new VNCParams();
+		 * p.setHostname(this.view.userdata.getNickname());
+		 * p.setGroupname(this.view.name); Object[] args = new Object[] {
+		 * receiver, p }; HashMap map = new HashMap(); map.put("args",args);
+		 * map.put("types",LineChatClientView.APPSHAREARGTYPES); ID serverID =
+		 * this.view.lch.createObject(null,
+		 * LineChatClientView.APPSHARECLASSNAME, map); EclipseAppShareServer
+		 * server = (EclipseAppShareServer) this.view.lch.getObject(serverID);
+		 * if (server != null) { LineChatView.setAppShareID(serverID,server);
+		 * this.view.setAppShareID(serverID); }
+		 *  } } catch (final Exception e) { Display.getDefault().asyncExec(new
+		 * Runnable() { public void run() { MessageDialog.openInformation(null,
+		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.cancelledtitle"),
+		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.cancelledmessage"));
+		 * ClientPlugin.log("Exception starting application share",e); } }); }
+		 */
 	}
 
 	protected void sendCoBrowseToUser(User user) {
@@ -1396,8 +1410,8 @@ public class ChatComposite extends Composite {
 		if (res != null) {
 			Object[] args = { userID, res };
 			// Do it
-			this.view.createObject(null, LineChatClientView.SHOWURLCLASSNAME, LineChatClientView.SHOWURLARGTYPES,
-					args);
+			this.view.createObject(null, LineChatClientView.SHOWURLCLASSNAME,
+					LineChatClientView.SHOWURLARGTYPES, args);
 		}
 	}
 
@@ -1407,20 +1421,21 @@ public class ChatComposite extends Composite {
 		String res = null;
 		ID userID = null;
 		if (user != null) {
-			res = getID("Send EclipseProjectComponent to " + user.getNickname(),
+			res = getID(
+					"Send EclipseProjectComponent to " + user.getNickname(),
 					"EclipseProjectComponent Class:", initStr);
 			userID = user.getUserID();
 		} else {
-			res = getID("Send EclipseProjectComponent", "EclipseProjectComponent Class:",
-					initStr);
+			res = getID("Send EclipseProjectComponent",
+					"EclipseProjectComponent Class:", initStr);
 		}
 		if (res != null)
 			this.view.createProxyObject(userID, res);
 	}
 
 	protected void sendFile(String pathName, final String fileName,
-			Date startDate, ID target,boolean launch) {
-        
+			Date startDate, ID target, boolean launch) {
+
 		try {
 			copyFileLocally(pathName, fileName);
 		} catch (final IOException e) {
@@ -1436,58 +1451,60 @@ public class ChatComposite extends Composite {
 						+ fileName + ")");
 			return;
 		}
-        
+
 		java.io.FileInputStream ins = null;
 		try {
 			ins = new java.io.FileInputStream(pathName);
 		} catch (final java.io.FileNotFoundException e) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					MessageDialog.openError(null, "File Open Error",
-							"File '" + fileName
-									+ "' not found\nException: " + e);
+					MessageDialog.openError(null, "File Open Error", "File '"
+							+ fileName + "' not found\nException: " + e);
 				}
 			});
 			if (this.view.lch != null)
-				this.view.lch.chatException(e, "File '" + fileName + "' not found.");
+				this.view.lch.chatException(e, "File '" + fileName
+						+ "' not found.");
 		}
-		readStreamAndSend(ins, fileName, startDate, target,launch);
+		readStreamAndSend(ins, fileName, startDate, target, launch);
 	}
 
 	protected void sendFileToGroup(boolean launch) {
-		FileDialog fd = new FileDialog(Display.getDefault()
-				.getActiveShell(), SWT.OPEN);
+		FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(),
+				SWT.OPEN);
 		fd.setFilterPath(System.getProperty("user.dir"));
 		fd.setText("Select File for Group");
 		String res = fd.open();
 		if (res != null) {
 			java.io.File selected = new java.io.File(res);
-            File localTarget = new File(this.view.downloaddir,selected.getName());
-			sendFile(selected.getPath(), localTarget.getAbsolutePath(),
-					null, null,launch);
+			File localTarget = new File(this.view.downloaddir, selected
+					.getName());
+			sendFile(selected.getPath(), localTarget.getAbsolutePath(), null,
+					null, launch);
 		}
 	}
 
-	protected void sendFileToUser(User user,boolean launch) {
-		FileDialog fd = new FileDialog(Display.getDefault()
-				.getActiveShell(), SWT.OPEN);
+	protected void sendFileToUser(User user, boolean launch) {
+		FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(),
+				SWT.OPEN);
 		fd.setFilterPath(System.getProperty("user.dir"));
 		fd.setText("Select File for " + user.getNickname());
 		String res = fd.open();
 		if (res != null) {
 			java.io.File selected = new java.io.File(res);
-            File localTarget = new File(this.view.downloaddir,selected.getName());
-			sendFile(selected.getPath(), localTarget.getAbsolutePath(),
-					null, user.getUserID(),launch);
+			File localTarget = new File(this.view.downloaddir, selected
+					.getName());
+			sendFile(selected.getPath(), localTarget.getAbsolutePath(), null,
+					user.getUserID(), launch);
 		}
 	}
 
 	protected void sendMessageToGroup() {
-		String res = getID("Send Message to Group", "Message For Group:",
-				"");
+		String res = getID("Send Message to Group", "Message For Group:", "");
 		if (res != null & !res.equals("")) {
 			String[] args = { res, this.view.userdata.getNickname() };
-			this.view.createObject(null, LineChatClientView.MESSAGECLASSNAME, args);
+			this.view.createObject(null, LineChatClientView.MESSAGECLASSNAME,
+					args);
 		}
 	}
 
@@ -1501,8 +1518,7 @@ public class ChatComposite extends Composite {
 	}
 
 	protected void sendRepObjectToGroup(User user) {
-		String result = getID(
-				"Send Replicated Object",
+		String result = getID("Send Replicated Object",
 				"Replicated Object Class and Args (separated by whitespace):",
 				"");
 		if (result != null && !result.equals("")) {
@@ -1518,8 +1534,7 @@ public class ChatComposite extends Composite {
 		String res = null;
 		if (this.view.lch != null) {
 			if (data != null) {
-				res = getID("Ring " + data.getNickname(), "Ring Message: ",
-						"");
+				res = getID("Ring " + data.getNickname(), "Ring Message: ", "");
 			} else {
 				res = getID("Ring Group", "Ring Message: ", "");
 			}
@@ -1543,57 +1558,76 @@ public class ChatComposite extends Composite {
 	}
 
 	protected void initializeDropTargets() {
-		chatDropTarget = new ChatDropTarget(view,textoutput.getTextWidget(), this);
-		treeDropTarget = new TreeDropTarget(view,treeView.getControl(), this);
+		chatDropTarget = new ChatDropTarget(view, textoutput.getTextWidget(),
+				this);
+		treeDropTarget = new TreeDropTarget(view, treeView.getControl(), this);
 	}
-	
+
 	private Color colorFromRGBString(String rgb) {
 		Color color = null;
-		
+
 		if (rgb == null || rgb.equals("")) {
 			color = new Color(getShell().getDisplay(), 0, 0, 0);
 			return color;
 		}
-		
+
 		if (color != null) {
 			color.dispose();
 		}
-		
+
 		String[] vals = rgb.split(",");
-		color = new Color(getShell().getDisplay(), Integer.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer.parseInt(vals[2]));
+		color = new Color(getShell().getDisplay(), Integer.parseInt(vals[0]),
+				Integer.parseInt(vals[1]), Integer.parseInt(vals[2]));
 		return color;
 	}
-	
-	private class ColorPropertyChangeListener implements org.eclipse.core.runtime.Preferences.IPropertyChangeListener {
 
-		/* (non-Javadoc)
+	private class ColorPropertyChangeListener implements
+			org.eclipse.core.runtime.Preferences.IPropertyChangeListener {
+
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see org.eclipse.core.runtime.Preferences.IPropertyChangeListener#propertyChange(org.eclipse.core.runtime.Preferences.PropertyChangeEvent)
 		 */
 		public void propertyChange(PropertyChangeEvent event) {
-			meColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_ME_TEXT_COLOR));
-			otherColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_OTHER_TEXT_COLOR));
-			systemColor = colorFromRGBString(ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_SYSTEM_TEXT_COLOR));
+			meColor = colorFromRGBString(ClientPlugin.getDefault()
+					.getPluginPreferences().getString(
+							ClientPlugin.PREF_ME_TEXT_COLOR));
+			otherColor = colorFromRGBString(ClientPlugin.getDefault()
+					.getPluginPreferences().getString(
+							ClientPlugin.PREF_OTHER_TEXT_COLOR));
+			systemColor = colorFromRGBString(ClientPlugin.getDefault()
+					.getPluginPreferences().getString(
+							ClientPlugin.PREF_SYSTEM_TEXT_COLOR));
 		}
-		
+
 	}
-	
-	private class FontPropertyChangeListener implements org.eclipse.core.runtime.Preferences.IPropertyChangeListener {
-		/* (non-Javadoc)
+
+	private class FontPropertyChangeListener implements
+			org.eclipse.core.runtime.Preferences.IPropertyChangeListener {
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see org.eclipse.core.runtime.Preferences.IPropertyChangeListener#propertyChange(org.eclipse.core.runtime.Preferences.PropertyChangeEvent)
 		 */
-		public void propertyChange(org.eclipse.core.runtime.Preferences.PropertyChangeEvent event) {
+		public void propertyChange(
+				org.eclipse.core.runtime.Preferences.PropertyChangeEvent event) {
 			if (event.getProperty().equals(ClientPlugin.PREF_CHAT_FONT)) {
-				String fontName = ClientPlugin.getDefault().getPluginPreferences().getString(ClientPlugin.PREF_CHAT_FONT);
+				String fontName = ClientPlugin.getDefault()
+						.getPluginPreferences().getString(
+								ClientPlugin.PREF_CHAT_FONT);
 				if (!(fontName == null) && !(fontName.equals(""))) {
-					FontRegistry fr = ClientPlugin.getDefault().getFontRegistry();
-					FontData []newFont = {new FontData(fontName)};
-					
+					FontRegistry fr = ClientPlugin.getDefault()
+							.getFontRegistry();
+					FontData[] newFont = { new FontData(fontName) };
+
 					fr.put(CHAT_OUTPUT_FONT, newFont);
-					textoutput.getTextWidget().setFont(fr.get(CHAT_OUTPUT_FONT));
+					textoutput.getTextWidget()
+							.setFont(fr.get(CHAT_OUTPUT_FONT));
 				}
 			}
 		}
-		
+
 	}
 
 }
