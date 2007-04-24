@@ -29,9 +29,9 @@ public interface IHistoryLine extends IAdaptable {
 	public ID getSenderID();
 	
 	/**
-	 * Get ID of sender for this history line.  ID returned will not be <code>null</code>.
+	 * Get ID of receiver for this history line.  ID returned will not be <code>null</code>.
 	 * 
-	 * @return ID of sender for this history line.  Will not be <code>null</code>.
+	 * @return ID of receiver for this history line.  Will not be <code>null</code>.
 	 */
 	public ID getReceiverID();
 	
