@@ -22,25 +22,25 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.CompoundContributionItem;
 
 /**
- * Abstract contribution item class for creating menu contribution items for roster entries.  Subclasses
- * should be created as appropriate.
+ * Abstract contribution item class for creating menu contribution items for
+ * roster entries. Subclasses should be created as appropriate.
  */
 public abstract class AbstractRosterEntryContributionItem extends
 		CompoundContributionItem {
 
 	public AbstractRosterEntryContributionItem() {
-		
+
 	}
-	
+
 	public AbstractRosterEntryContributionItem(String id) {
 		super(id);
 	}
-	
+
 	/**
 	 * Get the currently selected model object.
 	 * 
-	 * @return Object that is current workbenchwindow selection.  Returns <code>null</code> if
-	 * nothing is selected.
+	 * @return Object that is current workbenchwindow selection. Returns
+	 *         <code>null</code> if nothing is selected.
 	 */
 	protected Object getSelection() {
 		IWorkbenchWindow ww = PlatformUI.getWorkbench()
@@ -61,30 +61,36 @@ public abstract class AbstractRosterEntryContributionItem extends
 	/**
 	 * Get the currently selected IRosterEntry.
 	 * 
-	 * @return IRosterEntry that is current workbenchwindow selection.  Returns <code>null</code> if
-	 * nothing is selected.
+	 * @return IRosterEntry that is current workbenchwindow selection. Returns
+	 *         <code>null</code> if nothing is selected or if something other than
+	 *         IRosterEntry is selected.
 	 */
 	protected IRosterEntry getSelectedRosterEntry() {
-		return (IRosterEntry) getSelection();
-	}
-	
-	/**
-	 * Get container for the given IRosterEntry.  
-	 * 
-	 * @param entry the IRosterEntry.  May be <code>null</code>.
-	 * 
-	 * @return IContainer associated with currently selected IRosterEntry.  Returns <code>null</code>
-	 * if the given <code>entry</code> is null, or if the container associated with the <code>entry</code>
-	 * cannot be accessed.
-	 */
-	protected IContainer getContainerForRosterEntry(IRosterEntry entry) {
-		if (entry == null) return null;
-		IPresenceContainerAdapter pca = (IPresenceContainerAdapter) entry
-					.getRoster().getPresenceContainerAdapter();
-			if (pca != null)
-				return (IContainer) pca.getAdapter(IContainer.class);
+		Object selection = getSelection();
+		if (selection instanceof IRosterEntry)
+			return (IRosterEntry) selection;
 		return null;
 	}
 
+	/**
+	 * Get container for the given IRosterEntry.
+	 * 
+	 * @param entry
+	 *            the IRosterEntry. May be <code>null</code>.
+	 * 
+	 * @return IContainer associated with currently selected IRosterEntry.
+	 *         Returns <code>null</code> if the given <code>entry</code> is
+	 *         null, or if the container associated with the <code>entry</code>
+	 *         cannot be accessed.
+	 */
+	protected IContainer getContainerForRosterEntry(IRosterEntry entry) {
+		if (entry == null)
+			return null;
+		IPresenceContainerAdapter pca = (IPresenceContainerAdapter) entry
+				.getRoster().getPresenceContainerAdapter();
+		if (pca != null)
+			return (IContainer) pca.getAdapter(IContainer.class);
+		return null;
+	}
 
 }
