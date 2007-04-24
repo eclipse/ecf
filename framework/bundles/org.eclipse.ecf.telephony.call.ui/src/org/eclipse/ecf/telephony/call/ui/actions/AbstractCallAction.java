@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.call.ui.actions;
+package org.eclipse.ecf.telephony.call.ui.actions;
 
 import java.util.Map;
 

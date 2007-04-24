@@ -11,5 +11,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ecf,
  org.eclipse.ecf.telephony.call
-Export-Package: org.eclipse.ecf.call.ui.actions,
- org.eclipse.ecf.internal.telephony.call.ui;x-internal:=true
+Export-Package: org.eclipse.ecf.internal.telephony.call.ui;x-internal:=true,
+ org.eclipse.ecf.telephony.call.ui.actions
