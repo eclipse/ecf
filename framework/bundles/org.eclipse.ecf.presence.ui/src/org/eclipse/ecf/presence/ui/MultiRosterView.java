@@ -145,7 +145,7 @@ public class MultiRosterView extends ViewPart implements
 
 	private IPresenceListener presenceListener;
 
-	private ViewerFilter showOfflineFilter = new ViewerFilter() {
+	private ViewerFilter hideOfflineFilter = new ViewerFilter() {
 		public boolean select(Viewer viewer, Object parentElement,
 				Object element) {
 			if (element instanceof IRosterEntry) {
@@ -205,6 +205,7 @@ public class MultiRosterView extends ViewPart implements
 		presenceListener = new PresenceListener();
 		treeViewer.setContentProvider(new MultiRosterContentProvider());
 		treeViewer.setLabelProvider(new MultiRosterLabelProvider());
+		treeViewer.addFilter(hideOfflineFilter);
 		treeViewer.addFilter(showEmptyGroupsFilter);
 		treeViewer.setInput(rosterAccounts);
 		treeViewer.addOpenListener(new IOpenListener() {
@@ -344,7 +345,8 @@ public class MultiRosterView extends ViewPart implements
 			});
 			chatRoom
 					.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-						public void handlePresenceUpdated(ID fromID, IPresence presence) {
+						public void handlePresenceUpdated(ID fromID,
+								IPresence presence) {
 							chatroomview.handlePresence(fromID, presence);
 						}
 
@@ -671,14 +673,14 @@ public class MultiRosterView extends ViewPart implements
 		setStatusMenu.setVisible(false);
 		manager.add(setStatusMenu);
 		manager.add(new Separator());
-
+		
 		manager.add(new Action(Messages.MultiRosterView_ShowOffline,
 				Action.AS_CHECK_BOX) {
 			public void run() {
 				if (isChecked()) {
-					treeViewer.addFilter(showOfflineFilter);
+					treeViewer.removeFilter(hideOfflineFilter);
 				} else {
-					treeViewer.removeFilter(showOfflineFilter);
+					treeViewer.addFilter(hideOfflineFilter);
 				}
 			}
 		});
