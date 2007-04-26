@@ -60,7 +60,8 @@ public class XMPPCompoundContributionItem extends
 					sendFileToTarget(ioftca, entry.getUser().getID());
 				}
 			};
-			fileSendAction.setText(Messages.getString("XMPPCompoundContributionItem.SEND_FILE")); //$NON-NLS-1$
+			fileSendAction
+					.setText(Messages.XMPPCompoundContributionItem_SEND_FILE);
 			fileSendAction.setImageDescriptor(PlatformUI.getWorkbench()
 					.getSharedImages().getImageDescriptor(
 							ISharedImages.IMG_OBJ_FILE));
@@ -78,8 +79,8 @@ public class XMPPCompoundContributionItem extends
 		FileDialog fd = new FileDialog(shell, SWT.OPEN);
 		// XXX this should be some default path set by preferences
 		fd.setFilterPath(System.getProperty("user.home")); //$NON-NLS-1$
-		fd.setText(NLS.bind(Messages.getString("XMPPCompoundContributionItem.CHOOSE_FILE"), targetID //$NON-NLS-1$
-				.getName()));
+		fd.setText(NLS.bind(Messages.XMPPCompoundContributionItem_CHOOSE_FILE,
+				targetID.getName()));
 		final String res = fd.open();
 		if (res != null) {
 			File aFile = new File(res);
@@ -99,10 +100,10 @@ public class XMPPCompoundContributionItem extends
 												MessageDialog
 														.openInformation(
 																shell,
-																Messages.getString("XMPPCompoundContributionItem.FILE_SEND_REFUSED_TITLE"), //$NON-NLS-1$
+																Messages.XMPPCompoundContributionItem_FILE_SEND_REFUSED_TITLE,
 																NLS
 																		.bind(
-																				Messages.getString("XMPPCompoundContributionItem.FILE_SEND_REFUSED_MESSAGE"), //$NON-NLS-1$
+																				Messages.XMPPCompoundContributionItem_FILE_SEND_REFUSED_MESSAGE,
 																				res,
 																				targetID
 																						.getName()));
@@ -115,12 +116,11 @@ public class XMPPCompoundContributionItem extends
 				MessageDialog
 						.openError(
 								shell,
-								Messages.getString("XMPPCompoundContributionItem.SEND_ERROR_TITLE"), //$NON-NLS-1$
+								Messages.XMPPCompoundContributionItem_SEND_ERROR_TITLE,
 								NLS
 										.bind(
-												Messages.getString("XMPPCompoundContributionItem.SEND_ERROR_MESSAGE"), //$NON-NLS-1$
-												new Object[] { res,
-														e.getLocalizedMessage() }));
+												Messages.XMPPCompoundContributionItem_SEND_ERROR_MESSAGE,
+												res, e.getLocalizedMessage()));
 			}
 		}
 	}
