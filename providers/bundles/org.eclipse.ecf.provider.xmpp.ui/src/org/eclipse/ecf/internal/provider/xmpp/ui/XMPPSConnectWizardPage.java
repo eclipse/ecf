@@ -34,16 +34,19 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 		GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 
 		Label label = new Label(parent, SWT.LEFT);
-		label.setText(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_USERID);
+		label.setText(Messages.XMPPConnectWizardPage_LABEL_USERID);
 
 		connectText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		connectText.setLayoutData(fillData);
 		connectText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				if (!connectText.getText().equals("")) { //$NON-NLS-1$
-					updateStatus(null);
-				} else {
+				String text = connectText.getText();
+				if (text.equals("")) { //$NON-NLS-1$
 					updateStatus(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_STATUS);
+				} else if (text.indexOf('@') == -1) {
+					updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
+				} else {
+					updateStatus(null);
 				}
 			}
 		});

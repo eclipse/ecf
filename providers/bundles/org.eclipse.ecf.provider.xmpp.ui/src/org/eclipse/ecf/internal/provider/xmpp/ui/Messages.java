@@ -27,6 +27,7 @@ public class Messages extends NLS {
 	public static String XMPPConnectWizard_FILE_SAVE_TITLE;
 	public static String XMPPConnectWizard_SEE_DETAILS;
 	public static String XMPPConnectWizardPage_WIZARD_STATUS;
+	public static String XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE;
 	public static String XMPPConnectWizardPage_USERID_TEMPLATE;
 	public static String XMPPConnectWizardPage_WIZARD_PASSWORD;
 	public static String XMPPConnectWizard_FILE_RECEIVE_TITLE;

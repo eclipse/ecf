@@ -45,10 +45,13 @@ public class XMPPConnectWizardPage extends WizardPage {
 		connectText.setLayoutData(fillData);
 		connectText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				if (!connectText.getText().equals("")) { //$NON-NLS-1$
-					updateStatus(null);
-				} else {
+				String text = connectText.getText();
+				if (text.equals("")) { //$NON-NLS-1$
 					updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS);
+				} else if (text.indexOf('@') == -1) {
+					updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
+				} else {
+					updateStatus(null);
 				}
 			}
 		});
