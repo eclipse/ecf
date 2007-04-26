@@ -43,6 +43,8 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 
 	private IConnectContext connectContext;
 
+	private String uriString = null;
+	
 	private IExceptionHandler exceptionHandler = new IExceptionHandler() {
 		public IStatus handleException(final Throwable exception) {
 			if (exception != null) {
@@ -59,8 +61,16 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 		}
 	};
 
+	public IRCConnectWizard() {
+		super();
+	}
+	
+	public IRCConnectWizard(String uri) {
+		super();
+		uriString = uri;
+	}
 	public void addPages() {
-		page = new IRCConnectWizardPage();
+		page = new IRCConnectWizardPage(uriString);
 		addPage(page);
 	}
 

@@ -26,11 +26,18 @@ final class IRCConnectWizardPage extends WizardPage {
 
 	private Text passwordText;
 
+	private String uriString;
+	
 	IRCConnectWizardPage() {
 		super("");
 		setTitle("IRC Connection Wizard");
 		setDescription("Specify a nickname and IRC server to connect to.");
 		setPageComplete(false);
+	}
+	
+	IRCConnectWizardPage(String uri) {
+		this();
+		uriString = uri;
 	}
 
 	public void createControl(Composite parent) {
@@ -48,11 +55,10 @@ final class IRCConnectWizardPage extends WizardPage {
 				if (!connectText.getText().equals("")) { //$NON-NLS-1$
 					updateStatus(null);
 				} else {
-					updateStatus("An connect ID must be specified.");
+					updateStatus("A connect ID must be specified.");
 				}
 			}
 		});
-
 		label = new Label(parent, SWT.RIGHT);
 		label.setText("irc://<user>@<ircserver>[/<#channel>]");
 		label.setLayoutData(endData);
@@ -64,6 +70,11 @@ final class IRCConnectWizardPage extends WizardPage {
 		label = new Label(parent, SWT.RIGHT | SWT.WRAP);
 		label.setText("This password is for password-protected IRC servers.");
 		label.setLayoutData(endData);
+
+		if (uriString != null) {
+			connectText.setText(uriString);
+			passwordText.setFocus();
+		}
 
 		setControl(parent);
 	}
