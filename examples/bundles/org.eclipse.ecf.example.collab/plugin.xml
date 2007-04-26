@@ -173,4 +173,16 @@
          </actionSet>
       </perspectiveExtension>
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="org.eclipse.ecf.example.collab.ui.hyperlink.ECFGenericHyperlinkDetector"
+            id="org.eclipse.ecf.example.collab.ui.hyperlink.ECFGenericHyperlinkDetector"
+            name="ECF Generic"
+            targetId="org.eclipse.ui.DefaultTextEditor">
+      </hyperlinkDetector>
+   </extension>
+
 </plugin>

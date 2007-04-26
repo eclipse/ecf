@@ -86,8 +86,6 @@ public class CollabClient {
 			if (ircchatRoomManagerUI.isAlreadyConnectedToTarget(newClient, targetID, username))
 				return;
 		} else {
-			// Check for IPresenceContainerAdapter....if it is, setup presence UI, if
-			// not setup shared object container
 				// Setup sharedobject container if the new instance supports
 				// this
 				ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient
