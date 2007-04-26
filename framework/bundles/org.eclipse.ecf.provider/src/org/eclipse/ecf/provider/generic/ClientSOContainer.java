@@ -430,7 +430,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 			if (data != null && data instanceof Exception) throw (Exception) data;
 			else throw new NullPointerException(Messages.ClientSOContainer_Invalid_Server_Response);
 		}
-		// Otherwize everything is OK to this point and we get the group member IDs from server
+		// Otherwise everything is OK to this point and we get the group member IDs from server
 		ID[] ids = viewChangeMessage.getChangeIDs();
 		Assert.isNotNull(ids,Messages.ClientSOContainer_Exception_ID_Array_Null);
 		for (int i = 0; i < ids.length; i++) {
