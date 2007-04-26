@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.ConnectException;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
@@ -172,8 +173,10 @@ public abstract class ClientSOContainer extends SOContainer implements
 						setStateDisconnected(aConnection);
 						throw e;
 					}
-					aConnection.start();
 					setStateConnected(serverID, aConnection);
+					// notify listeners
+					fireContainerEvent(new ContainerConnectedEvent(this.getID(), remoteServerID));
+					aConnection.start();
 				}
 			}
 		} catch (Exception e) {
@@ -417,8 +420,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 			throws Exception {
 		ContainerMessage aPacket = (ContainerMessage) serverData;
 		ID fromID = aPacket.getFromContainerID();
-		if (fromID == null)
-			throw new NullPointerException(Messages.ClientSOContainer_ServerID_Cannot_Be_Null);
+		Assert.isNotNull(fromID, Messages.ClientSOContainer_ServerID_Cannot_Be_Null);
 		ContainerMessage.ViewChangeMessage viewChangeMessage = (ContainerMessage.ViewChangeMessage) aPacket.getData();
 		// If it's not an add message then we've been refused.  Get exception info from viewChangeMessage and
 		// throw if there
@@ -430,15 +432,10 @@ public abstract class ClientSOContainer extends SOContainer implements
 		}
 		// Otherwize everything is OK to this point and we get the group member IDs from server
 		ID[] ids = viewChangeMessage.getChangeIDs();
-		if (ids == null)
-			throw new NullPointerException(Messages.ClientSOContainer_Exception_ID_Array_Null);
+		Assert.isNotNull(ids,Messages.ClientSOContainer_Exception_ID_Array_Null);
 		for (int i = 0; i < ids.length; i++) {
 			ID id = ids[i];
-			if (id != null && !id.equals(getID())) {
-				addNewRemoteMember(id, null);
-				// notify listeners
-				fireContainerEvent(new ContainerConnectedEvent(this.getID(), id));
-			}
+			if (id != null && !id.equals(getID())) addNewRemoteMember(id, null);
 		}
 		return fromID;
 	}
