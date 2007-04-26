@@ -10,6 +10,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.ui.wizards;
 
+import java.net.URI;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
@@ -46,8 +48,19 @@ public class GenericClientContainerConnectWizard extends Wizard implements
 
 	private Shell shell;
 
+	private URI uri;
+	
+	public GenericClientContainerConnectWizard() {
+		super();
+	}
+	
+	public GenericClientContainerConnectWizard(URI uri) {
+		super();
+		this.uri = uri;
+	}
+
 	public void addPages() {
-		wizardPage = new GenericClientContainerConnectWizardPage();
+		wizardPage = new GenericClientContainerConnectWizardPage(uri);
 		addPage(wizardPage);
 	}
 

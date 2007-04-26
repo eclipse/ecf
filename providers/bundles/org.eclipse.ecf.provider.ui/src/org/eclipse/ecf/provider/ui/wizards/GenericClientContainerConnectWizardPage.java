@@ -10,10 +10,20 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.ui.wizards;
 
+import java.net.URI;
+
 import org.eclipse.ecf.ui.wizards.AbstractConnectWizardPage;
 
 public class GenericClientContainerConnectWizardPage extends AbstractConnectWizardPage {
 
+	public GenericClientContainerConnectWizardPage() {
+		super();
+	}
+	
+	public GenericClientContainerConnectWizardPage(URI uri) {
+		super(uri);
+	}
+	
 	public boolean shouldRequestUsername() {
 		return true;
 	}
