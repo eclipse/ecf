@@ -156,7 +156,7 @@ public class MultiRosterView extends ViewPart implements
 		}
 	};
 
-	private ViewerFilter showEmptyGroupsFilter = new ViewerFilter() {
+	private ViewerFilter hideEmptyGroupsFilter = new ViewerFilter() {
 		public boolean select(Viewer viewer, Object parentElement,
 				Object element) {
 			if (element instanceof IRosterGroup) {
@@ -206,7 +206,7 @@ public class MultiRosterView extends ViewPart implements
 		treeViewer.setContentProvider(new MultiRosterContentProvider());
 		treeViewer.setLabelProvider(new MultiRosterLabelProvider());
 		treeViewer.addFilter(hideOfflineFilter);
-		treeViewer.addFilter(showEmptyGroupsFilter);
+		treeViewer.addFilter(hideEmptyGroupsFilter);
 		treeViewer.setInput(rosterAccounts);
 		treeViewer.addOpenListener(new IOpenListener() {
 			public void open(OpenEvent e) {
@@ -688,13 +688,12 @@ public class MultiRosterView extends ViewPart implements
 				Messages.MultiRosterView_ShowEmptyGroups, Action.AS_CHECK_BOX) {
 			public void run() {
 				if (isChecked()) {
-					treeViewer.addFilter(showEmptyGroupsFilter);
+					treeViewer.removeFilter(hideEmptyGroupsFilter);
 				} else {
-					treeViewer.removeFilter(showEmptyGroupsFilter);
+					treeViewer.addFilter(hideEmptyGroupsFilter);
 				}
 			}
 		};
-		showEmptyGroupsAction.setChecked(true);
 		manager.add(showEmptyGroupsAction);
 
 		manager.add(new Separator());
