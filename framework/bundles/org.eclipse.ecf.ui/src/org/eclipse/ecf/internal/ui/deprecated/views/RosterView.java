@@ -72,7 +72,6 @@ import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
 import org.eclipse.ecf.ui.dialogs.ChangePasswordDialog;
 import org.eclipse.ecf.ui.dialogs.ChatRoomSelectionDialog;
 import org.eclipse.ecf.ui.views.ChatRoomView;
-import org.eclipse.ecf.ui.views.ChatWindow;
 import org.eclipse.ecf.ui.views.IChatRoomViewCloseListener;
 import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.jface.action.Action;

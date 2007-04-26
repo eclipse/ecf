@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.ui.views;
+package org.eclipse.ecf.internal.ui.deprecated.views;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +18,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.ui.Activator;
+import org.eclipse.ecf.ui.views.ChatLine;
+import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -25,9 +27,14 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.TextViewer;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
@@ -51,6 +58,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.part.ViewPart;
 
 public class TextChatComposite extends Composite {
@@ -59,8 +68,7 @@ public class TextChatComposite extends Composite {
 
 	protected static final int DEFAULT_INPUT_SEPARATOR = 5;
 
-	protected String TEXT_INPUT_INIT = MessageLoader
-			.getString("TextChatComposite.textinputinit");
+	protected String TEXT_INPUT_INIT = "<input chat text here>";
 
 	protected Color meColor = null;
 
@@ -70,7 +78,7 @@ public class TextChatComposite extends Composite {
 
 	protected StyledText styledText;
 
-	protected TextViewer textoutput;
+	//protected TextViewer textoutput;
 
 	protected Text textinput;
 
@@ -97,11 +105,12 @@ public class TextChatComposite extends Composite {
 	private Action outputPaste = null;
 
 	private Action outputSelectAll = null;
-	
+
 	private ViewPart view = null;
 
-	public TextChatComposite(ViewPart view, Composite parent, int style, String initText,
-			ILocalInputHandler handler, IUser localUser, IUser remoteUser) {
+	public TextChatComposite(ViewPart view, Composite parent, int style,
+			String initText, ILocalInputHandler handler, IUser localUser,
+			IUser remoteUser) {
 		super(parent, style);
 
 		this.view = view;
@@ -130,12 +139,15 @@ public class TextChatComposite extends Composite {
 		sash.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		// Setup text output
-		textoutput = new TextViewer(sash, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP);
-		styledText = textoutput.getTextWidget();
-		styledText.setEditable(false);
-		textoutput.setDocument(new Document(this.initText));
+		SourceViewer result = new SourceViewer(sash, null, null,
+				true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
+						| SWT.H_SCROLL | SWT.READ_ONLY);
+		result.configure(new TextSourceViewerConfiguration(EditorsUI
+				.getPreferenceStore()));
+		result.setDocument(new Document());
 
-		textoutput.setEditable(false);
+		styledText = result.getTextWidget();
+		styledText.setEditable(false);
 
 		// Setup text input
 		textinput = new Text(sash, SWT.WRAP | SWT.BORDER | SWT.V_SCROLL);
@@ -247,17 +259,17 @@ public class TextChatComposite extends Composite {
 	protected void outputClear() {
 		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
 				"Are you sure you want to clear output?"))
-			textoutput.getTextWidget().setText("");
+			styledText.setText("");
 	}
 
 	protected void outputCopy() {
-		String t = textoutput.getTextWidget().getSelectionText();
+		String t = styledText.getSelectionText();
 		if (t == null || t.length() == 0) {
-			textoutput.getTextWidget().selectAll();
+			styledText.selectAll();
 		}
-		textoutput.getTextWidget().copy();
-		textoutput.getTextWidget().setSelection(
-				textoutput.getTextWidget().getText().length());
+		styledText.copy();
+		styledText.setSelection(
+				styledText.getText().length());
 	}
 
 	protected void outputPaste() {
@@ -265,7 +277,7 @@ public class TextChatComposite extends Composite {
 	}
 
 	protected void outputSelectAll() {
-		textoutput.getTextWidget().selectAll();
+		styledText.selectAll();
 	}
 
 	private void hookContextMenu() {
@@ -276,10 +288,37 @@ public class TextChatComposite extends Composite {
 				fillContextMenu(manager);
 			}
 		});
-		Menu menu = menuMgr.createContextMenu(textoutput.getControl());
-		textoutput.getControl().setMenu(menu);
-		
-		view.getSite().registerContextMenu(menuMgr, textoutput);
+		Menu menu = menuMgr.createContextMenu(styledText);
+		styledText.setMenu(menu);
+		ISelectionProvider selectionProvider = new ISelectionProvider() {
+
+			public void addSelectionChangedListener(
+					ISelectionChangedListener listener) {
+			}
+
+			public ISelection getSelection() {
+				ISelection selection = new TextSelection(styledText
+						.getSelectionRange().x, styledText
+						.getSelectionRange().y);
+
+				return selection;
+			}
+
+			public void removeSelectionChangedListener(
+					ISelectionChangedListener listener) {
+			}
+
+			public void setSelection(ISelection selection) {
+				if (selection instanceof ITextSelection) {
+					ITextSelection textSelection = (ITextSelection) selection;
+					styledText.setSelection(textSelection.getOffset(),
+							textSelection.getOffset()
+									+ textSelection.getLength());
+				}
+			}
+
+		};
+		view.getSite().registerContextMenu(menuMgr, selectionProvider);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
@@ -323,9 +362,9 @@ public class TextChatComposite extends Composite {
 	}
 
 	public void appendText(ChatLine text) {
-		StyledText st = textoutput.getTextWidget();
+		StyledText st = styledText;
 
-		if (text == null || textoutput == null || st == null)
+		if (text == null || st == null)
 			return;
 
 		int startRange = st.getText().length();

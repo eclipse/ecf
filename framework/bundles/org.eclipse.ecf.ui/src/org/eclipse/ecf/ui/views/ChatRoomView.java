@@ -35,6 +35,13 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -52,13 +59,16 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
-public class ChatRoomView extends ViewPart implements IChatRoomInvitationListener {
-	
+public class ChatRoomView extends ViewPart implements
+		IChatRoomInvitationListener {
+
 	public static final String VIEW_ID = "org.eclipse.ecf.ui.views.ChatRoomView"; //$NON-NLS-1$
-	
+
 	private static final String USERNAME_HOST_DELIMETER = "@";
 
 	private static final int RATIO_WRITE_PANE = 2;
@@ -93,7 +103,7 @@ public class ChatRoomView extends ViewPart implements IChatRoomInvitationListene
 
 	private Text writeText = null;
 
-	private SimpleLinkTextViewer readText = null;
+	private StyledText readText = null;
 
 	private ListViewer memberViewer = null;
 
@@ -173,12 +183,17 @@ public class ChatRoomView extends ViewPart implements IChatRoomInvitationListene
 		readInlayComp.setLayout(new GridLayout());
 		readInlayComp.setLayoutData(new GridData(GridData.FILL_BOTH));
 		readInlayComp.setBackground(memberViewer.getList().getBackground());
-		readText = new SimpleLinkTextViewer(readInlayComp, SWT.V_SCROLL
-				| SWT.H_SCROLL | SWT.WRAP);
+		SourceViewer result = new SourceViewer(readInlayComp, null, null, true,
+				SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.H_SCROLL
+						| SWT.READ_ONLY);
+		result.configure(new TextSourceViewerConfiguration(EditorsUI
+				.getPreferenceStore()));
+		result.setDocument(new Document());
 
-		readText.getTextWidget().setEditable(false);
-		readText.getTextWidget()
-				.setLayoutData(new GridData(GridData.FILL_BOTH));
+		readText = result.getTextWidget();
+
+		readText.setEditable(false);
+		readText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Composite writeComp = new Composite(rightSash, SWT.NONE);
 		writeComp.setLayout(new FillLayout());
@@ -327,7 +342,7 @@ public class ChatRoomView extends ViewPart implements IChatRoomInvitationListene
 		private static final long serialVersionUID = 2008114088656711572L;
 
 		ID id;
-		
+
 		public Participant(ID id) {
 			this.id = id;
 		}
@@ -365,7 +380,9 @@ public class ChatRoomView extends ViewPart implements IChatRoomInvitationListene
 			return null;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see org.eclipse.ecf.core.user.IUser#getNickname()
 		 */
 		public String getNickname() {
@@ -479,7 +496,7 @@ public class ChatRoomView extends ViewPart implements IChatRoomInvitationListene
 	}
 
 	protected void appendText(ChatLine text) {
-		StyledText st = readText.getTextWidget();
+		StyledText st = readText;
 
 		if (text == null || readText == null || st == null)
 			return;
@@ -545,17 +562,16 @@ public class ChatRoomView extends ViewPart implements IChatRoomInvitationListene
 	protected void outputClear() {
 		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
 				"Are you sure you want to clear output?"))
-			readText.getTextWidget().setText("");
+			readText.setText("");
 	}
 
 	protected void outputCopy() {
-		String t = readText.getTextWidget().getSelectionText();
+		String t = readText.getSelectionText();
 		if (t == null || t.length() == 0) {
-			readText.getTextWidget().selectAll();
+			readText.selectAll();
 		}
-		readText.getTextWidget().copy();
-		readText.getTextWidget().setSelection(
-				readText.getTextWidget().getText().length());
+		readText.copy();
+		readText.setSelection(readText.getText().length());
 	}
 
 	protected void outputPaste() {
@@ -577,9 +593,9 @@ public class ChatRoomView extends ViewPart implements IChatRoomInvitationListene
 	public void handleUpdated(IUser user) {
 		// XXX todo
 	}
-	
+
 	protected void outputSelectAll() {
-		readText.getTextWidget().selectAll();
+		readText.selectAll();
 	}
 
 	protected void makeActions() {
@@ -642,9 +658,36 @@ public class ChatRoomView extends ViewPart implements IChatRoomInvitationListene
 				fillContextMenu(manager);
 			}
 		});
-		Menu menu = menuMgr.createContextMenu(readText.getControl());
-		readText.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, readText);
+		Menu menu = menuMgr.createContextMenu(readText);
+		readText.setMenu(menu);
+		ISelectionProvider selectionProvider = new ISelectionProvider() {
+
+			public void addSelectionChangedListener(
+					ISelectionChangedListener listener) {
+			}
+
+			public ISelection getSelection() {
+				ISelection selection = new TextSelection(readText
+						.getSelectionRange().x, readText.getSelectionRange().y);
+
+				return selection;
+			}
+
+			public void removeSelectionChangedListener(
+					ISelectionChangedListener listener) {
+			}
+
+			public void setSelection(ISelection selection) {
+				if (selection instanceof ITextSelection) {
+					ITextSelection textSelection = (ITextSelection) selection;
+					readText.setSelection(textSelection.getOffset(),
+							textSelection.getOffset()
+									+ textSelection.getLength());
+				}
+			}
+
+		};
+		getSite().registerContextMenu(menuMgr, selectionProvider);
 
 	}
 

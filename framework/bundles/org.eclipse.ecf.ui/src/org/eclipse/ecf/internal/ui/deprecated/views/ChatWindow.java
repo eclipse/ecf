@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.ui.views;
+package org.eclipse.ecf.internal.ui.deprecated.views;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -20,6 +20,8 @@ import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageEvent;
 import org.eclipse.ecf.ui.SharedImages;
+import org.eclipse.ecf.ui.views.ChatLine;
+import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -101,12 +103,6 @@ public class ChatWindow extends ApplicationWindow implements IIMMessageListener 
 	 */
 	protected void configureShell(final Shell newShell) {
 		super.configureShell(newShell);
-		String shellTitlePrefix = MessageLoader
-				.getString("ChatWindow.titleprefix");
-		if (shellTitlePrefix != null && !shellTitlePrefix.equals("")) {
-			shellTitlePrefix = shellTitlePrefix + ": ";
-		}
-		titleBarText = shellTitlePrefix + titleBarText;
 		newShell.setText(titleBarText);
 		image = SharedImages.getImage(SharedImages.IMG_USER_AVAILABLE);
 		newShell.setImage(image);
@@ -178,7 +174,7 @@ public class ChatWindow extends ApplicationWindow implements IIMMessageListener 
 		else if (obj instanceof ILocalInputHandler) {
 			inputHandler = (ILocalInputHandler) obj;
 		}
-		chat = new TextChatComposite(view,parent, SWT.NORMAL, initText,
+		chat = new TextChatComposite(view, parent, SWT.NORMAL, initText,
 				inputHandler, getLocalUser(), getRemoteUser());
 		chat.setLayoutData(new GridData(GridData.FILL_BOTH));
 		chat.setFont(parent.getFont());
@@ -301,20 +297,24 @@ public class ChatWindow extends ApplicationWindow implements IIMMessageListener 
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.IIMMessageListener#handleMessageEvent(org.eclipse.ecf.presence.IIMMessageEvent)
 	 */
 	public void handleMessageEvent(IIMMessageEvent messageEvent) {
 		if (messageEvent instanceof IChatMessageEvent) {
-			final IChatMessage m = ((IChatMessageEvent) messageEvent).getChatMessage();
+			final IChatMessage m = ((IChatMessageEvent) messageEvent)
+					.getChatMessage();
 			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
 					if (!disposed && chat != null) {
-						chat.appendText(new ChatLine(m.getBody(), getRemoteUser()));
+						chat.appendText(new ChatLine(m.getBody(),
+								getRemoteUser()));
 					}
 				}
 			});
 		}
-		
+
 	}
 }

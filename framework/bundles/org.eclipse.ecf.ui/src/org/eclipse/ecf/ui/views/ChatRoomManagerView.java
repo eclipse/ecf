@@ -10,10 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.ui.views;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,7 +27,6 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresence;
@@ -41,15 +38,21 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
-import org.eclipse.ecf.ui.ChatPreferencePage;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -76,17 +79,17 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class ChatRoomManagerView extends ViewPart implements
 		IChatRoomInvitationListener {
-	
+
 	public static final String VIEW_ID = "org.eclipse.ecf.ui.views.ChatRoomManagerView";
-	
+
 	private static final String COMMAND_PREFIX = "/";
 
 	private static final String COMMAND_DELIM = " ";
@@ -125,16 +128,13 @@ public class ChatRoomManagerView extends ViewPart implements
 
 	private Composite mainComp = null;
 
-	private SimpleLinkTextViewer readText = null;
+	private StyledText readText = null;
 
 	private Text writeText = null;
 
 	private CTabFolder tabFolder = null;
 
 	private Manager rootChatRoomTabItem = null;
-
-	private IWorkbenchBrowserSupport browserSupport = PlatformUI.getWorkbench()
-			.getBrowserSupport();
 
 	IChatRoomViewCloseListener closeListener = null;
 
@@ -181,12 +181,12 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		KeyListener keyListener;
 
-		SimpleLinkTextViewer textOutput;
+		StyledText textOutput;
 
 		Text textInput;
 
 		ListViewer listViewer;
-		
+
 		Action outputSelectAll;
 		Action outputCopy;
 		Action outputClear;
@@ -215,11 +215,18 @@ public class ChatRoomManagerView extends ViewPart implements
 			Composite readInlayComp = new Composite(rightSash, SWT.FILL);
 			readInlayComp.setLayout(new GridLayout());
 			readInlayComp.setLayoutData(new GridData(GridData.FILL_BOTH));
-			textOutput = new SimpleLinkTextViewer(readInlayComp, SWT.V_SCROLL
-					| SWT.H_SCROLL | SWT.WRAP);
-			textOutput.getTextWidget().setEditable(false);
-			textOutput.getTextWidget().setLayoutData(
-					new GridData(GridData.FILL_BOTH));
+
+			SourceViewer result = new SourceViewer(readInlayComp, null, null,
+					true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
+							| SWT.H_SCROLL | SWT.READ_ONLY);
+			result.configure(new TextSourceViewerConfiguration(EditorsUI
+					.getPreferenceStore()));
+			result.setDocument(new Document());
+
+			textOutput = result.getTextWidget();
+			textOutput.setEditable(false);
+			textOutput.setLayoutData(new GridData(GridData.FILL_BOTH));
+
 			Composite writeComp = new Composite(rightSash, SWT.NONE);
 			writeComp.setLayout(new FillLayout());
 			textInput = new Text(writeComp, SWT.BORDER | SWT.MULTI | SWT.WRAP
@@ -235,32 +242,31 @@ public class ChatRoomManagerView extends ViewPart implements
 			} else
 				tabItem.setControl(rightSash);
 			parent.setSelection(tabItem);
-			
+
 			makeActions();
 			hookContextMenu();
 		}
-		
+
 		protected void outputClear() {
 			if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
 					"Are you sure you want to clear output?")) {
-				textOutput.getTextWidget().setText(""); //$NON-NLS-1$
+				textOutput.setText(""); //$NON-NLS-1$
 			}
 		}
 
 		protected void outputCopy() {
-			String t = textOutput.getTextWidget().getSelectionText();
+			String t = textOutput.getSelectionText();
 			if (t == null || t.length() == 0) {
-				textOutput.getTextWidget().selectAll();
+				textOutput.selectAll();
 			}
-			textOutput.getTextWidget().copy();
-			textOutput.getTextWidget().setSelection(
-					textOutput.getTextWidget().getText().length());
+			textOutput.copy();
+			textOutput.setSelection(textOutput.getText().length());
 		}
 
 		protected void outputSelectAll() {
-			textOutput.getTextWidget().selectAll();
+			textOutput.selectAll();
 		}
-		
+
 		private void fillContextMenu(IMenuManager manager) {
 			manager.add(outputCopy);
 			manager.add(outputClear);
@@ -277,9 +283,37 @@ public class ChatRoomManagerView extends ViewPart implements
 					fillContextMenu(manager);
 				}
 			});
-			Menu menu = menuMgr.createContextMenu(textOutput.getControl());
-			textOutput.getControl().setMenu(menu);
-			getSite().registerContextMenu(menuMgr, textOutput);
+			Menu menu = menuMgr.createContextMenu(textOutput);
+			textOutput.setMenu(menu);
+			ISelectionProvider selectionProvider = new ISelectionProvider() {
+
+				public void addSelectionChangedListener(
+						ISelectionChangedListener listener) {
+				}
+
+				public ISelection getSelection() {
+					ISelection selection = new TextSelection(textOutput
+							.getSelectionRange().x, textOutput
+							.getSelectionRange().y);
+
+					return selection;
+				}
+
+				public void removeSelectionChangedListener(
+						ISelectionChangedListener listener) {
+				}
+
+				public void setSelection(ISelection selection) {
+					if (selection instanceof ITextSelection) {
+						ITextSelection textSelection = (ITextSelection) selection;
+						textOutput.setSelection(textSelection.getOffset(),
+								textSelection.getOffset()
+										+ textSelection.getLength());
+					}
+				}
+
+			};
+			getSite().registerContextMenu(menuMgr, selectionProvider);
 		}
 
 		private void makeActions() {
@@ -316,6 +350,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			};
 
 		}
+
 		protected String getTabName() {
 			return tabItem.getText();
 		}
@@ -328,10 +363,6 @@ public class ChatRoomManagerView extends ViewPart implements
 			return textInput;
 		}
 
-		protected SimpleLinkTextViewer getTextOutput() {
-			return textOutput;
-		}
-
 		protected void setKeyListener(KeyListener listener) {
 			if (listener != null)
 				textInput.addKeyListener(listener);
@@ -339,6 +370,13 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		protected ListViewer getListViewer() {
 			return listViewer;
+		}
+
+		/**
+		 * @return
+		 */
+		public StyledText getTextOutput() {
+			return textOutput;
 		}
 	}
 
@@ -433,11 +471,10 @@ public class ChatRoomManagerView extends ViewPart implements
 
 	private void initializeControls(ID targetID) {
 		// clear text output area
-		if (!readText.getControl().isDisposed())
-			readText.getTextWidget().setText(
-					new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z")
-							.format(new Date())
-							+ "\nConnecting to " + targetID.getName() + "\n\n");
+		if (!readText.isDisposed())
+			readText.setText(new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z")
+					.format(new Date())
+					+ "\nConnecting to " + targetID.getName() + "\n\n");
 	}
 
 	public void setEnabled(boolean enabled) {
@@ -582,10 +619,9 @@ public class ChatRoomManagerView extends ViewPart implements
 							rooms.put(target, chatroomview);
 						} catch (Exception e) {
 							MessageDialog.openError(getSite().getShell(),
-									"Connect Error",
-									"Could connect to " + target
-											+ ".\n\nError is " + e.getLocalizedMessage()
-											+ ".");
+									"Connect Error", "Could connect to "
+											+ target + ".\n\nError is "
+											+ e.getLocalizedMessage() + ".");
 						}
 					}
 				});
@@ -606,7 +642,7 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		Text inputText;
 
-		SimpleLinkTextViewer outputText;
+		StyledText outputText;
 
 		IChatRoomMessageSender channelMessageSender;
 
@@ -1210,30 +1246,8 @@ public class ChatRoomManagerView extends ViewPart implements
 				+ ",subject=" + subject + ",body=" + body);
 	}
 
-	private boolean intelligentAppend(SimpleLinkTextViewer readText,
-			StyledText st, ChatLine text) {
+	private boolean intelligentAppend(StyledText st, ChatLine text) {
 		String line = text.getText();
-		// check to see if a link exists in this line
-		int index = line.indexOf("http://"); //$NON-NLS-1$
-		if (index == -1) {
-			index = line.indexOf("https://"); //$NON-NLS-1$
-			if (index == -1) {
-				index = line.indexOf("www."); //$NON-NLS-1$
-				if (index == -1) {
-					return false;
-				}
-			}
-		} else {
-			int nextIndex = line.indexOf("https://"); //$NON-NLS-1$
-			if (nextIndex != -1 && nextIndex < index) {
-				index = nextIndex;
-			}
-
-			nextIndex = line.indexOf("www."); //$NON-NLS-1$
-			if (nextIndex != -1 && nextIndex < index) {
-				index = nextIndex;
-			}
-		}
 
 		int startRange = st.getText().length();
 		StringBuffer sb = new StringBuffer();
@@ -1266,117 +1280,6 @@ public class ChatRoomManagerView extends ViewPart implements
 			st.setStyleRange(sr);
 		}
 
-		while (index != -1) {
-			String front = line.substring(0, index);
-			line = line.substring(index);
-			int beforeMessageIndex = st.getText().length();
-			st.append(front);
-			if (text.getOriginator() == null) {
-				StyleRange sr = new StyleRange();
-				sr.start = beforeMessageIndex;
-				sr.length = front.length();
-				sr.foreground = systemColor;
-				sr.fontStyle = SWT.BOLD;
-				st.setStyleRange(sr);
-			} else if (nickContained) {
-				// highlight the message itself as necessary
-				StyleRange sr = new StyleRange();
-				sr.start = beforeMessageIndex;
-				sr.length = front.length();
-				sr.foreground = highlightColor;
-				st.setStyleRange(sr);
-			}
-
-			int spaceIndex = line.indexOf(' ');
-			if (spaceIndex != -1) {
-				String url = line.substring(0, spaceIndex);
-				int symbols = 0;
-				for (int i = url.length() - 1; i != 0; i--) {
-					char ch = url.charAt(i);
-					if (!Character.isLetterOrDigit(ch)) {
-						symbols++;
-					} else {
-						break;
-					}
-				}
-				if (!url.startsWith("http")) { //$NON-NLS-1$
-					if (symbols == 0) {
-						readText.appendLink(url, createLinkRunnable("http://" //$NON-NLS-1$
-								+ url));
-					} else {
-						int symbolIndex = url.length() - symbols;
-						String link = url.substring(0, symbolIndex);
-						readText.appendLink(link, createLinkRunnable("http://" //$NON-NLS-1$
-								+ link));
-						st.append(url.substring(symbolIndex));
-					}
-				} else {
-					if (symbols == 0) {
-						readText.appendLink(url, createLinkRunnable(url));
-					} else {
-						int symbolIndex = url.length() - symbols;
-						String link = url.substring(0, symbolIndex);
-						readText.appendLink(link, createLinkRunnable(link));
-						st.append(url.substring(symbolIndex));
-					}
-				}
-				line = line.substring(spaceIndex);
-				index = line.indexOf("http://"); //$NON-NLS-1$
-				if (index == -1) {
-					index = line.indexOf("https://"); //$NON-NLS-1$
-					if (index == -1) {
-						index = line.indexOf("www."); //$NON-NLS-1$
-						if (index == -1) {
-							break;
-						}
-					}
-				} else {
-					int nextIndex = line.indexOf("https://"); //$NON-NLS-1$
-					if (nextIndex != -1 && nextIndex < index) {
-						index = nextIndex;
-					}
-
-					nextIndex = line.indexOf("www."); //$NON-NLS-1$
-					if (nextIndex != -1 && nextIndex < index) {
-						index = nextIndex;
-					}
-				}
-			} else {
-				int symbols = 0;
-				for (int i = line.length() - 1; i != 0; i--) {
-					char ch = line.charAt(i);
-					if (!Character.isLetterOrDigit(ch)) {
-						symbols++;
-					} else {
-						break;
-					}
-				}
-				if (!line.startsWith("http")) { //$NON-NLS-1$
-					if (symbols == 0) {
-						readText.appendLink(line, createLinkRunnable("http://" //$NON-NLS-1$
-								+ line));
-					} else {
-						int symbolIndex = line.length() - symbols;
-						String link = line.substring(0, symbolIndex);
-						readText.appendLink(link, createLinkRunnable("http://" //$NON-NLS-1$
-								+ link));
-						st.append(line.substring(symbolIndex));
-					}
-				} else {
-					if (symbols == 0) {
-						readText.appendLink(line, createLinkRunnable(line));
-					} else {
-						int symbolIndex = line.length() - symbols;
-						String link = line.substring(0, symbolIndex);
-						readText.appendLink(link, createLinkRunnable(link));
-						st.append(line.substring(symbolIndex));
-					}
-				}
-				line = null;
-				break;
-			}
-		}
-
 		if (line != null && !line.equals("")) { //$NON-NLS-1$
 			int beforeMessageIndex = st.getText().length();
 			st.append(line);
@@ -1404,69 +1307,12 @@ public class ChatRoomManagerView extends ViewPart implements
 		return true;
 	}
 
-	private Runnable createLinkRunnable(final String url) {
-		return new Runnable() {
-			public void run() {
-				URL link = null;
-				try {
-					link = new URL(url);
-				} catch (MalformedURLException e) {
-					MessageDialog.openError(getSite().getShell(), "Link Error",
-							"The link is not of a proper form");
-					return;
-				}
-				if (browserSupport.isInternalWebBrowserAvailable()) {
-					String pref = Activator
-							.getDefault()
-							.getPreferenceStore()
-							.getString(ChatPreferencePage.PREF_BROWSER_FOR_CHAT);
-					try {
-						if (pref.equals(ChatPreferencePage.VIEW)) {
-							browserSupport.createBrowser(
-									IWorkbenchBrowserSupport.AS_VIEW,
-									"org.eclipse.ecf", url, url).openURL(link);
-						} else if (pref.equals(ChatPreferencePage.EDITOR)) {
-							browserSupport.createBrowser(
-									IWorkbenchBrowserSupport.AS_EDITOR,
-									"org.eclipse.ecf", url, url).openURL(link);
-						} else {
-							try {
-								browserSupport.getExternalBrowser().openURL(
-										link);
-							} catch (PartInitException ex) {
-								MessageDialog.openError(getSite().getShell(),
-										"Browser Error",
-										"Could not open a browser instance.");
-							}
-						}
-					} catch (PartInitException e) {
-						try {
-							browserSupport.getExternalBrowser().openURL(link);
-						} catch (PartInitException ex) {
-							MessageDialog.openError(getSite().getShell(),
-									"Browser Error",
-									"Could not open a browser instance.");
-						}
-					}
-				} else {
-					try {
-						browserSupport.getExternalBrowser().openURL(link);
-					} catch (PartInitException e) {
-						MessageDialog.openError(getSite().getShell(),
-								"Browser Error",
-								"Could not open a browser instance.");
-					}
-				}
-			}
-		};
-	}
-
-	protected void appendText(SimpleLinkTextViewer readText, ChatLine text) {
+	protected void appendText(StyledText readText, ChatLine text) {
 		if (readText == null || text == null) {
 			return;
 		}
-		StyledText st = readText.getTextWidget();
-		if (st == null || intelligentAppend(readText, st, text)) {
+		StyledText st = readText;
+		if (st == null || intelligentAppend(st, text)) {
 			return;
 		}
 		int startRange = st.getText().length();
@@ -1532,18 +1378,17 @@ public class ChatRoomManagerView extends ViewPart implements
 	protected void outputClear() {
 		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
 				"Are you sure you want to clear output?")) {
-			readText.getTextWidget().setText(""); //$NON-NLS-1$
+			readText.setText(""); //$NON-NLS-1$
 		}
 	}
 
 	protected void outputCopy() {
-		String t = readText.getTextWidget().getSelectionText();
+		String t = readText.getSelectionText();
 		if (t == null || t.length() == 0) {
-			readText.getTextWidget().selectAll();
+			readText.selectAll();
 		}
-		readText.getTextWidget().copy();
-		readText.getTextWidget().setSelection(
-				readText.getTextWidget().getText().length());
+		readText.copy();
+		readText.setSelection(readText.getText().length());
 	}
 
 	protected void outputPaste() {
@@ -1551,7 +1396,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	protected void outputSelectAll() {
-		readText.getTextWidget().selectAll();
+		readText.selectAll();
 	}
 
 	protected void makeActions() {
@@ -1611,9 +1456,36 @@ public class ChatRoomManagerView extends ViewPart implements
 				fillContextMenu(manager);
 			}
 		});
-		Menu menu = menuMgr.createContextMenu(readText.getControl());
-		readText.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, readText);
+		Menu menu = menuMgr.createContextMenu(readText);
+		readText.setMenu(menu);
+		ISelectionProvider selectionProvider = new ISelectionProvider() {
+
+			public void addSelectionChangedListener(
+					ISelectionChangedListener listener) {
+			}
+
+			public ISelection getSelection() {
+				ISelection selection = new TextSelection(readText
+						.getSelectionRange().x, readText.getSelectionRange().y);
+
+				return selection;
+			}
+
+			public void removeSelectionChangedListener(
+					ISelectionChangedListener listener) {
+			}
+
+			public void setSelection(ISelection selection) {
+				if (selection instanceof ITextSelection) {
+					ITextSelection textSelection = (ITextSelection) selection;
+					readText.setSelection(textSelection.getOffset(),
+							textSelection.getOffset()
+									+ textSelection.getLength());
+				}
+			}
+
+		};
+		getSite().registerContextMenu(menuMgr, selectionProvider);
 	}
 
 	private Color colorFromRGBString(String rgb) {

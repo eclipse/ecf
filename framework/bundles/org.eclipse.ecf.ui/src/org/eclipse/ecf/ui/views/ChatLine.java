@@ -13,10 +13,6 @@ package org.eclipse.ecf.ui.views;
 
 import org.eclipse.ecf.core.user.IUser;
 
-/**
- * @author kgilmer
- * 
- */
 public class ChatLine {
 	private IUser originator = null; //
 
