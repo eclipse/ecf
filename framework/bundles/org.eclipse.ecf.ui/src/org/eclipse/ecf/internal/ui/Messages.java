@@ -47,6 +47,8 @@ public class Messages extends NLS {
 	
 	public static String RosterView_SendFile_menutext;
 	
+	public static String AbstractURIHyperlink_EXCEPTION_HYPERLINK;
+
 	static {
 		// load message values from bundle file
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

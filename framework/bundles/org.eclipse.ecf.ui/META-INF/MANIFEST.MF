@@ -17,6 +17,7 @@ Export-Package: org.eclipse.ecf.internal.ui;x-internal:=true,
  org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.actions,
  org.eclipse.ecf.ui.dialogs,
+ org.eclipse.ecf.ui.hyperlink,
  org.eclipse.ecf.ui.util,
  org.eclipse.ecf.ui.views,
  org.eclipse.ecf.ui.wizards

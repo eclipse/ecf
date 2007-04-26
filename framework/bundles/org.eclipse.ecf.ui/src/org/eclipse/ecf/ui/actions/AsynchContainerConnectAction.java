@@ -25,8 +25,6 @@ import org.eclipse.jface.action.IAction;
 
 public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 
-	private static final int ERROR_CODE = 999;
-
 	public AsynchContainerConnectAction(IContainer container, ID targetID,
 			IConnectContext connectContext, IExceptionHandler exceptionHandler) {
 		super(container, targetID, connectContext, exceptionHandler);
@@ -50,7 +48,7 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 		else if (e == null)
 			return Status.OK_STATUS;
 		else
-			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, ERROR_CODE,
+			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
 					"Exception in run", e);
 	}
 

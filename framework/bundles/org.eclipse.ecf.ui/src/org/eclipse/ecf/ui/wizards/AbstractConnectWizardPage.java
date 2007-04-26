@@ -10,6 +10,8 @@
  *****************************************************************************/
 package org.eclipse.ecf.ui.wizards;
 
+import java.net.URI;
+
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -41,11 +43,18 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 
 	private Button autoLoginBtn;
 
+	private URI uri;
+	
 	protected AbstractConnectWizardPage() {
 		super(PAGE_NAME);
 		setTitle(getProviderTitle());
 		setDescription(getProviderDescription());
 		setPageComplete(false);
+	}
+
+	protected AbstractConnectWizardPage(URI uri) {
+		this();
+		this.uri = uri;
 	}
 
 	public void createControl(Composite parent) {
@@ -94,6 +103,10 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 		autoLoginBtn.setLayoutData(new GridData(SWT.END, SWT.CENTER, true,
 				false, 2, 1));
 
+		if (uri != null) {
+			connectText.setText(uri.toString());
+			usernameText.setFocus();
+		}
 		setControl(parent);
 	}
 
