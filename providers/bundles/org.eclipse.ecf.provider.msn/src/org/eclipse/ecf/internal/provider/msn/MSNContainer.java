@@ -148,7 +148,6 @@ final class MSNContainer implements IContainer, IChatManager,
 					Messages.MSNContainer_TargetIDNotMSNID);
 		}
 
-		connectID = (MSNID) targetID;
 		client = new MsnClient();
 		ObjectCallback[] cb = { new ObjectCallback() };
 		try {
@@ -295,8 +294,9 @@ final class MSNContainer implements IContainer, IChatManager,
 						}
 					});
 
-			fireContainerEvent(new ContainerConnectingEvent(guid, connectID));
-			client.connect(connectID.getName(), (String) cb[0].getObject());
+			fireContainerEvent(new ContainerConnectingEvent(guid, targetID));
+			client.connect(targetID.getName(), (String) cb[0].getObject());
+			connectID = (MSNID) targetID;
 			fireContainerEvent(new ContainerConnectedEvent(guid, connectID));
 			Activator.getDefault().registerService(this);
 		} catch (UnsupportedCallbackException e) {
