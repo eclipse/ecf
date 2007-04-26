@@ -10,4 +10,16 @@
             name="%wizardLabel"/>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="org.eclipse.ecf.internal.provider.msn.ui.MSNHyperlinkDetector"
+            id="org.eclipse.ecf.internal.provider.msn.ui.MSNHyperlinkDetector"
+            name="MSN"
+            targetId="org.eclipse.ui.DefaultTextEditor">
+      </hyperlinkDetector>
+   </extension>
+
+
 </plugin>

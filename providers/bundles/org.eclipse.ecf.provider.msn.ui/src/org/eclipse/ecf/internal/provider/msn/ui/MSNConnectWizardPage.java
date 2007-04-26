@@ -26,12 +26,19 @@ final class MSNConnectWizardPage extends WizardPage {
 
 	private Text passwordText;
 
+	private String username;
+	
 	MSNConnectWizardPage() {
 		super(MSNConnectWizardPage.class.getName());
 		setTitle(Messages.MSNConnectWizardPage_Title);
 		setPageComplete(false);
 	}
 
+	MSNConnectWizardPage(String username) {
+		this();
+		this.username = username;
+	}
+	
 	private void addListeners() {
 		ModifyListener listener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -68,6 +75,10 @@ final class MSNConnectWizardPage extends WizardPage {
 		passwordText.setLayoutData(data);
 
 		addListeners();
+		if (username != null) {
+			emailText.setText(username);
+			passwordText.setFocus();
+		}
 		setControl(parent);
 	}
 

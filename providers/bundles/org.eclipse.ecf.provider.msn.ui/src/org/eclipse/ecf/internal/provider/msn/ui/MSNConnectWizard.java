@@ -58,8 +58,19 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 
 	private IConnectContext connectContext;
 
+	private String username;
+	
+	public MSNConnectWizard() {
+		super();
+	}
+	
+	public MSNConnectWizard(String username) {
+		this();
+		this.username = username;
+	}
+	
 	public void addPages() {
-		page = new MSNConnectWizardPage();
+		page = new MSNConnectWizardPage(username);
 		addPage(page);
 	}
 
