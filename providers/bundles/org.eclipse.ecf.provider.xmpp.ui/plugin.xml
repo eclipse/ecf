@@ -24,4 +24,17 @@
          </dynamic>
       </menuContribution>
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="org.eclipse.ecf.internal.provider.xmpp.ui.hyperlink.XMPPHyperlinkDetector"
+            id="org.eclipse.ecf.internal.provider.xmpp.ui.hyperlink.XMPPHyperlinkDetector"
+            name="%XMPPHyperlinkDetector"
+            targetId="org.eclipse.ui.DefaultTextEditor">
+      </hyperlinkDetector>
+   </extension>
+
+   
 </plugin>

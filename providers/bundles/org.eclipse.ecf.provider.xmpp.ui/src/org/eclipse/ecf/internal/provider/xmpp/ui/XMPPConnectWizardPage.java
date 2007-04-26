@@ -26,6 +26,8 @@ public class XMPPConnectWizardPage extends WizardPage {
 
 	Text passwordText;
 
+	String usernameAtHost;
+	
 	XMPPConnectWizardPage() {
 		super(""); //$NON-NLS-1$
 		setTitle(Messages.XMPPConnectWizardPage_WIZARD_TITLE);
@@ -33,6 +35,11 @@ public class XMPPConnectWizardPage extends WizardPage {
 		setPageComplete(false);
 	}
 
+	XMPPConnectWizardPage(String usernameAtHost) {
+		this();
+		this.usernameAtHost = usernameAtHost;
+	}
+	
 	public void createControl(Composite parent) {
 		parent.setLayout(new GridLayout());
 		GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -65,6 +72,10 @@ public class XMPPConnectWizardPage extends WizardPage {
 		passwordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD | SWT.BORDER);
 		passwordText.setLayoutData(fillData);
 
+		if (usernameAtHost != null) {
+			connectText.setText(usernameAtHost);
+			passwordText.setFocus();
+		}
 		setControl(parent);
 	}
 

@@ -13,8 +13,16 @@ package org.eclipse.ecf.internal.provider.xmpp.ui;
 
 public final class XMPPSConnectWizard extends XMPPConnectWizard {
 
+	public XMPPSConnectWizard() {
+		super();
+	}
+	
+	public XMPPSConnectWizard(String uri) {
+		super(uri);
+	}
+	
 	public void addPages() {
-		page = new XMPPSConnectWizardPage();
+		page = new XMPPSConnectWizardPage(usernameAtHost);
 		addPage(page);
 	}
 

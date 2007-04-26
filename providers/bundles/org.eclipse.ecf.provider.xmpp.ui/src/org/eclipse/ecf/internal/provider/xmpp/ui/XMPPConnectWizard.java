@@ -71,6 +71,16 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 
 	private IConnectContext connectContext;
 
+	protected String usernameAtHost;
+	
+	public XMPPConnectWizard() {
+		super();
+	}
+	
+	public XMPPConnectWizard(String usernameAtHost) {
+		this();
+		this.usernameAtHost = usernameAtHost;
+	}
 	protected IIncomingFileTransferRequestListener requestListener = new IIncomingFileTransferRequestListener() {
 		public void handleFileTransferRequest(
 				final IFileTransferRequestEvent event) {
@@ -152,7 +162,7 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 	};
 
 	public void addPages() {
-		page = new XMPPConnectWizardPage();
+		page = new XMPPConnectWizardPage(usernameAtHost);
 		addPage(page);
 	}
 
