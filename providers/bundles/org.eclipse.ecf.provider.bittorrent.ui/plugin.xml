@@ -9,4 +9,17 @@
             id="org.eclipse.ecf.provider.ui.bittorrent.connectWizard"
             name="BitTorrent"/>
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="org.eclipse.ecf.internal.provider.bittorrent.ui.BitTorrentHyperlinkDetector"
+            id="org.eclipse.ecf.internal.provider.bittorrent.ui.BitTorrentHyperlinkDetector"
+            name="TORRENT"
+            targetId="org.eclipse.ui.DefaultTextEditor">
+      </hyperlinkDetector>
+   </extension>
+
+   
 </plugin>

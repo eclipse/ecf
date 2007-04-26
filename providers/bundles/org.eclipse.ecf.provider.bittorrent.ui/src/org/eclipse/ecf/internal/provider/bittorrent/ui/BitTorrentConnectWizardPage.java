@@ -36,10 +36,17 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 
 	private Button browseTargetBtn;
 
+	private String torrentFile;
+
 	BitTorrentConnectWizardPage() {
 		super("");
 		setTitle("BitTorrent File Sharing");
 		setPageComplete(false);
+	}
+
+	BitTorrentConnectWizardPage(String torrentFile) {
+		this();
+		this.torrentFile = torrentFile;
 	}
 
 	private void addListeners() {
@@ -60,7 +67,7 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 				}
 			}
 		});
-		
+
 		targetText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				String target = torrentText.getText().trim();
@@ -77,6 +84,12 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 				FileDialog dialog = new FileDialog(browseTorrentBtn.getShell(),
 						SWT.OPEN);
 				dialog.setFilterExtensions(new String[] { "*.torrent" }); //$NON-NLS-1$
+				if (torrentFile != null) {
+					int lastIndex = torrentFile.lastIndexOf('/');
+					if (lastIndex == -1) lastIndex = torrentFile.lastIndexOf('\\');
+					if (lastIndex != -1) 
+					dialog.setFilterPath(torrentFile.substring(0, lastIndex));
+				}
 				String torrent = dialog.open();
 				if (torrent != null) {
 					torrentText.setText(torrent);
@@ -119,6 +132,10 @@ final class BitTorrentConnectWizardPage extends WizardPage {
 		browseTargetBtn = new Button(parent, SWT.PUSH);
 		browseTargetBtn.setText("B&rowse");
 
+		if (torrentFile != null) {
+			torrentText.setText(torrentFile);
+			targetText.setFocus();
+		}
 		addListeners();
 		setControl(parent);
 	}

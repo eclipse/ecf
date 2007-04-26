@@ -42,9 +42,20 @@ public class BitTorrentConnectWizard extends Wizard implements IConnectWizard {
 	private IFileID targetID;
 
 	private IWorkbenchPage workbenchPage;
+	
+	private String torrentFile;
 
+	BitTorrentConnectWizard() {
+		super();
+	}
+	
+	BitTorrentConnectWizard(String torrentFile) {
+		this();
+		this.torrentFile = torrentFile;
+	}
+	
 	public void addPages() {
-		page = new BitTorrentConnectWizardPage();
+		page = new BitTorrentConnectWizardPage(torrentFile);
 		addPage(page);
 	}
 
