@@ -30,7 +30,6 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.ecf.example.collab.share.User;
 import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
-import org.eclipse.ecf.ui.views.SimpleLinkTextViewer;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -44,6 +43,13 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -87,6 +93,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.views.IViewCategory;
 import org.eclipse.ui.views.IViewDescriptor;
@@ -129,7 +137,7 @@ public class ChatComposite extends Composite {
 	protected static final int DEFAULT_INPUT_SEPARATOR = 5;
 
 	Text textinput = null;
-	SimpleLinkTextViewer textoutput = null;
+	StyledText textoutput = null;
 	ChatTreeViewer treeView = null;
 	ChatDropTarget chatDropTarget = null;
 	TreeDropTarget treeDropTarget = null;
@@ -182,8 +190,16 @@ public class ChatComposite extends Composite {
 		cl = new ChatLayout(DEFAULT_INPUT_HEIGHT, DEFAULT_INPUT_SEPARATOR);
 		setLayout(cl);
 		treeView = tree;
-		textoutput = new SimpleLinkTextViewer(this, SWT.V_SCROLL | SWT.H_SCROLL
-				| SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
+		
+		SourceViewer result = new SourceViewer(this, null, null, true,
+				SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.H_SCROLL
+						| SWT.READ_ONLY);
+		result.configure(new TextSourceViewerConfiguration(EditorsUI
+				.getPreferenceStore()));
+		result.setDocument(new Document());
+
+
+		textoutput = result.getTextWidget();
 		String fontName = ClientPlugin.getDefault().getPluginPreferences()
 				.getString(ClientPlugin.PREF_CHAT_FONT);
 		if (!(fontName == null) && !(fontName.equals(""))) {
@@ -191,7 +207,7 @@ public class ChatComposite extends Composite {
 			FontData[] newFont = { new FontData(fontName) };
 
 			fr.put(CHAT_OUTPUT_FONT, newFont);
-			textoutput.getTextWidget().setFont(fr.get(CHAT_OUTPUT_FONT));
+			textoutput.setFont(fr.get(CHAT_OUTPUT_FONT));
 		}
 
 		ClientPlugin.getDefault().getPluginPreferences()
@@ -263,7 +279,7 @@ public class ChatComposite extends Composite {
 	}
 
 	public void appendText(ChatLine text) {
-		StyledText st = textoutput.getTextWidget();
+		StyledText st = textoutput;
 
 		if (text == null || textoutput == null || st == null || st.isDisposed())
 			return;
@@ -291,10 +307,7 @@ public class ChatComposite extends Composite {
 
 		// int beforeMessageIndex = st.getText().length();
 
-		if (text.getOnClick() == null)
-			textoutput.append(text.getText());
-		else
-			textoutput.appendLink(text.getText(), text.getOnClick());
+		textoutput.append(text.getText());
 
 		// if (text.getOriginator() == null) {
 		// StyleRange sr = new StyleRange();
@@ -798,10 +811,37 @@ public class ChatComposite extends Composite {
 				fillContextMenu(manager);
 			}
 		});
-		Menu menu = menuMgr.createContextMenu(textoutput.getTextWidget());
-		textoutput.getTextWidget().setMenu(menu);
-		// TODO this.view.view.getSite().registerContextMenu(menuMgr,
-		// textoutput);
+		Menu menu = menuMgr.createContextMenu(textoutput);
+		textoutput.setMenu(menu);
+		ISelectionProvider selectionProvider = new ISelectionProvider() {
+
+			public void addSelectionChangedListener(
+					ISelectionChangedListener listener) {
+			}
+
+			public ISelection getSelection() {
+				ISelection selection = new TextSelection(
+						textoutput.getSelectionRange().x, textoutput
+								.getSelectionRange().y);
+
+				return selection;
+			}
+
+			public void removeSelectionChangedListener(
+					ISelectionChangedListener listener) {
+			}
+
+			public void setSelection(ISelection selection) {
+				if (selection instanceof ITextSelection) {
+					ITextSelection textSelection = (ITextSelection) selection;
+					textoutput.setSelection(textSelection.getOffset(), textSelection
+							.getOffset()
+							+ textSelection.getLength());
+				}
+			}
+			
+		};
+		this.view.view.getSite().registerContextMenu(menuMgr,selectionProvider);
 
 		MenuManager treeMenuMgr = new MenuManager("#PopupMenu");
 		treeMenuMgr.setRemoveAllWhenShown(true);
@@ -820,7 +860,7 @@ public class ChatComposite extends Composite {
 	}
 
 	protected Control getTextControl() {
-		return textoutput.getTextWidget();
+		return textoutput;
 	}
 
 	protected void makeActions() {
@@ -1252,17 +1292,17 @@ public class ChatComposite extends Composite {
 	protected void outputClear() {
 		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
 				"Are you sure you want to clear output?"))
-			textoutput.getTextWidget().setText("");
+			textoutput.setText("");
 	}
 
 	protected void outputCopy() {
-		String t = textoutput.getTextWidget().getSelectionText();
+		String t = textoutput.getSelectionText();
 		if (t == null || t.length() == 0) {
-			textoutput.getTextWidget().selectAll();
+			textoutput.selectAll();
 		}
-		textoutput.getTextWidget().copy();
-		textoutput.getTextWidget().setSelection(
-				textoutput.getTextWidget().getText().length());
+		textoutput.copy();
+		textoutput.setSelection(
+				textoutput.getText().length());
 	}
 
 	protected void outputPaste() {
@@ -1270,7 +1310,7 @@ public class ChatComposite extends Composite {
 	}
 
 	protected void outputSelectAll() {
-		textoutput.getTextWidget().selectAll();
+		textoutput.selectAll();
 	}
 
 	protected int getChunkPreference() {
@@ -1558,7 +1598,7 @@ public class ChatComposite extends Composite {
 	}
 
 	protected void initializeDropTargets() {
-		chatDropTarget = new ChatDropTarget(view, textoutput.getTextWidget(),
+		chatDropTarget = new ChatDropTarget(view, textoutput,
 				this);
 		treeDropTarget = new TreeDropTarget(view, treeView.getControl(), this);
 	}
@@ -1622,8 +1662,7 @@ public class ChatComposite extends Composite {
 					FontData[] newFont = { new FontData(fontName) };
 
 					fr.put(CHAT_OUTPUT_FONT, newFont);
-					textoutput.getTextWidget()
-							.setFont(fr.get(CHAT_OUTPUT_FONT));
+					textoutput.setFont(fr.get(CHAT_OUTPUT_FONT));
 				}
 			}
 		}

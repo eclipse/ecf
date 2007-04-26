@@ -12,6 +12,7 @@
 package org.eclipse.ecf.example.collab.actions;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -51,6 +52,7 @@ public class URIClientConnectAction implements IWorkbenchWindowActionDelegate {
         setProject(project);
     }
     public void setProject(IResource project) {
+    	if (project == null) project = ResourcesPlugin.getWorkspace().getRoot();
         this.project = project;
         projectName = CollabClient.getNameForResource(project);
     }
