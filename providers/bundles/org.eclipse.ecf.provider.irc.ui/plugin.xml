@@ -11,18 +11,10 @@
    </extension>
 
    <extension
-         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
-      <target
-            id="org.eclipse.ui.DefaultTextEditor"
-            name="%TextEditorHyperlinkTarget">
-      </target>
-   </extension>
-   
-   <extension
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
       <hyperlinkDetector
             activate="true"
-            class="org.eclipse.ecf.internal.irc.hyperlink.IRCHyperlinkDetector"
+            class="org.eclipse.ecf.internal.irc.ui.hyperlink.IRCHyperlinkDetector"
             id="org.eclipse.ecf.internal.irc.hyperlink.IRCHyperlinkDetector"
             name="%IRCHyperlinkDetector"
             targetId="org.eclipse.ui.DefaultTextEditor">
