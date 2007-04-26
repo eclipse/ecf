@@ -22,13 +22,13 @@ import org.eclipse.ecf.core.security.IConnectContext;
  * IContainer instances are used by clients to define a context for
  * communications. <br>
  * <br>
- * The typical lifecycle of an ECF communications container is:
+ * The typical life cycle of an ECF communications container is:
  * <ol>
  * <li>Create an IContainer instance via a {@link ContainerFactory}</li>
  * <li><b>Optional</b>: Setup client-specific protocol adapters for
  * communicating via specific protocols</li>
  * <li>Connect the container to a remote process or group</li>
- * <li>Engage in communication via protocol adapaters</li>
+ * <li>Engage in communication via protocol adapters</li>
  * <li>Disconnect</li>
  * </ol>
  * For example, to create and connect an ECF "generic client":
@@ -39,8 +39,8 @@ import org.eclipse.ecf.core.security.IConnectContext;
  * 		&quot;ecf.generic.client&quot;);
  * 
  * // Get presence protocol adapter
- * IPresenceContainer presence = (IPresenceContainer) container
- * 		.getAdapter(IPresenceContainer.class);
+ * IPresenceContainerAdapter presence = (IPresenceContainerAdapter) container
+ * 		.getAdapter(IPresenceContainerAdapter.class);
  * // ... setup presence listeners and local input here using presence
  * 
  * // Connect
