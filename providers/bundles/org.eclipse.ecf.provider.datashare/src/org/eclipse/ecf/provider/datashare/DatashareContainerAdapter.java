@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -60,7 +61,8 @@ public class DatashareContainerAdapter implements IChannelContainerAdapter {
 					DatashareContainerAdapter.class,
 					"DatashareContainerAdapter.initialize", e);
 			Activator
-					.getDefault().log(
+					.getDefault()
+					.log(
 							new Status(
 									IStatus.ERROR,
 									Activator.PLUGIN_ID,
@@ -123,7 +125,9 @@ public class DatashareContainerAdapter implements IChannelContainerAdapter {
 	}
 
 	public Object getAdapter(Class adapter) {
-		// TODO Auto-generated method stub
-		return null;
+		if (adapter != null && adapter.equals(IContainer.class))
+			return container;
+		else
+			return null;
 	}
 }
