@@ -16,6 +16,7 @@ import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.provider.generic.GenericContainerInstantiator;
+import org.eclipse.ecf.provider.xmpp.XMPPContainer;
 
 public class XMPPContainerInstantiator extends GenericContainerInstantiator {
 	/*

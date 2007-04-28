@@ -47,6 +47,7 @@ import org.eclipse.ecf.provider.generic.SOConfig;
 import org.eclipse.ecf.provider.generic.SOContainerConfig;
 import org.eclipse.ecf.provider.generic.SOContext;
 import org.eclipse.ecf.provider.generic.SOWrapper;
+import org.eclipse.ecf.provider.xmpp.XMPPContainer;
 import org.eclipse.osgi.util.NLS;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -125,7 +126,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 		return true;
 	}
 
-	protected void handleContainerMessage(ContainerMessage mess)
+	public void handleContainerMessage(ContainerMessage mess)
 			throws IOException {
 		if (mess == null) {
 			debug("got null container message...ignoring"); //$NON-NLS-1$

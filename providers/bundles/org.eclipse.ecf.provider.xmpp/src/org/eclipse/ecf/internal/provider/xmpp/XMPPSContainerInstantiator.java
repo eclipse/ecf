@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.provider.xmpp;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.provider.xmpp.XMPPSContainer;
 
 public class XMPPSContainerInstantiator extends XMPPContainerInstantiator {
 	public XMPPSContainerInstantiator() {

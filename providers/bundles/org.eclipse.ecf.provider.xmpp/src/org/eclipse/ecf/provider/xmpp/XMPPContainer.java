@@ -6,7 +6,7 @@
  *
  * Contributors: Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.internal.provider.xmpp;
+package org.eclipse.ecf.provider.xmpp;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -30,6 +30,12 @@ import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPChatRoomContainer;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPChatRoomManager;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerAccountManager;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerContext;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerPresenceHelper;
+import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
@@ -54,6 +60,7 @@ import org.eclipse.ecf.provider.generic.SOContainerConfig;
 import org.eclipse.ecf.provider.generic.SOContext;
 import org.eclipse.ecf.provider.generic.SOWrapper;
 import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
@@ -440,10 +447,16 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceContain
 		}
 	}
 
-	protected ECFConnection getECFConnection() {
+	public ECFConnection getECFConnection() {
 		return (ECFConnection) super.getConnection();
 	}
 
+	public XMPPConnection getXMPPConnection() {
+		ECFConnection conn = getECFConnection();
+		if (conn == null) return null;
+		else return conn.getXMPPConnection();
+	}
+	
 	// utility methods
 
 	protected void trace(String msg) {

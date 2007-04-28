@@ -97,7 +97,7 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 		}
 	}
 
-	protected void setConnection(Namespace connectNamespace, ID connectedID,
+	public void setConnection(Namespace connectNamespace, ID connectedID,
 			ECFConnection connection) {
 		this.connectNamespace = connectNamespace;
 		this.connectedID = connectedID;
@@ -232,7 +232,7 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 		}
 	}
 
-	protected IChatRoomContainer findReceiverChatRoom(ID toID) {
+	public IChatRoomContainer findReceiverChatRoom(ID toID) {
 		if (toID == null)
 			return null;
 		XMPPRoomID roomID = null;

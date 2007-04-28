@@ -43,7 +43,7 @@ public class XMPPContainerAccountManager implements IAccountManager {
 		accountManager = null;
 	}
 
-	protected void setConnection(XMPPConnection connection) {
+	public void setConnection(XMPPConnection connection) {
 		this.accountManager = (connection == null) ? null : new AccountManager(
 				connection);
 	}
