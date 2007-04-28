@@ -1303,6 +1303,11 @@ public class ChatRoomManagerView extends ViewPart implements
 		if (!text.isNoCRLF()) {
 			st.append("\n"); //$NON-NLS-1$
 		}
+		
+		String t = st.getText();
+		if (t == null)
+			return true;
+		st.setSelection(t.length());
 
 		return true;
 	}
