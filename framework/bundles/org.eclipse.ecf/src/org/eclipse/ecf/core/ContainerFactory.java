@@ -339,4 +339,11 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		}
 		return null;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerManager#hasContainer(org.eclipse.ecf.core.identity.ID)
+	 */
+	public boolean hasContainer(ID containerID) {
+		return containers.containsKey(containerID);
+	}
 }
