@@ -1,6 +1,7 @@
 package org.eclipse.ecf.internal.tests;
 
 import org.eclipse.ecf.core.IContainerFactory;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.IIDFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -23,6 +24,8 @@ public class Activator implements BundleActivator {
 	private static ServiceTracker containerFactoryServiceTracker;
 	private static IContainerFactory containerFactory;
 	
+	private static ServiceTracker containerManagerServiceTracker;
+
 	/**
 	 * The constructor
 	 */
@@ -34,13 +37,15 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
+		plugin = this;
 		idFactoryServiceTracker = new ServiceTracker(context,IIDFactory.class.getName(), null);
 		idFactoryServiceTracker.open();
 		idFactory = (IIDFactory) idFactoryServiceTracker.getService();
 		containerFactoryServiceTracker = new ServiceTracker(context,IContainerFactory.class.getName(),null);
 		containerFactoryServiceTracker.open();
 		containerFactory = (IContainerFactory) containerFactoryServiceTracker.getService();
-		plugin = this;
+		containerManagerServiceTracker = new ServiceTracker(context,IContainerManager.class.getName(),null);
+		containerManagerServiceTracker.open();
 	}
 
 	/*
@@ -55,6 +60,10 @@ public class Activator implements BundleActivator {
 		if (containerFactoryServiceTracker != null) {
 			containerFactoryServiceTracker.close();
 			containerFactoryServiceTracker = null;
+		}
+		if (containerManagerServiceTracker != null) {
+			containerManagerServiceTracker.close();
+			containerManagerServiceTracker = null;
 		}
 		plugin = null;
 		idFactory = null;
@@ -75,5 +84,12 @@ public class Activator implements BundleActivator {
 	
 	public IContainerFactory getContainerFactory() {
 		return containerFactory;
+	}
+
+	/**
+	 * @return
+	 */
+	public IContainerManager getContainerManager() {
+		return (IContainerManager) containerManagerServiceTracker.getService();
 	}
 }
