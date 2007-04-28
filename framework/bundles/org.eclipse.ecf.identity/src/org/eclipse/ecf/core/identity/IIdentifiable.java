@@ -15,9 +15,9 @@ package org.eclipse.ecf.core.identity;
 public interface IIdentifiable {
 	/**
 	 * Return the ID for this 'identifiable' object. The returned ID should be
-	 * unique within its namespace.  May return null.
+	 * unique within its namespace.  May return <code>null</code>.
 	 * 
-	 * @return the ID for this identifiable object.  May return null.
+	 * @return the ID for this identifiable object.  May return <code>null</code>.
 	 */
 	public ID getID();
 }
