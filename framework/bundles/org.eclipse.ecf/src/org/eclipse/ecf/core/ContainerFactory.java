@@ -11,13 +11,15 @@
 package org.eclipse.ecf.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.ECFDebugOptions;
@@ -44,17 +46,15 @@ import org.eclipse.ecf.internal.core.Messages;
  * @see IContainer
  * @see IContainerFactory
  */
-public class ContainerFactory implements IContainerFactory {
+public class ContainerFactory implements IContainerFactory, IContainerManager {
 
 	public static final String BASE_CONTAINER_NAME = Messages.ContainerFactory_Base_Container_Name;
 	
-	private static final int DISPOSE_ERROR_CODE = 10001;
-
 	private static Hashtable containerdescriptions = new Hashtable();
 
 	protected static IContainerFactory instance = null;
 
-	protected static Map containers = new WeakHashMap();
+	protected static Map containers = Collections.synchronizedMap(new HashMap());
 
 	static {
 		instance = new ContainerFactory();
@@ -76,31 +76,33 @@ public class ContainerFactory implements IContainerFactory {
 	}
 
 	protected void addContainer(IContainer container) {
-		containers.put(container, null);
+		containers.put(container.getID(), container);
 	}
 
 	protected void removeContainer(IContainer container) {
-		containers.remove(container);
+		containers.remove(container.getID());
 	}
 
 	protected void doDispose() {
-		for (Iterator i = containers.keySet().iterator(); i.hasNext();) {
-			IContainer c = (IContainer) i.next();
-			if (c != null) {
-				try {
-					c.dispose();
-				} catch (Exception e) {
-					// Log exception
-					ECFPlugin.getDefault().log(new Status(Status.ERROR, ECFPlugin
-							.getDefault().getBundle().getSymbolicName(),
-							DISPOSE_ERROR_CODE, "container dispose error", e)); //$NON-NLS-1$
-					Trace.catching(ECFPlugin.PLUGIN_ID,
-							ECFDebugOptions.EXCEPTIONS_CATCHING,
-							ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
+		synchronized (containers) {
+			for (Iterator i = containers.keySet().iterator(); i.hasNext();) {
+				IContainer c = (IContainer) i.next();
+				if (c != null) {
+					try {
+						c.dispose();
+					} catch (Exception e) {
+						// Log exception
+						ECFPlugin.getDefault().log(new Status(Status.ERROR, ECFPlugin
+								.getDefault().getBundle().getSymbolicName(),
+								Status.ERROR, "container dispose error", e)); //$NON-NLS-1$
+						Trace.catching(ECFPlugin.PLUGIN_ID,
+								ECFDebugOptions.EXCEPTIONS_CATCHING,
+								ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
+					}
 				}
 			}
+			containers.clear();
 		}
-		containers.clear();
 	}
 
 	/*
@@ -235,6 +237,7 @@ public class ContainerFactory implements IContainerFactory {
 		if (container == null)
 			throwContainerCreateException("Instantiator returned null for '" //$NON-NLS-1$
 					+ cd.getName() + "'", null, method); //$NON-NLS-1$
+		if (container.getID() == null) throwContainerCreateException("Container ID cannot be null",null,method);
 		// Add to containers map
 		addContainer(container);
 		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
@@ -313,5 +316,27 @@ public class ContainerFactory implements IContainerFactory {
 		}
 		return (ContainerTypeDescription[]) result
 				.toArray(new ContainerTypeDescription[] {});
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerManager#getAllContainers()
+	 */
+	public IContainer[] getAllContainers() {
+		List containersList = new ArrayList(containers.values());
+		return (IContainer[]) containersList.toArray(new IContainer[] {});
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerManager#getContainer(org.eclipse.ecf.core.identity.ID)
+	 */
+	public IContainer getContainer(ID containerID) {
+		if (containerID == null) return null;
+		synchronized (containers) {
+			for(Iterator i=containers.keySet().iterator(); i.hasNext(); ) {
+				IContainer container = (IContainer) containers.get(containerID);
+				if (container != null) return container;
+			}
+		}
+		return null;
 	}
 }

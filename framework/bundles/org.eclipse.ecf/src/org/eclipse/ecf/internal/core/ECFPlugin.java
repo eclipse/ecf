@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainerFactory;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
@@ -82,6 +83,8 @@ public class ECFPlugin implements BundleActivator {
 	private IRegistryChangeListener registryManager = null;
 
 	private ServiceRegistration containerFactoryServiceRegistration;
+
+	private ServiceRegistration containerManagerServiceRegistration;
 
 	private ServiceTracker logServiceTracker = null;
 
@@ -380,6 +383,7 @@ public class ECFPlugin implements BundleActivator {
 		containerFactoryServiceRegistration = context.registerService(
 				IContainerFactory.class.getName(), ContainerFactory
 						.getDefault(), null);
+		containerManagerServiceRegistration = context.registerService(IContainerManager.class.getName(), ContainerFactory.getDefault(), null);
 	}
 
 	protected class ECFRegistryManager implements IRegistryChangeListener {
@@ -422,6 +426,10 @@ public class ECFPlugin implements BundleActivator {
 		if (containerFactoryServiceRegistration != null) {
 			containerFactoryServiceRegistration.unregister();
 			containerFactoryServiceRegistration = null;
+		}
+		if (containerManagerServiceRegistration != null) {
+			containerManagerServiceRegistration.unregister();
+			containerManagerServiceRegistration = null;
 		}
 		if (adapterManagerTracker != null) {
 			adapterManagerTracker.close();
