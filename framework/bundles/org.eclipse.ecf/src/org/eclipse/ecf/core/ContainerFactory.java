@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
@@ -75,30 +76,34 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		return instance;
 	}
 
-	protected void addContainer(IContainer container) {
-		containers.put(container.getID(), container);
+	public IContainer addContainer(IContainer container) {
+		Assert.isNotNull(container);
+		ID containerID = container.getID();
+		if (containerID == null) throw new NullPointerException(Messages.ContainerFactory_EXCEPTION_CONTAINER_ID_NOT_NULL);
+		return (IContainer) containers.put(containerID, container);
 	}
 
-	protected void removeContainer(IContainer container) {
-		containers.remove(container.getID());
+	public IContainer removeContainer(IContainer container) {
+		Assert.isNotNull(container);
+		ID containerID = container.getID();
+		if (containerID == null) return null;
+		return (IContainer) containers.remove(container.getID());
 	}
 
 	protected void doDispose() {
 		synchronized (containers) {
 			for (Iterator i = containers.keySet().iterator(); i.hasNext();) {
-				IContainer c = (IContainer) i.next();
-				if (c != null) {
-					try {
-						c.dispose();
-					} catch (Exception e) {
-						// Log exception
-						ECFPlugin.getDefault().log(new Status(Status.ERROR, ECFPlugin
-								.getDefault().getBundle().getSymbolicName(),
-								Status.ERROR, "container dispose error", e)); //$NON-NLS-1$
-						Trace.catching(ECFPlugin.PLUGIN_ID,
-								ECFDebugOptions.EXCEPTIONS_CATCHING,
-								ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
-					}
+				IContainer c = (IContainer) containers.get((ID) i.next());
+				try {
+					c.dispose();
+				} catch (Throwable e) {
+					// Log exception
+					ECFPlugin.getDefault().log(new Status(Status.ERROR, ECFPlugin
+							.getDefault().getBundle().getSymbolicName(),
+							Status.ERROR, "container dispose error", e)); //$NON-NLS-1$
+					Trace.catching(ECFPlugin.PLUGIN_ID,
+							ECFDebugOptions.EXCEPTIONS_CATCHING,
+							ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
 				}
 			}
 			containers.clear();
@@ -237,9 +242,9 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		if (container == null)
 			throwContainerCreateException("Instantiator returned null for '" //$NON-NLS-1$
 					+ cd.getName() + "'", null, method); //$NON-NLS-1$
-		if (container.getID() == null) throwContainerCreateException("Container ID cannot be null",null,method);
-		// Add to containers map
-		addContainer(container);
+		// Add to containers map if container.getID() provides a valid value.
+		ID containerID = container.getID();
+		if (containerID != null) addContainer(container);
 		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
 				ContainerFactory.class, method, container);
 		return container;

@@ -53,4 +53,25 @@ public interface IContainerManager {
 	 */
 	public boolean hasContainer(ID containerID);
 
+	/**
+	 * Add given container to manager.
+	 * 
+	 * @param container
+	 *            to add. Must not be <code>null</code>. Also
+	 *            <code>container.getID()</code> must return a non-<code>null</code>
+	 *            value. If <code>container.getID()</code> returns
+	 *            <code>null</code> then this method will throw a
+	 *            {@link NullPointerException}.
+	 * @return IContainer previously added (with same ID).
+	 */
+	public IContainer addContainer(IContainer container);
+
+	/**
+	 * Remove given container from manager.
+	 * @param container the container to remove.  Must not be <code>null</code>. 
+	 * 
+	 * @return IContainer instance removed.  If no instance with same ID is found
+	 * then <code>null</code> will be returned.
+	 */
+	public IContainer removeContainer(IContainer container);
 }
