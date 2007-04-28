@@ -143,4 +143,13 @@ public class ContainerManagerServiceTest extends ContainerFactoryServiceAbstract
 			assertTrue(container.getID().equals(c[i].getID()));
 		}
 	}
+	
+	public void testHasContainerN() throws Exception {
+		IContainer[] c = createContainers(10);
+		assertNotNull(c);
+		for(int i=0; i < 10; i++) {
+			assertTrue(containerManager.hasContainer(c[i].getID()));
+		}
+	}
+
 }
