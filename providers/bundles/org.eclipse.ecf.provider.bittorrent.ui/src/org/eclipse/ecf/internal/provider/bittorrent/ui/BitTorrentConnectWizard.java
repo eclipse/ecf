@@ -45,11 +45,11 @@ public class BitTorrentConnectWizard extends Wizard implements IConnectWizard {
 	
 	private String torrentFile;
 
-	BitTorrentConnectWizard() {
+	public BitTorrentConnectWizard() {
 		super();
 	}
 	
-	BitTorrentConnectWizard(String torrentFile) {
+	public BitTorrentConnectWizard(String torrentFile) {
 		this();
 		this.torrentFile = torrentFile;
 	}
