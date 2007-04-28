@@ -74,6 +74,9 @@ final class IRCConnectWizardPage extends WizardPage {
 		if (uriString != null) {
 			connectText.setText(uriString);
 			passwordText.setFocus();
+		} else {
+			connectText.setText("irc://");
+			connectText.setSelection(6);
 		}
 
 		setControl(parent);
