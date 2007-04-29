@@ -55,7 +55,7 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 	public void createFieldEditors() {
 		addField(new StringFieldEditor(CONTAINER_TYPE, "Container Type:", this.getFieldEditorParent()));
 		addField(new StringFieldEditor(TARGET_SERVER, "ECF Server URL:", this.getFieldEditorParent()));
-		addField(new StringFieldEditor(CHANNEL_ID, "Channel (Group) Name:", this.getFieldEditorParent()));
+		addField(new StringFieldEditor(CHANNEL_ID, "ChatRoomTab (Group) Name:", this.getFieldEditorParent()));
 		addField(new StringFieldEditor(LOCAL_NAME, "Your Name:", this.getFieldEditorParent()));
 		
 	}
