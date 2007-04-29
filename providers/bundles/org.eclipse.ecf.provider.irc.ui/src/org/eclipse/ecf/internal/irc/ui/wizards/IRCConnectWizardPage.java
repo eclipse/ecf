@@ -39,7 +39,7 @@ final class IRCConnectWizardPage extends WizardPage {
 		this();
 		uriString = uri;
 	}
-
+	
 	public void createControl(Composite parent) {
 		parent.setLayout(new GridLayout());
 		GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -60,7 +60,7 @@ final class IRCConnectWizardPage extends WizardPage {
 			}
 		});
 		label = new Label(parent, SWT.RIGHT);
-		label.setText("irc://<user>@<ircserver>[/<#channel>]");
+		label.setText("irc://[<user>@]<ircserver[:port]>[/<channel>,<channel2>,...]");
 		label.setLayoutData(endData);
 
 		label = new Label(parent, SWT.LEFT);

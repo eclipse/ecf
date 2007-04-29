@@ -11,22 +11,25 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.irc.ui.wizards;
 
+import java.net.URI;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.IExceptionHandler;
 import org.eclipse.ecf.internal.irc.ui.Activator;
+import org.eclipse.ecf.internal.irc.ui.IRCUI;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
-import org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerUI;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
 import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
@@ -44,7 +47,7 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 	private IConnectContext connectContext;
 
 	private String uriString = null;
-	
+
 	private IExceptionHandler exceptionHandler = new IExceptionHandler() {
 		public IStatus handleException(final Throwable exception) {
 			if (exception != null) {
@@ -64,11 +67,12 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 	public IRCConnectWizard() {
 		super();
 	}
-	
+
 	public IRCConnectWizard(String uri) {
 		super();
 		uriString = uri;
 	}
+
 	public void addPages() {
 		page = new IRCConnectWizardPage(uriString);
 		addPage(page);
@@ -84,32 +88,25 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 				.createPasswordConnectContext(page.getPassword());
 
 		try {
+			new URI(page.getConnectID());
 			targetID = IDFactory.getDefault().createID(
 					container.getConnectNamespace(), page.getConnectID());
-		} catch (IDCreateException e) {
-			// TODO: This needs to be handled properly
-			e.printStackTrace();
+		} catch (Exception e) {
+			MessageDialog.openError(shell, "Connect Error", NLS.bind(
+					"Invalid connect ID: {0}", page.getConnectID()));
 			return false;
 		}
 
 		IChatRoomManager manager = (IChatRoomManager) this.container
 				.getAdapter(IChatRoomManager.class);
 
-		if (manager == null) {
-			// XXX
-			// Serious error...log, show dialog, freak out, etc
-			return false;
-		} else {
-			ChatRoomManagerUI ui = new ChatRoomManagerUI(this.container,
-					manager, exceptionHandler);
-			ui.showForTarget(targetID);
-			// If it's not already connected, then we connect this new container
-			if (!ui.isContainerConnected()) {
-				new AsynchContainerConnectAction(this.container, this.targetID,
-						this.connectContext, exceptionHandler).run(null);
+		IRCUI ui = new IRCUI(this.container, manager, exceptionHandler);
+		ui.showForTarget(targetID);
+		// If it's not already connected, then we connect this new container
+		if (!ui.isContainerConnected()) 
+			new AsynchContainerConnectAction(this.container, this.targetID,
+					this.connectContext, exceptionHandler).run(null);
 
-			}
-		}
 
 		return true;
 	}
