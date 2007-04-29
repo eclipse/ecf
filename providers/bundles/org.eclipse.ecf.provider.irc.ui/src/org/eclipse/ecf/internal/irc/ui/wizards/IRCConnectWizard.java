@@ -93,12 +93,8 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 
 		try {
 			URI uri = new URI(page.getConnectID());
-			String auth = uri.getAuthority();
-			if (auth.indexOf("@") == -1) {
-				auth = guestUser + "@" + auth;
-			}
 			targetID = IDFactory.getDefault().createID(
-					container.getConnectNamespace(), auth);
+					container.getConnectNamespace(), page.getConnectID());
 		} catch (Exception e) {
 			MessageDialog.openError(shell, "Connect Error", NLS.bind(
 					"Invalid connect ID: {0}", page.getConnectID()));
