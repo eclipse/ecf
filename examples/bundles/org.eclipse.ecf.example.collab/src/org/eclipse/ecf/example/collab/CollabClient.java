@@ -24,11 +24,9 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
-import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 
 public class CollabClient {
 	public static final String WORKSPACE_NAME = "<workspace>";
@@ -38,8 +36,6 @@ public class CollabClient {
 	static Hashtable clients = new Hashtable();
 
 	static CollabClient collabClient = new CollabClient();
-
-	IRCChatRoomManagerUI ircchatRoomManagerUI = null;
 
 	/**
 	 * Create a new container instance, and connect to a remote server or group.
@@ -66,11 +62,8 @@ public class CollabClient {
 		final IContainer newClient = ContainerFactory.getDefault()
 				.createContainer(containerType);
 
-		// Get the target namespace, so we can create a target ID of appropriate
-		// type
-		Namespace targetNamespace = newClient.getConnectNamespace();
 		// Create the targetID instance
-		ID targetID = IDFactory.getDefault().createID(targetNamespace, uri);
+		ID targetID = IDFactory.getDefault().createID(newClient.getConnectNamespace(), uri);
 
 		// Setup username
 		String username = setupUsername(targetID, nickname);
@@ -78,26 +71,14 @@ public class CollabClient {
 		final ClientEntry newClientEntry = new ClientEntry(containerType,
 				newClient);
 
-		IChatRoomManager man = (IChatRoomManager) newClient
-				.getAdapter(IChatRoomManager.class);
-		if (man != null) {
-			ircchatRoomManagerUI = new IRCChatRoomManagerUI(man);
-			// If it's already connected then return and skip further connect
-			if (ircchatRoomManagerUI.isAlreadyConnectedToTarget(newClient, targetID, username))
-				return;
-		} else {
-				// Setup sharedobject container if the new instance supports
-				// this
-				ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient
-						.getAdapter(ISharedObjectContainer.class);
-				if (sharedObjectContainer != null) {
-					SharedObjectContainerUI socui = new SharedObjectContainerUI(
-							this, sharedObjectContainer);
-					socui.setup(sharedObjectContainer, newClientEntry,
-							resource, username);
-				}
-		}
-
+		// Setup sharedobject container if the new instance supports
+		// this
+		ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient
+				.getAdapter(ISharedObjectContainer.class);
+		SharedObjectContainerUI socui = new SharedObjectContainerUI(
+				this, sharedObjectContainer);
+		socui.setup(sharedObjectContainer, newClientEntry,
+				resource, username);
 		// Now connect
 		try {
 			newClient.connect(targetID,
