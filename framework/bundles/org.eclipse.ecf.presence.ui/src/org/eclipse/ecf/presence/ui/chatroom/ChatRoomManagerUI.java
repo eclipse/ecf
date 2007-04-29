@@ -12,6 +12,7 @@ package org.eclipse.ecf.presence.ui.chatroom;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
@@ -45,21 +46,22 @@ import org.eclipse.ui.PlatformUI;
  * Chat room manager user interface.
  */
 public class ChatRoomManagerUI {
-	private static final String CHAT_ROOM_MANAGER_VIEWID = "org.eclipse.ecf.ui.views.ChatRoomManagerView"; //$NON-NLS-1$
+	
+	public static final String ROOM_DELIMITER = "&";
+	
+	private IContainer container;
 
-	IContainer container;
+	private IChatRoomManager manager;
 
-	IChatRoomManager manager;
+	private boolean isContainerConnected = false;
 
-	boolean isContainerConnected = false;
+	private boolean viewAlreadyActive = false;
 
-	boolean viewAlreadyActive = false;
+	private IExceptionHandler exceptionHandler = null;
 
-	IExceptionHandler exceptionHandler = null;
+	private ChatRoomManagerView chatroomview = null;
 
-	ChatRoomManagerView chatroomview = null;
-
-	ID targetID = null;
+	protected ID targetID = null;
 
 	public ChatRoomManagerUI(IContainer container, IChatRoomManager manager) {
 		this(container, manager, null);
@@ -88,7 +90,7 @@ public class ChatRoomManagerUI {
 			public void chatRoomViewClosing(String secondaryID) {
 				container.dispose();
 			}
-		}, chatRoom, manager, targetID, chatRoom.getChatRoomMessageSender());
+		}, chatRoom, manager, targetID);
 		// Add listener for container, so that if the container is spontaneously
 		// disconnected,
 		// then we will be able to have the UI respond by making itself inactive
@@ -108,9 +110,10 @@ public class ChatRoomManagerUI {
 						} else if (evt instanceof IContainerConnectedEvent) {
 							isContainerConnected = true;
 							chatroomview.setEnabled(true);
-							String channel = getChannelForTarget();
-							if (channel != null && !channel.equals(""))
-								chatroomview.joinRoom(channel);
+							String [] channels = getRoomsForTarget();
+							for (int i=0; i < channels.length; i++) {
+								chatroomview.joinRoom(channels[i]);
+							}
 						}
 					}
 				});
@@ -153,10 +156,11 @@ public class ChatRoomManagerUI {
 						setupNewView();
 					} else if (isContainerConnected) {
 						// If we are already active, and connected, then just
-						// join room
-						String channel = getChannelForTarget();
-						if (channel != null && !channel.equals(""))
-							chatroomview.joinRoom(channel);
+						// join room s
+						String [] channels = getRoomsForTarget();
+						for (int i=0; i < channels.length; i++) {
+							chatroomview.joinRoom(channels[i]);
+						}
 						// We're already connected, so all we do is return
 						return;
 					}
@@ -205,13 +209,13 @@ public class ChatRoomManagerUI {
 		IWorkbenchPage wp = ww.getActivePage();
 		ChatRoomManagerView view = null;
 		if (secondaryViewID == null)
-			view = (ChatRoomManagerView) wp.showView(CHAT_ROOM_MANAGER_VIEWID);
+			view = (ChatRoomManagerView) wp.showView(org.eclipse.ecf.ui.views.ChatRoomManagerView.VIEW_ID);
 		else {
 			IViewReference viewRef = wp.findViewReference(
-					CHAT_ROOM_MANAGER_VIEWID, secondaryViewID);
+					org.eclipse.ecf.ui.views.ChatRoomManagerView.VIEW_ID, secondaryViewID);
 			if (viewRef == null)
 				view = (ChatRoomManagerView) wp.showView(
-						CHAT_ROOM_MANAGER_VIEWID, secondaryViewID,
+						org.eclipse.ecf.ui.views.ChatRoomManagerView.VIEW_ID, secondaryViewID,
 						IWorkbenchPage.VIEW_ACTIVATE);
 			else {
 				// Old view with same secondaryViewID found, so use/restore it
@@ -219,27 +223,31 @@ public class ChatRoomManagerUI {
 				view = (ChatRoomManagerView) viewRef.getView(true);
 			}
 		}
-		if (view.isEnabled())
-			viewAlreadyActive = true;
-		else
-			viewAlreadyActive = false;
+		viewAlreadyActive = view.isEnabled();
 		return view;
 	}
 
-	protected String getChannelForTarget() {
-		String initialRoom = null;
+	protected String modifyRoomNameForTarget(String roomName) {
+		return roomName;
+	}
+	
+	protected String[] getRoomsForTarget() {
+		String initialRooms = null;
 		try {
 			URI targetURI = new URI(targetID.getName());
-			initialRoom = targetURI.getRawFragment();
+			initialRooms = targetURI.getPath();
 		} catch (URISyntaxException e) {
 		}
-		if (initialRoom == null || initialRoom.equals("")) //$NON-NLS-1$
-			return null;
-		while (initialRoom.charAt(0) == '/')
-			initialRoom = initialRoom.substring(1);
-		if (initialRoom.charAt(0) != '#')
-			initialRoom = "#" + initialRoom; //$NON-NLS-1$
-		return initialRoom;
+		if (initialRooms == null || initialRooms.equals("")) //$NON-NLS-1$
+			return new String[0];
+		while (initialRooms.charAt(0) == '/')
+			initialRooms = initialRooms.substring(1);
+		
+		StringTokenizer st = new StringTokenizer(initialRooms,ROOM_DELIMITER);
+		int tokenCount = st.countTokens();
+		String [] roomsResult = new String[tokenCount];
+		for(int i=0; i < tokenCount; i++) roomsResult[i] = modifyRoomNameForTarget(st.nextToken());
+		return roomsResult;
 	}
 
 }
