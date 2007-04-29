@@ -47,7 +47,7 @@ import org.eclipse.ui.PlatformUI;
  */
 public class ChatRoomManagerUI {
 	
-	public static final String ROOM_DELIMITER = "&";
+	public static final String ROOM_DELIMITER = ",";
 	
 	private IContainer container;
 
