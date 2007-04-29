@@ -36,6 +36,8 @@ import org.eclipse.ui.IWorkbench;
 
 public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 
+	public static final String DEFAULT_GUEST_USER = "guest";
+	
 	private Shell shell;
 
 	private IRCConnectWizardPage page;
@@ -48,6 +50,8 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 
 	private String uriString = null;
 
+	private String guestUser = DEFAULT_GUEST_USER;
+	
 	private IExceptionHandler exceptionHandler = new IExceptionHandler() {
 		public IStatus handleException(final Throwable exception) {
 			if (exception != null) {
@@ -88,9 +92,13 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 				.createPasswordConnectContext(page.getPassword());
 
 		try {
-			new URI(page.getConnectID());
+			URI uri = new URI(page.getConnectID());
+			String auth = uri.getAuthority();
+			if (auth.indexOf("@") == -1) {
+				auth = guestUser + "@" + auth;
+			}
 			targetID = IDFactory.getDefault().createID(
-					container.getConnectNamespace(), page.getConnectID());
+					container.getConnectNamespace(), auth);
 		} catch (Exception e) {
 			MessageDialog.openError(shell, "Connect Error", NLS.bind(
 					"Invalid connect ID: {0}", page.getConnectID()));
