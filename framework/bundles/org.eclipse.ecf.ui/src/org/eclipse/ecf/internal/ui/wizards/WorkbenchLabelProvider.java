@@ -36,7 +36,7 @@ import org.eclipse.ui.model.IWorkbenchAdapter2;
 /**
  * Provides basic labels for adaptable objects that have the
  * <code>IWorkbenchAdapter</code> adapter associated with them. All dispensed
- * images are cached until the label provider is explicitly disposed. This class
+ * images are cached until the label provider is explicitly rootDisposed. This class
  * provides a facility for subclasses to define annotations on the labels and
  * icons of adaptable objects.
  */
