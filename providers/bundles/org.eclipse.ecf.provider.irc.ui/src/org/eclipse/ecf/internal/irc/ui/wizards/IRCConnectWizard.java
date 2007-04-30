@@ -11,12 +11,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.irc.ui.wizards;
 
-import java.net.URI;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
@@ -48,10 +47,8 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 
 	private IConnectContext connectContext;
 
-	private String uriString = null;
+	private String authorityAndPath = null;
 
-	private String guestUser = DEFAULT_GUEST_USER;
-	
 	private IExceptionHandler exceptionHandler = new IExceptionHandler() {
 		public IStatus handleException(final Throwable exception) {
 			if (exception != null) {
@@ -72,13 +69,13 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 		super();
 	}
 
-	public IRCConnectWizard(String uri) {
+	public IRCConnectWizard(String authorityAndPart) {
 		super();
-		uriString = uri;
+		this.authorityAndPath = authorityAndPart;
 	}
 
 	public void addPages() {
-		page = new IRCConnectWizardPage(uriString);
+		page = new IRCConnectWizardPage(authorityAndPath);
 		addPage(page);
 	}
 
@@ -91,13 +88,13 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 		connectContext = ConnectContextFactory
 				.createPasswordConnectContext(page.getPassword());
 
+		String connectID = "irc://"+page.getConnectID();
 		try {
-			URI uri = new URI(page.getConnectID());
 			targetID = IDFactory.getDefault().createID(
-					container.getConnectNamespace(), page.getConnectID());
-		} catch (Exception e) {
+					container.getConnectNamespace(), connectID);
+		} catch (IDCreateException e) {
 			MessageDialog.openError(shell, "Connect Error", NLS.bind(
-					"Invalid connect ID: {0}", page.getConnectID()));
+					"Invalid connect ID: {0}", connectID));
 			return false;
 		}
 

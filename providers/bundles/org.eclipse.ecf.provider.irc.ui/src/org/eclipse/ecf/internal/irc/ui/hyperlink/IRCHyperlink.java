@@ -42,7 +42,11 @@ public class IRCHyperlink extends AbstractURLHyperlink {
 	 * @see org.eclipse.ecf.ui.hyperlink.AbstractURLHyperlink#createConnectWizard()
 	 */
 	protected IConnectWizard createConnectWizard() {
-		return new IRCConnectWizard(getURI().toString());
+		URI uri = getURI();
+		String authAndPath = uri.getSchemeSpecificPart();
+		while (authAndPath.startsWith("/")) authAndPath = authAndPath.substring(1);
+
+		return new IRCConnectWizard(authAndPath);
 	}
 
 	/* (non-Javadoc)

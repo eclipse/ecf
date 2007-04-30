@@ -26,18 +26,18 @@ final class IRCConnectWizardPage extends WizardPage {
 
 	private Text passwordText;
 
-	private String uriString;
+	private String authorityAndPath;
 	
 	IRCConnectWizardPage() {
 		super("");
 		setTitle("IRC Connection Wizard");
-		setDescription("Specify a nickname and IRC server to connect to.");
+		setDescription("Specify a user and IRC server to connect to.");
 		setPageComplete(false);
 	}
 	
-	IRCConnectWizardPage(String uri) {
+	IRCConnectWizardPage(String authorityAndPath) {
 		this();
-		uriString = uri;
+		this.authorityAndPath = authorityAndPath;
 	}
 	
 	public void createControl(Composite parent) {
@@ -52,15 +52,18 @@ final class IRCConnectWizardPage extends WizardPage {
 		connectText.setLayoutData(fillData);
 		connectText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				if (!connectText.getText().equals("")) { //$NON-NLS-1$
-					updateStatus(null);
+				String text = connectText.getText();
+				if (text.equals("")) { //$NON-NLS-1$
+					updateStatus("A valid connect ID must be specified.");
+				} else if (text.indexOf('@') == -1) {
+					updateStatus("The connect ID is malformed.");
 				} else {
-					updateStatus("A connect ID must be specified.");
+					updateStatus(null);
 				}
 			}
 		});
 		label = new Label(parent, SWT.RIGHT);
-		label.setText("irc://[<user>@]<ircserver[:port]>[/<channel>,<channel2>,...]");
+		label.setText("<user>@<ircserver>[:port][/<channel>,<channel2>,...]");
 		label.setLayoutData(endData);
 
 		label = new Label(parent, SWT.LEFT);
@@ -71,14 +74,11 @@ final class IRCConnectWizardPage extends WizardPage {
 		label.setText("This password is for password-protected IRC servers.");
 		label.setLayoutData(endData);
 
-		if (uriString != null) {
-			connectText.setText(uriString);
+		if (authorityAndPath != null) {
+			connectText.setText(authorityAndPath);
 			passwordText.setFocus();
-		} else {
-			connectText.setText("irc://");
-			connectText.setSelection(6);
-		}
-
+		} 
+		
 		setControl(parent);
 	}
 
