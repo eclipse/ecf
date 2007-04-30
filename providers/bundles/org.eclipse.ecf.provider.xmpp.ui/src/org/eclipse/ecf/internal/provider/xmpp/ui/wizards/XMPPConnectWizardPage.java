@@ -8,8 +8,10 @@
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.internal.provider.xmpp.ui;
+package org.eclipse.ecf.internal.provider.xmpp.ui.wizards;
 
+import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
+import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -19,16 +21,22 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
+public class XMPPConnectWizardPage extends WizardPage {
 
-	XMPPSConnectWizardPage() {
-		super();
-		setTitle(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_TITLE);
-		setDescription(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_DESCRIPTION);
+	Text connectText;
+
+	Text passwordText;
+
+	String usernameAtHost;
+	
+	XMPPConnectWizardPage() {
+		super(""); //$NON-NLS-1$
+		setTitle(Messages.XMPPConnectWizardPage_WIZARD_TITLE);
+		setDescription(Messages.XMPPConnectWizardPage_WIZARD_DESCRIPTION);
 		setPageComplete(false);
 	}
 
-	XMPPSConnectWizardPage(String usernameAtHost) {
+	XMPPConnectWizardPage(String usernameAtHost) {
 		this();
 		this.usernameAtHost = usernameAtHost;
 	}
@@ -47,7 +55,7 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 			public void modifyText(ModifyEvent e) {
 				String text = connectText.getText();
 				if (text.equals("")) { //$NON-NLS-1$
-					updateStatus(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_STATUS);
+					updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS);
 				} else if (text.indexOf('@') == -1) {
 					updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
 				} else {
@@ -57,11 +65,11 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 		});
 
 		label = new Label(parent, SWT.RIGHT);
-		label.setText(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_TEMPLATE);
+		label.setText(Messages.XMPPConnectWizardPage_USERID_TEMPLATE);
 		label.setLayoutData(endData);
 
 		label = new Label(parent, SWT.LEFT);
-		label.setText(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_PASSWORD);
+		label.setText(Messages.XMPPConnectWizardPage_WIZARD_PASSWORD);
 		passwordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD | SWT.BORDER);
 		passwordText.setLayoutData(fillData);
 
@@ -69,8 +77,20 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 			connectText.setText(usernameAtHost);
 			passwordText.setFocus();
 		}
-
 		setControl(parent);
+	}
+
+	String getConnectID() {
+		return connectText.getText();
+	}
+
+	String getPassword() {
+		return passwordText.getText();
+	}
+
+	protected void updateStatus(String message) {
+		setErrorMessage(message);
+		setPageComplete(message == null);
 	}
 
 }

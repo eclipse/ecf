@@ -8,7 +8,7 @@
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.internal.provider.xmpp.ui;
+package org.eclipse.ecf.internal.provider.xmpp.ui.wizards;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,6 +33,7 @@ import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IFileTransferRequestEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
+import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;

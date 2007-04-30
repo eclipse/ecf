@@ -8,7 +8,7 @@
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.internal.provider.xmpp.ui;
+package org.eclipse.ecf.internal.provider.xmpp.ui.wizards;
 
 
 public final class XMPPSConnectWizard extends XMPPConnectWizard {
