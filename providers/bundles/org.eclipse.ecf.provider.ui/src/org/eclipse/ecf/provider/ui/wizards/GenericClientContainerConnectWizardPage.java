@@ -17,11 +17,11 @@ import org.eclipse.ecf.ui.wizards.AbstractConnectWizardPage;
 public class GenericClientContainerConnectWizardPage extends AbstractConnectWizardPage {
 
 	public GenericClientContainerConnectWizardPage() {
-		super();
+		super("GenericClientContainerConnectWizardPage");
 	}
 	
 	public GenericClientContainerConnectWizardPage(URI uri) {
-		super(uri);
+		super("GenericClientContainerConnectWizardPage",uri);
 	}
 	
 	public boolean shouldRequestUsername() {
