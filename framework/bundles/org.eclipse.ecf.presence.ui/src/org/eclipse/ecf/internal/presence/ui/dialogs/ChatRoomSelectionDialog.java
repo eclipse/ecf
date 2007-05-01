@@ -16,7 +16,7 @@ import java.util.List;
 
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
-import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.ui.MultiRosterAccount;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -40,33 +40,33 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 public class ChatRoomSelectionDialog extends TitleAreaDialog {
-	IChatRoomManager[] managers = null;
+	MultiRosterAccount[] accounts = null;
 
 	private Room selectedRoom = null;
 
 	public class Room {
 		IChatRoomInfo info;
 
-		IChatRoomManager manager;
+		MultiRosterAccount account;
 
-		public Room(IChatRoomInfo info, IChatRoomManager man) {
+		public Room(IChatRoomInfo info, MultiRosterAccount man) {
 			this.info = info;
-			this.manager = man;
+			this.account = man;
 		}
 
 		public IChatRoomInfo getRoomInfo() {
 			return info;
 		}
 
-		public IChatRoomManager getManager() {
-			return manager;
+		public MultiRosterAccount getAccount() {
+			return account;
 		}
 	}
 
 	public ChatRoomSelectionDialog(Shell parentShell,
-			IChatRoomManager[] managers) {
+			MultiRosterAccount[] accounts) {
 		super(parentShell);
-		this.managers = managers;
+		this.accounts = accounts;
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -127,12 +127,12 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		viewer.setLabelProvider(new ChatRoomLabelProvider());
 
 		List all = new ArrayList();
-		for (int i = 0; i < managers.length; i++) {
-			IChatRoomInfo[] infos = managers[i].getChatRoomInfos();
+		for (int i = 0; i < accounts.length; i++) {
+			IChatRoomInfo[] infos = accounts[i].getPresenceContainerAdapter().getChatRoomManager().getChatRoomInfos();
 			if (infos != null) {
 				for (int j = 0; j < infos.length; j++) {
-					if (infos[j] != null && managers[i] != null) {
-						all.add(new Room(infos[j], managers[i]));
+					if (infos[j] != null && accounts[i] != null) {
+						all.add(new Room(infos[j], accounts[i]));
 					}
 				}
 			}
@@ -205,7 +205,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 			case 5:
 				return String.valueOf(info.isPersistent());
 			case 6:
-				return info.getConnectedID().getName();
+				return room.getAccount().getContainer().getConnectedID().getName();
 			default:
 				return ""; //$NON-NLS-1$
 

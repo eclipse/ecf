@@ -43,10 +43,10 @@ import org.eclipse.ui.PlatformUI;
 /**
  * Chat room manager user interface.
  */
-public class ChatRoomManagerUI implements IChatCommandListener {
-	
+public class ChatRoomManagerUI implements IChatRoomCommandListener {
+
 	public static final String ROOM_DELIMITER = ","; //$NON-NLS-1$
-	
+
 	protected IContainer container;
 
 	protected IChatRoomManager manager;
@@ -61,8 +61,8 @@ public class ChatRoomManagerUI implements IChatCommandListener {
 
 	protected ID targetID = null;
 
-	protected String [] channels = null;
-	
+	protected String[] channels = null;
+
 	public ChatRoomManagerUI(IContainer container, IChatRoomManager manager) {
 		this(container, manager, null);
 	}
@@ -79,25 +79,30 @@ public class ChatRoomManagerUI implements IChatCommandListener {
 		return targetID;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.presence.ui.chatroom.IChatCommandListener#handleCommand(org.eclipse.ecf.presence.chatroom.IChatRoomContainer, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.presence.ui.chatroom.IChatRoomCommandListener#handleCommand(org.eclipse.ecf.presence.chatroom.IChatRoomContainer,
+	 *      java.lang.String)
 	 */
-	public String handleCommand(IChatRoomContainer chatRoomContainer, String inputLine) {
+	public String handleCommand(IChatRoomContainer chatRoomContainer,
+			String inputLine) {
 		return inputLine;
 	}
-	
+
 	private void setupNewView() throws Exception {
 		IChatRoomInfo roomInfo = manager.getChatRoomInfo(null);
 		Assert.isNotNull(roomInfo,
 				Messages.ChatRoomManagerUI_EXCEPTION_NO_ROOT_CHAT_ROOM_MANAGER);
-		IChatRoomContainer chatRoom = roomInfo.createChatRoomContainer();
-		// initialize the chatroomview with the necessary
-		// information
-		chatroomview.initialize(new IChatRoomViewCloseListener() {
-			public void chatRoomViewClosing(String secondaryID) {
-				container.dispose();
-			}
-		}, chatRoom, manager, targetID, this);
+		IChatRoomContainer managerChatRoom = roomInfo.createChatRoomContainer();
+		chatroomview.initialize(
+				ChatRoomManagerView.getUsernameFromID(targetID),
+				ChatRoomManagerView.getHostnameFromID(targetID),
+				managerChatRoom, this, new IChatRoomViewCloseListener() {
+					public void chatRoomViewClosing() {
+						container.dispose();
+					}
+				});
 		// Add listener for container, so that if the container is spontaneously
 		// disconnected,
 		// then we will be able to have the UI respond by making itself inactive
@@ -117,9 +122,12 @@ public class ChatRoomManagerUI implements IChatCommandListener {
 						} else if (evt instanceof IContainerConnectedEvent) {
 							isContainerConnected = true;
 							chatroomview.setEnabled(true);
-							String [] channels = getRoomsForTarget();
-							for (int i=0; i < channels.length; i++) {
-								chatroomview.joinRoom(channels[i],null);
+							String[] channels = getRoomsForTarget();
+							for (int i = 0; i < channels.length; i++) {
+								IChatRoomInfo info = manager
+										.getChatRoomInfo(channels[i]);
+								chatroomview.joinRoom(info,
+										getPasswordForChatRoomConnect(info));
 							}
 						}
 					}
@@ -128,7 +136,7 @@ public class ChatRoomManagerUI implements IChatCommandListener {
 		});
 		// Add listeners so that the new chat room gets
 		// asynch notifications of various relevant chat room events
-		chatRoom.addMessageListener(new IIMMessageListener() {
+		managerChatRoom.addMessageListener(new IIMMessageListener() {
 			public void handleMessageEvent(IIMMessageEvent messageEvent) {
 				if (messageEvent instanceof IChatRoomMessageEvent) {
 					IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
@@ -139,16 +147,19 @@ public class ChatRoomManagerUI implements IChatCommandListener {
 		});
 	}
 
+	protected String getPasswordForChatRoomConnect(IChatRoomInfo info) {
+		return null;
+	}
+
 	/**
-	 * Show a chat room manager UI for given targetID.  If a UI already
-	 * exists that is connected to the given targetID, then it will be raised.
-	 * and isContainerConnected
-	 * connected to the given targetID then this will show the view associated
-	 * with this targetID, and return <code>true</code>. The caller then
-	 * <b>should not</b> connect the container, as there is already a container
-	 * connected to the given target. If we are not already connected, then this
-	 * method will return <code>false</code>, indicating that the caller
-	 * should connect the new container to the given target ID.
+	 * Show a chat room manager UI for given targetID. If a UI already exists
+	 * that is connected to the given targetID, then it will be raised. and
+	 * isContainerConnected connected to the given targetID then this will show
+	 * the view associated with this targetID, and return <code>true</code>.
+	 * The caller then <b>should not</b> connect the container, as there is
+	 * already a container connected to the given target. If we are not already
+	 * connected, then this method will return <code>false</code>, indicating
+	 * that the caller should connect the new container to the given target ID.
 	 * 
 	 * @param targetID
 	 */
@@ -165,8 +176,11 @@ public class ChatRoomManagerUI implements IChatCommandListener {
 						// If we are already active, and connected, then just
 						// join room s
 						channels = getRoomsForTarget();
-						for (int i=0; i < channels.length; i++) {
-							chatroomview.joinRoom(channels[i],null);
+						for (int i = 0; i < channels.length; i++) {
+							IChatRoomInfo info = manager
+									.getChatRoomInfo(channels[i]);
+							chatroomview.joinRoom(info,
+									getPasswordForChatRoomConnect(info));
 						}
 						// We're already connected, so all we do is return
 						return;
@@ -216,7 +230,8 @@ public class ChatRoomManagerUI implements IChatCommandListener {
 		IWorkbenchPage wp = ww.getActivePage();
 		ChatRoomManagerView view = null;
 		if (secondaryViewID == null)
-			view = (ChatRoomManagerView) wp.showView(ChatRoomManagerView.VIEW_ID);
+			view = (ChatRoomManagerView) wp
+					.showView(ChatRoomManagerView.VIEW_ID);
 		else {
 			IViewReference viewRef = wp.findViewReference(
 					ChatRoomManagerView.VIEW_ID, secondaryViewID);
@@ -237,7 +252,7 @@ public class ChatRoomManagerUI implements IChatCommandListener {
 	protected String modifyRoomNameForTarget(String roomName) {
 		return roomName;
 	}
-	
+
 	protected String[] getRoomsForTarget() {
 		String initialRooms = null;
 		try {
@@ -249,11 +264,12 @@ public class ChatRoomManagerUI implements IChatCommandListener {
 			return new String[0];
 		while (initialRooms.charAt(0) == '/')
 			initialRooms = initialRooms.substring(1);
-		
-		StringTokenizer st = new StringTokenizer(initialRooms,ROOM_DELIMITER);
+
+		StringTokenizer st = new StringTokenizer(initialRooms, ROOM_DELIMITER);
 		int tokenCount = st.countTokens();
-		String [] roomsResult = new String[tokenCount];
-		for(int i=0; i < tokenCount; i++) roomsResult[i] = modifyRoomNameForTarget(st.nextToken());
+		String[] roomsResult = new String[tokenCount];
+		for (int i = 0; i < tokenCount; i++)
+			roomsResult[i] = modifyRoomNameForTarget(st.nextToken());
 		return roomsResult;
 	}
 

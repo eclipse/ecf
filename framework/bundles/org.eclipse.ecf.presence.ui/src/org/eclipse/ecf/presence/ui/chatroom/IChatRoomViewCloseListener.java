@@ -16,13 +16,15 @@ package org.eclipse.ecf.presence.ui.chatroom;
  */
 public interface IChatRoomViewCloseListener {
 	/**
-	 * If a non-<code>null</code> instance of this listener is provided to the {@link ChatRoomManagerView}
-	 * or the {@link ChatRoomView}, this method will be called when the view is closing (with the secondaryID
-	 * of the view provided).  If the view that's closing has no <code>secondaryID</code>, then the parameter
-	 * will be <code>null</code>.
+	 * If a non-<code>null</code> instance of this listener is provided to
+	 * the {@link ChatRoomManagerView} this method will be called when the view
+	 * is closing (with the id of the view provided). If the view that's closing
+	 * has no <code>id</code>, then the parameter will be <code>null</code>.
 	 * 
-	 * @param secondaryID the secondary view ID of the chat room view that's closing.  If the view that's closing
-	 * has no secondary ID, then this value will be <code>null</code>.
+	 * @param id
+	 *            the ID of the chat room view that's closing. If the view
+	 *            that's closing has no id, then this value will be
+	 *            <code>null</code>.
 	 */
-	public void chatRoomViewClosing(String secondaryID);
+	public void chatRoomViewClosing();
 }
