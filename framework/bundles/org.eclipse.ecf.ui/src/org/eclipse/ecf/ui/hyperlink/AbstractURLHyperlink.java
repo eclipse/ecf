@@ -63,7 +63,7 @@ public abstract class AbstractURLHyperlink implements IHyperlink {
 	 * Creates a new URL hyperlink.
 	 * 
 	 * @param region
-	 * @param urlString
+	 * @param uri
 	 */
 	public AbstractURLHyperlink(IRegion region, URI uri) {
 		Assert.isNotNull(uri);
