@@ -61,17 +61,18 @@ public class SynchContainerConnectAction implements
 	public void run(IAction action) {
 		try {
 			Trace.entering(Activator.PLUGIN_ID,
-					UIDebugOptions.METHODS_ENTERING, this.getClass(), RUN_METHOD,
-					action);
+					UIDebugOptions.METHODS_ENTERING, this.getClass(),
+					RUN_METHOD, action);
 			container.connect(this.targetID, this.connectContext);
 		} catch (ContainerConnectException e) {
 			// First Trace
 			Trace.catching(Activator.PLUGIN_ID,
-					UIDebugOptions.METHODS_ENTERING, this.getClass(), RUN_METHOD, e);
+					UIDebugOptions.METHODS_ENTERING, this.getClass(),
+					RUN_METHOD, e);
 			handleConnectException(action, e);
 		} finally {
-			Trace.exiting(Activator.PLUGIN_ID,
-					UIDebugOptions.METHODS_EXITING, this.getClass(), RUN_METHOD);
+			Trace.exiting(Activator.PLUGIN_ID, UIDebugOptions.METHODS_EXITING,
+					this.getClass(), RUN_METHOD);
 		}
 	}
 

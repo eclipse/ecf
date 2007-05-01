@@ -13,7 +13,7 @@ package org.eclipse.ecf.internal.ui.deprecated.views;
 import org.eclipse.ecf.core.identity.ID;
 
 public class RosterObject {
-	
+
 	private String name;
 
 	private RosterParent parent;
@@ -40,7 +40,7 @@ public class RosterObject {
 	public ID getID() {
 		return id;
 	}
-	
+
 	public void setID(ID newID) {
 		this.id = newID;
 	}

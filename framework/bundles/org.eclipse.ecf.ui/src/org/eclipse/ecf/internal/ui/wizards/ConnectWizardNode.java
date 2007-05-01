@@ -21,10 +21,9 @@ import org.eclipse.ui.IWorkbench;
 public class ConnectWizardNode extends WizardNode {
 
 	protected IContainer containerToConnect;
-	
+
 	public ConnectWizardNode(IWorkbench workbench, WizardPage wizardPage,
-			WorkbenchWizardElement wizardElement,
-			IContainer container) {
+			WorkbenchWizardElement wizardElement, IContainer container) {
 		super(workbench, wizardPage, wizardElement);
 		this.containerToConnect = container;
 	}

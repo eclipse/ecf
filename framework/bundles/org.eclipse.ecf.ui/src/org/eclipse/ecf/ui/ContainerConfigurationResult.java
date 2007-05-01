@@ -10,28 +10,32 @@
  *****************************************************************************/
 package org.eclipse.ecf.ui;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 
-public class ContainerHolder implements IContainerHolder {
+/**
+ * Utility class to hold {@link ContainerTypeDescription} and associated
+ * {@link IContainer} resulting from container configuration.
+ */
+public class ContainerConfigurationResult {
 
 	protected IContainer container;
 
 	protected ContainerTypeDescription containerTypeDescription;
 
-	public ContainerHolder(ContainerTypeDescription containerTypeDescription,
+	public ContainerConfigurationResult(
+			ContainerTypeDescription containerTypeDescription,
 			IContainer container) {
+		Assert.isNotNull(containerTypeDescription);
+		Assert.isNotNull(container);
 		this.containerTypeDescription = containerTypeDescription;
 		this.container = container;
-		if (this.container == null)
-			throw new NullPointerException("container cannot be null");
-		if (this.containerTypeDescription == null)
-			throw new NullPointerException(
-					"containerTypeDescription cannot be null");
 	}
 
-	public ContainerHolder(String containerType, IContainer container) {
+	public ContainerConfigurationResult(String containerType,
+			IContainer container) {
 		this(ContainerFactory.getDefault().getDescriptionByName(containerType),
 				container);
 	}
@@ -45,9 +49,9 @@ public class ContainerHolder implements IContainerHolder {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ContainerHolder[");
-		buf.append(containerTypeDescription).append(";");
-		buf.append(container).append("]");
+		StringBuffer buf = new StringBuffer("ContainerConfigurationResult["); //$NON-NLS-1$
+		buf.append(containerTypeDescription).append(";"); //$NON-NLS-1$
+		buf.append(container).append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }

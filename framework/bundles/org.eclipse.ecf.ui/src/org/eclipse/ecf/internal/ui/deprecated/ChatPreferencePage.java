@@ -8,7 +8,7 @@
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.ui;
+package org.eclipse.ecf.internal.ui.deprecated;
 
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;

@@ -25,5 +25,4 @@ public interface UIDebugOptions {
 
 	public static final String METHODS_EXITING = DEBUG + "/methods/exiting"; //$NON-NLS-1$
 
-
 }

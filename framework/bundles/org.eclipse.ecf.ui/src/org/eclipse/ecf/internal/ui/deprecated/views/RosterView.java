@@ -68,12 +68,6 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.ui.SharedImages;
-import org.eclipse.ecf.ui.dialogs.AddBuddyDialog;
-import org.eclipse.ecf.ui.dialogs.ChangePasswordDialog;
-import org.eclipse.ecf.ui.dialogs.ChatRoomSelectionDialog;
-import org.eclipse.ecf.ui.views.ChatRoomView;
-import org.eclipse.ecf.ui.views.IChatRoomViewCloseListener;
-import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -109,7 +103,7 @@ import org.eclipse.ui.part.ViewPart;
 public class RosterView extends ViewPart implements IIMMessageListener,
 		IChatRoomViewCloseListener {
 	public static final String VIEW_ID = "org.eclipse.ecf.ui.view.rosterview"; //$NON-NLS-1$
-	
+
 	private static final String CHAT_ROOM_VIEW_CLASS = "org.eclipse.ecf.ui.views.ChatRoomView"; //$NON-NLS-1$
 
 	public static final String UNFILED_GROUP_NAME = "Buddies";
@@ -167,7 +161,8 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 						fd.setFileName(fileName);
 						int suffixLoc = fileName.lastIndexOf('.');
 						if (suffixLoc != -1) {
-							String ext = fileName.substring(fileName.lastIndexOf('.'));
+							String ext = fileName.substring(fileName
+									.lastIndexOf('.'));
 							fd.setFilterExtensions(new String[] { ext });
 						}
 						fd.setText(NLS.bind(
@@ -178,25 +173,24 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 							event.reject();
 						else {
 							try {
-								final FileOutputStream fos = new FileOutputStream(new File(res));
-								event.accept(
-										fos,
-										new IFileTransferListener() {
-											public void handleTransferEvent(
-													IFileTransferEvent event) {
-												// XXX Should have some some UI
-												// for transfer events
-												System.out
-														.println("handleTransferEvent("
-																+ event + ")");
-												if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
-													try {
-														fos.close();
-													} catch (IOException e) {
-													}
-												}
+								final FileOutputStream fos = new FileOutputStream(
+										new File(res));
+								event.accept(fos, new IFileTransferListener() {
+									public void handleTransferEvent(
+											IFileTransferEvent event) {
+										// XXX Should have some some UI
+										// for transfer events
+										System.out
+												.println("handleTransferEvent("
+														+ event + ")");
+										if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
+											try {
+												fos.close();
+											} catch (IOException e) {
 											}
-										});
+										}
+									}
+								});
 							} catch (Exception e) {
 								MessageDialog
 										.openError(
@@ -462,13 +456,11 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 				manager.add(fileSendAction);
 				manager.add(new Separator());
 				IPresence presence = tb.getPresence();
-				boolean type =  (presence == null)?false:presence.getType().equals(
-						IPresence.Type.AVAILABLE);
-				boolean mode = (presence == null)?false:presence.getMode().equals(
-						IPresence.Mode.AVAILABLE);
-				fileSendAction.setEnabled(fileTransfer != null
-						&& type
-						&& mode);
+				boolean type = (presence == null) ? false : presence.getType()
+						.equals(IPresence.Type.AVAILABLE);
+				boolean mode = (presence == null) ? false : presence.getMode()
+						.equals(IPresence.Mode.AVAILABLE);
+				fileSendAction.setEnabled(fileTransfer != null && type && mode);
 
 				RosterObject parent = rosterObject.getParent();
 				RosterGroup tg = null;
@@ -823,7 +815,8 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 			});
 			chatRoom
 					.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-						public void handlePresenceUpdated(ID fromID, IPresence presence) {
+						public void handlePresenceUpdated(ID fromID,
+								IPresence presence) {
 							chatroomview.handlePresence(fromID, presence);
 						}
 
@@ -957,8 +950,8 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 									});
 							chatRoom
 									.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-										public void handlePresenceUpdated(ID fromID,
-												IPresence presence) {
+										public void handlePresenceUpdated(
+												ID fromID, IPresence presence) {
 											chatroomview.handlePresence(fromID,
 													presence);
 										}

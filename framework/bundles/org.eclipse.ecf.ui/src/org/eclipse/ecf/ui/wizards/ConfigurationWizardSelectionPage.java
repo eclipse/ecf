@@ -26,7 +26,7 @@ import org.eclipse.ecf.internal.ui.wizards.WizardContentProvider;
 import org.eclipse.ecf.internal.ui.wizards.WizardsRegistryReader;
 import org.eclipse.ecf.internal.ui.wizards.WorkbenchLabelProvider;
 import org.eclipse.ecf.internal.ui.wizards.WorkbenchWizardElement;
-import org.eclipse.ecf.ui.ContainerHolder;
+import org.eclipse.ecf.ui.ContainerConfigurationResult;
 import org.eclipse.ecf.ui.IConfigurationWizard;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -41,6 +41,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardSelectionPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
@@ -82,10 +83,6 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 
 	protected class CategorizedWizardSelectionTree {
 		private final static int SIZING_LISTS_HEIGHT = 200;
-
-		protected static final String GENERAL_WIZARD_CATEGORY = "Protocols";
-
-		protected static final String UNCATEGORIZED_WIZARD_CATEGORY = "Other";
 
 		private IWizardCategory wizardCategories;
 
@@ -156,9 +153,12 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 				public int category(Object element) {
 					if (element instanceof WizardCollectionElement) {
 						String id = ((WizardCollectionElement) element).getId();
-						if (GENERAL_WIZARD_CATEGORY.equals(id))
+						String wizardCategory = Messages.ConfigurationWizardSelectionPage_WIZARD_CATEGORY;
+						if (wizardCategory != null && wizardCategory.equals(id))
 							return 1;
-						if (UNCATEGORIZED_WIZARD_CATEGORY.equals(id))
+						String uncategorizedCategory = Messages.ConfigurationWizardSelectionPage_UNCATEGORIZED_WIZARD_CATEGORY;
+						if (uncategorizedCategory != null
+								&& uncategorizedCategory.equals(id))
 							return 3;
 						return 2;
 					}
@@ -270,7 +270,8 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 
 	public ConfigurationWizardSelectionPage(IWorkbench workbench,
 			IStructuredSelection selection) {
-		super("createContainerWizardPage");
+		super(
+				Messages.ConfigurationWizardSelectionPage_CONFIGURATION_WIZARD_PAGE_NAME);
 		this.workbench = workbench;
 		this.currentResourceSelection = selection;
 		setTitle(Messages.Select);
@@ -281,7 +282,7 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 				.getTriggerPoint(IWizardRegistryConstants.CONFIGURE_EPOINT_ID);
 	}
 
-	protected ContainerHolder getContainerResult() {
+	protected ContainerConfigurationResult getContainerResult() {
 		ConfigurationWizardNode cwn = (ConfigurationWizardNode) getSelectedNode();
 		if (cwn == null)
 			return null;
@@ -295,13 +296,18 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 				.getDefault().getDescriptionByName(
 						element.getContainerTypeName());
 		if (typeDescription == null) {
-			String msg = "The container type name '" + element
-					+ "' does not exist";
+			String msg = NLS.bind(
+					Messages.ConfigurationWizardSelectionPage_ERROR_MESSAGE,
+					element);
 			setErrorMessage(msg);
-			ErrorDialog.openError(getShell(), "Problem Opening Wizard",
-					"The selected wizard could not be started.", new Status(
-							IStatus.ERROR, Activator.PLUGIN_ID,
-							CONTAINERTYPEDESCRIPTION_ERROR_CODE, msg, null));
+			ErrorDialog
+					.openError(
+							getShell(),
+							Messages.ConfigurationWizardSelectionPage_CONFIGRATION_ERROR_TITLE,
+							Messages.ConfigurationWizardSelectionPage_CONFIGURATION_ERROR_MESSAGE,
+							new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+									CONTAINERTYPEDESCRIPTION_ERROR_CODE, msg,
+									null));
 			return null;
 		}
 		return typeDescription;
@@ -339,7 +345,8 @@ public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 
 	protected Composite createTreeViewer(Composite parent) {
 		IWizardCategory root = getRootCategory();
-		wizardSelectionTree = new CategorizedWizardSelectionTree(root, "Select");
+		wizardSelectionTree = new CategorizedWizardSelectionTree(root,
+				Messages.ConfigurationWizardSelectionPage_SELECT);
 		Composite importComp = wizardSelectionTree.createControl(parent);
 		wizardSelectionTree.getViewer().addSelectionChangedListener(
 				new ISelectionChangedListener() {

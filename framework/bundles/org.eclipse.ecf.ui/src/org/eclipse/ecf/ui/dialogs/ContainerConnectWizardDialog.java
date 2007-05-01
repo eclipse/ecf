@@ -19,21 +19,21 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.wizards.IWizardRegistryConstants;
+import org.eclipse.ecf.ui.ContainerConfigurationResult;
 import org.eclipse.ecf.ui.IConnectWizard;
-import org.eclipse.ecf.ui.IContainerHolder;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 
-public class ConnectWizardDialog extends WizardDialog {
+public class ContainerConnectWizardDialog extends WizardDialog {
 
-	public ConnectWizardDialog(Shell parentShell, IWorkbench workbench,
-			IContainerHolder containerHolder) {
+	public ContainerConnectWizardDialog(Shell parentShell, IWorkbench workbench,
+			ContainerConfigurationResult containerHolder) {
 		super(parentShell, getWizard(workbench, containerHolder));
 	}
 
 	protected static IConnectWizard getWizard(IWorkbench workbench,
-			IContainerHolder containerHolder) {
+			ContainerConfigurationResult containerHolder) {
 		IConnectWizard connectWizard = null;
 		try {
 			IConfigurationElement ce = findConnectWizardConfigurationElements(containerHolder)[0];
@@ -50,7 +50,7 @@ public class ConnectWizardDialog extends WizardDialog {
 	}
 
 	public static IConfigurationElement[] findConnectWizardConfigurationElements(
-			IContainerHolder containerHolder) {
+			ContainerConfigurationResult containerHolder) {
 		List result = new ArrayList();
 		IExtensionRegistry reg = Activator.getDefault().getExtensionRegistry();
 		if (reg != null) {
@@ -59,7 +59,8 @@ public class ConnectWizardDialog extends WizardDialog {
 			if (extensionPoint == null) {
 				return null;
 			}
-			IConfigurationElement[] ce = extensionPoint.getConfigurationElements();
+			IConfigurationElement[] ce = extensionPoint
+					.getConfigurationElements();
 			for (int i = 0; i < ce.length; i++) {
 				String value = ce[i]
 						.getAttribute(IWizardRegistryConstants.ATT_CONTAINER_TYPE_NAME);
@@ -70,10 +71,11 @@ public class ConnectWizardDialog extends WizardDialog {
 			}
 			return (IConfigurationElement[]) result
 					.toArray(new IConfigurationElement[] {});
-		} else return new IConfigurationElement[0];
+		} else
+			return new IConfigurationElement[0];
 	}
 
-	public boolean hasConnectWizard(IContainerHolder containerHolder) {
+	public boolean hasConnectWizard(ContainerConfigurationResult containerHolder) {
 		return (findConnectWizardConfigurationElements(containerHolder).length > 0);
 	}
 }

@@ -20,8 +20,10 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.IExceptionHandler;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.ui.Activator;
+import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.ecf.internal.ui.UIDebugOptions;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.osgi.util.NLS;
 
 public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 
@@ -48,8 +50,8 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 		else if (e == null)
 			return Status.OK_STATUS;
 		else
-			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
-					"Exception in run", e);
+			return new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+					IStatus.ERROR, Messages.AsynchContainerConnectAction_EXCEPTION_CONNECT, e);
 	}
 
 	class ContainerMutex implements ISchedulingRule {
@@ -88,7 +90,7 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 	public class AsynchActionJob extends Job {
 
 		public AsynchActionJob() {
-			super("Connect for container " + getContainer().getID().getName());
+			super(NLS.bind(Messages.AsynchContainerConnectAction_JOB_NAME,getContainer().getID().getName()));
 			setRule(new ContainerMutex(getContainer()));
 		}
 
@@ -96,24 +98,21 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 			Trace.entering(Activator.PLUGIN_ID,
 					UIDebugOptions.METHODS_ENTERING, this.getClass(),
 					RUN_METHOD);
-			monitor.beginTask("Connecting", 100);
-			monitor.worked(10);
+			monitor.beginTask(NLS.bind(Messages.AsynchContainerConnectAction_MONITOR_BEGIN_TASK, getContainer().getID().getName()), 100);
+			monitor.worked(30);
 			try {
 				container.connect(targetID, connectContext);
-				IStatus status = Status.OK_STATUS;
 				if (monitor.isCanceled()) {
 					container.disconnect();
-					status = Status.CANCEL_STATUS;
-					return status;
+					return Status.CANCEL_STATUS;
 				}
-				monitor.worked(90);
-				return status;
+				monitor.worked(60);
+				return Status.OK_STATUS;
 			} catch (ContainerConnectException e) {
 				Trace.catching(Activator.PLUGIN_ID,
 						UIDebugOptions.METHODS_ENTERING, this.getClass(),
 						RUN_METHOD, e);
-				IStatus status = handleException(e);
-				return status;
+				return handleException(e);
 			} finally {
 				monitor.done();
 				Trace.exiting(Activator.PLUGIN_ID,

@@ -315,7 +315,7 @@ public class WizardsRegistryReader extends RegistryReader {
 		// to traverse through the NamedSolution "tree" that was previously
 		// created
 		WizardCollectionElement currentCollectionElement = wizardElements; // ie.-
-																			// root
+		// root
 		boolean moveToOther = false;
 
 		while (familyTokenizer.hasMoreElements()) {
@@ -323,7 +323,7 @@ public class WizardsRegistryReader extends RegistryReader {
 					currentCollectionElement, familyTokenizer.nextToken());
 
 			if (tempCollectionElement == null) { // can't find the path; bump
-													// it to uncategorized
+				// it to uncategorized
 				moveToOther = true;
 				break;
 			}
@@ -467,8 +467,10 @@ public class WizardsRegistryReader extends RegistryReader {
 		if (readAll) {
 			if (!areWizardsRead()) {
 				createEmptyWizardCollection();
-				IExtensionRegistry registry = Activator.getDefault().getExtensionRegistry();
-				if (registry != null) readRegistry(registry, plugin, pluginPoint);
+				IExtensionRegistry registry = Activator.getDefault()
+						.getExtensionRegistry();
+				if (registry != null)
+					readRegistry(registry, plugin, pluginPoint);
 			}
 		}
 		finishCategories();
@@ -563,19 +565,22 @@ public class WizardsRegistryReader extends RegistryReader {
 		}
 		return null;
 	}
-	
+
 	public WorkbenchWizardElement findWizard(String attName, String value) {
 		Object[] wizards = getWizardCollectionElements();
 		for (int nX = 0; nX < wizards.length; nX++) {
 			WizardCollectionElement collection = (WizardCollectionElement) wizards[nX];
-				WorkbenchWizardElement [] elements = collection.getWorkbenchWizardElements();
-				for(int i=0; i < elements.length; i++) {
-					WorkbenchWizardElement element = elements[i];
-					IConfigurationElement configElement = element.getConfigurationElement();
-					String att = configElement.getAttribute(attName);
-					if (att != null && att.equals(value)) return element;
-				}
+			WorkbenchWizardElement[] elements = collection
+					.getWorkbenchWizardElements();
+			for (int i = 0; i < elements.length; i++) {
+				WorkbenchWizardElement element = elements[i];
+				IConfigurationElement configElement = element
+						.getConfigurationElement();
+				String att = configElement.getAttribute(attName);
+				if (att != null && att.equals(value))
+					return element;
 			}
+		}
 		return null;
 	}
 }

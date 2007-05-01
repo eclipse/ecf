@@ -11,7 +11,7 @@
 package org.eclipse.ecf.internal.ui;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.ecf.ui.ChatPreferencePage;
+import org.eclipse.ecf.internal.ui.deprecated.ChatPreferencePage;
 
 public class UIPreferenceInitializer extends AbstractPreferenceInitializer {
 

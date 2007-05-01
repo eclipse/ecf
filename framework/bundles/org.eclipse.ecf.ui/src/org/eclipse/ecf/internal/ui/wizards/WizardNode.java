@@ -36,17 +36,17 @@ import org.eclipse.ui.IWorkbench;
  * etc.).
  * </p>
  */
-public abstract class WizardNode implements IWizardNode,
-		IPluginContribution {
+public abstract class WizardNode implements IWizardNode, IPluginContribution {
 	protected IWizard wizard;
 
 	protected IWorkbench workbench;
-	
+
 	protected WorkbenchWizardElement wizardElement;
 
 	protected WizardPage parentWizardPage;
 
-	public WizardNode(IWorkbench workbench, WizardPage wizardPage, WorkbenchWizardElement wizardElement) {
+	public WizardNode(IWorkbench workbench, WizardPage wizardPage,
+			WorkbenchWizardElement wizardElement) {
 		super();
 		this.workbench = workbench;
 		this.parentWizardPage = wizardPage;
@@ -56,10 +56,11 @@ public abstract class WizardNode implements IWizardNode,
 	protected IWorkbench getWorkbench() {
 		return this.workbench;
 	}
-	
+
 	protected WorkbenchWizardElement getWizardElement() {
 		return wizardElement;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -105,7 +106,7 @@ public abstract class WizardNode implements IWizardNode,
 	}
 
 	public abstract IWizard createWizard() throws CoreException;
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 

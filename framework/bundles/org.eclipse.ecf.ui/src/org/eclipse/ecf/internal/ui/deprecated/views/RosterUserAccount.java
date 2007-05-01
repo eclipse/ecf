@@ -16,7 +16,6 @@ import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.ui.views.ILocalInputHandler;
 
 public class RosterUserAccount {
 	/**
@@ -29,7 +28,7 @@ public class RosterUserAccount {
 	IUser user;
 
 	ILocalInputHandler inputHandler;
-	
+
 	IContainer container = null;
 
 	IPresenceContainerAdapter presenceContainer;
@@ -39,8 +38,7 @@ public class RosterUserAccount {
 	ISharedObject sharedObject = null;
 
 	public RosterUserAccount(RosterView rosterView, ID serviceID, IUser user,
-			ILocalInputHandler handler,
-			IContainer container,
+			ILocalInputHandler handler, IContainer container,
 			IPresenceContainerAdapter presenceContainer,
 			ISharedObjectContainer soContainer) {
 		this.rosterView = rosterView;
@@ -50,7 +48,8 @@ public class RosterUserAccount {
 		this.container = container;
 		this.presenceContainer = presenceContainer;
 		this.soContainer = soContainer;
-		this.sharedObject = this.rosterView.createAndAddSharedObjectForAccount(this);
+		this.sharedObject = this.rosterView
+				.createAndAddSharedObjectForAccount(this);
 	}
 
 	public ID getServiceID() {
@@ -68,7 +67,7 @@ public class RosterUserAccount {
 	public IContainer getContainer() {
 		return container;
 	}
-	
+
 	public IPresenceContainerAdapter getPresenceContainer() {
 		return presenceContainer;
 	}

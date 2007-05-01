@@ -4,26 +4,6 @@
    <extension-point id="connectWizards" name="ECF Connect Wizard" schema="schema/connectWizards.exsd"/>
    <extension-point id="configurationWizards" name="ECF Container Configuration Wizard" schema="schema/configurationWizards.exsd"/>
    <extension
-         point="org.eclipse.ui.views">
-      <category
-            name="ECF"
-            id="org.eclipse.ecf.ui.viewcategory"/>
-      <view
-            allowMultiple="true"
-            category="org.eclipse.ecf.ui.viewcategory"
-            class="org.eclipse.ecf.ui.views.ChatRoomView"
-            icon="icons/epresence16/group.gif"
-            id="org.eclipse.ecf.ui.views.ChatRoomView"
-            name="Chat Room"/>
-      <view
-            allowMultiple="true"
-            category="org.eclipse.ecf.ui.viewcategory"
-            class="org.eclipse.ecf.ui.views.ChatRoomManagerView"
-            icon="icons/epresence16/group.gif"
-            id="org.eclipse.ecf.ui.views.ChatRoomManagerView"
-            name="Chat Room Manager"/>
-   </extension>
-   <extension
          point="org.eclipse.ecf.ui.configurationWizards">
       <category
             id="org.eclipse.ecf.ui.clientcategory"
@@ -37,16 +17,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="org.eclipse.ecf.ui.ChatPreferencePage"
-            id="org.eclipse.ecf.ui.preferences.chat"
-            name="Chat"
-            category="org.eclipse.ecf.ui.category">
-      </page>
-   </extension>
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            class="org.eclipse.ecf.ui.CategoryPreferencePage"
+            class="org.eclipse.ecf.internal.ui.CategoryPreferencePage"
             id="org.eclipse.ecf.ui.category"
             name="ECF">
       </page>
@@ -57,4 +28,11 @@
             class="org.eclipse.ecf.internal.ui.UIPreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="ECF"
+            id="org.eclipse.ecf.ui.viewcategory"/>
+   </extension>
+   
 </plugin>

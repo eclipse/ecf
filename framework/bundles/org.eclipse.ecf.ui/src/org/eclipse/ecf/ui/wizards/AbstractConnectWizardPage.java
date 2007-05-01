@@ -13,6 +13,7 @@ package org.eclipse.ecf.ui.wizards;
 import java.net.URI;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -31,8 +32,6 @@ import org.eclipse.swt.widgets.Text;
  */
 public abstract class AbstractConnectWizardPage extends WizardPage {
 
-	private static final String PAGE_NAME = "ECF Connect Wizard Page"; //$NON-NLS-1$
-
 	private Text connectText;
 
 	private Text usernameText;
@@ -44,16 +43,16 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 	private Button autoLoginBtn;
 
 	private URI uri;
-	
-	protected AbstractConnectWizardPage() {
-		super(PAGE_NAME);
+
+	protected AbstractConnectWizardPage(String pageName) {
+		super(pageName);
 		setTitle(getProviderTitle());
 		setDescription(getProviderDescription());
 		setPageComplete(false);
 	}
 
-	protected AbstractConnectWizardPage(URI uri) {
-		this();
+	protected AbstractConnectWizardPage(String pageName, URI uri) {
+		this(pageName);
 		this.uri = uri;
 	}
 
@@ -64,16 +63,16 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 		GridData span = new GridData(SWT.END, SWT.CENTER, true, false, 2, 1);
 
 		Label label = new Label(parent, SWT.LEFT);
-		label.setText("Connect ID:");
+		label.setText(Messages.AbstractConnectWizardPage_CONNECT_ID_LABEL);
 		connectText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		connectText.setLayoutData(data);
 		connectText.addModifyListener(inputVerifier);
 
 		String defaultConnectText = getDefaultConnectText();
-		if (defaultConnectText != null && !defaultConnectText.equals("")) {
+		if (defaultConnectText != null && !defaultConnectText.equals("")) { //$NON-NLS-1$
 			connectText.setText(defaultConnectText);
 		}
-		
+
 		String exampleID = getExampleID();
 		if (exampleID != null && !exampleID.equals("")) { //$NON-NLS-1$
 			label = new Label(parent, SWT.RIGHT);
@@ -83,7 +82,7 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 
 		if (shouldRequestUsername()) {
 			label = new Label(parent, SWT.LEFT);
-			label.setText("Username:");
+			label.setText(Messages.AbstractConnectWizardPage_USERNAME_LABEL);
 			usernameText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 			usernameText.setLayoutData(data);
 			usernameText.addModifyListener(inputVerifier);
@@ -91,7 +90,7 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 
 		if (shouldRequestUsername()) {
 			label = new Label(parent, SWT.LEFT);
-			label.setText("Password:");
+			label.setText(Messages.AbstractConnectWizardPage_PASSWORD_LABEL);
 			passwordText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 			passwordText.setLayoutData(data);
 			passwordText.setEchoChar('*');
@@ -99,7 +98,7 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 		}
 
 		autoLoginBtn = new Button(parent, SWT.CHECK);
-		autoLoginBtn.setText("Login &automatically at startup");
+		autoLoginBtn.setText(Messages.AbstractConnectWizardPage_LOGIN_AUTOMATICALLY_LABEL);
 		autoLoginBtn.setLayoutData(new GridData(SWT.END, SWT.CENTER, true,
 				false, 2, 1));
 
@@ -122,18 +121,19 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 
 	/**
 	 * Checks
+	 * 
 	 * @return boolean true if page should request password
 	 */
 	public abstract boolean shouldRequestPassword();
 
 	public abstract String getExampleID();
 
-	protected String getDefaultConnectText(){
-		return "";
+	protected String getDefaultConnectText() {
+		return ""; //$NON-NLS-1$
 	}
-	
+
 	protected String getProviderTitle() {
-		return "New Provider Connection";
+		return Messages.AbstractConnectWizardPage_PROVIDER_TITLE;
 	}
 
 	protected String getProviderDescription() {
@@ -155,7 +155,7 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 	boolean shouldAutoLogin() {
 		return autoLoginBtn.getSelection();
 	}
-	
+
 	public void updateStatus(String message) {
 		setErrorMessage(message);
 		setPageComplete(message == null);
@@ -165,7 +165,7 @@ public abstract class AbstractConnectWizardPage extends WizardPage {
 
 		public void modifyText(ModifyEvent e) {
 			if (connectText.getText().equals("")) { //$NON-NLS-1$
-				updateStatus("A connect ID must be specified.");
+				updateStatus(Messages.AbstractConnectWizardPage_CONNECTID_ERROR_STATUS);
 			} else {
 				updateStatus(null);
 			}

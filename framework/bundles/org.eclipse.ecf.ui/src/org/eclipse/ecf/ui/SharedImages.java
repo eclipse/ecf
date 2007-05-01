@@ -14,6 +14,9 @@ import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 
+/**
+ * Shared images for ECF user interface elements.
+ */
 public final class SharedImages {
 
 	public static final String IMG_USER_AVAILABLE = "IMG_USER_AVAILABLE"; //$NON-NLS-1$
@@ -49,7 +52,7 @@ public final class SharedImages {
 	public static Image getImage(String key) {
 		return Activator.getDefault().getImageRegistry().get(key);
 	}
-	
+
 	private SharedImages() {
 		// private constructor to prevent instantiation
 	}

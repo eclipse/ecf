@@ -18,8 +18,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.ui.Activator;
-import org.eclipse.ecf.ui.views.ChatLine;
-import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -78,7 +76,7 @@ public class TextChatComposite extends Composite {
 
 	protected StyledText styledText;
 
-	//protected TextViewer textoutput;
+	// protected TextViewer textoutput;
 
 	protected Text textinput;
 
@@ -139,9 +137,9 @@ public class TextChatComposite extends Composite {
 		sash.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		// Setup text output
-		SourceViewer result = new SourceViewer(sash, null, null,
-				true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
-						| SWT.H_SCROLL | SWT.READ_ONLY);
+		SourceViewer result = new SourceViewer(sash, null, null, true,
+				SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.H_SCROLL
+						| SWT.READ_ONLY);
 		result.configure(new TextSourceViewerConfiguration(EditorsUI
 				.getPreferenceStore()));
 		result.setDocument(new Document());
@@ -268,8 +266,7 @@ public class TextChatComposite extends Composite {
 			styledText.selectAll();
 		}
 		styledText.copy();
-		styledText.setSelection(
-				styledText.getText().length());
+		styledText.setSelection(styledText.getText().length());
 	}
 
 	protected void outputPaste() {
@@ -298,8 +295,8 @@ public class TextChatComposite extends Composite {
 
 			public ISelection getSelection() {
 				ISelection selection = new TextSelection(styledText
-						.getSelectionRange().x, styledText
-						.getSelectionRange().y);
+						.getSelectionRange().x,
+						styledText.getSelectionRange().y);
 
 				return selection;
 			}

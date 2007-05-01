@@ -49,7 +49,8 @@ public class SelectProviderAction implements IWizardRegistryConstants,
 
 	public SelectProviderAction() {
 		try {
-			IExtensionRegistry registry = Activator.getDefault().getExtensionRegistry();
+			IExtensionRegistry registry = Activator.getDefault()
+					.getExtensionRegistry();
 			if (registry != null) {
 				IExtension[] configurationWizards = registry.getExtensionPoint(
 						CONFIGURE_EPOINT_ID).getExtensions();
@@ -67,19 +68,23 @@ public class SelectProviderAction implements IWizardRegistryConstants,
 						final IConfigurationWizard wizard = getWizard(
 								configurationWizards, factoryName);
 						final IConfigurationElement ice = ices[j];
-						ContainerTypeDescription typeDescription = ContainerFactory.getDefault().getDescriptionByName(factoryName);
+						ContainerTypeDescription typeDescription = ContainerFactory
+								.getDefault().getDescriptionByName(factoryName);
 						if (!typeDescription.isHidden()) {
 							if (wizard == null) {
 								map.put(ice.getAttribute(ATT_NAME),
 										new SelectionAdapter() {
-											public void widgetSelected(SelectionEvent e) {
-												openConnectWizard(ice, factoryName);
+											public void widgetSelected(
+													SelectionEvent e) {
+												openConnectWizard(ice,
+														factoryName);
 											}
 										});
 							} else {
 								map.put(ice.getAttribute(ATT_NAME),
 										new SelectionAdapter() {
-											public void widgetSelected(SelectionEvent e) {
+											public void widgetSelected(
+													SelectionEvent e) {
 												openConnectWizard(wizard, ice,
 														factoryName);
 											}

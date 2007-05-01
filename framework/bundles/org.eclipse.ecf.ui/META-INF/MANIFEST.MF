@@ -12,14 +12,13 @@ Provide-Package: org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.wizards
 Export-Package: org.eclipse.ecf.internal.ui;x-internal:=true,
  org.eclipse.ecf.internal.ui.actions;x-internal:=true,
+ org.eclipse.ecf.internal.ui.deprecated;x-internal:=true,
  org.eclipse.ecf.internal.ui.deprecated.views;x-internal:=true,
  org.eclipse.ecf.internal.ui.wizards;x-internal:=true,
  org.eclipse.ecf.ui,
  org.eclipse.ecf.ui.actions,
  org.eclipse.ecf.ui.dialogs,
  org.eclipse.ecf.ui.hyperlink,
- org.eclipse.ecf.ui.util,
- org.eclipse.ecf.ui.views,
  org.eclipse.ecf.ui.wizards
 Eclipse-RegisterBuddy: org.eclipse.ecf
 Eclipse-BuddyPolicy: dependent
@@ -27,10 +26,10 @@ Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
  J2SE-1.4
 Require-Bundle: org.eclipse.ecf,
  org.eclipse.ecf.presence,
- org.eclipse.ecf.sharedobject,
  org.eclipse.jface.text,
  org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ecf.filetransfer,
- org.eclipse.ui.editors
+ org.eclipse.ui.editors,
+ org.eclipse.ecf.sharedobject
 

@@ -8,15 +8,22 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.ui;
 
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
+package org.eclipse.ecf.internal.ui.deprecated.views;
 
-public interface IContainerHolder {
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.presence.IPresence;
 
-	public ContainerTypeDescription getContainerTypeDescription();
-	
-	public IContainer getContainer();
-	
+public interface ILocalInputHandler {
+	public void inputText(ID userID, String text);
+
+	public void startTyping(ID userID);
+
+	public void updatePresence(ID userID, IPresence presence);
+
+	public void sendRosterAdd(String user, String name, String[] groups);
+
+	public void sendRosterRemove(ID userID);
+
+	public void disconnect();
 }

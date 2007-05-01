@@ -106,7 +106,7 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		String name = entry.getName();
 		if (name == null)
 			name = this.rosterView.getUserNameFromID(entry.getUser().getID());
-		name = name.replace('?','\'');
+		name = name.replace('?', '\'');
 		IPresence presence = entry.getPresence();
 		RosterBuddy newBuddy = null;
 		if (oldBuddy == null)
@@ -308,16 +308,17 @@ public class RosterViewContentProvider implements IStructuredContentProvider,
 		if (entry == null)
 			return;
 		RosterGroup tg = findAccount(serviceID.getName());
-		replaceEntry(serviceID, tg, entry);		
+		replaceEntry(serviceID, tg, entry);
 	}
-	
+
 	public void handlePresence(ID groupID, ID userID, IPresence presence) {
 		RosterBuddy buddy = findBuddy(findAccount(groupID.getName()), userID);
-		if (buddy != null) fillPresence(buddy,presence);
+		if (buddy != null)
+			fillPresence(buddy, presence);
 	}
-	
+
 	public void handleRosterEntryAdd(ID serviceID, IRosterEntry entry) {
-		handleRosterEntryUpdate(serviceID,entry);
+		handleRosterEntryUpdate(serviceID, entry);
 	}
 
 	public void handleRosterEntryRemove(ID entry) {

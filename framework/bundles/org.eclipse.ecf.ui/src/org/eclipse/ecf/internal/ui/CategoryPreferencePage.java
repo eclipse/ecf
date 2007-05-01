@@ -1,4 +1,4 @@
-package org.eclipse.ecf.ui;
+package org.eclipse.ecf.internal.ui;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -23,7 +23,7 @@ public class CategoryPreferencePage extends PreferencePage implements
 
 	protected Control createContents(Composite parent) {
 		return null;
-		
+
 	}
 
 	public void init(IWorkbench workbench) {

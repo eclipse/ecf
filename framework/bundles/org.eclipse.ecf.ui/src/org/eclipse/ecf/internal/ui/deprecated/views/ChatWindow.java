@@ -20,8 +20,6 @@ import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageEvent;
 import org.eclipse.ecf.ui.SharedImages;
-import org.eclipse.ecf.ui.views.ChatLine;
-import org.eclipse.ecf.ui.views.ILocalInputHandler;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;

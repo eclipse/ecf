@@ -13,7 +13,7 @@ package org.eclipse.ecf.internal.ui.wizards;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.ui.ContainerHolder;
+import org.eclipse.ecf.ui.ContainerConfigurationResult;
 import org.eclipse.ecf.ui.IConfigurationWizard;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -23,8 +23,8 @@ public class ConfigurationWizardNode extends WizardNode {
 
 	protected ContainerTypeDescription typeDescription;
 
-	protected ContainerHolder containerHolder = null;
-	
+	protected ContainerConfigurationResult containerHolder = null;
+
 	public ConfigurationWizardNode(IWorkbench workbench, WizardPage wizardPage,
 			WorkbenchWizardElement wizardElement,
 			ContainerTypeDescription containerTypeDescription) {
@@ -39,7 +39,7 @@ public class ConfigurationWizardNode extends WizardNode {
 		return configWizard;
 	}
 
-	public ContainerHolder getConfigurationResult() {
+	public ContainerConfigurationResult getConfigurationResult() {
 		if (containerHolder != null)
 			return containerHolder;
 		else

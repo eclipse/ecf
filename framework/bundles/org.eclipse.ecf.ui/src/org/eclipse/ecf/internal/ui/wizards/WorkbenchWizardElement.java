@@ -129,8 +129,10 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	}
 
 	public String getContainerTypeName() {
-		return configurationElement.getAttribute(IWizardRegistryConstants.ATT_CONTAINER_TYPE_NAME);
+		return configurationElement
+				.getAttribute(IWizardRegistryConstants.ATT_CONTAINER_TYPE_NAME);
 	}
+
 	/**
 	 * Answer the description parameter of this element
 	 * 
@@ -248,7 +250,8 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 */
 	public String getHelpHref() {
 		// XXX todo change to constant
-		return configurationElement.getAttribute(IWizardRegistryConstants.HELP_HREF);
+		return configurationElement
+				.getAttribute(IWizardRegistryConstants.HELP_HREF);
 	}
 
 	/*
@@ -257,12 +260,14 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 * @see org.eclipse.ui.wizards.INewWizardDescriptor#createWizard()
 	 */
 	public IWorkbenchWizard createWizard() throws CoreException {
-		throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Cannot create workbench wizard", null));
+		throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+				0, "Cannot create workbench wizard", null));
 	}
 
 	public IWizard createWizardForNode() throws CoreException {
 		return (IWizard) createExecutableExtension();
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -335,8 +340,10 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 * @see org.eclipse.ui.wizards.IWizardDescriptor#canFinishEarly()
 	 */
 	public boolean canFinishEarly() {
-		return Boolean.valueOf(
-				configurationElement.getAttribute(IWizardRegistryConstants.CAN_FINISH_EARLY))
+		return Boolean
+				.valueOf(
+						configurationElement
+								.getAttribute(IWizardRegistryConstants.CAN_FINISH_EARLY))
 				.booleanValue();
 	}
 
@@ -346,7 +353,8 @@ public class WorkbenchWizardElement extends WorkbenchAdapter implements
 	 * @see org.eclipse.ui.wizards.IWizardDescriptor#hasPages()
 	 */
 	public boolean hasPages() {
-		String hasPagesString = configurationElement.getAttribute(IWizardRegistryConstants.HAS_PAGES);
+		String hasPagesString = configurationElement
+				.getAttribute(IWizardRegistryConstants.HAS_PAGES);
 		// default value is true
 		if (hasPagesString == null)
 			return true;

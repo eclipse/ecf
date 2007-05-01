@@ -14,8 +14,7 @@ package org.eclipse.ecf.ui.wizards;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.IImageFiles;
 import org.eclipse.ecf.internal.ui.Messages;
-import org.eclipse.ecf.ui.ContainerHolder;
-import org.eclipse.ecf.ui.IContainerHolder;
+import org.eclipse.ecf.ui.ContainerConfigurationResult;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -30,7 +29,7 @@ public class ConfigurationWizardSelectionWizard extends Wizard {
 
 	protected ConfigurationWizardSelectionPage createContainerWizardPage;
 
-	protected ContainerHolder containerHolder;
+	protected ContainerConfigurationResult containerHolder;
 
 	public boolean performFinish() {
 		if (createContainerWizardPage != null) {
@@ -40,7 +39,7 @@ public class ConfigurationWizardSelectionWizard extends Wizard {
 		return false;
 	}
 
-	public IContainerHolder getResult() {
+	public ContainerConfigurationResult getResult() {
 		return this.containerHolder;
 	}
 

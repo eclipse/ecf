@@ -32,14 +32,13 @@ public interface IConfigurationWizard extends IWizard {
 	 *            the {@link ContainerTypeDescription} to use to
 	 *            create/configure the new IContainer instance
 	 */
-	public void init(IWorkbench workbench,
-			ContainerTypeDescription description);
+	public void init(IWorkbench workbench, ContainerTypeDescription description);
 
 	/**
 	 * Get result of configuration.
 	 * 
-	 * @return ContainerHolder the result of the configuration.  If null, the container could not be
-	 * created.
+	 * @return ContainerConfigurationResult the result of the configuration. If
+	 *         null, the container could not be created.
 	 */
-	public ContainerHolder getConfigurationResult();
+	public ContainerConfigurationResult getConfigurationResult();
 }

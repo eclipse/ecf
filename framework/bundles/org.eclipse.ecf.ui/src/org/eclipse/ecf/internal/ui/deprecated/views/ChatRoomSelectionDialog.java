@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.ui.dialogs;
+package org.eclipse.ecf.internal.ui.deprecated.views;
 
 import java.util.ArrayList;
 import java.util.List;

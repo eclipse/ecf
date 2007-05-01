@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.ui.views;
+package org.eclipse.ecf.internal.ui.deprecated.views;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -91,7 +91,7 @@ import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 public class ChatRoomManagerView extends ViewPart implements
 		IChatRoomInvitationListener {
 
-	public static final String VIEW_ID = "org.eclipse.ecf.ui.views.ChatRoomManagerView";
+	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView";
 
 	private static final String COMMAND_PREFIX = "/";
 
@@ -431,8 +431,8 @@ public class ChatRoomManagerView extends ViewPart implements
 			return false;
 		} else {
 			if (MessageDialog.openQuestion(getSite().getShell(),
-					"Close Chat Room", NLS.bind("Close {0}?", tabItem
-							.getText()))) {
+					"Close Chat Room", NLS
+							.bind("Close {0}?", tabItem.getText()))) {
 				chatRoom.disconnect();
 				return true;
 			} else
@@ -654,7 +654,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	class ChatRoom implements IChatRoomInvitationListener, KeyListener {
-		
+
 		private IChatRoomContainer chatRoomContainer;
 
 		private ChatRoomTab chatRoomTab;
@@ -865,7 +865,8 @@ public class ChatRoomManagerView extends ViewPart implements
 					}
 					// get all of the users in this room and store them if they
 					// start with the prefix that the user has typed
-					String[] participants = chatRoomParticipantViewer.getList().getItems();
+					String[] participants = chatRoomParticipantViewer.getList()
+							.getItems();
 					for (int i = 0; i < participants.length; i++) {
 						if (participants[i].startsWith(prefix)) {
 							options.add(participants[i]);
@@ -996,9 +997,11 @@ public class ChatRoomManagerView extends ViewPart implements
 							IPresence.Type.AVAILABLE);
 					ChatRoomParticipant p = new ChatRoomParticipant(fromID);
 					if (isAdd) {
-						if (localUser == null) localUser = p;
+						if (localUser == null)
+							localUser = p;
 						addParticipant(p);
-					} else removeParticipant(p);
+					} else
+						removeParticipant(p);
 				}
 			});
 		}
@@ -1067,7 +1070,8 @@ public class ChatRoomManagerView extends ViewPart implements
 		}
 
 		protected void removeAllParticipants() {
-			org.eclipse.swt.widgets.List l = chatRoomParticipantViewer.getList();
+			org.eclipse.swt.widgets.List l = chatRoomParticipantViewer
+					.getList();
 			for (int i = 0; i < l.getItemCount(); i++) {
 				Object o = chatRoomParticipantViewer.getElementAt(i);
 				if (o != null)
@@ -1136,13 +1140,13 @@ public class ChatRoomManagerView extends ViewPart implements
 
 	public void joinRoom(final String room) {
 		if (room != null)
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				if (rootDisposed)
-					return;
-				doJoinRoom(room, null);
-			}
-		});
+			Display.getDefault().syncExec(new Runnable() {
+				public void run() {
+					if (rootDisposed)
+						return;
+					doJoinRoom(room, null);
+				}
+			});
 	}
 
 	public void dispose() {

@@ -29,8 +29,8 @@ import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
 public abstract class AbstractURLHyperlinkDetector extends
 		org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector {
 
-	public static final String DEFAULT_DETECTABLE = "://";
-	public static final String DEFAULT_ENDDELIMITERS = " \t\n\r\f<>";
+	public static final String DEFAULT_DETECTABLE = "://"; //$NON-NLS-1$
+	public static final String DEFAULT_ENDDELIMITERS = " \t\n\r\f<>"; //$NON-NLS-1$
 
 	String[] protocols = null;
 
@@ -75,7 +75,8 @@ public abstract class AbstractURLHyperlinkDetector extends
 					&& offsetInLine <= detectableOffsetInLine + resultLength)
 				break;
 
-			separatorOffset = fromLine.indexOf(DEFAULT_DETECTABLE, separatorOffset + 1);
+			separatorOffset = fromLine.indexOf(DEFAULT_DETECTABLE,
+					separatorOffset + 1);
 		}
 
 		if (separatorOffset < 0)
@@ -133,6 +134,9 @@ public abstract class AbstractURLHyperlinkDetector extends
 	protected abstract IHyperlink[] createHyperLinksForURI(IRegion region,
 			URI uri);
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.text.hyperlink.IHyperlinkDetector#detectHyperlinks(org.eclipse.jface.text.ITextViewer, org.eclipse.jface.text.IRegion, boolean)
+	 */
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
 			IRegion region, boolean canShowMultipleHyperlinks) {
 

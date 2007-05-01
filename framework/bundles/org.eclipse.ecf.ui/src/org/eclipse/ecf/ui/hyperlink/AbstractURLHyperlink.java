@@ -73,10 +73,11 @@ public abstract class AbstractURLHyperlink implements IHyperlink {
 		this.uri = uri;
 	}
 
-	protected abstract IContainer createContainer() throws ContainerCreateException;
-	
+	protected abstract IContainer createContainer()
+			throws ContainerCreateException;
+
 	protected abstract IConnectWizard createConnectWizard();
-	
+
 	/*
 	 * @see org.eclipse.jdt.internal.ui.javaeditor.IHyperlink#getHyperlinkRegion()
 	 */
@@ -136,6 +137,5 @@ public abstract class AbstractURLHyperlink implements IHyperlink {
 			Activator.getDefault().getLog().log(status);
 		}
 	}
-
 
 }

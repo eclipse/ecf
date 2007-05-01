@@ -10,7 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.ui.dialogs;
 
-import org.eclipse.ecf.ui.IContainerHolder;
+import org.eclipse.ecf.ui.ContainerConfigurationResult;
 import org.eclipse.ecf.ui.wizards.ConfigurationWizardSelectionWizard;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -20,18 +20,19 @@ import org.eclipse.ui.IWorkbench;
 public class ConfigurationWizardDialog extends WizardDialog {
 
 	ConfigurationWizardSelectionWizard wizard = null;
-	
-	public ConfigurationWizardDialog(Shell shell, IWorkbench workbench, IStructuredSelection selection) {
+
+	public ConfigurationWizardDialog(Shell shell, IWorkbench workbench,
+			IStructuredSelection selection) {
 		super(shell, new ConfigurationWizardSelectionWizard());
 		this.wizard = (ConfigurationWizardSelectionWizard) getWizard();
 		wizard.init(workbench, selection);
 	}
-	
+
 	public ConfigurationWizardDialog(Shell shell, IWorkbench workbench) {
-		this(shell,workbench, null);
+		this(shell, workbench, null);
 	}
-	
-	public IContainerHolder getResult() {
+
+	public ContainerConfigurationResult getResult() {
 		return wizard.getResult();
 	}
 }
