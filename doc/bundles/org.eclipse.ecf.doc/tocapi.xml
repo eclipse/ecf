@@ -2,12 +2,17 @@
 <toc label="JavaDoc">
 args[0] is http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/package-list
 <topic label="org.eclipse.ecf.core" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/package-summary.html"/>
+<topic label="org.eclipse.ecf.core.events" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/events/package-summary.html"/>
 <topic label="org.eclipse.ecf.core.identity" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/identity/package-summary.html"/>
+<topic label="org.eclipse.ecf.core.provider" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/provider/package-summary.html"/>
+<topic label="org.eclipse.ecf.core.security" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/security/package-summary.html"/>
 <topic label="org.eclipse.ecf.core.sharedobject" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/sharedobject/package-summary.html"/>
 <topic label="org.eclipse.ecf.core.sharedobject.events" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/sharedobject/events/package-summary.html"/>
 <topic label="org.eclipse.ecf.core.sharedobject.provider" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/sharedobject/provider/package-summary.html"/>
 <topic label="org.eclipse.ecf.core.sharedobject.security" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/sharedobject/security/package-summary.html"/>
 <topic label="org.eclipse.ecf.core.sharedobject.util" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/sharedobject/util/package-summary.html"/>
+<topic label="org.eclipse.ecf.core.start" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/start/package-summary.html"/>
+<topic label="org.eclipse.ecf.core.user" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/user/package-summary.html"/>
 <topic label="org.eclipse.ecf.core.util" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/util/package-summary.html"/>
 <topic label="org.eclipse.ecf.datashare" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/datashare/package-summary.html"/>
 <topic label="org.eclipse.ecf.datashare.events" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/datashare/events/package-summary.html"/>
@@ -15,6 +20,7 @@ args[0] is http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/package-list
 <topic label="org.eclipse.ecf.datashare.service" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/datashare/service/package-summary.html"/>
 <topic label="org.eclipse.ecf.discovery" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/discovery/package-summary.html"/>
 <topic label="org.eclipse.ecf.discovery.identity" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/discovery/identity/package-summary.html"/>
+<topic label="org.eclipse.ecf.discovery.service" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/discovery/service/package-summary.html"/>
 <topic label="org.eclipse.ecf.discovery.ui.views" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/discovery/ui/views/package-summary.html"/>
 <topic label="org.eclipse.ecf.filetransfer" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/filetransfer/package-summary.html"/>
 <topic label="org.eclipse.ecf.filetransfer.events" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/filetransfer/events/package-summary.html"/>
@@ -53,8 +59,7 @@ args[0] is http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/package-list
 <topic label="org.eclipse.ecf.ui" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/ui/package-summary.html"/>
 <topic label="org.eclipse.ecf.ui.actions" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/ui/actions/package-summary.html"/>
 <topic label="org.eclipse.ecf.ui.dialogs" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/ui/dialogs/package-summary.html"/>
-<topic label="org.eclipse.ecf.ui.util" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/ui/util/package-summary.html"/>
-<topic label="org.eclipse.ecf.ui.views" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/ui/views/package-summary.html"/>
+<topic label="org.eclipse.ecf.ui.hyperlink" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/ui/hyperlink/package-summary.html"/>
 <topic label="org.eclipse.ecf.ui.wizards" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/ui/wizards/package-summary.html"/>
 
 </toc>
