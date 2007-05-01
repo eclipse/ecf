@@ -151,4 +151,8 @@ public class XMPPRoomID extends BaseID implements IChatID {
 	public String getUsername() {
 		return getNickname();
 	}
+	
+	public String getHostname() {
+		return this.host;
+	}
 }
