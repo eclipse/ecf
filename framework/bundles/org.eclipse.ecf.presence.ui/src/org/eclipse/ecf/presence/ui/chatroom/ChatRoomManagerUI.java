@@ -89,6 +89,14 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 			String inputLine) {
 		return inputLine;
 	}
+	
+	protected IChatRoomViewCloseListener createChatRoomViewCloseListener() {
+		return new IChatRoomViewCloseListener() {
+			public void chatRoomViewClosing() {
+				container.dispose();
+			}
+		};
+	}
 
 	private void setupNewView() throws Exception {
 		IChatRoomInfo roomInfo = manager.getChatRoomInfo(null);
@@ -98,11 +106,7 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 		chatroomview.initialize(
 				ChatRoomManagerView.getUsernameFromID(targetID),
 				ChatRoomManagerView.getHostnameFromID(targetID),
-				managerChatRoom, this, new IChatRoomViewCloseListener() {
-					public void chatRoomViewClosing() {
-						container.dispose();
-					}
-				});
+				managerChatRoom, this, createChatRoomViewCloseListener());
 		// Add listener for container, so that if the container is spontaneously
 		// disconnected,
 		// then we will be able to have the UI respond by making itself inactive

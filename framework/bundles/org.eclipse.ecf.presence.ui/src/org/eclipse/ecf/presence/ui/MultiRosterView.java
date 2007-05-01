@@ -237,7 +237,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		IChatRoomInfo selectedInfo = dialog.getSelectedRoom().getRoomInfo();
 		MultiRosterAccount account = dialog.getSelectedRoom().getAccount();
 		// Now get the secondary ID from the selected room id
-		final ID connectedID = account.getContainer().getConnectedID();
+		final IContainer container = account.getContainer();
+		final ID connectedID = container.getConnectedID();
 		if (connectedID == null) {
 			MessageDialog
 					.openError(
@@ -274,9 +275,9 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 						: ref.getView(true));
 				// initialize new view
 				chatroommanagerview.initialize(ChatRoomManagerView
-						.getUsernameFromID(connectedID),
-						ChatRoomManagerView.getHostnameFromID(connectedID),
-						null, null, new IChatRoomViewCloseListener() {
+						.getUsernameFromID(connectedID), ChatRoomManagerView
+						.getHostnameFromID(connectedID), null, null,
+						new IChatRoomViewCloseListener() {
 							public void chatRoomViewClosing() {
 								RoomWithAView roomView = (RoomWithAView) chatRooms
 										.get(connectedID);
@@ -287,8 +288,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				// join room
 				chatroommanagerview.joinRoom(selectedInfo, null);
 
-				roomView = new RoomWithAView(chatroommanagerview,
-						connectedID);
+				roomView = new RoomWithAView(chatroommanagerview, connectedID);
 				chatRooms.put(roomView.getID(), roomView);
 			} catch (Exception e1) {
 				ErrorDialog ed = new ContainerConnectErrorDialog(getViewSite()

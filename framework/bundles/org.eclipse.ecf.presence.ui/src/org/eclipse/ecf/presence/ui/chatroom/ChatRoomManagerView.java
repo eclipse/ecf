@@ -418,7 +418,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			}
 		});
 	}
-
+ 
 	private boolean closeTabItem(CTabItem tabItem) {
 		ChatRoom chatRoom = findChatRoomForTabItem(tabItem);
 		if (chatRoom == null) {
@@ -1093,8 +1093,8 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	public void dispose() {
-		rootDisposed = true;
 		disconnect();
+		rootDisposed = true;
 		super.dispose();
 	}
 
@@ -1219,6 +1219,9 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	public void disconnect() {
+		if (rootCloseListener != null) {
+			rootCloseListener.chatRoomViewClosing();
+		}
 		// disconnect from each chat room container
 		for (Iterator i = chatRooms.values().iterator(); i.hasNext();) {
 			ChatRoom chatRoom = (ChatRoom) i.next();
@@ -1226,11 +1229,8 @@ public class ChatRoomManagerView extends ViewPart implements
 			if (container != null)
 				container.dispose();
 		}
-		if (rootCloseListener != null) {
-			rootCloseListener.chatRoomViewClosing();
-			rootCloseListener = null;
-		}
 		rootMessageSender = null;
+		rootCloseListener = null;
 		chatRooms.clear();
 	}
 
