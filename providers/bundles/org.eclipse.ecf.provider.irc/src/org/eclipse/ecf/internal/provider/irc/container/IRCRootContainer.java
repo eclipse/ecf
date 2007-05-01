@@ -515,7 +515,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				else
 					showErrorMessage(null, NLS.bind(
 							Messages.IRCRootContainer_Command_Error,
-							new Object[] { message, COMMAND_PREFIX }));
+							message, COMMAND_PREFIX ));
 			}
 		};
 	}
