@@ -67,6 +67,10 @@ public class IRCID extends BaseID implements IChatID {
 	public String getHost() {
 		return uri.getHost();
 	}
+	
+	public String getHostname() {
+		return getHost();
+	}
 	public int getPort() {
 		int p = uri.getPort();
 		if (p == -1) return DEFAULT_IRC_PORT;
