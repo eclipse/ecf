@@ -19,6 +19,13 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.irc.ui.messages"; //$NON-NLS-1$
 	public static String IRCHyperlink_EXCEPTION_IRC_HYPERLINK;
+	public static String IRCUI_DEPART_CONFIRM_MESSAGE;
+	public static String IRCUI_DEPART_CONFIRM_TITLE;
+	public static String IRCUI_DISCONNECT_CONFIRM_MESSAGE;
+	public static String IRCUI_DISCONNECT_CONFIRM_TITLE;
+	public static String IRCUI_JOIN_COMMAND;
+	public static String IRCUI_PART_COMMAND;
+	public static String IRCUI_QUIT_COMMAND;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
