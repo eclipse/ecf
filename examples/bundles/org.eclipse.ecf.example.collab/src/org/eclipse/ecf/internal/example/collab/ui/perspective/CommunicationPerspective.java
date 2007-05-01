@@ -15,7 +15,6 @@ import org.eclipse.ecf.example.collab.ui.LineChatView;
 import org.eclipse.ecf.presence.ui.MessagesView;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView;
-import org.eclipse.ecf.presence.ui.chatroom.ChatRoomView;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
@@ -69,7 +68,6 @@ public class CommunicationPerspective implements IPerspectiveFactory {
 		bottomRight.addView(IPageLayout.ID_TASK_LIST);
 		bottomRight.addView(LineChatView.VIEW_ID);
 		bottomRight.addPlaceholder(CollabDiscoveryView.VIEW_ID);
-		bottomRight.addPlaceholder(ChatRoomView.VIEW_ID);
 		bottomRight.addPlaceholder(ChatRoomManagerView.VIEW_ID);
 		bottomRight.addPlaceholder(MessagesView.VIEW_ID);
 	}
