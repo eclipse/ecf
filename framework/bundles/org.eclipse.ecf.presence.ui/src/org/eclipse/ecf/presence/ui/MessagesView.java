@@ -209,7 +209,7 @@ public class MessagesView extends ViewPart {
 	/**
 	 * Opens a new tab for conversing with a user.
 	 * 
-	 * @param rootMessageSender
+	 * @param messageSender
 	 *            the <tt>IChatMessageSender</tt> interface that can be used
 	 *            to send messages to the other user
 	 * @param typingSender
