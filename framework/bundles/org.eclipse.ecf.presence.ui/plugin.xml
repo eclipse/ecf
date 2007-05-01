@@ -78,4 +78,22 @@
       </view>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="org.eclipse.ecf.ui.viewcategory"
+            class="org.eclipse.ecf.presence.ui.chatroom.ChatRoomView"
+            icon="icons/group.gif"
+            id="org.eclipse.ecf.presence.ui.chatroom.ChatRoomView"
+            name="Chat Room"/>
+      <view
+            allowMultiple="true"
+            category="org.eclipse.ecf.ui.viewcategory"
+            class="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
+            icon="icons/group.gif"
+            id="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
+            name="Chat Room Manager"/>
+   </extension>
+
 </plugin>
