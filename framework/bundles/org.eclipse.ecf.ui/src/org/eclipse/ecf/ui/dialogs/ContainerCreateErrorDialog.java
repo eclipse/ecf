@@ -11,7 +11,6 @@
 package org.eclipse.ecf.ui.dialogs;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.internal.ui.Activator;
@@ -29,17 +28,10 @@ public class ContainerCreateErrorDialog extends ErrorDialog {
 				parentShell,
 				Messages.ContainerCreateErrorDialog_CREATE_CONTAINER_ERROR_TITLE,
 				Messages.ContainerCreateErrorDialog_CREATE_CONTAINER_ERROR_MESSAGE,
-				new MultiStatus(
+				new Status(
+						IStatus.ERROR,
 						Activator.PLUGIN_ID,
 						IStatus.ERROR,
-						new IStatus[] { new Status(
-								IStatus.ERROR,
-								Activator.PLUGIN_ID,
-								IStatus.ERROR,
-								(exception != null) ? exception
-										.getLocalizedMessage()
-										: Messages.ContainerCreateErrorDialog_CREATE_CONTAINER_ERROR_MESSAGE,
-								exception) },
 						(exception != null) ? exception.getLocalizedMessage()
 								: Messages.ContainerCreateErrorDialog_CREATE_CONTAINER_ERROR_MESSAGE,
 						exception), IStatus.ERROR);

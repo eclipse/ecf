@@ -11,7 +11,6 @@
 package org.eclipse.ecf.ui.dialogs;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.internal.ui.Activator;
@@ -32,18 +31,11 @@ public class ContainerConnectErrorDialog extends ErrorDialog {
 				Messages.ContainerConnectErrorDialog_ERROR_TITLE,
 				NLS.bind(Messages.ContainerConnectErrorDialog_ERROR_MESSAGE,
 						targetID),
-				new MultiStatus(Activator.PLUGIN_ID,
-						IStatus.ERROR,
-						new IStatus [] { new Status(IStatus.ERROR,Activator.PLUGIN_ID,IStatus.ERROR,(exception != null) ? exception.getLocalizedMessage()
+				new Status(IStatus.ERROR,Activator.PLUGIN_ID,IStatus.ERROR,(exception != null) ? exception.getLocalizedMessage()
 								: NLS
 								.bind(
 										Messages.ContainerConnectErrorDialog_ERROR_MESSAGE,
-										targetID), exception) },
-						(exception != null) ? exception.getLocalizedMessage()
-								: NLS
-										.bind(
-												Messages.ContainerConnectErrorDialog_ERROR_MESSAGE,
-												targetID), exception),
+										targetID), exception),
 				IStatus.ERROR);
 	}
 
