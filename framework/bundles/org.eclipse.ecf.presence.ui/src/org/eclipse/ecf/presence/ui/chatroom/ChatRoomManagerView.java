@@ -91,6 +91,11 @@ import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 public class ChatRoomManagerView extends ViewPart implements
 		IChatRoomInvitationListener {
 
+	/**
+	 * 
+	 */
+	private static final String ATSIGN = "@";
+
 	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"; //$NON-NLS-1$
 
 	private static final int RATIO_WRITE_PANE = 1;
@@ -461,11 +466,13 @@ public class ChatRoomManagerView extends ViewPart implements
 			final IChatRoomContainer rootChatRoomContainer,
 			final IChatRoomCommandListener commandListener,
 			final IChatRoomViewCloseListener closeListener) {
-		ChatRoomManagerView.this.localUserName = localUserName;
-		ChatRoomManagerView.this.hostName = hostName;
+		ChatRoomManagerView.this.localUserName = (localUserName == null) ? Messages.ChatRoomManagerView_DEFAULT_USER
+				: localUserName;
+		ChatRoomManagerView.this.hostName = (hostName == null) ? Messages.ChatRoomManagerView_DEFAULT_HOST
+				: hostName;
 		ChatRoomManagerView.this.rootCloseListener = closeListener;
 		ChatRoomManagerView.this.commandListener = commandListener;
-		String viewTitle = localUserName + "@" + hostName;
+		String viewTitle = localUserName + ATSIGN + hostName;
 		ChatRoomManagerView.this.setPartName(viewTitle);
 		ChatRoomManagerView.this
 				.setTitleToolTip(Messages.ChatRoomManagerView_VIEW_TITLE_HOST_PREFIX
@@ -1121,7 +1128,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				return user == null ? targetID.getName() : user;
 			} catch (URISyntaxException e) {
 				String userAtHost = targetID.getName();
-				int atIndex = userAtHost.lastIndexOf("@");
+				int atIndex = userAtHost.lastIndexOf(ATSIGN);
 				if (atIndex != -1)
 					userAtHost = userAtHost.substring(0, atIndex);
 				return userAtHost;
@@ -1139,7 +1146,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				return host == null ? targetID.getName() : host;
 			} catch (URISyntaxException e) {
 				String userAtHost = targetID.getName();
-				int atIndex = userAtHost.lastIndexOf("@");
+				int atIndex = userAtHost.lastIndexOf(ATSIGN);
 				if (atIndex != -1)
 					userAtHost = userAtHost.substring(atIndex + 1);
 				return userAtHost;
