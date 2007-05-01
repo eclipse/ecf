@@ -31,4 +31,6 @@ public interface IChatID {
 	 *         <code>null</code>.
 	 */
 	public String getUsername();
+	
+	public String getHostname();
 }
