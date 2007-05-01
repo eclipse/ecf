@@ -5,18 +5,16 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.IExceptionHandler;
-import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.ui.Activator;
-import org.eclipse.ecf.internal.ui.UIDebugOptions;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
+/**
+ * Action class to synchronously invoke {@link IContainer#connect(ID, IConnectContext)}.
+ */
 public class SynchContainerConnectAction implements
 		IWorkbenchWindowActionDelegate {
-
-	static final String RUN_METHOD = "run"; //$NON-NLS-1$
 
 	protected IWorkbenchWindow window;
 
@@ -60,19 +58,9 @@ public class SynchContainerConnectAction implements
 
 	public void run(IAction action) {
 		try {
-			Trace.entering(Activator.PLUGIN_ID,
-					UIDebugOptions.METHODS_ENTERING, this.getClass(),
-					RUN_METHOD, action);
 			container.connect(this.targetID, this.connectContext);
 		} catch (ContainerConnectException e) {
-			// First Trace
-			Trace.catching(Activator.PLUGIN_ID,
-					UIDebugOptions.METHODS_ENTERING, this.getClass(),
-					RUN_METHOD, e);
 			handleConnectException(action, e);
-		} finally {
-			Trace.exiting(Activator.PLUGIN_ID, UIDebugOptions.METHODS_EXITING,
-					this.getClass(), RUN_METHOD);
 		}
 	}
 

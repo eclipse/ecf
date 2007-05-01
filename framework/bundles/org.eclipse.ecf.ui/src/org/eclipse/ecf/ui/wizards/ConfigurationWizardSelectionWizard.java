@@ -21,6 +21,11 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
+/**
+ * A wizard to allow the selection and display of a configuration.  This wizard shows
+ * the available IConfigurationWizards in a list, and when selected opens up the
+ * selected configuration wizard.
+ */
 public class ConfigurationWizardSelectionWizard extends Wizard {
 
 	private IWorkbench workbench;
@@ -32,14 +37,12 @@ public class ConfigurationWizardSelectionWizard extends Wizard {
 	protected ContainerConfigurationResult containerHolder;
 
 	public boolean performFinish() {
-		if (createContainerWizardPage != null) {
-			this.containerHolder = createContainerWizardPage
+		if (createContainerWizardPage != null) this.containerHolder = createContainerWizardPage
 					.getContainerResult();
-		}
-		return false;
+		return (this.containerHolder != null);
 	}
 
-	public ContainerConfigurationResult getResult() {
+	public ContainerConfigurationResult getContainerConfigurationResult() {
 		return this.containerHolder;
 	}
 

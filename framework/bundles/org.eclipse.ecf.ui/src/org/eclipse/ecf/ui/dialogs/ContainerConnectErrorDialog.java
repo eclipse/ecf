@@ -13,12 +13,16 @@ package org.eclipse.ecf.ui.dialogs;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * Error dialog to show when an {@link ContainerConnectException} is thrown.
+ */
 public class ContainerConnectErrorDialog extends ErrorDialog {
 
 	public ContainerConnectErrorDialog(Shell parentShell, int errorCode,

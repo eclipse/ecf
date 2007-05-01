@@ -33,6 +33,6 @@ public class ConfigurationWizardDialog extends WizardDialog {
 	}
 
 	public ContainerConfigurationResult getResult() {
-		return wizard.getResult();
+		return wizard.getContainerConfigurationResult();
 	}
 }

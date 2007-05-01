@@ -30,7 +30,12 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * 
+ * Abstract class for representing ECF URL hyperlinks.  This class can be subclassed to 
+ * create an URL hyperlink specifically for accessing ECF protocols.  For example,
+ * and XMPPURLHyperlink subclass can be created to open URLs of the form:
+ * <p>
+ * xmpp://foo@bar.com
+ * </p>
  */
 public abstract class AbstractURLHyperlink implements IHyperlink {
 
@@ -76,6 +81,12 @@ public abstract class AbstractURLHyperlink implements IHyperlink {
 	protected abstract IContainer createContainer()
 			throws ContainerCreateException;
 
+	/**
+	 * Create a connect wizard for this hyperlink.  Subclasses must implement this
+	 * method to return a non-null instance of IConnectWizard when this method
+	 * is called (during {@link #open()}.
+	 * @return non-<code>null</code> instance implementing {@link IConnectWizard}.
+	 */
 	protected abstract IConnectWizard createConnectWizard();
 
 	/*
@@ -125,7 +136,9 @@ public abstract class AbstractURLHyperlink implements IHyperlink {
 			IWorkbench workbench = PlatformUI.getWorkbench();
 			IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 			IContainer container = createContainer();
+			Assert.isNotNull(container);
 			IConnectWizard icw = createConnectWizard();
+			Assert.isNotNull(icw);
 			icw.init(workbench, container);
 			WizardDialog dialog = new WizardDialog(window.getShell(), icw);
 			dialog.open();

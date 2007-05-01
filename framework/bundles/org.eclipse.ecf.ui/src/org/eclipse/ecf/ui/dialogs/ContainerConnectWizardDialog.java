@@ -25,31 +25,27 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 
+/**
+ * Dialog to show container connect wizard.
+ */
 public class ContainerConnectWizardDialog extends WizardDialog {
 
 	public ContainerConnectWizardDialog(Shell parentShell, IWorkbench workbench,
-			ContainerConfigurationResult containerHolder) {
+			ContainerConfigurationResult containerHolder) throws CoreException {
 		super(parentShell, getWizard(workbench, containerHolder));
 	}
 
 	protected static IConnectWizard getWizard(IWorkbench workbench,
-			ContainerConfigurationResult containerHolder) {
+			ContainerConfigurationResult containerHolder) throws CoreException {
 		IConnectWizard connectWizard = null;
-		try {
-			IConfigurationElement ce = findConnectWizardConfigurationElements(containerHolder)[0];
-			connectWizard = (IConnectWizard) ce
+		IConfigurationElement ce = findConnectWizardConfigurationElements(containerHolder)[0];
+		connectWizard = (IConnectWizard) ce
 					.createExecutableExtension(IWizardRegistryConstants.ATT_CLASS);
 			connectWizard.init(workbench, containerHolder.getContainer());
-		} catch (CoreException e) {
-			// TODO show error dialog
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO show error dialog
-		}
 		return connectWizard;
 	}
 
-	public static IConfigurationElement[] findConnectWizardConfigurationElements(
+	protected static IConfigurationElement[] findConnectWizardConfigurationElements(
 			ContainerConfigurationResult containerHolder) {
 		List result = new ArrayList();
 		IExtensionRegistry reg = Activator.getDefault().getExtensionRegistry();

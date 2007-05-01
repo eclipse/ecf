@@ -57,6 +57,9 @@ import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.model.AdaptableList;
 import org.eclipse.ui.wizards.IWizardCategory;
 
+/**
+ * A wizard page for {@link ConfigurationWizardSelectionWizard}.  
+ */
 public class ConfigurationWizardSelectionPage extends WizardSelectionPage {
 
 	private static final int CONTAINERTYPEDESCRIPTION_ERROR_CODE = 333;

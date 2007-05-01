@@ -24,7 +24,12 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
 
 /**
- * 
+ * Abstract class for representing ECF URL hyperlink detectors.  This class should be subclassed to 
+ * detect URL hyperlink specifically for accessing ECF protocols.  For example,
+ * and XMPPURLHyperlinkDetector subclass can be created to detect URLs of the form:
+ * <p>
+ * xmpp://foo@bar.com
+ * </p>
  */
 public abstract class AbstractURLHyperlinkDetector extends
 		org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector {

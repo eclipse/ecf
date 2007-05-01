@@ -13,11 +13,15 @@ package org.eclipse.ecf.ui.dialogs;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * Error dialog to show when an {@link ContainerCreateException} is thrown.
+ */
 public class ContainerCreateErrorDialog extends ErrorDialog {
 
 	public ContainerCreateErrorDialog(Shell parentShell, Throwable exception) {
