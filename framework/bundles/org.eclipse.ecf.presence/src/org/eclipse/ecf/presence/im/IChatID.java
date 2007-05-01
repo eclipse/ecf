@@ -32,5 +32,11 @@ public interface IChatID {
 	 */
 	public String getUsername();
 	
+	/**
+	 * Get hostname for this IChatID
+	 * 
+	 * @return 	String hostname for the implementing IChatID. May return
+	 *         <code>null</code>.
+	 */
 	public String getHostname();
 }
