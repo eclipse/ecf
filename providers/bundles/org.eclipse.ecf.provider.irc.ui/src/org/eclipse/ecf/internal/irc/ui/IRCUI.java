@@ -98,7 +98,7 @@ public class IRCUI extends ChatRoomManagerUI {
 				if (args.length > 1) {
 					arg2 = args[1];
 				}
-				chatroomview.joinRoom(arg1, arg2);
+				chatroomview.joinRoom(manager.getChatRoomInfo(arg1), arg2);
 				return null;
 			}
 			// QUIT can be done from root or channel
@@ -109,7 +109,7 @@ public class IRCUI extends ChatRoomManagerUI {
 								.getShell(), Messages.IRCUI_DISCONNECT_CONFIRM_TITLE, NLS
 								.bind(Messages.IRCUI_DISCONNECT_CONFIRM_MESSAGE, connectedID
 										.getName())))
-					chatroomview.hardDisconnect();
+					chatroomview.disconnect();
 				return null;
 			}
 			if (chatRoomContainer != null
