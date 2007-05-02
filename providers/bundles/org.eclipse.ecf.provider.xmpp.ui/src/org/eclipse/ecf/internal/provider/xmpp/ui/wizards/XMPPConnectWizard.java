@@ -14,8 +14,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
@@ -25,7 +23,6 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.util.IExceptionHandler;
 import org.eclipse.ecf.filetransfer.IFileTransferInfo;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransferRequestListener;
@@ -47,7 +44,7 @@ import org.eclipse.ecf.presence.ui.MessagesView;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
-import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
+import org.eclipse.ecf.ui.dialogs.IDCreateErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.osgi.util.NLS;
@@ -73,15 +70,16 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 	private IConnectContext connectContext;
 
 	protected String usernameAtHost;
-	
+
 	public XMPPConnectWizard() {
 		super();
 	}
-	
+
 	public XMPPConnectWizard(String usernameAtHost) {
 		this();
 		this.usernameAtHost = usernameAtHost;
 	}
+
 	protected IIncomingFileTransferRequestListener requestListener = new IIncomingFileTransferRequestListener() {
 		public void handleFileTransferRequest(
 				final IFileTransferRequestEvent event) {
@@ -233,9 +231,8 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 				MessagesView view = (MessagesView) workbench
 						.getActiveWorkbenchWindow().getActivePage().findView(
 								MessagesView.VIEW_ID);
-				if (view != null) {
+				if (view != null)
 					view.displayTypingNotification(e);
-				}
 			}
 		});
 	}
@@ -248,8 +245,7 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 			targetID = IDFactory.getDefault().createID(
 					container.getConnectNamespace(), page.getConnectID());
 		} catch (IDCreateException e) {
-			// TODO: This needs to be handled properly
-			e.printStackTrace();
+			new IDCreateErrorDialog(null,page.getConnectID(),e).open();
 			return false;
 		}
 
@@ -285,29 +281,8 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 		IOutgoingFileTransferContainerAdapter ioftca = (IOutgoingFileTransferContainerAdapter) container
 				.getAdapter(IOutgoingFileTransferContainerAdapter.class);
 		ioftca.addListener(requestListener);
-
-		new AsynchContainerConnectAction(container, targetID, connectContext,
-				new IExceptionHandler() {
-					public IStatus handleException(final Throwable exception) {
-						if (exception != null) {
-							exception.printStackTrace();
-							Display.getDefault().asyncExec(new Runnable() {
-								public void run() {
-									new ContainerConnectErrorDialog(
-											workbench
-													.getActiveWorkbenchWindow()
-													.getShell(),
-											1,
-											Messages.XMPPConnectWizard_SEE_DETAILS,
-											targetID.getName(), exception)
-											.open();
-								}
-							});
-						}
-						return Status.OK_STATUS;
-					}
-
-				}).run(null);
+		// Connect
+		new AsynchContainerConnectAction(container, targetID, connectContext).run();
 
 		return true;
 	}
