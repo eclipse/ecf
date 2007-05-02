@@ -121,5 +121,9 @@ public abstract class AbstractRosterManager implements IRosterManager {
 	public Object getAdapter(Class adapter) {
 		return null;
 	}
-
+	
+	public void disconnect() {
+		rosterSubscriptionListeners.clear();
+		rosterUpdateListeners.clear();
+	}
 }
