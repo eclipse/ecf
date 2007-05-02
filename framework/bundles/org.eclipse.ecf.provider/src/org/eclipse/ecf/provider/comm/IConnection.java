@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * Connection interface to represent transport-level connections
@@ -33,12 +34,10 @@ public interface IConnection extends IAdaptable {
 	 *            the timeout (in ms) for the connection to occur
 	 * @return a result object that is of type specific to provider
 	 *         implementation
-	 * @throws IOException
-	 *             thrown if connection cannot be established within given
-	 *             timeout period
+	 * @throws ECFException TODO
 	 */
 	public Object connect(ID remote, Object data, int timeout)
-			throws IOException;
+			throws ECFException;
 
 	/**
 	 * Disconnect

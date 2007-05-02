@@ -29,6 +29,7 @@ import java.util.Vector;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.util.SimpleFIFOQueue;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
 import org.eclipse.ecf.internal.provider.Messages;
@@ -166,38 +167,40 @@ public final class Client implements ISynchAsynchConnection {
 		}
 	}
 	public synchronized Object connect(ID remote, Object data, int timeout)
-			throws IOException {
+			throws ECFException {
 		debug("connect(" + remote + "," + data + "," + timeout + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		if (socket != null)
-			throw new ConnectException(Messages.Client_Already_Connected
-					+ getAddressPort());
+			throw new ECFException(Messages.Client_Already_Connected);
 		// parse URI
 		URI anURI = null;
 		try {
 			anURI = new URI(remote.getName());
 		} catch (URISyntaxException e) {
-			IOException except = new IOException(Messages.Client_Invalid_URI
-					+ remote);
-			except.setStackTrace(e.getStackTrace());
-			throw except;
+			throw new ECFException(Messages.Client_Invalid_URI
+					+ remote,e);
 		}
 		// Get socket factory and create/connect socket
 		SocketFactory fact = SocketFactory.getSocketFactory();
 		if (fact == null)
 			fact = SocketFactory.getDefaultSocketFactory();
-		Socket s = fact.createSocket(anURI.getHost(), anURI.getPort(), timeout);
-		// Set socket options
-		setSocketOptions(s);
-		// Now we've got a connection so set our socket
-		setSocket(s);
-		outputStream = new ObjectOutputStream(s.getOutputStream());
-		outputStream.flush();
-		inputStream = new ObjectInputStream(s.getInputStream());
-		debug("connect;" + anURI); //$NON-NLS-1$
-		// send connect data and get syncronous response
-		send(new ConnectRequestMessage(anURI, (Serializable) data));
 		ConnectResultMessage res = null;
-		res = (ConnectResultMessage) readObject();
+		try {
+			Socket s = fact.createSocket(anURI.getHost(), anURI.getPort(), timeout);
+			// Set socket options
+			setSocketOptions(s);
+			// Now we've got a connection so set our socket
+			setSocket(s);
+			outputStream = new ObjectOutputStream(s.getOutputStream());
+			outputStream.flush();
+			inputStream = new ObjectInputStream(s.getInputStream());
+			debug("connect;" + anURI); //$NON-NLS-1$
+			// send connect data and get syncronous response
+			send(new ConnectRequestMessage(anURI, (Serializable) data));
+			res = null;
+			res = (ConnectResultMessage) readObject();
+		} catch (Exception e) {
+			throw new ECFException(e.getLocalizedMessage(),e);
+		}
 		debug("connect;rcv:" + res); //$NON-NLS-1$
 		// Setup threads
 		setupThreads();

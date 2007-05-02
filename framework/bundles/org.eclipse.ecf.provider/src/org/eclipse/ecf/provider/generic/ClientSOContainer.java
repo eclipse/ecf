@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.net.ConnectException;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
@@ -28,6 +29,7 @@ import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerClient;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
@@ -153,7 +155,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 						// Make connect call
 						response = aConnection.connect(remote, connectData,
 								connectTimeout);
-					} catch (IOException e) {
+					} catch (ECFException e) {
 						if (getConnection() != aConnection)
 							killConnection(aConnection);
 						else
@@ -179,11 +181,13 @@ public abstract class ClientSOContainer extends SOContainer implements
 					aConnection.start();
 				}
 			}
+		} catch (ContainerConnectException e) {
+			throw e;
+		} catch (ECFException e) { 
+			IStatus s = e.getStatus();
+			throw new ContainerConnectException(s.getMessage(), s.getException());
 		} catch (Exception e) {
-			traceStack("Exception in connect", e); //$NON-NLS-1$
-			ContainerConnectException except = new ContainerConnectException(
-					Messages.ClientSOContainer_Exception_Connecting + remote.getName(), e);
-			throw except;
+			throw new ContainerConnectException(e.getLocalizedMessage(), e);
 		}
 	}
 

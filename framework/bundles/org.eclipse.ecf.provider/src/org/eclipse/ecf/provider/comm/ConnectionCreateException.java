@@ -10,6 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.comm;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -19,6 +20,10 @@ import org.eclipse.ecf.core.util.ECFException;
 public class ConnectionCreateException extends ECFException {
 	private static final long serialVersionUID = 3904958651231058229L;
 
+	public ConnectionCreateException(IStatus status) {
+		super(status);
+	}
+	
 	public ConnectionCreateException() {
 		super();
 	}
