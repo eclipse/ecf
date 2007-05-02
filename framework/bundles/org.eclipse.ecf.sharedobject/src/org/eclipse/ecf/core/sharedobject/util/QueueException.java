@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.sharedobject.util;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 public class QueueException extends ECFException {
@@ -15,6 +16,9 @@ public class QueueException extends ECFException {
 
 	IQueue theQueue = null;
 
+	public QueueException(IStatus status) {
+		super(status);
+	}
 	public QueueException() {
 		super();
 	}

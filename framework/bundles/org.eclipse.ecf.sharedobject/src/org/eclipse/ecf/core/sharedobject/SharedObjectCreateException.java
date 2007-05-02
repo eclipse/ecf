@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.sharedobject;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -22,6 +23,9 @@ public class SharedObjectCreateException extends ECFException {
 		super();
 	}
 
+	public SharedObjectCreateException(IStatus status) {
+		super(status);
+	}
 	public SharedObjectCreateException(String arg0) {
 		super(arg0);
 	}

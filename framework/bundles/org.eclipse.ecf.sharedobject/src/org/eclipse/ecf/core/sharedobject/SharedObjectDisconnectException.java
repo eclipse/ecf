@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.sharedobject;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -23,6 +24,9 @@ public class SharedObjectDisconnectException extends ECFException {
 		super();
 	}
 
+	public SharedObjectDisconnectException(IStatus status) {
+		super(status);
+	}
 	public SharedObjectDisconnectException(String arg0) {
 		super(arg0);
 	}

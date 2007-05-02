@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.sharedobject;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -19,6 +20,10 @@ import org.eclipse.ecf.core.util.ECFException;
 public class SharedObjectAddException extends ECFException {
 	private static final long serialVersionUID = 3257853198755705913L;
 
+	public SharedObjectAddException(IStatus status) {
+		super(status);
+	}
+	
 	public SharedObjectAddException() {
 		super();
 	}
