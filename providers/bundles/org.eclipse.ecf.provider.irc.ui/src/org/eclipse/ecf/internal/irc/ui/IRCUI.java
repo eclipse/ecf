@@ -93,12 +93,7 @@ public class IRCUI extends ChatRoomManagerUI {
 			System.arraycopy(tokens, 1, args, 0, tokens.length - 1);
 			// JOIN can be done from root or channel
 			if (command.equalsIgnoreCase(Messages.IRCUI_JOIN_COMMAND)) {
-				String arg1 = args[0];
-				String arg2 = ""; //$NON-NLS-1$
-				if (args.length > 1) {
-					arg2 = args[1];
-				}
-				chatroomview.joinRoom(manager.getChatRoomInfo(arg1), arg2);
+				chatroomview.joinRoom(manager.getChatRoomInfo(args[0]), (args.length > 1)?args[1]:"");
 				return null;
 			}
 			// QUIT can be done from root or channel

@@ -11,34 +11,24 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.irc.ui.wizards;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.util.IExceptionHandler;
-import org.eclipse.ecf.internal.irc.ui.Activator;
 import org.eclipse.ecf.internal.irc.ui.IRCUI;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
-import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.ecf.ui.dialogs.IDCreateErrorDialog;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 
 public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 
 	public static final String DEFAULT_GUEST_USER = "guest";
 	
-	private Shell shell;
-
 	private IRCConnectWizardPage page;
 
 	private IContainer container;
@@ -48,22 +38,6 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 	private IConnectContext connectContext;
 
 	private String authorityAndPath = null;
-
-	private IExceptionHandler exceptionHandler = new IExceptionHandler() {
-		public IStatus handleException(final Throwable exception) {
-			if (exception != null) {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						new ContainerConnectErrorDialog(shell, IStatus.ERROR,
-								"See Details", targetID.getName(), exception)
-								.open();
-					}
-				});
-			}
-			return new Status(IStatus.OK, Activator.PLUGIN_ID, IStatus.OK,
-					"Connected", null);
-		}
-	};
 
 	public IRCConnectWizard() {
 		super();
@@ -80,7 +54,6 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 	}
 
 	public void init(IWorkbench workbench, IContainer container) {
-		shell = workbench.getActiveWorkbenchWindow().getShell();
 		this.container = container;
 	}
 
@@ -93,20 +66,19 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 			targetID = IDFactory.getDefault().createID(
 					container.getConnectNamespace(), connectID);
 		} catch (IDCreateException e) {
-			MessageDialog.openError(shell, "Connect Error", NLS.bind(
-					"Invalid connect ID: {0}", connectID));
+			new IDCreateErrorDialog(null,connectID,e).open();
 			return false;
 		}
 
 		IChatRoomManager manager = (IChatRoomManager) this.container
 				.getAdapter(IChatRoomManager.class);
 
-		IRCUI ui = new IRCUI(this.container, manager, exceptionHandler);
+		IRCUI ui = new IRCUI(this.container, manager, null);
 		ui.showForTarget(targetID);
 		// If it's not already connected, then we connect this new container
 		if (!ui.isContainerConnected()) 
 			new AsynchContainerConnectAction(this.container, this.targetID,
-					this.connectContext, exceptionHandler).run(null);
+					this.connectContext).run();
 
 
 		return true;
