@@ -123,7 +123,6 @@ public abstract class AbstractRosterManager implements IRosterManager {
 	}
 	
 	public void disconnect() {
-		rosterSubscriptionListeners.clear();
-		rosterUpdateListeners.clear();
+		// do nothing, as we don't ever disconnect from client
 	}
 }
