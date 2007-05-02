@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.telephony.call;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -45,4 +46,7 @@ public class CallException extends ECFException {
 		super(message, cause);
 	}
 
+	public CallException(IStatus status) {
+		super(status);
+	}
 }
