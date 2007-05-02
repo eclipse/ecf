@@ -4,7 +4,4 @@
 <toc label="Getting Started" link_to="toc.xml#gettingstarted"> 
 	<topic label="System Requirements" href="html/gettingstarted/prerequisites.html"/>
 	<topic label="ECF Home Page" href="http://www.eclipse.org/ecf/"/>
-	<topic label="ECF Wiki" href="http://wiki.eclipse.org/index.php/Eclipse_Communication_Framework_Project"/>
-	<topic label="ECF Bundle API Docs" href="http://wiki.eclipse.org/index.php/ECF_API_Docs"/>
-    <topic label="ECF Servers" href="http://wiki.eclipse.org/index.php/ECF_Servers"/>
 </toc>
