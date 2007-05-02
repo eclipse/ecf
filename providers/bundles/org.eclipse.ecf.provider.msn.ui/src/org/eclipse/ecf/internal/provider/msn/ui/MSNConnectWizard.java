@@ -10,8 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.msn.ui;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
@@ -20,7 +18,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.util.IExceptionHandler;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
@@ -34,7 +31,7 @@ import org.eclipse.ecf.presence.ui.MessagesView;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
-import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
+import org.eclipse.ecf.ui.dialogs.IDCreateErrorDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
@@ -162,11 +159,8 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 			targetID = container.getConnectNamespace().createInstance(
 					new Object[] { page.getEmail() });
 		} catch (IDCreateException e) {
-			new ContainerConnectErrorDialog(workbench
-					.getActiveWorkbenchWindow().getShell(), 1,
-					Messages.MSNConnectWizard_CannotCreateTargetID, page
-							.getEmail(), e).open();
-			return true;
+			new IDCreateErrorDialog(null,page.getEmail(),e).open();
+			return false;
 		}
 
 		final IPresenceContainerAdapter adapter = (IPresenceContainerAdapter) container
@@ -197,24 +191,7 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 			}
 		});
 
-		new AsynchContainerConnectAction(container, targetID, connectContext,
-				new IExceptionHandler() {
-					public IStatus handleException(final Throwable exception) {
-						if (exception != null) {
-							exception.printStackTrace();
-							Display.getDefault().asyncExec(new Runnable() {
-								public void run() {
-									new ContainerConnectErrorDialog(workbench
-											.getActiveWorkbenchWindow()
-											.getShell(), 1, null, targetID
-											.getName(), exception).open();
-								}
-							});
-						}
-						return Status.OK_STATUS;
-					}
-
-				}).run(null);
+		new AsynchContainerConnectAction(container, targetID, connectContext).run();
 
 		return true;
 	}
