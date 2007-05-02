@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -18,6 +19,10 @@ public class IncomingFileTransferException extends ECFException {
 
 	private static final long serialVersionUID = 2438441801862623371L;
 
+	public IncomingFileTransferException(IStatus status) {
+		super(status);
+	}
+	
 	public IncomingFileTransferException() {
 	}
 

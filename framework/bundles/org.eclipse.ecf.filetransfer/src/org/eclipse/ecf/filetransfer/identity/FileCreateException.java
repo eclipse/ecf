@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer.identity;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -19,6 +20,10 @@ public class FileCreateException extends ECFException {
 
 	private static final long serialVersionUID = -4242692047102300537L;
 
+	public FileCreateException(IStatus status) {
+		super(status);
+	}
+	
 	public FileCreateException() {
 		super();
 	}

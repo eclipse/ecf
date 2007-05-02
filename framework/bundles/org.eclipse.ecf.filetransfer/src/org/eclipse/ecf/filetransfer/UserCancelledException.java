@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -21,6 +22,9 @@ public class UserCancelledException extends ECFException {
 	public UserCancelledException() {
 	}
 
+	public UserCancelledException(IStatus status) {
+		super(status);
+	}
 	public UserCancelledException(String message) {
 		super(message);
 	}
