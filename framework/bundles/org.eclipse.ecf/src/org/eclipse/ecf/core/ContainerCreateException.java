@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -18,6 +19,10 @@ import org.eclipse.ecf.core.util.ECFException;
 public class ContainerCreateException extends ECFException {
 	private static final long serialVersionUID = -6979687717421003065L;
 
+	public ContainerCreateException(IStatus status) {
+		super(status);
+	}
+	
 	public ContainerCreateException() {
 		super();
 	}

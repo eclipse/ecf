@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 /**
@@ -34,5 +35,9 @@ public class ContainerConnectException extends ECFException {
 
 	public ContainerConnectException(String message, Throwable cause) {
 		super(message, cause);
+	}
+	
+	public ContainerConnectException(IStatus status) {
+		super(status);
 	}
 }
