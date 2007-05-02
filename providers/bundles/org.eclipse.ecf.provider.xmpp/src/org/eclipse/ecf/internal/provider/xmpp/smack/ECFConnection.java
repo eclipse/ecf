@@ -13,9 +13,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.ecf.core.ContainerAuthenticationException;
+import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPRoomID;
 import org.eclipse.ecf.provider.comm.DisconnectEvent;
@@ -109,22 +112,20 @@ public class ECFConnection implements ISynchAsynchConnection {
 		return password;
 	}
 
-	protected XMPPID getXMPPID(ID remote) throws IOException {
+	protected XMPPID getXMPPID(ID remote) throws ECFException {
 		XMPPID jabberID = null;
 		try {
 			jabberID = (XMPPID) remote;
 		} catch (ClassCastException e) {
-			IOException throwMe = new IOException(e.getMessage());
-			throwMe.setStackTrace(e.getStackTrace());
-			throw throwMe;
+			throw new ECFException(e);
 		}
 		return jabberID;
 	}
 
 	public synchronized Object connect(ID remote, Object data, int timeout)
-			throws IOException {
+			throws ECFException {
 		if (connection != null)
-			throw new IOException("already connected");
+			throw new ECFException("already connected");
 		if (timeout > 0)
 			SmackConfiguration.setPacketReplyTimeout(timeout);
 		Roster.setDefaultSubscriptionMode(Roster.SUBSCRIPTION_MANUAL);
@@ -171,9 +172,8 @@ public class ECFConnection implements ISynchAsynchConnection {
 			if (connection != null) {
 				connection.close();
 			}
-			IOException result = new IOException(e.getMessage());
-			result.setStackTrace(e.getStackTrace());
-			throw result;
+			if (e.getMessage().equals("(401)")) throw new ContainerAuthenticationException("Password incorrect",e);
+			throw new ContainerConnectException(e.getLocalizedMessage(),e);
 		}
 		return null;
 	}

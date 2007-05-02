@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -198,10 +197,11 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceContain
 			accountManager.setConnection(null);
 			chatRoomManager.setConnection(null, null, null);
 			outgoingFileTransferContainerAdapter.setConnection(null);
+			presenceHelper.disconnect();
+			getSharedObjectManager().removeSharedObject(presenceHelperID);
 		}
 		// notify listeners
 		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), groupID));
-		dispose();
 	}
 
 	/*
@@ -210,10 +210,10 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceContain
 	 * @see org.eclipse.ecf.provider.generic.ClientSOContainer#dispose()
 	 */
 	public void dispose() {
-		if (presenceHelper != null)
-			getSharedObjectManager().removeSharedObject(presenceHelperID);
-		presenceHelperID = null;
-		presenceHelper = null;
+		if (presenceHelper != null) {
+			presenceHelperID = null;
+			presenceHelper = null;
+		}
 		if (chatRoomManager != null)
 			chatRoomManager.dispose();
 		chatRoomManager = null;
@@ -252,9 +252,6 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceContain
 			presenceHelper.setUser(new User(originalTarget));
 			outgoingFileTransferContainerAdapter.setConnection(conn
 					.getXMPPConnection());
-			// notify listeners
-			fireContainerEvent(new ContainerConnectedEvent(this.getID(),
-					originalTarget));
 			return originalTarget;
 
 		} else

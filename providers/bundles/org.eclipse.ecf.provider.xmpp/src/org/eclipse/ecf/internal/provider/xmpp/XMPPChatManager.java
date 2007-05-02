@@ -11,7 +11,6 @@
 
 package org.eclipse.ecf.internal.provider.xmpp;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +20,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
-import org.eclipse.ecf.presence.history.IHistoryManager;
 import org.eclipse.ecf.presence.history.IHistory;
+import org.eclipse.ecf.presence.history.IHistoryManager;
 import org.eclipse.ecf.presence.im.ChatMessage;
 import org.eclipse.ecf.presence.im.ChatMessageEvent;
 import org.eclipse.ecf.presence.im.IChatManager;
@@ -65,7 +64,7 @@ public class XMPPChatManager implements IChatManager {
 				presenceHelper.getConnectionOrThrowIfNull().sendMessage(toID,
 						threadID, XMPPChatManager.this.createMessageType(type),
 						subject, body, properties);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throw new ECFException("sendChatMessage exception", e);
 			}
 
@@ -92,7 +91,7 @@ public class XMPPChatManager implements IChatManager {
 				throw new ECFException("receiver cannot be null");
 			try {
 				presenceHelper.sendTypingMessage(toID, isTyping, body);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throw new ECFException("sendChatMessage exception", e);
 			}
 		}
@@ -216,5 +215,9 @@ public class XMPPChatManager implements IChatManager {
 
 	public IHistoryManager getHistoryManager() {
 		return historyManager;
+	}
+	
+	public void disconnect() {
+		messageListeners.clear();
 	}
 }

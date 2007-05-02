@@ -122,20 +122,20 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		}
 	}
 
+	public void disconnect() {
+		rosterManager.disconnect();
+		chatManager.disconnect();
+		messageListeners.clear();
+		sharedObjectMessageListeners.clear();
+		presenceListeners.clear();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
 	 */
 	public void dispose(ID containerID) {
-		if (messageListeners != null)
-			messageListeners.clear();
-		messageListeners = null;
-		if (sharedObjectMessageListeners != null)
-			sharedObjectMessageListeners.clear();
-		sharedObjectMessageListeners = null;
-		container = null;
-		config = null;
 	}
 
 	/*
@@ -174,6 +174,12 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		
 		public void notifyRosterRemove(IRosterEntry entry) {
 			fireRosterRemove(entry);
+		}
+		
+		public void disconnect() {
+			getRoster().getItems().clear();
+			super.disconnect();
+			fireRosterUpdate(roster);
 		}
 		
 		public void setUser(IUser user) {
