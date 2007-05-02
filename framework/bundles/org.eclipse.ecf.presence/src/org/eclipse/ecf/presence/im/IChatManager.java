@@ -11,6 +11,8 @@
 
 package org.eclipse.ecf.presence.im;
 
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.history.IHistoryManager;
 
@@ -62,4 +64,16 @@ public interface IChatManager {
 	 */
 	public IHistoryManager getHistoryManager();
 
+	/**
+	 * Create chat instance for given target user.
+	 * 
+	 * @param targetUser the targetUser to create chat for.  Should not be <code>null</code>.
+	 * If the user container is offline/disconnected. then an {@link ECFException} will
+	 * be thrown.  If this chat manager implementation does not support creating such chats,
+	 * then <code>null</code> will be returned.
+	 * 
+	 * @return IChat for given <code>targetUser</code>.  Will return <code>null</code> if
+	 * the underlying implementation does not support threads/specific chat instances.
+	 */
+	public IChat createChat(ID targetUser) throws ECFException;
 }

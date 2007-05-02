@@ -16,6 +16,7 @@ import java.util.Map;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 
 /**
@@ -71,4 +72,11 @@ public interface IChat {
 	 *             if chat room container cannot be made.
 	 */
 	public IChatRoomContainer createChatRoom() throws ContainerCreateException;
+	
+	/**
+	 * Get presence container adapter for this chat instance.
+	 * @return IPresenceContainerAdapter for this chat instance.  Will not
+	 * return <code>null</code>.
+	 */
+	public IPresenceContainerAdapter getPresenceContainerAdapter();
 }
