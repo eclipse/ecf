@@ -24,6 +24,7 @@ import org.eclipse.ecf.presence.history.IHistory;
 import org.eclipse.ecf.presence.history.IHistoryManager;
 import org.eclipse.ecf.presence.im.ChatMessage;
 import org.eclipse.ecf.presence.im.ChatMessageEvent;
+import org.eclipse.ecf.presence.im.IChat;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.im.IChatMessage;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
@@ -219,5 +220,13 @@ public class XMPPChatManager implements IChatManager {
 	
 	public void disconnect() {
 		messageListeners.clear();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.im.IChatManager#createChat(org.eclipse.ecf.core.identity.ID)
+	 */
+	public IChat createChat(ID targetUser) throws ECFException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
