@@ -12,23 +12,17 @@ package org.eclipse.ecf.provider.ui.wizards;
 
 import java.net.URI;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.util.IExceptionHandler;
-import org.eclipse.ecf.internal.provider.ui.Activator;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
-import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
+import org.eclipse.ecf.ui.dialogs.IDCreateErrorDialog;
 import org.eclipse.ecf.ui.wizards.AbstractConnectWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 
 public class GenericClientContainerConnectWizard extends Wizard implements
@@ -43,10 +37,6 @@ public class GenericClientContainerConnectWizard extends Wizard implements
 	private ID targetID;
 
 	private IConnectContext connectContext;
-
-	private IWorkbench workbench;
-
-	private Shell shell;
 
 	private URI uri;
 	
@@ -66,8 +56,6 @@ public class GenericClientContainerConnectWizard extends Wizard implements
 
 	public void init(IWorkbench workbench, IContainer container) {
 		this.container = container;
-		this.workbench = workbench;
-		this.shell = this.workbench.getActiveWorkbenchWindow().getShell();
 	}
 
 	public ID getTargetID() {
@@ -95,29 +83,12 @@ public class GenericClientContainerConnectWizard extends Wizard implements
 			targetID = IDFactory.getDefault().createID(
 					container.getConnectNamespace(), wizardPage.getConnectID());
 		} catch (IDCreateException e) {
-			// TODO: This needs to be handled properly
-			e.printStackTrace();
+			new IDCreateErrorDialog(null,wizardPage.getConnectID(),e).open();
 			return false;
 		}
 
 		new AsynchContainerConnectAction(this.container, this.targetID,
-				this.connectContext, new IExceptionHandler() {
-					public IStatus handleException(final Throwable exception) {
-						if (exception != null) {
-							Display.getDefault().asyncExec(new Runnable() {
-								public void run() {
-									new ContainerConnectErrorDialog(
-											shell, CONNECT_ERROR_CODE,
-											"See Details", targetID.getName(),
-											exception).open();
-								}
-							});
-						}
-						return new Status(IStatus.OK, Activator.PLUGIN_ID, 0,
-								"", null);
-					}
-
-				}).run(null);
+				this.connectContext).run();
 
 		return true;
 	}
