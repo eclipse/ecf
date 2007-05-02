@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.identity;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 public class IDCreateException extends ECFException {
@@ -17,6 +18,10 @@ public class IDCreateException extends ECFException {
 		super();
 	}
 
+	public IDCreateException(IStatus status) {
+		super(status);
+	}
+	
 	public IDCreateException(String message) {
 		super(message);
 	}

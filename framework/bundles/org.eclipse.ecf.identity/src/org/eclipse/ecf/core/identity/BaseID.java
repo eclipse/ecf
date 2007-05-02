@@ -22,7 +22,7 @@ public abstract class BaseID implements ID {
 
 	private static final long serialVersionUID = -6242599410460002514L;
 
-	Namespace namespace;
+	protected Namespace namespace;
 
 	protected BaseID() {
 	}
