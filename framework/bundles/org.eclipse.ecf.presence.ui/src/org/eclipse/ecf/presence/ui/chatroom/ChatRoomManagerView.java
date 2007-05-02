@@ -94,7 +94,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	/**
 	 * 
 	 */
-	private static final String ATSIGN = "@";
+	private static final String ATSIGN = "@"; //$NON-NLS-1$
 
 	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"; //$NON-NLS-1$
 
@@ -418,7 +418,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			}
 		});
 	}
- 
+
 	private boolean closeTabItem(CTabItem tabItem) {
 		ChatRoom chatRoom = findChatRoomForTabItem(tabItem);
 		if (chatRoom == null) {
@@ -462,7 +462,14 @@ public class ChatRoomManagerView extends ViewPart implements
 			return rootChannelTab.getOutputText();
 	}
 
-	public void initialize(String localUserName, String hostName,
+	public void initializeWithoutManager(String localUserName, String hostName,
+			final IChatRoomCommandListener commandListener,
+			final IChatRoomViewCloseListener closeListener) {
+		initializeWithManager(localUserName, hostName, null, commandListener,
+				closeListener);
+	}
+
+	public void initializeWithManager(String localUserName, String hostName,
 			final IChatRoomContainer rootChatRoomContainer,
 			final IChatRoomCommandListener commandListener,
 			final IChatRoomViewCloseListener closeListener) {
@@ -473,7 +480,8 @@ public class ChatRoomManagerView extends ViewPart implements
 		ChatRoomManagerView.this.rootCloseListener = closeListener;
 		ChatRoomManagerView.this.commandListener = commandListener;
 		String viewTitle = localUserName + ATSIGN + hostName;
-		ChatRoomManagerView.this.setPartName(viewTitle);
+		ChatRoomManagerView.this.setPartName(NLS.bind(
+				Messages.ChatRoomManagerView_VIEW_TITLE, viewTitle));
 		ChatRoomManagerView.this
 				.setTitleToolTip(Messages.ChatRoomManagerView_VIEW_TITLE_HOST_PREFIX
 						+ ChatRoomManagerView.this.hostName);

@@ -40,6 +40,7 @@ import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView;
+import org.eclipse.ecf.presence.ui.chatroom.IChatRoomCommandListener;
 import org.eclipse.ecf.presence.ui.chatroom.IChatRoomViewCloseListener;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
@@ -49,7 +50,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IOpenListener;
@@ -119,7 +119,12 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	private IAction setOfflineAction;
 
 	private IAction openChatRoomAction;
+
 	private IAction openAccountChatRoomAction;
+
+	private IAction disconnectAllAccountsAction;
+
+	private IAction disconnectAccountAction;
 
 	private IRosterSubscriptionListener subscriptionListener;
 
@@ -225,7 +230,23 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		}
 	}
 
-	private void showChatRoomsForAccounts(MultiRosterAccount[] accounts) {
+	protected IChatRoomCommandListener createChatRoomCommandListener() {
+		return null;
+	}
+
+	protected IChatRoomViewCloseListener createChatRoomViewCloseListener(
+			final ID connectedID) {
+		return new IChatRoomViewCloseListener() {
+			public void chatRoomViewClosing() {
+				RoomWithAView roomView = (RoomWithAView) chatRooms
+						.get(connectedID);
+				if (roomView != null)
+					chatRooms.remove(roomView.getID());
+			}
+		};
+	}
+
+	private void selectAndJoinChatRoomForAccounts(MultiRosterAccount[] accounts) {
 		// Create chat room selection dialog with managers, open
 		ChatRoomSelectionDialog dialog = new ChatRoomSelectionDialog(
 				getViewSite().getShell(), accounts);
@@ -253,7 +274,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 		IWorkbenchWindow ww = getViewSite().getPage().getWorkbenchWindow();
 		IWorkbenchPage wp = ww.getActivePage();
-		RoomWithAView roomView = getRoomView(connectedID);
+		// Get existing roomView...if it's there
+		RoomWithAView roomView = (RoomWithAView) chatRooms.get(connectedID);
 		if (roomView != null) {
 			// We've already connected to this room, so just show it.
 			ChatRoomManagerView chatroommanagerview = roomView.getView();
@@ -274,36 +296,22 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 								IWorkbenchPage.VIEW_ACTIVATE)
 						: ref.getView(true));
 				// initialize new view
-				chatroommanagerview.initialize(ChatRoomManagerView
-						.getUsernameFromID(connectedID), ChatRoomManagerView
-						.getHostnameFromID(connectedID), null, null,
-						new IChatRoomViewCloseListener() {
-							public void chatRoomViewClosing() {
-								RoomWithAView roomView = (RoomWithAView) chatRooms
-										.get(connectedID);
-								if (roomView != null)
-									chatRooms.remove(roomView.getID());
-							}
-						});
+				chatroommanagerview.initializeWithoutManager(
+						ChatRoomManagerView.getUsernameFromID(connectedID),
+						ChatRoomManagerView.getHostnameFromID(connectedID),
+						createChatRoomCommandListener(),
+						createChatRoomViewCloseListener(connectedID));
 				// join room
 				chatroommanagerview.joinRoom(selectedInfo, null);
 
 				roomView = new RoomWithAView(chatroommanagerview, connectedID);
 				chatRooms.put(roomView.getID(), roomView);
 			} catch (Exception e1) {
-				ErrorDialog ed = new ContainerConnectErrorDialog(getViewSite()
+				ContainerConnectErrorDialog ed = new ContainerConnectErrorDialog(getViewSite()
 						.getShell(), selectedInfo.getRoomID().getName(), e1);
 				ed.open();
 			}
 		}
-	}
-
-	/*
-	 * private void addRoomView(RoomWithAView roomView) {
-	 * chatRooms.put(roomView.getID(), roomView); }
-	 */
-	private RoomWithAView getRoomView(ID id) {
-		return (RoomWithAView) chatRooms.get(id);
 	}
 
 	private void makeActions() {
@@ -387,7 +395,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 		openChatRoomAction = new Action() {
 			public void run() {
-				showChatRoomsForAccounts((MultiRosterAccount[]) rosterAccounts
+				selectAndJoinChatRoomForAccounts((MultiRosterAccount[]) rosterAccounts
 						.toArray(new MultiRosterAccount[] {}));
 			}
 		};
@@ -407,7 +415,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				MultiRosterAccount account = findAccountForUser(roster
 						.getUser().getID());
 				if (account != null)
-					showChatRoomsForAccounts(new MultiRosterAccount[] { account });
+					selectAndJoinChatRoomForAccounts(new MultiRosterAccount[] { account });
 			}
 		};
 		openAccountChatRoomAction
@@ -415,6 +423,61 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		openAccountChatRoomAction.setEnabled(true);
 		openAccountChatRoomAction.setImageDescriptor(SharedImages
 				.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
+
+		disconnectAllAccountsAction = new Action() {
+			public void run() {
+				if (MessageDialog
+						.openQuestion(
+								getViewSite().getShell(),
+								Messages.MultiRosterView_DISCONNECT_QUESTION_TITLE,
+								Messages.MultiRosterView_DISCONNECT_ALL_ACCOUNTS_QUESTION_MESSAGE)) {
+					disconnectAccounts((MultiRosterAccount[]) rosterAccounts
+							.toArray(new MultiRosterAccount[] {}));
+				}
+			}
+		};
+		disconnectAllAccountsAction
+				.setText(Messages.MultiRosterView_DISCONNECT_ALL_ACCOUNTS_ACTION_TEXT);
+		disconnectAllAccountsAction.setEnabled(true);
+		disconnectAllAccountsAction.setImageDescriptor(PlatformUI
+				.getWorkbench().getSharedImages().getImageDescriptor(
+						ISharedImages.IMG_TOOL_DELETE));
+
+		disconnectAccountAction = new Action() {
+			public void run() {
+				IStructuredSelection iss = (IStructuredSelection) treeViewer
+						.getSelection();
+				IRoster roster = (IRoster) iss.getFirstElement();
+				MultiRosterAccount account = findAccountForUser(roster
+						.getUser().getID());
+				ID connectedID = account.getContainer().getConnectedID();
+				if (account != null
+						&& connectedID != null
+						&& MessageDialog
+								.openQuestion(
+										getViewSite().getShell(),
+										Messages.MultiRosterView_DISCONNECT_QUESTION_TITLE,
+										NLS
+												.bind(
+														Messages.MultiRosterView_DISCONNECT_ACCOUNT_QUESTION_MESSAGE,
+														connectedID.getName()))) {
+					disconnectAccounts(new MultiRosterAccount[] { account });
+				}
+			}
+		};
+		disconnectAccountAction
+				.setText(Messages.MultiRosterView_DISCONNECT_ACCOUNT_ACTION_TEXT);
+		disconnectAccountAction.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(
+						ISharedImages.IMG_TOOL_DELETE));
+
+	}
+
+	protected void disconnectAccounts(MultiRosterAccount[] accounts) {
+		for (int i = 0; i < accounts.length; i++) {
+			accounts[i].getContainer().disconnect();
+			removeRosterAccount(accounts[i]);
+		}
 	}
 
 	private MultiRosterAccount findAccountForUser(ID userID) {
@@ -469,6 +532,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			manager.add(removeAction);
 		} else if (element instanceof IRoster) {
 			manager.add(openAccountChatRoomAction);
+			manager.add(new Separator());
+			manager.add(disconnectAccountAction);
 			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		} else {
 			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
@@ -588,6 +653,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		});
 		manager.add(new Separator());
 		manager.add(openChatRoomAction);
+		manager.add(new Separator());
+		manager.add(disconnectAllAccountsAction);
 	}
 
 	/*
@@ -611,7 +678,25 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	protected boolean addRosterAccount(MultiRosterAccount account) {
-		return account != null && rosterAccounts.add(account);
+		boolean result = account != null && rosterAccounts.add(account);
+		if (result)
+			disconnectAllAccountsAction.setEnabled(true);
+		return result;
+	}
+
+	protected void removeRosterAccount(MultiRosterAccount account) {
+		// Remove subscription listener
+		account.getRosterManager().removeRosterSubscriptionListener(
+				subscriptionListener);
+		// Remove presence listener
+		account.getRosterManager().removePresenceListener(presenceListener);
+
+		treeViewer.remove(account.getRoster());
+		// Remove account
+		rosterAccounts.remove(account);
+		// Disable disconnect if no more accounts
+		disconnectAllAccountsAction.setEnabled(rosterAccounts.size() > 0);
+		account.dispose();
 	}
 
 	/*
@@ -738,8 +823,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		 *      org.eclipse.ecf.presence.IPresence)
 		 */
 		public void handlePresence(ID fromID, IPresence presence) {
-			// TODO Auto-generated method stub
-
+			// TODO Auto-generated method stub\
 		}
 
 	}

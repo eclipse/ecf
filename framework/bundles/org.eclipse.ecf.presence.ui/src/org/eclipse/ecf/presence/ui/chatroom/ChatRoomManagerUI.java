@@ -103,8 +103,7 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 		Assert.isNotNull(roomInfo,
 				Messages.ChatRoomManagerUI_EXCEPTION_NO_ROOT_CHAT_ROOM_MANAGER);
 		IChatRoomContainer managerChatRoom = roomInfo.createChatRoomContainer();
-		chatroomview.initialize(
-				ChatRoomManagerView.getUsernameFromID(targetID),
+		chatroomview.initializeWithManager(ChatRoomManagerView.getUsernameFromID(targetID),
 				ChatRoomManagerView.getHostnameFromID(targetID),
 				managerChatRoom, this, createChatRoomViewCloseListener());
 		// Add listener for container, so that if the container is spontaneously

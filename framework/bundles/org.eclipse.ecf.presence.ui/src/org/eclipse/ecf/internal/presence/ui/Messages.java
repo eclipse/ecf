@@ -92,6 +92,8 @@ public class Messages extends NLS {
 
 	public static String ChatRoomManagerView_VIEW_DISABLED_NAME;
 
+	public static String ChatRoomManagerView_VIEW_TITLE;
+
 	public static String ChatRoomManagerView_VIEW_TITLE_HOST_PREFIX;
 
 	public static String ChatRoomSelectionDialog_ACCOUNT_COLUMN;
@@ -125,6 +127,16 @@ public class Messages extends NLS {
 	public static String ChatRoomView_TITLE_TOOLTiP_PREFIX;
 
 	public static String ChatRoomView_VIEW_NAME_PREFIX;
+
+	public static String MultiRosterView_DISCONNECT_ACCOUNT_ACTION_TEXT;
+
+	public static String MultiRosterView_DISCONNECT_ACCOUNT_QUESTION_MESSAGE;
+
+	public static String MultiRosterView_DISCONNECT_ALL_ACCOUNTS_ACTION_TEXT;
+
+	public static String MultiRosterView_DISCONNECT_ALL_ACCOUNTS_QUESTION_MESSAGE;
+
+	public static String MultiRosterView_DISCONNECT_QUESTION_TITLE;
 
 	public static String MultiRosterView_ENTER_CHATROOM_ACTION_TEXT;
 
