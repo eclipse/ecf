@@ -1123,7 +1123,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	/**
-	 * @return
+	 * @return String username for given <code>targetID</code>
 	 */
 	public static String getUsernameFromID(ID targetID) {
 		IChatID chatID = (IChatID) targetID.getAdapter(IChatID.class);
@@ -1143,6 +1143,9 @@ public class ChatRoomManagerView extends ViewPart implements
 			}
 	}
 
+	/**
+	 * @return String hostname for given <code>targetID</code>
+	 */
 	public static String getHostnameFromID(ID targetID) {
 		IChatID chatID = (IChatID) targetID.getAdapter(IChatID.class);
 		if (chatID != null)
