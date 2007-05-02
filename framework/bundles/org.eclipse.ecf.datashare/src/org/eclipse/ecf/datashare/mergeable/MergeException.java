@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.datashare.mergeable;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 public class MergeException extends ECFException {
@@ -15,6 +16,9 @@ public class MergeException extends ECFException {
 		super();
 	}
 
+	public MergeException(IStatus status) {
+		super(status);
+	}
 	public MergeException(String message, Throwable cause) {
 		super(message, cause);
 	}

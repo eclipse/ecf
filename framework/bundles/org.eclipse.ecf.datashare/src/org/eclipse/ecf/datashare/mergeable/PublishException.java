@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.datashare.mergeable;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.ECFException;
 
 public class PublishException extends ECFException {
@@ -15,6 +16,10 @@ public class PublishException extends ECFException {
 		super();
 	}
 
+	public PublishException(IStatus status) {
+		super(status);
+	}
+	
 	public PublishException(String message, Throwable cause) {
 		super(message, cause);
 	}
