@@ -12,6 +12,7 @@
 package org.eclipse.ecf.presence.ui.roster;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 
@@ -65,4 +66,23 @@ public abstract class AbstractRosterEntryContributionItem extends
 		return null;
 	}
 
+	/**
+	 * Return true if given IRosterEntry has an IPresence, and it's IPresence.Type and
+	 * IPresence.Mode are both AVAILABLE.
+	 * 
+	 * @param entry the IRosterEntry to check.  If <code>null</code>, <code>false</code>
+	 * will be returned.
+	 * 
+	 * @return true if given <code>entry</code>'s IPresence.Mode and IPresence.Type are
+	 * both AVAILABLE.  <code>false</code> otherwise.
+	 */
+	protected boolean isAvailable(IRosterEntry entry) {
+		if (entry == null) return false;
+		IPresence presence = entry.getPresence();
+		boolean type = (presence == null) ? false : presence.getType()
+				.equals(IPresence.Type.AVAILABLE);
+		boolean mode = (presence == null) ? false : presence.getMode()
+				.equals(IPresence.Mode.AVAILABLE);
+		return (type && mode);
+	}
 }
