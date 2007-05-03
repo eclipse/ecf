@@ -34,4 +34,10 @@ public interface IAbstractChannel extends IAdaptable, IIdentifiable {
 	 *         then channel had no previous listener
 	 */
 	public IChannelListener setListener(IChannelListener listener);
+	
+	/**
+	 * Dispose this channel.
+	 */
+	public void dispose();
+	
 }
