@@ -86,7 +86,7 @@
             class="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
             icon="icons/group.gif"
             id="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
-            name="Chat Room Manager"/>
+            name="Chats"/>
    </extension>
 
 </plugin>
