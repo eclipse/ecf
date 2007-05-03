@@ -19,7 +19,6 @@ import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
 import org.eclipse.ecf.filetransfer.OutgoingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
-import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterEntryContributionItem;
 import org.eclipse.ecf.provider.xmpp.XMPPContainer;
@@ -55,14 +54,7 @@ public class XMPPCompoundContributionItem extends
 			IContributionItem[] contributions = new IContributionItem[2];
 			final IOutgoingFileTransferContainerAdapter ioftca = (IOutgoingFileTransferContainerAdapter) container
 					.getAdapter(IOutgoingFileTransferContainerAdapter.class);
-			IPresence presence = entry.getPresence();
-			boolean type = (presence == null) ? false : presence.getType()
-					.equals(IPresence.Type.AVAILABLE);
-			boolean mode = (presence == null) ? false : presence.getMode()
-					.equals(IPresence.Mode.AVAILABLE);
-			if (!(ioftca != null && type && mode)) {
-				return EMPTY_ARRAY;
-			}
+			if (!(ioftca != null && isAvailable(entry))) return EMPTY_ARRAY;
 			IAction fileSendAction = new Action() {
 				public void run() {
 					sendFileToTarget(ioftca, entry.getUser().getID());
