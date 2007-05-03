@@ -528,13 +528,16 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			// if the person is not online, we'll disable the action
 			imAction
 					.setEnabled(entry.getPresence().getType() == IPresence.Type.AVAILABLE);
+			manager.add(new Separator());
 			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+			manager.add(new Separator());
 			manager.add(removeAction);
 		} else if (element instanceof IRoster) {
 			manager.add(openAccountChatRoomAction);
 			manager.add(new Separator());
-			manager.add(disconnectAccountAction);
 			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+			manager.add(new Separator());
+			manager.add(disconnectAccountAction);
 		} else {
 			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		}

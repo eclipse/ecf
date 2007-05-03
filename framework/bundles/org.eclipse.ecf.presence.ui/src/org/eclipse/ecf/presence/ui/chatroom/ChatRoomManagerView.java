@@ -81,6 +81,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
@@ -266,11 +267,11 @@ public class ChatRoomManagerView extends ViewPart implements
 			manager.add(outputClear);
 			manager.add(new Separator());
 			manager.add(outputSelectAll);
-			manager.add(new Separator("#additions")); //$NON-NLS-1$
+			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS)); //$NON-NLS-1$
 		}
 
 		private void hookContextMenu() {
-			MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+			MenuManager menuMgr = new MenuManager(); 
 			menuMgr.setRemoveAllWhenShown(true);
 			menuMgr.addMenuListener(new IMenuListener() {
 				public void menuAboutToShow(IMenuManager manager) {
@@ -1465,11 +1466,11 @@ public class ChatRoomManagerView extends ViewPart implements
 		manager.add(outputClear);
 		manager.add(new Separator());
 		manager.add(outputSelectAll);
-		manager.add(new Separator("#Additions")); //$NON-NLS-1$
+		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS)); //$NON-NLS-1$
 	}
 
 	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+		MenuManager menuMgr = new MenuManager(); 
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
