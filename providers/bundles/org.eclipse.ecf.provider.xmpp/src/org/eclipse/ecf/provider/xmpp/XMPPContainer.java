@@ -28,12 +28,14 @@ import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.user.User;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
 import org.eclipse.ecf.internal.provider.xmpp.XMPPChatRoomContainer;
 import org.eclipse.ecf.internal.provider.xmpp.XMPPChatRoomManager;
 import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerAccountManager;
 import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerContext;
 import org.eclipse.ecf.internal.provider.xmpp.XMPPContainerPresenceHelper;
+import org.eclipse.ecf.internal.provider.xmpp.XMPPDebugOptions;
 import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
@@ -68,7 +70,8 @@ import org.jivesoftware.smackx.packet.MUCUser;
 import org.jivesoftware.smackx.packet.VCardTempXUpdateExtension;
 import org.jivesoftware.smackx.packet.XHTMLExtension;
 
-public class XMPPContainer extends ClientSOContainer implements IPresenceContainerAdapter {
+public class XMPPContainer extends ClientSOContainer implements
+		IPresenceContainerAdapter {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
 
@@ -438,8 +441,6 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceContain
 				debug("got unexpected event: " + e);
 			}
 		} catch (Exception except) {
-			System.err.println("Exception in processAsynch");
-			except.printStackTrace(System.err);
 			dumpStack("Exception processing event " + e, except);
 		}
 	}
@@ -450,16 +451,21 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceContain
 
 	public XMPPConnection getXMPPConnection() {
 		ECFConnection conn = getECFConnection();
-		if (conn == null) return null;
-		else return conn.getXMPPConnection();
+		if (conn == null)
+			return null;
+		else
+			return conn.getXMPPConnection();
 	}
-	
+
 	// utility methods
 
 	protected void trace(String msg) {
+		Trace.trace(XmppPlugin.PLUGIN_ID, msg);
 	}
 
 	protected void dumpStack(String msg, Throwable t) {
+		Trace.catching(XmppPlugin.PLUGIN_ID,
+				XMPPDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "", t);
 	}
 
 }

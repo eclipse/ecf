@@ -1,8 +1,17 @@
-org.eclipse.ecf.provider.xmpp/debug = true
+# Debugging options for the org.eclipse.ecf.provider.xmpp plug-in
+
+# Turn on general debugging for the org.eclipse.ecf.provider.xmpp plug-in
+org.eclipse.ecf.provider.xmpp/debug=true
 org.eclipse.ecf.provider.xmpp/debug/filter = *
 org.eclipse.ecf.provider.xmpp/debug/flag = true
-org.eclipse.ecf.provider.xmpp/debug/smackconnection = true
-org.eclipse.ecf.provider.xmpp/debug/xmpppresencesharedobject = true
-org.eclipse.ecf.provider.xmpp/debug/smackdebug = true
-org.eclipse.ecf.provider.xmpp/debug/XMPPClientSOContainer = true
-org.eclipse.ecf.provider.xmpp/debug/xmppgroupchatsharedobject = true
+
+# Trace when exceptions are caught
+org.eclipse.ecf.provider.xmpp/debug/exceptions/catching=false
+# Trace when exceptions are thrown
+org.eclipse.ecf.provider.xmpp/debug/exceptions/throwing=false
+
+# Trace when methods are entered
+org.eclipse.ecf.provider.xmpp/debug/methods/entering=false
+# Trace when methods are exited
+org.eclipse.ecf.provider.xmpp/debug/methods/exiting=false
+
