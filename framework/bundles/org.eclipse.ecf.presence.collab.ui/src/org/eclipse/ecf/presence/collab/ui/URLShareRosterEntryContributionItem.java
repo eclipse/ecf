@@ -26,8 +26,8 @@ public class URLShareRosterEntryContributionItem extends
 		if (entry != null && c != null) {
 			final IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c
 					.getAdapter(IChannelContainerAdapter.class);
-			// If the container has channel container adapter
-			if (channelAdapter != null) {
+			// If the container has channel container adapter and is online/available
+			if (channelAdapter != null && isAvailable(entry)) {
 				URLShare tmp = URLShareRosterContributionItem.getURLShare(c
 						.getID());
 				// If there is an URL share associated with this container

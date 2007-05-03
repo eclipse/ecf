@@ -85,17 +85,14 @@ public class URLShare extends AbstractShare {
 	}
 
 	public synchronized void dispose() {
-		if (channel != null) {
-			channel.dispose();
-			URLShareRosterContributionItem.removeURLShare(containerID);
-			channel = null;
-		}
+		super.dispose();
+		URLShareRosterContributionItem.removeURLShare(containerID);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.datashare.AbstractShare#handleChannelData(byte[])
 	 */
-	protected void handleMessage(byte[] data) {
+	protected void handleMessage(ID fromContainerID, byte[] data) {
 		showURL(new String(data));
 	}
 
