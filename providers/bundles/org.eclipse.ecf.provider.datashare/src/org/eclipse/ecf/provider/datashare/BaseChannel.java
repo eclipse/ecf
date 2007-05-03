@@ -304,4 +304,10 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			setChannelListener(receiver.getListener());
 		} 
 	}
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.datashare.IAbstractChannel#dispose()
+	 */
+	public void dispose() {
+		destroySelfLocal();
+	}
 }
