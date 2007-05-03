@@ -40,9 +40,9 @@ import org.eclipse.ui.PlatformUI;
 public class XMPPCompoundContributionItem extends
 		AbstractRosterEntryContributionItem {
 
-	private static final IContributionItem[] EMPTY_ARRAY = new IContributionItem[0];
-
-	private Shell shell;
+	protected IAction[] makeActions() {
+		return null;
+	}
 
 	protected IContributionItem[] getContributionItems() {
 		Object selection = getSelection();
@@ -52,8 +52,6 @@ public class XMPPCompoundContributionItem extends
 		final IRosterEntry entry = (IRosterEntry) selection;
 		IContainer container = getContainerForRosterEntry(entry);
 		if (container instanceof XMPPContainer) {
-			shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-					.getShell();
 			IContributionItem[] contributions = new IContributionItem[2];
 			final IOutgoingFileTransferContainerAdapter ioftca = (IOutgoingFileTransferContainerAdapter) container
 					.getAdapter(IOutgoingFileTransferContainerAdapter.class);
@@ -86,6 +84,8 @@ public class XMPPCompoundContributionItem extends
 	private void sendFileToTarget(
 			IOutgoingFileTransferContainerAdapter fileTransfer,
 			final ID targetID) {
+		final Shell shell = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getShell();
 		FileDialog fd = new FileDialog(shell, SWT.OPEN);
 		// XXX this should be some default path set by preferences
 		fd.setFilterPath(System.getProperty("user.home")); //$NON-NLS-1$
