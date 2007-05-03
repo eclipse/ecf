@@ -14,51 +14,52 @@ package org.eclipse.ecf.presence.ui.roster;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.presence.roster.IRosterGroup;
 
 /**
  * Abstract contribution item class for creating menu contribution items for
  * roster entries. Subclasses should be created as appropriate.
  */
-public abstract class AbstractRosterEntryContributionItem extends
+public abstract class AbstractRosterGroupContributionItem extends
 		AbstractPresenceContributionItem {
 
-	public AbstractRosterEntryContributionItem() {
+	public AbstractRosterGroupContributionItem() {
 
 	}
 
-	public AbstractRosterEntryContributionItem(String id) {
+	public AbstractRosterGroupContributionItem(String id) {
 		super(id);
 	}
 
 	/**
-	 * Get the currently selected IRosterEntry.
+	 * Get the currently selected IRosterGroup.
 	 * 
-	 * @return IRosterEntry that is current workbenchwindow selection. Returns
+	 * @return IRosterGroup that is current workbenchwindow selection. Returns
 	 *         <code>null</code> if nothing is selected or if something other than
-	 *         IRosterEntry is selected.
+	 *         IRosterGroup is selected.
 	 */
-	protected IRosterEntry getSelectedRosterEntry() {
+	protected IRosterGroup getSelectedRosterGroup() {
 		Object selection = getSelection();
 		if (selection instanceof IRosterEntry)
-			return (IRosterEntry) selection;
+			return (IRosterGroup) selection;
 		return null;
 	}
 
 	/**
-	 * Get container for the given IRosterEntry.
+	 * Get container for the given IRosterGroup.
 	 * 
-	 * @param entry
-	 *            the IRosterEntry. May be <code>null</code>.
+	 * @param group
+	 *            the IRosterGroup. May be <code>null</code>.
 	 * 
-	 * @return IContainer associated with currently selected IRosterEntry.
+	 * @return IContainer associated with currently selected IRosterGroup.
 	 *         Returns <code>null</code> if the given <code>entry</code> is
-	 *         null, or if the container associated with the <code>entry</code>
+	 *         null, or if the container associated with the <code>group</code>
 	 *         cannot be accessed.
 	 */
-	protected IContainer getContainerForRosterEntry(IRosterEntry entry) {
-		if (entry == null)
+	protected IContainer getContainerForRosterEntry(IRosterEntry group) {
+		if (group == null)
 			return null;
-		IPresenceContainerAdapter pca = (IPresenceContainerAdapter) entry
+		IPresenceContainerAdapter pca = (IPresenceContainerAdapter) group
 				.getRoster().getPresenceContainerAdapter();
 		if (pca != null)
 			return (IContainer) pca.getAdapter(IContainer.class);
