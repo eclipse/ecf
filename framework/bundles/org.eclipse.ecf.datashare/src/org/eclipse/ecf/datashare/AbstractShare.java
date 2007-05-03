@@ -21,8 +21,11 @@ import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 
 /**
- * Abstract class for sharing objects using {@link IChannel}.  Subclasses should
- * be created as desired to share objects of different types.
+ * Abstract class for sharing data using {@link IChannel}.  Subclasses should
+ * be created as desired to share objects of different types.  Note that
+ * to send data, subclasses can use {@link #sendMessage(ID, byte[])}, and
+ * to receive data subclasses must implement {@link #handleMessage(byte[])}
+ * or {@link #handleChannelEvent(IChannelEvent)}.
  */
 public abstract class AbstractShare {
 
@@ -30,11 +33,25 @@ public abstract class AbstractShare {
 
 	private IChannelListener listener = new IChannelListener() {
 		public void handleChannelEvent(IChannelEvent event) {
-			if (event instanceof IChannelMessageEvent)
-				handleMessage(((IChannelMessageEvent) event).getData());
+			AbstractShare.this.handleChannelEvent(event);
 		}
 	};
 
+	/**
+	 * Handle reception of an IChannelEvent.  
+	 * @param event the IChannelEvent received.  This implementation 
+	 * detects instances of {@link IChannelMessageEvent} and
+	 * calls {@link #handleMessage(byte[])} if found.  All other
+	 * channel events are ignored.  Subclasses may override to detect
+	 * and respond to other channel events as desired.
+	 */
+	protected void handleChannelEvent(IChannelEvent event) {
+		if (event instanceof IChannelMessageEvent) {
+			IChannelMessageEvent cme = (IChannelMessageEvent) event;
+			handleMessage(cme.getFromContainerID(),cme.getData());
+		}
+	}
+	
 	public AbstractShare(IChannelContainerAdapter adapter) throws ECFException {
 		Assert.isNotNull(adapter);
 		channel = adapter.createChannel(IDFactory.getDefault().createStringID(
@@ -57,9 +74,10 @@ public abstract class AbstractShare {
 	 * Receive message for this channel.  This method will be called asynchronously
 	 * by an arbitrary thread when data to the associated channel is received.
 	 * 
+	 * @param fromContainerID the ID of the sender container.  Will not be <code>null</code>.
 	 * @param data the data received on the channel.  Will not be <code>null</code>.
 	 */
-	protected abstract void handleMessage(byte[] data);
+	protected abstract void handleMessage(ID fromContainerID, byte[] data);
 
 	protected synchronized void sendMessage(ID toID, byte[] data)
 			throws ECFException {
@@ -71,6 +89,10 @@ public abstract class AbstractShare {
 		return channel;
 	}
 
+	public boolean isDisposed() {
+		return (getChannel() == null);
+	}
+	
 	public synchronized void dispose() {
 		if (channel != null) {
 			channel.dispose();
