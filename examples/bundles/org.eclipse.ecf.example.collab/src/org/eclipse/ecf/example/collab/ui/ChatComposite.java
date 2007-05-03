@@ -804,7 +804,7 @@ public class ChatComposite extends Composite {
 	}
 
 	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		MenuManager menuMgr = new MenuManager();
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
@@ -843,7 +843,7 @@ public class ChatComposite extends Composite {
 		};
 		this.view.view.getSite().registerContextMenu(menuMgr,selectionProvider);
 
-		MenuManager treeMenuMgr = new MenuManager("#PopupMenu");
+		MenuManager treeMenuMgr = new MenuManager();
 		treeMenuMgr.setRemoveAllWhenShown(true);
 		treeMenuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
