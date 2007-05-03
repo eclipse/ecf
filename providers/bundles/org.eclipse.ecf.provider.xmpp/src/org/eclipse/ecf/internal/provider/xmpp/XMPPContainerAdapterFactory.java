@@ -11,19 +11,11 @@
 
 package org.eclipse.ecf.internal.provider.xmpp;
 
-import org.eclipse.ecf.provider.datashare.DatashareContainerAdapter;
-import org.eclipse.ecf.provider.generic.SOContainer;
+import org.eclipse.ecf.provider.datashare.DatashareContainerAdapterFactory;
 
 /**
  *
  */
-public class XMPPContainerAdapterFactory extends DatashareContainerAdapter {
-
-	/**
-	 * @param container
-	 */
-	public XMPPContainerAdapterFactory(SOContainer container) {
-		super(container);
-	}
+public class XMPPContainerAdapterFactory extends DatashareContainerAdapterFactory {
 
 }
