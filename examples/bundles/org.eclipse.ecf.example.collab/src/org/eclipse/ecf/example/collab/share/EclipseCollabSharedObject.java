@@ -196,6 +196,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				try {
 					if (LineChatView.isDisposed())
 					showView();
+					LineChatView.setViewName("Collaborations: "+localUser.getNickname());
 					localGUI = LineChatView.createClientView(
 							EclipseCollabSharedObject.this, pn, init,
 							getLocalFullDownloadPath());

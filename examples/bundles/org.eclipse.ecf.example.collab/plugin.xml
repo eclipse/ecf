@@ -8,7 +8,7 @@
             icon="icons/group.gif"
             class="org.eclipse.ecf.example.collab.ui.LineChatView"
             category="org.eclipse.ecf.ui.viewcategory"
-            name="Group Collaboration"
+            name="Collaborations"
             id="org.eclipse.ecf.example.collab.ui.LineChatView"/>
       <view
             category="org.eclipse.ecf.ui.viewcategory"
