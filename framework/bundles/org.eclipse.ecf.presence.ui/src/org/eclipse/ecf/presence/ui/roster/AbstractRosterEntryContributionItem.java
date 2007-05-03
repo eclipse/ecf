@@ -13,6 +13,7 @@ package org.eclipse.ecf.presence.ui.roster;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
+import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -73,6 +74,21 @@ public abstract class AbstractRosterEntryContributionItem extends
 	}
 
 	/**
+	 * Get the currently selected IRoster.
+	 * 
+	 * @return IRoster that is current workbenchwindow selection. Returns
+	 *         <code>null</code> if nothing is selected or if something other than
+	 *         IRoster is selected.
+	 */
+	protected IRoster getSelectedRoster() {
+		Object selection = getSelection();
+		if (selection instanceof IRoster)
+			return (IRoster) selection;
+		return null;
+	}
+
+
+	/**
 	 * Get container for the given IRosterEntry.
 	 * 
 	 * @param entry
@@ -88,6 +104,26 @@ public abstract class AbstractRosterEntryContributionItem extends
 			return null;
 		IPresenceContainerAdapter pca = (IPresenceContainerAdapter) entry
 				.getRoster().getPresenceContainerAdapter();
+		if (pca != null)
+			return (IContainer) pca.getAdapter(IContainer.class);
+		return null;
+	}
+
+	/**
+	 * Get container for the given IRoster.
+	 * 
+	 * @param entry
+	 *            the IRoster. May be <code>null</code>.
+	 * 
+	 * @return IContainer associated with currently selected IRosterEntry.
+	 *         Returns <code>null</code> if the given <code>entry</code> is
+	 *         null, or if the container associated with the <code>entry</code>
+	 *         cannot be accessed.
+	 */
+	protected IContainer getContainerForRoster(IRoster roster) {
+		if (roster == null)
+			return null;
+		IPresenceContainerAdapter pca = (IPresenceContainerAdapter) roster.getPresenceContainerAdapter();
 		if (pca != null)
 			return (IContainer) pca.getAdapter(IContainer.class);
 		return null;
