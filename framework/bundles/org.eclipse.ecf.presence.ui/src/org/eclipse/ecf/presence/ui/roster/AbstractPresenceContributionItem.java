@@ -67,14 +67,17 @@ public abstract class AbstractPresenceContributionItem extends
 	 */
 	protected abstract IAction [] makeActions();
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.ui.roster.AbstractPresenceContributionItem#getContributionItems()
+	 */
 	protected IContributionItem[] getContributionItems() {
 		IAction[] actions = makeActions();
 		if (actions == null)
 			return EMPTY_ARRAY;
+		// One extra for separator
 		IContributionItem[] items = new IContributionItem[actions.length];
 		for (int i = 0; i < actions.length; i++)
 			items[i] = new ActionContributionItem(actions[i]);
 		return items;
 	}
-
 }
