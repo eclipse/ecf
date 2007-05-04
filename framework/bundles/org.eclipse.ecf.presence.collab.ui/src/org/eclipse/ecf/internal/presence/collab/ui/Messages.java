@@ -22,6 +22,7 @@ public class Messages extends NLS {
 	public static String URLShare_ENTER_URL_DIALOG_TEXT;
 	public static String URLShare_INPUT_URL_DIALOG_TITLE;
 	public static String URLShareRosterContributionItem_ADD_URL_SHARE_MENU_TEXT;
+	public static String URLShareRosterContributionItem_BROWSER_ICON;
 	public static String URLShareRosterContributionItem_REMOVE_URL_SHARE_MENU_TEXT;
 	public static String URLShareRosterEntryContributionItem_SEND_URL_MENU_TEXT;
 	static {

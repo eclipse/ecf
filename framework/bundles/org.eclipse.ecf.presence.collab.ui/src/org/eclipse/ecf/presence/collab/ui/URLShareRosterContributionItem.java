@@ -6,6 +6,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
+import org.eclipse.ecf.internal.presence.collab.ui.Activator;
 import org.eclipse.ecf.internal.presence.collab.ui.Messages;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterContributionItem;
@@ -50,6 +51,8 @@ public class URLShareRosterContributionItem extends
 		};
 		action
 				.setText(Messages.URLShareRosterContributionItem_ADD_URL_SHARE_MENU_TEXT);
+		action.setImageDescriptor(Activator.imageDescriptorFromPlugin(
+				Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
 		return new IAction[] { action };
 	}
 
@@ -62,6 +65,8 @@ public class URLShareRosterContributionItem extends
 		};
 		action
 				.setText(Messages.URLShareRosterContributionItem_REMOVE_URL_SHARE_MENU_TEXT);
+		action.setImageDescriptor(Activator.imageDescriptorFromPlugin(
+				Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
 		return new IAction[] { action };
 	}
 
