@@ -11,6 +11,10 @@
 
 package org.eclipse.ecf.presence.collab.ui;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 
 import org.eclipse.core.runtime.Assert;
@@ -20,6 +24,8 @@ import org.eclipse.ecf.datashare.AbstractShare;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.internal.presence.collab.ui.Messages;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
@@ -44,24 +50,28 @@ public class URLShare extends AbstractShare {
 		return containerID;
 	}
 
-	private void showURL(final String url) {
+	private void showURL(final String user, final String url) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				IWorkbenchBrowserSupport support = PlatformUI.getWorkbench()
-						.getBrowserSupport();
-				IWebBrowser browser;
-				try {
-					browser = support.createBrowser(null);
-					browser.openURL(new URL(url));
-				} catch (Exception e) {
-					// TODO display error to user
-					e.printStackTrace();
+				if (MessageDialog.openQuestion(null, Messages.URLShare_RECEIVED_URL_TITLE, NLS.bind(
+						Messages.URLShare_RECEIVED_URL_MESSAGE,
+						user))) {
+					IWorkbenchBrowserSupport support = PlatformUI.getWorkbench()
+							.getBrowserSupport();
+					IWebBrowser browser;
+					try {
+						browser = support.createBrowser(null);
+						browser.openURL(new URL(url));
+					} catch (Exception e) {
+						// TODO display error to user
+						e.printStackTrace();
+					}
 				}
 			}
 		});
 	}
 
-	public void sendURL(final ID toID) {
+	public void sendURL(final String senderuser, final ID toID) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				InputDialog input = new InputDialog(null,
@@ -74,7 +84,8 @@ public class URLShare extends AbstractShare {
 					String send = input.getValue();
 					if (send != null && !send.equals("")) { //$NON-NLS-1$
 						try {
-							sendMessage(toID, send.getBytes());
+							sendMessage(toID, serialize(new Object[] {
+									senderuser, send }));
 						} catch (Exception e) {
 							// TODO display error to user
 						}
@@ -89,11 +100,30 @@ public class URLShare extends AbstractShare {
 		URLShareRosterContributionItem.removeURLShare(containerID);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.datashare.AbstractShare#handleChannelData(byte[])
 	 */
 	protected void handleMessage(ID fromContainerID, byte[] data) {
-		showURL(new String(data));
+		try {
+			Object[] msg = (Object[]) deserialize(data);
+			showURL((String) msg[0], (String) msg[1]);
+		} catch (Exception e) {
+			// XXX show and/or log error
+		}
 	}
 
+	protected byte[] serialize(Object o) throws Exception {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(bos);
+		oos.writeObject(o);
+		return bos.toByteArray();
+	}
+
+	protected Object deserialize(byte[] bytes) throws Exception {
+		ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
+		ObjectInputStream oins = new ObjectInputStream(bins);
+		return oins.readObject();
+	}
 }

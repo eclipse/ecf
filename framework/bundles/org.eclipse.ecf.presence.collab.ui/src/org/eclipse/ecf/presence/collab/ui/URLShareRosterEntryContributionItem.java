@@ -36,7 +36,7 @@ public class URLShareRosterEntryContributionItem extends
 					final URLShare urlshare = tmp;
 					IAction action = new Action() {
 						public void run() {
-							urlshare.sendURL(entry.getUser().getID());
+							urlshare.sendURL(entry.getRoster().getUser().getName(),entry.getUser().getID());
 						}
 					};
 					action
