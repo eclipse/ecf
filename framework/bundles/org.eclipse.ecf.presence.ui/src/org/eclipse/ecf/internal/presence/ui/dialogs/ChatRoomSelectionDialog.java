@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
+import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.ui.MultiRosterAccount;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -128,11 +129,14 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 
 		List all = new ArrayList();
 		for (int i = 0; i < accounts.length; i++) {
-			IChatRoomInfo[] infos = accounts[i].getPresenceContainerAdapter().getChatRoomManager().getChatRoomInfos();
-			if (infos != null) {
-				for (int j = 0; j < infos.length; j++) {
-					if (infos[j] != null && accounts[i] != null) {
-						all.add(new Room(infos[j], accounts[i]));
+			IChatRoomManager chatRoomManager = accounts[i].getPresenceContainerAdapter().getChatRoomManager();
+			if (chatRoomManager != null) {
+				IChatRoomInfo[] infos = chatRoomManager.getChatRoomInfos();
+				if (infos != null) {
+					for (int j = 0; j < infos.length; j++) {
+						if (infos[j] != null && accounts[i] != null) {
+							all.add(new Room(infos[j], accounts[i]));
+						}
 					}
 				}
 			}
