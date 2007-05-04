@@ -26,7 +26,6 @@ import java.util.Vector;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainerListener;
-import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
@@ -811,13 +810,8 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			throws ContainerConnectException;
 
 	protected void killConnection(IConnection conn) {
-		try {
-			if (conn != null && conn.isConnected()) {
-				debug("killconnection(" + conn + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-				conn.disconnect();
-			}
-		} catch (IOException e) {
-			logException("Exception in killConnection", e); //$NON-NLS-1$
+		if (conn != null && conn.isConnected()) {
+			conn.disconnect();
 		}
 	}
 
@@ -982,22 +976,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	protected abstract ID getIDForConnection(IAsynchConnection connection);
 
 	protected void processDisconnect(DisconnectEvent e) {
-		debug("processDisconnect[" + Thread.currentThread().getName() + "]"); //$NON-NLS-1$ //$NON-NLS-2$
-		try {
-			// Get connection responsible for disconnect event
-			IAsynchConnection conn = (IAsynchConnection) e.getConnection();
-
-			ID fromID = null;
-			synchronized (getGroupMembershipLock()) {
-				fromID = getIDForConnection(conn);
-				memberLeave(fromID, conn);
-			}
-			if (fromID != null)
-				fireContainerEvent(new ContainerDisconnectedEvent(getID(),
-						fromID));
-		} catch (Exception except) {
-			logException("Exception in processDisconnect ", except); //$NON-NLS-1$
-		}
+		disconnect();
 	}
 
 	protected Serializable processSynch(SynchEvent e) throws IOException {

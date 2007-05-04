@@ -10,7 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.comm;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IAdaptable;
@@ -42,10 +41,8 @@ public interface IConnection extends IAdaptable {
 	/**
 	 * Disconnect
 	 * 
-	 * @throws IOException
-	 *             if disconnection cannot occur
 	 */
-	public void disconnect() throws IOException;
+	public void disconnect();
 
 	/**
 	 * @return true if the implementing class has been previously connected,

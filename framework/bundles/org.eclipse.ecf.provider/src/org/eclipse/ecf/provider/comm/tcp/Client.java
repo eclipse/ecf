@@ -437,7 +437,7 @@ public final class Client implements ISynchAsynchConnection {
 			}
 		}, getLocalID() + ":ping:" + getAddressPort()); //$NON-NLS-1$
 	}
-	public synchronized void disconnect() throws IOException {
+	public synchronized void disconnect() {
 		debug("disconnect()"); //$NON-NLS-1$
 		// Close send queue and socket
 		queue.close();
