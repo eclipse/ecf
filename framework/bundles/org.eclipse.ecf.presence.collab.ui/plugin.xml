@@ -4,14 +4,14 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?after=additions">
+            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
          <dynamic
                class="org.eclipse.ecf.presence.collab.ui.URLShareRosterEntryContributionItem"
                id="org.eclipse.ecf.presence.collab.ui.dynamic2">
          </dynamic>
       </menuContribution>
       <menuContribution
-            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?after=additions">
+            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
          <dynamic
                class="org.eclipse.ecf.presence.collab.ui.URLShareRosterContributionItem"
                id="org.eclipse.ecf.presence.collab.ui.dynamic3">
