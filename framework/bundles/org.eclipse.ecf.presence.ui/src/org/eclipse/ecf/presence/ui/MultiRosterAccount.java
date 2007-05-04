@@ -13,6 +13,9 @@ package org.eclipse.ecf.presence.ui;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.IContainerListener;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
@@ -64,6 +67,19 @@ public class MultiRosterAccount {
 		}
 	};
 
+	IContainerListener containerListener = new IContainerListener() {
+		public void handleEvent(IContainerEvent event) {
+			if (event instanceof IContainerDisconnectedEvent) {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						MultiRosterAccount.this.multiRosterView
+								.rosterAccountDisconnected(MultiRosterAccount.this);
+					}
+				});
+			}
+		}
+	};
+
 	public MultiRosterAccount(MultiRosterView multiRosterView,
 			IContainer container, IPresenceContainerAdapter adapter) {
 		this.multiRosterView = multiRosterView;
@@ -71,6 +87,7 @@ public class MultiRosterAccount {
 		Assert.isNotNull(adapter);
 		this.container = container;
 		this.adapter = adapter;
+		this.container.addListener(containerListener);
 		getRosterManager().addRosterListener(updateListener);
 	}
 
@@ -92,7 +109,6 @@ public class MultiRosterAccount {
 
 	public void dispose() {
 		getRosterManager().removeRosterListener(updateListener);
-		container = null;
-		adapter = null;
+		container.removeListener(containerListener);
 	}
 }

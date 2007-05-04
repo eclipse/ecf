@@ -474,10 +474,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	protected void disconnectAccounts(MultiRosterAccount[] accounts) {
-		for (int i = 0; i < accounts.length; i++) {
-			accounts[i].getContainer().disconnect();
-			removeRosterAccount(accounts[i]);
-		}
+		for (int i = 0; i < accounts.length; i++) accounts[i].getContainer().disconnect();
 	}
 
 	private MultiRosterAccount findAccountForUser(ID userID) {
@@ -683,6 +680,13 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		return result;
 	}
 
+	protected void rosterAccountDisconnected(MultiRosterAccount disconnectedAccount) {
+		// remove account.  This will be changed to maintain the roster account
+		// info even though disconnected...see bug
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=166670
+		removeRosterAccount(disconnectedAccount);
+	}
+	
 	protected void removeRosterAccount(MultiRosterAccount account) {
 		// Remove subscription listener
 		account.getRosterManager().removeRosterSubscriptionListener(
@@ -737,19 +741,14 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	 * @see org.eclipse.ecf.presence.ui.IMultiRosterViewPart#addContainer(org.eclipse.ecf.core.IContainer)
 	 */
 	public boolean addContainer(IContainer container) {
-		if (container == null) {
-			return false;
-		}
+		if (container == null) return false;
 		IPresenceContainerAdapter containerAdapter = (IPresenceContainerAdapter) container
 				.getAdapter(IPresenceContainerAdapter.class);
-		if (containerAdapter == null) {
-			return false;
-		} else {
+		if (containerAdapter == null) return false;
+		else {
 			MultiRosterAccount account = new MultiRosterAccount(this,
 					container, containerAdapter);
-			if (!addRosterAccount(account)) {
-				return false;
-			}
+			if (!addRosterAccount(account)) return false;
 
 			IRosterManager manager = containerAdapter.getRosterManager();
 			try {
