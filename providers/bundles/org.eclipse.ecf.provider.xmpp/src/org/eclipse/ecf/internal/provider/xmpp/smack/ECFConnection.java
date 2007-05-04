@@ -63,6 +63,8 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 	protected boolean secure = false;
 
+	protected boolean disconnecting = false;
+	
 	protected void debug(String msg) {
 	}
 
@@ -178,7 +180,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 		return null;
 	}
 
-	public synchronized void disconnect() throws IOException {
+	public synchronized void disconnect() {
 		debug("disconnect()");
 		if (isStarted()) {
 			stop();
@@ -221,7 +223,10 @@ public class ECFConnection implements ISynchAsynchConnection {
 	}
 
 	protected void handleConnectionClosed(Exception e) {
-		handler.handleDisconnectEvent(new DisconnectEvent(this, e, null));
+		if (!disconnecting) {
+			disconnecting = true;
+			handler.handleDisconnectEvent(new DisconnectEvent(this, e, null));
+		}
 	}
 
 	protected void handlePacket(Packet arg0) {

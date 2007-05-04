@@ -187,11 +187,6 @@ public class XMPPContainer extends ClientSOContainer implements
 					synchronized (getGroupMembershipLock()) {
 						memberLeave(groupID, null);
 					}
-					try {
-						conn.disconnect();
-					} catch (IOException e) {
-						dumpStack("Exception disconnecting", e);
-					}
 				}
 			}
 			connectionState = DISCONNECTED;
