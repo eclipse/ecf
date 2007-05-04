@@ -26,7 +26,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -51,7 +50,7 @@ public class XMPPCompoundContributionItem extends
 		final IRosterEntry entry = (IRosterEntry) selection;
 		IContainer container = getContainerForRosterEntry(entry);
 		if (container instanceof XMPPContainer) {
-			IContributionItem[] contributions = new IContributionItem[2];
+			IContributionItem[] contributions = new IContributionItem[1];
 			final IOutgoingFileTransferContainerAdapter ioftca = (IOutgoingFileTransferContainerAdapter) container
 					.getAdapter(IOutgoingFileTransferContainerAdapter.class);
 			if (!(ioftca != null && isAvailable(entry))) return EMPTY_ARRAY;
@@ -66,7 +65,6 @@ public class XMPPCompoundContributionItem extends
 					.getSharedImages().getImageDescriptor(
 							ISharedImages.IMG_OBJ_FILE));
 			contributions[0] = new ActionContributionItem(fileSendAction);
-			contributions[1] = new Separator();
 			return contributions;
 		} else {
 			return EMPTY_ARRAY;

@@ -17,7 +17,7 @@
       <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?after=additions">
+            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
          <dynamic
                class="org.eclipse.ecf.internal.provider.xmpp.ui.XMPPCompoundContributionItem"
                id="org.eclipse.ecf.provider.xmpp.ui.dynamicContribution">
