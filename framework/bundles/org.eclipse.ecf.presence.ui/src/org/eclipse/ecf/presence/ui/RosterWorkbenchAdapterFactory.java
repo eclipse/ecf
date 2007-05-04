@@ -84,13 +84,15 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	protected int getEntriesAvailableCount(Collection entries) {
 		int count = 0;
-		for (Iterator i = entries.iterator(); i.hasNext();) {
-			Object o = i.next();
-			if (o instanceof IRosterEntry) {
-				IRosterEntry entry = (IRosterEntry) o;
-				if (entry.getPresence().getType().equals(
-						IPresence.Type.AVAILABLE))
-					count++;
+		synchronized (entries) {
+			for (Iterator i = entries.iterator(); i.hasNext();) {
+				Object o = i.next();
+				if (o instanceof IRosterEntry) {
+					IRosterEntry entry = (IRosterEntry) o;
+					if (entry.getPresence().getType().equals(
+							IPresence.Type.AVAILABLE))
+						count++;
+				}
 			}
 		}
 		return count;
@@ -98,10 +100,12 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	protected int getEntriesTotalCount(Collection entries) {
 		int count = 0;
-		for (Iterator i = entries.iterator(); i.hasNext();) {
-			Object o = i.next();
-			if (o instanceof IRosterEntry)
-				count++;
+		synchronized (entries) {
+			for (Iterator i = entries.iterator(); i.hasNext();) {
+				Object o = i.next();
+				if (o instanceof IRosterEntry)
+					count++;
+			}
 		}
 		return count;
 	}
