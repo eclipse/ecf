@@ -5,6 +5,7 @@
  * available at http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: Composent, Inc. - initial API and implementation
+ * Boris Bokowski, IBM
  ******************************************************************************/
 package org.eclipse.ecf.example.clients.applications;
 
@@ -37,11 +38,6 @@ public class ChatRoomRobotApplication implements IApplication,
 
 	private String userName;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
-	 */
 	public Object start(IApplicationContext context) throws Exception {
 		Object[] args = context.getArguments().values().toArray();
 		while (args[0] instanceof Object[])
@@ -64,11 +60,6 @@ public class ChatRoomRobotApplication implements IApplication,
 		return new Integer(-1);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.equinox.app.IApplication#stop()
-	 */
 	public void stop() {
 	}
 
@@ -128,11 +119,6 @@ public class ChatRoomRobotApplication implements IApplication,
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.presence.IIMMessageListener#handleMessageEvent(org.eclipse.ecf.presence.IIMMessageEvent)
-	 */
 	public void handleMessageEvent(IIMMessageEvent messageEvent) {
 		if (messageEvent instanceof IChatRoomMessageEvent) {
 			IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
