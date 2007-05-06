@@ -235,7 +235,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			+ ".sharedobjectargs"; //$NON-NLS-1$
 	public static final String DEFAULT_OBJECT_ARGTYPES_KEY = SOContainer.class
 			.getName()
-			+ ".sharedobjectargs"; //$NON-NLS-1$
+			+ ".sharedobjectargtypes"; //$NON-NLS-1$
 	protected ISharedObjectContainerConfig config = null;
 	protected SOContainerGMM groupManager = null;
 	protected boolean isClosing = false;
