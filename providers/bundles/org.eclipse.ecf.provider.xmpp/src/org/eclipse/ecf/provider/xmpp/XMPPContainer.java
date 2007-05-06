@@ -185,7 +185,7 @@ public class XMPPContainer extends ClientSOContainer implements
 				ISynchAsynchConnection conn = getConnection();
 				synchronized (conn) {
 					synchronized (getGroupMembershipLock()) {
-						memberLeave(groupID, null);
+						handleLeave(groupID, null);
 					}
 				}
 			}
