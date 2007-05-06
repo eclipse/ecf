@@ -622,7 +622,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
 	protected void handleAsynchIOException(IOException except, AsynchEvent e) {
 		// If we get IO Exception, we'll disconnect...if we can
-		killConnection(e.getConnection());
+		disconnectConnection(e.getConnection());
 	}
 
 	protected void handleCreateMessage(ContainerMessage mess)
@@ -809,10 +809,8 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	public abstract void connect(ID groupID, IConnectContext connectContext)
 			throws ContainerConnectException;
 
-	protected void killConnection(IConnection conn) {
-		if (conn != null && conn.isConnected()) {
-			conn.disconnect();
-		}
+	protected void disconnectConnection(IConnection conn) {
+		if (conn != null && conn.isConnected()) conn.disconnect();
 	}
 
 	/*
@@ -875,7 +873,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		return new SOWrapper(newConfig, s, this);
 	}
 
-	protected void memberLeave(ID target, IConnection conn) {
+	protected void handleLeave(ID target, IConnection conn) {
 		if (target == null)
 			return;
 		if (groupManager.removeMember(target)) {
@@ -889,7 +887,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			}
 		}
 		if (conn != null)
-			killConnection(conn);
+			disconnectConnection(conn);
 	}
 
 	protected void moveFromLoadingToActive(SOWrapper wrap) {
@@ -975,10 +973,8 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
 	protected abstract ID getIDForConnection(IAsynchConnection connection);
 
-	protected void processDisconnect(DisconnectEvent e) {
-		disconnect();
-	}
-
+	protected abstract void processDisconnect(DisconnectEvent e);
+	
 	protected Serializable processSynch(SynchEvent e) throws IOException {
 		debug("processSynch:" + e); //$NON-NLS-1$
 		ContainerMessage mess = deserializeContainerMessage((byte[]) e

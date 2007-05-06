@@ -89,7 +89,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 			if (isConnected()) {
 				this.disconnect();
 			} else if (isConnecting()) {
-				killConnection(connection);
+				disconnectConnection(connection);
 			}
 			remoteServerID = null;
 		}
@@ -107,7 +107,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 	}
 
 	private void setStateDisconnected(ISynchAsynchConnection conn) {
-		killConnection(conn);
+		disconnectConnection(conn);
 		connectionState = DISCONNECTED;
 		connection = null;
 		remoteServerID = null;
@@ -157,14 +157,14 @@ public abstract class ClientSOContainer extends SOContainer implements
 								connectTimeout);
 					} catch (ECFException e) {
 						if (getConnection() != aConnection)
-							killConnection(aConnection);
+							disconnectConnection(aConnection);
 						else
 							setStateDisconnected(aConnection);
 						throw e;
 					}
 					// If not in correct state, disconnect and return
 					if (getConnection() != aConnection) {
-						killConnection(aConnection);
+						disconnectConnection(aConnection);
 						throw new IllegalStateException(
 								Messages.ClientSOContainer_Connect_Failed_Incorrect_State);
 					}
@@ -229,7 +229,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 		}
 		debug("We've been ejected from group " + remoteServerID); //$NON-NLS-1$
 		synchronized (getGroupMembershipLock()) {
-			memberLeave(fromID, connection);
+			handleLeave(fromID, connection);
 		}
 		// Now notify that we've been ejected
 		fireContainerEvent(new ContainerEjectedEvent(getID(), fromID, lgm
@@ -275,7 +275,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 						// We've been ejected.
 						ID serverID = remoteServerID;
 						synchronized (getGroupMembershipLock()) {
-							memberLeave(remoteServerID, connection);
+							handleLeave(remoteServerID, connection);
 						}
 						// Notify listeners that we've been ejected
 						fireContainerEvent(new ContainerEjectedEvent(getID(),
@@ -319,10 +319,9 @@ public abstract class ClientSOContainer extends SOContainer implements
 												groupID,
 												getNextSequenceNumber(),
 												getLeaveData(groupID))));
-					} catch (Exception e) {
-					}
+					} catch (Exception e) {}
 					synchronized (getGroupMembershipLock()) {
-						memberLeave(groupID, connection);
+						handleLeave(groupID, connection);
 					}
 				}
 				// notify listeners
@@ -354,14 +353,14 @@ public abstract class ClientSOContainer extends SOContainer implements
 		return remoteServerID;
 	}
 
-	protected void memberLeave(ID fromID, IAsynchConnection conn) {
+	protected void handleLeave(ID fromID, IConnection conn) {
+		// If it's the remote server then we're completely disconnected
 		if (fromID.equals(remoteServerID)) {
 			groupManager.removeNonLocalMembers();
-			super.memberLeave(fromID, conn);
+			super.handleLeave(fromID, conn);
 			setStateDisconnected(null);
-		} else if (fromID.equals(getID())) {
-			super.memberLeave(fromID, conn);
-		}
+			// Otherwise it's some other group member
+		} else if (fromID.equals(getID())) super.handleLeave(fromID, conn);
 	}
 
 	protected void sendMessage(ContainerMessage data) throws IOException {
@@ -384,9 +383,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 	protected void processDisconnect(DisconnectEvent evt) {
 		// Get connect lock, and just return if this connection has been
 		// terminated
-		synchronized (connectLock) {
-			super.processDisconnect(evt);
-		}
+		disconnect();
 	}
 
 	protected void processAsynch(AsynchEvent evt) throws IOException {

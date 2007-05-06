@@ -27,6 +27,7 @@ import org.eclipse.ecf.core.security.IConnectHandlerPolicy;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerGroupManager;
 import org.eclipse.ecf.internal.provider.Messages;
+import org.eclipse.ecf.provider.comm.DisconnectEvent;
 import org.eclipse.ecf.provider.comm.IAsynchConnection;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.comm.ISynchConnection;
@@ -134,9 +135,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
                 // Here we check to see if the given remoteID is already connected,
                 // if it is, then we close the old connection and cleanup
                 ISynchConnection oldConn = getSynchConnectionForID(remoteID);
-                if (oldConn != null) {
-                	memberLeave(remoteID,oldConn);
-                }
+                if (oldConn != null) handleLeave(remoteID,oldConn);
                 // Now we add the new connection
                 if (addNewRemoteMember(remoteID, conn)) {
                     // Notify existing remotes about new member
@@ -183,7 +182,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
         synchronized (getGroupMembershipLock()) {
             IAsynchConnection conn = getConnectionForID(fromID);
             if (conn == null) return;
-            memberLeave(fromID,conn);
+            handleLeave(fromID,conn);
         }
         // Notify listeners
         fireContainerEvent(new ContainerDisconnectedEvent(getID(),fromID));
@@ -203,7 +202,7 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
             } catch (Exception e) {
                 logException("Exception in ejectGroupMember.sendAsynch()",e); //$NON-NLS-1$
             }
-            memberLeave(memberID, conn);
+            handleLeave(memberID, conn);
         }
         // Notify listeners
         fireContainerEvent(new ContainerEjectedEvent(memberID,getID(),reason));        
@@ -276,6 +275,23 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 		synchronized (getGroupMembershipLock()) {
 			this.joinpolicy = policy;
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#processDisconnect(org.eclipse.ecf.provider.comm.DisconnectEvent)
+	 */
+	protected void processDisconnect(DisconnectEvent e) {
+		IAsynchConnection conn = (IAsynchConnection) e.getConnection();
+
+		ID fromID = null;
+		synchronized (getGroupMembershipLock()) {
+			fromID = getIDForConnection(conn);
+			if (fromID == null) return;
+			handleLeave(fromID, conn);
+		}
+		if (fromID != null)
+			fireContainerEvent(new ContainerDisconnectedEvent(getID(),
+					fromID));
 	}
 
 }
