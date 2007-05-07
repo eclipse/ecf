@@ -5,7 +5,10 @@ Bundle-SymbolicName: org.eclipse.ecf.doc; singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.help
+Require-Bundle: org.eclipse.help,
+ org.eclipse.ui.intro,
+ org.eclipse.ui.intro.universal,
+ org.eclipse.ui
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1

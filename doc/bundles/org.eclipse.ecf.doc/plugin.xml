@@ -30,5 +30,12 @@
             file="toctutorials.xml">
       </toc>
    </extension>
+    <extension
+          point="org.eclipse.ui.intro.configExtension">
+       <configExtension
+             configId="org.eclipse.ui.intro.universalConfig"
+             content="intro/sample.xml">
+       </configExtension>
+    </extension>
 
 </plugin>
