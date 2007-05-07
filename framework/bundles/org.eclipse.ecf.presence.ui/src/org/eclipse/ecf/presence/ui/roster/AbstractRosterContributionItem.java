@@ -47,7 +47,7 @@ public abstract class AbstractRosterContributionItem extends
 	/**
 	 * Get container for the given IRoster.
 	 * 
-	 * @param entry
+	 * @param roster
 	 *            the IRoster. May be <code>null</code>.
 	 * 
 	 * @return IContainer associated with currently selected IRosterEntry.
