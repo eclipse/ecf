@@ -355,9 +355,8 @@ public class ECFConnection implements ISynchAsynchConnection {
 
 	public void sendMessage(ID target, ID thread, Type type, String subject, String body, Map properties2) throws IOException {
 		if (target == null)
-			throw new IOException("target cannot be null");
+			throw new IOException("XMPP target for message cannot be null");
 		if (body == null) body = "";
-		debug("sendMessage(" + target + "," + body + ")");
 		Message aMsg = new Message();
 		aMsg.setBody(body);
 		if (thread != null) aMsg.setThread(thread.getName());
