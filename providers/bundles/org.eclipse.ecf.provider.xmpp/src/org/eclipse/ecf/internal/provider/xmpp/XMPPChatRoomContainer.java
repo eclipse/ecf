@@ -180,7 +180,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 				debug("got unexpected packet " + aPacket); //$NON-NLS-1$
 			}
 		} catch (IOException e) {
-			logException("Exception in handleXMPPMessage", e); //$NON-NLS-1$
+			traceStack("Exception in handleXMPPMessage", e); //$NON-NLS-1$
 		}
 	}
 
