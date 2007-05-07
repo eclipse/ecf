@@ -134,7 +134,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		public boolean select(Viewer viewer, Object parentElement,
 				Object element) {
 			if (element instanceof IRosterEntry) {
-				return ((IRosterEntry) element).getPresence().getType() != IPresence.Type.UNAVAILABLE;
+				IRosterEntry entry = (IRosterEntry) element;
+				IPresence presence = entry.getPresence();
+				if (presence != null) return (presence.getType() != IPresence.Type.UNAVAILABLE);
+				else return true;
 			} else {
 				return true;
 			}
