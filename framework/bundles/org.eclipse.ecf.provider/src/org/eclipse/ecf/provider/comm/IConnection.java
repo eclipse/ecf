@@ -33,7 +33,8 @@ public interface IConnection extends IAdaptable {
 	 *            the timeout (in ms) for the connection to occur
 	 * @return a result object that is of type specific to provider
 	 *         implementation
-	 * @throws ECFException TODO
+	 * @throws ECFException
+	 *             TODO
 	 */
 	public Object connect(ID remote, Object data, int timeout)
 			throws ECFException;
@@ -76,7 +77,7 @@ public interface IConnection extends IAdaptable {
 	/**
 	 * Get properties for this connection
 	 * 
-	 * @return Map the properties associated with this connection.  May be null.
+	 * @return Map the properties associated with this connection. May be null.
 	 */
 	public Map getProperties();
 

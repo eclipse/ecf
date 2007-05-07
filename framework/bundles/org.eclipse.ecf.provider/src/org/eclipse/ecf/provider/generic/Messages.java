@@ -15,7 +15,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
- *
+ * 
  */
 public class Messages {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.provider.generic.messages"; //$NON-NLS-1$

@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 
 package org.eclipse.ecf.provider.generic;
 
@@ -25,340 +25,340 @@ import org.eclipse.ecf.provider.generic.gmm.Member;
 import org.eclipse.ecf.provider.generic.gmm.MemberChanged;
 
 class SOContainerGMM implements Observer {
-    SOContainer container;
-    Member localMember;
-    GMMImpl groupManager;
-    // Maximum number of members. Default is -1 (no maximum).
-    int maxMembers = -1;
-    TreeMap loading, active;
+	SOContainer container;
+	Member localMember;
+	GMMImpl groupManager;
+	// Maximum number of members. Default is -1 (no maximum).
+	int maxMembers = -1;
+	TreeMap loading, active;
 
-    SOContainerGMM(SOContainer cont, Member local) {
-        container = cont;
-        groupManager = new GMMImpl();
-        groupManager.addObserver(this);
-        loading = new TreeMap();
-        active = new TreeMap();
-        localMember = local;
-        addMember(local);
-        debug("<init>"); //$NON-NLS-1$
-    }
+	SOContainerGMM(SOContainer cont, Member local) {
+		container = cont;
+		groupManager = new GMMImpl();
+		groupManager.addObserver(this);
+		loading = new TreeMap();
+		active = new TreeMap();
+		localMember = local;
+		addMember(local);
+		debug("<init>"); //$NON-NLS-1$
+	}
 
 	protected void debug(String msg) {
 		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG,
 				msg + ":" + container.getID()); //$NON-NLS-1$
 	}
-	
+
 	protected void traceStack(String msg, Throwable e) {
 		Trace.catching(ProviderPlugin.PLUGIN_ID,
-				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainerGMM.class,
-				container.getID() + ":" + msg, e); //$NON-NLS-1$
+				ECFProviderDebugOptions.EXCEPTIONS_CATCHING,
+				SOContainerGMM.class, container.getID() + ":" + msg, e); //$NON-NLS-1$
 	}
 
-    ID[] getSharedObjectIDs() {
-        return getActiveKeys();
-    }
+	ID[] getSharedObjectIDs() {
+		return getActiveKeys();
+	}
 
-    synchronized boolean addMember(Member m) {
-        debug("addMember(" + m.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (maxMembers > 0 && getSize() > maxMembers) {
-            return false;
-        } else {
-            return groupManager.addMember(m);
-        }
-    }
+	synchronized boolean addMember(Member m) {
+		debug("addMember(" + m.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (maxMembers > 0 && getSize() > maxMembers) {
+			return false;
+		} else {
+			return groupManager.addMember(m);
+		}
+	}
 
-    synchronized int setMaxMembers(int max) {
-        debug("setMaxMembers(" + max + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        int old = maxMembers;
-        maxMembers = max;
-        return old;
-    }
+	synchronized int setMaxMembers(int max) {
+		debug("setMaxMembers(" + max + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		int old = maxMembers;
+		maxMembers = max;
+		return old;
+	}
 
-    synchronized int getMaxMembers() {
-        return maxMembers;
-    }
+	synchronized int getMaxMembers() {
+		return maxMembers;
+	}
 
-    synchronized boolean removeMember(Member m) {
-        boolean res = groupManager.removeMember(m);
-        if (res) {
-            removeSharedObjects(m);
-        }
-        return res;
-    }
+	synchronized boolean removeMember(Member m) {
+		boolean res = groupManager.removeMember(m);
+		if (res) {
+			removeSharedObjects(m);
+		}
+		return res;
+	}
 
-    synchronized boolean removeMember(ID id) {
-        debug("removeMember(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        Member m = getMemberForID(id);
-        if (m == null)
-            return false;
-        return removeMember(m);
-    }
+	synchronized boolean removeMember(ID id) {
+		debug("removeMember(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		Member m = getMemberForID(id);
+		if (m == null)
+			return false;
+		return removeMember(m);
+	}
 
-    void removeAllMembers() {
-        removeAllMembers(null);
-    }
+	void removeAllMembers() {
+		removeAllMembers(null);
+	}
 
-    void removeNonLocalMembers() {
-        removeAllMembers(localMember);
-    }
+	void removeNonLocalMembers() {
+		removeAllMembers(localMember);
+	}
 
-    synchronized void removeAllMembers(Member exception) {
-        if (exception == null) {
-            debug("removeAllMembers()"); //$NON-NLS-1$
-        } else {
-            debug("removeAllMembers(" + exception.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        Object m[] = getMembers();
-        for (int i = 0; i < m.length; i++) {
-            Member mem = (Member) m[i];
-            if (exception == null || !exception.equals(mem))
-                removeMember(mem);
-        }
-    }
+	synchronized void removeAllMembers(Member exception) {
+		if (exception == null) {
+			debug("removeAllMembers()"); //$NON-NLS-1$
+		} else {
+			debug("removeAllMembers(" + exception.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		Object m[] = getMembers();
+		for (int i = 0; i < m.length; i++) {
+			Member mem = (Member) m[i];
+			if (exception == null || !exception.equals(mem))
+				removeMember(mem);
+		}
+	}
 
-    synchronized Object[] getMembers() {
-        return groupManager.getMembers();
-    }
+	synchronized Object[] getMembers() {
+		return groupManager.getMembers();
+	}
 
-    synchronized ID[] getOtherMemberIDs() {
-        return groupManager.getMemberIDs(localMember.getID());
-    }
+	synchronized ID[] getOtherMemberIDs() {
+		return groupManager.getMemberIDs(localMember.getID());
+	}
 
-    synchronized ID[] getMemberIDs() {
-        return groupManager.getMemberIDs(null);
-    }
+	synchronized ID[] getMemberIDs() {
+		return groupManager.getMemberIDs(null);
+	}
 
-    synchronized Member getMemberForID(ID id) {
-        Member newMem = new Member(id);
-        for (Iterator i = iterator(); i.hasNext();) {
-            Member oldMem = (Member) i.next();
-            if (newMem.equals(oldMem))
-                return oldMem;
-        }
-        return null;
-    }
+	synchronized Member getMemberForID(ID id) {
+		Member newMem = new Member(id);
+		for (Iterator i = iterator(); i.hasNext();) {
+			Member oldMem = (Member) i.next();
+			if (newMem.equals(oldMem))
+				return oldMem;
+		}
+		return null;
+	}
 
-    synchronized int getSize() {
-        return groupManager.getSize();
-    }
+	synchronized int getSize() {
+		return groupManager.getSize();
+	}
 
-    synchronized boolean containsMember(Member m) {
-        if (m != null) {
-            debug("containsMember(" + m.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        return groupManager.containsMember(m);
-    }
+	synchronized boolean containsMember(Member m) {
+		if (m != null) {
+			debug("containsMember(" + m.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		return groupManager.containsMember(m);
+	}
 
-    synchronized Iterator iterator() {
-        return groupManager.iterator();
-    }
+	synchronized Iterator iterator() {
+		return groupManager.iterator();
+	}
 
-    // End group membership change methods
-    synchronized boolean addSharedObject(SOWrapper ro) {
-        if (ro != null)
-            debug("addSharedObject(" + ro.getObjID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (getFromAny(ro.getObjID()) != null)
-            return false;
-        addSharedObjectToActive(ro);
-        return true;
-    }
+	// End group membership change methods
+	synchronized boolean addSharedObject(SOWrapper ro) {
+		if (ro != null)
+			debug("addSharedObject(" + ro.getObjID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (getFromAny(ro.getObjID()) != null)
+			return false;
+		addSharedObjectToActive(ro);
+		return true;
+	}
 
-    synchronized boolean addLoadingSharedObject(
-            SOContainer.LoadingSharedObject lso) {
-        if (lso != null)
-            debug("addLoadingSharedObject(" + lso.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (getFromAny(lso.getID()) != null)
-            return false;
-        loading.put(lso.getID(), new SOWrapper(lso, container));
-        // And start the thing
-        lso.start();
-        return true;
-    }
+	synchronized boolean addLoadingSharedObject(
+			SOContainer.LoadingSharedObject lso) {
+		if (lso != null)
+			debug("addLoadingSharedObject(" + lso.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (getFromAny(lso.getID()) != null)
+			return false;
+		loading.put(lso.getID(), new SOWrapper(lso, container));
+		// And start the thing
+		lso.start();
+		return true;
+	}
 
-    synchronized void moveSharedObjectFromLoadingToActive(SOWrapper ro) {
-        if (ro != null)
-            debug("moveSharedObjectFromLoadingToActive(" + ro.getObjID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (removeSharedObjectFromLoading(ro.getObjID()))
-            addSharedObjectToActive(ro);
-    }
+	synchronized void moveSharedObjectFromLoadingToActive(SOWrapper ro) {
+		if (ro != null)
+			debug("moveSharedObjectFromLoadingToActive(" + ro.getObjID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (removeSharedObjectFromLoading(ro.getObjID()))
+			addSharedObjectToActive(ro);
+	}
 
-    boolean removeSharedObjectFromLoading(ID id) {
-        debug("removeSharedObjectFromLoading(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (loading.remove(id) != null) {
-            return true;
-        } else
-            return false;
-    }
+	boolean removeSharedObjectFromLoading(ID id) {
+		debug("removeSharedObjectFromLoading(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (loading.remove(id) != null) {
+			return true;
+		} else
+			return false;
+	}
 
-    synchronized ID[] getActiveKeys() {
-        return (ID[]) active.keySet().toArray(new ID[0]);
-    }
+	synchronized ID[] getActiveKeys() {
+		return (ID[]) active.keySet().toArray(new ID[0]);
+	}
 
-    void addSharedObjectToActive(SOWrapper so) {
-        if (so != null)
-            debug("addSharedObjectToActive(" + so.getObjID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        active.put(so.getObjID(), so);
-        so.activated();
-    }
+	void addSharedObjectToActive(SOWrapper so) {
+		if (so != null)
+			debug("addSharedObjectToActive(" + so.getObjID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		active.put(so.getObjID(), so);
+		so.activated();
+	}
 
-    synchronized void notifyOthersActivated(ID id) {
-        debug("notifyOthersActivated(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        notifyOtherChanged(id, active, true);
-    }
+	synchronized void notifyOthersActivated(ID id) {
+		debug("notifyOthersActivated(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		notifyOtherChanged(id, active, true);
+	}
 
-    synchronized void notifyOthersDeactivated(ID id) {
-        debug("notifyOthersDeactivated(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        notifyOtherChanged(id, active, false);
-    }
+	synchronized void notifyOthersDeactivated(ID id) {
+		debug("notifyOthersDeactivated(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		notifyOtherChanged(id, active, false);
+	}
 
-    void notifyOtherChanged(ID id, TreeMap aMap, boolean activated) {
-        for (Iterator i = aMap.values().iterator(); i.hasNext();) {
-            SOWrapper other = (SOWrapper) i.next();
-            if (!id.equals(other.getObjID())) {
-                other.otherChanged(id, activated);
-            }
-        }
-    }
+	void notifyOtherChanged(ID id, TreeMap aMap, boolean activated) {
+		for (Iterator i = aMap.values().iterator(); i.hasNext();) {
+			SOWrapper other = (SOWrapper) i.next();
+			if (!id.equals(other.getObjID())) {
+				other.otherChanged(id, activated);
+			}
+		}
+	}
 
-    synchronized boolean removeSharedObject(ID id) {
-        debug("removeSharedObject(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-        SOWrapper ro = removeFromMap(id, active);
-        if (ro == null)
-            return false;
-        ro.deactivated();
-        return true;
-    }
+	synchronized boolean removeSharedObject(ID id) {
+		debug("removeSharedObject(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		SOWrapper ro = removeFromMap(id, active);
+		if (ro == null)
+			return false;
+		ro.deactivated();
+		return true;
+	}
 
-    synchronized SOWrapper getFromMap(ID objID, TreeMap aMap) {
-        return (SOWrapper) aMap.get(objID);
-    }
+	synchronized SOWrapper getFromMap(ID objID, TreeMap aMap) {
+		return (SOWrapper) aMap.get(objID);
+	}
 
-    synchronized SOWrapper removeFromMap(ID objID, TreeMap aMap) {
-        return (SOWrapper) aMap.remove(objID);
-    }
+	synchronized SOWrapper removeFromMap(ID objID, TreeMap aMap) {
+		return (SOWrapper) aMap.remove(objID);
+	}
 
-    SOWrapper getFromLoading(ID objID) {
-        return getFromMap(objID, loading);
-    }
+	SOWrapper getFromLoading(ID objID) {
+		return getFromMap(objID, loading);
+	}
 
-    SOWrapper getFromActive(ID objID) {
-        return getFromMap(objID, active);
-    }
+	SOWrapper getFromActive(ID objID) {
+		return getFromMap(objID, active);
+	}
 
-    synchronized SOWrapper getFromAny(ID objID) {
-        SOWrapper ro = getFromMap(objID, active);
-        if (ro != null)
-            return ro;
-        ro = getFromMap(objID, loading);
-        return ro;
-    }
+	synchronized SOWrapper getFromAny(ID objID) {
+		SOWrapper ro = getFromMap(objID, active);
+		if (ro != null)
+			return ro;
+		ro = getFromMap(objID, loading);
+		return ro;
+	}
 
-    // Notification methods
-    void notifyAllOfMemberChange(Member m, TreeMap map, boolean add) {
-        for (Iterator i = map.values().iterator(); i.hasNext();) {
-            SOWrapper ro = (SOWrapper) i.next();
-            ro.memberChanged(m, add);
-        }
-    }
+	// Notification methods
+	void notifyAllOfMemberChange(Member m, TreeMap map, boolean add) {
+		for (Iterator i = map.values().iterator(); i.hasNext();) {
+			SOWrapper ro = (SOWrapper) i.next();
+			ro.memberChanged(m, add);
+		}
+	}
 
-    public void update(Observable o, Object arg) {
-        MemberChanged mc = (MemberChanged) arg;
-        notifyAllOfMemberChange(mc.getMember(), active, mc.getAdded());
-    }
+	public void update(Observable o, Object arg) {
+		MemberChanged mc = (MemberChanged) arg;
+		notifyAllOfMemberChange(mc.getMember(), active, mc.getAdded());
+	}
 
-    synchronized void removeSharedObjects(Member m) {
-        removeSharedObjects(m, true);
-    }
+	synchronized void removeSharedObjects(Member m) {
+		removeSharedObjects(m, true);
+	}
 
-    synchronized void clear() {
-        debug("clear()"); //$NON-NLS-1$
-        removeSharedObjects(null, true);
-    }
+	synchronized void clear() {
+		debug("clear()"); //$NON-NLS-1$
+		removeSharedObjects(null, true);
+	}
 
-    void removeSharedObjects(Member m, boolean match) {
-        HashSet set = getRemoveIDs(m.getID(), match);
-        Iterator i = set.iterator();
-        while (i.hasNext()) {
-            ID removeID = (ID) i.next();
-            if (isLoading(removeID)) {
-                removeSharedObjectFromLoading(removeID);
-            } else {
-                container.destroySharedObject(removeID);
-            }
-        }
-    }
+	void removeSharedObjects(Member m, boolean match) {
+		HashSet set = getRemoveIDs(m.getID(), match);
+		Iterator i = set.iterator();
+		while (i.hasNext()) {
+			ID removeID = (ID) i.next();
+			if (isLoading(removeID)) {
+				removeSharedObjectFromLoading(removeID);
+			} else {
+				container.destroySharedObject(removeID);
+			}
+		}
+	}
 
-    HashSet getRemoveIDs(ID homeID, boolean match) {
-        HashSet aSet = new HashSet();
-        for (Iterator i = new DestroyIterator(loading, homeID, match); i
-                .hasNext();) {
-            aSet.add(i.next());
-        }
-        for (Iterator i = new DestroyIterator(active, homeID, match); i
-                .hasNext();) {
-            aSet.add(i.next());
-        }
-        return aSet;
-    }
+	HashSet getRemoveIDs(ID homeID, boolean match) {
+		HashSet aSet = new HashSet();
+		for (Iterator i = new DestroyIterator(loading, homeID, match); i
+				.hasNext();) {
+			aSet.add(i.next());
+		}
+		for (Iterator i = new DestroyIterator(active, homeID, match); i
+				.hasNext();) {
+			aSet.add(i.next());
+		}
+		return aSet;
+	}
 
-    synchronized boolean isActive(ID id) {
-        return active.containsKey(id);
-    }
+	synchronized boolean isActive(ID id) {
+		return active.containsKey(id);
+	}
 
-    synchronized boolean isLoading(ID id) {
-        return loading.containsKey(id);
-    }
+	synchronized boolean isLoading(ID id) {
+		return loading.containsKey(id);
+	}
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("SOContainerGMM["); //$NON-NLS-1$
-        sb.append(groupManager);
-        sb.append(";load:").append(loading); //$NON-NLS-1$
-        sb.append(";active:").append(active).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
-        return sb.toString();
-    }
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("SOContainerGMM["); //$NON-NLS-1$
+		sb.append(groupManager);
+		sb.append(";load:").append(loading); //$NON-NLS-1$
+		sb.append(";active:").append(active).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		return sb.toString();
+	}
 }
 
 class DestroyIterator implements Iterator {
-    ID next;
-    ID homeID;
-    Iterator i;
-    boolean match;
+	ID next;
+	ID homeID;
+	Iterator i;
+	boolean match;
 
-    public DestroyIterator(TreeMap map, ID hID, boolean m) {
-        i = map.values().iterator();
-        homeID = hID;
-        next = null;
-        match = m;
-    }
+	public DestroyIterator(TreeMap map, ID hID, boolean m) {
+		i = map.values().iterator();
+		homeID = hID;
+		next = null;
+		match = m;
+	}
 
-    public boolean hasNext() {
-        if (next == null)
-            next = getNext();
-        return (next != null);
-    }
+	public boolean hasNext() {
+		if (next == null)
+			next = getNext();
+		return (next != null);
+	}
 
-    public Object next() {
-        if (hasNext()) {
-            ID value = next;
-            next = null;
-            return value;
-        } else {
-            throw new java.util.NoSuchElementException();
-        }
-    }
+	public Object next() {
+		if (hasNext()) {
+			ID value = next;
+			next = null;
+			return value;
+		} else {
+			throw new java.util.NoSuchElementException();
+		}
+	}
 
-    ID getNext() {
-        while (i.hasNext()) {
-            SOWrapper ro = (SOWrapper) i.next();
-            if (homeID == null || (match ^ !ro.getHomeID().equals(homeID))) {
-                return ro.getObjID();
-            }
-        }
-        return null;
-    }
+	ID getNext() {
+		while (i.hasNext()) {
+			SOWrapper ro = (SOWrapper) i.next();
+			if (homeID == null || (match ^ !ro.getHomeID().equals(homeID))) {
+				return ro.getObjID();
+			}
+		}
+		return null;
+	}
 
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 }

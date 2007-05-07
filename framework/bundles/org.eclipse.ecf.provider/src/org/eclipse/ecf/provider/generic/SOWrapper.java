@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 
 package org.eclipse.ecf.provider.generic;
 
@@ -33,223 +33,224 @@ import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public class SOWrapper {
-    protected ISharedObject sharedObject;
-    private SOConfig sharedObjectConfig;
-    private ID sharedObjectID;
-    private SOContainer container;
-    private ID containerID;
-    private Thread thread;
-    private SimpleFIFOQueue queue;
+	protected ISharedObject sharedObject;
+	private SOConfig sharedObjectConfig;
+	private ID sharedObjectID;
+	private SOContainer container;
+	private ID containerID;
+	private Thread thread;
+	private SimpleFIFOQueue queue;
 
-    protected SOWrapper(SOContainer.LoadingSharedObject obj, SOContainer cont) {
-        sharedObjectID = obj.getID();
-        sharedObject = obj;
-        container = cont;
-        containerID = cont.getID();
-        sharedObjectConfig = null;
-        thread = null;
-        queue = new SimpleFIFOQueue();
-    }
+	protected SOWrapper(SOContainer.LoadingSharedObject obj, SOContainer cont) {
+		sharedObjectID = obj.getID();
+		sharedObject = obj;
+		container = cont;
+		containerID = cont.getID();
+		sharedObjectConfig = null;
+		thread = null;
+		queue = new SimpleFIFOQueue();
+	}
 
-    protected SOWrapper(SOConfig aConfig, ISharedObject obj, SOContainer cont) {
-        sharedObjectConfig = aConfig;
-        sharedObjectID = sharedObjectConfig.getSharedObjectID();
-        sharedObject = obj;
-        container = cont;
-        containerID = cont.getID();
-        thread = null;
-        queue = new SimpleFIFOQueue();
-    }
+	protected SOWrapper(SOConfig aConfig, ISharedObject obj, SOContainer cont) {
+		sharedObjectConfig = aConfig;
+		sharedObjectID = sharedObjectConfig.getSharedObjectID();
+		sharedObject = obj;
+		container = cont;
+		containerID = cont.getID();
+		thread = null;
+		queue = new SimpleFIFOQueue();
+	}
 
-    protected void init() throws SharedObjectInitException {
-        debug("init()"); //$NON-NLS-1$
-        sharedObjectConfig.makeActive(new QueueEnqueueImpl(queue));
-        sharedObject.init(sharedObjectConfig);
-    }
+	protected void init() throws SharedObjectInitException {
+		debug("init()"); //$NON-NLS-1$
+		sharedObjectConfig.makeActive(new QueueEnqueueImpl(queue));
+		sharedObject.init(sharedObjectConfig);
+	}
 
-    protected ID getObjID() {
-        return sharedObjectConfig.getSharedObjectID();
-    }
+	protected ID getObjID() {
+		return sharedObjectConfig.getSharedObjectID();
+	}
 
-    protected ID getHomeID() {
-        return sharedObjectConfig.getHomeContainerID();
-    }
+	protected ID getHomeID() {
+		return sharedObjectConfig.getHomeContainerID();
+	}
 
-    protected SOConfig getConfig() {
-        return sharedObjectConfig;
-    }
-    protected void activated() {
-        debug("activated"); //$NON-NLS-1$
-        thread = (Thread) AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run() {
-                Thread aThread = getThread();
-                return aThread;
-            }
-        });
-        // Notify container and listeners
-        container.notifySharedObjectActivated(sharedObjectID);
-        // Start thread
-        thread.start();
-        // Send message
-        send(new SharedObjectActivatedEvent(containerID, sharedObjectID));
-    }
+	protected SOConfig getConfig() {
+		return sharedObjectConfig;
+	}
 
-    protected void deactivated() {
-        debug("deactivated()"); //$NON-NLS-1$
-        container.notifySharedObjectDeactivated(sharedObjectID);
-        send(new SharedObjectDeactivatedEvent(containerID, sharedObjectID));
-        destroyed();
-    }
+	protected void activated() {
+		debug("activated"); //$NON-NLS-1$
+		thread = (Thread) AccessController.doPrivileged(new PrivilegedAction() {
+			public Object run() {
+				Thread aThread = getThread();
+				return aThread;
+			}
+		});
+		// Notify container and listeners
+		container.notifySharedObjectActivated(sharedObjectID);
+		// Start thread
+		thread.start();
+		// Send message
+		send(new SharedObjectActivatedEvent(containerID, sharedObjectID));
+	}
 
-    protected  void destroyed() {
-        if (!queue.isStopped()) {
-            if (thread != null)
-                queue.enqueue(new DisposeEvent());
-            queue.close();
-        }
-    }
+	protected void deactivated() {
+		debug("deactivated()"); //$NON-NLS-1$
+		container.notifySharedObjectDeactivated(sharedObjectID);
+		send(new SharedObjectDeactivatedEvent(containerID, sharedObjectID));
+		destroyed();
+	}
 
-    protected void otherChanged(ID otherID, boolean activated) {
-        debug("otherChanged(" + otherID + "," + activated); //$NON-NLS-1$ //$NON-NLS-2$
-        if (activated && thread != null) {
-            send(new SharedObjectActivatedEvent(containerID, otherID));
-        } else {
-            send(new SharedObjectDeactivatedEvent(containerID, otherID));
-        }
-    }
+	protected void destroyed() {
+		if (!queue.isStopped()) {
+			if (thread != null)
+				queue.enqueue(new DisposeEvent());
+			queue.close();
+		}
+	}
 
-    protected void memberChanged(Member m, boolean add) {
-        debug("memberChanged(" + m + "," + add); //$NON-NLS-1$ //$NON-NLS-2$
-        if (thread != null) {
-            if (add) {
-                send(new ContainerConnectedEvent(containerID, m
-                        .getID()));
-            } else {
-                send(new ContainerDisconnectedEvent(containerID, m
-                        .getID()));
-            }
-        }
-    }
+	protected void otherChanged(ID otherID, boolean activated) {
+		debug("otherChanged(" + otherID + "," + activated); //$NON-NLS-1$ //$NON-NLS-2$
+		if (activated && thread != null) {
+			send(new SharedObjectActivatedEvent(containerID, otherID));
+		} else {
+			send(new SharedObjectDeactivatedEvent(containerID, otherID));
+		}
+	}
 
-    protected Thread getThread() {
-        return container.getNewSharedObjectThread(sharedObjectID,
-                new Runnable() {
-                    public void run() {
-                        debug("runner(" + sharedObjectID + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-                        Event evt = null;
-                        for (;;) {
-                            if (Thread.currentThread().isInterrupted())
-                                break;
-                            evt = (Event) queue.dequeue();
-                            if (Thread.currentThread().isInterrupted()
-                                    || evt == null)
-                                break;
-                            try {
-                                if (evt instanceof ProcEvent) {
-                                    SOWrapper.this.svc(((ProcEvent) evt)
-                                            .getEvent());
-                                } else if (evt instanceof DisposeEvent) {
-                                    SOWrapper.this.doDestroy();
-                                } else {
-                                    SOWrapper.this.svc(evt);
-                                }
-                            } catch (Throwable t) {
-                                handleRuntimeException(t);
-                            }
-                        }
-                        if (Thread.currentThread().isInterrupted()) {
-                            debug("runner(" + sharedObjectID //$NON-NLS-1$
-                                    + ") terminating interrupted"); //$NON-NLS-1$
-                        } else {
-                            debug("runner(" + sharedObjectID //$NON-NLS-1$
-                                    + ") terminating normally"); //$NON-NLS-1$
-                        }
-                    }
-                });
-    }
+	protected void memberChanged(Member m, boolean add) {
+		debug("memberChanged(" + m + "," + add); //$NON-NLS-1$ //$NON-NLS-2$
+		if (thread != null) {
+			if (add) {
+				send(new ContainerConnectedEvent(containerID, m.getID()));
+			} else {
+				send(new ContainerDisconnectedEvent(containerID, m.getID()));
+			}
+		}
+	}
 
-    private void send(Event evt) {
-    	debug("queue("+evt+")"); //$NON-NLS-1$ //$NON-NLS-2$
-        queue.enqueue(new ProcEvent(evt));
-    }
+	protected Thread getThread() {
+		return container.getNewSharedObjectThread(sharedObjectID,
+				new Runnable() {
+					public void run() {
+						debug("runner(" + sharedObjectID + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+						Event evt = null;
+						for (;;) {
+							if (Thread.currentThread().isInterrupted())
+								break;
+							evt = (Event) queue.dequeue();
+							if (Thread.currentThread().isInterrupted()
+									|| evt == null)
+								break;
+							try {
+								if (evt instanceof ProcEvent) {
+									SOWrapper.this.svc(((ProcEvent) evt)
+											.getEvent());
+								} else if (evt instanceof DisposeEvent) {
+									SOWrapper.this.doDestroy();
+								} else {
+									SOWrapper.this.svc(evt);
+								}
+							} catch (Throwable t) {
+								handleRuntimeException(t);
+							}
+						}
+						if (Thread.currentThread().isInterrupted()) {
+							debug("runner(" + sharedObjectID //$NON-NLS-1$
+									+ ") terminating interrupted"); //$NON-NLS-1$
+						} else {
+							debug("runner(" + sharedObjectID //$NON-NLS-1$
+									+ ") terminating normally"); //$NON-NLS-1$
+						}
+					}
+				});
+	}
 
-    protected static class ProcEvent implements Event {
+	private void send(Event evt) {
+		debug("queue(" + evt + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		queue.enqueue(new ProcEvent(evt));
+	}
+
+	protected static class ProcEvent implements Event {
 		private static final long serialVersionUID = 3257002142513378616L;
 		Event theEvent = null;
 
-        ProcEvent(Event event) {
-            theEvent = event;
-        }
+		ProcEvent(Event event) {
+			theEvent = event;
+		}
 
-        Event getEvent() {
-            return theEvent;
-        }
-    }
+		Event getEvent() {
+			return theEvent;
+		}
+	}
 
-    protected static class DisposeEvent implements Event {
+	protected static class DisposeEvent implements Event {
 		private static final long serialVersionUID = 3688503311859135536L;
 
 		DisposeEvent() {
-        }
-    }
+		}
+	}
 
-    protected void svc(Event evt) {
-        sharedObject.handleEvent(evt);
-    }
+	protected void svc(Event evt) {
+		sharedObject.handleEvent(evt);
+	}
 
-    protected void doDestroy() {
-        sharedObject.dispose(containerID);
-        // make config inactive
-        sharedObjectConfig.makeInactive();
-    }
+	protected void doDestroy() {
+		sharedObject.dispose(containerID);
+		// make config inactive
+		sharedObjectConfig.makeInactive();
+	}
 
-    protected void deliverSharedObjectMessage(ID fromID, Serializable data) {
-        send(new RemoteSharedObjectEvent(getObjID(), fromID, data));
-    }
+	protected void deliverSharedObjectMessage(ID fromID, Serializable data) {
+		send(new RemoteSharedObjectEvent(getObjID(), fromID, data));
+	}
 
-    protected void deliverCreateResponse(ID fromID,
-            ContainerMessage.CreateResponseMessage resp) {
-        send(new RemoteSharedObjectCreateResponseEvent(
-                resp.getSharedObjectID(), fromID, resp.getSequence(), resp
-                        .getException()));
-    }
-    public void deliverEvent(Event evt) {
-        send(evt);
-    }
-    protected void destroySelf() {
-        debug("destroySelf()"); //$NON-NLS-1$
-        send(new DisposeEvent());
-    }
+	protected void deliverCreateResponse(ID fromID,
+			ContainerMessage.CreateResponseMessage resp) {
+		send(new RemoteSharedObjectCreateResponseEvent(
+				resp.getSharedObjectID(), fromID, resp.getSequence(), resp
+						.getException()));
+	}
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("SharedObjectWrapper[").append(getObjID()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
-        return sb.toString();
-    }
+	public void deliverEvent(Event evt) {
+		send(evt);
+	}
+
+	protected void destroySelf() {
+		debug("destroySelf()"); //$NON-NLS-1$
+		send(new DisposeEvent());
+	}
+
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("SharedObjectWrapper[").append(getObjID()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		return sb.toString();
+	}
 
 	protected void debug(String msg) {
 		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG,
 				msg + ":" + container.getID()); //$NON-NLS-1$
 	}
-	
+
 	protected void traceStack(String msg, Throwable e) {
 		Trace.catching(ProviderPlugin.PLUGIN_ID,
-				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainerGMM.class,
-				container.getID() + ":" + msg, e); //$NON-NLS-1$
+				ECFProviderDebugOptions.EXCEPTIONS_CATCHING,
+				SOContainerGMM.class, container.getID() + ":" + msg, e); //$NON-NLS-1$
 	}
 
-    protected void handleRuntimeException(Throwable except) {
-        except.printStackTrace(System.err);
-        traceStack(
-                "runner:handleRuntimeException(" + sharedObjectID.getName() + ")", //$NON-NLS-1$ //$NON-NLS-2$
-                except);
-    }
+	protected void handleRuntimeException(Throwable except) {
+		except.printStackTrace(System.err);
+		traceStack(
+				"runner:handleRuntimeException(" + sharedObjectID.getName() + ")", //$NON-NLS-1$ //$NON-NLS-2$
+				except);
+	}
 
-    protected ISharedObject getSharedObject() {
-        return sharedObject;
-    }
+	protected ISharedObject getSharedObject() {
+		return sharedObject;
+	}
 
-    public SimpleFIFOQueue getQueue() {
-        return queue;
-    }
+	public SimpleFIFOQueue getQueue() {
+		return queue;
+	}
 }

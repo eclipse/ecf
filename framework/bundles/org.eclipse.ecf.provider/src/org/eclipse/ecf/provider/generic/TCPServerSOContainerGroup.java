@@ -106,8 +106,9 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 				.readObject();
 		debug("serverrecv:" + req); //$NON-NLS-1$
 		if (req == null)
-			throw new InvalidObjectException(INVALID_CONNECT
-					+ Messages.TCPServerSOContainerGroup_Exception_Connect_Request_Null);
+			throw new InvalidObjectException(
+					INVALID_CONNECT
+							+ Messages.TCPServerSOContainerGroup_Exception_Connect_Request_Null);
 		URI uri = req.getTarget();
 		if (uri == null)
 			throw new InvalidObjectException(INVALID_CONNECT
@@ -118,8 +119,10 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 					+ Messages.TCPServerSOContainerGroup_Target_Path_Null);
 		TCPServerSOContainer srs = (TCPServerSOContainer) get(path);
 		if (srs == null)
-			throw new InvalidObjectException(Messages.TCPServerSOContainerGroup_Container_For_Target + path
-					+ Messages.TCPServerSOContainerGroup_Not_Found);
+			throw new InvalidObjectException(
+					Messages.TCPServerSOContainerGroup_Container_For_Target
+							+ path
+							+ Messages.TCPServerSOContainerGroup_Not_Found);
 		debug("found container:" + srs.getID().getName() + " for target " + uri); //$NON-NLS-1$ //$NON-NLS-2$
 		// Create our local messaging interface
 		Client newClient = new Client(aSocket, iStream, oStream, srs

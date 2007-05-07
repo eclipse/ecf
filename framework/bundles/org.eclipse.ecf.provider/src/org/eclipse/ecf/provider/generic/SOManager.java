@@ -70,7 +70,7 @@ public class SOManager implements ISharedObjectManager {
 		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG,
 				msg + ":" + container.getID()); //$NON-NLS-1$
 	}
-	
+
 	protected void traceStack(String msg, Throwable e) {
 		Trace.catching(ProviderPlugin.PLUGIN_ID,
 				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOManager.class,
@@ -117,8 +117,10 @@ public class SOManager implements ISharedObjectManager {
 		if (newSharedObject instanceof ISharedObject)
 			return (ISharedObject) newSharedObject;
 		else
-			throw new ClassCastException(Messages.SOManager_Object + newSharedObject.toString()
-					+ Messages.SOManager_Does_Not_Implement + ISharedObject.class.getName());
+			throw new ClassCastException(Messages.SOManager_Object
+					+ newSharedObject.toString()
+					+ Messages.SOManager_Does_Not_Implement
+					+ ISharedObject.class.getName());
 	}
 
 	protected ISharedObject loadSharedObject(SharedObjectDescription sd)
@@ -180,7 +182,8 @@ public class SOManager implements ISharedObjectManager {
 		} catch (Exception e) {
 			traceStack("Exception in createSharedObject", e); //$NON-NLS-1$
 			SharedObjectCreateException newExcept = new SharedObjectCreateException(
-					Messages.SOManager_Container + container.getID()
+					Messages.SOManager_Container
+							+ container.getID()
 							+ Messages.SOManager_Exception_Creating_Shared_Object
 							+ sd.getID() + ": " + e.getClass().getName() + ": " //$NON-NLS-1$ //$NON-NLS-2$
 							+ e.getMessage());
@@ -263,23 +266,29 @@ public class SOManager implements ISharedObjectManager {
 		debug("connectSharedObjects(" + sharedObjectFrom + "," //$NON-NLS-1$ //$NON-NLS-2$
 				+ sharedObjectsTo + ")"); //$NON-NLS-1$
 		if (sharedObjectFrom == null)
-			throw new SharedObjectConnectException(Messages.SOManager_Exception_Sender_Not_Null);
+			throw new SharedObjectConnectException(
+					Messages.SOManager_Exception_Sender_Not_Null);
 		if (sharedObjectsTo == null)
-			throw new SharedObjectConnectException(Messages.SOManager_Exception_Receivers_Not_Null);
+			throw new SharedObjectConnectException(
+					Messages.SOManager_Exception_Receivers_Not_Null);
 		ISharedObjectConnector result = null;
 		synchronized (container.getGroupMembershipLock()) {
 			// Get from to create sure it's there
 			SOWrapper wrap = container.getSharedObjectWrapper(sharedObjectFrom);
 			if (wrap == null)
-				throw new SharedObjectConnectException(Messages.SOManager_Sender_Object
-						+ sharedObjectFrom.getName() + Messages.SOManager_Not_Found);
+				throw new SharedObjectConnectException(
+						Messages.SOManager_Sender_Object
+								+ sharedObjectFrom.getName()
+								+ Messages.SOManager_Not_Found);
 			IQueueEnqueue[] queues = new IQueueEnqueue[sharedObjectsTo.length];
 			for (int i = 0; i < sharedObjectsTo.length; i++) {
 				SOWrapper w = container
 						.getSharedObjectWrapper(sharedObjectsTo[i]);
 				if (w == null)
-					throw new SharedObjectConnectException(Messages.SOManager_Receiver_Object
-							+ sharedObjectsTo[i].getName() + Messages.SOManager_Not_Found);
+					throw new SharedObjectConnectException(
+							Messages.SOManager_Receiver_Object
+									+ sharedObjectsTo[i].getName()
+									+ Messages.SOManager_Not_Found);
 				queues[i] = new QueueEnqueueImpl(w.getQueue());
 			}
 			// OK now we've got ids and wrappers, create a connector
@@ -300,11 +309,13 @@ public class SOManager implements ISharedObjectManager {
 	public void disconnectSharedObjects(ISharedObjectConnector connector)
 			throws SharedObjectDisconnectException {
 		if (connector == null)
-			throw new SharedObjectDisconnectException(Messages.SOManager_Exception_Connector_Not_Null);
+			throw new SharedObjectDisconnectException(
+					Messages.SOManager_Exception_Connector_Not_Null);
 		debug("disconnectSharedObjects(" + connector.getSenderID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (!removeConnector(connector)) {
-			throw new SharedObjectDisconnectException(Messages.SOManager_Connector + connector
-					+ Messages.SOManager_Not_Found);
+			throw new SharedObjectDisconnectException(
+					Messages.SOManager_Connector + connector
+							+ Messages.SOManager_Not_Found);
 		}
 		connector.dispose();
 		container.fireContainerEvent(new SharedObjectManagerDisconnectEvent(

@@ -23,7 +23,7 @@ public class ConnectionCreateException extends ECFException {
 	public ConnectionCreateException(IStatus status) {
 		super(status);
 	}
-	
+
 	public ConnectionCreateException() {
 		super();
 	}

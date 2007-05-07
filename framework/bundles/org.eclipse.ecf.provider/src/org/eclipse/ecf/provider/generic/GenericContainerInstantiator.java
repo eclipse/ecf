@@ -91,7 +91,8 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 		}
 	}
 
-	protected GenericContainerArgs getClientArgs(String [] argDefaults, Object[] args) throws IDCreateException {
+	protected GenericContainerArgs getClientArgs(String[] argDefaults,
+			Object[] args) throws IDCreateException {
 		ID newID = null;
 		Integer ka = null;
 		if (argDefaults != null && argDefaults.length > 0) {
@@ -152,7 +153,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 		try {
 			GenericContainerArgs gcargs = null;
 			// XXX get arg defaults from description
-			String [] argDefaults = null;
+			String[] argDefaults = null;
 			if (isClient)
 				gcargs = getClientArgs(argDefaults, args);
 			else

@@ -15,24 +15,24 @@ import java.util.List;
 
 import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
 
-
 public class Connector {
 	public static final int DEFAULT_PORT = TCPServerSOContainer.DEFAULT_PORT;
 	public static final int DEFAULT_TIMEOUT = TCPServerSOContainer.DEFAULT_KEEPALIVE;
 	public static final String DEFAULT_HOSTNAME = TCPServerSOContainer.DEFAULT_HOST;
 	public static final String DEFAULT_SERVERNAME = TCPServerSOContainer.DEFAULT_NAME;
 	public static final String DEFAULT_PROTOCOL = TCPServerSOContainer.DEFAULT_PROTOCOL;
-	
+
 	int port = DEFAULT_PORT;
 	int timeout = DEFAULT_TIMEOUT;
 	String protocol = DEFAULT_PROTOCOL;
 	String hostname = DEFAULT_HOSTNAME;
 	boolean discovery = false;
 	List groups = new ArrayList();
-	
-	public Connector(String protocol, String host, int port, int timeout, boolean discovery) {
-		if (protocol != null && !protocol.equals("")) this.protocol = protocol; //$NON-NLS-1$
-		if (host != null && !host.equals("")) this.hostname = host; //$NON-NLS-1$
+
+	public Connector(String protocol, String host, int port, int timeout,
+			boolean discovery) {
+		if (protocol != null && !protocol.equals(""))this.protocol = protocol; //$NON-NLS-1$
+		if (host != null && !host.equals(""))this.hostname = host; //$NON-NLS-1$
 		else {
 			try {
 				InetAddress addr = InetAddress.getLocalHost();
@@ -47,38 +47,47 @@ public class Connector {
 	}
 
 	public Connector(String protocol, String host, int port, int timeout) {
-		this(protocol,host,port,timeout,false);
+		this(protocol, host, port, timeout, false);
 	}
-	
+
 	public boolean shouldRegisterForDiscovery() {
 		return discovery;
 	}
+
 	public boolean addGroup(NamedGroup grp) {
-		if (grp == null) return false;
-		for(Iterator i=groups.iterator(); i.hasNext(); ) {
+		if (grp == null)
+			return false;
+		for (Iterator i = groups.iterator(); i.hasNext();) {
 			NamedGroup namedGroup = (NamedGroup) i.next();
-			if (namedGroup.getName().equals(grp.getName())) return false;
+			if (namedGroup.getName().equals(grp.getName()))
+				return false;
 		}
 		groups.add(grp);
 		grp.setParent(this);
 		return true;
 	}
+
 	public String getProtocol() {
 		return protocol;
 	}
+
 	public String getHostname() {
 		return hostname;
 	}
+
 	public int getPort() {
 		return port;
 	}
+
 	public int getTimeout() {
 		return timeout;
 	}
+
 	public List getGroups() {
 		return groups;
 	}
+
 	public String getID() {
-		return getProtocol()+"://"+getHostname()+":"+getPort(); //$NON-NLS-1$ //$NON-NLS-2$
+		return getProtocol() + "://" + getHostname() + ":" + getPort(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }
