@@ -260,6 +260,10 @@ More specifically:
    limitations under the License.
    </license>
 
+   <includes
+         id="org.eclipse.ecf.core.source"
+         version="0.0.0"/>
+
    <requires>
       <import plugin="org.eclipse.osgi"/>
       <import plugin="org.eclipse.core.jobs"/>
@@ -547,13 +551,6 @@ More specifically:
 
    <plugin
          id="org.eclipse.ecf.presence.collab.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.ecf.core.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
