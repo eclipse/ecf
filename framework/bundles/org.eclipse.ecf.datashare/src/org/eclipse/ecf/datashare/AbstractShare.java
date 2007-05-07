@@ -24,7 +24,7 @@ import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
  * Abstract class for sharing data using {@link IChannel}.  Subclasses should
  * be created as desired to share objects of different types.  Note that
  * to send data, subclasses can use {@link #sendMessage(ID, byte[])}, and
- * to receive data subclasses must implement {@link #handleMessage(byte[])}
+ * to receive data subclasses must implement {@link #handleMessage(ID, byte[])}
  * or {@link #handleChannelEvent(IChannelEvent)}.
  */
 public abstract class AbstractShare {
@@ -41,7 +41,7 @@ public abstract class AbstractShare {
 	 * Handle reception of an IChannelEvent.  
 	 * @param event the IChannelEvent received.  This implementation 
 	 * detects instances of {@link IChannelMessageEvent} and
-	 * calls {@link #handleMessage(byte[])} if found.  All other
+	 * calls {@link #handleMessage(ID, byte[])} if found.  All other
 	 * channel events are ignored.  Subclasses may override to detect
 	 * and respond to other channel events as desired.
 	 */
