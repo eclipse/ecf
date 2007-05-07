@@ -115,6 +115,8 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 									.getSubject(), arg3);
 				}
 			});
+		} else {
+			disposeChatRooms();
 		}
 	}
 

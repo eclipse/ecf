@@ -181,7 +181,6 @@ public class ECFConnection implements ISynchAsynchConnection {
 	}
 
 	public synchronized void disconnect() {
-		debug("disconnect()");
 		if (isStarted()) {
 			stop();
 		}
