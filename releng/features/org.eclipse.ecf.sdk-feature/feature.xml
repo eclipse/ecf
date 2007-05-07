@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.ecf.sdk_feature"
-      label="ECF SDK"
+      id="org.eclipse.ecf.sdk"
+      label="ECF Software Development Kit (SDK)"
       version="1.0.0.qualifier"
       provider-name="Eclipse.org">
 
