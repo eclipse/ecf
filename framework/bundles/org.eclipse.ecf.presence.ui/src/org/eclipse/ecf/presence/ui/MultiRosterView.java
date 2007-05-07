@@ -697,12 +697,13 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		// Remove presence listener
 		account.getRosterManager().removePresenceListener(presenceListener);
 
-		treeViewer.remove(account.getRoster());
+		if (treeViewer != null) treeViewer.remove(account.getRoster());
 		// Remove account
 		rosterAccounts.remove(account);
 		// Disable disconnect if no more accounts
 		disconnectAllAccountsAction.setEnabled(rosterAccounts.size() > 0);
 		account.dispose();
+		refreshTreeViewer(null,true);
 	}
 
 	/*
