@@ -42,7 +42,7 @@ public class URLShareRosterContributionItem extends
 		IAction action = new Action() {
 			public void run() {
 				try {
-					new URLShare(containerID, channelAdapter);
+					addURLShare(containerID, new URLShare(containerID, channelAdapter));
 				} catch (ECFException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -61,6 +61,7 @@ public class URLShareRosterContributionItem extends
 		IAction action = new Action() {
 			public void run() {
 				urlshare.dispose();
+				removeURLShare(containerID);
 			}
 		};
 		action

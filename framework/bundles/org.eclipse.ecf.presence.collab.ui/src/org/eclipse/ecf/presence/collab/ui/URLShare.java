@@ -18,10 +18,13 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.AbstractShare;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
+import org.eclipse.ecf.internal.presence.collab.ui.Activator;
 import org.eclipse.ecf.internal.presence.collab.ui.Messages;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -43,7 +46,6 @@ public class URLShare extends AbstractShare {
 		super(adapter);
 		Assert.isNotNull(containerID);
 		this.containerID = containerID;
-		URLShareRosterContributionItem.addURLShare(containerID, this);
 	}
 
 	protected ID getContainerID() {
@@ -63,8 +65,12 @@ public class URLShare extends AbstractShare {
 						browser = support.createBrowser(null);
 						browser.openURL(new URL(url));
 					} catch (Exception e) {
-						// TODO display error to user
-						e.printStackTrace();
+						MessageDialog.openError(null, Messages.URLShare_ERROR_BROWSER_TITLE, NLS.bind(
+								Messages.URLShare_ERROR_BROWSER_MESSAGE, e.getLocalizedMessage()));
+						Activator.getDefault().getLog().log(
+								new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+										IStatus.ERROR, Messages.URLShare_EXCEPTION_LOG_BROWSER,
+										e));
 					}
 				}
 			}
@@ -87,17 +93,17 @@ public class URLShare extends AbstractShare {
 							sendMessage(toID, serialize(new Object[] {
 									senderuser, send }));
 						} catch (Exception e) {
-							// TODO display error to user
+							MessageDialog.openError(null, Messages.URLShare_ERROR_SEND_TITLE, NLS.bind(
+									Messages.URLShare_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
+							Activator.getDefault().getLog().log(
+									new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+											IStatus.ERROR, Messages.URLShare_EXCEPTION_LOG_SEND,
+											e));
 						}
 					}
 				}
 			}
 		});
-	}
-
-	public synchronized void dispose() {
-		super.dispose();
-		URLShareRosterContributionItem.removeURLShare(containerID);
 	}
 
 	/*
@@ -110,7 +116,12 @@ public class URLShare extends AbstractShare {
 			Object[] msg = (Object[]) deserialize(data);
 			showURL((String) msg[0], (String) msg[1]);
 		} catch (Exception e) {
-			// XXX show and/or log error
+			MessageDialog.openError(null, Messages.URLShare_ERROR_RECEIVE_TITLE, NLS.bind(
+					Messages.URLShare_ERROR_RECEIVE_MESSAGE, e.getLocalizedMessage()));
+			Activator.getDefault().getLog().log(
+					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+							IStatus.ERROR, Messages.URLShare_EXCEPTION_LOG_MESSAGE,
+							e));
 		}
 	}
 
