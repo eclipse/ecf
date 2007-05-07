@@ -14,15 +14,6 @@
             class="org.eclipse.ecf.internal.provider.phpbb.container.ContainerInstantiator"
             description="phpBB HTTP Client"
             name="ecf.phpbb.http">
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usenickname"
-               value="true"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.usepassword"
-               value="true"/>
-         <property
-               name="org.eclipse.ecf.example.collab.ui.JoinGroupWizardPage.groupIDLabel"
-               value="URL:"/>
       </containerFactory>
    </extension>
 
