@@ -32,6 +32,7 @@ args[0] is http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/package-list
 <topic label="org.eclipse.ecf.presence.bot.application" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/bot/application/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence.bot.impl" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/bot/impl/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence.chatroom" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/chatroom/package-summary.html"/>
+<topic label="org.eclipse.ecf.presence.collab.ui" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/collab/ui/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence.history" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/history/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence.im" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/im/package-summary.html"/>
 <topic label="org.eclipse.ecf.presence.roster" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/presence/roster/package-summary.html"/>
