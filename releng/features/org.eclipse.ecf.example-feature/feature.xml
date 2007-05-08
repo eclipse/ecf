@@ -44,6 +44,34 @@ to any source code in the Content and such source code may be
 obtained at http://www.eclipse.org.
    </license>
 
+   <requires>
+      <import feature="org.eclipse.ecf.core" version="1.0.0.qualifier" match="equivalent"/>
+      <import plugin="org.eclipse.ecf"/>
+      <import plugin="org.eclipse.ecf.presence"/>
+      <import plugin="org.eclipse.ecf.provider.xmpp"/>
+      <import plugin="org.eclipse.ecf.sharedobject"/>
+      <import plugin="org.eclipse.ecf.presence.ui"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ecf.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.equinox.app"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.help.base"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ecf.discovery"/>
+      <import plugin="org.eclipse.ecf.provider"/>
+      <import plugin="org.eclipse.ecf.discovery.ui"/>
+      <import plugin="org.eclipse.ecf.datashare"/>
+      <import plugin="org.eclipse.ecf.provider.datashare"/>
+      <import plugin="org.eclipse.jdt"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+   </requires>
+
    <plugin
          id="org.eclipse.ecf.example.clients"
          download-size="0"
