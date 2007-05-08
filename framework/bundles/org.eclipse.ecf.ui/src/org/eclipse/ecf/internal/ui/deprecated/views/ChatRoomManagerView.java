@@ -1533,7 +1533,11 @@ public class ChatRoomManagerView extends ViewPart implements
 		if (color != null) {
 			color.dispose();
 		}
-		String[] vals = rgb.split(",");
+		StringTokenizer st = new StringTokenizer(rgb,",");
+		String [] vals = new String [3];
+		for(int i=0; i < 3; i++) {
+			vals[i] = st.nextToken();
+		}
 		color = new Color(getViewSite().getShell().getDisplay(), Integer
 				.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer
 				.parseInt(vals[2]));
