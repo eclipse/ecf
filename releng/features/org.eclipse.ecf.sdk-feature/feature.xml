@@ -309,8 +309,7 @@ limitations under the License.
 
    <includes
          id="org.eclipse.ecf.core.source"
-         version="0.0.0"
-         name="ECF Source"/>
+         version="0.0.0"/>
 
    <includes
          id="org.eclipse.ecf.core"
