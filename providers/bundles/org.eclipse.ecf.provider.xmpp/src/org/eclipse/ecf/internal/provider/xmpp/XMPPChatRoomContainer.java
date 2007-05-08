@@ -398,7 +398,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 			}
 			connectionState = DISCONNECTED;
 			remoteServerID = null;
-			containerHelper.setRoomID(null);
+			if (containerHelper != null) containerHelper.setRoomID(null);
 			this.connection = null;
 		}
 		// notify listeners
