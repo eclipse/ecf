@@ -64,7 +64,7 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * 
 	 * @see org.eclipse.ecf.core.IContainer#connect(ID,IConnectContext)
 	 */
-	public void connect(ID groupID, IConnectContext connectContext)
+	public void connect(ID targetID, IConnectContext connectContext)
 			throws ContainerConnectException;
 
 	/**
@@ -103,11 +103,11 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * ISharedObject. The given ReplicaSharedObjectDescription provides the
 	 * specification of the new object.
 	 * 
-	 * @param toContainerID
-	 *            the ID of the remote ISharedObjectContainer that is the target
+	 * @param targetID
+	 *            the ID of the remote that is the target
 	 *            of the create request. If this parameter is null, the request
-	 *            is assumed to be made of <b>all </b> remote containers
-	 *            currently in the given group (excepting the local container).
+	 *            is assumed to be made of <b>all </b> currently in the 
+	 *            given group (excepting the local container).
 	 * @param sd
 	 *            the ReplicaSharedObjectDescription describing the class,
 	 *            constructor and other properties to be associated with the new
@@ -115,7 +115,7 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * @throws IOException
 	 *             thrown if message cannot be sent by container
 	 */
-	public void sendCreate(ID toContainerID, ReplicaSharedObjectDescription sd)
+	public void sendCreate(ID targetID, ReplicaSharedObjectDescription sd)
 			throws IOException;
 
 	/**
@@ -125,18 +125,18 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * asking them to deliver the create response status back to the
 	 * ISharedObject.
 	 * 
-	 * @param toContainerID
-	 *            the ID of the container that is to receive this response
+	 * @param targetID
+	 *            the ID of the target that is to receive this response
 	 * @param throwable
 	 *            a throwable associated with the creation. Null means that no
-	 *            exception occured
+	 *            exception occurred
 	 * @param identifier
 	 *            the identifier used in the original create message (in the
 	 *            shared object description)
 	 * @exception IOException
 	 *                thrown if the create response cannot be sent
 	 */
-	public void sendCreateResponse(ID toContainerID, Throwable throwable,
+	public void sendCreateResponse(ID targetID, Throwable throwable,
 			long identifier) throws IOException;
 
 	/**
@@ -144,25 +144,26 @@ public interface ISharedObjectContext extends IAdaptable {
 	 * same ID as this instance. This method allows ISharedObject instances to
 	 * control the destruction of remote replicas.
 	 * 
-	 * @param toContainerID
-	 *            the ID of the remote ISharedObjectContainer that is the target
+	 * @param targetID
+	 *            the ID of the remote that is the target
 	 *            of the dispose request. If this parameter is null, the request
-	 *            is assumed to be made of <b>all </b> remote containers
+	 *            is assumed to be made of <b>all </b> remotes
 	 *            currently in the given group (excepting the local container).
-	 * @throws IOException
-	 *             thrown if message cannot be sent by container
+	 * @throws IOException 
+	 *             thrown if message cannot be sent by container, or if data
+	 *             cannot be serialized
 	 */
-	public void sendDispose(ID toContainerID) throws IOException;
+	public void sendDispose(ID targetID) throws IOException;
 
 	/**
 	 * Send arbitrary message to remote instance of the ISharedObject with same
 	 * ID as this instance. This method allows ISharedObject instances to send
 	 * arbitrary data to one or more remote replicas of this ISharedObject.
 	 * 
-	 * @param toContainerID
-	 *            the ID of the remote ISharedObjectContainer that is the target
-	 *            container for the message request. If this parameter is null,
-	 *            the request is assumed to be made of <b>all </b> remote
+	 * @param targetID
+	 *            the ID of the remote that is the target
+	 *            for the sendMessage. If this parameter is null,
+	 *            the message is sent to the entire group membership <b>all </b> remote
 	 *            containers currently in the given group (excepting the local
 	 *            container).
 	 * @param data
@@ -173,7 +174,7 @@ public interface ISharedObjectContext extends IAdaptable {
 	 *             thrown if message cannot be sent by container, or if data
 	 *             cannot be serialized
 	 */
-	public void sendMessage(ID toContainerID, Object data) throws IOException;
+	public void sendMessage(ID targetID, Object data) throws IOException;
 
 	/**
 	 * Get the Namespace instance that defines the ID type expected by the
