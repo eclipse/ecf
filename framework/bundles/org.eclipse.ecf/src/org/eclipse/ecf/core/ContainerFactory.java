@@ -103,9 +103,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	public IContainer addContainer(IContainer container) {
 		Assert.isNotNull(container);
 		ID containerID = container.getID();
-		if (containerID == null)
-			throw new NullPointerException(
-					Messages.ContainerFactory_EXCEPTION_CONTAINER_ID_NOT_NULL);
+		Assert.isNotNull(containerID,Messages.ContainerFactory_EXCEPTION_CONTAINER_ID_NOT_NULL);
 		return (IContainer) containers.put(containerID, container);
 	}
 
@@ -119,7 +117,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		ID containerID = container.getID();
 		if (containerID == null)
 			return null;
-		return (IContainer) containers.remove(container.getID());
+		return (IContainer) containers.remove(containerID);
 	}
 
 	/*
