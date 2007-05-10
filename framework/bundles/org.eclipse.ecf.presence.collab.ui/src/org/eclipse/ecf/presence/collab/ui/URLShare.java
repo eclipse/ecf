@@ -92,11 +92,14 @@ public class URLShare extends AbstractShare {
 						try {
 							sendMessage(toID, serialize(new Object[] {
 									senderuser, send }));
+						} catch (ECFException e) {
+							MessageDialog.openError(null, Messages.URLShare_ERROR_SEND_TITLE, NLS.bind(
+									Messages.URLShare_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
+							Activator.getDefault().getLog().log(e.getStatus());
 						} catch (Exception e) {
 							MessageDialog.openError(null, Messages.URLShare_ERROR_SEND_TITLE, NLS.bind(
 									Messages.URLShare_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
-							Activator.getDefault().getLog().log(
-									new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+							Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 											IStatus.ERROR, Messages.URLShare_EXCEPTION_LOG_SEND,
 											e));
 						}
