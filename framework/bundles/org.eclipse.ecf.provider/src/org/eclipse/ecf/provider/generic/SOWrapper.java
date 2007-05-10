@@ -51,7 +51,7 @@ public class SOWrapper {
 		queue = new SimpleFIFOQueue();
 	}
 
-	protected SOWrapper(SOConfig aConfig, ISharedObject obj, SOContainer cont) {
+	public SOWrapper(SOConfig aConfig, ISharedObject obj, SOContainer cont) {
 		sharedObjectConfig = aConfig;
 		sharedObjectID = sharedObjectConfig.getSharedObjectID();
 		sharedObject = obj;

@@ -49,6 +49,7 @@ import org.eclipse.ecf.core.sharedobject.events.SharedObjectActivatedEvent;
 import org.eclipse.ecf.core.sharedobject.events.SharedObjectDeactivatedEvent;
 import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
@@ -827,7 +828,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	}
 
 	protected SOConfig createSharedObjectConfig(ID id, ISharedObject obj,
-			Map props) {
+			Map props) throws ECFException {
 		return new SOConfig(id, getID(), this, props);
 	}
 
@@ -852,7 +853,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	}
 
 	protected SOWrapper createSharedObjectWrapper(ID id, ISharedObject s,
-			Map props) {
+			Map props) throws ECFException {
 		SOConfig newConfig = createSharedObjectConfig(id, s, props);
 		return new SOWrapper(newConfig, s, this);
 	}
