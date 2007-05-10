@@ -155,7 +155,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 	 */
 	protected ID createAdapterID(ISharedObjectContainer container,
 			Class adapterType) {
-		String singletonName = adapterType.getClass().getName();
+		String singletonName = adapterType.getName();
 		try {
 			return IDFactory.getDefault().createStringID(singletonName);
 		} catch (IDCreateException e) {
