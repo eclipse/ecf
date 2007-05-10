@@ -80,7 +80,6 @@ public class SOWrapper {
 	}
 
 	protected void activated() {
-		debug("activated"); //$NON-NLS-1$
 		thread = (Thread) AccessController.doPrivileged(new PrivilegedAction() {
 			public Object run() {
 				Thread aThread = getThread();
@@ -96,7 +95,6 @@ public class SOWrapper {
 	}
 
 	protected void deactivated() {
-		debug("deactivated()"); //$NON-NLS-1$
 		container.notifySharedObjectDeactivated(sharedObjectID);
 		send(new SharedObjectDeactivatedEvent(containerID, sharedObjectID));
 		destroyed();
@@ -111,7 +109,6 @@ public class SOWrapper {
 	}
 
 	protected void otherChanged(ID otherID, boolean activated) {
-		debug("otherChanged(" + otherID + "," + activated); //$NON-NLS-1$ //$NON-NLS-2$
 		if (activated && thread != null) {
 			send(new SharedObjectActivatedEvent(containerID, otherID));
 		} else {
@@ -120,7 +117,6 @@ public class SOWrapper {
 	}
 
 	protected void memberChanged(Member m, boolean add) {
-		debug("memberChanged(" + m + "," + add); //$NON-NLS-1$ //$NON-NLS-2$
 		if (thread != null) {
 			if (add) {
 				send(new ContainerConnectedEvent(containerID, m.getID()));
@@ -168,15 +164,14 @@ public class SOWrapper {
 	}
 
 	private void send(Event evt) {
-		debug("queue(" + evt + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		queue.enqueue(new ProcEvent(evt));
 	}
 
-	protected static class ProcEvent implements Event {
+	public static class ProcEvent implements Event {
 		private static final long serialVersionUID = 3257002142513378616L;
 		Event theEvent = null;
 
-		ProcEvent(Event event) {
+		public ProcEvent(Event event) {
 			theEvent = event;
 		}
 
