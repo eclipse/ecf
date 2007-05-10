@@ -244,7 +244,6 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 *      byte[])
 	 */
 	public void sendMessage(ID receiver, byte[] message) throws ECFException {
-		trace("sendMessage(" + receiver + "," + message + ")");
 		try {
 			getContext().sendMessage(receiver, new ChannelMsg(message));
 		} catch (Exception e) {
