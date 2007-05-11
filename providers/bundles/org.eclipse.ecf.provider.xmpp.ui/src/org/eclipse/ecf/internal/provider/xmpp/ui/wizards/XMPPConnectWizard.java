@@ -238,6 +238,10 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 	}
 
 	public boolean performFinish() {
+		
+		// Save combo text
+		page.saveComboText();
+		
 		connectContext = ConnectContextFactory
 				.createPasswordConnectContext(page.getPassword());
 
@@ -249,6 +253,9 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 			return false;
 		}
 
+		// If we successfully create ID, then we save combo items
+		page.saveComboItems();
+		
 		final IPresenceContainerAdapter adapter = (IPresenceContainerAdapter) container
 				.getAdapter(IPresenceContainerAdapter.class);
 

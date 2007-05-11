@@ -16,6 +16,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -42,7 +43,7 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 		Label label = new Label(parent, SWT.LEFT);
 		label.setText(Messages.XMPPConnectWizardPage_LABEL_USERID);
 
-		connectText = new Text(parent, SWT.SINGLE | SWT.BORDER);
+		connectText = new Combo(parent, SWT.SINGLE | SWT.BORDER | SWT.DROP_DOWN);
 		connectText.setLayoutData(fillData);
 		connectText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -57,6 +58,8 @@ final class XMPPSConnectWizardPage extends XMPPConnectWizardPage {
 			}
 		});
 
+		restoreCombo();
+		
 		label = new Label(parent, SWT.RIGHT);
 		label.setText(Messages.XMPPSConnectWizardPage_WIZARD_PAGE_TEMPLATE);
 		label.setLayoutData(endData);
