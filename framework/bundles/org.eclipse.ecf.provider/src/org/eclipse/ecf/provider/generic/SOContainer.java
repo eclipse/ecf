@@ -324,6 +324,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			loadingThreadGroup.interrupt();
 			loadingThreadGroup = null;
 		}
+		listeners.clear();
 	}
 
 	/*
