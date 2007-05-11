@@ -10,36 +10,43 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.irc.ui.wizards;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.eclipse.ecf.internal.irc.ui.Activator;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 final class IRCConnectWizardPage extends WizardPage {
 
-	private Text connectText;
+	private Combo connectText;
 
 	private Text passwordText;
 
 	private String authorityAndPath;
-	
+
 	IRCConnectWizardPage() {
 		super("");
 		setTitle("IRC Connection Wizard");
 		setDescription("Specify a user and IRC server to connect to.");
 		setPageComplete(false);
 	}
-	
+
 	IRCConnectWizardPage(String authorityAndPath) {
 		this();
 		this.authorityAndPath = authorityAndPath;
 	}
-	
+
 	public void createControl(Composite parent) {
 		parent.setLayout(new GridLayout());
 		GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -48,7 +55,7 @@ final class IRCConnectWizardPage extends WizardPage {
 		Label label = new Label(parent, SWT.LEFT);
 		label.setText("Connect ID:");
 
-		connectText = new Text(parent, SWT.SINGLE | SWT.BORDER);
+		connectText = new Combo(parent, SWT.SINGLE | SWT.BORDER | SWT.DROP_DOWN);
 		connectText.setLayoutData(fillData);
 		connectText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -62,6 +69,9 @@ final class IRCConnectWizardPage extends WizardPage {
 				}
 			}
 		});
+		
+		restoreCombo();
+		
 		label = new Label(parent, SWT.RIGHT);
 		label.setText("<user>@<ircserver>[:port][/<channel>,<channel2>,...]");
 		label.setLayoutData(endData);
@@ -71,19 +81,21 @@ final class IRCConnectWizardPage extends WizardPage {
 		passwordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD | SWT.BORDER);
 		passwordText.setLayoutData(fillData);
 		label = new Label(parent, SWT.RIGHT | SWT.WRAP);
-		label.setText("This password is for password-protected IRC servers.");
+		label.setText("Password is for password-protected IRC servers.");
 		label.setLayoutData(endData);
 
 		if (authorityAndPath != null) {
 			connectText.setText(authorityAndPath);
 			passwordText.setFocus();
-		} 
-		
+		}
+
 		setControl(parent);
 	}
 
 	String getConnectID() {
-		return connectText.getText();
+		String clean = connectText.getText().replaceAll("#","");
+		connectText.setText(clean);
+		return clean;
 	}
 
 	String getPassword() {
@@ -93,6 +105,66 @@ final class IRCConnectWizardPage extends WizardPage {
 	private void updateStatus(String message) {
 		setErrorMessage(message);
 		setPageComplete(message == null);
+	}
+
+	private static final String PAGE_SETTINGS = IRCConnectWizardPage.class
+			.getName();
+	private static final int MAX_COMBO_VALUES = 40;
+	private static final String COMBO_TEXT_KEY = "connectTextValue";
+	private static final String COMBO_BOX_ITEMS_KEY = "comboValues";
+
+	protected void saveComboText() {
+		IDialogSettings pageSettings = getPageSettings();
+		if (pageSettings != null)
+			pageSettings.put(COMBO_TEXT_KEY, connectText.getText());
+	}
+
+	protected void saveComboItems() {
+		IDialogSettings pageSettings = getPageSettings();
+		if (pageSettings != null) {
+			String connectTextValue = connectText.getText();
+			List rawItems = Arrays.asList(connectText.getItems());
+			// If existing text item is not in combo box then add it
+			List items = new ArrayList();
+			if (!rawItems.contains(connectTextValue))
+				items.add(connectTextValue);
+			items.addAll(rawItems);
+			int itemsToSaveLength = items.size();
+			if (itemsToSaveLength > MAX_COMBO_VALUES)
+				itemsToSaveLength = MAX_COMBO_VALUES;
+			String[] itemsToSave = new String[itemsToSaveLength];
+			System.arraycopy(items.toArray(new String[] {}), 0, itemsToSave, 0,
+					itemsToSaveLength);
+			pageSettings.put(COMBO_BOX_ITEMS_KEY, itemsToSave);
+		}
+	}
+
+	public IDialogSettings getDialogSettings() {
+		return Activator.getDefault().getDialogSettings();
+	}
+
+	private IDialogSettings getPageSettings() {
+		IDialogSettings pageSettings = null;
+		IDialogSettings dialogSettings = this.getDialogSettings();
+		if (dialogSettings != null) {
+			pageSettings = dialogSettings.getSection(PAGE_SETTINGS);
+			if (pageSettings == null)
+				pageSettings = dialogSettings.addNewSection(PAGE_SETTINGS);
+			return pageSettings;
+		}
+		return null;
+	}
+
+	protected void restoreCombo() {
+		IDialogSettings pageSettings = getPageSettings();
+		if (pageSettings != null) {
+			String[] items = pageSettings.getArray(COMBO_BOX_ITEMS_KEY);
+			if (items != null)
+				connectText.setItems(items);
+			String text = pageSettings.get(COMBO_TEXT_KEY);
+			if (text != null)
+				connectText.setText(text);
+		}
 	}
 
 }

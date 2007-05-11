@@ -58,10 +58,14 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 	}
 
 	public boolean performFinish() {
+		
 		connectContext = ConnectContextFactory
 				.createPasswordConnectContext(page.getPassword());
 
 		String connectID = "irc://"+page.getConnectID();
+		
+		page.saveComboText();
+		
 		try {
 			targetID = IDFactory.getDefault().createID(
 					container.getConnectNamespace(), connectID);
@@ -76,9 +80,11 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 		IRCUI ui = new IRCUI(this.container, manager, null);
 		ui.showForTarget(targetID);
 		// If it's not already connected, then we connect this new container
-		if (!ui.isContainerConnected()) 
+		if (!ui.isContainerConnected()) {
+			page.saveComboItems();
 			new AsynchContainerConnectAction(this.container, this.targetID,
 					this.connectContext).run();
+		}
 
 
 		return true;
