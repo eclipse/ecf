@@ -123,6 +123,9 @@ public abstract class AbstractRosterManager implements IRosterManager {
 	}
 	
 	public void disconnect() {
-		// do nothing, as we don't ever disconnect from client
+		roster.getItems().clear();
+		fireRosterUpdate(roster);
+		rosterUpdateListeners.clear();
+		rosterSubscriptionListeners.clear();
 	}
 }
