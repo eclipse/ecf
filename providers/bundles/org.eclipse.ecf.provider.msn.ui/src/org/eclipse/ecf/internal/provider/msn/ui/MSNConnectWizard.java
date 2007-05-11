@@ -152,6 +152,9 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 	}
 
 	public boolean performFinish() {
+		
+		page.saveComboText();
+		
 		connectContext = ConnectContextFactory
 				.createPasswordConnectContext(page.getPassword());
 
@@ -162,7 +165,9 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 			new IDCreateErrorDialog(null,page.getEmail(),e).open();
 			return false;
 		}
-
+		
+		page.saveComboItems();
+		
 		final IPresenceContainerAdapter adapter = (IPresenceContainerAdapter) container
 				.getAdapter(IPresenceContainerAdapter.class);
 		container.addListener(new IContainerListener() {
