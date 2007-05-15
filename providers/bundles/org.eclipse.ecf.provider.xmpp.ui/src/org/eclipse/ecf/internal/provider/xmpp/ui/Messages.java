@@ -20,6 +20,21 @@ public class Messages extends NLS {
 	public static String XMPPConnectWizardPage_WIZARD_DESCRIPTION;
 	public static String XMPPCompoundContributionItem_CHOOSE_FILE;
 	public static String XMPPConnectWizard_RECEIVE_ERROR_MESSAGE;
+
+	public static String XMPPHyperlink_CONNECT_ACCOUNT_DIALOG_MESSAGE;
+
+	public static String XMPPHyperlink_CONNECT_ACCOUNT_DIALOG_TITLE;
+
+	public static String XMPPHyperlink_ERROR_OPEN_MESSAGE_VIEW_DIALOG_MESSAGE;
+
+	public static String XMPPHyperlink_ERROR_OPEN_MESSAGE_VIEW_DIALOG_TITLE;
+
+	public static String XMPPHyperlink_ERROR_OPEN_MESSAGE_VIEW_LOG_STATUS_MESSAGE;
+
+	public static String XMPPHyperlink_SELECT_ACCOUNT_MESSAGE;
+
+	public static String XMPPHyperlink_SELECT_ACCOUNT_TITLE;
+
 	public static String XMPPSConnectWizardPage_WIZARD_PAGE_TITLE;
 	public static String XMPPSConnectWizardPage_WIZARD_PAGE_USERID;
 	public static String XMPPSConnectWizardPage_WIZARD_PAGE_STATUS;
