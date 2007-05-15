@@ -233,7 +233,7 @@ public class MessagesView extends ViewPart {
 		}
 	}
 
-	synchronized void selectTab(IChatMessageSender messageSender,
+	public synchronized void selectTab(IChatMessageSender messageSender,
 			ITypingMessageSender typingSender, ID localID, ID userID) {
 		ChatTab tab = getTab(messageSender, typingSender, localID, userID);
 		for (int i = 0; i < switchActions.size(); i++) {
