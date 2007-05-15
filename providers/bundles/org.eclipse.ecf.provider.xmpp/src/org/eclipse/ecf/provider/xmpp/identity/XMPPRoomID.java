@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.internal.provider.xmpp.identity;
+package org.eclipse.ecf.provider.xmpp.identity;
 
 import java.net.URISyntaxException;
 

@@ -8,29 +8,29 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.internal.provider.xmpp.identity;
+package org.eclipse.ecf.provider.xmpp.identity;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 
-public class XMPPSNamespace extends Namespace {
+public class XMPPNamespace extends Namespace {
 
-	private static final long serialVersionUID = -820087396161230667L;
-	
-	private static final String XMPPS_PROTOCOL = "xmpps"; //$NON-NLS-1$
+	private static final long serialVersionUID = 3257569499003041590L;
+
+	private static final String XMPP_PROTOCOL = "xmpp";
 	
 	public ID createInstance(Object[] args)
 			throws IDCreateException {
 		try {
-			return new XMPPSID(this, (String) args[0]);
+			return new XMPPID(this, (String) args[0]);
 		} catch (Exception e) {
 			throw new IDCreateException("XMPP ID creation exception", e);
 		}
 	}
 
 	public String getScheme() {
-		return XMPPS_PROTOCOL;
+		return XMPP_PROTOCOL;
 	}
 
 	/* (non-Javadoc)

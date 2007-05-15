@@ -8,42 +8,35 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.internal.provider.xmpp.identity;
+package org.eclipse.ecf.provider.xmpp.identity;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 
-public class XMPPRoomNamespace extends Namespace {
+public class XMPPSNamespace extends Namespace {
 
-	private static final long serialVersionUID = 4348545761410397583L;
-
-	private static final String XMPP_ROOM_PROTOCOL = "xmpp.muc";
-
-	public ID createInstance(Object[] args) throws IDCreateException {
+	private static final long serialVersionUID = -820087396161230667L;
+	
+	private static final String XMPPS_PROTOCOL = "xmpps"; //$NON-NLS-1$
+	
+	public ID createInstance(Object[] args)
+			throws IDCreateException {
 		try {
-			if (args.length == 5) {
-				return new XMPPRoomID(this, (String) args[0], (String) args[1],
-						(String) args[2], (String) args[3], (String) args[4]);
-			}
-			throw new IllegalArgumentException(
-					"XMPPRoomID constructor arguments invalid");
+			return new XMPPSID(this, (String) args[0]);
 		} catch (Exception e) {
 			throw new IDCreateException("XMPP ID creation exception", e);
 		}
 	}
 
 	public String getScheme() {
-		return XMPP_ROOM_PROTOCOL;
+		return XMPPS_PROTOCOL;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { { String.class, String.class, String.class,
-				String.class, String.class } };
+		return new Class[][] { { String.class } };
 	}
 }

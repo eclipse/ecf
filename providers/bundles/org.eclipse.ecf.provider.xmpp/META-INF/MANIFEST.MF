@@ -18,9 +18,9 @@ Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.provider.xmpp;x-internal:=true,
  org.eclipse.ecf.internal.provider.xmpp.events;x-internal:=true,
  org.eclipse.ecf.internal.provider.xmpp.filetransfer;x-internal:=true,
- org.eclipse.ecf.internal.provider.xmpp.identity;x-internal:=true,
  org.eclipse.ecf.internal.provider.xmpp.smack;x-internal:=true,
- org.eclipse.ecf.provider.xmpp
+ org.eclipse.ecf.provider.xmpp,
+ org.eclipse.ecf.provider.xmpp.identity
 Eclipse-BuddyPolicy: global
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1

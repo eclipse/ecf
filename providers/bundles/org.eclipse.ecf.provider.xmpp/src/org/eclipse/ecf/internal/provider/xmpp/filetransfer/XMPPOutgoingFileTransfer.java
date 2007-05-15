@@ -27,7 +27,7 @@ import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferResponseEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDataEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDoneEvent;
-import org.eclipse.ecf.internal.provider.xmpp.identity.XMPPID;
+import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.filetransfer.FileTransfer;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
