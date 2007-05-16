@@ -17,6 +17,8 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 
 public class SharedObjectMsg implements Serializable {
@@ -27,10 +29,8 @@ public class SharedObjectMsg implements Serializable {
     // Static factory methods for creating SharedObjectMsg instances
     public static SharedObjectMsg createMsg(String className, String methodName,
             Object[] param) {
-        if (methodName == null || param == null) {
-            throw new NullPointerException(
-                    "Invalid SharedObjectMsg construction");
-        }
+    	Assert.isNotNull(methodName);
+    	Assert.isNotNull(param);
         return new SharedObjectMsg(className, methodName, param);
     }
 

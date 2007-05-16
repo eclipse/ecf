@@ -15,13 +15,13 @@ public interface StreamSender
 {
     /**
      * Send a message with data to remote replica(s).  This method is called by
-     * the OutputStreamSharedObject when sends some data via the replicated object.
+     * the SharedObjectOutputStream when sends some data via the replicated object.
      * The replicated object that implements this interface should send a message
      * to one or all remote replicas that contains the information contained in
      * this method signature.  Remote replicas should then turn around and call the
-     * 'add' method on their InputStreamSharedObject to receive the data.
+     * 'add' method on their SharedObjectInputStream to receive the data.
      *
-     * @param currentCount the length of the data (assuming data are compressed)
+     * @param bytesSentCount the length of the data (assuming data are compressed)
      * @param data the actual data to send
      */
     public void sendDataMsg(int currentCount, byte [] data);

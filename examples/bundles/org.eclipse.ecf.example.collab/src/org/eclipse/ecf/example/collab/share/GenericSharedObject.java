@@ -36,7 +36,7 @@ import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectEvent;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.sharedobject.util.QueueException;
 import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.example.collab.Trace;
+import org.eclipse.ecf.internal.example.collab.Trace;
 
 /**
  * @author slewis
@@ -224,10 +224,6 @@ public class GenericSharedObject implements ISharedObject {
         return replicateID++;
     }
 
-    public ID getLocalContainerID() {
-        return localContainerID;
-    }
-
     protected ReplicaSharedObjectDescription getReplicaDescription(ID receiver) {
         ISharedObjectConfig soconfig = getConfig();
         if (soconfig != null) {
@@ -347,7 +343,7 @@ public void handleEvent(Event event) {
     public boolean isHost() {
         ID homeContainerID = getHomeContainerID();
         if (homeContainerID == null) return false;
-        else return (homeContainerID.equals(getLocalContainerID()));
+        else return (homeContainerID.equals(localContainerID));
     }
 
     protected Object isMsgAllowed(ID fromID, SharedObjectMsg aMsg) {
@@ -451,7 +447,7 @@ public void handleEvent(Event event) {
     public void sharedObjectMsg(ID fromID, SharedObjectMsg msg) {
         if (isMsgAllowed(fromID, msg) != null) {
             currentMsgFromObjID = fromID;
-            execMsg(getLocalContainerID(), msg);
+            execMsg(localContainerID, msg);
             currentMsgFromObjID = null;
         } else {
             ignoreSharedObjectMsg(fromID, msg);
@@ -473,7 +469,7 @@ public void handleEvent(Event event) {
     public ID createObject(ID target, ReplicaSharedObjectDescription desc) throws Exception {
     	if (target == null) {
     		if (desc.getID()==null) {
-    			desc.setID(IDFactory.getDefault().createStringID(getNewUniqueIDString()));
+    			desc.setID(IDFactory.getDefault().createStringID(getUniqueString()));
     		}
             try {
             	return getContext().getSharedObjectManager().createSharedObject(desc);
@@ -484,7 +480,7 @@ public void handleEvent(Event event) {
     	} else throw new Exception("cannot send object creation request "+desc+" direct to target");
 	}
 
-    public String getNewUniqueIDString() {
+    public String getUniqueString() {
         return String.valueOf((new Random()).nextLong());
     }
 }

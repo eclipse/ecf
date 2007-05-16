@@ -29,7 +29,7 @@ public interface EclipseProjectComponent {
 	 * may override this method in order to initialize, setup ui for 
 	 * this component, or perform some other component startup functions
 	 * 
-	 * @param obj
+	 * @param sharedObject
 	 * @param requestor
 	 * @throws Exception
 	 */
@@ -51,7 +51,7 @@ public interface EclipseProjectComponent {
 	 * associated EclipseProject.  Component implementers
 	 * may override this method in order to cleanup during component shutdown
 	 * 
-	 * @param obj
+	 * @param sharedObject
 	 * @throws Exception
 	 */
 	public void deregister(EclipseProject obj);

@@ -12,9 +12,9 @@
 package org.eclipse.ecf.example.collab.share.io;
 
 import java.io.File;
-import org.eclipse.ecf.example.collab.ClientPlugin;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
-import org.eclipse.ecf.example.collab.ui.MessageLoader;
+import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.internal.example.collab.ui.MessageLoader;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
@@ -36,7 +36,7 @@ public class EclipseFileTransferAndLaunch
         EclipseCollabSharedObject sender = null;
         try {
             sender = (EclipseCollabSharedObject) getContext()
-                    .getSharedObjectManager().getSharedObject(eclipseStageID);
+                    .getSharedObjectManager().getSharedObject(sharedObjectID);
         } catch (Exception except) {
             // Should never happen
             except.printStackTrace(System.err);

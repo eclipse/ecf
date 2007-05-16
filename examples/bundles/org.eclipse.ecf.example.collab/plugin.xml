@@ -6,13 +6,13 @@
          point="org.eclipse.ui.views">
       <view
             icon="icons/group.gif"
-            class="org.eclipse.ecf.example.collab.ui.LineChatView"
+            class="org.eclipse.ecf.internal.example.collab.ui.LineChatView"
             category="org.eclipse.ecf.ui.viewcategory"
             name="Collaboration"
             id="org.eclipse.ecf.example.collab.ui.LineChatView"/>
       <view
             category="org.eclipse.ecf.ui.viewcategory"
-            class="org.eclipse.ecf.example.collab.CollabDiscoveryView"
+            class="org.eclipse.ecf.internal.example.collab.ui.CollabDiscoveryView"
             icon="icons/default_provider_image.gif"
             id="org.eclipse.ecf.example.collab.discoveryview"
             name="Service Discovery"/>
@@ -31,7 +31,7 @@
             <separator name="group2"/>
          </menu>
          <action
-               class="org.eclipse.ecf.example.collab.actions.JoinGroupWizardAction"
+               class="org.eclipse.ecf.internal.example.collab.actions.JoinGroupWizardAction"
                icon="icons/group.gif"
                id="org.eclipse.ecf.client.joingroupwizardaction"
                label="Connect Project to ECF Collaboration Group..."
@@ -49,7 +49,7 @@
             <separator name="group2"/>
          </menu>
          <action
-               class="org.eclipse.ecf.example.collab.actions.OpenSharedEditorAction"
+               class="org.eclipse.ecf.internal.example.collab.actions.OpenSharedEditorAction"
                id="org.eclipse.ecf.client.editfileaction"
                label="Open Shared Editor"
                menubarPath="org.eclipse.ecf.example.collab.menu1/group1"/>
@@ -59,7 +59,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
       		category="org.eclipse.ecf.ui.category"
-            class="org.eclipse.ecf.example.collab.ui.ClientPreferencePage"
+            class="org.eclipse.ecf.internal.example.collab.ui.ClientPreferencePage"
             name="Collaboration"
             id="org.eclipse.ecf.example.collab.ui.preferences"/>
    </extension>
@@ -67,7 +67,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             category="org.eclipse.ecf.ui.category"
-            class="org.eclipse.ecf.example.collab.start.AutoLoginPreferencePage"
+            class="org.eclipse.ecf.internal.example.collab.start.AutoLoginPreferencePage"
             name="Autologin"
             id="org.eclipse.ecf.example.collab.ui.autologin"/>
    </extension>
@@ -86,7 +86,7 @@
             id="org.eclipse.ecf.texteditor.ruler.context.actions">
          <action
                label="Share Selection"
-               class="org.eclipse.ecf.example.collab.actions.SetSharedEditorSelectionAction"
+               class="org.eclipse.ecf.internal.example.collab.actions.SetSharedEditorSelectionAction"
                tooltip="Share Selection to ECF Remotes"
                menubarPath="additions"
                id="org.eclipse.ecf.example.collab.ui.text.SetSharedEditorSelectionAction">
@@ -102,7 +102,7 @@
          <action
                label="Share Selection"
                tooltip="Share Selection to ECF Remotes"
-               class="org.eclipse.ecf.example.collab.actions.SetSharedEditorSelectionAction"
+               class="org.eclipse.ecf.internal.example.collab.actions.SetSharedEditorSelectionAction"
                menubarPath="add"
                id="org.eclipse.ecf.example.collab.ui.java.SetSharedEditorSelectionAction">
          </action>
@@ -111,7 +111,7 @@
    <extension
          point="org.eclipse.ecf.startup">
       <ecfstart
-            class="org.eclipse.ecf.example.collab.start.CollabStart"/>
+            class="org.eclipse.ecf.internal.example.collab.start.CollabStart"/>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
@@ -124,7 +124,7 @@
                label="connectMenu">
          </menu>
          <action
-               class="org.eclipse.ecf.example.collab.actions.JoinGroupWizardAction"
+               class="org.eclipse.ecf.internal.example.collab.actions.JoinGroupWizardAction"
                icon="icons/group.gif"
                id="org.eclipse.ecf.example.collab.action2"
                label="Connect to ECF Collaboration Group..."
@@ -178,7 +178,7 @@
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
       <hyperlinkDetector
             activate="true"
-            class="org.eclipse.ecf.example.collab.ui.hyperlink.ECFGenericHyperlinkDetector"
+            class="org.eclipse.ecf.internal.example.collab.ui.hyperlink.ECFGenericHyperlinkDetector"
             id="org.eclipse.ecf.example.collab.ui.hyperlink.ECFGenericHyperlinkDetector"
             name="ECF Generic"
             targetId="org.eclipse.ui.DefaultTextEditor">

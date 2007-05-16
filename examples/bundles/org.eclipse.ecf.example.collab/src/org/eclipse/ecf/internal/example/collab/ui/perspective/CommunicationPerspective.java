@@ -10,8 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.example.collab.ui.perspective;
 
-import org.eclipse.ecf.example.collab.CollabDiscoveryView;
-import org.eclipse.ecf.example.collab.ui.LineChatView;
+import org.eclipse.ecf.internal.example.collab.ui.CollabDiscoveryView;
+import org.eclipse.ecf.internal.example.collab.ui.LineChatView;
 import org.eclipse.ecf.presence.ui.MessagesView;
 import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView;
@@ -40,7 +40,7 @@ public class CommunicationPerspective implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IPageLayout.ID_PROGRESS_VIEW);
 		layout.addShowViewShortcut(IPageLayout.ID_TASK_LIST);
 
-		layout.addActionSet("org.eclipse.ecf.example.collab.ui.actionSet"); //$NON-NLS-1$
+		layout.addActionSet("org.eclipse.ecf.internal.example.collab.ui.actionSet"); //$NON-NLS-1$
 	}
 
 	private void defineLayout(IPageLayout layout) {

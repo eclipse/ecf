@@ -14,9 +14,7 @@ package org.eclipse.ecf.example.collab.share;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.part.ViewPart;
 
 
 /**
@@ -43,8 +41,4 @@ public interface EclipseProject {
 	public void sendPrivateMessageToUser(User touser, String msg);
 	public void sendShowTextMsg(String msg);
 	
-	public ViewPart getViewPart();
-	public Control getTreeControl();
-	public Control getTextControl();
-
 }

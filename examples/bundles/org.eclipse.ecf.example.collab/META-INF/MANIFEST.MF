@@ -2,10 +2,18 @@ Manifest-Version: 1.0
 Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.example.collab;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: org.eclipse.ecf.example.collab.ClientPlugin
+Bundle-Activator: org.eclipse.ecf.internal.example.collab.ClientPlugin
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
-Export-Package: org.eclipse.ecf.example.collab, org.eclipse.ecf.example.collab.share, org.eclipse.ecf.example.collab.share.url, org.eclipse.ecf.example.collab.share.io
+Export-Package: org.eclipse.ecf.example.collab.share,
+ org.eclipse.ecf.example.collab.share.io,
+ org.eclipse.ecf.example.collab.share.url,
+ org.eclipse.ecf.internal.example.collab;x-internal:=true,
+ org.eclipse.ecf.internal.example.collab.actions,
+ org.eclipse.ecf.internal.example.collab.start,
+ org.eclipse.ecf.internal.example.collab.ui,
+ org.eclipse.ecf.internal.example.collab.ui.hyperlink,
+ org.eclipse.ecf.internal.example.collab.ui.perspective;x-internal:=true
 Eclipse-LazyStart: true
 Provide-Package: org.eclipse.ecf.example.collab
 Bundle-ManifestVersion: 2

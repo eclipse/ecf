@@ -13,7 +13,7 @@ package org.eclipse.ecf.example.collab.share.url;
 
 import java.net.URL;
 
-import org.eclipse.ecf.example.collab.ClientPlugin;
+import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.help.browser.IBrowser;
 import org.eclipse.help.internal.browser.BrowserManager;
 import org.eclipse.jface.dialogs.MessageDialog;

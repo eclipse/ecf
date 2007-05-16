@@ -19,8 +19,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
-import org.eclipse.ecf.example.collab.Trace;
 import org.eclipse.ecf.example.collab.share.GenericSharedObject;
+import org.eclipse.ecf.internal.example.collab.Trace;
 
 
 public class ExecURL extends GenericSharedObject {

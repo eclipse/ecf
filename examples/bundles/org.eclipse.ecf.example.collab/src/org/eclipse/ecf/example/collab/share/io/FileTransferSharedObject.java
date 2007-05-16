@@ -24,9 +24,9 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
-import org.eclipse.ecf.example.collab.Trace;
 import org.eclipse.ecf.example.collab.share.SharedObjectMsg;
 import org.eclipse.ecf.example.collab.share.TransactionSharedObject;
+import org.eclipse.ecf.internal.example.collab.Trace;
 
 
 public class FileTransferSharedObject extends TransactionSharedObject
@@ -38,7 +38,7 @@ public class FileTransferSharedObject extends TransactionSharedObject
     public static final String recvMethodName = "handleData";
     public static final String doneMethodName = "handleDone";
     public static final String startMethodName = "startSendToAll";
-    // Both host and client
+    // Both host and container
     protected FileTransferParams transferParams;
     protected FileTransferListener progressListener;
     // Host only
