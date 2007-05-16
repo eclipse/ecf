@@ -21,7 +21,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.example.collab.CollabClient;
+import org.eclipse.ecf.internal.example.collab.CollabClient;
 import org.eclipse.ecf.sdo.DataGraphSharingFactory;
 import org.eclipse.ecf.sdo.ISharedDataGraph;
 import org.eclipse.ecf.sdo.IUpdateConsumer;

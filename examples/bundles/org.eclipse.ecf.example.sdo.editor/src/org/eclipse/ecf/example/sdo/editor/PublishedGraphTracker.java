@@ -41,9 +41,9 @@ import org.eclipse.ecf.core.util.Event;
  * It works something like this:
  * </p>
  * <ul>
- * <li>The client should first check if an instance of this shared object
+ * <li>The container should first check if an instance of this shared object
  * already exists in their container. If not, create one and add it.</li>
- * <li>The client should call {@link #add(ID) add()}once published/subscribed
+ * <li>The container should call {@link #add(ID) add()}once published/subscribed
  * to a data graph. The method will block until this object activates (if it
  * hasn't already).</li>
  * <li>Upon activation, the primary instance replicates everywhere. This is to
