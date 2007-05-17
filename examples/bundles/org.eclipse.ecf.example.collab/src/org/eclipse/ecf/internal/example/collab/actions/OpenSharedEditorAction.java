@@ -33,16 +33,18 @@ import org.eclipse.ui.part.ShowInContext;
 
 public class OpenSharedEditorAction extends ActionDelegate implements
 		IObjectActionDelegate {
-	
+
 	IFile file;
-	
+
 	public OpenSharedEditorAction() {
 		super();
 	}
+
 	protected IProject getProjectForResource(IResource res) {
 		IProject proj = res.getProject();
 		return proj;
 	}
+
 	protected void setFileForSelection(IAction action, ISelection s) {
 		action.setEnabled(false);
 		file = null;
@@ -59,15 +61,17 @@ public class OpenSharedEditorAction extends ActionDelegate implements
 				try {
 					r = je.getCorrespondingResource();
 				} catch (JavaModelException e) {
-					r = null;;
+					r = null;
+					;
 				}
 				if (r != null && r.getType() == IResource.FILE) {
 					action.setEnabled(true);
 					file = (IFile) r;
 				}
 			}
-		} 
+		}
 	}
+
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 		action.setEnabled(false);
 		file = null;
@@ -81,21 +85,23 @@ public class OpenSharedEditorAction extends ActionDelegate implements
 			}
 		}
 	}
+
 	protected IWorkbench getWorkbench() {
 		return PlatformUI.getWorkbench();
 	}
-	
+
 	protected ClientEntry isConnected(IResource res) {
-		if (res == null) return null;
+		if (res == null)
+			return null;
 		CollabClient client = CollabClient.getDefault();
 		ClientEntry entry = client.isConnected(res,
 				CollabClient.GENERIC_CONTAINER_CLIENT_NAME);
 		return entry;
 	}
-	
+
 	public void run(IAction action) {
 		if (file == null) {
-			return;			
+			return;
 		}
 		IProject project = getProjectForResource(file);
 		ClientEntry entry = isConnected(project);

@@ -33,172 +33,178 @@ import org.eclipse.swt.widgets.Widget;
 public class URLListFieldEditor extends FieldEditor {
 
 	private List list;
-    private SelectionListener selectionListener;
-    private Button removeButton;
-    private Composite buttonBox;
+	private SelectionListener selectionListener;
+	private Button removeButton;
+	private Composite buttonBox;
 
-    private java.util.List removedConnectionDetails = new ArrayList();
-    
-    public URLListFieldEditor(String name, String labelText, Composite parent) {
-    	init(name,labelText);
-    	createControl(parent);
-    }
-    protected void adjustForNumColumns(int numColumns) {
-        Control control = getLabelControl();
-        if (control != null) ((GridData) control.getLayoutData()).horizontalSpan = numColumns;
-        ((GridData) list.getLayoutData()).horizontalSpan = numColumns - 1;
-    }
-    protected void createControl(Composite parent) {
-        GridLayout layout = new GridLayout();
-        layout.numColumns = getNumberOfControls();
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        layout.horizontalSpacing = HORIZONTAL_GAP;
-        parent.setLayout(layout);
-        doFillIntoGrid(parent, layout.numColumns);
-    }
+	private java.util.List removedConnectionDetails = new ArrayList();
 
-    protected void doFillIntoGrid(Composite parent, int numColumns) {
-        Control control = getLabelControl(parent);
-        GridData gd = new GridData();
-        gd.horizontalSpan = numColumns;
-        control.setLayoutData(gd);
+	public URLListFieldEditor(String name, String labelText, Composite parent) {
+		init(name, labelText);
+		createControl(parent);
+	}
 
-        list = getListControl(parent);
-        gd = new GridData(GridData.FILL_HORIZONTAL);
-        gd.verticalAlignment = GridData.FILL;
-        gd.horizontalSpan = numColumns - 1;
-        gd.grabExcessHorizontalSpace = true;
-        list.setLayoutData(gd);
+	protected void adjustForNumColumns(int numColumns) {
+		Control control = getLabelControl();
+		if (control != null)
+			((GridData) control.getLayoutData()).horizontalSpan = numColumns;
+		((GridData) list.getLayoutData()).horizontalSpan = numColumns - 1;
+	}
 
-        buttonBox = getButtonBoxControl(parent);
-        gd = new GridData();
-        gd.verticalAlignment = GridData.BEGINNING;
-        buttonBox.setLayoutData(gd);
-    }
+	protected void createControl(Composite parent) {
+		GridLayout layout = new GridLayout();
+		layout.numColumns = getNumberOfControls();
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
+		layout.horizontalSpacing = HORIZONTAL_GAP;
+		parent.setLayout(layout);
+		doFillIntoGrid(parent, layout.numColumns);
+	}
 
-    public Composite getButtonBoxControl(Composite parent) {
-        if (buttonBox == null) {
-            buttonBox = new Composite(parent, SWT.NULL);
-            GridLayout layout = new GridLayout();
-            layout.marginWidth = 0;
-            buttonBox.setLayout(layout);
-            createButtons(buttonBox);
-            buttonBox.addDisposeListener(new DisposeListener() {
-                public void widgetDisposed(DisposeEvent event) {
-                    removeButton = null;
-                    buttonBox = null;
-                }
-            });
+	protected void doFillIntoGrid(Composite parent, int numColumns) {
+		Control control = getLabelControl(parent);
+		GridData gd = new GridData();
+		gd.horizontalSpan = numColumns;
+		control.setLayoutData(gd);
 
-        } else {
-            checkParent(buttonBox, parent);
-        }
+		list = getListControl(parent);
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.verticalAlignment = GridData.FILL;
+		gd.horizontalSpan = numColumns - 1;
+		gd.grabExcessHorizontalSpace = true;
+		list.setLayoutData(gd);
 
-        selectionChanged();
-        return buttonBox;
-    }
+		buttonBox = getButtonBoxControl(parent);
+		gd = new GridData();
+		gd.verticalAlignment = GridData.BEGINNING;
+		buttonBox.setLayoutData(gd);
+	}
 
-    private void createButtons(Composite box) {
-        removeButton = createPushButton(box, "Remove");
-    }
+	public Composite getButtonBoxControl(Composite parent) {
+		if (buttonBox == null) {
+			buttonBox = new Composite(parent, SWT.NULL);
+			GridLayout layout = new GridLayout();
+			layout.marginWidth = 0;
+			buttonBox.setLayout(layout);
+			createButtons(buttonBox);
+			buttonBox.addDisposeListener(new DisposeListener() {
+				public void widgetDisposed(DisposeEvent event) {
+					removeButton = null;
+					buttonBox = null;
+				}
+			});
 
-    private Button createPushButton(Composite parent, String key) {
-        Button button = new Button(parent, SWT.PUSH);
-        button.setText(JFaceResources.getString(key));
-        button.setFont(parent.getFont());
-        GridData data = new GridData(GridData.FILL_HORIZONTAL);
-        int widthHint = convertHorizontalDLUsToPixels(button,
-                IDialogConstants.BUTTON_WIDTH);
-        data.widthHint = Math.max(widthHint, button.computeSize(SWT.DEFAULT,
-                SWT.DEFAULT, true).x);
-        button.setLayoutData(data);
-        button.addSelectionListener(getSelectionListener());
-        return button;
-    }
+		} else {
+			checkParent(buttonBox, parent);
+		}
 
-    public List getListControl(Composite parent) {
-        if (list == null) {
-            list = new List(parent, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL
-                    | SWT.H_SCROLL);
-            list.setFont(parent.getFont());
-            list.addSelectionListener(getSelectionListener());
-            list.addDisposeListener(new DisposeListener() {
-                public void widgetDisposed(DisposeEvent event) {
-                    list = null;
-                }
-            });
-        } else {
-            checkParent(list, parent);
-        }
-        return list;
-    }
+		selectionChanged();
+		return buttonBox;
+	}
 
-    private SelectionListener getSelectionListener() {
-        if (selectionListener == null) {
+	private void createButtons(Composite box) {
+		removeButton = createPushButton(box, "Remove");
+	}
+
+	private Button createPushButton(Composite parent, String key) {
+		Button button = new Button(parent, SWT.PUSH);
+		button.setText(JFaceResources.getString(key));
+		button.setFont(parent.getFont());
+		GridData data = new GridData(GridData.FILL_HORIZONTAL);
+		int widthHint = convertHorizontalDLUsToPixels(button,
+				IDialogConstants.BUTTON_WIDTH);
+		data.widthHint = Math.max(widthHint, button.computeSize(SWT.DEFAULT,
+				SWT.DEFAULT, true).x);
+		button.setLayoutData(data);
+		button.addSelectionListener(getSelectionListener());
+		return button;
+	}
+
+	public List getListControl(Composite parent) {
+		if (list == null) {
+			list = new List(parent, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL
+					| SWT.H_SCROLL);
+			list.setFont(parent.getFont());
+			list.addSelectionListener(getSelectionListener());
+			list.addDisposeListener(new DisposeListener() {
+				public void widgetDisposed(DisposeEvent event) {
+					list = null;
+				}
+			});
+		} else {
+			checkParent(list, parent);
+		}
+		return list;
+	}
+
+	private SelectionListener getSelectionListener() {
+		if (selectionListener == null) {
 			createSelectionListener();
 		}
-        return selectionListener;
-    }
+		return selectionListener;
+	}
 
-    public void createSelectionListener() {
-        selectionListener = new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent event) {
-                Widget widget = event.widget;
-                if (widget == removeButton) {
-                    removePressed();
-                } else if (widget == list) {
-                    selectionChanged();
-                }
-            }
-        };
-    }
-    private void removePressed() {
-        setPresentsDefaultValue(false);
-        int index = list.getSelectionIndex();
-        if (index >= 0) {
-        	String key = list.getItem(index);
-        	ConnectionDetails cd = (ConnectionDetails) list.getData(key);
-        	removeConnectionDetails(cd);
-            list.remove(index);           
-            selectionChanged();
-        }
-    }
-    private void removeConnectionDetails(ConnectionDetails cd) {
+	public void createSelectionListener() {
+		selectionListener = new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Widget widget = event.widget;
+				if (widget == removeButton) {
+					removePressed();
+				} else if (widget == list) {
+					selectionChanged();
+				}
+			}
+		};
+	}
+
+	private void removePressed() {
+		setPresentsDefaultValue(false);
+		int index = list.getSelectionIndex();
+		if (index >= 0) {
+			String key = list.getItem(index);
+			ConnectionDetails cd = (ConnectionDetails) list.getData(key);
+			removeConnectionDetails(cd);
+			list.remove(index);
+			selectionChanged();
+		}
+	}
+
+	private void removeConnectionDetails(ConnectionDetails cd) {
 		removedConnectionDetails.add(cd);
 	}
+
 	private void selectionChanged() {
 
-        int index = list.getSelectionIndex();
-        removeButton.setEnabled(index >= 0);
-    }
-
+		int index = list.getSelectionIndex();
+		removeButton.setEnabled(index >= 0);
+	}
 
 	protected void doLoad() {
 		if (list != null) {
 			AccountStart as = new AccountStart();
 			as.loadConnectionDetailsFromPreferenceStore();
 			Collection contents = as.getConnectionDetails();
-			for(Iterator i=contents.iterator(); i.hasNext(); ) {
+			for (Iterator i = contents.iterator(); i.hasNext();) {
 				ConnectionDetails cd = (ConnectionDetails) i.next();
-				String uri = cd.getContainerType()+":"+cd.getTargetURI();
+				String uri = cd.getContainerType() + ":" + cd.getTargetURI();
 				list.add(uri);
-				list.setData(uri,cd);
+				list.setData(uri, cd);
 			}
 		}
 	}
 
 	protected void doStore() {
-		for(Iterator i=removedConnectionDetails.iterator(); i.hasNext(); ) {
+		for (Iterator i = removedConnectionDetails.iterator(); i.hasNext();) {
 			ConnectionDetails cd = (ConnectionDetails) i.next();
 			AccountStart as = new AccountStart();
 			as.removeConnectionDetails(cd);
 		}
 	}
 
-    public int getNumberOfControls() {
-        return 2;
-    }
+	public int getNumberOfControls() {
+		return 2;
+	}
+
 	protected void doLoadDefault() {
 	}
 

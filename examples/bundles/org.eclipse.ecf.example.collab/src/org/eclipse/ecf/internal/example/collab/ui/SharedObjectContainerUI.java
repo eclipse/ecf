@@ -39,8 +39,9 @@ public class SharedObjectContainerUI {
 	public static final String COLLAB_SHARED_OBJECT_ID = "chat";
 	ISharedObjectContainer soc = null;
 	CollabClient collabclient = null;
-	
-	public SharedObjectContainerUI(CollabClient client, ISharedObjectContainer soc) {
+
+	public SharedObjectContainerUI(CollabClient client,
+			ISharedObjectContainer soc) {
 		this.collabclient = client;
 		this.soc = soc;
 	}
@@ -89,7 +90,8 @@ public class SharedObjectContainerUI {
 		return new User(clientID, usernick, topElements);
 	}
 
-	void addObjectToClient(ISharedObjectContainer soContainer, ClientEntry client, String username, IResource proj)
+	void addObjectToClient(ISharedObjectContainer soContainer,
+			ClientEntry client, String username, IResource proj)
 			throws Exception {
 		IResource project = (proj == null) ? CollabClient.getWorkspace() : proj;
 		User user = getUserData(client.getClass().getName(), client
@@ -98,29 +100,35 @@ public class SharedObjectContainerUI {
 				getSharedFileDirectoryForProject(project));
 	}
 
-	public void setup(final ISharedObjectContainer soContainer, final ClientEntry newClientEntry,
-			final IResource resource, String username) throws Exception {
+	public void setup(final ISharedObjectContainer soContainer,
+			final ClientEntry newClientEntry, final IResource resource,
+			String username) throws Exception {
 		addObjectToClient(soContainer, newClientEntry, username, resource);
 		soc.addListener(new IContainerListener() {
 			public void handleEvent(IContainerEvent evt) {
 				if (evt instanceof IContainerDisconnectedEvent) {
 					IContainerDisconnectedEvent cd = (IContainerDisconnectedEvent) evt;
 					final ID departedContainerID = cd.getTargetID();
-					ID connectedID = newClientEntry.getContainer().getConnectedID();
+					ID connectedID = newClientEntry.getContainer()
+							.getConnectedID();
 					if (connectedID == null
 							|| connectedID.equals(departedContainerID)) {
 						// This container is done
 						if (!newClientEntry.isDisposed()) {
-							collabclient.disposeClient(resource, newClientEntry);
+							collabclient
+									.disposeClient(resource, newClientEntry);
 						}
 					}
 				} else if (evt instanceof IContainerEjectedEvent) {
 					IContainerEjectedEvent ce = (IContainerEjectedEvent) evt;
 					final ID departedContainerID = ce.getTargetID();
-					ID connectedID = newClientEntry.getContainer().getConnectedID();
-					if (connectedID == null || connectedID.equals(departedContainerID)) {
+					ID connectedID = newClientEntry.getContainer()
+							.getConnectedID();
+					if (connectedID == null
+							|| connectedID.equals(departedContainerID)) {
 						if (!newClientEntry.isDisposed()) {
-							collabclient.disposeClient(resource, newClientEntry);
+							collabclient
+									.disposeClient(resource, newClientEntry);
 						}
 					}
 				}
@@ -128,7 +136,8 @@ public class SharedObjectContainerUI {
 		});
 	}
 
-	protected void createAndAddSharedObject(final ISharedObjectContainer soContainer, final ClientEntry client,
+	protected void createAndAddSharedObject(
+			final ISharedObjectContainer soContainer, final ClientEntry client,
 			final IResource proj, User user, String fileDir) throws Exception {
 		IWorkbenchWindow ww = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
@@ -158,9 +167,10 @@ public class SharedObjectContainerUI {
 				CollabClient.removeClientForResource(proj, groupID);
 			}
 		});
-		ID newID = IDFactory.getDefault().createStringID(COLLAB_SHARED_OBJECT_ID);
+		ID newID = IDFactory.getDefault().createStringID(
+				COLLAB_SHARED_OBJECT_ID);
 		soContainer.getSharedObjectManager().addSharedObject(newID,
 				sharedObject, new HashMap());
-			client.setSharedObject(sharedObject);
+		client.setSharedObject(sharedObject);
 	}
 }

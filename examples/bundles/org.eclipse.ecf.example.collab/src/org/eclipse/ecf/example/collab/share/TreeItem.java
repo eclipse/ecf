@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 
 package org.eclipse.ecf.example.collab.share;
 
@@ -35,12 +35,8 @@ public class TreeItem implements Serializable {
 		this(name, label, DEFAULT_SEPARATOR, labelValue, val);
 	}
 
-	public TreeItem(
-		String name,
-		String label,
-		String separator,
-		String labelValue,
-		Object value) {
+	public TreeItem(String name, String label, String separator,
+			String labelValue, Object value) {
 		this.name = name;
 		this.label = label;
 		this.separator = separator;

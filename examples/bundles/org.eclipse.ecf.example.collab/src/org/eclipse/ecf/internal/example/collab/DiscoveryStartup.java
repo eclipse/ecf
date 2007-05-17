@@ -40,19 +40,22 @@ public class DiscoveryStartup {
 	public static final String PROP_PATH_NAME = "path";
 	public static final int SVC_DEF_WEIGHT = 0;
 	public static final int SVC_DEF_PRIORITY = 0;
-	
+
 	static IDiscoveryContainerAdapter discovery = null;
 	static IContainer container = null;
-	
+
 	public DiscoveryStartup() throws Exception {
 		setupDiscovery();
 	}
+
 	protected IDiscoveryContainerAdapter getDiscoveryContainer() {
 		return discovery;
 	}
+
 	protected IContainer getContainer() {
 		return container;
 	}
+
 	public void dispose() {
 		if (container != null) {
 			container.dispose();
@@ -60,9 +63,11 @@ public class DiscoveryStartup {
 		}
 		discovery = null;
 	}
+
 	protected boolean isActive() {
 		return discovery != null;
 	}
+
 	protected void setupDiscovery() throws Exception {
 		try {
 			container = ContainerFactory.getDefault().createContainer(
@@ -85,9 +90,11 @@ public class DiscoveryStartup {
 			throw e;
 		}
 	}
+
 	protected void connectToServiceFromInfo(IServiceInfo svcInfo) {
 		IServiceProperties props = svcInfo.getServiceProperties();
-		String type = (String) props.getPropertyString(PROP_CONTAINER_TYPE_NAME);
+		String type = (String) props
+				.getPropertyString(PROP_CONTAINER_TYPE_NAME);
 		if (type == null || type.equals("")) {
 			type = CollabClient.GENERIC_CONTAINER_CLIENT_NAME;
 		}
@@ -103,10 +110,11 @@ public class DiscoveryStartup {
 			return;
 		}
 		URIClientConnectAction action = new URIClientConnectAction(type,
-				targetString, username, null, workspace,false);
+				targetString, username, null, workspace, false);
 		// do it
 		action.run(null);
 	}
+
 	public static void registerService(URI uri) {
 		if (discovery != null) {
 			try {
@@ -125,7 +133,8 @@ public class DiscoveryStartup {
 						+ protocol;
 				ServiceInfo svcInfo = new ServiceInfo(host, new ServiceID(
 						ClientPlugin.TCPSERVER_DISCOVERY_TYPE, svcName), port,
-						SVC_DEF_PRIORITY, SVC_DEF_WEIGHT, new ServiceProperties(props));
+						SVC_DEF_PRIORITY, SVC_DEF_WEIGHT,
+						new ServiceProperties(props));
 				discovery.registerService(svcInfo);
 			} catch (IOException e) {
 				ClientPlugin.log("Exception registering service " + uri);
@@ -135,8 +144,10 @@ public class DiscoveryStartup {
 					+ " because no discovery service is available");
 		}
 	}
+
 	public static void unregisterServer(ISharedObjectContainer container) {
 	}
+
 	public static void registerServiceTypes() {
 		if (discovery != null) {
 			for (int i = 0; i < ClientPlugin.serviceTypes.length; i++) {

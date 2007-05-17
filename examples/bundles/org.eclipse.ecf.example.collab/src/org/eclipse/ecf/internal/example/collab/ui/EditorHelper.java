@@ -29,13 +29,15 @@ import org.eclipse.ui.texteditor.ITextEditor;
 public class EditorHelper {
 
 	IWorkbenchWindow window = null;
-	
+
 	public EditorHelper(IWorkbenchWindow window) {
 		this.window = window;
 	}
+
 	protected IWorkbenchWindow getWorkbenchWindow() {
 		return window;
 	}
+
 	public IEditorPart openEditorForFile(IFile file) throws PartInitException {
 		IWorkbenchPage page = getWorkbenchWindow().getActivePage();
 		IEditorInput input = new FileEditorInput(file);
@@ -51,33 +53,45 @@ public class EditorHelper {
 		}
 		return part;
 	}
-	
-	protected ITextEditor openTextEditorForFile(IFile file) throws PartInitException {
+
+	protected ITextEditor openTextEditorForFile(IFile file)
+			throws PartInitException {
 		IEditorPart editor = openEditorForFile(file);
 		if (editor != null && (editor instanceof ITextEditor)) {
 			return (ITextEditor) editor;
-		} else return null;
+		} else
+			return null;
 	}
-	public void openAndSelectForFile(IFile file, int offset, int length) throws PartInitException {
+
+	public void openAndSelectForFile(IFile file, int offset, int length)
+			throws PartInitException {
 		ITextEditor textEditor = openTextEditorForFile(file);
-		if (textEditor == null) return;
-		setTextEditorSelection(textEditor,offset,length);
+		if (textEditor == null)
+			return;
+		setTextEditorSelection(textEditor, offset, length);
 	}
-	protected IMarker createMarkerForFile(IFile file, EclipseCollabSharedObject.SharedMarker marker) throws CoreException {
-		IMarker m = file.createMarker(EclipseCollabSharedObject.SHARED_MARKER_TYPE);
+
+	protected IMarker createMarkerForFile(IFile file,
+			EclipseCollabSharedObject.SharedMarker marker) throws CoreException {
+		IMarker m = file
+				.createMarker(EclipseCollabSharedObject.SHARED_MARKER_TYPE);
 		m.setAttribute(EclipseCollabSharedObject.SHARED_MARKER_KEY, "slewis");
-		//m.setAttribute(IMarker.MESSAGE, marker.getMessage());
+		// m.setAttribute(IMarker.MESSAGE, marker.getMessage());
 		m.setAttribute(IMarker.MESSAGE, "hello");
 		m.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_INFO);
 		Integer offset = marker.getOffset();
 		Integer length = marker.getLength();
-		int start = ((offset==null)?0:marker.getOffset().intValue());
+		int start = ((offset == null) ? 0 : marker.getOffset().intValue());
 		m.setAttribute(IMarker.CHAR_START, start);
-		int end = start +((length==null)?0:marker.getOffset().intValue());
-		m.setAttribute(IMarker.CHAR_END,end);
+		int end = start
+				+ ((length == null) ? 0 : marker.getOffset().intValue());
+		m.setAttribute(IMarker.CHAR_END, end);
 		return m;
 	}
-	public void openAndAddMarkerForFile(IFile file, EclipseCollabSharedObject.SharedMarker marker) throws PartInitException, CoreException {
+
+	public void openAndAddMarkerForFile(IFile file,
+			EclipseCollabSharedObject.SharedMarker marker)
+			throws PartInitException, CoreException {
 		IWorkbenchPage page = getWorkbenchWindow().getActivePage();
 		IEditorInput input = new FileEditorInput(file);
 		// try to find an open editor with this input
@@ -90,16 +104,21 @@ public class EditorHelper {
 			String editorId = getEditorIdForFile(file);
 			part = page.openEditor(input, editorId);
 		}
-		createMarkerForFile(file,marker);	    
+		createMarkerForFile(file, marker);
 	}
-	protected void setTextEditorSelection(ITextEditor textEditor, int offset, int length) {
+
+	protected void setTextEditorSelection(ITextEditor textEditor, int offset,
+			int length) {
 		textEditor.selectAndReveal(offset, length);
 	}
+
 	protected String getEditorIdForFile(IFile file) {
 		IWorkbench wb = getWorkbenchWindow().getWorkbench();
 		IEditorRegistry er = wb.getEditorRegistry();
 		IEditorDescriptor desc = er.getDefaultEditor(file.getName());
-		if (desc != null) return desc.getId();
-		else return EditorsUI.DEFAULT_TEXT_EDITOR_ID;
+		if (desc != null)
+			return desc.getId();
+		else
+			return EditorsUI.DEFAULT_TEXT_EDITOR_ID;
 	}
 }

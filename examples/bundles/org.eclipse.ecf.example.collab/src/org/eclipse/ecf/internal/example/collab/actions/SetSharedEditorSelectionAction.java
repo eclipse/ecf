@@ -39,10 +39,11 @@ public class SetSharedEditorSelectionAction implements IEditorActionDelegate {
 			setEnabled(action);
 		}
 	}
-	
+
 	protected void setEnabled(IAction action) {
 		action.setEnabled(false);
-		if (editor == null) return;
+		if (editor == null)
+			return;
 		IFile file = getFileForPart(editor);
 		if (file != null) {
 			ClientEntry client = isConnected(file.getProject());
@@ -51,6 +52,7 @@ public class SetSharedEditorSelectionAction implements IEditorActionDelegate {
 			}
 		}
 	}
+
 	protected IFile getFileForPart(ITextEditor editor) {
 		IEditorInput input = editor.getEditorInput();
 		if (input instanceof FileEditorInput) {
@@ -59,13 +61,16 @@ public class SetSharedEditorSelectionAction implements IEditorActionDelegate {
 		}
 		return null;
 	}
+
 	protected IProject getProjectForResource(IResource res) {
 		IProject proj = res.getProject();
 		return proj;
 	}
+
 	protected IWorkbench getWorkbench() {
 		return PlatformUI.getWorkbench();
 	}
+
 	protected ClientEntry isConnected(IResource res) {
 		if (res == null)
 			return null;
@@ -74,6 +79,7 @@ public class SetSharedEditorSelectionAction implements IEditorActionDelegate {
 				CollabClient.GENERIC_CONTAINER_CLIENT_NAME);
 		return entry;
 	}
+
 	public void run(IAction action) {
 		if (editor == null)
 			return;
@@ -104,11 +110,12 @@ public class SetSharedEditorSelectionAction implements IEditorActionDelegate {
 			collabsharedobject.sendOpenAndSelectForFile(null, file
 					.getProjectRelativePath().toString(), textSelection
 					.getOffset(), textSelection.getLength());
-//			collabsharedobject.sendAddMarkerForFile(null, file
-//					.getProjectRelativePath().toString(), textSelection
-//					.getOffset(), textSelection.getLength());
+// collabsharedobject.sendAddMarkerForFile(null, file
+// .getProjectRelativePath().toString(), textSelection
+// .getOffset(), textSelection.getLength());
 		}
 	}
+
 	public void selectionChanged(IAction action, ISelection selection) {
 		setEnabled(action);
 	}

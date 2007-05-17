@@ -9,6 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 package org.eclipse.ecf.internal.example.collab.ui;
+
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -36,14 +37,14 @@ class LabelFieldEditor extends FieldEditor {
 	// Fills the field editor's controls into the given parent.
 	protected void doFillIntoGrid(Composite parent, int numColumns) {
 		label = getLabelControl(parent);
-		
+
 		GridData gridData = new GridData();
 		gridData.horizontalSpan = numColumns;
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = false;
 		gridData.verticalAlignment = GridData.CENTER;
 		gridData.grabExcessVerticalSpace = false;
-		
+
 		label.setLayoutData(gridData);
 	}
 
@@ -55,8 +56,10 @@ class LabelFieldEditor extends FieldEditor {
 	// Labels do not persist any preferences, so these methods are empty.
 	protected void doLoad() {
 	}
+
 	protected void doLoadDefault() {
 	}
+
 	protected void doStore() {
 	}
 }

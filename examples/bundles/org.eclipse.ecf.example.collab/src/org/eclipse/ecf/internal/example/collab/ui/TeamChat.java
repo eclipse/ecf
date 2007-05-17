@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
@@ -29,15 +29,17 @@ class TeamChat extends Composite {
 	LineChatClientView view;
 	ChatWindow chatWindow;
 
-    static final int DEFAULT_TREE_WIDGET_PERCENT = 30;
+	static final int DEFAULT_TREE_WIDGET_PERCENT = 30;
 
-	TeamChat(LineChatClientView view,Composite parent, int options, String initText) {
+	TeamChat(LineChatClientView view, Composite parent, int options,
+			String initText) {
 		super(parent, options);
 
 		this.view = view;
 		setLayout(new FillLayout());
-		boolean useChatWindow =
-			ClientPlugin.getDefault().getPluginPreferences().getBoolean(ClientPlugin.PREF_USE_CHAT_WINDOW);
+		boolean useChatWindow = ClientPlugin.getDefault()
+				.getPluginPreferences().getBoolean(
+						ClientPlugin.PREF_USE_CHAT_WINDOW);
 		int[] w = null;
 		if (!useChatWindow) {
 			sash = new SashForm(this, SWT.NORMAL);
@@ -48,16 +50,15 @@ class TeamChat extends Composite {
 			w[1] = 100 - w[0];
 		}
 
-		treeView = 
-			new ChatTreeViewer(
-				useChatWindow ? (Composite) this : (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		treeView = new ChatTreeViewer(useChatWindow ? (Composite) this
+				: (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
+				| SWT.BORDER);
 		treeView.setAutoExpandLevel(LineChatClientView.TREE_EXPANSION_LEVELS);
 		vc = new ViewContentProvider(view);
-		
+
 		treeView.setContentProvider(vc);
 		treeView.setLabelProvider(new ViewLabelProvider());
 		treeView.setInput(ResourcesPlugin.getWorkspace());
-		
 
 		if (useChatWindow) {
 			chatWindow = new ChatWindow(view, this, treeView, initText);
@@ -69,59 +70,60 @@ class TeamChat extends Composite {
 		}
 	}
 
-    TeamChat(LineChatClientView view,Composite parent, int options, String initText, boolean useChatWindow, boolean showTree) {
-        super(parent, options);
+	TeamChat(LineChatClientView view, Composite parent, int options,
+			String initText, boolean useChatWindow, boolean showTree) {
+		super(parent, options);
 
-        this.view = view;
-        setLayout(new FillLayout());
-        int[] w = null;
-        if (!useChatWindow) {
-            sash = new SashForm(this, SWT.NORMAL);
-            sash.setLayout(new FillLayout());
-            sash.setOrientation(SWT.HORIZONTAL);
-            w = new int[2];
-            w[0] = DEFAULT_TREE_WIDGET_PERCENT;
-            w[1] = 100 - w[0];
-        }
+		this.view = view;
+		setLayout(new FillLayout());
+		int[] w = null;
+		if (!useChatWindow) {
+			sash = new SashForm(this, SWT.NORMAL);
+			sash.setLayout(new FillLayout());
+			sash.setOrientation(SWT.HORIZONTAL);
+			w = new int[2];
+			w[0] = DEFAULT_TREE_WIDGET_PERCENT;
+			w[1] = 100 - w[0];
+		}
 
-        if (showTree) {
-            treeView = 
-                new ChatTreeViewer(
-                    useChatWindow ? (Composite) this : (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-            treeView.setAutoExpandLevel(LineChatClientView.TREE_EXPANSION_LEVELS);
-            vc = new ViewContentProvider(view);
-            
-            treeView.setContentProvider(vc);
-            treeView.setLabelProvider(new ViewLabelProvider());
-            treeView.setInput(ResourcesPlugin.getWorkspace());
-        }
-        
-        if (useChatWindow) {
-            chatWindow = new ChatWindow(view, this, treeView, initText);
-            chatWindow.create();
-            chat = chatWindow.getChat();
-        } else {
-            chat = new ChatComposite(view, sash, treeView, SWT.NORMAL, initText);
-            sash.setWeights(w);
-        }
-    }
+		if (showTree) {
+			treeView = new ChatTreeViewer(useChatWindow ? (Composite) this
+					: (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
+					| SWT.BORDER);
+			treeView
+					.setAutoExpandLevel(LineChatClientView.TREE_EXPANSION_LEVELS);
+			vc = new ViewContentProvider(view);
+
+			treeView.setContentProvider(vc);
+			treeView.setLabelProvider(new ViewLabelProvider());
+			treeView.setInput(ResourcesPlugin.getWorkspace());
+		}
+
+		if (useChatWindow) {
+			chatWindow = new ChatWindow(view, this, treeView, initText);
+			chatWindow.create();
+			chat = chatWindow.getChat();
+		} else {
+			chat = new ChatComposite(view, sash, treeView, SWT.NORMAL, initText);
+			sash.setWeights(w);
+		}
+	}
 
 	void appendText(ChatLine text) {
-		if (chatWindow != null 
-				&& chatWindow.getShell() != null 
-				&& !chatWindow.getShell().isDisposed() 
+		if (chatWindow != null && chatWindow.getShell() != null
+				&& !chatWindow.getShell().isDisposed()
 				&& !chatWindow.hasFocus()) {
-			
+
 			if (chatWindow.getShell().isVisible())
 				chatWindow.flash();
 			else
 				chatWindow.open();
 		}
-		
+
 		chat.appendText(text);
 		setStatus(null);
 	}
-	
+
 	void setStatus(String status) {
 		if (chatWindow != null)
 			chatWindow.setStatus(status);
@@ -146,8 +148,10 @@ class TeamChat extends Composite {
 	Control getTextControl() {
 		return chat.getTextControl();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.swt.widgets.Widget#dispose()
 	 */
 	public void dispose() {
@@ -155,7 +159,7 @@ class TeamChat extends Composite {
 			chatWindow.close();
 			chatWindow = null;
 		}
-		
+
 		super.dispose();
 	}
 }

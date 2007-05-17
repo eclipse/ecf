@@ -64,7 +64,8 @@ public class CollabClient {
 				.createContainer(containerType);
 
 		// Create the targetID instance
-		ID targetID = IDFactory.getDefault().createID(newClient.getConnectNamespace(), uri);
+		ID targetID = IDFactory.getDefault().createID(
+				newClient.getConnectNamespace(), uri);
 
 		// Setup username
 		String username = setupUsername(targetID, nickname);
@@ -76,10 +77,9 @@ public class CollabClient {
 		// this
 		ISharedObjectContainer sharedObjectContainer = (ISharedObjectContainer) newClient
 				.getAdapter(ISharedObjectContainer.class);
-		SharedObjectContainerUI socui = new SharedObjectContainerUI(
-				this, sharedObjectContainer);
-		socui.setup(sharedObjectContainer, newClientEntry,
-				resource, username);
+		SharedObjectContainerUI socui = new SharedObjectContainerUI(this,
+				sharedObjectContainer);
+		socui.setup(sharedObjectContainer, newClientEntry, resource, username);
 		// Now connect
 		try {
 			newClient.connect(targetID,

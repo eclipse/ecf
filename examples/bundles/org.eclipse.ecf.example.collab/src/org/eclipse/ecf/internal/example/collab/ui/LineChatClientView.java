@@ -24,8 +24,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.example.collab.share.EclipseMessage;
 import org.eclipse.ecf.example.collab.share.TreeItem;
 import org.eclipse.ecf.example.collab.share.User;
-import org.eclipse.ecf.example.collab.share.url.ExecProg;
-import org.eclipse.ecf.example.collab.share.url.ExecURL;
+import org.eclipse.ecf.example.collab.share.url.StartProgramSharedObject;
+import org.eclipse.ecf.example.collab.share.url.ShowURLSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -42,7 +42,8 @@ public class LineChatClientView implements FileSenderUI {
 	public static final String EXECPROGARGTYPES[] = { ID.class.getName(),
 			"[Ljava.lang.String;", "[Ljava.lang.String;",
 			Boolean.class.getName(), Boolean.class.getName() };
-	public static final String EXECPROGCLASSNAME = ExecProg.class.getName();
+	public static final String EXECPROGCLASSNAME = StartProgramSharedObject.class
+			.getName();
 	public static final String HOST_PREFIX = "You say";
 	public static final String LEFT_STRING = "LEFT";
 	public static final String MESSAGECLASSNAME = EclipseMessage.class
@@ -50,10 +51,13 @@ public class LineChatClientView implements FileSenderUI {
 	public static final String REMOTEFILEPATH = null;
 	public static final String SHOWURLARGTYPES[] = { ID.class.getName(),
 			"java.lang.String" };
-	public static final String SHOWURLCLASSNAME = ExecURL.class.getName();
+	public static final String SHOWURLCLASSNAME = ShowURLSharedObject.class
+			.getName();
 	protected static final int TREE_EXPANSION_LEVELS = 1;
 	public static final String TREE_HEADER = "Participants";
-	private boolean showTimestamp = ClientPlugin.getDefault().getPreferenceStore().getBoolean(ClientPlugin.PREF_DISPLAY_TIMESTAMP);
+	private boolean showTimestamp = ClientPlugin.getDefault()
+			.getPreferenceStore().getBoolean(
+					ClientPlugin.PREF_DISPLAY_TIMESTAMP);
 	SimpleDateFormat df = new SimpleDateFormat("MM/dd hh:mm a");
 	String downloaddir;
 	LineChatHandler lch;
@@ -84,16 +88,19 @@ public class LineChatClientView implements FileSenderUI {
 		this.downloaddir = downloaddir;
 		if (userdata != null)
 			addUser(userdata);
-		
-		ClientPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
 
-			public void propertyChange(PropertyChangeEvent event) {
-				if (event.getProperty().equals(ClientPlugin.PREF_DISPLAY_TIMESTAMP)) {
-					showTimestamp = ((Boolean)event.getNewValue()).booleanValue();
-				}	
-			}
-			
-		});
+		ClientPlugin.getDefault().getPreferenceStore()
+				.addPropertyChangeListener(new IPropertyChangeListener() {
+
+					public void propertyChange(PropertyChangeEvent event) {
+						if (event.getProperty().equals(
+								ClientPlugin.PREF_DISPLAY_TIMESTAMP)) {
+							showTimestamp = ((Boolean) event.getNewValue())
+									.booleanValue();
+						}
+					}
+
+				});
 	}
 
 	public ViewPart getView() {
@@ -132,16 +139,18 @@ public class LineChatClientView implements FileSenderUI {
 	}
 
 	/**
-	 * This method is used to create an output string for the chat window.
-	 * Any user-defined preferences regarding output shall be handled here.
-	 * @param line Input text
+	 * This method is used to create an output string for the chat window. Any
+	 * user-defined preferences regarding output shall be handled here.
+	 * 
+	 * @param line
+	 *            Input text
 	 * @return User-defined output of chat text.
 	 */
 	private String createChatLine(String line) {
 		if (showTimestamp) {
 			return dateTime() + line;
 		}
-		
+
 		return line;
 	}
 
@@ -204,22 +213,22 @@ public class LineChatClientView implements FileSenderUI {
 	public void disposeClient() {
 		myNames.clear();
 		if (teamChat != null) {
-            final ChatWindow chatWindow = teamChat.chatWindow; 
+			final ChatWindow chatWindow = teamChat.chatWindow;
 			if (chatWindow != null && !Display.getDefault().isDisposed()) {
-                Display.getDefault().syncExec(new Runnable() {
-                    public void run() {
+				Display.getDefault().syncExec(new Runnable() {
+					public void run() {
 						if (chatWindow != null)
 							chatWindow.close();
-                    }
-                });
-            }
+					}
+				});
+			}
 
 			teamChat = null;
 		}
 		if (lch != null) {
 			lch = null;
 		}
-        view.disposeClient(this);
+		view.disposeClient(this);
 	}
 
 	protected void expandAll() {
@@ -262,7 +271,8 @@ public class LineChatClientView implements FileSenderUI {
 			if (tmp == null) {
 				tmp = objID.toString();
 			}
-			prefix += createChatLine(" " + tmp + CLIENT_PREFIX + " (private):  ");
+			prefix += createChatLine(" " + tmp + CLIENT_PREFIX
+					+ " (private):  ");
 		}
 		return prefix;
 	}
@@ -293,15 +303,15 @@ public class LineChatClientView implements FileSenderUI {
 		if (showTimestamp) {
 			text = dateTime() + text;
 		}
-		
+
 		ChatLine line = new ChatLine(text);
-		
+
 		if (lch != null) {
 			line.setOriginator(userdata);
 		}
 		appendAndScrollToBottom(line);
 		teamChat.clearInput();
-		
+
 		if (lch != null)
 			lch.inputText(text);
 	}
@@ -466,10 +476,11 @@ public class LineChatClientView implements FileSenderUI {
 
 	public void sendDone(File aFile, Exception e) {
 		if (e != null) {
-			showText(new ChatLine("Exception '" + e.getMessage() + "' sending file '"
-					+ aFile.getName()));
+			showText(new ChatLine("Exception '" + e.getMessage()
+					+ "' sending file '" + aFile.getName()));
 		} else {
-			showText(new ChatLine("\tSend of '" + aFile.getName() + "' completed"));
+			showText(new ChatLine("\tSend of '" + aFile.getName()
+					+ "' completed"));
 			if (lch != null)
 				lch.refreshProject();
 		}
@@ -492,7 +503,6 @@ public class LineChatClientView implements FileSenderUI {
 	public void showLine(ChatLine line) {
 		appendAndScrollToBottom(line);
 	}
-
 
 	public void startedTyping(final User user) {
 		Display.getDefault().asyncExec(new Runnable() {

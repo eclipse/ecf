@@ -22,6 +22,7 @@ import org.eclipse.ecf.internal.example.collab.CollabClient;
 
 public class CollabStart implements IECFStart {
 	Discovery discovery = null;
+
 	public IStatus startup(IProgressMonitor monitor) {
 		try {
 			AccountStart as = new AccountStart();
@@ -36,9 +37,11 @@ public class CollabStart implements IECFStart {
 		}
 		return new Status(IStatus.OK, ClientPlugin.PLUGIN_ID, 100, "OK", null);
 	}
+
 	private void startConnection(ConnectionDetails details) throws Exception {
 		CollabClient client = new CollabClient();
-		//ClientPlugin.log("ECF: Autostarting containerType="+details.getContainerType()+",uri="+details.getTargetURI()+",nickname="+details.getNickname());
+		// ClientPlugin.log("ECF: Autostarting
+		// containerType="+details.getContainerType()+",uri="+details.getTargetURI()+",nickname="+details.getNickname());
 		client.createAndConnectClient(details.getContainerType(), details
 				.getTargetURI(), details.getNickname(), details.getPassword(),
 				ResourcesPlugin.getWorkspace().getRoot());

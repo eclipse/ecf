@@ -26,40 +26,43 @@ public class AccountStart {
 	private static final int BACKING_STORE_SAVE_ERROR = 1001;
 	private static final int BACKING_STORE_LOAD_ERROR = 1002;
 	private Map connectionDetails = new HashMap();
-	
+
 	public ConnectionDetails addConnectionDetails(ConnectionDetails cd) {
 		String targetURI = normalizeURI(cd.getTargetURI());
 		return (ConnectionDetails) connectionDetails.put(targetURI, cd);
 	}
-	
+
 	private String normalizeURI(String uri) {
 		return uri.replace('/', '.');
 	}
+
 	public void removeConnectionDetails(ConnectionDetails cd) {
-			try {
-				Preferences preferences = new InstanceScope()
-						.getNode(ClientPlugin.PLUGIN_ID);
-				Preferences connections = preferences.node(SAVED);
-				String[] targets = connections.childrenNames();
-				for (int i = 0; i < targets.length; i++) {
-					String target = targets[i];
-					Preferences node = connections.node(target);
-					String cdTarget = normalizeURI(cd.getTargetURI());
-					if (node != null && target != null && target.equals(cdTarget)) {
-						node.removeNode();
-					}
+		try {
+			Preferences preferences = new InstanceScope()
+					.getNode(ClientPlugin.PLUGIN_ID);
+			Preferences connections = preferences.node(SAVED);
+			String[] targets = connections.childrenNames();
+			for (int i = 0; i < targets.length; i++) {
+				String target = targets[i];
+				Preferences node = connections.node(target);
+				String cdTarget = normalizeURI(cd.getTargetURI());
+				if (node != null && target != null && target.equals(cdTarget)) {
+					node.removeNode();
 				}
-				connections.flush();
-			} catch (BackingStoreException e) {
-				ClientPlugin.getDefault().getLog().log(
-						new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID,
-								BACKING_STORE_LOAD_ERROR,
-								"Exception loading connection details", e));
 			}
+			connections.flush();
+		} catch (BackingStoreException e) {
+			ClientPlugin.getDefault().getLog().log(
+					new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID,
+							BACKING_STORE_LOAD_ERROR,
+							"Exception loading connection details", e));
+		}
 	}
+
 	public Collection getConnectionDetails() {
 		return connectionDetails.values();
 	}
+
 	public void saveConnectionDetailsToPreferenceStore() {
 		Preferences preferences = new InstanceScope()
 				.getNode(ClientPlugin.PLUGIN_ID);
@@ -83,6 +86,7 @@ public class AccountStart {
 							"Exception saving connection details", e));
 		}
 	}
+
 	public void loadConnectionDetailsFromPreferenceStore() {
 		try {
 			Preferences preferences = new InstanceScope()

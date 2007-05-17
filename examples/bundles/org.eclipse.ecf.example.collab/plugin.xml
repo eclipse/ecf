@@ -63,6 +63,7 @@
             name="Collaboration"
             id="org.eclipse.ecf.example.collab.ui.preferences"/>
    </extension>
+   <!--
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -78,7 +79,7 @@
 	   <super type="org.eclipse.core.resources.textmarker"/>
 	   <attribute name="owner"/>
    </extension>
-
+-->
    <extension
          point="org.eclipse.ui.popupMenus">
       <viewerContribution

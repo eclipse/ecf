@@ -11,18 +11,19 @@
 package org.eclipse.ecf.internal.example.collab.start;
 
 public class ConnectionDetails {
-	
+
 	public static final String CONTAINER_TYPE = "containerType";
-	public static final String TARGET_URI =  "targetURI";
+	public static final String TARGET_URI = "targetURI";
 	public static final String NICKNAME = "nickname";
 	public static final String PASSWORD = "password";
-	
+
 	String containerType;
 	String targetURI;
 	String nickname;
 	String password;
-	
-	public ConnectionDetails(String containerType, String targetURI, String nickname, String password) {
+
+	public ConnectionDetails(String containerType, String targetURI,
+			String nickname, String password) {
 		this.containerType = containerType;
 		this.targetURI = targetURI;
 		this.nickname = nickname;
@@ -56,7 +57,7 @@ public class ConnectionDetails {
 	public String getTargetURI() {
 		return targetURI;
 	}
-	
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer("ConnectionDetails[");
 		sb.append(CONTAINER_TYPE).append("=").append(containerType).append(";");

@@ -188,14 +188,13 @@ public class ChatComposite extends Composite {
 		cl = new ChatLayout(DEFAULT_INPUT_HEIGHT, DEFAULT_INPUT_SEPARATOR);
 		setLayout(cl);
 		treeView = tree;
-		
+
 		SourceViewer result = new SourceViewer(this, null, null, true,
 				SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.H_SCROLL
 						| SWT.READ_ONLY);
 		result.configure(new TextSourceViewerConfiguration(EditorsUI
 				.getPreferenceStore()));
 		result.setDocument(new Document());
-
 
 		textoutput = result.getTextWidget();
 		String fontName = ClientPlugin.getDefault().getPluginPreferences()
@@ -817,9 +816,9 @@ public class ChatComposite extends Composite {
 			}
 
 			public ISelection getSelection() {
-				ISelection selection = new TextSelection(
-						textoutput.getSelectionRange().x, textoutput
-								.getSelectionRange().y);
+				ISelection selection = new TextSelection(textoutput
+						.getSelectionRange().x,
+						textoutput.getSelectionRange().y);
 
 				return selection;
 			}
@@ -831,14 +830,15 @@ public class ChatComposite extends Composite {
 			public void setSelection(ISelection selection) {
 				if (selection instanceof ITextSelection) {
 					ITextSelection textSelection = (ITextSelection) selection;
-					textoutput.setSelection(textSelection.getOffset(), textSelection
-							.getOffset()
-							+ textSelection.getLength());
+					textoutput.setSelection(textSelection.getOffset(),
+							textSelection.getOffset()
+									+ textSelection.getLength());
 				}
 			}
-			
+
 		};
-		this.view.view.getSite().registerContextMenu(menuMgr,selectionProvider);
+		this.view.view.getSite()
+				.registerContextMenu(menuMgr, selectionProvider);
 
 		MenuManager treeMenuMgr = new MenuManager();
 		treeMenuMgr.setRemoveAllWhenShown(true);
@@ -1274,8 +1274,7 @@ public class ChatComposite extends Composite {
 			textoutput.selectAll();
 		}
 		textoutput.copy();
-		textoutput.setSelection(
-				textoutput.getText().length());
+		textoutput.setSelection(textoutput.getText().length());
 	}
 
 	protected void outputPaste() {
@@ -1383,9 +1382,9 @@ public class ChatComposite extends Composite {
 		 * LineChatClientView.APPSHARECLASSNAME, map); EclipseAppShareServer
 		 * server = (EclipseAppShareServer) this.view.lch.getObject(serverID);
 		 * if (server != null) { LineChatView.setAppShareID(serverID,server);
-		 * this.view.setAppShareID(serverID); }
-		 *  } } catch (final Exception e) { Display.getDefault().asyncExec(new
-		 * Runnable() { public void run() { MessageDialog.openInformation(null,
+		 * this.view.setAppShareID(serverID); } } } catch (final Exception e) {
+		 * Display.getDefault().asyncExec(new Runnable() { public void run() {
+		 * MessageDialog.openInformation(null,
 		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.cancelledtitle"),
 		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.cancelledmessage"));
 		 * ClientPlugin.log("Exception starting application share",e); } }); }
@@ -1535,8 +1534,7 @@ public class ChatComposite extends Composite {
 	}
 
 	protected void initializeDropTargets() {
-		chatDropTarget = new ChatDropTarget(view, textoutput,
-				this);
+		chatDropTarget = new ChatDropTarget(view, textoutput, this);
 		treeDropTarget = new TreeDropTarget(view, treeView.getControl(), this);
 	}
 

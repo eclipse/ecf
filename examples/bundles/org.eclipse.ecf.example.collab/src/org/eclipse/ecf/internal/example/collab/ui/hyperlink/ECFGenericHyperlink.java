@@ -35,14 +35,18 @@ public class ECFGenericHyperlink extends AbstractURLHyperlink {
 		super(region, uri);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.ui.hyperlink.AbstractURLHyperlink#createConnectWizard()
 	 */
 	protected IConnectWizard createConnectWizard() {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.ui.hyperlink.AbstractURLHyperlink#createContainer()
 	 */
 	protected IContainer createContainer() throws ContainerCreateException {

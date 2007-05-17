@@ -120,14 +120,14 @@ public class ConnectionDialog extends TitleAreaDialog {
 	private IDialogSettings dialogSettings;
 
 	private GlobalModifyListener listener = new GlobalModifyListener();
-	
+
 	private Button autoLogin = null;
-	
+
 	private boolean autoLoginFlag = false;
 
 	public ConnectionDialog(Shell parentShell) {
 		super(parentShell);
-		setShellStyle(SWT.TITLE | SWT.BORDER| SWT.CLOSE | SWT.RESIZE);
+		setShellStyle(SWT.TITLE | SWT.BORDER | SWT.CLOSE | SWT.RESIZE);
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -156,12 +156,13 @@ public class ConnectionDialog extends TitleAreaDialog {
 		gData.widthHint = PROVIDER_TABLE_WIDTH;
 		gData.heightHint = PROVIDER_TABLE_HEIGHT;
 		table.setLayoutData(gData);
-		
-/*		table.setHeaderVisible(true); TableColumn tc = new TableColumn(table,
-		SWT.NONE); tc.setText("Name"); tc = new TableColumn(table, SWT.NONE);
-		tc.setText("Classname");
-		 
-*/
+
+/*
+ * table.setHeaderVisible(true); TableColumn tc = new TableColumn(table,
+ * SWT.NONE); tc.setText("Name"); tc = new TableColumn(table, SWT.NONE);
+ * tc.setText("Classname");
+ * 
+ */
 		viewer.setInput(ContainerFactory.getDefault().getDescriptions());
 
 		paramComp = new Composite(providerComp, SWT.NONE);
@@ -171,18 +172,19 @@ public class ConnectionDialog extends TitleAreaDialog {
 		paramComp.setLayout(glayout);
 		paramComp.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		autoLogin = new Button(main,SWT.CHECK);
+		autoLogin = new Button(main, SWT.CHECK);
 		autoLogin.setText("Login &automatically at startup");
 		autoLogin.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		autoLogin.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				autoLoginFlag = autoLogin.getSelection();
-			}});
-		
+			}
+		});
+
 		new Label(main, SWT.NONE);
 		Label sep = new Label(main, SWT.SEPARATOR | SWT.HORIZONTAL);
 		sep.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
+
 		this.setTitle("ECF Connection");
 		this
 				.setMessage("Please choose a provider and supply connection parameters.");
@@ -217,7 +219,8 @@ public class ConnectionDialog extends TitleAreaDialog {
 			for (Iterator i = rawDescriptions.iterator(); i.hasNext();) {
 				final ContainerTypeDescription desc = (ContainerTypeDescription) i
 						.next();
-				if (!desc.isServer() && !desc.isHidden()) elements.add(desc);
+				if (!desc.isServer() && !desc.isHidden())
+					elements.add(desc);
 			}
 
 			return elements.toArray();
@@ -258,9 +261,11 @@ public class ConnectionDialog extends TitleAreaDialog {
 	public String getNamespace() {
 		return namespace;
 	}
+
 	public boolean getAutoLoginFlag() {
 		return autoLoginFlag;
 	}
+
 	private void restoreDialogSettings() throws IOException {
 		IDialogSettings dialogSettings = getDialogSettings();
 		if (dialogSettings != null) {
@@ -305,22 +310,20 @@ public class ConnectionDialog extends TitleAreaDialog {
 			pageSettings.put("url", this.getJoinGroupText());
 			pageSettings.put("nickname", this.getNicknameText());
 			pageSettings.put("password", this.getPasswordText());
-			
+
 			int i = viewer.getTable().getSelectionIndex();
 			if (i >= 0)
 				pageSettings.put("provider", i);
 
-/*			try {
-				dialogSettings.save(this.getClass().toString());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-*/		}
+/*
+ * try { dialogSettings.save(this.getClass().toString()); } catch (IOException
+ * e) { // TODO Auto-generated catch block e.printStackTrace(); }
+ */		}
 	}
-	
+
 	private boolean savePassword() {
-		return ClientPlugin.getDefault().getPluginPreferences().getBoolean(ClientPlugin.PREF_STORE_PASSWORD);
+		return ClientPlugin.getDefault().getPluginPreferences().getBoolean(
+				ClientPlugin.PREF_STORE_PASSWORD);
 	}
 
 	protected void okPressed() {
@@ -387,7 +390,7 @@ public class ConnectionDialog extends TitleAreaDialog {
 				containerType = desc.getName();
 				// XXX replace with access to desc.getParameters()
 				createPropertyComposite(paramComp, null);
-				//createPropertyComposite(paramComp, desc.getProperties());
+				// createPropertyComposite(paramComp, desc.getProperties());
 			}
 		}
 

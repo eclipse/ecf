@@ -78,13 +78,16 @@ public class URIClientConnectAction implements IWorkbenchWindowActionDelegate {
 				removeAutoLoginInfo();
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						new ContainerConnectErrorDialog(null, uri, e.getStatus()).open();
-					} });
+						new ContainerConnectErrorDialog(null, uri, e
+								.getStatus()).open();
+					}
+				});
 			} catch (final Exception e) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
 						new ContainerConnectErrorDialog(null, uri, e).open();
-					} });
+					}
+				});
 			}
 			return Status.OK_STATUS;
 		}

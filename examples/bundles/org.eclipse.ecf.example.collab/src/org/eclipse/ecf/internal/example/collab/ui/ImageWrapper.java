@@ -39,7 +39,7 @@ public class ImageWrapper implements Serializable {
 		greenMask = data.palette.greenMask;
 		blueMask = data.palette.blueMask;
 	}
-	
+
 	public ImageData createImageData() {
 		PaletteData palette = new PaletteData(redMask, greenMask, blueMask);
 		return new ImageData(width, height, depth, palette, scanlinePad, data);

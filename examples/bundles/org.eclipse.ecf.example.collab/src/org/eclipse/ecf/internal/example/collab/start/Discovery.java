@@ -19,13 +19,14 @@ import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
 public class Discovery {
-	
+
 	IContainer container = null;
 	IDiscoveryContainerAdapter discoveryContainer = null;
-	
+
 	public Discovery() throws Exception {
 		startDiscovery();
 	}
+
 	private void startDiscovery() throws Exception {
 		container = ContainerFactory.getDefault().createContainer(
 				"ecf.discovery.jmdns");
@@ -36,7 +37,7 @@ public class Discovery {
 				.addServiceTypeListener(new CollabServiceTypeListener());
 		System.out.println("startDiscovery()");
 	}
-	
+
 	class CollabServiceTypeListener implements IServiceTypeListener {
 		public void serviceTypeAdded(IServiceEvent event) {
 			System.out.println("serviceTypeAdded(" + event + ")");
@@ -46,15 +47,18 @@ public class Discovery {
 			discoveryContainer.registerServiceType(svcID.getServiceType());
 		}
 	}
+
 	class CollabServiceListener implements IServiceListener {
 		public void serviceAdded(IServiceEvent event) {
 			System.out.println("serviceAdded(" + event + ")");
 			discoveryContainer.requestServiceInfo(event.getServiceInfo()
 					.getServiceID(), 3000);
 		}
+
 		public void serviceRemoved(IServiceEvent event) {
 			System.out.println("serviceRemoved(" + event + ")");
 		}
+
 		public void serviceResolved(IServiceEvent event) {
 			System.out.println("serviceResolved(" + event + ")");
 		}

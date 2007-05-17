@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 
 package org.eclipse.ecf.example.collab.share;
 
@@ -17,7 +17,7 @@ import java.util.Vector;
 import org.eclipse.ecf.core.identity.ID;
 
 public class User implements Serializable {
-	
+
 	private static final long serialVersionUID = -9164887171441293342L;
 	protected Vector userFields;
 	protected ID userID;
@@ -36,6 +36,7 @@ public class User implements Serializable {
 	public ID getUserID() {
 		return userID;
 	}
+
 	public String getNickname() {
 		return nickname;
 	}
@@ -43,6 +44,7 @@ public class User implements Serializable {
 	public void setUserFields(Vector uF) {
 		this.userFields = uF;
 	}
+
 	public void setNickname(String name) {
 		this.nickname = name;
 	}

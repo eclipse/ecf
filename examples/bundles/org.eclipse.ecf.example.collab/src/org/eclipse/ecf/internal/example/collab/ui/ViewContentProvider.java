@@ -1,13 +1,13 @@
 /****************************************************************************
-* Copyright (c) 2004 Composent, Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    Composent, Inc. - initial API and implementation
-*****************************************************************************/
+ * Copyright (c) 2004 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
@@ -22,10 +22,11 @@ class ViewContentProvider implements IStructuredContentProvider,
 	private TreeParent presenceRoot;
 	protected LineChatClientView view;
 
-    public ViewContentProvider(LineChatClientView view) {
-        super();
-        this.view = view;
-    }
+	public ViewContentProvider(LineChatClientView view) {
+		super();
+		this.view = view;
+	}
+
 	public void dispose() {
 	}
 
@@ -37,7 +38,7 @@ class ViewContentProvider implements IStructuredContentProvider,
 	}
 
 	public Object[] getElements(Object parent) {
-		
+
 		if (parent.equals(ResourcesPlugin.getWorkspace())) {
 			if (presenceRoot == null)
 				initialize();
@@ -69,7 +70,7 @@ class ViewContentProvider implements IStructuredContentProvider,
 	}
 
 	private void initialize() {
-		presenceRoot = new TreeParent(view,LineChatClientView.TREE_HEADER);
+		presenceRoot = new TreeParent(view, LineChatClientView.TREE_HEADER);
 		invisibleRoot = new TreeParent(view, "");
 		invisibleRoot.addChild(presenceRoot);
 	}

@@ -45,18 +45,23 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	private DiscoveryStartup discoveryStartup = null;
 	public static final String TCPSERVER_DISCOVERY_TYPE = "_ecftcp._tcp.local.";
 	protected static String serviceTypes[] = new String[] { TCPSERVER_DISCOVERY_TYPE };
+
 	public static URL getPluginTopLocation() {
 		return pluginLocation;
 	}
+
 	public static void log(String message) {
 		getDefault().getLog().log(
-				new Status(IStatus.OK, ClientPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK, message, null));
+				new Status(IStatus.OK, ClientPlugin.getDefault().getBundle()
+						.getSymbolicName(), IStatus.OK, message, null));
 	}
+
 	public static void log(String message, Throwable e) {
 		getDefault().getLog().log(
-				new Status(IStatus.ERROR, ClientPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK,
-						message, e));
+				new Status(IStatus.ERROR, ClientPlugin.getDefault().getBundle()
+						.getSymbolicName(), IStatus.OK, message, e));
 	}
+
 	/**
 	 * The constructor.
 	 */
@@ -65,6 +70,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		plugin = this;
 		this.fontRegistry = new FontRegistry();
 	}
+
 	public IDiscoveryController getDiscoveryController() {
 		return new IDiscoveryController() {
 			public void connectToService(IServiceInfo service) {
@@ -74,6 +80,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 					discoveryStartup.connectToServiceFromInfo(service);
 				}
 			}
+
 			public void startDiscovery() {
 				try {
 					getDefault().initDiscovery();
@@ -81,9 +88,11 @@ public class ClientPlugin extends AbstractUIPlugin implements
 					ClientPlugin.log("Exception initializing discovery", e);
 				}
 			}
+
 			public void stopDiscovery() {
 				getDefault().disposeDiscovery();
 			}
+
 			public IDiscoveryContainerAdapter getDiscoveryContainer() {
 				synchronized (ClientPlugin.this) {
 					if (discoveryStartup == null)
@@ -91,6 +100,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 					return discoveryStartup.getDiscoveryContainer();
 				}
 			}
+
 			public IContainer getContainer() {
 				synchronized (ClientPlugin.this) {
 					if (discoveryStartup == null)
@@ -98,14 +108,17 @@ public class ClientPlugin extends AbstractUIPlugin implements
 					return discoveryStartup.getContainer();
 				}
 			}
+
 			public String[] getServiceTypes() {
 				return serviceTypes;
 			}
+
 			public boolean isDiscoveryStarted() {
 				return getDefault().isDiscoveryActive();
 			}
 		};
 	}
+
 	protected void setPreferenceDefaults() {
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_USE_CHAT_WINDOW,
 				false);
@@ -123,10 +136,13 @@ public class ClientPlugin extends AbstractUIPlugin implements
 				false);
 		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,
 				false);
-		
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY,true);
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER,true);
+
+		this.getPreferenceStore().setDefault(
+				ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY, true);
+		this.getPreferenceStore().setDefault(
+				ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER, true);
 	}
+
 	/**
 	 * This method is called upon plug-in activation
 	 */
@@ -134,46 +150,53 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		super.start(context);
 		setPreferenceDefaults();
 	}
-	
+
 	public synchronized void initDiscovery() throws Exception {
 		if (discoveryStartup == null) {
 			discoveryStartup = new DiscoveryStartup();
 		}
 	}
+
 	public synchronized void initServer() throws Exception {
 		if (serverStartup == null) {
 			serverStartup = new ServerStartup();
 		}
 	}
+
 	public synchronized void registerServers() {
 		if (discoveryStartup != null && serverStartup != null) {
 			serverStartup.registerServers();
 		}
 	}
+
 	public synchronized boolean isDiscoveryActive() {
 		if (discoveryStartup == null)
 			return false;
 		else
 			return discoveryStartup.isActive();
 	}
+
 	public synchronized boolean isServerActive() {
 		if (serverStartup == null)
 			return false;
 		else
 			return serverStartup.isActive();
 	}
+
 	public synchronized void disposeDiscovery() {
 		if (discoveryStartup != null) {
 			discoveryStartup.dispose();
 			discoveryStartup = null;
 		}
 	}
+
 	public synchronized void disposeServer() {
 		if (serverStartup != null) {
 			serverStartup.dispose();
 			serverStartup = null;
 		}
 	}
+
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
@@ -184,13 +207,15 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		disposeServer();
 		disposeDiscovery();
 	}
-	
+
 	public FontRegistry getFontRegistry() {
 		return this.fontRegistry;
 	}
+
 	public Shell getActiveShell() {
 		return this.getWorkbench().getDisplay().getActiveShell();
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -222,17 +247,20 @@ public class ClientPlugin extends AbstractUIPlugin implements
 		registry.put(ClientPluginConstants.DECORATION_SYSTEM_MESSAGE,
 				PlatformUI.getWorkbench().getSharedImages().getImage(
 						ISharedImages.IMG_OBJS_INFO_TSK));
-		registry.put(ClientPluginConstants.DECORATION_DEFAULT_PROVIDER, 
-				AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.ecf.example.collab",
-				"icons/default_provider_image.gif").createImage());
+		registry.put(ClientPluginConstants.DECORATION_DEFAULT_PROVIDER,
+				AbstractUIPlugin.imageDescriptorFromPlugin(
+						"org.eclipse.ecf.example.collab",
+						"icons/default_provider_image.gif").createImage());
 		return registry;
 	}
+
 	/**
 	 * Returns the shared instance.
 	 */
 	public static ClientPlugin getDefault() {
 		return plugin;
 	}
+
 	/**
 	 * Returns the string from the plugin's resource bundle, or 'key' if not
 	 * found.
@@ -245,14 +273,14 @@ public class ClientPlugin extends AbstractUIPlugin implements
 			return key;
 		}
 	}
+
 	/**
 	 * Returns the plugin's resource bundle,
 	 */
 	public ResourceBundle getResourceBundle() {
 		try {
 			if (resourceBundle == null)
-				resourceBundle = ResourceBundle
-						.getBundle(PLUGIN_ID);
+				resourceBundle = ResourceBundle.getBundle(PLUGIN_ID);
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}

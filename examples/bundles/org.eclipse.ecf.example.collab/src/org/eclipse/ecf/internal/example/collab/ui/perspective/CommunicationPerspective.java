@@ -40,7 +40,8 @@ public class CommunicationPerspective implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IPageLayout.ID_PROGRESS_VIEW);
 		layout.addShowViewShortcut(IPageLayout.ID_TASK_LIST);
 
-		layout.addActionSet("org.eclipse.ecf.internal.example.collab.ui.actionSet"); //$NON-NLS-1$
+		layout
+				.addActionSet("org.eclipse.ecf.internal.example.collab.ui.actionSet"); //$NON-NLS-1$
 	}
 
 	private void defineLayout(IPageLayout layout) {

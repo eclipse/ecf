@@ -74,7 +74,9 @@ public class LineChatView extends ViewPart {
 						actionBars.getToolBarManager().removeAll();
 						actionBars.getMenuManager().removeAll();
 						actionBars.updateActionBars();
-						singleton.parentComposite.layout();
+						if (!singleton.parentComposite.isDisposed()) {
+							singleton.parentComposite.layout();
+						}
 					}
 				}
 			}
@@ -96,9 +98,10 @@ public class LineChatView extends ViewPart {
 	}
 
 	public static void setViewName(String name) {
-		if (singleton != null) singleton.setPartName(name);
+		if (singleton != null)
+			singleton.setPartName(name);
 	}
-	
+
 	public static LineChatClientView createClientView(
 			final LineChatHandler lch, final String name,
 			final String initText, String downloaddir) throws Exception {
@@ -159,8 +162,10 @@ public class LineChatView extends ViewPart {
 	}
 
 	private void createInactiveComposite(Composite parent) {
-		inactiveLabel = new Label(parent, SWT.NONE);
-		inactiveLabel.setText(COLLABORATION_PROJECTS_ARE_NOT_AVAILABLE_);
+		if (!parent.isDisposed()) {
+			inactiveLabel = new Label(parent, SWT.NONE);
+			inactiveLabel.setText(COLLABORATION_PROJECTS_ARE_NOT_AVAILABLE_);
+		}
 	}
 
 	protected void disposeClient(LineChatClientView lccv) {

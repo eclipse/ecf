@@ -13,9 +13,6 @@ package org.eclipse.ecf.example.collab.share;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Date;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -27,10 +24,8 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer;
@@ -50,7 +45,6 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
@@ -63,21 +57,39 @@ import org.eclipse.ui.part.ViewPart;
 
 public class EclipseCollabSharedObject extends GenericSharedObject implements
 		LineChatHandler, EclipseProject {
+	private static final String HANDLE_SHOW_VIEW_MSG = "handleShowView";
+	private static final String HANDLE_SHOW_VIEW_WITH_ID_MSG = "handleShowViewWithID";
+	private static final String HANDLE_LAUNCH_EDITOR_FOR_FILE_MSG = "handleLaunchEditorForFile";
+	private static final String HANDLE_OPEN_AND_SELECT_FOR_FILE_MSG = "handleOpenAndSelectForFile";
+	private static final String HANDLE_ADD_MARKER_FOR_FILE_MSG = "handleAddMarkerForFile";
+	private static final String HANDLE_USER_UPDATE_MSG = "handleUserUpdate";
+	private static final String HANDLE_UPDATE_TREE_DISPLAY_MSG = "handleUpdateTreeDisplay";
+	private static final String HANDLE_UNREGISTER_PROXY_MSG = "handleUnregisterProxy";
+	private static final String HANDLE_SHOW_TEXT_MSG = "handleShowTextMsg";
+	private static final String HANDLE_SHOW_IMAGE_MSG = "handleShowImage";
+	private static final String HANDLE_USER_MSG = "handleUserMessage";
+	private static final String HANDLE_CVS_PROJECT_UPDATE_REQUEST_MSG = "handleCVSProjectUpdateRequest";
+	private static final String HANDLE_REQUEST_USER_UPDATE_MSG = "handleRequestUserUpdate";
+	private static final String HANDLE_REGISTER_PROXY_MSG = "handleRegisterProxy";
+	private static final String HANDLE_SHOW_PRIVATE_TEXT_MSG = "handleShowPrivateTextMsg";
+	private static final String HANDLE_NOTIFY_USER_ADDED_MSG = "handleNotifyUserAdded";
+	private static final String HANDLE_STARTED_TYPING_MSG = "handleStartedTyping";
+
 	public static final String SHARED_MARKER_TYPE = ClientPlugin.SHARED_MARKER_TYPE;
 	public static final String SHARED_MARKER_KEY = ClientPlugin.SHARED_MARKER_KEY;
 	public static final String ID = "chat";
-	Date creationTime = new Date();
-	String downloadDirectory = "";
-	protected LineChatClientView localGUI = null;
-	IResource localResource = null;
-	User localUser = null;
-	String localVersion = "";
-	ID serverID = null;
-	SharedObjectEventListener sharedObjectEventListener = null;
-	IWorkbenchWindow workbenchWindow = null;
-	String treeTopLabel = null;
-	String windowtitle = "Chat";
-	URL[] projectCodebase = null;
+
+	private static final String DEFAULT_WINDOW_TITLE = "Chat";
+
+	private String windowTitle = DEFAULT_WINDOW_TITLE;
+	private String downloadDirectory = "";
+	private LineChatClientView localGUI = null;
+	private IResource localResource = null;
+	private User localUser = null;
+	private String localVersion = "";
+	private ID serverID = null;
+	private SharedObjectEventListener sharedObjectEventListener = null;
+	private IWorkbenchWindow workbenchWindow = null;
 
 	public EclipseCollabSharedObject() {
 	}
@@ -89,20 +101,13 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		this.localUser = user;
 		this.downloadDirectory = downloaddir;
 		this.localGUI = createOutputView();
-		Assert.isNotNull(localGUI,"Local GUI cannot be created...exiting");
+		Assert.isNotNull(localGUI, "Local GUI cannot be created...exiting");
 	}
 
 	public void activated(ID[] others) {
 		super.activated(others);
-		if (localGUI == null) {
-			try {
-				if (!getContext().isGroupManager())
-					destroySelfLocal();
-			} catch (Exception e) {
-				log("getContext() error", e);
-				destroySelfLocal();
-			}
-		}
+		if (localGUI == null && !getContext().isGroupManager())
+			destroySelfLocal();
 	}
 
 	public void chatException(Exception e, String text) {
@@ -115,11 +120,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			sharedObjectEventListener = null;
 		}
 		destroySelf();
-	}
-
-	protected void checkRegisterProxyPolicy(String operation, User sender,
-			String proxyClass) throws SecurityException {
-		// by default let it through;
 	}
 
 	public void deactivated() {
@@ -141,14 +141,11 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 	}
 
-	public void log(String aString, Exception e) {
-		ClientPlugin.log(aString, e);
-	}
-
 	public void destroySelf() {
 		// Make sure we disconnect
 		try {
-			if (isHost()) leaveGroup();
+			if (isHost())
+				leaveGroup();
 		} catch (Exception e) {
 			log("Exception in destroySelf", e);
 		}
@@ -169,34 +166,39 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		try {
 			eclipseDir = Platform.getLocation().toOSString();
 		} catch (IllegalStateException e) {
-			log("Exception getting local resource path",
-					e);
+			log("Exception getting local resource path", e);
 		}
-		if (eclipseDir == null) eclipseDir = ".";
-		String projectDir = (getResource() == null)?downloadDirectory:getResource().getFullPath().toOSString();
+		if (eclipseDir == null)
+			eclipseDir = ".";
+		String projectDir = (getResource() == null) ? downloadDirectory
+				: getResource().getFullPath().toOSString();
 		return new File(eclipseDir, projectDir).getAbsolutePath();
 	}
 
 	public String getLocalFullDownloadPath() {
-		return new File( getLocalFullProjectPath(), downloadDirectory).getAbsolutePath();
+		return new File(getLocalFullProjectPath(), downloadDirectory)
+				.getAbsolutePath();
 	}
 
 	protected LineChatClientView createOutputView() {
-		final String projectName = (localResource == null || localResource.getName()
-				.trim().equals("")) ? "<workspace>" : localResource.getName();
+		final String projectName = (localResource == null || localResource
+				.getName().trim().equals("")) ? "<workspace>" : localResource
+				.getName();
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				try {
 					if (LineChatView.isDisposed())
 						showView(LineChatView.VIEW_ID);
-					LineChatView.setViewName(NLS.bind("Collaboration: {0}",localUser.getNickname()));
+					LineChatView.setViewName(NLS.bind("Collaboration: {0}",
+							localUser.getNickname()));
 					localGUI = LineChatView.createClientView(
-							EclipseCollabSharedObject.this, projectName, NLS.bind("Collaboration for {0} \n\n",projectName),
+							EclipseCollabSharedObject.this, projectName, NLS
+									.bind("Collaboration for {0} \n\n",
+											projectName),
 							getLocalFullDownloadPath());
 					show(true);
 				} catch (Exception e) {
-					log("Exception creating LineChatView",
-							e);
+					log("Exception creating LineChatView", e);
 				}
 			}
 		});
@@ -224,10 +226,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	}
 
 	public User getUserForID(final ID user) {
-		if (localGUI != null) {
-			return localGUI.getUser(user);
-		}
-		return null;
+		return (localGUI != null) ? localGUI.getUser(user) : null;
 	}
 
 	public String getUserName() {
@@ -239,7 +238,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	}
 
 	public String getWindowTitle() {
-		return windowtitle;
+		return windowTitle;
 	}
 
 	public IWorkbenchWindow getWorkbenchWindow() {
@@ -251,7 +250,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		try {
 			createObject(null, cons);
 		} catch (Exception e) {
-			log("Exception creating local object " + cons, e);
+			log("Exception creating local object", e);
 		}
 	}
 
@@ -275,22 +274,16 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			}
 			// If addUserResult is false, it means that this is a new user
 			// And we need to report our own existence to them
-			if (addUserResult) {
+			if (addUserResult)
 				sendNotifyUserAdded();
-			}
 		}
 	}
 
 	protected void handleRegisterProxy(User sender, String proxyClass,
 			String name) {
-		if (sender == null || proxyClass == null || name == null)
-			throw new NullPointerException("sender or proxyClass is null");
-		try {
-			checkRegisterProxyPolicy("register", sender, proxyClass);
-		} catch (SecurityException e) {
-			log("SecurityException with registering Eclipse proxy", e);
-			throw e;
-		}
+		Assert.isNotNull(sender);
+		Assert.isNotNull(proxyClass);
+		Assert.isNotNull(name);
 		localRegisterProxy(sender, proxyClass, name);
 	}
 
@@ -324,20 +317,14 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	}
 
 	protected void handleUnregisterProxy(User sender, String name) {
-		if (sender == null || name == null)
-			throw new NullPointerException("sender or proxyClass is null");
+		Assert.isNotNull(sender);
+		Assert.isNotNull(name);
 		// loadClass and create instance if possible
-		try {
-			checkRegisterProxyPolicy("deregister", sender, name);
-		} catch (SecurityException e) {
-			log("SecurityException with deregistering Eclipse proxy", e);
-			throw e;
-		}
 		localUnregisterProxy(sender, name);
 	}
 
 	protected void handleUpdateTreeDisplay(final ID fromID, final TreeItem item) {
-		Display.getDefault().syncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
 					if (localGUI != null)
@@ -350,7 +337,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	}
 
 	protected void handleUserUpdate(final User ud) {
-		Display.getDefault().syncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
 					if (localGUI != null)
@@ -375,8 +362,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 					if (shells != null && shells.length > 0) {
 						shells[0].setActive();
 					}
-					MessageDialog.openInformation(null, "Private Message from "
-							+ sender.getNickname(), message);
+					MessageDialog.openInformation(null, NLS.bind(
+							"Private Message from {0}", sender.getNickname()),
+							message);
 				}
 			});
 		}
@@ -390,7 +378,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public void sendStartedTyping() {
 		try {
 			forwardMsgTo(null, SharedObjectMsg.createMsg(null,
-					"handleStartedTyping", localUser));
+					HANDLE_STARTED_TYPING_MSG, localUser));
 		} catch (Exception e) {
 			log("Exception on sendStartedTyping to remote clients", e);
 		}
@@ -404,33 +392,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		return super.isHost();
 	}
 
-	public void joinGroup(ID remote, IConnectContext data)
-			throws ContainerConnectException {
-		ISharedObjectContext crs = getContext();
-		if (crs == null) {
-			throw new ContainerConnectException("Cannot join remote space "
-					+ remote + ".  Have no local space access capability.");
-		} else {
-			if (remote != null) {
-				// Do it.
-				ChatLine line = new ChatLine();
-				if (localGUI != null) {
-					line.setText("Connecting to " + remote.getName());
-					localGUI.showLine(line);
-				}
-				crs.connect(remote, data);
-				if (localGUI != null) {
-					line.setText("Connected to " + remote.getName());
-					localGUI.showLine(line);
-				}
-				// Success
-			} else {
-				throw new ContainerConnectException("Invalid remote space ID "
-						+ remote);
-			}
-		}
-	}
-
 	public void leaveGroup() {
 		ISharedObjectContext crs = getContext();
 		if (crs == null) {
@@ -440,33 +401,18 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 	}
 
-	public URL[] getCodeBase() {
-		return null;
-	}
-
 	public void localRegisterProxy(User sender, String proxyClass, String name) {
 		EclipseProjectComponent ec = null;
 		try {
-			ClassLoader classLoader = getClass().getClassLoader();
-			URL[] codeBase = getCodeBase();
-			URLClassLoader ucl = new URLClassLoader(codeBase, classLoader);
-			Class cl = Class.forName(proxyClass, true, ucl);
+			Class cl = Class.forName(proxyClass);
 			ec = (EclipseProjectComponent) cl.newInstance();
-		} catch (Exception e) {
-			log("Exception loading proxy class or creating proxy instance for user "
-					+ sender.getNickname(),
-					e);
-			throw new RuntimeException("Exception creating proxy instance", e);
-		}
-		try {
 			ec.register(this, sender);
+			// OK, we have new instance...now we add it to our registered
+			// proxies
+			registerProxy(ec, name, EclipseProjectComponent.INVOKE_METHOD_NAME);
 		} catch (Exception e) {
-			log("Exception initializing EclipseProjectComponent", e);
-			throw new RuntimeException(
-					"Exception initializing EclipseProjectComponent", e);
+			log("Exception in localRegisterProxy", e);
 		}
-		// OK, we have new instance...now we add it to our registered proxies
-		registerProxy(ec, name, EclipseProjectComponent.INVOKE_METHOD_NAME);
 	}
 
 	public void localUnregisterProxy(User ud, String name) {
@@ -476,8 +422,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			// Get entry (if exists)
 			m = (MsgMap) ((msgMap == null) ? null : (msgMap.get(name)));
 			if (m == null)
-				throw new RuntimeException(
-						"deregisterProxy: No proxy registered for " + name);
+				return;
 			// Then remove
 			removed = msgMap.remove(name);
 		}
@@ -490,17 +435,14 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				if (ec != null)
 					ec.deregister(this);
 			} catch (Exception e) {
-				log("Exception deregistering component with name "
-						+ name + " with User " + ud, e);
+				log("Exception deregistering component with name " + name
+						+ " with User " + ud, e);
 			}
 		}
 	}
 
 	public Object getObject(ID obj) {
-		ISharedObjectContext crs = getContext();
-		if (crs == null)
-			return null;
-		return crs.getSharedObjectManager().getSharedObject(obj);
+		return getContext().getSharedObjectManager().getSharedObject(obj);
 	}
 
 	public void createProxyObject(ID target, String proxyClass, String name) {
@@ -571,8 +513,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				localResource.refreshLocal(IResource.DEPTH_INFINITE,
 						new NullProgressMonitor());
 			} catch (Exception e) {
-				log("Exception refreshing resource "
-						+ localResource.getName(), e);
+				log("Exception refreshing resource " + localResource.getName(),
+						e);
 			}
 		}
 	}
@@ -580,16 +522,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public void registerEclipseProxy(boolean localAlso, ID[] toReceivers,
 			String proxyClass, String name) {
 		// first, do it locally if this is what is desired
-		if (localAlso) {
-			try {
-				localRegisterProxy(localUser, proxyClass, name);
-			} catch (Exception e) {
-				log("Exception registering proxy class " + proxyClass
-						+ " locally", e);
-				throw new RuntimeException(
-						"registerEclipseProxy.  Local registration failed", e);
-			}
-		}
+		if (localAlso)
+			localRegisterProxy(localUser, proxyClass, name);
 		// Now send register message to appropriate receiver(s).
 		if (toReceivers == null)
 			sendRegisterProxy(null, proxyClass, name);
@@ -597,12 +531,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			sendRegisterProxy(toReceivers[0], proxyClass, name);
 		else {
 			for (int i = 0; i < toReceivers.length; i++) {
-				try {
-					sendRegisterProxy(toReceivers[i], proxyClass, name);
-				} catch (Exception e) {
-					log("Exception sending register proxy message to "
-							+ toReceivers[i], e);
-				}
+				sendRegisterProxy(toReceivers[i], proxyClass, name);
 			}
 		}
 	}
@@ -617,7 +546,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public void sendNotifyUserAdded() {
 		try {
 			forwardMsgTo(null, SharedObjectMsg.createMsg(null,
-					"handleNotifyUserAdded", localUser));
+					HANDLE_NOTIFY_USER_ADDED_MSG, localUser));
 		} catch (Exception e) {
 			log("Exception on sendNotifyUserAdded to remote clients", e);
 		}
@@ -626,17 +555,16 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public void sendPrivateMessageToUser(User touser, String msg) {
 		try {
 			forwardMsgTo(touser.getUserID(), SharedObjectMsg.createMsg(null,
-					"handleShowPrivateTextMsg", localUser, msg));
+					HANDLE_SHOW_PRIVATE_TEXT_MSG, localUser, msg));
 		} catch (Exception e) {
-			log("Exception on sendShowPrivateTextMsg to remote clients",
-					e);
+			log("Exception on sendShowPrivateTextMsg to remote clients", e);
 		}
 	}
 
 	public void sendRegisterProxy(ID toID, String proxyClass, String name) {
 		try {
 			forwardMsgTo(toID, SharedObjectMsg.createMsg(null,
-					"handleRegisterProxy", localUser, proxyClass, name));
+					HANDLE_REGISTER_PROXY_MSG, localUser, proxyClass, name));
 		} catch (IOException e) {
 			log("Exception sendRegisterProxy", e);
 		}
@@ -645,7 +573,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public void sendRequestUserUpdate(ID requestTarget) {
 		try {
 			forwardMsgTo(requestTarget, SharedObjectMsg.createMsg(null,
-					"handleRequestUserUpdate", localContainerID));
+					HANDLE_REQUEST_USER_UPDATE_MSG, localContainerID));
 		} catch (Exception e) {
 			log("Exception on sendRequestUserUpdate to remote clients", e);
 		}
@@ -658,14 +586,13 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 		try {
 			SharedObjectMsg m = SharedObjectMsg.createMsg(null,
-					"handleCVSProjectUpdateRequest", getUser(), msg);
+					HANDLE_CVS_PROJECT_UPDATE_REQUEST_MSG, getUser(), msg);
 			forwardMsgTo(receiver, m);
 			if (receiver == null) {
 				sendSelf(m);
 			}
 		} catch (Exception e) {
-			log("Exception on sendCVSProjectUpdateRequest to "
-					+ touser, e);
+			log("Exception on sendCVSProjectUpdateRequest to " + touser, e);
 		}
 	}
 
@@ -674,31 +601,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			// return CVSWorkspaceRoot.isSharedWithCVS(getProject());
 			return false;
 		} catch (Exception e) {
-			log("CVS Exception calling isSharedWithCVS in TeamUpdateAction",
-					e);
+			log("CVS Exception calling isSharedWithCVS in TeamUpdateAction", e);
 			return false;
 		}
-	}
-
-	protected void doCVSUpdateOperation(IResource proj, User fromUser) {
-		/*
-		 * IResource[] resources = new IResource[1]; resources[0] = proj; try {
-		 * new UpdateOperation(getViewPart(), resources,
-		 * Command.NO_LOCAL_OPTIONS, null).run(); } catch
-		 * (InvocationTargetException e) { ClientPlugin.log("Exception calling
-		 * update operation from user " + fromUser, e);
-		 * CVSUIPlugin.openError(Display.getDefault().getActiveShell(), null,
-		 * null, e); } catch (InterruptedException e) { }
-		 */
-	}
-
-	protected void handleCVSProjectUpdateRequest(final User fromUser,
-			final String msg) {
-		final IResource proj = getResource();
-		// If resource doesn't actually exist, just return silently
-		if (!proj.exists() || !isCVSShared())
-			return;
-		doCVSUpdateOperation(proj, fromUser);
 	}
 
 	public void sendRingMessageToUser(User user, String msg) {
@@ -708,7 +613,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 		try {
 			SharedObjectMsg m = SharedObjectMsg.createMsg(null,
-					"handleUserMessage", this.localUser, msg);
+					HANDLE_USER_MSG, this.localUser, msg);
 			forwardMsgTo(receiver, m);
 			if (receiver == null)
 				sendSelf(m);
@@ -719,12 +624,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
 	public void sendImage(ImageWrapper wrapper) {
 		try {
-			trace("sendImage(" + wrapper + ")");
-			forwardMsgTo(null, SharedObjectMsg.createMsg(
-					EclipseCollabSharedObject.class.getName(),
-					"handleShowImage", localContainerID, wrapper));
+			forwardMsgTo(null, SharedObjectMsg.createMsg(null,
+					HANDLE_SHOW_IMAGE_MSG, localContainerID, wrapper));
 		} catch (Exception e) {
-			e.printStackTrace();
 			log("Exception on sendShowTextMsg to remote clients", e);
 		}
 	}
@@ -755,9 +657,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
 	public void sendShowTextMsg(String msg) {
 		try {
-			trace("sendShowTextMsg(" + msg + ")");
 			forwardMsgTo(null, SharedObjectMsg.createMsg(null,
-					"handleShowTextMsg", localContainerID, msg));
+					HANDLE_SHOW_TEXT_MSG, localContainerID, msg));
 		} catch (Exception e) {
 			log("Exception on sendShowTextMsg to remote clients", e);
 		}
@@ -766,7 +667,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public void sendUnregisterProxy(ID toID, String proxyClass) {
 		try {
 			forwardMsgTo(toID, SharedObjectMsg.createMsg(null,
-					"handleUnregisterProxy", localUser, proxyClass));
+					HANDLE_UNREGISTER_PROXY_MSG, localUser, proxyClass));
 		} catch (IOException e) {
 			log("Exception sendRegisterProxy", e);
 		}
@@ -775,7 +676,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public void sendUpdateTreeDisplay(ID target, TreeItem item) {
 		try {
 			forwardMsgTo(target, SharedObjectMsg.createMsg(null,
-					"handleUpdateTreeDisplay", localContainerID, item));
+					HANDLE_UPDATE_TREE_DISPLAY_MSG, localContainerID, item));
 		} catch (Exception e) {
 			log("Exception on sendUpdateTreeDisplay to remote clients", e);
 		}
@@ -784,7 +685,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public void sendUserUpdate(ID target) {
 		try {
 			forwardMsgTo(target, SharedObjectMsg.createMsg(null,
-					"handleUserUpdate", localUser));
+					HANDLE_USER_UPDATE_MSG, localUser));
 		} catch (Exception e) {
 			log("Exception on sendUserUpdate to remote clients", e);
 		}
@@ -803,10 +704,10 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	}
 
 	public void setWindowTitle(String title) {
-		windowtitle = title;
+		this.windowTitle = title;
 		synchronized (this) {
 			if (localGUI != null) {
-				localGUI.setTitle(title);
+				localGUI.setTitle(windowTitle);
 			}
 		}
 	}
@@ -843,7 +744,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 					if (localGUI != null)
 						localGUI.showLine(new ChatLine(line,
 								getUserForID(remote)));
-					activateView();
 				} catch (Exception e) {
 					log("Exception in showLineOnGUI", e);
 				}
@@ -861,7 +761,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 								getUserForID(sender), onClick);
 						rawLine.setRaw(true);
 						localGUI.showLine(rawLine);
-						activateView();
 					}
 				} catch (Exception e) {
 					log("Exception in showLineOnGUI", e);
@@ -911,7 +810,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 		try {
 			SharedObjectMsg m = SharedObjectMsg.createMsg(null,
-					"handleAddMarkerForFile", getUser(), resourceName,
+					HANDLE_ADD_MARKER_FOR_FILE_MSG, getUser(), resourceName,
 					new SharedMarker("ECF marker", new Integer(offset),
 							new Integer(length)));
 			forwardMsgTo(receiver, m);
@@ -931,9 +830,9 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 		try {
 			SharedObjectMsg m = SharedObjectMsg.createMsg(null,
-					"handleOpenAndSelectForFile", getUser(), resourceName,
-					new SharedMarker("ECF marker", new Integer(offset),
-							new Integer(length)));
+					HANDLE_OPEN_AND_SELECT_FOR_FILE_MSG, getUser(),
+					resourceName, new SharedMarker("ECF marker", new Integer(
+							offset), new Integer(length)));
 			forwardMsgTo(receiver, m);
 			if (receiver == null) {
 				sendSelf(m);
@@ -950,7 +849,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 		try {
 			SharedObjectMsg m = SharedObjectMsg.createMsg(null,
-					"handleLaunchEditorForFile", getUser(), resourceName);
+					HANDLE_LAUNCH_EDITOR_FOR_FILE_MSG, getUser(), resourceName);
 			forwardMsgTo(receiver, m);
 			if (receiver == null) {
 				sendSelf(m);
@@ -962,7 +861,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
 	protected Runnable createOpenEditorAndSelectForFileRunnable(
 			final String resourceName, final SharedMarker marker) {
-		trace("openEditorAndSelectForFile(" + resourceName + ")");
 		final Integer offset = marker.getOffset();
 		final Integer length = marker.getLength();
 		return new Runnable() {
@@ -995,7 +893,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	}
 
 	protected Runnable createOpenEditorForFileRunnable(final String resourceName) {
-		trace("openEditorAndSelectForFile(" + resourceName + ")");
 		return new Runnable() {
 			public void run() {
 				IWorkbench wb = PlatformUI.getWorkbench();
@@ -1014,7 +911,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	}
 
 	protected void addMarkerForFile(final IFile file, final SharedMarker marker) {
-		trace("addMarkerForFile(" + file + ")");
 		if (file == null) {
 			return;
 		}
@@ -1034,15 +930,11 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
 	protected void handleAddMarkerForFile(final User fromuser,
 			final String resourceName, SharedMarker marker) {
-		trace("handleAddMarkerForFile(" + fromuser + "," + resourceName + ","
-				+ marker + ")");
 		addMarkerForFile(getLocalFileForRemote(resourceName), marker);
 	}
 
 	protected void handleOpenAndSelectForFile(final User fromuser,
 			final String resourceName, SharedMarker marker) {
-		trace("handleOpenAndSelectForFile(" + fromuser + "," + resourceName
-				+ "," + marker + ")");
 		User local = getUserForID(fromuser.getUserID());
 		if (local != null) {
 			Runnable runnable = createOpenEditorAndSelectForFileRunnable(
@@ -1083,8 +975,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 
 	protected void handleLaunchEditorForFile(final User fromuser,
 			final String resourceName) {
-		trace("handleLaunchEditorForFile(" + fromuser + "," + resourceName
-				+ ")");
 		final User local = getUserForID(fromuser.getUserID());
 		if (local != null) {
 			final Runnable runnable = createOpenEditorForFileRunnable(resourceName);
@@ -1159,7 +1049,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 		try {
 			SharedObjectMsg m = SharedObjectMsg.createMsg(null,
-					"handleShowViewWithID", getUser(), id, secID, mode);
+					HANDLE_SHOW_VIEW_WITH_ID_MSG, getUser(), id, secID, mode);
 			forwardMsgTo(receiver, m);
 			if (receiver == null) {
 				sendSelf(m);
@@ -1176,14 +1066,13 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 		try {
 			SharedObjectMsg m = SharedObjectMsg.createMsg(null,
-					"handleShowView", getUser(), id);
+					HANDLE_SHOW_VIEW_MSG, getUser(), id);
 			forwardMsgTo(receiver, m);
 			if (receiver == null) {
 				sendSelf(m);
 			}
 		} catch (Exception e) {
-			log("Exception on sendCVSProjectUpdateRequest to "
-					+ touser, e);
+			log("Exception on sendCVSProjectUpdateRequest to " + touser, e);
 		}
 	}
 
@@ -1194,8 +1083,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				try {
 					showViewWithID(id, secID, mode.intValue());
 				} catch (Exception e) {
-					log("Exception in showing view id=" + id
-							+ ";secID=" + secID + ";mode=" + mode, e);
+					log("Exception in showing view id=" + id + ";secID="
+							+ secID + ";mode=" + mode, e);
 				}
 			}
 		});
@@ -1219,8 +1108,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				.getActiveWorkbenchWindow();
 		IWorkbenchPage wp = ww.getActivePage();
 		if (wp == null)
-			throw new NullPointerException("showViewWithID(" + id + ") "
-					+ "workbench page is null");
+			throw new PartInitException("workbench page is null");
 		return wp.showView(id, secID, mode);
 	}
 
@@ -1240,7 +1128,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 			try {
 				localUnregisterProxy(getUser(), name);
 			} catch (Exception e) {
-				log("Exception deregistering " + name + " locally", e);
+				log("Exception deregistering locally", e);
 				throw new RuntimeException(
 						"deregisterEclipseProxy.  Local deregistration failed",
 						e);
@@ -1273,7 +1161,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				if (user != null) {
 					nick = user.getNickname();
 				}
-				showRawLine(from, "\t" + nick + " is sending you '"
+				showRawLine(from, "\t" + nick + " is sending you "
 						+ aFile.getName() + "'", null);
 			}
 
@@ -1297,7 +1185,8 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public void updateTreeDisplay(final TreeItem item) {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-				if (localGUI != null) localGUI.updateTreeDisplay(localContainerID, item);
+				if (localGUI != null)
+					localGUI.updateTreeDisplay(localContainerID, item);
 			}
 		});
 		// Send update message to all replicas

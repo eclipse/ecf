@@ -18,19 +18,19 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.part.FileEditorInput;
 
 /**
- * A skeleton shared editor based on TextEditor.  
- *
+ * A skeleton shared editor based on TextEditor.
+ * 
  */
 public class SharedEditor extends TextEditor implements IEditorPart {
 
-	protected void doSetInput(IEditorInput input) throws CoreException {		
+	protected void doSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
-		
+
 		if (input instanceof FileEditorInput) {
-			IFile file = ((FileEditorInput)input).getFile();
-			System.out.println("Create EclipseCollabSharedObject for " + file.getFullPath());
+			IFile file = ((FileEditorInput) input).getFile();
+			System.out.println("Create EclipseCollabSharedObject for "
+					+ file.getFullPath());
 		}
-		
-		
+
 	}
 }

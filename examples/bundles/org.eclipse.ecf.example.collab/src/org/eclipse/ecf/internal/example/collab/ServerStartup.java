@@ -31,18 +31,22 @@ public class ServerStartup {
 	static TCPServerSOContainerGroup serverGroups[] = null;
 	static final String SERVER_FILE_NAME = "ServerStartup.xml";
 	static List servers = new ArrayList();
+
 	public ServerStartup() throws Exception {
 		InputStream ins = this.getClass().getResourceAsStream(SERVER_FILE_NAME);
 		if (ins != null) {
 			createServers(ins);
 		}
 	}
+
 	protected boolean isActive() {
 		return (servers.size() > 0);
 	}
+
 	public void dispose() {
 		destroyServers();
 	}
+
 	protected synchronized void destroyServers() {
 		for (Iterator i = servers.iterator(); i.hasNext();) {
 			TCPServerSOContainer s = (TCPServerSOContainer) i.next();
@@ -64,6 +68,7 @@ public class ServerStartup {
 			serverGroups = null;
 		}
 	}
+
 	protected synchronized void createServers(InputStream ins) throws Exception {
 		ServerConfigParser scp = new ServerConfigParser();
 		List connectors = scp.load(ins);
@@ -89,6 +94,7 @@ public class ServerStartup {
 			}
 		}
 	}
+
 	protected void registerServers() {
 		for (Iterator i = servers.iterator(); i.hasNext();) {
 			ISharedObjectContainer cont = (ISharedObjectContainer) i.next();
@@ -100,15 +106,18 @@ public class ServerStartup {
 			}
 		}
 	}
+
 	protected void registerServer(ISharedObjectContainer cont)
 			throws URISyntaxException {
 		DiscoveryStartup.registerService(new URI(cont.getID().getName()));
 	}
+
 	protected TCPServerSOContainerGroup createServerGroup(String name, int port) {
 		TCPServerSOContainerGroup group = new TCPServerSOContainerGroup(name,
 				port);
 		return group;
 	}
+
 	protected TCPServerSOContainer createServerContainer(String id,
 			TCPServerSOContainerGroup group, String path, int keepAlive)
 			throws IDCreateException {
