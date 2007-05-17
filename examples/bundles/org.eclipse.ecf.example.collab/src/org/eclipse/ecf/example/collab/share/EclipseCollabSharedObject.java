@@ -100,7 +100,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		this.workbenchWindow = window;
 		this.localUser = user;
 		this.downloadDirectory = downloaddir;
-		this.localGUI = createOutputView();
+		createOutputView();
 		Assert.isNotNull(localGUI, "Local GUI cannot be created...exiting");
 	}
 
@@ -180,15 +180,17 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 				.getAbsolutePath();
 	}
 
-	protected LineChatClientView createOutputView() {
+	protected void createOutputView() {
 		final String projectName = (localResource == null || localResource
 				.getName().trim().equals("")) ? "<workspace>" : localResource
 				.getName();
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				try {
-					if (LineChatView.isDisposed())
-						showView(LineChatView.VIEW_ID);
+					IWorkbenchWindow ww = PlatformUI.getWorkbench()
+							.getActiveWorkbenchWindow();
+					IWorkbenchPage wp = ww.getActivePage();
+					wp.showView(LineChatView.VIEW_ID);
 					LineChatView.setViewName(NLS.bind("Collaboration: {0}",
 							localUser.getNickname()));
 					localGUI = LineChatView.createClientView(
@@ -196,13 +198,11 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 									.bind("Collaboration for {0} \n\n",
 											projectName),
 							getLocalFullDownloadPath());
-					show(true);
 				} catch (Exception e) {
 					log("Exception creating LineChatView", e);
 				}
 			}
 		});
-		return localGUI;
 	}
 
 	public IResource getResource() {
@@ -294,7 +294,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	protected void handleShowPrivateTextMsg(final User remote,
 			final String aString) {
 		// Show line on local interface
-		Display.getDefault().syncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
 					if (localGUI != null) {
@@ -302,7 +302,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 						line.setOriginator(remote);
 						line.setPrivate(true);
 						localGUI.showLine(line);
-						show(true);
+						localGUI.toFront();
 					}
 				} catch (Exception e) {
 					log("Exception in showLineOnGUI", e);
@@ -712,17 +712,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 	}
 
-	public void show(final boolean show) {
-		if (localGUI != null) {
-			Display.getDefault().syncExec(new Runnable() {
-				public void run() {
-					localGUI.setVisible(show);
-					localGUI.toFront();
-				}
-			});
-		}
-	}
-
 	protected void activateView() {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -731,7 +720,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 							.getActiveWorkbenchWindow();
 					IWorkbenchPage wp = ww.getActivePage();
 					wp.activate(localGUI.getView());
-					localGUI.toFront();
 				}
 			}
 		});
