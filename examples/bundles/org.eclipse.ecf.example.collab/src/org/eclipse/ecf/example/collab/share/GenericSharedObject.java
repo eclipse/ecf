@@ -315,11 +315,7 @@ public class GenericSharedObject implements ISharedObject {
 	}
 
 	public boolean isServer() {
-		ISharedObjectContext context = getContext();
-		if (context != null) {
-			return getContext().isGroupManager();
-		} else
-			return false;
+		return getContext().isGroupManager();
 	}
 
 	public void memberAdded(ID member) {
@@ -364,17 +360,14 @@ public class GenericSharedObject implements ISharedObject {
 	protected void replicate(ID remote) {
 		try {
 			// Get current group membership
-			ISharedObjectContext context = getContext();
-			if (context == null)
-				return;
-			ID[] group = context.getGroupMemberIDs();
+			ID[] group = getContext().getGroupMemberIDs();
 			if (group == null || group.length < 1) {
 				// we're done
 				return;
 			}
 			ReplicaSharedObjectDescription createInfo = getReplicaDescription(remote);
 			if (createInfo != null)
-				context.sendCreate(remote, createInfo);
+				getContext().sendCreate(remote, createInfo);
 			else
 				return;
 		} catch (IOException e) {
@@ -383,10 +376,7 @@ public class GenericSharedObject implements ISharedObject {
 	}
 
 	protected void sendSelf(SharedObjectMsg msg) {
-		ISharedObjectContext context = getContext();
-		if (context == null)
-			return;
-		IQueueEnqueue queue = context.getQueue();
+		IQueueEnqueue queue = getContext().getQueue();
 		try {
 			queue.enqueue(new RemoteSharedObjectMsgEvent(getID(), getContext()
 					.getLocalContainerID(), msg));
