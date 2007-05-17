@@ -346,10 +346,10 @@ public class RegistrySharedObject extends BaseSharedObject implements
 						+ call.getTimeout() + " ms");
 			}
 		} catch (final IOException e) {
-			logError(CALL_REQUEST_ERROR_CODE, CALL_REQUEST_ERROR_MESSAGE, e);
+			log(CALL_REQUEST_ERROR_CODE, CALL_REQUEST_ERROR_MESSAGE, e);
 			throw new ECFException("Exception sending request", e);
 		} catch (final InterruptedException e) {
-			logError(CALL_REQUEST_TIMEOUT_ERROR_CODE,
+			log(CALL_REQUEST_TIMEOUT_ERROR_CODE,
 					CALL_REQUEST_TIMEOUT_ERROR_MESSAGE, e);
 			throw new ECFException("Wait for response interrupted", e);
 		}
@@ -541,7 +541,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(null,
 					ADD_REGISTRATION, getLocalContainerID(), reg));
 		} catch (final IOException e) {
-			logError(ADD_REGISTRATION_ERROR_CODE,
+			log(ADD_REGISTRATION_ERROR_CODE,
 					ADD_REGISTRATION_ERROR_MESSAGE, e);
 		}
 		Trace.exiting(Activator.PLUGIN_ID,
@@ -615,7 +615,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			response = new Response(request.getRequestId(), result);
 		} catch (final Exception e) {
 			response = new Response(request.getRequestId(), e);
-			logError(SERVICE_INVOKE_ERROR_CODE, SERVICE_INVOKE_ERROR_MESSAGE, e);
+			log(SERVICE_INVOKE_ERROR_CODE, SERVICE_INVOKE_ERROR_MESSAGE, e);
 		}
 		// Now send response back to responseTarget (original requestor)
 		sendCallResponse(responseTarget, response);
@@ -640,7 +640,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
 					SharedObjectMsg.createMsg(CALL_REQUEST, request));
 		} catch (final IOException e) {
-			logError(CALL_REQUEST_ERROR_CODE, CALL_REQUEST_ERROR_MESSAGE, e);
+			log(CALL_REQUEST_ERROR_CODE, CALL_REQUEST_ERROR_MESSAGE, e);
 			removeRequest(request);
 			fireCallCompleteEvent(listener, request.getRequestId(), null, true,
 					e);
@@ -659,7 +659,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			sendSharedObjectMsgTo(responseTarget, SharedObjectMsg.createMsg(
 					CALL_RESPONSE, response));
 		} catch (final IOException e) {
-			logError(CALL_RESPONSE_ERROR_CODE, CALL_RESPONSE_ERROR_MESSAGE, e);
+			log(CALL_RESPONSE_ERROR_CODE, CALL_RESPONSE_ERROR_MESSAGE, e);
 		}
 		Trace.exiting(Activator.PLUGIN_ID,
 				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
@@ -672,7 +672,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 						.getClass(), CALL_RESPONSE, new Object[] { response });
 		final Request request = findRequestForId(response.getRequestId());
 		if (request == null) {
-			logError(REQUEST_NOT_FOUND_ERROR_CODE,
+			log(REQUEST_NOT_FOUND_ERROR_CODE,
 					REQUEST_NOT_FOUND_ERROR_MESSAGE, new NullPointerException());
 			return;
 		} else {
@@ -707,7 +707,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
 					SharedObjectMsg.createMsg(FIRE_REQUEST, request));
 		} catch (final IOException e) {
-			logError(FIRE_REQUEST_ERROR_CODE, FIRE_REQUEST_ERROR_MESSAGE, e);
+			log(FIRE_REQUEST_ERROR_CODE, FIRE_REQUEST_ERROR_MESSAGE, e);
 			throw new ECFException("IOException sending remote request", e);
 		}
 		Trace.exiting(Activator.PLUGIN_ID,
@@ -726,7 +726,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 		try {
 			localRegistration.callService(call);
 		} catch (final Exception e) {
-			logError(HANDLE_REQUEST_ERROR_CODE, HANDLE_REQUEST_ERROR_MESSAGE, e);
+			log(HANDLE_REQUEST_ERROR_CODE, HANDLE_REQUEST_ERROR_MESSAGE, e);
 		}
 		Trace.exiting(Activator.PLUGIN_ID,
 				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
@@ -747,7 +747,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 				this.sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(
 						UNREGISTER, new Object[] { containerID, serviceId }));
 			} catch (final IOException e) {
-				logError(UNREGISTER_ERROR_CODE, UNREGISTER_ERROR_MESSAGE, e);
+				log(UNREGISTER_ERROR_CODE, UNREGISTER_ERROR_MESSAGE, e);
 			}
 		}
 		Trace.exiting(Activator.PLUGIN_ID,
@@ -891,7 +891,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 		try {
 			msg.invoke(this);
 		} catch (final Exception e) {
-			logError(MSG_INVOKE_ERROR_CODE, MSG_INVOKE_ERROR_MESSAGE, e);
+			log(MSG_INVOKE_ERROR_CODE, MSG_INVOKE_ERROR_MESSAGE, e);
 		}
 		return false;
 	}
