@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
@@ -37,7 +38,7 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
  * utility method for subclasses to use for tracing (e.g.
  * {@link #traceCatching(String, Throwable)}, {@link #traceEntering(String)},
  * {@link #traceExiting(String)}) logging (e.g.
- * {@link #logError(int, String, Throwable)}), as well as methods to access the
+ * {@link #log(int, String, Throwable)}), as well as methods to access the
  * {@link ISharedObjectContext} for the shared object instance (e.g.
  * {@link #getID()}, {@link #getHomeContainerID()}, {@link #getContext()},
  * {@link #getConfig()}, {@link #getProperties()}, {@link #isConnected()},
@@ -210,7 +211,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 				destroyRemote(null);
 			} catch (IOException e) {
 				traceCatching("destroySelf", e); //$NON-NLS-1$
-				logError(DESTROYREMOTE_CODE, "destroySelf", e); //$NON-NLS-1$
+				log(DESTROYREMOTE_CODE, "destroySelf", e); //$NON-NLS-1$
 			}
 		}
 		// Now destroy self locally
@@ -228,7 +229,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 			}
 		} catch (Exception e) {
 			traceCatching("destroySelfLocal", e); //$NON-NLS-1$
-			logError(DESTROYSELFLOCAL_CODE, "destroySelfLocal", e); //$NON-NLS-1$
+			log(DESTROYSELFLOCAL_CODE, "destroySelfLocal", e); //$NON-NLS-1$
 		}
 		traceExiting("destroySelfLocal"); //$NON-NLS-1$
 	}
@@ -254,8 +255,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	 */
 	protected void sendSharedObjectMsgTo(ID toID, SharedObjectMsg msg)
 			throws IOException {
-		if (msg == null)
-			throw new NullPointerException(Messages.BaseSharedObject_Message_Not_Null);
+		Assert.isNotNull(msg,Messages.BaseSharedObject_Message_Not_Null);
 		String method = "sendSharedObjectMsgTo"; //$NON-NLS-1$
 		traceEntering(method, new Object[] { toID, msg });
 		getContext().sendMessage(toID,
@@ -296,7 +296,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 					.getLocalContainerID(), msg));
 		} catch (QueueException e) {
 			traceCatching("sendSharedObjectMsgToSelf", e); //$NON-NLS-1$
-			logError(DESTROYREMOTE_CODE, "sendSharedObjectMsgToSelf", e); //$NON-NLS-1$
+			log(DESTROYREMOTE_CODE, "sendSharedObjectMsgToSelf", e); //$NON-NLS-1$
 		}
 	}
 
@@ -507,16 +507,20 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		} catch (IOException e) {
 			traceCatching("replicateToRemoteContainers." + DESTROYREMOTE_CODE, //$NON-NLS-1$
 					e);
-			logError(DESTROYREMOTE_CODE, "replicateToRemoteContainers", e); //$NON-NLS-1$
+			log(DESTROYREMOTE_CODE, "replicateToRemoteContainers", e); //$NON-NLS-1$
 		}
 	}
 
-	protected void logError(int code, String method, Throwable e) {
+	protected void log(int code, String method, Throwable e) {
 		Activator.getDefault().log(
 				new Status(IStatus.ERROR, Activator.PLUGIN_ID, code,
 						getSharedObjectAsString(method), e));
 	}
 
+	protected void log(String method, Throwable e) {
+		log(IStatus.ERROR,method,e);
+	}
+	
 	private String getSharedObjectAsString(String suffix) {
 		StringBuffer buf = new StringBuffer(String.valueOf(getID()));
 		buf.append(((isPrimary()) ? ".p." : ".r.")); //$NON-NLS-1$ //$NON-NLS-2$
