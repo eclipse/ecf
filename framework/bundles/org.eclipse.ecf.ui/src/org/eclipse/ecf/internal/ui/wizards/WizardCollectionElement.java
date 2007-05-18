@@ -294,7 +294,7 @@ public class WizardCollectionElement extends AdaptableList implements
 	 * @see org.eclipse.ui.activities.support.IPluginContribution#getPluginId()
 	 */
 	public String getPluginId() {
-		return configElement != null ? configElement.getNamespace() : pluginId;
+		return configElement != null ? configElement.getContributor().getName() : pluginId;
 	}
 
 	/*

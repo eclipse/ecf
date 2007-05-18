@@ -137,8 +137,6 @@ public class ChatRoomManagerView extends ViewPart implements
 
 	private IChatRoomMessageSender rootMessageSender = null;
 
-	private IChatRoomContainer rootChatRoomContainer = null;
-
 	private IChatRoomManager rootChatRoomManager = null;
 
 	private Color otherColor = null;
@@ -466,7 +464,6 @@ public class ChatRoomManagerView extends ViewPart implements
 		Assert.isNotNull(targetID);
 		ChatRoomManagerView.this.rootChatRoomManager = chatRoomManager;
 		ChatRoomManagerView.this.rootCloseListener = parent;
-		ChatRoomManagerView.this.rootChatRoomContainer = chatRoomContainer;
 		ChatRoomManagerView.this.rootTargetID = targetID;
 		ChatRoomManagerView.this.rootMessageSender = chatRoomContainer
 				.getChatRoomMessageSender();
@@ -1257,7 +1254,6 @@ public class ChatRoomManagerView extends ViewPart implements
 			else
 				rootCloseListener.chatRoomViewClosing(rootTargetID.getName());
 			rootCloseListener = null;
-			rootChatRoomContainer = null;
 			rootMessageSender = null;
 		}
 	}

@@ -89,8 +89,8 @@ public abstract class RegistryReader {
 		System.arraycopy(extensions, 0, sortedExtension, 0, extensions.length);
 		Comparator comparer = new Comparator() {
 			public int compare(Object arg0, Object arg1) {
-				String s1 = ((IExtension) arg0).getNamespace();
-				String s2 = ((IExtension) arg1).getNamespace();
+				String s1 = ((IExtension) arg0).getContributor().getName();
+				String s2 = ((IExtension) arg1).getContributor().getName();
 				return s1.compareToIgnoreCase(s2);
 			}
 		};
