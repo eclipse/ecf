@@ -26,6 +26,19 @@ public class SharedObjectMsg implements Serializable {
 	public static final Object[] nullArgs = new Object[0];
 	public static final Class[] nullTypes = new Class[0];
 
+	class SenderID {
+
+		private ID id;
+
+		// No instances other than ones created in SharedObjectMsg.invokeFrom/2
+		protected SenderID(ID theID) {
+			id = theID;
+		}
+
+		public ID getID() {
+			return id;
+		}
+	}
 	// Static factory methods for creating SharedObjectMsg instances
 	public static SharedObjectMsg createMsg(String className,
 			String methodName, Object[] param) {

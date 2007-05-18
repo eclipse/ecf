@@ -111,7 +111,6 @@ public class ChatComposite extends Composite {
 
 	ChatLayout cl = null;
 	Action coBrowseURL = null;
-	Action messageEclipseComponent = null;
 	Action outputClear = null;
 	Action outputCopy = null;
 	Action outputPaste = null;
@@ -123,7 +122,6 @@ public class ChatComposite extends Composite {
 	Action sendMessage = null;
 	Action startProgram = null;
 	Action closeGroup = null;
-	Action sendCVSUpdateRequest = null;
 
 	Action sendShowViewRequest = null;
 
@@ -355,10 +353,6 @@ public class ChatComposite extends Composite {
 		bos.close();
 	}
 
-	protected void enableProxyMessage(boolean val) {
-		messageEclipseComponent.setEnabled(val);
-	}
-
 	private void fillContextMenu(IMenuManager manager) {
 		if (chatWindow != null) {
 			manager.add(showChatWindow);
@@ -374,21 +368,9 @@ public class ChatComposite extends Composite {
 		manager.add(sendFileToGroup);
 		// manager.add(sendFileToGroupAndLaunch);
 		manager.add(coBrowseURL);
-		// manager.add(startProgram);
-		// appShare.setEnabled(!LineChatView.appShareActive());
-		// manager.add(appShare);
 		manager.add(new Separator());
 		manager.add(sendMessage);
-		manager.add(sendCVSUpdateRequest);
 		manager.add(sendShowViewRequest);
-		// manager.add(new Separator());
-		// manager.add(sendEclipseComponent);
-		// manager.add(messageEclipseComponent);
-		// manager.add(removeEclipseComponent);
-		/*
-		 * manager.add(new Separator()); manager.add(sendComponent);
-		 * manager.add(sendComponentToServer);
-		 */
 		manager.add(new Separator());
 		manager.add(closeGroup);
 		// Other plug-ins can contribute there actions here
@@ -413,29 +395,10 @@ public class ChatComposite extends Composite {
 		manager.add(appShare);
 		manager.add(new Separator());
 		manager.add(sendMessage);
-		manager.add(sendCVSUpdateRequest);
 		manager.add(sendShowViewRequest);
-		/*
-		 * manager.add(new Separator()); manager.add(sendComponent);
-		 * manager.add(sendComponentToServer);
-		 * manager.add(sendEclipseComponent);
-		 */
 		manager.add(new Separator());
 		manager.add(closeGroup);
 	}
-
-	/*
-	 * private void fillLocalToolBar(IToolBarManager manager) {
-	 * manager.add(inputCopy); manager.add(inputPaste); manager.add(inputClear);
-	 * manager.add(new Separator()); manager.add(inputSelectAll);
-	 * manager.add(new Separator()); manager.add(sendFileToGroup);
-	 * manager.add(coBrowseURL); manager.add(startProgram);
-	 * manager.add(appShare); manager.add(new Separator());
-	 * manager.add(sendMessage); //manager.add(new Separator());
-	 * manager.add(sendComponent); //manager.add(sendComponentToServer);
-	 * //manager.add(sendEclipseComponent); manager.add(new Separator());
-	 * manager.add(closeGroup); }
-	 */
 
 	private void fillTreeContextMenu(IMenuManager manager) {
 		User ud = treeView.getSelectionUser();
@@ -988,16 +951,6 @@ public class ChatComposite extends Composite {
 				.getString("LineChatClientView.contextmenu.leaveGroup"));
 		closeGroup.setEnabled(true);
 
-		sendCVSUpdateRequest = new Action() {
-			public void run() {
-				sendCVSUpdateRequest(null);
-			}
-		};
-		sendCVSUpdateRequest
-				.setText(MessageLoader
-						.getString("LineChatClientView.contextmenu.sendCVSUpdateRequest"));
-		sendCVSUpdateRequest.setEnabled(this.view.lch.isCVSShared());
-
 		sendShowViewRequest = new Action() {
 			public void run() {
 				sendShowViewRequest(null);
@@ -1197,16 +1150,6 @@ public class ChatComposite extends Composite {
 		section.put(SELECTION_SETTING, selectedIDs);
 	}
 
-	protected void sendCVSUpdateRequest(User touser) {
-		// String initStr =
-		// MessageLoader.getString("LineChatClientView.contextmenu.sendCVSUpdateRequestInitStr");
-		// String res =
-		// getID(MessageLoader.getString("LineChatClientView.contextmenu.sendCVSUpdateRequestTitle"),
-		// MessageLoader.getString("LineChatClientView.contextmenu.sendCVSUpdateRequestMessage"),
-		// initStr);
-		this.view.lch.sendCVSProjectUpdateRequest(touser, null);
-	}
-
 	protected void closeProjectGroup(User user) {
 		if (MessageDialog
 				.openConfirm(
@@ -1222,45 +1165,6 @@ public class ChatComposite extends Composite {
 
 	}
 
-	protected void messageEclipseComponent(User user) {
-		String res = null;
-		ID userID = null;
-
-		String initStr = "";
-		if (this.view.proxyObjects.size() > 0) {
-			initStr = (String) this.view.proxyObjects
-					.get(this.view.proxyObjects.size() - 1);
-		}
-		res = initStr;
-		if (user != null) {
-			res = getID("Message EclipseProjectComponent for "
-					+ user.getNickname(), "EclipseProjectComponent Message:",
-					initStr);
-			userID = user.getUserID();
-		} else {
-			res = getID("Message EclipseProjectComponent for Group",
-					"EclipseProjectComponent Message:", initStr);
-		}
-		if (res != null) {
-			String className = getCommand(res);
-			// Find proxy object in local vector
-			if (this.view.proxyObjects.contains(className)) {
-				String[] args = getArgs(res);
-				String meth = "";
-				Object[] actualArgs = new Object[0];
-				if (args != null && args.length >= 2) {
-					meth = args[0];
-					actualArgs = new Object[args.length - 1];
-					for (int i = 1; i < args.length; i++) {
-						actualArgs[i - 1] = args[i];
-					}
-				}
-				// Send message
-				this.view.messageProxyObject(userID, className, meth,
-						actualArgs);
-			}
-		}
-	}
 
 	protected void outputClear() {
 		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",

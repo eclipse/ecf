@@ -133,10 +133,6 @@ class TeamChat extends Composite {
 		chat.clearInput();
 	}
 
-	void enableProxyMessage(boolean val) {
-		chat.enableProxyMessage(val);
-	}
-
 	ChatTreeViewer getTree() {
 		return treeView;
 	}

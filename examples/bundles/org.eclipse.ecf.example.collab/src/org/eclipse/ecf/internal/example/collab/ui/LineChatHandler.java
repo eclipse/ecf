@@ -47,17 +47,6 @@ public interface LineChatHandler {
 
 	public void sendPrivateMessageToUser(User touser, String msg);
 
-	public void createProxyObject(ID target, String classname, String name);
-
-	public void messageProxyObject(ID target, String name, String meth,
-			Object[] args);
-
-	public void removeProxyObject(ID target, String name);
-
-	public void sendCVSProjectUpdateRequest(User touser, String msg);
-
-	public boolean isCVSShared();
-
 	public void sendShowViewWithID(User touser, String id, String secID,
 			Integer mode);
 

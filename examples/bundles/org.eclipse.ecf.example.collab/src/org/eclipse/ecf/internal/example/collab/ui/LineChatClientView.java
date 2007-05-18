@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.example.collab.share.EclipseMessage;
+import org.eclipse.ecf.example.collab.share.HelloMessageSharedObject;
 import org.eclipse.ecf.example.collab.share.TreeItem;
 import org.eclipse.ecf.example.collab.share.User;
 import org.eclipse.ecf.example.collab.share.url.StartProgramSharedObject;
@@ -46,7 +46,7 @@ public class LineChatClientView implements FileSenderUI {
 			.getName();
 	public static final String HOST_PREFIX = "You say";
 	public static final String LEFT_STRING = "LEFT";
-	public static final String MESSAGECLASSNAME = EclipseMessage.class
+	public static final String MESSAGECLASSNAME = HelloMessageSharedObject.class
 			.getName();
 	public static final String REMOTEFILEPATH = null;
 	public static final String SHOWURLARGTYPES[] = { ID.class.getName(),
@@ -343,30 +343,6 @@ public class LineChatClientView implements FileSenderUI {
 		}
 	}
 
-	protected void createProxyObject(ID target, final String className) {
-		if (lch != null) {
-			try {
-				// With this interface, we'll simply supply the class name
-				// as the instance name. Eventually, the user interface should
-				// allow the creation of some other instance name
-				lch.createProxyObject(target, className, className);
-				proxyObjects.add(className);
-				teamChat.enableProxyMessage(true);
-			} catch (final Exception e) {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						MessageDialog.openInformation(null,
-								"Make Proxy Object Exception",
-								"Exception creating instance of '" + className
-										+ "'. \nException: " + e);
-					}
-				});
-				e.printStackTrace();
-				lch.chatException(e, "createProxyObject(" + className + ")");
-			}
-		}
-	}
-
 	protected TreeParent createUserNode(TreeParent node, Vector ht) {
 		if (node == null || ht == null)
 			return null;
@@ -391,13 +367,6 @@ public class LineChatClientView implements FileSenderUI {
 		return (TreeUser) createUserNode(tu, ud.getUserFields());
 	}
 
-	protected void messageProxyObject(ID target, String classname, String meth,
-			Object[] args) {
-		if (lch != null) {
-			lch.messageProxyObject(target, classname, meth, args);
-		}
-	}
-
 	protected void refreshTreeView() {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -411,30 +380,6 @@ public class LineChatClientView implements FileSenderUI {
 				}
 			}
 		});
-	}
-
-	protected void removeProxyObject(ID target, final String className) {
-		if (lch != null) {
-			try {
-				// With this interface, we'll simply supply the class name
-				// as the instance name. Eventually, the user interface should
-				// allow the creation of some other instance name
-				lch.removeProxyObject(target, className);
-				proxyObjects.remove(className);
-				teamChat.enableProxyMessage(proxyObjects.size() > 0);
-			} catch (final Exception e) {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						MessageDialog.openInformation(null,
-								"Remove Proxy Object Exception",
-								"Exception creating instance of '" + className
-										+ "'. \nException: " + e);
-					}
-				});
-				e.printStackTrace();
-				lch.chatException(e, "removeProxyObject(" + className + ")");
-			}
-		}
 	}
 
 	public void removeUser(ID id) {

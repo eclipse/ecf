@@ -50,6 +50,5 @@ public class ClientEntry {
 			sharedObject.destroySelf();
 			sharedObject = null;
 		}
-		container.dispose();
 	}
 }

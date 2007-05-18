@@ -21,16 +21,16 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 
-public class EclipseMessage extends GenericSharedObject {
+public class HelloMessageSharedObject extends GenericSharedObject {
 	private String message;
 	private String sender;
 
-	public EclipseMessage() {
+	public HelloMessageSharedObject() {
 		sender = "<unknown>";
 		message = " says hello";
 	}
 
-	public EclipseMessage(String message, String sender) {
+	public HelloMessageSharedObject(String message, String sender) {
 		this.message = message;
 		this.sender = sender;
 	}

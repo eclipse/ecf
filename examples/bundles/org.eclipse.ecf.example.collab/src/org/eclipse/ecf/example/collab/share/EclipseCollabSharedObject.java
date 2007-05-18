@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
 import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
 import org.eclipse.ecf.example.collab.share.io.EclipseFileTransfer;
 import org.eclipse.ecf.example.collab.share.io.FileTransferParams;
@@ -56,7 +55,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class EclipseCollabSharedObject extends GenericSharedObject implements
-		LineChatHandler, EclipseProject {
+		LineChatHandler {
 	private static final String HANDLE_SHOW_VIEW_MSG = "handleShowView";
 	private static final String HANDLE_SHOW_VIEW_WITH_ID_MSG = "handleShowViewWithID";
 	private static final String HANDLE_LAUNCH_EDITOR_FOR_FILE_MSG = "handleLaunchEditorForFile";
@@ -145,7 +144,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		// Make sure we disconnect
 		try {
 			if (isHost())
-				leaveGroup();
+				disconnect();
 		} catch (Exception e) {
 			log("Exception in destroySelf", e);
 		}
@@ -279,14 +278,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		}
 	}
 
-	protected void handleRegisterProxy(User sender, String proxyClass,
-			String name) {
-		Assert.isNotNull(sender);
-		Assert.isNotNull(proxyClass);
-		Assert.isNotNull(name);
-		localRegisterProxy(sender, proxyClass, name);
-	}
-
 	protected void handleRequestUserUpdate(ID requestor) {
 		sendUserUpdate(requestor);
 	}
@@ -314,13 +305,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	protected void handleShowTextMsg(ID remote, String aString) {
 		// Show line on local interface
 		showLineOnGUI(remote, aString);
-	}
-
-	protected void handleUnregisterProxy(User sender, String name) {
-		Assert.isNotNull(sender);
-		Assert.isNotNull(name);
-		// loadClass and create instance if possible
-		localUnregisterProxy(sender, name);
 	}
 
 	protected void handleUpdateTreeDisplay(final ID fromID, final TreeItem item) {
@@ -392,65 +376,12 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		return super.isHost();
 	}
 
-	public void leaveGroup() {
-		ISharedObjectContext crs = getContext();
-		if (crs == null) {
-		} else {
-			// Do it.
-			crs.disconnect();
-		}
-	}
-
-	public void localRegisterProxy(User sender, String proxyClass, String name) {
-		EclipseProjectComponent ec = null;
-		try {
-			Class cl = Class.forName(proxyClass);
-			ec = (EclipseProjectComponent) cl.newInstance();
-			ec.register(this, sender);
-			// OK, we have new instance...now we add it to our registered
-			// proxies
-			registerProxy(ec, name, EclipseProjectComponent.INVOKE_METHOD_NAME);
-		} catch (Exception e) {
-			log("Exception in localRegisterProxy", e);
-		}
-	}
-
-	public void localUnregisterProxy(User ud, String name) {
-		MsgMap m = null;
-		Object removed = null;
-		synchronized (msgMapLock) {
-			// Get entry (if exists)
-			m = (MsgMap) ((msgMap == null) ? null : (msgMap.get(name)));
-			if (m == null)
-				return;
-			// Then remove
-			removed = msgMap.remove(name);
-		}
-		if (removed != null) {
-			try {
-				MsgMap mm = (MsgMap) removed;
-				EclipseProjectComponent ec = (EclipseProjectComponent) mm
-						.getObject();
-				// Call it to give it a chance to clean up
-				if (ec != null)
-					ec.deregister(this);
-			} catch (Exception e) {
-				log("Exception deregistering component with name " + name
-						+ " with User " + ud, e);
-			}
-		}
+	public void disconnect() {
+		getContext().disconnect();
 	}
 
 	public Object getObject(ID obj) {
 		return getContext().getSharedObjectManager().getSharedObject(obj);
-	}
-
-	public void createProxyObject(ID target, String proxyClass, String name) {
-		ID[] targets = new ID[1];
-		targets[0] = target;
-		if (name == null)
-			name = proxyClass;
-		registerEclipseProxy((target == null), targets, proxyClass, name);
 	}
 
 	public void memberAdded(ID member) {
@@ -517,29 +448,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 						e);
 			}
 		}
-	}
-
-	public void registerEclipseProxy(boolean localAlso, ID[] toReceivers,
-			String proxyClass, String name) {
-		// first, do it locally if this is what is desired
-		if (localAlso)
-			localRegisterProxy(localUser, proxyClass, name);
-		// Now send register message to appropriate receiver(s).
-		if (toReceivers == null)
-			sendRegisterProxy(null, proxyClass, name);
-		else if (toReceivers.length == 1)
-			sendRegisterProxy(toReceivers[0], proxyClass, name);
-		else {
-			for (int i = 0; i < toReceivers.length; i++) {
-				sendRegisterProxy(toReceivers[i], proxyClass, name);
-			}
-		}
-	}
-
-	public void removeProxyObject(ID target, String name) {
-		ID[] targets = new ID[1];
-		targets[0] = target;
-		unregisterEclipseProxy((target == null), targets, name);
 	}
 
 	// SharedObjectMsg senders
@@ -1107,36 +1015,6 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 		if (wp == null)
 			throw new PartInitException("workbench page is null");
 		return wp.showView(id);
-	}
-
-	public void unregisterEclipseProxy(boolean localAlso, ID[] toReceivers,
-			String name) {
-		// first, do it locally if this is what is desired
-		if (localAlso) {
-			try {
-				localUnregisterProxy(getUser(), name);
-			} catch (Exception e) {
-				log("Exception deregistering locally", e);
-				throw new RuntimeException(
-						"deregisterEclipseProxy.  Local deregistration failed",
-						e);
-			}
-		}
-		// Now send register message to appropriate receiver(s).
-		if (toReceivers == null)
-			sendUnregisterProxy(null, name);
-		else if (toReceivers.length == 1)
-			sendUnregisterProxy(toReceivers[0], name);
-		else {
-			for (int i = 0; i < toReceivers.length; i++) {
-				try {
-					sendUnregisterProxy(toReceivers[i], name);
-				} catch (Exception e) {
-					log("Exception sending register proxy message to "
-							+ toReceivers[i], e);
-				}
-			}
-		}
 	}
 
 	public FileReceiverUI getFileReceiverUI(EclipseFileTransfer transfer,
