@@ -88,10 +88,9 @@ public abstract class ClientSOContainer extends SOContainer implements
 			isClosing = true;
 			if (isConnected()) {
 				this.disconnect();
-			} else if (isConnecting()) {
-				disconnect(connection);
+			} else {
+				setStateDisconnected(connection);
 			}
-			remoteServerID = null;
 		}
 		super.dispose();
 	}

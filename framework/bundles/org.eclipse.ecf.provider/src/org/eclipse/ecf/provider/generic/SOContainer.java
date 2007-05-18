@@ -311,7 +311,13 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	public void dispose() {
 		isClosing = true;
 		// notify listeners
-		fireContainerEvent(new ContainerDisposeEvent(getID()));
+		synchronized (listeners) {
+			for(Iterator i=listeners.iterator(); i.hasNext(); ) {
+				IContainerListener l = (IContainerListener) i.next();
+				l.handleEvent(new ContainerDisposeEvent(getID()));
+				i.remove();
+			}
+		}
 		// Clear group manager
 		if (groupManager != null)
 			groupManager.removeAllMembers();
@@ -324,7 +330,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			loadingThreadGroup.interrupt();
 			loadingThreadGroup = null;
 		}
-		listeners.clear();
 	}
 
 	/*
