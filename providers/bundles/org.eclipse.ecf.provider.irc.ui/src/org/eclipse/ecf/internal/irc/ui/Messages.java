@@ -18,6 +18,14 @@ import org.eclipse.osgi.util.NLS;
  */
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.irc.ui.messages"; //$NON-NLS-1$
+	public static String IRCConnectWizardPage_CONNECTID_EXAMPLE;
+	public static String IRCConnectWizardPage_CONNECTID_LABEL;
+	public static String IRCConnectWizardPage_PASSWORD_INFO;
+	public static String IRCConnectWizardPage_PASSWORD_LABEL;
+	public static String IRCConnectWizardPage_STATUS_MESSAGE_EMPTY;
+	public static String IRCConnectWizardPage_STATUS_MESSAGE_MALFORMED;
+	public static String IRCConnectWizardPage_WIZARD_PAGE_DESCRIPTION;
+	public static String IRCConnectWizardPage_WIZARD_PAGE_TITLE;
 	public static String IRCHyperlink_EXCEPTION_IRC_HYPERLINK;
 	public static String IRCUI_DEPART_CONFIRM_MESSAGE;
 	public static String IRCUI_DEPART_CONFIRM_TITLE;

@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.ecf.internal.irc.ui.Activator;
+import org.eclipse.ecf.internal.irc.ui.Messages;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -36,9 +37,9 @@ final class IRCConnectWizardPage extends WizardPage {
 	private String authorityAndPath;
 
 	IRCConnectWizardPage() {
-		super("");
-		setTitle("IRC Connection Wizard");
-		setDescription("Specify a user and IRC server to connect to.");
+		super("IRCConnectWizardPage"); //$NON-NLS-1$
+		setTitle(Messages.IRCConnectWizardPage_WIZARD_PAGE_TITLE);
+		setDescription(Messages.IRCConnectWizardPage_WIZARD_PAGE_DESCRIPTION);
 		setPageComplete(false);
 	}
 
@@ -53,7 +54,7 @@ final class IRCConnectWizardPage extends WizardPage {
 		GridData endData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 
 		Label label = new Label(parent, SWT.LEFT);
-		label.setText("Connect ID:");
+		label.setText(Messages.IRCConnectWizardPage_CONNECTID_LABEL);
 
 		connectText = new Combo(parent, SWT.SINGLE | SWT.BORDER | SWT.DROP_DOWN);
 		connectText.setLayoutData(fillData);
@@ -61,9 +62,9 @@ final class IRCConnectWizardPage extends WizardPage {
 			public void modifyText(ModifyEvent e) {
 				String text = connectText.getText();
 				if (text.equals("")) { //$NON-NLS-1$
-					updateStatus("A valid connect ID must be specified.");
+					updateStatus(Messages.IRCConnectWizardPage_STATUS_MESSAGE_EMPTY);
 				} else if (text.indexOf('@') == -1) {
-					updateStatus("The connect ID is malformed.");
+					updateStatus(Messages.IRCConnectWizardPage_STATUS_MESSAGE_MALFORMED);
 				} else {
 					updateStatus(null);
 				}
@@ -73,15 +74,15 @@ final class IRCConnectWizardPage extends WizardPage {
 		restoreCombo();
 		
 		label = new Label(parent, SWT.RIGHT);
-		label.setText("<user>@<ircserver>[:port][/<channel>,<channel2>,...]");
+		label.setText(Messages.IRCConnectWizardPage_CONNECTID_EXAMPLE);
 		label.setLayoutData(endData);
 
 		label = new Label(parent, SWT.LEFT);
-		label.setText("Password:");
+		label.setText(Messages.IRCConnectWizardPage_PASSWORD_LABEL);
 		passwordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD | SWT.BORDER);
 		passwordText.setLayoutData(fillData);
 		label = new Label(parent, SWT.RIGHT | SWT.WRAP);
-		label.setText("Password is for password-protected IRC servers.");
+		label.setText(Messages.IRCConnectWizardPage_PASSWORD_INFO);
 		label.setLayoutData(endData);
 
 		if (authorityAndPath != null) {
@@ -93,7 +94,7 @@ final class IRCConnectWizardPage extends WizardPage {
 	}
 
 	String getConnectID() {
-		String clean = connectText.getText().replaceAll("#","");
+		String clean = connectText.getText().replaceAll("#",""); //$NON-NLS-1$ //$NON-NLS-2$
 		connectText.setText(clean);
 		return clean;
 	}
@@ -110,8 +111,8 @@ final class IRCConnectWizardPage extends WizardPage {
 	private static final String PAGE_SETTINGS = IRCConnectWizardPage.class
 			.getName();
 	private static final int MAX_COMBO_VALUES = 40;
-	private static final String COMBO_TEXT_KEY = "connectTextValue";
-	private static final String COMBO_BOX_ITEMS_KEY = "comboValues";
+	private static final String COMBO_TEXT_KEY = "connectTextValue"; //$NON-NLS-1$
+	private static final String COMBO_BOX_ITEMS_KEY = "comboValues"; //$NON-NLS-1$
 
 	protected void saveComboText() {
 		IDialogSettings pageSettings = getPageSettings();
