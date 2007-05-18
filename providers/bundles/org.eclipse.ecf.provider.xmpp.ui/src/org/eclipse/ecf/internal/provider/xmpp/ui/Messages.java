@@ -31,6 +31,10 @@ public class Messages extends NLS {
 
 	public static String XMPPHyperlink_ERROR_OPEN_MESSAGE_VIEW_LOG_STATUS_MESSAGE;
 
+	public static String XMPPHyperlink_MESSAGING_ERROR_MESSAGE;
+
+	public static String XMPPHyperlink_MESSAGING_ERROR_TITLE;
+
 	public static String XMPPHyperlink_SELECT_ACCOUNT_MESSAGE;
 
 	public static String XMPPHyperlink_SELECT_ACCOUNT_TITLE;

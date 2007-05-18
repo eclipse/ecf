@@ -93,7 +93,12 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 	public void open() {
 		IContainer[] containers = getContainers();
 		if (containers.length > 0)
-			chooseAccountAndOpenMessagesView(containers);
+			if (containers[0].getConnectedID().getName().equals(
+					getURI().getAuthority())) {
+				MessageDialog.openError(null, Messages.XMPPHyperlink_MESSAGING_ERROR_TITLE,
+						Messages.XMPPHyperlink_MESSAGING_ERROR_MESSAGE);
+			} else
+				chooseAccountAndOpenMessagesView(containers);
 		else {
 			if (MessageDialog
 					.openQuestion(
