@@ -37,6 +37,7 @@ final class MSNConnectWizardPage extends WizardPage {
 	MSNConnectWizardPage() {
 		super(MSNConnectWizardPage.class.getName());
 		setTitle(Messages.MSNConnectWizardPage_Title);
+		setDescription(Messages.MSNConnectWizardPage_WIZARD_PAGE_DESCRIPTION);
 		setPageComplete(false);
 	}
 
@@ -106,8 +107,8 @@ final class MSNConnectWizardPage extends WizardPage {
 	private static final String PAGE_SETTINGS = MSNConnectWizardPage.class
 			.getName();
 	private static final int MAX_COMBO_VALUES = 40;
-	private static final String COMBO_TEXT_KEY = "connectTextValue";
-	private static final String COMBO_BOX_ITEMS_KEY = "comboValues";
+	private static final String COMBO_TEXT_KEY = "connectTextValue"; //$NON-NLS-1$
+	private static final String COMBO_BOX_ITEMS_KEY = "comboValues"; //$NON-NLS-1$
 
 	protected void saveComboText() {
 		IDialogSettings pageSettings = getPageSettings();

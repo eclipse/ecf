@@ -25,6 +25,8 @@ public class Messages extends NLS {
 	public static String MSNConnectWizardPage_EmailAddressLabel;
 	public static String MSNConnectWizardPage_PasswordLabel;
 
+	public static String MSNConnectWizardPage_WIZARD_PAGE_DESCRIPTION;
+
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
