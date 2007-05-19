@@ -37,6 +37,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainerOptionsAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
+import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
@@ -941,6 +942,14 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	
 	public IHistoryManager getHistoryManager() {
 		return chatRoomHistoryManager;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#getInvitationSender()
+	 */
+	public IChatRoomInvitationSender getInvitationSender() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
