@@ -27,6 +27,7 @@ import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
+import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.history.IHistory;
 import org.eclipse.ecf.presence.history.IHistoryManager;
@@ -466,5 +467,13 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	
 	public IHistoryManager getHistoryManager() {
 		return chatRoomHistoryManager;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#getInvitationSender()
+	 */
+	public IChatRoomInvitationSender getInvitationSender() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
