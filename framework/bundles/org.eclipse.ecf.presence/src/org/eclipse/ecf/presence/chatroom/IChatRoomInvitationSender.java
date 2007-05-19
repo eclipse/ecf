@@ -22,6 +22,9 @@ public interface IChatRoomInvitationSender {
 	/**
 	 * Send invitation to join in chat room to target user.
 	 * 
+	 * @param room
+	 *            the ID of the room that the invitation is for. Must not be
+	 *            <code>null</code>.
 	 * @param targetUser
 	 *            the ID of the targetUser to send the invitation to. Must not
 	 *            be <code>null</code>.
@@ -35,7 +38,7 @@ public interface IChatRoomInvitationSender {
 	 *             if connection disconnected or some other error preventing
 	 *             sending of the invitation.
 	 */
-	public void sendInvitation(ID targetUser, String subject, String body)
-			throws ECFException;
+	public void sendInvitation(ID room, ID targetUser, String subject,
+			String body) throws ECFException;
 
 }
