@@ -41,6 +41,16 @@ public interface IChatRoomManager extends IAdaptable {
 	public void removeInvitationListener(IChatRoomInvitationListener listener);
 
 	/**
+	 * Get chat room invitation sender.  If <code>null</code>, this chat room
+	 * manager does not support the ability to send invitations.
+	 * 
+	 * @return IChatRoomInvitationSender to use to send invitations.  May be 
+	 * <code>null</code>, and in that case no invitation sending ability
+	 * is available from this chat manager.
+	 */
+	public IChatRoomInvitationSender getInvitationSender();
+	
+	/**
 	 * Get parent IChatRoomManager. If this manager is the root, then this
 	 * method returns <code>null</code>.
 	 * 
