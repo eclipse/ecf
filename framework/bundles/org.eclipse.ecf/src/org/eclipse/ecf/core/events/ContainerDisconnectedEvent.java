@@ -1,15 +1,20 @@
-/*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
- * program and the accompanying materials are made available under the terms of
- * the Eclipse Public License v1.0 which accompanies this distribution, and is
- * available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: Composent, Inc. - initial API and implementation
- ******************************************************************************/
+/****************************************************************************
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 package org.eclipse.ecf.core.events;
 
 import org.eclipse.ecf.core.identity.ID;
 
+/**
+ * Container disconnected event.
+ */
 public class ContainerDisconnectedEvent implements IContainerDisconnectedEvent {
 	private static final long serialVersionUID = 3256437002059527733L;
 
@@ -17,9 +22,18 @@ public class ContainerDisconnectedEvent implements IContainerDisconnectedEvent {
 
 	private final ID localContainerID;
 
-	public ContainerDisconnectedEvent(ID container, ID o) {
+	/**
+	 * Creates a new ContainerDisconnectedEvent to indicate that the container
+	 * has now completely disconnected from its target host.
+	 * 
+	 * @param container
+	 *            the ID of the local container
+	 * @param departedContainerID
+	 *            the ID of the target
+	 */
+	public ContainerDisconnectedEvent(ID container, ID departedContainerID) {
 		this.localContainerID = container;
-		this.departedContainerID = o;
+		this.departedContainerID = departedContainerID;
 	}
 
 	/*
