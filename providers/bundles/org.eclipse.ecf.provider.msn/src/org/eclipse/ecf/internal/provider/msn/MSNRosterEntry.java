@@ -52,7 +52,7 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 			id = (MSNID) namespace.createInstance(new Object[] { contact
 					.getEmail() });
 		} catch (IDCreateException e) {
-			e.printStackTrace();
+			// ignored since this is not possible
 		}
 	}
 
