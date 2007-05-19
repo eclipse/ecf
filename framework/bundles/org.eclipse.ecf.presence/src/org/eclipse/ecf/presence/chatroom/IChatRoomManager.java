@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -64,7 +64,7 @@ public interface IChatRoomManager extends IAdaptable {
 	/**
 	 * Get detailed room info for given room name
 	 * 
-	 * @param roomname
+	 * @param roomName
 	 *            the name of the room to get detailed info for. If null, the
 	 *            room info is assumed to be a room associated with the chat
 	 *            room manager instance itself. For example, for IRC, the chat
@@ -74,7 +74,7 @@ public interface IChatRoomManager extends IAdaptable {
 	 *         <code>null</code> if no chat room info associated with given
 	 *         name or null
 	 */
-	public IChatRoomInfo getChatRoomInfo(String roomname);
+	public IChatRoomInfo getChatRoomInfo(String roomName);
 
 	/**
 	 * Get detailed room info for all chat rooms associated with this manager
@@ -87,9 +87,9 @@ public interface IChatRoomManager extends IAdaptable {
 
 	/**
 	 * 
-	 * Create a chat room with the given roomname and properties.
+	 * Create a chat room with the given room name and properties.
 	 * 
-	 * @param roomname
+	 * @param roomName
 	 *            the name of the room. Must not be <code>null</code>.
 	 * @param properties
 	 *            properties associated with the room's creation. May be
@@ -97,19 +97,19 @@ public interface IChatRoomManager extends IAdaptable {
 	 * @return IChatRoomInfo room info suitable for creating a chat room
 	 *         container and connecting. Will not be <code>null</code>.
 	 * @throws ChatRoomCreateException
-	 *             if roomname is <code>null</code>, or if chat room creation
+	 *             if roomName is <code>null</code>, or if chat room creation
 	 *             cannot occur (e.g. server refuses, name collision occurs,
 	 *             user has insufficient rights to perform creation operation,
 	 *             etc).
 	 */
-	public IChatRoomInfo createChatRoom(String roomname, Map properties)
+	public IChatRoomInfo createChatRoom(String roomName, Map properties)
 			throws ChatRoomCreateException;
 
 	/**
-	 * Get chat room history manager.  Will not return <code>null</code>.
+	 * Get chat room history manager. Will not return <code>null</code>.
 	 * 
-	 * @return IHistoryManager.  Will not return <code>null</code>.
+	 * @return IHistoryManager. Will not return <code>null</code>.
 	 */
 	public IHistoryManager getHistoryManager();
-	
+
 }
