@@ -39,6 +39,16 @@ public class Messages extends NLS {
 
 	public static String XMPPHyperlink_SELECT_ACCOUNT_TITLE;
 
+	public static String XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_CANCEL;
+
+	public static String XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_CONNECT;
+
+	public static String XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_SEND_MESSAGE;
+
+	public static String XMPPHyperlink_SELECT_ACTION_DIALOG_MESSAGE;
+
+	public static String XMPPHyperlink_SELECT_ACTION_DIALOG_TITLE;
+
 	public static String XMPPSConnectWizardPage_WIZARD_PAGE_TITLE;
 	public static String XMPPSConnectWizardPage_WIZARD_PAGE_USERID;
 	public static String XMPPSConnectWizardPage_WIZARD_PAGE_STATUS;

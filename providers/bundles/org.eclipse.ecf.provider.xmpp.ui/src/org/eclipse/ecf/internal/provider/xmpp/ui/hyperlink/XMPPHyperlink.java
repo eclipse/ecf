@@ -22,6 +22,7 @@ import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.internal.provider.xmpp.ui.Activator;
 import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
 import org.eclipse.ecf.internal.provider.xmpp.ui.wizards.XMPPConnectWizard;
@@ -35,6 +36,7 @@ import org.eclipse.ecf.presence.ui.MessagesView;
 import org.eclipse.ecf.provider.xmpp.XMPPContainer;
 import org.eclipse.ecf.provider.xmpp.XMPPSContainer;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
+import org.eclipse.ecf.provider.xmpp.identity.XMPPSID;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.hyperlink.AbstractURLHyperlink;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -46,6 +48,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
 
@@ -69,18 +72,10 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 		IContainer[] containers = manager.getAllContainers();
 		for (int i = 0; i < containers.length; i++) {
 			ID connectedID = containers[i].getConnectedID();
-			// Must be connected
-			if (connectedID != null) {
-				IPresenceContainerAdapter adapter = (IPresenceContainerAdapter) containers[i]
-						.getAdapter(IPresenceContainerAdapter.class);
-				// Must also be a presence container
-				if (adapter != null) {
-					// Must also be an XMPP/XMPPS Container
-					if ((isXMPPS && containers[i] instanceof XMPPSContainer)
-							|| (!isXMPPS && containers[i] instanceof XMPPContainer))
-						results.add(containers[i]);
-				}
-			}
+			// Must be connected and ID of correct type
+			if (connectedID != null
+					&& ((isXMPPS && containers[i] instanceof XMPPSContainer) || (!isXMPPS && containers[i] instanceof XMPPContainer)))
+				results.add(containers[i]);
 		}
 		return (IContainer[]) results.toArray(EMPTY);
 	}
@@ -92,14 +87,9 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 	 */
 	public void open() {
 		IContainer[] containers = getContainers();
-		if (containers.length > 0)
-			if (containers[0].getConnectedID().getName().equals(
-					getURI().getAuthority())) {
-				MessageDialog.openError(null, Messages.XMPPHyperlink_MESSAGING_ERROR_TITLE,
-						Messages.XMPPHyperlink_MESSAGING_ERROR_MESSAGE);
-			} else
-				chooseAccountAndOpenMessagesView(containers);
-		else {
+		if (containers.length > 0) {
+			chooseAccount(containers);
+		} else {
 			if (MessageDialog
 					.openQuestion(
 							null,
@@ -116,11 +106,10 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 	/**
 	 * @param adapters
 	 */
-	private void chooseAccountAndOpenMessagesView(final IContainer[] containers) {
+	private void chooseAccount(final IContainer[] containers) {
 		// If there's only one choice then use it
 		if (containers.length == 1) {
-			openMessagesView((IPresenceContainerAdapter) containers[0]
-					.getAdapter(IPresenceContainerAdapter.class));
+			openContainer(containers[0]);
 			return;
 		} else {
 			final IPresenceContainerAdapter[] adapters = new IPresenceContainerAdapter[containers.length];
@@ -179,30 +168,86 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 			if (result == ListDialog.OK) {
 				Object[] res = dialog.getResult();
 				if (res.length > 0)
-					openMessagesView((IPresenceContainerAdapter) res[0]);
+					openContainer((IContainer) res[0]);
 			}
 		}
+	}
+
+	private void openMessagesView(IChatManager chatManager, ID localID,
+			ID targetID) throws PartInitException {
+		IChatMessageSender icms = chatManager.getChatMessageSender();
+		ITypingMessageSender itms = chatManager.getTypingMessageSender();
+		IWorkbenchWindow ww = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		MessagesView view = (MessagesView) ww.getActivePage().showView(
+				MessagesView.VIEW_ID);
+		view.selectTab(icms, itms, localID, targetID);
 	}
 
 	/**
 	 * @param presenceContainerAdapter
 	 */
-	private void openMessagesView(
-			IPresenceContainerAdapter presenceContainerAdapter) {
+	private void openContainer(IContainer container) {
+		IPresenceContainerAdapter presenceContainerAdapter = (IPresenceContainerAdapter) container
+				.getAdapter(IPresenceContainerAdapter.class);
 		IChatManager chatManager = presenceContainerAdapter.getChatManager();
 		IRosterManager rosterManager = presenceContainerAdapter
 				.getRosterManager();
 		if (chatManager != null && rosterManager != null) {
-			IChatMessageSender icms = chatManager.getChatMessageSender();
-			ITypingMessageSender itms = chatManager.getTypingMessageSender();
 			try {
-				IWorkbenchWindow ww = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow();
-				MessagesView view = (MessagesView) ww.getActivePage().showView(
-						MessagesView.VIEW_ID);
-				ID localID = rosterManager.getRoster().getUser().getID();
-				view.selectTab(icms, itms, localID, new XMPPID(localID
-						.getNamespace(), getURI().getAuthority()));
+				// get local ID
+				XMPPID localID = (XMPPID) rosterManager.getRoster().getUser()
+						.getID();
+				Namespace ns = container.getConnectNamespace();
+				// create target ID
+				XMPPID targetID = (isXMPPS) ? new XMPPSID(ns, getURI()
+						.getAuthority()) : new XMPPID(ns, getURI()
+						.getAuthority());
+				// If they are same, just tell user and return
+				if (localID.equals(targetID)) {
+					MessageDialog.openError(null,
+							Messages.XMPPHyperlink_MESSAGING_ERROR_TITLE,
+							Messages.XMPPHyperlink_MESSAGING_ERROR_MESSAGE);
+					return;
+				} else {
+					String localHost = localID.getHostname();
+					String targetHost = targetID.getHostname();
+					// If the hosts are the same for the target and local
+					// accounts,
+					// it's pretty obvious that we wish to message to them
+					if (localHost.equals(targetHost)) {
+						openMessagesView(chatManager, localID, targetID);
+					} else {
+						// Otherwise, ask the user whether messaging, or
+						// connecting is desired
+						MessageDialog messageDialog = new MessageDialog(
+								null,
+								Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_TITLE,
+								null,
+								NLS
+										.bind(
+												Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_MESSAGE,
+												new Object[] { targetHost,
+														localHost,
+														targetID.getName(),
+														localID.getName() }),
+								MessageDialog.QUESTION, new String[] {
+										Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_SEND_MESSAGE, Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_CONNECT,
+										Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_CANCEL }, 2);
+						int selected = messageDialog.open();
+						switch (selected) {
+						case 0:
+							openMessagesView(chatManager, localID, targetID);
+							return;
+						case 1:
+							super.open();
+							return;
+						default:
+							return;
+
+						}
+					}
+				}
 			} catch (Exception e) {
 				MessageDialog
 						.openError(
