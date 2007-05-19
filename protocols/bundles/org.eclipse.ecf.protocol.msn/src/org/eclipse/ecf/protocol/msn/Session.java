@@ -225,7 +225,7 @@ abstract class Session {
 	}
 
 	void close() {
-		closed = false;
+		closed = true;
 		if (idleThread != null) {
 			idleThread.interrupt();
 			idleThread = null;
