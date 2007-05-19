@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,8 +44,8 @@ import org.eclipse.ecf.core.identity.ID;
 public interface IChatRoomInvitationListener {
 
 	/**
-	 * Handle notification of a received invitation to join chat room. This
-	 * method will be called by some thread when an invitiation is received by
+	 * Handle notification of a received invitation to join a chat room. This
+	 * method will be called by some thread when an invitation is received by
 	 * this user account to join a chat room
 	 * 
 	 * @param roomID
