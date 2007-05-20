@@ -27,44 +27,55 @@ public interface IChat {
 	/**
 	 * Get the receiver for this chat.
 	 * 
-	 * @return ID of receiver.  Will not return <code>null</code>.
+	 * @return ID of receiver. Will not return <code>null</code>.
 	 */
 	public ID getReceiverID();
 
 	/**
 	 * Get the thread ID for this chat.
 	 * 
-	 * @return ID of this chat thread.  Will not return <code>null</code>.
+	 * @return ID of this chat thread. Will not return <code>null</code>.
 	 */
 	public ID getThreadID();
 
 	/**
-	 * Send chat message to given ID.
+	 * Send chat message to receiver.
 	 * 
 	 * @param type
-	 *            the IChatMessage.Type of the message. May not be null.
+	 *            the IChatMessage.Type of the message. May not be
+	 *            <code>null</code>.
 	 * 
 	 * @param subject
-	 *            the subject of the message. May be null.
+	 *            the subject of the message. May be <code>null</code>.
 	 * 
-	 * @param body
-	 *            the body of the message to send. May be null.
+	 * @param messageBody
+	 *            the body of the message to send. May be <code>null</code>.
 	 * 
 	 * @param properties
-	 *            properties associated with message. May be null.
+	 *            any properties to be associated with message. May be
+	 *            <code>null</code>.
 	 * 
 	 * @throws ECFException
-	 *             thrown if toID is null, or currently disconnected
+	 *             thrown if currently disconnected or some transport error
 	 */
 	public void sendChatMessage(IChatMessage.Type type, String subject,
-			String body, Map properties) throws ECFException;
+			String messageBody, Map properties) throws ECFException;
 
-	
+	/**
+	 * Send chat message to receiver.
+	 * 
+	 * @param messageBody
+	 *            the body of the message to send. May be null.
+	 * @throws ECFException
+	 *             thrown if currently disconnected or some transport error
+	 */
+	public void sendChatMessage(String messageBody) throws ECFException;
+
 	/**
 	 * Create a new IChatRoomContainer instance. This method can be used to
-	 * create to a chat room identified by this two-way chat.  If supported
-	 * by the provider, this allows moving from a two-way chat represented
-	 * by this IChat instance to an n-way chat room container.
+	 * create to a chat room identified by this two-way chat. If supported by
+	 * the provider, this allows moving from a two-way chat represented by this
+	 * IChat instance to an n-way chat room container.
 	 * 
 	 * @return non-null IChatRoomContainer instance. Will not return
 	 *         <code>null</code>.
@@ -72,11 +83,12 @@ public interface IChat {
 	 *             if chat room container cannot be made.
 	 */
 	public IChatRoomContainer createChatRoom() throws ContainerCreateException;
-	
+
 	/**
 	 * Get presence container adapter for this chat instance.
-	 * @return IPresenceContainerAdapter for this chat instance.  Will not
-	 * return <code>null</code>.
+	 * 
+	 * @return IPresenceContainerAdapter for this chat instance. Will not return
+	 *         <code>null</code>.
 	 */
 	public IPresenceContainerAdapter getPresenceContainerAdapter();
 }
