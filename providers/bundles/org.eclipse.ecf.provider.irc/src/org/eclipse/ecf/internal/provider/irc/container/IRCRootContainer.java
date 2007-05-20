@@ -57,8 +57,8 @@ import org.schwering.irc.lib.ssl.SSLIRCConnection;
  * 
  */
 public class IRCRootContainer extends IRCAbstractContainer implements
-		IContainer, IChatRoomManager, IChatRoomContainer, IRCMessageChannel,
-		IChatRoomContainerOptionsAdapter {
+		IContainer, IChatRoomInvitationSender, IChatRoomManager,
+		IChatRoomContainer, IRCMessageChannel, IChatRoomContainerOptionsAdapter {
 
 	private static final long CONNECT_TIMEOUT = 20000;
 
@@ -71,7 +71,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	protected String username;
 
 	protected String encoding = null;
-	
+
 	private ArrayList invitationListeners;
 
 	private Object connectLock = new Object();
@@ -80,7 +80,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 	public IRCRootContainer(ID localID) throws IDCreateException {
 		this.localID = localID;
-		this.unknownID = IDFactory.getDefault().createStringID(Messages.IRCRootContainer_0);
+		this.unknownID = IDFactory.getDefault().createStringID(
+				Messages.IRCRootContainer_0);
 		this.replyHandler = new ReplyHandler();
 		invitationListeners = new ArrayList();
 	}
@@ -104,7 +105,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					Messages.IRCRootContainer_Exception_TargetID_Wrong_Type,
 					new Object[] { targetID, IRCID.class.getName() }));
 		if (connectWaiting)
-			throw new ContainerConnectException(Messages.IRCRootContainer_Connecting);
+			throw new ContainerConnectException(
+					Messages.IRCRootContainer_Connecting);
 
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
 				connectContext));
@@ -145,7 +147,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 				if (connectWaiting)
 					throw new TimeoutException(CONNECT_TIMEOUT,
-							Messages.IRCRootContainer_Connect_Timeout + targetID.getName());
+							Messages.IRCRootContainer_Connect_Timeout
+									+ targetID.getName());
 				if (connectException != null)
 					throw connectException;
 				this.targetID = tID;
@@ -324,7 +327,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 			public void onTopic(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnTopic(" + arg0 + "," + arg1 + "," + arg2 + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				handleSetSubject(arg0,arg1,arg2);
+				handleSetSubject(arg0, arg1, arg2);
 			}
 
 			public void unknown(String arg0, String arg1, String arg2,
@@ -409,7 +412,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 
 				public String getSubject() {
-					return "";  //$NON-NLS-1$
+					return ""; //$NON-NLS-1$
 				}
 
 				public boolean isModerated() {
@@ -515,8 +518,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					parseCommandAndSend(message, null);
 				else
 					showErrorMessage(null, NLS.bind(
-							Messages.IRCRootContainer_Command_Error,
-							message, COMMAND_PREFIX ));
+							Messages.IRCRootContainer_Command_Error, message,
+							COMMAND_PREFIX));
 			}
 		};
 	}
@@ -738,10 +741,10 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		IRCChannelContainer msgChannel = getChannel(channel);
 		if (msgChannel != null)
 			msgChannel.fireMessageListeners((username == null) ? getSystemID()
-					: createIDFromString(username), msg); 
+					: createIDFromString(username), msg);
 		else
 			fireMessageListeners((username == null) ? getSystemID()
-					: createIDFromString(username), msg); 
+					: createIDFromString(username), msg);
 	}
 
 	private ID getSystemID() {
@@ -798,9 +801,10 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			case 331:
 			case 332:
 				// Subject changes
-				String [] args = parseCommandTokens(arg1);
-				String channel = (args.length == 2)?args[1]:((args.length == 1)?args[0]:null);
-				handleSetSubject(channel,null,arg2);
+				String[] args = parseCommandTokens(arg1);
+				String channel = (args.length == 2) ? args[1]
+						: ((args.length == 1) ? args[0] : null);
+				handleSetSubject(channel, null, arg2);
 				break;
 			default:
 				// first user always expected to be us
@@ -818,25 +822,29 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		}
 	}
 
-	protected void handleSetSubject(String channelName, IRCUser user, String newSubject) {
+	protected void handleSetSubject(String channelName, IRCUser user,
+			String newSubject) {
 		IRCChannelContainer channel = (IRCChannelContainer) channels
-		.get(channelName);
+				.get(channelName);
 		if (channel == null) {
 			showMessage(null, newSubject);
 			fireSubjectListeners(null, newSubject);
 		} else {
-			String nickname = (user==null)?null:user.getNick(); 
-			ID fromID = (user==null)?null:createIDFromString(getIRCUserName(user));
+			String nickname = (user == null) ? null : user.getNick();
+			ID fromID = (user == null) ? null
+					: createIDFromString(getIRCUserName(user));
 			// Put out message to channel
-			if (nickname == null) showMessage(channelName, newSubject);
-			else showMessage(channelName, NLS.bind(
+			if (nickname == null)
+				showMessage(channelName, newSubject);
+			else
+				showMessage(channelName, NLS.bind(
 						Messages.IRCRootContainer_TopicChange, new Object[] {
 								nickname, newSubject }));
 			// Also notify subject listeners
 			channel.fireSubjectListeners(fromID, newSubject);
 		}
 	}
-	
+
 	protected void doJoinChannel(String channelName, String key) {
 		if (connection != null) {
 			if (key == null || key.equals("")) { //$NON-NLS-1$
@@ -912,8 +920,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	 */
 	public IChatRoomInfo createChatRoom(String roomname, Map properties)
 			throws ChatRoomCreateException {
-		throw new ChatRoomCreateException(roomname, Messages.IRCRootContainer_Exception_Create_Not_Supported,
-				null);
+		throw new ChatRoomCreateException(roomname,
+				Messages.IRCRootContainer_Exception_Create_Not_Supported, null);
 	}
 
 	protected IHistoryManager chatRoomHistoryManager = new IHistoryManager() {
@@ -930,26 +938,36 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 		public void setActive(boolean active) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public Object getAdapter(Class adapter) {
 			// TODO Auto-generated method stub
 			return null;
 		}
-		
+
 	};
-	
+
 	public IHistoryManager getHistoryManager() {
 		return chatRoomHistoryManager;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#getInvitationSender()
 	 */
 	public IChatRoomInvitationSender getInvitationSender() {
-		// TODO Auto-generated method stub
-		return null;
+		return this;
+	}
+
+	public void sendInvitation(ID room, ID targetUser, String subject,
+			String body) throws ECFException {
+		if (connection == null) {
+			throw new ECFException();
+		} else {
+			connection.doInvite(targetUser.getName(), room.getName());
+		}
 	}
 
 }
