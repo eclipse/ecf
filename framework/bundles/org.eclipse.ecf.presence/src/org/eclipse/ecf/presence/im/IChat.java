@@ -65,7 +65,7 @@ public interface IChat {
 	 * Send chat message to receiver.
 	 * 
 	 * @param messageBody
-	 *            the body of the message to send. May be null.
+	 *            the body of the message to send. May be <code>null</code>.
 	 * @throws ECFException
 	 *             thrown if currently disconnected or some transport error
 	 */
