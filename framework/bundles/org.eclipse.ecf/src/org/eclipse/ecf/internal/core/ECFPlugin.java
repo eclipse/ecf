@@ -293,7 +293,7 @@ public class ECFPlugin implements BundleActivator {
 	/**
 	 * Setup container factory extension point
 	 * 
-	 * @param context
+	 * @param bc
 	 *            the BundleContext for this bundle
 	 */
 	protected void setupContainerFactoryExtensionPoint(BundleContext bc) {
