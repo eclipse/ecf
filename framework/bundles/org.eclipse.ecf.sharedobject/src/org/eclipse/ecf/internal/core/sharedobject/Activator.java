@@ -281,7 +281,7 @@ public class Activator implements BundleActivator {
 	/**
 	 * Setup shared object extension point
 	 * 
-	 * @param context
+	 * @param bc
 	 *            the BundleContext for this bundle
 	 */
 	protected void setupSharedObjectExtensionPoint(BundleContext bc) {
