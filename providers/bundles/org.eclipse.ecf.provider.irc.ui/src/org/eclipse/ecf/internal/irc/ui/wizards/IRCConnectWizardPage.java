@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.ecf.internal.irc.ui.Activator;
 import org.eclipse.ecf.internal.irc.ui.Messages;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -41,6 +42,7 @@ final class IRCConnectWizardPage extends WizardPage {
 		setTitle(Messages.IRCConnectWizardPage_WIZARD_PAGE_TITLE);
 		setDescription(Messages.IRCConnectWizardPage_WIZARD_PAGE_DESCRIPTION);
 		setPageComplete(false);
+		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_CHAT_WIZARD));
 	}
 
 	IRCConnectWizardPage(String authorityAndPath) {
