@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -39,12 +40,12 @@ public class JoinGroupWizardPage extends WizardPage {
 
 	protected static final String USER_NAME_SYSTEM_PROPERTY = "user.name";
 
-	protected static final String PAGE_DESCRIPTION = "Complete account info and choose 'Finish' to login";
+	protected static final String PAGE_DESCRIPTION = "Complete account info and choose 'Finish' to login.";
 	protected static final String JOINGROUP_FIELDNAME = "Group ID:";
 	protected static final String NICKNAME_FIELDNAME = "Nickname:";
 	protected static final String ECF_DEFAULT_URL = "ecftcp://ecf.eclipse.org:3282/server";
 	protected static final String ECF_TEMPLATE_URL = "ecftcp://<server>:<port>/<groupname>";
-	protected static final String PAGE_TITLE = "Connect ECF Generic Client";
+	protected static final String PAGE_TITLE = "Connect Generic Client";
 
 	protected static final String DEFAULT_CLIENT = "ecf.generic.client";
 
@@ -54,6 +55,7 @@ public class JoinGroupWizardPage extends WizardPage {
 		super("wizardPage");
 		setTitle(PAGE_TITLE);
 		setDescription(PAGE_DESCRIPTION);
+		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_COLLABORATION_WIZARD));
 	}
 
 	protected String template_url = ECF_TEMPLATE_URL;
@@ -179,7 +181,9 @@ public class JoinGroupWizardPage extends WizardPage {
 				autoLoginFlag = autoLogin.getSelection();
 			}
 		});
-
+		// XXX disallow autologin for now
+		autoLogin.setEnabled(false);
+		
 		fillCombo();
 		restoreDialogSettings();
 	}

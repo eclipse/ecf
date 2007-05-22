@@ -25,7 +25,7 @@ import org.eclipse.ui.IWorkbench;
 
 public class JoinGroupWizard extends Wizard {
 
-	protected static final String PAGE_TITLE = "ECF Collaboration Connect";
+	protected static final String PAGE_TITLE = "Collaboration Connect";
 
 	private static final String DIALOG_SETTINGS = JoinGroupWizard.class
 			.getName();

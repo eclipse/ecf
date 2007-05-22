@@ -131,7 +131,7 @@ public class ChatWindow extends ApplicationWindow {
 		newShell.setText("Team Chat: " + view.name);
 		image = ImageDescriptor.createFromURL(
 				FileLocator.find(ClientPlugin.getDefault().getBundle(),
-						new Path("icons/person.gif"), null)).createImage();
+						new Path("icons/contact_enabled.gif"), null)).createImage();
 		newShell.setImage(image);
 		RGB[] colors = new RGB[2];
 		colors[0] = new RGB(0, 0, 0);

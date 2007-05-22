@@ -5,7 +5,7 @@
          id="org.eclipse.ecf.example.collab.ui.ClientPreferencePage"
          point="org.eclipse.ui.views">
       <view
-            icon="icons/group.gif"
+            icon="icons/collaboration.gif"
             class="org.eclipse.ecf.internal.example.collab.ui.LineChatView"
             category="org.eclipse.ecf.ui.viewcategory"
             name="Collaboration"
@@ -32,7 +32,7 @@
          </menu>
          <action
                class="org.eclipse.ecf.internal.example.collab.actions.JoinGroupWizardAction"
-               icon="icons/group.gif"
+               icon="icons/collaboration.gif"
                id="org.eclipse.ecf.client.joingroupwizardaction"
                label="Connect Project to ECF Collaboration Group..."
                menubarPath="org.eclipse.ecf.example.collab.menu1/group1"/>
@@ -126,7 +126,7 @@
          </menu>
          <action
                class="org.eclipse.ecf.internal.example.collab.actions.JoinGroupWizardAction"
-               icon="icons/group.gif"
+               icon="icons/collaboration.gif"
                id="org.eclipse.ecf.example.collab.action2"
                label="Connect to ECF Collaboration Group..."
                style="push"
@@ -135,7 +135,7 @@
          </action>
          <action
                class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
-               icon="icons/im.gif"
+               icon="icons/messages.gif"
                id="org.eclipse.ecf.example.collab.ui.connectAction"
                label="Connect to ECF IM/Chat Provider"
                style="pulldown"
@@ -151,7 +151,7 @@
             class="org.eclipse.ecf.example.collab.ui.SharedEditor"
             default="false"
             extensions="xml,txt,java"
-            icon="icons/person.gif"
+            icon="icons/contact_enabled.gif"
             id="org.eclipse.ecf.example.collab.SharedEditor"
             name="Shared Editor"/>
    </extension>

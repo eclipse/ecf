@@ -227,8 +227,8 @@ public class ClientPlugin extends AbstractUIPlugin implements
 				.getWorkbench().getSharedImages().getImage(
 						ISharedImages.IMG_OBJ_FOLDER));
 		registry.put(ClientPluginConstants.DECORATION_USER, AbstractUIPlugin
-				.imageDescriptorFromPlugin("org.eclipse.ecf.example.collab",
-						"icons/buddy_available.gif").createImage());
+				.imageDescriptorFromPlugin("org.eclipse.ecf.ui",
+						"icons/enabled/contact_enabled.gif").createImage());
 		registry.put(ClientPluginConstants.DECORATION_TIME, PlatformUI
 				.getWorkbench().getSharedImages().getImage(
 						ISharedImages.IMG_TOOL_FORWARD));
