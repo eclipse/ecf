@@ -12,16 +12,19 @@ package org.eclipse.ecf.provider.ui.wizards;
 
 import java.net.URI;
 
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.ecf.ui.wizards.AbstractConnectWizardPage;
 
 public class GenericClientContainerConnectWizardPage extends AbstractConnectWizardPage {
 
 	public GenericClientContainerConnectWizardPage() {
 		super("GenericClientContainerConnectWizardPage");
+		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_COLLABORATION_WIZARD));
 	}
 	
 	public GenericClientContainerConnectWizardPage(URI uri) {
 		super("GenericClientContainerConnectWizardPage",uri);
+		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_COLLABORATION_WIZARD));
 	}
 	
 	public boolean shouldRequestUsername() {

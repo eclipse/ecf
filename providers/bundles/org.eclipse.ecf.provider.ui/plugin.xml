@@ -8,7 +8,7 @@
       <wizard
             class="org.eclipse.ecf.provider.ui.wizards.GenericClientContainerConnectWizard"
             containerFactoryName="ecf.generic.client"
-            icon="icons/person.gif"
+            icon="icons/contact_enabled.gif"
             id="org.eclipse.ecf.provider.ui.generic.client"
             name="ECF Generic Client">
       </wizard>
