@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -39,6 +40,7 @@ final class MSNConnectWizardPage extends WizardPage {
 		setTitle(Messages.MSNConnectWizardPage_Title);
 		setDescription(Messages.MSNConnectWizardPage_WIZARD_PAGE_DESCRIPTION);
 		setPageComplete(false);
+		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_CHAT_WIZARD));
 	}
 
 	MSNConnectWizardPage(String username) {
