@@ -65,14 +65,14 @@
       <view
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.presence.ui.MessagesView"
-            icon="icons/im.gif"
+            icon="icons/messages.gif"
             id="org.eclipse.ecf.presence.ui.MessagesView"
             name="%views.messages">
       </view>
       <view
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.presence.ui.MultiRosterView"
-            icon="icons/buddy_available.gif"
+            icon="icons/contacts.gif"
             id="org.eclipse.ecf.presence.ui.MultiRosterView"
             name="%views.multiRosterView">
       </view>
@@ -84,7 +84,7 @@
             allowMultiple="true"
             category="org.eclipse.ecf.ui.viewcategory"
             class="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
-            icon="icons/group.gif"
+            icon="icons/chats.gif"
             id="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
             name="Chats"/>
    </extension>
