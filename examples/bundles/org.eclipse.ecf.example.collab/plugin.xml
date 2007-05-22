@@ -160,7 +160,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.eclipse.ecf.internal.example.collab.ui.perspective.CommunicationPerspective"
-            icon="icons/group.gif"
+            icon="icons/communications.gif"
             id="org.eclipse.collaboration.ui.perspective.collab"
             name="%perspective.name">
       </perspective>
