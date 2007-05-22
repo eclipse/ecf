@@ -11,15 +11,11 @@
 
 package org.eclipse.ecf.ui.wizards;
 
-import org.eclipse.ecf.internal.ui.Activator;
-import org.eclipse.ecf.internal.ui.IImageFiles;
 import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.ecf.ui.ContainerConfigurationResult;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * A wizard to allow the selection and display of a configuration.  This wizard shows
@@ -65,13 +61,6 @@ public class ConfigurationWizardSelectionWizard extends Wizard {
 			IStructuredSelection currentSelection) {
 		this.workbench = aWorkbench;
 		this.selection = currentSelection;
-
-		ImageDescriptor wizardBannerImage = AbstractUIPlugin
-				.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
-						IImageFiles.CONFIGURATION_WIZARD);
-
-		if (wizardBannerImage != null)
-			setDefaultPageImageDescriptor(wizardBannerImage);
 
 		setWindowTitle(Messages.ConfigurationWizard_title);
 

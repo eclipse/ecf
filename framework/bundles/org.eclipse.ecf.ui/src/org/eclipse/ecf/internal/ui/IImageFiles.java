@@ -13,31 +13,33 @@ package org.eclipse.ecf.internal.ui;
 
 public interface IImageFiles {
 
-	public static final String USER_AVAILABLE = "icons/epresence16/buddy_available.gif"; //$NON-NLS-1$
+	public static final String USER_AVAILABLE = "icons/enabled/contact_enabled.gif"; //$NON-NLS-1$
 
-	public static final String USER_AWAY = "icons/epresence16/buddy_away.gif"; //$NON-NLS-1$
+	public static final String USER_AWAY = "icons/enabled/contact_away.gif"; //$NON-NLS-1$
 
-	public static final String USER_DND = "icons/epresence16/buddy_dnd.gif"; //$NON-NLS-1$
+	public static final String USER_DND = "icons/enabled/contact_do_not_disturb.gif"; //$NON-NLS-1$
 
-	public static final String USER_UNAVAILABLE = "icons/epresence16/buddy_unavailable.gif"; //$NON-NLS-1$
+	public static final String USER_UNAVAILABLE = "icons/enabled/contact_disabled.gif"; //$NON-NLS-1$
 
-	public static final String GROUP = "icons/epresence16/group.gif"; //$NON-NLS-1$
+	public static final String GROUP = "icons/enabled/group.gif"; //$NON-NLS-1$
 
 	public static final String DISCONNECT_DISABLED = "icons/disabled/terminate_co.gif"; //$NON-NLS-1$
 
 	public static final String DISCONNECT_ENABLED = "icons/enabled/terminate_co.gif"; //$NON-NLS-1$
 
-	public static final String ADD_GROUP = "icons/epresence16/add_group.gif"; //$NON-NLS-1$
+	public static final String ADD_GROUP = "icons/enabled/add_group.gif"; //$NON-NLS-1$
 
-	public static final String ADD_BUDDY = "icons/epresence16/add_buddy.gif"; //$NON-NLS-1$
+	public static final String ADD_BUDDY = "icons/enabled/add_contact.gif"; //$NON-NLS-1$
 
-	public static final String ADD_CHAT = "icons/enabled/addchat.gif"; //$NON-NLS-1$
+	public static final String ADD_CHAT = "icons/enabled/add_chat.gif"; //$NON-NLS-1$
 
 	public static final String SEND_MESSAGE = "icons/enabled/message.gif"; //$NON-NLS-1$
 
 	public static final String ADD = "icons/enabled/add.gif"; //$NON-NLS-1$
 
-	public static final String CONFIGURATION_WIZARD = "icons/wizards/configuration.gif"; //$NON-NLS-1$
-
-	public static final String CONNECT_WIZARD = "icons/wizards/connect.gif"; //$NON-NLS-1$
+	public static final String MESSAGES = "icons/enabled/messages.gif";
+	
+	public static final String CHAT_WIZARD = "icons/wizards/chat_wizard.png"; //$NON_NLS-$1
+	
+	public static final String COLLABORATION_WIZARD = "icons/wizards/collaboration_wizard.png"; //$NON_NLS-$1
 }
