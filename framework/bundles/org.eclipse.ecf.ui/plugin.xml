@@ -7,11 +7,11 @@
          point="org.eclipse.ecf.ui.configurationWizards">
       <category
             id="org.eclipse.ecf.ui.clientcategory"
-            name="Clients">
+            name="%configurationWizards.category.client">
       </category>
       <category
             id="org.eclipse.ecf.ui.servercategory"
-            name="Servers">
+            name="%configurationWizards.category.server">
       </category>
    </extension>
    <extension
@@ -19,7 +19,7 @@
       <page
             class="org.eclipse.ecf.internal.ui.CategoryPreferencePage"
             id="org.eclipse.ecf.ui.category"
-            name="ECF">
+            name="%preferences.page.name">
       </page>
    </extension>
    <extension
@@ -31,7 +31,7 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="ECF"
+            name="%view.name"
             id="org.eclipse.ecf.ui.viewcategory"/>
    </extension>
    
