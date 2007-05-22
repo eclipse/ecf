@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.ecf.internal.provider.xmpp.ui.Activator;
 import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -41,6 +42,7 @@ public class XMPPConnectWizardPage extends WizardPage {
 		setTitle(Messages.XMPPConnectWizardPage_WIZARD_TITLE);
 		setDescription(Messages.XMPPConnectWizardPage_WIZARD_DESCRIPTION);
 		setPageComplete(false);
+		setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_CHAT_WIZARD));
 	}
 
 	XMPPConnectWizardPage(String usernameAtHost) {
