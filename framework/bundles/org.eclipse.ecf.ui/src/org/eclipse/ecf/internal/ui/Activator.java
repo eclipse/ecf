@@ -156,6 +156,9 @@ public class Activator extends AbstractUIPlugin {
 				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.COLLABORATION_WIZARD)
 				.createImage());
 
+		registry.put(SharedImages.IMG_IDENTITY, AbstractUIPlugin
+				.imageDescriptorFromPlugin(PLUGIN_ID, IImageFiles.IDENTITY)
+				.createImage());
 
 		return registry;
 	}

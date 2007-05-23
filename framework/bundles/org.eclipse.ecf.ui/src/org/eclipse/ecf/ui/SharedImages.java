@@ -19,6 +19,8 @@ import org.eclipse.swt.graphics.Image;
  */
 public final class SharedImages {
 
+	public static final String IMG_IDENTITY = "IMG_IDENTITY";
+	
 	public static final String IMG_USER_AVAILABLE = "IMG_USER_AVAILABLE"; //$NON-NLS-1$
 
 	public static final String IMG_USER_UNAVAILABLE = "IMG_USER_UNAVAILABLE"; //$NON-NLS-1$

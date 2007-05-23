@@ -13,6 +13,8 @@ package org.eclipse.ecf.internal.ui;
 
 public interface IImageFiles {
 
+	public static final String IDENTITY = "/icons/enabled/identity.gif"; //$NON-NLS-1$
+	
 	public static final String USER_AVAILABLE = "icons/enabled/contact_enabled.gif"; //$NON-NLS-1$
 
 	public static final String USER_AWAY = "icons/enabled/contact_away.gif"; //$NON-NLS-1$
