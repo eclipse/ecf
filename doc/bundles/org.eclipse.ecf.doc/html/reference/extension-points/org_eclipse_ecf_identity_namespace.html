@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>ECF Namespace</title>
+<style>@import url("../../book.css");</style>
+<style>@import url("../../schema.css");</style>
+</HEAD>
+<BODY>
+<H1><CENTER>ECF Namespace</CENTER></H1>
+<p></p>
+<h6 class=CaptionFigColumn id=header>Identifier: </h6>org.eclipse.ecf.identity.namespace<p></p>
+<h6 class=CaptionFigColumn id=header>Since: </h6>0.4.0
+<p></p>
+
+<p>
+<h6 class=CaptionFigColumn id=header>Description: </h6>Extension point that allows other plugins to define new Namespaces.  Namespaces are used by the IDFactory for creating new ID instances.  Plugins may define extension Namespace implementation, which will then be used to construct ID instances within than Namespace when clients use the default ECF identity factory (accessed via org.eclipse.ecf.core.identity.IDFactory.getDefault()).
+<p>
+Plugins implementing this extension point must define a Namespace class that extends <b>org.eclipse.ecf.core.identity.Namespace</b>.  The class attribute of the namespace extension must provide a valid Namespace subclass.  The name attribute defines the namespace name.  If the name attribute is not present, then the Namespace class will be used as the Namespace name.  The optional description attribute is an optional arbitrary description for the Namespace.</p>
+<p><h6 class=CaptionFigColumn id=header>Configuration Markup:</h6></p>
+<p class=code id=dtd>&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.namespace">namespace</a>+)&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST extension</p>
+<p class=code id=dtdAttlist>point&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.namespace">namespace</a> EMPTY&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST namespace</p>
+<p class=code id=dtdAttlist>name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>description&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<p class=ConfigMarkup id=elementDesc>
+Element allowing plugins to define new ECF Namespaces.  Plugins wishing to define new Namespaces must provide an extension of this extension point.</p>
+<br>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>name</b> - Optional name for new Namespace.  If not provided, the name will be assumed to be the value provided by the 'class' attribute for this extension point.  Note that this name must <b>not</b> conflict with any other Namespace name in the ECF IDFactory in order to be successfully registered.  Care should therefore be taken in selection of a namespace name such that it does not conflict with other implementations.</li>
+<li><b>class</b> - The fully qualified name of a class that extends <b>org.eclipse.ecf.core.identity.Namespace</b>.</li>
+<li><b>description</b> - An optional description for the Namespace extension</li>
+</ul>
+<br><h6 class=CaptionFigColumn id=header>Examples: </h6>Here's an extension definition that associates an namespace class with namespace 'testid':
+
+<pre>
+   <p class=code id=tag>&lt;extension point=<p class=code id=cstring>&quot;org.eclipse.ecf.identity.namespace&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;namespace name=<p class=code id=cstring>&quot;testnamespace&quot;</p><p class=code id=tag> class=<p class=code id=cstring>&quot;org.eclipse.ecf.test.FooNamespace&quot;</p><p class=code id=tag> description=<p class=code id=cstring>&quot;my namespace implementation&quot;</p><p class=code id=tag>/&gt;</p>
+   <p class=code id=tag>&lt;/extension&gt;</p>
+</pre>
+
+Here is some example code to implement this FooNamespace class:
+
+<pre>
+package org.eclipse.ecf.test;
+
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.Namespace;
+
+public class FooNamespace extends
+        org.eclipse.ecf.core.identity.Namespace {
+
+    public ID createInstance(Class[] argTypes, Object[] args)
+            throws IDCreateException {
+        return new FooID((String) args[0]);
+    }
+}
+</pre>
+
+In this example, the FooNamespace class implements the abstract  <b>Namesapce</b>.createInstance method by creating and returning a new instance of FooID, a class also defined by the extension plugin.  This class must implement <b>ID</b>, so that it can successfully be returned from the Namespace.createInstance call.
+
+<h3>Example Usage of IDFactory by Clients</h3>
+
+Clients that wish to use the 'testnamespace' Namespace implementation can do so simply by making the following call to create an <b>IDFactory</b>:
+
+<pre>
+ID newID = IDFactory.getDefault().createID("testnamespace","email@emailserver.com"); 
+</pre>
+Another example would be:
+<pre>
+ID newID = IDFactory.getDefault().createID(new URI("testnamespace:email@emailserver.com"));
+</pre>
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>API Information: </h6>The client API for this extension point is provided by the <b>org.eclipse.ecf.core.IIDFactory.createID</b> methods.  A valid IIDFactory is provided by the by the static <b>org.eclipse.ecf.core.identityIDFactory.getDefault()</b> method.
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>Supplied Implementation: </h6>The following implementations of this extension point are provided by ECF itself:
+<p>
+StringID -- A namespace of ID instances that are implemented by <b>org.eclipse.ecf.core.identity.StringID</b>
+<p>Clients may use this namespace with calls to:
+<pre>
+ID newID = org.eclipse.ecf.core.identity.IDFactory.createStringID(&apos;idstringvalue&apos;);
+</pre>
+</p>
+</p>
+<p>
+LongID -- A namespace of ID instances that are implemented by <b>org.eclipse.ecf.core.identity.LongID</b>
+<p>Clients may use this namespace with calls to:
+<pre>
+ID newID = org.eclipse.ecf.core.identity.IDFactory.createLongID(2004L);
+</pre>
+</p>
+</p>
+<p>
+GUID -- A namespace of ID instances that are implemented by <b>org.eclipse.ecf.core.identity.GUID</b>
+<p>Clients may use this namespace with calls to:
+<pre>
+ID newID = org.eclipse.ecf.core.identity.IDFactory.createGUID(16);
+</pre>
+</p>
+</p>
+<p></p>
+
+<br>
+<p class=note id=copyright>
+Copyright (c) 2004 Composent, Inc. and others.
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation
+<p></p>
+
+</p>
+</BODY>
+</HTML>

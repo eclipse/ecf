@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>ECF Core Startup</title>
+<style>@import url("../../book.css");</style>
+<style>@import url("../../schema.css");</style>
+</HEAD>
+<BODY>
+<H1><CENTER>ECF Core Startup</CENTER></H1>
+<p></p>
+<h6 class=CaptionFigColumn id=header>Identifier: </h6>org.eclipse.ecf.startup<p></p>
+<h6 class=CaptionFigColumn id=header>Since: </h6>0.9.0
+<p></p>
+
+<p>
+<h6 class=CaptionFigColumn id=header>Description: </h6>ECF Core Startup Extension Point.  This extension point (<b>org.eclipse.ecf.startup</b>) allows other bundles to have arbitrary code run upon ECF startup.  Note that extensions will be run when the ECF core bundle (ID: <b>org.eclipse.ecf</b>) is started by the runtime, not necessarily upon platform startup.  Of course, if the <b>org.eclipse.ecf</b> bundle is started at platform startup, then extensions of this extension point will also be run.</p>
+<p><h6 class=CaptionFigColumn id=header>Configuration Markup:</h6></p>
+<p class=code id=dtd>&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.ecfstart">ecfstart</a>)&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST extension</p>
+<p class=code id=dtdAttlist>point&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.ecfstart">ecfstart</a> (<a href="#e.property">property</a>*)&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST ecfstart</p>
+<p class=code id=dtdAttlist>class&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>class</b> - The fully qualified name of the class that implements the org.eclipse.ecf.core.start.IECFStart interface.</li>
+<li><b>name</b> - </li>
+</ul>
+<br><h6 class=CaptionFigColumn id=header>Examples: </h6>Here is an example usage of this extension point:
+
+<pre>
+<p class=code id=tag>&lt;extension
+      point=<p class=code id=cstring>&quot;org.eclipse.ecf.startup&quot;</p><p class=code id=tag>&gt;</p>
+   <p class=code id=tag>&lt;ecfstart
+         class=<p class=code id=cstring>&quot;org.eclipse.ecf.example.collab.start.CollabStart&quot;</p><p class=code id=tag>/&gt;</p>
+<p class=code id=tag>&lt;/extension&gt;</p>
+</pre>
+
+Note that the CollabStart class must implement the <b>org.eclipse.ecf.start.IECFStart</b> interface.
+
+Here's an example implementation class:
+
+<pre>
+public class CollabStart implements IECFStart {
+ Discovery discovery = null;
+ public IStatus startup(IProgressMonitor monitor) {
+  try {
+   AccountStart as = new AccountStart();
+   as.loadConnectionDetailsFromPreferenceStore();
+   Collection c = as.getConnectionDetails();
+   for (Iterator i = c.iterator(); i.hasNext();) {
+    startConnection((ConnectionDetails) i.next());
+   }
+  } catch (Exception e) {
+   return new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID, 200,
+     "Exception in starting connection", e);
+  }
+  return new Status(IStatus.OK, ClientPlugin.PLUGIN_ID, 100, "OK", null);
+ }
+ private void startConnection(ConnectionDetails details) throws Exception {
+  CollabClient client = new CollabClient();
+  //ClientPlugin.log("ECF: Autostarting containerType="+details.getContainerType()+",uri="+details.getTargetURI()+",nickname="+details.getNickname());
+  client.createAndConnectClient(details.getContainerType(), details
+    .getTargetURI(), details.getNickname(), details.getPassword(),
+    ResourcesPlugin.getWorkspace().getRoot());
+ }
+}
+
+</pre>
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>API Information: </h6>The API for the <b>org.eclipse.ecf.startup</b> extension point is provided by the
+<b>org.eclipse.ecf.startup.IECFStartup</b> interface:
+
+<pre>
+/**
+ * Interface that must be implemented by extensions of the org.eclipse.ecf.start
+ * extension point. Such extensions will have their start method called by a new
+ * Job upon ECF startup.
+ */
+public interface IECFStart {
+ /**
+  * Start ECF client or server.
+  * 
+  * @return IStatus the status of the start
+  * @throws ECFStartException
+  *             if some exception thrown during start
+  */
+ public IStatus startup(IProgressMonitor monitor);
+}
+</pre>
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>Supplied Implementation: </h6>No implementation supplied for this extensinion point.
+<p></p>
+
+<br>
+<p class=note id=copyright>
+Copyright (c) 2004 Composent, Inc. and others.
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation
+<p></p>
+
+</p>
+</BODY>
+</HTML>

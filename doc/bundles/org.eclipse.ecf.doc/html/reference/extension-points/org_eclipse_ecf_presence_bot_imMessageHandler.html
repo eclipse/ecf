@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>IM Message Handler</title>
+<style>@import url("../../book.css");</style>
+<style>@import url("../../schema.css");</style>
+</HEAD>
+<BODY>
+<H1><CENTER>IM Message Handler</CENTER></H1>
+<p></p>
+<h6 class=CaptionFigColumn id=header>Identifier: </h6>org.eclipse.ecf.presence.bot.imMessageHandler<p></p>
+<h6 class=CaptionFigColumn id=header>Since: </h6>1.0.0 milestone 6
+<p></p>
+
+<p>
+<h6 class=CaptionFigColumn id=header>Description: </h6>This extension point allows message handler objects to be associated
+with imrobot instances.</p>
+<p><h6 class=CaptionFigColumn id=header>Configuration Markup:</h6></p>
+<p class=code id=dtd>&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.handler">handler</a>+)&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST extension</p>
+<p class=code id=dtdAttlist>point&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.handler">handler</a> EMPTY&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST handler</p>
+<p class=code id=dtdAttlist>imRobotId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>filterExpression&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED&gt;</p>
+<p></p>
+<p class=ConfigMarkup id=elementDesc>
+The im message handler</p>
+<br>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>imRobotId</b> - Required imRobotId.  The value of this field must match a imrobot id</li>
+<li><b>filterExpression</b> - Optional filter expression.  If filterExpression is provided, then chatroom messages will be filtered via given regular expression.  If match, then the handleChatRoomMessage method will be called.  If not matched, then the received message will be ignored.</li>
+<li><b>class</b> - The class of the message handler instance to create.  Must implement <b>org.eclipse.ecf.presence.bot.IIMMessageHandler</b>.</li>
+</ul>
+<br><h6 class=CaptionFigColumn id=header>Examples: </h6><pre>
+   <p class=code id=tag>&lt;extension
+         point=<p class=code id=cstring>&quot;org.eclipse.ecf.presence.bot.imMessageHandler&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;handler
+            imrobotid=<p class=code id=cstring>&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;</p><p class=code id=tag>
+            class=<p class=code id=cstring>&quot;org.eclipse.ecf.presence.imbot.DefaultIMMessageHandler&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;/handler&gt;</p>
+   <p class=code id=tag>&lt;/extension&gt;</p>
+</pre>
+
+Note that the given imrobotid=<b>org.eclipse.ecf.presence.imbot.defaultbot</b> must be previously defined via the imrobot extension point.  Here is an example:
+
+<pre>
+   <p class=code id=tag>&lt;extension
+         point=<p class=code id=cstring>&quot;org.eclipse.ecf.presence.bot.imRobot&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;imRobot
+            connectID=<p class=code id=cstring>&quot;slewis@ecf.eclipse.org&quot;</p><p class=code id=tag>
+            containerFactoryName=<p class=code id=cstring>&quot;ecf.xmpp.smack&quot;</p><p class=code id=tag>
+            id=<p class=code id=cstring>&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;</p><p class=code id=tag>/&gt;</p>
+      <p class=code id=tag>&lt;/imRobot&gt;</p>
+   <p class=code id=tag>&lt;/extension&gt;</p>
+</pre>
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>API Information: </h6>The class implementation provided in extension point must implement the following interface:
+
+<pre>
+public interface IIMMessageHandler extends IContainerAdvisor {
+
+ /**
+  * This method is called when a {@link IChatMessage} is received.
+  * 
+  * @param message
+  *            the {@link IChatMessage} received. Will not be
+  *            <p class=code id=tag>&lt;code&gt;</p>null<p class=code id=tag>&lt;/code&gt;</p>. Implementers should not block the
+  *            calling thread. Any methods on the given <p class=code id=tag>&lt;code&gt;</p>message<p class=code id=tag>&lt;/code&gt;</p>
+  *            parameter may be called.
+  */
+ public void handleIMMessage(IChatMessage message);
+
+}
+</pre>
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>Supplied Implementation: </h6>No supplied implementation.
+<p></p>
+
+<br>
+<p class=note id=copyright>
+Copyright (c) 2007 IBM Corporation and others.  All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+<p></p>
+
+</p>
+</BODY>
+</HTML>

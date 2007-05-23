@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>IM Robot</title>
+<style>@import url("../../book.css");</style>
+<style>@import url("../../schema.css");</style>
+</HEAD>
+<BODY>
+<H1><CENTER>IM Robot</CENTER></H1>
+<p></p>
+<h6 class=CaptionFigColumn id=header>Identifier: </h6>org.eclipse.ecf.presence.bot.imRobot<p></p>
+<h6 class=CaptionFigColumn id=header>Since: </h6>1.0.0 milestone 6
+<p></p>
+
+<p>
+<h6 class=CaptionFigColumn id=header>Description: </h6>This extension point allows implementers to define a im bot.</p>
+<p><h6 class=CaptionFigColumn id=header>Configuration Markup:</h6></p>
+<p class=code id=dtd>&lt;!ELEMENT <a name="e.extension">extension</a> (<a href="#e.imRobot">imRobot</a>)+&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST extension</p>
+<p class=code id=dtdAttlist>point&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>name&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<ul class=ConfigMarkup id=attlistDesc>
+</ul>
+<br><p class=code id=dtd>&lt;!ELEMENT <a name="e.imRobot">imRobot</a> EMPTY&gt;</p>
+<p class=code id=dtd>&lt;!ATTLIST imRobot</p>
+<p class=code id=dtdAttlist>id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>containerFactoryName&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>connectId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED<p class=code id=dtdAttlist>name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED<p class=code id=dtdAttlist>connectPassword&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED&gt;</p>
+<p></p>
+<p class=ConfigMarkup id=elementDesc>
+The imrobot extension point.</p>
+<br>
+<ul class=ConfigMarkup id=attlistDesc>
+<li><b>id</b> - The required id for the im robot.  This must be a unique value relative to all other im robots.  For message handlers that are to use this robot, they must provide a imrobotid that matches this value.</li>
+<li><b>containerFactoryName</b> - The required container factory name.  This should be the container factory name for a given protocol.  For example, for the built in ECF IRC provider the value is <b>ecf.xmpp.smack</b>.</li>
+<li><b>connectId</b> - The connect ID for connecting to the given container.  For example, for XMPP the expected ID syntax of the connect ID is
+<pre>
+username@host[:port]
+
+for example:  slewis@ecf.eclipse.org
+</pre></li>
+<li><b>name</b> - An optional name for the bot.</li>
+<li><b>connectPassword</b> - An optional connect password.  If a password is required to connect to the given container then an appropriate value must be provided.</li>
+</ul>
+<br><h6 class=CaptionFigColumn id=header>Examples: </h6><pre>
+   <p class=code id=tag>&lt;extension
+         point=<p class=code id=cstring>&quot;org.eclipse.ecf.presence.bot.imRobot&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;imRobot
+            connectID=<p class=code id=cstring>&quot;slewis@ecf.eclipse.org&quot;</p><p class=code id=tag>
+            containerFactoryName=<p class=code id=cstring>&quot;ecf.xmpp.smack&quot;</p><p class=code id=tag>
+            id=<p class=code id=cstring>&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;</p><p class=code id=tag>/&gt;</p>
+      <p class=code id=tag>&lt;/imRobot&gt;</p>
+   <p class=code id=tag>&lt;/extension&gt;</p>
+</pre>
+
+Note that to have the imrobot receive im messages and process them, that the immessagehandler should also be defined 
+using the id for the imrobot given above.  For example:
+
+<pre>
+   <p class=code id=tag>&lt;extension
+         point=<p class=code id=cstring>&quot;org.eclipse.ecf.presence.bot.immessagehandler&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;handler
+            imrobotid=<p class=code id=cstring>&quot;org.eclipse.ecf.presence.imbot.defaultbot&quot;</p><p class=code id=tag>
+            class=<p class=code id=cstring>&quot;org.eclipse.ecf.presence.imbot.DefaultIMMessageHandler&quot;</p><p class=code id=tag>&gt;</p>
+      <p class=code id=tag>&lt;/handler&gt;</p>
+   <p class=code id=tag>&lt;/extension&gt;</p>
+</pre>
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>API Information: </h6>See the API information for the immessagehandler.
+<p></p>
+
+<h6 class=CaptionFigColumn id=header>Supplied Implementation: </h6>No supplied implementation.
+<p></p>
+
+<br>
+<p class=note id=copyright>
+Copyright (c) 2007 IBM Corporation and others.  All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+<p></p>
+
+</p>
+</BODY>
+</HTML>
