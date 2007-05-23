@@ -118,7 +118,7 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="org.eclipse.ecf.example.collab.ui.actionSet"
-            label="ECF Communications Action Set"
+            label="Communications"
             visible="false">
          <menu
                id="org.eclipse.ecf.example.collab.ui.connectMenu"
