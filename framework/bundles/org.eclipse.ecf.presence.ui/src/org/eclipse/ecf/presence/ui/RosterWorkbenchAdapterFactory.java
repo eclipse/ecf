@@ -59,7 +59,7 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 		if (user == null)
 			return getImageDescriptor(SharedImages.IMG_USER_UNAVAILABLE);
 		else
-			return getImageDescriptor(SharedImages.IMG_USER_AVAILABLE);
+			return getImageDescriptor(SharedImages.IMG_IDENTITY);
 	}
 
 	private IWorkbenchAdapter rosterAdapter = new IWorkbenchAdapter() {
