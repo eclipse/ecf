@@ -18,6 +18,7 @@ import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.ui.MultiRosterAccount;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -68,6 +69,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 			MultiRosterAccount[] accounts) {
 		super(parentShell);
 		this.accounts = accounts;
+		setTitleImage(SharedImages.getImage(SharedImages.IMG_CHAT_WIZARD));
 	}
 
 	protected Control createDialogArea(Composite parent) {
