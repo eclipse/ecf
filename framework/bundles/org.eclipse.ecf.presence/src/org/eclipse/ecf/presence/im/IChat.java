@@ -72,6 +72,16 @@ public interface IChat {
 	public void sendChatMessage(String messageBody) throws ECFException;
 
 	/**
+	 * Get typing message sender. If sending typing messages not supported by
+	 * this provider then <code>null</code> will be returned.
+	 * 
+	 * @return ITypingMessageSender to use for sending typing messages
+	 *         (instances of ITypingMessage). If <code>null</code>, sending
+	 *         typing messages not supported by this provider.
+	 */
+	public ITypingMessageSender getTypingMessageSender();
+	
+	/**
 	 * Create a new IChatRoomContainer instance. This method can be used to
 	 * create to a chat room identified by this two-way chat. If supported by
 	 * the provider, this allows moving from a two-way chat represented by this
