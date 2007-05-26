@@ -38,6 +38,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener;
+import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
@@ -425,6 +426,11 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 
 	protected ISynchAsynchConnection createConnection(ID remoteSpace,
 			Object data) throws ConnectionCreateException {
+		return null;
+	}
+
+	public IChatMessageSender getPrivateMessageSender() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
