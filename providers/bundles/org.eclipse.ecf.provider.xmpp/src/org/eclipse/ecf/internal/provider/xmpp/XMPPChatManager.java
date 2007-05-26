@@ -225,7 +225,7 @@ public class XMPPChatManager implements IChatManager {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.im.IChatManager#createChat(org.eclipse.ecf.core.identity.ID)
 	 */
-	public IChat createChat(ID targetUser) throws ECFException {
+	public IChat createChat(ID targetUser, IIMMessageListener messageListener) throws ECFException {
 		// TODO Auto-generated method stub
 		return null;
 	}
