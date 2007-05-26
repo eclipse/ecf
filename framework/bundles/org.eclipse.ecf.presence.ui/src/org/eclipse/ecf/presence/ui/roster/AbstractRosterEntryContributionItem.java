@@ -35,8 +35,8 @@ public abstract class AbstractRosterEntryContributionItem extends
 	 * Get the currently selected IRosterEntry.
 	 * 
 	 * @return IRosterEntry that is current workbenchwindow selection. Returns
-	 *         <code>null</code> if nothing is selected or if something other than
-	 *         IRosterEntry is selected.
+	 *         <code>null</code> if nothing is selected or if something other
+	 *         than IRosterEntry is selected.
 	 */
 	protected IRosterEntry getSelectedRosterEntry() {
 		Object selection = getSelection();
@@ -59,30 +59,33 @@ public abstract class AbstractRosterEntryContributionItem extends
 	protected IContainer getContainerForRosterEntry(IRosterEntry entry) {
 		if (entry == null)
 			return null;
-		IPresenceContainerAdapter pca = (IPresenceContainerAdapter) entry
-				.getRoster().getPresenceContainerAdapter();
+		IPresenceContainerAdapter pca = entry.getRoster()
+				.getPresenceContainerAdapter();
 		if (pca != null)
 			return (IContainer) pca.getAdapter(IContainer.class);
 		return null;
 	}
 
 	/**
-	 * Return true if given IRosterEntry has an IPresence, and it's IPresence.Type and
-	 * IPresence.Mode are both AVAILABLE.
+	 * Return true if given IRosterEntry has an IPresence, and it's
+	 * IPresence.Type and IPresence.Mode are both AVAILABLE.
 	 * 
-	 * @param entry the IRosterEntry to check.  If <code>null</code>, <code>false</code>
-	 * will be returned.
+	 * @param entry
+	 *            the IRosterEntry to check. If <code>null</code>,
+	 *            <code>false</code> will be returned.
 	 * 
-	 * @return true if given <code>entry</code>'s IPresence.Mode and IPresence.Type are
-	 * both AVAILABLE.  <code>false</code> otherwise.
+	 * @return true if given <code>entry</code>'s IPresence.Mode and
+	 *         IPresence.Type are both AVAILABLE. <code>false</code>
+	 *         otherwise.
 	 */
 	protected boolean isAvailable(IRosterEntry entry) {
-		if (entry == null) return false;
+		if (entry == null)
+			return false;
 		IPresence presence = entry.getPresence();
-		boolean type = (presence == null) ? false : presence.getType()
-				.equals(IPresence.Type.AVAILABLE);
-		boolean mode = (presence == null) ? false : presence.getMode()
-				.equals(IPresence.Mode.AVAILABLE);
+		boolean type = (presence == null) ? false : presence.getType().equals(
+				IPresence.Type.AVAILABLE);
+		boolean mode = (presence == null) ? false : presence.getMode().equals(
+				IPresence.Mode.AVAILABLE);
 		return (type && mode);
 	}
 }

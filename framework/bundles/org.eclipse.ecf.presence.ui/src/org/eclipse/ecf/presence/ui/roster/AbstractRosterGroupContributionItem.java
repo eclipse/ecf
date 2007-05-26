@@ -35,8 +35,8 @@ public abstract class AbstractRosterGroupContributionItem extends
 	 * Get the currently selected IRosterGroup.
 	 * 
 	 * @return IRosterGroup that is current workbenchwindow selection. Returns
-	 *         <code>null</code> if nothing is selected or if something other than
-	 *         IRosterGroup is selected.
+	 *         <code>null</code> if nothing is selected or if something other
+	 *         than IRosterGroup is selected.
 	 */
 	protected IRosterGroup getSelectedRosterGroup() {
 		Object selection = getSelection();
@@ -59,8 +59,8 @@ public abstract class AbstractRosterGroupContributionItem extends
 	protected IContainer getContainerForRosterEntry(IRosterEntry group) {
 		if (group == null)
 			return null;
-		IPresenceContainerAdapter pca = (IPresenceContainerAdapter) group
-				.getRoster().getPresenceContainerAdapter();
+		IPresenceContainerAdapter pca = group.getRoster()
+				.getPresenceContainerAdapter();
 		if (pca != null)
 			return (IContainer) pca.getAdapter(IContainer.class);
 		return null;
