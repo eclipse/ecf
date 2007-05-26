@@ -37,7 +37,7 @@ public class ClientPreferencePage extends FieldEditorPreferencePage implements
 	protected void performDefaults() {
 		super.performDefaults();
 		
-		getPreferenceStore().setDefault(CONTAINER_TYPE, "ecf.generic.channel");
+		getPreferenceStore().setDefault(CONTAINER_TYPE, "ecf.generic.client");
 		getPreferenceStore().setDefault(TARGET_SERVER, "ecftcp://localhost:3282/server");
 		getPreferenceStore().setDefault(CHANNEL_ID, "collab.editor");
 		try {
