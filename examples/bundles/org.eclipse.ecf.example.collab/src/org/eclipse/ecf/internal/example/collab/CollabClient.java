@@ -158,7 +158,7 @@ public class CollabClient {
 
 	protected static ClientEntry getClientEntry(IResource proj, ID targetID) {
 		synchronized (clients) {
-			Vector v = (Vector) getClientEntries(proj);
+			Vector v = getClientEntries(proj);
 			if (v == null)
 				return null;
 			for (Iterator i = v.iterator(); i.hasNext();) {
@@ -177,7 +177,7 @@ public class CollabClient {
 	protected static ClientEntry getClientEntry(IResource proj,
 			String containerType) {
 		synchronized (clients) {
-			Vector v = (Vector) getClientEntries(proj);
+			Vector v = getClientEntries(proj);
 			if (v == null)
 				return null;
 			for (Iterator i = v.iterator(); i.hasNext();) {

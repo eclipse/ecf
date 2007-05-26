@@ -93,8 +93,7 @@ public class DiscoveryStartup {
 
 	protected void connectToServiceFromInfo(IServiceInfo svcInfo) {
 		IServiceProperties props = svcInfo.getServiceProperties();
-		String type = (String) props
-				.getPropertyString(PROP_CONTAINER_TYPE_NAME);
+		String type = props.getPropertyString(PROP_CONTAINER_TYPE_NAME);
 		if (type == null || type.equals("")) {
 			type = CollabClient.GENERIC_CONTAINER_CLIENT_NAME;
 		}
