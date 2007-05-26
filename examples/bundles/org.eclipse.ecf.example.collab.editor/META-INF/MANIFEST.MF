@@ -6,21 +6,16 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.example.collab.editor.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ui,
- org.eclipse.jface.text,
- org.eclipse.ui.workbench.texteditor,
+ org.eclipse.core.resources,
  org.eclipse.ecf,
  org.eclipse.ecf.datashare,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.provider,
  org.eclipse.ecf.provider.datashare,
- org.eclipse.ecf.ui,
- org.eclipse.core.resources,
+ org.eclipse.jface.text,
+ org.eclipse.ui.ide,
  org.eclipse.ui.editors,
- org.eclipse.jdt,
- org.eclipse.jdt.ui,
- org.eclipse.ui.ide
+ org.eclipse.ui
 Eclipse-LazyStart: true
 Bundle-Vendor: %plugin.provider
-Bundle-RequiredExecutionEnvironment: J2SE-1.4,
- CDC-1.1/Foundation-1.1
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
