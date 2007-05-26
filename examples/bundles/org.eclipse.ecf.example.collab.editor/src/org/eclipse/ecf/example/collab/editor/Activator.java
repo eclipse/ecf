@@ -47,8 +47,8 @@ public class Activator extends AbstractUIPlugin {
 	private IChannel presenceChannel;
 
 	private IContainer presenceContainer = null;
-	
-	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab.editor";
+
+	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab.editor"; //$NON-NLS-1$
 
 	/**
 	 * The constructor.
@@ -96,7 +96,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.ecf.example.collab.editor", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
 	public boolean isListenerActive() {
@@ -112,13 +112,18 @@ public class Activator extends AbstractUIPlugin {
 	 */
 
 	public void addSession(String channelID, String sessionName) {
-		
-		sessionNames.add(new SessionInstance(channelID, sessionName, getPreferenceStore().getString(ClientPreferencePage.LOCAL_NAME), Calendar.getInstance().getTime()));
+
+		sessionNames
+				.add(new SessionInstance(channelID, sessionName,
+						getPreferenceStore().getString(
+								ClientPreferencePage.LOCAL_NAME), Calendar
+								.getInstance().getTime()));
 
 		if (presenceChannel != null) {
 			// Tell everyone there is a new shared editor.
 			try {
-				presenceChannel.sendMessage((new SharedEditorSessionList(sessionNames)).toByteArray());
+				presenceChannel.sendMessage((new SharedEditorSessionList(
+						sessionNames)).toByteArray());
 			} catch (ECFException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -133,21 +138,30 @@ public class Activator extends AbstractUIPlugin {
 		return presenceChannelListener;
 	}
 
-	public IChannel intializePresenceSession(IChannelListener clistener) throws ECFException {
+	public IChannel intializePresenceSession(IChannelListener clistener)
+			throws ECFException {
 		presenceContainer = ContainerFactory.getDefault().createContainer(
-				Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CONTAINER_TYPE));
+				Activator.getDefault().getPreferenceStore().getString(
+						ClientPreferencePage.CONTAINER_TYPE));
 
-		IChannelContainerAdapter channelContainer = (IChannelContainerAdapter) presenceContainer.getAdapter(IChannelContainerAdapter.class);
+		IChannelContainerAdapter channelContainer = (IChannelContainerAdapter) presenceContainer
+				.getAdapter(IChannelContainerAdapter.class);
 
-		final ID channelID = IDFactory.getDefault().createID(channelContainer.getChannelNamespace(),
-				Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CHANNEL_ID) + ".presence");
+		final ID channelID = IDFactory.getDefault().createID(
+				channelContainer.getChannelNamespace(),
+				Activator.getDefault().getPreferenceStore().getString(
+						ClientPreferencePage.CHANNEL_ID)
+						+ ".presence");
 
-		presenceChannel = channelContainer.createChannel(channelID, clistener, new HashMap());
+		presenceChannel = channelContainer.createChannel(channelID, clistener,
+				new HashMap());
 
 		this.presenceChannelListener = clistener;
 
-		presenceContainer.connect(IDFactory.getDefault().createID(presenceContainer.getConnectNamespace(),
-				Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.TARGET_SERVER)), null);
+		presenceContainer.connect(IDFactory.getDefault().createID(
+				presenceContainer.getConnectNamespace(),
+				Activator.getDefault().getPreferenceStore().getString(
+						ClientPreferencePage.TARGET_SERVER)), null);
 
 		return presenceChannel;
 	}
