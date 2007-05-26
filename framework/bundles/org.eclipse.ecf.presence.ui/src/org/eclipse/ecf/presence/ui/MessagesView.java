@@ -37,6 +37,8 @@ import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Adapter;
+import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.ST;
 import org.eclipse.swt.custom.SashForm;
@@ -103,6 +105,20 @@ public class MessagesView extends ViewPart {
 					ChatTab tab = (ChatTab) it.next();
 					if (tab.item == e.item) {
 						tab.inputText.setFocus();
+						break;
+					}
+				}
+			}
+		});
+		
+		tabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+			public void close(CTabFolderEvent e) {
+				Iterator it = tabs.keySet().iterator();
+				while (it.hasNext()) {
+					Object key = it.next();
+					ChatTab tab = (ChatTab) tabs.get(key);
+					if (tab.item == e.item) {
+						tabs.remove(key);
 						break;
 					}
 				}
