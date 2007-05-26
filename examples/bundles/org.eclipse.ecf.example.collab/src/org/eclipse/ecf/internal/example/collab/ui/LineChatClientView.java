@@ -187,7 +187,7 @@ public class LineChatClientView implements FileSenderUI {
 		TreeParent top = getPresenceRoot();
 		for (Iterator childs = top.children().iterator(); childs.hasNext();) {
 			TreeUser child = (TreeUser) childs.next();
-			User ud = (User) child.getUser();
+			User ud = child.getUser();
 			if (ud.getUserID().equals(userdata.getUserID())) {
 				// We've found it...so remove existing data
 				top.removeChild(child);
@@ -291,7 +291,7 @@ public class LineChatClientView implements FileSenderUI {
 		TreeParent top = getPresenceRoot();
 		for (Iterator e = top.children().iterator(); e.hasNext();) {
 			TreeUser tn = (TreeUser) e.next();
-			User ud = (User) tn.getUser();
+			User ud = tn.getUser();
 			if (id.equals(ud.getUserID())) {
 				return ud;
 			}
@@ -399,7 +399,7 @@ public class LineChatClientView implements FileSenderUI {
 		if (top != null) {
 			for (Iterator e = top.children().iterator(); e.hasNext();) {
 				TreeUser tn = (TreeUser) e.next();
-				User ud = (User) tn.getUser();
+				User ud = tn.getUser();
 				if (id.equals(ud.getUserID())) {
 					e.remove();
 					refreshTreeView();

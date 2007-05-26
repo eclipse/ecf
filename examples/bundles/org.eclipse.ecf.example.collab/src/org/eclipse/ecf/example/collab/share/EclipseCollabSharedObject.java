@@ -413,7 +413,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements
 	public void messageProxyObject(ID target, String classname, String meth,
 			Object[] args) {
 		SharedObjectMsg m = SharedObjectMsg.createMsg(null, classname, meth,
-				(Object[]) args);
+				args);
 		try {
 			forwardMsgTo(target, m);
 			if (target == null) {
