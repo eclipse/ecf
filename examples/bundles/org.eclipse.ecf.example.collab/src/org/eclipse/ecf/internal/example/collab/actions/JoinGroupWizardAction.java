@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,40 +12,29 @@ package org.eclipse.ecf.internal.example.collab.actions;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientEntry;
 import org.eclipse.ecf.internal.example.collab.CollabClient;
 import org.eclipse.ecf.internal.example.collab.ui.JoinGroupWizard;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IObjectActionDelegate;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.actions.ActionDelegate;
-import org.eclipse.ui.part.IShowInSource;
-import org.eclipse.ui.part.ShowInContext;
 
-public class JoinGroupWizardAction extends ActionDelegate implements
-		IObjectActionDelegate, IWorkbenchWindowActionDelegate {
+public class JoinGroupWizardAction implements IObjectActionDelegate {
 
 	private static final String CONNECT_PROJECT_MENU_TEXT = "Connect Project to Collaboration Group...";
 	private static final String DISCONNECT_PROJECT_MENU_TEXT = "Disconnect Project";
-	IResource resource;
-	boolean connected = false;
-	IWorkbenchWindow window = null;
 
-	public JoinGroupWizardAction() {
-		super();
-	}
+	private IResource resource;
+	private boolean connected = false;
+	private IWorkbenchPart targetPart;
 
-	protected ClientEntry isConnected(IResource res) {
+	private ClientEntry isConnected(IResource res) {
 		if (res == null)
 			return null;
 		CollabClient client = CollabClient.getDefault();
@@ -54,53 +43,28 @@ public class JoinGroupWizardAction extends ActionDelegate implements
 		return entry;
 	}
 
-	protected void setAction(IAction action, IResource res) {
-		if (isConnected(res) != null) {
+	private void setAction(IAction action, IResource resource) {
+		if (isConnected(resource) != null) {
 			action.setText(DISCONNECT_PROJECT_MENU_TEXT);
 			connected = true;
 		} else {
 			action.setText(CONNECT_PROJECT_MENU_TEXT);
 			connected = false;
 		}
-		action.setEnabled(true);
-		if (!res.isAccessible())
-			action.setEnabled(false);
+		action.setEnabled(resource.isAccessible());
 	}
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		resource = null;
-		Object o = targetPart.getAdapter(IShowInSource.class);
-		if (o != null) {
-			IShowInSource sis = (IShowInSource) o;
-			ShowInContext sc = sis.getShowInContext();
-			ISelection s = sc.getSelection();
-			if (s instanceof IStructuredSelection) {
-				IStructuredSelection ss = (IStructuredSelection) s;
-				Object obj = ss.getFirstElement();
-				if (obj instanceof IJavaProject) {
-					IJavaProject ij = (IJavaProject) obj;
-					resource = ij.getProject();
-					setAction(action, resource);
-				}
-				if (obj instanceof IProject) {
-					resource = (IProject) obj;
-					setAction(action, resource);
-				}
-			}
-		}
-	}
-
-	protected IWorkbench getWorkbench() {
-		return PlatformUI.getWorkbench();
+		this.targetPart = targetPart;
 	}
 
 	public void run(IAction action) {
 		if (!connected) {
-			JoinGroupWizard wizard = new JoinGroupWizard(resource,
-					getWorkbench());
+			JoinGroupWizard wizard = new JoinGroupWizard(resource, PlatformUI
+					.getWorkbench());
 			// Create the wizard dialog
-			WizardDialog dialog = new WizardDialog(getWorkbench()
-					.getActiveWorkbenchWindow().getShell(), wizard);
+			WizardDialog dialog = new WizardDialog(targetPart.getSite()
+					.getShell(), wizard);
 			// Open the wizard dialog
 			dialog.open();
 		} else {
@@ -117,12 +81,21 @@ public class JoinGroupWizardAction extends ActionDelegate implements
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
-	 */
-	public void init(IWorkbenchWindow window) {
-		resource = ResourcesPlugin.getWorkspace().getRoot();
+	public void selectionChanged(IAction action, ISelection selection) {
+		if (selection instanceof IStructuredSelection) {
+			IStructuredSelection iss = (IStructuredSelection) selection;
+			Object obj = iss.getFirstElement();
+			if (obj instanceof IProject) {
+				resource = (IProject) obj;
+			} else if (obj instanceof IAdaptable) {
+				resource = (IProject) ((IAdaptable) obj)
+						.getAdapter(IProject.class);
+			} else {
+				resource = null;
+			}
+		} else {
+			resource = null;
+		}
+		setAction(action, resource);
 	}
 }
