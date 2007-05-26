@@ -34,8 +34,8 @@ public abstract class AbstractRosterContributionItem extends
 	 * Get the currently selected IRoster.
 	 * 
 	 * @return IRoster that is current workbenchwindow selection. Returns
-	 *         <code>null</code> if nothing is selected or if something other than
-	 *         IRoster is selected.
+	 *         <code>null</code> if nothing is selected or if something other
+	 *         than IRoster is selected.
 	 */
 	protected IRoster getSelectedRoster() {
 		Object selection = getSelection();
@@ -58,7 +58,7 @@ public abstract class AbstractRosterContributionItem extends
 	protected IContainer getContainerForRoster(IRoster roster) {
 		if (roster == null)
 			return null;
-		IPresenceContainerAdapter pca = (IPresenceContainerAdapter) roster.getPresenceContainerAdapter();
+		IPresenceContainerAdapter pca = roster.getPresenceContainerAdapter();
 		if (pca != null)
 			return (IContainer) pca.getAdapter(IContainer.class);
 		return null;
