@@ -11,11 +11,9 @@
 package org.eclipse.ecf.presence.ui;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
@@ -31,10 +29,8 @@ import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.im.ITypingMessageEvent;
 import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.source.SourceViewer;
@@ -53,21 +49,18 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
-import org.eclipse.ui.forms.widgets.Form;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
@@ -86,14 +79,6 @@ public class MessagesView extends ViewPart {
 
 	private Color blueColor;
 
-	private Image image;
-
-	private FormToolkit toolkit;
-
-	private List switchActions;
-
-	private List menuManagers;
-
 	private Map tabs;
 
 	private boolean showTimestamps = true;
@@ -104,15 +89,12 @@ public class MessagesView extends ViewPart {
 	}
 
 	public MessagesView() {
-		menuManagers = new ArrayList();
-		switchActions = new ArrayList();
 		tabs = new HashMap();
 	}
 
 	public void createPartControl(Composite parent) {
-		tabFolder = new CTabFolder(parent, SWT.NONE);
+		tabFolder = new CTabFolder(parent, SWT.CLOSE);
 		tabFolder.setTabPosition(SWT.BOTTOM);
-		toolkit = new FormToolkit(tabFolder.getDisplay());
 
 		tabFolder.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -120,10 +102,8 @@ public class MessagesView extends ViewPart {
 				while (it.hasNext()) {
 					ChatTab tab = (ChatTab) it.next();
 					if (tab.item == e.item) {
-						tab.switchItem.getAction().setChecked(true);
 						tab.inputText.setFocus();
-					} else {
-						tab.switchItem.getAction().setChecked(false);
+						break;
 					}
 				}
 			}
@@ -153,8 +133,7 @@ public class MessagesView extends ViewPart {
 											NLS
 													.bind(
 															Messages.MessagesView_ClearChatLogDialogMessage,
-															MessagesView
-																	.getUserName(tab.remoteID)))) {
+															getUserName(tab.remoteID)))) {
 								synchronized (tab) {
 									tab.chatText.setText(""); //$NON-NLS-1$
 								}
@@ -173,7 +152,6 @@ public class MessagesView extends ViewPart {
 	}
 
 	public void dispose() {
-		toolkit.dispose();
 		redColor.dispose();
 		blueColor.dispose();
 		super.dispose();
@@ -236,12 +214,6 @@ public class MessagesView extends ViewPart {
 	public synchronized void selectTab(IChatMessageSender messageSender,
 			ITypingMessageSender typingSender, ID localID, ID userID) {
 		ChatTab tab = getTab(messageSender, typingSender, localID, userID);
-		for (int i = 0; i < switchActions.size(); i++) {
-			IAction action = ((ActionContributionItem) switchActions.get(i))
-					.getAction();
-			action.setChecked(false);
-		}
-		tab.switchItem.getAction().setChecked(true);
 		tabFolder.setSelection(tab.item);
 		tab.inputText.setFocus();
 	}
@@ -258,16 +230,6 @@ public class MessagesView extends ViewPart {
 		ChatTab tab = (ChatTab) tabs.get(remoteID);
 		if (tab != null) {
 			tab.append(remoteID, message.getBody());
-		}
-	}
-
-	private synchronized void removeTab(ChatTab tab) {
-		for (Iterator it = tabs.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
-			if (tabs.get(key) == tab) {
-				tabs.remove(key);
-				return;
-			}
 		}
 	}
 
@@ -288,15 +250,11 @@ public class MessagesView extends ViewPart {
 
 		private CTabItem item;
 
-		private Form form;
-
 		private StyledText chatText;
 
 		private Text inputText;
 
-		private IMenuManager manager;
-
-		private ActionContributionItem switchItem;
+		private Label notificationLabel;
 
 		private IChatMessageSender icms;
 
@@ -334,13 +292,8 @@ public class MessagesView extends ViewPart {
 								}
 								append(localID, text);
 							} catch (ECFException ex) {
-								form
-										.setMessage(
-												NLS
-														.bind(
-																Messages.MessagesView_CouldNotSendMessage,
-																text),
-												IMessageProvider.ERROR);
+								notificationLabel
+										.setText(Messages.MessagesView_CouldNotSendMessage);
 							}
 							e.doit = false;
 							sendTyping = false;
@@ -382,7 +335,7 @@ public class MessagesView extends ViewPart {
 				chatText.append(name + ": " + body); //$NON-NLS-1$
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, redColor, null, SWT.BOLD));
-				form.setMessage(null);
+				notificationLabel.setText(""); //$NON-NLS-1$
 				if (isFirstMessage) {
 					final MessageNotificationPopup popup = new MessageNotificationPopup(
 							getSite().getWorkbenchWindow(), tabFolder
@@ -418,17 +371,17 @@ public class MessagesView extends ViewPart {
 
 		private void constructWidgets() {
 			item = new CTabItem(tabFolder, SWT.NONE);
-			form = toolkit.createForm(tabFolder);
-			form.setImage(image);
-			toolkit.decorateFormHeading(form);
-			form.setText(getUserName(remoteID));
+			Composite parent = new Composite(tabFolder, SWT.NONE);
+			parent.setLayout(new GridLayout());
 
-			form.getBody().setLayout(new GridLayout());
+			notificationLabel = new Label(parent, SWT.BEGINNING);
+			notificationLabel.setLayoutData(new GridData(SWT.FILL,
+					SWT.BEGINNING, true, false));
 
-			SashForm sash = new SashForm(form.getBody(), SWT.VERTICAL);
+			SashForm sash = new SashForm(parent, SWT.VERTICAL);
 			sash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-			Composite client = toolkit.createComposite(sash);
+			Composite client = new Composite(sash, SWT.NONE);
 			client.setLayout(new FillLayout());
 
 			SourceViewer result = new SourceViewer(client, null, null, true,
@@ -440,11 +393,7 @@ public class MessagesView extends ViewPart {
 
 			chatText = result.getTextWidget();
 
-			client = toolkit.createComposite(sash);
-			client.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			client.setLayout(new FillLayout());
-
-			inputText = new Text(client, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+			inputText = new Text(sash, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 
 			sash.setWeights(WEIGHTS);
 
@@ -470,64 +419,14 @@ public class MessagesView extends ViewPart {
 			});
 			chatText.setMenu(menu);
 
-			IAction action = new Action(getUserName(remoteID) + '\t',
-					IAction.AS_RADIO_BUTTON) {
-				public void run() {
-					tabFolder.setSelection(item);
-				}
-			};
-			switchItem = new ActionContributionItem(action);
-
-			manager = form.getMenuManager();
-
-			switchActions.add(switchItem);
-			menuManagers.add(manager);
-
-			for (int i = menuManagers.size() - 1; i > -1; i--) {
-				IMenuManager manager = (IMenuManager) menuManagers.get(i);
-				manager.removeAll();
-				for (int j = 0; j < switchActions.size(); j++) {
-					IAction switchAction = ((ActionContributionItem) switchActions
-							.get(j)).getAction();
-					switchAction.setChecked(false);
-					manager.add(new ActionContributionItem(switchAction));
-				}
-				manager.update();
-			}
-			action.setChecked(true);
-
-			action = new Action() {
-				public void run() {
-					item.dispose();
-					removeTab(ChatTab.this);
-					switchActions.remove(switchItem);
-					menuManagers.remove(manager);
-
-					for (int i = 0; i < menuManagers.size(); i++) {
-						IMenuManager manager = (IMenuManager) menuManagers
-								.get(i);
-						manager.remove(switchItem);
-						manager.update(true);
-					}
-				}
-			};
-			action.setImageDescriptor(PlatformUI.getWorkbench()
-					.getSharedImages().getImageDescriptor(
-							ISharedImages.IMG_TOOL_DELETE));
-
-			form.getToolBarManager().add(action);
-			form.getToolBarManager().update(true);
-
-			item.setControl(form);
+			item.setControl(parent);
 			item.setText(getUserName(remoteID));
-
-			toolkit.paintBordersFor(form.getBody());
 		}
 
 		private void showIsTyping(boolean isTyping) {
-			form.setMessage(isTyping ? NLS.bind(
+			notificationLabel.setText(isTyping ? NLS.bind(
 					Messages.MessagesView_TypingNotification,
-					getUserName(remoteID)) : null);
+					getUserName(remoteID)) : ""); //$NON-NLS-1$
 		}
 	}
 
