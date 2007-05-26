@@ -12,6 +12,7 @@ package org.eclipse.ecf.internal.example.collab.actions;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientEntry;
@@ -21,11 +22,15 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 
-public class JoinGroupWizardAction implements IObjectActionDelegate {
+public class JoinGroupWizardAction implements IObjectActionDelegate,
+		IWorkbenchWindowActionDelegate {
 
 	private static final String CONNECT_PROJECT_MENU_TEXT = "Connect Project to Collaboration Group...";
 	private static final String DISCONNECT_PROJECT_MENU_TEXT = "Disconnect Project";
@@ -33,6 +38,7 @@ public class JoinGroupWizardAction implements IObjectActionDelegate {
 	private IResource resource;
 	private boolean connected = false;
 	private IWorkbenchPart targetPart;
+	private IWorkbenchWindow window;
 
 	private ClientEntry isConnected(IResource res) {
 		if (res == null)
@@ -62,9 +68,14 @@ public class JoinGroupWizardAction implements IObjectActionDelegate {
 		if (!connected) {
 			JoinGroupWizard wizard = new JoinGroupWizard(resource, PlatformUI
 					.getWorkbench());
+			Shell shell = null;
+			if (targetPart == null) {
+				shell = window.getShell();
+			} else {
+				shell = targetPart.getSite().getShell();
+			}
 			// Create the wizard dialog
-			WizardDialog dialog = new WizardDialog(targetPart.getSite()
-					.getShell(), wizard);
+			WizardDialog dialog = new WizardDialog(shell, wizard);
 			// Open the wizard dialog
 			dialog.open();
 		} else {
@@ -91,11 +102,20 @@ public class JoinGroupWizardAction implements IObjectActionDelegate {
 				resource = (IProject) ((IAdaptable) obj)
 						.getAdapter(IProject.class);
 			} else {
-				resource = null;
+				resource = ResourcesPlugin.getWorkspace().getRoot();
 			}
 		} else {
-			resource = null;
+			resource = ResourcesPlugin.getWorkspace().getRoot();
 		}
 		setAction(action, resource);
+	}
+
+	public void dispose() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void init(IWorkbenchWindow window) {
+		this.window = window;
 	}
 }
