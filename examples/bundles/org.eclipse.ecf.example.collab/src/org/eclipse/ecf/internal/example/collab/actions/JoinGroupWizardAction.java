@@ -51,7 +51,7 @@ public class JoinGroupWizardAction implements IObjectActionDelegate {
 			action.setText(CONNECT_PROJECT_MENU_TEXT);
 			connected = false;
 		}
-		action.setEnabled(resource.isAccessible());
+		action.setEnabled(resource == null ? false : resource.isAccessible());
 	}
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
