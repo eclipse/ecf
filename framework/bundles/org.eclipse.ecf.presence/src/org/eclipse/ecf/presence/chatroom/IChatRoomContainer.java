@@ -12,6 +12,7 @@ package org.eclipse.ecf.presence.chatroom;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.presence.IIMMessageListener;
+import org.eclipse.ecf.presence.im.IChatMessageSender;
 
 /**
  * Container for chat rooms.
@@ -33,6 +34,17 @@ public interface IChatRoomContainer extends IContainer {
 	 *            the listener to remove. Must not be <code>null</code>.
 	 */
 	public void removeMessageListener(IIMMessageListener listener);
+
+	/**
+	 * Retrieve a chat message sender to send private chat messages to other
+	 * participants. If sending private chat messages is not supported by this
+	 * provider then <code>null</code> will be returned.
+	 * 
+	 * @return IChatMessageSender to use for sending chat message. If
+	 *         <code>null</code>, sending chat messages not supported by this
+	 *         provider.
+	 */
+	public IChatMessageSender getPrivateMessageSender();
 
 	/**
 	 * Get interface for sending messages
@@ -61,19 +73,21 @@ public interface IChatRoomContainer extends IContainer {
 	 */
 	public void removeChatRoomParticipantListener(
 			IChatRoomParticipantListener participantListener);
-	
+
 	/**
 	 * Add chat room admin listener to listen for room admin changes.
 	 * 
-	 * @param adminListener the listener to add.  Must not be <code>null</code>.
+	 * @param adminListener
+	 *            the listener to add. Must not be <code>null</code>.
 	 */
 	public void addChatRoomAdminListener(IChatRoomAdminListener adminListener);
-	
+
 	/**
 	 * Remove chat room admin listener.
 	 * 
-	 * @param adminListener the listener to remove.  Must not be <code>null</code>.
+	 * @param adminListener
+	 *            the listener to remove. Must not be <code>null</code>.
 	 */
 	public void removeChatRoomAdminListener(IChatRoomAdminListener adminListener);
-	
+
 }
