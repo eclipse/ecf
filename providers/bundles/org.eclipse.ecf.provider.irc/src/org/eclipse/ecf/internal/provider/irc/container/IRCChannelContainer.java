@@ -36,6 +36,7 @@ import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.osgi.util.NLS;
 import org.schwering.irc.lib.IRCUser;
 
@@ -44,7 +45,7 @@ import org.schwering.irc.lib.IRCUser;
  * 
  */
 public class IRCChannelContainer extends IRCAbstractContainer implements
-		IChatRoomContainer {
+		IChatMessageSender, IChatRoomContainer {
 
 	private static final long CONNECT_TIMEOUT = 10000;
 
@@ -320,6 +321,20 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 
 	protected void setChannelOperator(String channelOperator) {
 		this.channelOperator = channelOperator;
+	}
+
+	public void sendChatMessage(ID toID, ID threadID,
+			org.eclipse.ecf.presence.im.IChatMessage.Type type, String subject,
+			String body, Map properties) throws ECFException {
+		rootContainer.sendChatMessage(toID, body);
+	}
+
+	public void sendChatMessage(ID toID, String body) throws ECFException {
+		rootContainer.sendChatMessage(toID, body);
+	}
+	
+	public IChatMessageSender getPrivateMessageSender() {
+		return this;
 	}
 
 }

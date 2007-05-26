@@ -15,6 +15,6 @@ import org.eclipse.ecf.core.identity.ID;
 
 public interface IRCMessageChannel {
 
-	public void fireMessageListeners(ID sender, String msg);
+	public void fireChatRoomMessageEvent(ID sender, String msg);
 
 }

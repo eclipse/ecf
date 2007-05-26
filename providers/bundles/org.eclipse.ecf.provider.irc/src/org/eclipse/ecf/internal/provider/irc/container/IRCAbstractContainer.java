@@ -27,6 +27,8 @@ import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.chatroom.ChatRoomMessage;
 import org.eclipse.ecf.presence.chatroom.ChatRoomMessageEvent;
 import org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener;
+import org.eclipse.ecf.presence.im.ChatMessage;
+import org.eclipse.ecf.presence.im.ChatMessageEvent;
 
 public abstract class IRCAbstractContainer extends AbstractContainer {
 
@@ -63,8 +65,16 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	protected void traceStack(Throwable t, String msg) {
 		Trace.catching(Activator.PLUGIN_ID, IRCDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), msg, t);
 	}
+	
+	public void fireChatMessageEvent(ID sender, String msg) {
+		for (Iterator i = msgListeners.iterator(); i.hasNext();) {
+			IIMMessageListener l = (IIMMessageListener) i.next();
+			l.handleMessageEvent(new ChatMessageEvent(sender,
+					new ChatMessage(sender, msg)));
+		}
+	}
 
-	public void fireMessageListeners(ID sender, String msg) {
+	public void fireChatRoomMessageEvent(ID sender, String msg) {
 		for (Iterator i = msgListeners.iterator(); i.hasNext();) {
 			IIMMessageListener l = (IIMMessageListener) i.next();
 			l.handleMessageEvent(new ChatRoomMessageEvent(sender,
