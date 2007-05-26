@@ -93,10 +93,6 @@
                id="org.eclipse.ecf.example.collab.ui.text.SetSharedEditorSelectionAction">
          </action>
       </viewerContribution>
-   </extension>
-
-   <extension
-         point="org.eclipse.ui.popupMenus">
       <viewerContribution
             targetID="#CompilationUnitRulerContext"
             id="org.eclipse.ecf.javaeditor.ruler.context.actions">
