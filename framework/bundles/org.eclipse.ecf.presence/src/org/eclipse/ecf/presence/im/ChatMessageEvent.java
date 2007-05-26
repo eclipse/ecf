@@ -22,10 +22,16 @@ public class ChatMessageEvent implements IChatMessageEvent {
 
 	protected ID fromID;
 	protected IChatMessage message;
-
-	public ChatMessageEvent(ID fromID, IChatMessage message) {
+    protected IChat chat;
+    
+	public ChatMessageEvent(ID fromID, IChatMessage message, IChat chat) {
 		this.fromID = fromID;
 		this.message = message;
+		this.chat = chat;
+	}
+
+	public ChatMessageEvent(ID fromID, IChatMessage message) {
+		this(fromID,message,null);
 	}
 
 	/*
@@ -46,6 +52,13 @@ public class ChatMessageEvent implements IChatMessageEvent {
 		return message;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.im.IChatMessageEvent#getChat()
+	 */
+	public IChat getChat() {
+		return chat;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -54,7 +67,8 @@ public class ChatMessageEvent implements IChatMessageEvent {
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ChatMessageEvent["); //$NON-NLS-1$
 		buf.append("fromID=").append(getFromID()); //$NON-NLS-1$
-		buf.append(";message=").append(message).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append(";message=").append(message);
+		buf.append(";chat=").append(chat).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 

@@ -13,16 +13,20 @@ package org.eclipse.ecf.presence.im;
 
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 
 /**
- * Object representing a specific two-way chat.
+ * A two-person chat. Instances are created via
+ * {@link IChatManager#createChat(ID, org.eclipse.ecf.presence.IIMMessageListener).
  */
-public interface IChat {
+public interface IChat extends IAdaptable {
 
 	/**
 	 * Get the receiver for this chat.
@@ -67,32 +71,53 @@ public interface IChat {
 	 * @param messageBody
 	 *            the body of the message to send. May be <code>null</code>.
 	 * @throws ECFException
-	 *             thrown if currently disconnected or some transport error
+	 *             thrown if disconnected or some transport error.
 	 */
 	public void sendChatMessage(String messageBody) throws ECFException;
 
 	/**
-	 * Get typing message sender. If sending typing messages not supported by
-	 * this provider then <code>null</code> will be returned.
+	 * Send typing message to a remote receiver.
 	 * 
-	 * @return ITypingMessageSender to use for sending typing messages
-	 *         (instances of ITypingMessage). If <code>null</code>, sending
-	 *         typing messages not supported by this provider.
+	 * @param isTyping
+	 *            true if user is typing, false if they've stopped typing.
+	 * 
+	 * @param body
+	 *            the content of what has been/is being typed. May be
+	 *            <code>null</code>.
+	 * 
+	 * @throws ECFException
+	 *             thrown if disconnected or some other communications error.
 	 */
-	public ITypingMessageSender getTypingMessageSender();
-	
+	public void sendTypingMessage(boolean isTyping, String body)
+			throws ECFException;
+
 	/**
-	 * Create a new IChatRoomContainer instance. This method can be used to
-	 * create to a chat room identified by this two-way chat. If supported by
-	 * the provider, this allows moving from a two-way chat represented by this
-	 * IChat instance to an n-way chat room container.
+	 * Create a new IChatRoomContainer instance from this chat. This method can
+	 * be used to convert this two-way chat into an n-way chat room. If not
+	 * supported by the provider, this method should return <code>null</code>.
+	 * <p>
+	 * </p>
+	 * If supported by the provider, this allows moving from a two-way chat
+	 * represented by this IChat instance to an n-way chat room container. The
+	 * initial set of participants will be the two participants in this two way
+	 * chat, and the {@link IContainer#getConnectedID()} will be non-null, and
+	 * equal to {@link IChat#getThreadID()}.
+	 * <p>
+	 * </p>
+	 * If this method is called succesfully (no exception and non-<code>null</code>
+	 * instance returned) then the other participant in this IChat (i.e.
+	 * identified by the {@link IChat#getReceiverID()} will be notified
+	 * asynchronously via the delivery of an {@link IChatRoomCreationEvent} to
+	 * the {@link IIMMessageListener} for the remote {@link IChat} instance.
 	 * 
-	 * @return non-null IChatRoomContainer instance. Will not return
-	 *         <code>null</code>.
+	 * @return a new IChatRoomContainer instance. Will return <code>null</code>
+	 *         if underlying provider does not support this functionality.
 	 * @throws ContainerCreateException
-	 *             if chat room container cannot be made.
+	 *             if chat room container cannot be made (e.g. due to
+	 *             disconnection or other failure).
 	 */
-	public IChatRoomContainer createChatRoom() throws ContainerCreateException;
+	public IChatRoomContainer createChatRoomContainer()
+			throws ContainerCreateException;
 
 	/**
 	 * Get presence container adapter for this chat instance.
@@ -101,4 +126,11 @@ public interface IChat {
 	 *         <code>null</code>.
 	 */
 	public IPresenceContainerAdapter getPresenceContainerAdapter();
+
+	/**
+	 * Dispose this chat, making it incapable of receiving any more messages or
+	 * being the source of any more messages. Also results in removing any
+	 * listeners associated with this chat.
+	 */
+	public void dispose();
 }

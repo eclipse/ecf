@@ -15,7 +15,7 @@ import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 
 /**
- * Container for chat rooms.
+ * A container representing a specific chat room.
  */
 public interface IChatRoomContainer extends IContainer {
 
@@ -50,13 +50,13 @@ public interface IChatRoomContainer extends IContainer {
 	 * Get interface for sending messages
 	 * 
 	 * @return IChatRoomMessageSender. Will be <code>null</code> if no message
-	 *         sender available
+	 *         sender available for the provider implementation.
 	 */
 	public IChatRoomMessageSender getChatRoomMessageSender();
 
 	/**
 	 * Add chat room participant listener. The given listener will be notified
-	 * if/when participants are added or removed from given room
+	 * if/when participants are added or removed from given room.
 	 * 
 	 * @param participantListener
 	 *            to add. Must not be <code>null</code>.

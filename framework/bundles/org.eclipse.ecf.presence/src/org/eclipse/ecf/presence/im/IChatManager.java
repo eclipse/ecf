@@ -57,23 +57,34 @@ public interface IChatManager {
 	 *         typing messages not supported by this provider.
 	 */
 	public ITypingMessageSender getTypingMessageSender();
-	
+
 	/**
 	 * Get the history manager for this chat manager.
-	 * @return IChatRoomHistoryManager the history manager instance.  Will not be <code>null</code>.
+	 * 
+	 * @return IChatRoomHistoryManager the history manager instance. Will not be
+	 *         <code>null</code>.
 	 */
 	public IHistoryManager getHistoryManager();
 
 	/**
 	 * Create chat instance for given target user.
 	 * 
-	 * @param targetUser the targetUser to create chat for.  Should not be <code>null</code>.
-	 * If the user container is offline/disconnected. then an {@link ECFException} will
-	 * be thrown.  If this chat manager implementation does not support creating such chats,
-	 * then <code>null</code> will be returned.
+	 * @param targetUser
+	 *            the targetUser to create chat for. Must not be
+	 *            <code>null</code>. If the user container is
+	 *            offline/disconnected. then an {@link ECFException} will be
+	 *            thrown. If this chat manager implementation does not support
+	 *            creating such chats, then <code>null</code> will be
+	 *            returned.
 	 * 
-	 * @return IChat for given <code>targetUser</code>.  Will return <code>null</code> if
-	 * the underlying implementation does not support threads/specific chat instances.
+	 * @param messageListener
+	 *            the message listener to listen for messages. Must not be
+	 *            <code>null</code>.
+	 * 
+	 * @return IChat for given <code>targetUser</code>. Will return
+	 *         <code>null</code> if the underlying implementation does not
+	 *         support threads/specific chat instances.
 	 */
-	public IChat createChat(ID targetUser) throws ECFException;
+	public IChat createChat(ID targetUser, IIMMessageListener messageListener)
+			throws ECFException;
 }

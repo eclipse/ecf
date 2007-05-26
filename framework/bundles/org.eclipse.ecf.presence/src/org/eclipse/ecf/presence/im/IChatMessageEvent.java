@@ -25,4 +25,11 @@ public interface IChatMessageEvent extends IIMMessageEvent {
 	 */
 	public IChatMessage getChatMessage();
 
+	/**
+	 * Get chat associated with this chat message event.
+	 * 
+	 * @return IChat associated with this chat message event.  May be <code>null</code> if
+	 * provider does not support having an IChat.
+	 */
+	public IChat getChat();
 }

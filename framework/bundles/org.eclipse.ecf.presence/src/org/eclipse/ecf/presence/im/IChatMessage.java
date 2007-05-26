@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IIMMessage;
 
 /**
- * Chat message. This is the message class received in when another user sends a
+ * Chat message. This is the message received when another user sends a
  * chat message to us.
  */
 public interface IChatMessage extends IIMMessage {
