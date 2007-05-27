@@ -73,7 +73,7 @@ public class JoinGroupWizardPage extends WizardPage {
 
 	protected String namespace = null;
 
-	private Button autoLogin = null;
+//	private Button autoLogin = null;
 	private boolean autoLoginFlag = false;
 
 	public boolean getAutoLoginFlag() {
@@ -173,16 +173,16 @@ public class JoinGroupWizardPage extends WizardPage {
 			nickname_label.setVisible(false);
 		}
 
-		autoLogin = new Button(container, SWT.CHECK);
-		autoLogin.setText("Login &automatically at startup");
-		autoLogin.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-		autoLogin.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				autoLoginFlag = autoLogin.getSelection();
-			}
-		});
 		// XXX disallow autologin for now
-		autoLogin.setEnabled(false);
+//		autoLogin = new Button(container, SWT.CHECK);
+//		autoLogin.setText("Login &automatically at startup");
+//		autoLogin.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+//		autoLogin.addSelectionListener(new SelectionAdapter() {
+//			public void widgetSelected(SelectionEvent e) {
+//				autoLoginFlag = autoLogin.getSelection();
+//			}
+//		});
+//		autoLogin.setEnabled(false);
 		
 		fillCombo();
 		restoreDialogSettings();
