@@ -53,7 +53,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -136,21 +136,20 @@ public class ChatComposite extends Composite {
 
 	Text textinput = null;
 	StyledText textoutput = null;
-	TreeViewer treeView = null;
+	TableViewer tableView = null;
 	ChatDropTarget chatDropTarget = null;
 	TreeDropTarget treeDropTarget = null;
 
 	ChatWindow chatWindow;
 	boolean typing;
 
-	ChatComposite(LineChatClientView view, Composite parent,
-			TreeViewer tree, int options, String initText) {
-		this(view, parent, tree, options, initText, null);
+	ChatComposite(LineChatClientView view, Composite parent, TableViewer table,
+			int options, String initText) {
+		this(view, parent, table, options, initText, null);
 	}
 
-	ChatComposite(LineChatClientView view, Composite parent,
-			TreeViewer tree, int options, String initText,
-			ChatWindow chatWindow) {
+	ChatComposite(LineChatClientView view, Composite parent, TableViewer table,
+			int options, String initText, ChatWindow chatWindow) {
 		super(parent, options);
 		this.view = view;
 		this.chatWindow = chatWindow;
@@ -185,7 +184,7 @@ public class ChatComposite extends Composite {
 
 		});
 
-		treeView = tree;
+		tableView = table;
 		setLayout(new GridLayout(1, true));
 
 		SourceViewer result = new SourceViewer(this, null, null, true,
@@ -397,7 +396,7 @@ public class ChatComposite extends Composite {
 	}
 
 	private void fillTreeContextMenu(IMenuManager manager) {
-		IStructuredSelection iss = (IStructuredSelection) treeView
+		IStructuredSelection iss = (IStructuredSelection) tableView
 				.getSelection();
 		Object element = iss.getFirstElement();
 		if (element == null || !(element instanceof TreeUser)) {
@@ -808,13 +807,13 @@ public class ChatComposite extends Composite {
 				fillTreeContextMenu(manager);
 			}
 		});
-		Menu treeMenu = treeMenuMgr.createContextMenu(treeView.getControl());
-		treeView.getControl().setMenu(treeMenu);
-		this.view.view.getSite().registerContextMenu(treeMenuMgr, treeView);
+		Menu treeMenu = treeMenuMgr.createContextMenu(tableView.getControl());
+		tableView.getControl().setMenu(treeMenu);
+		this.view.view.getSite().registerContextMenu(treeMenuMgr, tableView);
 	}
 
 	protected Control getTreeControl() {
-		return treeView.getControl();
+		return tableView.getControl();
 	}
 
 	protected Control getTextControl() {
@@ -1436,7 +1435,7 @@ public class ChatComposite extends Composite {
 
 	protected void initializeDropTargets() {
 		chatDropTarget = new ChatDropTarget(view, textoutput, this);
-		treeDropTarget = new TreeDropTarget(view, treeView.getControl(), this);
+		treeDropTarget = new TreeDropTarget(view, tableView.getControl(), this);
 	}
 
 	private Color colorFromRGBString(String rgb) {

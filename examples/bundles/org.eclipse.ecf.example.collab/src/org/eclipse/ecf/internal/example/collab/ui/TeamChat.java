@@ -1,5 +1,5 @@
-/****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+/*******************************************************************************
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,13 +7,13 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
- *****************************************************************************/
+ ******************************************************************************/
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
-import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.FillLayout;
@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.ToolBar;
 class TeamChat extends Composite {
 	ChatComposite chat = null;
 	SashForm sash = null;
-	TreeViewer treeView = null;
+	TableViewer tableView = null;
 	ViewContentProvider vc;
 	ToolBar bar;
 	LineChatClientView view;
@@ -51,61 +51,22 @@ class TeamChat extends Composite {
 			w[1] = 100 - w[0];
 		}
 
-		treeView = new TreeViewer(useChatWindow ? (Composite) this
+		tableView = new TableViewer(useChatWindow ? (Composite) this
 				: (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.BORDER);
-		treeView.setAutoExpandLevel(LineChatClientView.TREE_EXPANSION_LEVELS);
 		vc = new ViewContentProvider(view);
 
-		treeView.setContentProvider(vc);
-		treeView.setLabelProvider(new ViewLabelProvider());
-		treeView.setInput(ResourcesPlugin.getWorkspace());
+		tableView.setContentProvider(vc);
+		tableView.setLabelProvider(new ViewLabelProvider());
+		tableView.setInput(ResourcesPlugin.getWorkspace());
 
 		if (useChatWindow) {
-			chatWindow = new ChatWindow(view, this, treeView, initText);
+			chatWindow = new ChatWindow(view, this, tableView, initText);
 			chatWindow.create();
 			chat = chatWindow.getChat();
 		} else {
-			chat = new ChatComposite(view, sash, treeView, SWT.NORMAL, initText);
-			sash.setWeights(w);
-		}
-	}
-
-	TeamChat(LineChatClientView view, Composite parent, int options,
-			String initText, boolean useChatWindow, boolean showTree) {
-		super(parent, options);
-
-		this.view = view;
-		setLayout(new FillLayout());
-		int[] w = null;
-		if (!useChatWindow) {
-			sash = new SashForm(this, SWT.NORMAL);
-			sash.setLayout(new FillLayout());
-			sash.setOrientation(SWT.HORIZONTAL);
-			w = new int[2];
-			w[0] = DEFAULT_TREE_WIDGET_PERCENT;
-			w[1] = 100 - w[0];
-		}
-
-		if (showTree) {
-			treeView = new TreeViewer(useChatWindow ? (Composite) this
-					: (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
-					| SWT.BORDER);
-			treeView
-					.setAutoExpandLevel(LineChatClientView.TREE_EXPANSION_LEVELS);
-			vc = new ViewContentProvider(view);
-
-			treeView.setContentProvider(vc);
-			treeView.setLabelProvider(new ViewLabelProvider());
-			treeView.setInput(ResourcesPlugin.getWorkspace());
-		}
-
-		if (useChatWindow) {
-			chatWindow = new ChatWindow(view, this, treeView, initText);
-			chatWindow.create();
-			chat = chatWindow.getChat();
-		} else {
-			chat = new ChatComposite(view, sash, treeView, SWT.NORMAL, initText);
+			chat = new ChatComposite(view, sash, tableView, SWT.NORMAL,
+					initText);
 			sash.setWeights(w);
 		}
 	}
@@ -134,12 +95,12 @@ class TeamChat extends Composite {
 		chat.clearInput();
 	}
 
-	TreeViewer getTree() {
-		return treeView;
+	TableViewer getTable() {
+		return tableView;
 	}
 
 	Control getTreeControl() {
-		return treeView.getControl();
+		return tableView.getControl();
 	}
 
 	Control getTextControl() {

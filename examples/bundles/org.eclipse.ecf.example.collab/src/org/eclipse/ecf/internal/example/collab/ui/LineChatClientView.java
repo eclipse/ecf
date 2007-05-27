@@ -121,7 +121,7 @@ public class LineChatClientView implements FileSenderUI {
 						JFaceResources.getDefaultFont().getFontData()[0]
 								.getName()).getFontData());
 
-		ToolTip toolTip = new ViewerToolTip(teamChat.getTree().getControl());
+		ToolTip toolTip = new ViewerToolTip(teamChat.getTable().getControl());
 		toolTip.setShift(new Point(-5, -5));
 		toolTip.setHideOnMouseDown(false);
 	}
@@ -254,12 +254,6 @@ public class LineChatClientView implements FileSenderUI {
 		view.disposeClient(this);
 	}
 
-	protected void expandAll() {
-		if (teamChat != null) {
-			teamChat.getTree().expandToLevel(TREE_EXPANSION_LEVELS);
-		}
-	}
-
 	protected String getPrefix(ID objID) {
 		String prefix = "";
 		if (userdata.getUserID().equals(objID)) {
@@ -277,7 +271,7 @@ public class LineChatClientView implements FileSenderUI {
 	protected TreeParent getPresenceRoot() {
 		if (teamChat == null)
 			return null;
-		ViewContentProvider vcp = (ViewContentProvider) teamChat.getTree()
+		ViewContentProvider vcp = (ViewContentProvider) teamChat.getTable()
 				.getContentProvider();
 		if (vcp == null)
 			return null;
@@ -385,9 +379,7 @@ public class LineChatClientView implements FileSenderUI {
 			public void run() {
 				if (teamChat != null) {
 					try {
-						// teamChat.getTree().refresh(getPresenceRoot(), true);
-						teamChat.getTree().refresh();
-						expandAll();
+						teamChat.getTable().refresh();
 					} catch (Exception e) {
 					}
 				}
@@ -541,7 +533,7 @@ public class LineChatClientView implements FileSenderUI {
 
 		protected Composite createToolTipContentArea(Event event,
 				Composite parent) {
-			Widget item = teamChat.getTree().getTree().getItem(
+			Widget item = teamChat.getTable().getTable().getItem(
 					new Point(event.x, event.y));
 			User user = ((TreeUser) item.getData()).getUser();
 
@@ -604,7 +596,7 @@ public class LineChatClientView implements FileSenderUI {
 
 		protected boolean shouldCreateToolTip(Event e) {
 			if (super.shouldCreateToolTip(e)) {
-				Widget item = teamChat.getTree().getTree().getItem(
+				Widget item = teamChat.getTable().getTable().getItem(
 						new Point(e.x, e.y));
 				if (item != null) {
 					User user = ((TreeUser) item.getData()).getUser();

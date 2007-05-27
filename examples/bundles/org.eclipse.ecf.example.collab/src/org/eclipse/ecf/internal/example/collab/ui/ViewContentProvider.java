@@ -1,5 +1,5 @@
-/****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+/*******************************************************************************
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,30 +7,27 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
- *****************************************************************************/
+ ******************************************************************************/
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-class ViewContentProvider implements IStructuredContentProvider,
-		ITreeContentProvider {
+class ViewContentProvider implements IStructuredContentProvider {
 	private TreeParent invisibleRoot;
 	private TreeParent presenceRoot;
 	protected LineChatClientView view;
 
 	public ViewContentProvider(LineChatClientView view) {
-		super();
 		this.view = view;
 	}
 
 	public void dispose() {
 	}
 
-	public Object[] getChildren(Object parent) {
+	private Object[] getChildren(Object parent) {
 		if (parent instanceof TreeParent) {
 			return ((TreeParent) parent).getChildren();
 		}
@@ -48,25 +45,12 @@ class ViewContentProvider implements IStructuredContentProvider,
 
 	}
 
-	public Object getParent(Object child) {
-		if (child instanceof TreeObject) {
-			return ((TreeObject) child).getParent();
-		}
-		return null;
-	}
-
 	public TreeParent getPresenceRoot() {
 		return presenceRoot;
 	}
 
 	public TreeParent getRoot() {
 		return invisibleRoot;
-	}
-
-	public boolean hasChildren(Object parent) {
-		if (parent instanceof TreeParent)
-			return ((TreeParent) parent).hasChildren();
-		return false;
 	}
 
 	private void initialize() {

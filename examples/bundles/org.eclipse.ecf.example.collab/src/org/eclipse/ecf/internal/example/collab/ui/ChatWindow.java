@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -42,7 +43,7 @@ public class ChatWindow extends ApplicationWindow {
 
 	private LineChatClientView view;
 
-	private TreeViewer tree;
+	private TableViewer table;
 
 	private String initText;
 
@@ -114,10 +115,10 @@ public class ChatWindow extends ApplicationWindow {
 	};
 
 	public ChatWindow(LineChatClientView view, Composite parent,
-			TreeViewer tree, String initText) {
+			TableViewer table, String initText) {
 		super(null);
 		this.view = view;
-		this.tree = tree;
+		this.table = table;
 		this.initText = initText;
 		addStatusLine();
 	}
@@ -172,7 +173,7 @@ public class ChatWindow extends ApplicationWindow {
 	 * @see org.eclipse.jface.window.Window#createContents(org.eclipse.swt.widgets.Composite)
 	 */
 	protected Control createContents(Composite parent) {
-		chat = new ChatComposite(view, parent, tree, SWT.NORMAL, initText, this);
+		chat = new ChatComposite(view, parent, table, SWT.NORMAL, initText, this);
 		chat.setLayoutData(new GridData(GridData.FILL_BOTH));
 		chat.setFont(parent.getFont());
 		return chat;
