@@ -13,13 +13,14 @@ package org.eclipse.ecf.presence;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.internal.presence.PresencePlugin;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
+import org.eclipse.ecf.presence.service.IPresenceService;
 
 /**
  * An abstract {@link IPresenceContainerAdapter} implementation. This class is
  * intended to be subclassed.
  */
 public abstract class AbstractPresenceContainer implements
-		IPresenceContainerAdapter {
+		IPresenceService {
 
 	/**
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
