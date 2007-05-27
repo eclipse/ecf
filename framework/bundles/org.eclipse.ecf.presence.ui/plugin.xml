@@ -87,7 +87,7 @@
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
-            targetID="org.eclipse.collaboration.ui.perspective.collab">
+            targetID="org.eclipse.ecf.ui.perspective.communications">
          <view
                id="org.eclipse.ecf.presence.ui.MultiRosterView"
                relationship="stack"
