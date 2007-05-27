@@ -79,6 +79,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -109,7 +110,6 @@ public class ChatComposite extends Composite {
 
 	Action appShare = null;
 
-	ChatLayout cl = null;
 	Action coBrowseURL = null;
 	Action outputClear = null;
 	Action outputCopy = null;
@@ -183,9 +183,8 @@ public class ChatComposite extends Composite {
 
 		});
 
-		cl = new ChatLayout(DEFAULT_INPUT_HEIGHT, DEFAULT_INPUT_SEPARATOR);
-		setLayout(cl);
 		treeView = tree;
+		setLayout(new GridLayout(1, true));
 
 		SourceViewer result = new SourceViewer(this, null, null, true,
 				SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.H_SCROLL
@@ -195,6 +194,7 @@ public class ChatComposite extends Composite {
 		result.setDocument(new Document());
 
 		textoutput = result.getTextWidget();
+		textoutput.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		String fontName = ClientPlugin.getDefault().getPluginPreferences()
 				.getString(ClientPlugin.PREF_CHAT_FONT);
 		if (!(fontName == null) && !(fontName.equals(""))) {
@@ -211,10 +211,9 @@ public class ChatComposite extends Composite {
 		textoutput.append(initText);
 
 		textinput = new Text(this, SWT.SINGLE | SWT.BORDER);
-		cl
-				.setInputTextHeight(textinput.getFont().getFontData()[0]
-						.getHeight() + 2);
 		textinput.setText(TEXT_INPUT_INIT);
+		textinput.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true,
+				false));
 
 		textinput.selectAll();
 		textinput.addKeyListener(new KeyListener() {
@@ -1164,7 +1163,6 @@ public class ChatComposite extends Composite {
 		}
 
 	}
-
 
 	protected void outputClear() {
 		if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",
