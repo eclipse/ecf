@@ -22,6 +22,7 @@ import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.internal.discovery.ui.Messages;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -39,6 +40,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -51,7 +53,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class DiscoveryView extends ViewPart {
-	protected static final String DISCOVERED_SERVICES = "Services";
+
+	protected static final String DISCOVERED_SERVICES = Messages.DiscoveryView_Services;
 
 	protected static final int SERVICE_INFO_TIMEOUT = 3000;
 
@@ -60,13 +63,9 @@ public class DiscoveryView extends ViewPart {
 	private TreeViewer viewer;
 
 	private Action requestServiceInfoAction;
-
 	private Action registerServiceTypeAction;
-
 	private Action connectToAction;
-
 	private Action disconnectContainerAction;
-
 	private Action connectContainerAction;
 
 	IDiscoveryController controller = null;
@@ -248,7 +247,7 @@ public class DiscoveryView extends ViewPart {
 		}
 
 		private void initialize() {
-			invisibleRoot = new TreeParent(null, "", null);
+			invisibleRoot = new TreeParent(null, "", null); //$NON-NLS-1$
 			root = new TreeParent(null, DISCOVERED_SERVICES, null);
 			invisibleRoot.addChild(root);
 		}
@@ -324,19 +323,25 @@ public class DiscoveryView extends ViewPart {
 					serviceInfo);
 			InetAddress addr = serviceInfo.getAddress();
 			if (addr != null) {
-				TreeObject toaddr = new TreeObject("Address: "
-						+ addr.getHostAddress());
+				TreeObject toaddr = new TreeObject(NLS.bind(
+						Messages.DiscoveryView_AddressLabel, addr
+								.getHostAddress()));
 				newEntry.addChild(toaddr);
 			}
-			TreeObject typeo = new TreeObject("Type: " + svcID.getServiceType());
+			TreeObject typeo = new TreeObject(NLS.bind(
+					Messages.DiscoveryView_TypeLabel, svcID.getServiceType()));
 			newEntry.addChild(typeo);
-			TreeObject porto = new TreeObject("Port: " + serviceInfo.getPort());
+			TreeObject porto = new TreeObject(NLS.bind(
+					Messages.DiscoveryView_PortLabel, Integer
+							.toString(serviceInfo.getPort())));
 			newEntry.addChild(porto);
-			TreeObject prioo = new TreeObject("Priority: "
-					+ serviceInfo.getPriority());
+			TreeObject prioo = new TreeObject(NLS.bind(
+					Messages.DiscoveryView_PriorityLabel, Integer
+							.toString(serviceInfo.getPriority())));
 			newEntry.addChild(prioo);
-			TreeObject weighto = new TreeObject("Weight: "
-					+ serviceInfo.getWeight());
+			TreeObject weighto = new TreeObject(NLS.bind(
+					Messages.DiscoveryView_WeightLabel, Integer
+							.toString(serviceInfo.getWeight())));
 			newEntry.addChild(weighto);
 			IServiceProperties props = serviceInfo.getServiceProperties();
 			if (props != null) {
@@ -347,7 +352,7 @@ public class DiscoveryView extends ViewPart {
 						String keys = (String) key;
 						String val = props.getPropertyString(keys);
 						if (val != null) {
-							TreeObject prop = new TreeObject(keys + "=" + val);
+							TreeObject prop = new TreeObject(keys + '=' + val);
 							newEntry.addChild(prop);
 						}
 					}
@@ -384,10 +389,10 @@ public class DiscoveryView extends ViewPart {
 		if (showTypeDetails)
 			return inputName;
 		String res = inputName.trim();
-		while (res.startsWith("_")) {
+		while (res.startsWith("_")) { //$NON-NLS-1$
 			res = res.substring(1);
 		}
-		int dotLoc = res.indexOf(".");
+		int dotLoc = res.indexOf('.');
 		if (dotLoc != -1) {
 			res = res.substring(0, dotLoc);
 		}
@@ -397,13 +402,13 @@ public class DiscoveryView extends ViewPart {
 	class ViewLabelProvider extends LabelProvider {
 
 		public String getText(Object obj) {
-			if (obj != null && obj instanceof TreeParent) {
+			if (obj instanceof TreeParent) {
 				TreeParent tp = (TreeParent) obj;
 				IServiceID svcID = tp.getID();
 				if (svcID == null)
 					return cleanTypeName(tp.getName());
 			}
-			return obj.toString();
+			return super.getText(obj);
 		}
 
 		public Image getImage(Object obj) {
@@ -543,9 +548,9 @@ public class DiscoveryView extends ViewPart {
 				}
 			}
 		};
-		requestServiceInfoAction.setText("Request info...");
+		requestServiceInfoAction.setText(Messages.DiscoveryView_RequestInfo);
 		requestServiceInfoAction
-				.setToolTipText("Request info for selected service");
+				.setToolTipText(Messages.DiscoveryView_RequestInfoTooltip);
 		requestServiceInfoAction.setEnabled(true);
 
 		registerServiceTypeAction = new Action() {
@@ -560,9 +565,9 @@ public class DiscoveryView extends ViewPart {
 				}
 			}
 		};
-		registerServiceTypeAction.setText("Register type...");
+		registerServiceTypeAction.setText(Messages.DiscoveryView_RegisterType);
 		registerServiceTypeAction
-				.setToolTipText("Register for selected service type");
+				.setToolTipText(Messages.DiscoveryView_RegisterTypeTooltip);
 		registerServiceTypeAction.setEnabled(true);
 
 		connectToAction = new Action() {
@@ -574,15 +579,15 @@ public class DiscoveryView extends ViewPart {
 				}
 			}
 		};
-		connectToAction.setText("Connect to service...");
-		connectToAction.setToolTipText("Connect to this service");
+		connectToAction.setText(Messages.DiscoveryView_ConnectTo);
+		connectToAction.setToolTipText(Messages.DiscoveryView_ConnectToTooltip);
 		connectToAction.setEnabled(true);
 
 		disconnectContainerAction = new Action() {
 			public void run() {
 				if (MessageDialog.openConfirm(DiscoveryView.this.getViewSite()
-						.getShell(), "Stop discovery",
-						"Stop network service discovery?")) {
+						.getShell(), Messages.DiscoveryView_StopDiscoveryTitle,
+						Messages.DiscoveryView_StopDiscoveryDescription)) {
 					ViewContentProvider vcp = (ViewContentProvider) viewer
 							.getContentProvider();
 					if (vcp != null) {
@@ -596,9 +601,9 @@ public class DiscoveryView extends ViewPart {
 				}
 			}
 		};
-		disconnectContainerAction.setText("Stop discovery");
+		disconnectContainerAction.setText(Messages.DiscoveryView_StopDiscovery);
 		disconnectContainerAction
-				.setToolTipText("Stop network service discovery");
+				.setToolTipText(Messages.DiscoveryView_StopDiscoveryTooltip);
 		disconnectContainerAction.setImageDescriptor(SharedImages
 				.getImageDescriptor(SharedImages.IMG_DISCONNECT));
 		disconnectContainerAction.setDisabledImageDescriptor(SharedImages
@@ -626,9 +631,9 @@ public class DiscoveryView extends ViewPart {
 				}
 			}
 		};
-		connectContainerAction.setText("Start discovery");
+		connectContainerAction.setText(Messages.DiscoveryView_StartDiscovery);
 		connectContainerAction
-				.setToolTipText("Start network service discovery");
+				.setToolTipText(Messages.DiscoveryView_StartDiscoveryTooltip);
 		if (c == null) {
 			connectContainerAction.setEnabled(false);
 		} else {
@@ -650,13 +655,15 @@ public class DiscoveryView extends ViewPart {
 				IServiceID svcID = tp.getID();
 				if (svcID != null) {
 					IServiceInfo svcInfo = tp.getServiceInfo();
-					connectToAction.setText("Connect to '"
-							+ svcID.getServiceName() + "' service");
+					connectToAction.setText(NLS.bind(
+							Messages.DiscoveryView_ConnectToService, svcID
+									.getServiceName()));
 					manager.add(connectToAction);
 					manager.add(new Separator());
 					connectToAction.setEnabled(false);
-					requestServiceInfoAction.setText("Request info about '"
-							+ svcID.getServiceName() + "'");
+					requestServiceInfoAction.setText(NLS.bind(
+							Messages.DiscoveryView_RequestInfoAboutService,
+							svcID.getServiceName()));
 					manager.add(requestServiceInfoAction);
 					requestServiceInfoAction.setEnabled(true);
 					if (svcInfo != null) {
@@ -664,11 +671,10 @@ public class DiscoveryView extends ViewPart {
 								&& isSupportedServiceType(svcID
 										.getServiceType())) {
 							try {
-								URI uri = new URI(svcInfo.getServiceID()
-										.getName());
-								if (uri != null) {
-									connectToAction.setEnabled(true);
-								}
+								// try to create a URI to see if the format is
+								// correct before we enable the action
+								new URI(svcInfo.getServiceID().getName());
+								connectToAction.setEnabled(true);
 							} catch (URISyntaxException e) {
 							}
 						}
@@ -683,9 +689,6 @@ public class DiscoveryView extends ViewPart {
 	protected void connectToService(IServiceInfo svcInfo) {
 		if (controller != null) {
 			controller.connectToService(svcInfo);
-		} else {
-			System.out.println("No service connect listener to connect to "
-					+ svcInfo);
 		}
 	}
 
