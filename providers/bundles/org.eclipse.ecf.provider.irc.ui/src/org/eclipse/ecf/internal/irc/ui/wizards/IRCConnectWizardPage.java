@@ -55,7 +55,6 @@ final class IRCConnectWizardPage extends WizardPage {
 
 	private void verify() {
 		String text = connectText.getText();
-		passwordText.setText("");
 		if (text.equals("")) { //$NON-NLS-1$
 			updateStatus(Messages.IRCConnectWizardPage_STATUS_MESSAGE_EMPTY);
 		} else if (text.indexOf('@') == -1) {
@@ -66,8 +65,14 @@ final class IRCConnectWizardPage extends WizardPage {
 		}
 	}
 	
+	protected String getPasswordKeyFromUserName(String username) {
+		if (username == null || username.equals("")) return null;
+		else {
+			return username.substring(0,username.indexOf("/"));
+		}
+	}
 	protected void restorePassword(String username) {
-		PasswordCacheHelper pwStorage = new PasswordCacheHelper(username);
+		PasswordCacheHelper pwStorage = new PasswordCacheHelper(getPasswordKeyFromUserName(username));
 		String pw = pwStorage.retrievePassword();
 		if (pw != null) {
 			passwordText.setText(pw);
@@ -94,6 +99,7 @@ final class IRCConnectWizardPage extends WizardPage {
 				verify();
 			}
 			public void widgetSelected(SelectionEvent e) {
+				passwordText.setText("");
 				verify();
 			}});
 

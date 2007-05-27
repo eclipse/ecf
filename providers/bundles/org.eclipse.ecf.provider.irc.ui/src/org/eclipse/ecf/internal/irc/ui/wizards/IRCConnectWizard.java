@@ -86,7 +86,7 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 			page.saveComboItems();
 			new AsynchContainerConnectAction(container, targetID, connectContext, null, new Runnable() {
 				public void run() {
-					cachePassword(connectID,password);
+					cachePassword(page.getPasswordKeyFromUserName(connectID),password);
 				}}).run();
 
 		}
