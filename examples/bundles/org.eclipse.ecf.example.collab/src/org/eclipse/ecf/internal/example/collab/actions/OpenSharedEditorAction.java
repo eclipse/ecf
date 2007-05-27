@@ -53,8 +53,7 @@ public class OpenSharedEditorAction implements IObjectActionDelegate {
 			MessageDialog
 					.openInformation(
 							targetPart.getSite().getWorkbenchWindow()
-									.getWorkbench().getDisplay()
-									.getActiveShell(),
+									.getShell(),
 							"Project Not Connected to Collaboration Group",
 							"Project '"
 									+ project.getName()
@@ -74,7 +73,7 @@ public class OpenSharedEditorAction implements IObjectActionDelegate {
 		if (selection instanceof IStructuredSelection) {
 			IStructuredSelection ss = (IStructuredSelection) selection;
 			Object obj = ss.getFirstElement();
-			// Then try to set relevant file
+			// now try to set relevant file
 			if (obj instanceof IFile) {
 				file = (IFile) obj;
 				action.setEnabled(true);
