@@ -50,8 +50,10 @@ import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -134,7 +136,7 @@ public class ChatComposite extends Composite {
 
 	Text textinput = null;
 	StyledText textoutput = null;
-	ChatTreeViewer treeView = null;
+	TreeViewer treeView = null;
 	ChatDropTarget chatDropTarget = null;
 	TreeDropTarget treeDropTarget = null;
 
@@ -142,12 +144,12 @@ public class ChatComposite extends Composite {
 	boolean typing;
 
 	ChatComposite(LineChatClientView view, Composite parent,
-			ChatTreeViewer tree, int options, String initText) {
+			TreeViewer tree, int options, String initText) {
 		this(view, parent, tree, options, initText, null);
 	}
 
 	ChatComposite(LineChatClientView view, Composite parent,
-			ChatTreeViewer tree, int options, String initText,
+			TreeViewer tree, int options, String initText,
 			ChatWindow chatWindow) {
 		super(parent, options);
 		this.view = view;
@@ -265,11 +267,6 @@ public class ChatComposite extends Composite {
 		hookContextMenu();
 		contributeToActionBars();
 		initializeDropTargets();
-	}
-
-	ChatComposite(LineChatClientView view, Composite parent,
-			ChatTreeViewer tree, String initText) {
-		this(view, parent, tree, SWT.NULL, initText);
 	}
 
 	public void appendText(ChatLine text) {
@@ -400,11 +397,13 @@ public class ChatComposite extends Composite {
 	}
 
 	private void fillTreeContextMenu(IMenuManager manager) {
-		User ud = treeView.getSelectionUser();
-		if (ud != null) {
-			fillTreeContextMenuUser(manager, ud);
-		} else {
+		IStructuredSelection iss = (IStructuredSelection) treeView
+				.getSelection();
+		Object element = iss.getFirstElement();
+		if (element == null || !(element instanceof TreeUser)) {
 			fillContextMenu(manager);
+		} else {
+			fillTreeContextMenuUser(manager, ((TreeUser) element).getUser());
 		}
 	}
 

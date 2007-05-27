@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.example.collab.ui;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.FillLayout;
@@ -23,7 +24,7 @@ import org.eclipse.swt.widgets.ToolBar;
 class TeamChat extends Composite {
 	ChatComposite chat = null;
 	SashForm sash = null;
-	ChatTreeViewer treeView = null;
+	TreeViewer treeView = null;
 	ViewContentProvider vc;
 	ToolBar bar;
 	LineChatClientView view;
@@ -50,7 +51,7 @@ class TeamChat extends Composite {
 			w[1] = 100 - w[0];
 		}
 
-		treeView = new ChatTreeViewer(useChatWindow ? (Composite) this
+		treeView = new TreeViewer(useChatWindow ? (Composite) this
 				: (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.BORDER);
 		treeView.setAutoExpandLevel(LineChatClientView.TREE_EXPANSION_LEVELS);
@@ -87,7 +88,7 @@ class TeamChat extends Composite {
 		}
 
 		if (showTree) {
-			treeView = new ChatTreeViewer(useChatWindow ? (Composite) this
+			treeView = new TreeViewer(useChatWindow ? (Composite) this
 					: (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
 					| SWT.BORDER);
 			treeView
@@ -133,7 +134,7 @@ class TeamChat extends Composite {
 		chat.clearInput();
 	}
 
-	ChatTreeViewer getTree() {
+	TreeViewer getTree() {
 		return treeView;
 	}
 

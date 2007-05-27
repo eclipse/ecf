@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -41,7 +42,7 @@ public class ChatWindow extends ApplicationWindow {
 
 	private LineChatClientView view;
 
-	private ChatTreeViewer tree;
+	private TreeViewer tree;
 
 	private String initText;
 
@@ -113,7 +114,7 @@ public class ChatWindow extends ApplicationWindow {
 	};
 
 	public ChatWindow(LineChatClientView view, Composite parent,
-			ChatTreeViewer tree, String initText) {
+			TreeViewer tree, String initText) {
 		super(null);
 		this.view = view;
 		this.tree = tree;
