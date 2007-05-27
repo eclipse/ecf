@@ -194,9 +194,8 @@ public final class Client implements ISynchAsynchConnection {
 			outputStream.flush();
 			inputStream = new ObjectInputStream(s.getInputStream());
 			debug("connect;" + anURI); //$NON-NLS-1$
-			// send connect data and get syncronous response
+			// send connect data and get synchronous response
 			send(new ConnectRequestMessage(anURI, (Serializable) data));
-			res = null;
 			res = (ConnectResultMessage) readObject();
 		} catch (Exception e) {
 			throw new ECFException(e.getLocalizedMessage(),e);
