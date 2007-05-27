@@ -32,6 +32,7 @@ import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
 import org.eclipse.ecf.ui.dialogs.IDCreateErrorDialog;
+import org.eclipse.ecf.ui.util.PasswordCacheHelper;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
@@ -153,16 +154,20 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 
 	public boolean performFinish() {
 		
+		final String connectID = page.getEmail();
+		final String password = page.getPassword();
+		
+		// Save combo text even if we don't successfully login
 		page.saveComboText();
 		
 		connectContext = ConnectContextFactory
-				.createPasswordConnectContext(page.getPassword());
+				.createPasswordConnectContext(password);
 
 		try {
 			targetID = container.getConnectNamespace().createInstance(
-					new Object[] { page.getEmail() });
+					new Object[] { connectID });
 		} catch (IDCreateException e) {
-			new IDCreateErrorDialog(null,page.getEmail(),e).open();
+			new IDCreateErrorDialog(null,connectID,e).open();
 			return false;
 		}
 		
@@ -196,8 +201,19 @@ public class MSNConnectWizard extends Wizard implements IConnectWizard {
 			}
 		});
 
-		new AsynchContainerConnectAction(container, targetID, connectContext).run();
+		new AsynchContainerConnectAction(container, targetID, connectContext, null, new Runnable() {
+			public void run() {
+				cachePassword(connectID,password);
+			}}).run();
 
 		return true;
 	}
+	
+	private void cachePassword(final String connectID, String password) {
+		if (password != null && !password.equals("")) {
+			PasswordCacheHelper pwStorage = new PasswordCacheHelper(connectID);
+			pwStorage.savePassword(password);
+		}
+	}
+	
 }

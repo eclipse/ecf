@@ -15,11 +15,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.ecf.ui.SharedImages;
+import org.eclipse.ecf.ui.util.PasswordCacheHelper;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -48,24 +51,53 @@ final class MSNConnectWizardPage extends WizardPage {
 		this.username = username;
 	}
 
+	private void verifyEmail() {
+		String email = emailText.getText().trim();
+		passwordText.setText("");
+		if (email.equals("")) { //$NON-NLS-1$
+			setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressRequired);
+		} else if (email.indexOf('@') == -1) {
+			setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressInvalid);
+		} else {
+			setErrorMessage(null);
+			restorePassword(email);
+		}
+	}
+	
+	private void verifyPassword() {
+		if (passwordText.getText().trim().equals("")) { //$NON-NLS-1$
+			setErrorMessage(Messages.MSNConnectWizardPage_PasswordRequired);
+		} else {
+			setErrorMessage(null);
+		}
+	}
+	
+	private void restorePassword(String username) {
+		PasswordCacheHelper pwStorage = new PasswordCacheHelper(username);
+		String pw = pwStorage.retrievePassword();
+		if (pw != null) {
+			passwordText.setText(pw);
+		}
+	}
+	
 	private void addListeners() {
-		ModifyListener listener = new ModifyListener() {
+		emailText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				String email = emailText.getText().trim();
-				if (email.equals("")) { //$NON-NLS-1$
-					setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressRequired);
-				} else if (email.indexOf('@') == -1) {
-					setErrorMessage(Messages.MSNConnectWizardPage_EmailAddressInvalid);
-				} else if (passwordText.getText().trim().equals("")) { //$NON-NLS-1$
-					setErrorMessage(Messages.MSNConnectWizardPage_PasswordRequired);
-				} else {
-					setErrorMessage(null);
-				}
+				verifyEmail();
 			}
-		};
-
-		emailText.addModifyListener(listener);
-		passwordText.addModifyListener(listener);
+		});
+		emailText.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				verifyEmail();
+			}
+			public void widgetSelected(SelectionEvent e) {
+				verifyEmail();
+			}});
+		passwordText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				verifyPassword();
+			}
+		});
 	}
 
 	public void createControl(Composite parent) {
@@ -78,16 +110,18 @@ final class MSNConnectWizardPage extends WizardPage {
 		emailText = new Combo(parent, SWT.SINGLE | SWT.BORDER | SWT.DROP_DOWN);
 		emailText.setLayoutData(data);
 		
-		restoreCombo();
-
 		label = new Label(parent, SWT.LEFT);
 		label.setText(Messages.MSNConnectWizardPage_PasswordLabel);
 		passwordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD | SWT.BORDER);
 		passwordText.setLayoutData(data);
 
 		addListeners();
+
+		restoreCombo();
+
 		if (username != null) {
 			emailText.setText(username);
+			restorePassword(username);
 			passwordText.setFocus();
 		}
 		setControl(parent);
