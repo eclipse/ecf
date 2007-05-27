@@ -155,7 +155,7 @@
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
-            targetID="org.eclipse.collaboration.ui.perspective.collab">
+            targetID="org.eclipse.ecf.ui.perspective.communications">
          <actionSet
                id="org.eclipse.ecf.example.collab.ui.actionSet">
          </actionSet>
