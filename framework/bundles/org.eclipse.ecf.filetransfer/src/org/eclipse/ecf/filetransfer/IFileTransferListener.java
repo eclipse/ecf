@@ -16,6 +16,28 @@ import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
  * asynchronously when a given event is received. Implementers must be prepared
  * to have this method called asynchronously by an arbitrary thread.
  * 
+ * <p>
+ * </p>
+ * Note these methods will be called asynchronously when notifications of remote
+ * changes are received by the provider implementation code. The provider is
+ * free to call the methods below with an arbitrary thread, so the
+ * implementation of these methods must be appropriately prepared.
+ * <p>
+ * </p>
+ * For example, if the code implementing any of these methods must interact with
+ * user interface code, then it should use code such as the following to execute
+ * on the SWT UI thread:
+ * 
+ * <pre>
+ * 	Display.getDefault().asyncExec(new Runnable() {
+ * 		public void run() {
+ * 		... UI code here
+ * 		}
+ * 	});
+ * </pre>
+ * 
+ * Further, the code in the implementations of these methods should <b>not block</b>
+ * via I/O operations or blocking UI calls.
  */
 public interface IFileTransferListener {
 	/**
