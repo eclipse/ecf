@@ -71,18 +71,20 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 			ecfplugin.addDisposable(new IDisposable() {
 				public void dispose() {
 					synchronized (containers) {
-						for (Iterator i = containers.keySet().iterator(); i.hasNext();) {
-							IContainer c = (IContainer) containers.get((ID) i.next());
+						for (Iterator i = containers.keySet().iterator(); i
+								.hasNext();) {
+							IContainer c = (IContainer) containers
+									.get(i.next());
 							try {
 								c.dispose();
 							} catch (Throwable e) {
 								// Log exception
-								ECFPlugin.getDefault()
-										.log(
-												new Status(Status.ERROR, ECFPlugin
-														.getDefault().getBundle()
-														.getSymbolicName(), Status.ERROR,
-														"container dispose error", e)); //$NON-NLS-1$
+								ECFPlugin.getDefault().log(
+										new Status(Status.ERROR, ECFPlugin
+												.getDefault().getBundle()
+												.getSymbolicName(),
+												Status.ERROR,
+												"container dispose error", e)); //$NON-NLS-1$
 								Trace.catching(ECFPlugin.PLUGIN_ID,
 										ECFDebugOptions.EXCEPTIONS_CATCHING,
 										ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
@@ -103,7 +105,8 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	public IContainer addContainer(IContainer container) {
 		Assert.isNotNull(container);
 		ID containerID = container.getID();
-		Assert.isNotNull(containerID,Messages.ContainerFactory_EXCEPTION_CONTAINER_ID_NOT_NULL);
+		Assert.isNotNull(containerID,
+				Messages.ContainerFactory_EXCEPTION_CONTAINER_ID_NOT_NULL);
 		return (IContainer) containers.put(containerID, container);
 	}
 
