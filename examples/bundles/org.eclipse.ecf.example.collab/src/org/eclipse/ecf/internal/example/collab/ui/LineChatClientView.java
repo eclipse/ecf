@@ -24,15 +24,26 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.example.collab.share.HelloMessageSharedObject;
 import org.eclipse.ecf.example.collab.share.TreeItem;
 import org.eclipse.ecf.example.collab.share.User;
-import org.eclipse.ecf.example.collab.share.url.StartProgramSharedObject;
 import org.eclipse.ecf.example.collab.share.url.ShowURLSharedObject;
+import org.eclipse.ecf.example.collab.share.url.StartProgramSharedObject;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.ViewPart;
 
 public class LineChatClientView implements FileSenderUI {
@@ -101,6 +112,18 @@ public class LineChatClientView implements FileSenderUI {
 					}
 
 				});
+
+		JFaceResources.getColorRegistry().put(ViewerToolTip.HEADER_BG_COLOR,
+				new RGB(255, 255, 255));
+		JFaceResources.getFontRegistry().put(
+				ViewerToolTip.HEADER_FONT,
+				JFaceResources.getFontRegistry().getBold(
+						JFaceResources.getDefaultFont().getFontData()[0]
+								.getName()).getFontData());
+
+		ToolTip toolTip = new ViewerToolTip(teamChat.getTree().getControl());
+		toolTip.setShift(new Point(-5, -5));
+		toolTip.setHideOnMouseDown(false);
 	}
 
 	public ViewPart getView() {
@@ -343,20 +366,10 @@ public class LineChatClientView implements FileSenderUI {
 		}
 	}
 
-	protected TreeParent createUserNode(TreeParent node, Vector ht) {
-		if (node == null || ht == null)
-			return null;
-		for (Enumeration e = ht.elements(); e.hasMoreElements();) {
-			TreeItem ti = (TreeItem) e.nextElement();
-			Object val = ti.getValue();
-			final TreeParent tn = new TreeParent(this, ti);
-			if (val instanceof Vector) {
-				// Create new tree node
-				createUserNode(tn, (Vector) val);
-			}
-			node.addChild(tn);
+	protected TreeParent createUserNode(TreeParent node) {
+		if (node != null) {
+			refreshTreeView();
 		}
-		refreshTreeView();
 		return node;
 	}
 
@@ -364,7 +377,7 @@ public class LineChatClientView implements FileSenderUI {
 		if (ud == null)
 			return null;
 		TreeUser tu = new TreeUser(this, ud);
-		return (TreeUser) createUserNode(tu, ud.getUserFields());
+		return (TreeUser) createUserNode(tu);
 	}
 
 	protected void refreshTreeView() {
@@ -468,12 +481,7 @@ public class LineChatClientView implements FileSenderUI {
 
 	protected TreeParent updateSubtree(TreeParent root, TreeItem item) {
 		root.removeAllChildren();
-		TreeParent newRoot = new TreeParent(this, item);
-		Object val = item.getValue();
-		if (val instanceof Vector) {
-			return createUserNode(newRoot, (Vector) val);
-		} else
-			return newRoot;
+		return new TreeParent(this, item);
 	}
 
 	public boolean updateTreeDisplay(ID user, TreeItem item) {
@@ -517,5 +525,99 @@ public class LineChatClientView implements FileSenderUI {
 			}
 		}
 		return false;
+	}
+
+	private class ViewerToolTip extends ToolTip {
+
+		public static final String HEADER_BG_COLOR = ClientPlugin.PLUGIN_ID
+				+ ".TOOLTIP_HEAD_BG_COLOR"; //$NON-NLS-1$
+
+		public static final String HEADER_FONT = ClientPlugin.PLUGIN_ID
+				+ ".TOOLTIP_HEAD_FONT"; //$NON-NLS-1$
+
+		public ViewerToolTip(Control control) {
+			super(control);
+		}
+
+		protected Composite createToolTipContentArea(Event event,
+				Composite parent) {
+			Widget item = teamChat.getTree().getTree().getItem(
+					new Point(event.x, event.y));
+			User user = ((TreeUser) item.getData()).getUser();
+
+			GridLayout gl = new GridLayout();
+			gl.marginBottom = 0;
+			gl.marginTop = 0;
+			gl.marginHeight = 0;
+			gl.marginWidth = 0;
+			gl.marginLeft = 0;
+			gl.marginRight = 0;
+			gl.verticalSpacing = 1;
+			parent.setLayout(gl);
+
+			Composite topArea = new Composite(parent, SWT.NONE);
+			GridData data = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+			data.widthHint = 200;
+			topArea.setLayoutData(data);
+			topArea.setBackground(JFaceResources.getColorRegistry().get(
+					HEADER_BG_COLOR));
+
+			gl = new GridLayout();
+			gl.marginBottom = 2;
+			gl.marginTop = 2;
+			gl.marginHeight = 0;
+			gl.marginWidth = 0;
+			gl.marginLeft = 5;
+			gl.marginRight = 2;
+
+			topArea.setLayout(gl);
+
+			Label l = new Label(topArea, SWT.NONE);
+			l.setText(user.getNickname());
+			l.setBackground(JFaceResources.getColorRegistry().get(
+					HEADER_BG_COLOR));
+			l.setFont(JFaceResources.getFontRegistry().get(HEADER_FONT));
+			l.setLayoutData(data);
+
+			createContentArea(parent, user.getUserFields()).setLayoutData(
+					new GridData(SWT.FILL, SWT.FILL, true, true));
+
+			return parent;
+		}
+
+		protected Control createContentArea(Composite parent, Vector fields) {
+			Text label = new Text(parent, SWT.READ_ONLY | SWT.MULTI);
+			label.setBackground(parent.getDisplay().getSystemColor(
+					SWT.COLOR_INFO_BACKGROUND));
+			StringBuffer buffer = new StringBuffer();
+			synchronized (buffer) {
+				for (int i = 0; i < fields.size(); i++) {
+					TreeItem item = (TreeItem) fields.get(i);
+					buffer.append(item.getLabel()).append(": ").append( //$NON-NLS-1$
+							item.getLabelValue());
+					buffer.append(Text.DELIMITER);
+				}
+			}
+			label.setText(buffer.toString().trim());
+			label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true,
+					false));
+			return label;
+		}
+
+		protected boolean shouldCreateToolTip(Event e) {
+			if (super.shouldCreateToolTip(e)) {
+				Widget item = teamChat.getTree().getTree().getItem(
+						new Point(e.x, e.y));
+				if (item != null) {
+					User user = ((TreeUser) item.getData()).getUser();
+					Vector fields = user.getUserFields();
+					return fields != null && !fields.isEmpty();
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
 	}
 }
