@@ -24,7 +24,7 @@
             objectClass="org.eclipse.core.resources.IProject"
             id="org.eclipse.ecf.example.collab.contribution1">
          <menu
-               label="ECF"
+               label="Communications"
                path="additions"
                id="org.eclipse.ecf.example.collab.menu1">
             <separator name="group1"/>
@@ -34,7 +34,7 @@
                class="org.eclipse.ecf.internal.example.collab.actions.JoinGroupWizardAction"
                icon="icons/collaboration.gif"
                id="org.eclipse.ecf.client.joingroupwizardaction"
-               label="Connect Project to ECF Collaboration Group..."
+               label="Connect Project to Collaboration Group..."
                menubarPath="org.eclipse.ecf.example.collab.menu1/group1"/>
       </objectContribution>
       <objectContribution
@@ -43,7 +43,7 @@
             objectClass="org.eclipse.core.resources.IFile">
          <menu
                id="org.eclipse.ecf.example.collab.menu1"
-               label="ECF"
+               label="Communications"
                path="additions">
             <separator name="group1"/>
             <separator name="group2"/>
@@ -51,7 +51,7 @@
          <action
                class="org.eclipse.ecf.internal.example.collab.actions.OpenSharedEditorAction"
                id="org.eclipse.ecf.client.editfileaction"
-               label="Open Shared Editor"
+               label="Send Request to Open Resource"
                menubarPath="org.eclipse.ecf.example.collab.menu1/group1"/>
       </objectContribution>
    </extension>
@@ -88,7 +88,7 @@
          <action
                label="Share Selection"
                class="org.eclipse.ecf.internal.example.collab.actions.SetSharedEditorSelectionAction"
-               tooltip="Share Selection to ECF Remotes"
+               tooltip="Share Selection to Remotes"
                menubarPath="additions"
                id="org.eclipse.ecf.example.collab.ui.text.SetSharedEditorSelectionAction">
          </action>
@@ -98,7 +98,7 @@
             id="org.eclipse.ecf.javaeditor.ruler.context.actions">
          <action
                label="Share Selection"
-               tooltip="Share Selection to ECF Remotes"
+               tooltip="Share Selection to Remotes"
                class="org.eclipse.ecf.internal.example.collab.actions.SetSharedEditorSelectionAction"
                menubarPath="add"
                id="org.eclipse.ecf.example.collab.ui.java.SetSharedEditorSelectionAction">
@@ -124,19 +124,19 @@
                class="org.eclipse.ecf.internal.example.collab.actions.JoinGroupWizardAction"
                icon="icons/collaboration.gif"
                id="org.eclipse.ecf.example.collab.action2"
-               label="Connect to ECF Collaboration Group..."
+               label="Connect Workspace to Collaboration Group..."
                style="push"
                toolbarPath="connectSeparator2"
-               tooltip="Connect to ECF Collaboration Group">
+               tooltip="Connect Workspace to Collaboration Group">
          </action>
          <action
                class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
                icon="icons/messages.gif"
                id="org.eclipse.ecf.example.collab.ui.connectAction"
-               label="Connect to ECF IM/Chat Provider"
+               label="Connect to IM/Chat Provider"
                style="pulldown"
                toolbarPath="connectSeparator"
-               tooltip="Connect to ECF IM/Chat Provider">
+               tooltip="Connect to IM/Chat Provider">
          </action>
       </actionSet>
    </extension>
