@@ -267,7 +267,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			manager.add(outputClear);
 			manager.add(new Separator());
 			manager.add(outputSelectAll);
-			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS)); //$NON-NLS-1$
+			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		}
 
 		private void hookContextMenu() {
@@ -1466,7 +1466,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		manager.add(outputClear);
 		manager.add(new Separator());
 		manager.add(outputSelectAll);
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS)); //$NON-NLS-1$
+		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
 	private void hookContextMenu() {
