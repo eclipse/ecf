@@ -32,6 +32,11 @@ import org.eclipse.osgi.util.NLS;
 public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 
 	public AsynchContainerConnectAction(IContainer container, ID targetID,
+			IConnectContext connectContext, IExceptionHandler exceptionHandler, Runnable successBlock) {
+		super(container, targetID, connectContext, exceptionHandler, successBlock);
+	}
+
+	public AsynchContainerConnectAction(IContainer container, ID targetID,
 			IConnectContext connectContext, IExceptionHandler exceptionHandler) {
 		super(container, targetID, connectContext, exceptionHandler);
 	}
@@ -123,6 +128,9 @@ public class AsynchContainerConnectAction extends SynchContainerConnectAction {
 				if (monitor.isCanceled()) {
 					container.disconnect();
 					return Status.CANCEL_STATUS;
+				}
+				if (successBlock != null) {
+					successBlock.run();
 				}
 				monitor.worked(60);
 				return Status.OK_STATUS;

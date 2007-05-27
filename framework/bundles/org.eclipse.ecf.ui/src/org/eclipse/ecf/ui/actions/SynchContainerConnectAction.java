@@ -26,12 +26,20 @@ public class SynchContainerConnectAction implements
 
 	protected IExceptionHandler exceptionHandler;
 
+	protected Runnable successBlock;
+	
 	public SynchContainerConnectAction(IContainer container, ID targetID,
-			IConnectContext connectContext, IExceptionHandler exceptionHandler) {
+			IConnectContext connectContext, IExceptionHandler exceptionHandler, Runnable successBlock) {
 		this.container = container;
 		this.targetID = targetID;
 		this.connectContext = connectContext;
 		this.exceptionHandler = exceptionHandler;
+		this.successBlock = successBlock;
+	}
+
+	public SynchContainerConnectAction(IContainer container, ID targetID,
+			IConnectContext connectContext, IExceptionHandler exceptionHandler) {
+		this(container,targetID,connectContext,exceptionHandler,null);
 	}
 
 	public SynchContainerConnectAction(IContainer container, ID targetID,
@@ -59,6 +67,9 @@ public class SynchContainerConnectAction implements
 	public void run(IAction action) {
 		try {
 			container.connect(this.targetID, this.connectContext);
+			if (successBlock != null) {
+				successBlock.run();
+			}
 		} catch (ContainerConnectException e) {
 			handleConnectException(action, e);
 		}
@@ -87,4 +98,7 @@ public class SynchContainerConnectAction implements
 		return exceptionHandler;
 	}
 
+	protected Runnable getSuccessBlock() {
+		return successBlock;
+	}
 }
