@@ -50,6 +50,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.im.IChatManager;
 import org.eclipse.ecf.presence.roster.IRosterManager;
+import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
@@ -71,7 +72,7 @@ import org.jivesoftware.smackx.packet.VCardTempXUpdateExtension;
 import org.jivesoftware.smackx.packet.XHTMLExtension;
 
 public class XMPPContainer extends ClientSOContainer implements
-		IPresenceContainerAdapter {
+		IPresenceService {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
 
