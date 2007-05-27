@@ -399,10 +399,10 @@ public class ChatComposite extends Composite {
 		IStructuredSelection iss = (IStructuredSelection) tableView
 				.getSelection();
 		Object element = iss.getFirstElement();
-		if (element == null || !(element instanceof TreeUser)) {
+		if (element == null || !(element instanceof User)) {
 			fillContextMenu(manager);
 		} else {
-			fillTreeContextMenuUser(manager, ((TreeUser) element).getUser());
+			fillTreeContextMenuUser(manager, (User) element);
 		}
 	}
 

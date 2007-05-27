@@ -13,11 +13,11 @@ package org.eclipse.ecf.internal.example.collab.ui;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
@@ -31,6 +31,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -80,6 +81,8 @@ public class LineChatClientView implements FileSenderUI {
 	LineChatView view;
 	protected ID appShareID = null;
 
+	private List users;
+
 	protected ID getAppShareID() {
 		return appShareID;
 	}
@@ -97,6 +100,8 @@ public class LineChatClientView implements FileSenderUI {
 		this.teamChat = new TeamChat(this, view.tabFolder, SWT.NULL, initText);
 		this.userdata = lch.getUser();
 		this.downloaddir = downloaddir;
+		users = new ArrayList();
+		teamChat.getTableViewer().setInput(users);
 		if (userdata != null)
 			addUser(userdata);
 
@@ -121,7 +126,8 @@ public class LineChatClientView implements FileSenderUI {
 						JFaceResources.getDefaultFont().getFontData()[0]
 								.getName()).getFontData());
 
-		ToolTip toolTip = new ViewerToolTip(teamChat.getTable().getControl());
+		ToolTip toolTip = new ViewerToolTip(teamChat.getTableViewer()
+				.getControl());
 		toolTip.setShift(new Point(-5, -5));
 		toolTip.setHideOnMouseDown(false);
 	}
@@ -177,17 +183,13 @@ public class LineChatClientView implements FileSenderUI {
 		return line;
 	}
 
-	protected void addUserToTree(User ud) {
-		if (ud == null)
-			return;
-		TreeParent root = getPresenceRoot();
-		if (root == null)
-			return;
-		TreeUser top = createUserNode(ud);
-		if (top == null)
-			return;
-		root.addChild(top);
-		refreshTreeView();
+	protected void addUserToTree(final User user) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				users.add(user);
+				teamChat.getTableViewer().add(user);
+			}
+		});
 	}
 
 	protected void appendAndScrollToBottom(final ChatLine str) {
@@ -203,18 +205,19 @@ public class LineChatClientView implements FileSenderUI {
 		return changeUserInTree(user);
 	}
 
-	protected boolean changeUserInTree(User userdata) {
-		if (userdata == null)
-			return false;
-		// First, find node for user
-		TreeParent top = getPresenceRoot();
-		for (Iterator childs = top.children().iterator(); childs.hasNext();) {
-			TreeUser child = (TreeUser) childs.next();
-			User ud = child.getUser();
-			if (ud.getUserID().equals(userdata.getUserID())) {
-				// We've found it...so remove existing data
-				top.removeChild(child);
-				addUserToTree(userdata);
+	protected boolean changeUserInTree(final User userdata) {
+		for (int i = 0; i < users.size(); i++) {
+			final User user = (User) users.get(i);
+			if (user.getUserID().equals(userdata.getUserID())) {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						TableViewer view = teamChat.getTableViewer();
+						view.remove(user);
+						users.remove(user);
+						view.add(userdata);
+						users.add(userdata);
+					}
+				});
 				return true;
 			}
 		}
@@ -240,8 +243,7 @@ public class LineChatClientView implements FileSenderUI {
 			if (chatWindow != null && !Display.getDefault().isDisposed()) {
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
-						if (chatWindow != null)
-							chatWindow.close();
+						chatWindow.close();
 					}
 				});
 			}
@@ -268,17 +270,6 @@ public class LineChatClientView implements FileSenderUI {
 		return prefix;
 	}
 
-	protected TreeParent getPresenceRoot() {
-		if (teamChat == null)
-			return null;
-		ViewContentProvider vcp = (ViewContentProvider) teamChat.getTable()
-				.getContentProvider();
-		if (vcp == null)
-			return null;
-		else
-			return vcp.getPresenceRoot();
-	}
-
 	protected String getPrivatePrefix(ID objID) {
 		String prefix = "";
 		if (userdata.getUserID().equals(objID)) {
@@ -303,17 +294,17 @@ public class LineChatClientView implements FileSenderUI {
 	}
 
 	public User getUser(ID id) {
-		if (id == null)
+		if (id == null) {
 			return null;
-		TreeParent top = getPresenceRoot();
-		for (Iterator e = top.children().iterator(); e.hasNext();) {
-			TreeUser tn = (TreeUser) e.next();
-			User ud = tn.getUser();
-			if (id.equals(ud.getUserID())) {
-				return ud;
+		} else {
+			for (int i = 0; i < users.size(); i++) {
+				User user = (User) users.get(i);
+				if (id.equals(user.getUserID())) {
+					return user;
+				}
 			}
+			return null;
 		}
-		return null;
 	}
 
 	protected void handleTextInput(String text) {
@@ -360,26 +351,12 @@ public class LineChatClientView implements FileSenderUI {
 		}
 	}
 
-	protected TreeParent createUserNode(TreeParent node) {
-		if (node != null) {
-			refreshTreeView();
-		}
-		return node;
-	}
-
-	protected TreeUser createUserNode(User ud) {
-		if (ud == null)
-			return null;
-		TreeUser tu = new TreeUser(this, ud);
-		return (TreeUser) createUserNode(tu);
-	}
-
 	protected void refreshTreeView() {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if (teamChat != null) {
 					try {
-						teamChat.getTable().refresh();
+						teamChat.getTableViewer().refresh();
 					} catch (Exception e) {
 					}
 				}
@@ -398,16 +375,19 @@ public class LineChatClientView implements FileSenderUI {
 	}
 
 	protected void removeUserFromTree(ID id) {
-		if (id == null)
+		if (id == null) {
 			return;
-		TreeParent top = getPresenceRoot();
-		if (top != null) {
-			for (Iterator e = top.children().iterator(); e.hasNext();) {
-				TreeUser tn = (TreeUser) e.next();
-				User ud = tn.getUser();
-				if (id.equals(ud.getUserID())) {
-					e.remove();
-					refreshTreeView();
+		} else {
+			for (int i = 0; i < users.size(); i++) {
+				final User user = (User) users.get(i);
+				if (user.getUserID().equals(id)) {
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							teamChat.getTableViewer().remove(user);
+						}
+					});
+					users.remove(i);
+					break;
 				}
 			}
 		}
@@ -471,52 +451,19 @@ public class LineChatClientView implements FileSenderUI {
 		view.setActiveTab(name);
 	}
 
-	protected TreeParent updateSubtree(TreeParent root, TreeItem item) {
-		root.removeAllChildren();
-		return new TreeParent(this, item);
-	}
-
-	public boolean updateTreeDisplay(ID user, TreeItem item) {
-		if (user == null || item == null)
+	public boolean updateTreeDisplay(ID id, TreeItem item) {
+		if (id == null) {
 			return false;
-		TreeParent root = getPresenceRoot();
-		for (Iterator childs = root.children().iterator(); childs.hasNext();) {
-			TreeUser ut = (TreeUser) childs.next();
-			User a = ut.getUser();
-			if (a != null && (user.equals(a.getUserID()))) {
-				// Found user...now find tree item
-				updateUserTree(ut, item);
-				refreshTreeView();
-				return true;
-			}
-		}
-		return false;
-	}
-
-	protected boolean updateUserTree(TreeParent userNode, TreeItem item) {
-		if (userNode == null || item == null)
-			return false;
-		int i = 0;
-		for (Iterator e = userNode.children().iterator(); e.hasNext(); i++) {
-			TreeParent child = (TreeParent) e.next();
-			TreeItem existing = child.getTreeItem();
-			if (item.equals(existing)) {
-				TreeParent newChild = updateSubtree(child, item);
-				userNode.removeChild(child);
-				userNode.addChild(newChild);
-				return true;
-			} else {
-				Object val = existing.getValue();
-				if (val instanceof Vector) {
-					Vector v = (Vector) val;
-					for (Enumeration ev = v.elements(); ev.hasMoreElements();) {
-						TreeItem ti = (TreeItem) ev.nextElement();
-						updateUserTree(child, ti);
-					}
+		} else {
+			for (int i = 0; i < users.size(); i++) {
+				User user = (User) users.get(i);
+				if (user.getUserID().equals(id)) {
+					teamChat.getTableViewer().refresh(user);
+					return true;
 				}
 			}
+			return false;
 		}
-		return false;
 	}
 
 	private class ViewerToolTip extends ToolTip {
@@ -533,9 +480,9 @@ public class LineChatClientView implements FileSenderUI {
 
 		protected Composite createToolTipContentArea(Event event,
 				Composite parent) {
-			Widget item = teamChat.getTable().getTable().getItem(
+			Widget item = teamChat.getTableViewer().getTable().getItem(
 					new Point(event.x, event.y));
-			User user = ((TreeUser) item.getData()).getUser();
+			User user = (User) item.getData();
 
 			GridLayout gl = new GridLayout();
 			gl.marginBottom = 0;
@@ -596,10 +543,10 @@ public class LineChatClientView implements FileSenderUI {
 
 		protected boolean shouldCreateToolTip(Event e) {
 			if (super.shouldCreateToolTip(e)) {
-				Widget item = teamChat.getTable().getTable().getItem(
+				Widget item = teamChat.getTableViewer().getTable().getItem(
 						new Point(e.x, e.y));
 				if (item != null) {
-					User user = ((TreeUser) item.getData()).getUser();
+					User user = (User) item.getData();
 					Vector fields = user.getUserFields();
 					return fields != null && !fields.isEmpty();
 				} else {

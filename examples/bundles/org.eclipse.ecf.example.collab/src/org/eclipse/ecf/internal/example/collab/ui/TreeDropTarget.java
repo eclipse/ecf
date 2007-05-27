@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,30 +24,12 @@ class TreeDropTarget extends ChatDropTarget {
 	}
 
 	protected Object getData(DropTargetEvent event) {
-		Object item = event.item;
-		if (item != null && item instanceof Widget) {
-			Widget titem = (Widget) item;
-			Object obj = titem.getData();
-			return obj;
-		}
-		return null;
-	}
-
-	private User findUserNode(Object to) {
-		if (to == null)
+		Widget item = event.item;
+		if (item != null) {
+			return item.getData();
+		} else {
 			return null;
-		if (to instanceof TreeUser) {
-			TreeUser tu = (TreeUser) to;
-			return tu.getUser();
 		}
-		if (to instanceof TreeParent) {
-			return findUserNode(((TreeParent) to).getParent());
-		}
-		return null;
-	}
-
-	protected User isUserHit(Object item) {
-		return findUserNode(item);
 	}
 
 	public void dragEnter(DropTargetEvent event) {
@@ -63,12 +45,12 @@ class TreeDropTarget extends ChatDropTarget {
 			event.detail = DND.DROP_NONE;
 			return;
 		} else {
-			User user = isUserHit(item);
-			if (user == null) {
+			if (item instanceof User) {
+				selectedUser = (User) item;
+			} else {
 				event.detail = DND.DROP_NONE;
 				return;
 			}
-			selectedUser = user;
 		}
 		// will accept text but prefer to have files dropped
 		for (int i = 0; i < event.dataTypes.length; i++) {
@@ -93,14 +75,12 @@ class TreeDropTarget extends ChatDropTarget {
 		Object item = getData(event);
 		if (item == null) {
 			event.detail = DND.DROP_NONE;
-			return;
 		} else {
-			User user = isUserHit(item);
-			if (user == null) {
+			if (item instanceof User) {
+				selectedUser = (User) item;
+			} else {
 				event.detail = DND.DROP_NONE;
-				return;
 			}
-			selectedUser = user;
 		}
 	}
 }

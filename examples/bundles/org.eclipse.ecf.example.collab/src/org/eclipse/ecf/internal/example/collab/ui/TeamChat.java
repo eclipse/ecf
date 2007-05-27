@@ -11,11 +11,18 @@
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
-import org.eclipse.core.resources.ResourcesPlugin;
+import java.util.List;
+
+import org.eclipse.ecf.example.collab.share.User;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.ui.SharedImages;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -25,7 +32,6 @@ class TeamChat extends Composite {
 	ChatComposite chat = null;
 	SashForm sash = null;
 	TableViewer tableView = null;
-	ViewContentProvider vc;
 	ToolBar bar;
 	LineChatClientView view;
 	ChatWindow chatWindow;
@@ -54,11 +60,8 @@ class TeamChat extends Composite {
 		tableView = new TableViewer(useChatWindow ? (Composite) this
 				: (Composite) sash, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.BORDER);
-		vc = new ViewContentProvider(view);
-
-		tableView.setContentProvider(vc);
+		tableView.setContentProvider(new ViewContentProvider());
 		tableView.setLabelProvider(new ViewLabelProvider());
-		tableView.setInput(ResourcesPlugin.getWorkspace());
 
 		if (useChatWindow) {
 			chatWindow = new ChatWindow(view, this, tableView, initText);
@@ -95,7 +98,7 @@ class TeamChat extends Composite {
 		chat.clearInput();
 	}
 
-	TableViewer getTable() {
+	TableViewer getTableViewer() {
 		return tableView;
 	}
 
@@ -119,5 +122,25 @@ class TeamChat extends Composite {
 		}
 
 		super.dispose();
+	}
+
+	private class ViewContentProvider implements IStructuredContentProvider {
+
+		public void dispose() {
+		}
+
+		public Object[] getElements(Object parent) {
+			return ((List) parent).toArray();
+		}
+
+		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+		}
+	}
+
+	private class ViewLabelProvider extends LabelProvider {
+		public Image getImage(Object obj) {
+			return obj instanceof User ? SharedImages
+					.getImage(SharedImages.IMG_USER_AVAILABLE) : null;
+		}
 	}
 }
