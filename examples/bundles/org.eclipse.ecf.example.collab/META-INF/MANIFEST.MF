@@ -9,11 +9,10 @@ Export-Package: org.eclipse.ecf.example.collab.share,
  org.eclipse.ecf.example.collab.share.io,
  org.eclipse.ecf.example.collab.share.url,
  org.eclipse.ecf.internal.example.collab;x-internal:=true,
- org.eclipse.ecf.internal.example.collab.actions,
- org.eclipse.ecf.internal.example.collab.start,
- org.eclipse.ecf.internal.example.collab.ui,
- org.eclipse.ecf.internal.example.collab.ui.hyperlink,
- org.eclipse.ecf.internal.example.collab.ui.perspective;x-internal:=true
+ org.eclipse.ecf.internal.example.collab.actions;x-internal:=true,
+ org.eclipse.ecf.internal.example.collab.start;x-internal:=true,
+ org.eclipse.ecf.internal.example.collab.ui;x-internal:=true,
+ org.eclipse.ecf.internal.example.collab.ui.hyperlink;x-internal:=true
 Eclipse-LazyStart: true
 Provide-Package: org.eclipse.ecf.example.collab
 Bundle-ManifestVersion: 2
