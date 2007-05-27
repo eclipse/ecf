@@ -1,5 +1,5 @@
-/****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+/*******************************************************************************
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
- *****************************************************************************/
+ ******************************************************************************/
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
@@ -592,9 +592,7 @@ public class LineChatClientView implements FileSenderUI {
 			StringBuffer buffer = new StringBuffer();
 			synchronized (buffer) {
 				for (int i = 0; i < fields.size(); i++) {
-					TreeItem item = (TreeItem) fields.get(i);
-					buffer.append(item.getLabel()).append(": ").append( //$NON-NLS-1$
-							item.getLabelValue());
+					buffer.append(fields.get(i));
 					buffer.append(Text.DELIMITER);
 				}
 			}

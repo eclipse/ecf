@@ -1,5 +1,5 @@
-/****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+/*******************************************************************************
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,25 +7,25 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
- *****************************************************************************/
+ ******************************************************************************/
 package org.eclipse.ecf.internal.example.collab.ui;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.core.IContainerListener;
+import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEjectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
-import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.SharedObjectEventListener;
-import org.eclipse.ecf.example.collab.share.TreeItem;
 import org.eclipse.ecf.example.collab.share.User;
 import org.eclipse.ecf.internal.example.collab.ClientEntry;
 import org.eclipse.ecf.internal.example.collab.CollabClient;
@@ -57,34 +57,29 @@ public class SharedObjectContainerUI {
 	protected User getUserData(String containerType, ID clientID,
 			String usernick, IResource project) {
 		Vector topElements = new Vector();
-		topElements.add(new TreeItem("Project", CollabClient
-				.getNameForResource(project)));
+		topElements.add("Project: " + CollabClient.getNameForResource(project));
 		SimpleDateFormat sdf = new SimpleDateFormat(JOIN_TIME_FORMAT);
-		topElements.add(new TreeItem("Time", sdf.format(new Date())));
+		topElements.add("Time: " + sdf.format(new Date()));
 		try {
-			String userLang = System.getProperty("user.language");
-			topElements.add(new TreeItem("Language", userLang));
+			topElements.add("Language: " + System.getProperty("user.language"));
 		} catch (Exception e) {
 		}
 		try {
-			String timeZone = System.getProperty("user.timezone");
-			topElements.add(new TreeItem("Time Zone", timeZone));
+			topElements
+					.add("Time Zone: " + System.getProperty("user.timezone"));
 		} catch (Exception e) {
 		}
 		try {
-			String osgiVersion = System
-					.getProperty("org.osgi.framework.version");
-			topElements.add(new TreeItem("OSGI version", osgiVersion));
+			topElements.add("OSGi Version: "
+					+ System.getProperty("org.osgi.framework.version"));
 		} catch (Exception e) {
 		}
 		try {
-			String javaVersion = System.getProperty("java.version");
-			topElements.add(new TreeItem("Java", javaVersion));
+			topElements.add("Java: " + System.getProperty("java.version"));
 		} catch (Exception e) {
 		}
 		try {
-			String osName = Platform.getOS();
-			topElements.add(new TreeItem("OS", osName));
+			topElements.add("OS: " + Platform.getOS());
 		} catch (Exception e) {
 		}
 		return new User(clientID, usernick, topElements);
