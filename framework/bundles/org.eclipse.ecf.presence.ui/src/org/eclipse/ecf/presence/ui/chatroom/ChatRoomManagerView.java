@@ -1260,79 +1260,8 @@ public class ChatRoomManagerView extends ViewPart implements
 		// XXX TODO
 	}
 
-	private boolean intelligentAppend(StyledText st, ChatLine text) {
-		String line = text.getText();
-
-		int startRange = st.getText().length();
-		StringBuffer sb = new StringBuffer();
-		// check to see if the message has the user's name contained within
-		boolean nickContained = text.getText().indexOf(localUserName) != -1;
-		if (text.getOriginator() != null) {
-			// check to make sure that the person referring to the user's name
-			// is not the user himself, no highlighting is required in this case
-			// as the user is already aware that his name is being referenced
-			nickContained = !text.getOriginator().getName().equals(
-					localUserName)
-					&& nickContained;
-			sb.append('(').append(getCurrentDate(DEFAULT_TIME_FORMAT)).append(
-					") "); //$NON-NLS-1$
-			StyleRange dateStyle = new StyleRange();
-			dateStyle.start = startRange;
-			dateStyle.length = sb.length();
-			dateStyle.foreground = dateColor;
-			dateStyle.fontStyle = SWT.NORMAL;
-			st.append(sb.toString());
-			st.setStyleRange(dateStyle);
-			sb = new StringBuffer();
-			sb.append(text.getOriginator().getName()).append(": "); //$NON-NLS-1$
-			StyleRange sr = new StyleRange();
-			sr.start = startRange + dateStyle.length;
-			sr.length = sb.length();
-			sr.fontStyle = SWT.BOLD;
-			// check to see which color should be used
-			sr.foreground = nickContained ? highlightColor : otherColor;
-			st.append(sb.toString());
-			st.setStyleRange(sr);
-		}
-
-		if (line != null && !line.equals("")) { //$NON-NLS-1$
-			int beforeMessageIndex = st.getText().length();
-			st.append(line);
-			if (text.getOriginator() == null) {
-				StyleRange sr = new StyleRange();
-				sr.start = beforeMessageIndex;
-				sr.length = line.length();
-				sr.foreground = systemColor;
-				sr.fontStyle = SWT.BOLD;
-				st.setStyleRange(sr);
-			} else if (nickContained) {
-				// highlight the message itself as necessary
-				StyleRange sr = new StyleRange();
-				sr.start = beforeMessageIndex;
-				sr.length = line.length();
-				sr.foreground = highlightColor;
-				st.setStyleRange(sr);
-			}
-		}
-
-		if (!text.isNoCRLF()) {
-			st.append("\n"); //$NON-NLS-1$
-		}
-
-		String t = st.getText();
-		if (t == null)
-			return true;
-		st.setSelection(t.length());
-
-		return true;
-	}
-
-	protected void appendText(StyledText readText, ChatLine text) {
-		if (readText == null || text == null) {
-			return;
-		}
-		StyledText st = readText;
-		if (st == null || intelligentAppend(st, text)) {
+	protected void appendText(StyledText st, ChatLine text) {
+		if (st == null || text == null) {
 			return;
 		}
 		int startRange = st.getText().length();
