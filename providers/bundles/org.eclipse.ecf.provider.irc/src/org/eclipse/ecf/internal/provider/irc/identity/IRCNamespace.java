@@ -21,6 +21,10 @@ public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 
 	public static final String IRC_PROTOCOL = "irc"; //$NON-NLS-1$
 
+	private String getProtocolPrefix() {
+		return getScheme()+"://";
+	}
+	
 	public ID createInstance(Object[] args) throws IDCreateException {
 		URI newURI = null;
 		String s = null;
@@ -30,6 +34,7 @@ public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 			throw new IDCreateException("Cannot cast argument " + args[0]
 					+ " to String");
 		}
+		if (!s.startsWith(getProtocolPrefix())) s = getProtocolPrefix()+s;
 		try {
 			newURI = new URI(s);
 		} catch (URISyntaxException e) {
