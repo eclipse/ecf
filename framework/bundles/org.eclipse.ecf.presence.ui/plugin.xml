@@ -76,10 +76,6 @@
             id="org.eclipse.ecf.presence.ui.MultiRosterView"
             name="%views.multiRosterView">
       </view>
-   </extension>
-
-   <extension
-         point="org.eclipse.ui.views">
       <view
             allowMultiple="true"
             category="org.eclipse.ecf.ui.viewcategory"
@@ -87,6 +83,30 @@
             icon="icons/chats.gif"
             id="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
             name="Chats"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.collaboration.ui.perspective.collab">
+         <view
+               id="org.eclipse.ecf.presence.ui.MultiRosterView"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ContentOutline"
+               visible="false">
+         </view>
+         <view
+               id="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView"
+               visible="false">
+         </view>
+         <view
+               id="org.eclipse.ecf.presence.ui.MessagesView"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView"
+               visible="false">
+         </view>
+      </perspectiveExtension>
    </extension>
 
 </plugin>
