@@ -24,7 +24,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 
 /**
  * A two-person chat. Instances are created via
- * {@link IChatManager#createChat(ID, org.eclipse.ecf.presence.IIMMessageListener).
+ * {@link IChatManager#createChat(ID, org.eclipse.ecf.presence.IIMMessageListener)}.
  */
 public interface IChat extends IAdaptable {
 
