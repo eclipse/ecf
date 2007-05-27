@@ -17,11 +17,14 @@ import java.util.List;
 import org.eclipse.ecf.internal.provider.xmpp.ui.Activator;
 import org.eclipse.ecf.internal.provider.xmpp.ui.Messages;
 import org.eclipse.ecf.ui.SharedImages;
+import org.eclipse.ecf.ui.util.PasswordCacheHelper;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -50,6 +53,19 @@ public class XMPPConnectWizardPage extends WizardPage {
 		this.usernameAtHost = usernameAtHost;
 	}
 
+	private void verify() {
+		String text = connectText.getText();
+		passwordText.setText("");
+		if (text.equals("")) { //$NON-NLS-1$
+			updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS);
+		} else if (text.indexOf('@') == -1) {
+			updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
+		} else {
+			updateStatus(null);
+			restorePassword(text);
+		}
+	}
+	
 	public void createControl(Composite parent) {
 		parent.setLayout(new GridLayout());
 		GridData fillData = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -62,18 +78,16 @@ public class XMPPConnectWizardPage extends WizardPage {
 		connectText.setLayoutData(fillData);
 		connectText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				String text = connectText.getText();
-				if (text.equals("")) { //$NON-NLS-1$
-					updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS);
-				} else if (text.indexOf('@') == -1) {
-					updateStatus(Messages.XMPPConnectWizardPage_WIZARD_STATUS_INCOMPLETE);
-				} else {
-					updateStatus(null);
-				}
+				verify();
 			}
 		});
-
-		restoreCombo();
+		connectText.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				verify();
+			}
+			public void widgetSelected(SelectionEvent e) {
+				verify();
+			}});
 		
 		label = new Label(parent, SWT.RIGHT);
 		label.setText(Messages.XMPPConnectWizardPage_USERID_TEMPLATE);
@@ -84,13 +98,23 @@ public class XMPPConnectWizardPage extends WizardPage {
 		passwordText = new Text(parent, SWT.SINGLE | SWT.PASSWORD | SWT.BORDER);
 		passwordText.setLayoutData(fillData);
 
+		restoreCombo();
+		
 		if (usernameAtHost != null) {
 			connectText.setText(usernameAtHost);
+			restorePassword(usernameAtHost);
 			passwordText.setFocus();
 		}
 		setControl(parent);
 	}
 
+	protected void restorePassword(String username) {
+		PasswordCacheHelper pwStorage = new PasswordCacheHelper(username);
+		String pw = pwStorage.retrievePassword();
+		if (pw != null) {
+			passwordText.setText(pw);
+		}
+	}
 	
 	String getConnectID() {
 		return connectText.getText();

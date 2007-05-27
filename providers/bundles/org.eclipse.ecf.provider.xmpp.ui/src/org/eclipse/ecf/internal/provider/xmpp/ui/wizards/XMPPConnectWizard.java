@@ -45,6 +45,7 @@ import org.eclipse.ecf.presence.ui.MultiRosterView;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
 import org.eclipse.ecf.ui.dialogs.IDCreateErrorDialog;
+import org.eclipse.ecf.ui.util.PasswordCacheHelper;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.osgi.util.NLS;
@@ -239,23 +240,26 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 
 	public boolean performFinish() {
 		
-		// Save combo text
+		final String connectID = page.getConnectID();
+		final String password = page.getPassword();
+		
+		// Save combo text even if we don't successfully login
 		page.saveComboText();
 		
 		connectContext = ConnectContextFactory
-				.createPasswordConnectContext(page.getPassword());
+				.createPasswordConnectContext(password);
 
 		try {
 			targetID = IDFactory.getDefault().createID(
-					container.getConnectNamespace(), page.getConnectID());
+					container.getConnectNamespace(), connectID);
 		} catch (IDCreateException e) {
-			new IDCreateErrorDialog(null,page.getConnectID(),e).open();
+			new IDCreateErrorDialog(null,connectID,e).open();
 			return false;
 		}
 
-		// If we successfully create ID, then we save combo items
+		// Save combo items if targetID created successfully
 		page.saveComboItems();
-		
+
 		final IPresenceContainerAdapter adapter = (IPresenceContainerAdapter) container
 				.getAdapter(IPresenceContainerAdapter.class);
 
@@ -289,9 +293,19 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 				.getAdapter(IOutgoingFileTransferContainerAdapter.class);
 		ioftca.addListener(requestListener);
 		// Connect
-		new AsynchContainerConnectAction(container, targetID, connectContext).run();
+		new AsynchContainerConnectAction(container, targetID, connectContext, null, new Runnable() {
+			public void run() {
+				cachePassword(connectID,password);
+			}}).run();
 
 		return true;
 	}
 
+	protected void cachePassword(final String connectID, String password) {
+		if (password != null && !password.equals("")) {
+			PasswordCacheHelper pwStorage = new PasswordCacheHelper(connectID);
+			pwStorage.savePassword(password);
+		}
+	}
+	
 }
