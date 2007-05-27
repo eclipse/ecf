@@ -39,7 +39,7 @@
       <perspective
             class="org.eclipse.ecf.internal.ui.perspectives.CommunicationPerspective"
             icon="icons/enabled/communications.gif"
-            id="org.eclipse.collaboration.ui.perspective.collab"
+            id="org.eclipse.ecf.ui.perspective.communications"
             name="%perspective.name">
       </perspective>
    </extension>
