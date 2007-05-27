@@ -22,6 +22,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.ecf.ui.actions.AsynchContainerConnectAction;
 import org.eclipse.ecf.ui.dialogs.IDCreateErrorDialog;
+import org.eclipse.ecf.ui.util.PasswordCacheHelper;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 
@@ -59,11 +60,12 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 
 	public boolean performFinish() {
 		
-		connectContext = ConnectContextFactory
-				.createPasswordConnectContext(page.getPassword());
-
-		String connectID = "irc://"+page.getConnectID();
+		final String connectID = page.getConnectID();
+		final String password = page.getPassword();
 		
+		connectContext = ConnectContextFactory
+				.createPasswordConnectContext(password);
+
 		page.saveComboText();
 		
 		try {
@@ -82,12 +84,22 @@ public final class IRCConnectWizard extends Wizard implements IConnectWizard {
 		// If it's not already connected, then we connect this new container
 		if (!ui.isContainerConnected()) {
 			page.saveComboItems();
-			new AsynchContainerConnectAction(this.container, this.targetID,
-					this.connectContext).run();
+			new AsynchContainerConnectAction(container, targetID, connectContext, null, new Runnable() {
+				public void run() {
+					cachePassword(connectID,password);
+				}}).run();
+
 		}
 
 
 		return true;
 	}
 
+	protected void cachePassword(final String connectID, String password) {
+		if (password != null && !password.equals("")) {
+			PasswordCacheHelper pwStorage = new PasswordCacheHelper(connectID);
+			pwStorage.savePassword(password);
+		}
+	}
+	
 }

@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.ecf.presence,
  org.eclipse.ecf.presence.ui,
- org.eclipse.jface.text
+ org.eclipse.jface.text,
+ org.eclipse.ecf.provider.irc
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.irc.ui;x-internal:=true,
  org.eclipse.ecf.internal.irc.ui.wizards;x-internal:=true
