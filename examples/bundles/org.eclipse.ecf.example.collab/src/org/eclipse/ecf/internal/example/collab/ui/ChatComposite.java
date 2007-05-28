@@ -864,7 +864,7 @@ public class ChatComposite extends Composite {
 				.getString("LineChatClientView.contextmenu.paste"));
 		outputPaste.setToolTipText(MessageLoader
 				.getString("LineChatClientView.contextmenu.paste.tooltip"));
-		outputCopy.setAccelerator(SWT.CTRL | 'V');
+		outputPaste.setAccelerator(SWT.CTRL | 'V');
 		outputPaste.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(
 						ISharedImages.IMG_TOOL_PASTE));
