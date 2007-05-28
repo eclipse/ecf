@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005 IBM Corporation and others.
+ * Copyright (c) 2005, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,36 +8,44 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-/*
- * Created on Feb 18, 2005
- *
- */
 package org.eclipse.ecf.internal.example.collab.ui;
 
 import org.eclipse.ecf.example.collab.share.User;
 
 /**
  * @author kgilmer
- * 
  */
 public class ChatLine {
-	private User originator = null; //
-	private String text = null;
+	private User originator;
+	private String text;
+	private String date;
 	private boolean isPrivate = false;
 	private boolean isRaw = false;
 	private boolean noCRLF = false;
-	private Runnable onClick = null;
+	private Runnable onClick;
 
 	public ChatLine() {
 		this(null);
 	}
 
 	public ChatLine(String text) {
-		this(text, null);
+		this(text, null, null, null);
+	}
+
+	public ChatLine(String text, String date) {
+		this(text, date, null);
 	}
 
 	public ChatLine(String text, User user) {
-		this(text, user, null);
+		this(text, null, user);
+	}
+
+	public ChatLine(String text, String date, User user) {
+		this(text, date, user, null);
+	}
+
+	public ChatLine(String text, User user, Runnable onClick) {
+		this(text, null, user, onClick);
 	}
 
 	/**
@@ -46,11 +54,13 @@ public class ChatLine {
 	 * when the user clicks on the chat line.
 	 * 
 	 * @param text
+	 * @param date
 	 * @param user
 	 * @param onClick
 	 */
-	public ChatLine(String text, User user, Runnable onClick) {
+	public ChatLine(String text, String date, User user, Runnable onClick) {
 		this.text = text;
+		this.date = date;
 		this.originator = user;
 		this.onClick = onClick;
 	}
@@ -83,6 +93,14 @@ public class ChatLine {
 	 */
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
 	}
 
 	/**

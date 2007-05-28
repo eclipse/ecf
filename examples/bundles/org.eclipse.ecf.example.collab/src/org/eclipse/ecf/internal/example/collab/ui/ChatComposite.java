@@ -280,6 +280,10 @@ public class ChatComposite extends Composite {
 		range.start = textoutput.getText().length();
 		if (user != null) {
 			String prefix = user.getNickname() + ": "; //$NON-NLS-1$
+			String date = text.getDate();
+			if (date != null && !date.equals("")) { //$NON-NLS-1$
+				prefix = date + ' ' + prefix;
+			}
 			range.length = prefix.length();
 			range.foreground = user.equals(view.userdata) ? meColor
 					: otherColor;
@@ -288,6 +292,10 @@ public class ChatComposite extends Composite {
 			textoutput.append(text.getText());
 		} else {
 			String content = text.getText();
+			String date = text.getDate();
+			if (date != null && !date.equals("")) { //$NON-NLS-1$
+				content = date + ' ' + content;
+			}
 			range.length = content.length();
 			range.foreground = otherColor;
 			textoutput.append(content);
