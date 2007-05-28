@@ -116,17 +116,13 @@
             id="org.eclipse.ecf.example.collab.ui.actionSet"
             label="Communications"
             visible="false">
-         <menu
-               id="org.eclipse.ecf.example.collab.ui.connectMenu"
-               label="connectMenu">
-         </menu>
          <action
                class="org.eclipse.ecf.internal.example.collab.actions.JoinGroupWizardAction"
                icon="icons/collaboration.gif"
                id="org.eclipse.ecf.example.collab.action2"
                label="Connect Workspace to Collaboration Group..."
                style="push"
-               toolbarPath="connectSeparator2"
+               toolbarPath="org.eclipse.ecf.ui.collaboration"
                tooltip="Connect Workspace to Collaboration Group">
          </action>
          <action
@@ -135,7 +131,7 @@
                id="org.eclipse.ecf.example.collab.ui.connectAction"
                label="Connect to IM/Chat Provider"
                style="pulldown"
-               toolbarPath="connectSeparator"
+               toolbarPath="org.eclipse.ecf.ui.collaboration"
                tooltip="Connect to IM/Chat Provider">
          </action>
       </actionSet>
@@ -169,7 +165,7 @@
                id="org.eclipse.ecf.example.collab.discoveryview"
                relationship="stack"
                relative="org.eclipse.ui.views.ProblemView"
-               visible="true">
+               visible="false">
          </view>
       </perspectiveExtension>
    </extension>
