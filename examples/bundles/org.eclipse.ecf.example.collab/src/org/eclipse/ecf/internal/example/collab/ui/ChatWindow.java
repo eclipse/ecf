@@ -1,5 +1,5 @@
-/****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+/*******************************************************************************
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,16 +7,12 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
- *****************************************************************************/
+ ******************************************************************************/
 
 package org.eclipse.ecf.internal.example.collab.ui;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.ecf.internal.example.collab.ClientPlugin;
-import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -35,7 +31,6 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * @author pnehrer
- * 
  */
 public class ChatWindow extends ApplicationWindow {
 
@@ -71,51 +66,8 @@ public class ChatWindow extends ApplicationWindow {
 
 	private Flash flash;
 
-	private class Flash implements Runnable {
-
-		private final Display display;
-
-		private boolean disposed;
-
-		public Flash(Display display) {
-			this.display = display;
-		}
-
-		public synchronized void dispose() {
-			if (!disposed) {
-				disposed = true;
-				notify();
-			}
-		}
-
-		public void run() {
-			while (true) {
-				synchronized (this) {
-					try {
-						while (!flashing && !disposed)
-							wait();
-					} catch (InterruptedException e) {
-						break;
-					}
-				}
-
-				if (disposed && display.isDisposed())
-					break;
-
-				display.syncExec(flipImage);
-				synchronized (this) {
-					try {
-						wait(FLASH_INTERVAL);
-					} catch (InterruptedException e) {
-						break;
-					}
-				}
-			}
-		}
-	};
-
-	public ChatWindow(LineChatClientView view, Composite parent,
-			TableViewer table, String initText) {
+	public ChatWindow(LineChatClientView view, TableViewer table,
+			String initText) {
 		super(null);
 		this.view = view;
 		this.table = table;
@@ -131,9 +83,7 @@ public class ChatWindow extends ApplicationWindow {
 	protected void configureShell(final Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText("Team Chat: " + view.name);
-		image = ImageDescriptor.createFromURL(
-				FileLocator.find(ClientPlugin.getDefault().getBundle(),
-						new Path("icons/contact_enabled.gif"), null)).createImage();
+		image = SharedImages.getImage(SharedImages.IMG_USER_AVAILABLE);
 		newShell.setImage(image);
 		RGB[] colors = new RGB[2];
 		colors[0] = new RGB(0, 0, 0);
@@ -149,10 +99,6 @@ public class ChatWindow extends ApplicationWindow {
 			public void widgetDisposed(DisposeEvent e) {
 				if (flash != null)
 					flash.dispose();
-
-				if (image != null)
-					image.dispose();
-
 				if (blank != null)
 					blank.dispose();
 			}
@@ -173,7 +119,8 @@ public class ChatWindow extends ApplicationWindow {
 	 * @see org.eclipse.jface.window.Window#createContents(org.eclipse.swt.widgets.Composite)
 	 */
 	protected Control createContents(Composite parent) {
-		chat = new ChatComposite(view, parent, table, SWT.NORMAL, initText, this);
+		chat = new ChatComposite(view, parent, table, SWT.NORMAL, initText,
+				this);
 		chat.setLayoutData(new GridData(GridData.FILL_BOTH));
 		chat.setFont(parent.getFont());
 		return chat;
@@ -235,4 +182,47 @@ public class ChatWindow extends ApplicationWindow {
 		if (!getShell().isDisposed())
 			getShell().setVisible(false);
 	}
+
+	private class Flash implements Runnable {
+
+		private final Display display;
+
+		private boolean disposed;
+
+		public Flash(Display display) {
+			this.display = display;
+		}
+
+		public synchronized void dispose() {
+			if (!disposed) {
+				disposed = true;
+				notify();
+			}
+		}
+
+		public void run() {
+			while (true) {
+				synchronized (this) {
+					try {
+						while (!flashing && !disposed)
+							wait();
+					} catch (InterruptedException e) {
+						break;
+					}
+				}
+
+				if (disposed && display.isDisposed())
+					break;
+
+				display.syncExec(flipImage);
+				synchronized (this) {
+					try {
+						wait(FLASH_INTERVAL);
+					} catch (InterruptedException e) {
+						break;
+					}
+				}
+			}
+		}
+	};
 }

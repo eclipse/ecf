@@ -64,7 +64,7 @@ class TeamChat extends Composite {
 		tableView.setLabelProvider(new ViewLabelProvider());
 
 		if (useChatWindow) {
-			chatWindow = new ChatWindow(view, this, tableView, initText);
+			chatWindow = new ChatWindow(view, tableView, initText);
 			chatWindow.create();
 			chat = chatWindow.getChat();
 		} else {
