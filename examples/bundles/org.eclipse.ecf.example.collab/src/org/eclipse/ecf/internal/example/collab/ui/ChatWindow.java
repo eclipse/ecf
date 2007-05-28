@@ -14,7 +14,6 @@ package org.eclipse.ecf.internal.example.collab.ui;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ApplicationWindow;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ShellAdapter;

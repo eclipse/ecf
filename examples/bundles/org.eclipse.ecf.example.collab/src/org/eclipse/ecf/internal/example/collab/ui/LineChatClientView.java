@@ -48,7 +48,6 @@ import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.ViewPart;
 
 public class LineChatClientView implements FileSenderUI {
-	public static final String CLIENT_PREFIX = " says";
 	public static final String DEFAULT_UNIX_BROWSER = "mozilla";
 	public static final String ENTER_STRING = "ARRIVED";
 	public static final String EXECPROGARGTYPES[] = { ID.class.getName(),
@@ -56,7 +55,6 @@ public class LineChatClientView implements FileSenderUI {
 			Boolean.class.getName(), Boolean.class.getName() };
 	public static final String EXECPROGCLASSNAME = StartProgramSharedObject.class
 			.getName();
-	public static final String HOST_PREFIX = "You say";
 	public static final String LEFT_STRING = "LEFT";
 	public static final String MESSAGECLASSNAME = HelloMessageSharedObject.class
 			.getName();
@@ -65,31 +63,20 @@ public class LineChatClientView implements FileSenderUI {
 			"java.lang.String" };
 	public static final String SHOWURLCLASSNAME = ShowURLSharedObject.class
 			.getName();
-	protected static final int TREE_EXPANSION_LEVELS = 1;
-	public static final String TREE_HEADER = "Participants";
+	
 	private boolean showTimestamp = ClientPlugin.getDefault()
 			.getPreferenceStore().getBoolean(
 					ClientPlugin.PREF_DISPLAY_TIMESTAMP);
-	SimpleDateFormat df = new SimpleDateFormat("MM/dd hh:mm a");
+	private SimpleDateFormat df = new SimpleDateFormat("MM/dd hh:mm a"); //$NON-NLS-1$
 	String downloaddir;
 	LineChatHandler lch;
 	Hashtable myNames = new Hashtable();
 	String name;
-	Vector proxyObjects = new Vector();
-	TeamChat teamChat;
+	private TeamChat teamChat;
 	User userdata;
 	LineChatView view;
-	protected ID appShareID = null;
 
 	private List users;
-
-	protected ID getAppShareID() {
-		return appShareID;
-	}
-
-	protected void setAppShareID(ID val) {
-		appShareID = val;
-	}
 
 	public LineChatClientView(LineChatHandler lch, LineChatView view,
 			String name, String initText, String downloaddir) {
@@ -221,6 +208,7 @@ public class LineChatClientView implements FileSenderUI {
 
 	public void disposeClient() {
 		myNames.clear();
+		users.clear();
 		if (teamChat != null) {
 			final ChatWindow chatWindow = teamChat.chatWindow;
 			if (chatWindow != null && !Display.getDefault().isDisposed()) {
@@ -372,11 +360,6 @@ public class LineChatClientView implements FileSenderUI {
 
 	public void setTitle(String title) {
 		// NOTHING HAPPENS
-	}
-
-	public void setVisible(boolean visible) {
-		// NOTHING HAPPENS
-		// teamChat.setVisible(visible);
 	}
 
 	public void showLine(ChatLine line) {
