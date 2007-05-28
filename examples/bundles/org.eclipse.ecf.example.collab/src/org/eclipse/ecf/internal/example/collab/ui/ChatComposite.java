@@ -92,6 +92,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -353,8 +354,8 @@ public class ChatComposite extends Composite {
 		manager.add(sendShowViewRequest);
 		manager.add(new Separator());
 		manager.add(closeGroup);
-		// Other plug-ins can contribute there actions here
-		manager.add(new Separator("Additions"));
+		// other plug-ins can contribute there actions here
+		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
@@ -539,8 +540,7 @@ public class ChatComposite extends Composite {
 	}
 
 	private void sendImage() {
-		final Display display = getDisplay();
-		Job job = new ScreenCaptureJob(display);
+		Job job = new ScreenCaptureJob(getDisplay());
 		job.schedule(5000);
 	}
 
@@ -691,8 +691,8 @@ public class ChatComposite extends Composite {
 			sendMessageToUser.setText("Send Message to Yourself");
 			man.add(sendMessageToUser);
 		}
-		// Other plug-ins can contribute there actions here
-		man.add(new Separator("Additions"));
+		// other plug-ins can contribute there actions here
+		man.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
 	protected String[] getArgs(String aString) {
