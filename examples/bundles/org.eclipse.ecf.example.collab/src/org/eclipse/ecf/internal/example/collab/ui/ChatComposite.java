@@ -1424,21 +1424,14 @@ public class ChatComposite extends Composite {
 	}
 
 	private Color colorFromRGBString(String rgb) {
-		Color color = null;
-
-		if (rgb == null || rgb.equals("")) {
-			color = new Color(getShell().getDisplay(), 0, 0, 0);
-			return color;
+		if (rgb == null || rgb.equals("")) { //$NON-NLS-1$
+			return new Color(getShell().getDisplay(), 0, 0, 0);
+		} else {
+			String[] vals = rgb.split(","); //$NON-NLS-1$
+			return new Color(getShell().getDisplay(),
+					Integer.parseInt(vals[0]), Integer.parseInt(vals[1]),
+					Integer.parseInt(vals[2]));
 		}
-
-		if (color != null) {
-			color.dispose();
-		}
-
-		String[] vals = rgb.split(",");
-		color = new Color(getShell().getDisplay(), Integer.parseInt(vals[0]),
-				Integer.parseInt(vals[1]), Integer.parseInt(vals[2]));
-		return color;
 	}
 
 	private class ColorPropertyChangeListener implements
@@ -1450,6 +1443,9 @@ public class ChatComposite extends Composite {
 		 * @see org.eclipse.core.runtime.Preferences.IPropertyChangeListener#propertyChange(org.eclipse.core.runtime.Preferences.PropertyChangeEvent)
 		 */
 		public void propertyChange(PropertyChangeEvent event) {
+			meColor.dispose();
+			otherColor.dispose();
+			systemColor.dispose();
 			meColor = colorFromRGBString(ClientPlugin.getDefault()
 					.getPluginPreferences().getString(
 							ClientPlugin.PREF_ME_TEXT_COLOR));
