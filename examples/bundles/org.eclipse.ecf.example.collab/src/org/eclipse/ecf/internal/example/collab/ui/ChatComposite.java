@@ -146,13 +146,13 @@ public class ChatComposite extends Composite {
 	boolean typing;
 
 	ChatComposite(LineChatClientView view, Composite parent, TableViewer table,
-			int options, String initText) {
-		this(view, parent, table, options, initText, null);
+			String initText) {
+		this(view, parent, table, initText, null);
 	}
 
 	ChatComposite(LineChatClientView view, Composite parent, TableViewer table,
-			int options, String initText, ChatWindow chatWindow) {
-		super(parent, options);
+			String initText, ChatWindow chatWindow) {
+		super(parent, SWT.NONE);
 		this.view = view;
 		this.chatWindow = chatWindow;
 

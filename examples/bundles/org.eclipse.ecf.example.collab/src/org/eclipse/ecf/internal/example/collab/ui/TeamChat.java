@@ -68,8 +68,7 @@ class TeamChat extends Composite {
 			chatWindow.create();
 			chat = chatWindow.getChat();
 		} else {
-			chat = new ChatComposite(view, sash, tableView, SWT.NORMAL,
-					initText);
+			chat = new ChatComposite(view, sash, tableView, initText);
 			sash.setWeights(w);
 		}
 	}

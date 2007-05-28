@@ -119,8 +119,7 @@ public class ChatWindow extends ApplicationWindow {
 	 * @see org.eclipse.jface.window.Window#createContents(org.eclipse.swt.widgets.Composite)
 	 */
 	protected Control createContents(Composite parent) {
-		chat = new ChatComposite(view, parent, table, SWT.NORMAL, initText,
-				this);
+		chat = new ChatComposite(view, parent, table, initText, this);
 		chat.setLayoutData(new GridData(GridData.FILL_BOTH));
 		chat.setFont(parent.getFont());
 		return chat;
