@@ -59,6 +59,7 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -269,57 +270,41 @@ public class ChatComposite extends Composite {
 	}
 
 	public void appendText(ChatLine text) {
-		StyledText st = textoutput;
-
-		if (text == null || textoutput == null || st == null || st.isDisposed())
+		if (text == null || textoutput == null || textoutput.isDisposed()) {
 			return;
-
-		// int startRange = st.getText().length();
-		StringBuffer sb = new StringBuffer();
-
-		if (text.getOriginator() != null) {
-			sb.append(text.getOriginator().getNickname() + ": ");
-			// StyleRange sr = new StyleRange();
-			// sr.start = startRange;
-			// sr.length = sb.length();
-			// if
-			// (view.userdata.getUserID().equals(text.getOriginator().getUserID()))
-			// {
-			// sr.foreground = meColor;
-			// } else {
-			// sr.foreground = otherColor;
-			// }
-			// st.append(sb.toString());
-			// st.setStyleRange(sr);
-
-			textoutput.append(sb.toString());
 		}
 
-		// int beforeMessageIndex = st.getText().length();
-
-		textoutput.append(text.getText());
-
-		// if (text.getOriginator() == null) {
-		// StyleRange sr = new StyleRange();
-		// sr.start = beforeMessageIndex;
-		// sr.length = text.getText().length();
-		// sr.foreground = systemColor;
-		// st.setStyleRange(sr);
-		// }
+		User user = text.getOriginator();
+		StyleRange range = new StyleRange();
+		range.start = textoutput.getText().length();
+		if (user != null) {
+			String prefix = user.getNickname() + ": "; //$NON-NLS-1$
+			range.length = prefix.length();
+			range.foreground = user.equals(view.userdata) ? meColor
+					: otherColor;
+			textoutput.append(prefix);
+			textoutput.setStyleRange(range);
+			textoutput.append(text.getText());
+		} else {
+			String content = text.getText();
+			range.length = content.length();
+			range.foreground = otherColor;
+			textoutput.append(content);
+		}
 
 		if (!text.isNoCRLF()) {
-			textoutput.append("\n");
+			textoutput.append(Text.DELIMITER);
 		}
 
 		// scroll to end
-		String t = st.getText();
-		if (t == null)
-			return;
-		st.setSelection(t.length());
+		String t = textoutput.getText();
+		if (t != null) {
+			textoutput.setSelection(t.length());
+		}
 	}
 
 	protected void clearInput() {
-		textinput.setText("");
+		textinput.setText(""); //$NON-NLS-1$
 	}
 
 	private void contributeToActionBars() {
