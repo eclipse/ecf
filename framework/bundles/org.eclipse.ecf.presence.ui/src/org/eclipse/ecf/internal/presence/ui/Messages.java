@@ -150,6 +150,8 @@ public class Messages extends NLS {
 
 	public static String MultiRosterView_NO_IDENTIFIER_FOR_ROOM_TITLE;
 
+	public static String MultiRosterView_ROSTER_VIEW_EXT_POINT_ERROR_MESSAGE;
+
 	public static String MultiRosterView_SendIM;
 	public static String MultiRosterView_Remove;
 	public static String MultiRosterView_SetStatusAs;

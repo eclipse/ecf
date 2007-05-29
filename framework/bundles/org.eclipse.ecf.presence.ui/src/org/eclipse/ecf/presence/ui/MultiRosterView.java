@@ -17,6 +17,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
@@ -35,6 +41,7 @@ import org.eclipse.ecf.presence.im.ITypingMessageSender;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
+import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
@@ -42,6 +49,7 @@ import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView;
 import org.eclipse.ecf.presence.ui.chatroom.IChatRoomCommandListener;
 import org.eclipse.ecf.presence.ui.chatroom.IChatRoomViewCloseListener;
+import org.eclipse.ecf.presence.ui.dnd.IRosterViewerDropTarget;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
 import org.eclipse.jface.action.Action;
@@ -52,16 +60,25 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.HTMLTransfer;
+import org.eclipse.swt.dnd.RTFTransfer;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
@@ -82,6 +99,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.EditorInputTransfer;
+import org.eclipse.ui.part.PluginTransfer;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -95,6 +114,20 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.MultiRosterView"; //$NON-NLS-1$
 
 	protected static final int DEFAULT_EXPAND_LEVEL = 3;
+
+	private static final String ROSTER_VIEWER_DROP_TARGET_EPOINT = Activator.PLUGIN_ID
+			+ "." //$NON-NLS-1$
+			+ "rosterViewerDropTarget"; //$NON-NLS-1$
+
+	private static final String ROSTER_VIEWER_DROP_TARGET_CLASS_ATTR = "class"; //$NON-NLS-1$
+
+	private static final Transfer[] dndTransferTypes = {
+			EditorInputTransfer.getInstance(), FileTransfer.getInstance(),
+			HTMLTransfer.getInstance(), LocalSelectionTransfer.getTransfer(),
+			PluginTransfer.getInstance(), RTFTransfer.getInstance(),
+			TextTransfer.getInstance() };
+
+	private static final int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
 
 	protected TreeViewer treeViewer;
 
@@ -129,6 +162,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	private IRosterSubscriptionListener subscriptionListener;
 
 	private IPresenceListener presenceListener;
+
+	private RosterViewerDropAdapter dropAdapter;
 
 	private ViewerFilter hideOfflineFilter = new ViewerFilter() {
 		public boolean select(Viewer viewer, Object parentElement,
@@ -220,7 +255,103 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		hookContextMenu();
 		contributeToActionBars();
 		retrieveServices();
+		hookDropSupport();
 		treeViewer.expandToLevel(DEFAULT_EXPAND_LEVEL);
+
+	}
+
+	class RosterViewerDropAdapter extends ViewerDropAdapter {
+		private List rosterDropTargets = new ArrayList();
+		private List rosterPerformDrop = new ArrayList();
+
+		public RosterViewerDropAdapter(TreeViewer treeViewer,
+				IRosterViewerDropTarget dropTarget) {
+			super(treeViewer);
+			Assert.isNotNull(dropTarget);
+			setFeedbackEnabled(false);
+			addRosterDropTarget(dropTarget);
+		}
+
+		public boolean addRosterDropTarget(
+				IRosterViewerDropTarget rosterDropTarget) {
+			return rosterDropTargets.add(rosterDropTarget);
+		}
+
+		public boolean performDrop(Object data) {
+			boolean result = false;
+			for (Iterator i = rosterPerformDrop.iterator(); i.hasNext();) {
+				IRosterViewerDropTarget rdt = (IRosterViewerDropTarget) i
+						.next();
+				if (rdt.performDrop(data))
+					result = true;
+			}
+			rosterPerformDrop.clear();
+			return result;
+		}
+
+		public void dispose() {
+			rosterDropTargets.clear();
+			rosterPerformDrop.clear();
+		}
+
+		public boolean validateDrop(Object target, int operation,
+				TransferData transferType) {
+			if (target != null && target instanceof IRosterItem) {
+				rosterPerformDrop.clear();
+				boolean result = false;
+				for (Iterator i = rosterDropTargets.iterator(); i.hasNext();) {
+					IRosterViewerDropTarget rdt = (IRosterViewerDropTarget) i
+							.next();
+					if (rdt.validateDrop((IRosterItem) target, operation,
+							transferType)) {
+						result = true;
+						rosterPerformDrop.add(rdt);
+					}
+				}
+				return result;
+			} else
+				return false;
+		}
+	}
+
+	private void hookDropSupport() {
+		IExtensionRegistry reg = Activator.getDefault().getExtensionRegistry();
+		if (reg != null) {
+			IExtensionPoint extensionPoint = reg
+					.getExtensionPoint(ROSTER_VIEWER_DROP_TARGET_EPOINT);
+			if (extensionPoint == null) {
+				return;
+			}
+			IConfigurationElement[] configurationElements = extensionPoint
+					.getConfigurationElements();
+
+			for (int i = 0; i < configurationElements.length; i++) {
+				try {
+					IRosterViewerDropTarget rosterDropTarget = (IRosterViewerDropTarget) configurationElements[i]
+							.createExecutableExtension(ROSTER_VIEWER_DROP_TARGET_CLASS_ATTR);
+					if (dropAdapter == null) {
+						dropAdapter = new RosterViewerDropAdapter(treeViewer,
+								rosterDropTarget);
+						treeViewer.addDropSupport(dndOperations,
+								dndTransferTypes, dropAdapter);
+					} else
+						dropAdapter.addRosterDropTarget(rosterDropTarget);
+				} catch (Exception e) {
+					// Log
+					Activator
+							.getDefault()
+							.getLog()
+							.log(
+									new Status(
+											IStatus.ERROR,
+											Activator.PLUGIN_ID,
+											IStatus.ERROR,
+											Messages.MultiRosterView_ROSTER_VIEW_EXT_POINT_ERROR_MESSAGE,
+											e));
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	private void retrieveServices() {
@@ -667,6 +798,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
 	 */
 	public void dispose() {
+		if (dropAdapter != null) {
+			dropAdapter.dispose();
+			dropAdapter = null;
+		}
 		treeViewer = null;
 		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
 			MultiRosterAccount account = (MultiRosterAccount) i.next();
