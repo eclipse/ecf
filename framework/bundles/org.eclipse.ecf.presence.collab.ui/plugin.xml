@@ -25,11 +25,4 @@
       </dropTarget>
    </extension>
 
-   <extension
-         point="org.eclipse.ecf.presence.ui.rosterViewerDropTarget">
-      <dropTarget
-            class="org.eclipse.ecf.presence.collab.ui.TextRosterViewerDropTarget1">
-      </dropTarget>
-   </extension>
-
 </plugin>
