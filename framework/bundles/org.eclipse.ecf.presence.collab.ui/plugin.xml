@@ -18,11 +18,12 @@
          </dynamic>
       </menuContribution>
    </extension>
+   <!--
    <extension
          point="org.eclipse.ecf.presence.ui.rosterViewerDropTarget">
       <dropTarget
             class="org.eclipse.ecf.presence.collab.ui.RosterViewerDropTargetText">
       </dropTarget>
    </extension>
-
+   -->
 </plugin>
