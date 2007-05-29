@@ -1,4 +1,4 @@
-package org.eclipse.ecf.presence.collab.ui;
+package org.eclipse.ecf.internal.presence.collab.ui;
 
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterItem;

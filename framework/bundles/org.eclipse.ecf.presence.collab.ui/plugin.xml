@@ -22,7 +22,7 @@
    <extension
          point="org.eclipse.ecf.presence.ui.rosterViewerDropTarget">
       <dropTarget
-            class="org.eclipse.ecf.presence.collab.ui.RosterViewerDropTargetText">
+            class="org.eclipse.ecf.internal.presence.collab.ui.RosterViewerDropTargetText">
       </dropTarget>
    </extension>
    -->
