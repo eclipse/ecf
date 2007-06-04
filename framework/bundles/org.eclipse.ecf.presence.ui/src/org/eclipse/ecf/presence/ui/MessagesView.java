@@ -51,7 +51,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -110,7 +109,7 @@ public class MessagesView extends ViewPart {
 				}
 			}
 		});
-		
+
 		tabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
 			public void close(CTabFolderEvent e) {
 				Iterator it = tabs.keySet().iterator();
@@ -388,7 +387,10 @@ public class MessagesView extends ViewPart {
 		private void constructWidgets() {
 			item = new CTabItem(tabFolder, SWT.NONE);
 			Composite parent = new Composite(tabFolder, SWT.NONE);
-			parent.setLayout(new GridLayout());
+			GridLayout layout = new GridLayout();
+			layout.marginHeight = 0;
+			layout.marginWidth = 0;
+			parent.setLayout(layout);
 
 			notificationLabel = new Label(parent, SWT.BEGINNING);
 			notificationLabel.setLayoutData(new GridData(SWT.FILL,
@@ -397,10 +399,7 @@ public class MessagesView extends ViewPart {
 			SashForm sash = new SashForm(parent, SWT.VERTICAL);
 			sash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-			Composite client = new Composite(sash, SWT.NONE);
-			client.setLayout(new FillLayout());
-
-			SourceViewer result = new SourceViewer(client, null, null, true,
+			SourceViewer result = new SourceViewer(sash, null, null, true,
 					SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
 							| SWT.READ_ONLY);
 			result.configure(new TextSourceViewerConfiguration(EditorsUI
