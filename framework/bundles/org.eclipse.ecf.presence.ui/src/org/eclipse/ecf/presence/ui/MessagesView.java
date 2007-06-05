@@ -51,10 +51,8 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -269,8 +267,6 @@ public class MessagesView extends ViewPart {
 
 		private Text inputText;
 
-		private Label notificationLabel;
-
 		private IChatMessageSender icms;
 
 		private ITypingMessageSender itms;
@@ -307,8 +303,7 @@ public class MessagesView extends ViewPart {
 								}
 								append(localID, text);
 							} catch (ECFException ex) {
-								notificationLabel
-										.setText(Messages.MessagesView_CouldNotSendMessage);
+								setContentDescription(Messages.MessagesView_CouldNotSendMessage);
 							}
 							e.doit = false;
 							sendTyping = false;
@@ -350,7 +345,7 @@ public class MessagesView extends ViewPart {
 				chatText.append(name + ": " + body); //$NON-NLS-1$
 				chatText.setStyleRange(new StyleRange(length,
 						name.length() + 1, redColor, null, SWT.BOLD));
-				notificationLabel.setText(""); //$NON-NLS-1$
+				setContentDescription(""); //$NON-NLS-1$
 				if (isFirstMessage) {
 					final MessageNotificationPopup popup = new MessageNotificationPopup(
 							getSite().getWorkbenchWindow(), tabFolder
@@ -387,17 +382,9 @@ public class MessagesView extends ViewPart {
 		private void constructWidgets() {
 			item = new CTabItem(tabFolder, SWT.NONE);
 			Composite parent = new Composite(tabFolder, SWT.NONE);
-			GridLayout layout = new GridLayout();
-			layout.marginHeight = 0;
-			layout.marginWidth = 0;
-			parent.setLayout(layout);
-
-			notificationLabel = new Label(parent, SWT.BEGINNING);
-			notificationLabel.setLayoutData(new GridData(SWT.FILL,
-					SWT.BEGINNING, true, false));
+			parent.setLayout(new FillLayout());
 
 			SashForm sash = new SashForm(parent, SWT.VERTICAL);
-			sash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 			SourceViewer result = new SourceViewer(sash, null, null, true,
 					SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
@@ -439,7 +426,7 @@ public class MessagesView extends ViewPart {
 		}
 
 		private void showIsTyping(boolean isTyping) {
-			notificationLabel.setText(isTyping ? NLS.bind(
+			setContentDescription(isTyping ? NLS.bind(
 					Messages.MessagesView_TypingNotification,
 					getUserName(remoteID)) : ""); //$NON-NLS-1$
 		}
