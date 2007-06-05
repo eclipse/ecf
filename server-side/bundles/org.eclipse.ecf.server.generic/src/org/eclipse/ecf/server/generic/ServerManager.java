@@ -172,8 +172,10 @@ public class ServerManager {
 						connect.getTimeout());
 				if (connect.shouldRegisterForDiscovery()) registerServerForDiscovery(group, false);
 				servers.put(cont.getID(), cont);
-				Activator.log(NLS.bind(Messages.ServerStarter_STARTING_SERVER,
-						cont.getID().getName())); //$NON-NLS-1$
+				String msg = NLS.bind(Messages.ServerStarter_STARTING_SERVER,
+				cont.getID().getName());
+				System.out.println(msg);
+				Activator.log(msg); //$NON-NLS-1$
 			}
 			serverGroups[j].putOnTheAir();
 			j++;
