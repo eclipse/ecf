@@ -103,7 +103,7 @@ public class GenericSharedObject implements ISharedObject {
 	 * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
 	 */
 	public void dispose(ID containerID) {
-		config = null;
+		System.out.println("");
 	}
 
 	protected void execMsg(ID fromID, SharedObjectMsg msg) {
