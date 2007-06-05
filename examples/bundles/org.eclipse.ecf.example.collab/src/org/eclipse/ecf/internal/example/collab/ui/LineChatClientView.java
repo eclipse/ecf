@@ -63,7 +63,7 @@ public class LineChatClientView implements FileSenderUI {
 			"java.lang.String" };
 	public static final String SHOWURLCLASSNAME = ShowURLSharedObject.class
 			.getName();
-	
+
 	private boolean showTimestamp = ClientPlugin.getDefault()
 			.getPreferenceStore().getBoolean(
 					ClientPlugin.PREF_DISPLAY_TIMESTAMP);
@@ -157,7 +157,8 @@ public class LineChatClientView implements FileSenderUI {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				users.add(user);
-				teamChat.getTableViewer().add(user);
+				if (!teamChat.isDisposed())
+					teamChat.getTableViewer().add(user);
 			}
 		});
 	}
@@ -165,7 +166,7 @@ public class LineChatClientView implements FileSenderUI {
 	protected void appendAndScrollToBottom(final ChatLine str) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				if (teamChat != null)
+				if (!teamChat.isDisposed())
 					teamChat.appendText(str);
 			}
 		});
@@ -181,11 +182,13 @@ public class LineChatClientView implements FileSenderUI {
 			if (user.getUserID().equals(userdata.getUserID())) {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						TableViewer view = teamChat.getTableViewer();
-						view.remove(user);
-						users.remove(user);
-						view.add(userdata);
-						users.add(userdata);
+						if (!teamChat.isDisposed()) {
+							TableViewer view = teamChat.getTableViewer();
+							view.remove(user);
+							users.remove(user);
+							view.add(userdata);
+							users.add(userdata);
+						}
 					}
 				});
 				return true;
@@ -209,21 +212,13 @@ public class LineChatClientView implements FileSenderUI {
 	public void disposeClient() {
 		myNames.clear();
 		users.clear();
-		if (teamChat != null) {
-			final ChatWindow chatWindow = teamChat.chatWindow;
-			if (chatWindow != null && !Display.getDefault().isDisposed()) {
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						chatWindow.close();
-					}
-				});
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				if (!teamChat.isDisposed() && teamChat.chatWindow != null)
+					teamChat.chatWindow.close();
 			}
+		});
 
-			teamChat = null;
-		}
-		if (lch != null) {
-			lch = null;
-		}
 		view.disposeClient(this);
 	}
 
@@ -292,12 +287,8 @@ public class LineChatClientView implements FileSenderUI {
 	protected void refreshTreeView() {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				if (teamChat != null) {
-					try {
-						teamChat.getTableViewer().refresh();
-					} catch (Exception e) {
-					}
-				}
+				if (!teamChat.isDisposed())
+					teamChat.getTableViewer().refresh();
 			}
 		});
 	}
@@ -320,7 +311,8 @@ public class LineChatClientView implements FileSenderUI {
 				if (user.getUserID().equals(id)) {
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							teamChat.getTableViewer().remove(user);
+							if (!teamChat.isDisposed())
+								teamChat.getTableViewer().remove(user);
 						}
 					});
 					users.remove(i);
@@ -372,7 +364,7 @@ public class LineChatClientView implements FileSenderUI {
 	public void startedTyping(final User user) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				if (teamChat != null)
+				if (!teamChat.isDisposed())
 					teamChat.setStatus(user.getNickname() + " is typing...");
 			}
 		});
