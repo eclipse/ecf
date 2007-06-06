@@ -142,6 +142,7 @@ public class GenericSharedObject implements ISharedObject {
 
 	protected void execMsgInvoke(SharedObjectMsg msg, ID fromID, Object o)
 			throws Exception {
+		if (msg == null || fromID == null || o == null) return;
 		try {
 			msg.invoke(o);
 		} catch (NoSuchMethodException e) {
