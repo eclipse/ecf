@@ -23,10 +23,6 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run class="org.eclipse.ecf.example.clients.applications.ChatRobotApplication">
-         	<parameter name="username" value="fliwatuet"/> 
-         	<parameter name="hostname" value="ecf.eclipse.org"/> 
-         	<parameter name="password" value="fliwatuet"/> 
-         	<parameter name="targetUserID" value="slewis@ecf.eclipse.org"/> 
          </run>
       </application>
    </extension>
