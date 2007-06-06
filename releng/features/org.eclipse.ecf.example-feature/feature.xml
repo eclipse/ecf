@@ -3,7 +3,8 @@
       id="org.eclipse.ecf.examples"
       label="%featureName"
       version="1.0.0.qualifier"
-      provider-name="%providerName">
+      provider-name="%providerName"
+      plugin="org.eclipse.ecf.example.collab">
 
    <description url="http://www.eclipse.org/ecf">
       Eclipse Communication Framework Example Applications
