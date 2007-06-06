@@ -70,7 +70,7 @@ public class JoinGroupWizardAction implements IObjectActionDelegate,
 					.getWorkbench());
 			Shell shell = null;
 			if (targetPart == null) {
-				shell = window.getShell();
+				shell = (window == null)?null:window.getShell();
 			} else {
 				shell = targetPart.getSite().getShell();
 			}
