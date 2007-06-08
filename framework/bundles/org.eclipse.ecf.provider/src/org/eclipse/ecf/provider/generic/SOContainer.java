@@ -56,6 +56,7 @@ import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
 import org.eclipse.ecf.internal.provider.Messages;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
 import org.eclipse.ecf.provider.comm.AsynchEvent;
+import org.eclipse.ecf.provider.comm.ConnectionEvent;
 import org.eclipse.ecf.provider.comm.DisconnectEvent;
 import org.eclipse.ecf.provider.comm.IAsynchConnection;
 import org.eclipse.ecf.provider.comm.IConnection;
@@ -210,6 +211,10 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
 		public ID getEventHandlerID() {
 			return getID();
+		}
+		
+		public void handleConnectEvent(ConnectionEvent event) {
+			
 		}
 
 		public void handleDisconnectEvent(DisconnectEvent event) {

@@ -33,5 +33,12 @@ public interface IConnectionListener {
 	 *            the disconnect event
 	 */
 	public void handleDisconnectEvent(DisconnectEvent event);
+	
+	/**
+	 * Handle connect event
+	 * 
+	 * @param event the connection event.
+	 */
+	public void handleConnectEvent(ConnectionEvent event);
 
 }
