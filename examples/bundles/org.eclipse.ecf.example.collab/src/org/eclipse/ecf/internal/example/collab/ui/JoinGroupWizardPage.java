@@ -126,18 +126,6 @@ public class JoinGroupWizardPage extends WizardPage {
 				nicknameText.selectAll();
 			}
 		});
-
-		// XXX disallow autologin for now
-		// autoLogin = new Button(container, SWT.CHECK);
-		// autoLogin.setText("Login &automatically at startup");
-		// autoLogin.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-		// autoLogin.addSelectionListener(new SelectionAdapter() {
-		// public void widgetSelected(SelectionEvent e) {
-		// autoLoginFlag = autoLogin.getSelection();
-		// }
-		// });
-		// autoLogin.setEnabled(false);
-
 		fillCombo();
 		restoreDialogSettings();
 	}
