@@ -10,13 +10,14 @@ package org.eclipse.ecf.core.sharedobject;
 
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.IIdentifiable;
 
 /**
  * Configuration information associated with ISharedObjectContainer.
  * 
  */
-public interface ISharedObjectContainerConfig extends IIdentifiable {
+public interface ISharedObjectContainerConfig extends IIdentifiable, IAdaptable {
 	/**
 	 * The properties associated with the owner ISharedObjectContainer
 	 * 
@@ -24,14 +25,4 @@ public interface ISharedObjectContainerConfig extends IIdentifiable {
 	 */
 	public Map getProperties();
 
-	/**
-	 * Returns an object which is an instance of the given class associated with
-	 * this object.
-	 * 
-	 * @param clazz
-	 *            the adapter class to lookup
-	 * @return Object a object castable to the given class, or null if this
-	 *         object does not have an adapter for the given class
-	 */
-	public Object getAdapter(Class clazz);
 }
