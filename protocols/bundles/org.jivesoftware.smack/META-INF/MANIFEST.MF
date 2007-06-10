@@ -22,7 +22,6 @@ Export-Package: org.jivesoftware.smack,
  org.jivesoftware.smackx.search
 Bundle-ClassPath: .,
  jars/xpp.jar
-Bundle-RequiredExecutionEnvironment: J2SE-1.4,
- CDC-1.1/Foundation-1.1
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Eclipse-ExtensibleAPI: true
 
