@@ -59,9 +59,9 @@
        <pre>
        IPresenceContainer pc = (IPresenceContainer) cont.getAdapter(IPresenceContainer.class);
        if (pc != null) {
-           // The container DOES exposed IPresenceContainer capabilities, so we can use them!
+           // The container DOES expose IPresenceContainer capabilities, so we can use them!
        } else {
-           // The container does not expose IPresenceContainer capabilities...we're out of luck
+           // The container does NOT expose IPresenceContainer capabilities...we're out of luck
        }
        </pre>
        Among other positive characteristics, this adapter mechanism provides a consistent-yet-simple way for
