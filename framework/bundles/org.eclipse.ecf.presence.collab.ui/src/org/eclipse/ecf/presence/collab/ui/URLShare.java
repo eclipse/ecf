@@ -93,14 +93,14 @@ public class URLShare extends AbstractShare {
 							sendMessage(toID, serialize(new Object[] {
 									senderuser, send }));
 						} catch (ECFException e) {
-							MessageDialog.openError(null, Messages.URLShare_ERROR_SEND_TITLE, NLS.bind(
-									Messages.URLShare_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
+							MessageDialog.openError(null, Messages.Share_ERROR_SEND_TITLE, NLS.bind(
+									Messages.Share_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
 							Activator.getDefault().getLog().log(e.getStatus());
 						} catch (Exception e) {
-							MessageDialog.openError(null, Messages.URLShare_ERROR_SEND_TITLE, NLS.bind(
-									Messages.URLShare_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
+							MessageDialog.openError(null, Messages.Share_ERROR_SEND_TITLE, NLS.bind(
+									Messages.Share_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
 							Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-											IStatus.ERROR, Messages.URLShare_EXCEPTION_LOG_SEND,
+											IStatus.ERROR, Messages.Share_EXCEPTION_LOG_SEND,
 											e));
 						}
 					}
@@ -119,11 +119,11 @@ public class URLShare extends AbstractShare {
 			Object[] msg = (Object[]) deserialize(data);
 			showURL((String) msg[0], (String) msg[1]);
 		} catch (Exception e) {
-			MessageDialog.openError(null, Messages.URLShare_ERROR_RECEIVE_TITLE, NLS.bind(
-					Messages.URLShare_ERROR_RECEIVE_MESSAGE, e.getLocalizedMessage()));
+			MessageDialog.openError(null, Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(
+					Messages.Share_ERROR_RECEIVE_MESSAGE, e.getLocalizedMessage()));
 			Activator.getDefault().getLog().log(
 					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							IStatus.ERROR, Messages.URLShare_EXCEPTION_LOG_MESSAGE,
+							IStatus.ERROR, Messages.Share_EXCEPTION_LOG_MESSAGE,
 							e));
 		}
 	}
