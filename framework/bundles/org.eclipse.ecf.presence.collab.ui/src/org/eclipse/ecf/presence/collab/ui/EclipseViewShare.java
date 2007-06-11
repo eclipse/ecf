@@ -102,11 +102,10 @@ public class EclipseViewShare extends AbstractShare {
 				if (page == null)
 					return;
 				ElementTreeSelectionDialog dlg = new ElementTreeSelectionDialog(
-						null, new ShowViewDialogLabelProvider(), new ShowViewDialogTreeContentProvider());
-				dlg
-						.setTitle("Send Show View Request");
-				dlg
-						.setMessage("Select View to Open Remotely");
+						null, new ShowViewDialogLabelProvider(),
+						new ShowViewDialogTreeContentProvider());
+				dlg.setTitle("Send Show View Request");
+				dlg.setMessage("Select View to Open Remotely");
 				dlg.addFilter(new ShowViewDialogViewerFilter());
 				dlg.setComparator(new ViewerComparator());
 				dlg.setValidator(new ISelectionStatusValidator() {
@@ -137,38 +136,21 @@ public class EclipseViewShare extends AbstractShare {
 						sendMessage(toID, serialize(new Object[] { senderuser,
 								selectedIDs[i] }));
 					} catch (ECFException e) {
-						MessageDialog
-								.openError(
-										null,
-										Messages.Share_ERROR_SEND_TITLE,
-										NLS
-												.bind(
-														Messages.Share_ERROR_SEND_MESSAGE,
-														e
-																.getStatus()
-																.getException()
-																.getLocalizedMessage()));
+						MessageDialog.openError(null,
+								Messages.Share_ERROR_SEND_TITLE, NLS.bind(
+										Messages.Share_ERROR_SEND_MESSAGE, e
+												.getStatus().getException()
+												.getLocalizedMessage()));
 						Activator.getDefault().getLog().log(e.getStatus());
 					} catch (Exception e) {
-						MessageDialog
-								.openError(
-										null,
-										Messages.Share_ERROR_SEND_TITLE,
-										NLS
-												.bind(
-														Messages.Share_ERROR_SEND_MESSAGE,
-														e
-																.getLocalizedMessage()));
-						Activator
-								.getDefault()
-								.getLog()
-								.log(
-										new Status(
-												IStatus.ERROR,
-												Activator.PLUGIN_ID,
-												IStatus.ERROR,
-												Messages.Share_EXCEPTION_LOG_SEND,
-												e));
+						MessageDialog.openError(null,
+								Messages.Share_ERROR_SEND_TITLE, NLS.bind(
+										Messages.Share_ERROR_SEND_MESSAGE, e
+												.getLocalizedMessage()));
+						Activator.getDefault().getLog().log(
+								new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+										IStatus.ERROR,
+										Messages.Share_EXCEPTION_LOG_SEND, e));
 					}
 				}
 			}
@@ -183,12 +165,12 @@ public class EclipseViewShare extends AbstractShare {
 	protected void handleMessage(ID fromContainerID, byte[] data) {
 		try {
 			Object[] msg = (Object[]) deserialize(data);
-			showView((String) msg[0], (String) msg[1], null, 0);
+			showView((String) msg[0], (String) msg[1], null,
+					IWorkbenchPage.VIEW_ACTIVATE);
 		} catch (Exception e) {
-			MessageDialog.openError(null,
-					Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(
-							Messages.Share_ERROR_RECEIVE_MESSAGE, e
-									.getLocalizedMessage()));
+			MessageDialog.openError(null, Messages.Share_ERROR_RECEIVE_TITLE,
+					NLS.bind(Messages.Share_ERROR_RECEIVE_MESSAGE, e
+							.getLocalizedMessage()));
 			Activator.getDefault().getLog().log(
 					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 							IStatus.ERROR,
