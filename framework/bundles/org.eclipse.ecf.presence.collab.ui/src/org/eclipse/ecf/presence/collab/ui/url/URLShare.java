@@ -35,7 +35,7 @@ import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 /**
- * 
+ * Send/receive requests to display an URL in the internal web browser.
  */
 public class URLShare extends AbstractShare {
 
@@ -67,23 +67,25 @@ public class URLShare extends AbstractShare {
 		MessageDialog.openError(null, title, message);
 	}
 
-
 	private void showURL(final String user, final String url) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				if (MessageDialog.openQuestion(null, Messages.URLShare_RECEIVED_URL_TITLE, NLS.bind(
-						Messages.URLShare_RECEIVED_URL_MESSAGE,
-						user))) {
-					IWorkbenchBrowserSupport support = PlatformUI.getWorkbench()
-							.getBrowserSupport();
+				if (MessageDialog.openQuestion(null,
+						Messages.URLShare_RECEIVED_URL_TITLE, NLS.bind(
+								Messages.URLShare_RECEIVED_URL_MESSAGE, user))) {
+					IWorkbenchBrowserSupport support = PlatformUI
+							.getWorkbench().getBrowserSupport();
 					IWebBrowser browser;
 					try {
 						browser = support.createBrowser(null);
 						browser.openURL(new URL(url));
 					} catch (Exception e) {
-						showErrorToUser(Messages.URLShare_ERROR_BROWSER_TITLE, NLS.bind(
-								Messages.URLShare_ERROR_BROWSER_MESSAGE, e
-										.getLocalizedMessage()));
+						showErrorToUser(
+								Messages.URLShare_ERROR_BROWSER_TITLE,
+								NLS
+										.bind(
+												Messages.URLShare_ERROR_BROWSER_MESSAGE,
+												e.getLocalizedMessage()));
 						logError(Messages.URLShare_EXCEPTION_LOG_BROWSER, e);
 					}
 				}
@@ -107,15 +109,15 @@ public class URLShare extends AbstractShare {
 							sendMessage(toID, serialize(new Object[] {
 									senderuser, send }));
 						} catch (ECFException e) {
-							showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS
-									.bind(Messages.Share_ERROR_SEND_MESSAGE, e
-											.getStatus().getException()
-											.getLocalizedMessage()));
+							showErrorToUser(Messages.Share_ERROR_SEND_TITLE,
+									NLS.bind(Messages.Share_ERROR_SEND_MESSAGE,
+											e.getStatus().getException()
+													.getLocalizedMessage()));
 							logError(e.getStatus());
 						} catch (Exception e) {
-							showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS
-									.bind(Messages.Share_ERROR_SEND_MESSAGE, e
-											.getLocalizedMessage()));
+							showErrorToUser(Messages.Share_ERROR_SEND_TITLE,
+									NLS.bind(Messages.Share_ERROR_SEND_MESSAGE,
+											e.getLocalizedMessage()));
 							logError(Messages.Share_EXCEPTION_LOG_SEND, e);
 						}
 					}
