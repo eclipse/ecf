@@ -42,11 +42,11 @@ import org.eclipse.ui.views.IViewRegistry;
 /**
  * 
  */
-public class EclipseViewShare extends AbstractShare {
+public class ViewShare extends AbstractShare {
 
 	private ID containerID = null;
 
-	public EclipseViewShare(ID containerID, IChannelContainerAdapter adapter)
+	public ViewShare(ID containerID, IChannelContainerAdapter adapter)
 			throws ECFException {
 		super(adapter);
 		Assert.isNotNull(containerID);
