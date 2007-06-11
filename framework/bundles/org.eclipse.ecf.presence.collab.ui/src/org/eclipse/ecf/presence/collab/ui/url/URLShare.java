@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.collab.ui;
+package org.eclipse.ecf.presence.collab.ui.url;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -52,6 +52,22 @@ public class URLShare extends AbstractShare {
 		return containerID;
 	}
 
+	private void logError(String exceptionString, Throwable e) {
+		Activator.getDefault().getLog().log(
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
+						exceptionString, e));
+
+	}
+
+	private void logError(IStatus status) {
+		Activator.getDefault().getLog().log(status);
+	}
+
+	private void showErrorToUser(String title, String message) {
+		MessageDialog.openError(null, title, message);
+	}
+
+
 	private void showURL(final String user, final String url) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -65,12 +81,10 @@ public class URLShare extends AbstractShare {
 						browser = support.createBrowser(null);
 						browser.openURL(new URL(url));
 					} catch (Exception e) {
-						MessageDialog.openError(null, Messages.URLShare_ERROR_BROWSER_TITLE, NLS.bind(
-								Messages.URLShare_ERROR_BROWSER_MESSAGE, e.getLocalizedMessage()));
-						Activator.getDefault().getLog().log(
-								new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-										IStatus.ERROR, Messages.URLShare_EXCEPTION_LOG_BROWSER,
-										e));
+						showErrorToUser(Messages.URLShare_ERROR_BROWSER_TITLE, NLS.bind(
+								Messages.URLShare_ERROR_BROWSER_MESSAGE, e
+										.getLocalizedMessage()));
+						logError(Messages.URLShare_EXCEPTION_LOG_BROWSER, e);
 					}
 				}
 			}
@@ -93,15 +107,16 @@ public class URLShare extends AbstractShare {
 							sendMessage(toID, serialize(new Object[] {
 									senderuser, send }));
 						} catch (ECFException e) {
-							MessageDialog.openError(null, Messages.Share_ERROR_SEND_TITLE, NLS.bind(
-									Messages.Share_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
-							Activator.getDefault().getLog().log(e.getStatus());
+							showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS
+									.bind(Messages.Share_ERROR_SEND_MESSAGE, e
+											.getStatus().getException()
+											.getLocalizedMessage()));
+							logError(e.getStatus());
 						} catch (Exception e) {
-							MessageDialog.openError(null, Messages.Share_ERROR_SEND_TITLE, NLS.bind(
-									Messages.Share_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
-							Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-											IStatus.ERROR, Messages.Share_EXCEPTION_LOG_SEND,
-											e));
+							showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS
+									.bind(Messages.Share_ERROR_SEND_MESSAGE, e
+											.getLocalizedMessage()));
+							logError(Messages.Share_EXCEPTION_LOG_SEND, e);
 						}
 					}
 				}
@@ -119,12 +134,10 @@ public class URLShare extends AbstractShare {
 			Object[] msg = (Object[]) deserialize(data);
 			showURL((String) msg[0], (String) msg[1]);
 		} catch (Exception e) {
-			MessageDialog.openError(null, Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(
-					Messages.Share_ERROR_RECEIVE_MESSAGE, e.getLocalizedMessage()));
-			Activator.getDefault().getLog().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							IStatus.ERROR, Messages.Share_EXCEPTION_LOG_MESSAGE,
-							e));
+			showErrorToUser(Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(
+					Messages.Share_ERROR_RECEIVE_MESSAGE, e
+							.getLocalizedMessage()));
+			logError(Messages.Share_EXCEPTION_LOG_MESSAGE, e);
 		}
 	}
 

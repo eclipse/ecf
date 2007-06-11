@@ -6,14 +6,14 @@
       <menuContribution
             locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
          <dynamic
-               class="org.eclipse.ecf.presence.collab.ui.URLShareRosterEntryContributionItem"
+               class="org.eclipse.ecf.presence.collab.ui.url.URLShareRosterEntryContributionItem"
                id="org.eclipse.ecf.presence.collab.ui.dynamic2">
          </dynamic>
       </menuContribution>
       <menuContribution
             locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
          <dynamic
-               class="org.eclipse.ecf.presence.collab.ui.URLShareRosterContributionItem"
+               class="org.eclipse.ecf.presence.collab.ui.url.URLShareRosterContributionItem"
                id="org.eclipse.ecf.presence.collab.ui.dynamic3">
          </dynamic>
       </menuContribution>

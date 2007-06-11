@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.presence.collab.ui;
+package org.eclipse.ecf.presence.collab.ui.url;
 
 import java.util.Hashtable;
 

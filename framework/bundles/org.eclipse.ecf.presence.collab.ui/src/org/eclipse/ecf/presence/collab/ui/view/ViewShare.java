@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.presence.collab.ui;
+package org.eclipse.ecf.presence.collab.ui.view;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,7 +40,7 @@ import org.eclipse.ui.views.IViewDescriptor;
 import org.eclipse.ui.views.IViewRegistry;
 
 /**
- * 
+ * Send/receive requests to share a specific view (identified by view ID).
  */
 public class ViewShare extends AbstractShare {
 
@@ -55,6 +55,21 @@ public class ViewShare extends AbstractShare {
 
 	protected ID getContainerID() {
 		return containerID;
+	}
+
+	private void logError(String exceptionString, Throwable e) {
+		Activator.getDefault().getLog().log(
+				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
+						exceptionString, e));
+
+	}
+
+	private void logError(IStatus status) {
+		Activator.getDefault().getLog().log(status);
+	}
+
+	private void showErrorToUser(String title, String message) {
+		MessageDialog.openError(null, title, message);
 	}
 
 	private void showView(final String user, final String viewID,
@@ -79,21 +94,19 @@ public class ViewShare extends AbstractShare {
 									"workbench page is null");
 						// Actually show view requested
 						wp.showView(viewID, secondaryID, mode);
+
 					} catch (Exception e) {
-						MessageDialog.openError(null, "Error opening view", NLS
-								.bind("Error opening view {0}", e
+						showErrorToUser("Error opening view", NLS.bind(
+								"Error opening view {0}", e
 										.getLocalizedMessage()));
-						Activator.getDefault().getLog().log(
-								new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-										IStatus.ERROR, "Exception in openView",
-										e));
+						logError("Exception in openView", e);
 					}
 				}
 			}
 		});
 	}
 
-	public void sendOpenViewRequest(final String senderuser, final ID toID) {
+	public void sendOpenViewRequestMessage(final String senderuser, final ID toID) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				IWorkbenchWindow ww = PlatformUI.getWorkbench()
@@ -133,24 +146,21 @@ public class ViewShare extends AbstractShare {
 				for (int i = 0; i < descs.length; ++i) {
 					selectedIDs[i] = ((IViewDescriptor) descs[i]).getId();
 					try {
+						// Actually send messages to target remote user (toID),
+						// with selectedIDs (view IDs) to show
 						sendMessage(toID, serialize(new Object[] { senderuser,
 								selectedIDs[i] }));
 					} catch (ECFException e) {
-						MessageDialog.openError(null,
-								Messages.Share_ERROR_SEND_TITLE, NLS.bind(
-										Messages.Share_ERROR_SEND_MESSAGE, e
-												.getStatus().getException()
-												.getLocalizedMessage()));
-						Activator.getDefault().getLog().log(e.getStatus());
+						showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS
+								.bind(Messages.Share_ERROR_SEND_MESSAGE, e
+										.getStatus().getException()
+										.getLocalizedMessage()));
+						logError(e.getStatus());
 					} catch (Exception e) {
-						MessageDialog.openError(null,
-								Messages.Share_ERROR_SEND_TITLE, NLS.bind(
-										Messages.Share_ERROR_SEND_MESSAGE, e
-												.getLocalizedMessage()));
-						Activator.getDefault().getLog().log(
-								new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-										IStatus.ERROR,
-										Messages.Share_EXCEPTION_LOG_SEND, e));
+						showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS
+								.bind(Messages.Share_ERROR_SEND_MESSAGE, e
+										.getLocalizedMessage()));
+						logError(Messages.Share_EXCEPTION_LOG_SEND, e);
 					}
 				}
 			}
@@ -168,13 +178,10 @@ public class ViewShare extends AbstractShare {
 			showView((String) msg[0], (String) msg[1], null,
 					IWorkbenchPage.VIEW_ACTIVATE);
 		} catch (Exception e) {
-			MessageDialog.openError(null, Messages.Share_ERROR_RECEIVE_TITLE,
-					NLS.bind(Messages.Share_ERROR_RECEIVE_MESSAGE, e
+			showErrorToUser(Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(
+					Messages.Share_ERROR_RECEIVE_MESSAGE, e
 							.getLocalizedMessage()));
-			Activator.getDefault().getLog().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							IStatus.ERROR,
-							Messages.Share_EXCEPTION_LOG_MESSAGE, e));
+			logError(Messages.Share_EXCEPTION_LOG_MESSAGE, e);
 		}
 	}
 
