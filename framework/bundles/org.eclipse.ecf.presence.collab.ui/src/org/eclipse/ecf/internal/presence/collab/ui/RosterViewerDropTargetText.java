@@ -15,7 +15,7 @@ public class RosterViewerDropTargetText implements IRosterViewerDropTarget {
 	public boolean validateDrop(IRosterItem rosterItem, int operation,
 			TransferData transferType) {
 		// TODO Auto-generated method stub
-		System.out.println("RosterViewerDropTargetText.validateDrop("+rosterItem+","+operation+","+transferType+")");
+		System.out.println("RosterViewerDropTargetText.validateDrop("+rosterItem+","+operation+","+transferType+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		if (rosterItem != null && rosterItem instanceof IRosterEntry) return true;
 		return false;
 	}

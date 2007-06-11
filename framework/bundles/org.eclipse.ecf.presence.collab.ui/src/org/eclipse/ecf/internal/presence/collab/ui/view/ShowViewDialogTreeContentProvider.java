@@ -1,4 +1,4 @@
-package org.eclipse.ecf.presence.collab.ui.view;
+package org.eclipse.ecf.internal.presence.collab.ui.view;
 
 import java.util.HashMap;
 

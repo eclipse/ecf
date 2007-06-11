@@ -25,6 +25,9 @@ import org.eclipse.ecf.datashare.AbstractShare;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.internal.presence.collab.ui.Activator;
 import org.eclipse.ecf.internal.presence.collab.ui.Messages;
+import org.eclipse.ecf.internal.presence.collab.ui.view.ShowViewDialogLabelProvider;
+import org.eclipse.ecf.internal.presence.collab.ui.view.ShowViewDialogTreeContentProvider;
+import org.eclipse.ecf.internal.presence.collab.ui.view.ShowViewDialogViewerFilter;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
@@ -72,7 +75,7 @@ public class ViewShare extends AbstractShare {
 		MessageDialog.openError(null, title, message);
 	}
 
-	private void showView(final String user, final String viewID,
+	private void handleOpenViewRequest(final String user, final String viewID,
 			final String secondaryID, final int mode) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -80,10 +83,10 @@ public class ViewShare extends AbstractShare {
 				if (MessageDialog
 						.openQuestion(
 								null,
-								"Received Open View Request",
+								Messages.ViewShare_VIEWSHARE_RECEIVED_REQUEST_TITLE,
 								NLS
 										.bind(
-												"Received open view request from {0}.  Allow view to open?",
+												Messages.ViewShare_VIEWSHARE_RECEIVED_REQUEST_MESSAGE,
 												user))) {
 					try {
 						IWorkbenchWindow ww = PlatformUI.getWorkbench()
@@ -91,22 +94,22 @@ public class ViewShare extends AbstractShare {
 						IWorkbenchPage wp = ww.getActivePage();
 						if (wp == null)
 							throw new PartInitException(
-									"workbench page is null");
+									Messages.ViewShare_EXCEPTION_WORKBENCHPAGE_NULL);
 						// Actually show view requested
 						wp.showView(viewID, secondaryID, mode);
 
 					} catch (Exception e) {
-						showErrorToUser("Error opening view", NLS.bind(
-								"Error opening view {0}", e
+						showErrorToUser(Messages.ViewShare_VIEWSHARE_ERROR_DIALOG_TITLE, NLS.bind(
+								Messages.ViewShare_VIEWSHARE_ERROR_DIALOG_MESSAGE, e
 										.getLocalizedMessage()));
-						logError("Exception in openView", e);
+						logError(Messages.ViewShare_VIEWSHARE_ERROR_LOG_MESSAGE, e);
 					}
 				}
 			}
 		});
 	}
 
-	public void sendOpenViewRequestMessage(final String senderuser, final ID toID) {
+	public void sendOpenViewRequest(final String senderuser, final ID toID) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				IWorkbenchWindow ww = PlatformUI.getWorkbench()
@@ -117,8 +120,8 @@ public class ViewShare extends AbstractShare {
 				ElementTreeSelectionDialog dlg = new ElementTreeSelectionDialog(
 						null, new ShowViewDialogLabelProvider(),
 						new ShowViewDialogTreeContentProvider());
-				dlg.setTitle("Send Show View Request");
-				dlg.setMessage("Select View to Open Remotely");
+				dlg.setTitle(Messages.ViewShare_VIEWSHARE_VIEW_REQUEST_DIALOG_TITLE);
+				dlg.setMessage(Messages.ViewShare_VIEWSHARE_VIEW_REQUEST_DIALOG_MESSAGE);
 				dlg.addFilter(new ShowViewDialogViewerFilter());
 				dlg.setComparator(new ViewerComparator());
 				dlg.setValidator(new ISelectionStatusValidator() {
@@ -126,10 +129,10 @@ public class ViewShare extends AbstractShare {
 						for (int i = 0; i < selection.length; ++i)
 							if (!(selection[i] instanceof IViewDescriptor))
 								return new Status(Status.ERROR,
-										Activator.PLUGIN_ID, 0, "", null);
+										Activator.PLUGIN_ID, 0, "", null); //$NON-NLS-1$
 
 						return new Status(Status.OK, Activator.getDefault()
-								.getBundle().getSymbolicName(), 0, "", null);
+								.getBundle().getSymbolicName(), 0, "", null); //$NON-NLS-1$
 					}
 				});
 				IViewRegistry reg = PlatformUI.getWorkbench().getViewRegistry();
@@ -175,7 +178,7 @@ public class ViewShare extends AbstractShare {
 	protected void handleMessage(ID fromContainerID, byte[] data) {
 		try {
 			Object[] msg = (Object[]) deserialize(data);
-			showView((String) msg[0], (String) msg[1], null,
+			handleOpenViewRequest((String) msg[0], (String) msg[1], null,
 					IWorkbenchPage.VIEW_ACTIVATE);
 		} catch (Exception e) {
 			showErrorToUser(Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(

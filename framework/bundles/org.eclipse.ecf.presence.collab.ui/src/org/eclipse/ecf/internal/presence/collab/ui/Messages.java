@@ -36,6 +36,17 @@ public class Messages extends NLS {
 	public static String URLShareRosterContributionItem_BROWSER_ICON;
 	public static String URLShareRosterContributionItem_REMOVE_URL_SHARE_MENU_TEXT;
 	public static String URLShareRosterEntryContributionItem_SEND_URL_MENU_TEXT;
+	public static String ViewShare_EXCEPTION_WORKBENCHPAGE_NULL;
+	public static String ViewShare_VIEWSHARE_ERROR_DIALOG_MESSAGE;
+	public static String ViewShare_VIEWSHARE_ERROR_DIALOG_TITLE;
+	public static String ViewShare_VIEWSHARE_ERROR_LOG_MESSAGE;
+	public static String ViewShare_VIEWSHARE_RECEIVED_REQUEST_MESSAGE;
+	public static String ViewShare_VIEWSHARE_RECEIVED_REQUEST_TITLE;
+	public static String ViewShare_VIEWSHARE_VIEW_REQUEST_DIALOG_MESSAGE;
+	public static String ViewShare_VIEWSHARE_VIEW_REQUEST_DIALOG_TITLE;
+	public static String ViewShareRosterContributionItem_VIEWSHARE_LISTENER_MENU_ADD_TEXT;
+	public static String ViewShareRosterContributionItem_VIEWSHARE_LISTENER_MENU_REMOVE_TEXT;
+	public static String ViewShareRosterEntryContributionItem_VIEWSHARE_MENU_TEXT;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
