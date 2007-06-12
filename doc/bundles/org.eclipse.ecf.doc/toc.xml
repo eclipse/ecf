@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 
-<toc label="ECF Plug-in Developer Guide" topic="html/index.html">
+<toc label="ECF Plug-in Developer Guide" topic="html/overview/ecf_overview.html">
    <topic label="Getting Started">
       <anchor id="gettingstarted"/>
    </topic>
@@ -11,12 +11,12 @@
    <topic label="Reference">
       <anchor id="reference"/>
    </topic>
-   <!--
-   <topic label="Samples">
-      <anchor id="samples"/>
-   </topic>
-   -->
    <topic label="Tutorials">
       <anchor id="tutorials"/>
    </topic>
+   <topic label="Overview" href="html/overview/ecf_overview.html"/>
+   <topic label="What's new" href="html/whatsNew/ecf_whatsnew.html"/>
+   <topic label="FAQ" href="html/overview/ecfFaq.html"/>
+   <topic label="Tips and Tricks" href="html/overview/ecfTipsTricks.html"/>
+   <topic label="Legal" href="notices.html"/>
 </toc>
