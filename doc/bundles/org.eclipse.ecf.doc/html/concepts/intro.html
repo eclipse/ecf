@@ -1,9 +1,20 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+<meta name="copyright" content="Copyright (c) IBM Corporation and others 2000, 2007. This page is made available under license. For full details see the LEGAL in the documentation book that contains this page." >
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="STYLESHEET" href="../../book.css" charset="ISO-8859-1"
+	type="text/css">
+<style type="text/css">
+td {border-top: solid thin black;}
+img[alt] {background-color:#ffdddd;}
+tr {vertical-align: top;}
+</style>
+<script language="JavaScript" type="text/javascript" src="PLUGINS_ROOT/org.eclipse.help/livehelp.js"> </script>
 </head>
 <body>
-	<h3>ECF Containers</h3>
+	<h2>ECF Containers</h2>
        ECF introduces the concept of a communications <b>container</b>.  ECF containers represent access to 
        a protocol-specific communications context. For connection-oriented communications, an ECF container loosely 
        corresponds to the traditional notion of a communications <b>session</b>, but the more general container concept is also
@@ -15,7 +26,7 @@
        many communications applications to be constructed out of one or more containers...each of which
        provides access to some specific communications context and some protocol for communicating within
        that context.
-       <h3><a name="Instance Creation"></a>Instance Creation</h3>       
+       <h2><a name="Instance Creation"></a>Instance Creation</h2>       
        Container instance creation is done via ECF-provided factory APIs.  For example, here's code to create 
        and IContainer instance:
        <pre>
@@ -24,7 +35,7 @@
        Once constructed, <a href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/IContainer.html">IContainer</a> instances may be used in the manner appropriate for the given application.  When
        no longer required the <a href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/IContainer.html#dispose()">IContainer.dispose()</a> method should be called to release any resources associated with
        the container instance upon construction.
-       <h3><a name="Container Connection"></a>Container Connection/Disconnection</h3>
+       <h2><a name="Container Connection"></a>Container Connection/Disconnection</h2>
        The IContainer interface exposes two key methods:  <a href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/core/IContainer.html#connect(org.eclipse.ecf.core.identity.ID,%20org.eclipse.ecf.core.security.IConnectContext)">connect(ID targetID, IConnectContect connectContext)</a> and disconnect().  
        As is obvious, these two methods allow
        container implementations to initiate communication with remote services, 
@@ -37,7 +48,7 @@
        the URL specifying a particular file at a particular path on a particular server...e.g: <b>http://www.eclipse.org/ecf</b>.  For some
        other communications protocol the ID provided would be different...e.g:  <b>sip:someone@example.com;transport=tcp</b>.  All such targets for
        connect may be represented via an instance of the ID interface.
-       <h3><a name="Example Connection Code"></a>Example Container Creation and Connection Code</h3>
+       <h2><a name="Example Connection Code"></a>Example Container Creation and Connection Code</h2>
        Here's an example code snippet that shows the creation and connection of an ECF container:
        <pre>
        // make container instance
@@ -47,7 +58,7 @@
        // then connect to targetID
        cont.connect(targetID,null);
        </pre>       
-       <h3><a name="Extensibility"></a>Container Extensibility through Adapters</h3>
+       <h2><a name="Extensibility"></a>Container Extensibility through Adapters</h2>
        In order to support run-time extensibility, the IContainer interface inherits from org.eclipse.core.runtime.IAdaptable.  This 
        interface exposes the 'getAdapter(Class intf)' method.  In the case of IContainer instances,
        this allows clients to query the container at runtime about it's exposed interfaces, and get
