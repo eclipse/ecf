@@ -1,41 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.1"?>
+<!-- ===================================================== -->
+<!-- Declare the documentation for the ECF User Guide  	   -->
+<!-- ===================================================== -->
 <plugin>
 
-    <extension
-         point="org.eclipse.help.toc">
-      <toc
-            file="toc.xml"
-            primary="true">
-      </toc>
-      <toc
-            file="tocconcepts.xml">
-      </toc>
-      <toc
-            file="tocgettingstarted.xml">
-      </toc>
-      <toc
-            file="tocreference.xml">
-      </toc>
-      <toc
-            file="tocapi.xml">
-      </toc>
-      <toc
-            file="tocextpoint.xml">
-      </toc>
-      <toc
-            file="tocsamples.xml">
-      </toc>
-      <toc 
-            file="toctutorials.xml">
-      </toc>
+<!-- ============================================================================= -->
+<!-- Define TOC's                                                                  -->
+<!-- ============================================================================= -->
+   <extension point="org.eclipse.help.toc">
+      <toc file="toc.xml" primary="true"/>
+      <toc file="tocpics_Concepts.xml"/>
+      <toc file="topics_GettingStarted.xml"/>
+      <toc file="topics_Reference.xml"/>
+      <toc file="tocapi.xml"/>
+      <toc file="topics_Extpoint.xml"/>
+      <toc file="topics_Samples.xml"/>
+      <toc file="topics_Tutorials.xml"/>
    </extension>
-    <extension
-          point="org.eclipse.ui.intro.configExtension">
-       <configExtension
-             configId="org.eclipse.ui.intro.universalConfig"
-             content="intro/sample.xml">
-       </configExtension>
-    </extension>
-
+   
+   
+<!-- ============================================================================= -->
+<!-- Eclipse Welcome                                                               -->
+<!-- ============================================================================= -->   
+   <extension point="org.eclipse.ui.intro.configExtension">
+      <configExtension
+         configId="org.eclipse.ui.intro.universalConfig"
+         content="intro/overviewExtensionContent.xml">
+      </configExtension>
+      <configExtension
+         configId="org.eclipse.ui.intro.universalConfig"
+         content="intro/whatsnewExtensionContent.xml">
+      </configExtension>
+      <configExtension
+         configId="org.eclipse.ui.intro.universalConfig"
+         content="intro/tutorialsExtensionContent.xml">
+      </configExtension>
+   </extension>
 </plugin>
