@@ -375,31 +375,46 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			final ID connectedID) {
 		return new IChatRoomViewCloseListener() {
 			public void chatRoomViewClosing() {
-				RoomWithAView roomView = (RoomWithAView) chatRooms
-						.get(connectedID);
-				if (roomView != null)
-					chatRooms.remove(roomView.getID());
+				chatRooms.remove(connectedID);
 			}
 		};
 	}
 
-	protected void joinRoom(MultiRosterAccount account, IChatRoomInfo roomInfo,
+	/**
+	 * For the given container, join the chat room specified by roomInfo. NOTE:
+	 * this is to be considered provisional 'Gunner' API and may not be
+	 * available in subsequent versions of this class.
+	 * 
+	 * @param container
+	 *            the IContainer instance that exposes the chat room. Must not
+	 *            be <code>null</code>. Also must be the same container
+	 *            associated with one of the accounts managed by this
+	 *            MultiRosterView.
+	 * @param roomInfo
+	 *            chat room information that will be used to join. Must not be
+	 *            <code>null</code>.
+	 * @param password
+	 *            a password associated with chat room access. May be
+	 *            <code>null</code>.
+	 * @throws ECFException
+	 *             if the given container is not connected, or if the given
+	 *             container is not managed by this MultiRosterView, or if
+	 *             {@link ChatRoomManagerView} cannot be initialized.
+	 */
+	public void joinChatRoom(IContainer container, IChatRoomInfo roomInfo,
 			String password) throws ECFException {
-		Assert.isNotNull(account);
+		Assert.isNotNull(container);
 		Assert.isNotNull(roomInfo);
-		boolean hasAccount = false;
-		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
-			MultiRosterAccount mrva = (MultiRosterAccount) i.next();
-			if (mrva.getContainer().getID().equals(
-					account.getContainer().getID()))
-				hasAccount = true;
-		}
-		if (!hasAccount)
-			throw new ECFException(Messages.MultiRosterView_EXCEPTION_JOIN_ROOM_INVALID_ACCOUNT);
-		final IContainer container = account.getContainer();
-		final ID connectedID = container.getConnectedID();
+		// Check to make sure given container is connected.
+		ID connectedID = container.getConnectedID();
 		if (connectedID == null)
-			throw new ECFException(Messages.MultiRosterView_EXCEPTION_JOIN_ROOM_NOT_CONNECTED);
+			throw new ECFException(
+					Messages.MultiRosterView_EXCEPTION_JOIN_ROOM_NOT_CONNECTED);
+		// Check to make sure that the given container is one that we have in
+		// our accounts set
+		if (findAccountForContainer(container) == null)
+			throw new ECFException(
+					Messages.MultiRosterView_EXCEPTION_JOIN_ROOM_INVALID_ACCOUNT);
 
 		IWorkbenchWindow ww = getViewSite().getPage().getWorkbenchWindow();
 		IWorkbenchPage wp = ww.getActivePage();
@@ -469,12 +484,14 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		}
 
 		try {
-			joinRoom(account, selectedInfo, null);
+			joinChatRoom(container, selectedInfo, null);
 		} catch (ECFException e) {
 			Throwable e1 = e.getStatus().getException();
 			Activator.getDefault().getLog().log(
 					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							IStatus.ERROR, Messages.MultiRosterView_EXCEPTION_LOG_JOIN_ROOM, e1));
+							IStatus.ERROR,
+							Messages.MultiRosterView_EXCEPTION_LOG_JOIN_ROOM,
+							e1));
 			ContainerConnectErrorDialog ed = new ContainerConnectErrorDialog(
 					getViewSite().getShell(), selectedInfo.getRoomID()
 							.getName(), e1);
@@ -716,6 +733,19 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				}
 			} else if (userID.equals(((IRosterEntry) item).getUser().getID())) {
 				return (IRosterEntry) item;
+			}
+		}
+		return null;
+	}
+
+	private MultiRosterAccount findAccountForContainer(IContainer container) {
+		if (container == null)
+			return null;
+		synchronized (rosterAccounts) {
+			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
+				MultiRosterAccount account = (MultiRosterAccount) i.next();
+				if (account.getContainer().getID().equals(container.getID()))
+					return account;
 			}
 		}
 		return null;
@@ -966,7 +996,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			IRosterSubscriptionListener {
 
 		public void handleSubscribeRequest(ID fromID) {
-			// TODO Auto-generated method stub
 		}
 
 		public void handleSubscribed(ID fromID) {
@@ -1001,7 +1030,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		 *      org.eclipse.ecf.presence.IPresence)
 		 */
 		public void handlePresence(ID fromID, IPresence presence) {
-			// TODO Auto-generated method stub\
 		}
 
 	}
