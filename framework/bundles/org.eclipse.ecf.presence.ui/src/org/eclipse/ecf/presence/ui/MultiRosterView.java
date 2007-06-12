@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -127,7 +128,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			PluginTransfer.getInstance(), RTFTransfer.getInstance(),
 			TextTransfer.getInstance() };
 
-	private static final int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+	private static final int dndOperations = DND.DROP_COPY | DND.DROP_MOVE
+			| DND.DROP_LINK;
 
 	protected TreeViewer treeViewer;
 
@@ -336,7 +338,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 								dndTransferTypes, dropAdapter);
 					} else
 						dropAdapter.addRosterDropTarget(rosterDropTarget);
-				} catch (Exception e) {
+				} catch (CoreException e) {
 					// Log
 					Activator
 							.getDefault()
@@ -348,7 +350,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 											IStatus.ERROR,
 											Messages.MultiRosterView_ROSTER_VIEW_EXT_POINT_ERROR_MESSAGE,
 											e));
-					e.printStackTrace();
 				}
 			}
 		}
@@ -382,6 +383,65 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		};
 	}
 
+	protected void joinRoom(MultiRosterAccount account, IChatRoomInfo roomInfo,
+			String password) throws ECFException {
+		Assert.isNotNull(account);
+		Assert.isNotNull(roomInfo);
+		boolean hasAccount = false;
+		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
+			MultiRosterAccount mrva = (MultiRosterAccount) i.next();
+			if (mrva.getContainer().getID().equals(
+					account.getContainer().getID()))
+				hasAccount = true;
+		}
+		if (!hasAccount)
+			throw new ECFException(Messages.MultiRosterView_EXCEPTION_JOIN_ROOM_INVALID_ACCOUNT);
+		final IContainer container = account.getContainer();
+		final ID connectedID = container.getConnectedID();
+		if (connectedID == null)
+			throw new ECFException(Messages.MultiRosterView_EXCEPTION_JOIN_ROOM_NOT_CONNECTED);
+
+		IWorkbenchWindow ww = getViewSite().getPage().getWorkbenchWindow();
+		IWorkbenchPage wp = ww.getActivePage();
+		// Get existing roomView...if it's there
+		RoomWithAView roomView = (RoomWithAView) chatRooms.get(connectedID);
+		if (roomView != null) {
+			// We've already connected to this room, so just show it.
+			ChatRoomManagerView chatroommanagerview = roomView.getView();
+			wp.activate(chatroommanagerview);
+			chatroommanagerview.joinRoom(roomInfo, password);
+			return;
+		} else {
+			try {
+				IViewReference ref = wp
+						.findViewReference(
+								org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView.VIEW_ID,
+								connectedID.getName());
+				// Open view for given connectedID (secondaryID)
+				final ChatRoomManagerView chatroommanagerview = (ChatRoomManagerView) ((ref == null) ? wp
+						.showView(
+								org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView.VIEW_ID,
+								connectedID.getName(),
+								IWorkbenchPage.VIEW_ACTIVATE)
+						: ref.getView(true));
+				// initialize new view
+				chatroommanagerview.initializeWithoutManager(
+						ChatRoomManagerView.getUsernameFromID(connectedID),
+						ChatRoomManagerView.getHostnameFromID(connectedID),
+						createChatRoomCommandListener(),
+						createChatRoomViewCloseListener(connectedID));
+				// join room
+				chatroommanagerview.joinRoom(roomInfo, password);
+
+				roomView = new RoomWithAView(chatroommanagerview, connectedID);
+				chatRooms.put(roomView.getID(), roomView);
+			} catch (Exception e1) {
+				throw new ECFException(e1);
+			}
+		}
+
+	}
+
 	private void selectAndJoinChatRoomForAccounts(MultiRosterAccount[] accounts) {
 		// Create chat room selection dialog with managers, open
 		ChatRoomSelectionDialog dialog = new ChatRoomSelectionDialog(
@@ -408,46 +468,17 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			return;
 		}
 
-		IWorkbenchWindow ww = getViewSite().getPage().getWorkbenchWindow();
-		IWorkbenchPage wp = ww.getActivePage();
-		// Get existing roomView...if it's there
-		RoomWithAView roomView = (RoomWithAView) chatRooms.get(connectedID);
-		if (roomView != null) {
-			// We've already connected to this room, so just show it.
-			ChatRoomManagerView chatroommanagerview = roomView.getView();
-			wp.activate(chatroommanagerview);
-			chatroommanagerview.joinRoom(selectedInfo, null);
-			return;
-		} else {
-			try {
-				IViewReference ref = wp
-						.findViewReference(
-								org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView.VIEW_ID,
-								connectedID.getName());
-				// Open view for given connectedID (secondaryID)
-				final ChatRoomManagerView chatroommanagerview = (ChatRoomManagerView) ((ref == null) ? wp
-						.showView(
-								org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView.VIEW_ID,
-								connectedID.getName(),
-								IWorkbenchPage.VIEW_ACTIVATE)
-						: ref.getView(true));
-				// initialize new view
-				chatroommanagerview.initializeWithoutManager(
-						ChatRoomManagerView.getUsernameFromID(connectedID),
-						ChatRoomManagerView.getHostnameFromID(connectedID),
-						createChatRoomCommandListener(),
-						createChatRoomViewCloseListener(connectedID));
-				// join room
-				chatroommanagerview.joinRoom(selectedInfo, null);
-
-				roomView = new RoomWithAView(chatroommanagerview, connectedID);
-				chatRooms.put(roomView.getID(), roomView);
-			} catch (Exception e1) {
-				ContainerConnectErrorDialog ed = new ContainerConnectErrorDialog(
-						getViewSite().getShell(), selectedInfo.getRoomID()
-								.getName(), e1);
-				ed.open();
-			}
+		try {
+			joinRoom(account, selectedInfo, null);
+		} catch (ECFException e) {
+			Throwable e1 = e.getStatus().getException();
+			Activator.getDefault().getLog().log(
+					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+							IStatus.ERROR, Messages.MultiRosterView_EXCEPTION_LOG_JOIN_ROOM, e1));
+			ContainerConnectErrorDialog ed = new ContainerConnectErrorDialog(
+					getViewSite().getShell(), selectedInfo.getRoomID()
+							.getName(), e1);
+			ed.open();
 		}
 	}
 

@@ -142,6 +142,12 @@ public class Messages extends NLS {
 
 	public static String MultiRosterView_ENTER_CHATROOM_TOOLTIP_TEXT;
 
+	public static String MultiRosterView_EXCEPTION_JOIN_ROOM_INVALID_ACCOUNT;
+
+	public static String MultiRosterView_EXCEPTION_JOIN_ROOM_NOT_CONNECTED;
+
+	public static String MultiRosterView_EXCEPTION_LOG_JOIN_ROOM;
+
 	public static String MultiRosterView_EXCEPTION_USER_CANCELLED;
 
 	public static String MultiRosterView_NICKNAME_MESSAGE;
