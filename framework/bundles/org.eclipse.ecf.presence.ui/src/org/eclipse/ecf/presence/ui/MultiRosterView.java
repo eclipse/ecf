@@ -401,7 +401,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	 *             container is not managed by this MultiRosterView, or if
 	 *             {@link ChatRoomManagerView} cannot be initialized.
 	 */
-	public void joinChatRoom(IContainer container, IChatRoomInfo roomInfo,
+	protected void joinChatRoom(IContainer container, IChatRoomInfo roomInfo,
 			String password) throws ECFException {
 		Assert.isNotNull(container);
 		Assert.isNotNull(roomInfo);
