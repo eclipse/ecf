@@ -89,6 +89,8 @@ public class Messages extends NLS {
 
 	public static String AbstractURIHyperlink_EXCEPTION_HYPERLINK;
 
+	public static String SelectProviderAction_WARNING_CONTAINER_TYPE_DESCRIPTION_NOT_FOUND;
+
 	static {
 		// load message values from bundle file
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

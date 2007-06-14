@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
+ *    Scott Lewis <slewis@composent.com> - error checking
  ******************************************************************************/
 package org.eclipse.ecf.internal.ui.actions;
 
@@ -16,16 +17,20 @@ import java.util.Iterator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.internal.ui.Activator;
+import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.ecf.internal.ui.wizards.IWizardRegistryConstants;
 import org.eclipse.ecf.ui.IConfigurationWizard;
 import org.eclipse.ecf.ui.IConnectWizard;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -70,26 +75,42 @@ public class SelectProviderAction implements IWizardRegistryConstants,
 						final IConfigurationElement ice = ices[j];
 						ContainerTypeDescription typeDescription = ContainerFactory
 								.getDefault().getDescriptionByName(factoryName);
-						if (!typeDescription.isHidden()) {
-							if (wizard == null) {
-								map.put(ice.getAttribute(ATT_NAME),
-										new SelectionAdapter() {
-											public void widgetSelected(
-													SelectionEvent e) {
-												openConnectWizard(ice,
-														factoryName);
-											}
-										});
-							} else {
-								map.put(ice.getAttribute(ATT_NAME),
-										new SelectionAdapter() {
-											public void widgetSelected(
-													SelectionEvent e) {
-												openConnectWizard(wizard, ice,
-														factoryName);
-											}
-										});
+						if (typeDescription != null) {
+							if (!typeDescription.isHidden()) {
+								if (wizard == null) {
+									map.put(ice.getAttribute(ATT_NAME),
+											new SelectionAdapter() {
+												public void widgetSelected(
+														SelectionEvent e) {
+													openConnectWizard(ice,
+															factoryName);
+												}
+											});
+								} else {
+									map.put(ice.getAttribute(ATT_NAME),
+											new SelectionAdapter() {
+												public void widgetSelected(
+														SelectionEvent e) {
+													openConnectWizard(wizard,
+															ice, factoryName);
+												}
+											});
+								}
 							}
+						} else {
+							Activator
+									.getDefault()
+									.getLog()
+									.log(
+											new Status(
+													IStatus.WARNING,
+													Activator.PLUGIN_ID,
+													IStatus.WARNING,
+													NLS
+															.bind(
+																	Messages.SelectProviderAction_WARNING_CONTAINER_TYPE_DESCRIPTION_NOT_FOUND,
+																	factoryName),
+													null));
 						}
 					}
 				}
