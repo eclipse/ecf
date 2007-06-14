@@ -57,7 +57,7 @@ public class OpenSharedEditorAction implements IObjectActionDelegate {
 							"Project Not Connected to Collaboration Group",
 							"Project '"
 									+ project.getName()
-									+ "' not connected to any collaboration group.  To connect, open context menu for resource and choose ECF->Join ECF Collaboration...");
+									+ "' not connected to any collaboration session.  To connect project, open context menu for project and choose Communications->Connect Project to Collaboration Group...");
 			return;
 		}
 		EclipseCollabSharedObject collabsharedobject = entry.getSharedObject();
