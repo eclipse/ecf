@@ -30,7 +30,7 @@ public class RetrieveFileTransferServiceTest extends ContainerAbstractTestCase {
 	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
 	private static final String HTTPS_RETRIEVE = "https://bugs.eclipse.org/bugs";
 	
-	private static final String EFS_RETRIEVE = "efs:file://c:/foo.txt";
+	//private static final String EFS_RETRIEVE = "efs:file://c:/foo.txt";
 	
 	File tmpFile = null;
 	
