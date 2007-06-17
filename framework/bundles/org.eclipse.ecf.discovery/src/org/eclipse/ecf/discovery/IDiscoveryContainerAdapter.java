@@ -109,8 +109,8 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	/**
 	 * Asynchronously (within given timeout) retrieve info about the service
 	 * defined by the first parameter. Sends a request for service information
-	 * and returns. Answers to such requests occur via the
-	 * IServiceListener.resolveService() method.
+	 * and returns. Answers to such requests occur via {@link IServiceListener}'s
+	 * {@link IServiceListener#serviceResolved() serviceResolved()} method.
 	 * 
 	 * @param service
 	 *            ServiceID of the service to get info about. Must not be
