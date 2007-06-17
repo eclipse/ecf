@@ -2,6 +2,6 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Getting Started" link_to="toc.xml#gettingstarted"> 
+    <topic label="Quick Start" href="html/gettingstarted/quickStart.html"/>
 	<topic label="System Requirements" href="html/gettingstarted/prerequisites.html"/>
-	<topic label="Hello World" href="html/gettingstarted/helloworld.html"/>
 </toc>

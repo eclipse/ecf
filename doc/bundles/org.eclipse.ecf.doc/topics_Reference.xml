@@ -2,7 +2,6 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Reference" link_to="toc.xml#reference">
-	<topic label="ECF Home Page" href="html/reference/ecfHomePage.html"/>
 	<topic label="ECF API" href="html/reference/ecfApi.html"/>
 	<topic label="JavaDoc" href="html/reference/ecfJavaDoc.html"/>
 	<topic label="Extension Points">
@@ -11,5 +10,4 @@
 	<topic label="Project Wiki" href="html/reference/ecfWiki.html"/>
     <topic label="ECF Servers" href="html/reference/ecfServers.html"/>
     <topic label="Bot Framework" href="html/reference/ecfBotFramework.html"/>
-	
 </toc>

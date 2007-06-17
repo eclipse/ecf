@@ -3,6 +3,5 @@
 
 <toc label="Concepts" link_to="toc.xml#concepts">
 	<topic label="Introduction" href="html/concepts/intro.html"/>
-	<topic label="SharedObjectContainer" href="html/concepts/container.html"/>
-	<topic label="ISharedObject" href="html/concepts/sharedobject.html"/>
+	<topic label="ECF Architecture" href="http://www.eclipse.org/ecf/documentation.php"/>
 </toc>

@@ -5,18 +5,18 @@
    <topic label="Getting Started">
       <anchor id="gettingstarted"/>
    </topic>
-   <topic label="Concepts">
+   <topic label="API Concepts">
       <anchor id="concepts"/>
    </topic>
-   <topic label="Reference">
+   <topic label="Programmer's Reference">
       <anchor id="reference"/>
    </topic>
    <topic label="Tutorials">
       <anchor id="tutorials"/>
    </topic>
+   <topic label="Quick Start" href="html/gettingstarted/quickStart.html"/>
    <topic label="Overview" href="html/overview/ecf_overview.html"/>
    <topic label="What's new" href="html/whatsNew/ecf_whatsnew.html"/>
-   <topic label="Quick Start" href="html/gettingstarted/quickStart.html"/>
    <topic label="FAQ" href="html/overview/ecfFaq.html"/>
    <topic label="Tips and Tricks" href="html/overview/ecfTipsTricks.html"/>
    <topic label="Legal" href="notices.html"/>
