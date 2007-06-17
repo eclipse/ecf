@@ -17,6 +17,8 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.datashare.events.IChannelConnectEvent;
+import org.eclipse.ecf.datashare.events.IChannelDisconnectEvent;
 import org.eclipse.ecf.datashare.events.IChannelEvent;
 import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 
@@ -37,21 +39,6 @@ public abstract class AbstractShare {
 		}
 	};
 
-	/**
-	 * Handle reception of an IChannelEvent.  
-	 * @param event the IChannelEvent received.  This implementation 
-	 * detects instances of {@link IChannelMessageEvent} and
-	 * calls {@link #handleMessage(ID, byte[])} if found.  All other
-	 * channel events are ignored.  Subclasses may override to detect
-	 * and respond to other channel events as desired.
-	 */
-	protected void handleChannelEvent(IChannelEvent event) {
-		if (event instanceof IChannelMessageEvent) {
-			IChannelMessageEvent cme = (IChannelMessageEvent) event;
-			handleMessage(cme.getFromContainerID(),cme.getData());
-		}
-	}
-	
 	public AbstractShare(IChannelContainerAdapter adapter) throws ECFException {
 		Assert.isNotNull(adapter);
 		channel = adapter.createChannel(IDFactory.getDefault().createStringID(
@@ -68,6 +55,39 @@ public abstract class AbstractShare {
 		Assert.isNotNull(adapter);
 		Assert.isNotNull(channelID);
 		channel = adapter.createChannel(channelID, listener, options);
+	}
+
+	/**
+	 * Handle reception of an IChannelEvent.  
+	 * @param event the IChannelEvent received.  This implementation 
+	 * detects instances of {@link IChannelMessageEvent} and
+	 * calls {@link #handleMessage(ID, byte[])} if found.  All other
+	 * channel events are ignored.  Subclasses may override to detect
+	 * and respond to other channel events as desired.
+	 */
+	protected void handleChannelEvent(IChannelEvent event) {
+		if (event instanceof IChannelMessageEvent) {
+			IChannelMessageEvent cme = (IChannelMessageEvent) event;
+			handleMessage(cme.getFromContainerID(),cme.getData());
+		} else if (event instanceof IChannelConnectEvent) {
+			IChannelConnectEvent cce = (IChannelConnectEvent) event;
+			handleConnectEvent(cce);
+		} else if (event instanceof IChannelDisconnectEvent) {
+			IChannelDisconnectEvent cde = (IChannelDisconnectEvent) event;
+			handleDisconnectEvent(cde);
+		}
+	}
+	
+	/**
+	 * @param cde
+	 */
+	protected void handleDisconnectEvent(IChannelDisconnectEvent cde) {
+	}
+	
+	/**
+	 * @param cce
+	 */
+	protected void handleConnectEvent(IChannelConnectEvent cce) {
 	}
 
 	/**
