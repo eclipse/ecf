@@ -2,9 +2,12 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="ECF Developer Guide" topic="html/overview/ecf_overview.html">
-   <topic label="Getting Started">
-      <anchor id="gettingstarted"/>
-   </topic>
+   <topic label="Quick Start" href="html/gettingstarted/quickStart.html"/>
+   <topic label="System Requirements" href="html/gettingstarted/prerequisites.html"/>
+   <topic label="Overview" href="html/overview/ecf_overview.html"/>
+   <topic label="Tips and Tricks" href="html/overview/ecfTipsTricks.html"/>
+   <topic label="What's New" href="html/whatsNew/ecf_whatsnew.html"/>
+   <topic label="Legal" href="notices.html"/>
    <topic label="API Concepts">
       <anchor id="concepts"/>
    </topic>
@@ -14,10 +17,4 @@
    <topic label="Tutorials">
       <anchor id="tutorials"/>
    </topic>
-   <topic label="Quick Start" href="html/gettingstarted/quickStart.html"/>
-   <topic label="Overview" href="html/overview/ecf_overview.html"/>
-   <topic label="What's new" href="html/whatsNew/ecf_whatsnew.html"/>
-   <topic label="FAQ" href="html/overview/ecfFaq.html"/>
-   <topic label="Tips and Tricks" href="html/overview/ecfTipsTricks.html"/>
-   <topic label="Legal" href="notices.html"/>
 </toc>
