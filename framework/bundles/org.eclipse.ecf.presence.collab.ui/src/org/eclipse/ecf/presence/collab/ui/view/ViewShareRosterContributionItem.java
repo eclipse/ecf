@@ -21,6 +21,8 @@ import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterContributionItem;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 public class ViewShareRosterContributionItem extends
 		AbstractRosterContributionItem {
@@ -60,6 +62,9 @@ public class ViewShareRosterContributionItem extends
 		};
 		action
 				.setText(Messages.ViewShareRosterContributionItem_VIEWSHARE_LISTENER_MENU_ADD_TEXT);
+		action.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(
+						ISharedImages.IMG_DEF_VIEW));
 		return new IAction[] { action };
 	}
 

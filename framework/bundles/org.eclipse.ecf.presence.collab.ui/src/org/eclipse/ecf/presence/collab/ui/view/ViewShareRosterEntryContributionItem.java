@@ -17,6 +17,8 @@ import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterEntryContributionItem;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 public class ViewShareRosterEntryContributionItem extends
 		AbstractRosterEntryContributionItem {
@@ -50,6 +52,9 @@ public class ViewShareRosterEntryContributionItem extends
 					};
 					action
 							.setText(Messages.ViewShareRosterEntryContributionItem_VIEWSHARE_MENU_TEXT);
+					action.setImageDescriptor(PlatformUI.getWorkbench()
+							.getSharedImages().getImageDescriptor(
+									ISharedImages.IMG_DEF_VIEW));
 					return new IAction[] { action };
 				}
 			}
