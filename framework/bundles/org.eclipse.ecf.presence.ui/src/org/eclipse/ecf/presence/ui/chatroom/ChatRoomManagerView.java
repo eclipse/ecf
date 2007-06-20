@@ -102,9 +102,9 @@ public class ChatRoomManagerView extends ViewPart implements
 
 	private static final int RATIO_READ_PANE = 9;
 
-	private static final int RATIO_READ_WRITE_PANE = 90;
+	private static final int RATIO_READ_WRITE_PANE = 85;
 
-	private static final int RATIO_PRESENCE_PANE = 10;
+	private static final int RATIO_PRESENCE_PANE = 15;
 
 	protected static final String DEFAULT_ME_COLOR = "0,255,0"; //$NON-NLS-1$
 
