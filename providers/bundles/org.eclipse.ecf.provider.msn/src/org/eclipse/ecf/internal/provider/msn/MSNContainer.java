@@ -693,7 +693,7 @@ final class MSNContainer implements IContainer, IChatManager,
 		}
 
 		public String getName() {
-			return client.getDisplayName();
+			return client.getUserEmail();
 		}
 
 		public String getNickname() {
