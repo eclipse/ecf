@@ -152,6 +152,12 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	private IAction setInvisibleAction;
 
 	private IAction setOfflineAction;
+	
+	private IAction showOfflineAction;
+	
+	private IAction showEmptyGroupsAction;
+	
+	private IAction addContactAction;
 
 	private IAction openChatRoomAction;
 
@@ -578,6 +584,48 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		};
 		setOfflineAction.setChecked(true);
 
+		showOfflineAction = new Action(Messages.MultiRosterView_ShowOffline,
+				Action.AS_CHECK_BOX) {
+			public void run() {
+				if (isChecked()) {
+					treeViewer.removeFilter(hideOfflineFilter);
+				} else {
+					treeViewer.addFilter(hideOfflineFilter);
+				}
+			}
+		};
+			
+		showEmptyGroupsAction = new Action(
+				Messages.MultiRosterView_ShowEmptyGroups, Action.AS_CHECK_BOX) {
+			public void run() {
+				if (isChecked()) {
+					treeViewer.removeFilter(hideEmptyGroupsFilter);
+				} else {
+					treeViewer.addFilter(hideEmptyGroupsFilter);
+				}
+			}
+		};
+		
+		addContactAction = new Action(Messages.MultiRosterView_AddContact,
+				SharedImages.getImageDescriptor(SharedImages.IMG_ADD_BUDDY)) {
+			public void run() {
+				AddContactDialog dialog = new AddContactDialog(treeViewer
+						.getControl().getShell());
+				dialog.setInput(rosterAccounts);
+				if (Window.OK == dialog.open()) {
+					IPresenceContainerAdapter ipca = dialog.getSelection();
+					IRosterSubscriptionSender sender = ipca.getRosterManager()
+							.getRosterSubscriptionSender();
+					try {
+						sender.sendRosterAdd(dialog.getAccountID(), dialog
+								.getAlias(), null);
+					} catch (ECFException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		
 		openChatRoomAction = new Action() {
 			public void run() {
 				selectAndJoinChatRoomForAccounts((MultiRosterAccount[]) rosterAccounts
@@ -793,6 +841,19 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		fillLocalPullDown(bars.getMenuManager());
 	}
 
+	private void setLocalPullDownEnabled(boolean enabled) {
+		setAvailableAction.setEnabled(enabled);
+		setAwayAction.setEnabled(enabled);
+		setDNDAction.setEnabled(enabled);
+		setInvisibleAction.setEnabled(enabled);
+		setOfflineAction.setEnabled(enabled);
+		showOfflineAction.setEnabled(enabled);
+		showEmptyGroupsAction.setEnabled(enabled);
+		addContactAction.setEnabled(enabled);
+		openChatRoomAction.setEnabled(enabled);
+		disconnectAllAccountsAction.setEnabled(enabled);
+	}
+	
 	private void fillLocalPullDown(IMenuManager manager) {
 		setStatusMenu = new MenuManager(Messages.MultiRosterView_SetStatusAs,
 				null);
@@ -801,56 +862,20 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		setStatusMenu.add(setDNDAction);
 		setStatusMenu.add(setInvisibleAction);
 		setStatusMenu.add(setOfflineAction);
-		setStatusMenu.setVisible(false);
 		manager.add(setStatusMenu);
 		manager.add(new Separator());
 
-		manager.add(new Action(Messages.MultiRosterView_ShowOffline,
-				Action.AS_CHECK_BOX) {
-			public void run() {
-				if (isChecked()) {
-					treeViewer.removeFilter(hideOfflineFilter);
-				} else {
-					treeViewer.addFilter(hideOfflineFilter);
-				}
-			}
-		});
-		IAction showEmptyGroupsAction = new Action(
-				Messages.MultiRosterView_ShowEmptyGroups, Action.AS_CHECK_BOX) {
-			public void run() {
-				if (isChecked()) {
-					treeViewer.removeFilter(hideEmptyGroupsFilter);
-				} else {
-					treeViewer.addFilter(hideEmptyGroupsFilter);
-				}
-			}
-		};
+		manager.add(showOfflineAction);
+		
 		manager.add(showEmptyGroupsAction);
 
 		manager.add(new Separator());
-		manager.add(new Action(Messages.MultiRosterView_AddContact,
-				SharedImages.getImageDescriptor(SharedImages.IMG_ADD_BUDDY)) {
-			public void run() {
-				AddContactDialog dialog = new AddContactDialog(treeViewer
-						.getControl().getShell());
-				dialog.setInput(rosterAccounts);
-				if (Window.OK == dialog.open()) {
-					IPresenceContainerAdapter ipca = dialog.getSelection();
-					IRosterSubscriptionSender sender = ipca.getRosterManager()
-							.getRosterSubscriptionSender();
-					try {
-						sender.sendRosterAdd(dialog.getAccountID(), dialog
-								.getAlias(), null);
-					} catch (ECFException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
+		manager.add(addContactAction);
 		manager.add(new Separator());
 		manager.add(openChatRoomAction);
 		manager.add(new Separator());
 		manager.add(disconnectAllAccountsAction);
+		setLocalPullDownEnabled(false);
 	}
 
 	/*
@@ -879,8 +904,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	protected boolean addRosterAccount(MultiRosterAccount account) {
 		boolean result = account != null && rosterAccounts.add(account);
-		if (result)
-			disconnectAllAccountsAction.setEnabled(true);
+		if (result) setLocalPullDownEnabled(true);
 		return result;
 	}
 
@@ -903,8 +927,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			treeViewer.remove(account.getRoster());
 		// Remove account
 		rosterAccounts.remove(account);
-		// Disable disconnect if no more accounts
-		disconnectAllAccountsAction.setEnabled(rosterAccounts.size() > 0);
+		// Disable local pull down window if no more accounts
+		setLocalPullDownEnabled(rosterAccounts.size() > 0);
 		account.dispose();
 		refreshTreeViewer(null, true);
 	}

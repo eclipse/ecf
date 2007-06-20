@@ -75,7 +75,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
@@ -101,11 +100,11 @@ public class ChatRoomManagerView extends ViewPart implements
 
 	private static final int RATIO_WRITE_PANE = 1;
 
-	private static final int RATIO_READ_PANE = 7;
+	private static final int RATIO_READ_PANE = 9;
 
-	private static final int RATIO_READ_WRITE_PANE = 85;
+	private static final int RATIO_READ_WRITE_PANE = 90;
 
-	private static final int RATIO_PRESENCE_PANE = 15;
+	private static final int RATIO_PRESENCE_PANE = 10;
 
 	protected static final String DEFAULT_ME_COLOR = "0,255,0"; //$NON-NLS-1$
 
@@ -207,11 +206,8 @@ public class ChatRoomManagerView extends ViewPart implements
 				rightSash = new SashForm(rightComp, SWT.VERTICAL);
 			} else
 				rightSash = new SashForm(parent, SWT.VERTICAL);
-			Composite readInlayComp = new Composite(rightSash, SWT.FILL);
-			readInlayComp.setLayout(new GridLayout());
-			readInlayComp.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-			SourceViewer result = new SourceViewer(readInlayComp, null, null,
+			SourceViewer result = new SourceViewer(rightSash, null, null,
 					true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
 							| SWT.H_SCROLL | SWT.READ_ONLY);
 			result.configure(new TextSourceViewerConfiguration(EditorsUI
@@ -222,9 +218,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			outputText.setEditable(false);
 			outputText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-			Composite writeComp = new Composite(rightSash, SWT.NONE);
-			writeComp.setLayout(new FillLayout());
-			inputText = new Text(writeComp, SWT.BORDER | SWT.MULTI | SWT.WRAP
+			inputText = new Text(rightSash, SWT.BORDER | SWT.MULTI | SWT.WRAP
 					| SWT.V_SCROLL);
 			if (keyListener != null)
 				inputText.addKeyListener(keyListener);
