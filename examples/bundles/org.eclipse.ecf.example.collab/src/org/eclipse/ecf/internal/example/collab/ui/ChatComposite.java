@@ -59,6 +59,7 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
@@ -82,7 +83,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -155,7 +155,7 @@ public class ChatComposite extends Composite {
 		super(parent, SWT.NONE);
 		this.view = view;
 		this.chatWindow = chatWindow;
-
+		setLayout(new FillLayout());
 		meColor = colorFromRGBString(ClientPlugin.getDefault()
 				.getPluginPreferences().getString(
 						ClientPlugin.PREF_ME_TEXT_COLOR));
@@ -185,11 +185,12 @@ public class ChatComposite extends Composite {
 			}
 
 		});
+		SashForm sf = new SashForm(this,SWT.NORMAL);
+		sf.setLayout(new FillLayout());
+		sf.setOrientation(SWT.VERTICAL);
 
 		tableView = table;
-		setLayout(new GridLayout(1, true));
-
-		SourceViewer result = new SourceViewer(this, null, null, true,
+		SourceViewer result = new SourceViewer(sf, null, null, true,
 				SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.H_SCROLL
 						| SWT.READ_ONLY);
 		result.configure(new TextSourceViewerConfiguration(EditorsUI
@@ -197,7 +198,7 @@ public class ChatComposite extends Composite {
 		result.setDocument(new Document());
 
 		textoutput = result.getTextWidget();
-		textoutput.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		textoutput.setLayoutData(new GridData(SWT.FILL));
 		String fontName = ClientPlugin.getDefault().getPluginPreferences()
 				.getString(ClientPlugin.PREF_CHAT_FONT);
 		if (!(fontName == null) && !(fontName.equals(""))) {
@@ -213,10 +214,9 @@ public class ChatComposite extends Composite {
 
 		textoutput.append(initText);
 
-		textinput = new Text(this, SWT.SINGLE | SWT.BORDER);
+		textinput = new Text(sf, SWT.SINGLE | SWT.BORDER);
 		textinput.setText(TEXT_INPUT_INIT);
-		textinput.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true,
-				false));
+		textinput.setLayoutData(new GridData(SWT.FILL));
 
 		textinput.selectAll();
 		textinput.addKeyListener(new KeyListener() {
@@ -263,6 +263,8 @@ public class ChatComposite extends Composite {
 				}
 			}
 		});
+		
+		sf.setWeights(new int[] { 90, 10});
 		// make actions
 		makeActions();
 		hookContextMenu();
@@ -874,14 +876,6 @@ public class ChatComposite extends Composite {
 						ISharedImages.IMG_OBJ_FILE));
 		// XXX disabled
 		sendFileToGroup.setEnabled(false);
-		/*
-		 * sendFileToGroupAndLaunch = new Action() { public void run() {
-		 * sendFileToGroup(true); } };
-		 * sendFileToGroupAndLaunch.setText(MessageLoader
-		 * .getString("LineChatClientView.contextmenu.sendfileandlaunch"));
-		 * sendFileToGroupAndLaunch.setImageDescriptor(PlatformUI.getWorkbench()
-		 * .getSharedImages().getImageDescriptor( ISharedImages.IMG_OBJ_FILE));
-		 */
 		coBrowseURL = new Action() {
 			public void run() {
 				sendCoBrowseToUser(null);
@@ -900,7 +894,6 @@ public class ChatComposite extends Composite {
 
 		appShare = new Action() {
 			public void run() {
-				sendAppShare(null);
 			}
 		};
 		appShare.setText(MessageLoader
@@ -1251,37 +1244,6 @@ public class ChatComposite extends Composite {
 				this.view.lch.chatException(e, "readStreamAndSend()");
 		}
 
-	}
-
-	protected void sendAppShare(ID receiver) {
-		if (this.view.lch == null)
-			return;
-		/*
-		 * try { if (LineChatView.appShareActive()) {
-		 * Display.getDefault().asyncExec(new Runnable() { public void run() {
-		 * MessageDialog.openInformation(null,
-		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.activetitle"),
-		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.activemessage")); }
-		 * }); return; } if (MessageDialog.openConfirm(null,
-		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.confirmtitle"),
-		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.confirmmessage"))) {
-		 * 
-		 * VNCParams p = new VNCParams();
-		 * p.setHostname(this.view.userdata.getNickname());
-		 * p.setGroupname(this.view.name); Object[] args = new Object[] {
-		 * receiver, p }; HashMap map = new HashMap(); map.put("args",args);
-		 * map.put("types",LineChatClientView.APPSHAREARGTYPES); ID serverID =
-		 * this.view.lch.createObject(null,
-		 * LineChatClientView.APPSHARECLASSNAME, map); EclipseAppShareServer
-		 * server = (EclipseAppShareServer) this.view.lch.getObject(serverID);
-		 * if (server != null) { LineChatView.setAppShareID(serverID,server);
-		 * this.view.setAppShareID(serverID); } } } catch (final Exception e) {
-		 * Display.getDefault().asyncExec(new Runnable() { public void run() {
-		 * MessageDialog.openInformation(null,
-		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.cancelledtitle"),
-		 * MessageLoader.getString("LineChatClientView.contextmenu.appshare.cancelledmessage"));
-		 * ClientPlugin.log("Exception starting application share",e); } }); }
-		 */
 	}
 
 	protected void sendCoBrowseToUser(User user) {

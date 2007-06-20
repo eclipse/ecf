@@ -36,7 +36,7 @@ class TeamChat extends Composite {
 	LineChatClientView view;
 	ChatWindow chatWindow;
 
-	static final int DEFAULT_TREE_WIDGET_PERCENT = 30;
+	static final int DEFAULT_TREE_WIDGET_PERCENT = 10;
 
 	TeamChat(LineChatClientView view, Composite parent, int options,
 			String initText) {
