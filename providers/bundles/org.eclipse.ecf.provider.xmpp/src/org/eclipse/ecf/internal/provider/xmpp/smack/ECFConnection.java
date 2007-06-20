@@ -19,6 +19,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.provider.comm.DisconnectEvent;
 import org.eclipse.ecf.provider.comm.IAsynchEventHandler;
 import org.eclipse.ecf.provider.comm.IConnectionListener;
@@ -43,36 +44,46 @@ import org.jivesoftware.smack.packet.Message.Type;
 public class ECFConnection implements ISynchAsynchConnection {
 
 	public static final String CLIENT_TYPE = "ECF_XMPP";
-
+	public static final boolean DEBUG = Boolean.getBoolean(System.getProperty("smack.debug", "false"));
+	
 	protected static final String STRING_ENCODING = "UTF-8";
 	public static final String OBJECT_PROPERTY_NAME = ECFConnection.class
 			.getName()
 			+ ".object";
 	protected static final int XMPP_NORMAL_PORT = 5222;
-	protected XMPPConnection connection = null;
-	protected IAsynchEventHandler handler = null;
-	protected ID localID = null;
-	protected boolean isStarted = false;
-	protected String serverName;
-	protected int serverPort = -1;
-	protected Map properties = null;
-	protected boolean isConnected = false;
-	protected Namespace namespace = null;
+	private XMPPConnection connection = null;
+	private IAsynchEventHandler handler = null;
+	private boolean isStarted = false;
+	private String serverName;
+	private int serverPort = -1;
+	private Map properties = null;
+	private boolean isConnected = false;
+	private Namespace namespace = null;
 
-	protected boolean google = false;
+	private boolean google = false;
 
-	protected boolean secure = false;
+	private boolean secure = false;
 
-	protected boolean disconnecting = false;
+	private boolean disconnecting = false;
 	
-	protected void debug(String msg) {
-	}
+	private PacketListener packetListener = new PacketListener() {
+		public void processPacket(Packet arg0) {
+			handlePacket(arg0);
+		}
+	};
+	
+	private ConnectionListener connectionListener = new ConnectionListener() {
+		public void connectionClosed() {
+			handleConnectionClosed(null);
+		}
 
-	protected void dumpStack(String msg, Throwable t) {
-	}
-
+		public void connectionClosedOnError(Exception e) {
+			handleConnectionClosed(e);
+		}
+	};
+	
 	protected void logException(String msg, Throwable t) {
-		dumpStack(msg, t);
+		XmppPlugin.log(msg, t);
 	}
 
 	public Map getProperties() {
@@ -93,11 +104,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 		this.namespace = ns;
 		this.google = google;
 		this.secure = secure;
-		/*
-		if (Platform.inDebugMode()) {
-			XMPPConnection.DEBUG_ENABLED = true;
-		}
-		*/
+		if (DEBUG) XMPPConnection.DEBUG_ENABLED = true;
 	}
 
 	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h) {
@@ -114,7 +121,7 @@ public class ECFConnection implements ISynchAsynchConnection {
 		return password;
 	}
 
-	protected XMPPID getXMPPID(ID remote) throws ECFException {
+	private XMPPID getXMPPID(ID remote) throws ECFException {
 		XMPPID jabberID = null;
 		try {
 			jabberID = (XMPPID) remote;
@@ -152,24 +159,11 @@ public class ECFConnection implements ISynchAsynchConnection {
 					connection = new XMPPConnection(serverName, serverPort);
 				}
 			}
-			connection.addPacketListener(new PacketListener() {
-				public void processPacket(Packet arg0) {
-					handlePacket(arg0);
-				}
-			}, null);
-			connection.addConnectionListener(new ConnectionListener() {
-				public void connectionClosed() {
-					handleConnectionClosed(null);
-				}
-
-				public void connectionClosedOnError(Exception e) {
-					handleConnectionClosed(e);
-				}
-			});
+			connection.addPacketListener(packetListener, null);
+			connection.addConnectionListener(connectionListener);
 			// Login
 			connection.login(username, (String) data, CLIENT_TYPE);
 			isConnected = true;
-			debug("User: " + username + " logged into " + serverName);
 		} catch (XMPPException e) {
 			if (connection != null) {
 				connection.close();
@@ -181,10 +175,13 @@ public class ECFConnection implements ISynchAsynchConnection {
 	}
 
 	public synchronized void disconnect() {
+		disconnecting = true;
 		if (isStarted()) {
 			stop();
 		}
 		if (connection != null) {
+			connection.removePacketListener(packetListener);
+			connection.removeConnectionListener(connectionListener);
 			connection.close();
 			isConnected = false;
 			connection = null;
@@ -229,7 +226,6 @@ public class ECFConnection implements ISynchAsynchConnection {
 	}
 
 	protected void handlePacket(Packet arg0) {
-		debug("handlePacket(" + arg0 + ")");
 		try {
 			Object val = arg0.getProperty(OBJECT_PROPERTY_NAME);
 			if (val != null) {
@@ -253,7 +249,6 @@ public class ECFConnection implements ISynchAsynchConnection {
 			throws IOException {
 		if (data == null)
 			throw new IOException("no data");
-		debug("sendAsynch(" + receiver + "," + data + ")");
 		Message aMsg = new Message();
 		aMsg.setProperty(OBJECT_PROPERTY_NAME, data);
 		sendMessage(receiver, aMsg);
@@ -313,7 +308,6 @@ public class ECFConnection implements ISynchAsynchConnection {
 			throw new IOException("target cannot be null");
 		if (message == null)
 			throw new IOException("message cannot be null");
-		debug("sendMessage(" + target + "," + message + ")");
 		Message aMsg = new Message();
 		aMsg.setBody(message);
 		sendMessage(target, aMsg);
@@ -370,7 +364,6 @@ public class ECFConnection implements ISynchAsynchConnection {
 			throws IOException {
 		if (presence == null)
 			throw new IOException("presence cannot be null");
-		debug("sendPresenceUpdate(" + target + "," + presence + ")");
 		presence.setFrom(connection.getUser());
 		if (target != null) presence.setTo(target.getName());
 		synchronized (this) {
@@ -398,12 +391,9 @@ public class ECFConnection implements ISynchAsynchConnection {
 	 * @see org.eclipse.ecf.provider.xmpp.IIMMessageSender#getRoster()
 	 */
 	public Roster getRoster() throws IOException {
-		if (connection == null)
+		if (connection == null || !connection.isConnected())
 			return null;
-		if (!connection.isConnected())
-			return null;
-		Roster roster = connection.getRoster();
-		return roster;
+		return connection.getRoster();
 	}
 
 }

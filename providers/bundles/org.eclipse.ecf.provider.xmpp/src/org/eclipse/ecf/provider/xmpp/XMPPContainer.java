@@ -186,11 +186,10 @@ public class XMPPContainer extends ClientSOContainer implements
 				ISynchAsynchConnection conn = getConnection();
 				synchronized (conn) {
 					synchronized (getGroupMembershipLock()) {
-						handleLeave(groupID, null);
+						handleLeave(groupID, conn);
 					}
 				}
 			}
-			connectionState = DISCONNECTED;
 			this.connection = null;
 			remoteServerID = null;
 			accountManager.setConnection(null);
