@@ -948,6 +948,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			if (c != null && !c.isDisposed()) {
 				if (val != null) {
 					treeViewer.refresh(val, labels);
+					ViewerFilter[] filters = treeViewer.getFilters();
+					if (filters.length != 0) {
+						treeViewer.refresh(labels);
+					}
 				} else {
 					treeViewer.refresh(labels);
 				}
