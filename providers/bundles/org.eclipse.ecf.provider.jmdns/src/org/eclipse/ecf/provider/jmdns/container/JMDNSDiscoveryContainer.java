@@ -41,6 +41,7 @@ import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceListener;
@@ -390,8 +391,12 @@ public class JMDNSDiscoveryContainer implements IContainer,
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
-	public void registerService(IServiceInfo serviceInfo) throws IOException {
-		registerServiceWithJmDNS(serviceInfo);
+	public void registerService(IServiceInfo serviceInfo) throws ECFException {
+		try {
+			registerServiceWithJmDNS(serviceInfo);
+		} catch (IOException e) {
+			throw new ECFException("registerService",e);
+		}
 	}
 
 	/* (non-Javadoc)
