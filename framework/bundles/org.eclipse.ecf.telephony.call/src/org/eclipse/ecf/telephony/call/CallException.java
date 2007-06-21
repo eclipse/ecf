@@ -20,6 +20,7 @@ import org.eclipse.ecf.core.util.ECFException;
 public class CallException extends ECFException {
 
 	private static final long serialVersionUID = -4189098435363433141L;
+	private CallSessionState callSessionState;
 
 	public CallException() {
 	}
@@ -31,6 +32,10 @@ public class CallException extends ECFException {
 		super(message);
 	}
 
+	public CallException(String message, CallSessionState state) {
+		super(message);
+		this.callSessionState = state;
+	}
 	/**
 	 * @param cause
 	 */
@@ -38,6 +43,11 @@ public class CallException extends ECFException {
 		super(cause);
 	}
 
+	public CallException(Throwable cause, CallSessionState state) {
+		super(cause);
+		this.callSessionState = state;
+	}
+	
 	/**
 	 * @param message
 	 * @param cause
@@ -46,7 +56,21 @@ public class CallException extends ECFException {
 		super(message, cause);
 	}
 
+	public CallException(String message, Throwable cause, CallSessionState state) {
+		super(message, cause);
+		this.callSessionState = state;
+	}
+	
 	public CallException(IStatus status) {
 		super(status);
+	}
+	
+	public CallException(IStatus status, CallSessionState state) {
+		super(status);
+		this.callSessionState = state;
+	}
+	
+	public CallSessionState getCallSessionState() {
+		return this.callSessionState;
 	}
 }

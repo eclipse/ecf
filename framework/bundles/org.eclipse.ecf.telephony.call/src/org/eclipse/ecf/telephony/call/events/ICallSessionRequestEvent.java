@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.telephony.call.CallException;
+import org.eclipse.ecf.telephony.call.CallSessionState;
 import org.eclipse.ecf.telephony.call.ICallSession;
 import org.eclipse.ecf.telephony.call.ICallSessionListener;
 
@@ -52,6 +53,17 @@ public interface ICallSessionRequestEvent {
 	 *         <code>null</code>.
 	 */
 	public Map getProperties();
+
+	/**
+	 * Get CallSessionState for this request. Typically, the returned
+	 * CallSessionState instance will be {@link CallSessionState#PENDING},
+	 * meaning that the call is pending subsequent acceptance by this request
+	 * listener (via athe {@link #accept(ICallSessionListener, Map)} call. Can
+	 * be other values, however, depending upon the actual call state.
+	 * 
+	 * @return CallSessionState the
+	 */
+	public CallSessionState getCallSessionState();
 
 	/**
 	 * Accept the incoming call request. If the call is to be answered,
