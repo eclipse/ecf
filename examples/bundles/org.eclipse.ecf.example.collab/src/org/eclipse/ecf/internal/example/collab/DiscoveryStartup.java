@@ -10,14 +10,14 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.example.collab;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.Properties;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerCreateException;
+import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
@@ -135,8 +135,8 @@ public class DiscoveryStartup {
 						SVC_DEF_PRIORITY, SVC_DEF_WEIGHT,
 						new ServiceProperties(props));
 				discovery.registerService(svcInfo);
-			} catch (IOException e) {
-				ClientPlugin.log("Exception registering service " + uri);
+			} catch (Exception e) {
+				ClientPlugin.log("Exception registering service " + uri,e);
 			}
 		} else {
 			ClientPlugin.log("Cannot register service " + uri
