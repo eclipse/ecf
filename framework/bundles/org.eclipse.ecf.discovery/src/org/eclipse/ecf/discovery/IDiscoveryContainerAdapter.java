@@ -9,9 +9,8 @@
 
 package org.eclipse.ecf.discovery;
 
-import java.io.IOException;
-
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
 /**
@@ -89,8 +88,10 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * @param serviceInfo
 	 *            IServiceInfo of the service to be published. Must not be
 	 *            <code>null</code>.
+	 * @throws ECFException
+	 *             if service info cannot be registered with this service
 	 */
-	public void registerService(IServiceInfo serviceInfo) throws IOException;
+	public void registerService(IServiceInfo serviceInfo) throws ECFException;
 
 	/**
 	 * Synchronously (within given timeout) retrieve info about the service
