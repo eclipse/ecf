@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %plugin.name
-Bundle-SymbolicName: org.jivesoftware.smack;singleton:=true
+Bundle-SymbolicName: org.jivesoftware.smack
 Bundle-Version: 2.2.1
 Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
