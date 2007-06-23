@@ -7,7 +7,7 @@
       plugin="org.eclipse.ecf.example.collab">
 
    <description url="http://www.eclipse.org/ecf">
-      Eclipse Communication Framework Example Applications
+      Eclipse Communication Framework Application
    </description>
 
    <copyright>
