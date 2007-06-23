@@ -26,6 +26,7 @@ Contributors: Composent, Inc. - initial API and implementation
    </license>
 
    <requires>
+      <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.equinox.common"/>
       <import plugin="org.eclipse.equinox.registry"/>
       <import plugin="org.eclipse.osgi"/>
@@ -37,12 +38,9 @@ Contributors: Composent, Inc. - initial API and implementation
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.jivesoftware.smack" version="2.2.1" match="compatible"/>
       <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.ui.forms"/>
       <import plugin="org.eclipse.equinox.app"/>
-      <import plugin="org.apache.commons.codec" version="1.2.0"/>
-      <import plugin="org.apache.commons.logging" version="1.0.3" match="equivalent"/>
    </requires>
 
    <plugin
