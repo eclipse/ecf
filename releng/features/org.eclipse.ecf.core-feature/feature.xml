@@ -7,7 +7,7 @@
       plugin="org.eclipse.ecf">
 
    <description url="http://www.eclipse.org/ecf">
-      Eclipse Communications Framework Core
+      Eclipse Communication Framework Core feature.  This feature provides the ECF core set of application programming interfaces (APIs) for writing ECF-enabled applications.  This feature, along with the ECF Application feature are needed to run ECF.
    </description>
 
    <copyright>
