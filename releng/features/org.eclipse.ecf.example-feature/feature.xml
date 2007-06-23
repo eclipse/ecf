@@ -7,7 +7,7 @@
       plugin="org.eclipse.ecf.example.collab">
 
    <description url="http://www.eclipse.org/ecf">
-      Eclipse Communication Framework Application
+      Eclipse Communication Framework Application feature.  This feature provides the basic ECF application functionality...e.g. instant messaging, real-time collaboration.  This feature, along with the ECF Application feature are needed to run ECF.
    </description>
 
    <copyright>
