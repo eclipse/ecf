@@ -7,7 +7,7 @@
       plugin="org.eclipse.ecf">
 
    <description url="http://www.eclipse.org/ecf">
-      This feature provides a core set of APIs for writing ECF-enabled applications.  This feature and the ECF Application feature is required to run ECF as a set of applications.
+      This feature provides a core set of APIs for writing ECF-enabled applications.  This feature and the ECF Application feature are required to run ECF applications.
    </description>
 
    <copyright>
