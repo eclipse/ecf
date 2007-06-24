@@ -69,11 +69,11 @@ public class ViewShareRosterContributionItem extends
 	}
 
 	private IAction[] createActionRemove(final ID containerID,
-			final ViewShare ViewShare) {
+			final ViewShare viewShare) {
 		IAction action = new Action() {
 			public void run() {
-				ViewShare.dispose();
 				removeViewShare(containerID);
+				viewShare.dispose();
 			}
 		};
 		action
@@ -88,10 +88,10 @@ public class ViewShareRosterContributionItem extends
 			IContainer c = getContainerForRoster(roster);
 			if (c != null) {
 				// Get existing ViewShare for this container (if it exists)
-				ViewShare ViewShare = getViewShare(c.getID());
+				ViewShare viewShare = getViewShare(c.getID());
 				// If it does exist already, then create action to remove
-				if (ViewShare != null)
-					return createActionRemove(c.getID(), ViewShare);
+				if (viewShare != null)
+					return createActionRemove(c.getID(), viewShare);
 				else {
 					IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c
 							.getAdapter(IChannelContainerAdapter.class);

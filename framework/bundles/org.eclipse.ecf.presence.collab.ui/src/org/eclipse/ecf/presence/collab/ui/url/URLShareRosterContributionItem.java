@@ -70,8 +70,8 @@ public class URLShareRosterContributionItem extends
 			final URLShare urlshare) {
 		IAction action = new Action() {
 			public void run() {
-				urlshare.dispose();
 				removeURLShare(containerID);
+				urlshare.dispose();
 			}
 		};
 		action
