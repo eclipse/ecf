@@ -106,7 +106,6 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 	public void dispose(ID containerID) {
 		traceEntering("dispose", containerID); //$NON-NLS-1$
 		eventProcessors.clear();
-		config = null;
 	}
 
 	public Object getAdapter(Class adapter) {
