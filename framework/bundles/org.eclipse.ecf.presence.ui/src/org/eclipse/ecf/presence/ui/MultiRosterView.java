@@ -256,8 +256,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 								.getName()).getFontData());
 
 		ToolTip toolTip = new ViewerToolTip(treeViewer.getControl());
-		toolTip.setShift(new Point(-5, -5));
 		toolTip.setHideOnMouseDown(false);
+		toolTip.setPopupDelay(200);
 
 		makeActions();
 		hookContextMenu();
