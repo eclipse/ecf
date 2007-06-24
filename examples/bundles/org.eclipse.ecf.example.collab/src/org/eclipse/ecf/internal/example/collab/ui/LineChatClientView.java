@@ -115,8 +115,8 @@ public class LineChatClientView implements FileSenderUI {
 
 		ToolTip toolTip = new ViewerToolTip(teamChat.getTableViewer()
 				.getControl());
-		toolTip.setShift(new Point(-5, -5));
 		toolTip.setHideOnMouseDown(false);
+		toolTip.setPopupDelay(200);
 	}
 
 	public ViewPart getView() {
