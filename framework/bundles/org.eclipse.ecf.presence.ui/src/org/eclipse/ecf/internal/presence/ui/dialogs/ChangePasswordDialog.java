@@ -29,9 +29,9 @@ import org.eclipse.swt.widgets.Text;
 
 public class ChangePasswordDialog extends Dialog {
 
-	private Text p1;
+	private Text password1;
 
-	private Text p2;
+	private Text password2;
 
 	private int result = Window.CANCEL;
 
@@ -39,10 +39,13 @@ public class ChangePasswordDialog extends Dialog {
 
 	private String pass2 = Messages.ChangePasswordDialog_1;
 
-	Button okButton = null;
+	private Button okButton;
+	
+	private String accountName;
 
-	public ChangePasswordDialog(Shell parentShell) {
+	public ChangePasswordDialog(Shell parentShell, String accountName) {
 		super(parentShell);
+		this.accountName = accountName;
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -56,20 +59,24 @@ public class ChangePasswordDialog extends Dialog {
 		gridLayout_2.numColumns = 2;
 		composite.setLayout(gridLayout_2);
 
+		Label l = new Label(composite, SWT.NONE);
+		l.setText(accountName);
+		new Label(composite,SWT.NONE);
+		
 		final Label label_3 = new Label(composite, SWT.NONE);
 		label_3.setText(Messages.ChangePasswordDialog_NEW_PASSWORD_LABEL);
 
-		p1 = new Text(composite, SWT.BORDER);
-		p1.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-		p1.setEchoChar('*');
+		password1 = new Text(composite, SWT.BORDER);
+		password1.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		password1.setEchoChar('*');
 		final Label label_2 = new Label(composite, SWT.NONE);
 		label_2.setText(Messages.ChangePasswordDialog_REENTER_PASSWORD_LABEL);
 
-		p2 = new Text(composite, SWT.BORDER);
+		password2 = new Text(composite, SWT.BORDER);
 		final GridData gridData_1 = new GridData(GridData.FILL_HORIZONTAL);
 		gridData_1.widthHint = 192;
-		p2.setLayoutData(gridData_1);
-		p2.setEchoChar('*');
+		password2.setLayoutData(gridData_1);
+		password2.setEchoChar('*');
 		//
 		return container;
 	}
@@ -94,15 +101,15 @@ public class ChangePasswordDialog extends Dialog {
 	public void buttonPressed(int button) {
 		result = button;
 		if (button == Window.OK) {
-			pass1 = p1.getText();
-			pass2 = p2.getText();
+			pass1 = password1.getText();
+			pass2 = password2.getText();
 			if (!pass1.equals(pass2)) {
 				// message box that passwords do not match
 				MessageDialog.openError(getShell(), Messages.ChangePasswordDialog_PASSWORDS_NO_MATCH_TITLE,
 						Messages.ChangePasswordDialog_PASSWORDS_NO_MATCH_MESSAGE);
-				p1.setText(""); //$NON-NLS-1$
-				p2.setText(""); //$NON-NLS-1$
-				p1.setFocus();
+				password1.setText(""); //$NON-NLS-1$
+				password2.setText(""); //$NON-NLS-1$
+				password1.setFocus();
 				return;
 			}
 		}

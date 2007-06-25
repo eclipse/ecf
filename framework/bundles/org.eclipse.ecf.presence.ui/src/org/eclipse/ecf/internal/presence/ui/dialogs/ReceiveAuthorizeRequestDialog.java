@@ -35,8 +35,6 @@ public class ReceiveAuthorizeRequestDialog extends Dialog {
 
 	public static final int REFUSE_ID = IDialogConstants.CLIENT_ID + 3;
 
-	public static final int AUTHORIZE_AND_ADD = IDialogConstants.CLIENT_ID + 2;
-
 	public static final int AUTHORIZE_ID = IDialogConstants.CLIENT_ID + 1;
 
 	int buttonPressed = 0;
@@ -108,9 +106,6 @@ public class ReceiveAuthorizeRequestDialog extends Dialog {
 
 	protected void createButtonsForButtonBar(Composite parent) {
 
-		createButton(parent, AUTHORIZE_AND_ADD, Messages.ReceiveAuthorizeRequestDialog_BUTTON_AUTHORIZE_AND_ADD,
-				false);
-
 		createButton(parent, AUTHORIZE_ID, Messages.ReceiveAuthorizeRequestDialog_BUTTON_AUTHORIZE_ONLY, false);
 
 		createButton(parent, REFUSE_ID, Messages.ReceiveAuthorizeRequestDialog_BUTTON_REFUSE, true);
@@ -130,7 +125,6 @@ public class ReceiveAuthorizeRequestDialog extends Dialog {
 	}
 
 	protected void buttonPressed(int button) {
-		// System.out.println("button "+button+" pressed");
 		buttonPressed = button;
 		this.close();
 	}

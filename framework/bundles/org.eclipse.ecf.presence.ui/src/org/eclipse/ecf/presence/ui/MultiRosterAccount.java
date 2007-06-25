@@ -16,13 +16,21 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.presence.ui.Activator;
+import org.eclipse.ecf.internal.presence.ui.dialogs.ReceiveAuthorizeRequestDialog;
+import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
+import org.eclipse.ecf.presence.Presence;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.presence.roster.IRosterListener;
+import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * A roster account appropriate for usage by a MultiRosterView. This class
@@ -80,6 +88,54 @@ public class MultiRosterAccount {
 		}
 	};
 
+	IRosterSubscriptionListener subscriptionListener = new IRosterSubscriptionListener() {
+
+		public void handleSubscribeRequest(final ID fromID) {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					try {
+						Shell shell = MultiRosterAccount.this.multiRosterView
+								.getViewSite().getShell();
+						ReceiveAuthorizeRequestDialog authRequest = new ReceiveAuthorizeRequestDialog(
+								shell, fromID.getName(),
+								MultiRosterAccount.this.getRoster().getUser()
+										.getID().getName());
+						authRequest.setBlockOnOpen(true);
+						authRequest.open();
+						int res = authRequest.getButtonPressed();
+						if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_ID) {
+							MultiRosterAccount.this.getRosterManager()
+									.getPresenceSender().sendPresenceUpdate(
+											fromID,
+											new Presence(
+													IPresence.Type.SUBSCRIBED));
+						} else if (res == ReceiveAuthorizeRequestDialog.REFUSE_ID) {
+							// do nothing
+						} else {
+							// do nothing
+						}
+					} catch (ECFException e) {
+						Activator.getDefault().getLog().log(e.getStatus());
+					}
+				}
+			});
+
+		}
+
+		public void handleSubscribed(ID fromID) {
+		}
+
+		public void handleUnsubscribed(final ID fromID) {
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					MultiRosterAccount.this.multiRosterView
+							.removeEntryFromTreeViewer(fromID);
+				}
+			});
+		}
+
+	};
+
 	public MultiRosterAccount(MultiRosterView multiRosterView,
 			IContainer container, IPresenceContainerAdapter adapter) {
 		this.multiRosterView = multiRosterView;
@@ -89,6 +145,7 @@ public class MultiRosterAccount {
 		this.adapter = adapter;
 		this.container.addListener(containerListener);
 		getRosterManager().addRosterListener(updateListener);
+		getRosterManager().addRosterSubscriptionListener(subscriptionListener);
 	}
 
 	public IContainer getContainer() {
@@ -108,6 +165,8 @@ public class MultiRosterAccount {
 	}
 
 	public void dispose() {
+		getRosterManager().removeRosterSubscriptionListener(
+				subscriptionListener);
 		getRosterManager().removeRosterListener(updateListener);
 		container.removeListener(containerListener);
 	}

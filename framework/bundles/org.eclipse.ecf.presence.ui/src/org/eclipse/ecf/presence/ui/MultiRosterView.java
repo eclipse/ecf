@@ -30,7 +30,9 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.internal.presence.ui.dialogs.AddContactDialog;
+import org.eclipse.ecf.internal.presence.ui.dialogs.ChangePasswordDialog;
 import org.eclipse.ecf.internal.presence.ui.dialogs.ChatRoomSelectionDialog;
+import org.eclipse.ecf.presence.IAccountManager;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.IPresenceListener;
@@ -44,7 +46,6 @@ import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterManager;
-import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
 import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView;
@@ -152,22 +153,24 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	private IAction setInvisibleAction;
 
 	private IAction setOfflineAction;
-	
+
 	private IAction showOfflineAction;
-	
+
 	private IAction showEmptyGroupsAction;
-	
+
 	private IAction addContactAction;
 
 	private IAction openChatRoomAction;
 
 	private IAction openAccountChatRoomAction;
 
+	private IAction changePasswordAction;
+
 	private IAction disconnectAllAccountsAction;
 
 	private IAction disconnectAccountAction;
 
-	private IRosterSubscriptionListener subscriptionListener;
+	//private IRosterSubscriptionListener subscriptionListener;
 
 	private IPresenceListener presenceListener;
 
@@ -234,7 +237,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.SINGLE
 				| SWT.V_SCROLL);
 		getSite().setSelectionProvider(treeViewer);
-		subscriptionListener = new RosterSubscriptionListener();
 		presenceListener = new PresenceListener();
 		treeViewer.setContentProvider(new MultiRosterContentProvider());
 		treeViewer.setLabelProvider(new MultiRosterLabelProvider());
@@ -569,9 +571,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 					for (int i = 0; i < rosterAccounts.size(); i++) {
 						MultiRosterAccount account = (MultiRosterAccount) rosterAccounts
 								.get(i);
-						account.getRosterManager()
-								.removeRosterSubscriptionListener(
-										subscriptionListener);
 						treeViewer.remove(account);
 					}
 					rosterAccounts.clear();
@@ -594,7 +593,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				}
 			}
 		};
-			
+
 		showEmptyGroupsAction = new Action(
 				Messages.MultiRosterView_ShowEmptyGroups, Action.AS_CHECK_BOX) {
 			public void run() {
@@ -605,7 +604,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				}
 			}
 		};
-		
+
 		addContactAction = new Action(Messages.MultiRosterView_AddContact,
 				SharedImages.getImageDescriptor(SharedImages.IMG_ADD_BUDDY)) {
 			public void run() {
@@ -620,12 +619,12 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 						sender.sendRosterAdd(dialog.getAccountID(), dialog
 								.getAlias(), null);
 					} catch (ECFException e) {
-						e.printStackTrace();
+						Activator.getDefault().getLog().log(e.getStatus());
 					}
 				}
 			}
 		};
-		
+
 		openChatRoomAction = new Action() {
 			public void run() {
 				selectAndJoinChatRoomForAccounts((MultiRosterAccount[]) rosterAccounts
@@ -656,6 +655,22 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		openAccountChatRoomAction.setEnabled(true);
 		openAccountChatRoomAction.setImageDescriptor(SharedImages
 				.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
+
+		changePasswordAction = new Action() {
+			public void run() {
+				IStructuredSelection iss = (IStructuredSelection) treeViewer
+						.getSelection();
+				IRoster roster = (IRoster) iss.getFirstElement();
+				MultiRosterAccount account = findAccountForUser(roster
+						.getUser().getID());
+				if (account != null)
+					changePasswordForAccount(account);
+			}
+		};
+
+		changePasswordAction
+				.setText(Messages.MultiRosterView_CHANGE_PASSWORD_MENU);
+		changePasswordAction.setEnabled(true);
 
 		disconnectAllAccountsAction = new Action() {
 			public void run() {
@@ -706,6 +721,39 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	}
 
+	protected void changePasswordForAccount(MultiRosterAccount account) {
+		ChangePasswordDialog cpd = new ChangePasswordDialog(getViewSite()
+				.getShell(), account.getRoster().getUser().getID().getName());
+		cpd.open();
+		if (cpd.getResult() == Window.OK) {
+			IPresenceContainerAdapter pc = account
+					.getPresenceContainerAdapter();
+			IAccountManager am = pc.getAccountManager();
+			try {
+				if (am.changePassword(cpd.getNewPassword()))
+					MessageDialog
+							.openInformation(
+									getViewSite().getShell(),
+									Messages.MultiRosterView_PASSWORD_CHANGED_DIALOG_TITLE,
+									Messages.MultiRosterView_PASSWORD_CHANGED_MESSAGE);
+				else
+					MessageDialog
+							.openInformation(
+									getViewSite().getShell(),
+									Messages.MultiRosterView_PASSWORD_NOT_CHANGED_TITLE,
+									Messages.MultiRosterView_PASSWORD_NOT_CHANGED_MESSAGE);
+			} catch (ECFException e) {
+				MessageDialog.openError(getViewSite().getShell(),
+						Messages.MultiRosterView_PASSWORD_NOT_CHANGED_TITLE,
+						Messages.MultiRosterView_PASSWORD_CHANGE_ERROR);
+				Activator
+						.getDefault()
+						.getLog()
+						.log(e.getStatus());
+			}
+		}
+	}
+
 	protected void disconnectAccounts(MultiRosterAccount[] accounts) {
 		for (int i = 0; i < accounts.length; i++)
 			accounts[i].getContainer().disconnect();
@@ -731,7 +779,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 										mode));
 			}
 		} catch (ECFException e) {
-			e.printStackTrace();
+			Activator.getDefault().getLog().log(e.getStatus());
 		}
 	}
 
@@ -762,7 +810,12 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 			manager.add(removeAction);
 		} else if (element instanceof IRoster) {
+			manager.add(changePasswordAction);
+			manager.add(new Separator());
+			manager.add(addContactAction);
+			manager.add(new Separator());
 			manager.add(openAccountChatRoomAction);
+			manager.add(new Separator());
 			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 			manager.add(disconnectAccountAction);
 		} else {
@@ -808,7 +861,11 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 								entry.getUser().getID());
 			}
 		} catch (ECFException e) {
-			e.printStackTrace();
+			MessageDialog.openError(getViewSite().getShell(),
+					Messages.MultiRosterView_ERROR_CONTACT_REMOVE_TITLE, NLS.bind(
+							Messages.MultiRosterView_ERROR_CONTACT_REMOVED_MESSAGE, entry.getUser()
+									.getID().getName()));
+			Activator.getDefault().getLog().log(e.getStatus()); //$NON-NLS-1$
 		}
 	}
 
@@ -853,7 +910,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		openChatRoomAction.setEnabled(enabled);
 		disconnectAllAccountsAction.setEnabled(enabled);
 	}
-	
+
 	private void fillLocalPullDown(IMenuManager manager) {
 		setStatusMenu = new MenuManager(Messages.MultiRosterView_SetStatusAs,
 				null);
@@ -866,7 +923,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		manager.add(new Separator());
 
 		manager.add(showOfflineAction);
-		
+
 		manager.add(showEmptyGroupsAction);
 
 		manager.add(new Separator());
@@ -891,11 +948,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		treeViewer = null;
 		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
 			MultiRosterAccount account = (MultiRosterAccount) i.next();
-			account.getRosterManager().removeRosterSubscriptionListener(
-					subscriptionListener);
-		}
-		for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
-			MultiRosterAccount account = (MultiRosterAccount) i.next();
 			account.getRosterManager().removePresenceListener(presenceListener);
 		}
 		rosterAccounts.clear();
@@ -904,7 +956,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	protected boolean addRosterAccount(MultiRosterAccount account) {
 		boolean result = account != null && rosterAccounts.add(account);
-		if (result) setLocalPullDownEnabled(true);
+		if (result)
+			setLocalPullDownEnabled(true);
 		return result;
 	}
 
@@ -917,9 +970,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	protected void removeRosterAccount(MultiRosterAccount account) {
-		// Remove subscription listener
-		account.getRosterManager().removeRosterSubscriptionListener(
-				subscriptionListener);
 		// Remove presence listener
 		account.getRosterManager().removePresenceListener(presenceListener);
 
@@ -970,6 +1020,17 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			treeViewer.remove(entry);
 	}
 
+	protected void removeEntryFromTreeViewer(ID entryID) {
+		synchronized (rosterAccounts) {
+			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
+				MultiRosterAccount account = (MultiRosterAccount) i.next();
+				final IRosterEntry entry = find(account.getRoster()
+						.getItems(), entryID);
+				if (entry != null) treeViewer.remove(entry);
+			}
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -1007,10 +1068,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 							new Presence(null, null, IPresence.Mode.INVISIBLE));
 				}
 			} catch (ECFException e) {
-				e.printStackTrace();
+				Activator.getDefault().getLog().log(e.getStatus());
 			}
-			containerAdapter.getRosterManager().addRosterSubscriptionListener(
-					subscriptionListener);
 			containerAdapter.getRosterManager().addPresenceListener(
 					presenceListener);
 			setStatusMenu.setVisible(true);
@@ -1018,35 +1077,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			treeViewer.add(treeViewer.getInput(), account.getRoster());
 			return true;
 		}
-	}
-
-	private class RosterSubscriptionListener implements
-			IRosterSubscriptionListener {
-
-		public void handleSubscribeRequest(ID fromID) {
-		}
-
-		public void handleSubscribed(ID fromID) {
-		}
-
-		public void handleUnsubscribed(ID fromID) {
-			synchronized (rosterAccounts) {
-				for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
-					MultiRosterAccount account = (MultiRosterAccount) i.next();
-					final IRosterEntry entry = find(account.getRoster()
-							.getItems(), fromID);
-					if (entry != null) {
-						treeViewer.getControl().getDisplay().asyncExec(
-								new Runnable() {
-									public void run() {
-										treeViewer.remove(entry);
-									}
-								});
-					}
-				}
-			}
-		}
-
 	}
 
 	private class PresenceListener implements IPresenceListener {

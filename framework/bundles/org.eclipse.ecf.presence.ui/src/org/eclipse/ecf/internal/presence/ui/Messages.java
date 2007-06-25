@@ -128,6 +128,10 @@ public class Messages extends NLS {
 
 	public static String ChatRoomView_VIEW_NAME_PREFIX;
 
+	public static String MultiRosterView_CHANGE_PASSWORD_EXCEPTION;
+
+	public static String MultiRosterView_CHANGE_PASSWORD_MENU;
+
 	public static String MultiRosterView_DISCONNECT_ACCOUNT_ACTION_TEXT;
 
 	public static String MultiRosterView_DISCONNECT_ACCOUNT_QUESTION_MESSAGE;
@@ -142,6 +146,10 @@ public class Messages extends NLS {
 
 	public static String MultiRosterView_ENTER_CHATROOM_TOOLTIP_TEXT;
 
+	public static String MultiRosterView_ERROR_CONTACT_REMOVE_TITLE;
+
+	public static String MultiRosterView_ERROR_CONTACT_REMOVED_MESSAGE;
+
 	public static String MultiRosterView_EXCEPTION_JOIN_ROOM_INVALID_ACCOUNT;
 
 	public static String MultiRosterView_EXCEPTION_JOIN_ROOM_NOT_CONNECTED;
@@ -155,6 +163,16 @@ public class Messages extends NLS {
 	public static String MultiRosterView_NO_IDENTIFIER_FOR_ROOM_MESSAGE;
 
 	public static String MultiRosterView_NO_IDENTIFIER_FOR_ROOM_TITLE;
+
+	public static String MultiRosterView_PASSWORD_CHANGE_ERROR;
+
+	public static String MultiRosterView_PASSWORD_CHANGED_DIALOG_TITLE;
+
+	public static String MultiRosterView_PASSWORD_CHANGED_MESSAGE;
+
+	public static String MultiRosterView_PASSWORD_NOT_CHANGED_MESSAGE;
+
+	public static String MultiRosterView_PASSWORD_NOT_CHANGED_TITLE;
 
 	public static String MultiRosterView_ROSTER_VIEW_EXT_POINT_ERROR_MESSAGE;
 

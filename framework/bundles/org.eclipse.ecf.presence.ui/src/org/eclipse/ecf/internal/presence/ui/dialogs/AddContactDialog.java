@@ -103,7 +103,6 @@ public class AddContactDialog extends Dialog {
 				.setText(Messages.AddContactDialog_Alias);
 		aliasText = new Text(parent, SWT.SINGLE);
 		aliasText.setLayoutData(data);
-
 		new Label(parent, SWT.BEGINNING)
 				.setText(Messages.AddContactDialog_Account);
 		accountsViewer = new ComboViewer(parent, SWT.READ_ONLY | SWT.BORDER);
