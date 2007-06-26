@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
@@ -27,6 +29,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.ChatLine;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IIMMessageEvent;
@@ -207,14 +210,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			} else
 				rightSash = new SashForm(parent, SWT.VERTICAL);
 
-			SourceViewer result = new SourceViewer(rightSash, null, null,
-					true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
-							| SWT.H_SCROLL | SWT.READ_ONLY);
-			result.configure(new TextSourceViewerConfiguration(EditorsUI
-					.getPreferenceStore()));
-			result.setDocument(new Document());
-
-			outputText = result.getTextWidget();
+			outputText = createStyledTextWidget(rightSash);
 			outputText.setEditable(false);
 			outputText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
@@ -236,6 +232,32 @@ public class ChatRoomManagerView extends ViewPart implements
 			makeActions();
 			hookContextMenu();
 		}
+
+		private StyledText createStyledTextWidget(Composite parent) {
+			try {
+				SourceViewer result = new SourceViewer(parent, null, null,
+						true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
+								| SWT.READ_ONLY);
+				result.configure(new TextSourceViewerConfiguration(EditorsUI
+						.getPreferenceStore()));
+				result.setDocument(new Document());
+				return result.getTextWidget();
+			} catch (Exception e) {
+				Activator
+						.getDefault()
+						.getLog()
+						.log(
+								new Status(
+										IStatus.WARNING,
+										Activator.PLUGIN_ID,
+										IStatus.WARNING,
+										Messages.ChatRoomManagerView_WARNING_HYPERLINKING_NOT_AVAILABLE,
+										e));
+				return new StyledText(parent, SWT.BORDER | SWT.WRAP
+						| SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+			}
+		}
+
 
 		protected void outputClear() {
 			if (MessageDialog

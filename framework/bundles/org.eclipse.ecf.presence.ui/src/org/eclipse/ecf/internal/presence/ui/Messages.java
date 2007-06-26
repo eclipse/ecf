@@ -96,6 +96,8 @@ public class Messages extends NLS {
 
 	public static String ChatRoomManagerView_VIEW_TITLE_HOST_PREFIX;
 
+	public static String ChatRoomManagerView_WARNING_HYPERLINKING_NOT_AVAILABLE;
+
 	public static String ChatRoomSelectionDialog_ACCOUNT_COLUMN;
 
 	public static String ChatRoomSelectionDialog_DESCRIPTION_COLUMN;
@@ -127,6 +129,8 @@ public class Messages extends NLS {
 	public static String ChatRoomView_TITLE_TOOLTiP_PREFIX;
 
 	public static String ChatRoomView_VIEW_NAME_PREFIX;
+
+	public static String MessagesView_WARNING_HYPERLINKING_NOT_AVAILABLE;
 
 	public static String MultiRosterView_CHANGE_PASSWORD_EXCEPTION;
 

@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.im.IChatID;
 import org.eclipse.ecf.presence.im.IChatMessage;
@@ -379,6 +380,31 @@ public class MessagesView extends ViewPart {
 			chatText.invokeAction(ST.PAGE_DOWN);
 		}
 
+		private StyledText createStyledTextWidget(Composite parent) {
+			try {
+				SourceViewer result = new SourceViewer(parent, null, null,
+						true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
+								| SWT.READ_ONLY);
+				result.configure(new TextSourceViewerConfiguration(EditorsUI
+						.getPreferenceStore()));
+				result.setDocument(new Document());
+				return result.getTextWidget();
+			} catch (Exception e) {
+				Activator
+						.getDefault()
+						.getLog()
+						.log(
+								new Status(
+										IStatus.WARNING,
+										Activator.PLUGIN_ID,
+										IStatus.WARNING,
+										Messages.MessagesView_WARNING_HYPERLINKING_NOT_AVAILABLE,
+										e));
+				return new StyledText(parent, SWT.BORDER | SWT.WRAP
+						| SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+			}
+		}
+
 		private void constructWidgets() {
 			item = new CTabItem(tabFolder, SWT.NONE);
 			Composite parent = new Composite(tabFolder, SWT.NONE);
@@ -386,14 +412,7 @@ public class MessagesView extends ViewPart {
 
 			SashForm sash = new SashForm(parent, SWT.VERTICAL);
 
-			SourceViewer result = new SourceViewer(sash, null, null, true,
-					SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
-							| SWT.READ_ONLY);
-			result.configure(new TextSourceViewerConfiguration(EditorsUI
-					.getPreferenceStore()));
-			result.setDocument(new Document());
-
-			chatText = result.getTextWidget();
+			chatText = createStyledTextWidget(sash);
 
 			inputText = new Text(sash, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 
