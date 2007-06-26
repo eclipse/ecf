@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
@@ -29,6 +31,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresence;
@@ -209,14 +212,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			readInlayComp.setLayout(new GridLayout());
 			readInlayComp.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-			SourceViewer result = new SourceViewer(readInlayComp, null, null,
-					true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
-							| SWT.H_SCROLL | SWT.READ_ONLY);
-			result.configure(new TextSourceViewerConfiguration(EditorsUI
-					.getPreferenceStore()));
-			result.setDocument(new Document());
-
-			outputText = result.getTextWidget();
+			outputText = createStyledTextWidget(readInlayComp);
 			outputText.setEditable(false);
 			outputText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
@@ -240,6 +236,32 @@ public class ChatRoomManagerView extends ViewPart implements
 			makeActions();
 			hookContextMenu();
 		}
+
+		private StyledText createStyledTextWidget(Composite parent) {
+			try {
+				SourceViewer result = new SourceViewer(parent, null, null,
+						true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
+								| SWT.READ_ONLY);
+				result.configure(new TextSourceViewerConfiguration(EditorsUI
+						.getPreferenceStore()));
+				result.setDocument(new Document());
+				return result.getTextWidget();
+			} catch (Exception e) {
+				Activator
+						.getDefault()
+						.getLog()
+						.log(
+								new Status(
+										IStatus.WARNING,
+										Activator.PLUGIN_ID,
+										IStatus.WARNING,
+										"Source viewer not available.  Hyperlinking will be disabled.",
+										e));
+				return new StyledText(parent, SWT.BORDER | SWT.WRAP
+						| SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+			}
+		}
+
 
 		protected void outputClear() {
 			if (MessageDialog.openConfirm(null, "Confirm Clear Text Output",

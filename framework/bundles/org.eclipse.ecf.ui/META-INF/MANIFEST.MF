@@ -31,6 +31,6 @@ Require-Bundle: org.eclipse.ecf,
  org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ecf.filetransfer,
- org.eclipse.ui.editors,
  org.eclipse.ecf.sharedobject
+Import-Package: org.eclipse.ui.editors.text;optional=true
 

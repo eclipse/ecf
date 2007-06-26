@@ -21,9 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.internal.ui.Activator;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
@@ -188,14 +191,8 @@ public class ChatRoomView extends ViewPart implements
 		readInlayComp.setLayout(new GridLayout());
 		readInlayComp.setLayoutData(new GridData(GridData.FILL_BOTH));
 		readInlayComp.setBackground(memberViewer.getList().getBackground());
-		SourceViewer result = new SourceViewer(readInlayComp, null, null, true,
-				SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.H_SCROLL
-						| SWT.READ_ONLY);
-		result.configure(new TextSourceViewerConfiguration(EditorsUI
-				.getPreferenceStore()));
-		result.setDocument(new Document());
 
-		readText = result.getTextWidget();
+		readText = createStyledTextWidget(readInlayComp);
 
 		readText.setEditable(false);
 		readText.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -222,6 +219,32 @@ public class ChatRoomView extends ViewPart implements
 		makeActions();
 		hookContextMenu();
 	}
+
+	private StyledText createStyledTextWidget(Composite parent) {
+		try {
+			SourceViewer result = new SourceViewer(parent, null, null,
+					true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
+							| SWT.READ_ONLY);
+			result.configure(new TextSourceViewerConfiguration(EditorsUI
+					.getPreferenceStore()));
+			result.setDocument(new Document());
+			return result.getTextWidget();
+		} catch (Exception e) {
+			Activator
+					.getDefault()
+					.getLog()
+					.log(
+							new Status(
+									IStatus.WARNING,
+									Activator.PLUGIN_ID,
+									IStatus.WARNING,
+									"Source viewer not available.  Hyperlinking will be disabled.",
+									e));
+			return new StyledText(parent, SWT.BORDER | SWT.WRAP
+					| SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+		}
+	}
+
 
 	protected void setEnabled(boolean enabled) {
 		if (!writeText.isDisposed())

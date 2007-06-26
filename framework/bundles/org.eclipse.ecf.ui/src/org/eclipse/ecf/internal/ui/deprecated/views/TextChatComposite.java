@@ -136,15 +136,7 @@ public class TextChatComposite extends Composite {
 		SashForm sash = new SashForm(this, SWT.VERTICAL | SWT.SMOOTH);
 		sash.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		// Setup text output
-		SourceViewer result = new SourceViewer(sash, null, null, true,
-				SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.H_SCROLL
-						| SWT.READ_ONLY);
-		result.configure(new TextSourceViewerConfiguration(EditorsUI
-				.getPreferenceStore()));
-		result.setDocument(new Document());
-
-		styledText = result.getTextWidget();
+		styledText = createStyledTextWidget(sash);
 		styledText.setEditable(false);
 
 		// Setup text input
@@ -214,6 +206,32 @@ public class TextChatComposite extends Composite {
 				});
 
 	}
+
+	private StyledText createStyledTextWidget(Composite parent) {
+		try {
+			SourceViewer result = new SourceViewer(parent, null, null,
+					true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
+							| SWT.READ_ONLY);
+			result.configure(new TextSourceViewerConfiguration(EditorsUI
+					.getPreferenceStore()));
+			result.setDocument(new Document());
+			return result.getTextWidget();
+		} catch (Exception e) {
+			Activator
+					.getDefault()
+					.getLog()
+					.log(
+							new Status(
+									IStatus.WARNING,
+									Activator.PLUGIN_ID,
+									IStatus.WARNING,
+									"Source viewer not available.  Hyperlinking will be disabled.",
+									e));
+			return new StyledText(parent, SWT.BORDER | SWT.WRAP
+					| SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+		}
+	}
+
 
 	private void makeActions() {
 		outputSelectAll = new Action() {
