@@ -2,6 +2,6 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Tutorials" link_to="toc.xml#tutorials"> 
-	<topic label="ScribbleShare" href="html/tutorials/installation.html"/>
 	<topic label="Create an IRC bot" href="html/tutorials/bot.html"/>
+	<topic label="Other Info" href="http://wiki.eclipse.org/Eclipse_Communication_Framework_Project"/>
 </toc>

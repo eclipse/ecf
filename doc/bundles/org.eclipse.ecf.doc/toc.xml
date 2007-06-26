@@ -6,7 +6,7 @@
    <topic label="System Requirements" href="html/gettingstarted/prerequisites.html"/>
    <topic label="Overview" href="html/overview/ecf_overview.html"/>
    <topic label="Tips and Tricks" href="html/overview/ecfTipsTricks.html"/>
-   <topic label="What's New" href="html/whatsNew/ecf_whatsnew.html"/>
+   <topic label="What's New and Noteworthy" href="http://www.eclipse.org/ecf/NewAndNoteworthy.html"/>
    <topic label="Legal" href="notices.html"/>
    <topic label="API Concepts">
       <anchor id="concepts"/>
