@@ -190,14 +190,8 @@ public class ChatComposite extends Composite {
 		sf.setOrientation(SWT.VERTICAL);
 
 		tableView = table;
-		SourceViewer result = new SourceViewer(sf, null, null, true,
-				SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.H_SCROLL
-						| SWT.READ_ONLY);
-		result.configure(new TextSourceViewerConfiguration(EditorsUI
-				.getPreferenceStore()));
-		result.setDocument(new Document());
 
-		textoutput = result.getTextWidget();
+		textoutput = createStyledTextWidget(sf);
 		textoutput.setLayoutData(new GridData(SWT.FILL));
 		String fontName = ClientPlugin.getDefault().getPluginPreferences()
 				.getString(ClientPlugin.PREF_CHAT_FONT);
@@ -271,6 +265,32 @@ public class ChatComposite extends Composite {
 		contributeToActionBars();
 		initializeDropTargets();
 	}
+
+	private StyledText createStyledTextWidget(Composite parent) {
+		try {
+			SourceViewer result = new SourceViewer(parent, null, null,
+					true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
+							| SWT.READ_ONLY);
+			result.configure(new TextSourceViewerConfiguration(EditorsUI
+					.getPreferenceStore()));
+			result.setDocument(new Document());
+			return result.getTextWidget();
+		} catch (Exception e) {
+			ClientPlugin
+					.getDefault()
+					.getLog()
+					.log(
+							new Status(
+									IStatus.WARNING,
+									ClientPlugin.PLUGIN_ID,
+									IStatus.WARNING,
+									"Source viewer not available.  Hyperlinking will be disabled.",
+									e));
+			return new StyledText(parent, SWT.BORDER | SWT.WRAP
+					| SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+		}
+	}
+
 
 	public void appendText(ChatLine text) {
 		if (text == null || textoutput == null || textoutput.isDisposed()) {
