@@ -14,13 +14,10 @@ package org.eclipse.ecf.tests.filetransfer;
 import java.io.ByteArrayOutputStream;
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
 
 public class FileTransferNamespaceTest extends ECFAbstractTestCase {
@@ -77,7 +74,9 @@ public class FileTransferNamespaceTest extends ECFAbstractTestCase {
 		assertNotNull(supportedSchemes);
 	}
 
+	/*
 	public final void testGetURLConnection() throws Exception {
+		
 		FileIDFactory.getDefault();
 		URL anURL = new URL("foobar:http://slewis@lala.lala.com:3333/foo/bar/lala.txt?artifact=one&group=two");
 		
@@ -96,5 +95,7 @@ public class FileTransferNamespaceTest extends ECFAbstractTestCase {
 		
 		URLConnection connection = anURL.openConnection();
 		assertNotNull(connection);
+		
 	}
+	*/
 }
