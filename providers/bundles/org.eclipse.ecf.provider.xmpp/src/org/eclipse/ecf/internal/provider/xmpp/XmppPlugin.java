@@ -39,7 +39,7 @@ public class XmppPlugin implements BundleActivator {
 	public static void log(String message, Throwable e) {
 		getDefault().log(
 				new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK,
-						"Caught exception", e)); //$NON-NLS-1$
+						message, e)); 
 	}
 
 	/**
