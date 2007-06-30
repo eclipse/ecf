@@ -2,12 +2,12 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Reference" link_to="toc.xml#reference">
-	<topic label="ECF API" href="html/reference/ecfApi.html"/>
-	<topic label="JavaDoc" href="html/reference/ecfJavaDoc.html"/>
+	<topic label="ECF API" href="http://wiki.eclipse.org/index.php/ECF_API_Docs"/>
+	<topic label="JavaDoc" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/overview-summary.html"/>
 	<topic label="Extension Points">
 		<link toc="topics_Extpoint.xml"/>
 	</topic>
-	<topic label="Project Wiki" href="html/reference/ecfWiki.html"/>
-    <topic label="ECF Servers" href="html/reference/ecfServers.html"/>
-    <topic label="Bot Framework" href="html/reference/ecfBotFramework.html"/>
+	<topic label="Project Wiki" href="http://wiki.eclipse.org/index.php/Eclipse_Communication_Framework_Project"/>
+    <topic label="ECF Servers" href="http://wiki.eclipse.org/index.php/ECF_Servers"/>
+    <topic label="Bot Framework" href="http://wiki.eclipse.org/index.php/Bot_Framework"/>
 </toc>
