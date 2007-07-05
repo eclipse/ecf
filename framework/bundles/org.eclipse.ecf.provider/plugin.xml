@@ -19,4 +19,14 @@
             name="ecf.generic.client">
       </containerFactory>
    </extension>
+   <extension
+         id="GenericServer"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="*"
+            thread="main">
+         <run
+               class="org.eclipse.ecf.provider.app.GenericServer"/>
+      </application>
+   </extension>
 </plugin>
