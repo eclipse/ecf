@@ -27,11 +27,8 @@
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
-      <category
-            id="org.eclipse.ecf.example.collab.editor"
-            name="Team"/>
       <wizard
-            category="org.eclipse.ecf.example.collab.editor"
+            category="org.eclipse.team.ui.newWizards"
             class="org.eclipse.ecf.example.collab.editor.wizards.NewSharedSessionWizard"
             hasPages="true"
             icon="icons/shared_editor.gif"
