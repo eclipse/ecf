@@ -68,7 +68,9 @@ final class IRCConnectWizardPage extends WizardPage {
 	protected String getPasswordKeyFromUserName(String username) {
 		if (username == null || username.equals("")) return null;
 		else {
-			return username.substring(0,username.indexOf("/"));
+			int slashIndex = username.indexOf("/");
+			if (slashIndex == -1) return username;
+			else return username.substring(0,username.indexOf("/"));
 		}
 	}
 	protected void restorePassword(String username) {
