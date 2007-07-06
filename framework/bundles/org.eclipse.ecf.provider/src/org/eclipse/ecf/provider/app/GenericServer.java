@@ -61,6 +61,7 @@ public class GenericServer implements IApplication {
 					keepAlive = Integer.parseInt(args[3]);
 				case 3:
 					name = args[2];
+					if (!name.startsWith("/")) name = "/"+name;
 				case 2:
 					hostname = args[1];
 				case 1:
