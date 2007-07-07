@@ -60,10 +60,10 @@ public class GenericServer implements IApplication {
 				case 4:
 					keepAlive = Integer.parseInt(args[3]);
 				case 3:
-					name = args[2];
-					if (!name.startsWith("/")) name = "/"+name;
+					hostname = args[2];
 				case 2:
-					hostname = args[1];
+					name = args[1];
+					if (!name.startsWith("/")) name = "/"+name;
 				case 1:
 					port = Integer.parseInt(args[0]);
 				}
@@ -83,14 +83,14 @@ public class GenericServer implements IApplication {
 		System.out
 				.println("Usage: eclipse.exe -application " //$NON-NLS-1$
 						+ this.getClass().getName()
-						+ "[port [hostname [groupname [keepAlive]]]] | [-config|-c <configfile.xml>]"); //$NON-NLS-1$
+						+ "[port [groupname [hostname [keepAlive]]]] | [-config|-c <configfile.xml>]"); //$NON-NLS-1$
 		System.out
 				.println("   Examples: eclipse -application org.eclipse.ecf.provider.GenericServer"); //$NON-NLS-1$
 		System.out
 				.println("             eclipse -application org.eclipse.ecf.provider.GenericServer " + 7777); //$NON-NLS-1$
 		System.out
 				.println("             eclipse -application org.eclipse.ecf.provider.GenericServer " + 7777 //$NON-NLS-1$
-						+ " foobarhost group 35000"); //$NON-NLS-1$
+						+ " mygroup foobarhost.wherever.com 35000"); //$NON-NLS-1$
 		System.out
 				.println("             eclipse -application org.eclipse.ecf.provider.GenericServer -c myconfig.xml"); //$NON-NLS-1$
 
