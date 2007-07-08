@@ -53,6 +53,8 @@ public final class SharedImages {
 	
 	public static final String IMG_COLLABORATION_WIZARD = "IMG_COLLABORATION_WIZARD"; //$NON-NLS-1$
 	
+	public static final String IMG_COMMUNICATIONS = "IMG_COMMUNICATIONS"; //$NON-NLS-1$
+	
 	public static ImageDescriptor getImageDescriptor(String key) {
 		return Activator.getDefault().getImageRegistry().getDescriptor(key);
 	}

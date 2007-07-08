@@ -43,4 +43,11 @@
             name="%perspective.name">
       </perspective>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="org.eclipse.ecf.ui.commands.category"
+            name="Communications">
+      </category>
+   </extension>
 </plugin>

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,4 +44,7 @@ public interface IImageFiles {
 	public static final String CHAT_WIZARD = "icons/wizards/chat_wizard.png"; //$NON_NLS-$1
 	
 	public static final String COLLABORATION_WIZARD = "icons/wizards/collaboration_wizard.png"; //$NON_NLS-$1
+	
+	public static final String COMMUNICATIONS = "icons/enabled/communications.gif"; //$NON_NLS-$1
+
 }
