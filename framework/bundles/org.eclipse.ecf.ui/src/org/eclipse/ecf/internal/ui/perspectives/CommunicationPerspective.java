@@ -41,7 +41,8 @@ public class CommunicationPerspective implements IPerspectiveFactory {
 		String editorArea = layout.getEditorArea();
 
 		// Top left.
-		layout.createFolder("topLeft", IPageLayout.LEFT, 0.26f, editorArea); //$NON-NLS-1$
+		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.26f, editorArea); //$NON-NLS-1$
+		topLeft.addView(IPageLayout.ID_RES_NAV);
 
 		// Bottom left.
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", //$NON-NLS-1$
