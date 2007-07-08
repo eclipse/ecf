@@ -165,7 +165,7 @@
                id="org.eclipse.ecf.example.collab.discoveryview"
                relationship="stack"
                relative="org.eclipse.ui.views.ProblemView"
-               visible="false">
+               visible="true">
          </view>
       </perspectiveExtension>
    </extension>
