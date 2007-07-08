@@ -11,6 +11,7 @@
 package org.eclipse.ecf.internal.presence.ui;
 
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.presence.service.IPresenceService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -31,6 +32,8 @@ public class Activator extends AbstractUIPlugin {
 	private ServiceTracker tracker;
 
 	private ServiceTracker extensionRegistryTracker = null;
+	
+	private ServiceTracker containerManagerTracker = null;
 	
 	private BundleContext context;
 	
@@ -78,6 +81,10 @@ public class Activator extends AbstractUIPlugin {
 			extensionRegistryTracker.close();
 			extensionRegistryTracker = null;
 		}
+		if (containerManagerTracker != null) {
+			containerManagerTracker.close();
+			containerManagerTracker = null;
+		}
 		this.context = null;
 		super.stop(context);
 	}
@@ -100,5 +107,13 @@ public class Activator extends AbstractUIPlugin {
 		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 	
+	public IContainerManager getContainerManager() {
+		if (containerManagerTracker == null) {
+			containerManagerTracker = new ServiceTracker(context,
+					IContainerManager.class.getName(), null);
+			containerManagerTracker.open();
+		}
+		return (IContainerManager) containerManagerTracker.getService();
+	}
 
 }

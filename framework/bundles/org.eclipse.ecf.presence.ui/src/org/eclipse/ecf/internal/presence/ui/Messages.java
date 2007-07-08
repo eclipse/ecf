@@ -227,6 +227,10 @@ public class Messages extends NLS {
 	public static String RosterWorkbenchAdapterFactory_Account;
 	public static String RosterWorkbenchAdapterFactory_Disconnected;
 	public static String RosterWorkbenchAdapterFactory_GroupLabel;
+	
+	public static String BrowseDialog_title;
+	public static String BrowseDialog_scanning;
+	public static String BrowseDialog_message;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
