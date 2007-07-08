@@ -92,20 +92,20 @@
          <view
                id="org.eclipse.ecf.presence.ui.MultiRosterView"
                relationship="stack"
-               relative="org.eclipse.ui.views.ContentOutline"
-               visible="false">
+               relative="org.eclipse.ui.views.ResourceNavigator"
+               visible="true">
          </view>
          <view
                id="org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"
                relationship="stack"
                relative="org.eclipse.ui.views.ProblemView"
-               visible="false">
+               visible="true">
          </view>
          <view
                id="org.eclipse.ecf.presence.ui.MessagesView"
                relationship="stack"
                relative="org.eclipse.ui.views.ProblemView"
-               visible="false">
+               visible="true">
          </view>
       </perspectiveExtension>
    </extension>
