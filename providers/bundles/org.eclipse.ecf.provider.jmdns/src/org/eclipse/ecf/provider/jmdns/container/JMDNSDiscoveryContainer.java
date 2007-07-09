@@ -323,7 +323,7 @@ public class JMDNSDiscoveryContainer implements IContainer,
 			}
 
 			public Object getProperty(String name) {
-				return svcProperties.getPropertyBytes(name);
+				return svcProperties.getProperty(name);
 			}
 
 			public Object setProperty(String name, Object value) {
