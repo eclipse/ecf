@@ -102,7 +102,7 @@ public class GenericServer implements IApplication {
 	 * @param name
 	 * @param keepAlive
 	 */
-	private void setupServerFromParameters(String hostname, int port,
+	protected void setupServerFromParameters(String hostname, int port,
 			String name, int keepAlive) throws IOException, IDCreateException {
 		String hostnamePort = hostname + ":" + port; //$NON-NLS-1$
 		synchronized (serverGroups) {
@@ -114,11 +114,12 @@ public class GenericServer implements IApplication {
 				serverGroup = new TCPServerSOContainerGroup(hostname, port);
 				String url = TCPServerSOContainer.DEFAULT_PROTOCOL + "://" //$NON-NLS-1$
 						+ hostnamePort + name;
+				// Create
 				TCPServerSOContainer container = createServerContainer(url,
 						serverGroup, name, keepAlive);
-				// Setup join policy
-				((ISharedObjectContainerGroupManager) container)
-						.setConnectPolicy(new JoinListener());
+				// Configure
+				configureServerContainer(container);
+				// Put on the air
 				serverGroup.putOnTheAir();
 				serverGroups.put(hostnamePort, serverGroup);
 				System.out
@@ -132,9 +133,23 @@ public class GenericServer implements IApplication {
 	}
 
 	/**
+	 * This method may be overridden by subclasses in order to customize the configuration of the
+	 * newly created server containers (before they are put on the air).  For example, to set the appropriate
+	 * connect policy.
+	 * 
+	 * @param container the container to configure
+	 */
+	protected void configureServerContainer(TCPServerSOContainer container) {
+		// Setup join policy
+		((ISharedObjectContainerGroupManager) container)
+				.setConnectPolicy(new JoinListener());
+
+	}
+
+	/**
 	 * @param load
 	 */
-	private void setupServerFromConfig(List connectors) throws IOException,
+	protected void setupServerFromConfig(List connectors) throws IOException,
 			IDCreateException {
 		for (Iterator i = connectors.iterator(); i.hasNext();) {
 			Connector connector = (Connector) i.next();
@@ -152,12 +167,12 @@ public class GenericServer implements IApplication {
 					List groups = connector.getGroups();
 					for (Iterator g = groups.iterator(); g.hasNext();) {
 						NamedGroup group = (NamedGroup) g.next();
+						// Create
 						TCPServerSOContainer container = createServerContainer(
 								group.getIDForGroup(), serverGroup, group
 										.getName(), connector.getTimeout());
-						// Setup join policy
-						((ISharedObjectContainerGroupManager) container)
-								.setConnectPolicy(new JoinListener());
+						// Configure
+						configureServerContainer(container);
 					}
 					serverGroup.putOnTheAir();
 					serverGroups.put(hostnamePort, serverGroup);
