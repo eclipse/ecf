@@ -24,7 +24,8 @@
          point="org.eclipse.core.runtime.applications">
       <application
             cardinality="*"
-            thread="main">
+            thread="main"
+            visible="true">
          <run
                class="org.eclipse.ecf.provider.app.GenericServer"/>
       </application>
