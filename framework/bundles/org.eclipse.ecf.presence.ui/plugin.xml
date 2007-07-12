@@ -114,7 +114,7 @@
       <command
             categoryId="org.eclipse.ecf.ui.commands.category"
             id="org.eclipse.ecf.presence.ui.commands.browse"
-            name="Browse Rosters">
+            name="Open Contact">
       </command>
    </extension>
    <extension
@@ -132,6 +132,36 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+P">
       </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="org.eclipse.search.searchActionSet">
+                        <command
+                              commandId="org.eclipse.ecf.presence.ui.commands.browse"
+                              icon="icons/open_contacts.gif"
+                              id="org.eclipse.ecf.presence.ui.commands.browse.toolbar"
+                              label="%browse.command.label"
+                              style="push"
+                              tooltip="%browse.command.tooltip"/>
+         </toolbar>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:navigate?after=open.ext3">
+            <separator
+                  name="org.eclipse.ecf.ui.browse.separator"
+                  visible="true"/>
+            <command
+                  commandId="org.eclipse.ecf.presence.ui.commands.browse"
+                  icon="icons/open_contacts.gif"
+                  id="org.eclipse.ecf.presence.ui.commands.browse.menu"
+                  label="%browse.command.label"
+                  style="push"
+                  tooltip="%browse.command.tooltip">
+            </command>
+      </menuContribution>
    </extension>
 
 </plugin>
