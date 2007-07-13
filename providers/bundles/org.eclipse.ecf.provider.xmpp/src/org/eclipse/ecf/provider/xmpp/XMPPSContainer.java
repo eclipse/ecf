@@ -48,19 +48,8 @@ public class XMPPSContainer extends XMPPContainer {
 
 	protected ISynchAsynchConnection createConnection(ID remoteSpace,
 			Object data) throws ConnectionCreateException {
-		boolean google = false;
-		boolean secure = false;
-		if (remoteSpace instanceof XMPPID) {
-			XMPPID theID = (XMPPID) remoteSpace;
-			String host = theID.getHostname();
-			if (host.toLowerCase().equals(GOOGLE_SERVICENAME)) {
-				google = true;
-				secure = false;
-			} else {
-				google = false;
-				secure = true;
-			}
-		}
+		boolean google = isGoogle(remoteSpace);
+		boolean secure = !google;
 		return new ECFConnection(google, getConnectNamespace(), receiver,
 				secure);
 	}
