@@ -17,7 +17,6 @@ import org.eclipse.ecf.internal.provider.xmpp.XmppPlugin;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 
 public class XMPPSContainer extends XMPPContainer {
 	public XMPPSContainer() throws Exception {
