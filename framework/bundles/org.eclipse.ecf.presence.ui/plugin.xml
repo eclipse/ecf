@@ -120,7 +120,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="org.eclipse.ecf.presence.ui.handlers.BrowseHandler"
+            class="org.eclipse.ecf.internal.presence.ui.handlers.BrowseHandler"
             commandId="org.eclipse.ecf.presence.ui.commands.browse">
       </handler>
    </extension>

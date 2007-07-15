@@ -8,7 +8,7 @@
  * Contributors:
  *    Chris Aniszczyk <caniszczyk@gmail.com> - initial API and implementation
  ******************************************************************************/
-package org.eclipse.ecf.presence.ui.handlers;
+package org.eclipse.ecf.internal.presence.ui.handlers;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
