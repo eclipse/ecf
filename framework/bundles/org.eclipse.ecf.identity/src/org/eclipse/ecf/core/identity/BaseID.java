@@ -9,6 +9,8 @@
 package org.eclipse.ecf.core.identity;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.ecf.internal.core.identity.Activator;
 
 /**
  * Base class for ID implementation classes
@@ -112,6 +114,8 @@ public abstract class BaseID implements ID {
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class clazz) {
-		return null;
+		IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
+		if (adapterManager == null) return null;
+		return adapterManager.loadAdapter(this, clazz.getName());
 	}
 }
