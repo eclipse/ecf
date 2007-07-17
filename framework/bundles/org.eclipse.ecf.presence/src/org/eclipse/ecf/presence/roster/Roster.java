@@ -104,15 +104,6 @@ public class Roster extends RosterItem implements IRoster {
 		this.rosterUser = user;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	public Object getAdapter(Class adapter) {
-		return null;
-	}
-
 	/**
 	 * @return String this object as String
 	 */

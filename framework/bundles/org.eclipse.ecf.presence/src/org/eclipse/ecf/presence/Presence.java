@@ -14,6 +14,9 @@ package org.eclipse.ecf.presence;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.ecf.internal.presence.PresencePlugin;
+
 /**
  * Base presence class implementing {@link IPresence}. Subclasses may be
  * created as appropriate.
@@ -100,7 +103,9 @@ public class Presence implements IPresence {
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
-		return null;
+		IAdapterManager adapterManager = PresencePlugin.getDefault().getAdapterManager();
+		if (adapterManager == null) return null;
+		return adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	/*

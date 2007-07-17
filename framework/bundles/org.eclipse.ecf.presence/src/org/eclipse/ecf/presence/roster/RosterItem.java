@@ -11,6 +11,8 @@
 package org.eclipse.ecf.presence.roster;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.ecf.internal.presence.PresencePlugin;
 
 /**
  * Base class implmentation of {@link IRosterItem} super interface. This class
@@ -55,7 +57,9 @@ public class RosterItem implements IRosterItem {
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
-		return null;
+		IAdapterManager adapterManager = PresencePlugin.getDefault().getAdapterManager();
+		if (adapterManager == null) return null;
+		return adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	public IRoster getRoster() {
