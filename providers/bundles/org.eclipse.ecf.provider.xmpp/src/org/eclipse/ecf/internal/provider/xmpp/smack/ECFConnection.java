@@ -28,7 +28,6 @@ import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionListener;
-import org.jivesoftware.smack.GoogleTalkConnection;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
@@ -43,6 +42,10 @@ import org.jivesoftware.smack.packet.Message.Type;
 
 public class ECFConnection implements ISynchAsynchConnection {
 
+	/**
+	 * 
+	 */
+	private static final String GOOGLE_TALK_HOST = "talk.google.com";
 	public static final String CLIENT_TYPE = "ECF_XMPP";
 	public static final boolean DEBUG = Boolean.getBoolean(System.getProperty("smack.debug", "false"));
 	
@@ -50,7 +53,9 @@ public class ECFConnection implements ISynchAsynchConnection {
 	public static final String OBJECT_PROPERTY_NAME = ECFConnection.class
 			.getName()
 			+ ".object";
-	protected static final int XMPP_NORMAL_PORT = 5222;
+	protected static final int XMPP_DEFAULT_PORT = 5222;
+	protected static final int XMPPS_DEFAULT_PORT = 5223;
+	
 	private XMPPConnection connection = null;
 	private IAsynchEventHandler handler = null;
 	private boolean isStarted = false;
@@ -145,7 +150,11 @@ public class ECFConnection implements ISynchAsynchConnection {
 		serverPort = jabberURI.getPort();
 		try {
 			if (google) {
-				connection = new GoogleTalkConnection();
+				if (secure) {
+					connection = new SSLXMPPConnection(GOOGLE_TALK_HOST,XMPPS_DEFAULT_PORT,jabberURI.getHostname());
+				} else {
+					connection = new XMPPConnection(GOOGLE_TALK_HOST,XMPP_DEFAULT_PORT,jabberURI.getHostname());
+				}
 			} else if (serverPort == -1) {
 				if (secure) {
 					connection = new SSLXMPPConnection(serverName);
