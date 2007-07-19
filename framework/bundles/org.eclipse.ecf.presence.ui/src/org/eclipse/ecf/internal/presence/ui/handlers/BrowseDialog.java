@@ -29,6 +29,7 @@ import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterItem;
+import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -96,15 +97,18 @@ public class BrowseDialog extends FilteredItemsSelectionDialog {
 		
 		// TODO need to grab the proper IContainer reference
 		// cycle through all the containers and grab entries 
-		for(int i = 0; i < containers.length; i++) {
+		for (int i = 0; i < containers.length; i++) {
 			IContainer container = containers[i];
 			IPresenceContainerAdapter presenceContainer = 
 				(IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
 			if (presenceContainer != null) {
-				Collection items = 
-						presenceContainer.getRosterManager().getRoster().getItems();
-				for(Iterator it = items.iterator(); it.hasNext(); ) {
-					contentProvider.add(it.next(), itemsFilter);
+				IRosterManager manager = presenceContainer.getRosterManager();
+				if (manager != null) {
+					Collection items = 
+						manager.getRoster().getItems();
+					for(Iterator it = items.iterator(); it.hasNext(); ) {
+						contentProvider.add(it.next(), itemsFilter);
+					}
 				}
 			}
 			progressMonitor.worked(1);
