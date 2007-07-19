@@ -15,7 +15,19 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.provider.xmpp.messages"; //$NON-NLS-1$
+	public static String XMPPChatRoomContainer_EXCEPTION_CALLBACKHANDLER;
 	public static String XMPPChatRoomContainer_Exception_Connect_Wrong_Type;
+	public static String XMPPChatRoomContainer_EXCEPTION_CREATING_ROOM_ID;
+	public static String XMPPChatRoomContainer_EXCEPTION_JOINING_ROOM;
+	public static String XMPPChatRoomContainer_EXCEPTION_NOT_CONNECTED;
+	public static String XMPPChatRoomContainer_EXCEPTION_SEND_MESSAGE;
+	public static String XMPPChatRoomContainer_EXCEPTION_TARGET_USER_NOT_NULL;
+	public static String XMPPChatRoomContainer_NAME_CALLBACK_NICK;
+	public static String XMPPChatRoomManager_EXCEPTION_CONTAINER_DISCONNECTED;
+	public static String XMPPChatRoomManager_EXCEPTION_CREATING_CHAT_CONTAINER;
+	public static String XMPPChatRoomManager_EXCEPTION_NO_ROOM_INFO;
+	public static String XMPPChatRoomManager_EXCEPTION_ROOM_CANNOT_BE_NULL;
+	public static String XMPPChatRoomManager_ROOM_NOT_FOUND;
 	public static String XMPPContainer_EXCEPTION_ADDING_SHARED_OBJECT;
 	public static String XMPPContainer_EXCEPTION_DESERIALIZED_OBJECT_NULL;
 	public static String XMPPContainer_EXCEPTION_HANDLING_ASYCH_EVENT;

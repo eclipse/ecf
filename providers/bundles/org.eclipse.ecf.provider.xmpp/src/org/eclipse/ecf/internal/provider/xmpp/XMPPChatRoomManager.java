@@ -22,6 +22,7 @@ import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
@@ -33,6 +34,7 @@ import org.eclipse.ecf.presence.history.IHistory;
 import org.eclipse.ecf.presence.history.IHistoryManager;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPID;
 import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
+import org.eclipse.osgi.util.NLS;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
@@ -46,14 +48,11 @@ import org.jivesoftware.smackx.packet.DiscoverItems;
 
 public class XMPPChatRoomManager implements IChatRoomManager {
 
-	/**
-	 * 
-	 */
-	private static final String PROP_XMPP_SUBJECT = "subject";
+	private static final String PROP_XMPP_SUBJECT = "subject"; //$NON-NLS-1$
 
 	// key in the create room configuration in order to find the please to find
 	// the conference rooms on the XMPP server
-	public static final String PROP_XMPP_CONFERENCE = "conference";
+	public static final String PROP_XMPP_CONFERENCE = "conference"; //$NON-NLS-1$
 
 	ID containerID = null;
 
@@ -67,16 +66,55 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 
 	ID connectedID = null;
 
+	IChatRoomInvitationSender invitationSender = new IChatRoomInvitationSender() {
+
+		public void sendInvitation(ID room, ID targetUser, String subject,
+				String body) throws ECFException {
+			XMPPChatRoomManager.this.sendInvitation(room, targetUser, subject,
+					body);
+		}
+
+	};
+
 	public XMPPChatRoomManager(ID containerID) {
 		this.containerID = containerID;
 	}
 
-	protected void addChat(IChatRoomContainer container) {
+	/**
+	 * @param room
+	 * @param targetUser
+	 * @param subject
+	 * @param body
+	 */
+	protected void sendInvitation(ID room, ID targetUser, String subject,
+			String body) throws ECFException {
+		XMPPChatRoomContainer chatRoomContainer = getChatRoomContainer(room);
+		if (chatRoomContainer == null)
+			throw new ECFException(NLS
+					.bind(Messages.XMPPChatRoomManager_ROOM_NOT_FOUND, room.getName()));
+		chatRoomContainer.sendInvitation(targetUser, subject, body);
+	}
+
+	protected void addChat(XMPPChatRoomContainer container) {
 		chatrooms.add(container);
 	}
 
-	protected void removeChat(IChatRoomContainer container) {
+	protected void removeChat(XMPPChatRoomContainer container) {
 		chatrooms.remove(container);
+	}
+
+	protected XMPPChatRoomContainer getChatRoomContainer(ID roomID) {
+		if (roomID == null)
+			return null;
+		for (Iterator i = chatrooms.iterator(); i.hasNext();) {
+			XMPPChatRoomContainer container = (XMPPChatRoomContainer) i.next();
+			ID containerRoomID = container.getConnectedID();
+			if (containerRoomID == null)
+				continue;
+			if (containerRoomID.equals(roomID))
+				return container;
+		}
+		return null;
 	}
 
 	protected ID createRoomIDFromName(String from) {
@@ -193,9 +231,9 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 
 		public IChatRoomContainer createChatRoomContainer()
 				throws ContainerCreateException {
-			IChatRoomContainer chatContainer = null;
+			XMPPChatRoomContainer chatContainer = null;
 			if (ecfConnection == null)
-				throw new ContainerCreateException("disconnected");
+				throw new ContainerCreateException(Messages.XMPPChatRoomManager_EXCEPTION_CONTAINER_DISCONNECTED);
 			try {
 				chatContainer = new XMPPChatRoomContainer(ecfConnection,
 						connectNamespace);
@@ -203,20 +241,20 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 				return chatContainer;
 			} catch (IDCreateException e) {
 				throw new ContainerCreateException(
-						"Exception creating chat container", e);
+						Messages.XMPPChatRoomManager_EXCEPTION_CREATING_CHAT_CONTAINER, e);
 			}
 		}
 
 		public String toString() {
-			StringBuffer buf = new StringBuffer("ECFRoomInfo[");
-			buf.append("id=").append(containerID).append(";name=" + getName());
-			buf.append(";service=" + getConnectedID());
-			buf.append(";count=" + getParticipantsCount());
-			buf.append(";subject=" + getSubject()).append(
-					";desc=" + getDescription());
-			buf.append(";pers=" + isPersistent()).append(
-					";pw=" + requiresPassword());
-			buf.append(";mod=" + isModerated()).append("]");
+			StringBuffer buf = new StringBuffer("ECFRoomInfo["); //$NON-NLS-1$
+			buf.append("id=").append(containerID).append(";name=" + getName()); //$NON-NLS-1$ //$NON-NLS-2$
+			buf.append(";service=" + getConnectedID()); //$NON-NLS-1$
+			buf.append(";count=" + getParticipantsCount()); //$NON-NLS-1$
+			buf.append(";subject=" + getSubject()).append( //$NON-NLS-1$
+					";desc=" + getDescription()); //$NON-NLS-1$
+			buf.append(";pers=" + isPersistent()).append( //$NON-NLS-1$
+					";pw=" + requiresPassword()); //$NON-NLS-1$
+			buf.append(";mod=" + isModerated()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 			return buf.toString();
 		}
 	}
@@ -372,7 +410,7 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 			throws ChatRoomCreateException {
 		if (roomname == null)
 			throw new ChatRoomCreateException(roomname,
-					"roomname cannot be null");
+					Messages.XMPPChatRoomManager_EXCEPTION_ROOM_CANNOT_BE_NULL);
 		try {
 			String nickname = ecfConnection.getXMPPConnection().getUser();
 			String server = ecfConnection.getXMPPConnection().getHost();
@@ -407,7 +445,7 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 						ecfConnection.getXMPPConnection(), roomID, longname);
 				return new ECFRoomInfo(xid, info, connectedID);
 			} else
-				throw new XMPPException("No room info for " + roomID);
+				throw new XMPPException(NLS.bind(Messages.XMPPChatRoomManager_EXCEPTION_NO_ROOM_INFO,roomID)); 
 		} catch (XMPPException e) {
 			throw new ChatRoomCreateException(roomname, e.getMessage(), e);
 		} catch (URISyntaxException e) {
@@ -455,25 +493,26 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 
 		public void setActive(boolean active) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public Object getAdapter(Class adapter) {
 			// TODO Auto-generated method stub
 			return null;
 		}
-		
+
 	};
-	
+
 	public IHistoryManager getHistoryManager() {
 		return chatRoomHistoryManager;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#getInvitationSender()
 	 */
 	public IChatRoomInvitationSender getInvitationSender() {
-		// TODO Auto-generated method stub
-		return null;
+		return invitationSender;
 	}
 }

@@ -34,10 +34,10 @@ import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.presence.IIMMessageListener;
+import org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
-import org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
@@ -67,13 +67,11 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 			.getName()
 			+ ".xmppgroupchathandler"; //$NON-NLS-1$
 
-	protected ID containerHelperID;
+	private ID containerHelperID;
 
-	protected XMPPChatRoomContainerHelper containerHelper;
+	private XMPPChatRoomContainerHelper containerHelper;
 
-	protected MultiUserChat multiuserchat;
-
-	protected Namespace usernamespace = null;
+	private MultiUserChat multiuserchat;
 
 	public XMPPChatRoomContainer(ISharedObjectContainerConfig config,
 			ECFConnection conn, Namespace usernamespace)
@@ -81,11 +79,23 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 		super(config);
 		this.connection = conn;
 		this.config = config;
-		this.usernamespace = usernamespace;
 		this.containerHelperID = IDFactory.getDefault().createStringID(
 				CONTAINER_HELPER_ID);
 		this.containerHelper = new XMPPChatRoomContainerHelper(usernamespace,
 				getXMPPConnection());
+	}
+
+	protected void sendInvitation(ID toUser, String subject, String body)
+			throws ECFException {
+		if (toUser == null)
+			throw new ECFException(
+					Messages.XMPPChatRoomContainer_EXCEPTION_TARGET_USER_NOT_NULL);
+		synchronized (getConnectLock()) {
+			if (multiuserchat == null)
+				throw new ContainerConnectException(
+						Messages.XMPPChatRoomContainer_EXCEPTION_NOT_CONNECTED);
+			multiuserchat.invite(toUser.getName(), (body == null) ? "" : body); //$NON-NLS-1$
+		}
 	}
 
 	public XMPPChatRoomContainer(ECFConnection conn, Namespace usernamespace)
@@ -233,8 +243,9 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 				String nick = null;
 				try {
 					Callback[] callbacks = new Callback[1];
-					callbacks[0] = new NameCallback("Nickname", roomID
-							.getNickname());
+					callbacks[0] = new NameCallback(
+							Messages.XMPPChatRoomContainer_NAME_CALLBACK_NICK,
+							roomID.getNickname());
 					if (connectContext != null) {
 						CallbackHandler handler = connectContext
 								.getCallbackHandler();
@@ -248,11 +259,11 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 					}
 				} catch (Exception e) {
 					throw new ContainerConnectException(
-							"Exception in CallbackHandler.handle(<callbacks>)",
+							Messages.XMPPChatRoomContainer_EXCEPTION_CALLBACKHANDLER,
 							e);
 				}
 				String nickname = null;
-				if (nick == null || nick.equals(""))
+				if (nick == null || nick.equals("")) //$NON-NLS-1$
 					nickname = roomID.getNickname();
 				else
 					nickname = nick;
@@ -279,83 +290,83 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 							public void voiceGranted(String arg0) {
 								// TODO Auto-generated method stub
 								System.out
-										.println("voiceGranted(" + arg0 + ")");
+										.println("voiceGranted(" + arg0 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 
 							public void voiceRevoked(String arg0) {
 								// TODO Auto-generated method stub
 								System.out
-										.println("voiceRevoked(" + arg0 + ")");
+										.println("voiceRevoked(" + arg0 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 
 							public void membershipGranted(String arg0) {
 								// TODO Auto-generated method stub
-								System.out.println("membershipGranted(" + arg0
-										+ ")");
+								System.out.println("membershipGranted(" + arg0 //$NON-NLS-1$
+										+ ")"); //$NON-NLS-1$
 							}
 
 							public void membershipRevoked(String arg0) {
 								// TODO Auto-generated method stub
-								System.out.println("membershipRevoked(" + arg0
-										+ ")");
+								System.out.println("membershipRevoked(" + arg0 //$NON-NLS-1$
+										+ ")"); //$NON-NLS-1$
 							}
 
 							public void moderatorGranted(String arg0) {
 								// TODO Auto-generated method stub
-								System.out.println("moderatorGranted(" + arg0
-										+ ")");
+								System.out.println("moderatorGranted(" + arg0 //$NON-NLS-1$
+										+ ")"); //$NON-NLS-1$
 							}
 
 							public void moderatorRevoked(String arg0) {
 								// TODO Auto-generated method stub
-								System.out.println("moderatorRevoked(" + arg0
-										+ ")");
+								System.out.println("moderatorRevoked(" + arg0 //$NON-NLS-1$
+										+ ")"); //$NON-NLS-1$
 							}
 
 							public void ownershipGranted(String arg0) {
 								// TODO Auto-generated method stub
-								System.out.println("ownershipGranted(" + arg0
-										+ ")");
+								System.out.println("ownershipGranted(" + arg0 //$NON-NLS-1$
+										+ ")"); //$NON-NLS-1$
 							}
 
 							public void ownershipRevoked(String arg0) {
 								// TODO Auto-generated method stub
-								System.out.println("ownershipRevoked(" + arg0
-										+ ")");
+								System.out.println("ownershipRevoked(" + arg0 //$NON-NLS-1$
+										+ ")"); //$NON-NLS-1$
 							}
 
 							public void adminGranted(String arg0) {
 								// TODO Auto-generated method stub
 								System.out
-										.println("adminGranted(" + arg0 + ")");
+										.println("adminGranted(" + arg0 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 
 							public void adminRevoked(String arg0) {
 								// TODO Auto-generated method stub
 								System.out
-										.println("adminRevoked(" + arg0 + ")");
+										.println("adminRevoked(" + arg0 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 
 							public void kicked(String arg0, String arg1,
 									String arg2) {
 								// TODO Auto-generated method stub
-								System.out.println("kicked(" + arg0 + ","
-										+ arg1 + "," + arg2 + ")");
+								System.out.println("kicked(" + arg0 + "," //$NON-NLS-1$ //$NON-NLS-2$
+										+ arg1 + "," + arg2 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 
 							}
 
 							public void banned(String arg0, String arg1,
 									String arg2) {
 								// TODO Auto-generated method stub
-								System.out.println("banned(" + arg0 + ","
-										+ arg1 + "," + arg2 + ")");
+								System.out.println("banned(" + arg0 + "," //$NON-NLS-1$ //$NON-NLS-2$
+										+ arg1 + "," + arg2 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 
 							}
 
 							public void nicknameChanged(String arg0, String arg1) {
 								// TODO Auto-generated method stub
-								System.out.println("nicknameChanged(" + arg0
-										+ "," + arg1 + ")");
+								System.out.println("nicknameChanged(" + arg0 //$NON-NLS-1$
+										+ "," + arg1 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 
 							}
 						});
@@ -364,8 +375,8 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 							public void invitationDeclined(String arg0,
 									String arg1) {
 								// TODO Auto-generated method stub
-								System.out.println("invitationDeclined(" + arg0
-										+ "," + arg1 + ")");
+								System.out.println("invitationDeclined(" + arg0 //$NON-NLS-1$
+										+ "," + arg1 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 						});
 				multiuserchat.join(nickname);
@@ -377,7 +388,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 			} catch (Exception e) {
 				cleanUpConnectFail();
 				ContainerConnectException ce = new ContainerConnectException(
-						"Exception joining " + roomID);
+						NLS.bind(Messages.XMPPChatRoomContainer_EXCEPTION_JOINING_ROOM, roomID));
 				ce.setStackTrace(e.getStackTrace());
 				throw ce;
 			}
@@ -394,12 +405,13 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 				try {
 					multiuserchat.leave();
 				} catch (Exception e) {
-					traceStack("Exception in multi user chat.leave", e);
+					traceStack("Exception in multi user chat.leave", e); //$NON-NLS-1$
 				}
 			}
 			connectionState = DISCONNECTED;
 			remoteServerID = null;
-			if (containerHelper != null) containerHelper.setRoomID(null);
+			if (containerHelper != null)
+				containerHelper.setRoomID(null);
 			this.connection = null;
 		}
 		// notify listeners
@@ -442,7 +454,8 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 						multiuserchat.sendMessage(messageBody);
 					} catch (Exception e) {
 						ECFException except = new ECFException(
-								"Send message exception", e);
+								Messages.XMPPChatRoomContainer_EXCEPTION_SEND_MESSAGE,
+								e);
 						throw except;
 					}
 				}
@@ -456,7 +469,8 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 			targetID = createChatRoomID(groupName);
 		} catch (IDCreateException e) {
 			throw new ContainerConnectException(
-					"Exception creating chat room id", e);
+					Messages.XMPPChatRoomContainer_EXCEPTION_CREATING_ROOM_ID,
+					e);
 		}
 		this.connect(targetID, null);
 	}
