@@ -26,14 +26,21 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.Messages;
+import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.roster.IRoster;
+import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.ui.SharedImages;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -50,9 +57,16 @@ public class BrowseDialog extends FilteredItemsSelectionDialog {
 	private static final String DIALOG_SETTINGS = 
 		"org.eclipse.ecf.presence.ui.dialogs.BrowseDialog"; //$NON-NLS-1$
 	
+	private static final String SHOW_ONLINE_ONLY = "showOnlineOnly"; //$NON-NLS-1$
+	
 	private IContainer[] containers = null;
 	private RosterItemLabelProvider rosterItemLabelProvider;
 	private RosterItemDetailsLabelProvider rosterItemDetailsLabelProvider;
+	
+	private ToggleOnlineOnlyAction toggleOnlineOnlyAction;
+	
+	private OnlineOnlyViewerFilter onlineOnlyFilter = 
+		new OnlineOnlyViewerFilter();
 	
 	public BrowseDialog(Shell shell, IContainer[] containers) {
 		super(shell, false);
@@ -95,7 +109,6 @@ public class BrowseDialog extends FilteredItemsSelectionDialog {
 		
 		progressMonitor.beginTask(Messages.BrowseDialog_scanning, containers.length);
 		
-		// TODO need to grab the proper IContainer reference
 		// cycle through all the containers and grab entries 
 		for (int i = 0; i < containers.length; i++) {
 			IContainer container = containers[i];
@@ -156,6 +169,56 @@ public class BrowseDialog extends FilteredItemsSelectionDialog {
 		return new Status(IStatus.OK, Activator.PLUGIN_ID, 0, "", null); //$NON-NLS-1$
 	}
 	
+	protected void fillViewMenu(IMenuManager menuManager) {
+		super.fillViewMenu(menuManager);
+		
+		toggleOnlineOnlyAction = new ToggleOnlineOnlyAction();
+		menuManager.add(toggleOnlineOnlyAction);
+	}
+	
+	protected void restoreDialog(IDialogSettings settings) {
+		super.restoreDialog(settings);
+		
+		if (settings.get(SHOW_ONLINE_ONLY) != null) {
+			boolean showOnlineOnly = settings.getBoolean(SHOW_ONLINE_ONLY);
+			toggleOnlineOnlyAction.setChecked(showOnlineOnly);
+		}
+		
+		addListFilter(onlineOnlyFilter);
+		applyFilter();
+	}
+
+	protected void storeDialog(IDialogSettings settings) {
+		super.storeDialog(settings);
+		
+		settings.put(SHOW_ONLINE_ONLY, toggleOnlineOnlyAction.isChecked());
+	}
+	
+	private class OnlineOnlyViewerFilter extends ViewerFilter {
+
+		private boolean online = true;
+		
+		public boolean select(Viewer viewer, Object parentElement,
+				Object element) {
+			
+			if (!(element instanceof IRosterEntry)) {
+				return false;
+			}
+			IRosterEntry entry = (IRosterEntry) element;
+			
+			// check if we are showing online only
+			if (online && entry.getPresence() != null && IPresence.Type.UNAVAILABLE == entry.getPresence().getType())
+				return false;
+			
+			return true;
+		}
+		
+		public void setOnlineOnly(boolean show) {
+			this.online = show;
+		}
+		
+	}
+
 	public class RosterItemDetailsLabelProvider extends LabelProvider {
 
 		private Map imageTable = new HashMap(7);
@@ -259,10 +322,10 @@ public class BrowseDialog extends FilteredItemsSelectionDialog {
 		}
 
 		public boolean matchItem(Object item) {
-			if (!(item instanceof IRosterItem)) {
+			if (!(item instanceof IRosterEntry)) {
 				return false;
 			}
-			IRosterItem rosterItem = (IRosterItem) item;
+			IRosterEntry rosterItem = (IRosterEntry) item;
 			return matches(rosterItem.getName());
 		}
 		
@@ -294,6 +357,21 @@ public class BrowseDialog extends FilteredItemsSelectionDialog {
 			adapter = (IWorkbenchAdapter) Platform.getAdapterManager()
 					.loadAdapter(element, IWorkbenchAdapter.class.getName());
 		return adapter;
+	}
+	
+	private class ToggleOnlineOnlyAction extends Action {
+
+		public ToggleOnlineOnlyAction() {
+			super(
+					Messages.ToggleOnlineOnlyAction_title,
+					IAction.AS_CHECK_BOX);
+			setChecked(true);
+		}
+		public void run() {
+			onlineOnlyFilter.setOnlineOnly(isChecked());
+			scheduleRefresh();
+		}
+		
 	}
 
 }
