@@ -231,6 +231,8 @@ public class Messages extends NLS {
 	public static String BrowseDialog_title;
 	public static String BrowseDialog_scanning;
 	public static String BrowseDialog_message;
+	
+	public static String ToggleOnlineOnlyAction_title;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
