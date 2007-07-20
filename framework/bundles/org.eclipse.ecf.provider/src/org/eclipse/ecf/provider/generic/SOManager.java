@@ -23,6 +23,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.IDCreateException;
@@ -125,9 +127,7 @@ public class SOManager implements ISharedObjectManager {
 
 	protected ISharedObject loadSharedObject(SharedObjectDescription sd)
 			throws Exception {
-		if (sd == null)
-			throw new NullPointerException(
-					Messages.SOManager_Exception_Shared_Object_Description_Not_Null);
+		Assert.isNotNull(sd,Messages.SOManager_Exception_Shared_Object_Description_Not_Null);
 		// Then get args array from properties
 		Object[] args = container.getArgsFromProperties(sd);
 		// And arg types
