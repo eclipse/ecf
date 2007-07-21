@@ -69,6 +69,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -76,11 +78,14 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -776,7 +781,36 @@ public class ChatRoomManagerView extends ViewPart implements
 						makeTabItemNormal();
 				}
 			});
+			
+			StyledText st = getOutputText();
+			if (st != null) {
+				ScrollBar vsb = st.getVerticalBar();
+				if (vsb != null) {
+					vsb.addSelectionListener(scrollSelectionListener);
+					vsb.addDisposeListener(new DisposeListener() {
+						public void widgetDisposed(DisposeEvent e) {
+							StyledText st = getOutputText();
+							if (st != null) {
+								ScrollBar vsb = st.getVerticalBar();
+								if (vsb != null) vsb.removeSelectionListener(scrollSelectionListener);
+							}
+						}});
+				}
+			}
 		}
+		
+		private SelectionListener scrollSelectionListener = new SelectionListener() {
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				if (shouldScrollToEnd(getOutputText())) {
+					makeTabItemNormal();
+				}
+			}
+			
+		};
 
 		protected void makeTabItemBold() {
 			changeTabItem(true);
@@ -802,7 +836,7 @@ public class ChatRoomManagerView extends ViewPart implements
 					appendText(getOutputText(), new ChatLine(messageBody,
 							new ChatRoomParticipant(fromID)));
 					CTabItem item = rootTabFolder.getSelection();
-					if (item != chatRoomTab.tabItem)
+					if (item != chatRoomTab.tabItem || !shouldScrollToEnd(getOutputText())) 
 						makeTabItemBold();
 				}
 			});
@@ -1275,11 +1309,21 @@ public class ChatRoomManagerView extends ViewPart implements
 			String body) {
 		// XXX TODO
 	}
+	
+	private boolean shouldScrollToEnd(StyledText chatText) {
+		Point locAtEnd = chatText.getLocationAtOffset(chatText.getText().length());
+		Rectangle bounds = chatText.getBounds();
+		if (locAtEnd.y > bounds.height + 5) return false;
+		return true;
+	}
 
 	protected void appendText(StyledText st, ChatLine text) {
 		if (st == null || text == null) {
 			return;
 		}
+		
+		boolean scrollToBottom = shouldScrollToEnd(st);
+		
 		int startRange = st.getText().length();
 		StringBuffer sb = new StringBuffer();
 		// check to see if the message has the user's name contained within
@@ -1334,7 +1378,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		String t = st.getText();
 		if (t == null)
 			return;
-		st.setSelection(t.length());
+		if (scrollToBottom) st.setSelection(t.length());
 		// Bold title if view is not visible.
 		IWorkbenchSiteProgressService pservice = (IWorkbenchSiteProgressService) this
 				.getSite().getAdapter(IWorkbenchSiteProgressService.class);

@@ -45,17 +45,25 @@ import org.eclipse.swt.custom.ST;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
@@ -327,9 +335,35 @@ public class MessagesView extends ViewPart {
 					}
 				}
 			});
+			
+			ScrollBar vscrollBar = chatText.getVerticalBar();
+			if (vscrollBar != null) {
+				vscrollBar.addSelectionListener(scrollSelectionListener);
+				chatText.addDisposeListener(new DisposeListener() {
+					public void widgetDisposed(DisposeEvent e) {
+						ScrollBar bar = chatText.getVerticalBar();
+						if (bar != null) bar.removeSelectionListener(scrollSelectionListener);
+					}});
+			}
 		}
+		
+		private SelectionListener scrollSelectionListener = new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {}
+			public void widgetSelected(SelectionEvent e) {
+				if (shouldScrollToEnd(chatText)) boldTabTitle(false);
+			}
+		};
 
+		private boolean shouldScrollToEnd(StyledText chatText) {
+			Point locAtEnd = chatText.getLocationAtOffset(chatText.getText().length());
+			Rectangle bounds = chatText.getBounds();
+			if (locAtEnd.y > bounds.height + 5) return false;
+			return true;
+		}
+		
 		private void append(ID fromID, String body) {
+			boolean scrollToEnd = shouldScrollToEnd(chatText);
+			
 			if (!isFirstMessage) {
 				chatText.append(Text.DELIMITER);
 			}
@@ -377,7 +411,8 @@ public class MessagesView extends ViewPart {
 						name.length() + 1, blueColor, null, SWT.BOLD));
 			}
 			isFirstMessage = false;
-			chatText.invokeAction(ST.PAGE_DOWN);
+			if (scrollToEnd) chatText.invokeAction(ST.TEXT_END);
+			boldTabTitle(!scrollToEnd);
 		}
 
 		private StyledText createStyledTextWidget(Composite parent) {
@@ -405,6 +440,13 @@ public class MessagesView extends ViewPart {
 			}
 		}
 
+		private void boldTabTitle(boolean bold) {
+			Font oldFont = item.getFont();
+			FontData[] fd = oldFont.getFontData();
+			item.setFont(new Font(oldFont.getDevice(), fd[0].getName(), fd[0]
+					.getHeight(), (bold) ? SWT.BOLD : SWT.NORMAL));
+		}
+		
 		private void constructWidgets() {
 			item = new CTabItem(tabFolder, SWT.NONE);
 			Composite parent = new Composite(tabFolder, SWT.NONE);
