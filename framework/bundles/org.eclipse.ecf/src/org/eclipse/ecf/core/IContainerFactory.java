@@ -99,12 +99,12 @@ public interface IContainerFactory {
 	 * instance of IContainer</li>
 	 * </ul>
 	 * 
-	 * @param descriptionName
+	 * @param name
 	 *            the ContainerTypeDescription name to lookup
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException
 	 */
-	public IContainer createContainer(String descriptionName)
+	public IContainer createContainer(String name)
 			throws ContainerCreateException;
 
 	/**
@@ -119,7 +119,7 @@ public interface IContainerFactory {
 	 * instance of IContainer</li>
 	 * </ul>
 	 * 
-	 * @param descriptionName
+	 * @param name
 	 *            the ContainerTypeDescription name to lookup
 	 * @param parameters
 	 *            the Object [] of parameters passed to the
@@ -127,7 +127,7 @@ public interface IContainerFactory {
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException
 	 */
-	public IContainer createContainer(String descriptionName, Object[] parameters)
+	public IContainer createContainer(String name, Object[] parameters)
 			throws ContainerCreateException;
 
 	/**

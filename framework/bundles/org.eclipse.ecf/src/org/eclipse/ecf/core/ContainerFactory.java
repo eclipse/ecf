@@ -259,9 +259,9 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 * 
 	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String)
 	 */
-	public IContainer createContainer(String descriptionName)
+	public IContainer createContainer(String name)
 			throws ContainerCreateException {
-		return createContainer(getDescriptionByName(descriptionName), null);
+		return createContainer(getDescriptionByName(name), null);
 	}
 
 	/*
@@ -270,9 +270,9 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 * @see org.eclipse.ecf.core.IContainerFactory#createContainer(java.lang.String,
 	 *      java.lang.Object[])
 	 */
-	public IContainer createContainer(String descriptionName,
+	public IContainer createContainer(String name,
 			Object[] parameters) throws ContainerCreateException {
-		return createContainer(getDescriptionByName(descriptionName),
+		return createContainer(getDescriptionByName(name),
 				parameters);
 	}
 
