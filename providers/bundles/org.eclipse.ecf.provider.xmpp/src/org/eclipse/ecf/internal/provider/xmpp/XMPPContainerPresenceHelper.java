@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.util.WeakHashMap;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -50,14 +52,37 @@ import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.RosterGroup;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smack.packet.Presence.Mode;
 import org.jivesoftware.smack.packet.Presence.Type;
+import org.jivesoftware.smackx.packet.VCard;
 
 public class XMPPContainerPresenceHelper implements ISharedObject {
+
+	public static final String VCARD = "vcard";
+	public static final String VCARD_EMAIL = VCARD + ".email";
+	public static final String VCARD_EMAIL_HOME = VCARD_EMAIL + ".home";
+	public static final String VCARD_EMAIL_WORK = VCARD_EMAIL + ".work";
+	public static final String VCARD_NAME = VCARD + ".name";
+	public static final String VCARD_NAME_FIRST = VCARD_NAME + ".first";
+	public static final String VCARD_NAME_MIDDLE = VCARD_NAME + ".middle";
+	public static final String VCARD_NAME_LAST = VCARD_NAME + ".last";
+	public static final String VCARD_NAME_NICK = VCARD_NAME + ".nick";
+	public static final String VCARD_PHONE = VCARD + ".phone";
+	public static final String VCARD_PHONE_HOME = VCARD_PHONE + ".home";
+	public static final String VCARD_PHONE_HOME_VOICE = VCARD_PHONE_HOME
+			+ ".voice";
+	public static final String VCARD_PHONE_HOME_CELL = VCARD_PHONE_HOME
+			+ ".cell";
+	public static final String VCARD_PHONE_WORK = VCARD_PHONE + ".work";
+	public static final String VCARD_PHONE_WORK_VOICE = VCARD_PHONE_WORK
+			+ ".voice";
+	public static final String VCARD_PHONE_WORK_CELL = VCARD_PHONE_WORK
+			+ ".cell";
 
 	ISharedObjectConfig config = null;
 
@@ -129,13 +154,14 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		sharedObjectMessageListeners.clear();
 		presenceListeners.clear();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
 	 */
 	public void dispose(ID containerID) {
+		vcardCache.clear();
 	}
 
 	/*
@@ -171,17 +197,17 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		public void notifyRosterAdd(IRosterEntry entry) {
 			fireRosterAdd(entry);
 		}
-		
+
 		public void notifyRosterRemove(IRosterEntry entry) {
 			fireRosterRemove(entry);
 		}
-		
+
 		public void disconnect() {
 			getRoster().getItems().clear();
 			super.disconnect();
 			fireRosterUpdate(roster);
 		}
-		
+
 		public void setUser(IUser user) {
 			org.eclipse.ecf.presence.roster.Roster roster = (org.eclipse.ecf.presence.roster.Roster) getRoster();
 			roster.setUser(user);
@@ -382,8 +408,10 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	protected void fireSetRosterEntry(boolean remove, IRosterEntry entry) {
-		if (remove) rosterManager.notifyRosterRemove(entry);
-		else rosterManager.notifyRosterAdd(entry);
+		if (remove)
+			rosterManager.notifyRosterRemove(entry);
+		else
+			rosterManager.notifyRosterAdd(entry);
 	}
 
 	private void removeItemFromRoster(Collection rosterItems,
@@ -407,7 +435,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 				}
 			}
 		}
-		if (removed) rosterManager.notifyRosterUpdate(roster);
+		if (removed)
+			rosterManager.notifyRosterUpdate(roster);
 
 	}
 
@@ -466,8 +495,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	protected void handlePresenceEvent(PresenceEvent evt) {
 		Presence xmppPresence = evt.getPresence();
 		String from = xmppPresence.getFrom();
-		IPresence newPresence = createIPresence(xmppPresence, evt
-				.getPhotoData());
+		IPresence newPresence = createIPresence(xmppPresence);
 		XMPPID fromID = createIDFromName(from);
 		if (newPresence.getType().equals(IPresence.Type.SUBSCRIBE)
 				|| newPresence.getType().equals(IPresence.Type.UNSUBSCRIBE)
@@ -493,7 +521,8 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 			for (Iterator i = roster.getItems().iterator(); i.hasNext();) {
 				IRosterItem item = (IRosterItem) i.next();
 				if (item instanceof IRosterGroup) {
-					updatePresenceInGroup((IRosterGroup) item, fromID, newPresence);
+					updatePresenceInGroup((IRosterGroup) item, fromID,
+							newPresence);
 				} else if (item instanceof org.eclipse.ecf.presence.roster.RosterEntry) {
 					updatePresenceForMatchingEntry(
 							(org.eclipse.ecf.presence.roster.RosterEntry) item,
@@ -556,11 +585,83 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	}
 
-	protected IPresence createIPresence(Presence xmppPresence, byte[] photoData) {
+	private Map vcardCache = new WeakHashMap();
+
+	private VCard getFromCache(String id) {
+		if (id == null)
+			return null;
+		return (VCard) vcardCache.get(id);
+	}
+
+	private void addToCache(String id, VCard card) {
+		vcardCache.put(id, card);
+	}
+
+	private VCard getVCardForPresence(Presence xmppPresence) {
+		VCard result = null;
+		if (xmppPresence.getExtension("x", "vcard-temp:x:update") != null) {
+			String from = xmppPresence.getFrom();
+			result = getFromCache(from);
+			if (result == null && from != null) {
+				result = new VCard();
+				try {
+					result.load(container.getXMPPConnection(), from);
+					addToCache(from, result);
+				} catch (XMPPException e) {
+					traceStack("vcard loading exception", e);
+				}
+			}
+		}
+		return result;
+	}
+
+	private Map addVCardProperties(VCard vcard, Map props) {
+		if (vcard == null)
+			return props;
+		String emailHome = vcard.getEmailHome();
+		if (emailHome != null && !emailHome.equals(""))
+			props.put(VCARD_EMAIL_HOME, emailHome);
+		String emailWork = vcard.getEmailWork();
+		if (emailWork != null && !emailWork.equals(""))
+			props.put(VCARD_EMAIL_WORK, emailWork);
+		String firstName = vcard.getFirstName();
+		if (firstName != null && !firstName.equals(""))
+			props.put(VCARD_NAME_FIRST, firstName);
+		String middleName = vcard.getMiddleName();
+		if (middleName != null && !middleName.equals(""))
+			props.put(VCARD_NAME_MIDDLE, middleName);
+		String lastName = vcard.getLastName();
+		if (lastName != null && !lastName.equals(""))
+			props.put(VCARD_NAME_LAST, lastName);
+		String nickName = vcard.getNickName();
+		if (nickName != null && !nickName.equals(""))
+			props.put(VCARD_NAME_NICK, nickName);
+		String phoneHomeVoice = vcard.getPhoneHome("VOICE");
+		if (phoneHomeVoice != null && !phoneHomeVoice.equals(""))
+			props.put(VCARD_PHONE_HOME_VOICE, phoneHomeVoice);
+		String phoneHomeCell = vcard.getPhoneHome("CELL");
+		if (phoneHomeCell != null && !phoneHomeCell.equals(""))
+			props.put(VCARD_PHONE_HOME_CELL, phoneHomeCell);
+		String phoneWorkVoice = vcard.getPhoneWork("VOICE");
+		if (phoneWorkVoice != null && !phoneWorkVoice.equals(""))
+			props.put(VCARD_PHONE_WORK_VOICE, phoneWorkVoice);
+		String phoneWorkCell = vcard.getPhoneWork("CELL");
+		if (phoneWorkCell != null && !phoneWorkCell.equals(""))
+			props.put(VCARD_PHONE_WORK_CELL, phoneWorkCell);
+		return props;
+	}
+
+	protected IPresence createIPresence(Presence xmppPresence) {
+		byte[] photoData = null;
+		Map props = ECFConnection.getPropertiesFromPacket(xmppPresence);
+		VCard vcard = getVCardForPresence(xmppPresence);
+		if (vcard != null) {
+			props = addVCardProperties(vcard, props);
+			photoData = vcard.getAvatar();
+		}
 		return new org.eclipse.ecf.presence.Presence(
 				createIPresenceType(xmppPresence), xmppPresence.getStatus(),
-				createIPresenceMode(xmppPresence), ECFConnection
-						.getPropertiesFromPacket(xmppPresence), photoData);
+				createIPresenceMode(xmppPresence), props, photoData);
 	}
 
 	protected Presence createPresence(IPresence ipresence) {

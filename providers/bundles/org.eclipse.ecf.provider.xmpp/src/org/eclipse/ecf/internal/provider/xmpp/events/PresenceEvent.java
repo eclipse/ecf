@@ -19,23 +19,12 @@ public class PresenceEvent implements Event {
 	private static final long serialVersionUID = -8207158000504357229L;
 	protected Presence presence = null;
     
-	protected byte [] photoData;
-	
-	public PresenceEvent(Presence presence, byte [] photoData) {
-		this.presence = presence;
-		this.photoData = photoData;
-	}
-	
     public PresenceEvent(Presence presence) {
         this.presence = presence;
     }
     
     public Presence getPresence() {
         return presence;
-    }
-    
-    public byte [] getPhotoData() {
-    	return photoData;
     }
     
     public String toString() {

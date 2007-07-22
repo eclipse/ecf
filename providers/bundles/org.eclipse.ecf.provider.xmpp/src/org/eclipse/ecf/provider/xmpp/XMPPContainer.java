@@ -70,7 +70,6 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.packet.MUCUser;
-import org.jivesoftware.smackx.packet.VCardTempXUpdateExtension;
 import org.jivesoftware.smackx.packet.XHTMLExtension;
 
 public class XMPPContainer extends ClientSOContainer implements
@@ -372,12 +371,7 @@ public class XMPPContainer extends ClientSOContainer implements
 		Iterator i = packet.getExtensions();
 		for (; i.hasNext();) {
 			Object extension = i.next();
-			if (extension instanceof VCardTempXUpdateExtension) {
-				VCardTempXUpdateExtension photoExtension = (VCardTempXUpdateExtension) extension;
-				deliverEvent(new PresenceEvent((Presence) packet,
-						photoExtension.getPhotoDataAsBytes()));
-				return true;
-			} else if (extension instanceof XHTMLExtension) {
+			if (extension instanceof XHTMLExtension) {
 				XHTMLExtension xhtmlExtension = (XHTMLExtension) extension;
 				deliverEvent(new MessageEvent((Message) packet, xhtmlExtension
 						.getBodies()));

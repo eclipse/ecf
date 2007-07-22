@@ -109,7 +109,6 @@ public class ECFConnection implements ISynchAsynchConnection {
 		this.namespace = ns;
 		this.google = google;
 		this.secure = secure;
-		if (DEBUG) XMPPConnection.DEBUG_ENABLED = true;
 	}
 
 	public ECFConnection(boolean google, Namespace ns, IAsynchEventHandler h) {
@@ -183,6 +182,10 @@ public class ECFConnection implements ISynchAsynchConnection {
 		return null;
 	}
 
+	public void sendPacket(Packet packet) throws XMPPException {
+		if (connection != null) connection.sendPacket(packet);
+	}
+	
 	public synchronized void disconnect() {
 		disconnecting = true;
 		if (isStarted()) {
