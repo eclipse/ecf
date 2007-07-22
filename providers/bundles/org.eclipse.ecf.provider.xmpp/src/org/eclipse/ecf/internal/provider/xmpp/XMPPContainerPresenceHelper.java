@@ -28,8 +28,10 @@ import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageListener;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
+import org.eclipse.ecf.core.util.AsynchResult;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.core.util.ICallable;
 import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
@@ -153,6 +155,7 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		messageListeners.clear();
 		sharedObjectMessageListeners.clear();
 		presenceListeners.clear();
+		vcardCache.clear();
 	}
 
 	/*
@@ -651,17 +654,66 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		return props;
 	}
 
-	protected IPresence createIPresence(Presence xmppPresence) {
-		byte[] photoData = null;
-		Map props = ECFConnection.getPropertiesFromPacket(xmppPresence);
-		VCard vcard = getVCardForPresence(xmppPresence);
-		if (vcard != null) {
-			props = addVCardProperties(vcard, props);
-			photoData = vcard.getAvatar();
+	class XMPPPresence extends org.eclipse.ecf.presence.Presence {
+
+		private static final long serialVersionUID = 7843634971520771692L;
+
+		AsynchResult asynchResult = null;
+		String fromID = null;
+
+		XMPPPresence(String fromID, Presence xmppPresence, AsynchResult future) {
+			super(createIPresenceType(xmppPresence), xmppPresence.getStatus(),
+					createIPresenceMode(xmppPresence), ECFConnection
+							.getPropertiesFromPacket(xmppPresence), null);
+			this.fromID = fromID;
 		}
-		return new org.eclipse.ecf.presence.Presence(
-				createIPresenceType(xmppPresence), xmppPresence.getStatus(),
-				createIPresenceMode(xmppPresence), props, photoData);
+
+		private void fillFromVCard() {
+			VCard card = getFromCache(fromID);
+			if (card == null && asynchResult != null) {
+				try {
+					card = (VCard) asynchResult.get();
+					asynchResult = null;
+				} catch (Exception e) {
+				}
+			}
+			if (card != null) {
+				addToCache(fromID, card);
+				byte[] bytes = card.getAvatar();
+				this.pictureData = (bytes == null) ? new byte[0] : bytes;
+				this.properties = addVCardProperties(card, this.properties);
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.presence.Presence#getPictureData()
+		 */
+		public byte[] getPictureData() {
+			fillFromVCard();
+			return this.pictureData;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ecf.presence.Presence#getProperties()
+		 */
+		public Map getProperties() {
+			fillFromVCard();
+			return this.properties;
+		}
+	}
+
+	protected IPresence createIPresence(final Presence xmppPresence) {
+		AsynchResult asynchResult = new AsynchResult();
+		Thread t = new Thread(asynchResult.setter(new ICallable() {
+			public Object call() throws Throwable {
+				return getVCardForPresence(xmppPresence);
+			}}));
+		t.start();
+		return new XMPPPresence(xmppPresence.getFrom(),xmppPresence,asynchResult);
 	}
 
 	protected Presence createPresence(IPresence ipresence) {
