@@ -10,6 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.ui;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -74,6 +75,7 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.HTMLTransfer;
@@ -81,11 +83,18 @@ import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -170,7 +179,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	private IAction disconnectAccountAction;
 
-	//private IRosterSubscriptionListener subscriptionListener;
+	// private IRosterSubscriptionListener subscriptionListener;
 
 	private IPresenceListener presenceListener;
 
@@ -746,10 +755,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				MessageDialog.openError(getViewSite().getShell(),
 						Messages.MultiRosterView_PASSWORD_NOT_CHANGED_TITLE,
 						Messages.MultiRosterView_PASSWORD_CHANGE_ERROR);
-				Activator
-						.getDefault()
-						.getLog()
-						.log(e.getStatus());
+				Activator.getDefault().getLog().log(e.getStatus());
 			}
 		}
 	}
@@ -861,10 +867,14 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 								entry.getUser().getID());
 			}
 		} catch (ECFException e) {
-			MessageDialog.openError(getViewSite().getShell(),
-					Messages.MultiRosterView_ERROR_CONTACT_REMOVE_TITLE, NLS.bind(
-							Messages.MultiRosterView_ERROR_CONTACT_REMOVED_MESSAGE, entry.getUser()
-									.getID().getName()));
+			MessageDialog
+					.openError(
+							getViewSite().getShell(),
+							Messages.MultiRosterView_ERROR_CONTACT_REMOVE_TITLE,
+							NLS
+									.bind(
+											Messages.MultiRosterView_ERROR_CONTACT_REMOVED_MESSAGE,
+											entry.getUser().getID().getName()));
 			Activator.getDefault().getLog().log(e.getStatus()); //$NON-NLS-1$
 		}
 	}
@@ -1024,13 +1034,14 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		synchronized (rosterAccounts) {
 			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
 				MultiRosterAccount account = (MultiRosterAccount) i.next();
-				final IRosterEntry entry = find(account.getRoster()
-						.getItems(), entryID);
-				if (entry != null) treeViewer.remove(entry);
+				final IRosterEntry entry = find(account.getRoster().getItems(),
+						entryID);
+				if (entry != null)
+					treeViewer.remove(entry);
 			}
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -1144,21 +1155,114 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			l.setFont(JFaceResources.getFontRegistry().get(HEADER_FONT));
 			l.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-			createContentArea(parent, entry).setLayoutData(
-					new GridData(GridData.FILL_BOTH));
+			GridData contentData = new GridData(SWT.FILL, SWT.FILL, true, true);
+			contentData.heightHint = 96;
+			createContentArea(parent, entry).setLayoutData(contentData);
 
 			return parent;
 		}
 
 		protected Composite createContentArea(Composite parent,
 				IRosterEntry entry) {
-			Composite comp = new Composite(parent, SWT.NONE);
-			comp.setBackground(parent.getDisplay().getSystemColor(
-					SWT.COLOR_INFO_BACKGROUND));
-			comp.setLayout(new FillLayout());
-			Label label = new Label(comp, SWT.NONE);
-			label.setText(getRosterEntryChildrenFromPresence(entry));
-			return comp;
+			byte[] data = entry.getPresence().getPictureData();
+			if (data.length == 0) {
+				// if there is no picture data, we'll just draw our standard
+				// tooltip
+				Composite comp = new Composite(parent, SWT.NONE);
+				comp.setBackground(parent.getDisplay().getSystemColor(
+						SWT.COLOR_INFO_BACKGROUND));
+				comp.setLayout(new GridLayout(2, false));
+				Label label = new Label(comp, SWT.NONE);
+				label.setText(getRosterEntryChildrenFromPresence(entry));
+				return comp;
+			} else {
+				Composite comp = new Composite(parent, SWT.NONE);
+				comp.setBackground(parent.getDisplay().getSystemColor(
+						SWT.COLOR_INFO_BACKGROUND));
+
+				Label label = new Label(comp, SWT.NONE);
+				label.setText(getRosterEntryChildrenFromPresence(entry));
+
+				// create a canvas for drawing
+				Canvas canvas = new Canvas(comp, SWT.NONE);
+				GridData canvasData = new GridData(SWT.FILL, SWT.FILL, true,
+						true);
+				// set a minimum width hint of 96 pixels
+				canvasData.widthHint = 96;
+				canvas.setLayoutData(canvasData);
+				try {
+					// create the image by reading in the bytes
+					final Image image = new Image(canvas.getDisplay(),
+							new ByteArrayInputStream(data));
+					Rectangle bounds = image.getBounds();
+					final int imageHeight = bounds.height;
+					final int imageWidth = bounds.width;
+
+					// use a PaintListener to draw the image
+					canvas.addPaintListener(new PaintListener() {
+						public void paintControl(PaintEvent e) {
+							if (imageHeight > 96 && imageHeight > imageWidth) {
+								// if the image's height is over 96 and it's
+								// larger than the width, we need to scale it
+								// down based on the ratio of the height against
+								// 96
+								double ratio = 96 / imageHeight;
+								e.gc.drawImage(image, 0, 0, imageWidth,
+										imageHeight,
+										48 - ((int) (imageHeight * ratio) / 2),
+										48 - ((int) (imageWidth * ratio) / 2),
+										(int) (imageWidth * ratio),
+										(int) (imageHeight * ratio));
+							} else if (imageWidth > 96) {
+								// if the image's width is over 96, we'll have
+								// to scale the image down based on the ratio of
+								// the width against 96
+								double ratio = 96 / imageWidth;
+								e.gc.drawImage(image, 0, 0, imageWidth,
+										imageHeight,
+										48 - ((int) (imageHeight * ratio) / 2),
+										48 - ((int) (imageWidth * ratio) / 2),
+										(int) (imageWidth * ratio),
+										(int) (imageHeight * ratio));
+							} else {
+								// center the image and then draw it
+								e.gc.drawImage(image, 0, 0, imageWidth,
+										imageHeight, 48 - (imageWidth / 2),
+										48 - (imageHeight / 2), imageWidth,
+										imageHeight);
+							}
+						}
+					});
+
+					canvas.addDisposeListener(new DisposeListener() {
+						public void widgetDisposed(DisposeEvent e) {
+							image.dispose();
+						}
+					});
+
+					label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+							true));
+
+					GridLayout layout = new GridLayout(2, false);
+					layout.marginHeight = 0;
+					layout.marginWidth = 0;
+					layout.horizontalSpacing = 0;
+					layout.verticalSpacing = 0;
+					comp.setLayout(layout);
+
+					return comp;
+				} catch (SWTException e) {
+					// if the error wasn't caused by an unsupported format that
+					// was thrown because we failed to construct the image, we
+					// should propagate the exception upwards
+					if (e.code != SWT.ERROR_UNSUPPORTED_FORMAT) {
+						throw e;
+					}
+					canvas.dispose();
+					comp.setLayout(new FillLayout());
+					return comp;
+				}
+			}
 		}
 
 		protected boolean shouldCreateToolTip(Event e) {
