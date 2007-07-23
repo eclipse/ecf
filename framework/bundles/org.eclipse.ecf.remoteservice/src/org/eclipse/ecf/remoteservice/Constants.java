@@ -96,4 +96,17 @@ public interface Constants {
 	 */
 	public static final String SERVICE_DESCRIPTION = "remote.service.description";
 
+	/**
+	 * Service property (named &quot;remoteservice.description&quot;)
+	 * identifying a a registration's target for receiving the service. The
+	 * value of the property MUST be either a non-<code>null</code> instance
+	 * of org.eclipse.ecf.core.identity.ID OR an ID[].
+	 * <p>
+	 * This property may be supplied in the properties <code>Dictionary</code>
+	 * object passed to the
+	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
+	 * method.
+	 */
+	public static final String SERVICE_REGISTRATION_TARGETS = "remote.service.registration.targets";
+
 }
