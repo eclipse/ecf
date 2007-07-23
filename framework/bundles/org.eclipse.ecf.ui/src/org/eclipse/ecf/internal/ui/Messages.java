@@ -90,6 +90,8 @@ public class Messages extends NLS {
 	public static String AbstractURIHyperlink_EXCEPTION_HYPERLINK;
 
 	public static String SelectProviderAction_WARNING_CONTAINER_TYPE_DESCRIPTION_NOT_FOUND;
+	public static String SelectProviderAction_selectProviderDialog_title;
+	public static String SelectProviderAction_selectProviderDialog_message;
 
 	static {
 		// load message values from bundle file

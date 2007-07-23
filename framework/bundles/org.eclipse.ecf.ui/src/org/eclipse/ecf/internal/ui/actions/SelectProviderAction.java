@@ -11,9 +11,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.ui.actions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -27,14 +30,18 @@ import org.eclipse.ecf.internal.ui.Messages;
 import org.eclipse.ecf.internal.ui.wizards.IWizardRegistryConstants;
 import org.eclipse.ecf.ui.IConfigurationWizard;
 import org.eclipse.ecf.ui.IConnectWizard;
+import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -42,7 +49,9 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
+// TODO, we should rework this class... it's confusing >_<
 public class SelectProviderAction implements IWizardRegistryConstants,
 		IWorkbenchWindowActionDelegate, IWorkbenchWindowPulldownDelegate {
 
@@ -51,13 +60,17 @@ public class SelectProviderAction implements IWizardRegistryConstants,
 	private Menu menu;
 
 	private HashMap map = new HashMap();
+	
+	private List elements = new ArrayList();
+	
+	private IExtension[] configurationWizards;
 
 	public SelectProviderAction() {
 		try {
 			IExtensionRegistry registry = Activator.getDefault()
 					.getExtensionRegistry();
 			if (registry != null) {
-				IExtension[] configurationWizards = registry.getExtensionPoint(
+				configurationWizards = registry.getExtensionPoint(
 						CONFIGURE_EPOINT_ID).getExtensions();
 				IExtension[] connectWizards = registry.getExtensionPoint(
 						CONNECT_EPOINT_ID).getExtensions();
@@ -77,6 +90,7 @@ public class SelectProviderAction implements IWizardRegistryConstants,
 								.getDefault().getDescriptionByName(factoryName);
 						if (typeDescription != null) {
 							if (!typeDescription.isHidden()) {
+								elements.add(ice); // add to list
 								if (wizard == null) {
 									map.put(ice.getAttribute(ATT_NAME),
 											new SelectionAdapter() {
@@ -167,6 +181,24 @@ public class SelectProviderAction implements IWizardRegistryConstants,
 	}
 
 	public void run(IAction action) {
+		ElementListSelectionDialog dialog = 
+			new ElementListSelectionDialog(window.getShell(), new ProviderLabelProvider());
+		dialog.setElements(elements.toArray());
+		dialog.setTitle(Messages.SelectProviderAction_selectProviderDialog_title);
+		dialog.setMessage(Messages.SelectProviderAction_selectProviderDialog_message);
+		dialog.setImage(SharedImages.getImage(SharedImages.IMG_COMMUNICATIONS));
+		dialog.setHelpAvailable(false);
+		if(dialog.open() == Window.OK) {
+			Object[] result = dialog.getResult();
+			IConfigurationElement element = (IConfigurationElement) result[0];
+			String factoryName = element.getAttribute(ATT_CONTAINER_TYPE_NAME);
+			IConfigurationWizard wizard = getWizard(configurationWizards, factoryName);
+			if (wizard == null) {
+				openConnectWizard(element, factoryName);
+			} else {
+				openConnectWizard(wizard, element, factoryName);
+			}
+		}	
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
@@ -174,15 +206,20 @@ public class SelectProviderAction implements IWizardRegistryConstants,
 	}
 
 	private static IConfigurationWizard getWizard(IExtension[] extensions,
-			String containerFactoryName) throws Exception {
+			String containerFactoryName) {
 		for (int i = 0; i < extensions.length; i++) {
 			IConfigurationElement[] elements = extensions[i]
 					.getConfigurationElements();
 			for (int j = 0; j < elements.length; j++) {
 				if (containerFactoryName.equals(elements[j]
 						.getAttribute(ATT_CONTAINER_TYPE_NAME))) {
-					return (IConfigurationWizard) elements[j]
-							.createExecutableExtension(ATT_CLASS);
+					IConfigurationWizard wizard = null;
+					try {
+						wizard = (IConfigurationWizard) elements[j].createExecutableExtension(ATT_CLASS);
+					} catch (CoreException e) {
+						Activator.log(e.getMessage());
+					}
+					return wizard;
 				}
 			}
 		}
@@ -201,5 +238,19 @@ public class SelectProviderAction implements IWizardRegistryConstants,
 		}
 		return menu;
 	}
+	
+	// isn't this a funny name?
+	private class ProviderLabelProvider extends LabelProvider {
 
+		public Image getImage(Object element) {
+			return null;
+		}
+
+		public String getText(Object element) {
+			IConfigurationElement provider = (IConfigurationElement) element;
+			return provider.getAttribute(ATT_NAME);
+		}
+		
+	}
+	
 }
