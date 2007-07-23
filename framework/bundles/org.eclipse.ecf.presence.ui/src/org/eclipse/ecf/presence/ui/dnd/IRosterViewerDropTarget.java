@@ -25,7 +25,7 @@ public interface IRosterViewerDropTarget {
      * Validates dropping on the given roster item. This method is called whenever some 
      * aspect of the drop operation changes.
      * 
-     * @param target the object that the mouse is currently hovering over, or
+     * @param rosterItem the roster item that the mouse is currently hovering over, or
      *   <code>null</code> if the mouse is hovering over empty space
      * @param operation the current drag operation (copy, move, etc.)
      * @param transferType the current transfer type
