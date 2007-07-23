@@ -129,6 +129,10 @@ public class RegistrySharedObject extends BaseSharedObject implements
 		return result;
 	}
 
+	protected ID[] getTargetsFromProperties(Dictionary properties) {
+		return null;
+	}
+	
 	public IRemoteServiceRegistration registerRemoteService(String[] clazzes,
 			Object service, Dictionary properties) {
 		Trace.entering(Activator.PLUGIN_ID,
@@ -159,7 +163,9 @@ public class RegistrySharedObject extends BaseSharedObject implements
 		final RemoteServiceRegistrationImpl reg = new RemoteServiceRegistrationImpl();
 		reg.publish(this, localRegistry, service, clazzes, properties);
 
-		sendAddRegistration(null, reg);
+		ID [] targets = getTargetsFromProperties(properties);
+		if (targets == null) sendAddRegistration(null,reg);
+		else for(int i=0; i < targets.length; i++) sendAddRegistration(targets[i], reg);
 
 		fireRemoteServiceListeners(createRegisteredEvent(reg));
 		Trace.exiting(Activator.PLUGIN_ID,
@@ -538,7 +544,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 						.getClass(), "sendAddRegistration", new Object[] {
 						receiver, reg });
 		try {
-			sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(null,
+			sendSharedObjectMsgTo(receiver, SharedObjectMsg.createMsg(null,
 					ADD_REGISTRATION, getLocalContainerID(), reg));
 		} catch (final IOException e) {
 			log(ADD_REGISTRATION_ERROR_CODE,
