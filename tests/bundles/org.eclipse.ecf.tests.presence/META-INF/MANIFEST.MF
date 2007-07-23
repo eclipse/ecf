@@ -13,3 +13,4 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.tests
 Eclipse-LazyStart: true
 Import-Package: org.osgi.framework;version="1.4.0"
+Export-Package: org.eclipse.ecf.tests.presence
