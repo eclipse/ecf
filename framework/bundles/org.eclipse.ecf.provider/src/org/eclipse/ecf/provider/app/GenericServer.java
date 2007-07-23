@@ -146,9 +146,6 @@ public class GenericServer implements IApplication {
 
 	}
 
-	/**
-	 * @param load
-	 */
 	protected void setupServerFromConfig(List connectors) throws IOException,
 			IDCreateException {
 		for (Iterator i = connectors.iterator(); i.hasNext();) {
