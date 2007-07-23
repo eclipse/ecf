@@ -10,6 +10,7 @@ package org.eclipse.ecf.internal.provider.xmpp;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
@@ -39,6 +40,7 @@ import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
+import org.eclipse.ecf.presence.im.IChatMessage.Type;
 import org.eclipse.ecf.provider.comm.ConnectionCreateException;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.generic.ClientSOContainer;
@@ -441,9 +443,21 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements
 		return null;
 	}
 
+	IChatMessageSender privateSender = new IChatMessageSender() {
+		public void sendChatMessage(ID toID, ID threadID, Type type,
+				String subject, String body, Map properties)
+				throws ECFException {
+			// TODO Auto-generated method stub
+		}
+
+		public void sendChatMessage(ID toID, String body) throws ECFException {
+			// TODO Auto-generated method stub
+		}
+		
+	};
+	
 	public IChatMessageSender getPrivateMessageSender() {
-		// TODO Auto-generated method stub
-		return null;
+		return privateSender;
 	}
 
 	public IChatRoomMessageSender getChatRoomMessageSender() {
