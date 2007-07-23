@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 192762
  ******************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
@@ -84,9 +85,11 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IActionFilter;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
@@ -106,6 +109,8 @@ public class ChatRoomManagerView extends ViewPart implements
 
 	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"; //$NON-NLS-1$
 
+	public static final String PARTICIPANTS_MENU_ID = "org.eclipse.ecf.presence.ui.chatroom.participantsView"; //$NON-NLS-1$ 
+	
 	private static final int RATIO_WRITE_PANE = 1;
 
 	private static final int RATIO_READ_PANE = 9;
@@ -167,6 +172,8 @@ public class ChatRoomManagerView extends ViewPart implements
 	private Hashtable chatRooms = new Hashtable();
 
 	private IChatRoomCommandListener commandListener = null;
+	
+	private IChatRoomContainer container = null;
 
 	private String localUserName = Messages.ChatRoomManagerView_DEFAULT_USER;
 
@@ -236,6 +243,9 @@ public class ChatRoomManagerView extends ViewPart implements
 
 			makeActions();
 			hookContextMenu();
+			if (withParticipants) {
+				hookParticipantsContextMenu();
+			}
 		}
 
 		private StyledText createStyledTextWidget(Composite parent) {
@@ -331,7 +341,16 @@ public class ChatRoomManagerView extends ViewPart implements
 			};
 			getSite().registerContextMenu(menuMgr, selectionProvider);
 		}
-
+		
+		private void hookParticipantsContextMenu() {
+			MenuManager menuMgr = new MenuManager(); 
+			menuMgr.setRemoveAllWhenShown(true);
+			List list = (List) listViewer.getControl();
+			Menu menu = menuMgr.createContextMenu(list);
+			list.setMenu(menu);
+			getSite().registerContextMenu(PARTICIPANTS_MENU_ID, menuMgr, listViewer);
+		}
+		
 		private void makeActions() {
 			tabSelectAll = new Action() {
 				public void run() {
@@ -508,6 +527,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				.setTitleToolTip(Messages.ChatRoomManagerView_VIEW_TITLE_HOST_PREFIX
 						+ ChatRoomManagerView.this.hostName);
 		if (rootChatRoomContainer != null) {
+			ChatRoomManagerView.this.container = rootChatRoomContainer;
 			ChatRoomManagerView.this.rootMessageSender = rootChatRoomContainer
 					.getChatRoomMessageSender();
 			rootChannelTab = new ChatRoomTab(false, rootTabFolder,
@@ -1215,7 +1235,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			}
 	}
 
-	class ChatRoomParticipant implements IUser {
+	class ChatRoomParticipant implements IUser, IActionFilter {
 		private static final long serialVersionUID = 2008114088656711572L;
 
 		ID id;
@@ -1264,6 +1284,15 @@ public class ChatRoomManagerView extends ViewPart implements
 		 */
 		public String getNickname() {
 			return getName();
+		}
+
+		public boolean testAttribute(Object target, String name, String value) {
+			if(name.equals("scheme")) { //$NON-NLS-1$
+				IChatRoomContainer container = ChatRoomManagerView.this.container;
+				String scheme = container.getConnectedID().getNamespace().getScheme();
+				return scheme.equalsIgnoreCase(value);
+			}
+			return false;
 		}
 	}
 
