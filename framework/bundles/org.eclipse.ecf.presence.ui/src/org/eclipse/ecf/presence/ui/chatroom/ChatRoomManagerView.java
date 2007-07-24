@@ -480,6 +480,21 @@ public class ChatRoomManagerView extends ViewPart implements
 		}
 	}
 
+	/**
+	 * @return chat room container of currently selected tab or null if none found.
+	 */
+	public IChatRoomContainer getActiveChatRoomContainer() {
+		CTabItem selection = rootTabFolder.getSelection();
+		if (selection != null) {
+			ChatRoom chatRoom = findChatRoomForTabItem(selection);
+			if (chatRoom != null) {
+				return chatRoom.chatRoomContainer;
+			}
+		}
+		
+		return null;
+	}
+	
 	private ChatRoom findChatRoomForTabItem(CTabItem tabItem) {
 		for (Iterator i = chatRooms.values().iterator(); i.hasNext();) {
 			ChatRoom cr = (ChatRoom) i.next();
