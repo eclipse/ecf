@@ -25,7 +25,7 @@ import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 
 /**
- *
+ * Chat with me about this at:  xmpp://fliwatuet@ecf.eclipse.org
  */
 public class RosterWriter {
 

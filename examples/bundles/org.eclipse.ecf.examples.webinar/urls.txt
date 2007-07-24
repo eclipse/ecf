@@ -1,0 +1,16 @@
+xmpp://fliwatuet@ecf.eclipse.org
+
+xmpps://caniszczyk@gmail.com
+
+yahoo://scottblewis  
+
+skype://mayworm
+
+irc://slewis2_@irc.freenode.net/#eclipse-ecf
+
+ecftcp://ecf.eclipse.org:3282/server 
+
+torrent://c:/foo.bar
+
+
+
