@@ -1,4 +1,4 @@
-package org.eclipse.ecf.internal.examples.webinar;
+package org.eclipse.ecf.internal.examples.webinar.util.rosterentry;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,36 +31,6 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 public class RosterEntryContributionItem2 extends
 		AbstractRosterEntryContributionItem {
 
-	private static Map channels = new HashMap();
-
-	public RosterEntryContributionItem2() {
-		super();
-	}
-
-	private IChannel initializeChannelFor(IContainer container) {
-		if (container == null) return null;
-		ID containerID = container.getID();
-		IChannel chan = (IChannel) channels.get(containerID);
-		if (chan == null) {
-			IChannelContainerAdapter adapter = (IChannelContainerAdapter) container
-						.getAdapter(IChannelContainerAdapter.class);
-			if (adapter != null) {
-				chan = createChannel(adapter);
-				channels.put(containerID,chan);
-			}
-		}
-		return chan;
-	}
-
-	public void dispose() {
-		super.dispose();
-		for(Iterator i=channels.keySet().iterator(); i.hasNext(); ) {
-			IChannel chan = (IChannel) channels.get(i.next());
-			chan.dispose();
-		}
-		channels.clear();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -68,17 +38,16 @@ public class RosterEntryContributionItem2 extends
 	 */
 	protected IAction[] makeActions() {
 		IAction action = null;
-		IRosterEntry rosterEntry = getSelectedRosterEntry();
+		final IRosterEntry rosterEntry = getSelectedRosterEntry();
 		if (rosterEntry != null) {
 			if (initializeChannelFor(getContainerForRosterEntry(rosterEntry)) != null) {
 				action = new Action() {
 					public void run() {
-						sendDataToChannel(getSelectedRosterEntry());
+						sendDataToChannel(rosterEntry);
 					}
 
 				};
-				action
-						.setText("Send Object Array");
+				action.setText("Send Message and URL");
 				action.setImageDescriptor(PlatformUI.getWorkbench()
 						.getSharedImages().getImageDescriptor(
 								ISharedImages.IMG_DEF_VIEW));
@@ -109,12 +78,39 @@ public class RosterEntryContributionItem2 extends
 			ByteArrayInputStream bins = new ByteArrayInputStream(data);
 			ObjectInputStream oos = new ObjectInputStream(bins);
 			String[] received = (String[]) oos.readObject();
-			show(received[0], received[1]);
+			showMessageAndURL(received[0], received[1]);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+	}
+
+	private static Map channels = new HashMap();
+
+	private IChannel initializeChannelFor(IContainer container) {
+		if (container == null)
+			return null;
+		ID containerID = container.getID();
+		IChannel chan = (IChannel) channels.get(containerID);
+		if (chan == null) {
+			IChannelContainerAdapter adapter = (IChannelContainerAdapter) container
+					.getAdapter(IChannelContainerAdapter.class);
+			if (adapter != null) {
+				chan = createChannel(adapter);
+				channels.put(containerID, chan);
+			}
+		}
+		return chan;
+	}
+
+	public void dispose() {
+		super.dispose();
+		for (Iterator i = channels.keySet().iterator(); i.hasNext();) {
+			IChannel chan = (IChannel) channels.get(i.next());
+			chan.dispose();
+		}
+		channels.clear();
 	}
 
 	private IChannel createChannel(IChannelContainerAdapter adapter) {
@@ -136,7 +132,7 @@ public class RosterEntryContributionItem2 extends
 		return null;
 	}
 
-	private void show(final String string, final String url) {
+	private void showMessageAndURL(final String string, final String url) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if (MessageDialog.openConfirm(null, "Received message", string

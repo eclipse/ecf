@@ -6,7 +6,7 @@
       <menuContribution
             locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
          <dynamic
-               class="org.eclipse.ecf.internal.examples.webinar.RosterEntryContributionItem1"
+               class="org.eclipse.ecf.internal.examples.webinar.util.rosterentry.RosterEntryContributionItem1"
                id="org.eclipse.ecf.examples.webinar.dynamic1">
          </dynamic>
       </menuContribution>
@@ -17,15 +17,38 @@
       <menuContribution
             locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
          <dynamic
-               class="org.eclipse.ecf.internal.examples.webinar.RosterEntryContributionItem2"
+               class="org.eclipse.ecf.internal.examples.webinar.util.rosterentry.RosterEntryContributionItem2"
                id="org.eclipse.ecf.examples.webinar.dynamic2">
          </dynamic>
       </menuContribution>
    </extension>
+
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
+         <dynamic
+               class="org.eclipse.ecf.internal.examples.webinar.util.roster.RosterContributionItem1"
+               id="org.eclipse.ecf.examples.webinar.dynamic3">
+         </dynamic>
+      </menuContribution>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ecf.presence.ui.MultiRosterView?after=additions">
+         <dynamic
+               class="org.eclipse.ecf.internal.examples.webinar.util.rosterview.RosterViewContributionItem1"
+               id="org.eclipse.ecf.examples.webinar.dynamic4">
+         </dynamic>
+      </menuContribution>
+   </extension>
+
    <extension
          point="org.eclipse.ecf.presence.ui.rosterViewerDropTarget">
       <dropTarget
-            class="org.eclipse.ecf.internal.examples.webinar.RosterViewerDropTarget1">
+            class="org.eclipse.ecf.internal.examples.webinar.dnd.RosterViewerDropTarget1">
       </dropTarget>
    </extension>
 

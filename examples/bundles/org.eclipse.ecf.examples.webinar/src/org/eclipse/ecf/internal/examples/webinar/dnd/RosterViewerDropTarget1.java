@@ -1,4 +1,4 @@
-package org.eclipse.ecf.internal.examples.webinar;
+package org.eclipse.ecf.internal.examples.webinar.dnd;
 
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.roster.IRosterItem;

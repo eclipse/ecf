@@ -1,4 +1,4 @@
-package org.eclipse.ecf.internal.examples.webinar;
+package org.eclipse.ecf.internal.examples.webinar.util.rosterentry;
 
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterEntryContributionItem;
@@ -13,16 +13,14 @@ public class RosterEntryContributionItem1 extends AbstractRosterEntryContributio
 	 * @see org.eclipse.ecf.presence.ui.roster.AbstractPresenceContributionItem#makeActions()
 	 */
 	protected IAction[] makeActions() {
-		IAction action = null;
-		IRosterEntry entry = getSelectedRosterEntry();
+		final IRosterEntry entry = getSelectedRosterEntry();
 		if (entry != null) {
-			action = new Action() {
+			IAction action = new Action() {
 				public void run() {
-					IRosterEntry rosterEntry = getSelectedRosterEntry();
-					System.out.println("running action for roster entry "+rosterEntry.getName());
+					System.out.println("running action for "+entry.getName());
 				}
 			};
-			action.setText("Send info to "+getSelectedRosterEntry().getName());
+			action.setText("Super duper addon");
 			action.setImageDescriptor(PlatformUI.getWorkbench()
 					.getSharedImages().getImageDescriptor(
 							ISharedImages.IMG_DEF_VIEW));
