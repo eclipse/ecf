@@ -20,5 +20,60 @@
             targetId="org.eclipse.ui.DefaultTextEditor">
       </hyperlinkDetector>
    </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="org.eclipse.ecf.provider.irc.ui.viewerContribution1"
+            targetID="org.eclipse.ecf.presence.ui.chatroom.participantsView">
+         <action
+               class="org.eclipse.ecf.internal.irc.ui.actions.KickAction"
+               id="org.eclipse.ecf.provider.irc.ui.action2"
+               label="%KickAction_Label"
+               menubarPath="additions">
+         </action>
+         <action
+               class="org.eclipse.ecf.internal.irc.ui.actions.BanAction"
+               id="org.eclipse.ecf.provider.irc.ui.action2"
+               label="%BanAction_Label"
+               menubarPath="additions">
+         </action>
+         <action
+               class="org.eclipse.ecf.internal.irc.ui.actions.OpAction"
+               id="org.eclipse.ecf.provider.irc.ui.action2"
+               label="%OpAction_Label"
+               menubarPath="additions">
+         </action>
+         <action
+               class="org.eclipse.ecf.internal.irc.ui.actions.DeopAction"
+               id="org.eclipse.ecf.provider.irc.ui.action2"
+               label="%DeopAction_Label"
+               menubarPath="additions">
+         </action>
+         <action
+               class="org.eclipse.ecf.internal.irc.ui.actions.VoiceAction"
+               id="org.eclipse.ecf.provider.irc.ui.action2"
+               label="%VoiceAction_Label"
+               menubarPath="additions">
+         </action>
+         <action
+               class="org.eclipse.ecf.internal.irc.ui.actions.DevoiceAction"
+               id="org.eclipse.ecf.provider.irc.ui.action2"
+               label="%DevoiceAction_Label"
+               menubarPath="additions">
+         </action>
+         <action
+               class="org.eclipse.ecf.internal.irc.ui.actions.WhoisAction"
+               id="org.eclipse.ecf.provider.irc.ui.action2"
+               label="%WhoisAction_Label"
+               menubarPath="additions">
+         </action>
+         <visibility>
+            <objectState
+                  name="scheme"
+                  value="irc">
+            </objectState>
+         </visibility>
+      </viewerContribution>
+   </extension>
 
 </plugin>
