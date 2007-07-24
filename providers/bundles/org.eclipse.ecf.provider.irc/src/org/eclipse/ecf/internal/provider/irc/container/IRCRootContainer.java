@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 197604
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.irc.container;
 
@@ -352,6 +353,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	 * 
 	 * @see org.eclipse.ecf.core.IContainer#disconnect()
 	 */
+	@Override
 	public void disconnect() {
 		if (connection != null) {
 			connection.close();
@@ -365,6 +367,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	 * 
 	 * @see org.eclipse.ecf.core.IContainer#getAdapter(java.lang.Class)
 	 */
+	@Override
 	public Object getAdapter(Class serviceType) {
 		if (serviceType != null && serviceType.isInstance(this)) {
 			return this;
@@ -524,11 +527,51 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		};
 	}
 
+	/**
+	 * Returns string from the buffer beginning up to nearest COMMAND_DELIM. Strips trailing COMMAND_DELIMs.
+	 * 
+	 * @param buffer
+	 * @return String up to first COMMAND_DELIM occurrence in buffer.
+	 */
+	protected String nextToken(StringBuffer buffer) {
+		if (buffer.length() == 0) {
+			return null;
+		}
+		
+		String token;
+		
+		int index = buffer.indexOf(COMMAND_DELIM);
+		
+		if (index == -1) { // no delim until the end of buffer
+			token = buffer.toString();
+			buffer.delete(0, buffer.length());
+			return token;
+		}
+		
+		token = buffer.substring(0, index);
+		
+		/*if (token.length() == buffer.length()) {
+			//index = token.length() - 1;
+		} */
+		
+		// trim trailing command delims
+		while ((buffer.length() > index) && (buffer.indexOf(COMMAND_DELIM, index) == index)) {
+			index += COMMAND_DELIM.length();
+		}
+		if (index > 0) {
+			buffer.delete(0, index);
+		}
+		
+		return token;
+	}
+	
 	protected void parseCommandAndSend(String commandMessage, String channelName) {
 		synchronized (this) {
 			if (connection != null) {
 				try {
 					String lowerCase = commandMessage.toLowerCase();
+					StringBuffer command = new StringBuffer(commandMessage);
+					
 					if (lowerCase.startsWith("/msg ")) { //$NON-NLS-1$
 						commandMessage = commandMessage.substring(5);
 						int index = commandMessage.indexOf(COMMAND_DELIM);
@@ -548,58 +591,53 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 											.substring(index + 1));
 						}
 					} else if (lowerCase.startsWith("/op ")) { //$NON-NLS-1$
-						commandMessage = commandMessage.substring(4);
-						int endmode = commandMessage.lastIndexOf(COMMAND_DELIM,
-								5);
-						String mode = "+o " //$NON-NLS-1$
-								+ commandMessage.substring(5, endmode - 1);
-						int index = commandMessage.indexOf(COMMAND_DELIM);
-						if (index != -1) {
-							connection.doMode(channelName, mode);
+						nextToken(command); // skip command
+						
+						String nick = nextToken(command);
+						
+						if (nick != null) {
+							connection.doMode(channelName, "+o "+nick); //$NON-NLS-1$
 						}
 					} else if (lowerCase.startsWith("/dop ")) { //$NON-NLS-1$
-						commandMessage = commandMessage.substring(5);
-						int endmode = commandMessage.lastIndexOf(COMMAND_DELIM,
-								6);
-						String mode = "-o " //$NON-NLS-1$
-								+ commandMessage.substring(6, endmode - 1);
-						int index = commandMessage.indexOf(COMMAND_DELIM);
-						if (index != -1) {
-							connection.doMode(channelName, mode);
+						nextToken(command); // skip command
+						
+						String nick = nextToken(command);
+						
+						if (nick != null) {
+							connection.doMode(channelName, "-o "+nick); //$NON-NLS-1$
 						}
 					} else if (lowerCase.startsWith("/ban ")) { //$NON-NLS-1$
-						commandMessage = commandMessage.substring(5);
-						int endmode = commandMessage.lastIndexOf(COMMAND_DELIM,
-								6);
-						String mode = "+b " //$NON-NLS-1$
-								+ commandMessage.substring(6, endmode - 1);
-						int index = commandMessage.indexOf(COMMAND_DELIM);
-						if (index != -1) {
-							connection.doMode(channelName, mode);
+						nextToken(command); // skip command
+						
+						String nick = nextToken(command);
+						
+						if (nick != null) {
+							connection.doMode(channelName, "+b "+nick); //$NON-NLS-1$
 						}
 					} else if (lowerCase.startsWith("/unban ")) { //$NON-NLS-1$
-						commandMessage = commandMessage.substring(7);
-						int endmode = commandMessage.lastIndexOf(COMMAND_DELIM,
-								8);
-						String mode = "-b " //$NON-NLS-1$
-								+ commandMessage.substring(8, endmode - 1);
-						int index = commandMessage.indexOf(COMMAND_DELIM);
-						if (index != -1) {
-							connection.doMode(channelName, mode);
+						nextToken(command); // skip command
+						
+						String nick = nextToken(command);
+						
+						if (nick != null) {
+							connection.doMode(channelName, "-b "+nick); //$NON-NLS-1$ 
 						}
 					} else if (lowerCase.startsWith("/kick ")) { //$NON-NLS-1$
-						commandMessage = commandMessage.substring(6);
-						int endnick = commandMessage.lastIndexOf(COMMAND_DELIM,
-								7);
-						String nick = commandMessage.substring(7, endnick - 1);
-						String comment = commandMessage.substring(endnick);
-						int index = commandMessage.indexOf(COMMAND_DELIM);
-						if (index != -1) {
-							if (comment.length() > 0) {
-								connection.doKick(channelName, nick, comment);
-							} else {
-								connection.doKick(channelName, nick);
-							}
+						nextToken(command); // skip command
+						
+						String nick = nextToken(command);
+						
+						if (nick.startsWith("#")) { //$NON-NLS-1$
+							channelName = nick;
+							nick = nextToken(command);
+						}
+						
+						String comment = command.toString(); // rest of command
+						
+						if (comment.length() > 0) {
+							connection.doKick(channelName, nick, comment);
+						} else {
+							connection.doKick(channelName, nick);
 						}
 					} else if (lowerCase.startsWith("/mode ")) { //$NON-NLS-1$
 						commandMessage = commandMessage.substring(6);
@@ -697,7 +735,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					.bind(Messages.IRCRootContainer_Command_Unrecognized,
 							origCommand);
 			trace(msg + " in IRCContainer: " + getID()); //$NON-NLS-1$
-			showErrorMessage(channelName, msg); //$NON-NLS-1$
+			showErrorMessage(channelName, msg); 
 		}
 	}
 
