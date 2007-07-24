@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ECF Webinar Plug-in
+Bundle-SymbolicName: org.eclipse.ecf.examples.webinar;singleton:=true
+Bundle-Version: 0.0.1.qualifier
+Bundle-Activator: org.eclipse.ecf.internal.examples.webinar.Activator
+Bundle-Vendor: Eclipse.org
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ecf,
+ org.eclipse.ecf.datashare,
+ org.eclipse.ecf.remoteservice,
+ org.eclipse.ecf.presence,
+ org.eclipse.ecf.presence.ui
+Eclipse-LazyStart: true

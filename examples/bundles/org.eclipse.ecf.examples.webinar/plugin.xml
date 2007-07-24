@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
+         <dynamic
+               class="org.eclipse.ecf.internal.examples.webinar.RosterEntryContributionItem1"
+               id="org.eclipse.ecf.examples.webinar.dynamic1">
+         </dynamic>
+      </menuContribution>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
+         <dynamic
+               class="org.eclipse.ecf.internal.examples.webinar.RosterEntryContributionItem2"
+               id="org.eclipse.ecf.examples.webinar.dynamic2">
+         </dynamic>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.presence.ui.rosterViewerDropTarget">
+      <dropTarget
+            class="org.eclipse.ecf.internal.examples.webinar.RosterViewerDropTarget1">
+      </dropTarget>
+   </extension>
+
+</plugin>
