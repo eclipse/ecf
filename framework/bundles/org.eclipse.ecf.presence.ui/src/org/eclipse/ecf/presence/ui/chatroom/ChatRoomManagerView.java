@@ -59,7 +59,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -84,10 +84,12 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionFilter;
 import org.eclipse.ui.ISharedImages;
@@ -190,7 +192,7 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		private Text inputText;
 
-		private ListViewer listViewer;
+		private TableViewer participantsTable;
 
 		private Action tabSelectAll;
 		private Action tabCopy;
@@ -213,9 +215,9 @@ public class ChatRoomManagerView extends ViewPart implements
 				fullChat.setLayout(new FillLayout());
 				Composite memberComp = new Composite(fullChat, SWT.NONE);
 				memberComp.setLayout(new FillLayout());
-				listViewer = new ListViewer(memberComp, SWT.BORDER
-						| SWT.V_SCROLL | SWT.H_SCROLL);
-				listViewer.setSorter(new ViewerSorter());
+				participantsTable = new TableViewer(memberComp, SWT.BORDER
+						| SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+				participantsTable.setSorter(new ViewerSorter());
 				Composite rightComp = new Composite(fullChat, SWT.NONE);
 				rightComp.setLayout(new FillLayout());
 				rightSash = new SashForm(rightComp, SWT.VERTICAL);
@@ -343,12 +345,17 @@ public class ChatRoomManagerView extends ViewPart implements
 		}
 		
 		private void hookParticipantsContextMenu() {
-			MenuManager menuMgr = new MenuManager(); 
+			MenuManager menuMgr = new MenuManager();
+			menuMgr.addMenuListener(new IMenuListener() {
+				public void menuAboutToShow(IMenuManager manager) {
+					manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+				}
+			});
 			menuMgr.setRemoveAllWhenShown(true);
-			List list = (List) listViewer.getControl();
-			Menu menu = menuMgr.createContextMenu(list);
-			list.setMenu(menu);
-			getSite().registerContextMenu(PARTICIPANTS_MENU_ID, menuMgr, listViewer);
+			Control control = participantsTable.getControl();
+			Menu menu = menuMgr.createContextMenu(control);
+			control.setMenu(menu);
+			getSite().registerContextMenu(PARTICIPANTS_MENU_ID, menuMgr, participantsTable);
 		}
 		
 		private void makeActions() {
@@ -400,8 +407,8 @@ public class ChatRoomManagerView extends ViewPart implements
 				inputText.addKeyListener(listener);
 		}
 
-		protected ListViewer getListViewer() {
-			return listViewer;
+		protected TableViewer getParticipantsViewer() {
+			return participantsTable;
 		}
 
 		/**
@@ -719,7 +726,7 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		private IUser localUser;
 
-		private ListViewer chatRoomParticipantViewer = null;
+		private TableViewer chatRoomParticipantViewer = null;
 
 		/**
 		 * A list of available nicknames for nickname completion via the 'tab'
@@ -799,10 +806,10 @@ public class ChatRoomManagerView extends ViewPart implements
 			this.chatRoomContainer = container;
 			this.chatRoomMessageSender = container.getChatRoomMessageSender();
 			this.chatRoomTab = tabItem;
-			chatRoomParticipantViewer = this.chatRoomTab.getListViewer();
 			options = new ArrayList();
 			this.chatRoomTab.setKeyListener(this);
-
+			this.chatRoomParticipantViewer = this.chatRoomTab.getParticipantsViewer();
+				
 			rootTabFolder.setUnselectedCloseVisible(true);
 
 			rootTabFolder.addSelectionListener(new SelectionListener() {
@@ -950,10 +957,9 @@ public class ChatRoomManagerView extends ViewPart implements
 					}
 					// get all of the users in this room and store them if they
 					// start with the prefix that the user has typed
-					String[] participants = chatRoomParticipantViewer.getList()
-							.getItems();
+					TableItem[] participants = chatRoomParticipantViewer.getTable().getItems();
 					for (int i = 0; i < participants.length; i++) {
-						if (participants[i].startsWith(prefix)) {
+						if (participants[i].getText().startsWith(prefix)) {
 							options.add(participants[i]);
 						}
 					}
@@ -1127,9 +1133,8 @@ public class ChatRoomManagerView extends ViewPart implements
 		}
 
 		protected void removeAllParticipants() {
-			org.eclipse.swt.widgets.List l = chatRoomParticipantViewer
-					.getList();
-			for (int i = 0; i < l.getItemCount(); i++) {
+			Table t = chatRoomParticipantViewer.getTable();
+			for (int i = 0; i < t.getItemCount(); i++) {
 				Object o = chatRoomParticipantViewer.getElementAt(i);
 				if (o != null)
 					chatRoomParticipantViewer.remove(o);
