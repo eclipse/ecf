@@ -23,7 +23,18 @@
             category="org.eclipse.ecf.ui.category"
             class="org.eclipse.ecf.example.collab.editor.preferences.ClientPreferencePage"
             id="org.eclipse.ecf.example.collab.editor.page"
-            name="Editor Sharing"/>
+            name="Editor Sharing">
+         <keywordReference
+               id="org.eclipse.ecf.example.collab.editor.keywords">
+         </keywordReference>
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.keywords">
+      <keyword
+            id="org.eclipse.ecf.example.collab.editor.keywords"
+            label="collab editor share sharing ecf">
+      </keyword>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
