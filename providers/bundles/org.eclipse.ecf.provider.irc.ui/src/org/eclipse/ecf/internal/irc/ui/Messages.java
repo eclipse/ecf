@@ -18,6 +18,7 @@ import org.eclipse.osgi.util.NLS;
  */
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.irc.ui.messages"; //$NON-NLS-1$
+	public static String IRCConnectWizardPage_CONNECTID_DEFAULT;
 	public static String IRCConnectWizardPage_CONNECTID_EXAMPLE;
 	public static String IRCConnectWizardPage_CONNECTID_LABEL;
 	public static String IRCConnectWizardPage_PASSWORD_INFO;

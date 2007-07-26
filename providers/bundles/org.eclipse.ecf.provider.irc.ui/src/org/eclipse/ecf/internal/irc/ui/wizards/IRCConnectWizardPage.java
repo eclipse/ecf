@@ -7,12 +7,14 @@
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
+ *    Abner Ballardo <modlost@modlost.net> - bug 193136
  *****************************************************************************/
 package org.eclipse.ecf.internal.irc.ui.wizards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import org.eclipse.ecf.internal.irc.ui.Activator;
 import org.eclipse.ecf.internal.irc.ui.Messages;
@@ -20,6 +22,7 @@ import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.ecf.ui.util.PasswordCacheHelper;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -104,6 +107,8 @@ final class IRCConnectWizardPage extends WizardPage {
 				passwordText.setText("");
 				verify();
 			}});
+		connectText.setText(NLS.bind(
+				Messages.IRCConnectWizardPage_CONNECTID_DEFAULT, getRandomNumber()));
 
 		label = new Label(parent, SWT.RIGHT);
 		label.setText(Messages.IRCConnectWizardPage_CONNECTID_EXAMPLE);
@@ -126,6 +131,11 @@ final class IRCConnectWizardPage extends WizardPage {
 		}
 
 		setControl(parent);
+	}
+
+	private String getRandomNumber() {
+		Random random = new Random();
+		return String.valueOf(random.nextInt(100000));
 	}
 
 	String getConnectID() {
