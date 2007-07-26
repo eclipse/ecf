@@ -248,7 +248,54 @@ public class ChatRoomManagerView extends ViewPart implements
 			if (withParticipants) {
 				hookParticipantsContextMenu();
 			}
+			
+			StyledText st = getOutputText();
+			if (st != null) {
+				ScrollBar vsb = st.getVerticalBar();
+				if (vsb != null) {
+					vsb.addSelectionListener(scrollSelectionListener);
+					vsb.addDisposeListener(new DisposeListener() {
+						public void widgetDisposed(DisposeEvent e) {
+							StyledText st = getOutputText();
+							if (st != null) {
+								ScrollBar vsb = st.getVerticalBar();
+								if (vsb != null) vsb.removeSelectionListener(scrollSelectionListener);
+							}
+						}});
+				}
+			}
+
 		}
+
+		private SelectionListener scrollSelectionListener = new SelectionListener() {
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				if (shouldScrollToEnd(getOutputText())) {
+					makeTabItemNormal();
+				}
+			}
+			
+		};
+
+		protected void makeTabItemBold() {
+			changeTabItem(true);
+		}
+
+		protected void makeTabItemNormal() {
+			changeTabItem(false);
+		}
+
+		protected void changeTabItem(boolean bold) {
+			CTabItem item = tabItem;
+			Font oldFont = item.getFont();
+			FontData[] fd = oldFont.getFontData();
+			item.setFont(new Font(oldFont.getDevice(), fd[0].getName(), fd[0]
+					.getHeight(), (bold) ? SWT.BOLD : SWT.NORMAL));
+		}
+
 
 		private StyledText createStyledTextWidget(Composite parent) {
 			try {
@@ -821,6 +868,7 @@ public class ChatRoomManagerView extends ViewPart implements
 					itemSelected = (CTabItem) e.item;
 					if (itemSelected == chatRoomTab.tabItem)
 						makeTabItemNormal();
+					if (itemSelected == rootChannelTab.tabItem) rootChannelTab.makeTabItemNormal();
 				}
 			});
 			
@@ -1209,6 +1257,7 @@ public class ChatRoomManagerView extends ViewPart implements
 					return;
 				appendText(getRootTextOutput(), new ChatLine(messageBody,
 						new ChatRoomParticipant(fromID)));
+				if (rootChannelTab != null) rootChannelTab.makeTabItemBold();
 			}
 		});
 	}
