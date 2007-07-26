@@ -40,6 +40,17 @@ public class JoinGroupWizardAction implements IObjectActionDelegate,
 	private IWorkbenchPart targetPart;
 	private IWorkbenchWindow window;
 
+	private String connectID = null;
+	
+	public JoinGroupWizardAction() {
+		super();
+	}
+	
+	public JoinGroupWizardAction(String connectID) {
+		this();
+		this.connectID = connectID;
+	}
+	
 	private ClientEntry isConnected(IResource res) {
 		if (res == null)
 			return null;
@@ -67,7 +78,7 @@ public class JoinGroupWizardAction implements IObjectActionDelegate,
 	public void run(IAction action) {
 		if (!connected) {
 			JoinGroupWizard wizard = new JoinGroupWizard(resource, PlatformUI
-					.getWorkbench());
+					.getWorkbench(), connectID);
 			Shell shell = null;
 			if (targetPart == null) {
 				shell = (window == null)?null:window.getShell();

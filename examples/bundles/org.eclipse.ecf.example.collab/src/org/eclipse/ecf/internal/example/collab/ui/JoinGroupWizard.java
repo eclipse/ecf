@@ -32,6 +32,8 @@ public class JoinGroupWizard extends Wizard {
 
 	JoinGroupWizardPage mainPage;
 	private IResource resource;
+	
+	private String connectID;
 
 	public JoinGroupWizard(IResource resource, IWorkbench workbench) {
 		super();
@@ -47,13 +49,18 @@ public class JoinGroupWizard extends Wizard {
 		setDialogSettings(wizardSettings);
 	}
 
+	public JoinGroupWizard(IResource resource, IWorkbench workbench, String connectID) {
+		this(resource,workbench);
+		this.connectID = connectID;
+	}
+	
 	protected ISchedulingRule getSchedulingRule() {
 		return resource;
 	}
 
 	public void addPages() {
 		super.addPages();
-		mainPage = new JoinGroupWizardPage();
+		mainPage = new JoinGroupWizardPage(connectID);
 		addPage(mainPage);
 	}
 

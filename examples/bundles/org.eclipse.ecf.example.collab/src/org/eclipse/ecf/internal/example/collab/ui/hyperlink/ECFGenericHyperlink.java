@@ -54,7 +54,7 @@ public class ECFGenericHyperlink extends AbstractURLHyperlink {
 	}
 
 	public void open() {
-		new JoinGroupWizardAction().run(null);
+		new JoinGroupWizardAction(getURI().toString()).run(null);
 	}
 
 }

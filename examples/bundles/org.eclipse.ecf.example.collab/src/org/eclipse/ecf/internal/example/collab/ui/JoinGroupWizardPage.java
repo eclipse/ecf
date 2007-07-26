@@ -46,12 +46,23 @@ public class JoinGroupWizardPage extends WizardPage {
 
 	private static final String DIALOG_SETTINGS = CLASSNAME;
 
+	private String connectID = null;
+	
 	public JoinGroupWizardPage() {
 		super("wizardPage");
 		setTitle(PAGE_TITLE);
 		setDescription(PAGE_DESCRIPTION);
 		setImageDescriptor(SharedImages
 				.getImageDescriptor(SharedImages.IMG_COLLABORATION_WIZARD));
+	}
+
+	public JoinGroupWizardPage(String connectID) {
+		super("wizardPage");
+		setTitle(PAGE_TITLE);
+		setDescription(PAGE_DESCRIPTION);
+		setImageDescriptor(SharedImages
+				.getImageDescriptor(SharedImages.IMG_COLLABORATION_WIZARD));
+		this.connectID = connectID;
 	}
 
 	protected String template_url = ECF_TEMPLATE_URL;
@@ -128,6 +139,9 @@ public class JoinGroupWizardPage extends WizardPage {
 		});
 		fillCombo();
 		restoreDialogSettings();
+		if (connectID != null) {
+			joinGroupText.setText(connectID);
+		}
 	}
 
 	private void restoreDialogSettings() {
