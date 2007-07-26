@@ -12,7 +12,7 @@ package org.eclipse.ecf.internal.irc.ui.actions;
 
 public class KickAction extends AbstractActionDelegate {
 
-	protected String getMessage() {
-		return "/kick "+getUsername(); //$NON-NLS-1$
+	protected String getMessage(String username) {
+		return "/kick "+username; //$NON-NLS-1$
 	}
 }

@@ -12,7 +12,7 @@ package org.eclipse.ecf.internal.irc.ui.actions;
 
 public class DeopAction extends AbstractActionDelegate {
 
-	protected String getMessage() {
-		return "/dop "+getUsername(); //$NON-NLS-1$
+	protected String getMessage(String username) {
+		return "/dop "+username; //$NON-NLS-1$
 	}
 }

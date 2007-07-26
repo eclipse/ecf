@@ -12,7 +12,7 @@ package org.eclipse.ecf.internal.irc.ui.actions;
 
 public class WhoisAction extends AbstractActionDelegate {
 
-	protected String getMessage() {
-		return "/whois "+getUsername(); //$NON-NLS-1$
+	protected String getMessage(String username) {
+		return "/whois "+username; //$NON-NLS-1$
 	}
 }

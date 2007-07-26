@@ -12,7 +12,7 @@ package org.eclipse.ecf.internal.irc.ui.actions;
 
 public class OpAction extends AbstractActionDelegate {
 
-	protected String getMessage() {
-		return "/op "+getUsername(); //$NON-NLS-1$
+	protected String getMessage(String username) {
+		return "/op "+username; //$NON-NLS-1$
 	}
 }

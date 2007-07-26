@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.irc.ui.actions;
 
+import java.util.Iterator;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.user.IUser;
@@ -26,38 +28,34 @@ import org.eclipse.ui.statushandlers.StatusManager;
 
 abstract public class AbstractActionDelegate implements IViewActionDelegate {
 
-	private IUser user;
-	private String username;
+	private IStructuredSelection selection;
 	private IChatRoomContainer chatRoomContainer;
 
 	public AbstractActionDelegate() {
 		super();
 	}
 
-	protected abstract String getMessage();
+	protected abstract String getMessage(String username);
 	
-	protected String getUsername() {
-		if (username != null) {
-			return username;
+	protected String getUsername(IUser user) {
+		String username = user.getName();
+		if (username.startsWith("@")) { //$NON-NLS-1$
+			username = username.substring(1);
 		}
-		
-		if (user != null) {
-			username = user.getName();
-			if (username.startsWith("@")) { //$NON-NLS-1$
-				username = username.substring(1);
-			}
-			return username;
-		}
-		
-		return null;
+		return username;
 	}
 	
 	public void run(IAction action) {
-		if ((chatRoomContainer == null) || (user == null)) {
+		if ((chatRoomContainer == null) || (selection == null)) {
 			return;
 		}
 		try {
-			chatRoomContainer.getChatRoomMessageSender().sendMessage(getMessage()); //$NON-NLS-1$
+			Iterator iterator = selection.iterator();
+			while (iterator.hasNext()) {
+				IUser user = (IUser) iterator.next();
+				String message = getMessage(getUsername(user));
+				chatRoomContainer.getChatRoomMessageSender().sendMessage(message);
+			}
 		} catch (ECFException e) {
 			StatusManager.getManager().handle(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
 		}
@@ -68,7 +66,7 @@ abstract public class AbstractActionDelegate implements IViewActionDelegate {
 			return;
 		}
 		
-		user = (IUser) ((IStructuredSelection) selection).getFirstElement();
+		this.selection = (IStructuredSelection) selection;
 	}
 
 	public void init(IViewPart view) {

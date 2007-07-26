@@ -12,7 +12,7 @@ package org.eclipse.ecf.internal.irc.ui.actions;
 
 public class DevoiceAction extends AbstractActionDelegate {
 
-	protected String getMessage() {
-		return "/mode -v "+getUsername(); //$NON-NLS-1$
+	protected String getMessage(String username) {
+		return "/mode -v "+username; //$NON-NLS-1$
 	}
 }

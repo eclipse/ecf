@@ -13,7 +13,7 @@ package org.eclipse.ecf.internal.irc.ui.actions;
 
 public class BanAction extends AbstractActionDelegate {
 
-	protected String getMessage() {
-		return "/ban "+getUsername(); //$NON-NLS-1$
+	protected String getMessage(String username) {
+		return "/ban "+username; //$NON-NLS-1$
 	}
 }
