@@ -58,10 +58,21 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-      		category="org.eclipse.ecf.ui.category"
+            category="org.eclipse.ecf.ui.category"
             class="org.eclipse.ecf.internal.example.collab.ui.ClientPreferencePage"
-            name="Collaboration"
-            id="org.eclipse.ecf.example.collab.ui.preferences"/>
+            id="org.eclipse.ecf.example.collab.ui.preferences"
+            name="Collaboration">
+         <keywordReference
+               id="org.eclipse.ecf.example.collab.ui.keywords">
+         </keywordReference>
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.keywords">
+      <keyword
+            id="org.eclipse.ecf.example.collab.ui.keywords"
+            label="collab chat ecf">
+      </keyword>
    </extension>
    <!--
    <extension
@@ -129,10 +140,10 @@
                class="org.eclipse.ecf.internal.ui.actions.SelectProviderAction"
                icon="icons/messages.gif"
                id="org.eclipse.ecf.example.collab.ui.connectAction"
-               label="Connect to IM/Chat Provider"
+               label="%connectionToProvider.name"
                style="pulldown"
                toolbarPath="org.eclipse.ecf.ui.collaboration"
-               tooltip="Connect to IM/Chat Provider">
+               tooltip="connectionToProvider.tooltip">
          </action>
       </actionSet>
    </extension>
