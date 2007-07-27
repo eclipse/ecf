@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.identity.namespace">
+      <namespace
+            class="org.eclipse.ecf.internal.examples.provider.trivial.identity.TrivialNamespace"
+            description="ECF Trivial Container Namespace"
+            name="ecf.namespace.trivial">
+      </namespace>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.containerFactory">
+      <containerFactory
+            class="org.eclipse.ecf.internal.examples.provider.trivial.container.TrivialContainerInstantiator"
+            description="ECF trivial container"
+            hidden="false"
+            name="ecf.container.trivial"
+            server="false">
+      </containerFactory>
+   </extension>
+
+</plugin>
