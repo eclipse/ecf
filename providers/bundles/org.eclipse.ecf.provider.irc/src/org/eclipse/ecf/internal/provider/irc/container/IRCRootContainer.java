@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
- *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 197604
+ *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 197604, 197329
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.irc.container;
 
@@ -135,7 +135,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		connection.addIRCEventListener(getIRCEventListener());
 		connection.setPong(true);
 		connection.setDaemon(false);
-		connection.setColors(false);
+		connection.setColors(true);
 		if (encoding != null)
 			connection.setEncoding(encoding);
 		trace(Messages.IRCRootContainer_Connecting_To + targetID);
@@ -518,7 +518,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		return new IChatRoomMessageSender() {
 			public void sendMessage(String message) throws ECFException {
 				if (isCommand(message))
-					parseCommandAndSend(message, null);
+					parseCommandAndSend(message, null, null);
 				else
 					showErrorMessage(null, NLS.bind(
 							Messages.IRCRootContainer_Command_Error, message,
@@ -565,7 +565,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		return token;
 	}
 	
-	protected void parseCommandAndSend(String commandMessage, String channelName) {
+	protected void parseCommandAndSend(String commandMessage, String channelName, String ircUser) {
 		synchronized (this) {
 			if (connection != null) {
 				try {
@@ -644,6 +644,15 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						int index = commandMessage.indexOf(COMMAND_DELIM);
 						if (index != -1) {
 							connection.doMode(channelName, commandMessage);
+						}
+					} else if (lowerCase.startsWith("/me ")) { //$NON-NLS-1$
+						nextToken(command); // skip command
+						
+						String message = command.toString();
+						if (message.length() > 0) {
+							message = "\01ACTION "+message+"\01"; //$NON-NLS-1$ //$NON-NLS-2$
+							connection.doPrivmsg(channelName, message);
+							showMessage(channelName, ircUser, message);
 						}
 					} else {
 						String[] tokens = parseCommandTokens(commandMessage);
@@ -909,7 +918,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		if (connection != null) {
 			// If it's a command,
 			if (isCommand(msg)) {
-				parseCommandAndSend(msg, channelName);
+				parseCommandAndSend(msg, channelName, ircUser);
 			} else {
 				connection.doPrivmsg(channelName, msg);
 				showMessage(channelName, ircUser, msg);
