@@ -983,7 +983,7 @@ public class ChatRoomManagerView extends ViewPart implements
 					TableItem[] participants = chatRoomParticipantViewer.getTable().getItems();
 					for (int i = 0; i < participants.length; i++) {
 						if (participants[i].getText().startsWith(prefix)) {
-							options.add(participants[i]);
+							options.add(participants[i].getText());
 						}
 					}
 
