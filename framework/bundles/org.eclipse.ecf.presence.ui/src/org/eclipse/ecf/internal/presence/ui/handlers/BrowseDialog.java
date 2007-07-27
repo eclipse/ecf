@@ -30,6 +30,7 @@ import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
+import org.eclipse.ecf.presence.roster.IRosterGroup;
 import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.roster.IRosterManager;
 import org.eclipse.ecf.ui.SharedImages;
@@ -120,7 +121,8 @@ public class BrowseDialog extends FilteredItemsSelectionDialog {
 					Collection items = 
 						manager.getRoster().getItems();
 					for(Iterator it = items.iterator(); it.hasNext(); ) {
-						contentProvider.add(it.next(), itemsFilter);
+						IRosterItem item = (IRosterItem) it.next();
+						addRosterItem(item, contentProvider, itemsFilter);
 					}
 				}
 			}
@@ -128,6 +130,18 @@ public class BrowseDialog extends FilteredItemsSelectionDialog {
 		}
 		if (progressMonitor != null)
 			progressMonitor.done();
+	}
+
+	// cycle through all roster items recursively
+	private void addRosterItem(IRosterItem item,
+			AbstractContentProvider contentProvider, ItemsFilter itemsFilter) {
+		if(item instanceof IRosterGroup) {
+			IRosterGroup group = (IRosterGroup) item;	
+			for(Iterator it = group.getEntries().iterator(); it.hasNext();) {
+				addRosterItem((IRosterItem) it.next(), contentProvider, itemsFilter);
+			}
+		}
+		contentProvider.add(item, itemsFilter);
 	}
 
 	/* (non-Javadoc)
