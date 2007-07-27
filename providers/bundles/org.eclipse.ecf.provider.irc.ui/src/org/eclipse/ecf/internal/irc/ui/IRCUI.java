@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 197329
  *****************************************************************************/
 
 package org.eclipse.ecf.internal.irc.ui;
@@ -21,6 +22,7 @@ import org.eclipse.ecf.core.util.IExceptionHandler;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerUI;
+import org.eclipse.ecf.presence.ui.chatroom.IMessageRenderer;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 
@@ -120,5 +122,8 @@ public class IRCUI extends ChatRoomManagerUI {
 		return inputLine;
 
 	}
-
+	
+	protected IMessageRenderer getDefaultMessageRenderer() {
+		return new IRCMessageRenderer();
+	}
 }
