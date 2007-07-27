@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 197329
  *****************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
@@ -106,6 +107,7 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 		chatroomview.initializeWithManager(ChatRoomManagerView.getUsernameFromID(targetID),
 				ChatRoomManagerView.getHostnameFromID(targetID),
 				managerChatRoom, this, createChatRoomViewCloseListener());
+		chatroomview.setMessageRenderer(getDefaultMessageRenderer());
 		// Add listener for container, so that if the container is spontaneously
 		// disconnected,
 		// then we will be able to have the UI respond by making itself inactive
@@ -148,6 +150,10 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 				}
 			}
 		});
+	}
+
+	protected IMessageRenderer getDefaultMessageRenderer() {
+		return new MessageRenderer();
 	}
 
 	protected String getPasswordForChatRoomConnect(IChatRoomInfo info) {

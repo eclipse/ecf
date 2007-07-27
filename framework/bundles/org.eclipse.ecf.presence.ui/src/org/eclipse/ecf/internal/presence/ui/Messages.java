@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 197329
  *****************************************************************************/
 
 package org.eclipse.ecf.internal.presence.ui;
@@ -60,8 +61,6 @@ public class Messages extends NLS {
 
 	public static String ChatRoomManagerView_COPY_TOOLTIP;
 
-	public static String ChatRoomManagerView_DATE_FORMAT;
-
 	public static String ChatRoomManagerView_DEFAULT_HOST;
 
 	public static String ChatRoomManagerView_DEFAULT_USER;
@@ -73,8 +72,6 @@ public class Messages extends NLS {
 	public static String ChatRoomManagerView_JOIN_COMMAND;
 	
 	public static String ChatRoomManagerView_MESSAGE;
-	
-	public static String ChatRoomManagerView_MESSAGE_DATE;
 
 	public static String ChatRoomManagerView_NOT_CONNECTED_MESSAGE;
 
@@ -87,8 +84,6 @@ public class Messages extends NLS {
 	public static String ChatRoomManagerView_SELECT_ALL_TEXT;
 
 	public static String ChatRoomManagerView_SELECT_ALL_TOOLTIP;
-
-	public static String ChatRoomManagerView_TIME_FORMAT;
 
 	public static String ChatRoomManagerView_VIEW_DISABLED_NAME;
 
@@ -234,6 +229,10 @@ public class Messages extends NLS {
 	
 	public static String ToggleOnlineOnlyAction_title;
 
+	public static String MessageRenderer_DEFAULT_DATE_FORMAT;
+	public static String MessageRenderer_DEFAULT_DATETIME_FORMAT;
+	public static String MessageRenderer_DEFAULT_TIME_FORMAT;
+	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

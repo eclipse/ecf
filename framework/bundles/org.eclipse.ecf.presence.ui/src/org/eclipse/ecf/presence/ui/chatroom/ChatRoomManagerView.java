@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
- *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 192762
+ *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 192762, 197329
  ******************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
@@ -76,7 +76,6 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -120,25 +119,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	private static final int RATIO_READ_WRITE_PANE = 85;
 
 	private static final int RATIO_PRESENCE_PANE = 15;
-
-	protected static final String DEFAULT_ME_COLOR = "0,255,0"; //$NON-NLS-1$
-
-	protected static final String DEFAULT_OTHER_COLOR = "0,0,0"; //$NON-NLS-1$
-
-	protected static final String DEFAULT_SYSTEM_COLOR = "0,0,255"; //$NON-NLS-1$
-
-	/**
-	 * The default color used to highlight the string of text when the user's
-	 * name is referred to in the chatroom. The default color is red.
-	 */
-	protected static final String DEFAULT_HIGHLIGHT_COLOR = "255,0,0"; //$NON-NLS-1$
-
-	protected static final String DEFAULT_DATE_COLOR = "0,0,0"; //$NON-NLS-1$
-
-	protected static final String DEFAULT_TIME_FORMAT = Messages.ChatRoomManagerView_TIME_FORMAT;
-
-	protected static final String DEFAULT_DATE_FORMAT = Messages.ChatRoomManagerView_DATE_FORMAT;
-
+	
 	protected static final int DEFAULT_INPUT_HEIGHT = 25;
 
 	protected static final int DEFAULT_INPUT_SEPARATOR = 5;
@@ -150,14 +131,12 @@ public class ChatRoomManagerView extends ViewPart implements
 	private IChatRoomViewCloseListener rootCloseListener = null;
 
 	private IChatRoomMessageSender rootMessageSender = null;
-
-	private Color otherColor = null;
-
-	private Color systemColor = null;
-
-	private Color dateColor = null;
-
-	private Color highlightColor = null;
+	
+	/**
+	 * UI independent renderer, that is aware of displaying any special fragments
+	 * of message, like formatting, graphical attachments, emotional content, etc.
+	 */
+	private IMessageRenderer messageRenderer = null;
 
 	Action outputClear = null;
 
@@ -467,10 +446,6 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	public void createPartControl(Composite parent) {
-		otherColor = colorFromRGBString(DEFAULT_OTHER_COLOR);
-		systemColor = colorFromRGBString(DEFAULT_SYSTEM_COLOR);
-		highlightColor = colorFromRGBString(DEFAULT_HIGHLIGHT_COLOR);
-		dateColor = colorFromRGBString(DEFAULT_DATE_COLOR);
 		Composite rootComposite = new Composite(parent, SWT.NONE);
 		rootComposite.setLayout(new FillLayout());
 		boolean useTraditionalTabFolder = PlatformUI
@@ -1143,7 +1118,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				if (id != null) {
 					appendText(getOutputText(), new ChatLine(NLS.bind(
 							Messages.ChatRoomManagerView_ENTERED_MESSAGE,
-							getDateTime(), getUsernameFromID(id)), null));
+							getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.add(p);
 				}
 			}
@@ -1174,7 +1149,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				if (id != null) {
 					appendText(getOutputText(), new ChatLine(NLS.bind(
 							Messages.ChatRoomManagerView_LEFT_MESSAGE,
-							getDateTime(), getUsernameFromID(id)), null));
+							getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.remove(p);
 				}
 			}
@@ -1365,19 +1340,6 @@ public class ChatRoomManagerView extends ViewPart implements
 		}
 	}
 
-	protected String getCurrentDate(String format) {
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
-		String res = sdf.format(new Date());
-		return res;
-	}
-
-	protected String getDateTime() {
-		StringBuffer buf = new StringBuffer();
-		buf.append(getCurrentDate(DEFAULT_DATE_FORMAT)).append(" ").append( //$NON-NLS-1$
-				getCurrentDate(DEFAULT_TIME_FORMAT));
-		return buf.toString();
-	}
-
 	public void disconnect() {
 		if (rootCloseListener != null) {
 			rootCloseListener.chatRoomViewClosing();
@@ -1411,8 +1373,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	private boolean shouldScrollToEnd(StyledText chatText) {
 		Point locAtEnd = chatText.getLocationAtOffset(chatText.getText().length());
 		Rectangle bounds = chatText.getBounds();
-		if (locAtEnd.y > bounds.height + 5) return false;
-		return true;
+		return (locAtEnd.y > bounds.height + 5);
 	}
 
 	protected void appendText(StyledText st, ChatLine text) {
@@ -1420,63 +1381,35 @@ public class ChatRoomManagerView extends ViewPart implements
 			return;
 		}
 		
-		boolean scrollToBottom = shouldScrollToEnd(st);
+		String originator = null;
+		if (text.getOriginator() != null) {
+			originator = text.getOriginator().getNickname(); 
+		}
+		
+		String output = messageRenderer.render(text.getText(), originator, localUserName);
+		StyleRange[] ranges = messageRenderer.getStyleRanges();
+		
+		if (output == null) {
+			return;
+		}
 		
 		int startRange = st.getText().length();
-		StringBuffer sb = new StringBuffer();
-		// check to see if the message has the user's name contained within
-		boolean nickContained = text.getText().indexOf(localUserName) != -1;
-		if (text.getOriginator() != null) {
-			// check to make sure that the person referring to the user's name
-			// is not the user himself, no highlighting is required in this case
-			// as the user is already aware that his name is being referenced
-			nickContained = !text.getOriginator().getName().equals(
-					localUserName)
-					&& nickContained;
-			sb.append(NLS.bind(Messages.ChatRoomManagerView_MESSAGE_DATE,
-					getCurrentDate(DEFAULT_TIME_FORMAT)));
-			StyleRange dateStyle = new StyleRange();
-			dateStyle.start = startRange;
-			dateStyle.length = sb.length();
-			dateStyle.foreground = dateColor;
-			dateStyle.fontStyle = SWT.NORMAL;
-			st.append(sb.toString());
-			st.setStyleRange(dateStyle);
-			sb = new StringBuffer();
-			sb.append(text.getOriginator().getName()).append(": "); //$NON-NLS-1$
-			StyleRange sr = new StyleRange();
-			sr.start = startRange + dateStyle.length;
-			sr.length = sb.length();
-			sr.fontStyle = SWT.BOLD;
-			// check to see which color should be used
-			sr.foreground = nickContained ? highlightColor : otherColor;
-			st.append(sb.toString());
-			st.setStyleRange(sr);
-		}
-		int beforeMessageIndex = st.getText().length();
-		st.append(text.getText());
-		if (text.getOriginator() == null) {
-			StyleRange sr = new StyleRange();
-			sr.start = beforeMessageIndex;
-			sr.length = text.getText().length();
-			sr.foreground = systemColor;
-			sr.fontStyle = SWT.BOLD;
-			st.setStyleRange(sr);
-		} else if (nickContained) {
-			// highlight the message itself as necessary
-			StyleRange sr = new StyleRange();
-			sr.start = beforeMessageIndex;
-			sr.length = text.getText().length();
-			sr.foreground = highlightColor;
-			st.setStyleRange(sr);
-		}
+			
 		if (!text.isNoCRLF()) {
-			st.append("\n"); //$NON-NLS-1$
+			output += "\n"; //$NON-NLS-1$
 		}
-		String t = st.getText();
-		if (t == null)
-			return;
-		if (scrollToBottom) st.setSelection(t.length());
+		
+		st.append(output);
+		if (ranges != null) {
+
+			// set all ranges to start as message line starts
+			for (int i = 0; i < ranges.length; i++) {
+				ranges[i].start += startRange;
+				st.setStyleRange(ranges[i]);
+			} 	
+		}
+		
+		if (shouldScrollToEnd(st)) st.setSelection(startRange + output.length());
 		// Bold title if view is not visible.
 		IWorkbenchSiteProgressService pservice = (IWorkbenchSiteProgressService) this
 				.getSite().getAdapter(IWorkbenchSiteProgressService.class);
@@ -1600,19 +1533,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		getSite().registerContextMenu(menuMgr, selectionProvider);
 	}
 
-	private Color colorFromRGBString(String rgb) {
-		Color color = null;
-		if (rgb == null || rgb.equals("")) { //$NON-NLS-1$
-			color = new Color(getViewSite().getShell().getDisplay(), 0, 0, 0);
-			return color;
-		}
-		if (color != null) {
-			color.dispose();
-		}
-		String[] vals = rgb.split(","); //$NON-NLS-1$
-		color = new Color(getViewSite().getShell().getDisplay(), Integer
-				.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer
-				.parseInt(vals[2]));
-		return color;
+	public void setMessageRenderer(IMessageRenderer defaultMessageRenderer) {
+		this.messageRenderer = defaultMessageRenderer;
 	}
 }
