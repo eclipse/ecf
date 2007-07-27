@@ -28,6 +28,8 @@ public class TrivialNamespace extends Namespace {
 	 */
 	@Override
 	public ID createInstance(Object[] parameters) throws IDCreateException {
+		// XXX Note that this assumes that a unique string is provided for creating the ID
+		// e.g. IDFactory.getDefault().createID("myid");
 		return new TrivialID(this,(String) parameters[0]);
 	}
 

@@ -25,18 +25,32 @@ import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.internal.examples.provider.trivial.identity.TrivialNamespace;
 
 /**
- * 
+ * Trivial container implementation. Note that container adapter implementations can be
+ * provided by the container class to expose appropriate adapters.
  */
-public class TrivialContainer extends AbstractContainer {
+public class TrivialContainer extends AbstractContainer
+/*
+ * implements IChannelContainerAdapter, ICallSessionContainerAdapter,
+ * IDiscoveryContainerAdapter, IRetrieveFileTransferContainerAdapter
+ */
+{
 
+	/*
+	 * The targetID.  This value is set on 'connect' and unset in 'disconnect'.
+	 * This represents the other process that this container is connected to.
+	 * Value is returned via getConnectedID()
+	 */  
 	private ID targetID = null;
-
+	/*
+	 * This is the ID for this container.  Returned via getID().
+	 */
 	private ID containerID = null;
-	
+
 	public TrivialContainer() throws IDCreateException {
 		super();
 		this.containerID = IDFactory.getDefault().createGUID();
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -52,11 +66,10 @@ public class TrivialContainer extends AbstractContainer {
 
 		fireContainerEvent(new ContainerConnectingEvent(getID(), targetID));
 
-		// TODO connect here
+		// XXX connect to remote service here
 
 		this.targetID = targetID;
-		fireContainerEvent(new ContainerConnectedEvent(getID(),
-				targetID));
+		fireContainerEvent(new ContainerConnectedEvent(getID(), targetID));
 
 	}
 
@@ -69,8 +82,8 @@ public class TrivialContainer extends AbstractContainer {
 		fireContainerEvent(new ContainerDisconnectingEvent(getID(), targetID));
 
 		ID oldID = targetID;
-		
-		// TODO disconnect here
+
+		// XXX disconnect here
 
 		fireContainerEvent(new ContainerDisconnectedEvent(getID(), oldID));
 	}
@@ -102,4 +115,16 @@ public class TrivialContainer extends AbstractContainer {
 		return containerID;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.AbstractContainer#getAdapter(java.lang.Class)
+	 */
+	@Override
+	public Object getAdapter(Class serviceType) {
+		/*
+		 * See AbstractContainer.getAdapter() implementation.
+		 */
+		return super.getAdapter(serviceType);
+	}
 }
