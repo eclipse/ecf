@@ -1052,8 +1052,10 @@ public class ChatRoomManagerView extends ViewPart implements
 						Messages.ChatRoomManagerView_NOT_CONNECTED_TITLE,
 						Messages.ChatRoomManagerView_NOT_CONNECTED_MESSAGE);
 				return;
-			} else
-				sendMessageLine(processForCommand(chatRoomContainer, text));
+			} else {
+				String output = processForCommand(chatRoomContainer, text);
+				if (output != null) sendMessageLine(output);
+			}
 		}
 
 		protected void chatRoomDisconnect() {
@@ -1171,8 +1173,10 @@ public class ChatRoomManagerView extends ViewPart implements
 					Messages.ChatRoomManagerView_NOT_CONNECTED_TITLE,
 					Messages.ChatRoomManagerView_NOT_CONNECTED_MESSAGE);
 			return;
-		} else
-			sendMessageLine(processForCommand(null, text));
+		} else {
+			String output = processForCommand(null, text);
+			if (output != null) sendMessageLine(output);
+		}
 	}
 
 	protected String processForCommand(IChatRoomContainer chatRoomContainer,
