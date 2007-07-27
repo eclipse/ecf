@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
+ *    Cagatay Calli <ccalli@gmail.com> - https://bugs.eclipse.org/bugs/show_bug.cgi?id=196812
  ******************************************************************************/
 package org.eclipse.ecf.protocol.msn;
 
@@ -102,24 +103,30 @@ final class NotificationSession extends DispatchSession {
 					.getParam(3));
 			password = null;
 
-			write("USR", "TWN S " + ticket); //$NON-NLS-1$ //$NON-NLS-2$
-			ticket = null;
-			String input = super.read();
-			if (!input.startsWith("USR")) { //$NON-NLS-1$
-				throw new ConnectException(
-						"An error occurred while attempting to authenticate "
-								+ "with the Tweener server.");
+			if(ticket == null){
+				throw new ConnectException("Wrong username and/or password.");
 			}
+			else {
+				write("USR", "TWN S " + ticket); //$NON-NLS-1$ //$NON-NLS-2$
+				ticket = null;
+				String input = super.read();
+				if (!input.startsWith("USR")) { //$NON-NLS-1$
+					throw new ConnectException(
+							"An error occurred while attempting to authenticate "
+							+ "with the Tweener server.");
+				}
 
-			retrieveBuddyList();
-			this.username = username;
-			return true;
+				retrieveBuddyList();
+				this.username = username;
+				return true;
+			}
 		} else if (!response.getCommand().equals("XFR")) { //$NON-NLS-1$
 			throw new ConnectException("Unable to connect to the MSN server.");
 		} else {
 			alternateServer = response.getParam(2);
 			return false;
 		}
+		
 	}
 
 	private void retrieveBuddyList() throws IOException {

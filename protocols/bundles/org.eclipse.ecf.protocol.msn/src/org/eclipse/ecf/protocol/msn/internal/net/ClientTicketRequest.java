@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
+ *    Cagatay Calli <ccalli@gmail.com> - https://bugs.eclipse.org/bugs/show_bug.cgi?id=196812
  ******************************************************************************/
 package org.eclipse.ecf.protocol.msn.internal.net;
 
@@ -87,7 +88,7 @@ public final class ClientTicketRequest {
 	 *            the user's password
 	 * @param challengeString
 	 *            the challenge string received from the notification session
-	 * @return the client ticket
+	 * @return the client ticket if login info is correct, <code>null</code> otherwise
 	 * @throws IOException
 	 *             If an I/O error occurs while connecting to the Passport Nexus
 	 *             page or when getting the response codes from the connection
@@ -119,6 +120,10 @@ public final class ClientTicketRequest {
 						// form [http://www.msn.com/]
 						daLoginURL = daLoginURL.substring(1, daLoginURL
 								.length() - 1);
+					}
+					else if(request.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED){
+						request.disconnect();
+						return null;
 					}
 				}
 			} catch (Exception e) {
