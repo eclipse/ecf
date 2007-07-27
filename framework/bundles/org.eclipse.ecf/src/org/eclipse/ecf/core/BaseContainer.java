@@ -89,6 +89,7 @@ public class BaseContainer implements IContainer {
 	 * @see org.eclipse.ecf.core.IContainer#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class serviceType) {
+		if (serviceType == null) return null;
 		if (serviceType.isInstance(this)) {
 			return this;
 		} else {

@@ -55,9 +55,14 @@ public abstract class AbstractContainer implements IContainer {
 	}
 
 	public Object getAdapter(Class serviceType) {
-		IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
-		if (adapterManager == null) return null;
-		return adapterManager.getAdapter(this, serviceType);
+		if (serviceType == null) return null;
+		if (serviceType.isInstance(this)) {
+			return this;
+		} else {
+			IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
+			if (adapterManager == null) return null;
+			return adapterManager.loadAdapter(this, serviceType.getName());
+		}
 	}
 
 	protected String getPasswordFromConnectContext(
