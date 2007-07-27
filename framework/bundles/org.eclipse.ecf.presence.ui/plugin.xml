@@ -163,5 +163,32 @@
             </command>
       </menuContribution>
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="org.eclipse.ecf.internal.presence.ui.hyperlink.PresenceHyperlinkDetector"
+            id="org.eclipse.ecf.presence.ui.hyperlink.PresenceHyperlinkDetector"
+            name="Presence Hyperlink Detector"
+            targetId="org.eclipse.ui.DefaultTextEditor">
+      </hyperlinkDetector>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.ecf.ui.category"
+            class="org.eclipse.ecf.internal.presence.ui.preferences.ChatRoomPreferencePage"
+            id="org.eclipse.ecf.internal.presence.ui.preferences.ChatRoomPreferencePage"
+            name="%chatroom.preferencePage.name">
+      </page>
+    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+                  class="org.eclipse.ecf.internal.presence.ui.preferences.PreferenceInitializer">
+      </initializer>
+  </extension>
 
 </plugin>

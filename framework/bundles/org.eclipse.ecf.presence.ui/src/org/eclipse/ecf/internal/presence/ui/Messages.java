@@ -233,6 +233,8 @@ public class Messages extends NLS {
 	public static String MessageRenderer_DEFAULT_DATETIME_FORMAT;
 	public static String MessageRenderer_DEFAULT_TIME_FORMAT;
 	
+	public static String ChatRoomPreferencePage_CHATROOM_SHOW_USER_PRESENCE_TEXT;
+	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

@@ -8,6 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 192762, 197329
+ *    Abner Ballardo <modlost@modlost.net> - bug 192756
  ******************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
@@ -22,6 +23,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
@@ -33,6 +35,7 @@ import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.ChatLine;
 import org.eclipse.ecf.internal.presence.ui.Messages;
+import org.eclipse.ecf.internal.presence.ui.preferences.PreferenceConstants;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.IPresence;
@@ -103,9 +106,6 @@ import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 public class ChatRoomManagerView extends ViewPart implements
 		IChatRoomInvitationListener {
 
-	/**
-	 * 
-	 */
 	private static final String ATSIGN = "@"; //$NON-NLS-1$
 
 	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"; //$NON-NLS-1$
@@ -1118,9 +1118,13 @@ public class ChatRoomManagerView extends ViewPart implements
 			if (p != null) {
 				ID id = p.getID();
 				if (id != null) {
-					appendText(getOutputText(), new ChatLine(NLS.bind(
-							Messages.ChatRoomManagerView_ENTERED_MESSAGE,
-							getUsernameFromID(id)), null));
+					Preferences prefs = Activator.getDefault()
+							.getPluginPreferences();
+					
+					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE)) 
+						appendText(getOutputText(), new ChatLine(NLS.bind(
+								Messages.ChatRoomManagerView_ENTERED_MESSAGE,
+								getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.add(p);
 				}
 			}
@@ -1149,9 +1153,13 @@ public class ChatRoomManagerView extends ViewPart implements
 			if (p != null) {
 				ID id = p.getID();
 				if (id != null) {
-					appendText(getOutputText(), new ChatLine(NLS.bind(
-							Messages.ChatRoomManagerView_LEFT_MESSAGE,
-							getUsernameFromID(id)), null));
+					Preferences prefs = Activator.getDefault()
+					.getPluginPreferences();
+			
+					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE)) 
+						appendText(getOutputText(), new ChatLine(NLS.bind(
+								Messages.ChatRoomManagerView_LEFT_MESSAGE,
+								getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.remove(p);
 				}
 			}
