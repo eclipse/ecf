@@ -985,7 +985,15 @@ public class ChatRoomManagerView extends ViewPart implements
 				cleanUp();
 			} else if (command.equalsIgnoreCase("PART")) {
 				disconnect();
-			} else {
+			} else if (command.equalsIgnoreCase("JOIN")) {
+				String arg1 = args[0];
+				String arg2 = "";
+				if (args.length > 1) {
+					arg2 = args[1];
+				}
+				doJoinRoom(arg1, arg2);
+			} 
+			else {
 				sendMessageLine(line);
 			}
 		}
