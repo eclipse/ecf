@@ -353,7 +353,6 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	 * 
 	 * @see org.eclipse.ecf.core.IContainer#disconnect()
 	 */
-	@Override
 	public void disconnect() {
 		if (connection != null) {
 			connection.close();
@@ -367,7 +366,6 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	 * 
 	 * @see org.eclipse.ecf.core.IContainer#getAdapter(java.lang.Class)
 	 */
-	@Override
 	public Object getAdapter(Class serviceType) {
 		if (serviceType != null && serviceType.isInstance(this)) {
 			return this;
