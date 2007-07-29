@@ -24,7 +24,7 @@ public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 	private String getProtocolPrefix() {
 		return getScheme()+"://";
 	}
-	
+
 	public ID createInstance(Object[] args) throws IDCreateException {
 		URI newURI = null;
 		String s = null;
@@ -36,7 +36,8 @@ public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 		}
 		if (!s.startsWith(getProtocolPrefix())) s = getProtocolPrefix()+s;
 		try {
-			newURI = new URI(s);
+			newURI = createURI(s);
+//			newURI = new URI(s);
 		} catch (URISyntaxException e) {
 			throw new IDCreateException("Exception creating URI out of " + s);
 		}
@@ -49,13 +50,34 @@ public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 		return new IRCID(this, newURI);
 	}
 
+	private URI createURI(String s) throws IDCreateException, URISyntaxException{
+		URI ret = null;
+		String uname = s.substring(getProtocolPrefix().length(),s.indexOf("@"));
+		int hostend = s.lastIndexOf("/");
+		if(hostend == -1){
+			hostend = s.length();
+		}
+		String host = s.substring(s.indexOf("@")+1,hostend);
+		int port = -1;
+		int portidx = host.indexOf(":");
+		if(portidx >= 0){
+			port = Integer.parseInt(host.substring(portidx+1,host.length()));
+			host = host.substring(0,portidx);
+		}
+		String path = s.substring(hostend, s.length());
+
+		ret = new URI(getScheme(),uname,host,port,path,null,null);
+
+		return ret;
+	}
+
 	public String getScheme() {
 		return IRC_PROTOCOL;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
