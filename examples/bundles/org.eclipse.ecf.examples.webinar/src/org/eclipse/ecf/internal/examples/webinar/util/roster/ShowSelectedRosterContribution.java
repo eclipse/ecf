@@ -1,6 +1,6 @@
 package org.eclipse.ecf.internal.examples.webinar.util.roster;
 
-import org.eclipse.ecf.internal.examples.webinar.util.RosterWriter;
+import org.eclipse.ecf.internal.examples.webinar.util.RosterWriterHelper;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterContributionItem;
 import org.eclipse.jface.action.Action;
@@ -8,7 +8,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-public class RosterContributionItem1 extends AbstractRosterContributionItem {
+public class ShowSelectedRosterContribution extends AbstractRosterContributionItem {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.ui.roster.AbstractPresenceContributionItem#makeActions()
@@ -18,8 +18,8 @@ public class RosterContributionItem1 extends AbstractRosterContributionItem {
 		if (roster != null) {
 			IAction action = new Action() {
 				public void run() {
-					RosterWriter accessor = new RosterWriter();
-					accessor.showRoster(roster);
+					// Write selected roster to console
+					new RosterWriterHelper().writeRosterToConsole(roster);
 				}
 			};
 			action.setText("Show this roster on console");

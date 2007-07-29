@@ -28,8 +28,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
-public class RosterEntryContributionItem2 extends
+public class SendMessageRosterEntryContribution extends
 		AbstractRosterEntryContributionItem {
+
+	private static final String CHANNELID = "mychannel";
 
 	/*
 	 * (non-Javadoc)
@@ -75,8 +77,7 @@ public class RosterEntryContributionItem2 extends
 
 	private void receiveDataFromChannel(byte[] data) {
 		try {
-			ByteArrayInputStream bins = new ByteArrayInputStream(data);
-			ObjectInputStream oos = new ObjectInputStream(bins);
+			ObjectInputStream oos = new ObjectInputStream(new ByteArrayInputStream(data));
 			String[] received = (String[]) oos.readObject();
 			showMessageAndURL(received[0], received[1]);
 		} catch (Exception e) {
@@ -116,7 +117,7 @@ public class RosterEntryContributionItem2 extends
 	private IChannel createChannel(IChannelContainerAdapter adapter) {
 		try {
 			return adapter.createChannel(IDFactory.getDefault().createStringID(
-					"mychannel"), new IChannelListener() {
+					CHANNELID), new IChannelListener() {
 				public void handleChannelEvent(IChannelEvent event) {
 					if (event instanceof IChannelMessageEvent) {
 						receiveDataFromChannel(((IChannelMessageEvent) event)

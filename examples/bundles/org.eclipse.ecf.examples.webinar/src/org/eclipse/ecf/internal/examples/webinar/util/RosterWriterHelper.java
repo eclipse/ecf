@@ -27,7 +27,7 @@ import org.eclipse.ecf.presence.roster.IRosterItem;
 /**
  * Chat with me about this at:  xmpp://fliwatuet@ecf.eclipse.org
  */
-public class RosterWriter {
+public class RosterWriterHelper {
 
 	private IContainer[] getContainers() {
 		return Activator.getDefault().getContainers();
@@ -46,7 +46,7 @@ public class RosterWriter {
 		return (Object []) l.toArray();
 	}
 	
-	public void showAllRosters() {
+	public void writeAllRostersToConsole() {
 		Object [] adapters = getConnectedContainerAdapters(IPresenceContainerAdapter.class);
 		for(int i=0; i < adapters.length; i++) {
 			IPresenceContainerAdapter presenceAdapter = (IPresenceContainerAdapter) adapters[i];
@@ -54,7 +54,7 @@ public class RosterWriter {
 		}
 	}
 	
-	public void showRoster(IRoster roster) {
+	public void writeRosterToConsole(IRoster roster) {
 		showRosterItems(roster);
 	}
 
