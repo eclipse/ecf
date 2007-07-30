@@ -135,7 +135,6 @@ public class ServerConfigParser {
 	public static void main(String[] args) throws Exception {
 		InputStream ins = new FileInputStream(args[0]);
 		ServerConfigParser configParser = new ServerConfigParser();
-		List res = configParser.load(ins);
-		System.out.println("result is " + res); //$NON-NLS-1$
+		configParser.load(ins);
 	}
 }
