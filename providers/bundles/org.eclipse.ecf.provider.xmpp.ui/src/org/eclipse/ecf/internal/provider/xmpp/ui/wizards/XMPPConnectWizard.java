@@ -127,9 +127,6 @@ public class XMPPConnectWizard extends Wizard implements IConnectWizard {
 											IFileTransferEvent event) {
 										// XXX Should have some some UI
 										// for transfer events
-										System.out
-												.println("handleTransferEvent(" //$NON-NLS-1$
-														+ event + ")"); //$NON-NLS-1$
 										if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
 											try {
 												fos.close();
