@@ -5,7 +5,6 @@ import org.eclipse.ecf.presence.roster.IRosterItem;
 import org.eclipse.ecf.presence.ui.dnd.IRosterViewerDropTarget;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.dnd.TransferData;
-import org.eclipse.ui.PlatformUI;
 
 public class RosterEntryDropTarget implements IRosterViewerDropTarget {
 
@@ -16,6 +15,7 @@ public class RosterEntryDropTarget implements IRosterViewerDropTarget {
 			TransferData transferType) {
 		if (rosterItem instanceof IRosterEntry) {
 			transferData = transferType;
+			rosterEntry = (IRosterEntry) rosterItem;
 			return true;
 		} else {
 			transferData = null;
@@ -25,10 +25,10 @@ public class RosterEntryDropTarget implements IRosterViewerDropTarget {
 	}
 
 	public boolean performDrop(Object data) {
-		if (data instanceof String) {
+		if (data instanceof String && rosterEntry != null) {
 			// Right here, send data to channel
 			// sendString(rosterEntry.getUser().getID(),(String) data);
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getDisplay().getActiveShell(),"Roster Drop","The following text was dropped on "
+			MessageDialog.openInformation(null,"Drop on Entry","The following text was dropped on "
 					+ rosterEntry.getUser().getName() + ":\n\n" + data);
 			return true;
 		}
