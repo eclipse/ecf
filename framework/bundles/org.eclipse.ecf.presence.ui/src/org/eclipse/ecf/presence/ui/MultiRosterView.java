@@ -87,6 +87,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -1165,15 +1166,16 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		protected Composite createContentArea(Composite parent,
 				IRosterEntry entry) {
 			byte[] data = entry.getPresence().getPictureData();
+			Color background = parent.getDisplay().getSystemColor(
+					SWT.COLOR_INFO_BACKGROUND);
 			if (data.length == 0) {
 				// if there is no picture data, we'll just draw our standard
 				// tooltip
 				Composite comp = new Composite(parent, SWT.NONE);
-				comp.setBackground(parent.getDisplay().getSystemColor(
-						SWT.COLOR_INFO_BACKGROUND));
-				comp.setLayout(new GridLayout(2, false));
+				comp.setLayout(new FillLayout());
 				Label label = new Label(comp, SWT.NONE);
 				label.setText(getRosterEntryChildrenFromPresence(entry));
+				label.setBackground(background);
 				return comp;
 			} else {
 				Composite comp = new Composite(parent, SWT.NONE);
@@ -1182,9 +1184,11 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 				Label label = new Label(comp, SWT.NONE);
 				label.setText(getRosterEntryChildrenFromPresence(entry));
+				label.setBackground(background);
 
 				// create a canvas for drawing
 				Canvas canvas = new Canvas(comp, SWT.NONE);
+				canvas.setBackground(background);
 				GridData canvasData = new GridData(SWT.FILL, SWT.FILL, true,
 						true);
 				// set a minimum width hint of 96 pixels
