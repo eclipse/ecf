@@ -64,7 +64,6 @@ public class PresenceChannelListener implements IChannelListener {
 				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e));
 			} finally {
 				Activator.getDefault().setListenerActive(true);
-				System.out.println("Setting events on");
 			}
 		}
 	}
