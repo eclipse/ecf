@@ -35,12 +35,10 @@ public class Discovery {
 				.getAdapter(IDiscoveryContainerAdapter.class);
 		discoveryContainer
 				.addServiceTypeListener(new CollabServiceTypeListener());
-		System.out.println("startDiscovery()");
 	}
 
 	class CollabServiceTypeListener implements IServiceTypeListener {
 		public void serviceTypeAdded(IServiceEvent event) {
-			System.out.println("serviceTypeAdded(" + event + ")");
 			IServiceID svcID = event.getServiceInfo().getServiceID();
 			discoveryContainer.addServiceListener(svcID.getServiceType(),
 					new CollabServiceListener());
@@ -50,17 +48,14 @@ public class Discovery {
 
 	class CollabServiceListener implements IServiceListener {
 		public void serviceAdded(IServiceEvent event) {
-			System.out.println("serviceAdded(" + event + ")");
 			discoveryContainer.requestServiceInfo(event.getServiceInfo()
 					.getServiceID(), 3000);
 		}
 
 		public void serviceRemoved(IServiceEvent event) {
-			System.out.println("serviceRemoved(" + event + ")");
 		}
 
 		public void serviceResolved(IServiceEvent event) {
-			System.out.println("serviceResolved(" + event + ")");
 		}
 	}
 }

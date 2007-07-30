@@ -28,8 +28,6 @@ public class SharedEditor extends TextEditor implements IEditorPart {
 
 		if (input instanceof FileEditorInput) {
 			IFile file = ((FileEditorInput) input).getFile();
-			System.out.println("Create EclipseCollabSharedObject for "
-					+ file.getFullPath());
 		}
 
 	}
