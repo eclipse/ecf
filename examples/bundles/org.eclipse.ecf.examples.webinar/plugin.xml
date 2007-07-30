@@ -5,10 +5,10 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
+            locationURI="menu:org.eclipse.ecf.presence.ui.MultiRosterView?after=additions">
          <dynamic
-               class="org.eclipse.ecf.internal.examples.webinar.util.rosterentry.SendMessageRosterEntryContribution"
-               id="org.eclipse.ecf.examples.webinar.dynamic2">
+               class="org.eclipse.ecf.internal.examples.webinar.util.rosterview.ShowAllRostersContribution"
+               id="org.eclipse.ecf.examples.webinar.dynamic4">
          </dynamic>
       </menuContribution>
    </extension>
@@ -27,10 +27,10 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="menu:org.eclipse.ecf.presence.ui.MultiRosterView?after=additions">
+            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
          <dynamic
-               class="org.eclipse.ecf.internal.examples.webinar.util.rosterview.ShowAllRostersContribution"
-               id="org.eclipse.ecf.examples.webinar.dynamic4">
+               class="org.eclipse.ecf.internal.examples.webinar.util.rosterentry.SendMessageRosterEntryContribution"
+               id="org.eclipse.ecf.examples.webinar.dynamic2">
          </dynamic>
       </menuContribution>
    </extension>
