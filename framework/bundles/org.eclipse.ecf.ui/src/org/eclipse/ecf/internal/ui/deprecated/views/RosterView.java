@@ -180,9 +180,6 @@ public class RosterView extends ViewPart implements IIMMessageListener,
 											IFileTransferEvent event) {
 										// XXX Should have some some UI
 										// for transfer events
-										System.out
-												.println("handleTransferEvent("
-														+ event + ")");
 										if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
 											try {
 												fos.close();
