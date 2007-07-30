@@ -104,7 +104,7 @@ public class MessageRenderer implements IMessageRenderer {
 	}
 	
 	protected void appendDateTime() {
-		String message = NLS.bind(Messages.MessageRenderer_DEFAULT_DATETIME_FORMAT, getCurrentDate(DEFAULT_TIME_FORMAT));
+		String message = NLS.bind(Messages.MessageRenderer_DEFAULT_DATETIME_FORMAT, getCurrentDate(DEFAULT_TIME_FORMAT)) + " ";
 		append(message, dateColor, null, SWT.NORMAL);
 	}
 

@@ -1397,6 +1397,8 @@ public class ChatRoomManagerView extends ViewPart implements
 			originator = text.getOriginator().getNickname(); 
 		}
 		
+		if (messageRenderer == null) messageRenderer = new MessageRenderer();
+		
 		String output = messageRenderer.render(text.getText(), originator, localUserName);
 		StyleRange[] ranges = messageRenderer.getStyleRanges();
 		
