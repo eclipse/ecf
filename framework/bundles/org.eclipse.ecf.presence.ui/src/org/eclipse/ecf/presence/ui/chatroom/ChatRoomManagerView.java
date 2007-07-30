@@ -909,8 +909,7 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		public void handleInvitationReceived(ID roomID, ID from,
 				String subject, String body) {
-			System.out.println("invitation room=" + roomID + ",from=" + from //$NON-NLS-1$ //$NON-NLS-2$
-					+ ",subject=" + subject + ",body=" + body); //$NON-NLS-1$ //$NON-NLS-2$
+			// XXX TODO show UI for invitation
 		}
 
 		public void keyPressed(KeyEvent e) {
