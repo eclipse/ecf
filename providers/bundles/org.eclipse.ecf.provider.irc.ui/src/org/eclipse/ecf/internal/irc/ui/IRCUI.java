@@ -63,7 +63,8 @@ public class IRCUI extends ChatRoomManagerUI {
 			initialRooms = targetURI.getPath();
 		} catch (URISyntaxException e) {
 		}
-		if (initialRooms == null || initialRooms.equals("")) //$NON-NLS-1$
+		if (initialRooms == null 
+				|| initialRooms.equals("") || initialRooms.equals("/")) //$NON-NLS-1$
 			return new String[0];
 		while (initialRooms.charAt(0) == '/')
 			initialRooms = initialRooms.substring(1);
