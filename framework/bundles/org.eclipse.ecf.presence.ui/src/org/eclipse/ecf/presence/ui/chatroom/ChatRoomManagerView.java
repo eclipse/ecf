@@ -101,7 +101,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class ChatRoomManagerView extends ViewPart implements
 		IChatRoomInvitationListener {
@@ -252,7 +251,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			}
 
 			public void widgetSelected(SelectionEvent e) {
-				if (shouldScrollToEnd(getOutputText())) {
+				if (!isLastOutputInvisible(getOutputText())) {
 					makeTabItemNormal();
 				}
 			}
@@ -870,7 +869,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			}
 
 			public void widgetSelected(SelectionEvent e) {
-				if (shouldScrollToEnd(getOutputText())) {
+				if (!isLastOutputInvisible(getOutputText())) {
 					makeTabItemNormal();
 				}
 			}
@@ -898,11 +897,8 @@ public class ChatRoomManagerView extends ViewPart implements
 				public void run() {
 					if (rootDisposed)
 						return;
-					appendText(getOutputText(), new ChatLine(messageBody,
+					appendText(chatRoomTab, getOutputText(), new ChatLine(messageBody,
 							new ChatRoomParticipant(fromID)));
-					CTabItem item = rootTabFolder.getSelection();
-					if (item != chatRoomTab.tabItem || !shouldScrollToEnd(getOutputText())) 
-						makeTabItemBold();
 				}
 			});
 		}
@@ -926,6 +922,8 @@ public class ChatRoomManagerView extends ViewPart implements
 				if (inputText.getText().trim().length() > 0)
 					handleTextInput(inputText.getText());
 				clearInput();
+				makeTabItemNormal();
+				scrollToEnd(getOutputText());
 				evt.doit = false;
 				isCycling = false;
 			} else if (evt.character == SWT.TAB) {
@@ -1028,7 +1026,7 @@ public class ChatRoomManagerView extends ViewPart implements
 							choices.delete(choices.length() - 1, choices
 									.length());
 						}
-						appendText(getOutputText(), new ChatLine(choices
+						appendText(chatRoomTab, getOutputText(), new ChatLine(choices
 								.toString()));
 					}
 				}
@@ -1121,7 +1119,7 @@ public class ChatRoomManagerView extends ViewPart implements
 							.getPluginPreferences();
 					
 					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE)) 
-						appendText(getOutputText(), new ChatLine(NLS.bind(
+						appendText(chatRoomTab, getOutputText(), new ChatLine(NLS.bind(
 								Messages.ChatRoomManagerView_ENTERED_MESSAGE,
 								getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.add(p);
@@ -1156,7 +1154,7 @@ public class ChatRoomManagerView extends ViewPart implements
 					.getPluginPreferences();
 			
 					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE)) 
-						appendText(getOutputText(), new ChatLine(NLS.bind(
+						appendText(chatRoomTab,getOutputText(), new ChatLine(NLS.bind(
 								Messages.ChatRoomManagerView_LEFT_MESSAGE,
 								getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.remove(p);
@@ -1200,6 +1198,8 @@ public class ChatRoomManagerView extends ViewPart implements
 		if (inputText.getText().trim().length() > 0)
 			handleTextInput(inputText.getText());
 		clearInput();
+		scrollToEnd(getRootTextOutput());
+		rootChannelTab.makeTabItemNormal();
 	}
 
 	protected void handleKeyPressed(KeyEvent evt) {
@@ -1241,7 +1241,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			public void run() {
 				if (rootDisposed)
 					return;
-				appendText(getRootTextOutput(), new ChatLine(messageBody,
+				appendText(rootChannelTab, getRootTextOutput(), new ChatLine(messageBody,
 						new ChatRoomParticipant(fromID)));
 				if (rootChannelTab != null) rootChannelTab.makeTabItemBold();
 			}
@@ -1381,13 +1381,17 @@ public class ChatRoomManagerView extends ViewPart implements
 		// XXX TODO
 	}
 	
-	private boolean shouldScrollToEnd(StyledText chatText) {
+	private boolean isLastOutputInvisible(StyledText chatText) {
 		Point locAtEnd = chatText.getLocationAtOffset(chatText.getText().length());
 		Rectangle bounds = chatText.getBounds();
 		return (locAtEnd.y > bounds.height + 5);
 	}
 
-	protected void appendText(StyledText st, ChatLine text) {
+	private void scrollToEnd(StyledText chatText) {
+		chatText.setSelection(chatText.getText().length());
+	}
+	
+	protected void appendText(ChatRoomTab chatRoomTab, StyledText st, ChatLine text) {
 		if (st == null || text == null) {
 			return;
 		}
@@ -1421,12 +1425,13 @@ public class ChatRoomManagerView extends ViewPart implements
 				st.setStyleRange(ranges[i]);
 			} 	
 		}
+		// If we are not the currently active tab, then bold the tab
+		// item so that user can see that they received something
+		if (!isCurrentlyActive(chatRoomTab) || isLastOutputInvisible(st)) chatRoomTab.makeTabItemBold();
+		else chatRoomTab.makeTabItemNormal();
+		// In either case, if the last output is visible, then scroll to end
+		if (!isLastOutputInvisible(st)) scrollToEnd(st);
 		
-		if (shouldScrollToEnd(st)) st.setSelection(startRange + output.length());
-		// Bold title if view is not visible.
-		IWorkbenchSiteProgressService pservice = (IWorkbenchSiteProgressService) this
-				.getSite().getAdapter(IWorkbenchSiteProgressService.class);
-		pservice.warnOfContentChange();
 	}
 
 	protected void outputClear() {
@@ -1548,5 +1553,14 @@ public class ChatRoomManagerView extends ViewPart implements
 
 	public void setMessageRenderer(IMessageRenderer defaultMessageRenderer) {
 		this.messageRenderer = defaultMessageRenderer;
+	}
+	
+	private boolean isCurrentlyActive(ChatRoomTab chatRoomTab) {
+		int selected = rootTabFolder.getSelectionIndex();
+		if (selected != -1) {
+			CTabItem item = rootTabFolder.getItem(selected);
+			if (item == chatRoomTab.tabItem) return true;
+		}
+		return false;
 	}
 }
