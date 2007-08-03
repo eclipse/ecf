@@ -54,10 +54,11 @@ public class IRCNamespace extends org.eclipse.ecf.core.identity.Namespace {
 		URI ret = null;
 		String uname = s.substring(getProtocolPrefix().length(),s.indexOf("@"));
 		int hostend = s.lastIndexOf("/");
-		if(hostend == -1){
+		int hoststart = s.indexOf("@");
+		if(hoststart > hostend || hostend == -1){
 			hostend = s.length();
 		}
-		String host = s.substring(s.indexOf("@")+1,hostend);
+		String host = s.substring(hoststart+1,hostend);
 		int port = -1;
 		int portidx = host.indexOf(":");
 		if(portidx >= 0){
