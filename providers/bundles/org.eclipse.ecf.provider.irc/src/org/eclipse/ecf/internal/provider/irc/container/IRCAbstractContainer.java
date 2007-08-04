@@ -142,11 +142,6 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 
 	public abstract void disconnect();
 
-	public void dispose() {
-		fireContainerEvent(new ContainerDisposeEvent(getID()));
-		disconnect();
-	}
-
 	protected String[] parseCommandTokens(String message) {
 		StringTokenizer st = new StringTokenizer(message, COMMAND_DELIM);
 		int countTokens = st.countTokens();
