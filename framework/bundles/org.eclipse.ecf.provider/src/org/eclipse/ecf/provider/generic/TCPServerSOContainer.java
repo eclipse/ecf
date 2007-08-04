@@ -92,12 +92,8 @@ public class TCPServerSOContainer extends ServerSOContainer implements
 		} catch (Exception e) {
 			// Should never happen
 		}
-		if (aURI != null)
-			group.remove(aURI.getPath());
-		if (isSingle) {
-			group.takeOffTheAir();
-		}
-		group = null;
+		group.remove(aURI.getPath());
+		if (isSingle) group.takeOffTheAir();
 		super.dispose();
 	}
 

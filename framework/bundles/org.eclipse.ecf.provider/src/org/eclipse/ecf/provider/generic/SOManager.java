@@ -176,7 +176,7 @@ public class SOManager implements ISharedObjectManager {
 		try {
 			newObject = loadSharedObject(sd);
 			ID newID = createNewSharedObjectID(sd, newObject);
-			container.fireContainerEvent(new SharedObjectManagerCreateEvent(
+			container.fireDelegateContainerEvent(new SharedObjectManagerCreateEvent(
 					container.getID(), newID));
 			result = addSharedObject(newID, newObject, sd.getProperties());
 		} catch (Exception e) {
@@ -214,7 +214,7 @@ public class SOManager implements ISharedObjectManager {
 		debug("addSharedObject(" + sharedObjectID + "," + sharedObject + "," //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				+ properties + ")"); //$NON-NLS-1$
 		// notify listeners
-		container.fireContainerEvent(new SharedObjectManagerAddEvent(container
+		container.fireDelegateContainerEvent(new SharedObjectManagerAddEvent(container
 				.getID(), sharedObjectID));
 		ID result = sharedObjectID;
 		try {
@@ -250,7 +250,7 @@ public class SOManager implements ISharedObjectManager {
 	public ISharedObject removeSharedObject(ID sharedObjectID) {
 		debug("removeSharedObject(" + sharedObjectID + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		// notify listeners
-		container.fireContainerEvent(new SharedObjectManagerRemoveEvent(
+		container.fireDelegateContainerEvent(new SharedObjectManagerRemoveEvent(
 				container.getID(), sharedObjectID));
 		return container.removeSharedObject(sharedObjectID);
 	}
@@ -295,7 +295,7 @@ public class SOManager implements ISharedObjectManager {
 			result = new SOConnector(sharedObjectFrom, sharedObjectsTo, queues);
 			addConnector(result);
 			// notify listeners
-			container.fireContainerEvent(new SharedObjectManagerConnectEvent(
+			container.fireDelegateContainerEvent(new SharedObjectManagerConnectEvent(
 					container.getID(), result));
 		}
 		return result;
@@ -318,7 +318,7 @@ public class SOManager implements ISharedObjectManager {
 							+ Messages.SOManager_Not_Found);
 		}
 		connector.dispose();
-		container.fireContainerEvent(new SharedObjectManagerDisconnectEvent(
+		container.fireDelegateContainerEvent(new SharedObjectManagerDisconnectEvent(
 				container.getID(), connector));
 	}
 

@@ -36,11 +36,11 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements
 	public static final String INVALID_CONNECT = Messages.TCPServerSOContainerGroup_Invalid_Connect_Request;
 	public static final String DEFAULT_GROUP_NAME = TCPServerSOContainerGroup.class
 			.getName();
-	protected int port;
-	Server listener;
-	boolean isOnTheAir = false;
-	ThreadGroup threadGroup;
-	int socketKeepAlive = DEFAULT_SOCKET_KEEPALIVE;
+	private int port;
+	private Server listener;
+	private boolean isOnTheAir = false;
+	private ThreadGroup threadGroup;
+	private int socketKeepAlive = DEFAULT_SOCKET_KEEPALIVE;
 
 	public TCPServerSOContainerGroup(String name, ThreadGroup group, int port,
 			int socketKeepAlive) {

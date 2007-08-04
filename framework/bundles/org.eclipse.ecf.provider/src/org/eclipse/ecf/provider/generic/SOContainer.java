@@ -19,15 +19,12 @@ import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.IContainerListener;
-import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -67,7 +64,7 @@ import org.eclipse.ecf.provider.util.IClassLoaderMapper;
 import org.eclipse.ecf.provider.util.IdentifiableObjectInputStream;
 import org.eclipse.ecf.provider.util.IdentifiableObjectOutputStream;
 
-public abstract class SOContainer implements ISharedObjectContainer {
+public abstract class SOContainer extends AbstractContainer implements ISharedObjectContainer {
 	class LoadingSharedObject implements ISharedObject {
 		private ReplicaSharedObjectDescription description;
 		private Thread runner = null;
@@ -186,8 +183,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			.getName()
 			+ ".sharedobjectargtypes"; //$NON-NLS-1$
 
-	private Vector listeners = null;
-
 	private long sequenceNumber = 0L;
 
 	protected ISharedObjectContainerConfig config = null;
@@ -235,7 +230,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 		sharedObjectManager = new SOManager(this);
 		loadingThreadGroup = new ThreadGroup(getID() + ":loading");
 		sharedObjectThreadGroup = new ThreadGroup(getID() + ":SOs");
-		listeners = new Vector();
 	}
 
 	// Implementation of IIdentifiable
@@ -250,29 +244,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	}
 
 	// Implementation of IContainer
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainer#addListener(org.eclipse.ecf.core.IContainerListener,
-	 *      java.lang.String)
-	 */
-	public void addListener(IContainerListener l) {
-		synchronized (listeners) {
-			listeners.add(l);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.ISharedObjectContainer#removeListener(org.eclipse.ecf.core.IContainerListener)
-	 */
-	public void removeListener(IContainerListener l) {
-		synchronized (listeners) {
-			listeners.remove(l);
-		}
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -315,14 +286,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 	 */
 	public void dispose() {
 		isClosing = true;
-		// notify listeners
-		synchronized (listeners) {
-			for(Iterator i=listeners.iterator(); i.hasNext(); ) {
-				IContainerListener l = (IContainerListener) i.next();
-				l.handleEvent(new ContainerDisposeEvent(getID()));
-				i.remove();
-			}
-		}
 		// Clear group manager
 		if (groupManager != null)
 			groupManager.removeAllMembers();
@@ -335,6 +298,7 @@ public abstract class SOContainer implements ISharedObjectContainer {
 			loadingThreadGroup.interrupt();
 			loadingThreadGroup = null;
 		}
+		super.dispose();
 	}
 
 	/*
@@ -497,15 +461,6 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
 	protected boolean destroySharedObject(ID sharedObjectID) {
 		return groupManager.removeSharedObject(sharedObjectID);
-	}
-
-	protected void fireContainerEvent(IContainerEvent event) {
-		synchronized (listeners) {
-			for (Iterator i = listeners.iterator(); i.hasNext();) {
-				IContainerListener l = (IContainerListener) i.next();
-				l.handleEvent(event);
-			}
-		}
 	}
 
 	protected final void forward(ID fromID, ID toID, ContainerMessage data)
@@ -1139,6 +1094,15 @@ public abstract class SOContainer implements ISharedObjectContainer {
 
 	protected void setMaxGroupMembers(int max) {
 		groupManager.setMaxMembers(max);
+	}
+
+	/**
+	 * @param sharedObjectManagerCreateEvent
+	 */
+	protected void fireDelegateContainerEvent(
+			IContainerEvent containerEvent) {
+		super.fireContainerEvent(containerEvent);
+		
 	}
 
 }
