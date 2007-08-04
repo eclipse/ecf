@@ -26,16 +26,13 @@ import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.ServiceTypeListener;
 
-import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectingEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
-import org.eclipse.ecf.core.events.ContainerDisposeEvent;
-import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -57,19 +54,17 @@ import org.eclipse.ecf.internal.provider.jmdns.JMDNSPlugin;
 import org.eclipse.ecf.internal.provider.jmdns.Messages;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceID;
 
-public class JMDNSDiscoveryContainer implements IContainer,
+public class JMDNSDiscoveryContainer extends AbstractContainer implements IContainer,
 		IDiscoveryService, ServiceListener, ServiceTypeListener {
 	public static final int DEFAULT_REQUEST_TIMEOUT = 3000;
 	protected static String JMDNS_NAMESPACE_ID = Messages
 			.getString("JMDNSPlugin.namespace.identifier"); //$NON-NLS-1$;
 
-	ContainerConfig config = null;
-	InetAddress intf = null;
-	JmDNS jmdns = null;
-	int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
-	Map serviceListeners = new HashMap();
-	Vector serviceTypeListeners = new Vector();
-	private Vector listeners = new Vector();
+	private ContainerConfig config = null;
+	private InetAddress intf = null;
+	private JmDNS jmdns = null;
+	private Map serviceListeners = new HashMap();
+	private Vector serviceTypeListeners = new Vector();
 
 	public JMDNSDiscoveryContainer() throws IOException, IDCreateException {
 		this(null);
@@ -113,21 +108,12 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		serviceTypeListeners.add(listener);
 	}
 
-	protected void fireContainerEvent(IContainerEvent event) {
-		synchronized (listeners) {
-			for (Iterator i = listeners.iterator(); i.hasNext();) {
-				IContainerListener l = (IContainerListener) i.next();
-				l.handleEvent(event);
-			}
-		}
-	}
-
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.IContainer#dispose()
 	 */
 	public void dispose() {
 		disconnect();
-		fireContainerEvent(new ContainerDisposeEvent(getID()));
+		super.dispose();
 	}
 
 	protected void fireServiceAdded(ServiceEvent arg0) {
@@ -180,19 +166,6 @@ public class JMDNSDiscoveryContainer implements IContainer,
 						createIServiceInfoFromServiceEvent(arg0), config
 								.getID()));
 			}
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.IContainer#getAdapter(java.lang.Class)
-	 */
-	public Object getAdapter(Class adapter) {
-		if (adapter.isInstance(this)) {
-			return this;
-		} else {
-			IAdapterManager adapterManager = JMDNSPlugin.getDefault().getAdapterManager();
-			if (adapterManager == null) return null;
-			return adapterManager.getAdapter(this, adapter);
 		}
 	}
 
@@ -514,22 +487,4 @@ public class JMDNSDiscoveryContainer implements IContainer,
 		return IDFactory.getDefault().getNamespaceByName(JMDNS_NAMESPACE_ID);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.IContainer#addListener(org.eclipse.ecf.core.IContainerListener)
-	 */
-	public void addListener(IContainerListener l) {
-		synchronized (listeners) {
-			listeners.add(l);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.IContainer#removeListener(org.eclipse.ecf.core.IContainerListener)
-	 */
-	public void removeListener(IContainerListener l) {
-		synchronized (listeners) {
-			listeners.remove(l);
-		}
-	}
-	
 }
