@@ -107,15 +107,6 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 		assertNull(client.getConnectedID());
 	}
 
-	public void testClientDispose() throws Exception {
-		IContainer client = getClients()[0];
-		assertNull(client.getConnectedID());
-		client.connect(createServerID(), null);
-		assertNotNull(client.getConnectedID());
-		client.dispose();
-		assertNull(client.getConnectedID());
-	}
-
 	protected IContainerListener createListener() {
 		return new IContainerListener() {
 
@@ -167,18 +158,6 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 		Object o = clientConnectedEvents.get(0);
 		assertTrue(o instanceof IContainerConnectedEvent);
 		IContainerConnectedEvent cco = (IContainerConnectedEvent) o;
-		assertTrue(cco.getLocalContainerID().equals(client.getID()));
-		assertTrue(cco.getTargetID().equals(createServerID()));
-	}
-
-	public void testListenerDisconnecting() throws Exception {
-		IContainer client = getClients()[0];
-		client.addListener(createListener());
-		client.connect(createServerID(), null);
-		client.disconnect();
-		Object o = clientDisconnectingEvents.get(0);
-		assertTrue(o instanceof IContainerDisconnectingEvent);
-		IContainerDisconnectingEvent cco = (IContainerDisconnectingEvent) o;
 		assertTrue(cco.getLocalContainerID().equals(client.getID()));
 		assertTrue(cco.getTargetID().equals(createServerID()));
 	}
