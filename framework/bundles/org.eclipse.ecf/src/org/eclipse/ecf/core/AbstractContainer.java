@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.security.Callback;
 import org.eclipse.ecf.core.security.CallbackHandler;
@@ -29,17 +30,25 @@ import org.eclipse.ecf.internal.core.Messages;
  */
 public abstract class AbstractContainer implements IContainer {
 
-	protected List containerListeners = new ArrayList();
+	private final List containerListeners = new ArrayList(5);
 
 	public void addListener(IContainerListener l) {
-		containerListeners.add(l);
+		synchronized (containerListeners) {
+			containerListeners.add(l);
+		}
 	}
 
 	public void removeListener(IContainerListener l) {
-		containerListeners.remove(l);
+		synchronized (containerListeners) {
+			containerListeners.remove(l);
+		}
 	}
 
 	public void dispose() {
+		fireContainerEvent(new ContainerDisposeEvent(getID()));
+		synchronized (containerListeners) {
+			containerListeners.clear();
+		}
 	}
 
 	/**
@@ -48,20 +57,28 @@ public abstract class AbstractContainer implements IContainer {
 	 * @param event
 	 */
 	protected void fireContainerEvent(IContainerEvent event) {
-		for (Iterator i = containerListeners.iterator(); i.hasNext();) {
+		List toNotify = null;
+		// Copy array
+		synchronized (containerListeners) {
+			toNotify = new ArrayList(containerListeners);
+		}
+		// Notify all in toNotify
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
 			IContainerListener l = (IContainerListener) i.next();
 			l.handleEvent(event);
 		}
 	}
 
 	public Object getAdapter(Class serviceType) {
-		if (serviceType == null) return null;
+		if (serviceType == null)
+			return null;
 		if (serviceType.isInstance(this)) {
 			return this;
 		} else {
-			IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
-			if (adapterManager == null) return null;
-			return adapterManager.loadAdapter(this, serviceType.getName());
+			IAdapterManager adapterManager = ECFPlugin.getDefault()
+					.getAdapterManager();
+			return (adapterManager == null) ? null : adapterManager
+					.loadAdapter(this, serviceType.getName());
 		}
 	}
 
