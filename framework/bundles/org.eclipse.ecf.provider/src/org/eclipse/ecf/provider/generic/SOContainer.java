@@ -1097,7 +1097,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	/**
-	 * @param sharedObjectManagerCreateEvent
+	 * @param containerEvent
 	 */
 	protected void fireDelegateContainerEvent(
 			IContainerEvent containerEvent) {
