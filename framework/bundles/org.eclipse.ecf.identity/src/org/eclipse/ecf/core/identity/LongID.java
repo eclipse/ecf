@@ -78,4 +78,10 @@ public class LongID extends BaseID {
 		return value.longValue();
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer("LongID[");
+		sb.append(value).append("]"); //$NON-NLS-1$
+		return sb.toString();
+
+	}
 }
