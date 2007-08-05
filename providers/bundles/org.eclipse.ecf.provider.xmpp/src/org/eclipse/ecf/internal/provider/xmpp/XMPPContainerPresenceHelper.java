@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.WeakHashMap;
 
 import org.eclipse.ecf.core.identity.ID;
@@ -86,17 +85,15 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	public static final String VCARD_PHONE_WORK_CELL = VCARD_PHONE_WORK
 			+ ".cell";
 
-	ISharedObjectConfig config = null;
+	private ISharedObjectConfig config = null;
 
-	Vector messageListeners = new Vector();
+	private List sharedObjectMessageListeners = new ArrayList();
 
-	Vector sharedObjectMessageListeners = new Vector();
+	private XMPPContainer container = null;
 
-	XMPPContainer container = null;
+	private XMPPChatManager chatManager = null;
 
-	XMPPChatManager chatManager = null;
-
-	Vector presenceListeners = new Vector();
+	private List presenceListeners = new ArrayList();
 
 	public XMPPContainerPresenceHelper(XMPPContainer container) {
 		this.container = container;
@@ -152,9 +149,12 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	public void disconnect() {
 		rosterManager.disconnect();
 		chatManager.disconnect();
-		messageListeners.clear();
-		sharedObjectMessageListeners.clear();
-		presenceListeners.clear();
+		synchronized (sharedObjectMessageListeners) {
+			sharedObjectMessageListeners.clear();		
+		}
+		synchronized (presenceListeners) {
+			presenceListeners.clear();
+		}
 		vcardCache.clear();
 	}
 
@@ -291,7 +291,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		 * @see org.eclipse.ecf.presence.roster.IRosterManager#addPresenceListener(org.eclipse.ecf.presence.roster.IPresenceListener)
 		 */
 		public void addPresenceListener(IPresenceListener listener) {
-			presenceListeners.add(listener);
+			synchronized (presenceListeners) {
+				presenceListeners.add(listener);
+			}
 		}
 
 		/*
@@ -300,7 +302,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 		 * @see org.eclipse.ecf.presence.roster.IRosterManager#removePresenceListener(org.eclipse.ecf.presence.roster.IPresenceListener)
 		 */
 		public void removePresenceListener(IPresenceListener listener) {
-			presenceListeners.add(listener);
+			synchronized (presenceListeners) {
+				presenceListeners.add(listener);
+			}
 		}
 
 	}
@@ -322,7 +326,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	protected void addSharedObjectMessageListener(
 			ISharedObjectMessageListener listener) {
-		sharedObjectMessageListeners.add(listener);
+		synchronized (sharedObjectMessageListeners) {
+			sharedObjectMessageListeners.add(listener);
+		}
 	}
 
 	protected void sendTypingMessage(ID toID, boolean isTyping, String body)
@@ -335,7 +341,11 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	protected void handleSharedObjectMessageEvent(
 			ISharedObjectMessageEvent event) {
-		for (Iterator i = sharedObjectMessageListeners.iterator(); i.hasNext();) {
+		List toNotify = null;
+		synchronized (sharedObjectMessageListeners) {
+			toNotify = new ArrayList(sharedObjectMessageListeners);
+		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
 			ISharedObjectMessageListener l = (ISharedObjectMessageListener) i
 					.next();
 			l.handleSharedObjectMessage(event);
@@ -351,7 +361,9 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 	protected void removeSharedObjectMessageListener(
 			ISharedObjectMessageListener listener) {
-		sharedObjectMessageListeners.remove(listener);
+		synchronized (sharedObjectMessageListeners) {
+			sharedObjectMessageListeners.remove(listener);
+		}
 	}
 
 	private void addToRoster(IRosterItem[] items) {
@@ -512,7 +524,11 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	private void firePresenceListeners(ID fromID, IPresence presence) {
-		for (Iterator i = presenceListeners.iterator(); i.hasNext();) {
+		List toNotify = null;
+		synchronized (presenceListeners) {
+			toNotify = new ArrayList(presenceListeners);
+		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
 			IPresenceListener l = (IPresenceListener) i.next();
 			l.handlePresence(fromID, presence);
 		}

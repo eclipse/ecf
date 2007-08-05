@@ -10,7 +10,6 @@ package org.eclipse.ecf.provider.xmpp;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -173,7 +172,7 @@ public class XMPPContainer extends ClientSOContainer implements
 			throws ContainerConnectException {
 		try {
 			getSharedObjectManager().addSharedObject(presenceHelperID,
-					presenceHelper, new HashMap());
+					presenceHelper, null);
 			super.connect(remote, joinContext);
 		} catch (ContainerConnectException e) {
 			disconnect();

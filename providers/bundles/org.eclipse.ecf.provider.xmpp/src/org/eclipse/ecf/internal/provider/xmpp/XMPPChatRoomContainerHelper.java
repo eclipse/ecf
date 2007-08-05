@@ -11,8 +11,9 @@
 package org.eclipse.ecf.internal.provider.xmpp;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
@@ -42,11 +43,11 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 
 	ISharedObjectConfig config = null;
 
-	Vector messageListeners = new Vector();
-	Namespace usernamespace = null;
-	XMPPConnection connection = null;
-	Vector participantListeners = new Vector();
-	ID roomID = null;
+	private List messageListeners = new ArrayList();
+	private Namespace usernamespace = null;
+	private XMPPConnection connection = null;
+	private List participantListeners = new ArrayList();
+	private ID roomID = null;
 	
 	protected void trace(String message) {
 
@@ -54,12 +55,16 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 
 	protected void addChatParticipantListener(
 			IChatRoomParticipantListener listener) {
-		participantListeners.add(listener);
+		synchronized (participantListeners) {
+			participantListeners.add(listener);
+		}
 	}
 
 	protected void removeChatParticipantListener(
 			IChatRoomParticipantListener listener) {
-		participantListeners.remove(listener);
+		synchronized (participantListeners) {
+			participantListeners.remove(listener);			
+		}
 	}
 
 	public XMPPChatRoomContainerHelper(Namespace usernamespace,
@@ -120,7 +125,11 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	}
 
 	protected void fireMessageListeners(ID from, String body) {
-		for (Iterator i = messageListeners.iterator(); i.hasNext();) {
+		List toNotify = null;
+		synchronized (messageListeners) {
+			toNotify = new ArrayList(messageListeners);
+		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
 			IIMMessageListener l = (IIMMessageListener) i.next();
 			l.handleMessageEvent(new ChatRoomMessageEvent(from,
 					new ChatRoomMessage(from, roomID, body)));
@@ -217,7 +226,11 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	}
 
 	protected void fireParticipant(ID fromID, IPresence presence) {
-		for (Iterator i = participantListeners.iterator(); i.hasNext();) {
+		List toNotify = null;
+		synchronized (participantListeners) {
+			toNotify = new ArrayList(participantListeners);
+		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
 			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
 					.next();
 			l.handlePresenceUpdated(fromID, presence);
@@ -225,7 +238,11 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	}
 
 	protected void fireChatParticipant(ID fromID, boolean join) {
-		for (Iterator i = participantListeners.iterator(); i.hasNext();) {
+		List toNotify = null;
+		synchronized (participantListeners) {
+			toNotify = new ArrayList(participantListeners);
+		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
 			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
 					.next();
 			if (join) {
@@ -270,8 +287,12 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	 * @see org.eclipse.ecf.core.ISharedObject#dispose(org.eclipse.ecf.core.identity.ID)
 	 */
 	public void dispose(ID containerID) {
-		messageListeners.clear();
-		participantListeners.clear();
+		synchronized (messageListeners) {
+			messageListeners.clear();
+		}
+		synchronized (participantListeners) {
+			participantListeners.clear();
+		}
 		this.config = null;
 		this.connection = null;
 		this.usernamespace = null;
@@ -290,14 +311,18 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	 * @param msgListener
 	 */
 	protected void addChatRoomMessageListener(IIMMessageListener msgListener) {
-		messageListeners.add(msgListener);
+		synchronized (messageListeners) {
+			messageListeners.add(msgListener);
+		}
 	}
 
 	/**
 	 * @param msgListener
 	 */
 	public void removeChatRoomMessageListener(IIMMessageListener msgListener) {
-		messageListeners.remove(msgListener);
+		synchronized (messageListeners) {
+			messageListeners.remove(msgListener);
+		}
 	}
 
 	/**

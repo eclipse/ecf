@@ -11,10 +11,10 @@
 
 package org.eclipse.ecf.internal.provider.xmpp;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
@@ -41,11 +41,11 @@ import org.jivesoftware.smack.packet.Message.Type;
  */
 public class XMPPChatManager implements IChatManager {
 
-	protected Vector messageListeners = new Vector();
+	private List messageListeners = new ArrayList();
 
-	protected XMPPContainerPresenceHelper presenceHelper;
+	private XMPPContainerPresenceHelper presenceHelper;
 
-	protected IChatMessageSender chatMessageSender = new IChatMessageSender() {
+	private IChatMessageSender chatMessageSender = new IChatMessageSender() {
 
 		/*
 		 * (non-Javadoc)
@@ -159,7 +159,9 @@ public class XMPPChatManager implements IChatManager {
 	 * @see org.eclipse.ecf.presence.im.IChatManager#addChatMessageListener(org.eclipse.ecf.presence.im.IIMMessageListener)
 	 */
 	public void addMessageListener(IIMMessageListener listener) {
-		messageListeners.add(listener);
+		synchronized (messageListeners) {
+			messageListeners.add(listener);
+		}
 	}
 
 	/*
@@ -177,11 +179,17 @@ public class XMPPChatManager implements IChatManager {
 	 * @see org.eclipse.ecf.presence.im.IChatManager#removeChatMessageListener(org.eclipse.ecf.presence.im.IIMMessageListener)
 	 */
 	public void removeMessageListener(IIMMessageListener listener) {
-		messageListeners.remove(listener);
+		synchronized (messageListeners) {
+			messageListeners.remove(listener);			
+		}
 	}
 
 	private void fireMessageEvent(IIMMessageEvent event) {
-		for (Iterator i = messageListeners.iterator(); i.hasNext();) {
+		List toNotify = null;
+		synchronized (messageListeners) {
+			toNotify = new ArrayList(messageListeners);
+		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
 			IIMMessageListener l = (IIMMessageListener) i.next();
 			l.handleMessageEvent(event);
 		}
@@ -219,7 +227,9 @@ public class XMPPChatManager implements IChatManager {
 	}
 	
 	public void disconnect() {
-		messageListeners.clear();
+		synchronized (messageListeners) {
+			messageListeners.clear();
+		}
 	}
 
 	/* (non-Javadoc)

@@ -15,8 +15,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.identity.ID;
@@ -54,19 +54,19 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	// the conference rooms on the XMPP server
 	public static final String PROP_XMPP_CONFERENCE = "conference"; //$NON-NLS-1$
 
-	ID containerID = null;
+	private ID containerID = null;
 
-	Namespace connectNamespace = null;
+	private Namespace connectNamespace = null;
 
-	Vector invitationListeners = new Vector();
+	private List invitationListeners = new ArrayList();
 
-	ECFConnection ecfConnection = null;
+	private ECFConnection ecfConnection = null;
 
-	Vector chatrooms = new Vector();
+	private List chatrooms = new ArrayList();
 
-	ID connectedID = null;
+	private ID connectedID = null;
 
-	IChatRoomInvitationSender invitationSender = new IChatRoomInvitationSender() {
+	private IChatRoomInvitationSender invitationSender = new IChatRoomInvitationSender() {
 
 		public void sendInvitation(ID room, ID targetUser, String subject,
 				String body) throws ECFException {
@@ -96,17 +96,26 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	}
 
 	protected void addChat(XMPPChatRoomContainer container) {
-		chatrooms.add(container);
+		synchronized (chatrooms) {
+			chatrooms.add(container);
+		}
 	}
 
 	protected void removeChat(XMPPChatRoomContainer container) {
-		chatrooms.remove(container);
+		synchronized (chatrooms) {
+			chatrooms.remove(container);
+		}
 	}
 
 	protected XMPPChatRoomContainer getChatRoomContainer(ID roomID) {
 		if (roomID == null)
 			return null;
-		for (Iterator i = chatrooms.iterator(); i.hasNext();) {
+		List toNotify = null;
+		synchronized (chatrooms) {
+			toNotify = new ArrayList(chatrooms);
+		}
+
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
 			XMPPChatRoomContainer container = (XMPPChatRoomContainer) i.next();
 			ID containerRoomID = container.getConnectedID();
 			if (containerRoomID == null)
@@ -160,15 +169,21 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	}
 
 	protected void disposeChatRooms() {
-		for (Iterator i = chatrooms.iterator(); i.hasNext();) {
+		List toNotify = null;
+		synchronized (chatrooms) {
+			toNotify = new ArrayList(chatrooms);
+			chatrooms.clear();
+		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
 			IChatRoomContainer cc = (IChatRoomContainer) i.next();
 			cc.dispose();
 		}
-		chatrooms.clear();
 	}
 
 	public void dispose() {
-		invitationListeners.clear();
+		synchronized (invitationListeners) {
+			invitationListeners.clear();		
+		}
 		containerID = null;
 		connectNamespace = null;
 		disposeChatRooms();
@@ -280,7 +295,11 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 		if (toID instanceof XMPPRoomID) {
 			roomID = (XMPPRoomID) toID;
 			String mucname = roomID.getMucString();
-			for (Iterator i = chatrooms.iterator(); i.hasNext();) {
+			List toNotify = null;
+			synchronized (chatrooms) {
+				toNotify = new ArrayList(chatrooms);
+			}
+			for (Iterator i = toNotify.iterator(); i.hasNext();) {
 				IChatRoomContainer cont = (IChatRoomContainer) i.next();
 				if (cont == null)
 					continue;
@@ -380,16 +399,24 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	}
 
 	public void addInvitationListener(IChatRoomInvitationListener listener) {
-		invitationListeners.add(listener);
+		synchronized (invitationListeners) {
+			invitationListeners.add(listener);
+		}
 	}
 
 	public void removeInvitationListener(IChatRoomInvitationListener listener) {
-		invitationListeners.remove(listener);
+		synchronized (invitationListeners) {
+			invitationListeners.remove(listener);			
+		}
 	}
 
 	protected void fireInvitationReceived(ID roomID, ID fromID, ID toID,
 			String subject, String body) {
-		for (Iterator i = invitationListeners.iterator(); i.hasNext();) {
+		List toNotify = null;
+		synchronized (invitationListeners) {
+			toNotify = new ArrayList(invitationListeners);
+		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
 			IChatRoomInvitationListener l = (IChatRoomInvitationListener) i
 					.next();
 			l.handleInvitationReceived(roomID, fromID, subject, body);

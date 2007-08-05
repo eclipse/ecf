@@ -23,7 +23,7 @@ public class XMPPContainerAccountManager implements IAccountManager {
 
 	private static final String NOT_CONNECTED = "not connected";
 
-	AccountManager accountManager = null;
+	private AccountManager accountManager = null;
 
 	protected void traceAndThrow(String msg, Throwable t) throws ECFException {
 		throw new ECFException(msg, t);
