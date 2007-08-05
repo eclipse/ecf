@@ -41,8 +41,8 @@ public abstract class AbstractContainerAdapterFactory implements
 	 * return the proper container adapter object based upon the given adapterType.
 	 * 
 	 * @param container the IContainer adaptable object provided to the adapter.  Will not be <code>null</code>.
-	 * @param adapterType 
-	 * @return
+	 * @param adapterType.  The type (interface) of the adapter on the given container.  Will not be <code>null</code>
+	 * @return Object the container adapter instance.  May be <code>null</code>.
 	 */
 	protected abstract Object getContainerAdapter(IContainer container, Class adapterType);
 
