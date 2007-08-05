@@ -17,6 +17,7 @@ import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
+import org.eclipse.ecf.core.IContainerManagerListener;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -29,14 +30,22 @@ public class ContainerManagerServiceTest extends ContainerFactoryServiceAbstract
 
 	protected static final String CONTAINER_TYPE_NAME = ContainerManagerServiceTest.class.getName();
 	
-	protected IContainerManager containerManager = null;
+	private IContainerManager containerManager = null;
 	
-	protected IContainer containers = null;
-	
+	private IContainerManagerListener containerManagerListener = new IContainerManagerListener() {
+
+		public void containerAdded(IContainer container) {
+			System.out.println("containerAdded("+container+")");
+		}
+
+		public void containerRemoved(IContainer container) {
+			System.out.println("containerRemoved("+container+")");
+		}};
+		
 	protected IContainer[] createContainers(int length) throws Exception {
 		IContainer [] result = new IContainer[length];
 		for(int i=0; i < length; i++) {
-			result[i] = Activator.getDefault().getContainerFactory().createContainer(CONTAINER_TYPE_NAME);
+			result[i] = Activator.getDefault().getContainerFactory().createContainer();
 		}
 		return result;
 	}
@@ -48,6 +57,7 @@ public class ContainerManagerServiceTest extends ContainerFactoryServiceAbstract
 		super.setUp();
 		getFixture().addDescription(createContainerTypeDescription());
 		containerManager = Activator.getDefault().getContainerManager();
+		containerManager.addListener(containerManagerListener);
 	}
 	
 	/* (non-Javadoc)
@@ -55,8 +65,8 @@ public class ContainerManagerServiceTest extends ContainerFactoryServiceAbstract
 	 */
 	protected void tearDown() throws Exception {
 		getFixture().removeDescription(createContainerTypeDescription());
+		containerManager.removeListener(containerManagerListener);
 		containerManager = null;
-		containers = null;
 		super.tearDown();
 	}
 	
