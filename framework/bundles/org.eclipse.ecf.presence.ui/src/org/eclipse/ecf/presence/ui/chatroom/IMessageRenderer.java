@@ -10,7 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
-import org.eclipse.ecf.internal.presence.ui.ChatLine;
 import org.eclipse.swt.custom.StyleRange;
 
 /**
@@ -30,7 +29,7 @@ public interface IMessageRenderer {
 	String render(String message, String originator, String localUserName);
 	
 	/**
-	 * Returns formatting to be applied to rendered final output, returned by {@link #render(ChatLine, boolean)}.
+	 * Returns formatting to be applied to rendered final output, returned by {@link #render(String, String, String)}.
 	 * @return formatting to be applied to output, or null if no formatting
 	 */
 	StyleRange[] getStyleRanges();
