@@ -10,7 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.example.collab.ui;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -27,7 +26,7 @@ public class SharedEditor extends TextEditor implements IEditorPart {
 		super.doSetInput(input);
 
 		if (input instanceof FileEditorInput) {
-			IFile file = ((FileEditorInput) input).getFile();
+			//IFile file = ((FileEditorInput) input).getFile();
 		}
 
 	}
