@@ -290,7 +290,11 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 	 * @see org.eclipse.ecf.core.IContainer#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class serviceType) {
-		return null;
+		if (serviceType != null && serviceType.isInstance(this)) {
+			return this;
+		} else {
+			return null;
+		}
 	}
 
 	/*
