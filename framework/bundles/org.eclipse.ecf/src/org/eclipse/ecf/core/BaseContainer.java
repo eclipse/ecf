@@ -27,10 +27,11 @@ import org.eclipse.ecf.core.security.IConnectContext;
 public class BaseContainer extends AbstractContainer {
 
 	public static class Instantiator extends BaseContainerInstantiator {
-
+		private static long nextBaseContainerID = 0L;
+		
 		public IContainer createInstance(ContainerTypeDescription description,
 				Object[] parameters) throws ContainerCreateException {
-			return new BaseContainer();
+			return new BaseContainer(nextBaseContainerID++);
 		}
 
 		/*
@@ -46,11 +47,11 @@ public class BaseContainer extends AbstractContainer {
 
 	private ID id = null;
 	
-	public BaseContainer() {
+	private BaseContainer(long idl) throws ContainerCreateException {
 		try {
-			id = IDFactory.getDefault().createLongID(0);
+			this.id = IDFactory.getDefault().createLongID(idl);
 		} catch (IDCreateException e) {
-			// Can't happen
+			throw new ContainerCreateException(e);
 		}
 	}
 	
@@ -99,4 +100,9 @@ public class BaseContainer extends AbstractContainer {
 		return id;
 	}
 
+	public String toString() {
+		StringBuffer sb = new StringBuffer("BaseContainer[");
+		sb.append("id=").append(getID()).append("]");
+		return sb.toString();
+	}
 }

@@ -18,9 +18,9 @@ public class ContainerDisconnectingEvent implements
 
 	ID groupID;
 
-	public ContainerDisconnectingEvent(ID localContainerID, ID groupID) {
+	public ContainerDisconnectingEvent(ID localContainerID, ID targetID) {
 		this.localContainerID = localContainerID;
-		this.groupID = groupID;
+		this.groupID = targetID;
 	}
 
 	/*

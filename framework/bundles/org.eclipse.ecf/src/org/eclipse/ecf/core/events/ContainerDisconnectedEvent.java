@@ -26,14 +26,14 @@ public class ContainerDisconnectedEvent implements IContainerDisconnectedEvent {
 	 * Creates a new ContainerDisconnectedEvent to indicate that the container
 	 * has now completely disconnected from its target host.
 	 * 
-	 * @param container
+	 * @param localContainerID
 	 *            the ID of the local container
-	 * @param departedContainerID
+	 * @param targetID
 	 *            the ID of the target
 	 */
-	public ContainerDisconnectedEvent(ID container, ID departedContainerID) {
-		this.localContainerID = container;
-		this.departedContainerID = departedContainerID;
+	public ContainerDisconnectedEvent(ID localContainerID, ID targetID) {
+		this.localContainerID = localContainerID;
+		this.departedContainerID = targetID;
 	}
 
 	/*
@@ -61,8 +61,8 @@ public class ContainerDisconnectedEvent implements IContainerDisconnectedEvent {
 	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ContainerDisconnectedEvent["); //$NON-NLS-1$
-		buf.append(getTargetID()).append(";"); //$NON-NLS-1$
 		buf.append(getLocalContainerID()).append(";").append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append(getTargetID()).append(";"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }

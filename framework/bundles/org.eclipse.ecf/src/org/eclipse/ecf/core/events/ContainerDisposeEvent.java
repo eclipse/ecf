@@ -15,9 +15,9 @@ public class ContainerDisposeEvent implements IContainerDisposeEvent {
 
 	private final ID localContainerID;
 
-	public ContainerDisposeEvent(ID container) {
+	public ContainerDisposeEvent(ID localContainerID) {
 		super();
-		this.localContainerID = container;
+		this.localContainerID = localContainerID;
 	}
 
 	/*

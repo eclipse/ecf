@@ -20,10 +20,10 @@ public class ContainerEjectedEvent implements IContainerEjectedEvent {
 
 	private final Serializable reason;
 
-	public ContainerEjectedEvent(ID containerID, ID groupID, Serializable reason) {
+	public ContainerEjectedEvent(ID localContainerID, ID targetID, Serializable reason) {
 		super();
-		this.localContainerID = containerID;
-		this.groupID = groupID;
+		this.localContainerID = localContainerID;
+		this.groupID = targetID;
 		this.reason = reason;
 	}
 

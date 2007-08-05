@@ -19,9 +19,9 @@ public class ContainerConnectingEvent implements IContainerConnectingEvent {
 
 	Object data;
 
-	public ContainerConnectingEvent(ID localContainerID, ID groupID, Object data) {
+	public ContainerConnectingEvent(ID localContainerID, ID targetID, Object data) {
 		this.localContainerID = localContainerID;
-		this.targetID = groupID;
+		this.targetID = targetID;
 		this.data = data;
 	}
 

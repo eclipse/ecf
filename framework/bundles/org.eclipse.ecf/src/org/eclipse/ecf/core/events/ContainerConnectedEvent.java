@@ -21,10 +21,10 @@ public class ContainerConnectedEvent implements IContainerConnectedEvent {
 
 	private final ID localContainerID;
 
-	public ContainerConnectedEvent(ID local, ID joinContainerID) {
+	public ContainerConnectedEvent(ID localContainerID, ID targetID) {
 		super();
-		this.localContainerID = local;
-		this.joinedContainerID = joinContainerID;
+		this.localContainerID = localContainerID;
+		this.joinedContainerID = targetID;
 	}
 
 	/*
@@ -47,8 +47,8 @@ public class ContainerConnectedEvent implements IContainerConnectedEvent {
 	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ContainerConnectedEvent["); //$NON-NLS-1$
-		buf.append(getTargetID()).append(";"); //$NON-NLS-1$
 		buf.append(getLocalContainerID()).append("]"); //$NON-NLS-1$
+		buf.append(getTargetID()).append(";"); //$NON-NLS-1$
 		return buf.toString();
 	}
 }
