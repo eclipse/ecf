@@ -23,8 +23,8 @@ public abstract class AbstractRosterManager implements IRosterManager {
 
 	protected IRoster roster;
 
-	protected List rosterSubscriptionListeners = new ArrayList();
-	protected List rosterUpdateListeners = new ArrayList();
+	private List rosterSubscriptionListeners = new ArrayList();
+	private List rosterUpdateListeners = new ArrayList();
 
 	public AbstractRosterManager() {
 
@@ -53,41 +53,51 @@ public abstract class AbstractRosterManager implements IRosterManager {
 	}
 
 	protected void fireRosterUpdate(IRosterItem changedItem) {
+		List toNotify = null;
 		synchronized (rosterUpdateListeners) {
-			for (Iterator i = rosterUpdateListeners.iterator(); i.hasNext();)
-				((IRosterListener) i.next()).handleRosterUpdate(roster,
-						changedItem);
+			toNotify = new ArrayList(rosterUpdateListeners);
 		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();)
+			((IRosterListener) i.next()).handleRosterUpdate(roster,
+					changedItem);
 	}
 
 	protected void fireRosterAdd(IRosterEntry entry) {
+		List toNotify = null;
 		synchronized (rosterUpdateListeners) {
-			for (Iterator i = rosterUpdateListeners.iterator(); i.hasNext();)
-				((IRosterListener) i.next()).handleRosterEntryAdd(entry);
+			toNotify = new ArrayList(rosterUpdateListeners);
 		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();)
+			((IRosterListener) i.next()).handleRosterEntryAdd(entry);
+		
 	}
 	
 	protected void fireRosterRemove(IRosterEntry entry) {
+		List toNotify = null;
 		synchronized (rosterUpdateListeners) {
-			for (Iterator i = rosterUpdateListeners.iterator(); i.hasNext();)
-				((IRosterListener) i.next()).handleRosterEntryRemove(entry);
+			toNotify = new ArrayList(rosterUpdateListeners);
 		}
+		for (Iterator i = toNotify.iterator(); i.hasNext();)
+			((IRosterListener) i.next()).handleRosterEntryRemove(entry);
+		
 	}
 	
 	protected void fireSubscriptionListener(ID fromID, IPresence.Type presencetype) {
+		List toNotify = null;
 		synchronized (rosterSubscriptionListeners) {
-			for (Iterator i = rosterSubscriptionListeners.iterator(); i
-					.hasNext();) {
-				IRosterSubscriptionListener l = (IRosterSubscriptionListener) i
-						.next();
-				if (presencetype.equals(IPresence.Type.SUBSCRIBE)) {
-					l.handleSubscribeRequest(fromID);
-				} else if (presencetype.equals(IPresence.Type.SUBSCRIBED)) {
-					l.handleSubscribed(fromID);
-				} else if (presencetype.equals(
-						IPresence.Type.UNSUBSCRIBED)) {
-					l.handleUnsubscribed(fromID);
-				}
+			toNotify = new ArrayList(rosterSubscriptionListeners);
+		}
+		for (Iterator i = toNotify.iterator(); i
+				.hasNext();) {
+			IRosterSubscriptionListener l = (IRosterSubscriptionListener) i
+					.next();
+			if (presencetype.equals(IPresence.Type.SUBSCRIBE)) {
+				l.handleSubscribeRequest(fromID);
+			} else if (presencetype.equals(IPresence.Type.SUBSCRIBED)) {
+				l.handleSubscribed(fromID);
+			} else if (presencetype.equals(
+					IPresence.Type.UNSUBSCRIBED)) {
+				l.handleUnsubscribed(fromID);
 			}
 		}
 	}
@@ -125,7 +135,11 @@ public abstract class AbstractRosterManager implements IRosterManager {
 	public void disconnect() {
 		roster.getItems().clear();
 		fireRosterUpdate(roster);
-		rosterUpdateListeners.clear();
-		rosterSubscriptionListeners.clear();
+		synchronized (rosterUpdateListeners) {
+			rosterUpdateListeners.clear();
+		}
+		synchronized (rosterSubscriptionListeners) {
+			rosterSubscriptionListeners.clear();
+		}
 	}
 }
