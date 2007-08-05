@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.ecf.core.AbstractContainer;
-import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
