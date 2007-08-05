@@ -134,6 +134,7 @@ public class ClientContainerConnectTest extends ContainerAbstractTestCase {
 		assertTrue(clientConnectedEvents.size() == 1);
 		assertTrue(clientDisconnectingEvents.size() == 0);
 		assertTrue(clientDisconnectedEvents.size() == 0);
+		sleep(2000);
 		client.disconnect();
 		assertTrue(clientDisconnectingEvents.size() == 1);
 		assertTrue(clientDisconnectedEvents.size() == 1);
