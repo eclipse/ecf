@@ -1396,6 +1396,8 @@ public class ChatRoomManagerView extends ViewPart implements
 			return;
 		}
 		
+		boolean isAtEnd = !isLastOutputInvisible(st);
+		
 		String originator = null;
 		if (text.getOriginator() != null) {
 			originator = text.getOriginator().getNickname(); 
@@ -1425,13 +1427,14 @@ public class ChatRoomManagerView extends ViewPart implements
 				st.setStyleRange(ranges[i]);
 			} 	
 		}
-		// If we are not the currently active tab, then bold the tab
-		// item so that user can see that they received something
-		if (!isCurrentlyActive(chatRoomTab) || isLastOutputInvisible(st)) chatRoomTab.makeTabItemBold();
-		else chatRoomTab.makeTabItemNormal();
-		// In either case, if the last output is visible, then scroll to end
-		if (!isLastOutputInvisible(st)) scrollToEnd(st);
 		
+		if (isCurrentlyActive(chatRoomTab)) {
+			scrollToEnd(st);
+			chatRoomTab.makeTabItemNormal();
+		} else {
+			if (isAtEnd) scrollToEnd(st);
+			chatRoomTab.makeTabItemBold();
+		}
 	}
 
 	protected void outputClear() {
