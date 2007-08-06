@@ -35,6 +35,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -66,6 +68,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
@@ -101,8 +104,28 @@ public class MessagesView extends ViewPart {
 	}
 
 	public void createPartControl(Composite parent) {
+		boolean useTraditionalTabFolder = PlatformUI
+		.getPreferenceStore()
+		.getBoolean(
+				IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS);
+
 		tabFolder = new CTabFolder(parent, SWT.CLOSE);
 		tabFolder.setTabPosition(SWT.BOTTOM);
+		tabFolder.setSimple(useTraditionalTabFolder);
+		PlatformUI.getPreferenceStore().addPropertyChangeListener(
+				new IPropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent event) {
+						if (event
+								.getProperty()
+								.equals(
+										IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS)
+								&& !tabFolder.isDisposed()) {
+							tabFolder.setSimple(((Boolean) event
+									.getNewValue()).booleanValue());
+							tabFolder.redraw();
+						}
+					}
+				});
 
 		tabFolder.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -192,7 +215,7 @@ public class MessagesView extends ViewPart {
 	/**
 	 * Display a message to notify the current user that a typing event has
 	 * occurred.
-	 * 
+	 *
 	 * @param event
 	 *            the typing message event
 	 */
@@ -208,7 +231,7 @@ public class MessagesView extends ViewPart {
 
 	/**
 	 * Opens a new tab for conversing with a user.
-	 * 
+	 *
 	 * @param messageSender
 	 *            the <tt>IChatMessageSender</tt> interface that can be used
 	 *            to send messages to the other user
@@ -242,7 +265,7 @@ public class MessagesView extends ViewPart {
 
 	/**
 	 * Display a chat message from a remote user in their designated chat box.
-	 * 
+	 *
 	 * @param message
 	 *            a chat message that has been sent to the local user
 	 */
@@ -335,7 +358,7 @@ public class MessagesView extends ViewPart {
 					}
 				}
 			});
-			
+
 			ScrollBar vscrollBar = chatText.getVerticalBar();
 			if (vscrollBar != null) {
 				vscrollBar.addSelectionListener(scrollSelectionListener);
@@ -346,7 +369,7 @@ public class MessagesView extends ViewPart {
 					}});
 			}
 		}
-		
+
 		private SelectionListener scrollSelectionListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
@@ -360,10 +383,10 @@ public class MessagesView extends ViewPart {
 			if (locAtEnd.y > bounds.height + 5) return false;
 			return true;
 		}
-		
+
 		private void append(ID fromID, String body) {
 			boolean scrollToEnd = shouldScrollToEnd(chatText);
-			
+
 			if (!isFirstMessage) {
 				chatText.append(Text.DELIMITER);
 			}
@@ -446,7 +469,7 @@ public class MessagesView extends ViewPart {
 			item.setFont(new Font(oldFont.getDevice(), fd[0].getName(), fd[0]
 					.getHeight(), (bold) ? SWT.BOLD : SWT.NORMAL));
 		}
-		
+
 		private void constructWidgets() {
 			item = new CTabItem(tabFolder, SWT.NONE);
 			Composite parent = new Composite(tabFolder, SWT.NONE);
