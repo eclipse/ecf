@@ -1396,7 +1396,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			return;
 		}
 		
-		boolean isAtEnd = !isLastOutputInvisible(st);
+		boolean isAtEndBeforeAppend = !isLastOutputInvisible(st);
 		
 		String originator = null;
 		if (text.getOriginator() != null) {
@@ -1428,13 +1428,9 @@ public class ChatRoomManagerView extends ViewPart implements
 			} 	
 		}
 		
-		if (isCurrentlyActive(chatRoomTab)) {
-			scrollToEnd(st);
-			chatRoomTab.makeTabItemNormal();
-		} else {
-			if (isAtEnd) scrollToEnd(st);
-			chatRoomTab.makeTabItemBold();
-		}
+		if (isAtEndBeforeAppend) scrollToEnd(st);
+		if (isCurrentlyActive(chatRoomTab)) chatRoomTab.makeTabItemNormal();
+		else chatRoomTab.makeTabItemBold();
 	}
 
 	protected void outputClear() {
