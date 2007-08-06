@@ -11,9 +11,7 @@
 package org.eclipse.ecf.core;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -51,11 +49,13 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 
 	public static final String BASE_CONTAINER_NAME = Messages.ContainerFactory_Base_Container_Name;
 
-	private static Hashtable containerdescriptions = new Hashtable();
+	private static final Map containerdescriptions = new HashMap();
 
+	private static final Map containers = new HashMap();
+
+	private static final List managerListeners = new ArrayList();
+	
 	private static IContainerFactory instance = null;
-
-	private static Map containers = Collections.synchronizedMap(new HashMap());
 
 	static {
 		instance = new ContainerFactory();
@@ -66,35 +66,34 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	}
 
 	protected ContainerFactory() {
-		ECFPlugin ecfplugin = ECFPlugin.getDefault();
-		if (ecfplugin != null) {
-			ecfplugin.addDisposable(new IDisposable() {
-				public void dispose() {
-					synchronized (containers) {
-						for (Iterator i = containers.keySet().iterator(); i
-								.hasNext();) {
-							IContainer c = (IContainer) containers
-									.get(i.next());
-							try {
-								c.dispose();
-							} catch (Throwable e) {
-								// Log exception
-								ECFPlugin.getDefault().log(
-										new Status(Status.ERROR, ECFPlugin
-												.getDefault().getBundle()
-												.getSymbolicName(),
-												Status.ERROR,
-												"container dispose error", e)); //$NON-NLS-1$
-								Trace.catching(ECFPlugin.PLUGIN_ID,
-										ECFDebugOptions.EXCEPTIONS_CATCHING,
-										ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
-							}
+		ECFPlugin.getDefault().addDisposable(new IDisposable() {
+			public void dispose() {
+				synchronized (containers) {
+					for (Iterator i = containers.keySet().iterator(); i
+							.hasNext();) {
+						IContainer c = (IContainer) containers
+								.get(i.next());
+						try {
+							c.dispose();
+						} catch (Throwable e) {
+							// Log exception
+							ECFPlugin.getDefault().log(
+									new Status(Status.ERROR, ECFPlugin
+											.getDefault().getBundle()
+											.getSymbolicName(),
+											Status.ERROR,
+											"container dispose error", e)); //$NON-NLS-1$
+							Trace.catching(ECFPlugin.PLUGIN_ID,
+									ECFDebugOptions.EXCEPTIONS_CATCHING,
+									ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
 						}
-						containers.clear();
 					}
+					containers.clear();
 				}
-			});
-		}
+				containerdescriptions.clear();
+				managerListeners.clear();
+			}
+		});
 	}
 
 	/*
@@ -107,7 +106,26 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		ID containerID = container.getID();
 		Assert.isNotNull(containerID,
 				Messages.ContainerFactory_EXCEPTION_CONTAINER_ID_NOT_NULL);
-		return (IContainer) containers.put(containerID, container);
+	    IContainer result = null;
+	    synchronized (containers) {
+	    	result = (IContainer) containers.put(containerID, container);
+	    }
+	    if (result == null) fireContainerAdded(container);
+	    return result;
+	}
+
+	/**
+	 * @param result
+	 */
+	private void fireContainerAdded(IContainer result) {
+		List toNotify = null;
+		synchronized (managerListeners) {
+			toNotify = new ArrayList(managerListeners);
+		}
+		for(Iterator i=toNotify.iterator(); i.hasNext(); ) {
+			IContainerManagerListener cml = (IContainerManagerListener) i.next();
+			cml.containerAdded(result);
+		}
 	}
 
 	/*
@@ -120,7 +138,26 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 		ID containerID = container.getID();
 		if (containerID == null)
 			return null;
-		return (IContainer) containers.remove(containerID);
+		IContainer result = null;
+		synchronized (containers) {
+			result = (IContainer) containers.remove(containerID);
+		}
+		if (result != null) fireContainerRemoved(result);
+		return result;
+	}
+
+	/**
+	 * @param result
+	 */
+	private void fireContainerRemoved(IContainer result) {
+		List toNotify = null;
+		synchronized (managerListeners) {
+			toNotify = new ArrayList(managerListeners);
+		}
+		for(Iterator i=toNotify.iterator(); i.hasNext(); ) {
+			IContainerManagerListener cml = (IContainerManagerListener) i.next();
+			cml.containerRemoved(result);
+		}
 	}
 
 	/*
@@ -142,15 +179,19 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	}
 
 	protected List getDescriptions0() {
-		return new ArrayList(containerdescriptions.values());
+		synchronized (containerdescriptions) {
+			return new ArrayList(containerdescriptions.values());			
+		}
 	}
 
 	protected ContainerTypeDescription addDescription0(
 			ContainerTypeDescription n) {
 		if (n == null)
 			return null;
-		return (ContainerTypeDescription) containerdescriptions.put(
-				n.getName(), n);
+		synchronized (containerdescriptions) {
+			return (ContainerTypeDescription) containerdescriptions.put(
+					n.getName(), n);
+		}
 	}
 
 	/*
@@ -165,21 +206,27 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	protected boolean containsDescription0(ContainerTypeDescription scd) {
 		if (scd == null)
 			return false;
-		return containerdescriptions.containsKey(scd.getName());
+		synchronized (containerdescriptions) {
+			return containerdescriptions.containsKey(scd.getName());
+		}
 	}
 
 	protected ContainerTypeDescription getDescription0(
 			ContainerTypeDescription scd) {
 		if (scd == null)
 			return null;
-		return (ContainerTypeDescription) containerdescriptions.get(scd
-				.getName());
+		synchronized (containerdescriptions) {
+			return (ContainerTypeDescription) containerdescriptions.get(scd
+					.getName());	
+		}
 	}
 
 	protected ContainerTypeDescription getDescription0(String name) {
 		if (name == null)
 			return null;
-		return (ContainerTypeDescription) containerdescriptions.get(name);
+		synchronized (containerdescriptions) {
+			return (ContainerTypeDescription) containerdescriptions.get(name);			
+		}
 	}
 
 	/*
@@ -291,8 +338,10 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 			ContainerTypeDescription n) {
 		if (n == null)
 			return null;
-		return (ContainerTypeDescription) containerdescriptions.remove(n
-				.getName());
+		synchronized (containerdescriptions) {
+			return (ContainerTypeDescription) containerdescriptions.remove(n
+					.getName());			
+		}
 	}
 
 	/*
@@ -328,7 +377,10 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 * @see org.eclipse.ecf.core.IContainerManager#getAllContainers()
 	 */
 	public IContainer[] getAllContainers() {
-		List containersList = new ArrayList(containers.values());
+		List containersList = null;
+		synchronized (containers) {
+			containersList = new ArrayList(containers.values());
+		}
 		return (IContainer[]) containersList.toArray(new IContainer[] {});
 	}
 
@@ -356,6 +408,29 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 	 * @see org.eclipse.ecf.core.IContainerManager#hasContainer(org.eclipse.ecf.core.identity.ID)
 	 */
 	public boolean hasContainer(ID containerID) {
-		return containers.containsKey(containerID);
+		Assert.isNotNull(containerID);
+		synchronized (containers) {
+			return containers.containsKey(containerID);			
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerManager#addListener(org.eclipse.ecf.core.IContainerManagerListener)
+	 */
+	public boolean addListener(IContainerManagerListener listener) {
+		Assert.isNotNull(listener);
+		synchronized (managerListeners) {
+			return managerListeners.add(listener);			
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainerManager#removeListener(org.eclipse.ecf.core.IContainerManagerListener)
+	 */
+	public boolean removeListener(IContainerManagerListener listener) {
+		Assert.isNotNull(listener);
+		synchronized (managerListeners) {
+			return managerListeners.remove(listener);
+		}
 	}
 }

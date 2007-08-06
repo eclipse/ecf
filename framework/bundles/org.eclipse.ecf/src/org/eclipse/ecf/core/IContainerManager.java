@@ -74,4 +74,20 @@ public interface IContainerManager {
 	 * then <code>null</code> will be returned.
 	 */
 	public IContainer removeContainer(IContainer container);
+	
+	/**
+	 * Add listener to this {@link IContainerManager}.
+	 * 
+	 * @param listener the listener to add.  Must not be <code>null</code>.
+	 * @return true if listener successfully added
+	 */
+	public boolean addListener(IContainerManagerListener listener);
+	
+	/**
+	 * Remove listener from this {@link IContainerManager}.
+	 * 
+	 * @param listener the listener to remove.  Must not be <code>null</code>.
+	 * @return true if listener successfully removed
+	 */
+	public boolean removeListener(IContainerManagerListener listener);
 }
