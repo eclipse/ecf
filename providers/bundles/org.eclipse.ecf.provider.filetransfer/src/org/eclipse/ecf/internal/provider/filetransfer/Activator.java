@@ -10,11 +10,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.core.util.PlatformHelper;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransferFactory;
 import org.eclipse.ecf.provider.filetransfer.retrieve.MultiProtocolRetrieveAdapter;
@@ -70,6 +72,7 @@ public class Activator implements BundleActivator {
 	
 	private Map fileTransferProtocolMap = null;
 
+	private ServiceTracker adapterManagerTracker = null;
 
 	/**
 	 * The constructor
@@ -128,6 +131,10 @@ public class Activator implements BundleActivator {
 		if (fileTransferServiceRegistration != null) {
 			fileTransferServiceRegistration.unregister();
 			fileTransferServiceRegistration = null;
+		}
+		if (adapterManagerTracker != null) {
+			adapterManagerTracker.close();
+			adapterManagerTracker = null;
 		}
 		this.context = null;
 		this.fileTransferProtocolMap = null;
@@ -245,4 +252,21 @@ public class Activator implements BundleActivator {
 		return null;
 	}
 	
+	public IAdapterManager getAdapterManager() {
+		// First, try to get the adapter manager via
+		if (adapterManagerTracker == null) {
+			adapterManagerTracker = new ServiceTracker(this.context,
+					IAdapterManager.class.getName(), null);
+			adapterManagerTracker.open();
+		}
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker
+				.getService();
+		// Then, if the service isn't there, try to get from Platform class via
+		// PlatformHelper class
+		if (adapterManager == null)
+			adapterManager = PlatformHelper.getPlatformAdapterManager();
+		return adapterManager;
+	}
+
+
 }

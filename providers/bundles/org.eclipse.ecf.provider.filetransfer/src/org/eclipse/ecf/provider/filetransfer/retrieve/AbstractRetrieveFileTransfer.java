@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -242,7 +243,16 @@ public abstract class AbstractRetrieveFileTransfer implements
 	}
 
 	public Object getAdapter(Class adapter) {
-		return null;
+		if (adapter == null)
+			return null;
+		if (adapter.isInstance(this)) {
+			return this;
+		} else {
+			IAdapterManager adapterManager = Activator.getDefault()
+					.getAdapterManager();
+			return (adapterManager == null) ? null : adapterManager
+					.loadAdapter(this, adapter.getName());
+		}
 	}
 
 	/**
