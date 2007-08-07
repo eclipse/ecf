@@ -80,7 +80,8 @@ public class RetrieveFileTransferCancelServiceTest extends ContainerAbstractTest
 					}
 					System.out.println("receive data="+event);
 				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
-					System.out.println("receive done="+event);
+					System.out.println("receive done="+event+", exception="+incoming.getException());
+					assertTrue(incoming.getException() != null);
 				}
 			}
 		};
