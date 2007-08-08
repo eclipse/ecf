@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2004, 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
+ *    Abner Ballardo <modlost@modlost.net> - bug 198731
  *****************************************************************************/
 
 package org.eclipse.ecf.ui.hyperlink;
@@ -49,7 +50,8 @@ public abstract class AbstractURLHyperlinkDetector extends
 		return protocols;
 	}
 
-	protected String detectSubstring(String fromLine, int offsetInLine) {
+	protected IRegion detectSubRegion(IRegion lineInfo, String fromLine,
+			int offsetInLine) {
 		boolean startDoubleQuote = false;
 		int detectableOffsetInLine = 0;
 		int resultLength = 0;
@@ -101,8 +103,8 @@ public abstract class AbstractURLHyperlinkDetector extends
 				resultLength = endOffset - detectableOffsetInLine;
 		}
 
-		return fromLine.substring(detectableOffsetInLine,
-				detectableOffsetInLine + resultLength);
+		return new Region(lineInfo.getOffset() + detectableOffsetInLine,
+				resultLength);
 	}
 
 	protected URI detectProtocol(String uriString) {
@@ -166,16 +168,19 @@ public abstract class AbstractURLHyperlinkDetector extends
 			return null;
 		}
 
-		String detectedSubstring = detectSubstring(line, offset
+		IRegion detectedRegion = detectSubRegion(lineInfo, line, offset
 				- lineInfo.getOffset());
+		if (detectedRegion == null)
+			return null;
+		
 		// Set and validate URL string
-		URI uri = detectProtocol(detectedSubstring);
+		int detectedOffset = detectedRegion.getOffset() - lineInfo.getOffset();
+		URI uri = detectProtocol(line.substring(detectedOffset, detectedOffset
+				+ detectedRegion.getLength()));
 		if (uri == null)
 			return null;
 
-		return createHyperLinksForURI(new Region(lineInfo.getOffset()
-				+ line.indexOf(detectedSubstring), detectedSubstring.length()),
-				uri);
+		return createHyperLinksForURI(detectedRegion, uri);
 	}
 
 }
