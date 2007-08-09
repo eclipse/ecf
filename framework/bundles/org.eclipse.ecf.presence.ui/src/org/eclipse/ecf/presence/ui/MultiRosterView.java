@@ -62,7 +62,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -75,7 +74,6 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.HTMLTransfer;
@@ -83,25 +81,17 @@ import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
@@ -111,6 +101,11 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.forms.FormColors;
+import org.eclipse.ui.forms.IFormColors;
+import org.eclipse.ui.forms.widgets.Form;
+import org.eclipse.ui.forms.widgets.FormText;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorInputTransfer;
 import org.eclipse.ui.part.PluginTransfer;
 import org.eclipse.ui.part.ViewPart;
@@ -222,27 +217,6 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		setupTreeViewer(parent);
 	}
 
-	protected String getRosterEntryChildrenFromPresence(IRosterEntry entry) {
-		IPresence presence = entry.getPresence();
-		Map properties = presence.getProperties();
-		int fixedEntries = 3;
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Account,
-				entry.getUser().getID().getName()));
-		buffer.append(Text.DELIMITER);
-		buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Type,
-				presence.getType()));
-		buffer.append(Text.DELIMITER);
-		buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Mode,
-				presence.getMode().toString()));
-		for (Iterator i = properties.keySet().iterator(); i.hasNext(); fixedEntries++) {
-			buffer.append(Text.DELIMITER);
-			Object key = i.next();
-			buffer.append(key).append(": ").append(properties.get(key)); //$NON-NLS-1$
-		}
-		return buffer.toString();
-	}
-
 	protected void setupTreeViewer(Composite parent) {
 		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.SINGLE
 				| SWT.V_SCROLL);
@@ -259,17 +233,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		});
 
-		JFaceResources.getColorRegistry().put(ViewerToolTip.HEADER_BG_COLOR,
-				new RGB(255, 255, 255));
-		JFaceResources.getFontRegistry().put(
-				ViewerToolTip.HEADER_FONT,
-				JFaceResources.getFontRegistry().getBold(
-						JFaceResources.getDefaultFont().getFontData()[0]
-								.getName()).getFontData());
-
 		ToolTip toolTip = new ViewerToolTip(treeViewer.getControl());
 		toolTip.setHideOnMouseDown(false);
 		toolTip.setPopupDelay(200);
+		toolTip.setShift(new Point(5, 5));
 
 		makeActions();
 		hookContextMenu();
@@ -1106,12 +1073,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	private class ViewerToolTip extends ToolTip {
 
-		public static final String HEADER_BG_COLOR = Activator.PLUGIN_ID
-				+ ".TOOLTIP_HEAD_BG_COLOR"; //$NON-NLS-1$
-
-		public static final String HEADER_FONT = Activator.PLUGIN_ID
-				+ ".TOOLTIP_HEAD_FONT"; //$NON-NLS-1$
-
+		private Image image;
+		
 		public ViewerToolTip(Control control) {
 			super(control);
 		}
@@ -1122,151 +1085,95 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 					new Point(event.x, event.y));
 			IRosterEntry entry = (IRosterEntry) item.getData();
 
-			GridLayout gl = new GridLayout();
-			gl.marginBottom = 0;
-			gl.marginTop = 0;
-			gl.marginHeight = 0;
-			gl.marginWidth = 0;
-			gl.marginLeft = 0;
-			gl.marginRight = 0;
-			gl.verticalSpacing = 1;
-			parent.setLayout(gl);
-
-			Composite topArea = new Composite(parent, SWT.NONE);
-			GridData data = new GridData(SWT.FILL, SWT.FILL, true, false);
-			data.widthHint = 200;
-			topArea.setLayoutData(data);
-			topArea.setBackground(JFaceResources.getColorRegistry().get(
-					HEADER_BG_COLOR));
-
-			gl = new GridLayout();
-			gl.marginBottom = 2;
-			gl.marginTop = 2;
-			gl.marginHeight = 0;
-			gl.marginWidth = 0;
-			gl.marginLeft = 5;
-			gl.marginRight = 2;
-
-			topArea.setLayout(gl);
-
-			Label l = new Label(topArea, SWT.NONE);
-			l.setText(entry.getName());
-			l.setBackground(JFaceResources.getColorRegistry().get(
-					HEADER_BG_COLOR));
-			l.setFont(JFaceResources.getFontRegistry().get(HEADER_FONT));
-			l.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-			GridData contentData = new GridData(SWT.FILL, SWT.FILL, true, true);
-			contentData.heightHint = 96;
-			createContentArea(parent, entry).setLayoutData(contentData);
-
+			FormToolkit toolkit = new FormToolkit(parent.getDisplay());
+			FormColors colors = toolkit.getColors();
+			Color top = colors.getColor(IFormColors.H_GRADIENT_END);
+			Color bot = colors.getColor(IFormColors.H_GRADIENT_START);
+			
+			// create the base form
+			Form form = toolkit.createForm(parent);
+			form.setText(entry.getName());
+			form.setImage(SharedImages.getImage(SharedImages.IMG_USER_AVAILABLE));
+			form.setTextBackground(new Color[] { top, bot }, new int[] { 100 }, true);
+			GridLayout layout = new GridLayout();
+			layout.numColumns = 3;
+			form.getBody().setLayout(layout);
+			
+			// create the text
+			FormText text = toolkit.createFormText(form.getBody(), true);
+			GridData td = new GridData();
+			td.horizontalSpan = 2;
+			td.heightHint = 100;
+			td.widthHint = 200;
+			text.setLayoutData(td);
+			
+			String buffer = getRosterEntryChildrenFromPresence(entry);
+			text.setText(buffer, true, false);
+			
+			// create the picture
+			td = new GridData();
+			td.horizontalSpan = 1;
+			td.heightHint = 100;
+			td.widthHint = 64;
+			FormText formImage = toolkit.createFormText(form.getBody(), false);
+			formImage.setText("<form><p><img href=\"image\"/></p></form>", true, false); //$NON-NLS-1$
+			formImage.setLayoutData(td);
+			
+			// grab the image and resize it
+			byte[] data = entry.getPresence().getPictureData();
+			if(data.length != 0) {
+				Image originalImage = new Image(parent.getDisplay(),
+						new ByteArrayInputStream(data));
+				image = resize(originalImage, 64, 64);
+				formImage.setImage("image", image); //$NON-NLS-1$
+				originalImage.dispose();
+			}
+			
 			return parent;
 		}
-
-		protected Composite createContentArea(Composite parent,
-				IRosterEntry entry) {
-			byte[] data = entry.getPresence().getPictureData();
-			Color background = parent.getDisplay().getSystemColor(
-					SWT.COLOR_INFO_BACKGROUND);
-			if (data.length == 0) {
-				// if there is no picture data, we'll just draw our standard
-				// tooltip
-				Composite comp = new Composite(parent, SWT.NONE);
-				comp.setLayout(new FillLayout());
-				Label label = new Label(comp, SWT.NONE);
-				label.setText(getRosterEntryChildrenFromPresence(entry));
-				label.setBackground(background);
-				return comp;
-			} else {
-				Composite comp = new Composite(parent, SWT.NONE);
-				comp.setBackground(parent.getDisplay().getSystemColor(
-						SWT.COLOR_INFO_BACKGROUND));
-
-				Label label = new Label(comp, SWT.NONE);
-				label.setText(getRosterEntryChildrenFromPresence(entry));
-				label.setBackground(background);
-
-				// create a canvas for drawing
-				Canvas canvas = new Canvas(comp, SWT.NONE);
-				canvas.setBackground(background);
-				GridData canvasData = new GridData(SWT.FILL, SWT.FILL, true,
-						true);
-				// set a minimum width hint of 96 pixels
-				canvasData.widthHint = 96;
-				canvas.setLayoutData(canvasData);
-				try {
-					// create the image by reading in the bytes
-					final Image image = new Image(canvas.getDisplay(),
-							new ByteArrayInputStream(data));
-					Rectangle bounds = image.getBounds();
-					final int imageHeight = bounds.height;
-					final int imageWidth = bounds.width;
-
-					// use a PaintListener to draw the image
-					canvas.addPaintListener(new PaintListener() {
-						public void paintControl(PaintEvent e) {
-							if (imageHeight > 96 && imageHeight > imageWidth) {
-								// if the image's height is over 96 and it's
-								// larger than the width, we need to scale it
-								// down based on the ratio of the height against
-								// 96
-								double ratio = 96 / imageHeight;
-								e.gc.drawImage(image, 0, 0, imageWidth,
-										imageHeight,
-										48 - ((int) (imageHeight * ratio) / 2),
-										48 - ((int) (imageWidth * ratio) / 2),
-										(int) (imageWidth * ratio),
-										(int) (imageHeight * ratio));
-							} else if (imageWidth > 96) {
-								// if the image's width is over 96, we'll have
-								// to scale the image down based on the ratio of
-								// the width against 96
-								double ratio = 96 / imageWidth;
-								e.gc.drawImage(image, 0, 0, imageWidth,
-										imageHeight,
-										48 - ((int) (imageHeight * ratio) / 2),
-										48 - ((int) (imageWidth * ratio) / 2),
-										(int) (imageWidth * ratio),
-										(int) (imageHeight * ratio));
-							} else {
-								// center the image and then draw it
-								e.gc.drawImage(image, 0, 0, imageWidth,
-										imageHeight, 48 - (imageWidth / 2),
-										48 - (imageHeight / 2), imageWidth,
-										imageHeight);
-							}
-						}
-					});
-
-					canvas.addDisposeListener(new DisposeListener() {
-						public void widgetDisposed(DisposeEvent e) {
-							image.dispose();
-						}
-					});
-
-					label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-							true));
-
-					GridLayout layout = new GridLayout(2, false);
-					layout.marginHeight = 0;
-					layout.marginWidth = 0;
-					layout.horizontalSpacing = 0;
-					layout.verticalSpacing = 0;
-					comp.setLayout(layout);
-
-					return comp;
-				} catch (SWTException e) {
-					// if the error wasn't caused by an unsupported format that
-					// was thrown because we failed to construct the image, we
-					// should propagate the exception upwards
-					if (e.code != SWT.ERROR_UNSUPPORTED_FORMAT) {
-						throw e;
-					}
-					canvas.dispose();
-					comp.setLayout(new FillLayout());
-					return comp;
-				}
+		
+		public void deactivate() {
+			super.deactivate();
+			if (image != null)
+				image.dispose();
+		}
+		
+		private Image resize(Image image, int width, int height) {
+			final Image scaled = new Image(Display.getDefault(), width, height);
+			GC gc = new GC(scaled);
+			gc.setAntialias(SWT.ON);
+			gc.setInterpolation(SWT.HIGH);
+			gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, width, height);
+			gc.dispose();
+			return scaled;
+		}
+		
+		private String getRosterEntryChildrenFromPresence(IRosterEntry entry) {
+			IPresence presence = entry.getPresence();
+			Map properties = presence.getProperties();
+			int fixedEntries = 3;
+			StringBuffer buffer = new StringBuffer();
+			buffer.append("<form>"); //$NON-NLS-1$
+			buffer.append("<p>"); //$NON-NLS-1$
+			buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Account,
+					entry.getUser().getID().getName()));
+			buffer.append("</p>"); //$NON-NLS-1$
+			buffer.append("<p>"); //$NON-NLS-1$
+			buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Type,
+					presence.getType()));
+			buffer.append("</p>"); //$NON-NLS-1$
+			buffer.append("<p>");//$NON-NLS-1$
+			buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Mode,
+					presence.getMode().toString()));
+			buffer.append("</p>"); //$NON-NLS-1$
+			for (Iterator i = properties.keySet().iterator(); i.hasNext(); fixedEntries++) {
+				buffer.append("<p>"); //$NON-NLS-1$
+				Object key = i.next();
+				buffer.append(key).append(": ").append(properties.get(key)); //$NON-NLS-1$
+				buffer.append("</p>"); //$NON-NLS-1$
 			}
+			buffer.append("</form>"); //$NON-NLS-1$
+			return buffer.toString();
 		}
 
 		protected boolean shouldCreateToolTip(Event e) {
