@@ -196,11 +196,11 @@ public class Trace {
 	}
 
 	private static String getStringFromByteArray(byte [] bytes) {
-		StringBuffer buf = new StringBuffer("[");
+		StringBuffer buf = new StringBuffer("["); //$NON-NLS-1$
 		for(int i=0; i < bytes.length; i++) {
 			buf.append(bytes[i]);
-			if (i == (bytes.length -1)) buf.append("]");
-			else buf.append(",");
+			if (i == (bytes.length -1)) buf.append("]"); //$NON-NLS-1$
+			else buf.append(","); //$NON-NLS-1$
 		}
 		return buf.toString();
 	}
