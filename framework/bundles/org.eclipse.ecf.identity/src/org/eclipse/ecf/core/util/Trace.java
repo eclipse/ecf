@@ -188,12 +188,22 @@ public class Trace {
 	public static String getArgumentString(Object argument) {
 		if (argument == null)
 			return "null"; //$NON-NLS-1$
+		if (argument instanceof byte[]) return getStringFromByteArray((byte []) argument);
 		if (argument.getClass().isArray())
 			return getArgumentsString((Object[]) argument);
 		else
 			return String.valueOf(argument);
 	}
 
+	private static String getStringFromByteArray(byte [] bytes) {
+		StringBuffer buf = new StringBuffer("[");
+		for(int i=0; i < bytes.length; i++) {
+			buf.append(bytes[i]);
+			if (i == (bytes.length -1)) buf.append("]");
+			else buf.append(",");
+		}
+		return buf.toString();
+	}
 	/**
 	 * Retrieves a textual representation of the specified arguments.
 	 * 
