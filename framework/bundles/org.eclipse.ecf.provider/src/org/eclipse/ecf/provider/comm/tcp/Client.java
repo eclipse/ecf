@@ -21,10 +21,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
-import java.util.Vector;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
@@ -69,7 +71,7 @@ public final class Client implements ISynchAsynchConnection {
 	protected PingResponseMessage pingResp = new PingResponseMessage();
 	protected int maxMsg = DEFAULT_MAX_BUFFER_MSG;
 	protected long closeTimeout = DEFAULT_CLOSE_TIMEOUT;
-	protected Vector eventNotify = null;
+	protected List eventNotify = null;
 	protected Map properties;
 	protected ID containerID = null;
 	protected Object pingLock = new Object();
@@ -121,7 +123,8 @@ public final class Client implements ISynchAsynchConnection {
 		containerID = handler.getEventHandlerID();
 		this.keepAlive = keepAlive;
 		maxMsg = maxmsgs;
-		this.properties = new Properties();
+		this.properties = new HashMap();
+		this.eventNotify = new ArrayList();
 	}
 	public synchronized ID getLocalID() {
 		if (containerID != null)
@@ -139,13 +142,15 @@ public final class Client implements ISynchAsynchConnection {
 		}
 		return retID;
 	}
-	public synchronized void removeListener(IConnectionListener l) {
-		eventNotify.remove(l);
+	public void removeListener(IConnectionListener l) {
+		synchronized (eventNotify) {
+			eventNotify.remove(l);
+		}
 	}
-	public synchronized void addListener(IConnectionListener l) {
-		if (eventNotify == null)
-			eventNotify = new Vector();
-		eventNotify.add(l);
+	public void addListener(IConnectionListener l) {
+		synchronized (eventNotify) {
+			eventNotify.add(l);
+		}
 	}
 	public synchronized boolean isConnected() {
 		if (socket != null)
