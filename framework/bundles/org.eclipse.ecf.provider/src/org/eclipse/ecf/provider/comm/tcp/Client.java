@@ -21,9 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
@@ -71,7 +69,6 @@ public final class Client implements ISynchAsynchConnection {
 	protected PingResponseMessage pingResp = new PingResponseMessage();
 	protected int maxMsg = DEFAULT_MAX_BUFFER_MSG;
 	protected long closeTimeout = DEFAULT_CLOSE_TIMEOUT;
-	protected List eventNotify = null;
 	protected Map properties;
 	protected ID containerID = null;
 	protected Object pingLock = new Object();
@@ -124,7 +121,6 @@ public final class Client implements ISynchAsynchConnection {
 		this.keepAlive = keepAlive;
 		maxMsg = maxmsgs;
 		this.properties = new HashMap();
-		this.eventNotify = new ArrayList();
 	}
 	public synchronized ID getLocalID() {
 		if (containerID != null)
@@ -143,14 +139,8 @@ public final class Client implements ISynchAsynchConnection {
 		return retID;
 	}
 	public void removeListener(IConnectionListener l) {
-		synchronized (eventNotify) {
-			eventNotify.remove(l);
-		}
 	}
 	public void addListener(IConnectionListener l) {
-		synchronized (eventNotify) {
-			eventNotify.add(l);
-		}
 	}
 	public synchronized boolean isConnected() {
 		if (socket != null)
