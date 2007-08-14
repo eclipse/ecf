@@ -149,8 +149,8 @@ public abstract class AbstractRetrieveFileTransfer implements
 				Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK,
 				null)
 				: new Status(
-						IStatus.ERROR,
-						Activator.getDefault().getBundle().getSymbolicName(),
+						IStatus.CANCEL,
+						Activator.PLUGIN_ID,
 						FILETRANSFER_ERRORCODE,
 						Messages.AbstractRetrieveFileTransfer_Status_Transfer_Exception,
 						exception);
