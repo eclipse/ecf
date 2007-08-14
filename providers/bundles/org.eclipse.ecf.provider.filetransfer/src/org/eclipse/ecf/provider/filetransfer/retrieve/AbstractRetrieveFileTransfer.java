@@ -38,8 +38,7 @@ import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 import org.eclipse.osgi.util.NLS;
 
 public abstract class AbstractRetrieveFileTransfer implements
-		IIncomingFileTransfer, IRetrieveFileTransfer,
-		IFileTransferPausable {
+		IIncomingFileTransfer, IRetrieveFileTransfer, IFileTransferPausable {
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
 
@@ -142,18 +141,27 @@ public abstract class AbstractRetrieveFileTransfer implements
 	}
 
 	protected IStatus getFinalStatus(Throwable exception) {
-		return (exception == null) ? new Status(
-				IStatus.OK,
-				Activator.getDefault().getBundle().getSymbolicName(),
-				0,
-				Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK,
-				null)
-				: new Status(
-						IStatus.CANCEL,
-						Activator.PLUGIN_ID,
-						FILETRANSFER_ERRORCODE,
-						Messages.AbstractRetrieveFileTransfer_Status_Transfer_Exception,
-						exception);
+		if (exception == null)
+			return new Status(
+					IStatus.OK,
+					Activator.getDefault().getBundle().getSymbolicName(),
+					0,
+					Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK,
+					null);
+		else if (exception instanceof UserCancelledException)
+			return new Status(
+					IStatus.CANCEL,
+					Activator.PLUGIN_ID,
+					FILETRANSFER_ERRORCODE,
+					Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled,
+					exception);
+		else
+			return new Status(
+					IStatus.ERROR,
+					Activator.PLUGIN_ID,
+					FILETRANSFER_ERRORCODE,
+					Messages.AbstractRetrieveFileTransfer_Status_Transfer_Exception,
+					exception);
 	}
 
 	protected void hardClose() {
