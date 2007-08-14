@@ -378,12 +378,12 @@ public class ECFPlugin implements BundleActivator {
 			this.registryManager = new ECFRegistryManager();
 			registry.addRegistryChangeListener(registryManager);
 		}
-		setupContainerFactoryExtensionPoint(context);
-		setupStartExtensionPoint(context);
 		containerFactoryServiceRegistration = context.registerService(
 				IContainerFactory.class.getName(), ContainerFactory
 						.getDefault(), null);
 		containerManagerServiceRegistration = context.registerService(IContainerManager.class.getName(), ContainerFactory.getDefault(), null);
+		setupContainerFactoryExtensionPoint(context);
+		setupStartExtensionPoint(context);
 	}
 
 	protected class ECFRegistryManager implements IRegistryChangeListener {
