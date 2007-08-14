@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IRegistryChangeEvent;
 import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.ContainerTypeDescription;
@@ -68,9 +69,11 @@ public class ECFPlugin implements BundleActivator {
 	public static final String VALUE_ATTRIBUTE = "value"; //$NON-NLS-1$
 
 	public static final String SERVER_ATTRIBUTE = "server"; //$NON-NLS-1$
-	
+
 	public static final String HIDDEN_ATTRIBUTE = "hidden"; //$NON-NLS-1$
-	
+
+	public static final String SYNCH_ATTRIBUTE = "synch"; //$NON-NLS-1$
+
 	// The shared instance.
 	private static ECFPlugin plugin;
 
@@ -194,18 +197,11 @@ public class ECFPlugin implements BundleActivator {
 				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG, method
 						+ ".removed " + cd + " from factory"); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (Exception e) {
-				logException(
-						new Status(
-								Status.ERROR,
-								getDefault().getBundle().getSymbolicName(),
-								IStatus.ERROR,
-								NLS
-										.bind(
-												Messages.ECFPlugin_Container_Name_Collision_Prefix,
-												name,
-												extension
-														.getExtensionPointUniqueIdentifier()),
-								null), method, e);
+				logException(new Status(Status.ERROR, getDefault().getBundle()
+						.getSymbolicName(), IStatus.ERROR, NLS.bind(
+						Messages.ECFPlugin_Container_Name_Collision_Prefix,
+						name, extension.getExtensionPointUniqueIdentifier()),
+						null), method, e);
 			}
 		}
 	}
@@ -243,16 +239,19 @@ public class ECFPlugin implements BundleActivator {
 				}
 
 				String s = member.getAttribute(SERVER_ATTRIBUTE);
-				boolean server = (s==null)?false:(new Boolean(s).booleanValue());
+				boolean server = (s == null) ? false : (new Boolean(s)
+						.booleanValue());
 				s = member.getAttribute(HIDDEN_ATTRIBUTE);
-				boolean hidden = (s==null)?false:(new Boolean(s).booleanValue());
-				
+				boolean hidden = (s == null) ? false : (new Boolean(s)
+						.booleanValue());
+
 				// Now make description instance
 				ContainerTypeDescription scd = new ContainerTypeDescription(
-						name, (IContainerInstantiator) exten, description, server, hidden);
-				
+						name, (IContainerInstantiator) exten, description,
+						server, hidden);
+
 				IContainerFactory factory = ContainerFactory.getDefault();
-				
+
 				if (factory.containsDescription(scd)) {
 					throw new CoreException(
 							new Status(
@@ -274,18 +273,11 @@ public class ECFPlugin implements BundleActivator {
 			} catch (CoreException e) {
 				logException(e.getStatus(), method, e);
 			} catch (Exception e) {
-				logException(
-						new Status(
-								Status.ERROR,
-								getDefault().getBundle().getSymbolicName(),
-								IStatus.ERROR,
-								NLS
-										.bind(
-												Messages.ECFPlugin_Container_Name_Collision_Prefix,
-												name,
-												extension
-														.getExtensionPointUniqueIdentifier()),
-								null), method, e);
+				logException(new Status(Status.ERROR, getDefault().getBundle()
+						.getSymbolicName(), IStatus.ERROR, NLS.bind(
+						Messages.ECFPlugin_Container_Name_Collision_Prefix,
+						name, extension.getExtensionPointUniqueIdentifier()),
+						null), method, e);
 			}
 		}
 	}
@@ -347,7 +339,10 @@ public class ECFPlugin implements BundleActivator {
 				name = member.getAttribute(NAME_ATTRIBUTE);
 				if (name == null)
 					name = exten.getClass().getName();
-				startExtension(name, exten);
+				Boolean synch = new Boolean(member
+						.getAttribute(SYNCH_ATTRIBUTE));
+				startExtension(name, exten, synch.booleanValue());
+
 			} catch (CoreException e) {
 				logException(e.getStatus(), method, e);
 			} catch (Exception e) {
@@ -358,10 +353,24 @@ public class ECFPlugin implements BundleActivator {
 		}
 	}
 
-	private void startExtension(String name, IECFStart exten) {
+	private void startExtension(String name, IECFStart exten,
+			boolean synchronous) {
 		// Create job to do start, and schedule
-		ECFStartJob job = new ECFStartJob(name, exten);
-		job.schedule();
+		if (synchronous) {
+			IStatus result = null;
+			try {
+				result = exten.startup(new NullProgressMonitor());
+			} catch (Exception e) {
+				String message = "startup extension error"; //$NON-NLS-1$
+				logException(new Status(IStatus.ERROR, PLUGIN_ID,
+						IStatus.ERROR, message, e), message, e);
+			}
+			if (result != null && !result.isOK())
+				logException(result, result.getMessage(), result.getException());
+		} else {
+			ECFStartJob job = new ECFStartJob(name, exten);
+			job.schedule();
+		}
 	}
 
 	/**
@@ -381,7 +390,9 @@ public class ECFPlugin implements BundleActivator {
 		containerFactoryServiceRegistration = context.registerService(
 				IContainerFactory.class.getName(), ContainerFactory
 						.getDefault(), null);
-		containerManagerServiceRegistration = context.registerService(IContainerManager.class.getName(), ContainerFactory.getDefault(), null);
+		containerManagerServiceRegistration = context.registerService(
+				IContainerManager.class.getName(), ContainerFactory
+						.getDefault(), null);
 		setupContainerFactoryExtensionPoint(context);
 		setupStartExtensionPoint(context);
 	}

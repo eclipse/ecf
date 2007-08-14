@@ -64,6 +64,13 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="synch" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -87,7 +94,7 @@
 &lt;extension
       point=&quot;org.eclipse.ecf.startup&quot;&gt;
    &lt;ecfstart
-         class=&quot;org.eclipse.ecf.example.collab.start.CollabStart&quot;/&gt;
+         class=&quot;org.eclipse.ecf.example.collab.start.CollabStart&quot; synch=&quot;true&quot; /&gt;
 &lt;/extension&gt;
 &lt;/pre&gt;
 
