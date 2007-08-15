@@ -64,7 +64,7 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="synch" type="string">
+         <attribute name="synch" type="boolean">
             <annotation>
                <documentation>
                   
