@@ -28,7 +28,6 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
-import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
 
 /**
@@ -105,7 +104,7 @@ public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
 	 */
 	public ID getID() {
-		return new FileTransferID(getRetrieveNamespace(), getRemoteFileURL());
+		return remoteFileID;
 	}
 
 	/*
