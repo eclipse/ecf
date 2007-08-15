@@ -56,6 +56,9 @@ public interface IFileTransfer extends IAdaptable, IIdentifiable {
 	 * completed unsuccessfully (some exception occurred), then
 	 * {@link #isDone()} will return true, and this method will return a
 	 * non-null Exception instance that occurred.
+	 * <p></p>
+	 * If the the file transfer was canceled by the user, then the exception 
+	 * returned will be an instance of {@link UserCancelledException}.  
 	 * 
 	 * @return Exception associated with this file transfer. <code>null</code>
 	 *         if transfer completed successfully, non-null if transfer

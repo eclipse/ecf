@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer.events;
 
+import org.eclipse.ecf.filetransfer.UserCancelledException;
+
 /**
  * Event sent to IFileTransferListeners when an incoming file transfer is
  * completed.
@@ -22,6 +24,9 @@ public interface IIncomingFileTransferReceiveDoneEvent extends
 	 * <code>null</code>. If the file transfer completed unsuccessfully (some
 	 * exception occurred), then this method will return a non-<code>null</code>
 	 * Exception instance that occurred.
+	 * <p></p>
+	 * If the the file transfer was canceled by the user, then the exception 
+	 * returned will be an instance of {@link UserCancelledException}.  
 	 * 
 	 * @return Exception associated with this file transfer. <code>null</code>
 	 *         if transfer completed successfully, non-null if transfer
