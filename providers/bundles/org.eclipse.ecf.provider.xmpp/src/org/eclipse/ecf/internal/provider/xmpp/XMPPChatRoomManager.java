@@ -378,7 +378,7 @@ public class XMPPChatRoomManager implements IChatRoomManager {
 	public IChatRoomInfo[] getChatRoomInfos() {
 		ID[] chatRooms = getChatRooms();
 		if (chatRooms == null)
-			return null;
+			return new IChatRoomInfo[0];
 		IChatRoomInfo[] res = new IChatRoomInfo[chatRooms.length];
 		int count = 0;
 		for (int i = 0; i < chatRooms.length; i++) {
