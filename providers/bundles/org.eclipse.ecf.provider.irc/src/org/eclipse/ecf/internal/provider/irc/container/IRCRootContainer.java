@@ -492,11 +492,11 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	}
 
 	public IChatRoomInfo[] getChatRoomInfos() {
-		return null;
+		return new IChatRoomInfo[0];
 	}
 
 	public IChatRoomManager[] getChildren() {
-		return null;
+		return new IChatRoomManager[0];
 	}
 
 	public IChatRoomManager getParent() {
