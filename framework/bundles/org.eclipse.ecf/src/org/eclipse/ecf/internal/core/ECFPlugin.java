@@ -239,11 +239,9 @@ public class ECFPlugin implements BundleActivator {
 				}
 
 				String s = member.getAttribute(SERVER_ATTRIBUTE);
-				boolean server = (s == null) ? false : (new Boolean(s)
-						.booleanValue());
+				boolean server = (s == null) ? false : Boolean.getBoolean(s);
 				s = member.getAttribute(HIDDEN_ATTRIBUTE);
-				boolean hidden = (s == null) ? false : (new Boolean(s)
-						.booleanValue());
+				boolean hidden = (s == null) ? false : Boolean.getBoolean(s);
 
 				// Now make description instance
 				ContainerTypeDescription scd = new ContainerTypeDescription(
@@ -339,9 +337,8 @@ public class ECFPlugin implements BundleActivator {
 				name = member.getAttribute(NAME_ATTRIBUTE);
 				if (name == null)
 					name = exten.getClass().getName();
-				Boolean synch = new Boolean(member
-						.getAttribute(SYNCH_ATTRIBUTE));
-				startExtension(name, exten, synch.booleanValue());
+				startExtension(name, exten, Boolean.getBoolean(member
+						.getAttribute(SYNCH_ATTRIBUTE)));
 
 			} catch (CoreException e) {
 				logException(e.getStatus(), method, e);
