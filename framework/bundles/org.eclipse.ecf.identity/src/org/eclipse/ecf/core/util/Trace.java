@@ -163,10 +163,8 @@ public class Trace {
 
 			synchronized (cachedOptions) {
 				value = (Boolean) cachedOptions.get(option);
-
 				if (null == value) {
-					value = new Boolean(shouldTrace0(option));
-
+					value = shouldTrace0(option) ? Boolean.TRUE : Boolean.FALSE;
 					cachedOptions.put(option, value);
 				}
 			}
