@@ -358,7 +358,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 			if (msg != null)
 				result = handleSharedObjectMsg(msg);
 		}
-		traceExiting("handleSharedObjectMsgEvent", new Boolean(result)); //$NON-NLS-1$
+		traceExiting("handleSharedObjectMsgEvent", result ? Boolean.TRUE : Boolean.FALSE); //$NON-NLS-1$
 		return result;
 	}
 
