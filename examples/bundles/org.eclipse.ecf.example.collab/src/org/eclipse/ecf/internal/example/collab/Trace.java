@@ -68,8 +68,7 @@ public class Trace {
 			String res = Platform
 					.getDebugOption(pluginName + debugPrefix + key);
 			if (res != null) {
-				Boolean on = new Boolean(res);
-				if (on.booleanValue())
+				if (Boolean.getBoolean(res))
 					return new Trace(pluginName + "(" + key + ")");
 				else
 					return null;

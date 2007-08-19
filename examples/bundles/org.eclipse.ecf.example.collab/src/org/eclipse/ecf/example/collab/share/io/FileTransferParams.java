@@ -44,7 +44,7 @@ public class FileTransferParams implements Serializable {
 			DEFAULT_FILE_LENGTH = Integer.parseInt(str);
 			str = System.getProperty(FileTransferParams.class.getName()
 					+ ".FILEINCLUDESERVER", "false");
-			DEFAULT_INCLUDE_SERVER = Boolean.valueOf(str).booleanValue();
+			DEFAULT_INCLUDE_SERVER = Boolean.getBoolean(str);
 		} catch (Exception e) {
 		}
 	}

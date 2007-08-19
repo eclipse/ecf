@@ -324,8 +324,8 @@ public class LineChatClientView implements FileSenderUI {
 
 	protected void runProgram(ID receiver, String program, String[] env) {
 		String[] cmds = { program };
-		Object[] args = { receiver, cmds, env, new Boolean(receiver == null),
-				new Boolean(false) };
+		Object[] args = { receiver, cmds, env, Boolean.valueOf(receiver == null),
+				Boolean.FALSE };
 		// Do it
 		createObject(null, EXECPROGCLASSNAME, EXECPROGARGTYPES, args);
 	}
