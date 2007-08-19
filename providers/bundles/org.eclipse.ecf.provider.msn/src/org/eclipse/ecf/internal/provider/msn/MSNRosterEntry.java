@@ -136,7 +136,7 @@ final class MSNRosterEntry implements IPresence, IRosterEntry, IUser {
 
 	public byte[] getPictureData() {
 		// TODO: update this when avatars have been implemented
-		return null;
+		return new byte[0];
 	}
 
 	public ID getID() {
