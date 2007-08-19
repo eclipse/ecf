@@ -784,8 +784,12 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 			manager.add(removeAction);
 		} else if (element instanceof IRoster) {
-			manager.add(changePasswordAction);
-			manager.add(new Separator());
+			IAccountManager accountManager = ((IRoster) element)
+					.getPresenceContainerAdapter().getAccountManager();
+			if (accountManager != null) {
+				manager.add(changePasswordAction);
+				manager.add(new Separator());	
+			}
 			manager.add(addContactAction);
 			manager.add(new Separator());
 			manager.add(openAccountChatRoomAction);
