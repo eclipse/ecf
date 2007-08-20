@@ -56,8 +56,7 @@ public interface IFileTransferRequestEvent extends IFileTransferEvent {
 	 * @throws IncomingFileTransferException
 	 *             if accept message cannot be delivered back to requester
 	 */
-	public IIncomingFileTransfer accept(File localFileToSave)
-			throws IncomingFileTransferException;
+	public IIncomingFileTransfer accept(File localFileToSave) throws IncomingFileTransferException;
 
 	/**
 	 * Accept the file transfer request. This method should be called if the
@@ -79,9 +78,7 @@ public interface IFileTransferRequestEvent extends IFileTransferEvent {
 	 * @throws IncomingFileTransferException
 	 *             if accept message cannot be delivered back to requester
 	 */
-	public IIncomingFileTransfer accept(OutputStream outputStream,
-			IFileTransferListener listener)
-			throws IncomingFileTransferException;
+	public IIncomingFileTransfer accept(OutputStream outputStream, IFileTransferListener listener) throws IncomingFileTransferException;
 
 	/**
 	 * Reject the file transfer request. This method should be called if the

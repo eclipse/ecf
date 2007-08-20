@@ -15,8 +15,7 @@ import org.eclipse.ecf.filetransfer.UserCancelledException;
  * completed.
  * 
  */
-public interface IIncomingFileTransferReceiveDoneEvent extends
-		IIncomingFileTransferEvent {
+public interface IIncomingFileTransferReceiveDoneEvent extends IIncomingFileTransferEvent {
 
 	/**
 	 * Get any exception associated with this file transfer. If the file

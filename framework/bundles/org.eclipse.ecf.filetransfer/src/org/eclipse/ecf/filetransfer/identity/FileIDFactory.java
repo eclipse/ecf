@@ -53,9 +53,8 @@ public class FileIDFactory {
 	 *             thrown if some problem creating IFileID from given namespace
 	 *             and filename
 	 */
-	public IFileID createFileID(Namespace namespace, URL remoteFile)
-			throws FileCreateException {
-		return createFileID(namespace, new Object[] { remoteFile });
+	public IFileID createFileID(Namespace namespace, URL remoteFile) throws FileCreateException {
+		return createFileID(namespace, new Object[] {remoteFile});
 	}
 
 	/**
@@ -72,9 +71,8 @@ public class FileIDFactory {
 	 *             thrown if some problem creating IFileID from given namespace
 	 *             and filename
 	 */
-	public IFileID createFileID(Namespace namespace, String remoteFile)
-			throws FileCreateException {
-		return createFileID(namespace, new Object[] { remoteFile });
+	public IFileID createFileID(Namespace namespace, String remoteFile) throws FileCreateException {
+		return createFileID(namespace, new Object[] {remoteFile});
 	}
 
 	/**
@@ -94,22 +92,14 @@ public class FileIDFactory {
 	 *             thrown if some problem creating IFileID from given namespace
 	 *             and filename
 	 */
-	public IFileID createFileID(Namespace namespace, Object[] arguments)
-			throws FileCreateException {
-		Trace.entering(Activator.PLUGIN_ID,
-				FileTransferDebugOptions.METHODS_ENTERING, this.getClass(),
-				"createFileID", new Object[] { namespace, arguments }); //$NON-NLS-1$
+	public IFileID createFileID(Namespace namespace, Object[] arguments) throws FileCreateException {
+		Trace.entering(Activator.PLUGIN_ID, FileTransferDebugOptions.METHODS_ENTERING, this.getClass(), "createFileID", new Object[] {namespace, arguments}); //$NON-NLS-1$
 		try {
-			IFileID result = (IFileID) IDFactory.getDefault().createID(
-					namespace, arguments);
-			Trace.exiting(Activator.PLUGIN_ID,
-					FileTransferDebugOptions.METHODS_EXITING, this.getClass(),
-					"createFileID", result); //$NON-NLS-1$
+			IFileID result = (IFileID) IDFactory.getDefault().createID(namespace, arguments);
+			Trace.exiting(Activator.PLUGIN_ID, FileTransferDebugOptions.METHODS_EXITING, this.getClass(), "createFileID", result); //$NON-NLS-1$
 			return result;
 		} catch (Exception e) {
-			Trace.throwing(Activator.PLUGIN_ID,
-					FileTransferDebugOptions.EXCEPTIONS_THROWING,
-					FileIDFactory.class, "createFileID", e); //$NON-NLS-1$
+			Trace.throwing(Activator.PLUGIN_ID, FileTransferDebugOptions.EXCEPTIONS_THROWING, FileIDFactory.class, "createFileID", e); //$NON-NLS-1$
 			throw new FileCreateException(Messages.FileIDFactory_Exception_File_Create, e);
 		}
 	}

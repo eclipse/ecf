@@ -103,9 +103,7 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
 	 */
-	public void sendRetrieveRequest(IFileID remoteFileID,
-			IFileTransferListener transferListener, Map options)
-			throws IncomingFileTransferException;
+	public void sendRetrieveRequest(IFileID remoteFileID, IFileTransferListener transferListener, Map options) throws IncomingFileTransferException;
 
 	/**
 	 * Get namespace to be used for creation of remoteFileID for retrieve
@@ -133,8 +131,7 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 *            If <code>null</code>, then no authentication will be
 	 *            attempted.
 	 */
-	public void setConnectContextForAuthentication(
-			IConnectContext connectContext);
+	public void setConnectContextForAuthentication(IConnectContext connectContext);
 
 	/**
 	 * Set proxy for use upon subsequent

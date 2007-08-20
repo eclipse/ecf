@@ -22,7 +22,7 @@ public class IncomingFileTransferException extends ECFException {
 	public IncomingFileTransferException(IStatus status) {
 		super(status);
 	}
-	
+
 	public IncomingFileTransferException() {
 	}
 

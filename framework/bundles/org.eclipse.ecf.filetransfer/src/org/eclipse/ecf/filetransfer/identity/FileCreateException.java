@@ -23,7 +23,7 @@ public class FileCreateException extends ECFException {
 	public FileCreateException(IStatus status) {
 		super(status);
 	}
-	
+
 	public FileCreateException() {
 		super();
 	}

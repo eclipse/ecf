@@ -16,6 +16,5 @@ import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
  * {@link IOutgoingFileTransfer} instances when some data are received
  * 
  */
-public interface IOutgoingFileTransferSendDataEvent extends
-		IOutgoingFileTransferEvent {
+public interface IOutgoingFileTransferSendDataEvent extends IOutgoingFileTransferEvent {
 }

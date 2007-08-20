@@ -34,7 +34,7 @@ public interface IFileTransferInfo extends IAdaptable {
 	 * @return long file size (in bytes).  If file size is unknown, will return -1.
 	 */
 	public long getFileSize();
-	
+
 	/**
 	 * Get any properties associated with this file transfer. The map keys and
 	 * values are assumed to be Strings.

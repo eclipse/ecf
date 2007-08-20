@@ -25,6 +25,7 @@ public class UserCancelledException extends ECFException {
 	public UserCancelledException(IStatus status) {
 		super(status);
 	}
+
 	public UserCancelledException(String message) {
 		super(message);
 	}

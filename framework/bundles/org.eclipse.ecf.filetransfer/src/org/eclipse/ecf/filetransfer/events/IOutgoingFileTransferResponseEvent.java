@@ -17,8 +17,7 @@ import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
  * remote target (or provider times out).
  * 
  */
-public interface IOutgoingFileTransferResponseEvent extends
-		IOutgoingFileTransferEvent {
+public interface IOutgoingFileTransferResponseEvent extends IOutgoingFileTransferEvent {
 	/**
 	 * If request was accepted from remote target this method will return true,
 	 * if rejected or failed returns false.

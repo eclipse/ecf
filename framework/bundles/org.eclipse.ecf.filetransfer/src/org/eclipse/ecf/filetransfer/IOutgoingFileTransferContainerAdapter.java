@@ -97,10 +97,7 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
 	 */
-	public void sendOutgoingRequest(ID targetReceiver,
-			IFileTransferInfo localFileToSend,
-			IFileTransferListener transferListener, Map options)
-			throws OutgoingFileTransferException;
+	public void sendOutgoingRequest(ID targetReceiver, IFileTransferInfo localFileToSend, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException;
 
 	/**
 	 * Send request for outgoing file transfer. This method is used to initiate
@@ -127,9 +124,7 @@ public interface IOutgoingFileTransferContainerAdapter {
 	 *             if the provider is not connected or is not in the correct
 	 *             state for initiating file transfer
 	 */
-	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend,
-			IFileTransferListener transferListener, Map options)
-			throws OutgoingFileTransferException;
+	public void sendOutgoingRequest(ID targetReceiver, File localFileToSend, IFileTransferListener transferListener, Map options) throws OutgoingFileTransferException;
 
 	/**
 	 * Add incoming file transfer listener. If the underlying provider supports

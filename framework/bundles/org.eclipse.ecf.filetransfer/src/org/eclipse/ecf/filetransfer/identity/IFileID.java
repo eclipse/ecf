@@ -28,7 +28,7 @@ public interface IFileID extends ID {
 	 *         IFileID. Will not be <code>null</code>.
 	 */
 	public String getFilename();
-	
+
 	/**
 	 * Get the url associated with the file identified by this IFileID.
 	 * 

@@ -19,8 +19,7 @@ import org.eclipse.ecf.filetransfer.identity.IFileID;
  * {@link IIncomingFileTransfer} instances
  * 
  */
-public interface IIncomingFileTransferReceiveStartEvent extends
-		IFileTransferEvent {
+public interface IIncomingFileTransferReceiveStartEvent extends IFileTransferEvent {
 
 	/**
 	 * Get IFileID for incoming file
@@ -44,8 +43,7 @@ public interface IIncomingFileTransferReceiveStartEvent extends
 	 * @throws IOException
 	 *             if localFileToSave cannot be opened for writing
 	 */
-	public IIncomingFileTransfer receive(File localFileToSave)
-			throws IOException;
+	public IIncomingFileTransfer receive(File localFileToSave) throws IOException;
 
 	/**
 	 * Get incoming file transfer by specifying an OutputStream instance to save
@@ -68,8 +66,7 @@ public interface IIncomingFileTransferReceiveStartEvent extends
 	 * @throws IOException
 	 *             if streamToStore cannot be opened for writing
 	 */
-	public IIncomingFileTransfer receive(OutputStream streamToStore)
-			throws IOException;
+	public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException;
 
 	/**
 	 * Cancel incoming file transfer

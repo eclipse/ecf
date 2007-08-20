@@ -26,7 +26,7 @@ import org.eclipse.ecf.internal.filetransfer.Messages;
 public class FileTransferInfo implements IFileTransferInfo, Serializable {
 
 	private static final Map defaultProperties = new HashMap();
-	
+
 	private static final long serialVersionUID = 8354226751625912190L;
 
 	protected File file;
@@ -49,11 +49,9 @@ public class FileTransferInfo implements IFileTransferInfo, Serializable {
 		this(file, properties, description, null);
 	}
 
-	public FileTransferInfo(File file, Map properties, String description,
-			String mimeType) {
+	public FileTransferInfo(File file, Map properties, String description, String mimeType) {
 		if (file == null)
-			throw new NullPointerException(
-					Messages.BaseFileTransferInfo_File_Not_Null);
+			throw new NullPointerException(Messages.BaseFileTransferInfo_File_Not_Null);
 		this.file = file;
 		this.properties = (properties == null) ? defaultProperties : properties;
 		this.description = description;
@@ -112,8 +110,7 @@ public class FileTransferInfo implements IFileTransferInfo, Serializable {
 	 */
 	public String getMimeType() {
 		if (mimeType == null)
-			return URLConnection.getFileNameMap().getContentTypeFor(
-					file.getAbsolutePath());
+			return URLConnection.getFileNameMap().getContentTypeFor(file.getAbsolutePath());
 		return mimeType;
 	}
 }

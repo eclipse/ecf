@@ -45,7 +45,7 @@ public class Activator implements BundleActivator {
 	private static Activator plugin;
 
 	private BundleContext context = null;
-	
+
 	private ServiceTracker logServiceTracker = null;
 
 	/**
@@ -67,8 +67,7 @@ public class Activator implements BundleActivator {
 
 	protected LogService getLogService() {
 		if (logServiceTracker == null) {
-			logServiceTracker = new ServiceTracker(this.context,
-					LogService.class.getName(), null);
+			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
 		}
 		return (LogService) logServiceTracker.getService();
@@ -77,15 +76,13 @@ public class Activator implements BundleActivator {
 	public void log(IStatus status) {
 		LogService logService = getLogService();
 		if (logService != null) {
-			logService.log(LogHelper.getLogCode(status), LogHelper
-					.getLogMessage(status), status.getException());
+			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
 		}
 	}
 
 	public IExtensionRegistry getExtensionRegistry() {
 		if (extensionRegistryTracker == null) {
-			this.extensionRegistryTracker = new ServiceTracker(context,
-					IExtensionRegistry.class.getName(), null);
+			this.extensionRegistryTracker = new ServiceTracker(context, IExtensionRegistry.class.getName(), null);
 			this.extensionRegistryTracker.open();
 		}
 		return (IExtensionRegistry) extensionRegistryTracker.getService();
@@ -94,31 +91,25 @@ public class Activator implements BundleActivator {
 	private void setupProtocolHandlers(BundleContext context) {
 		IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
-			IExtensionPoint extensionPoint = reg
-					.getExtensionPoint(URLCONNECTION_FACTORY_EPOINT);
+			IExtensionPoint extensionPoint = reg.getExtensionPoint(URLCONNECTION_FACTORY_EPOINT);
 			if (extensionPoint == null) {
 				return;
 			}
-			IConfigurationElement[] configurationElements = extensionPoint
-					.getConfigurationElements();
+			IConfigurationElement[] configurationElements = extensionPoint.getConfigurationElements();
 
 			for (int i = 0; i < configurationElements.length; i++) {
 				AbstractURLStreamHandlerService svc = null;
 				String protocol = null;
 				try {
-					svc = (AbstractURLStreamHandlerService) configurationElements[i]
-							.createExecutableExtension(SERVICE_CLASS_ATTRIBUTE);
-					protocol = configurationElements[i]
-							.getAttribute(PROTOCOL_ATTRIBUTE);
+					svc = (AbstractURLStreamHandlerService) configurationElements[i].createExecutableExtension(SERVICE_CLASS_ATTRIBUTE);
+					protocol = configurationElements[i].getAttribute(PROTOCOL_ATTRIBUTE);
 				} catch (CoreException e) {
 					log(e.getStatus());
 				}
 				if (svc != null && protocol != null) {
 					Hashtable properties = new Hashtable();
-					properties.put(URLConstants.URL_HANDLER_PROTOCOL,
-							new String[] { protocol });
-					context.registerService(URLStreamHandlerService.class
-							.getName(), svc, properties);
+					properties.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] {protocol});
+					context.registerService(URLStreamHandlerService.class.getName(), svc, properties);
 				}
 			}
 		}
