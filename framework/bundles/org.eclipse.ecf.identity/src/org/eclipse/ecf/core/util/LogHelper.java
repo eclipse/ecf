@@ -20,18 +20,18 @@ public class LogHelper {
 
 	public static int getLogCode(IStatus status) {
 		switch (status.getCode()) {
-		case IStatus.CANCEL:
-			return LogService.LOG_INFO;
-		case IStatus.ERROR:
-			return LogService.LOG_ERROR;
-		case IStatus.INFO:
-			return LogService.LOG_INFO;
-		case IStatus.OK:
-			return LogService.LOG_INFO;
-		case IStatus.WARNING:
-			return LogService.LOG_WARNING;
-		default:
-			return IStatus.INFO;
+			case IStatus.CANCEL :
+				return LogService.LOG_INFO;
+			case IStatus.ERROR :
+				return LogService.LOG_ERROR;
+			case IStatus.INFO :
+				return LogService.LOG_INFO;
+			case IStatus.OK :
+				return LogService.LOG_INFO;
+			case IStatus.WARNING :
+				return LogService.LOG_WARNING;
+			default :
+				return IStatus.INFO;
 		}
 	}
 

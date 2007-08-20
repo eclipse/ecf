@@ -29,8 +29,7 @@ import org.eclipse.core.runtime.IAdaptable;
  * @see Namespace
  * 
  */
-public interface ID extends java.io.Serializable, java.lang.Comparable,
-		java.security.Principal, IAdaptable {
+public interface ID extends java.io.Serializable, java.lang.Comparable, java.security.Principal, IAdaptable {
 
 	public boolean equals(Object obj);
 

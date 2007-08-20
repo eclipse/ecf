@@ -9,8 +9,7 @@
 package org.eclipse.ecf.core.util;
 
 public class AbstractFactory {
-	public static Class[] getClassesForTypes(String[] argTypes, Object[] args,
-			ClassLoader cl) throws ClassNotFoundException {
+	public static Class[] getClassesForTypes(String[] argTypes, Object[] args, ClassLoader cl) throws ClassNotFoundException {
 		Class clazzes[] = null;
 		if (args == null || args.length == 0)
 			clazzes = new Class[0];

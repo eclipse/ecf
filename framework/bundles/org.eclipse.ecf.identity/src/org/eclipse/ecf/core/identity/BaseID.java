@@ -40,8 +40,7 @@ public abstract class BaseID implements ID {
 	 * @see java.lang.Comparable#compareTo(T)
 	 */
 	public int compareTo(Object o) {
-		Assert.isTrue(o != null && o instanceof BaseID,
-				"incompatible types for compare"); //$NON-NLS-1$
+		Assert.isTrue(o != null && o instanceof BaseID, "incompatible types for compare"); //$NON-NLS-1$
 		return namespace.getCompareToForObject(this, (BaseID) o);
 	}
 
@@ -104,8 +103,7 @@ public abstract class BaseID implements ID {
 	protected abstract int namespaceHashCode();
 
 	protected String namespaceToExternalForm() {
-		return namespace.getScheme() + Namespace.SCHEME_SEPARATOR
-				+ namespaceGetName();
+		return namespace.getScheme() + Namespace.SCHEME_SEPARATOR + namespaceGetName();
 	}
 
 	/*
@@ -115,7 +113,8 @@ public abstract class BaseID implements ID {
 	 */
 	public Object getAdapter(Class clazz) {
 		IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
-		if (adapterManager == null) return null;
+		if (adapterManager == null)
+			return null;
 		return adapterManager.loadAdapter(this, clazz.getName());
 	}
 }

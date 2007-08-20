@@ -126,8 +126,7 @@ public interface IIDFactory {
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createID(String namespaceName, Object[] args)
-			throws IDCreateException;
+	public ID createID(String namespaceName, Object[] args) throws IDCreateException;
 
 	/**
 	 * Make a new identity instance from a namespace and String.
@@ -141,8 +140,7 @@ public interface IIDFactory {
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createID(Namespace namespace, String uri)
-			throws IDCreateException;
+	public ID createID(Namespace namespace, String uri) throws IDCreateException;
 
 	/**
 	 * Make a new identity instance from a namespaceName and idValue. The
@@ -159,8 +157,7 @@ public interface IIDFactory {
 	 *                loaded, if something goes wrong during instance
 	 *                construction
 	 */
-	public ID createID(String namespaceName, String idValue)
-			throws IDCreateException;
+	public ID createID(String namespaceName, String idValue) throws IDCreateException;
 
 	/**
 	 * Make a an ID from a String

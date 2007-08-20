@@ -48,7 +48,7 @@ public class GUID extends StringID {
 		 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 		 */
 		public Class[][] getSupportedParameterTypes() {
-			return new Class[][] { {}, { Integer.class } };
+			return new Class[][] { {}, {Integer.class}};
 		}
 
 	}
@@ -72,15 +72,13 @@ public class GUID extends StringID {
 	 * @param byteLength
 	 *            the length of the target number (in bytes)
 	 */
-	protected GUID(Namespace n, String algo, String provider, int byteLength)
-			throws IDCreateException {
+	protected GUID(Namespace n, String algo, String provider, int byteLength) throws IDCreateException {
 		super(n, ""); //$NON-NLS-1$
 		// Get SecureRandom instance for class
 		try {
 			getRandom(algo, provider);
 		} catch (Exception e) {
-			throw new IDCreateException(Messages.GUID_GUID_Creation_Failure
-					+ e.getMessage());
+			throw new IDCreateException(Messages.GUID_GUID_Creation_Failure + e.getMessage());
 		}
 		// make sure we have reasonable byteLength
 		if (byteLength <= 0)
@@ -113,8 +111,7 @@ public class GUID extends StringID {
 	 * @exception Exception
 	 *                thrown if SecureRandom instance cannot be created/accessed
 	 */
-	protected static synchronized SecureRandom getRandom(String algo,
-			String provider) throws Exception {
+	protected static synchronized SecureRandom getRandom(String algo, String provider) throws Exception {
 		// Given algo and provider, get SecureRandom instance
 		if (random == null) {
 			initializeRandom(algo, provider);
@@ -122,8 +119,7 @@ public class GUID extends StringID {
 		return random;
 	}
 
-	protected static synchronized void initializeRandom(String algo,
-			String provider) throws Exception {
+	protected static synchronized void initializeRandom(String algo, String provider) throws Exception {
 		if (provider == null) {
 			if (algo == null) {
 				try {

@@ -44,7 +44,7 @@ import org.eclipse.ecf.internal.core.identity.Messages;
  * @see ID
  */
 public abstract class Namespace implements Serializable, IAdaptable {
-	
+
 	private static final long serialVersionUID = 3976740272094720312L;
 
 	public static final String SCHEME_SEPARATOR = ":"; //$NON-NLS-1$
@@ -158,8 +158,7 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 * @throws IDCreateException
 	 *             if construction fails
 	 */
-	public abstract ID createInstance(Object[] parameters)
-			throws IDCreateException;
+	public abstract ID createInstance(Object[] parameters) throws IDCreateException;
 
 	/**
 	 * Get the primary scheme associated with this namespace. Subclasses must
@@ -226,7 +225,7 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	 *         parameters to {@link #createInstance(Object[])} will be ignored.
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { {} };
+		return new Class[][] {{}};
 	}
 
 	/* (non-Javadoc)
@@ -237,11 +236,13 @@ public abstract class Namespace implements Serializable, IAdaptable {
 			return this;
 		} else {
 			IAdapterManager manager = Activator.getDefault().getAdapterManager();
-			if (manager == null) return null;
-			else return manager.loadAdapter(this, adapter.getName());
+			if (manager == null)
+				return null;
+			else
+				return manager.loadAdapter(this, adapter.getName());
 		}
 	}
-	
+
 	public String toString() {
 		StringBuffer b = new StringBuffer("Namespace["); //$NON-NLS-1$
 		b.append("name=").append(name).append(";"); //$NON-NLS-1$ //$NON-NLS-2$

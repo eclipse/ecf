@@ -37,30 +37,20 @@ public class PlatformHelper {
 
 	static {
 		try {
-			Bundle[] bundles = Activator.getDefault().getBundleContext()
-					.getBundles();
+			Bundle[] bundles = Activator.getDefault().getBundleContext().getBundles();
 			Bundle coreRuntime = null;
 			for (int i = 0; i < bundles.length; i++)
-				if (bundles[i].getSymbolicName().equals(
-						"org.eclipse.core.runtime")) { //$NON-NLS-1$
+				if (bundles[i].getSymbolicName().equals("org.eclipse.core.runtime")) { //$NON-NLS-1$
 					coreRuntime = bundles[i];
-					platformClass = coreRuntime
-							.loadClass("org.eclipse.core.runtime.Platform"); //$NON-NLS-1$
+					platformClass = coreRuntime.loadClass("org.eclipse.core.runtime.Platform"); //$NON-NLS-1$
 					break;
 				}
 		} catch (Exception e) {
 			// Platform not available...just leave platformClass == null and log
 			// as error
 			try {
-				Activator
-						.getDefault()
-						.log(
-								new Status(
-										IStatus.ERROR,
-										Activator.PLUGIN_ID,
-										IStatus.ERROR,
-										"Cannot load Platform class.  No adapter manager available", //$NON-NLS-1$
-										e));
+				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Cannot load Platform class.  No adapter manager available", //$NON-NLS-1$
+						e));
 			} catch (Throwable t) {
 			}
 		}
@@ -79,14 +69,7 @@ public class PlatformHelper {
 				adapterManagerCache = (IAdapterManager) m.invoke(null, null);
 				return adapterManagerCache;
 			} catch (Exception e) {
-				Activator
-						.getDefault()
-						.log(
-								new Status(
-										IStatus.ERROR,
-										Activator.PLUGIN_ID,
-										IStatus.ERROR,
-										"Exception in PlatformHelper.getPlatformAdapterManager()", e)); //$NON-NLS-1$
+				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Exception in PlatformHelper.getPlatformAdapterManager()", e)); //$NON-NLS-1$
 				return null;
 			}
 		} else
@@ -98,20 +81,11 @@ public class PlatformHelper {
 			return extensionRegistryCache;
 		if (isPlatformAvailable()) {
 			try {
-				Method m = platformClass
-						.getMethod("getExtensionRegistry", null); //$NON-NLS-1$
-				extensionRegistryCache = (IExtensionRegistry) m.invoke(null,
-						null);
+				Method m = platformClass.getMethod("getExtensionRegistry", null); //$NON-NLS-1$
+				extensionRegistryCache = (IExtensionRegistry) m.invoke(null, null);
 				return extensionRegistryCache;
 			} catch (Exception e) {
-				Activator
-						.getDefault()
-						.log(
-								new Status(
-										IStatus.ERROR,
-										Activator.PLUGIN_ID,
-										IStatus.ERROR,
-										"Exception in PlatformHelper.getExtensionRegistry()", e)); //$NON-NLS-1$
+				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Exception in PlatformHelper.getExtensionRegistry()", e)); //$NON-NLS-1$
 				return null;
 			}
 

@@ -27,8 +27,7 @@ import org.eclipse.osgi.util.NLS;
  * 
  */
 public class IDFactory implements IIDFactory {
-	public static final String SECURITY_PROPERTY = IDFactory.class.getName()
-			+ ".security"; //$NON-NLS-1$
+	public static final String SECURITY_PROPERTY = IDFactory.class.getName() + ".security"; //$NON-NLS-1$
 
 	private static final int IDENTITY_CREATION_ERRORCODE = 2001;
 
@@ -60,15 +59,10 @@ public class IDFactory implements IIDFactory {
 	public Namespace addNamespace(Namespace namespace) throws SecurityException {
 		if (namespace == null)
 			return null;
-		Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
-				"addNamespace", namespace); //$NON-NLS-1$
-		checkPermission(new NamespacePermission(namespace.toString(),
-				NamespacePermission.ADD_NAMESPACE));
+		Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, IDFactory.class, "addNamespace", namespace); //$NON-NLS-1$
+		checkPermission(new NamespacePermission(namespace.toString(), NamespacePermission.ADD_NAMESPACE));
 		Namespace result = addNamespace0(namespace);
-		Trace.exiting(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
-				"addNamespace", result); //$NON-NLS-1$
+		Trace.exiting(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_EXITING, IDFactory.class, "addNamespace", result); //$NON-NLS-1$
 		return result;
 	}
 
@@ -78,8 +72,7 @@ public class IDFactory implements IIDFactory {
 		return (Namespace) namespaces.put(namespace.getName(), namespace);
 	}
 
-	protected final static void checkPermission(
-			NamespacePermission namespacepermission) throws SecurityException {
+	protected final static void checkPermission(NamespacePermission namespacepermission) throws SecurityException {
 		if (securityEnabled)
 			AccessController.checkPermission(namespacepermission);
 	}
@@ -89,19 +82,13 @@ public class IDFactory implements IIDFactory {
 	 * 
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#containsNamespace(org.eclipse.ecf.core.identity.Namespace)
 	 */
-	public boolean containsNamespace(Namespace namespace)
-			throws SecurityException {
-		Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
-				"containsNamespace", namespace); //$NON-NLS-1$
+	public boolean containsNamespace(Namespace namespace) throws SecurityException {
+		Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, IDFactory.class, "containsNamespace", namespace); //$NON-NLS-1$
 		if (namespace == null)
 			return false;
-		checkPermission(new NamespacePermission(namespace.toString(),
-				NamespacePermission.CONTAINS_NAMESPACE));
+		checkPermission(new NamespacePermission(namespace.toString(), NamespacePermission.CONTAINS_NAMESPACE));
 		boolean result = containsNamespace0(namespace);
-		Trace.exiting(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
-				"containsNamespace", new Boolean(result)); //$NON-NLS-1$
+		Trace.exiting(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_EXITING, IDFactory.class, "containsNamespace", new Boolean(result)); //$NON-NLS-1$
 		return result;
 	}
 
@@ -111,9 +98,7 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#getNamespaces()
 	 */
 	public List getNamespaces() {
-		Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
-				"getNamespaces"); //$NON-NLS-1$
+		Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, IDFactory.class, "getNamespaces"); //$NON-NLS-1$
 		return new ArrayList(namespaces.values());
 	}
 
@@ -129,17 +114,12 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#getNamespace(org.eclipse.ecf.core.identity.Namespace)
 	 */
 	public Namespace getNamespace(Namespace namespace) throws SecurityException {
-		Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
-				"getNamespace", namespace); //$NON-NLS-1$
+		Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, IDFactory.class, "getNamespace", namespace); //$NON-NLS-1$
 		if (namespace == null)
 			return null;
-		checkPermission(new NamespacePermission(namespace.toString(),
-				NamespacePermission.GET_NAMESPACE));
+		checkPermission(new NamespacePermission(namespace.toString(), NamespacePermission.GET_NAMESPACE));
 		Namespace result = getNamespace0(namespace);
-		Trace.exiting(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
-				"getNamespace", result); //$NON-NLS-1$
+		Trace.exiting(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_EXITING, IDFactory.class, "getNamespace", result); //$NON-NLS-1$
 		return result;
 	}
 
@@ -149,13 +129,9 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#getNamespaceByName(java.lang.String)
 	 */
 	public Namespace getNamespaceByName(String name) throws SecurityException {
-		Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
-				"getNamespaceByName", name); //$NON-NLS-1$
+		Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, IDFactory.class, "getNamespaceByName", name); //$NON-NLS-1$
 		Namespace result = getNamespace0(name);
-		Trace.exiting(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
-				"getNamespaceByName", result); //$NON-NLS-1$
+		Trace.exiting(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_EXITING, IDFactory.class, "getNamespaceByName", result); //$NON-NLS-1$
 		return result;
 	}
 
@@ -187,19 +163,14 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createGUID(int)
 	 */
 	public ID createGUID(int length) throws IDCreateException {
-		Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
-				"createGUID", new Integer(length)); //$NON-NLS-1$
+		Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, IDFactory.class, "createGUID", new Integer(length)); //$NON-NLS-1$
 		Namespace namespace = new GUID.GUIDNamespace();
-		ID result = createID(namespace, new Integer[] { new Integer(length) });
-		Trace.exiting(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
-				"createGUID", result); //$NON-NLS-1$
+		ID result = createID(namespace, new Integer[] {new Integer(length)});
+		Trace.exiting(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_EXITING, IDFactory.class, "createGUID", result); //$NON-NLS-1$
 		return result;
 	}
 
-	protected static void logAndThrow(String s, Throwable t)
-			throws IDCreateException {
+	protected static void logAndThrow(String s, Throwable t) throws IDCreateException {
 		IDCreateException e = null;
 		if (t != null) {
 			e = new IDCreateException(s + ": " + t.getClass().getName() + ": " //$NON-NLS-1$ //$NON-NLS-2$
@@ -207,12 +178,8 @@ public class IDFactory implements IIDFactory {
 		} else {
 			e = new IDCreateException(s);
 		}
-		Trace.throwing(Activator.PLUGIN_ID,
-				IdentityDebugOptions.EXCEPTIONS_THROWING, IDFactory.class,
-				"logAndThrow", e); //$NON-NLS-1$
-		Activator.getDefault().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-						IDENTITY_CREATION_ERRORCODE, s, e));
+		Trace.throwing(Activator.PLUGIN_ID, IdentityDebugOptions.EXCEPTIONS_THROWING, IDFactory.class, "logAndThrow", e); //$NON-NLS-1$
+		Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IDENTITY_CREATION_ERRORCODE, s, e));
 		throw e;
 	}
 
@@ -223,9 +190,7 @@ public class IDFactory implements IIDFactory {
 	 *      java.lang.Object[])
 	 */
 	public ID createID(Namespace n, Object[] args) throws IDCreateException {
-		Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
-				"createID", new Object[] { n, Trace.getArgumentsString(args) }); //$NON-NLS-1$
+		Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, IDFactory.class, "createID", new Object[] {n, Trace.getArgumentsString(args)}); //$NON-NLS-1$
 		// Verify namespace is non-null
 		if (n == null)
 			logAndThrow(Messages.IDFactory_Namespace_Not_Null, null);
@@ -233,15 +198,12 @@ public class IDFactory implements IIDFactory {
 		// throw...we don't create any instances that we don't know about!
 		Namespace ns = getNamespace0(n);
 		if (ns == null)
-			logAndThrow(NLS.bind(Messages.IDFactory_Namespace_Not_Found, n
-					.getName()), null);
+			logAndThrow(NLS.bind(Messages.IDFactory_Namespace_Not_Found, n.getName()), null);
 		// We're OK, go ahead and setup array of classes for call to
 		// instantiator
 		// Ask instantiator to actually create instance
 		ID result = ns.createInstance(args);
-		Trace.exiting(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
-				"createID", result); //$NON-NLS-1$
+		Trace.exiting(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_EXITING, IDFactory.class, "createID", result); //$NON-NLS-1$
 		return result;
 	}
 
@@ -251,22 +213,19 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#createID(java.lang.String,
 	 *      java.lang.Object[])
 	 */
-	public ID createID(String namespaceName, Object[] args)
-			throws IDCreateException {
+	public ID createID(String namespaceName, Object[] args) throws IDCreateException {
 		Namespace n = getNamespaceByName(namespaceName);
 		if (n == null)
-			throw new IDCreateException(NLS.bind(
-					Messages.IDFactory_Namespace_Not_Found, namespaceName));
+			throw new IDCreateException(NLS.bind(Messages.IDFactory_Namespace_Not_Found, namespaceName));
 		return createID(n, args);
 	}
 
-	public ID createID(Namespace namespace, String uri)
-			throws IDCreateException {
-		return createID(namespace, new Object[] { uri });
+	public ID createID(Namespace namespace, String uri) throws IDCreateException {
+		return createID(namespace, new Object[] {uri});
 	}
 
 	public ID createID(String namespace, String uri) throws IDCreateException {
-		return createID(namespace, new Object[] { uri });
+		return createID(namespace, new Object[] {uri});
 	}
 
 	/*
@@ -278,7 +237,7 @@ public class IDFactory implements IIDFactory {
 		if (idstring == null)
 			throw new IDCreateException(Messages.IDFactory_StringID_Not_Null);
 		Namespace n = new StringID.StringIDNamespace();
-		return createID(n, new String[] { idstring });
+		return createID(n, new String[] {idstring});
 	}
 
 	/*
@@ -288,7 +247,7 @@ public class IDFactory implements IIDFactory {
 	 */
 	public ID createLongID(long l) throws IDCreateException {
 		Namespace n = new LongID.LongNamespace();
-		return createID(n, new Long[] { new Long(l) });
+		return createID(n, new Long[] {new Long(l)});
 	}
 
 	/*
@@ -297,17 +256,12 @@ public class IDFactory implements IIDFactory {
 	 * @see org.eclipse.ecf.core.identity.IIDFactory#removeNamespace(org.eclipse.ecf.core.identity.Namespace)
 	 */
 	public Namespace removeNamespace(Namespace n) throws SecurityException {
-		Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, IDFactory.class,
-				"removeNamespace", n); //$NON-NLS-1$
+		Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, IDFactory.class, "removeNamespace", n); //$NON-NLS-1$
 		if (n == null)
 			return null;
-		checkPermission(new NamespacePermission(n.toString(),
-				NamespacePermission.REMOVE_NAMESPACE));
+		checkPermission(new NamespacePermission(n.toString(), NamespacePermission.REMOVE_NAMESPACE));
 		Namespace result = removeNamespace0(n);
-		Trace.exiting(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, IDFactory.class,
-				"removeNamespace", result); //$NON-NLS-1$
+		Trace.exiting(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_EXITING, IDFactory.class, "removeNamespace", result); //$NON-NLS-1$
 		return result;
 	}
 

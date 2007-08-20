@@ -21,7 +21,7 @@ public class IDCreateException extends ECFException {
 	public IDCreateException(IStatus status) {
 		super(status);
 	}
-	
+
 	public IDCreateException(String message) {
 		super(message);
 	}

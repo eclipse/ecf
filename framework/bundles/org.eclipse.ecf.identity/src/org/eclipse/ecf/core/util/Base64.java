@@ -95,10 +95,7 @@ public final class Base64 {
 		byte[] raw = new byte[length];
 		int rawIndex = 0;
 		for (int i = 0; i < base64.length(); i += 4) {
-			int block = (getValue(base64.charAt(i)) << 18)
-					+ (getValue(base64.charAt(i + 1)) << 12)
-					+ (getValue(base64.charAt(i + 2)) << 6)
-					+ (getValue(base64.charAt(i + 3)));
+			int block = (getValue(base64.charAt(i)) << 18) + (getValue(base64.charAt(i + 1)) << 12) + (getValue(base64.charAt(i + 2)) << 6) + (getValue(base64.charAt(i + 3)));
 			for (int j = 0; j < 3 && rawIndex + j < raw.length; j++)
 				raw[rawIndex + j] = (byte) ((block >> (8 * (2 - j))) & 0xff);
 			rawIndex += 3;
@@ -121,7 +118,6 @@ public final class Base64 {
 		// modify to use '-' instead of '='
 		if (c == '-')
 			return 0;
-		throw new NumberFormatException(NLS.bind(Messages.Base64_Invalid_Value,
-				String.valueOf(c)));
+		throw new NumberFormatException(NLS.bind(Messages.Base64_Invalid_Value, String.valueOf(c)));
 	}
 }

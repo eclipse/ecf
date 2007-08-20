@@ -45,7 +45,7 @@ public class StringID extends BaseID {
 		 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 		 */
 		public Class[][] getSupportedParameterTypes() {
-			return new Class[][] { { String.class } };
+			return new Class[][] {{String.class}};
 		}
 	}
 
@@ -124,8 +124,7 @@ public class StringID extends BaseID {
 
 	protected synchronized void setEmptyNamespace() {
 		if (namespace == null) {
-			namespace = IDFactory.getDefault().getNamespaceByName(
-					StringID.class.getName());
+			namespace = IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
 		}
 	}
 

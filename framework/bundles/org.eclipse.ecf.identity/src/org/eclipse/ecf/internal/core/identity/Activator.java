@@ -76,20 +76,16 @@ public class Activator implements BundleActivator {
 	public IAdapterManager getAdapterManager() {
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
-			adapterManagerTracker = new ServiceTracker(this.context,
-					IAdapterManager.class.getName(), null);
+			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
 			adapterManagerTracker.open();
 		}
-		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker
-				.getService();
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
 		// Then, if the service isn't there, try to get from Platform class via
 		// PlatformHelper class
 		if (adapterManager == null)
 			adapterManager = PlatformHelper.getPlatformAdapterManager();
 		if (adapterManager == null)
-			getDefault().log(
-					new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR,
-							"Cannot get adapter manager", null)); //$NON-NLS-1$
+			getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, "Cannot get adapter manager", null)); //$NON-NLS-1$
 		return adapterManager;
 	}
 
@@ -101,18 +97,17 @@ public class Activator implements BundleActivator {
 
 	public IExtensionRegistry getExtensionRegistry() {
 		if (extensionRegistryTracker == null) {
-			extensionRegistryTracker = new ServiceTracker(context,
-					IExtensionRegistry.class.getName(), null);
+			extensionRegistryTracker = new ServiceTracker(context, IExtensionRegistry.class.getName(), null);
 			extensionRegistryTracker.open();
 		}
 		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
 
 	public DebugOptions getDebugOptions() {
-		if (context == null) return null;
+		if (context == null)
+			return null;
 		if (debugOptionsTracker == null) {
-			debugOptionsTracker = new ServiceTracker(context,
-					DebugOptions.class.getName(), null);
+			debugOptionsTracker = new ServiceTracker(context, DebugOptions.class.getName(), null);
 			debugOptionsTracker.open();
 		}
 		return (DebugOptions) debugOptionsTracker.getService();
@@ -132,34 +127,27 @@ public class Activator implements BundleActivator {
 			reg.addRegistryChangeListener(registryManager);
 		}
 		this.setupNamespaceExtensionPoint();
-		Trace
-				.exiting(Activator.PLUGIN_ID,
-						IdentityDebugOptions.METHODS_ENTERING, Activator.class,
-						"start"); //$NON-NLS-1$
+		Trace.exiting(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, Activator.class, "start"); //$NON-NLS-1$
 		// Register IIDFactory service
-		idFactoryServiceRegistration = context.registerService(IIDFactory.class
-				.getName(), IDFactory.getDefault(), null);
-		
+		idFactoryServiceRegistration = context.registerService(IIDFactory.class.getName(), IDFactory.getDefault(), null);
+
 	}
 
 	public BundleContext getBundleContext() {
 		return context;
 	}
-	
+
 	protected class IdentityRegistryManager implements IRegistryChangeListener {
 		public void registryChanged(IRegistryChangeEvent event) {
-			IExtensionDelta delta[] = event.getExtensionDeltas(PLUGIN_ID,
-					NAMESPACE_NAME);
+			IExtensionDelta delta[] = event.getExtensionDeltas(PLUGIN_ID, NAMESPACE_NAME);
 			for (int i = 0; i < delta.length; i++) {
 				switch (delta[i].getKind()) {
-				case IExtensionDelta.ADDED:
-					addNamespaceExtensions(delta[i].getExtension()
-							.getConfigurationElements());
-					break;
-				case IExtensionDelta.REMOVED:
-					removeNamespaceExtensions(delta[i].getExtension()
-							.getConfigurationElements());
-					break;
+					case IExtensionDelta.ADDED :
+						addNamespaceExtensions(delta[i].getExtension().getConfigurationElements());
+						break;
+					case IExtensionDelta.REMOVED :
+						removeNamespaceExtensions(delta[i].getExtension().getConfigurationElements());
+						break;
 				}
 			}
 		}
@@ -172,9 +160,7 @@ public class Activator implements BundleActivator {
 	 *            the members to remove
 	 */
 	protected void removeNamespaceExtensions(IConfigurationElement[] members) {
-		org.eclipse.ecf.core.util.Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, Activator.class,
-				"removeNamespaceExtensions", members); //$NON-NLS-1$
+		org.eclipse.ecf.core.util.Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, Activator.class, "removeNamespaceExtensions", members); //$NON-NLS-1$
 		for (int m = 0; m < members.length; m++) {
 			IConfigurationElement member = members[m];
 			String name = null;
@@ -192,23 +178,14 @@ public class Activator implements BundleActivator {
 				}
 				// remove
 				factory.removeNamespace(n);
-				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID,
-						IdentityDebugOptions.DEBUG,
-						"removeNamespaceExtensions.removedNamespace(" //$NON-NLS-1$
-								+ n + ")"); //$NON-NLS-1$
+				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID, IdentityDebugOptions.DEBUG, "removeNamespaceExtensions.removedNamespace(" //$NON-NLS-1$
+						+ n + ")"); //$NON-NLS-1$
 			} catch (Exception e) {
-				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID,
-						IdentityDebugOptions.EXCEPTIONS_CATCHING,
-						Activator.class, "removeNamespaceExtensions", e); //$NON-NLS-1$
-				getDefault().log(
-						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-								REMOVE_NAMESPACE_ERRORCODE,
-								"Exception removing namespace", e)); //$NON-NLS-1$
+				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID, IdentityDebugOptions.EXCEPTIONS_CATCHING, Activator.class, "removeNamespaceExtensions", e); //$NON-NLS-1$
+				getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, REMOVE_NAMESPACE_ERRORCODE, "Exception removing namespace", e)); //$NON-NLS-1$
 			}
 		}
-		org.eclipse.ecf.core.util.Trace.exiting(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, Activator.class,
-				"removeNamespaceExtensions", members); //$NON-NLS-1$
+		org.eclipse.ecf.core.util.Trace.exiting(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_EXITING, Activator.class, "removeNamespaceExtensions", members); //$NON-NLS-1$
 	}
 
 	public Bundle getBundle() {
@@ -220,8 +197,7 @@ public class Activator implements BundleActivator {
 
 	protected LogService getLogService() {
 		if (logServiceTracker == null) {
-			logServiceTracker = new ServiceTracker(this.context,
-					LogService.class.getName(), null);
+			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
 		}
 		return (LogService) logServiceTracker.getService();
@@ -230,8 +206,7 @@ public class Activator implements BundleActivator {
 	public void log(IStatus status) {
 		LogService logService = getLogService();
 		if (logService != null) {
-			logService.log(LogHelper.getLogCode(status), LogHelper
-					.getLogMessage(status), status.getException());
+			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
 		}
 	}
 
@@ -242,9 +217,7 @@ public class Activator implements BundleActivator {
 	 *            the members to add
 	 */
 	protected void addNamespaceExtensions(IConfigurationElement[] members) {
-		org.eclipse.ecf.core.util.Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_ENTERING, Activator.class,
-				"addNamespaceExtensions", members); //$NON-NLS-1$
+		org.eclipse.ecf.core.util.Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_ENTERING, Activator.class, "addNamespaceExtensions", members); //$NON-NLS-1$
 		String bundleName = getDefault().getBundle().getSymbolicName();
 		for (int m = 0; m < members.length; m++) {
 			IConfigurationElement member = members[m];
@@ -253,64 +226,35 @@ public class Activator implements BundleActivator {
 			IExtension extension = member.getDeclaringExtension();
 			String nsName = null;
 			try {
-				Namespace ns = (Namespace) member
-						.createExecutableExtension(CLASS_ATTRIBUTE);
+				Namespace ns = (Namespace) member.createExecutableExtension(CLASS_ATTRIBUTE);
 				String clazz = ns.getClass().getName();
 				nsName = member.getAttribute(NAME_ATTRIBUTE);
 				if (nsName == null) {
 					nsName = clazz;
 				}
-				String nsDescription = member
-						.getAttribute(DESCRIPTION_ATTRIBUTE);
+				String nsDescription = member.getAttribute(DESCRIPTION_ATTRIBUTE);
 				ns.initialize(nsName, nsDescription);
-				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID,
-						IdentityDebugOptions.DEBUG,
-						"addNamespaceExtensions.createdNamespace(" + ns + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID, IdentityDebugOptions.DEBUG, "addNamespaceExtensions.createdNamespace(" + ns + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 				// Check to see if we have a namespace name collision
 				if (IDFactory.getDefault().containsNamespace(ns))
-					throw new CoreException(
-							new Status(
-									Status.ERROR,
-									bundleName,
-									FACTORY_NAME_COLLISION_ERRORCODE,
-									"name=" //$NON-NLS-1$
-											+ nsName
-											+ ";extension point id=" //$NON-NLS-1$
-											+ extension
-													.getExtensionPointUniqueIdentifier(),
-									null));
+					throw new CoreException(new Status(Status.ERROR, bundleName, FACTORY_NAME_COLLISION_ERRORCODE, "name=" //$NON-NLS-1$
+							+ nsName + ";extension point id=" //$NON-NLS-1$
+							+ extension.getExtensionPointUniqueIdentifier(), null));
 				// Now add to known namespaces
 				IDFactory.getDefault().addNamespace(ns);
-				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID,
-						IdentityDebugOptions.DEBUG,
-						"addNamespaceExtensions.addedNamespaceToFactory(" + ns //$NON-NLS-1$
-								+ ")"); //$NON-NLS-1$
+				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID, IdentityDebugOptions.DEBUG, "addNamespaceExtensions.addedNamespaceToFactory(" + ns //$NON-NLS-1$
+						+ ")"); //$NON-NLS-1$
 			} catch (CoreException e) {
 				getDefault().log(e.getStatus());
-				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID,
-						IdentityDebugOptions.EXCEPTIONS_CATCHING,
-						Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
+				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID, IdentityDebugOptions.EXCEPTIONS_CATCHING, Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
 			} catch (Exception e) {
-				getDefault()
-						.log(
-								new Status(
-										Status.ERROR,
-										bundleName,
-										FACTORY_NAME_COLLISION_ERRORCODE,
-										"name=" //$NON-NLS-1$
-												+ nsName
-												+ ";extension point id=" //$NON-NLS-1$
-												+ extension
-														.getExtensionPointUniqueIdentifier(),
-										null));
-				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID,
-						IdentityDebugOptions.EXCEPTIONS_CATCHING,
-						Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
+				getDefault().log(new Status(Status.ERROR, bundleName, FACTORY_NAME_COLLISION_ERRORCODE, "name=" //$NON-NLS-1$
+						+ nsName + ";extension point id=" //$NON-NLS-1$
+						+ extension.getExtensionPointUniqueIdentifier(), null));
+				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID, IdentityDebugOptions.EXCEPTIONS_CATCHING, Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
 			}
 		}
-		org.eclipse.ecf.core.util.Trace.exiting(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, Activator.class,
-				"addNamespaceExtensions"); //$NON-NLS-1$
+		org.eclipse.ecf.core.util.Trace.exiting(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_EXITING, Activator.class, "addNamespaceExtensions"); //$NON-NLS-1$
 	}
 
 	/**
@@ -321,8 +265,7 @@ public class Activator implements BundleActivator {
 		// Process extension points
 		IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
-			IExtensionPoint extensionPoint = reg
-					.getExtensionPoint(NAMESPACE_EPOINT);
+			IExtensionPoint extensionPoint = reg.getExtensionPoint(NAMESPACE_EPOINT);
 			if (extensionPoint == null) {
 				return;
 			}
@@ -336,8 +279,7 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		Trace.entering(Activator.PLUGIN_ID,
-				IdentityDebugOptions.METHODS_EXITING, Activator.class, "stop"); //$NON-NLS-1$
+		Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_EXITING, Activator.class, "stop"); //$NON-NLS-1$
 		IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null)
 			reg.removeRegistryChangeListener(registryManager);
