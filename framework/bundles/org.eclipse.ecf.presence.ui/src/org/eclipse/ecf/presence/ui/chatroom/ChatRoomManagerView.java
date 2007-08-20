@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 192762, 197329
- *    Abner Ballardo <modlost@modlost.net> - bug 192756
+ *    Abner Ballardo <modlost@modlost.net> - bug 192756, 199336
  ******************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
@@ -491,7 +491,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	private boolean closeTabItem(CTabItem tabItem) {
 		ChatRoom chatRoom = findChatRoomForTabItem(tabItem);
 		if (chatRoom == null) {
-			return false;
+			return true;
 		} else {
 			if (MessageDialog
 					.openQuestion(
