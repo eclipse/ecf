@@ -10,20 +10,17 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.presence.ui.dialogs;
 
-import java.util.List;
-
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.ui.MultiRosterAccount;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -91,34 +88,24 @@ public class AddContactDialog extends Dialog {
 
 	protected Control createDialogArea(Composite parent) {
 		parent = (Composite) super.createDialogArea(parent);
-		parent.setLayout(new GridLayout(1, true));
+		parent.setLayout(new GridLayout(2, false));
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
 
 		new Label(parent, SWT.BEGINNING)
 				.setText(Messages.AddContactDialog_UserID);
-		accountText = new Text(parent, SWT.SINGLE);
+		accountText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		accountText.setLayoutData(data);
 
 		new Label(parent, SWT.BEGINNING)
 				.setText(Messages.AddContactDialog_Alias);
-		aliasText = new Text(parent, SWT.SINGLE);
+		aliasText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		aliasText.setLayoutData(data);
+		
 		new Label(parent, SWT.BEGINNING)
 				.setText(Messages.AddContactDialog_Account);
 		accountsViewer = new ComboViewer(parent, SWT.READ_ONLY | SWT.BORDER);
 		accountsViewer.getControl().setLayoutData(data);
-		accountsViewer.setContentProvider(new IStructuredContentProvider() {
-			public Object[] getElements(Object inputElement) {
-				return ((List) inputElement).toArray();
-			}
-
-			public void dispose() {
-			}
-
-			public void inputChanged(Viewer viewer, Object oldInput,
-					Object newInput) {
-			}
-		});
+		accountsViewer.setContentProvider(new ArrayContentProvider());
 		accountsViewer.setLabelProvider(new LabelProvider() {
 			public String getText(Object element) {
 				MultiRosterAccount account = (MultiRosterAccount) element;
