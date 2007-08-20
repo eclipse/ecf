@@ -128,8 +128,8 @@ public class BrowseDialog extends FilteredItemsSelectionDialog {
 			}
 			progressMonitor.worked(1);
 		}
-		if (progressMonitor != null)
-			progressMonitor.done();
+		
+		progressMonitor.done();
 	}
 
 	// cycle through all roster items recursively
