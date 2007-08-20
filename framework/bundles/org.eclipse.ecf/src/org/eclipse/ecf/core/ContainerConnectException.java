@@ -36,7 +36,7 @@ public class ContainerConnectException extends ECFException {
 	public ContainerConnectException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
+
 	public ContainerConnectException(IStatus status) {
 		super(status);
 	}

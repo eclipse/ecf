@@ -28,9 +28,8 @@ public class BaseContainer extends AbstractContainer {
 
 	public static class Instantiator extends BaseContainerInstantiator {
 		private static long nextBaseContainerID = 0L;
-		
-		public IContainer createInstance(ContainerTypeDescription description,
-				Object[] parameters) throws ContainerCreateException {
+
+		public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
 			return new BaseContainer(nextBaseContainerID++);
 		}
 
@@ -39,14 +38,13 @@ public class BaseContainer extends AbstractContainer {
 		 * 
 		 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedAdapterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 		 */
-		public String[] getSupportedAdapterTypes(
-				ContainerTypeDescription description) {
+		public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
 			return getInterfacesAndAdaptersForClass(BaseContainer.class);
 		}
 	}
 
 	private ID id = null;
-	
+
 	protected BaseContainer(long idl) throws ContainerCreateException {
 		try {
 			this.id = IDFactory.getDefault().createLongID(idl);
@@ -54,15 +52,14 @@ public class BaseContainer extends AbstractContainer {
 			throw new ContainerCreateException(e);
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID targetID, IConnectContext connectContext)
-			throws ContainerConnectException {
+	public void connect(ID targetID, IConnectContext connectContext) throws ContainerConnectException {
 	}
 
 	/*

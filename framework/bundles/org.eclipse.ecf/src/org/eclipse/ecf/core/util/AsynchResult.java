@@ -59,8 +59,7 @@ public class AsynchResult {
 	 * @throws InvocationTargetException
 	 *             thrown if exception was thrown by execution
 	 */
-	public synchronized Object get() throws InterruptedException,
-			InvocationTargetException {
+	public synchronized Object get() throws InterruptedException, InvocationTargetException {
 		while (!resultReady)
 			wait();
 		return doGet();
@@ -81,8 +80,7 @@ public class AsynchResult {
 	 * @throws InvocationTargetException
 	 *             thrown if exception was thrown by execution
 	 */
-	public synchronized Object get(long msecs) throws TimeoutException,
-			InterruptedException, InvocationTargetException {
+	public synchronized Object get(long msecs) throws TimeoutException, InterruptedException, InvocationTargetException {
 		long startTime = (msecs <= 0) ? 0 : System.currentTimeMillis();
 		long waitTime = msecs;
 		if (resultReady)

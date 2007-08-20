@@ -45,8 +45,7 @@ public interface IContainerInstantiator {
 	 *         ContainerCreateException. Null will not be returned.
 	 * @throws ContainerCreateException
 	 */
-	public IContainer createInstance(ContainerTypeDescription description,
-			Object[] parameters) throws ContainerCreateException;
+	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException;
 
 	/**
 	 * Get array of supported adapters for the given container type description.
@@ -71,8 +70,7 @@ public interface IContainerInstantiator {
 	 *         the given description. <code>null</code> may be returned by
 	 *         the provider if no adapters are supported for this description.
 	 */
-	public String[] getSupportedAdapterTypes(
-			ContainerTypeDescription description);
+	public String[] getSupportedAdapterTypes(ContainerTypeDescription description);
 
 	/**
 	 * Get array of parameter types for given container type description.
@@ -122,7 +120,6 @@ public interface IContainerInstantiator {
 	 *         <code>null</code> returned if no parameter types supported for
 	 *         given description.
 	 */
-	public Class[][] getSupportedParameterTypes(
-			ContainerTypeDescription description);
+	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description);
 
 }

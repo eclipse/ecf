@@ -18,7 +18,7 @@ import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 
 public class User implements IUser {
-	
+
 	private static final long serialVersionUID = 3978709484518586169L;
 
 	protected ID id;
@@ -26,7 +26,7 @@ public class User implements IUser {
 	protected String name;
 
 	protected String nickname;
-	
+
 	protected Map properties;
 
 	public User(ID userID) {
@@ -47,7 +47,7 @@ public class User implements IUser {
 		this.nickname = nickname;
 		this.properties = properties;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -85,19 +85,19 @@ public class User implements IUser {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
 	}
-	
+
 	public Object getAdapter(Class adapter) {
 		if (adapter.isInstance(this)) {
 			return this;
 		} else {
 			IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
-			if (adapterManager == null) return null;
-			return adapterManager.loadAdapter(this,
-					adapter.getName());
+			if (adapterManager == null)
+				return null;
+			return adapterManager.loadAdapter(this, adapter.getName());
 		}
 	}
 
@@ -105,8 +105,7 @@ public class User implements IUser {
 		StringBuffer sb = new StringBuffer("User["); //$NON-NLS-1$
 		sb.append("id=" + getID()).append(";name=" + getName()); //$NON-NLS-1$ //$NON-NLS-2$
 		sb.append(";nickname=").append(getNickname()); //$NON-NLS-1$
-		sb.append(
-				";props=" + getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append(";props=" + getProperties()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
 

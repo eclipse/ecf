@@ -22,7 +22,7 @@ public class ContainerCreateException extends ECFException {
 	public ContainerCreateException(IStatus status) {
 		super(status);
 	}
-	
+
 	public ContainerCreateException() {
 		super();
 	}

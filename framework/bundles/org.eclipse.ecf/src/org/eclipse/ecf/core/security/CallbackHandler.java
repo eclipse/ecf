@@ -10,7 +10,6 @@ package org.eclipse.ecf.core.security;
 
 public interface CallbackHandler {
 
-	void handle(Callback[] callbacks) throws java.io.IOException,
-			UnsupportedCallbackException;
+	void handle(Callback[] callbacks) throws java.io.IOException, UnsupportedCallbackException;
 
 }

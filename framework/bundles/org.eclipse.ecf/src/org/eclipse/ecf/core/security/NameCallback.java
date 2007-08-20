@@ -59,8 +59,7 @@ public class NameCallback implements Callback, java.io.Serializable {
 	 *                or if <code>defaultName</code> has a length of 0.
 	 */
 	public NameCallback(String prompt, String defaultName) {
-		if (prompt == null || prompt.length() == 0 || defaultName == null
-				|| defaultName.length() == 0)
+		if (prompt == null || prompt.length() == 0 || defaultName == null || defaultName.length() == 0)
 			throw new IllegalArgumentException();
 
 		this.prompt = prompt;

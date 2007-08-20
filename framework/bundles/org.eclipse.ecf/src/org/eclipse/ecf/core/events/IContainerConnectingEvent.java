@@ -21,7 +21,7 @@ public interface IContainerConnectingEvent extends IContainerEvent {
 	 * @return ID the ID of the container we connecting to. Will not be null.
 	 */
 	public ID getTargetID();
-	
+
 	/**
 	 * Get data associated with connecting
 	 * 

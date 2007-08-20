@@ -26,7 +26,7 @@ public interface IConnectInitiatorPolicy extends IContainerPolicy {
 	 * @return Object that will be used as data for the connect call
 	 */
 	public Object createConnectData(IContainer container, ID targetID, IConnectContext context);
-	
+
 	/**
 	 * Get connect timeout (in ms)
 	 * @return int connect timeout in ms

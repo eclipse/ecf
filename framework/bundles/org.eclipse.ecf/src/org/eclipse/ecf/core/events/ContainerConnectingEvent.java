@@ -28,7 +28,7 @@ public class ContainerConnectingEvent implements IContainerConnectingEvent {
 	public ContainerConnectingEvent(ID localContainerID, ID targetID) {
 		this(localContainerID, targetID, null);
 	}
-	
+
 	public ID getTargetID() {
 		return targetID;
 	}

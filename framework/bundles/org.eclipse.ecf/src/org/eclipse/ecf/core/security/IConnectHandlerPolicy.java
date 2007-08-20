@@ -33,7 +33,5 @@ public interface IConnectHandlerPolicy extends IContainerPolicy {
 	 *         a successful acceptance of join request
 	 * @throws Exception thrown if connect should not be allowed
 	 */
-	public PermissionCollection checkConnect(Object address, ID fromID,
-			ID targetID, String targetGroup, Object connectData)
-			throws Exception;
+	public PermissionCollection checkConnect(Object address, ID fromID, ID targetID, String targetGroup, Object connectData) throws Exception;
 }

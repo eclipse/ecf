@@ -29,12 +29,12 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 
 	protected static String[] EMPTY_STRING_ARRAY = new String[] {};
 	protected static Class[][] EMPTY_CLASS_ARRAY = new Class[][] {{}};
-	
+
 	protected Set getAdaptersForClass(Class clazz) {
 		Set result = new HashSet();
 		IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
-		if (adapterManager != null)	result.addAll(Arrays.asList(adapterManager
-				.computeAdapterTypes(clazz)));
+		if (adapterManager != null)
+			result.addAll(Arrays.asList(adapterManager.computeAdapterTypes(clazz)));
 		return result;
 	}
 
@@ -65,24 +65,21 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#createInstance(org.eclipse.ecf.core.ContainerTypeDescription, java.lang.Object[])
 	 */
-	public IContainer createInstance(ContainerTypeDescription description,
-			Object[] parameters) throws ContainerCreateException {
+	public IContainer createInstance(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException {
 		throw new ContainerCreateException();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedAdapterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public String[] getSupportedAdapterTypes(
-			ContainerTypeDescription description) {
+	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
 		return EMPTY_STRING_ARRAY;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.provider.IContainerInstantiator#getSupportedParameterTypes(org.eclipse.ecf.core.ContainerTypeDescription)
 	 */
-	public Class[][] getSupportedParameterTypes(
-			ContainerTypeDescription description) {
+	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 		return EMPTY_CLASS_ARRAY;
 	}
 

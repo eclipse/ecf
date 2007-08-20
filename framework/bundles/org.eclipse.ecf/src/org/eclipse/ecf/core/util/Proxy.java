@@ -62,7 +62,7 @@ public class Proxy implements Serializable {
 
 		private final int ordinal = nextOrdinal++;
 
-		private static final Type[] VALUES = { DIRECT, HTTP, SOCKS };
+		private static final Type[] VALUES = {DIRECT, HTTP, SOCKS};
 
 		Object readResolve() throws ObjectStreamException {
 			return VALUES[ordinal];
@@ -84,8 +84,7 @@ public class Proxy implements Serializable {
 		this.address = null;
 	}
 
-	public Proxy(Type type, ProxyAddress address, String username,
-			String password) {
+	public Proxy(Type type, ProxyAddress address, String username, String password) {
 		this.type = type;
 		this.address = address;
 		this.username = username;
@@ -119,7 +118,7 @@ public class Proxy implements Serializable {
 	public String toString() {
 		if (getType() == Type.DIRECT)
 			return "DIRECT"; //$NON-NLS-1$
-		return getType() + " @ " + getAddress();  //$NON-NLS-1$
+		return getType() + " @ " + getAddress(); //$NON-NLS-1$
 	}
 
 	public final boolean equals(Object obj) {

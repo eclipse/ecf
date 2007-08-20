@@ -24,7 +24,7 @@ import org.eclipse.ecf.internal.core.Messages;
  * @see ContainerFactory IContainerInstantiator
  */
 public class ContainerTypeDescription {
-	
+
 	protected String name = null;
 
 	protected String instantiatorClass = null;
@@ -34,39 +34,35 @@ public class ContainerTypeDescription {
 	protected String description = null;
 
 	protected int hashCode = 0;
-	
+
 	protected boolean server;
-	
+
 	protected boolean hidden;
 
-	public ContainerTypeDescription(String name,
-			String instantiatorClass, String description) {
-		this(name,instantiatorClass,description,false,false);
+	public ContainerTypeDescription(String name, String instantiatorClass, String description) {
+		this(name, instantiatorClass, description, false, false);
 	}
 
-	public ContainerTypeDescription(String name,
-			String instantiatorClass, String description, boolean server, boolean hidden) {
-		Assert.isNotNull(name,Messages.ContainerTypeDescription_Name_Not_Null);
+	public ContainerTypeDescription(String name, String instantiatorClass, String description, boolean server, boolean hidden) {
+		Assert.isNotNull(name, Messages.ContainerTypeDescription_Name_Not_Null);
 		this.name = name;
 		this.hashCode = name.hashCode();
-		Assert.isNotNull(instantiatorClass,Messages.ContainerTypeDescription_Instantiator_Class_Not_Null);
+		Assert.isNotNull(instantiatorClass, Messages.ContainerTypeDescription_Instantiator_Class_Not_Null);
 		this.instantiatorClass = instantiatorClass;
 		this.description = description;
 		this.server = server;
 		this.hidden = hidden;
 	}
 
-	public ContainerTypeDescription(String name, IContainerInstantiator instantiator,
-			String description) {
-		this(name,instantiator,description,false,false);
+	public ContainerTypeDescription(String name, IContainerInstantiator instantiator, String description) {
+		this(name, instantiator, description, false, false);
 	}
 
-	public ContainerTypeDescription(String name, IContainerInstantiator inst,
-			String desc, boolean server, boolean hidden) {
-		Assert.isNotNull(name,Messages.ContainerTypeDescription_Name_Not_Null);
+	public ContainerTypeDescription(String name, IContainerInstantiator inst, String desc, boolean server, boolean hidden) {
+		Assert.isNotNull(name, Messages.ContainerTypeDescription_Name_Not_Null);
 		this.name = name;
 		this.hashCode = name.hashCode();
-		Assert.isNotNull(inst,Messages.ContainerTypeDescription_Instantiator_Instance_Not_Null);
+		Assert.isNotNull(inst, Messages.ContainerTypeDescription_Instantiator_Instance_Not_Null);
 		this.instantiator = inst;
 		this.description = desc;
 		this.server = server;
@@ -105,9 +101,7 @@ public class ContainerTypeDescription {
 		return b.toString();
 	}
 
-	protected IContainerInstantiator getInstantiator()
-			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException {
+	protected IContainerInstantiator getInstantiator() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		synchronized (this) {
 			if (instantiator == null)
 				initializeInstantiator();
@@ -115,9 +109,7 @@ public class ContainerTypeDescription {
 		}
 	}
 
-	private void initializeInstantiator()
-			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException {
+	private void initializeInstantiator() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		// Load instantiator class
 		Class clazz = Class.forName(instantiatorClass);
 		// Make new instance
@@ -133,11 +125,11 @@ public class ContainerTypeDescription {
 	public String getDescription() {
 		return description;
 	}
-	
+
 	public boolean isServer() {
 		return server;
 	}
-	
+
 	public boolean isHidden() {
 		return hidden;
 	}
@@ -160,28 +152,22 @@ public class ContainerTypeDescription {
 	 */
 	public String[] getSupportedAdapterTypes() {
 		String method = "getSupportedAdapterTypes"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID,
-				ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
+		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		String[] result = new String[0];
 		try {
-			String [] r = getInstantiator().getSupportedAdapterTypes(this);
-			if (r != null) result = r;
+			String[] r = getInstantiator().getSupportedAdapterTypes(this);
+			if (r != null)
+				result = r;
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
 		}
-		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
-				this.getClass(), method, result);
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
 		return result;
 	}
 
 	protected void traceAndLogException(int code, String method, Throwable e) {
-		Trace
-				.catching(ECFPlugin.PLUGIN_ID,
-						ECFDebugOptions.EXCEPTIONS_CATCHING, this.getClass(),
-						method, e);
-		ECFPlugin.getDefault().log(
-						new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, code,
-								method, e));
+		Trace.catching(ECFPlugin.PLUGIN_ID, ECFDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), method, e);
+		ECFPlugin.getDefault().log(new Status(IStatus.ERROR, ECFPlugin.PLUGIN_ID, code, method, e));
 	}
 
 	/**
@@ -205,17 +191,16 @@ public class ContainerTypeDescription {
 	 */
 	public Class[][] getSupportedParameterTypes() {
 		String method = "getParameterTypes"; //$NON-NLS-1$
-		Trace.entering(ECFPlugin.PLUGIN_ID,
-				ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
+		Trace.entering(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_ENTERING, this.getClass(), method);
 		Class[][] result = new Class[0][0];
 		try {
-			Class [][] r = getInstantiator().getSupportedParameterTypes(this);
-			if (r != null) result = r;
+			Class[][] r = getInstantiator().getSupportedParameterTypes(this);
+			if (r != null)
+				result = r;
 		} catch (Exception e) {
 			traceAndLogException(IStatus.ERROR, method, e);
 		}
-		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING,
-				this.getClass(), method, result);
+		Trace.exiting(ECFPlugin.PLUGIN_ID, ECFDebugOptions.METHODS_EXITING, this.getClass(), method, result);
 		return result;
 	}
 

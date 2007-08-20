@@ -17,8 +17,7 @@ import org.eclipse.core.runtime.IAdapterFactory;
  * Abstract container adapter factory. This is an abstract implementation of the
  * {@link IAdapterFactory} interface.  Subclasses may be created as appropriate.
  */
-public abstract class AbstractContainerAdapterFactory implements
-		IAdapterFactory {
+public abstract class AbstractContainerAdapterFactory implements IAdapterFactory {
 
 	/*
 	 * (non-Javadoc)
@@ -30,8 +29,7 @@ public abstract class AbstractContainerAdapterFactory implements
 		if (adaptableObject == null || adapterType == null)
 			return null;
 		if (IContainer.class.isInstance(adaptableObject))
-			return getContainerAdapter((IContainer) adaptableObject,
-					adapterType);
+			return getContainerAdapter((IContainer) adaptableObject, adapterType);
 		return null;
 	}
 

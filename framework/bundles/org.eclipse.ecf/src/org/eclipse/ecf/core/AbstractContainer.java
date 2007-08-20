@@ -75,15 +75,12 @@ public abstract class AbstractContainer implements IContainer {
 		if (serviceType.isInstance(this)) {
 			return this;
 		} else {
-			IAdapterManager adapterManager = ECFPlugin.getDefault()
-					.getAdapterManager();
-			return (adapterManager == null) ? null : adapterManager
-					.loadAdapter(this, serviceType.getName());
+			IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
+			return (adapterManager == null) ? null : adapterManager.loadAdapter(this, serviceType.getName());
 		}
 	}
 
-	protected String getPasswordFromConnectContext(
-			IConnectContext connectContext) throws ContainerConnectException {
+	protected String getPasswordFromConnectContext(IConnectContext connectContext) throws ContainerConnectException {
 		String pw = null;
 		try {
 			Callback[] callbacks = new Callback[1];
@@ -97,8 +94,7 @@ public abstract class AbstractContainer implements IContainer {
 			ObjectCallback cb = (ObjectCallback) callbacks[0];
 			pw = (String) cb.getObject();
 		} catch (Exception e) {
-			throw new ContainerConnectException(
-					Messages.AbstractContainer_Exception_Callback_Handler, e);
+			throw new ContainerConnectException(Messages.AbstractContainer_Exception_Callback_Handler, e);
 		}
 		return pw;
 	}

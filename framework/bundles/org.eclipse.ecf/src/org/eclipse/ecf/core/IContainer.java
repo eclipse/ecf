@@ -55,7 +55,7 @@ import org.eclipse.ecf.core.security.IConnectContext;
  * 
  */
 public interface IContainer extends IAdaptable, IIdentifiable {
-	
+
 	/**
 	 * Connect to a target remote process or process group. The target
 	 * identified by the first parameter (targetID) is connected the
@@ -87,8 +87,7 @@ public interface IContainer extends IAdaptable, IIdentifiable {
 	 *                authentication failure, server error, or if container is
 	 *                already connected.
 	 */
-	public void connect(ID targetID, IConnectContext connectContext)
-			throws ContainerConnectException;
+	public void connect(ID targetID, IConnectContext connectContext) throws ContainerConnectException;
 
 	/**
 	 * Get the target ID that this container instance has connected to. Returns

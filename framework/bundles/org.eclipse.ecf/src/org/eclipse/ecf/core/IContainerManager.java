@@ -74,7 +74,7 @@ public interface IContainerManager {
 	 * then <code>null</code> will be returned.
 	 */
 	public IContainer removeContainer(IContainer container);
-	
+
 	/**
 	 * Add listener to this {@link IContainerManager}.
 	 * 
@@ -82,7 +82,7 @@ public interface IContainerManager {
 	 * @return true if listener successfully added
 	 */
 	public boolean addListener(IContainerManagerListener listener);
-	
+
 	/**
 	 * Remove listener from this {@link IContainerManager}.
 	 * 

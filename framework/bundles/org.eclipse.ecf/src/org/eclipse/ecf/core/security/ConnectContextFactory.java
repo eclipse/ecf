@@ -29,13 +29,11 @@ public class ConnectContextFactory {
 	 *            the password
 	 * @return IConnectContext for accessing the username and password
 	 */
-	public static IConnectContext createUsernamePasswordConnectContext(
-			final String username, final Object password) {
+	public static IConnectContext createUsernamePasswordConnectContext(final String username, final Object password) {
 		return new IConnectContext() {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {
-					public void handle(Callback[] callbacks)
-							throws IOException, UnsupportedCallbackException {
+					public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
 						if (callbacks == null)
 							return;
 						for (int i = 0; i < callbacks.length; i++) {
@@ -61,13 +59,11 @@ public class ConnectContextFactory {
 	 *            the password to use
 	 * @return IConnectContext for accessing the given password
 	 */
-	public static IConnectContext createPasswordConnectContext(
-			final String password) {
+	public static IConnectContext createPasswordConnectContext(final String password) {
 		return new IConnectContext() {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {
-					public void handle(Callback[] callbacks)
-							throws IOException, UnsupportedCallbackException {
+					public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
 						if (callbacks == null)
 							return;
 						for (int i = 0; i < callbacks.length; i++) {

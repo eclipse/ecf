@@ -34,7 +34,7 @@ public interface IContainerFactory {
 	 * 
 	 * @return List of ContainerTypeDescription instances
 	 */
-	public List /* ContainerTypeDescription */ getDescriptions();
+	public List /* ContainerTypeDescription */getDescriptions();
 
 	/**
 	 * Check to see if a given named description is already contained by this
@@ -62,7 +62,7 @@ public interface IContainerFactory {
 	 * @throws ContainerCreateException if some problem creating a base IContainer instance.
 	 */
 	public IContainer createContainer() throws ContainerCreateException;
-	
+
 	/**
 	 * Make IContainer instance. Given a ContainerTypeDescription object, a
 	 * String [] of argument types, and an Object [] of parameters, this method
@@ -84,8 +84,7 @@ public interface IContainerFactory {
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException
 	 */
-	public IContainer createContainer(ContainerTypeDescription description,
-			Object[] parameters) throws ContainerCreateException;
+	public IContainer createContainer(ContainerTypeDescription description, Object[] parameters) throws ContainerCreateException;
 
 	/**
 	 * Make IContainer instance. Given a ContainerTypeDescription name, this
@@ -104,8 +103,7 @@ public interface IContainerFactory {
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException
 	 */
-	public IContainer createContainer(String name)
-			throws ContainerCreateException;
+	public IContainer createContainer(String name) throws ContainerCreateException;
 
 	/**
 	 * Make IContainer instance. Given a ContainerTypeDescription name, this
@@ -127,8 +125,7 @@ public interface IContainerFactory {
 	 * @return a valid instance of IContainer
 	 * @throws ContainerCreateException
 	 */
-	public IContainer createContainer(String name, Object[] parameters)
-			throws ContainerCreateException;
+	public IContainer createContainer(String name, Object[] parameters) throws ContainerCreateException;
 
 	/**
 	 * Remove given description from set known to this factory.
@@ -137,9 +134,8 @@ public interface IContainerFactory {
 	 *            the ContainerTypeDescription to remove
 	 * @return the removed ContainerTypeDescription, null if nothing removed
 	 */
-	public ContainerTypeDescription removeDescription(
-			ContainerTypeDescription description);
-	
+	public ContainerTypeDescription removeDescription(ContainerTypeDescription description);
+
 	/**
 	 * Get container type descriptions that support the given containerAdapter
 	 * 
@@ -148,5 +144,5 @@ public interface IContainerFactory {
 	 * ContainerTypeDescriptions found that support the given adapter, an empty array will be returned.
 	 */
 	public ContainerTypeDescription[] getDescriptionsForContainerAdapter(Class containerAdapter);
-	
+
 }
