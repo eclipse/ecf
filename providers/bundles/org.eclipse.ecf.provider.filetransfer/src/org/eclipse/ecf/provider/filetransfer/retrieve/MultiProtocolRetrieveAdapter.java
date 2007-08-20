@@ -32,8 +32,7 @@ import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
  * httpclient 3.0.1-based file retriever and the URLConnection-based file
  * retriever.
  */
-public class MultiProtocolRetrieveAdapter implements
-		IRetrieveFileTransfer {
+public class MultiProtocolRetrieveAdapter implements IRetrieveFileTransfer {
 
 	IConnectContext connectContext = null;
 	Proxy proxy = null;
@@ -44,8 +43,7 @@ public class MultiProtocolRetrieveAdapter implements
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#getRetrieveNamespace()
 	 */
 	public Namespace getRetrieveNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(
-				FileTransferNamespace.PROTOCOL);
+		return IDFactory.getDefault().getNamespaceByName(FileTransferNamespace.PROTOCOL);
 	}
 
 	/*
@@ -53,8 +51,7 @@ public class MultiProtocolRetrieveAdapter implements
 	 * 
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void setConnectContextForAuthentication(
-			IConnectContext connectContext) {
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		this.connectContext = connectContext;
 	}
 
@@ -73,23 +70,20 @@ public class MultiProtocolRetrieveAdapter implements
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#sendRetrieveRequest(org.eclipse.ecf.filetransfer.identity.IFileID,
 	 *      org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
 	 */
-	public void sendRetrieveRequest(IFileID remoteFileID,
-			IFileTransferListener transferListener, Map options)
-			throws IncomingFileTransferException {
+	public void sendRetrieveRequest(IFileID remoteFileID, IFileTransferListener transferListener, Map options) throws IncomingFileTransferException {
 
 		String protocol = null;
 		try {
 			protocol = remoteFileID.getURL().getProtocol();
 		} catch (MalformedURLException e) {
-			throw new IncomingFileTransferException(
-					Messages.AbstractRetrieveFileTransfer_MalformedURLException);
+			throw new IncomingFileTransferException(Messages.AbstractRetrieveFileTransfer_MalformedURLException);
 		}
 
 		IRetrieveFileTransferContainerAdapter fileTransfer = null;
 		fileTransfer = Activator.getDefault().getFileTransfer(protocol);
-		
+
 		// TODO do we want to default to this?
-		if(fileTransfer == null)
+		if (fileTransfer == null)
 			fileTransfer = new UrlConnectionRetrieveFileTransfer();
 
 		// Set connect context
@@ -99,8 +93,7 @@ public class MultiProtocolRetrieveAdapter implements
 
 		// send request using given file transfer protocol
 
-		fileTransfer.sendRetrieveRequest(remoteFileID, transferListener,
-				options);
+		fileTransfer.sendRetrieveRequest(remoteFileID, transferListener, options);
 
 	}
 

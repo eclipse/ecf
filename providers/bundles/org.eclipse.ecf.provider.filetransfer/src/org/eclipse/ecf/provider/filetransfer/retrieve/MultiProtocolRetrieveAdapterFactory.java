@@ -18,8 +18,7 @@ import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 /**
  * 
  */
-public class MultiProtocolRetrieveAdapterFactory extends
-		AbstractContainerAdapterFactory {
+public class MultiProtocolRetrieveAdapterFactory extends AbstractContainerAdapterFactory {
 
 	IRetrieveFileTransferContainerAdapter multiProtocolAdapter = new MultiProtocolRetrieveAdapter();
 
@@ -29,7 +28,7 @@ public class MultiProtocolRetrieveAdapterFactory extends
 	 * @see org.eclipse.ecf.core.sharedobject.AbstractSharedObjectContainerAdapterFactory#getAdapterList()
 	 */
 	public Class[] getAdapterList() {
-		return new Class[] { IRetrieveFileTransferContainerAdapter.class };
+		return new Class[] {IRetrieveFileTransferContainerAdapter.class};
 	}
 
 	/*

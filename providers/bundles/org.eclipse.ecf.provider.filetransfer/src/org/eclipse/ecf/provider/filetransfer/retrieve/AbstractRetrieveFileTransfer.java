@@ -37,8 +37,7 @@ import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferNamespace;
 import org.eclipse.osgi.util.NLS;
 
-public abstract class AbstractRetrieveFileTransfer implements
-		IIncomingFileTransfer, IRetrieveFileTransfer, IFileTransferPausable {
+public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTransfer, IRetrieveFileTransfer, IFileTransferPausable {
 
 	public static final int DEFAULT_BUF_LENGTH = 4096;
 
@@ -106,14 +105,11 @@ public abstract class AbstractRetrieveFileTransfer implements
 		protected IStatus run(IProgressMonitor monitor) {
 			byte[] buf = new byte[buff_length];
 			int totalWork = ((fileLength == -1) ? 100 : (int) fileLength);
-			monitor.beginTask(getRemoteFileURL().toString()
-					+ Messages.AbstractRetrieveFileTransfer_Progress_Data,
-					totalWork);
+			monitor.beginTask(getRemoteFileURL().toString() + Messages.AbstractRetrieveFileTransfer_Progress_Data, totalWork);
 			try {
 				while (!isDone()) {
 					if (monitor.isCanceled())
-						throw new UserCancelledException(
-								Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
+						throw new UserCancelledException(Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
 					int bytes = remoteFileContents.read(buf);
 					if (bytes != -1) {
 						bytesReceived += bytes;
@@ -142,26 +138,11 @@ public abstract class AbstractRetrieveFileTransfer implements
 
 	protected IStatus getFinalStatus(Throwable exception) {
 		if (exception == null)
-			return new Status(
-					IStatus.OK,
-					Activator.getDefault().getBundle().getSymbolicName(),
-					0,
-					Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK,
-					null);
+			return new Status(IStatus.OK, Activator.getDefault().getBundle().getSymbolicName(), 0, Messages.AbstractRetrieveFileTransfer_Status_Transfer_Completed_OK, null);
 		else if (exception instanceof UserCancelledException)
-			return new Status(
-					IStatus.CANCEL,
-					Activator.PLUGIN_ID,
-					FILETRANSFER_ERRORCODE,
-					Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled,
-					exception);
+			return new Status(IStatus.CANCEL, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled, exception);
 		else
-			return new Status(
-					IStatus.ERROR,
-					Activator.PLUGIN_ID,
-					FILETRANSFER_ERRORCODE,
-					Messages.AbstractRetrieveFileTransfer_Status_Transfer_Exception,
-					exception);
+			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, FILETRANSFER_ERRORCODE, Messages.AbstractRetrieveFileTransfer_Status_Transfer_Exception, exception);
 	}
 
 	protected void hardClose() {
@@ -183,50 +164,46 @@ public abstract class AbstractRetrieveFileTransfer implements
 	}
 
 	protected void fireTransferReceiveDoneEvent() {
-		listener
-				.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
+		listener.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
 
-					private static final long serialVersionUID = 6925524078226825710L;
+			private static final long serialVersionUID = 6925524078226825710L;
 
-					public IIncomingFileTransfer getSource() {
-						return AbstractRetrieveFileTransfer.this;
-					}
+			public IIncomingFileTransfer getSource() {
+				return AbstractRetrieveFileTransfer.this;
+			}
 
-					public Exception getException() {
-						return AbstractRetrieveFileTransfer.this.getException();
-					}
+			public Exception getException() {
+				return AbstractRetrieveFileTransfer.this.getException();
+			}
 
-					public String toString() {
-						StringBuffer sb = new StringBuffer(
-								"IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
-						sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-						sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-								.append("]"); //$NON-NLS-1$
-						return sb.toString();
-					}
-				});
+			public String toString() {
+				StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
+				sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+						.append("]"); //$NON-NLS-1$
+				return sb.toString();
+			}
+		});
 	}
 
 	protected void fireTransferReceiveDataEvent() {
-		listener
-				.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
-					private static final long serialVersionUID = -5656328374614130161L;
+		listener.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
+			private static final long serialVersionUID = -5656328374614130161L;
 
-					public IIncomingFileTransfer getSource() {
-						return AbstractRetrieveFileTransfer.this;
-					}
+			public IIncomingFileTransfer getSource() {
+				return AbstractRetrieveFileTransfer.this;
+			}
 
-					public String toString() {
-						StringBuffer sb = new StringBuffer(
-								"IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
-						sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-						sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-								.append(";"); //$NON-NLS-1$
-						sb.append("percentComplete=").append( //$NON-NLS-1$
-								getPercentComplete() * 100).append("]"); //$NON-NLS-1$
-						return sb.toString();
-					}
-				});
+			public String toString() {
+				StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
+				sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+						.append(";"); //$NON-NLS-1$
+				sb.append("percentComplete=").append( //$NON-NLS-1$
+						getPercentComplete() * 100).append("]"); //$NON-NLS-1$
+				return sb.toString();
+			}
+		});
 	}
 
 	public long getBytesReceived() {
@@ -256,10 +233,8 @@ public abstract class AbstractRetrieveFileTransfer implements
 		if (adapter.isInstance(this)) {
 			return this;
 		} else {
-			IAdapterManager adapterManager = Activator.getDefault()
-					.getAdapterManager();
-			return (adapterManager == null) ? null : adapterManager
-					.loadAdapter(this, adapter.getName());
+			IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
+			return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 		}
 	}
 
@@ -276,15 +251,9 @@ public abstract class AbstractRetrieveFileTransfer implements
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#sendRetrieveRequest(org.eclipse.ecf.filetransfer.identity.IFileID,
 	 *      org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
 	 */
-	public void sendRetrieveRequest(final IFileID remoteFileID,
-			IFileTransferListener transferListener, Map options)
-			throws IncomingFileTransferException {
-		Assert.isNotNull(remoteFileID,
-				Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
-		Assert
-				.isNotNull(
-						transferListener,
-						Messages.AbstractRetrieveFileTransfer_TransferListener_Not_Null);
+	public void sendRetrieveRequest(final IFileID remoteFileID, IFileTransferListener transferListener, Map options) throws IncomingFileTransferException {
+		Assert.isNotNull(remoteFileID, Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
+		Assert.isNotNull(transferListener, Messages.AbstractRetrieveFileTransfer_TransferListener_Not_Null);
 		this.done = false;
 		this.bytesReceived = 0;
 		this.exception = null;
@@ -295,19 +264,14 @@ public abstract class AbstractRetrieveFileTransfer implements
 		try {
 			this.remoteFileURL = remoteFileID.getURL();
 		} catch (MalformedURLException e) {
-			throw new IncomingFileTransferException(
-					NLS
-							.bind(
-									Messages.AbstractRetrieveFileTransfer_MalformedURLException,
-									remoteFileID), e);
+			throw new IncomingFileTransferException(NLS.bind(Messages.AbstractRetrieveFileTransfer_MalformedURLException, remoteFileID), e);
 		}
 		this.listener = transferListener;
 		openStreams();
 	}
 
 	public Namespace getRetrieveNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(
-				FileTransferNamespace.PROTOCOL);
+		return IDFactory.getDefault().getNamespaceByName(FileTransferNamespace.PROTOCOL);
 	}
 
 	public boolean isPaused() {

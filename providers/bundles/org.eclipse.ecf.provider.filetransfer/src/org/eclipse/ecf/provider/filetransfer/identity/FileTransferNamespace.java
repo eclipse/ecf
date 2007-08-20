@@ -35,19 +35,16 @@ public class FileTransferNamespace extends Namespace {
 	 */
 	public ID createInstance(Object[] args) throws IDCreateException {
 		if (args == null || args.length == 0)
-			throw new IDCreateException(
-					Messages.FileTransferNamespace_Exception_Args_Null);
+			throw new IDCreateException(Messages.FileTransferNamespace_Exception_Args_Null);
 		try {
 			if (args[0] instanceof URL)
 				return new FileTransferID(this, (URL) args[0]);
 			if (args[0] instanceof String)
 				return new FileTransferID(this, new URL((String) args[0]));
 		} catch (Exception e) {
-			throw new IDCreateException(
-					Messages.FileTransferNamespace_Exception_Create_Instance, e);
+			throw new IDCreateException(Messages.FileTransferNamespace_Exception_Create_Instance, e);
 		}
-		throw new IDCreateException(
-				Messages.FileTransferNamespace_Exception_Create_Instance_Failed);
+		throw new IDCreateException(Messages.FileTransferNamespace_Exception_Create_Instance_Failed);
 	}
 
 	/*
@@ -57,8 +54,7 @@ public class FileTransferNamespace extends Namespace {
 	 */
 	public String[] getSupportedSchemes() {
 		Set result = new HashSet();
-		String[] platformSchemes = Activator.getDefault()
-				.getPlatformSupportedSchemes();
+		String[] platformSchemes = Activator.getDefault().getPlatformSupportedSchemes();
 		for (int i = 0; i < platformSchemes.length; i++)
 			result.add(platformSchemes[i]);
 		return (String[]) result.toArray(new String[] {});
@@ -79,7 +75,7 @@ public class FileTransferNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { { URL.class }, { String.class } };
+		return new Class[][] { {URL.class}, {String.class}};
 	}
 
 }
