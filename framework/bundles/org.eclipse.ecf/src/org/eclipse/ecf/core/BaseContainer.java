@@ -47,7 +47,7 @@ public class BaseContainer extends AbstractContainer {
 
 	private ID id = null;
 	
-	private BaseContainer(long idl) throws ContainerCreateException {
+	protected BaseContainer(long idl) throws ContainerCreateException {
 		try {
 			this.id = IDFactory.getDefault().createLongID(idl);
 		} catch (IDCreateException e) {
