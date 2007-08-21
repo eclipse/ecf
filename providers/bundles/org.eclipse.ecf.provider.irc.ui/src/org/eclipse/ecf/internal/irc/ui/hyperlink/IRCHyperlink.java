@@ -44,8 +44,15 @@ public class IRCHyperlink extends AbstractURLHyperlink {
 	protected IConnectWizard createConnectWizard() {
 		URI uri = getURI();
 		String authAndPath = uri.getSchemeSpecificPart();
-		while (authAndPath.startsWith("/")) authAndPath = authAndPath.substring(1);
+		while (authAndPath.startsWith("/")) authAndPath = authAndPath.substring(1); //$NON-NLS-1$
 
+		String fragment = uri.getFragment();
+		if (fragment != null) {
+			StringBuffer buf = new StringBuffer(authAndPath);
+			buf.append("#").append(fragment); //$NON-NLS-1$
+			authAndPath = buf.toString();
+		}
+		
 		return new IRCConnectWizard(authAndPath);
 	}
 
