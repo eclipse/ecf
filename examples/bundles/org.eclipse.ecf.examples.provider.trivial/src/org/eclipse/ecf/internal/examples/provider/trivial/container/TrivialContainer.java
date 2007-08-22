@@ -39,7 +39,7 @@ public class TrivialContainer extends AbstractContainer
 	 * The targetID.  This value is set on 'connect' and unset in 'disconnect'.
 	 * This represents the other process that this container is connected to.
 	 * Value is returned via getConnectedID()
-	 */  
+	 */
 	private ID targetID = null;
 	/*
 	 * This is the ID for this container.  Returned via getID().
@@ -57,12 +57,9 @@ public class TrivialContainer extends AbstractContainer
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID targetID, IConnectContext connectContext)
-			throws ContainerConnectException {
-		if (!targetID.getNamespace().getName().equals(
-				getConnectNamespace().getName()))
-			throw new ContainerConnectException(
-					"targetID not of appropriate Namespace");
+	public void connect(ID targetID, IConnectContext connectContext) throws ContainerConnectException {
+		if (!targetID.getNamespace().getName().equals(getConnectNamespace().getName()))
+			throw new ContainerConnectException("targetID not of appropriate Namespace");
 
 		fireContainerEvent(new ContainerConnectingEvent(getID(), targetID));
 

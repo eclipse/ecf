@@ -25,8 +25,7 @@ public class TrivialClient implements Runnable {
 	public void run() {
 		try {
 			// Create instance of trivial container
-			IContainer container = ContainerFactory.getDefault()
-					.createContainer("ecf.container.trivial");
+			IContainer container = ContainerFactory.getDefault().createContainer("ecf.container.trivial");
 
 			// Get appropriate container adapter...e.g. IChannelContainerAdapter
 			// IChannelContainerAdapter containerAdapter =
@@ -34,8 +33,7 @@ public class TrivialClient implements Runnable {
 			// container.getAdapter(IChannelContainerAdapter.class);
 
 			// Connect
-			ID targetID = IDFactory.getDefault().createID(
-					container.getConnectNamespace(), "myid");
+			ID targetID = IDFactory.getDefault().createID(container.getConnectNamespace(), "myid");
 			container.connect(targetID, null);
 
 		} catch (ECFException e) {
