@@ -20,6 +20,11 @@ import org.eclipse.ecf.core.identity.StringID;
 public class TrivialID extends StringID {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3656862045346223983L;
+
+	/**
 	 * @param n
 	 * @param s
 	 */

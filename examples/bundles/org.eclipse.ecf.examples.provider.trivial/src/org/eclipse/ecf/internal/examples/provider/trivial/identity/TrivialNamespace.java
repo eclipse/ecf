@@ -20,13 +20,16 @@ import org.eclipse.ecf.core.identity.Namespace;
  */
 public class TrivialNamespace extends Namespace {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1235788855435011811L;
 	public static final String SCHEME = "trivial";
 	public static final String NAME = "ecf.namespace.trivial";
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
 	 */
-	@Override
 	public ID createInstance(Object[] parameters) throws IDCreateException {
 		// XXX Note that this assumes that a unique string is provided for creating the ID
 		// e.g. IDFactory.getDefault().createID("myid");
@@ -36,7 +39,6 @@ public class TrivialNamespace extends Namespace {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#getScheme()
 	 */
-	@Override
 	public String getScheme() {
 		return SCHEME;
 	}
