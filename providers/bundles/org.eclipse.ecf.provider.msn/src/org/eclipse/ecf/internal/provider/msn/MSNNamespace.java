@@ -35,7 +35,7 @@ public class MSNNamespace extends Namespace {
 	}
 
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { { String.class }, { String.class, String.class } };
+		return new Class[][] { { String.class } };
 	}
 
 }
