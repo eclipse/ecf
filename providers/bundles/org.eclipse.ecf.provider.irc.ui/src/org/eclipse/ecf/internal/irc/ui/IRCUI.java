@@ -12,8 +12,6 @@
 
 package org.eclipse.ecf.internal.irc.ui;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.StringTokenizer;
 
 import org.eclipse.ecf.core.IContainer;
@@ -57,22 +55,27 @@ public class IRCUI extends ChatRoomManagerUI {
 	}
 
 	protected String[] getRoomsForTarget() {
-		String initialRooms = null;
-		try {
-			URI targetURI = new URI(targetID.getName());
-			initialRooms = targetURI.getPath();
-		} catch (URISyntaxException e) {
-		}
-		if (initialRooms == null 
-				|| initialRooms.equals("") || initialRooms.equals("/")) //$NON-NLS-1$
+		String initialChannels = targetID.getName();
+		int protocolSeparator = initialChannels.indexOf("://"); //$NON-NLS-1$
+		if (protocolSeparator != -1) initialChannels = initialChannels.substring(protocolSeparator+3);
+		int index = initialChannels.lastIndexOf("/"); //$NON-NLS-1$
+		if (index != -1) {
+			initialChannels = initialChannels.substring(index+1);
+			while (initialChannels.startsWith("/")) initialChannels = initialChannels.substring(1); //$NON-NLS-1$
+		} else initialChannels = null;
+		if (initialChannels == null 
+				|| initialChannels.equals("") || initialChannels.equals("/")) //$NON-NLS-1$ //$NON-NLS-2$
 			return new String[0];
-		while (initialRooms.charAt(0) == '/')
-			initialRooms = initialRooms.substring(1);
-
-		if (initialRooms.startsWith(CHANNEL_PREFIX))
-			return new String[] { initialRooms };
-		else
-			return super.getRoomsForTarget();
+		
+		StringTokenizer toks = new StringTokenizer(initialChannels,ROOM_DELIMITER); //$NON-NLS-1$
+		String [] results = new String[toks.countTokens()];
+		for(int i=0; i < results.length; i++) {
+			results[i] = toks.nextToken();
+			if (results[i].startsWith("%23")) { //$NON-NLS-1$
+				results[i] = "#"+results[i].substring(3); //$NON-NLS-1$
+			} else if (!results[i].startsWith("#")) results[i] = "#"+results[i]; //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		return results;
 	}
 
 	/*
@@ -96,7 +99,7 @@ public class IRCUI extends ChatRoomManagerUI {
 			System.arraycopy(tokens, 1, args, 0, tokens.length - 1);
 			// JOIN can be done from root or channel
 			if (command.equalsIgnoreCase(Messages.IRCUI_JOIN_COMMAND)) {
-				chatroomview.joinRoom(manager.getChatRoomInfo(args[0]), (args.length > 1)?args[1]:"");
+				chatroomview.joinRoom(manager.getChatRoomInfo(args[0]), (args.length > 1)?args[1]:""); //$NON-NLS-1$
 				return null;
 			}
 			// QUIT can be done from root or channel

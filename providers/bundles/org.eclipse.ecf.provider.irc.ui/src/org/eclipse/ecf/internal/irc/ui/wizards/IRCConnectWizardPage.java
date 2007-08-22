@@ -139,9 +139,7 @@ final class IRCConnectWizardPage extends WizardPage {
 	}
 
 	String getConnectID() {
-		String clean = connectText.getText().replaceAll("#",""); //$NON-NLS-1$ //$NON-NLS-2$
-		connectText.setText(clean);
-		return clean;
+		return connectText.getText();
 	}
 
 	String getPassword() {
