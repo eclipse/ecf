@@ -28,7 +28,7 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
 public class DiscoveryTest extends TestCase {
-	
+
 	static IContainer container = null;
 	static IDiscoveryContainerAdapter discoveryContainer = null;
 	static final String TEST_SERVICE_TYPE = "_ecftcp._tcp.local.";
@@ -36,47 +36,52 @@ public class DiscoveryTest extends TestCase {
 	static final String TEST_HOST = "localhost";
 	static final int TEST_PORT = 3282;
 	static final String TEST_SERVICE_NAME = System.getProperty("user.name") + "." + TEST_PROTOCOL;
-	
-	public void testContainerCreate() throws Exception {
-		container = ContainerFactory.getDefault().createContainer(
-		"ecf.discovery.jmdns");
-		assertNotNull(container);
+
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		container = ContainerFactory.getDefault().createContainer("ecf.discovery.jmdns");
+		container.connect(null, null);
+		discoveryContainer = (IDiscoveryContainerAdapter) container.getAdapter(IDiscoveryContainerAdapter.class);
 	}
-	
-	public void testContainerConnect() throws Exception {
-		container.connect(null, null);		
+
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#tearDown()
+	 */
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		discoveryContainer = null;
+		container.disconnect();
+		container.dispose();
+		container = null;
 	}
-	public void testDiscoveryContainerAdapter() throws Exception {
-		discoveryContainer = (IDiscoveryContainerAdapter) container
-		.getAdapter(IDiscoveryContainerAdapter.class);		
-		assertNotNull(discoveryContainer);
-	}
-	
+
 	public void testAddServiceTypeListener() throws Exception {
-		discoveryContainer
-		.addServiceTypeListener(new CollabServiceTypeListener());
+		discoveryContainer.addServiceTypeListener(new CollabServiceTypeListener());
 	}
-	
+
 	public void testRegisterServiceType() throws Exception {
 		discoveryContainer.registerServiceType(TEST_SERVICE_TYPE);
-		System.out.println("registered service type "+TEST_SERVICE_TYPE+" waiting 5s");
+		System.out.println("registered service type " + TEST_SERVICE_TYPE + " waiting 5s");
 		Thread.sleep(5000);
 	}
-	
+
 	public void testRegisterService() throws Exception {
 		Properties props = new Properties();
 		String protocol = TEST_PROTOCOL;
 		InetAddress host = InetAddress.getByName(TEST_HOST);
 		int port = TEST_PORT;
-		String svcName = System.getProperty("user.name") + "."
-				+ protocol;
-		ServiceInfo svcInfo = new ServiceInfo(host, new ServiceID(
-				TEST_SERVICE_TYPE, svcName), port,
-				0, 0, new ServiceProperties(props));
+		String svcName = System.getProperty("user.name") + "." + protocol;
+		ServiceInfo svcInfo = new ServiceInfo(host, new ServiceID(TEST_SERVICE_TYPE, svcName), port, 0, 0, new ServiceProperties(props));
 		discoveryContainer.registerService(svcInfo);
 	}
+
 	public final void testDiscovery() throws Exception {
-		
+
 		System.out.println("Discovery started.  Waiting 10s for discovered services");
 		Thread.sleep(10000);
 	}
@@ -85,20 +90,21 @@ public class DiscoveryTest extends TestCase {
 		public void serviceTypeAdded(IServiceEvent event) {
 			System.out.println("serviceTypeAdded(" + event + ")");
 			IServiceID svcID = event.getServiceInfo().getServiceID();
-			discoveryContainer.addServiceListener(svcID.getServiceType(),
-					new CollabServiceListener());
+			discoveryContainer.addServiceListener(svcID.getServiceType(), new CollabServiceListener());
 			discoveryContainer.registerServiceType(svcID.getServiceType());
 		}
 	}
+
 	class CollabServiceListener implements IServiceListener {
 		public void serviceAdded(IServiceEvent event) {
 			System.out.println("serviceAdded(" + event + ")");
-			discoveryContainer.requestServiceInfo(event.getServiceInfo()
-					.getServiceID(), 3000);
+			discoveryContainer.requestServiceInfo(event.getServiceInfo().getServiceID(), 3000);
 		}
+
 		public void serviceRemoved(IServiceEvent event) {
 			System.out.println("serviceRemoved(" + event + ")");
 		}
+
 		public void serviceResolved(IServiceEvent event) {
 			System.out.println("serviceResolved(" + event + ")");
 		}

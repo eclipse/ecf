@@ -24,6 +24,7 @@ public class AllTests {
 				"Test for org.eclipse.ecf.tests.discovery");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(DiscoveryTest.class);
+		suite.addTestSuite(DiscoveryServiceTest.class);
 		//$JUnit-END$
 		return suite;
 	}

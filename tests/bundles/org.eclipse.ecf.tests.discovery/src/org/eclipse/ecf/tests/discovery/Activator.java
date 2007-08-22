@@ -1,8 +1,11 @@
 package org.eclipse.ecf.tests.discovery;
 
+import org.eclipse.ecf.core.ContainerFactory;
+import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -18,6 +21,8 @@ public class Activator implements BundleActivator {
 	
 	private ServiceTracker tracker;
 	
+	private ServiceRegistration discoveryRegistration;
+
 	/**
 	 * The constructor
 	 */
@@ -30,6 +35,10 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext context) throws Exception {
 		plugin = this;
+		IContainer container = ContainerFactory.getDefault().createContainer(
+		"ecf.discovery.jmdns");
+		container.connect(null, null);
+		discoveryRegistration = context.registerService(IDiscoveryService.class.getName(), container, null);
 		tracker = new ServiceTracker(context,IDiscoveryService.class.getName(),null);
 		tracker.open();
 	}
@@ -39,11 +48,15 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		plugin = null;
 		if (tracker != null) {
 			tracker.close();
 			tracker = null;
 		}
+		if (discoveryRegistration != null) {
+			discoveryRegistration.unregister();
+			discoveryRegistration = null;
+		}
+		plugin = null;
 	}
 
 	/**
