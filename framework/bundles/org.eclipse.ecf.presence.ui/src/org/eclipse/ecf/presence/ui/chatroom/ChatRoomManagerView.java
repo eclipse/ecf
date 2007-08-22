@@ -1360,7 +1360,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			ChatRoom chatRoom = (ChatRoom) i.next();
 			IChatRoomContainer container = chatRoom.chatRoomContainer;
 			if (container != null)
-				container.dispose();
+				container.disconnect();
 		}
 		rootMessageSender = null;
 		rootCloseListener = null;

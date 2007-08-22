@@ -94,7 +94,7 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 	protected IChatRoomViewCloseListener createChatRoomViewCloseListener() {
 		return new IChatRoomViewCloseListener() {
 			public void chatRoomViewClosing() {
-				container.dispose();
+				container.disconnect();
 			}
 		};
 	}
