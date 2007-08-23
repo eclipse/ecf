@@ -24,8 +24,8 @@ public interface IConnection extends IAdaptable {
 	/**
 	 * Connect to a remote process
 	 * 
-	 * @param remote
-	 *            the identity of the remote to connect to
+	 * @param targetID
+	 *            the identity of the remote to connect to.  Must not be <code>null</code>.
 	 * @param data
 	 *            any data to send with the connection request (e.g. password or
 	 *            other authentication data)
@@ -33,11 +33,9 @@ public interface IConnection extends IAdaptable {
 	 *            the timeout (in ms) for the connection to occur
 	 * @return a result object that is of type specific to provider
 	 *         implementation
-	 * @throws ECFException
-	 *             TODO
+	 * @throws ECFException thrown if some problem with connect
 	 */
-	public Object connect(ID remote, Object data, int timeout)
-			throws ECFException;
+	public Object connect(ID targetID, Object data, int timeout) throws ECFException;
 
 	/**
 	 * Disconnect

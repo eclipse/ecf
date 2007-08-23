@@ -40,8 +40,7 @@ import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 import org.eclipse.ecf.provider.comm.SynchEvent;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
-public abstract class ClientSOContainer extends SOContainer implements
-		ISharedObjectContainerClient {
+public abstract class ClientSOContainer extends SOContainer implements ISharedObjectContainerClient {
 
 	public static final int DEFAULT_CONNECT_TIMEOUT = 30000;
 
@@ -123,41 +122,39 @@ public abstract class ClientSOContainer extends SOContainer implements
 		remoteServerID = serverID;
 	}
 
-	public void connect(ID remote, IConnectContext joinContext)
-			throws ContainerConnectException {
+	public void connect(ID targetID, IConnectContext joinContext) throws ContainerConnectException {
 		try {
 			if (isClosing)
-				throw new IllegalStateException(
-						Messages.ClientSOContainer_Container_Closing);
-			debug("connect(" + remote + "," + joinContext + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				throw new IllegalStateException(Messages.ClientSOContainer_Container_Closing);
+			if (targetID == null)
+				throw new ContainerConnectException("targetID cannot be null");
+			if (targetID.getNamespace().getName().equals(getConnectNamespace().getName()))
+				throw new ContainerConnectException("targetID namespace does not match connect namespace");
+
 			Object response = null;
 			synchronized (getConnectLock()) {
 				// Throw if already connected
 				if (isConnected())
-					throw new IllegalStateException(
-							Messages.ClientSOContainer_Already_Connected
-									+ getConnectedID());
+					throw new IllegalStateException(Messages.ClientSOContainer_Already_Connected + getConnectedID());
 				// Throw if connecting
 				if (isConnecting())
-					throw new IllegalStateException(
-							Messages.ClientSOContainer_Currently_Connecting);
+					throw new IllegalStateException(Messages.ClientSOContainer_Currently_Connecting);
 				// else we're entering connecting state
 				// first notify synchonously
-				fireContainerEvent(new ContainerConnectingEvent(this.getID(),
-						remote, joinContext));
-				ISynchAsynchConnection aConnection = createConnection(remote,
-						joinContext);
+				final ISynchAsynchConnection aConnection = createConnection(targetID, joinContext);
 				setStateConnecting(aConnection);
-				synchronized (aConnection) {
 
-					Object connectData = getConnectData(remote, joinContext);
-					int connectTimeout = getConnectTimeout();
+				fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID, joinContext));
+
+				final Object connectData = getConnectData(targetID, joinContext);
+				final int connectTimeout = getConnectTimeout();
+
+				synchronized (aConnection) {
 
 					try {
 						// Make connect call
-						response = aConnection.connect(remote, connectData,
-								connectTimeout);
-					} catch (ECFException e) {
+						response = aConnection.connect(targetID, connectData, connectTimeout);
+					} catch (final ECFException e) {
 						if (getConnection() != aConnection)
 							disconnect(aConnection);
 						else
@@ -167,30 +164,27 @@ public abstract class ClientSOContainer extends SOContainer implements
 					// If not in correct state, disconnect and return
 					if (getConnection() != aConnection) {
 						disconnect(aConnection);
-						throw new IllegalStateException(
-								Messages.ClientSOContainer_Connect_Failed_Incorrect_State);
+						throw new IllegalStateException(Messages.ClientSOContainer_Connect_Failed_Incorrect_State);
 					}
 					ID serverID = null;
 					try {
-						serverID = handleConnectResponse(remote, response);
-					} catch (Exception e) {
+						serverID = handleConnectResponse(targetID, response);
+					} catch (final Exception e) {
 						setStateDisconnected(aConnection);
 						throw e;
 					}
 					setStateConnected(serverID, aConnection);
 					// notify listeners
-					fireContainerEvent(new ContainerConnectedEvent(
-							this.getID(), remoteServerID));
+					fireContainerEvent(new ContainerConnectedEvent(this.getID(), remoteServerID));
 					aConnection.start();
 				}
 			}
-		} catch (ContainerConnectException e) {
+		} catch (final ContainerConnectException e) {
 			throw e;
-		} catch (ECFException e) {
-			IStatus s = e.getStatus();
-			throw new ContainerConnectException(s.getMessage(), s
-					.getException());
-		} catch (Exception e) {
+		} catch (final ECFException e) {
+			final IStatus s = e.getStatus();
+			throw new ContainerConnectException(s.getMessage(), s.getException());
+		} catch (final Exception e) {
 			throw new ContainerConnectException(e.getLocalizedMessage(), e);
 		}
 	}
@@ -199,22 +193,19 @@ public abstract class ClientSOContainer extends SOContainer implements
 		return null;
 	}
 
-	protected Object getConnectData(ID remote, IConnectContext joinContext)
-			throws IOException, UnsupportedCallbackException {
+	protected Object getConnectData(ID remote, IConnectContext joinContext) throws IOException, UnsupportedCallbackException {
 		Object connectData = null;
 		if (connectPolicy != null)
-			connectData = connectPolicy.createConnectData(this, remote,
-					joinContext);
+			connectData = connectPolicy.createConnectData(this, remote, joinContext);
 		else {
-			Callback[] callbacks = createAuthorizationCallbacks();
+			final Callback[] callbacks = createAuthorizationCallbacks();
 			if (joinContext != null) {
-				CallbackHandler handler = joinContext.getCallbackHandler();
+				final CallbackHandler handler = joinContext.getCallbackHandler();
 				if (handler != null)
 					handler.handle(callbacks);
 			}
 		}
-		return ContainerMessage.createJoinGroupMessage(getID(), remote,
-				getNextSequenceNumber(), (Serializable) connectData);
+		return ContainerMessage.createJoinGroupMessage(getID(), remote, getNextSequenceNumber(), (Serializable) connectData);
 	}
 
 	protected int getConnectTimeout() {
@@ -227,9 +218,8 @@ public abstract class ClientSOContainer extends SOContainer implements
 	protected void handleLeaveGroupMessage(ContainerMessage mess) {
 		if (!isConnected())
 			return;
-		ContainerMessage.LeaveGroupMessage lgm = (ContainerMessage.LeaveGroupMessage) mess
-				.getData();
-		ID fromID = mess.getFromContainerID();
+		final ContainerMessage.LeaveGroupMessage lgm = (ContainerMessage.LeaveGroupMessage) mess.getData();
+		final ID fromID = mess.getFromContainerID();
 		if (fromID == null || !fromID.equals(remoteServerID)) {
 			// we ignore anything not from our server
 			return;
@@ -238,27 +228,20 @@ public abstract class ClientSOContainer extends SOContainer implements
 			handleLeave(fromID, connection);
 		}
 		// Now notify that we've been ejected
-		fireContainerEvent(new ContainerEjectedEvent(getID(), fromID, lgm
-				.getData()));
+		fireContainerEvent(new ContainerEjectedEvent(getID(), fromID, lgm.getData()));
 	}
 
-	protected void handleViewChangeMessage(ContainerMessage mess)
-			throws IOException {
+	protected void handleViewChangeMessage(ContainerMessage mess) throws IOException {
 		if (!isConnected())
 			return;
-		ContainerMessage.ViewChangeMessage vc = (ContainerMessage.ViewChangeMessage) mess
-				.getData();
+		final ContainerMessage.ViewChangeMessage vc = (ContainerMessage.ViewChangeMessage) mess.getData();
 		if (vc == null)
-			throw new IOException(
-					Messages.ClientSOContainer_View_Change_Is_Null);
-		ID fromID = mess.getFromContainerID();
+			throw new IOException(Messages.ClientSOContainer_View_Change_Is_Null);
+		final ID fromID = mess.getFromContainerID();
 		if (fromID == null || !fromID.equals(remoteServerID)) {
-			throw new IOException(
-					Messages.ClientSOContainer_View_Change_Message + fromID
-							+ Messages.ClientSOContainer_Is_Not_Same
-							+ remoteServerID);
+			throw new IOException(Messages.ClientSOContainer_View_Change_Message + fromID + Messages.ClientSOContainer_Is_Not_Same + remoteServerID);
 		}
-		ID[] changeIDs = vc.getChangeIDs();
+		final ID[] changeIDs = vc.getChangeIDs();
 		if (changeIDs == null) {
 			// do nothing if we've got no changes
 		} else {
@@ -276,33 +259,29 @@ public abstract class ClientSOContainer extends SOContainer implements
 					// Notify listeners only if the add was actually
 					// accomplished
 					if (wasAdded)
-						fireContainerEvent(new ContainerConnectedEvent(getID(),
-								changeIDs[i]));
+						fireContainerEvent(new ContainerConnectedEvent(getID(), changeIDs[i]));
 				} else {
 					if (changeIDs[i].equals(getID())) {
 						// We've been ejected.
-						ID serverID = remoteServerID;
+						final ID serverID = remoteServerID;
 						synchronized (getGroupMembershipLock()) {
 							handleLeave(remoteServerID, connection);
 						}
 						// Notify listeners that we've been ejected
-						fireContainerEvent(new ContainerEjectedEvent(getID(),
-								serverID, vc.getData()));
+						fireContainerEvent(new ContainerEjectedEvent(getID(), serverID, vc.getData()));
 					} else {
 						synchronized (getGroupMembershipLock()) {
 							groupManager.removeMember(changeIDs[i]);
 						}
 						// Notify listeners that another remote has gone away
-						fireContainerEvent(new ContainerDisconnectedEvent(
-								getID(), changeIDs[i]));
+						fireContainerEvent(new ContainerDisconnectedEvent(getID(), changeIDs[i]));
 					}
 				}
 			}
 		}
 	}
 
-	protected void forwardExcluding(ID from, ID excluding, ContainerMessage data)
-			throws IOException {
+	protected void forwardExcluding(ID from, ID excluding, ContainerMessage data) throws IOException {
 		// NOP
 	}
 
@@ -315,45 +294,34 @@ public abstract class ClientSOContainer extends SOContainer implements
 			// If we are currently connected then get connection lock and send
 			// disconnect message
 			if (isConnected()) {
-				ID groupID = getConnectedID();
-				fireContainerEvent(new ContainerDisconnectingEvent(
-						this.getID(), groupID));
+				final ID groupID = getConnectedID();
+				fireContainerEvent(new ContainerDisconnectingEvent(this.getID(), groupID));
 				synchronized (connection) {
 					try {
-						connection.sendSynch(groupID,
-								serialize(ContainerMessage
-										.createLeaveGroupMessage(getID(),
-												groupID,
-												getNextSequenceNumber(),
-												getLeaveData(groupID))));
-					} catch (Exception e) {
+						connection.sendSynch(groupID, serialize(ContainerMessage.createLeaveGroupMessage(getID(), groupID, getNextSequenceNumber(), getLeaveData(groupID))));
+					} catch (final Exception e) {
 					}
 					synchronized (getGroupMembershipLock()) {
 						handleLeave(groupID, connection);
 					}
 				}
 				// notify listeners
-				fireContainerEvent(new ContainerDisconnectedEvent(this.getID(),
-						groupID));
+				fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), groupID));
 			}
 		}
 	}
 
-	protected abstract ISynchAsynchConnection createConnection(ID remoteSpace,
-			Object data) throws ConnectionCreateException;
+	protected abstract ISynchAsynchConnection createConnection(ID remoteSpace, Object data) throws ConnectionCreateException;
 
-	protected void queueContainerMessage(ContainerMessage message)
-			throws IOException {
+	protected void queueContainerMessage(ContainerMessage message) throws IOException {
 		// Do it
 		connection.sendAsynch(message.getToContainerID(), serialize(message));
 	}
 
-	protected void forwardExcluding(ID from, ID excluding, byte msg,
-			Serializable data) throws IOException { /* NOP */
+	protected void forwardExcluding(ID from, ID excluding, byte msg, Serializable data) throws IOException { /* NOP */
 	}
 
-	protected void forwardToRemote(ID from, ID to, ContainerMessage message)
-			throws IOException { /* NOP */
+	protected void forwardToRemote(ID from, ID to, ContainerMessage message) throws IOException { /* NOP */
 	}
 
 	protected ID getIDForConnection(IAsynchConnection conn) {
@@ -379,8 +347,7 @@ public abstract class ClientSOContainer extends SOContainer implements
 		}
 	}
 
-	protected ID[] sendCreateMsg(ID toID, SharedObjectDescription createInfo)
-			throws IOException {
+	protected ID[] sendCreateMsg(ID toID, SharedObjectDescription createInfo) throws IOException {
 		// Get connect lock, then call super version
 		synchronized (connectLock) {
 			checkConnected();
@@ -405,10 +372,9 @@ public abstract class ClientSOContainer extends SOContainer implements
 	protected Serializable processSynch(SynchEvent evt) throws IOException {
 		synchronized (connectLock) {
 			checkConnected();
-			IConnection conn = evt.getConnection();
+			final IConnection conn = evt.getConnection();
 			if (connection != conn)
-				throw new ConnectException(
-						Messages.ClientSOContainer_Not_Connected);
+				throw new ConnectException(Messages.ClientSOContainer_Not_Connected);
 			return super.processSynch(evt);
 		}
 	}
@@ -426,33 +392,28 @@ public abstract class ClientSOContainer extends SOContainer implements
 			throw new ConnectException(Messages.ClientSOContainer_Not_Connected);
 	}
 
-	protected ID handleConnectResponse(ID orginalTarget, Object serverData)
-			throws Exception {
-		ContainerMessage aPacket = (ContainerMessage) serverData;
-		ID fromID = aPacket.getFromContainerID();
-		Assert.isNotNull(fromID,
-				Messages.ClientSOContainer_ServerID_Cannot_Be_Null);
-		ContainerMessage.ViewChangeMessage viewChangeMessage = (ContainerMessage.ViewChangeMessage) aPacket
-				.getData();
+	protected ID handleConnectResponse(ID orginalTarget, Object serverData) throws Exception {
+		final ContainerMessage aPacket = (ContainerMessage) serverData;
+		final ID fromID = aPacket.getFromContainerID();
+		Assert.isNotNull(fromID, Messages.ClientSOContainer_ServerID_Cannot_Be_Null);
+		final ContainerMessage.ViewChangeMessage viewChangeMessage = (ContainerMessage.ViewChangeMessage) aPacket.getData();
 		// If it's not an add message then we've been refused. Get exception
 		// info from viewChangeMessage and
 		// throw if there
 		if (!viewChangeMessage.isAdd()) {
 			// We were refused by server...so we retrieve data and throw
-			Object data = viewChangeMessage.getData();
+			final Object data = viewChangeMessage.getData();
 			if (data != null && data instanceof Exception)
 				throw (Exception) data;
 			else
-				throw new NullPointerException(
-						Messages.ClientSOContainer_Invalid_Server_Response);
+				throw new NullPointerException(Messages.ClientSOContainer_Invalid_Server_Response);
 		}
 		// Otherwise everything is OK to this point and we get the group member
 		// IDs from server
-		ID[] ids = viewChangeMessage.getChangeIDs();
-		Assert.isNotNull(ids,
-				Messages.ClientSOContainer_Exception_ID_Array_Null);
+		final ID[] ids = viewChangeMessage.getChangeIDs();
+		Assert.isNotNull(ids, Messages.ClientSOContainer_Exception_ID_Array_Null);
 		for (int i = 0; i < ids.length; i++) {
-			ID id = ids[i];
+			final ID id = ids[i];
 			if (id != null && !id.equals(getID()))
 				addNewRemoteMember(id, null);
 		}
