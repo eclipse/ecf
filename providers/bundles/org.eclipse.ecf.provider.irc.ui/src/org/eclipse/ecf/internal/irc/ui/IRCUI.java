@@ -43,8 +43,7 @@ public class IRCUI extends ChatRoomManagerUI {
 		super(container, manager);
 	}
 
-	public IRCUI(IContainer container, IChatRoomManager manager,
-			IExceptionHandler exceptionHandler) {
+	public IRCUI(IContainer container, IChatRoomManager manager, IExceptionHandler exceptionHandler) {
 		super(container, manager, exceptionHandler);
 	}
 
@@ -56,24 +55,30 @@ public class IRCUI extends ChatRoomManagerUI {
 
 	protected String[] getRoomsForTarget() {
 		String initialChannels = targetID.getName();
-		int protocolSeparator = initialChannels.indexOf("://"); //$NON-NLS-1$
-		if (protocolSeparator != -1) initialChannels = initialChannels.substring(protocolSeparator+3);
-		int index = initialChannels.lastIndexOf("/"); //$NON-NLS-1$
+		final int protocolSeparator = initialChannels.indexOf("://"); //$NON-NLS-1$
+		if (protocolSeparator != -1)
+			initialChannels = initialChannels.substring(protocolSeparator + 3);
+		final int index = initialChannels.lastIndexOf("/"); //$NON-NLS-1$
 		if (index != -1) {
-			initialChannels = initialChannels.substring(index+1);
-			while (initialChannels.startsWith("/")) initialChannels = initialChannels.substring(1); //$NON-NLS-1$
-		} else initialChannels = null;
-		if (initialChannels == null 
-				|| initialChannels.equals("") || initialChannels.equals("/")) //$NON-NLS-1$ //$NON-NLS-2$
+			initialChannels = initialChannels.substring(index + 1);
+			while (initialChannels.startsWith("/"))initialChannels = initialChannels.substring(1); //$NON-NLS-1$
+		} else
+			initialChannels = null;
+		if (initialChannels == null || initialChannels.equals("") || initialChannels.equals("/")) //$NON-NLS-1$ //$NON-NLS-2$
 			return new String[0];
-		
-		StringTokenizer toks = new StringTokenizer(initialChannels,ROOM_DELIMITER); //$NON-NLS-1$
-		String [] results = new String[toks.countTokens()];
-		for(int i=0; i < results.length; i++) {
-			results[i] = toks.nextToken();
-			if (results[i].startsWith("%23")) { //$NON-NLS-1$
-				results[i] = "#"+results[i].substring(3); //$NON-NLS-1$
-			} else if (!results[i].startsWith("#")) results[i] = "#"+results[i]; //$NON-NLS-1$ //$NON-NLS-2$
+
+		final StringTokenizer toks = new StringTokenizer(initialChannels, ROOM_DELIMITER);
+		final String[] results = new String[toks.countTokens()];
+		for (int i = 0; i < results.length; i++) {
+			String tmp = toks.nextToken();
+			final StringBuffer buf = new StringBuffer();
+			while (tmp.startsWith("%23")) { //$NON-NLS-1$
+				buf.append("#"); //$NON-NLS-1$
+				tmp = tmp.substring(3);
+			}
+			buf.append(tmp);
+			results[i] = buf.toString();
+			if (!results[i].startsWith("#"))results[i] = "#" + results[i]; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return results;
 	}
@@ -83,42 +88,32 @@ public class IRCUI extends ChatRoomManagerUI {
 	 * 
 	 * @see org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerUI#handleCommand(java.lang.String)
 	 */
-	public String handleCommand(IChatRoomContainer chatRoomContainer,
-			String inputLine) {
+	public String handleCommand(IChatRoomContainer chatRoomContainer, String inputLine) {
 		if ((inputLine != null && inputLine.startsWith(COMMAND_PREFIX))) {
-			StringTokenizer st = new StringTokenizer(inputLine, COMMAND_DELIM);
-			int countTokens = st.countTokens();
-			String tokens[] = new String[countTokens];
+			final StringTokenizer st = new StringTokenizer(inputLine, COMMAND_DELIM);
+			final int countTokens = st.countTokens();
+			final String tokens[] = new String[countTokens];
 			for (int i = 0; i < countTokens; i++)
 				tokens[i] = st.nextToken();
 			String command = tokens[0];
 			while (command.startsWith(COMMAND_PREFIX))
 				command = command.substring(1);
 			// Look at first one and switch
-			String[] args = new String[tokens.length - 1];
+			final String[] args = new String[tokens.length - 1];
 			System.arraycopy(tokens, 1, args, 0, tokens.length - 1);
 			// JOIN can be done from root or channel
 			if (command.equalsIgnoreCase(Messages.IRCUI_JOIN_COMMAND)) {
-				chatroomview.joinRoom(manager.getChatRoomInfo(args[0]), (args.length > 1)?args[1]:""); //$NON-NLS-1$
+				chatroomview.joinRoom(manager.getChatRoomInfo(args[0]), (args.length > 1) ? args[1] : ""); //$NON-NLS-1$
 				return null;
 			}
 			// QUIT can be done from root or channel
 			if (command.equalsIgnoreCase(Messages.IRCUI_QUIT_COMMAND)) {
-				ID connectedID = container.getConnectedID();
-				if (connectedID != null
-						&& MessageDialog.openQuestion(chatroomview.getSite()
-								.getShell(), Messages.IRCUI_DISCONNECT_CONFIRM_TITLE, NLS
-								.bind(Messages.IRCUI_DISCONNECT_CONFIRM_MESSAGE, connectedID
-										.getName())))
+				final ID connectedID = container.getConnectedID();
+				if (connectedID != null && MessageDialog.openQuestion(chatroomview.getSite().getShell(), Messages.IRCUI_DISCONNECT_CONFIRM_TITLE, NLS.bind(Messages.IRCUI_DISCONNECT_CONFIRM_MESSAGE, connectedID.getName())))
 					chatroomview.disconnect();
 				return null;
 			}
-			if (chatRoomContainer != null
-					&& command.equalsIgnoreCase(Messages.IRCUI_PART_COMMAND)
-					&& MessageDialog.openQuestion(chatroomview.getSite()
-							.getShell(), Messages.IRCUI_DEPART_CONFIRM_TITLE, NLS.bind(
-							Messages.IRCUI_DEPART_CONFIRM_MESSAGE, chatRoomContainer
-									.getConnectedID().getName()))) {
+			if (chatRoomContainer != null && command.equalsIgnoreCase(Messages.IRCUI_PART_COMMAND) && MessageDialog.openQuestion(chatroomview.getSite().getShell(), Messages.IRCUI_DEPART_CONFIRM_TITLE, NLS.bind(Messages.IRCUI_DEPART_CONFIRM_MESSAGE, chatRoomContainer.getConnectedID().getName()))) {
 				chatRoomContainer.disconnect();
 				return null;
 			}
@@ -126,7 +121,7 @@ public class IRCUI extends ChatRoomManagerUI {
 		return inputLine;
 
 	}
-	
+
 	protected IMessageRenderer getDefaultMessageRenderer() {
 		return new IRCMessageRenderer();
 	}
