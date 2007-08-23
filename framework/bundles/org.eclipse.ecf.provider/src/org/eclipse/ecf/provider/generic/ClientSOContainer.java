@@ -128,9 +128,6 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 				throw new IllegalStateException(Messages.ClientSOContainer_Container_Closing);
 			if (targetID == null)
 				throw new ContainerConnectException("targetID cannot be null");
-			if (targetID.getNamespace().getName().equals(getConnectNamespace().getName()))
-				throw new ContainerConnectException("targetID namespace does not match connect namespace");
-
 			Object response = null;
 			synchronized (getConnectLock()) {
 				// Throw if already connected
