@@ -941,20 +941,17 @@ public class ChatRoomManagerView extends ViewPart implements
 					if (choice == options.size()) {
 						choice = 0;
 					}
-					// cut of the user's nickname based on what's already
-					// entered and at a trailing space
+					
 					String append = ((String) options.get(choice++))
-							.substring(prefixLength)
 							+ (isAtStart ? nickCompletionSuffix + " " : " "); //$NON-NLS-1$ //$NON-NLS-2$
-					// add what's been typed along with the next nickname option
-					// and the rest of the message
-					inputText.setText(text.substring(0, caret) + append
+					// remove the previous completion proposal and insert the new one
+					inputText.setText(text.substring(0, caret - prefixLength) + append
 							+ text.substring(caret + nickRemainder));
-					nickRemainder = append.length();
+					// subtract the prefix so we remember where we were originally
+					nickRemainder = append.length() - prefixLength;
 					// set the caret position to be the place where the nickname
 					// completion ended
-					inputText.setSelection(caret + nickRemainder, caret
-							+ nickRemainder);
+					inputText.setSelection(caret + nickRemainder);
 				} else {
 					// the user is not cycling, so we need to identify what the
 					// user has typed based on the current caret position
@@ -968,8 +965,8 @@ public class ChatRoomManagerView extends ViewPart implements
 					count++;
 					// remove all previous options
 					options.clear();
-					// get the prefix that the user typed
-					String prefix = text.substring(count, pos);
+					// get the prefix that the user typed as a lowercase string
+					String prefix = text.substring(count, pos).toLowerCase();
 					isAtStart = count == 0;
 					// if what's found was actually whitespace, do nothing
 					if (prefix.trim().equals("")) { //$NON-NLS-1$
@@ -977,10 +974,13 @@ public class ChatRoomManagerView extends ViewPart implements
 					}
 					// get all of the users in this room and store them if they
 					// start with the prefix that the user has typed
-					TableItem[] participants = chatRoomParticipantViewer.getTable().getItems();
+					TableItem[] participants = chatRoomParticipantViewer
+							.getTable().getItems();
 					for (int i = 0; i < participants.length; i++) {
-						if (participants[i].getText().startsWith(prefix)) {
-							options.add(participants[i].getText());
+						String name = participants[i].getText();
+						// do a lowercase comparison because we should display options that differ in casing
+						if (name.toLowerCase().startsWith(prefix)) {
+							options.add(name);
 						}
 					}
 
@@ -991,9 +991,10 @@ public class ChatRoomManagerView extends ViewPart implements
 					prefixLength = prefix.length();
 					if (options.size() == 1) {
 						String nickname = (String) options.get(0);
-						// since only one nickname is available, simply insert
-						// it after truncating the prefix
-						nickname = nickname.substring(prefixLength);
+						// since only one nickname is available, we'll select
+						// the prefix that has been entered and then replace it
+						// with the nickname option
+						inputText.setSelection(pos - prefixLength, pos);
 						inputText
 								.insert(nickname
 										+ (isAtStart ? nickCompletionSuffix
@@ -1007,11 +1008,13 @@ public class ChatRoomManagerView extends ViewPart implements
 						// insert the nickname after removing the prefix
 						String nickname = options.get(choice++)
 								+ (isAtStart ? nickCompletionSuffix + " " : " "); //$NON-NLS-1$ //$NON-NLS-2$
-						nickname = nickname.substring(prefixLength);
+						// select the prefix of the proposal
+						inputText.setSelection(pos - prefixLength, pos);
+						// and then replace it with a proposal
 						inputText.insert(nickname);
 						// store the length of this truncated nickname so that
 						// it can be removed when the user is cycling
-						nickRemainder = nickname.length();
+						nickRemainder = nickname.length() - prefixLength;
 					} else {
 						// as there are too many choices for the user to pick
 						// from, simply display all of the available ones on the
