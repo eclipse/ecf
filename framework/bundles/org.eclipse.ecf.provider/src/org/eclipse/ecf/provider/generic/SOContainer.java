@@ -23,6 +23,8 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.IContainerEvent;
@@ -66,7 +68,7 @@ import org.eclipse.ecf.provider.util.IdentifiableObjectOutputStream;
 
 public abstract class SOContainer extends AbstractContainer implements ISharedObjectContainer {
 	class LoadingSharedObject implements ISharedObject {
-		private ReplicaSharedObjectDescription description;
+		private final ReplicaSharedObjectDescription description;
 		private Thread runner = null;
 		private ID fromID = null;
 
@@ -83,7 +85,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		}
 
 		ID getHomeID() {
-			ID homeID = description.getHomeID();
+			final ID homeID = description.getHomeID();
 			if (homeID == null)
 				return getID();
 			else
@@ -100,88 +102,59 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		public void handleEvents(Event[] events) {
 		}
 
-		public void init(ISharedObjectConfig initData)
-				throws SharedObjectInitException {
+		public void init(ISharedObjectConfig initData) throws SharedObjectInitException {
 		}
 
 		void start() {
 			if (runner == null) {
-				runner = (Thread) AccessController
-						.doPrivileged(new PrivilegedAction() {
-							public Object run() {
-								return new Thread(loadingThreadGroup,
-										new Runnable() {
-											public void run() {
-												try {
-													if (Thread.currentThread()
-															.isInterrupted()
-															|| isClosing())
-														throw new InterruptedException(
-																Messages.SOContainer_Loading_Interrupted
-																		+ getID()
-																				.getName());
-													// First load object
-													ISharedObject obj = load(description);
-													// Create wrapper object and
-													// move from loading to
-													// active
-													// list.
-													SOWrapper wrap = createRemoteSharedObjectWrapper(
-															fromID,
-															description, obj);
-													wrap.init();
-													// Check to make sure thread
-													// has not been
-													// interrupted...if it has,
-													// throw
-													if (Thread.currentThread()
-															.isInterrupted()
-															|| isClosing())
-														throw new InterruptedException(
-																Messages.SOContainer_Loading_Interrupted
-																		+ getID()
-																				.getName());
-													// Finally, we move from
-													// loading to active, and
-													// then the
-													// object is done
-													SOContainer.this
-															.moveFromLoadingToActive(wrap);
-												} catch (Exception e) {
-													traceStack(
-															"Exception loading:" + description, e); //$NON-NLS-1$
-													SOContainer.this
-															.removeFromLoading(getID());
-													try {
-														sendCreateResponse(
-																getHomeID(),
-																getID(),
-																e,
-																description
-																		.getIdentifier());
-													} catch (Exception e1) {
-														traceStack(
-																"Exception sending create response from LoadingSharedObject.run:" //$NON-NLS-1$
-																		+ description,
-																e1);
-													}
-												}
-											}
-										}, getID().getName() + ":loading"); //$NON-NLS-1$
+				runner = (Thread) AccessController.doPrivileged(new PrivilegedAction() {
+					public Object run() {
+						return new Thread(loadingThreadGroup, new Runnable() {
+							public void run() {
+								try {
+									if (Thread.currentThread().isInterrupted() || isClosing())
+										throw new InterruptedException(Messages.SOContainer_Loading_Interrupted + getID().getName());
+									// First load object
+									final ISharedObject obj = load(description);
+									// Create wrapper object and
+									// move from loading to
+									// active
+									// list.
+									final SOWrapper wrap = createRemoteSharedObjectWrapper(fromID, description, obj);
+									wrap.init();
+									// Check to make sure thread
+									// has not been
+									// interrupted...if it has,
+									// throw
+									if (Thread.currentThread().isInterrupted() || isClosing())
+										throw new InterruptedException(Messages.SOContainer_Loading_Interrupted + getID().getName());
+									// Finally, we move from
+									// loading to active, and
+									// then the
+									// object is done
+									SOContainer.this.moveFromLoadingToActive(wrap);
+								} catch (final Exception e) {
+									traceStack("Exception loading:" + description, e); //$NON-NLS-1$
+									SOContainer.this.removeFromLoading(getID());
+									try {
+										sendCreateResponse(getHomeID(), getID(), e, description.getIdentifier());
+									} catch (final Exception e1) {
+										traceStack("Exception sending create response from LoadingSharedObject.run:" //$NON-NLS-1$
+												+ description, e1);
+									}
+								}
 							}
-						});
+						}, getID().getName() + ":loading"); //$NON-NLS-1$
+					}
+				});
 				runner.setDaemon(true);
 				runner.start();
 			}
 		}
 	}
 
-	public static final String DEFAULT_OBJECT_ARG_KEY = SOContainer.class
-			.getName()
-			+ ".sharedobjectargs"; //$NON-NLS-1$
-	public static final String DEFAULT_OBJECT_ARGTYPES_KEY = SOContainer.class
-			.getName()
-			+ ".sharedobjectargtypes"; //$NON-NLS-1$
+	public static final String DEFAULT_OBJECT_ARG_KEY = SOContainer.class.getName() + ".sharedobjectargs"; //$NON-NLS-1$
+	public static final String DEFAULT_OBJECT_ARGTYPES_KEY = SOContainer.class.getName() + ".sharedobjectargtypes"; //$NON-NLS-1$
 
 	private long sequenceNumber = 0L;
 
@@ -207,9 +180,9 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		public ID getEventHandlerID() {
 			return getID();
 		}
-		
+
 		public void handleConnectEvent(ConnectionEvent event) {
-			
+
 		}
 
 		public void handleDisconnectEvent(DisconnectEvent event) {
@@ -222,9 +195,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	};
 
 	public SOContainer(ISharedObjectContainerConfig config) {
-		Assert
-				.isNotNull(config,
-						Messages.SOContainer_Exception_Config_Not_Null);
+		Assert.isNotNull(config, Messages.SOContainer_Exception_Config_Not_Null);
 		this.config = config;
 		groupManager = new SOContainerGMM(this, new Member(config.getID()));
 		sharedObjectManager = new SOManager(this);
@@ -251,8 +222,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	 * @see org.eclipse.ecf.core.ISharedObjectContainer#connect(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public abstract void connect(ID groupID, IConnectContext connectContext)
-			throws ContainerConnectException;
+	public abstract void connect(ID groupID, IConnectContext connectContext) throws ContainerConnectException;
 
 	/*
 	 * (non-Javadoc)
@@ -275,8 +245,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	 */
 	public Namespace getConnectNamespace() {
 		// We expect StringIDs for the generic server
-		return IDFactory.getDefault().getNamespaceByName(
-				ProviderPlugin.getDefault().getNamespaceIdentifier());
+		return IDFactory.getDefault().getNamespaceByName(ProviderPlugin.getDefault().getNamespaceIdentifier());
 	}
 
 	/*
@@ -310,8 +279,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		if (adapter.isInstance(this)) {
 			return this;
 		} else {
-			IAdapterManager adapterManager = ProviderPlugin.getDefault()
-					.getAdapterManager();
+			final IAdapterManager adapterManager = ProviderPlugin.getDefault().getAdapterManager();
 			if (adapterManager == null)
 				return null;
 			return adapterManager.loadAdapter(this, adapter.getName());
@@ -365,43 +333,34 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		return groupManager.addMember(new Member(memberID, data));
 	}
 
-	protected ISharedObjectContainerTransaction addSharedObject0(ID id,
-			ISharedObject s, Map props) throws Exception {
+	protected ISharedObjectContainerTransaction addSharedObject0(ID id, ISharedObject s, Map props) throws Exception {
 		return addSharedObjectWrapper(createSharedObjectWrapper(id, s, props));
 	}
 
-	protected void addSharedObjectAndWait(ID id, ISharedObject s, Map properties)
-			throws Exception {
+	protected void addSharedObjectAndWait(ID id, ISharedObject s, Map properties) throws Exception {
 		if (id == null || s == null) {
-			throw new SharedObjectAddException(
-					Messages.SOContainer_Exception_Add_Object);
+			throw new SharedObjectAddException(Messages.SOContainer_Exception_Add_Object);
 		}
-		ISharedObjectContainerTransaction t = addSharedObject0(id, s,
-				properties);
+		final ISharedObjectContainerTransaction t = addSharedObject0(id, s, properties);
 		// Wait right here until committed
 		if (t != null)
 			t.waitToCommit();
 	}
 
-	protected ISharedObjectContainerTransaction addSharedObjectWrapper(
-			SOWrapper wrapper) throws Exception {
+	protected ISharedObjectContainerTransaction addSharedObjectWrapper(SOWrapper wrapper) throws Exception {
 		if (wrapper == null)
 			return null;
-		ID id = wrapper.getObjID();
+		final ID id = wrapper.getObjID();
 		ISharedObjectContainerTransaction transaction = null;
 		synchronized (getGroupMembershipLock()) {
-			Object obj = groupManager.getFromAny(id);
+			final Object obj = groupManager.getFromAny(id);
 			if (obj != null) {
-				throw new SharedObjectAddException(
-						Messages.SOContainer_Exception_Object_With_ID
-								+ id.getName()
-								+ Messages.SOContainer_Exception_Already_In_Container);
+				throw new SharedObjectAddException(Messages.SOContainer_Exception_Object_With_ID + id.getName() + Messages.SOContainer_Exception_Already_In_Container);
 			}
 			// Call initialize. If this throws it halts everything
 			wrapper.init();
 			// Call getAdapter(ISharedObjectContainerTransaction)
-			transaction = (ISharedObjectContainerTransaction) wrapper.sharedObject
-					.getAdapter(ISharedObjectContainerTransaction.class);
+			transaction = (ISharedObjectContainerTransaction) wrapper.sharedObject.getAdapter(ISharedObjectContainerTransaction.class);
 			// Put in table
 			groupManager.addSharedObjectToActive(wrapper);
 		}
@@ -439,8 +398,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	 *             sendCreateResponse) to the sender that the creation has
 	 *             failed
 	 */
-	protected Object checkRemoteCreate(ID fromID, ID toID,
-			ReplicaSharedObjectDescription desc) throws Exception {
+	protected Object checkRemoteCreate(ID fromID, ID toID, ReplicaSharedObjectDescription desc) throws Exception {
 		debug("checkRemoteCreate(" + fromID + "," + toID + "," + desc + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		if (policy != null) {
 			return policy.checkAddSharedObject(fromID, toID, getID(), desc);
@@ -449,33 +407,27 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	protected void debug(String msg) {
-		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG,
-				msg + ":" + config.getID()); //$NON-NLS-1$
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg + ":" + config.getID()); //$NON-NLS-1$
 	}
 
 	protected void traceStack(String msg, Throwable e) {
-		Trace.catching(ProviderPlugin.PLUGIN_ID,
-				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainer.class,
-				config.getID() + ":" + msg, e); //$NON-NLS-1$
+		Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainer.class, config.getID() + ":" + msg, e); //$NON-NLS-1$
 	}
 
 	protected boolean destroySharedObject(ID sharedObjectID) {
 		return groupManager.removeSharedObject(sharedObjectID);
 	}
 
-	protected final void forward(ID fromID, ID toID, ContainerMessage data)
-			throws IOException {
+	protected final void forward(ID fromID, ID toID, ContainerMessage data) throws IOException {
 		if (toID == null)
 			forwardExcluding(fromID, fromID, data);
 		else
 			forwardToRemote(fromID, toID, data);
 	}
 
-	abstract protected void forwardExcluding(ID from, ID excluding,
-			ContainerMessage data) throws IOException;
+	abstract protected void forwardExcluding(ID from, ID excluding, ContainerMessage data) throws IOException;
 
-	abstract protected void forwardToRemote(ID from, ID to,
-			ContainerMessage data) throws IOException;
+	abstract protected void forwardToRemote(ID from, ID to, ContainerMessage data) throws IOException;
 
 	/**
 	 * @param sd
@@ -484,14 +436,14 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	protected Object[] getArgsFromProperties(SharedObjectDescription sd) {
 		if (sd == null)
 			return null;
-		Map aMap = sd.getProperties();
+		final Map aMap = sd.getProperties();
 		if (aMap == null)
 			return null;
-		Object obj = aMap.get(DEFAULT_OBJECT_ARG_KEY);
+		final Object obj = aMap.get(DEFAULT_OBJECT_ARG_KEY);
 		if (obj == null)
 			return null;
 		if (obj instanceof Object[]) {
-			Object[] ret = (Object[]) obj;
+			final Object[] ret = (Object[]) obj;
 			aMap.remove(DEFAULT_OBJECT_ARG_KEY);
 			return ret;
 		} else
@@ -505,23 +457,23 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	protected String[] getArgTypesFromProperties(SharedObjectDescription sd) {
 		if (sd == null)
 			return null;
-		Map aMap = sd.getProperties();
+		final Map aMap = sd.getProperties();
 		if (aMap == null)
 			return null;
-		Object obj = aMap.get(DEFAULT_OBJECT_ARGTYPES_KEY);
+		final Object obj = aMap.get(DEFAULT_OBJECT_ARGTYPES_KEY);
 		if (obj == null)
 			return null;
 		if (obj instanceof String[]) {
-			String[] ret = (String[]) obj;
+			final String[] ret = (String[]) obj;
 			aMap.remove(DEFAULT_OBJECT_ARGTYPES_KEY);
 			return ret;
 		} else
 			return null;
 	}
 
-	protected byte[] serialize(Serializable obj) throws IOException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(bos);
+	public static byte[] serialize(Serializable obj) throws IOException {
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final ObjectOutputStream oos = new ObjectOutputStream(bos);
 		oos.writeObject(obj);
 		return bos.toByteArray();
 	}
@@ -537,8 +489,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	 * @param sd
 	 * @return ClassLoader
 	 */
-	protected ClassLoader getClassLoaderForSharedObject(
-			SharedObjectDescription sd) {
+	protected ClassLoader getClassLoaderForSharedObject(SharedObjectDescription sd) {
 		return getClassLoaderForContainer();
 	}
 
@@ -550,11 +501,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		return groupManager.getMaxMembers();
 	}
 
-	protected Thread getNewSharedObjectThread(ID sharedObjectID,
-			Runnable runnable) {
-		return new Thread(sharedObjectThreadGroup, runnable, sharedObjectID
-				.getName()
-				+ ":run"); //$NON-NLS-1$
+	protected Thread getNewSharedObjectThread(ID sharedObjectID, Runnable runnable) {
+		return new Thread(sharedObjectThreadGroup, runnable, sharedObjectID.getName() + ":run"); //$NON-NLS-1$
 	}
 
 	protected long getNextSequenceNumber() {
@@ -565,24 +513,23 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			return sequenceNumber++;
 	}
 
-	protected ContainerMessage deserializeContainerMessage(byte[] bytes)
-			throws IOException {
-		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-		ObjectInputStream ois = new ObjectInputStream(bis);
+	public static ContainerMessage deserializeContainerMessage(byte[] bytes) throws IOException {
+		final ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+		final ObjectInputStream ois = new ObjectInputStream(bis);
 		Object obj = null;
 		try {
 			obj = ois.readObject();
-		} catch (ClassNotFoundException e) {
-			traceStack("class not found for message", e); //$NON-NLS-1$
+		} catch (final ClassNotFoundException e) {
+			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, "container message deserialization ClassNotFoundException", e));
 			return null;
-		} catch (InvalidClassException e) {
-			traceStack("invalid class for message", e); //$NON-NLS-1$
+		} catch (final InvalidClassException e) {
+			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, "container message deserialization InvalidClassException", e));
 			return null;
 		}
 		if (obj instanceof ContainerMessage)
 			return (ContainerMessage) obj;
 		else {
-			traceStack("not a containermessage", new Exception()); //$NON-NLS-1$
+			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, "container message deserialization not a ContainerMessage", null));
 			return null;
 		}
 	}
@@ -596,7 +543,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	}
 
 	protected ISharedObject getSharedObject(ID id) {
-		SOWrapper wrap = getSharedObjectWrapper(id);
+		final SOWrapper wrap = getSharedObjectWrapper(id);
 		return (wrap == null) ? null : wrap.getSharedObject();
 	}
 
@@ -613,25 +560,19 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		disconnect(e.getConnection());
 	}
 
-	protected void handleCreateMessage(ContainerMessage mess)
-			throws IOException {
-		ContainerMessage.CreateMessage create = (ContainerMessage.CreateMessage) mess
-				.getData();
+	protected void handleCreateMessage(ContainerMessage mess) throws IOException {
+		final ContainerMessage.CreateMessage create = (ContainerMessage.CreateMessage) mess.getData();
 		if (create == null)
-			throw new IOException(
-					Messages.SOContainer_Exception_Bad_Container_Message);
-		ReplicaSharedObjectDescription desc = (ReplicaSharedObjectDescription) create
-				.getData();
+			throw new IOException(Messages.SOContainer_Exception_Bad_Container_Message);
+		final ReplicaSharedObjectDescription desc = (ReplicaSharedObjectDescription) create.getData();
 		if (desc == null)
-			throw new IOException(
-					Messages.SOContainer_Exception_Bad_Description);
-		ID fromID = mess.getFromContainerID();
-		ID toID = mess.getToContainerID();
+			throw new IOException(Messages.SOContainer_Exception_Bad_Description);
+		final ID fromID = mess.getFromContainerID();
+		final ID toID = mess.getToContainerID();
 		Object checkCreateResult = null;
-		ID sharedObjectID = desc.getID();
+		final ID sharedObjectID = desc.getID();
 		if (sharedObjectID == null)
-			throw new IOException(
-					Messages.SOContainer_Exception_ObjectID_Is_Null);
+			throw new IOException(Messages.SOContainer_Exception_ObjectID_Is_Null);
 		// Check to make sure that the remote creation is allowed.
 		// If this method throws, a failure (and exception will be sent back to
 		// caller
@@ -640,18 +581,13 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		// returns a non-null object, the creation is allowed to proceed
 		try {
 			checkCreateResult = checkRemoteCreate(fromID, toID, desc);
-		} catch (Exception e) {
-			SharedObjectAddException addException = new SharedObjectAddException(
-					Messages.SOContainer_Shared_Object + sharedObjectID
-							+ Messages.SOContainer_Rejected_By_Container
-							+ getID(), e);
+		} catch (final Exception e) {
+			final SharedObjectAddException addException = new SharedObjectAddException(Messages.SOContainer_Shared_Object + sharedObjectID + Messages.SOContainer_Rejected_By_Container + getID(), e);
 			traceStack("Exception in checkRemoteCreate:" + desc, addException); //$NON-NLS-1$
 			try {
-				sendCreateResponse(fromID, sharedObjectID, addException, desc
-						.getIdentifier());
-			} catch (IOException except) {
-				traceStack(
-						"Exception from sendCreateResponse in handleCreateResponse", //$NON-NLS-1$
+				sendCreateResponse(fromID, sharedObjectID, addException, desc.getIdentifier());
+			} catch (final IOException except) {
+				traceStack("Exception from sendCreateResponse in handleCreateResponse", //$NON-NLS-1$
 						except);
 			}
 			return;
@@ -659,22 +595,13 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		// Then if result from check is non-null, we continue. If null, we
 		// ignore
 		if (checkCreateResult != null) {
-			LoadingSharedObject lso = new LoadingSharedObject(fromID, desc);
+			final LoadingSharedObject lso = new LoadingSharedObject(fromID, desc);
 			synchronized (getGroupMembershipLock()) {
 				if (!addToLoading(lso)) {
 					try {
-						sendCreateResponse(
-								fromID,
-								sharedObjectID,
-								new SharedObjectAddException(
-										Messages.SOContainer_Shared_Object
-												+ sharedObjectID
-												+ Messages.SOContainer_Exception_Already_Exists_In_Container
-												+ getID()), desc
-										.getIdentifier());
-					} catch (IOException e) {
-						traceStack(
-								"Exception in handleCreateMessage.sendCreateResponse", //$NON-NLS-1$
+						sendCreateResponse(fromID, sharedObjectID, new SharedObjectAddException(Messages.SOContainer_Shared_Object + sharedObjectID + Messages.SOContainer_Exception_Already_Exists_In_Container + getID()), desc.getIdentifier());
+					} catch (final IOException e) {
+						traceStack("Exception in handleCreateMessage.sendCreateResponse", //$NON-NLS-1$
 								e);
 					}
 				}
@@ -687,15 +614,13 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		}
 	}
 
-	protected void handleCreateResponseMessage(ContainerMessage mess)
-			throws IOException {
-		ID fromID = mess.getFromContainerID();
-		ID toID = mess.getToContainerID();
-		ContainerMessage.CreateResponseMessage resp = (ContainerMessage.CreateResponseMessage) mess
-				.getData();
+	protected void handleCreateResponseMessage(ContainerMessage mess) throws IOException {
+		final ID fromID = mess.getFromContainerID();
+		final ID toID = mess.getToContainerID();
+		final ContainerMessage.CreateResponseMessage resp = (ContainerMessage.CreateResponseMessage) mess.getData();
 		if (toID != null && toID.equals(getID())) {
-			ID sharedObjectID = resp.getSharedObjectID();
-			SOWrapper sow = getSharedObjectWrapper(sharedObjectID);
+			final ID sharedObjectID = resp.getSharedObjectID();
+			final SOWrapper sow = getSharedObjectWrapper(sharedObjectID);
 			if (sow != null) {
 				sow.deliverCreateResponse(fromID, resp);
 			} else {
@@ -712,13 +637,11 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	 */
 	protected abstract void handleLeaveGroupMessage(ContainerMessage mess);
 
-	protected void handleSharedObjectDisposeMessage(ContainerMessage mess)
-			throws IOException {
-		ID fromID = mess.getFromContainerID();
-		ID toID = mess.getToContainerID();
-		ContainerMessage.SharedObjectDisposeMessage resp = (ContainerMessage.SharedObjectDisposeMessage) mess
-				.getData();
-		ID sharedObjectID = resp.getSharedObjectID();
+	protected void handleSharedObjectDisposeMessage(ContainerMessage mess) throws IOException {
+		final ID fromID = mess.getFromContainerID();
+		final ID toID = mess.getToContainerID();
+		final ContainerMessage.SharedObjectDisposeMessage resp = (ContainerMessage.SharedObjectDisposeMessage) mess.getData();
+		final ID sharedObjectID = resp.getSharedObjectID();
 		synchronized (getGroupMembershipLock()) {
 			if (groupManager.isLoading(sharedObjectID)) {
 				groupManager.removeSharedObjectFromLoading(sharedObjectID);
@@ -736,49 +659,37 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			return false;
 	}
 
-	protected void handleSharedObjectMessage(ContainerMessage mess)
-			throws IOException {
-		ID fromID = mess.getFromContainerID();
-		ID toID = mess.getToContainerID();
-		ContainerMessage.SharedObjectMessage resp = (ContainerMessage.SharedObjectMessage) mess
-				.getData();
-		ID sharedObjectID = resp.getFromSharedObjectID();
+	protected void handleSharedObjectMessage(ContainerMessage mess) throws IOException {
+		final ID fromID = mess.getFromContainerID();
+		final ID toID = mess.getToContainerID();
+		final ContainerMessage.SharedObjectMessage resp = (ContainerMessage.SharedObjectMessage) mess.getData();
+		final ID sharedObjectID = resp.getFromSharedObjectID();
 		synchronized (getGroupMembershipLock()) {
-			SOWrapper sow = getSharedObjectWrapper(sharedObjectID);
+			final SOWrapper sow = getSharedObjectWrapper(sharedObjectID);
 			if (sow != null) {
 				try {
-					Serializable obj = (Serializable) deserializeSharedObjectMessage((byte[]) resp
-							.getData());
+					final Serializable obj = (Serializable) deserializeSharedObjectMessage((byte[]) resp.getData());
 					// Fire container event notifying container listeners about
 					// receiving
 					// event.
-					fireContainerEvent(new ContainerSharedObjectMessageReceivingEvent(
-							getID(), fromID, sharedObjectID, obj));
+					fireContainerEvent(new ContainerSharedObjectMessageReceivingEvent(getID(), fromID, sharedObjectID, obj));
 					// Actually deliver event to shared object asynchronously
 					sow.deliverSharedObjectMessage(fromID, obj);
-				} catch (ClassNotFoundException e) {
-					traceStack(
-							"Exception in handleSharedObjectMessage:" + resp, e); //$NON-NLS-1$
-					Trace
-							.catching(
-									ProviderPlugin.PLUGIN_ID,
-									ECFProviderDebugOptions.EXCEPTIONS_CATCHING,
-									this.getClass(),
-									"handleSharedObjectMessage", e); //$NON-NLS-1$
+				} catch (final ClassNotFoundException e) {
+					traceStack("Exception in handleSharedObjectMessage:" + resp, e); //$NON-NLS-1$
+					Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "handleSharedObjectMessage", e); //$NON-NLS-1$
 				}
 			}
 			forward(fromID, toID, mess);
 		}
 	}
 
-	protected void handleUnidentifiedMessage(ContainerMessage mess)
-			throws IOException {
+	protected void handleUnidentifiedMessage(ContainerMessage mess) throws IOException {
 		// do nothing
 		debug("received unidentified message: " + mess);
 	}
 
-	protected abstract void handleViewChangeMessage(ContainerMessage mess)
-			throws IOException;
+	protected abstract void handleViewChangeMessage(ContainerMessage mess) throws IOException;
 
 	protected boolean isClosing() {
 		return isClosing;
@@ -793,40 +704,32 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		return sharedObjectManager.loadSharedObject(sd);
 	}
 
-	protected SOConfig createSharedObjectConfig(ID id, ISharedObject obj,
-			Map props) throws ECFException {
+	protected SOConfig createSharedObjectConfig(ID id, ISharedObject obj, Map props) throws ECFException {
 		return new SOConfig(id, getID(), this, props);
 	}
 
-	protected SOConfig createRemoteSharedObjectConfig(ID fromID,
-			ReplicaSharedObjectDescription sd, ISharedObject obj) {
+	protected SOConfig createRemoteSharedObjectConfig(ID fromID, ReplicaSharedObjectDescription sd, ISharedObject obj) {
 		ID homeID = sd.getHomeID();
 		if (homeID == null)
 			homeID = fromID;
 		return new SOConfig(sd.getID(), homeID, this, sd.getProperties());
 	}
 
-	protected SOContext createSharedObjectContext(SOConfig soconfig,
-			IQueueEnqueue queue) {
-		return new SOContext(soconfig.getSharedObjectID(), soconfig
-				.getHomeContainerID(), this, soconfig.getProperties(), queue);
+	protected SOContext createSharedObjectContext(SOConfig soconfig, IQueueEnqueue queue) {
+		return new SOContext(soconfig.getSharedObjectID(), soconfig.getHomeContainerID(), this, soconfig.getProperties(), queue);
 	}
 
-	protected SOContext createRemoteSharedObjectContext(SOConfig soconfig,
-			IQueueEnqueue queue) {
-		return new SOContext(soconfig.getSharedObjectID(), soconfig
-				.getHomeContainerID(), this, soconfig.getProperties(), queue);
+	protected SOContext createRemoteSharedObjectContext(SOConfig soconfig, IQueueEnqueue queue) {
+		return new SOContext(soconfig.getSharedObjectID(), soconfig.getHomeContainerID(), this, soconfig.getProperties(), queue);
 	}
 
-	protected SOWrapper createSharedObjectWrapper(ID id, ISharedObject s,
-			Map props) throws ECFException {
-		SOConfig newConfig = createSharedObjectConfig(id, s, props);
+	protected SOWrapper createSharedObjectWrapper(ID id, ISharedObject s, Map props) throws ECFException {
+		final SOConfig newConfig = createSharedObjectConfig(id, s, props);
 		return new SOWrapper(newConfig, s, this);
 	}
 
-	protected SOWrapper createRemoteSharedObjectWrapper(ID fromID,
-			ReplicaSharedObjectDescription sd, ISharedObject s) {
-		SOConfig newConfig = createRemoteSharedObjectConfig(fromID, sd, s);
+	protected SOWrapper createRemoteSharedObjectWrapper(ID fromID, ReplicaSharedObjectDescription sd, ISharedObject s) {
+		final SOConfig newConfig = createRemoteSharedObjectConfig(fromID, sd, s);
 		return new SOWrapper(newConfig, s, this);
 	}
 
@@ -835,11 +738,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			return;
 		if (groupManager.removeMember(leftID)) {
 			try {
-				forwardExcluding(getID(), leftID, ContainerMessage
-						.createViewChangeMessage(getID(), null,
-								getNextSequenceNumber(), new ID[] { leftID },
-								false, null));
-			} catch (IOException e) {
+				forwardExcluding(getID(), leftID, ContainerMessage.createViewChangeMessage(getID(), null, getNextSequenceNumber(), new ID[] {leftID}, false, null));
+			} catch (final IOException e) {
 				traceStack("Exception in memberLeave.forwardExcluding", e); //$NON-NLS-1$
 			}
 		}
@@ -854,16 +754,14 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	protected void notifySharedObjectActivated(ID sharedObjectID) {
 		synchronized (getGroupMembershipLock()) {
 			groupManager.notifyOthersActivated(sharedObjectID);
-			fireContainerEvent(new SharedObjectActivatedEvent(getID(),
-					sharedObjectID));
+			fireContainerEvent(new SharedObjectActivatedEvent(getID(), sharedObjectID));
 		}
 	}
 
 	protected void notifySharedObjectDeactivated(ID sharedObjectID) {
 		synchronized (getGroupMembershipLock()) {
 			groupManager.notifyOthersDeactivated(sharedObjectID);
-			fireContainerEvent(new SharedObjectDeactivatedEvent(getID(),
-					sharedObjectID));
+			fireContainerEvent(new SharedObjectDeactivatedEvent(getID(), sharedObjectID));
 		}
 	}
 
@@ -872,8 +770,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		if (mess == null)
 			return null;
 		if (mess instanceof ContainerMessage) {
-			ContainerMessage contmess = (ContainerMessage) mess;
-			ID fromID = contmess.getFromContainerID();
+			final ContainerMessage contmess = (ContainerMessage) mess;
+			final ID fromID = contmess.getFromContainerID();
 			if (fromID == null)
 				return null;
 			// OK..let it continue on it's journey
@@ -884,7 +782,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 
 	protected void processAsynch(AsynchEvent event) throws IOException {
 		try {
-			Object obj = event.getData();
+			final Object obj = event.getData();
 			if (obj == null) {
 				debug("Ignoring null data in event " + event); //$NON-NLS-1$
 				return;
@@ -893,12 +791,12 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 				debug("Ignoring event without valid data " + event); //$NON-NLS-1$
 				return;
 			}
-			ContainerMessage mess = validateContainerMessage(deserializeContainerMessage((byte[]) obj));
+			final ContainerMessage mess = validateContainerMessage(deserializeContainerMessage((byte[]) obj));
 			if (mess == null) {
 				debug("event not validated: " + event); //$NON-NLS-1$
 				return;
 			}
-			Serializable submess = mess.getData();
+			final Serializable submess = mess.getData();
 			if (submess == null) {
 				debug("submess is null: " + event);
 				return;
@@ -916,7 +814,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			else
 				handleUnidentifiedMessage(mess);
 
-		} catch (IOException except) {
+		} catch (final IOException except) {
 			handleAsynchIOException(except, event);
 		}
 	}
@@ -926,17 +824,15 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	protected abstract void processDisconnect(DisconnectEvent event);
 
 	protected Serializable processSynch(SynchEvent e) throws IOException {
-		ContainerMessage mess = deserializeContainerMessage((byte[]) e
-				.getData());
-		Serializable data = mess.getData();
+		final ContainerMessage mess = deserializeContainerMessage((byte[]) e.getData());
+		final Serializable data = mess.getData();
 		// Must be non null
 		if (data != null && data instanceof ContainerMessage.LeaveGroupMessage)
 			handleLeaveGroupMessage(mess);
 		return null;
 	}
 
-	abstract protected void queueContainerMessage(ContainerMessage mess)
-			throws IOException;
+	abstract protected void queueContainerMessage(ContainerMessage mess) throws IOException;
 
 	protected void removeFromLoading(ID id) {
 		groupManager.removeSharedObjectFromLoading(id);
@@ -948,7 +844,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 
 	protected ISharedObject removeSharedObject(ID id) {
 		synchronized (getGroupMembershipLock()) {
-			SOWrapper wrap = groupManager.getFromActive(id);
+			final SOWrapper wrap = groupManager.getFromActive(id);
 			if (wrap == null)
 				return null;
 			groupManager.removeSharedObject(id);
@@ -956,32 +852,24 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		}
 	}
 
-	protected void sendCreate(ID sharedObjectID, ID toContainerID,
-			SharedObjectDescription sd) throws IOException {
+	protected void sendCreate(ID sharedObjectID, ID toContainerID, SharedObjectDescription sd) throws IOException {
 		sendCreateSharedObjectMessage(toContainerID, sd);
 	}
 
-	protected void sendCreateResponse(ID homeID, ID sharedObjectID,
-			Throwable t, long identifier) throws IOException {
-		sendCreateResponseSharedObjectMessage(homeID, sharedObjectID, t,
-				identifier);
+	protected void sendCreateResponse(ID homeID, ID sharedObjectID, Throwable t, long identifier) throws IOException {
+		sendCreateResponseSharedObjectMessage(homeID, sharedObjectID, t, identifier);
 	}
 
-	protected void sendCreateResponseSharedObjectMessage(ID toContainerID,
-			ID fromSharedObject, Throwable t, long ident) throws IOException {
-		sendMessage(ContainerMessage.createSharedObjectCreateResponseMessage(
-				getID(), toContainerID, getNextSequenceNumber(),
-				fromSharedObject, t, ident));
+	protected void sendCreateResponseSharedObjectMessage(ID toContainerID, ID fromSharedObject, Throwable t, long ident) throws IOException {
+		sendMessage(ContainerMessage.createSharedObjectCreateResponseMessage(getID(), toContainerID, getNextSequenceNumber(), fromSharedObject, t, ident));
 	}
 
-	protected ID[] sendCreateSharedObjectMessage(ID toContainerID,
-			SharedObjectDescription sd) throws IOException {
+	protected ID[] sendCreateSharedObjectMessage(ID toContainerID, SharedObjectDescription sd) throws IOException {
 		ID[] returnIDs = null;
 		if (toContainerID == null) {
 			synchronized (getGroupMembershipLock()) {
 				// Send message to all
-				sendMessage(ContainerMessage.createSharedObjectCreateMessage(
-						getID(), toContainerID, getNextSequenceNumber(), sd));
+				sendMessage(ContainerMessage.createSharedObjectCreateMessage(getID(), toContainerID, getNextSequenceNumber(), sd));
 				returnIDs = getOtherMemberIDs();
 			}
 		} else {
@@ -989,8 +877,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			if (getID().equals(toContainerID)) {
 				returnIDs = new ID[0];
 			} else {
-				sendMessage(ContainerMessage.createSharedObjectCreateMessage(
-						getID(), toContainerID, getNextSequenceNumber(), sd));
+				sendMessage(ContainerMessage.createSharedObjectCreateMessage(getID(), toContainerID, getNextSequenceNumber(), sd));
 				returnIDs = new ID[1];
 				returnIDs[0] = toContainerID;
 			}
@@ -1002,94 +889,81 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		return new HashMap();
 	}
 
-	protected void sendDispose(ID toContainerID, ID sharedObjectID)
-			throws IOException {
+	protected void sendDispose(ID toContainerID, ID sharedObjectID) throws IOException {
 		sendDisposeSharedObjectMessage(toContainerID, sharedObjectID);
 	}
 
-	protected void sendDisposeSharedObjectMessage(ID toContainerID,
-			ID fromSharedObject) throws IOException {
-		sendMessage(ContainerMessage.createSharedObjectDisposeMessage(getID(),
-				toContainerID, getNextSequenceNumber(), fromSharedObject));
+	protected void sendDisposeSharedObjectMessage(ID toContainerID, ID fromSharedObject) throws IOException {
+		sendMessage(ContainerMessage.createSharedObjectDisposeMessage(getID(), toContainerID, getNextSequenceNumber(), fromSharedObject));
 	}
 
 	protected void sendMessage(ContainerMessage data) throws IOException {
 		synchronized (getGroupMembershipLock()) {
-			ID ourID = getID();
+			final ID ourID = getID();
 			// We don't send to ourselves
 			if (!ourID.equals(data.getToContainerID()))
 				queueContainerMessage(data);
 		}
 	}
 
-	protected byte[] serializeSharedObjectMessage(ID sharedObjectID,
-			Object message) throws IOException {
+	protected byte[] serializeSharedObjectMessage(ID sharedObjectID, Object message) throws IOException {
 		if (!(message instanceof Serializable))
-			throw new NotSerializableException(
-					Messages.SOContainer_Shared_Object_Message + message
-							+ Messages.SOContainer_Not_Serializable);
-		ByteArrayOutputStream bouts = new ByteArrayOutputStream();
-		IdentifiableObjectOutputStream ioos = new IdentifiableObjectOutputStream(
-				sharedObjectID.getName(), bouts);
+			throw new NotSerializableException(Messages.SOContainer_Shared_Object_Message + message + Messages.SOContainer_Not_Serializable);
+		final ByteArrayOutputStream bouts = new ByteArrayOutputStream();
+		final IdentifiableObjectOutputStream ioos = new IdentifiableObjectOutputStream(sharedObjectID.getName(), bouts);
 		ioos.writeObject(message);
 		return bouts.toByteArray();
 	}
 
-	protected Object deserializeSharedObjectMessage(byte[] bytes)
-			throws IOException, ClassNotFoundException {
-		ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
+	protected Object deserializeSharedObjectMessage(byte[] bytes) throws IOException, ClassNotFoundException {
+		final ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
 		Object obj = null;
 		try {
 			// First try normal classloading. In Eclipse environment this will
 			// use
 			// buddy classloading
-			ObjectInputStream oins = new ObjectInputStream(bins);
+			final ObjectInputStream oins = new ObjectInputStream(bins);
 			obj = oins.readObject();
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			// first reset stream
 			bins.reset();
 			// Now try with shared object classloader
-			IdentifiableObjectInputStream iins = new IdentifiableObjectInputStream(
-					new IClassLoaderMapper() {
-						public ClassLoader mapNameToClassLoader(String name) {
-							ISharedObjectManager manager = getSharedObjectManager();
-							ID[] ids = manager.getSharedObjectIDs();
-							ID found = null;
-							for (int i = 0; i < ids.length; i++) {
-								ID id = ids[i];
-								if (name.equals(id.getName())) {
-									found = id;
-									break;
-								}
-							}
-							if (found == null)
-								return null;
-							ISharedObject obj = manager.getSharedObject(found);
-							if (obj == null)
-								return null;
-							return obj.getClass().getClassLoader();
+			final IdentifiableObjectInputStream iins = new IdentifiableObjectInputStream(new IClassLoaderMapper() {
+				public ClassLoader mapNameToClassLoader(String name) {
+					ISharedObjectManager manager = getSharedObjectManager();
+					ID[] ids = manager.getSharedObjectIDs();
+					ID found = null;
+					for (int i = 0; i < ids.length; i++) {
+						ID id = ids[i];
+						if (name.equals(id.getName())) {
+							found = id;
+							break;
 						}
-					}, bins);
+					}
+					if (found == null)
+						return null;
+					ISharedObject obj = manager.getSharedObject(found);
+					if (obj == null)
+						return null;
+					return obj.getClass().getClassLoader();
+				}
+			}, bins);
 			obj = iins.readObject();
 		}
 		return obj;
 	}
 
-	protected void sendMessage(ID toContainerID, ID sharedObjectID,
-			Object message) throws IOException {
+	protected void sendMessage(ID toContainerID, ID sharedObjectID, Object message) throws IOException {
 		if (message == null)
 			return;
 		// fire IContainerSharedObjectMessageSendingEvent
-		fireContainerEvent(new ContainerSharedObjectMessageSendingEvent(
-				getID(), toContainerID, sharedObjectID, message));
-		byte[] sendData = serializeSharedObjectMessage(sharedObjectID, message);
+		fireContainerEvent(new ContainerSharedObjectMessageSendingEvent(getID(), toContainerID, sharedObjectID, message));
+		final byte[] sendData = serializeSharedObjectMessage(sharedObjectID, message);
 		sendSharedObjectMessage(toContainerID, sharedObjectID, sendData);
 	}
 
-	protected void sendSharedObjectMessage(ID toContainerID,
-			ID fromSharedObject, Serializable data) throws IOException {
-		sendMessage(ContainerMessage.createSharedObjectMessage(getID(),
-				toContainerID, getNextSequenceNumber(), fromSharedObject, data));
+	protected void sendSharedObjectMessage(ID toContainerID, ID fromSharedObject, Serializable data) throws IOException {
+		sendMessage(ContainerMessage.createSharedObjectMessage(getID(), toContainerID, getNextSequenceNumber(), fromSharedObject, data));
 	}
 
 	protected void setMaxGroupMembers(int max) {
@@ -1099,10 +973,9 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	/**
 	 * @param containerEvent
 	 */
-	protected void fireDelegateContainerEvent(
-			IContainerEvent containerEvent) {
+	protected void fireDelegateContainerEvent(IContainerEvent containerEvent) {
 		super.fireContainerEvent(containerEvent);
-		
+
 	}
 
 }
