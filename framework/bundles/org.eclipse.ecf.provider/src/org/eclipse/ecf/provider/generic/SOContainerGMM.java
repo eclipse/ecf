@@ -44,7 +44,7 @@ class SOContainerGMM implements Observer {
 
 	protected void debug(String msg) {
 		if (Trace.shouldTrace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG)) {
-			Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg + ";container=" + container.getID() + ";members=" + groupManager); //$NON-NLS-1$
+			Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg + ";container=" + container.getID() + ";existingmembers=" + groupManager); //$NON-NLS-1$
 		}
 	}
 
