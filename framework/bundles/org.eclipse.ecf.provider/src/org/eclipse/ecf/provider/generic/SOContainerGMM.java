@@ -40,18 +40,16 @@ class SOContainerGMM implements Observer {
 		active = new TreeMap();
 		localMember = local;
 		addMember(local);
-		debug("<init>"); //$NON-NLS-1$
 	}
 
 	protected void debug(String msg) {
-		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG,
-				msg + ":" + container.getID()); //$NON-NLS-1$
+		if (Trace.shouldTrace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG)) {
+			Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg + ";container=" + container.getID() + ";members=" + groupManager); //$NON-NLS-1$
+		}
 	}
 
 	protected void traceStack(String msg, Throwable e) {
-		Trace.catching(ProviderPlugin.PLUGIN_ID,
-				ECFProviderDebugOptions.EXCEPTIONS_CATCHING,
-				SOContainerGMM.class, container.getID() + ":" + msg, e); //$NON-NLS-1$
+		Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainerGMM.class, container.getID() + ":" + msg, e); //$NON-NLS-1$
 	}
 
 	ID[] getSharedObjectIDs() {
@@ -69,7 +67,7 @@ class SOContainerGMM implements Observer {
 
 	synchronized int setMaxMembers(int max) {
 		debug("setMaxMembers(" + max + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-		int old = maxMembers;
+		final int old = maxMembers;
 		maxMembers = max;
 		return old;
 	}
@@ -79,7 +77,7 @@ class SOContainerGMM implements Observer {
 	}
 
 	synchronized boolean removeMember(Member m) {
-		boolean res = groupManager.removeMember(m);
+		final boolean res = groupManager.removeMember(m);
 		if (res) {
 			removeSharedObjects(m);
 		}
@@ -88,7 +86,7 @@ class SOContainerGMM implements Observer {
 
 	synchronized boolean removeMember(ID id) {
 		debug("removeMember(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-		Member m = getMemberForID(id);
+		final Member m = getMemberForID(id);
 		if (m == null)
 			return false;
 		return removeMember(m);
@@ -108,9 +106,9 @@ class SOContainerGMM implements Observer {
 		} else {
 			debug("removeAllMembers(" + exception.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		Object m[] = getMembers();
+		final Object m[] = getMembers();
 		for (int i = 0; i < m.length; i++) {
-			Member mem = (Member) m[i];
+			final Member mem = (Member) m[i];
 			if (exception == null || !exception.equals(mem))
 				removeMember(mem);
 		}
@@ -129,9 +127,9 @@ class SOContainerGMM implements Observer {
 	}
 
 	synchronized Member getMemberForID(ID id) {
-		Member newMem = new Member(id);
-		for (Iterator i = iterator(); i.hasNext();) {
-			Member oldMem = (Member) i.next();
+		final Member newMem = new Member(id);
+		for (final Iterator i = iterator(); i.hasNext();) {
+			final Member oldMem = (Member) i.next();
 			if (newMem.equals(oldMem))
 				return oldMem;
 		}
@@ -163,8 +161,7 @@ class SOContainerGMM implements Observer {
 		return true;
 	}
 
-	synchronized boolean addLoadingSharedObject(
-			SOContainer.LoadingSharedObject lso) {
+	synchronized boolean addLoadingSharedObject(SOContainer.LoadingSharedObject lso) {
 		if (lso != null)
 			debug("addLoadingSharedObject(" + lso.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (getFromAny(lso.getID()) != null)
@@ -212,8 +209,8 @@ class SOContainerGMM implements Observer {
 	}
 
 	void notifyOtherChanged(ID id, TreeMap aMap, boolean activated) {
-		for (Iterator i = aMap.values().iterator(); i.hasNext();) {
-			SOWrapper other = (SOWrapper) i.next();
+		for (final Iterator i = aMap.values().iterator(); i.hasNext();) {
+			final SOWrapper other = (SOWrapper) i.next();
 			if (!id.equals(other.getObjID())) {
 				other.otherChanged(id, activated);
 			}
@@ -222,7 +219,7 @@ class SOContainerGMM implements Observer {
 
 	synchronized boolean removeSharedObject(ID id) {
 		debug("removeSharedObject(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-		SOWrapper ro = removeFromMap(id, active);
+		final SOWrapper ro = removeFromMap(id, active);
 		if (ro == null)
 			return false;
 		ro.deactivated();
@@ -255,14 +252,14 @@ class SOContainerGMM implements Observer {
 
 	// Notification methods
 	void notifyAllOfMemberChange(Member m, TreeMap map, boolean add) {
-		for (Iterator i = map.values().iterator(); i.hasNext();) {
-			SOWrapper ro = (SOWrapper) i.next();
+		for (final Iterator i = map.values().iterator(); i.hasNext();) {
+			final SOWrapper ro = (SOWrapper) i.next();
 			ro.memberChanged(m, add);
 		}
 	}
 
 	public void update(Observable o, Object arg) {
-		MemberChanged mc = (MemberChanged) arg;
+		final MemberChanged mc = (MemberChanged) arg;
 		notifyAllOfMemberChange(mc.getMember(), active, mc.getAdded());
 	}
 
@@ -276,10 +273,10 @@ class SOContainerGMM implements Observer {
 	}
 
 	void removeSharedObjects(Member m, boolean match) {
-		HashSet set = getRemoveIDs(m.getID(), match);
-		Iterator i = set.iterator();
+		final HashSet set = getRemoveIDs(m.getID(), match);
+		final Iterator i = set.iterator();
 		while (i.hasNext()) {
-			ID removeID = (ID) i.next();
+			final ID removeID = (ID) i.next();
 			if (isLoading(removeID)) {
 				removeSharedObjectFromLoading(removeID);
 			} else {
@@ -289,13 +286,11 @@ class SOContainerGMM implements Observer {
 	}
 
 	HashSet getRemoveIDs(ID homeID, boolean match) {
-		HashSet aSet = new HashSet();
-		for (Iterator i = new DestroyIterator(loading, homeID, match); i
-				.hasNext();) {
+		final HashSet aSet = new HashSet();
+		for (final Iterator i = new DestroyIterator(loading, homeID, match); i.hasNext();) {
 			aSet.add(i.next());
 		}
-		for (Iterator i = new DestroyIterator(active, homeID, match); i
-				.hasNext();) {
+		for (final Iterator i = new DestroyIterator(active, homeID, match); i.hasNext();) {
 			aSet.add(i.next());
 		}
 		return aSet;
@@ -310,7 +305,7 @@ class SOContainerGMM implements Observer {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		final StringBuffer sb = new StringBuffer();
 		sb.append("SOContainerGMM["); //$NON-NLS-1$
 		sb.append(groupManager);
 		sb.append(";load:").append(loading); //$NON-NLS-1$
@@ -340,7 +335,7 @@ class DestroyIterator implements Iterator {
 
 	public Object next() {
 		if (hasNext()) {
-			ID value = next;
+			final ID value = next;
 			next = null;
 			return value;
 		} else {
@@ -350,7 +345,7 @@ class DestroyIterator implements Iterator {
 
 	ID getNext() {
 		while (i.hasNext()) {
-			SOWrapper ro = (SOWrapper) i.next();
+			final SOWrapper ro = (SOWrapper) i.next();
 			if (homeID == null || (match ^ !ro.getHomeID().equals(homeID))) {
 				return ro.getObjID();
 			}
