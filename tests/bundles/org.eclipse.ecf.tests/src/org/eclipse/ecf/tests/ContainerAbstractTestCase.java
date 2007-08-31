@@ -43,19 +43,19 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	protected String[] passwords = null;
 
 	protected String getUsername(int client) {
-		if (usernames == null || usernames.length <= client) return null;
+		if (usernames == null || usernames.length <= client)
+			return null;
 		return usernames[client];
 	}
 
 	protected String getPassword(int client) {
-		if (passwords == null || passwords.length <= client) return null;
+		if (passwords == null || passwords.length <= client)
+			return null;
 		return passwords[client];
 	}
 
-	protected IConnectContext createUsernamePasswordConnectContext(
-			String username, String password) {
-		return ConnectContextFactory.createUsernamePasswordConnectContext(
-				username, password);
+	protected IConnectContext createUsernamePasswordConnectContext(String username, String password) {
+		return ConnectContextFactory.createUsernamePasswordConnectContext(username, password);
 	}
 
 	protected IConnectContext createPasswordConnectContext(String password) {
@@ -75,10 +75,11 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	}
 
 	protected IContainer getClient(int index) {
-		if (clients == null || clients.length <= index) return null;
+		if (clients == null || clients.length <= index)
+			return null;
 		return clients[index];
 	}
-	
+
 	protected String getServerContainerName() {
 		return genericServerName;
 	}
@@ -108,22 +109,23 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	}
 
 	protected IContainer createServer() throws Exception {
-		return ContainerFactory.getDefault().createContainer(
-				getServerContainerName(), new Object[] { getServerCreateID() });
+		return ContainerFactory.getDefault().createContainer(getServerContainerName(), new Object[] {getServerCreateID()});
 	}
 
 	protected IContainer[] createClients() throws Exception {
-		IContainer[] result = new IContainer[getClientCount()];
+		final IContainer[] result = new IContainer[getClientCount()];
 		usernames = new String[getClientCount()];
 		passwords = new String[getClientCount()];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = createClient(i);
-			String uname = System.getProperty("username"+i);
-			if (uname == null && i == 0) uname = System.getProperty("username");
+			String uname = System.getProperty("username" + i);
+			if (uname == null && i == 0)
+				uname = System.getProperty("username");
 			if (uname != null)
 				usernames[i] = uname;
-			String pword = System.getProperty("password"+i);
-			if (pword == null && i == 0) pword = System.getProperty("password");
+			String pword = System.getProperty("password" + i);
+			if (pword == null && i == 0)
+				pword = System.getProperty("password");
 			if (pword != null)
 				passwords[i] = pword;
 		}
@@ -131,8 +133,7 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	}
 
 	protected IContainer createClient(int index) throws Exception {
-		return ContainerFactory.getDefault().createContainer(
-				getClientContainerName());
+		return ContainerFactory.getDefault().createContainer(getClientContainerName());
 	}
 
 	protected void createServerAndClients() throws Exception {
@@ -161,28 +162,25 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	}
 
 	protected void connectClients() throws Exception {
-		IContainer[] clients = getClients();
+		final IContainer[] clients = getClients();
 		for (int i = 0; i < clients.length; i++)
-			connectClient(clients[i], getServerConnectID(i),
-					getConnectContext(i));
+			connectClient(clients[i], getServerConnectID(i), getConnectContext(i));
 	}
 
 	protected IConnectContext getConnectContext(int client) {
-		return createUsernamePasswordConnectContext(getUsername(client),
-				getPassword(client));
+		return createUsernamePasswordConnectContext(getUsername(client), getPassword(client));
 	}
 
-	protected void connectClient(IContainer containerToConnect, ID connectID,
-			IConnectContext context) throws ContainerConnectException {
+	protected void connectClient(IContainer containerToConnect, ID connectID, IConnectContext context) throws ContainerConnectException {
 		containerToConnect.connect(connectID, context);
 	}
 
 	protected void connectClient(int client) throws ContainerConnectException {
 		connectClient(getClient(client), getServerConnectID(client), getConnectContext(client));
 	}
-	
+
 	protected void disconnectClients() throws Exception {
-		IContainer[] clients = getClients();
+		final IContainer[] clients = getClients();
 		for (int i = 0; i < clients.length; i++) {
 			clients[i].disconnect();
 		}
@@ -192,22 +190,20 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 		assertHasEventCount(collection, eventType, 1);
 	}
 
-	protected void assertHasEventCount(Collection collection, Class eventType,
-			int eventCount) {
+	protected void assertHasEventCount(Collection collection, Class eventType, int eventCount) {
 		int count = 0;
-		for (Iterator i = collection.iterator(); i.hasNext();) {
-			Object o = i.next();
+		for (final Iterator i = collection.iterator(); i.hasNext();) {
+			final Object o = i.next();
 			if (eventType.isInstance(o))
 				count++;
 		}
 		assertTrue(count == eventCount);
 	}
 
-	protected void assertHasMoreThanEventCount(Collection collection,
-			Class eventType, int eventCount) {
+	protected void assertHasMoreThanEventCount(Collection collection, Class eventType, int eventCount) {
 		int count = 0;
-		for (Iterator i = collection.iterator(); i.hasNext();) {
-			Object o = i.next();
+		for (final Iterator i = collection.iterator(); i.hasNext();) {
+			final Object o = i.next();
 			if (eventType.isInstance(o))
 				count++;
 		}
