@@ -154,11 +154,11 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	}
 
 	protected void cleanUpServerAndClients() {
+		cleanUpClients();
 		serverID = null;
 		server.disconnect();
 		server.dispose();
 		server = null;
-		cleanUpClients();
 	}
 
 	protected void connectClients() throws Exception {
