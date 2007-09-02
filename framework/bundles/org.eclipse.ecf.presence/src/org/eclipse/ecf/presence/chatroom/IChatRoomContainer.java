@@ -94,6 +94,7 @@ public interface IChatRoomContainer extends IContainer {
 	 * 
 	 * @return ID[] of chatroom participants.  If no participants in chat room, will return
 	 * an empty array.  Will not return <code>null</code>
+	 * @since 1.1
 	 */
 	public ID[] getChatRoomParticipants();
 }
