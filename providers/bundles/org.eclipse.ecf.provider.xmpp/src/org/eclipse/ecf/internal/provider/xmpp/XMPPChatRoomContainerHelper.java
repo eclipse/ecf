@@ -12,6 +12,7 @@ package org.eclipse.ecf.internal.provider.xmpp;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,32 +44,31 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 
 	ISharedObjectConfig config = null;
 
-	private List messageListeners = new ArrayList();
+	private final List messageListeners = new ArrayList();
 	private Namespace usernamespace = null;
 	private XMPPConnection connection = null;
-	private List participantListeners = new ArrayList();
+	private final List participantListeners = new ArrayList();
 	private ID roomID = null;
-	
+
+	private final List chatRoomContainerParticipants = Collections.synchronizedList(new ArrayList());
+
 	protected void trace(String message) {
 
 	}
 
-	protected void addChatParticipantListener(
-			IChatRoomParticipantListener listener) {
+	protected void addChatParticipantListener(IChatRoomParticipantListener listener) {
 		synchronized (participantListeners) {
 			participantListeners.add(listener);
 		}
 	}
 
-	protected void removeChatParticipantListener(
-			IChatRoomParticipantListener listener) {
+	protected void removeChatParticipantListener(IChatRoomParticipantListener listener) {
 		synchronized (participantListeners) {
-			participantListeners.remove(listener);			
+			participantListeners.remove(listener);
 		}
 	}
 
-	public XMPPChatRoomContainerHelper(Namespace usernamespace,
-			XMPPConnection conn) {
+	public XMPPChatRoomContainerHelper(Namespace usernamespace, XMPPConnection conn) {
 		super();
 		this.usernamespace = usernamespace;
 		this.connection = conn;
@@ -83,8 +83,7 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObject#init(org.eclipse.ecf.core.ISharedObjectConfig)
 	 */
-	public void init(ISharedObjectConfig initData)
-			throws SharedObjectInitException {
+	public void init(ISharedObjectConfig initData) throws SharedObjectInitException {
 		this.config = initData;
 	}
 
@@ -93,12 +92,12 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		try {
 			result = new XMPPID(usernamespace, name);
 			return result;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}
 
-	protected Message.Type[] ALLOWED_MESSAGES = { Message.Type.GROUP_CHAT };
+	protected Message.Type[] ALLOWED_MESSAGES = {Message.Type.GROUP_CHAT};
 
 	protected Message filterMessageType(Message msg) {
 		for (int i = 0; i < ALLOWED_MESSAGES.length; i++) {
@@ -112,10 +111,10 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	protected String canonicalizeRoomFrom(String from) {
 		if (from == null)
 			return null;
-		int atIndex = from.indexOf('@');
+		final int atIndex = from.indexOf('@');
 		String hostname = null;
 		String username = null;
-		int index = from.indexOf("/");
+		final int index = from.indexOf("/");
 		if (atIndex > 0 && index > 0) {
 			hostname = from.substring(atIndex + 1, index);
 			username = from.substring(index + 1);
@@ -129,17 +128,16 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		synchronized (messageListeners) {
 			toNotify = new ArrayList(messageListeners);
 		}
-		for (Iterator i = toNotify.iterator(); i.hasNext();) {
-			IIMMessageListener l = (IIMMessageListener) i.next();
-			l.handleMessageEvent(new ChatRoomMessageEvent(from,
-					new ChatRoomMessage(from, roomID, body)));
+		for (final Iterator i = toNotify.iterator(); i.hasNext();) {
+			final IIMMessageListener l = (IIMMessageListener) i.next();
+			l.handleMessageEvent(new ChatRoomMessageEvent(from, new ChatRoomMessage(from, roomID, body)));
 		}
 	}
 
 	protected String canonicalizeRoomTo(String to) {
 		if (to == null)
 			return null;
-		int index = to.indexOf("/");
+		final int index = to.indexOf("/");
 		if (index > 0) {
 			return to.substring(0, index);
 		} else
@@ -149,22 +147,21 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	protected ID createRoomIDFromName(String from) {
 		try {
 			return new XMPPRoomID(usernamespace, connection, from);
-		} catch (URISyntaxException e) {
+		} catch (final URISyntaxException e) {
 			return null;
 		}
 	}
 
 	protected void handleMessageEvent(MessageEvent evt) {
-		Message msg = filterMessageType(evt.getMessage());
+		final Message msg = filterMessageType(evt.getMessage());
 		if (msg != null)
-			fireMessageListeners(createUserIDFromName(canonicalizeRoomFrom(msg
-					.getFrom())), msg.getBody());
+			fireMessageListeners(createUserIDFromName(canonicalizeRoomFrom(msg.getFrom())), msg.getBody());
 	}
 
 	protected IPresence.Type createIPresenceType(Presence xmppPresence) {
 		if (xmppPresence == null)
 			return IPresence.Type.AVAILABLE;
-		Type type = xmppPresence.getType();
+		final Type type = xmppPresence.getType();
 		if (type == Presence.Type.AVAILABLE) {
 			return IPresence.Type.AVAILABLE;
 		} else if (type == Presence.Type.ERROR) {
@@ -186,7 +183,7 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	protected IPresence.Mode createIPresenceMode(Presence xmppPresence) {
 		if (xmppPresence == null)
 			return IPresence.Mode.AVAILABLE;
-		Mode mode = xmppPresence.getMode();
+		final Mode mode = xmppPresence.getMode();
 		if (mode == Presence.Mode.AVAILABLE) {
 			return IPresence.Mode.AVAILABLE;
 		} else if (mode == Presence.Mode.AWAY) {
@@ -204,24 +201,32 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	}
 
 	protected IPresence createIPresence(Presence xmppPresence) {
-		String status = xmppPresence.getStatus();
-		IPresence newPresence = new org.eclipse.ecf.presence.Presence(
-				createIPresenceType(xmppPresence), status,
-				createIPresenceMode(xmppPresence));
+		final String status = xmppPresence.getStatus();
+		final IPresence newPresence = new org.eclipse.ecf.presence.Presence(createIPresenceType(xmppPresence), status, createIPresenceMode(xmppPresence));
 		return newPresence;
 	}
 
+	protected void disconnect() {
+		chatRoomContainerParticipants.clear();
+		setRoomID(null);
+	}
+
 	protected void handlePresenceEvent(PresenceEvent evt) {
-		Presence xmppPresence = evt.getPresence();
-		String from = canonicalizeRoomFrom(xmppPresence.getFrom());
-		IPresence newPresence = createIPresence(xmppPresence);
-		ID fromID = createUserIDFromName(from);
+		final Presence xmppPresence = evt.getPresence();
+		final String from = canonicalizeRoomFrom(xmppPresence.getFrom());
+		final IPresence newPresence = createIPresence(xmppPresence);
+		final ID fromID = createUserIDFromName(from);
+		if (newPresence.getType().equals(IPresence.Type.AVAILABLE)) {
+			if (!chatRoomContainerParticipants.contains(fromID))
+				chatRoomContainerParticipants.add(fromID);
+		} else
+			chatRoomContainerParticipants.remove(fromID);
 		fireParticipant(fromID, newPresence);
 	}
 
 	protected void handleChatMembershipEvent(ChatMembershipEvent evt) {
-		String from = canonicalizeRoomFrom(evt.getFrom());
-		ID fromID = createUserIDFromName(from);
+		final String from = canonicalizeRoomFrom(evt.getFrom());
+		final ID fromID = createUserIDFromName(from);
 		fireChatParticipant(fromID, evt.isAdd());
 	}
 
@@ -230,9 +235,8 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		synchronized (participantListeners) {
 			toNotify = new ArrayList(participantListeners);
 		}
-		for (Iterator i = toNotify.iterator(); i.hasNext();) {
-			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
-					.next();
+		for (final Iterator i = toNotify.iterator(); i.hasNext();) {
+			final IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
 			l.handlePresenceUpdated(fromID, presence);
 		}
 	}
@@ -242,9 +246,8 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		synchronized (participantListeners) {
 			toNotify = new ArrayList(participantListeners);
 		}
-		for (Iterator i = toNotify.iterator(); i.hasNext();) {
-			IChatRoomParticipantListener l = (IChatRoomParticipantListener) i
-					.next();
+		for (final Iterator i = toNotify.iterator(); i.hasNext();) {
+			final IChatRoomParticipantListener l = (IChatRoomParticipantListener) i.next();
 			if (join) {
 				l.handleArrived(new User(fromID));
 			} else {
@@ -293,6 +296,9 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 		synchronized (participantListeners) {
 			participantListeners.clear();
 		}
+		synchronized (chatRoomContainerParticipants) {
+			chatRoomContainerParticipants.clear();
+		}
 		this.config = null;
 		this.connection = null;
 		this.usernamespace = null;
@@ -330,5 +336,12 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	 */
 	protected void setRoomID(ID roomID) {
 		this.roomID = roomID;
+	}
+
+	/**
+	 * @return
+	 */
+	public ID[] getChatRoomParticipants() {
+		return (ID[]) chatRoomContainerParticipants.toArray(new ID[] {});
 	}
 }
