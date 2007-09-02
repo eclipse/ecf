@@ -1036,4 +1036,9 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		return this;
 	}
 
+	public ID[] getChatRoomParticipants() {
+		// root channel has no participants
+		return new ID[0];
+	}
+
 }

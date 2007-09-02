@@ -341,4 +341,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements
 		return this;
 	}
 
+	public ID[] getChatRoomParticipants() {
+		return (ID[]) channelParticipants.toArray(new ID[channelParticipants.size()]);
+	}
+
 }
