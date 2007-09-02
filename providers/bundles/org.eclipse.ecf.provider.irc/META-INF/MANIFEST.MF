@@ -11,8 +11,8 @@ Require-Bundle: org.eclipse.equinox.common,
  org.eclipse.ecf.presence
 Eclipse-LazyStart: true
 Bundle-ClassPath: ., lib/irclib.jar
-Bundle-RequiredExecutionEnvironment: J2SE-1.4,
- CDC-1.1/Foundation-1.1
+Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
+ J2SE-1.4
 Export-Package: org.eclipse.ecf.internal.provider.irc;x-internal:=true,
  org.eclipse.ecf.internal.provider.irc.container;x-internal:=true,
  org.eclipse.ecf.internal.provider.irc.identity;x-internal:=true
