@@ -7,7 +7,7 @@
  *
  * Contributors:
  *    Composent, Inc. - initial API and implementation
- *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 192762, 197329
+ *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 192762, 197329, 190851
  *    Abner Ballardo <modlost@modlost.net> - bug 192756, 199336
  ******************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
@@ -1422,16 +1422,18 @@ public class ChatRoomManagerView extends ViewPart implements
 		}
 		
 		st.append(output);
+		
 		if (ranges != null) {
 
 			// set all ranges to start as message line starts
 			for (int i = 0; i < ranges.length; i++) {
 				ranges[i].start += startRange;
-				st.setStyleRange(ranges[i]);
 			} 	
+			st.replaceStyleRanges(startRange, output.length(), ranges);
 		}
 		
 		if (isAtEndBeforeAppend) scrollToEnd(st);
+		
 		if (isCurrentlyActive(chatRoomTab)) chatRoomTab.makeTabItemNormal();
 		else chatRoomTab.makeTabItemBold();
 	}

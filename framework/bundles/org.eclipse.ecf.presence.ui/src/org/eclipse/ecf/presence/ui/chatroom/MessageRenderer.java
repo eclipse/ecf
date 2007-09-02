@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 197329
+ *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 197329, 190851
  *****************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
@@ -21,48 +21,63 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.themes.ITheme;
 
 /**
  * Default implementation of {@link IMessageRenderer}.
  *
  */
 public class MessageRenderer implements IMessageRenderer {
-
-	private Color otherColor = null;
-	private Color systemColor = null;
-	private Color dateColor = null;
-	private Color highlightColor = null;
 	
-	private StringBuffer buffer;
+	/**
+	 * Messages sent by local user
+	 */
+	protected static final String SENT_COLOR = "org.eclipse.ecf.presence.ui.sentColor"; //$NON-NLS-1$
+	protected static final String SENT_FONT = "org.eclipse.ecf.presence.ui.sentFont"; //$NON-NLS-1$
 	
-	private List styleRanges = new ArrayList();
+	/**
+	 * Any received messages
+	 */
+	protected static final String RECEIVED_COLOR = "org.eclipse.ecf.presence.ui.receivedColor"; //$NON-NLS-1$
+	protected static final String RECEIVED_FONT = "org.eclipse.ecf.presence.ui.receivedFont"; //$NON-NLS-1$
 	
-	protected static final String DEFAULT_ME_COLOR = "0,255,0"; //$NON-NLS-1$
-	protected static final String DEFAULT_OTHER_COLOR = "0,0,0"; //$NON-NLS-1$
-	protected static final String DEFAULT_SYSTEM_COLOR = "0,0,255"; //$NON-NLS-1$
+	/**
+	 * System messages, eg. server notifications
+	 */
+	protected static final String SYSTEM_COLOR = "org.eclipse.ecf.presence.ui.systemColor"; //$NON-NLS-1$
+	protected static final String SYSTEM_FONT = "org.eclipse.ecf.presence.ui.systemFont"; //$NON-NLS-1$
 
 	/**
-	 * The default color used to highlight the string of text when the user's
+	 * The default color used to highlight message when the user's
 	 * name is referred to in the chatroom. The default color is red.
 	 */
-	protected static final String DEFAULT_HIGHLIGHT_COLOR = "255,0,0"; //$NON-NLS-1$
-	protected static final String DEFAULT_DATE_COLOR = "0,0,0"; //$NON-NLS-1$
+	protected static final String RECEIVEDHIGHLIGHT_COLOR = "org.eclipse.ecf.presence.ui.receivedHighlightColor"; //$NON-NLS-1$
+	protected static final String RECEIVEDHIGHLIGHT_FONT = "org.eclipse.ecf.presence.ui.receivedHighlightFont"; //$NON-NLS-1$
+	
+	/**
+	 * Date stamp in message window
+	 */
+	protected static final String DATE_COLOR = "org.eclipse.ecf.presence.ui.dateColor"; //$NON-NLS-1$
+	protected static final String DATE_FONT = "org.eclipse.ecf.presence.ui.dateFont"; //$NON-NLS-1$
 	
 	protected static final String DEFAULT_TIME_FORMAT = Messages.MessageRenderer_DEFAULT_TIME_FORMAT;
 
 	protected static final String DEFAULT_DATE_FORMAT = Messages.MessageRenderer_DEFAULT_DATE_FORMAT;
 	
+	private StringBuffer buffer;
+	
+	private List styleRanges = new ArrayList();
+	
 	protected boolean nickContained;
+	protected boolean isSent;
 	protected String message;
 	protected String originator;
 	
-	public MessageRenderer() {
-		otherColor = colorFromRGBString(DEFAULT_OTHER_COLOR);
-		systemColor = colorFromRGBString(DEFAULT_SYSTEM_COLOR);
-		highlightColor = colorFromRGBString(DEFAULT_HIGHLIGHT_COLOR);
-		dateColor = colorFromRGBString(DEFAULT_DATE_COLOR);
-	}
+	private String font;
+	private String color;
 	
 	public StyleRange[] getStyleRanges() {
 		return (StyleRange[]) styleRanges.toArray(new StyleRange[styleRanges.size()]);
@@ -88,6 +103,21 @@ public class MessageRenderer implements IMessageRenderer {
 		// is not the user himself, no highlighting is required in this case
 		// as the user is already aware that his name is being referenced
 		nickContained = (message.indexOf(localUserName) != -1) && (! localUserName.equals(originator));
+		isSent = (originator != null) && (originator.equals(localUserName));
+		
+		if (originator == null) {
+			color = SYSTEM_COLOR;
+			font = SYSTEM_FONT;
+		} else if (isSent) {
+			color = SENT_COLOR;
+			font = SENT_FONT;
+		} else if (nickContained) {			
+			color = RECEIVEDHIGHLIGHT_COLOR;
+			font = RECEIVEDHIGHLIGHT_FONT;
+		} else {
+			color = RECEIVED_COLOR;
+			font = RECEIVED_FONT;
+		}
 		
 		doRender();
 		
@@ -105,30 +135,19 @@ public class MessageRenderer implements IMessageRenderer {
 	
 	protected void appendDateTime() {
 		String message = NLS.bind(Messages.MessageRenderer_DEFAULT_DATETIME_FORMAT, getCurrentDate(DEFAULT_TIME_FORMAT)) + " ";
-		append(message, dateColor, null, SWT.NORMAL);
+		append(message, DATE_COLOR, null, DATE_FONT);
 	}
 
 	protected void appendNickname() {
 		String message = originator + ": "; //$NON-NLS-1$
-		// check to see which color should be used
-		Color foreground = nickContained ? highlightColor : otherColor;
-		append(message, foreground, null, SWT.BOLD);
+		append(message, color, null, font);
 	}
 	
 	protected void appendMessage() {
-		Color color = null;
-		int style = SWT.NONE;
-		if (originator == null) {
-			color = systemColor;
-			style = SWT.BOLD;
-		} else if (nickContained) {
-			// highlight the message itself as necessary			
-			color = highlightColor;
-		}
-		append(message, color, null, style);
+		append(message, color, null, font);
 	}
 	
-	protected void append(String message, Color foreground, Color background, int style) {
+	protected void append(String message, String foreground, String background, String font) {
 		if (message == null) {
 			return;
 		}
@@ -137,28 +156,43 @@ public class MessageRenderer implements IMessageRenderer {
 		
 		buffer.append(message);
 		
-		if (foreground == null && background == null && style == SWT.NONE) {
+		if (foreground == null && background == null && font == null) {
 			return;
 		}
 		
-		StyleRange styleRange = new StyleRange(start, message.length(), foreground, background, style);
+		StyleRange styleRange = new StyleRange(start, message.length(), getColor(foreground), getColor(background));
+		styleRange.font = getFont(font);
 		styleRanges.add(styleRange);
 	}
 	
-	private Color colorFromRGBString(String rgb) {
-		Color color = null;
-		if (rgb == null || rgb.equals("")) { //$NON-NLS-1$
-			color = new Color(Display.getCurrent(), 0, 0, 0);
-			return color;
+	private Color getColor(String name) {
+		if (name == null) {
+			return null;
 		}
-		if (color != null) {
-			color.dispose();
+		
+		ITheme theme = PlatformUI.getWorkbench().getThemeManager().getCurrentTheme();
+		Color color = theme.getColorRegistry().get(name);
+		
+		if (color == null) {
+			return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 		}
-		String[] vals = rgb.split(","); //$NON-NLS-1$
-		color = new Color(Display.getCurrent(), Integer
-				.parseInt(vals[0]), Integer.parseInt(vals[1]), Integer
-				.parseInt(vals[2]));
+		
 		return color;
+	}
+	
+	private Font getFont(String name) {
+		if (name == null) {
+			return null;
+		}
+		
+		ITheme theme = PlatformUI.getWorkbench().getThemeManager().getCurrentTheme();
+		Font font = theme.getFontRegistry().get(name);
+		
+		if (font == null) {
+			return Display.getDefault().getSystemFont();
+		}
+		
+		return font;
 	}
 	
 	protected String getCurrentDate(String format) {
