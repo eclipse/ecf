@@ -1,3 +1,13 @@
+/****************************************************************************
+ * Copyright (c) 2006, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.identity;
 
 import java.net.URL;
@@ -21,7 +31,8 @@ public class FileTransferID extends BaseID implements IFileID {
 	}
 
 	protected int namespaceCompareTo(BaseID o) {
-		return this.fileURL.toExternalForm().compareTo(((FileTransferID) o).toExternalForm());
+		return this.fileURL.toExternalForm().compareTo(
+				((FileTransferID) o).toExternalForm());
 	}
 
 	protected boolean namespaceEquals(BaseID o) {
@@ -45,12 +56,12 @@ public class FileTransferID extends BaseID implements IFileID {
 	}
 
 	protected String getFileNameOnly() {
-		String path = this.fileURL.getPath();
+		final String path = this.fileURL.getPath();
 		return path.substring(path.lastIndexOf("/") + 1); //$NON-NLS-1$;
 	}
 
 	public String toString() {
-		StringBuffer b = new StringBuffer("FileTransferID["); //$NON-NLS-1$
+		final StringBuffer b = new StringBuffer("FileTransferID["); //$NON-NLS-1$
 		b.append(toExternalForm());
 		b.append("]"); //$NON-NLS-1$
 		return b.toString();
