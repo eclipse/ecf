@@ -387,21 +387,9 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			}
 		});
 
-		rootTabFolder.addCTabFolder2Listener(new CTabFolder2Listener() {
+		rootTabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
 			public void close(CTabFolderEvent event) {
 				event.doit = closeTabItem((CTabItem) event.item);
-			}
-
-			public void maximize(CTabFolderEvent event) {
-			}
-
-			public void minimize(CTabFolderEvent event) {
-			}
-
-			public void restore(CTabFolderEvent event) {
-			}
-
-			public void showList(CTabFolderEvent event) {
 			}
 		});
 	}
@@ -984,7 +972,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE))
 						appendText(chatRoomTab, getOutputText(), new ChatLine(NLS.bind(Messages.ChatRoomManagerView_ENTERED_MESSAGE, getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.add(p);
-					chatRoomParticipantsLabel.setText(NLS.bind(Messages.ChatRoomManagerView_USERS_IN_CHAT_ROOM, String.valueOf(chatRoomParticipantViewer.getTable().getItems().length)));
+					chatRoomParticipantsLabel.setText(NLS.bind(Messages.ChatRoomManagerView_USERS_IN_CHAT_ROOM, String.valueOf(chatRoomContainer.getChatRoomParticipants().length)));
 				}
 			}
 		}
@@ -1016,7 +1004,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE))
 						appendText(chatRoomTab, getOutputText(), new ChatLine(NLS.bind(Messages.ChatRoomManagerView_LEFT_MESSAGE, getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.remove(p);
-					chatRoomParticipantsLabel.setText(NLS.bind(Messages.ChatRoomManagerView_USERS_IN_CHAT_ROOM, String.valueOf(chatRoomParticipantViewer.getTable().getItems().length)));
+					chatRoomParticipantsLabel.setText(NLS.bind(Messages.ChatRoomManagerView_USERS_IN_CHAT_ROOM, String.valueOf(chatRoomContainer.getChatRoomParticipants().length)));
 				}
 			}
 		}
@@ -1028,7 +1016,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				if (o != null)
 					chatRoomParticipantViewer.remove(o);
 			}
-			chatRoomParticipantsLabel.setText(NLS.bind(Messages.ChatRoomManagerView_USERS_IN_CHAT_ROOM, String.valueOf(chatRoomParticipantViewer.getTable().getItems().length)));
+			chatRoomParticipantsLabel.setText(NLS.bind(Messages.ChatRoomManagerView_USERS_IN_CHAT_ROOM, String.valueOf(chatRoomContainer.getChatRoomParticipants().length)));
 		}
 	}
 
