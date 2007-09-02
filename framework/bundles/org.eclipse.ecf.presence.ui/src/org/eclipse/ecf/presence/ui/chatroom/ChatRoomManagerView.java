@@ -15,16 +15,9 @@ package org.eclipse.ecf.presence.ui.chatroom;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-
+import java.util.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Preferences;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
@@ -32,85 +25,38 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.internal.presence.ui.Activator;
-import org.eclipse.ecf.internal.presence.ui.ChatLine;
-import org.eclipse.ecf.internal.presence.ui.Messages;
+import org.eclipse.ecf.internal.presence.ui.*;
 import org.eclipse.ecf.internal.presence.ui.preferences.PreferenceConstants;
-import org.eclipse.ecf.presence.IIMMessageEvent;
-import org.eclipse.ecf.presence.IIMMessageListener;
-import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
-import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
-import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
-import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.ecf.presence.*;
+import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.presence.im.IChatID;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.*;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Listener;
-import org.eclipse.swt.custom.CTabFolderEvent;
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.ScrollBar;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IActionFilter;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPreferenceConstants;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.custom.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.part.ViewPart;
 
-public class ChatRoomManagerView extends ViewPart implements
-		IChatRoomInvitationListener {
+public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitationListener {
 
 	private static final String ATSIGN = "@"; //$NON-NLS-1$
 
 	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView"; //$NON-NLS-1$
 
 	public static final String PARTICIPANTS_MENU_ID = "org.eclipse.ecf.presence.ui.chatroom.participantsView"; //$NON-NLS-1$ 
-	
+
 	private static final int RATIO_WRITE_PANE = 1;
 
 	private static final int RATIO_READ_PANE = 9;
@@ -118,7 +64,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	private static final int RATIO_READ_WRITE_PANE = 85;
 
 	private static final int RATIO_PRESENCE_PANE = 15;
-	
+
 	protected static final int DEFAULT_INPUT_HEIGHT = 25;
 
 	protected static final int DEFAULT_INPUT_SEPARATOR = 5;
@@ -130,7 +76,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	private IChatRoomViewCloseListener rootCloseListener = null;
 
 	private IChatRoomMessageSender rootMessageSender = null;
-	
+
 	/**
 	 * UI independent renderer, that is aware of displaying any special fragments
 	 * of message, like formatting, graphical attachments, emotional content, etc.
@@ -152,7 +98,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	private Hashtable chatRooms = new Hashtable();
 
 	private IChatRoomCommandListener commandListener = null;
-	
+
 	private IChatRoomContainer container = null;
 
 	private String localUserName = Messages.ChatRoomManagerView_DEFAULT_USER;
@@ -170,6 +116,8 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		private Text inputText;
 
+		private Label participantsNumberLabel;
+
 		private TableViewer participantsTable;
 
 		private Action tabSelectAll;
@@ -183,8 +131,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			this(true, parent, name, null);
 		}
 
-		ChatRoomTab(boolean withParticipantsList, CTabFolder parent,
-				String name, KeyListener keyListener) {
+		ChatRoomTab(boolean withParticipantsList, CTabFolder parent, String name, KeyListener keyListener) {
 			withParticipants = withParticipantsList;
 			tabItem = new CTabItem(parent, SWT.NULL);
 			tabItem.setText(name);
@@ -192,10 +139,18 @@ public class ChatRoomManagerView extends ViewPart implements
 				fullChat = new SashForm(parent, SWT.HORIZONTAL);
 				fullChat.setLayout(new FillLayout());
 				Composite memberComp = new Composite(fullChat, SWT.NONE);
-				memberComp.setLayout(new FillLayout());
-				participantsTable = new TableViewer(memberComp, SWT.BORDER
-						| SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+				GridLayout layout = new GridLayout(1, true);
+				layout.marginWidth = 0;
+				layout.marginHeight = 0;
+				memberComp.setLayout(layout);
+
+				participantsNumberLabel = new Label(memberComp, SWT.BORDER | SWT.READ_ONLY);
+				participantsNumberLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+				participantsNumberLabel.setAlignment(SWT.CENTER);
+				participantsTable = new TableViewer(memberComp, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
 				participantsTable.setSorter(new ViewerSorter());
+				participantsTable.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
 				Composite rightComp = new Composite(fullChat, SWT.NONE);
 				rightComp.setLayout(new FillLayout());
 				rightSash = new SashForm(rightComp, SWT.VERTICAL);
@@ -206,15 +161,12 @@ public class ChatRoomManagerView extends ViewPart implements
 			outputText.setEditable(false);
 			outputText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-			inputText = new Text(rightSash, SWT.BORDER | SWT.MULTI | SWT.WRAP
-					| SWT.V_SCROLL);
+			inputText = new Text(rightSash, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 			if (keyListener != null)
 				inputText.addKeyListener(keyListener);
-			rightSash
-					.setWeights(new int[] { RATIO_READ_PANE, RATIO_WRITE_PANE });
+			rightSash.setWeights(new int[] {RATIO_READ_PANE, RATIO_WRITE_PANE});
 			if (withParticipants) {
-				fullChat.setWeights(new int[] { RATIO_PRESENCE_PANE,
-						RATIO_READ_WRITE_PANE });
+				fullChat.setWeights(new int[] {RATIO_PRESENCE_PANE, RATIO_READ_WRITE_PANE});
 				tabItem.setControl(fullChat);
 			} else
 				tabItem.setControl(rightSash);
@@ -226,7 +178,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			if (withParticipants) {
 				hookParticipantsContextMenu();
 			}
-			
+
 			StyledText st = getOutputText();
 			if (st != null) {
 				ScrollBar vsb = st.getVerticalBar();
@@ -237,9 +189,11 @@ public class ChatRoomManagerView extends ViewPart implements
 							StyledText st = getOutputText();
 							if (st != null) {
 								ScrollBar vsb = st.getVerticalBar();
-								if (vsb != null) vsb.removeSelectionListener(scrollSelectionListener);
+								if (vsb != null)
+									vsb.removeSelectionListener(scrollSelectionListener);
 							}
-						}});
+						}
+					});
 				}
 			}
 
@@ -255,7 +209,7 @@ public class ChatRoomManagerView extends ViewPart implements
 					makeTabItemNormal();
 				}
 			}
-			
+
 		};
 
 		protected void makeTabItemBold() {
@@ -270,43 +224,23 @@ public class ChatRoomManagerView extends ViewPart implements
 			CTabItem item = tabItem;
 			Font oldFont = item.getFont();
 			FontData[] fd = oldFont.getFontData();
-			item.setFont(new Font(oldFont.getDevice(), fd[0].getName(), fd[0]
-					.getHeight(), (bold) ? SWT.BOLD : SWT.NORMAL));
+			item.setFont(new Font(oldFont.getDevice(), fd[0].getName(), fd[0].getHeight(), (bold) ? SWT.BOLD : SWT.NORMAL));
 		}
-
 
 		private StyledText createStyledTextWidget(Composite parent) {
 			try {
-				SourceViewer result = new SourceViewer(parent, null, null,
-						true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
-								| SWT.READ_ONLY);
-				result.configure(new TextSourceViewerConfiguration(EditorsUI
-						.getPreferenceStore()));
+				SourceViewer result = new SourceViewer(parent, null, null, true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+				result.configure(new TextSourceViewerConfiguration(EditorsUI.getPreferenceStore()));
 				result.setDocument(new Document());
 				return result.getTextWidget();
 			} catch (Exception e) {
-				Activator
-						.getDefault()
-						.getLog()
-						.log(
-								new Status(
-										IStatus.WARNING,
-										Activator.PLUGIN_ID,
-										IStatus.WARNING,
-										Messages.ChatRoomManagerView_WARNING_HYPERLINKING_NOT_AVAILABLE,
-										e));
-				return new StyledText(parent, SWT.BORDER | SWT.WRAP
-						| SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+				Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, Messages.ChatRoomManagerView_WARNING_HYPERLINKING_NOT_AVAILABLE, e));
+				return new StyledText(parent, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
 			}
 		}
 
-
 		protected void outputClear() {
-			if (MessageDialog
-					.openConfirm(
-							null,
-							Messages.ChatRoomManagerView_CONFIRM_CLEAR_TEXT_OUTPUT_TITLE,
-							Messages.ChatRoomManagerView_CONFIRM_CLEAR_TEXT_OUTPUT_MESSAGE)) {
+			if (MessageDialog.openConfirm(null, Messages.ChatRoomManagerView_CONFIRM_CLEAR_TEXT_OUTPUT_TITLE, Messages.ChatRoomManagerView_CONFIRM_CLEAR_TEXT_OUTPUT_MESSAGE)) {
 				outputText.setText(""); //$NON-NLS-1$
 			}
 		}
@@ -329,7 +263,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		}
 
 		private void hookContextMenu() {
-			MenuManager menuMgr = new MenuManager(); 
+			MenuManager menuMgr = new MenuManager();
 			menuMgr.setRemoveAllWhenShown(true);
 			menuMgr.addMenuListener(new IMenuListener() {
 				public void menuAboutToShow(IMenuManager manager) {
@@ -340,35 +274,29 @@ public class ChatRoomManagerView extends ViewPart implements
 			outputText.setMenu(menu);
 			ISelectionProvider selectionProvider = new ISelectionProvider() {
 
-				public void addSelectionChangedListener(
-						ISelectionChangedListener listener) {
+				public void addSelectionChangedListener(ISelectionChangedListener listener) {
 				}
 
 				public ISelection getSelection() {
-					ISelection selection = new TextSelection(outputText
-							.getSelectionRange().x, outputText
-							.getSelectionRange().y);
+					ISelection selection = new TextSelection(outputText.getSelectionRange().x, outputText.getSelectionRange().y);
 
 					return selection;
 				}
 
-				public void removeSelectionChangedListener(
-						ISelectionChangedListener listener) {
+				public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 				}
 
 				public void setSelection(ISelection selection) {
 					if (selection instanceof ITextSelection) {
 						ITextSelection textSelection = (ITextSelection) selection;
-						outputText.setSelection(textSelection.getOffset(),
-								textSelection.getOffset()
-										+ textSelection.getLength());
+						outputText.setSelection(textSelection.getOffset(), textSelection.getOffset() + textSelection.getLength());
 					}
 				}
 
 			};
 			getSite().registerContextMenu(menuMgr, selectionProvider);
 		}
-		
+
 		private void hookParticipantsContextMenu() {
 			MenuManager menuMgr = new MenuManager();
 			menuMgr.addMenuListener(new IMenuListener() {
@@ -382,7 +310,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			control.setMenu(menu);
 			getSite().registerContextMenu(PARTICIPANTS_MENU_ID, menuMgr, participantsTable);
 		}
-		
+
 		private void makeActions() {
 			tabSelectAll = new Action() {
 				public void run() {
@@ -390,8 +318,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				}
 			};
 			tabSelectAll.setText(Messages.ChatRoomManagerView_SELECT_ALL_TEXT);
-			tabSelectAll
-					.setToolTipText(Messages.ChatRoomManagerView_SELECT_ALL_TOOLTIP);
+			tabSelectAll.setToolTipText(Messages.ChatRoomManagerView_SELECT_ALL_TOOLTIP);
 			tabSelectAll.setAccelerator(SWT.CTRL | 'A');
 			tabCopy = new Action() {
 				public void run() {
@@ -401,9 +328,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			tabCopy.setText(Messages.ChatRoomManagerView_COPY_TEXT);
 			tabCopy.setToolTipText(Messages.ChatRoomManagerView_COPY_TOOLTIP);
 			tabCopy.setAccelerator(SWT.CTRL | 'C');
-			tabCopy.setImageDescriptor(PlatformUI.getWorkbench()
-					.getSharedImages().getImageDescriptor(
-							ISharedImages.IMG_TOOL_COPY));
+			tabCopy.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 			tabClear = new Action() {
 				public void run() {
 					outputClear();
@@ -417,9 +342,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				}
 			};
 			tabPaste.setAccelerator(SWT.CTRL | 'V');
-			tabPaste.setImageDescriptor(PlatformUI.getWorkbench()
-					.getSharedImages().getImageDescriptor(
-							ISharedImages.IMG_TOOL_PASTE));
+			tabPaste.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
 
 		}
 
@@ -430,6 +353,10 @@ public class ChatRoomManagerView extends ViewPart implements
 		protected void setKeyListener(KeyListener listener) {
 			if (listener != null)
 				inputText.addKeyListener(listener);
+		}
+
+		protected Label getParticipantsLabel() {
+			return participantsNumberLabel;
 		}
 
 		protected TableViewer getParticipantsViewer() {
@@ -447,27 +374,18 @@ public class ChatRoomManagerView extends ViewPart implements
 	public void createPartControl(Composite parent) {
 		Composite rootComposite = new Composite(parent, SWT.NONE);
 		rootComposite.setLayout(new FillLayout());
-		boolean useTraditionalTabFolder = PlatformUI
-				.getPreferenceStore()
-				.getBoolean(
-						IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS);
+		boolean useTraditionalTabFolder = PlatformUI.getPreferenceStore().getBoolean(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS);
 		rootTabFolder = new CTabFolder(rootComposite, SWT.NORMAL | SWT.CLOSE);
 		rootTabFolder.setUnselectedCloseVisible(false);
 		rootTabFolder.setSimple(useTraditionalTabFolder);
-		PlatformUI.getPreferenceStore().addPropertyChangeListener(
-				new IPropertyChangeListener() {
-					public void propertyChange(PropertyChangeEvent event) {
-						if (event
-								.getProperty()
-								.equals(
-										IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS)
-								&& !rootTabFolder.isDisposed()) {
-							rootTabFolder.setSimple(((Boolean) event
-									.getNewValue()).booleanValue());
-							rootTabFolder.redraw();
-						}
-					}
-				});
+		PlatformUI.getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getProperty().equals(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS) && !rootTabFolder.isDisposed()) {
+					rootTabFolder.setSimple(((Boolean) event.getNewValue()).booleanValue());
+					rootTabFolder.redraw();
+				}
+			}
+		});
 
 		rootTabFolder.addCTabFolder2Listener(new CTabFolder2Listener() {
 			public void close(CTabFolderEvent event) {
@@ -493,14 +411,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		if (chatRoom == null) {
 			return true;
 		} else {
-			if (MessageDialog
-					.openQuestion(
-							getSite().getShell(),
-							Messages.ChatRoomManagerView_CLOSE_CHAT_ROOM_TITLE,
-							NLS
-									.bind(
-											Messages.ChatRoomManagerView_CLOSE_CHAT_ROOM_MESSAGE,
-											tabItem.getText()))) {
+			if (MessageDialog.openQuestion(getSite().getShell(), Messages.ChatRoomManagerView_CLOSE_CHAT_ROOM_TITLE, NLS.bind(Messages.ChatRoomManagerView_CLOSE_CHAT_ROOM_MESSAGE, tabItem.getText()))) {
 				chatRoom.chatRoomDisconnect();
 				return true;
 			} else
@@ -519,10 +430,10 @@ public class ChatRoomManagerView extends ViewPart implements
 				return chatRoom.chatRoomContainer;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	private ChatRoom findChatRoomForTabItem(CTabItem tabItem) {
 		for (Iterator i = chatRooms.values().iterator(); i.hasNext();) {
 			ChatRoom cr = (ChatRoom) i.next();
@@ -546,55 +457,35 @@ public class ChatRoomManagerView extends ViewPart implements
 			return rootChannelTab.getOutputText();
 	}
 
-	public void initializeWithoutManager(String localUserName, String hostName,
-			final IChatRoomCommandListener commandListener,
-			final IChatRoomViewCloseListener closeListener) {
-		initializeWithManager(localUserName, hostName, null, commandListener,
-				closeListener);
+	public void initializeWithoutManager(String localUserName, String hostName, final IChatRoomCommandListener commandListener, final IChatRoomViewCloseListener closeListener) {
+		initializeWithManager(localUserName, hostName, null, commandListener, closeListener);
 	}
 
-	public void initializeWithManager(String localUserName, String hostName,
-			final IChatRoomContainer rootChatRoomContainer,
-			final IChatRoomCommandListener commandListener,
-			final IChatRoomViewCloseListener closeListener) {
-		ChatRoomManagerView.this.localUserName = (localUserName == null) ? Messages.ChatRoomManagerView_DEFAULT_USER
-				: localUserName;
-		ChatRoomManagerView.this.hostName = (hostName == null) ? Messages.ChatRoomManagerView_DEFAULT_HOST
-				: hostName;
+	public void initializeWithManager(String localUserName, String hostName, final IChatRoomContainer rootChatRoomContainer, final IChatRoomCommandListener commandListener, final IChatRoomViewCloseListener closeListener) {
+		ChatRoomManagerView.this.localUserName = (localUserName == null) ? Messages.ChatRoomManagerView_DEFAULT_USER : localUserName;
+		ChatRoomManagerView.this.hostName = (hostName == null) ? Messages.ChatRoomManagerView_DEFAULT_HOST : hostName;
 		ChatRoomManagerView.this.rootCloseListener = closeListener;
 		ChatRoomManagerView.this.commandListener = commandListener;
 		String viewTitle = localUserName + ATSIGN + hostName;
-		ChatRoomManagerView.this.setPartName(NLS.bind(
-				Messages.ChatRoomManagerView_VIEW_TITLE, viewTitle));
-		ChatRoomManagerView.this
-				.setTitleToolTip(Messages.ChatRoomManagerView_VIEW_TITLE_HOST_PREFIX
-						+ ChatRoomManagerView.this.hostName);
+		ChatRoomManagerView.this.setPartName(NLS.bind(Messages.ChatRoomManagerView_VIEW_TITLE, viewTitle));
+		ChatRoomManagerView.this.setTitleToolTip(Messages.ChatRoomManagerView_VIEW_TITLE_HOST_PREFIX + ChatRoomManagerView.this.hostName);
 		if (rootChatRoomContainer != null) {
 			ChatRoomManagerView.this.container = rootChatRoomContainer;
-			ChatRoomManagerView.this.rootMessageSender = rootChatRoomContainer
-					.getChatRoomMessageSender();
-			rootChannelTab = new ChatRoomTab(false, rootTabFolder,
-					ChatRoomManagerView.this.hostName, new KeyListener() {
-						public void keyPressed(KeyEvent evt) {
-							handleKeyPressed(evt);
-						}
+			ChatRoomManagerView.this.rootMessageSender = rootChatRoomContainer.getChatRoomMessageSender();
+			rootChannelTab = new ChatRoomTab(false, rootTabFolder, ChatRoomManagerView.this.hostName, new KeyListener() {
+				public void keyPressed(KeyEvent evt) {
+					handleKeyPressed(evt);
+				}
 
-						public void keyReleased(KeyEvent evt) {
-						}
-					});
+				public void keyReleased(KeyEvent evt) {
+				}
+			});
 			makeActions();
 			hookContextMenu();
 			if (rootChatRoomContainer.getConnectedID() == null) {
 				StyledText outputText = getRootTextOutput();
 				if (!outputText.isDisposed())
-					outputText
-							.setText(new SimpleDateFormat(
-									Messages.ChatRoomManagerView_CONNECT_DATE_TIME_FORMAT)
-									.format(new Date())
-									+ NLS
-											.bind(
-													Messages.ChatRoomManagerView_CONNECT_MESSAGE,
-													viewTitle));
+					outputText.setText(new SimpleDateFormat(Messages.ChatRoomManagerView_CONNECT_DATE_TIME_FORMAT).format(new Date()) + NLS.bind(Messages.ChatRoomManagerView_CONNECT_MESSAGE, viewTitle));
 			}
 		}
 		setEnabled(false);
@@ -633,9 +524,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				if (rootDisposed)
 					return;
 				setEnabled(false);
-				setPartName(NLS.bind(
-						Messages.ChatRoomManagerView_VIEW_DISABLED_NAME,
-						getPartName()));
+				setPartName(NLS.bind(Messages.ChatRoomManagerView_VIEW_DISABLED_NAME, getPartName()));
 			}
 		});
 	}
@@ -650,8 +539,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		return null;
 	}
 
-	protected void doJoinRoom(final IChatRoomInfo roomInfo,
-			final String password) {
+	protected void doJoinRoom(final IChatRoomInfo roomInfo, final String password) {
 		final ID targetRoomID = roomInfo.getRoomID();
 		final String targetRoomName = targetRoomID.getName();
 		// first, check to see if we already have it open. If so just activate
@@ -664,39 +552,34 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		// Then we create a new chatRoomContainer from the roomInfo
 		try {
-			final IChatRoomContainer chatRoomContainer = roomInfo
-					.createChatRoomContainer();
+			final IChatRoomContainer chatRoomContainer = roomInfo.createChatRoomContainer();
 
 			// Setup new user interface (new tab)
-			final ChatRoom chatroom = new ChatRoom(chatRoomContainer,
-					new ChatRoomTab(rootTabFolder, targetRoomName));
+			final ChatRoom chatroom = new ChatRoom(chatRoomContainer, new ChatRoomTab(rootTabFolder, targetRoomName));
 			// setup message listener
 			chatRoomContainer.addMessageListener(new IIMMessageListener() {
 				public void handleMessageEvent(IIMMessageEvent messageEvent) {
 					if (messageEvent instanceof IChatRoomMessageEvent) {
-						IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
-								.getChatRoomMessage();
+						IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
 						chatroom.handleMessage(m.getFromID(), m.getMessage());
 					}
 				}
 			});
 			// setup participant listener
-			chatRoomContainer
-					.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
-						public void handlePresenceUpdated(ID fromID,
-								IPresence presence) {
-							chatroom.handlePresence(fromID, presence);
-						}
+			chatRoomContainer.addChatRoomParticipantListener(new IChatRoomParticipantListener() {
+				public void handlePresenceUpdated(ID fromID, IPresence presence) {
+					chatroom.handlePresence(fromID, presence);
+				}
 
-						public void handleArrived(IUser participant) {
-						}
+				public void handleArrived(IUser participant) {
+				}
 
-						public void handleUpdated(IUser updatedParticipant) {
-						}
+				public void handleUpdated(IUser updatedParticipant) {
+				}
 
-						public void handleDeparted(IUser participant) {
-						}
-					});
+				public void handleDeparted(IUser participant) {
+				}
+			});
 			chatRoomContainer.addListener(new IContainerListener() {
 				public void handleEvent(IContainerEvent evt) {
 					if (evt instanceof IContainerDisconnectedEvent) {
@@ -708,32 +591,19 @@ public class ChatRoomManagerView extends ViewPart implements
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					try {
-						chatRoomContainer
-								.connect(targetRoomID, ConnectContextFactory
-										.createPasswordConnectContext(password));
+						chatRoomContainer.connect(targetRoomID, ConnectContextFactory.createPasswordConnectContext(password));
 						chatRooms.put(targetRoomName, chatroom);
 					} catch (Exception e) {
-						MessageDialog
-								.openError(
-										getSite().getShell(),
-										"Connect Error", //$NON-NLS-1$
-										NLS
-												.bind(
-														"Could not connect to {0}.\n\nError is {1}.", //$NON-NLS-1$
-														targetRoomName,
-														e.getLocalizedMessage()));
+						MessageDialog.openError(getSite().getShell(), "Connect Error", //$NON-NLS-1$
+								NLS.bind("Could not connect to {0}.\n\nError is {1}.", //$NON-NLS-1$
+										targetRoomName, e.getLocalizedMessage()));
 					}
 				}
 			});
 		} catch (Exception e) {
-			MessageDialog
-					.openError(getSite().getShell(),
-							"Container Create Error", //$NON-NLS-1$
-							NLS
-									.bind(
-											"Could not create chatRoomContainer for {0}.\n\nError is {1}.", //$NON-NLS-1$
-											targetRoomName, e
-													.getLocalizedMessage()));
+			MessageDialog.openError(getSite().getShell(), "Container Create Error", //$NON-NLS-1$
+					NLS.bind("Could not create chatRoomContainer for {0}.\n\nError is {1}.", //$NON-NLS-1$
+							targetRoomName, e.getLocalizedMessage()));
 		}
 	}
 
@@ -746,6 +616,8 @@ public class ChatRoomManagerView extends ViewPart implements
 		private IChatRoomMessageSender chatRoomMessageSender;
 
 		private IUser localUser;
+
+		private Label chatRoomParticipantsLabel;
 
 		private TableViewer chatRoomParticipantViewer = null;
 
@@ -807,7 +679,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		 * message, it is likely that the user is typing another user's name to
 		 * reference that person and not to direct the message to said person,
 		 * as such, the <code>nickCompletionSuffix</code> does not need to be
-		 * appeneded.
+		 * appended.
 		 */
 		private boolean isAtStart = false;
 
@@ -829,8 +701,9 @@ public class ChatRoomManagerView extends ViewPart implements
 			this.chatRoomTab = tabItem;
 			options = new ArrayList();
 			this.chatRoomTab.setKeyListener(this);
-			this.chatRoomParticipantViewer = this.chatRoomTab.getParticipantsViewer();
-				
+			this.chatRoomParticipantsLabel = tabItem.getParticipantsLabel();
+			this.chatRoomParticipantViewer = tabItem.getParticipantsViewer();
+
 			rootTabFolder.setUnselectedCloseVisible(true);
 
 			rootTabFolder.addSelectionListener(new SelectionListener() {
@@ -842,10 +715,11 @@ public class ChatRoomManagerView extends ViewPart implements
 					itemSelected = (CTabItem) e.item;
 					if (itemSelected == chatRoomTab.tabItem)
 						makeTabItemNormal();
-					if (itemSelected == rootChannelTab.tabItem) rootChannelTab.makeTabItemNormal();
+					if (itemSelected == rootChannelTab.tabItem)
+						rootChannelTab.makeTabItemNormal();
 				}
 			});
-			
+
 			StyledText st = getOutputText();
 			if (st != null) {
 				ScrollBar vsb = st.getVerticalBar();
@@ -856,13 +730,15 @@ public class ChatRoomManagerView extends ViewPart implements
 							StyledText st = getOutputText();
 							if (st != null) {
 								ScrollBar vsb = st.getVerticalBar();
-								if (vsb != null) vsb.removeSelectionListener(scrollSelectionListener);
+								if (vsb != null)
+									vsb.removeSelectionListener(scrollSelectionListener);
 							}
-						}});
+						}
+					});
 				}
 			}
 		}
-		
+
 		private SelectionListener scrollSelectionListener = new SelectionListener() {
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -873,7 +749,7 @@ public class ChatRoomManagerView extends ViewPart implements
 					makeTabItemNormal();
 				}
 			}
-			
+
 		};
 
 		protected void makeTabItemBold() {
@@ -888,8 +764,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			CTabItem item = chatRoomTab.tabItem;
 			Font oldFont = item.getFont();
 			FontData[] fd = oldFont.getFontData();
-			item.setFont(new Font(oldFont.getDevice(), fd[0].getName(), fd[0]
-					.getHeight(), (bold) ? SWT.BOLD : SWT.NORMAL));
+			item.setFont(new Font(oldFont.getDevice(), fd[0].getName(), fd[0].getHeight(), (bold) ? SWT.BOLD : SWT.NORMAL));
 		}
 
 		public void handleMessage(final ID fromID, final String messageBody) {
@@ -897,14 +772,12 @@ public class ChatRoomManagerView extends ViewPart implements
 				public void run() {
 					if (rootDisposed)
 						return;
-					appendText(chatRoomTab, getOutputText(), new ChatLine(messageBody,
-							new ChatRoomParticipant(fromID)));
+					appendText(chatRoomTab, getOutputText(), new ChatLine(messageBody, new ChatRoomParticipant(fromID)));
 				}
 			});
 		}
 
-		public void handleInvitationReceived(ID roomID, ID from,
-				String subject, String body) {
+		public void handleInvitationReceived(ID roomID, ID from, String subject, String body) {
 			// XXX TODO show UI for invitation
 		}
 
@@ -941,12 +814,10 @@ public class ChatRoomManagerView extends ViewPart implements
 					if (choice == options.size()) {
 						choice = 0;
 					}
-					
-					String append = ((String) options.get(choice++))
-							+ (isAtStart ? nickCompletionSuffix + " " : " "); //$NON-NLS-1$ //$NON-NLS-2$
+
+					String append = ((String) options.get(choice++)) + (isAtStart ? nickCompletionSuffix + " " : " "); //$NON-NLS-1$ //$NON-NLS-2$
 					// remove the previous completion proposal and insert the new one
-					inputText.setText(text.substring(0, caret - prefixLength) + append
-							+ text.substring(caret + nickRemainder));
+					inputText.setText(text.substring(0, caret - prefixLength) + append + text.substring(caret + nickRemainder));
 					// subtract the prefix so we remember where we were originally
 					nickRemainder = append.length() - prefixLength;
 					// set the caret position to be the place where the nickname
@@ -958,8 +829,7 @@ public class ChatRoomManagerView extends ViewPart implements
 					int count = pos - 1;
 					// keep looping until the whitespace has been identified or
 					// the beginning of the message has been reached
-					while (count > -1
-							&& !Character.isWhitespace(text.charAt(count))) {
+					while (count > -1 && !Character.isWhitespace(text.charAt(count))) {
 						count--;
 					}
 					count++;
@@ -974,8 +844,7 @@ public class ChatRoomManagerView extends ViewPart implements
 					}
 					// get all of the users in this room and store them if they
 					// start with the prefix that the user has typed
-					TableItem[] participants = chatRoomParticipantViewer
-							.getTable().getItems();
+					TableItem[] participants = chatRoomParticipantViewer.getTable().getItems();
 					for (int i = 0; i < participants.length; i++) {
 						String name = participants[i].getText();
 						// do a lowercase comparison because we should display options that differ in casing
@@ -995,10 +864,7 @@ public class ChatRoomManagerView extends ViewPart implements
 						// the prefix that has been entered and then replace it
 						// with the nickname option
 						inputText.setSelection(pos - prefixLength, pos);
-						inputText
-								.insert(nickname
-										+ (isAtStart ? nickCompletionSuffix
-												+ " " : " ")); //$NON-NLS-1$ //$NON-NLS-2$
+						inputText.insert(nickname + (isAtStart ? nickCompletionSuffix + " " : " ")); //$NON-NLS-1$ //$NON-NLS-2$
 					} else if (options.size() <= maximumCyclingOptions) {
 						// note that the user is currently cycling through
 						// options and also store the current caret position
@@ -1006,8 +872,7 @@ public class ChatRoomManagerView extends ViewPart implements
 						caret = pos;
 						choice = 0;
 						// insert the nickname after removing the prefix
-						String nickname = options.get(choice++)
-								+ (isAtStart ? nickCompletionSuffix + " " : " "); //$NON-NLS-1$ //$NON-NLS-2$
+						String nickname = options.get(choice++) + (isAtStart ? nickCompletionSuffix + " " : " "); //$NON-NLS-1$ //$NON-NLS-2$
 						// select the prefix of the proposal
 						inputText.setSelection(pos - prefixLength, pos);
 						// and then replace it with a proposal
@@ -1026,11 +891,9 @@ public class ChatRoomManagerView extends ViewPart implements
 							for (int i = 0; i < options.size(); i++) {
 								choices.append(options.get(i)).append(' ');
 							}
-							choices.delete(choices.length() - 1, choices
-									.length());
+							choices.delete(choices.length() - 1, choices.length());
 						}
-						appendText(chatRoomTab, getOutputText(), new ChatLine(choices
-								.toString()));
+						appendText(chatRoomTab, getOutputText(), new ChatLine(choices.toString()));
 					}
 				}
 			} else {
@@ -1048,13 +911,12 @@ public class ChatRoomManagerView extends ViewPart implements
 
 		protected void handleTextInput(String text) {
 			if (chatRoomMessageSender == null) {
-				MessageDialog.openError(getViewSite().getShell(),
-						Messages.ChatRoomManagerView_NOT_CONNECTED_TITLE,
-						Messages.ChatRoomManagerView_NOT_CONNECTED_MESSAGE);
+				MessageDialog.openError(getViewSite().getShell(), Messages.ChatRoomManagerView_NOT_CONNECTED_TITLE, Messages.ChatRoomManagerView_NOT_CONNECTED_MESSAGE);
 				return;
 			} else {
 				String output = processForCommand(chatRoomContainer, text);
-				if (output != null) sendMessageLine(output);
+				if (output != null)
+					sendMessageLine(output);
 			}
 		}
 
@@ -1080,8 +942,7 @@ public class ChatRoomManagerView extends ViewPart implements
 				public void run() {
 					if (rootDisposed)
 						return;
-					boolean isAdd = presence.getType().equals(
-							IPresence.Type.AVAILABLE);
+					boolean isAdd = presence.getType().equals(IPresence.Type.AVAILABLE);
 					ChatRoomParticipant p = new ChatRoomParticipant(fromID);
 					if (isAdd) {
 						if (localUser == null)
@@ -1118,14 +979,12 @@ public class ChatRoomManagerView extends ViewPart implements
 			if (p != null) {
 				ID id = p.getID();
 				if (id != null) {
-					Preferences prefs = Activator.getDefault()
-							.getPluginPreferences();
-					
-					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE)) 
-						appendText(chatRoomTab, getOutputText(), new ChatLine(NLS.bind(
-								Messages.ChatRoomManagerView_ENTERED_MESSAGE,
-								getUsernameFromID(id)), null));
+					Preferences prefs = Activator.getDefault().getPluginPreferences();
+
+					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE))
+						appendText(chatRoomTab, getOutputText(), new ChatLine(NLS.bind(Messages.ChatRoomManagerView_ENTERED_MESSAGE, getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.add(p);
+					chatRoomParticipantsLabel.setText(NLS.bind(Messages.ChatRoomManagerView_USERS_IN_CHAT_ROOM, String.valueOf(chatRoomParticipantViewer.getTable().getItems().length)));
 				}
 			}
 		}
@@ -1142,8 +1001,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		protected void removeLocalUser() {
 			// It's us that's gone away... so we're outta here
 			String title = getPartName();
-			setPartName(NLS.bind(
-					Messages.ChatRoomManagerView_VIEW_DISABLED_NAME, title));
+			setPartName(NLS.bind(Messages.ChatRoomManagerView_VIEW_DISABLED_NAME, title));
 			removeAllParticipants();
 			disconnect();
 			setEnabled(false);
@@ -1153,14 +1011,12 @@ public class ChatRoomManagerView extends ViewPart implements
 			if (p != null) {
 				ID id = p.getID();
 				if (id != null) {
-					Preferences prefs = Activator.getDefault()
-					.getPluginPreferences();
-			
-					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE)) 
-						appendText(chatRoomTab,getOutputText(), new ChatLine(NLS.bind(
-								Messages.ChatRoomManagerView_LEFT_MESSAGE,
-								getUsernameFromID(id)), null));
+					Preferences prefs = Activator.getDefault().getPluginPreferences();
+
+					if (prefs.getBoolean(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE))
+						appendText(chatRoomTab, getOutputText(), new ChatLine(NLS.bind(Messages.ChatRoomManagerView_LEFT_MESSAGE, getUsernameFromID(id)), null));
 					chatRoomParticipantViewer.remove(p);
+					chatRoomParticipantsLabel.setText(NLS.bind(Messages.ChatRoomManagerView_USERS_IN_CHAT_ROOM, String.valueOf(chatRoomParticipantViewer.getTable().getItems().length)));
 				}
 			}
 		}
@@ -1172,23 +1028,21 @@ public class ChatRoomManagerView extends ViewPart implements
 				if (o != null)
 					chatRoomParticipantViewer.remove(o);
 			}
+			chatRoomParticipantsLabel.setText(NLS.bind(Messages.ChatRoomManagerView_USERS_IN_CHAT_ROOM, String.valueOf(chatRoomParticipantViewer.getTable().getItems().length)));
 		}
 	}
 
 	protected void handleTextInput(String text) {
 		if (rootMessageSender == null) {
-			MessageDialog.openError(getViewSite().getShell(),
-					Messages.ChatRoomManagerView_NOT_CONNECTED_TITLE,
-					Messages.ChatRoomManagerView_NOT_CONNECTED_MESSAGE);
-			return;
+			MessageDialog.openError(getViewSite().getShell(), Messages.ChatRoomManagerView_NOT_CONNECTED_TITLE, Messages.ChatRoomManagerView_NOT_CONNECTED_MESSAGE);
 		} else {
 			String output = processForCommand(null, text);
-			if (output != null) sendMessageLine(output);
+			if (output != null)
+				sendMessageLine(output);
 		}
 	}
 
-	protected String processForCommand(IChatRoomContainer chatRoomContainer,
-			String text) {
+	protected String processForCommand(IChatRoomContainer chatRoomContainer, String text) {
 		IChatRoomCommandListener l = commandListener;
 		if (l != null)
 			return l.handleCommand(chatRoomContainer, text);
@@ -1235,8 +1089,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	protected String getMessageString(ID fromID, String text) {
-		return NLS.bind(Messages.ChatRoomManagerView_MESSAGE, fromID.getName(),
-				text);
+		return NLS.bind(Messages.ChatRoomManagerView_MESSAGE, fromID.getName(), text);
 	}
 
 	public void handleMessage(final ID fromID, final String messageBody) {
@@ -1244,9 +1097,9 @@ public class ChatRoomManagerView extends ViewPart implements
 			public void run() {
 				if (rootDisposed)
 					return;
-				appendText(rootChannelTab, getRootTextOutput(), new ChatLine(messageBody,
-						new ChatRoomParticipant(fromID)));
-				if (rootChannelTab != null) rootChannelTab.makeTabItemBold();
+				appendText(rootChannelTab, getRootTextOutput(), new ChatLine(messageBody, new ChatRoomParticipant(fromID)));
+				if (rootChannelTab != null)
+					rootChannelTab.makeTabItemBold();
 			}
 		});
 	}
@@ -1345,7 +1198,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		}
 
 		public boolean testAttribute(Object target, String name, String value) {
-			if(name.equals("scheme")) { //$NON-NLS-1$
+			if (name.equals("scheme")) { //$NON-NLS-1$
 				IChatRoomContainer container = ChatRoomManagerView.this.container;
 				String scheme = container.getConnectedID().getNamespace().getScheme();
 				return scheme.equalsIgnoreCase(value);
@@ -1373,17 +1226,15 @@ public class ChatRoomManagerView extends ViewPart implements
 	protected void removeLocalUser() {
 		// It's us that's gone away... so we're outta here
 		String title = getPartName();
-		setPartName(NLS.bind(Messages.ChatRoomManagerView_VIEW_DISABLED_NAME,
-				title));
+		setPartName(NLS.bind(Messages.ChatRoomManagerView_VIEW_DISABLED_NAME, title));
 		disconnect();
 		setEnabled(false);
 	}
 
-	public void handleInvitationReceived(ID roomID, ID from, String subject,
-			String body) {
+	public void handleInvitationReceived(ID roomID, ID from, String subject, String body) {
 		// XXX TODO
 	}
-	
+
 	private boolean isLastOutputInvisible(StyledText chatText) {
 		Point locAtEnd = chatText.getLocationAtOffset(chatText.getText().length());
 		Rectangle bounds = chatText.getBounds();
@@ -1393,55 +1244,57 @@ public class ChatRoomManagerView extends ViewPart implements
 	private void scrollToEnd(StyledText chatText) {
 		chatText.setSelection(chatText.getText().length());
 	}
-	
+
 	protected void appendText(ChatRoomTab chatRoomTab, StyledText st, ChatLine text) {
 		if (st == null || text == null) {
 			return;
 		}
-		
+
 		boolean isAtEndBeforeAppend = !isLastOutputInvisible(st);
-		
+
 		String originator = null;
 		if (text.getOriginator() != null) {
-			originator = text.getOriginator().getNickname(); 
+			originator = text.getOriginator().getNickname();
 		}
-		
-		if (messageRenderer == null) messageRenderer = new MessageRenderer();
-		
+
+		if (messageRenderer == null)
+			messageRenderer = new MessageRenderer();
+
 		String output = messageRenderer.render(text.getText(), originator, localUserName);
 		StyleRange[] ranges = messageRenderer.getStyleRanges();
-		
+
 		if (output == null) {
 			return;
 		}
-		
+
 		int startRange = st.getText().length();
-			
+
 		if (!text.isNoCRLF()) {
 			output += "\n"; //$NON-NLS-1$
 		}
-		
+
 		st.append(output);
-		
+
 		if (ranges != null) {
 
 			// set all ranges to start as message line starts
 			for (int i = 0; i < ranges.length; i++) {
 				ranges[i].start += startRange;
-			} 	
+			}
 			st.replaceStyleRanges(startRange, output.length(), ranges);
 		}
-		
-		if (isAtEndBeforeAppend) scrollToEnd(st);
-		
-		if (isCurrentlyActive(chatRoomTab)) chatRoomTab.makeTabItemNormal();
-		else chatRoomTab.makeTabItemBold();
+
+		if (isAtEndBeforeAppend)
+			scrollToEnd(st);
+
+		if (isCurrentlyActive(chatRoomTab))
+			chatRoomTab.makeTabItemNormal();
+		else
+			chatRoomTab.makeTabItemBold();
 	}
 
 	protected void outputClear() {
-		if (MessageDialog.openConfirm(null,
-				Messages.ChatRoomManagerView_CLEAR_CONFIRM_TITLE,
-				Messages.ChatRoomManagerView_CLEAR_CONFIRM_MESSAGE)) {
+		if (MessageDialog.openConfirm(null, Messages.ChatRoomManagerView_CLEAR_CONFIRM_TITLE, Messages.ChatRoomManagerView_CLEAR_CONFIRM_MESSAGE)) {
 			getRootTextOutput().setText(""); //$NON-NLS-1$
 		}
 	}
@@ -1468,8 +1321,7 @@ public class ChatRoomManagerView extends ViewPart implements
 			}
 		};
 		outputSelectAll.setText(Messages.ChatRoomManagerView_SELECT_ALL_TEXT);
-		outputSelectAll
-				.setToolTipText(Messages.ChatRoomManagerView_SELECT_ALL_TOOLTIP);
+		outputSelectAll.setToolTipText(Messages.ChatRoomManagerView_SELECT_ALL_TOOLTIP);
 		outputSelectAll.setAccelerator(SWT.CTRL | 'A');
 		outputCopy = new Action() {
 			public void run() {
@@ -1479,9 +1331,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		outputCopy.setText(Messages.ChatRoomManagerView_COPY_TEXT);
 		outputCopy.setToolTipText(Messages.ChatRoomManagerView_COPY_TOOLTIP);
 		outputCopy.setAccelerator(SWT.CTRL | 'C');
-		outputCopy.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_COPY));
+		outputCopy.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 		outputClear = new Action() {
 			public void run() {
 				outputClear();
@@ -1497,9 +1347,7 @@ public class ChatRoomManagerView extends ViewPart implements
 		outputPaste.setText(Messages.ChatRoomManagerView_PASTE_TEXT);
 		outputPaste.setToolTipText(Messages.ChatRoomManagerView_PASTE_TOOLTIP);
 		outputPaste.setAccelerator(SWT.CTRL | 'V');
-		outputPaste.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_PASTE));
+		outputPaste.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
@@ -1512,7 +1360,7 @@ public class ChatRoomManagerView extends ViewPart implements
 	}
 
 	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager(); 
+		MenuManager menuMgr = new MenuManager();
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
@@ -1524,30 +1372,24 @@ public class ChatRoomManagerView extends ViewPart implements
 		outputText.setMenu(menu);
 		ISelectionProvider selectionProvider = new ISelectionProvider() {
 
-			public void addSelectionChangedListener(
-					ISelectionChangedListener listener) {
+			public void addSelectionChangedListener(ISelectionChangedListener listener) {
 			}
 
 			public ISelection getSelection() {
 				StyledText outputText = getRootTextOutput();
-				ISelection selection = new TextSelection(outputText
-						.getSelectionRange().x,
-						outputText.getSelectionRange().y);
+				ISelection selection = new TextSelection(outputText.getSelectionRange().x, outputText.getSelectionRange().y);
 
 				return selection;
 			}
 
-			public void removeSelectionChangedListener(
-					ISelectionChangedListener listener) {
+			public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 			}
 
 			public void setSelection(ISelection selection) {
-				StyledText outputText = getRootTextOutput();
 				if (selection instanceof ITextSelection) {
 					ITextSelection textSelection = (ITextSelection) selection;
-					outputText.setSelection(textSelection.getOffset(),
-							textSelection.getOffset()
-									+ textSelection.getLength());
+					StyledText outputText = getRootTextOutput();
+					outputText.setSelection(textSelection.getOffset(), textSelection.getOffset() + textSelection.getLength());
 				}
 			}
 
@@ -1558,12 +1400,13 @@ public class ChatRoomManagerView extends ViewPart implements
 	public void setMessageRenderer(IMessageRenderer defaultMessageRenderer) {
 		this.messageRenderer = defaultMessageRenderer;
 	}
-	
+
 	private boolean isCurrentlyActive(ChatRoomTab chatRoomTab) {
 		int selected = rootTabFolder.getSelectionIndex();
 		if (selected != -1) {
 			CTabItem item = rootTabFolder.getItem(selected);
-			if (item == chatRoomTab.tabItem) return true;
+			if (item == chatRoomTab.tabItem)
+				return true;
 		}
 		return false;
 	}

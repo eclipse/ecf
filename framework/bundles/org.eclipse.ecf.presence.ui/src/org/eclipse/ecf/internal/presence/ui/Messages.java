@@ -93,6 +93,8 @@ public class Messages extends NLS {
 
 	public static String ChatRoomManagerView_WARNING_HYPERLINKING_NOT_AVAILABLE;
 
+	public static String ChatRoomManagerView_USERS_IN_CHAT_ROOM;
+
 	public static String ChatRoomSelectionDialog_ACCOUNT_COLUMN;
 
 	public static String ChatRoomSelectionDialog_DESCRIPTION_COLUMN;
