@@ -11,6 +11,7 @@
 package org.eclipse.ecf.presence.chatroom;
 
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 
@@ -61,8 +62,7 @@ public interface IChatRoomContainer extends IContainer {
 	 * @param participantListener
 	 *            to add. Must not be <code>null</code>.
 	 */
-	public void addChatRoomParticipantListener(
-			IChatRoomParticipantListener participantListener);
+	public void addChatRoomParticipantListener(IChatRoomParticipantListener participantListener);
 
 	/**
 	 * Remove chat room participant listener.
@@ -71,8 +71,7 @@ public interface IChatRoomContainer extends IContainer {
 	 *            the participant listener to remove. Must not be
 	 *            <code>null</code>.
 	 */
-	public void removeChatRoomParticipantListener(
-			IChatRoomParticipantListener participantListener);
+	public void removeChatRoomParticipantListener(IChatRoomParticipantListener participantListener);
 
 	/**
 	 * Add chat room admin listener to listen for room admin changes.
@@ -90,4 +89,11 @@ public interface IChatRoomContainer extends IContainer {
 	 */
 	public void removeChatRoomAdminListener(IChatRoomAdminListener adminListener);
 
+	/**
+	 * Returns an array of IDs of current chatroom participants.  
+	 * 
+	 * @return ID[] of chatroom participants.  If no participants in chat room, will return
+	 * an empty array.  Will not return <code>null</code>
+	 */
+	public ID[] getChatRoomParticipants();
 }
