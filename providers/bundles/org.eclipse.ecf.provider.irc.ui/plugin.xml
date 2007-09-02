@@ -75,5 +75,28 @@
          </visibility>
       </viewerContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.themes">
+      <colorDefinition
+            categoryId="org.eclipse.ecf.presence.ui.themeElementCategory"
+            defaultsTo="org.eclipse.ecf.presence.ui.sentColor"
+            id="org.eclipse.ecf.presence.irc.ui.meColor"
+            isEditable="true"
+            label="%colorDefinition.ircMeColor">
+         <description>
+            %colorDefinition.ircMeColor.description
+         </description>
+      </colorDefinition>
+      <fontDefinition
+            categoryId="org.eclipse.ecf.presence.ui.themeElementCategory"
+            id="org.eclipse.ecf.presence.irc.ui.meFont"
+            isEditable="true"
+            label="%fontDefinition.ircMeFont"
+            value="-italic-10">
+         <description>
+            %fontDefinition.ircMeFont.description
+         </description>
+      </fontDefinition>
+   </extension>
 
 </plugin>
