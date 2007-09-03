@@ -16,4 +16,17 @@
       </connector>
    </extension>
 -->
+
+   <extension
+         id="GenericServer"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="*"
+            thread="any"
+            visible="true">
+         <run
+               class="org.eclipse.ecf.server.generic.app.GenericServer"/>
+      </application>
+   </extension>
+
 </plugin>
