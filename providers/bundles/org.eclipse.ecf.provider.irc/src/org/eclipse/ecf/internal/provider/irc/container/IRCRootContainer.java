@@ -927,7 +927,13 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 		if (toID == null) {
 			throw new ECFException();
 		}
-		connection.doPrivmsg(toID.getName(), body);
+
+		// FIXME: temporary workaround to allow for the sending of messages to users that are operators
+		String name = toID.getName();
+		if (name.charAt(0) == '@') {
+			name = name.substring(1);
+		}
+		connection.doPrivmsg(name, body);
 	}
 
 	public IChatMessageSender getPrivateMessageSender() {
