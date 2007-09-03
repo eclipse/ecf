@@ -11,46 +11,23 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.irc.container;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.events.ContainerConnectedEvent;
-import org.eclipse.ecf.core.events.ContainerConnectingEvent;
-import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
+import java.util.*;
+import org.eclipse.ecf.core.*;
+import org.eclipse.ecf.core.events.*;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.TimeoutException;
 import org.eclipse.ecf.internal.provider.irc.Activator;
 import org.eclipse.ecf.internal.provider.irc.Messages;
 import org.eclipse.ecf.internal.provider.irc.identity.IRCID;
-import org.eclipse.ecf.presence.chatroom.ChatRoomCreateException;
-import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
-import org.eclipse.ecf.presence.chatroom.IChatRoomContainerOptionsAdapter;
-import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
-import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationListener;
-import org.eclipse.ecf.presence.chatroom.IChatRoomInvitationSender;
-import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
-import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
+import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.presence.history.IHistory;
 import org.eclipse.ecf.presence.history.IHistoryManager;
 import org.eclipse.ecf.presence.im.IChatMessageSender;
 import org.eclipse.ecf.presence.im.IChatMessage.Type;
 import org.eclipse.osgi.util.NLS;
-import org.schwering.irc.lib.IRCConnection;
-import org.schwering.irc.lib.IRCEventListener;
-import org.schwering.irc.lib.IRCModeParser;
-import org.schwering.irc.lib.IRCUser;
+import org.schwering.irc.lib.*;
 import org.schwering.irc.lib.ssl.SSLIRCConnection;
 
 /**
@@ -59,9 +36,7 @@ import org.schwering.irc.lib.ssl.SSLIRCConnection;
  * function as both a manager of IRC channels and as an IRC channel itself.
  * 
  */
-public class IRCRootContainer extends IRCAbstractContainer implements
-		IContainer, IChatMessageSender, IChatRoomInvitationSender, IChatRoomManager,
-		IChatRoomContainer, IRCMessageChannel, IChatRoomContainerOptionsAdapter {
+public class IRCRootContainer extends IRCAbstractContainer implements IContainer, IChatMessageSender, IChatRoomInvitationSender, IChatRoomManager, IChatRoomContainer, IRCMessageChannel, IChatRoomContainerOptionsAdapter {
 
 	private static final long CONNECT_TIMEOUT = 20000;
 
@@ -83,8 +58,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 	public IRCRootContainer(ID localID) throws IDCreateException {
 		this.localID = localID;
-		this.unknownID = IDFactory.getDefault().createStringID(
-				Messages.IRCRootContainer_0);
+		this.unknownID = IDFactory.getDefault().createStringID(Messages.IRCRootContainer_0);
 		this.replyHandler = new ReplyHandler();
 		invitationListeners = new ArrayList();
 	}
@@ -95,24 +69,17 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID targetID, IConnectContext connectContext)
-			throws ContainerConnectException {
+	public void connect(ID targetID, IConnectContext connectContext) throws ContainerConnectException {
 		if (connection != null)
-			throw new ContainerConnectException(
-					Messages.IRCRootContainer_Exception_Already_Connected);
+			throw new ContainerConnectException(Messages.IRCRootContainer_Exception_Already_Connected);
 		if (targetID == null)
-			throw new ContainerConnectException(
-					Messages.IRCRootContainer_Exception_TargetID_Null);
+			throw new ContainerConnectException(Messages.IRCRootContainer_Exception_TargetID_Null);
 		if (!(targetID instanceof IRCID))
-			throw new ContainerConnectException(NLS.bind(
-					Messages.IRCRootContainer_Exception_TargetID_Wrong_Type,
-					new Object[] { targetID, IRCID.class.getName() }));
+			throw new ContainerConnectException(NLS.bind(Messages.IRCRootContainer_Exception_TargetID_Wrong_Type, new Object[] {targetID, IRCID.class.getName()}));
 		if (connectWaiting)
-			throw new ContainerConnectException(
-					Messages.IRCRootContainer_Connecting);
+			throw new ContainerConnectException(Messages.IRCRootContainer_Connecting);
 
-		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID,
-				connectContext));
+		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID, connectContext));
 		// Get password via callback in connectContext
 		String pw = getPasswordFromConnectContext(connectContext);
 		IRCID tID = (IRCID) targetID;
@@ -125,11 +92,9 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		String name = null;
 		boolean ssl = false;
 		if (!ssl) {
-			connection = new IRCConnection(host, new int[] { port }, pass,
-					nick, user, name);
+			connection = new IRCConnection(host, new int[] {port}, pass, nick, user, name);
 		} else {
-			connection = new SSLIRCConnection(host, new int[] { port }, pass,
-					nick, user, name);
+			connection = new SSLIRCConnection(host, new int[] {port}, pass, nick, user, name);
 		}
 		// connection setup
 		connection.addIRCEventListener(getIRCEventListener());
@@ -149,19 +114,14 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 					connectLock.wait(2000);
 				}
 				if (connectWaiting)
-					throw new TimeoutException(CONNECT_TIMEOUT,
-							Messages.IRCRootContainer_Connect_Timeout
-									+ targetID.getName());
+					throw new TimeoutException(CONNECT_TIMEOUT, Messages.IRCRootContainer_Connect_Timeout + targetID.getName());
 				if (connectException != null)
 					throw connectException;
 				this.targetID = tID;
-				fireContainerEvent(new ContainerConnectedEvent(getID(),
-						this.targetID));
+				fireContainerEvent(new ContainerConnectedEvent(getID(), this.targetID));
 			} catch (Exception e) {
 				this.targetID = null;
-				throw new ContainerConnectException(NLS.bind(
-						Messages.IRCRootContainer_Exception_Connect_Failed,
-						targetID.getName()), e);
+				throw new ContainerConnectException(NLS.bind(Messages.IRCRootContainer_Exception_Connect_Failed, targetID.getName()), e);
 			} finally {
 				connectWaiting = false;
 				connectException = null;
@@ -200,38 +160,32 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				synchronized (connectLock) {
 					if (connectWaiting) {
 						if (connectException == null)
-							connectException = new Exception(
-									Messages.IRCRootContainer_Exception_Unexplained_Disconnect);
+							connectException = new Exception(Messages.IRCRootContainer_Exception_Unexplained_Disconnect);
 						connectWaiting = false;
 						connectLock.notify();
 					}
 				}
 				if (targetID != null) {
-					showMessage(null, NLS.bind(
-							Messages.IRCRootContainer_Disconnected, targetID
-									.getName()));
+					showMessage(null, NLS.bind(Messages.IRCRootContainer_Disconnected, targetID.getName()));
 					handleDisconnected();
 				}
 			}
 
 			public void onError(String arg0) {
 				trace("handleOnError(" + arg0 + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-				showMessage(null, NLS.bind(Messages.IRCRootContainer_Error,
-						arg0));
+				showMessage(null, NLS.bind(Messages.IRCRootContainer_Error, arg0));
 				handleErrorIfConnecting(arg0);
 			}
 
 			public void onError(int arg0, String arg1) {
 				String msg = arg0 + "," + arg1; //$NON-NLS-1$
 				trace("handleOnError(" + msg + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-				showMessage(null, NLS
-						.bind(Messages.IRCRootContainer_Error, msg));
+				showMessage(null, NLS.bind(Messages.IRCRootContainer_Error, msg));
 				handleErrorIfConnecting(arg0 + msg);
 			}
 
 			public void onInvite(String arg0, IRCUser arg1, String arg2) {
-				handleInvite(createIDFromString(arg0), createIDFromString(arg1
-						.getNick()));
+				handleInvite(createIDFromString(arg0), createIDFromString(arg1.getNick()));
 			}
 
 			public void onJoin(String arg0, IRCUser arg1) {
@@ -242,8 +196,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				}
 			}
 
-			public void onKick(String channelName, IRCUser kicker,
-					String kicked, String reason) {
+			public void onKick(String channelName, IRCUser kicker, String kicked, String reason) {
 				trace("handleOnKick(" + channelName + "," + kicker + "," //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						+ kicked + "," + reason + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 				// retrieve the channel that this kick is happening at
@@ -251,24 +204,15 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				if (channel != null) {
 					// display a message to indicate that a user has been kicked
 					// from the channel
-					showMessage(channelName, NLS.bind(
-							Messages.IRCRootContainer_UserKicked, new Object[] {
-									kicker.getNick(), kicked, channelName,
-									reason }));
+					showMessage(channelName, NLS.bind(Messages.IRCRootContainer_UserKicked, new Object[] {kicker.getNick(), kicked, channelName, reason}));
 					// check if we are the ones that have been kicked
 					if (kicked.equals(((IRCID) targetID).getUsername())) {
 						// fire disconnection events for this channel container
-						channel
-								.fireContainerEvent(new ContainerDisconnectingEvent(
-										channel.getID(), channel.targetID));
-						channel.firePresenceListeners(false,
-								new String[] { kicked });
-						channel
-								.fireContainerEvent(new ContainerDisconnectedEvent(
-										channel.getID(), channel.targetID));
+						channel.fireContainerEvent(new ContainerDisconnectingEvent(channel.getID(), channel.targetID));
+						channel.firePresenceListeners(false, new String[] {kicked});
+						channel.fireContainerEvent(new ContainerDisconnectedEvent(channel.getID(), channel.targetID));
 					} else {
-						channel.firePresenceListeners(false,
-								new String[] { kicked });
+						channel.firePresenceListeners(false, new String[] {kicked});
 					}
 				}
 			}
@@ -292,11 +236,9 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 
 			public void onPart(String arg0, IRCUser arg1, String arg2) {
 				trace("handleOnPart(" + arg0 + "," + arg1 + "," + arg2 + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				IRCChannelContainer channel = (IRCChannelContainer) channels
-						.get(arg0);
+				IRCChannelContainer channel = (IRCChannelContainer) channels.get(arg0);
 				if (channel != null) {
-					channel.firePresenceListeners(false,
-							new String[] { getIRCUserName(arg1) });
+					channel.firePresenceListeners(false, new String[] {getIRCUserName(arg1)});
 				}
 			}
 
@@ -310,15 +252,19 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			}
 
 			public void onPrivmsg(String arg0, IRCUser arg1, String arg2) {
-				trace("handleOnPrivmsg(" + arg0 + "," + arg1 + "," + arg2 + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				showMessage(arg0, arg1.toString(), arg2);
+				trace("handleOnPrivmsg(" + arg0 + "," + arg1 + "," + arg2 + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ 
+				if (arg2.equals("\01VERSION\01")) { //$NON-NLS-1$
+					showMessage(null, NLS.bind(Messages.IRCRootContainer_CTCP_VERSION_Request, arg1.toString()));
+				} else {
+					showMessage(arg0, arg1.toString(), arg2);
+				}
+
 			}
 
 			public void onQuit(IRCUser arg0, String arg1) {
 				trace("handleOnQuit(" + arg0 + "," + arg1 + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				for (Iterator i = channels.values().iterator(); i.hasNext();) {
-					IRCChannelContainer container = (IRCChannelContainer) i
-							.next();
+					IRCChannelContainer container = (IRCChannelContainer) i.next();
 					container.handleUserQuit(getIRCUserName(arg0));
 				}
 			}
@@ -333,13 +279,10 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				handleSetSubject(arg0, arg1, arg2);
 			}
 
-			public void unknown(String arg0, String arg1, String arg2,
-					String arg3) {
+			public void unknown(String arg0, String arg1, String arg2, String arg3) {
 				trace("handleUnknown(" + arg0 + "," + arg1 + "," + arg2 + "," //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 						+ arg3 + ")"); //$NON-NLS-1$
-				showMessage(null, NLS.bind(
-						Messages.IRCRootContainer_Unknown_Message,
-						new Object[] { arg0, arg1, arg2, arg3 }));
+				showMessage(null, NLS.bind(Messages.IRCRootContainer_Unknown_Message, new Object[] {arg0, arg1, arg2, arg3}));
 			}
 		};
 	}
@@ -380,15 +323,13 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	 * @see org.eclipse.ecf.core.IContainer#getConnectNamespace()
 	 */
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(
-				Activator.NAMESPACE_IDENTIFIER);
+		return IDFactory.getDefault().getNamespaceByName(Activator.NAMESPACE_IDENTIFIER);
 	}
 
 	public IChatRoomInfo getChatRoomInfo(final String roomName) {
 		if (roomName == null)
 			return new IChatRoomInfo() {
-				public IChatRoomContainer createChatRoomContainer()
-						throws ContainerCreateException {
+				public IChatRoomContainer createChatRoomContainer() throws ContainerCreateException {
 					return IRCRootContainer.this;
 				}
 
@@ -434,18 +375,13 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 			};
 		else
 			return new IChatRoomInfo() {
-				public IChatRoomContainer createChatRoomContainer()
-						throws ContainerCreateException {
+				public IChatRoomContainer createChatRoomContainer() throws ContainerCreateException {
 					try {
-						IRCChannelContainer newChannelContainer = new IRCChannelContainer(
-								IRCRootContainer.this, IDFactory.getDefault()
-										.createGUID());
+						IRCChannelContainer newChannelContainer = new IRCChannelContainer(IRCRootContainer.this, IDFactory.getDefault().createGUID());
 						addChannel(roomName, newChannelContainer);
 						return newChannelContainer;
 					} catch (Exception e) {
-						throw new ContainerCreateException(
-								Messages.IRCRootContainer_Exception_Create_ChatRoom,
-								e);
+						throw new ContainerCreateException(Messages.IRCRootContainer_Exception_Create_ChatRoom, e);
 					}
 				}
 
@@ -503,13 +439,11 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		return null;
 	}
 
-	public void addChatRoomParticipantListener(
-			IChatRoomParticipantListener participantListener) {
+	public void addChatRoomParticipantListener(IChatRoomParticipantListener participantListener) {
 		// for root container, no participant listening
 	}
 
-	public void removeChatRoomParticipantListener(
-			IChatRoomParticipantListener participantListener) {
+	public void removeChatRoomParticipantListener(IChatRoomParticipantListener participantListener) {
 	}
 
 	public IChatRoomMessageSender getChatRoomMessageSender() {
@@ -518,9 +452,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				if (isCommand(message))
 					parseCommandAndSend(message, null, null);
 				else
-					showErrorMessage(null, NLS.bind(
-							Messages.IRCRootContainer_Command_Error, message,
-							COMMAND_PREFIX));
+					showErrorMessage(null, NLS.bind(Messages.IRCRootContainer_Command_Error, message, COMMAND_PREFIX));
 			}
 		};
 	}
@@ -535,23 +467,23 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		if (buffer.length() == 0) {
 			return null;
 		}
-		
+
 		String token;
-		
+
 		int index = buffer.indexOf(COMMAND_DELIM);
-		
+
 		if (index == -1) { // no delim until the end of buffer
 			token = buffer.toString();
 			buffer.delete(0, buffer.length());
 			return token;
 		}
-		
+
 		token = buffer.substring(0, index);
-		
+
 		/*if (token.length() == buffer.length()) {
 			//index = token.length() - 1;
 		} */
-		
+
 		// trim trailing command delims
 		while ((buffer.length() > index) && (buffer.indexOf(COMMAND_DELIM, index) == index)) {
 			index += COMMAND_DELIM.length();
@@ -559,79 +491,73 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		if (index > 0) {
 			buffer.delete(0, index);
 		}
-		
+
 		return token;
 	}
-	
+
 	protected void parseCommandAndSend(String commandMessage, String channelName, String ircUser) {
 		synchronized (this) {
 			if (connection != null) {
 				try {
 					String lowerCase = commandMessage.toLowerCase();
 					StringBuffer command = new StringBuffer(commandMessage);
-					
+
 					if (lowerCase.startsWith("/msg ")) { //$NON-NLS-1$
 						commandMessage = commandMessage.substring(5);
 						int index = commandMessage.indexOf(COMMAND_DELIM);
 						if (index != -1) {
-							connection
-									.doPrivmsg(commandMessage.substring(0,
-											index), commandMessage
-											.substring(index + 1));
+							connection.doPrivmsg(commandMessage.substring(0, index), commandMessage.substring(index + 1));
 						}
 					} else if (lowerCase.startsWith("/privmsg ")) { //$NON-NLS-1$
 						commandMessage = commandMessage.substring(9);
 						int index = commandMessage.indexOf(COMMAND_DELIM);
 						if (index != -1) {
-							connection
-									.doPrivmsg(commandMessage.substring(0,
-											index), commandMessage
-											.substring(index + 1));
+							connection.doPrivmsg(commandMessage.substring(0, index), commandMessage.substring(index + 1));
 						}
 					} else if (lowerCase.startsWith("/op ")) { //$NON-NLS-1$
 						nextToken(command); // skip command
-						
+
 						String nick = nextToken(command);
-						
+
 						if (nick != null) {
-							connection.doMode(channelName, "+o "+nick); //$NON-NLS-1$
+							connection.doMode(channelName, "+o " + nick); //$NON-NLS-1$
 						}
 					} else if (lowerCase.startsWith("/dop ")) { //$NON-NLS-1$
 						nextToken(command); // skip command
-						
+
 						String nick = nextToken(command);
-						
+
 						if (nick != null) {
-							connection.doMode(channelName, "-o "+nick); //$NON-NLS-1$
+							connection.doMode(channelName, "-o " + nick); //$NON-NLS-1$
 						}
 					} else if (lowerCase.startsWith("/ban ")) { //$NON-NLS-1$
 						nextToken(command); // skip command
-						
+
 						String nick = nextToken(command);
-						
+
 						if (nick != null) {
-							connection.doMode(channelName, "+b "+nick); //$NON-NLS-1$
+							connection.doMode(channelName, "+b " + nick); //$NON-NLS-1$
 						}
 					} else if (lowerCase.startsWith("/unban ")) { //$NON-NLS-1$
 						nextToken(command); // skip command
-						
+
 						String nick = nextToken(command);
-						
+
 						if (nick != null) {
-							connection.doMode(channelName, "-b "+nick); //$NON-NLS-1$ 
+							connection.doMode(channelName, "-b " + nick); //$NON-NLS-1$ 
 						}
 					} else if (lowerCase.startsWith("/kick ")) { //$NON-NLS-1$
 						nextToken(command); // skip command
-						
+
 						String nick = nextToken(command);
-						
+
 						if (nick.startsWith("#")) { //$NON-NLS-1$
 							channelName = nick;
 							nick = nextToken(command);
 						}
-						
+
 						String comment = command.toString(); // rest of command
-						
+
 						if (comment.length() > 0) {
 							connection.doKick(channelName, nick, comment);
 						} else {
@@ -645,10 +571,10 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						}
 					} else if (lowerCase.startsWith("/me ")) { //$NON-NLS-1$
 						nextToken(command); // skip command
-						
+
 						String message = command.toString();
 						if (message.length() > 0) {
-							message = "\01ACTION "+message+"\01"; //$NON-NLS-1$ //$NON-NLS-2$
+							message = "\01ACTION " + message + "\01"; //$NON-NLS-1$ //$NON-NLS-2$
 							connection.doPrivmsg(channelName, message);
 							showMessage(channelName, ircUser, message);
 						}
@@ -657,10 +583,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 						handleCommandMessage(tokens, channelName);
 					}
 				} catch (Exception e) {
-					showErrorMessage(channelName, NLS.bind(
-							Messages.IRCRootContainer_Exception_Parse,
-							new Object[] { e.getClass().getName(),
-									e.getLocalizedMessage() }));
+					showErrorMessage(channelName, NLS.bind(Messages.IRCRootContainer_Exception_Parse, new Object[] {e.getClass().getName(), e.getLocalizedMessage()}));
 					traceStack(e, "PARSE ERROR: " + commandMessage); //$NON-NLS-1$
 				}
 			} else {
@@ -670,8 +593,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		}
 	}
 
-	private synchronized void handleCommandMessage(String[] tokens,
-			String channelName) {
+	private synchronized void handleCommandMessage(String[] tokens, String channelName) {
 		// Look at first one and switch
 		String origCommand = tokens[0];
 		String command = origCommand;
@@ -738,19 +660,16 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 				connection.doInvite(args[0], args[1]);
 			}
 		} else {
-			String msg = NLS
-					.bind(Messages.IRCRootContainer_Command_Unrecognized,
-							origCommand);
+			String msg = NLS.bind(Messages.IRCRootContainer_Command_Unrecognized, origCommand);
 			trace(msg + " in IRCContainer: " + getID()); //$NON-NLS-1$
-			showErrorMessage(channelName, msg); 
+			showErrorMessage(channelName, msg);
 		}
 	}
 
 	private void handleInvite(ID channelID, ID fromID) {
 		synchronized (invitationListeners) {
 			for (int i = 0; i < invitationListeners.size(); i++) {
-				IChatRoomInvitationListener icril = (IChatRoomInvitationListener) invitationListeners
-						.get(i);
+				IChatRoomInvitationListener icril = (IChatRoomInvitationListener) invitationListeners.get(i);
 				icril.handleInvitationReceived(channelID, fromID, null, null);
 			}
 		}
@@ -770,8 +689,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		if (msgChannel != null)
 			msgChannel.fireChatRoomMessageEvent(createIDFromString(channel), msg);
 		else
-			fireChatRoomMessageEvent((channel == null) ? getSystemID()
-					: createIDFromString(channel), msg);
+			fireChatRoomMessageEvent((channel == null) ? getSystemID() : createIDFromString(channel), msg);
 	}
 
 	private void showMessage(String channel, String user, String msg) {
@@ -790,22 +708,18 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	private void showErrorMessage(String channel, String msg) {
 		IRCChannelContainer msgChannel = getChannel(channel);
 		if (msgChannel != null)
-			msgChannel.fireChatRoomMessageEvent((username == null) ? getSystemID()
-					: createIDFromString(username), msg);
+			msgChannel.fireChatRoomMessageEvent((username == null) ? getSystemID() : createIDFromString(username), msg);
 		else
-			fireChatRoomMessageEvent((username == null) ? getSystemID()
-					: createIDFromString(username), msg);
+			fireChatRoomMessageEvent((username == null) ? getSystemID() : createIDFromString(username), msg);
 	}
 
 	private ID getSystemID() {
 		if (targetID == null)
 			return unknownID;
 		try {
-			return IDFactory.getDefault().createStringID(
-					((IRCID) targetID).getHost());
+			return IDFactory.getDefault().createStringID(((IRCID) targetID).getHost());
 		} catch (IDCreateException e) {
-			Activator.log(
-					"ID creation exception in IRCContainer.getSystemID()", e); //$NON-NLS-1$
+			Activator.log("ID creation exception in IRCContainer.getSystemID()", e); //$NON-NLS-1$
 			return unknownID;
 		}
 	}
@@ -813,8 +727,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	protected void handle353Reply(String channel, String[] strings) {
 		IRCChannelContainer container = getChannel(channel);
 		if (container == null) {
-			showMessage(null, NLS.bind(Messages.IRCRootContainer_353_Error,
-					channel));
+			showMessage(null, NLS.bind(Messages.IRCRootContainer_353_Error, channel));
 		} else
 			container.firePresenceListeners(true, strings);
 	}
@@ -823,46 +736,41 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		public void handleReply(int code, String arg1, String arg2) {
 			String[] users = parseUsers(arg1);
 			switch (code) {
-			case 353:
-				handle353Reply(users[2], parseUserNames(arg2));
-				break;
-			case 311:
-				showMessage(null, NLS.bind(Messages.IRCRootContainer_Whois,
-						users[1]));
-				showMessage(null, trimUsername(users[2]) + "@" + users[3]); //$NON-NLS-1$
-				break;
-			case 312:
-				showMessage(null, NLS.bind(Messages.IRCRootContainer_Server,
-						new Object[] { users[2], arg2 }));
-				break;
-			case 317:
-				showMessage(null, NLS.bind(Messages.IRCRootContainer_Idle,
-						users[2]));
-				break;
-			case 318:
-				showMessage(null, Messages.IRCRootContainer_Whois_End);
-				break;
-			case 319:
-				showMessage(null, NLS.bind(Messages.IRCRootContainer_Channels,
-						arg2));
-				break;
-			case 320:
-				break;
-			case 331:
-			case 332:
-				// Subject changes
-				String[] args = parseCommandTokens(arg1);
-				String channel = (args.length == 2) ? args[1]
-						: ((args.length == 1) ? args[0] : null);
-				handleSetSubject(channel, null, arg2);
-				break;
-			default:
-				// first user always expected to be us
-				if (users.length < 2)
-					showMessage(null, arg2);
-				else {
-					showMessage(users[1], concat(users, 2, arg2));
-				}
+				case 353 :
+					handle353Reply(users[2], parseUserNames(arg2));
+					break;
+				case 311 :
+					showMessage(null, NLS.bind(Messages.IRCRootContainer_Whois, users[1]));
+					showMessage(null, trimUsername(users[2]) + "@" + users[3]); //$NON-NLS-1$
+					break;
+				case 312 :
+					showMessage(null, NLS.bind(Messages.IRCRootContainer_Server, new Object[] {users[2], arg2}));
+					break;
+				case 317 :
+					showMessage(null, NLS.bind(Messages.IRCRootContainer_Idle, users[2]));
+					break;
+				case 318 :
+					showMessage(null, Messages.IRCRootContainer_Whois_End);
+					break;
+				case 319 :
+					showMessage(null, NLS.bind(Messages.IRCRootContainer_Channels, arg2));
+					break;
+				case 320 :
+					break;
+				case 331 :
+				case 332 :
+					// Subject changes
+					String[] args = parseCommandTokens(arg1);
+					String channel = (args.length == 2) ? args[1] : ((args.length == 1) ? args[0] : null);
+					handleSetSubject(channel, null, arg2);
+					break;
+				default :
+					// first user always expected to be us
+					if (users.length < 2)
+						showMessage(null, arg2);
+					else {
+						showMessage(users[1], concat(users, 2, arg2));
+					}
 			}
 		}
 
@@ -872,24 +780,19 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		}
 	}
 
-	protected void handleSetSubject(String channelName, IRCUser user,
-			String newSubject) {
-		IRCChannelContainer channel = (IRCChannelContainer) channels
-				.get(channelName);
+	protected void handleSetSubject(String channelName, IRCUser user, String newSubject) {
+		IRCChannelContainer channel = (IRCChannelContainer) channels.get(channelName);
 		if (channel == null) {
 			showMessage(null, newSubject);
 			fireSubjectListeners(null, newSubject);
 		} else {
 			String nickname = (user == null) ? null : user.getNick();
-			ID fromID = (user == null) ? null
-					: createIDFromString(getIRCUserName(user));
+			ID fromID = (user == null) ? null : createIDFromString(getIRCUserName(user));
 			// Put out message to channel
 			if (nickname == null)
 				showMessage(channelName, newSubject);
 			else
-				showMessage(channelName, NLS.bind(
-						Messages.IRCRootContainer_TopicChange, new Object[] {
-								nickname, newSubject }));
+				showMessage(channelName, NLS.bind(Messages.IRCRootContainer_TopicChange, new Object[] {nickname, newSubject}));
 			// Also notify subject listeners
 			channel.fireSubjectListeners(fromID, newSubject);
 		}
@@ -911,8 +814,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		}
 	}
 
-	protected void doSendChannelMessage(String channelName, String ircUser,
-			String msg) {
+	protected void doSendChannelMessage(String channelName, String ircUser, String msg) {
 		if (connection != null) {
 			// If it's a command,
 			if (isCommand(msg)) {
@@ -968,10 +870,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomManager#createChatRoom(java.lang.String,
 	 *      java.util.Map)
 	 */
-	public IChatRoomInfo createChatRoom(String roomname, Map properties)
-			throws ChatRoomCreateException {
-		throw new ChatRoomCreateException(roomname,
-				Messages.IRCRootContainer_Exception_Create_Not_Supported, null);
+	public IChatRoomInfo createChatRoom(String roomname, Map properties) throws ChatRoomCreateException {
+		throw new ChatRoomCreateException(roomname, Messages.IRCRootContainer_Exception_Create_Not_Supported, null);
 	}
 
 	protected IHistoryManager chatRoomHistoryManager = new IHistoryManager() {
@@ -1011,8 +911,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		return this;
 	}
 
-	public void sendInvitation(ID room, ID targetUser, String subject,
-			String body) throws ECFException {
+	public void sendInvitation(ID room, ID targetUser, String subject, String body) throws ECFException {
 		if (connection == null) {
 			throw new ECFException();
 		} else {
@@ -1020,8 +919,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		}
 	}
 
-	public void sendChatMessage(ID toID, ID threadID, Type type,
-			String subject, String body, Map properties) throws ECFException {
+	public void sendChatMessage(ID toID, ID threadID, Type type, String subject, String body, Map properties) throws ECFException {
 		sendChatMessage(toID, body);
 	}
 
@@ -1031,7 +929,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements
 		}
 		connection.doPrivmsg(toID.getName(), body);
 	}
-	
+
 	public IChatMessageSender getPrivateMessageSender() {
 		return this;
 	}

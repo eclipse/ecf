@@ -32,31 +32,33 @@ public class Messages extends NLS {
 	public static String IRCRootContainer_Command_Error;
 	public static String IRCRootContainer_Command_Unrecognized;
 	public static String IRCRootContainer_353_Error;
-	
+
 	public static String IRCRootContainer_Whois;
 	public static String IRCRootContainer_Server;
 	public static String IRCRootContainer_Idle;
 	public static String IRCRootContainer_Whois_End;
 	public static String IRCRootContainer_Channels;
-	
+
 	public static String IRCRootContainer_Exception_Already_Connected;
 	public static String IRCRootContainer_Exception_TargetID_Null;
 	public static String IRCRootContainer_Exception_TargetID_Wrong_Type;
-	
+
 	public static String IRCRootContainer_Exception_Connect_Failed;
-	
+
 	public static String IRCRootContainer_Exception_Unexplained_Disconnect;
 	public static String IRCRootContainer_Exception_Create_ChatRoom;
 	public static String IRCRootContainer_Exception_Parse;
 	public static String IRCRootContainer_Exception_Create_Not_Supported;
-	
+
+	public static String IRCRootContainer_CTCP_VERSION_Request;
+
 	public static String IRCChannelContainer_Exception_Connecting;
 	public static String IRCChannelContainer_Exception_TargetID_Null;
-    public static String IRCChannelContainer_Exception_Connect_Failed;
-    public static String IRCChannelContainer_Exception_Connect_Timeout;
-    
-    public static String IRCContainerInstantiator_Exception_CreateID_Failed;
-    
+	public static String IRCChannelContainer_Exception_Connect_Failed;
+	public static String IRCChannelContainer_Exception_Connect_Timeout;
+
+	public static String IRCContainerInstantiator_Exception_CreateID_Failed;
+
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
