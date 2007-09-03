@@ -8,7 +8,7 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 192762, 197329, 190851
- *    Abner Ballardo <modlost@modlost.net> - bug 192756, 199336
+ *    Abner Ballardo <modlost@modlost.net> - bug 192756, 199336, 200630
  ******************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.IContainerListener;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
-import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.util.ECFException;
@@ -30,6 +30,8 @@ import org.eclipse.ecf.internal.presence.ui.preferences.PreferenceConstants;
 import org.eclipse.ecf.presence.*;
 import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.presence.im.IChatID;
+import org.eclipse.ecf.presence.im.IChatMessage;
+import org.eclipse.ecf.presence.ui.MessagesView;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.*;
@@ -48,6 +50,7 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitationListener {
 
@@ -150,6 +153,21 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				participantsTable = new TableViewer(memberComp, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
 				participantsTable.setSorter(new ViewerSorter());
 				participantsTable.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+				participantsTable.addOpenListener(new IOpenListener() {
+					public void open(OpenEvent event) {
+						IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+						String user = ((ChatRoomParticipant) selection.getFirstElement()).getName();
+						if (!ChatRoomManagerView.this.localUserName.equals(user)) {
+							try {
+								MessagesView messagesView = getMessagesView();
+								messagesView.selectTab(container.getPrivateMessageSender(), null, createStringID(localUserName), createStringID(user));
+								getSite().getPage().activate(messagesView);
+							} catch (PartInitException e) {
+								Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, NLS.bind(Messages.ChatRoomManagerView_EXCEPTION_MESSAGE_VIEW_INITIALIZATION, user), e));
+							}
+						}
+					}
+				});
 
 				Composite rightComp = new Composite(fullChat, SWT.NONE);
 				rightComp.setLayout(new FillLayout());
@@ -1078,6 +1096,54 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 
 	protected String getMessageString(ID fromID, String text) {
 		return NLS.bind(Messages.ChatRoomManagerView_MESSAGE, fromID.getName(), text);
+	}
+
+	private ID createStringID(String str) {
+		ID id = null;
+
+		try {
+			id = IDFactory.getDefault().createStringID(str);
+		} catch (IDCreateException e) {
+		}
+
+		return id;
+	}
+
+	private MessagesView getMessagesView() throws PartInitException {
+		IWorkbenchPage page = getSite().getPage();
+		MessagesView messageView = (MessagesView) page.findView(MessagesView.VIEW_ID);
+		if (messageView == null) {
+			messageView = (MessagesView) page.showView(MessagesView.VIEW_ID, null, IWorkbenchPage.VIEW_CREATE);
+		}
+
+		return messageView;
+	}
+
+	/**
+	 * A delegate method to handle chat messages.
+	 * @param message the chat message that has been received
+	 * @since 1.1
+	 */
+	public void handleChatMessage(final IChatMessage message) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				try {
+					ID targetID = createStringID(localUserName);
+					MessagesView messageView = getMessagesView();
+
+					IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) messageView.getSite().getAdapter(IWorkbenchSiteProgressService.class);
+
+					if (container.getPrivateMessageSender() != null) {
+						messageView.openTab(container.getPrivateMessageSender(), null, targetID, message.getFromID());
+
+						messageView.showMessage(message);
+						service.warnOfContentChange();
+					}
+				} catch (Exception e) {
+					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.ChatRoomManagerView_EXCEPTION_MESSAGE_VIEW_INITIALIZATION + message.getFromID(), e));
+				}
+			}
+		});
 	}
 
 	public void handleMessage(final ID fromID, final String messageBody) {

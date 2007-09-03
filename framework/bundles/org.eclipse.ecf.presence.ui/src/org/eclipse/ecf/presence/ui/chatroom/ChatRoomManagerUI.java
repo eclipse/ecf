@@ -8,38 +8,28 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 197329
+ *    Abner Ballardo <modlost@modlost.net> - bug 200630
  *****************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.StringTokenizer;
-
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerListener;
-import org.eclipse.ecf.core.events.IContainerConnectedEvent;
-import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.IExceptionHandler;
 import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IIMMessageEvent;
 import org.eclipse.ecf.presence.IIMMessageListener;
-import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
-import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
-import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessage;
-import org.eclipse.ecf.presence.chatroom.IChatRoomMessageEvent;
+import org.eclipse.ecf.presence.chatroom.*;
+import org.eclipse.ecf.presence.im.IChatMessage;
+import org.eclipse.ecf.presence.im.IChatMessageEvent;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IViewReference;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.*;
 
 /**
  * Chat room manager user interface.
@@ -68,8 +58,7 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 		this(container, manager, null);
 	}
 
-	public ChatRoomManagerUI(IContainer container, IChatRoomManager manager,
-			IExceptionHandler exceptionHandler) {
+	public ChatRoomManagerUI(IContainer container, IChatRoomManager manager, IExceptionHandler exceptionHandler) {
 		super();
 		this.container = container;
 		this.manager = manager;
@@ -86,11 +75,10 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 	 * @see org.eclipse.ecf.presence.ui.chatroom.IChatRoomCommandListener#handleCommand(org.eclipse.ecf.presence.chatroom.IChatRoomContainer,
 	 *      java.lang.String)
 	 */
-	public String handleCommand(IChatRoomContainer chatRoomContainer,
-			String inputLine) {
+	public String handleCommand(IChatRoomContainer chatRoomContainer, String inputLine) {
 		return inputLine;
 	}
-	
+
 	protected IChatRoomViewCloseListener createChatRoomViewCloseListener() {
 		return new IChatRoomViewCloseListener() {
 			public void chatRoomViewClosing() {
@@ -101,12 +89,9 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 
 	private void setupNewView() throws Exception {
 		IChatRoomInfo roomInfo = manager.getChatRoomInfo(null);
-		Assert.isNotNull(roomInfo,
-				Messages.ChatRoomManagerUI_EXCEPTION_NO_ROOT_CHAT_ROOM_MANAGER);
-		IChatRoomContainer managerChatRoom = roomInfo.createChatRoomContainer();
-		chatroomview.initializeWithManager(ChatRoomManagerView.getUsernameFromID(targetID),
-				ChatRoomManagerView.getHostnameFromID(targetID),
-				managerChatRoom, this, createChatRoomViewCloseListener());
+		Assert.isNotNull(roomInfo, Messages.ChatRoomManagerUI_EXCEPTION_NO_ROOT_CHAT_ROOM_MANAGER);
+		final IChatRoomContainer managerChatRoom = roomInfo.createChatRoomContainer();
+		chatroomview.initializeWithManager(ChatRoomManagerView.getUsernameFromID(targetID), ChatRoomManagerView.getHostnameFromID(targetID), managerChatRoom, this, createChatRoomViewCloseListener());
 		chatroomview.setMessageRenderer(getDefaultMessageRenderer());
 		// Add listener for container, so that if the container is spontaneously
 		// disconnected,
@@ -119,8 +104,7 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 							IContainerDisconnectedEvent cd = (IContainerDisconnectedEvent) evt;
 							final ID departedContainerID = cd.getTargetID();
 							ID connectedID = targetID;
-							if (connectedID == null
-									|| connectedID.equals(departedContainerID)) {
+							if (connectedID == null || connectedID.equals(departedContainerID)) {
 								chatroomview.disconnected();
 								isContainerConnected = false;
 							}
@@ -129,10 +113,8 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 							chatroomview.setEnabled(true);
 							String[] channels = getRoomsForTarget();
 							for (int i = 0; i < channels.length; i++) {
-								IChatRoomInfo info = manager
-										.getChatRoomInfo(channels[i]);
-								chatroomview.joinRoom(info,
-										getPasswordForChatRoomConnect(info));
+								IChatRoomInfo info = manager.getChatRoomInfo(channels[i]);
+								chatroomview.joinRoom(info, getPasswordForChatRoomConnect(info));
 							}
 						}
 					}
@@ -144,9 +126,11 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 		managerChatRoom.addMessageListener(new IIMMessageListener() {
 			public void handleMessageEvent(IIMMessageEvent messageEvent) {
 				if (messageEvent instanceof IChatRoomMessageEvent) {
-					IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent)
-							.getChatRoomMessage();
+					IChatRoomMessage m = ((IChatRoomMessageEvent) messageEvent).getChatRoomMessage();
 					chatroomview.handleMessage(m.getFromID(), m.getMessage());
+				} else if (messageEvent instanceof IChatMessageEvent) {
+					final IChatMessage chatMessage = ((IChatMessageEvent) messageEvent).getChatMessage();
+					chatroomview.handleChatMessage(chatMessage);
 				}
 			}
 		});
@@ -186,10 +170,8 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 						// join room s
 						channels = getRoomsForTarget();
 						for (int i = 0; i < channels.length; i++) {
-							IChatRoomInfo info = manager
-									.getChatRoomInfo(channels[i]);
-							chatroomview.joinRoom(info,
-									getPasswordForChatRoomConnect(info));
+							IChatRoomInfo info = manager.getChatRoomInfo(channels[i]);
+							chatroomview.joinRoom(info, getPasswordForChatRoomConnect(info));
 						}
 						// We're already connected, so all we do is return
 						return;
@@ -198,16 +180,7 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 					if (exceptionHandler != null)
 						exceptionHandler.handleException(e);
 					else
-						Activator
-								.getDefault()
-								.getLog()
-								.log(
-										new Status(
-												IStatus.ERROR,
-												Activator.PLUGIN_ID,
-												IStatus.ERROR,
-												Messages.ChatRoomManagerUI_EXCEPTION_CHAT_ROOM_VIEW_INITIALIZATION
-														+ targetID, e));
+						Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.ChatRoomManagerUI_EXCEPTION_CHAT_ROOM_VIEW_INITIALIZATION + targetID, e));
 				}
 			}
 
@@ -230,24 +203,18 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 		return uri.getAuthority() + ((port == -1) ? "" : ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	protected ChatRoomManagerView getChatRoomManagerView()
-			throws PartInitException {
+	protected ChatRoomManagerView getChatRoomManagerView() throws PartInitException {
 		// Get view
 		String secondaryViewID = getSecondaryViewID(targetID);
-		IWorkbenchWindow ww = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
+		IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage wp = ww.getActivePage();
 		ChatRoomManagerView view = null;
 		if (secondaryViewID == null)
-			view = (ChatRoomManagerView) wp
-					.showView(ChatRoomManagerView.VIEW_ID);
+			view = (ChatRoomManagerView) wp.showView(ChatRoomManagerView.VIEW_ID);
 		else {
-			IViewReference viewRef = wp.findViewReference(
-					ChatRoomManagerView.VIEW_ID, secondaryViewID);
+			IViewReference viewRef = wp.findViewReference(ChatRoomManagerView.VIEW_ID, secondaryViewID);
 			if (viewRef == null)
-				view = (ChatRoomManagerView) wp.showView(
-						ChatRoomManagerView.VIEW_ID, secondaryViewID,
-						IWorkbenchPage.VIEW_ACTIVATE);
+				view = (ChatRoomManagerView) wp.showView(ChatRoomManagerView.VIEW_ID, secondaryViewID, IWorkbenchPage.VIEW_ACTIVATE);
 			else {
 				// Old view with same secondaryViewID found, so use/restore it
 				// rather than creating new view

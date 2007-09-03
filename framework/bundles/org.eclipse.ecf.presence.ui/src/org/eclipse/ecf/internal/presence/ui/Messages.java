@@ -33,6 +33,8 @@ public class Messages extends NLS {
 	public static String ChatRoomManagerUI_EXCEPTION_CHAT_ROOM_VIEW_INITIALIZATION;
 	public static String ChatRoomManagerUI_EXCEPTION_NO_ROOT_CHAT_ROOM_MANAGER;
 
+	public static String ChatRoomManagerView_EXCEPTION_MESSAGE_VIEW_INITIALIZATION;
+
 	public static String ChatRoomManagerView_CLEAR_TEXT;
 
 	public static String ChatRoomManagerView_CLEAR_TOOLTIP;
