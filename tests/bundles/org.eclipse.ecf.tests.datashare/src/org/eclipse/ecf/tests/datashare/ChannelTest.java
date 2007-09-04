@@ -32,16 +32,6 @@ public class ChannelTest extends ContainerAbstractTestCase {
 	private static final String CHANNEL_NAME_1 = "channel1";
 
 	protected Hashtable messageEvents = new Hashtable();
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.tests.connect.ContainerConnectTestCase#createServerAndClients()
-	 */
-	protected void createServerAndClients() throws Exception {
-		clientCount = 5;
-		super.createServerAndClients();
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -50,6 +40,7 @@ public class ChannelTest extends ContainerAbstractTestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
+		setClientCount(5);
 		createServerAndClients();
 		addChannelToClients();
 		connectClients();
@@ -58,10 +49,10 @@ public class ChannelTest extends ContainerAbstractTestCase {
 	/**
 	 * 
 	 */
-	private void addChannelToClients() throws Exception {
-		for(int i=0; i < clientCount; i++) {
-			IChannelContainerAdapter channelContainer = getChannelContainer(i);
-			channelContainer.createChannel(getNewID(CHANNEL_NAME),getIChannelListener(getContainerID(i)),null);
+	protected void addChannelToClients() throws Exception {
+		for (int i = 0; i < clientCount; i++) {
+			final IChannelContainerAdapter channelContainer = getChannelContainer(i);
+			channelContainer.createChannel(getNewID(CHANNEL_NAME), getIChannelListener(getContainerID(i)), null);
 		}
 	}
 
@@ -83,57 +74,58 @@ public class ChannelTest extends ContainerAbstractTestCase {
 	protected ID getContainerID(int clientIndex) {
 		return getClients()[clientIndex].getID();
 	}
-	
+
 	protected IChannelContainerAdapter getChannelContainer(int clientIndex) {
 		return (IChannelContainerAdapter) getClients()[clientIndex].getAdapter(IChannelContainerAdapter.class);
 	}
-	
+
 	public void testGetChannelContainerAdapter() throws Exception {
-		IChannelContainerAdapter channelContainer = getChannelContainer(0);
+		final IChannelContainerAdapter channelContainer = getChannelContainer(0);
 		assertNotNull(channelContainer);
 	}
-	
+
 	public void testCreateChannel() throws Exception {
-		IChannelContainerAdapter channelContainer = getChannelContainer(0);
-		IChannel channel = channelContainer.createChannel(getNewID(CHANNEL_NAME_1),getIChannelListener(getContainerID(0)),null);
+		final IChannelContainerAdapter channelContainer = getChannelContainer(0);
+		final IChannel channel = channelContainer.createChannel(getNewID(CHANNEL_NAME_1), getIChannelListener(getContainerID(0)), null);
 		assertNotNull(channel);
 		assertNotNull(channel.getID());
 		assertNotNull(channel.getListener());
 	}
 
 	public void testGetChannelFromContainer() throws Exception {
-		IChannelContainerAdapter channelContainer = getChannelContainer(0);
-		channelContainer.createChannel(getNewID(CHANNEL_NAME_1),getIChannelListener(getContainerID(0)),null);
+		final IChannelContainerAdapter channelContainer = getChannelContainer(0);
+		channelContainer.createChannel(getNewID(CHANNEL_NAME_1), getIChannelListener(getContainerID(0)), null);
 		assertNotNull(channelContainer.getChannel(getNewID(CHANNEL_NAME_1)));
 	}
 
 	public void testGetChannelNamespace() throws Exception {
-		IChannelContainerAdapter channelContainer = getChannelContainer(0);
+		final IChannelContainerAdapter channelContainer = getChannelContainer(0);
 		assertNotNull(channelContainer.getChannelNamespace());
 	}
-	
+
 	public void testSender() throws Exception {
-		IChannelContainerAdapter senderContainer = getChannelContainer(0);
-		IChannel sender = senderContainer.getChannel(getNewID(CHANNEL_NAME));
+		final IChannelContainerAdapter senderContainer = getChannelContainer(0);
+		final IChannel sender = senderContainer.getChannel(getNewID(CHANNEL_NAME));
 		assertNotNull(sender);
 		sender.sendMessage(new String("hello").getBytes());
 		sleep(3000);
-		assertNotNull(messageEvents.get(getContainerID(1)));
-		assertNotNull(messageEvents.get(getContainerID(2)));
-		assertNotNull(messageEvents.get(getContainerID(3)));
-		assertNotNull(messageEvents.get(getContainerID(4)));
+		for (int i = 1; i < getClientCount(); i++) {
+			assertNotNull(messageEvents.get(getContainerID(i)));
+		}
 	}
+
 	/**
 	 * @return
 	 */
-	private IChannelListener getIChannelListener(final ID id) throws Exception {
+	protected IChannelListener getIChannelListener(final ID id) throws Exception {
 		return new IChannelListener() {
 			public void handleChannelEvent(IChannelEvent event) {
 				if (event instanceof IChannelMessageEvent) {
 					//IChannelMessageEvent cme = (IChannelMessageEvent) event;
-					messageEvents.put(id,event);
+					messageEvents.put(id, event);
 				}
-			}};
+			}
+		};
 	}
 
 	/**

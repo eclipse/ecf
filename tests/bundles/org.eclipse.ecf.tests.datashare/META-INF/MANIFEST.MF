@@ -13,3 +13,4 @@ Require-Bundle: org.eclipse.equinox.common,
  org.junit
 Eclipse-LazyStart: true
 Import-Package: org.osgi.framework;version="1.4.0"
+Export-Package: org.eclipse.ecf.tests.datashare
