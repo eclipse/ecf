@@ -42,4 +42,16 @@
       </application>
    </extension>
 
+   <extension
+         id="Server"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="*"
+            thread="main"
+            visible="true">
+         <run
+               class="org.eclipse.ecf.server.generic.app.GenericServer"/>
+      </application>
+   </extension>
+
 </plugin>
