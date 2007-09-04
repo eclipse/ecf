@@ -117,11 +117,6 @@
        </viewerContribution>
    </extension>
    <extension
-         point="org.eclipse.ecf.startup">
-      <ecfstart
-            class="org.eclipse.ecf.internal.example.collab.start.CollabStart"/>
-   </extension>
-   <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
             id="org.eclipse.ecf.example.collab.ui.actionSet"
