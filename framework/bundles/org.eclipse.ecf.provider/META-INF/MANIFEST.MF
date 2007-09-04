@@ -8,7 +8,6 @@ Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Provide-Package: org.eclipse.ecf.provider.comm.tcp, org.eclipse.ecf.provider.app, org.eclipse.ecf.provider.generic, org.eclipse.ecf.provider.generic.gmm
 Export-Package: org.eclipse.ecf.internal.provider;x-internal:=true,
- org.eclipse.ecf.provider.app,
  org.eclipse.ecf.provider.comm,
  org.eclipse.ecf.provider.comm.tcp,
  org.eclipse.ecf.provider.generic,
