@@ -18,6 +18,8 @@ import junit.framework.TestCase;
 
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
@@ -25,7 +27,7 @@ import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.ServiceID;
+import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
 public class DiscoveryTest extends TestCase {
 
@@ -63,18 +65,22 @@ public class DiscoveryTest extends TestCase {
 	}
 
 	public void testRegisterServiceType() throws Exception {
-		discoveryContainer.registerServiceType(TEST_SERVICE_TYPE);
+		final IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(discoveryContainer.getServicesNamespace(), TEST_SERVICE_TYPE);
+		discoveryContainer.registerServiceType(serviceID.getServiceTypeID());
 		System.out.println("registered service type " + TEST_SERVICE_TYPE + " waiting 5s");
 		Thread.sleep(5000);
 	}
 
 	public void testRegisterService() throws Exception {
-		Properties props = new Properties();
-		String protocol = TEST_PROTOCOL;
-		InetAddress host = InetAddress.getByName(TEST_HOST);
-		int port = TEST_PORT;
-		String svcName = System.getProperty("user.name") + "." + protocol;
-		ServiceInfo svcInfo = new ServiceInfo(host, new ServiceID(TEST_SERVICE_TYPE, svcName), port, 0, 0, new ServiceProperties(props));
+		final Properties props = new Properties();
+		final String protocol = TEST_PROTOCOL;
+		final InetAddress host = InetAddress.getByName(TEST_HOST);
+		final int port = TEST_PORT;
+		final String svcName = System.getProperty("user.name") + "." + protocol;
+		// XXX change this to create IServiceID in appropriate way
+		final Namespace ns = IDFactory.getDefault().getNamespaceByName("ecf.namespace.jmdns");
+		final IServiceID serviceID = (IServiceID) IDFactory.getDefault().createID(ns, new Object[] {TEST_SERVICE_TYPE, svcName});
+		final ServiceInfo svcInfo = new ServiceInfo(host, serviceID, port, 0, 0, new ServiceProperties(props));
 		discoveryContainer.registerService(svcInfo);
 	}
 
@@ -87,9 +93,9 @@ public class DiscoveryTest extends TestCase {
 	class CollabServiceTypeListener implements IServiceTypeListener {
 		public void serviceTypeAdded(IServiceEvent event) {
 			System.out.println("serviceTypeAdded(" + event + ")");
-			IServiceID svcID = event.getServiceInfo().getServiceID();
-			discoveryContainer.addServiceListener(svcID.getServiceType(), new CollabServiceListener());
-			discoveryContainer.registerServiceType(svcID.getServiceType());
+			final IServiceID svcID = event.getServiceInfo().getServiceID();
+			discoveryContainer.addServiceListener(svcID.getServiceTypeID(), new CollabServiceListener());
+			discoveryContainer.registerServiceType(svcID.getServiceTypeID());
 		}
 	}
 
