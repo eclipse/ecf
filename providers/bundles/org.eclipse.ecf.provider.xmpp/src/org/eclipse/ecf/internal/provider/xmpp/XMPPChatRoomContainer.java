@@ -76,7 +76,7 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements IChatRoo
 
 	private MultiUserChat multiuserchat;
 
-	private final List chatRoomAdminListeners;
+	private List chatRoomAdminListeners;
 
 	public XMPPChatRoomContainer(ISharedObjectContainerConfig config, ECFConnection conn, Namespace usernamespace) throws IDCreateException {
 		super(config);
@@ -110,6 +110,9 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements IChatRoo
 		if (containerHelper != null)
 			containerHelper.dispose(getID());
 		containerHelper = null;
+		if (chatRoomAdminListeners != null)
+			chatRoomAdminListeners.clear();
+		chatRoomAdminListeners = null;
 		super.dispose();
 	}
 
