@@ -15,7 +15,7 @@ import org.eclipse.ecf.discovery.identity.ServiceID;
 
 public class JMDNSServiceID extends ServiceID {
 
-	private static final String DELIMITER = ".";
+	private static final String DELIMITER = "."; //$NON-NLS-1$
 	private static final long serialVersionUID = 1L;
 
 	public JMDNSServiceID(Namespace namespace, String type, String name) {

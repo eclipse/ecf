@@ -25,11 +25,8 @@ public class JMDNSPlugin implements BundleActivator {
 	private static JMDNSPlugin plugin;
 
 	private BundleContext context = null;
-	
-	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.jmdns";
-	
-	public static final String NAMESPACE_IDENTIFIER = Messages
-			.getString("JMDNSPlugin.namespace.identifier"); //$NON-NLS-1$
+
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.jmdns"; //$NON-NLS-1$
 
 	/**
 	 * The constructor.
@@ -44,12 +41,10 @@ public class JMDNSPlugin implements BundleActivator {
 	public IAdapterManager getAdapterManager() {
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
-			adapterManagerTracker = new ServiceTracker(this.context,
-					IAdapterManager.class.getName(), null);
+			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
 			adapterManagerTracker.open();
 		}
-		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker
-				.getService();
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
 		// Then, if the service isn't there, try to get from Platform class via
 		// PlatformHelper class
 		if (adapterManager == null)
@@ -65,9 +60,12 @@ public class JMDNSPlugin implements BundleActivator {
 	}
 
 	protected Bundle getBundle() {
-		if (context == null) return null;
-		else return context.getBundle();
+		if (context == null)
+			return null;
+		else
+			return context.getBundle();
 	}
+
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
@@ -88,10 +86,6 @@ public class JMDNSPlugin implements BundleActivator {
 			plugin = new JMDNSPlugin();
 		}
 		return plugin;
-	}
-
-	public String getNamespaceIdentifier() {
-		return NAMESPACE_IDENTIFIER;
 	}
 
 }

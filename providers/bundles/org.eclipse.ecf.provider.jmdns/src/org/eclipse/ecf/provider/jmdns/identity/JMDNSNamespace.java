@@ -17,10 +17,12 @@ import org.eclipse.ecf.core.identity.Namespace;
 public class JMDNSNamespace extends Namespace {
 	private static final long serialVersionUID = 1L;
 
-	private static final String JMDNS_SCHEME = "jmdns";
+	private static final String JMDNS_SCHEME = "jmdns"; //$NON-NLS-1$
+
+	public static final String NAME = "ecf.namespace.jmdns"; //$NON-NLS-1$
 
 	public ID createInstance(Object[] args) throws IDCreateException {
-		String type = (String) args[0];
+		final String type = (String) args[0];
 		String name = null;
 		if (args.length > 1) {
 			name = (String) args[1];
@@ -38,6 +40,6 @@ public class JMDNSNamespace extends Namespace {
 	 * @see org.eclipse.ecf.core.identity.Namespace#getSupportedParameterTypesForCreateInstance()
 	 */
 	public Class[][] getSupportedParameterTypes() {
-		return new Class[][] { { String.class }, { String.class, String.class } };
+		return new Class[][] { {String.class}, {String.class, String.class}};
 	}
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,24 +8,27 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
+
 package org.eclipse.ecf.internal.provider.jmdns;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import org.eclipse.osgi.util.NLS;
 
-public class Messages {
+/**
+ *
+ */
+public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.provider.jmdns.messages"; //$NON-NLS-1$
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-			.getBundle(BUNDLE_NAME);
-
-	private Messages() {
+	public static String ContainerInstantiator_EXCEPTION_CONTAINER_CREATE;
+	public static String ContainerInstantiator_EXCEPTION_GETTING_INETADDRESS;
+	public static String JMDNSDiscoveryContainer_EXCEPTION_ALREADY_CONNECTED;
+	public static String JMDNSDiscoveryContainer_EXCEPTION_CREATE_JMDNS_INSTANCE;
+	public static String JMDNSDiscoveryContainer_EXCEPTION_REGISTER_SERVICE;
+	public static String JMDNSDiscoveryContainer_JMDNS_LOCAL_SUFFIX;
+	static {
+		// initialize resource bundle
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 
-	public static String getString(String key) {
-		try {
-			return RESOURCE_BUNDLE.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
+	private Messages() {
 	}
 }

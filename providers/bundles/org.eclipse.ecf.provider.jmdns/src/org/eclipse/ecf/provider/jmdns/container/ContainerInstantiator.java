@@ -18,6 +18,7 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
+import org.eclipse.ecf.internal.provider.jmdns.Messages;
 
 public class ContainerInstantiator implements IContainerInstantiator {
 
@@ -25,31 +26,26 @@ public class ContainerInstantiator implements IContainerInstantiator {
 		super();
 	}
 
-	public IContainer createInstance(ContainerTypeDescription description,
-			Object[] args) throws ContainerCreateException {
+	public IContainer createInstance(ContainerTypeDescription description, Object[] args) throws ContainerCreateException {
 		try {
 			JMDNSDiscoveryContainer container = new JMDNSDiscoveryContainer();
 			return container;
 		} catch (IDCreateException e) {
-			ContainerCreateException excep = new ContainerCreateException(
-					"Exception making JMDNS container");
+			ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_EXCEPTION_CONTAINER_CREATE);
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
 		} catch (IOException e) {
-			ContainerCreateException excep = new ContainerCreateException(
-					"Exception getting InetAddress for JMDNS container");
+			ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_EXCEPTION_GETTING_INETADDRESS);
 			excep.setStackTrace(e.getStackTrace());
 			throw excep;
 		}
 	}
 
-	public String[] getSupportedAdapterTypes(
-			ContainerTypeDescription description) {
-		return new String[] { IDiscoveryContainerAdapter.class.getName() };
+	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
+		return new String[] {IDiscoveryContainerAdapter.class.getName()};
 	}
 
-	public Class[][] getSupportedParameterTypes(
-			ContainerTypeDescription description) {
+	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 		return new Class[0][0];
 	}
 

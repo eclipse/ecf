@@ -15,7 +15,7 @@
       <namespace
             class="org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace"
             description="JMDNS Namespace"
-            name="zeroconf.jmdns"/>
+            name="ecf.namespace.jmdns"/>
    </extension>
 
 </plugin>
