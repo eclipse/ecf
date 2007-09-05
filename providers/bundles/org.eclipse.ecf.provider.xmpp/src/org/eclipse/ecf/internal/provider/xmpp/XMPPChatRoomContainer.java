@@ -9,7 +9,10 @@
 package org.eclipse.ecf.internal.provider.xmpp;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ecf.core.ContainerConnectException;
@@ -61,6 +64,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
+import org.jivesoftware.smackx.muc.SubjectUpdatedListener;
 
 public class XMPPChatRoomContainer extends ClientSOContainer implements IChatRoomContainer {
 
@@ -72,12 +76,15 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements IChatRoo
 
 	private MultiUserChat multiuserchat;
 
+	private final List chatRoomAdminListeners;
+
 	public XMPPChatRoomContainer(ISharedObjectContainerConfig config, ECFConnection conn, Namespace usernamespace) throws IDCreateException {
 		super(config);
 		this.connection = conn;
 		this.config = config;
 		this.containerHelperID = IDFactory.getDefault().createStringID(CONTAINER_HELPER_ID);
 		this.containerHelper = new XMPPChatRoomContainerHelper(usernamespace, getXMPPConnection());
+		this.chatRoomAdminListeners = new ArrayList();
 	}
 
 	protected void sendInvitation(ID toUser, String subject, String body) throws ECFException {
@@ -241,6 +248,12 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements IChatRoo
 					nickname = roomID.getNickname();
 				else
 					nickname = nick;
+				multiuserchat.addSubjectUpdatedListener(new SubjectUpdatedListener() {
+					public void subjectUpdated(String subject, String from) {
+						fireSubjectUpdated(subject, from);
+					}
+				});
+
 				multiuserchat.addMessageListener(new PacketListener() {
 					public void processPacket(Packet arg0) {
 						handleXMPPMessage(arg0);
@@ -355,6 +368,21 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements IChatRoo
 				ce.setStackTrace(e.getStackTrace());
 				throw ce;
 			}
+		}
+	}
+
+	/**
+	 * @param subject
+	 * @param from
+	 */
+	protected void fireSubjectUpdated(String subject, String from) {
+		List notify = null;
+		synchronized (chatRoomAdminListeners) {
+			notify = new ArrayList(chatRoomAdminListeners);
+		}
+		for (final Iterator i = notify.iterator(); i.hasNext();) {
+			final IChatRoomAdminListener l = (IChatRoomAdminListener) i.next();
+			l.handleSubjectChange(containerHelper.createUserIDFromName(from), subject);
 		}
 	}
 
@@ -475,7 +503,9 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements IChatRoo
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
 	 */
 	public void addChatRoomAdminListener(IChatRoomAdminListener subjectListener) {
-		// TODO Auto-generated method stub
+		if (subjectListener == null)
+			return;
+		chatRoomAdminListeners.add(subjectListener);
 	}
 
 	/*
@@ -484,7 +514,9 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements IChatRoo
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#removeChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
 	 */
 	public void removeChatRoomAdminListener(IChatRoomAdminListener subjectListener) {
-		// TODO Auto-generated method stub
+		if (subjectListener == null)
+			return;
+		chatRoomAdminListeners.remove(subjectListener);
 	}
 
 	/* (non-Javadoc)
