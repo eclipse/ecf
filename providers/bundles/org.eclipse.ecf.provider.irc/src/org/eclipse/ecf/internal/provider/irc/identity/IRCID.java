@@ -11,7 +11,6 @@
 package org.eclipse.ecf.internal.provider.irc.identity;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.presence.im.IChatID;
@@ -19,19 +18,21 @@ import org.eclipse.ecf.presence.im.IChatID;
 public class IRCID extends BaseID implements IChatID {
 	private static final long serialVersionUID = -6582811574473106742L;
 	public static final int DEFAULT_IRC_PORT = 6667;
-	
+
 	URI uri;
-	
+
 	protected IRCID(Namespace namespace, URI uri) {
 		super(namespace);
 		this.uri = uri;
 	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceCompareTo(org.eclipse.ecf.core.identity.BaseID)
 	 */
 	protected int namespaceCompareTo(BaseID o) {
-        return getName().compareTo(o.getName());
+		return getName().compareTo(o.getName());
 	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceEquals(org.eclipse.ecf.core.identity.BaseID)
 	 */
@@ -42,59 +43,63 @@ public class IRCID extends BaseID implements IChatID {
 		IRCID other = (IRCID) o;
 		return uri.equals(other.uri);
 	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceGetName()
 	 */
 	protected String namespaceGetName() {
 		return uri.toString();
 	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceHashCode()
 	 */
 	protected int namespaceHashCode() {
 		return uri.hashCode();
 	}
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceToURI()
-	 */
-	protected URI namespaceToURI() throws URISyntaxException {
-		return uri;
-	}
-	
+
 	public String getUser() {
 		return uri.getUserInfo();
 	}
+
 	public String getHost() {
 		return uri.getHost();
 	}
-	
+
 	public String getHostname() {
 		return getHost();
 	}
+
 	public int getPort() {
 		int p = uri.getPort();
-		if (p == -1) return DEFAULT_IRC_PORT;
-		else return p;
+		if (p == -1)
+			return DEFAULT_IRC_PORT;
+		return p;
 	}
+
 	public String getChannel() {
 		String frag = uri.getFragment();
-		if (frag != null && !frag.equals("")) return "#"+frag; //$NON-NLS-1$ //$NON-NLS-2$
-		else return null;
+		if (frag != null && !frag.equals(""))return "#" + frag; //$NON-NLS-1$ //$NON-NLS-2$
+		return null;
 	}
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer("IRCID["); //$NON-NLS-1$
 		sb.append(uri.toString()).append(']');
 		return sb.toString();
 	}
+
 	public String getUsername() {
 		return getUser();
 	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.BaseID#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class clazz) {
-	    if (clazz.isInstance(this)) {
-	    	return this;
-	    } else return super.getAdapter(clazz);
+		if (clazz.isInstance(this)) {
+			return this;
+		}
+		return super.getAdapter(clazz);
 	}
 }

@@ -16,6 +16,12 @@ public class Messages extends NLS {
 
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.provider.irc.messages"; //$NON-NLS-1$
 
+	public static String IRCNamespace_EXCEPTION_CREATE_CANNOT_CAST_TO_STRING;
+
+	public static String IRCNamespace_EXCEPTION_CREATING_URI;
+
+	public static String IRCNamespace_EXCEPTION_INVALID_PROTOCOL;
+
 	public static String IRCRootContainer_0;
 
 	public static String IRCRootContainer_Connect_Timeout;
@@ -23,6 +29,10 @@ public class Messages extends NLS {
 	public static String IRCRootContainer_Connecting;
 
 	public static String IRCRootContainer_Connecting_To;
+
+	public static String IRCRootContainer_EXCEPTION_CONNECTION_CANNOT_BE_NULL;
+
+	public static String IRCRootContainer_EXCEPTION_TARGETID_CANNOT_BE_NULL;
 
 	public static String IRCRootContainer_TopicChange;
 	public static String IRCRootContainer_UserKicked;

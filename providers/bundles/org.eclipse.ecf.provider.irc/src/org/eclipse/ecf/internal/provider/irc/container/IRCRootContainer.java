@@ -52,9 +52,9 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 
 	private ArrayList invitationListeners;
 
-	private Object connectLock = new Object();
-	private boolean connectWaiting = false;
-	private Exception connectException = null;
+	protected Object connectLock = new Object();
+	protected boolean connectWaiting = false;
+	protected Exception connectException = null;
 
 	public IRCRootContainer(ID localID) throws IDCreateException {
 		this.localID = localID;
@@ -69,20 +69,20 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID targetID, IConnectContext connectContext) throws ContainerConnectException {
+	public void connect(ID connectID, IConnectContext connectContext) throws ContainerConnectException {
 		if (connection != null)
 			throw new ContainerConnectException(Messages.IRCRootContainer_Exception_Already_Connected);
-		if (targetID == null)
+		if (connectID == null)
 			throw new ContainerConnectException(Messages.IRCRootContainer_Exception_TargetID_Null);
-		if (!(targetID instanceof IRCID))
+		if (!(connectID instanceof IRCID))
 			throw new ContainerConnectException(NLS.bind(Messages.IRCRootContainer_Exception_TargetID_Wrong_Type, new Object[] {targetID, IRCID.class.getName()}));
 		if (connectWaiting)
 			throw new ContainerConnectException(Messages.IRCRootContainer_Connecting);
 
-		fireContainerEvent(new ContainerConnectingEvent(this.getID(), targetID, connectContext));
+		fireContainerEvent(new ContainerConnectingEvent(this.getID(), connectID, connectContext));
 		// Get password via callback in connectContext
 		String pw = getPasswordFromConnectContext(connectContext);
-		IRCID tID = (IRCID) targetID;
+		IRCID tID = (IRCID) connectID;
 		String host = tID.getHost();
 		int port = tID.getPort();
 		String pass = pw;
@@ -312,9 +312,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 	public Object getAdapter(Class serviceType) {
 		if (serviceType != null && serviceType.isInstance(this)) {
 			return this;
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	/*
@@ -373,58 +372,57 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 					return null;
 				}
 			};
-		else
-			return new IChatRoomInfo() {
-				public IChatRoomContainer createChatRoomContainer() throws ContainerCreateException {
-					try {
-						IRCChannelContainer newChannelContainer = new IRCChannelContainer(IRCRootContainer.this, IDFactory.getDefault().createGUID());
-						addChannel(roomName, newChannelContainer);
-						return newChannelContainer;
-					} catch (Exception e) {
-						throw new ContainerCreateException(Messages.IRCRootContainer_Exception_Create_ChatRoom, e);
-					}
+		return new IChatRoomInfo() {
+			public IChatRoomContainer createChatRoomContainer() throws ContainerCreateException {
+				try {
+					IRCChannelContainer newChannelContainer = new IRCChannelContainer(IRCRootContainer.this, IDFactory.getDefault().createGUID());
+					addChannel(roomName, newChannelContainer);
+					return newChannelContainer;
+				} catch (Exception e) {
+					throw new ContainerCreateException(Messages.IRCRootContainer_Exception_Create_ChatRoom, e);
 				}
+			}
 
-				public ID getConnectedID() {
-					return IRCRootContainer.this.getConnectedID();
-				}
+			public ID getConnectedID() {
+				return IRCRootContainer.this.getConnectedID();
+			}
 
-				public String getDescription() {
-					return ""; //$NON-NLS-1$
-				}
+			public String getDescription() {
+				return ""; //$NON-NLS-1$
+			}
 
-				public String getName() {
-					return roomName;
-				}
+			public String getName() {
+				return roomName;
+			}
 
-				public int getParticipantsCount() {
-					return 0;
-				}
+			public int getParticipantsCount() {
+				return 0;
+			}
 
-				public ID getRoomID() {
-					return createIDFromString(roomName);
-				}
+			public ID getRoomID() {
+				return createIDFromString(roomName);
+			}
 
-				public String getSubject() {
-					return ""; //$NON-NLS-1$
-				}
+			public String getSubject() {
+				return ""; //$NON-NLS-1$
+			}
 
-				public boolean isModerated() {
-					return false;
-				}
+			public boolean isModerated() {
+				return false;
+			}
 
-				public boolean isPersistent() {
-					return false;
-				}
+			public boolean isPersistent() {
+				return false;
+			}
 
-				public boolean requiresPassword() {
-					return false;
-				}
+			public boolean requiresPassword() {
+				return false;
+			}
 
-				public Object getAdapter(Class adapter) {
-					return null;
-				}
-			};
+			public Object getAdapter(Class adapter) {
+				return null;
+			}
+		};
 	}
 
 	public IChatRoomInfo[] getChatRoomInfos() {
@@ -444,6 +442,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 	}
 
 	public void removeChatRoomParticipantListener(IChatRoomParticipantListener participantListener) {
+		// for root container, no participant listening
 	}
 
 	public IChatRoomMessageSender getChatRoomMessageSender() {
@@ -666,7 +665,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 		}
 	}
 
-	private void handleInvite(ID channelID, ID fromID) {
+	protected void handleInvite(ID channelID, ID fromID) {
 		synchronized (invitationListeners) {
 			for (int i = 0; i < invitationListeners.size(); i++) {
 				IChatRoomInvitationListener icril = (IChatRoomInvitationListener) invitationListeners.get(i);
@@ -684,7 +683,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 		return container;
 	}
 
-	private void showMessage(String channel, String msg) {
+	protected void showMessage(String channel, String msg) {
 		IRCChannelContainer msgChannel = getChannel(channel);
 		if (msgChannel != null)
 			msgChannel.fireChatRoomMessageEvent(createIDFromString(channel), msg);
@@ -692,7 +691,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 			fireChatRoomMessageEvent((channel == null) ? getSystemID() : createIDFromString(channel), msg);
 	}
 
-	private void showMessage(String channel, String user, String msg) {
+	protected void showMessage(String channel, String user, String msg) {
 		IRCChannelContainer msgChannel = getChannel(channel);
 		if (msgChannel != null) {
 			msgChannel.fireChatRoomMessageEvent(createIDFromString(user), msg);
@@ -705,7 +704,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 		}
 	}
 
-	private void showErrorMessage(String channel, String msg) {
+	void showErrorMessage(String channel, String msg) {
 		IRCChannelContainer msgChannel = getChannel(channel);
 		if (msgChannel != null)
 			msgChannel.fireChatRoomMessageEvent((username == null) ? getSystemID() : createIDFromString(username), msg);
@@ -713,7 +712,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 			fireChatRoomMessageEvent((username == null) ? getSystemID() : createIDFromString(username), msg);
 	}
 
-	private ID getSystemID() {
+	ID getSystemID() {
 		if (targetID == null)
 			return unknownID;
 		try {
@@ -842,8 +841,8 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 		if (connection == null) {
 			this.encoding = encoding;
 			return true;
-		} else
-			return false;
+		}
+		return false;
 	}
 
 	public void addInvitationListener(IChatRoomInvitationListener listener) {
@@ -912,11 +911,9 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 	}
 
 	public void sendInvitation(ID room, ID targetUser, String subject, String body) throws ECFException {
-		if (connection == null) {
-			throw new ECFException();
-		} else {
-			connection.doInvite(targetUser.getName(), room.getName());
-		}
+		if (connection == null)
+			throw new ECFException(Messages.IRCRootContainer_EXCEPTION_CONNECTION_CANNOT_BE_NULL);
+		connection.doInvite(targetUser.getName(), room.getName());
 	}
 
 	public void sendChatMessage(ID toID, ID threadID, Type type, String subject, String body, Map properties) throws ECFException {
@@ -925,7 +922,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 
 	public void sendChatMessage(ID toID, String body) throws ECFException {
 		if (toID == null) {
-			throw new ECFException();
+			throw new ECFException(Messages.IRCRootContainer_EXCEPTION_TARGETID_CANNOT_BE_NULL);
 		}
 
 		// FIXME: temporary workaround to allow for the sending of messages to users that are operators
