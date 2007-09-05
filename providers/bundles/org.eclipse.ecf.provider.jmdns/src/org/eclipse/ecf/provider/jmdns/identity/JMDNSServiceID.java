@@ -11,6 +11,7 @@
 package org.eclipse.ecf.provider.jmdns.identity;
 
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceID;
 
 public class JMDNSServiceID extends ServiceID {
@@ -18,15 +19,15 @@ public class JMDNSServiceID extends ServiceID {
 	private static final String DELIMITER = "."; //$NON-NLS-1$
 	private static final long serialVersionUID = 1L;
 
-	public JMDNSServiceID(Namespace namespace, String type, String name) {
+	public JMDNSServiceID(Namespace namespace, IServiceTypeID type, String name) {
 		super(namespace, type, name);
 	}
 
 	protected String getFullyQualifiedName() {
 		if (name == null)
-			return type;
+			return type.getName();
 		else
-			return name + DELIMITER + type;
+			return name + DELIMITER + type.getName();
 	}
 
 }

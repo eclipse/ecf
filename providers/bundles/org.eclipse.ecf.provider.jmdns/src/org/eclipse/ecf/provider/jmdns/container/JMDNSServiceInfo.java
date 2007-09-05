@@ -27,8 +27,4 @@ public class JMDNSServiceInfo extends ServiceInfo {
 		super(address, id, port, priority, weight, props);
 	}
 
-	public JMDNSServiceInfo(InetAddress address, String type, int port, int priority, int weight, IServiceProperties props) {
-		super(address, type, port, priority, weight, props);
-	}
-
 }
