@@ -27,10 +27,11 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
-import org.eclipse.ecf.discovery.identity.ServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.server.generic.Activator;
 import org.eclipse.ecf.internal.server.generic.Messages;
@@ -43,6 +44,11 @@ import org.eclipse.ecf.server.generic.app.ServerConfigParser;
 import org.eclipse.osgi.util.NLS;
 
 public class ServerManager {
+
+	/**
+	 * 
+	 */
+	private static final String ECF_NAMESPACE_JMDNS = "ecf.namespace.jmdns";
 
 	private static final String GROUP_PROPERTY_NAME = "group"; //$NON-NLS-1$
 
@@ -111,7 +117,7 @@ public class ServerManager {
 			final String discoveryString = element.getAttribute(DISCOVERY_ATTR);
 			if (discoveryString != null)
 				discovery = Boolean.parseBoolean(discoveryString);
-			Connector connector = new Connector(null, element.getAttribute(HOSTNAME_ATTR), port, keepAlive, discovery);
+			final Connector connector = new Connector(null, element.getAttribute(HOSTNAME_ATTR), port, keepAlive, discovery);
 			final IConfigurationElement[] groupElements = element.getChildren(GROUP_ELEMENT);
 			for (int j = 0; j < groupElements.length; j++) {
 				final String groupName = groupElements[i].getAttribute(NAME_ATTR);
@@ -152,11 +158,11 @@ public class ServerManager {
 		serverGroups = new TCPServerSOContainerGroup[connectors.size()];
 		int j = 0;
 		for (final Iterator i = connectors.iterator(); i.hasNext();) {
-			Connector connect = (Connector) i.next();
+			final Connector connect = (Connector) i.next();
 			serverGroups[j] = createServerGroup(connect);
 			final List groups = connect.getGroups();
 			for (final Iterator g = groups.iterator(); g.hasNext();) {
-				NamedGroup group = (NamedGroup) g.next();
+				final NamedGroup group = (NamedGroup) g.next();
 				final TCPServerSOContainer cont = createServerContainer(group.getIDForGroup(), serverGroups[j], group.getName(), connect.getTimeout());
 				if (connect.shouldRegisterForDiscovery())
 					registerServerForDiscovery(group, false);
@@ -171,7 +177,7 @@ public class ServerManager {
 	}
 
 	private void createServersFromConfigurationFile(InputStream ins) throws Exception {
-		ServerConfigParser scp = new ServerConfigParser();
+		final ServerConfigParser scp = new ServerConfigParser();
 		final List connectors = scp.load(ins);
 		if (connectors != null)
 			createServersFromConnectorList(connectors);
@@ -192,13 +198,14 @@ public class ServerManager {
 		if (discovery != null) {
 			discovery.registerServiceType(SERVICE_TYPE);
 			final String rawGroupName = group.getRawName();
-			final ServiceID serviceID = new ServiceID(SERVICE_TYPE, rawGroupName);
-			Connector connector = group.getConnector();
+			final Connector connector = group.getConnector();
 			final Properties props = new Properties();
 			props.put(PROTOCOL_PROPERTY_NAME, TCPServerSOContainer.DEFAULT_PROTOCOL);
 			props.put(PWREQUIRED_PROPERTY_NAME, new Boolean(pwrequired).toString());
 			props.put(GROUP_PROPERTY_NAME, rawGroupName);
 			try {
+				final Namespace ns = IDFactory.getDefault().getNamespaceByName(ECF_NAMESPACE_JMDNS);
+				final IServiceID serviceID = (IServiceID) IDFactory.getDefault().createID(ns, new Object[] {SERVICE_TYPE, rawGroupName});
 				final InetAddress host = InetAddress.getByName(connector.getHostname());
 				final ServiceInfo svcInfo = new ServiceInfo(host, serviceID, connector.getPort(), 0, 0, new ServiceProperties(props));
 				discovery.registerService(svcInfo);
