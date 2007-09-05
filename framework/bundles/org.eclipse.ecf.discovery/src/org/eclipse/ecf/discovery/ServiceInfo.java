@@ -22,6 +22,9 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 
 	private static final long serialVersionUID = -5651115550295457142L;
 
+	public static final int DEFAULT_PRIORITY = -1;
+	public static final int DEFAULT_WEIGHT = -1;
+
 	protected InetAddress addr = null;
 
 	protected IServiceID serviceID;
@@ -41,6 +44,10 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		this.priority = priority;
 		this.weight = weight;
 		this.properties = props;
+	}
+
+	public ServiceInfo(InetAddress address, IServiceID serviceID, int port) {
+		this(address, serviceID, port, DEFAULT_PRIORITY, DEFAULT_WEIGHT, new ServiceProperties());
 	}
 
 	/* (non-Javadoc)
