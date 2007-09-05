@@ -19,13 +19,15 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
-import org.eclipse.ecf.discovery.identity.ServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.internal.example.collab.actions.URIClientConnectAction;
 
 public class DiscoveryStartup {
@@ -130,8 +132,10 @@ public class DiscoveryStartup {
 				int port = uri.getPort();
 				String svcName = System.getProperty("user.name") + "."
 						+ protocol;
-				ServiceInfo svcInfo = new ServiceInfo(host, new ServiceID(
-						ClientPlugin.TCPSERVER_DISCOVERY_TYPE, svcName), port,
+				Namespace namespace = IDFactory.getDefault().getNamespaceByName("zeroconf.jmdns");
+				IServiceID srvID = (IServiceID) namespace.createInstance(new String[]{ClientPlugin.TCPSERVER_DISCOVERY_TYPE, svcName});
+				
+				ServiceInfo svcInfo = new ServiceInfo(host, srvID, port,
 						SVC_DEF_PRIORITY, SVC_DEF_WEIGHT,
 						new ServiceProperties(props));
 				discovery.registerService(svcInfo);
