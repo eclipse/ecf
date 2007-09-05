@@ -8,9 +8,9 @@
  ******************************************************************************/
 package org.eclipse.ecf.discovery.identity;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.BaseID;
 import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.internal.discovery.Messages;
 
 /**
  * Service identity type.  ServiceIDs are IDs that uniquely identify
@@ -18,30 +18,25 @@ import org.eclipse.ecf.internal.discovery.Messages;
  * 
  */
 public class ServiceID extends BaseID implements IServiceID {
-	private static final long serialVersionUID = 1L;
 
-	protected String type;
+	private static final long serialVersionUID = 4362768703249025783L;
+
+	protected IServiceTypeID type;
 
 	protected String name;
 
-	protected ServiceID(Namespace namespace, String type, String name) {
+	protected ServiceID(Namespace namespace, IServiceTypeID type, String name) {
 		super(namespace);
-		if (type == null)
-			throw new NullPointerException(Messages.getString("ServiceID.ServiceID_Not_Null")); //$NON-NLS-1$
+		Assert.isNotNull(type);
 		this.type = type;
 		this.name = name;
-	}
-
-	public ServiceID(String type, String name) {
-		this.name = name;
-		this.type = type;
 	}
 
 	protected String getFullyQualifiedName() {
 		if (name == null)
-			return type;
+			return type.getName();
 		else
-			return type + name;
+			return type.getName() + name;
 	}
 
 	/* (non-Javadoc)
@@ -49,8 +44,8 @@ public class ServiceID extends BaseID implements IServiceID {
 	 */
 	protected int namespaceCompareTo(BaseID o) {
 		if (o instanceof ServiceID) {
-			ServiceID other = (ServiceID) o;
-			String typename = other.getFullyQualifiedName();
+			final ServiceID other = (ServiceID) o;
+			final String typename = other.getFullyQualifiedName();
 			return getFullyQualifiedName().compareTo(typename);
 		} else {
 			return 1;
@@ -64,7 +59,7 @@ public class ServiceID extends BaseID implements IServiceID {
 		if (o == null)
 			return false;
 		if (o instanceof ServiceID) {
-			ServiceID other = (ServiceID) o;
+			final ServiceID other = (ServiceID) o;
 			if (other.getName().equals(getName())) {
 				return true;
 			}
@@ -91,6 +86,13 @@ public class ServiceID extends BaseID implements IServiceID {
 	 * @return String service type.  Will not be <code>null</code>.
 	 */
 	public String getServiceType() {
+		return type.getName();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.identity.IServiceID#getServiceTypeID()
+	 */
+	public IServiceTypeID getServiceTypeID() {
 		return type;
 	}
 
@@ -107,7 +109,7 @@ public class ServiceID extends BaseID implements IServiceID {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ServiceID["); //$NON-NLS-1$
+		final StringBuffer buf = new StringBuffer("ServiceID["); //$NON-NLS-1$
 		buf.append("type=").append(type).append(";name=").append(name).append( //$NON-NLS-1$ //$NON-NLS-2$
 				";full=" + getFullyQualifiedName()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();

@@ -20,9 +20,18 @@ public interface IServiceID extends ID {
 
 	/**
 	 * Get service type for this ID.
+	 * Delegates to getServiceTypeID().getName()
 	 * @return String service type.  Will not be <code>null</code>.
+	 * @deprecated Use getServiceTypeID() instead!
 	 */
 	public String getServiceType();
+
+	/**
+	 * Get service type ID for this ID.
+	 * @return IServiceTypeID.  Will not be <code>null</code>.
+	 */
+	public IServiceTypeID getServiceTypeID();
+
 	/**
 	 * Get service name for this ID.  
 	 * 

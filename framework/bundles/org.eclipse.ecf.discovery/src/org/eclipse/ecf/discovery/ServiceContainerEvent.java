@@ -17,7 +17,7 @@ import org.eclipse.ecf.core.identity.ID;
  */
 public class ServiceContainerEvent implements IServiceEvent {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -2704247495748252242L;
 
 	protected IServiceInfo info;
 
@@ -46,7 +46,7 @@ public class ServiceContainerEvent implements IServiceEvent {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ServiceContainerEvent["); //$NON-NLS-1$
+		final StringBuffer buf = new StringBuffer("ServiceContainerEvent["); //$NON-NLS-1$
 		buf.append("serviceinfo=").append(info).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}

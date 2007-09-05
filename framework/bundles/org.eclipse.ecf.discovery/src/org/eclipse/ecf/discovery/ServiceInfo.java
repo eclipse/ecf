@@ -13,7 +13,6 @@ import java.io.Serializable;
 import java.net.InetAddress;
 
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.ServiceID;
 
 /**
  * Base implementation of {@link IServiceInfo}.  Subclasses
@@ -21,32 +20,21 @@ import org.eclipse.ecf.discovery.identity.ServiceID;
  */
 public class ServiceInfo implements IServiceInfo, Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -5651115550295457142L;
 
-	InetAddress addr = null;
+	protected InetAddress addr = null;
 
-	IServiceID serviceID;
+	protected IServiceID serviceID;
 
-	int port;
+	protected int port;
 
-	int priority;
+	protected int priority;
 
-	int weight;
+	protected int weight;
 
-	IServiceProperties properties;
+	protected IServiceProperties properties;
 
-	public ServiceInfo(InetAddress address, String type, int port,
-			int priority, int weight, IServiceProperties props) {
-		this.addr = address;
-		this.serviceID = new ServiceID(type, null);
-		this.port = port;
-		this.priority = priority;
-		this.weight = weight;
-		this.properties = props;
-	}
-
-	public ServiceInfo(InetAddress address, IServiceID serviceID, int port,
-			int priority, int weight, IServiceProperties props) {
+	public ServiceInfo(InetAddress address, IServiceID serviceID, int port, int priority, int weight, IServiceProperties props) {
 		this.addr = address;
 		this.serviceID = serviceID;
 		this.port = port;
@@ -112,7 +100,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ServiceInfo["); //$NON-NLS-1$
+		final StringBuffer buf = new StringBuffer("ServiceInfo["); //$NON-NLS-1$
 		buf.append("addr=").append(addr).append(";id=").append(serviceID) //$NON-NLS-1$ //$NON-NLS-2$
 				.append(";port=").append(port).append(";priority=").append( //$NON-NLS-1$ //$NON-NLS-2$
 						priority).append(";weight=").append(weight).append( //$NON-NLS-1$

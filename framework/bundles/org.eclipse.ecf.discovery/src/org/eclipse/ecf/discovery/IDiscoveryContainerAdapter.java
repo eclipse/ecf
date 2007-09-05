@@ -10,8 +10,11 @@
 package org.eclipse.ecf.discovery;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 
 /**
  * Entry point discovery container adapter. This interface exposes the ability
@@ -28,30 +31,6 @@ import org.eclipse.ecf.discovery.identity.IServiceID;
  * 
  */
 public interface IDiscoveryContainerAdapter extends IAdaptable {
-	/**
-	 * Add a service listener. The given listener will have its method called
-	 * when a service with a type matching that specified by the first parameter
-	 * is discovered.
-	 * 
-	 * @param type
-	 *            String type to listen for. Must not be <code>null</code>.
-	 * @param listener
-	 *            IServiceListener to be notified. Must not be <code>null</code>.
-	 */
-	public void addServiceListener(String type, IServiceListener listener);
-
-	/**
-	 * Remove a service listener. Remove the listener associated with the type
-	 * specified by the first parameter.
-	 * 
-	 * @param type
-	 *            String of the desired type to remove the listener. Must not be
-	 *            <code>null</code>.
-	 * @param listener
-	 *            IServiceListener listener to be removed. Must not be
-	 *            <code>null</code>.
-	 */
-	public void removeServiceListener(String type, IServiceListener listener);
 
 	/**
 	 * Add a service type listener. The given listener will have its method
@@ -72,14 +51,51 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	public void removeServiceTypeListener(IServiceTypeListener listener);
 
 	/**
+	 * Add a service listener. The given listener will have its method called
+	 * when a service with a type matching that specified by the first parameter
+	 * is discovered.
+	 * 
+	 * @param type
+	 *            String type to listen for. Must not be <code>null</code>.
+	 *            Must be formatted accroding to this specific IDiscoveryContainer
+	 * @param listener
+	 *            IServiceListener to be notified. Must not be <code>null</code>.
+	 * @deprecated Use addServiceListener(IServiceTypeID, IServiceListener) instead.
+	 */
+	public void addServiceListener(String type, IServiceListener listener);
+
+	public void addServiceListener(IServiceTypeID type, IServiceListener listener);
+
+	/**
+	 * Remove a service listener. Remove the listener associated with the type
+	 * specified by the first parameter.
+	 * 
+	 * @param type
+	 *            String of the desired type to remove the listener. Must not be
+	 *            <code>null</code>.
+	 *            Must be formatted accroding to this specific IDiscoveryContainer
+	 * @param listener
+	 *            IServiceListener listener to be removed. Must not be
+	 *            <code>null</code>.
+	 * @deprecated Use removeServiceListener(IServiceTypeID, IServiceListener) instead.
+	 */
+	public void removeServiceListener(String type, IServiceListener listener);
+
+	public void removeServiceListener(IServiceTypeID type, IServiceListener listener);
+
+	/**
 	 * Register the given service type. This publishes the given service type to
 	 * the underlying publishing mechanism
 	 * 
 	 * @param serviceType
 	 *            String of the serviceType to be published. Must not be
 	 *            <code>null</code>.
+	 *            Must be formatted accroding to this specific IDiscoveryContainer
+	 * @deprecated Use registerServiceType(IServiceTypeID) instead.
 	 */
 	public void registerServiceType(String serviceType);
+
+	public void registerServiceType(IServiceTypeID type);
 
 	/**
 	 * Register the given service. This publishes the service defined by the
@@ -141,4 +157,15 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 *         Will not be <code>null</code>. May be of length 0.
 	 */
 	public IServiceInfo[] getServices(String type);
+
+	/**
+	 * Get a namespace for services associated with this discovery container adapter.  The given namespace
+	 * may be used via {@link ServiceIDFactory} to create IServiceIDs rather than simple IDs.  For example:
+	 * <pre>
+	 * IServiceID serviceID = ServiceIDFactory.getDefault().createServiceID(container.getServicesNamespace(),serviceType,serviceName);
+	 * </pre>
+	 * 
+	 * @return Namespace for creating service IDs.  Will not be <code>null</code>.
+	 */
+	public Namespace getServicesNamespace();
 }

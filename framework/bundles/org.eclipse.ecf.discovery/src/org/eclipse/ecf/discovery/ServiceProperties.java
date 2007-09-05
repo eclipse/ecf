@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others. All rights reserved. This
+ * Copyright (c) 2007 Composent, Inc. and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -17,7 +17,7 @@ import java.util.Properties;
  */
 public class ServiceProperties implements IServiceProperties {
 
-	Properties props = new Properties();
+	private final Properties props;
 
 	public ServiceProperties() {
 		super();
@@ -26,7 +26,7 @@ public class ServiceProperties implements IServiceProperties {
 
 	public ServiceProperties(Properties props) {
 		super();
-		this.props = (props == null)?new Properties():props;
+		this.props = (props == null) ? new Properties() : props;
 	}
 
 	/*
@@ -44,7 +44,7 @@ public class ServiceProperties implements IServiceProperties {
 	 * @see org.eclipse.ecf.discovery.IServiceProperties#getPropertyString(java.lang.String)
 	 */
 	public String getPropertyString(String name) {
-		Object val = props.get(name);
+		final Object val = props.get(name);
 		if (val instanceof String) {
 			return (String) val;
 		}
@@ -57,7 +57,7 @@ public class ServiceProperties implements IServiceProperties {
 	 * @see org.eclipse.ecf.discovery.IServiceProperties#getPropertyBytes(java.lang.String)
 	 */
 	public byte[] getPropertyBytes(String name) {
-		Object val = props.get(name);
+		final Object val = props.get(name);
 		if (val instanceof byte[]) {
 			return (byte[]) val;
 		}
@@ -84,13 +84,13 @@ public class ServiceProperties implements IServiceProperties {
 	 * @see org.eclipse.ecf.discovery.IServiceProperties#setPropertyBytes(java.lang.String, byte[])
 	 */
 	public Object setPropertyBytes(String name, byte[] value) {
-		return props.put(name,value);
+		return props.put(name, value);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IServiceProperties#setPropertyString(java.lang.String, java.lang.String)
 	 */
 	public Object setPropertyString(String name, String value) {
-		return props.put(name,value);
+		return props.put(name, value);
 	}
 }
