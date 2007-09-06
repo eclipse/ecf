@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
-Bundle-Name: %Bundle-Name.0
+Bundle-Name: %plugin.name
 Bundle-SymbolicName: org.eclipse.ecf.presence;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.presence.PresencePlugin
-Bundle-Vendor: %Bundle-Vendor.0
+Bundle-Vendor: %plugin.provider
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.ecf.internal.presence;x-internal:=true,
