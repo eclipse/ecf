@@ -30,6 +30,10 @@ public class TrivialNamespace extends Namespace {
 	public ID createInstance(Object[] parameters) throws IDCreateException {
 		// XXX Note that this assumes that a unique string is provided for creating the ID
 		// e.g. IDFactory.getDefault().createID("myid");
+		if (parameters == null || parameters.length < 1)
+			throw new IDCreateException("parameters not of correct size");
+		if (!(parameters[0] instanceof String))
+			throw new IDCreateException("parameter not of String type");
 		return new TrivialID(this, (String) parameters[0]);
 	}
 

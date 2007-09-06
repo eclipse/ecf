@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ECF Trivial Provider
 Bundle-SymbolicName: org.eclipse.ecf.examples.provider.trivial;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.100.provider
 Bundle-Activator: org.eclipse.ecf.internal.examples.provider.trivial.Activator
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.core.runtime,
