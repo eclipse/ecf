@@ -32,6 +32,7 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.server.generic.Activator;
 import org.eclipse.ecf.internal.server.generic.Messages;
@@ -196,14 +197,15 @@ public class ServerManager {
 	private void registerServerForDiscovery(NamedGroup group, boolean pwrequired) {
 		final IDiscoveryService discovery = Activator.getDefault().getDiscovery();
 		if (discovery != null) {
-			discovery.registerServiceType(SERVICE_TYPE);
-			final String rawGroupName = group.getRawName();
-			final Connector connector = group.getConnector();
-			final Properties props = new Properties();
-			props.put(PROTOCOL_PROPERTY_NAME, TCPServerSOContainer.DEFAULT_PROTOCOL);
-			props.put(PWREQUIRED_PROPERTY_NAME, new Boolean(pwrequired).toString());
-			props.put(GROUP_PROPERTY_NAME, rawGroupName);
 			try {
+				final IServiceID sID = ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), SERVICE_TYPE);
+				discovery.registerServiceType(sID.getServiceTypeID());
+				final String rawGroupName = group.getRawName();
+				final Connector connector = group.getConnector();
+				final Properties props = new Properties();
+				props.put(PROTOCOL_PROPERTY_NAME, TCPServerSOContainer.DEFAULT_PROTOCOL);
+				props.put(PWREQUIRED_PROPERTY_NAME, new Boolean(pwrequired).toString());
+				props.put(GROUP_PROPERTY_NAME, rawGroupName);
 				final Namespace ns = IDFactory.getDefault().getNamespaceByName(ECF_NAMESPACE_JMDNS);
 				final IServiceID serviceID = (IServiceID) IDFactory.getDefault().createID(ns, new Object[] {SERVICE_TYPE, rawGroupName});
 				final InetAddress host = InetAddress.getByName(connector.getHostname());
