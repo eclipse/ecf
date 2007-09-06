@@ -13,33 +13,19 @@ package org.eclipse.ecf.internal.presence.ui.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
 import org.eclipse.ecf.presence.chatroom.IChatRoomManager;
 import org.eclipse.ecf.presence.ui.MultiRosterAccount;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.*;
 
 public class ChatRoomSelectionDialog extends TitleAreaDialog {
 	MultiRosterAccount[] accounts = null;
@@ -65,8 +51,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		}
 	}
 
-	public ChatRoomSelectionDialog(Shell parentShell,
-			MultiRosterAccount[] accounts) {
+	public ChatRoomSelectionDialog(Shell parentShell, MultiRosterAccount[] accounts) {
 		super(parentShell);
 		this.accounts = accounts;
 		setTitleImage(SharedImages.getImage(SharedImages.IMG_CHAT_WIZARD));
@@ -77,8 +62,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		main.setLayout(new GridLayout());
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		TableViewer viewer = new TableViewer(main, SWT.BORDER | SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.FULL_SELECTION);
+		TableViewer viewer = new TableViewer(main, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 		Table table = viewer.getTable();
 
 		table.setHeaderVisible(true);
@@ -119,8 +103,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 
 			public void selectionChanged(SelectionChangedEvent event) {
 				if (!event.getSelection().isEmpty()) {
-					ChatRoomSelectionDialog.this.getButton(Window.OK)
-							.setEnabled(true);
+					ChatRoomSelectionDialog.this.getButton(Window.OK).setEnabled(true);
 				}
 			}
 
@@ -150,8 +133,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent e) {
-				IStructuredSelection s = (IStructuredSelection) e
-						.getSelection();
+				IStructuredSelection s = (IStructuredSelection) e.getSelection();
 				Object o = s.getFirstElement();
 				if (o instanceof Room) {
 					selectedRoom = (Room) o;
@@ -180,9 +162,11 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		}
 
 		public void dispose() {
+			// do nothing
 		}
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			// do nothing
 		}
 
 	}
@@ -198,31 +182,33 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 
 			IChatRoomInfo info = room.getRoomInfo();
 			switch (columnIndex) {
-			case 0:
-				return info.getName();
-			case 1:
-				return info.getSubject();
-			case 2:
-				return info.getDescription();
-			case 3:
-				return String.valueOf(info.getParticipantsCount());
-			case 4:
-				return String.valueOf(info.isModerated());
-			case 5:
-				return String.valueOf(info.isPersistent());
-			case 6:
-				return room.getAccount().getContainer().getConnectedID().getName();
-			default:
-				return ""; //$NON-NLS-1$
+				case 0 :
+					return info.getName();
+				case 1 :
+					return info.getSubject();
+				case 2 :
+					return info.getDescription();
+				case 3 :
+					return String.valueOf(info.getParticipantsCount());
+				case 4 :
+					return String.valueOf(info.isModerated());
+				case 5 :
+					return String.valueOf(info.isPersistent());
+				case 6 :
+					return room.getAccount().getContainer().getConnectedID().getName();
+				default :
+					return ""; //$NON-NLS-1$
 
 			}
 
 		}
 
 		public void addListener(ILabelProviderListener listener) {
+			// do nothing
 		}
 
 		public void dispose() {
+			// do nothing
 		}
 
 		public boolean isLabelProperty(Object element, String property) {
@@ -230,6 +216,7 @@ public class ChatRoomSelectionDialog extends TitleAreaDialog {
 		}
 
 		public void removeListener(ILabelProviderListener listener) {
+			// do nothing
 		}
 
 	}

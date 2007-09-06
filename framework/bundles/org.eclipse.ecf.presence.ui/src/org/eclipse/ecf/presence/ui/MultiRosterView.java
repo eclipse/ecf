@@ -11,104 +11,42 @@
 package org.eclipse.ecf.presence.ui;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.Messages;
-import org.eclipse.ecf.internal.presence.ui.dialogs.AddContactDialog;
-import org.eclipse.ecf.internal.presence.ui.dialogs.ChangePasswordDialog;
-import org.eclipse.ecf.internal.presence.ui.dialogs.ChatRoomSelectionDialog;
-import org.eclipse.ecf.presence.IAccountManager;
-import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.IPresenceListener;
-import org.eclipse.ecf.presence.Presence;
+import org.eclipse.ecf.internal.presence.ui.dialogs.*;
+import org.eclipse.ecf.presence.*;
 import org.eclipse.ecf.presence.chatroom.IChatRoomInfo;
-import org.eclipse.ecf.presence.im.IChatManager;
-import org.eclipse.ecf.presence.im.IChatMessageSender;
-import org.eclipse.ecf.presence.im.ITypingMessageSender;
-import org.eclipse.ecf.presence.roster.IRoster;
-import org.eclipse.ecf.presence.roster.IRosterEntry;
-import org.eclipse.ecf.presence.roster.IRosterGroup;
-import org.eclipse.ecf.presence.roster.IRosterItem;
-import org.eclipse.ecf.presence.roster.IRosterManager;
-import org.eclipse.ecf.presence.roster.IRosterSubscriptionSender;
+import org.eclipse.ecf.presence.im.*;
+import org.eclipse.ecf.presence.roster.*;
 import org.eclipse.ecf.presence.service.IPresenceService;
-import org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView;
-import org.eclipse.ecf.presence.ui.chatroom.IChatRoomCommandListener;
-import org.eclipse.ecf.presence.ui.chatroom.IChatRoomViewCloseListener;
+import org.eclipse.ecf.presence.ui.chatroom.*;
 import org.eclipse.ecf.presence.ui.dnd.IRosterViewerDropTarget;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.ecf.ui.dialogs.ContainerConnectErrorDialog;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.LocalSelectionTransfer;
-import org.eclipse.jface.viewers.IOpenListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.OpenEvent;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerDropAdapter;
-import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.FileTransfer;
-import org.eclipse.swt.dnd.HTMLTransfer;
-import org.eclipse.swt.dnd.RTFTransfer;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.dnd.TransferData;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IViewReference;
-import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
 import org.eclipse.ui.forms.FormColors;
 import org.eclipse.ui.forms.IFormColors;
-import org.eclipse.ui.forms.widgets.Form;
-import org.eclipse.ui.forms.widgets.FormText;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.part.EditorInputTransfer;
-import org.eclipse.ui.part.PluginTransfer;
-import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.forms.widgets.*;
+import org.eclipse.ui.part.*;
 
 /**
  * View class for displaying multiple rosters in a tree viewer. This view part
@@ -122,20 +60,14 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 	protected static final int DEFAULT_EXPAND_LEVEL = 3;
 
-	private static final String ROSTER_VIEWER_DROP_TARGET_EPOINT = Activator.PLUGIN_ID
-			+ "." //$NON-NLS-1$
+	private static final String ROSTER_VIEWER_DROP_TARGET_EPOINT = Activator.PLUGIN_ID + "." //$NON-NLS-1$
 			+ "rosterViewerDropTarget"; //$NON-NLS-1$
 
 	private static final String ROSTER_VIEWER_DROP_TARGET_CLASS_ATTR = "class"; //$NON-NLS-1$
 
-	private static final Transfer[] dndTransferTypes = {
-			EditorInputTransfer.getInstance(), FileTransfer.getInstance(),
-			HTMLTransfer.getInstance(), LocalSelectionTransfer.getTransfer(),
-			PluginTransfer.getInstance(), RTFTransfer.getInstance(),
-			TextTransfer.getInstance() };
+	private static final Transfer[] dndTransferTypes = {EditorInputTransfer.getInstance(), FileTransfer.getInstance(), HTMLTransfer.getInstance(), LocalSelectionTransfer.getTransfer(), PluginTransfer.getInstance(), RTFTransfer.getInstance(), TextTransfer.getInstance()};
 
-	private static final int dndOperations = DND.DROP_COPY | DND.DROP_MOVE
-			| DND.DROP_LINK;
+	private static final int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
 
 	protected TreeViewer treeViewer;
 
@@ -182,29 +114,24 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	private RosterViewerDropAdapter dropAdapter;
 
 	private ViewerFilter hideOfflineFilter = new ViewerFilter() {
-		public boolean select(Viewer viewer, Object parentElement,
-				Object element) {
+		public boolean select(Viewer viewer, Object parentElement, Object element) {
 			if (element instanceof IRosterEntry) {
 				IRosterEntry entry = (IRosterEntry) element;
 				IPresence presence = entry.getPresence();
 				if (presence != null)
 					return (presence.getType() != IPresence.Type.UNAVAILABLE);
-				else
-					return true;
-			} else {
 				return true;
 			}
+			return true;
 		}
 	};
 
 	private ViewerFilter hideEmptyGroupsFilter = new ViewerFilter() {
-		public boolean select(Viewer viewer, Object parentElement,
-				Object element) {
+		public boolean select(Viewer viewer, Object parentElement, Object element) {
 			if (element instanceof IRosterGroup) {
 				return !((IRosterGroup) element).getEntries().isEmpty();
-			} else {
-				return true;
 			}
+			return true;
 		}
 	};
 
@@ -218,8 +145,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	protected void setupTreeViewer(Composite parent) {
-		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.SINGLE
-				| SWT.V_SCROLL);
+		treeViewer = new TreeViewer(parent, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
 		getSite().setSelectionProvider(treeViewer);
 		presenceListener = new PresenceListener();
 		treeViewer.setContentProvider(new MultiRosterContentProvider());
@@ -251,24 +177,21 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		private List rosterDropTargets = new ArrayList();
 		private List rosterPerformDrop = new ArrayList();
 
-		public RosterViewerDropAdapter(TreeViewer treeViewer,
-				IRosterViewerDropTarget dropTarget) {
+		public RosterViewerDropAdapter(TreeViewer treeViewer, IRosterViewerDropTarget dropTarget) {
 			super(treeViewer);
 			Assert.isNotNull(dropTarget);
 			setFeedbackEnabled(false);
 			addRosterDropTarget(dropTarget);
 		}
 
-		public boolean addRosterDropTarget(
-				IRosterViewerDropTarget rosterDropTarget) {
+		public boolean addRosterDropTarget(IRosterViewerDropTarget rosterDropTarget) {
 			return rosterDropTargets.add(rosterDropTarget);
 		}
 
 		public boolean performDrop(Object data) {
 			boolean result = false;
 			for (Iterator i = rosterPerformDrop.iterator(); i.hasNext();) {
-				IRosterViewerDropTarget rdt = (IRosterViewerDropTarget) i
-						.next();
+				IRosterViewerDropTarget rdt = (IRosterViewerDropTarget) i.next();
 				if (rdt.performDrop(data))
 					result = true;
 			}
@@ -281,71 +204,52 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			rosterPerformDrop.clear();
 		}
 
-		public boolean validateDrop(Object target, int operation,
-				TransferData transferType) {
+		public boolean validateDrop(Object target, int operation, TransferData transferType) {
 			if (target != null && target instanceof IRosterItem) {
 				rosterPerformDrop.clear();
 				boolean result = false;
 				for (Iterator i = rosterDropTargets.iterator(); i.hasNext();) {
-					IRosterViewerDropTarget rdt = (IRosterViewerDropTarget) i
-							.next();
-					if (rdt.validateDrop((IRosterItem) target, operation,
-							transferType)) {
+					IRosterViewerDropTarget rdt = (IRosterViewerDropTarget) i.next();
+					if (rdt.validateDrop((IRosterItem) target, operation, transferType)) {
 						result = true;
 						rosterPerformDrop.add(rdt);
 					}
 				}
 				return result;
-			} else
-				return false;
+			}
+			return false;
 		}
 	}
 
 	private void hookDropSupport() {
 		IExtensionRegistry reg = Activator.getDefault().getExtensionRegistry();
 		if (reg != null) {
-			IExtensionPoint extensionPoint = reg
-					.getExtensionPoint(ROSTER_VIEWER_DROP_TARGET_EPOINT);
+			IExtensionPoint extensionPoint = reg.getExtensionPoint(ROSTER_VIEWER_DROP_TARGET_EPOINT);
 			if (extensionPoint == null) {
 				return;
 			}
-			IConfigurationElement[] configurationElements = extensionPoint
-					.getConfigurationElements();
+			IConfigurationElement[] configurationElements = extensionPoint.getConfigurationElements();
 
 			for (int i = 0; i < configurationElements.length; i++) {
 				try {
-					IRosterViewerDropTarget rosterDropTarget = (IRosterViewerDropTarget) configurationElements[i]
-							.createExecutableExtension(ROSTER_VIEWER_DROP_TARGET_CLASS_ATTR);
+					IRosterViewerDropTarget rosterDropTarget = (IRosterViewerDropTarget) configurationElements[i].createExecutableExtension(ROSTER_VIEWER_DROP_TARGET_CLASS_ATTR);
 					if (dropAdapter == null) {
-						dropAdapter = new RosterViewerDropAdapter(treeViewer,
-								rosterDropTarget);
-						treeViewer.addDropSupport(dndOperations,
-								dndTransferTypes, dropAdapter);
+						dropAdapter = new RosterViewerDropAdapter(treeViewer, rosterDropTarget);
+						treeViewer.addDropSupport(dndOperations, dndTransferTypes, dropAdapter);
 					} else
 						dropAdapter.addRosterDropTarget(rosterDropTarget);
 				} catch (CoreException e) {
 					// Log
-					Activator
-							.getDefault()
-							.getLog()
-							.log(
-									new Status(
-											IStatus.ERROR,
-											Activator.PLUGIN_ID,
-											IStatus.ERROR,
-											Messages.MultiRosterView_ROSTER_VIEW_EXT_POINT_ERROR_MESSAGE,
-											e));
+					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.MultiRosterView_ROSTER_VIEW_EXT_POINT_ERROR_MESSAGE, e));
 				}
 			}
 		}
 	}
 
 	private void retrieveServices() {
-		IPresenceService[] services = Activator.getDefault()
-				.getPresenceServices();
+		IPresenceService[] services = Activator.getDefault().getPresenceServices();
 		for (int i = 0; i < services.length; i++) {
-			IContainer container = (IContainer) services[i]
-					.getAdapter(IContainer.class);
+			IContainer container = (IContainer) services[i].getAdapter(IContainer.class);
 			if (container != null && container.getConnectedID() != null) {
 				addContainer(container);
 			}
@@ -356,8 +260,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		return null;
 	}
 
-	protected IChatRoomViewCloseListener createChatRoomViewCloseListener(
-			final ID connectedID) {
+	protected IChatRoomViewCloseListener createChatRoomViewCloseListener(final ID connectedID) {
 		return new IChatRoomViewCloseListener() {
 			public void chatRoomViewClosing() {
 				chatRooms.remove(connectedID);
@@ -386,20 +289,17 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	 *             container is not managed by this MultiRosterView, or if
 	 *             {@link ChatRoomManagerView} cannot be initialized.
 	 */
-	protected void joinChatRoom(IContainer container, IChatRoomInfo roomInfo,
-			String password) throws ECFException {
+	protected void joinChatRoom(IContainer container, IChatRoomInfo roomInfo, String password) throws ECFException {
 		Assert.isNotNull(container);
 		Assert.isNotNull(roomInfo);
 		// Check to make sure given container is connected.
 		ID connectedID = container.getConnectedID();
 		if (connectedID == null)
-			throw new ECFException(
-					Messages.MultiRosterView_EXCEPTION_JOIN_ROOM_NOT_CONNECTED);
+			throw new ECFException(Messages.MultiRosterView_EXCEPTION_JOIN_ROOM_NOT_CONNECTED);
 		// Check to make sure that the given container is one that we have in
 		// our accounts set
 		if (findAccountForContainer(container) == null)
-			throw new ECFException(
-					Messages.MultiRosterView_EXCEPTION_JOIN_ROOM_INVALID_ACCOUNT);
+			throw new ECFException(Messages.MultiRosterView_EXCEPTION_JOIN_ROOM_INVALID_ACCOUNT);
 
 		IWorkbenchWindow ww = getViewSite().getPage().getWorkbenchWindow();
 		IWorkbenchPage wp = ww.getActivePage();
@@ -411,41 +311,27 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			wp.activate(chatroommanagerview);
 			chatroommanagerview.joinRoom(roomInfo, password);
 			return;
-		} else {
-			try {
-				IViewReference ref = wp
-						.findViewReference(
-								org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView.VIEW_ID,
-								connectedID.getName());
-				// Open view for given connectedID (secondaryID)
-				final ChatRoomManagerView chatroommanagerview = (ChatRoomManagerView) ((ref == null) ? wp
-						.showView(
-								org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView.VIEW_ID,
-								connectedID.getName(),
-								IWorkbenchPage.VIEW_ACTIVATE)
-						: ref.getView(true));
-				// initialize new view
-				chatroommanagerview.initializeWithoutManager(
-						ChatRoomManagerView.getUsernameFromID(connectedID),
-						ChatRoomManagerView.getHostnameFromID(connectedID),
-						createChatRoomCommandListener(),
-						createChatRoomViewCloseListener(connectedID));
-				// join room
-				chatroommanagerview.joinRoom(roomInfo, password);
+		}
+		try {
+			IViewReference ref = wp.findViewReference(org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView.VIEW_ID, connectedID.getName());
+			// Open view for given connectedID (secondaryID)
+			final ChatRoomManagerView chatroommanagerview = (ChatRoomManagerView) ((ref == null) ? wp.showView(org.eclipse.ecf.presence.ui.chatroom.ChatRoomManagerView.VIEW_ID, connectedID.getName(), IWorkbenchPage.VIEW_ACTIVATE) : ref.getView(true));
+			// initialize new view
+			chatroommanagerview.initializeWithoutManager(ChatRoomManagerView.getUsernameFromID(connectedID), ChatRoomManagerView.getHostnameFromID(connectedID), createChatRoomCommandListener(), createChatRoomViewCloseListener(connectedID));
+			// join room
+			chatroommanagerview.joinRoom(roomInfo, password);
 
-				roomView = new RoomWithAView(chatroommanagerview, connectedID);
-				chatRooms.put(roomView.getID(), roomView);
-			} catch (Exception e1) {
-				throw new ECFException(e1);
-			}
+			roomView = new RoomWithAView(chatroommanagerview, connectedID);
+			chatRooms.put(roomView.getID(), roomView);
+		} catch (Exception e1) {
+			throw new ECFException(e1);
 		}
 
 	}
 
 	private void selectAndJoinChatRoomForAccounts(MultiRosterAccount[] accounts) {
 		// Create chat room selection dialog with managers, open
-		ChatRoomSelectionDialog dialog = new ChatRoomSelectionDialog(
-				getViewSite().getShell(), accounts);
+		ChatRoomSelectionDialog dialog = new ChatRoomSelectionDialog(getViewSite().getShell(), accounts);
 		dialog.open();
 		// If selection cancelled then simply return
 		if (dialog.getReturnCode() != Window.OK)
@@ -457,14 +343,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		final IContainer container = account.getContainer();
 		final ID connectedID = container.getConnectedID();
 		if (connectedID == null) {
-			MessageDialog
-					.openError(
-							getViewSite().getShell(),
-							Messages.MultiRosterView_NO_IDENTIFIER_FOR_ROOM_TITLE,
-							NLS
-									.bind(
-											Messages.MultiRosterView_NO_IDENTIFIER_FOR_ROOM_MESSAGE,
-											selectedInfo.getRoomID()));
+			MessageDialog.openError(getViewSite().getShell(), Messages.MultiRosterView_NO_IDENTIFIER_FOR_ROOM_TITLE, NLS.bind(Messages.MultiRosterView_NO_IDENTIFIER_FOR_ROOM_MESSAGE, selectedInfo.getRoomID()));
 			return;
 		}
 
@@ -472,14 +351,8 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			joinChatRoom(container, selectedInfo, null);
 		} catch (ECFException e) {
 			Throwable e1 = e.getStatus().getException();
-			Activator.getDefault().getLog().log(
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							IStatus.ERROR,
-							Messages.MultiRosterView_EXCEPTION_LOG_JOIN_ROOM,
-							e1));
-			ContainerConnectErrorDialog ed = new ContainerConnectErrorDialog(
-					getViewSite().getShell(), selectedInfo.getRoomID()
-							.getName(), e1);
+			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.MultiRosterView_EXCEPTION_LOG_JOIN_ROOM, e1));
+			ContainerConnectErrorDialog ed = new ContainerConnectErrorDialog(getViewSite().getShell(), selectedInfo.getRoomID().getName(), e1);
 			ed.open();
 		}
 	}
@@ -490,23 +363,18 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 				message((IStructuredSelection) treeViewer.getSelection());
 			}
 		};
-		imAction.setImageDescriptor(SharedImages
-				.getImageDescriptor(SharedImages.IMG_MESSAGE));
+		imAction.setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_MESSAGE));
 
 		removeAction = new Action() {
 			public void run() {
-				IStructuredSelection iss = (IStructuredSelection) treeViewer
-						.getSelection();
+				IStructuredSelection iss = (IStructuredSelection) treeViewer.getSelection();
 				remove((IRosterEntry) iss.getFirstElement());
 			}
 		};
 		removeAction.setText(Messages.MultiRosterView_Remove);
-		removeAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_DELETE));
+		removeAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 
-		setAvailableAction = new Action(Messages.MultiRosterView_SetAvailable,
-				IAction.AS_RADIO_BUTTON) {
+		setAvailableAction = new Action(Messages.MultiRosterView_SetAvailable, IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
 					sendPresence(IPresence.Mode.AVAILABLE);
@@ -514,8 +382,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		};
 
-		setAwayAction = new Action(Messages.MultiRosterView_SetAway,
-				IAction.AS_RADIO_BUTTON) {
+		setAwayAction = new Action(Messages.MultiRosterView_SetAway, IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
 					sendPresence(IPresence.Mode.AWAY);
@@ -523,8 +390,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		};
 
-		setDNDAction = new Action(Messages.MultiRosterView_SetDoNotDisturb,
-				IAction.AS_RADIO_BUTTON) {
+		setDNDAction = new Action(Messages.MultiRosterView_SetDoNotDisturb, IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
 					sendPresence(IPresence.Mode.DND);
@@ -532,8 +398,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		};
 
-		setInvisibleAction = new Action(Messages.MultiRosterView_SetInvisible,
-				IAction.AS_RADIO_BUTTON) {
+		setInvisibleAction = new Action(Messages.MultiRosterView_SetInvisible, IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
 					sendPresence(IPresence.Mode.INVISIBLE);
@@ -541,27 +406,23 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		};
 
-		setOfflineAction = new Action(Messages.MultiRosterView_SetOffline,
-				IAction.AS_RADIO_BUTTON) {
+		setOfflineAction = new Action(Messages.MultiRosterView_SetOffline, IAction.AS_RADIO_BUTTON) {
 			public void run() {
 				if (isChecked()) {
 					for (int i = 0; i < rosterAccounts.size(); i++) {
-						MultiRosterAccount account = (MultiRosterAccount) rosterAccounts
-								.get(i);
+						MultiRosterAccount account = (MultiRosterAccount) rosterAccounts.get(i);
 						treeViewer.remove(account);
 					}
 					rosterAccounts.clear();
 					refreshTreeViewer(null, false);
 					setStatusMenu.setVisible(false);
-					getViewSite().getActionBars().getMenuManager()
-							.update(false);
+					getViewSite().getActionBars().getMenuManager().update(false);
 				}
 			}
 		};
 		setOfflineAction.setChecked(true);
 
-		showOfflineAction = new Action(Messages.MultiRosterView_ShowOffline,
-				Action.AS_CHECK_BOX) {
+		showOfflineAction = new Action(Messages.MultiRosterView_ShowOffline, IAction.AS_CHECK_BOX) {
 			public void run() {
 				if (isChecked()) {
 					treeViewer.removeFilter(hideOfflineFilter);
@@ -571,8 +432,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		};
 
-		showEmptyGroupsAction = new Action(
-				Messages.MultiRosterView_ShowEmptyGroups, Action.AS_CHECK_BOX) {
+		showEmptyGroupsAction = new Action(Messages.MultiRosterView_ShowEmptyGroups, IAction.AS_CHECK_BOX) {
 			public void run() {
 				if (isChecked()) {
 					treeViewer.removeFilter(hideEmptyGroupsFilter);
@@ -582,19 +442,15 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			}
 		};
 
-		addContactAction = new Action(Messages.MultiRosterView_AddContact,
-				SharedImages.getImageDescriptor(SharedImages.IMG_ADD_BUDDY)) {
+		addContactAction = new Action(Messages.MultiRosterView_AddContact, SharedImages.getImageDescriptor(SharedImages.IMG_ADD_BUDDY)) {
 			public void run() {
-				AddContactDialog dialog = new AddContactDialog(treeViewer
-						.getControl().getShell());
+				AddContactDialog dialog = new AddContactDialog(treeViewer.getControl().getShell());
 				dialog.setInput(rosterAccounts);
 				if (Window.OK == dialog.open()) {
 					IPresenceContainerAdapter ipca = dialog.getSelection();
-					IRosterSubscriptionSender sender = ipca.getRosterManager()
-							.getRosterSubscriptionSender();
+					IRosterSubscriptionSender sender = ipca.getRosterManager().getRosterSubscriptionSender();
 					try {
-						sender.sendRosterAdd(dialog.getAccountID(), dialog
-								.getAlias(), null);
+						sender.sendRosterAdd(dialog.getAccountID(), dialog.getAlias(), null);
 					} catch (ECFException e) {
 						Activator.getDefault().getLog().log(e.getStatus());
 					}
@@ -604,125 +460,80 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 		openChatRoomAction = new Action() {
 			public void run() {
-				selectAndJoinChatRoomForAccounts((MultiRosterAccount[]) rosterAccounts
-						.toArray(new MultiRosterAccount[] {}));
+				selectAndJoinChatRoomForAccounts((MultiRosterAccount[]) rosterAccounts.toArray(new MultiRosterAccount[] {}));
 			}
 		};
-		openChatRoomAction
-				.setText(Messages.MultiRosterView_ENTER_CHATROOM_ACTION_TEXT);
-		openChatRoomAction
-				.setToolTipText(Messages.MultiRosterView_ENTER_CHATROOM_TOOLTIP_TEXT);
-		openChatRoomAction.setImageDescriptor(SharedImages
-				.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
+		openChatRoomAction.setText(Messages.MultiRosterView_ENTER_CHATROOM_ACTION_TEXT);
+		openChatRoomAction.setToolTipText(Messages.MultiRosterView_ENTER_CHATROOM_TOOLTIP_TEXT);
+		openChatRoomAction.setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
 		openChatRoomAction.setEnabled(true);
 
 		openAccountChatRoomAction = new Action() {
 			public void run() {
-				IStructuredSelection iss = (IStructuredSelection) treeViewer
-						.getSelection();
+				IStructuredSelection iss = (IStructuredSelection) treeViewer.getSelection();
 				IRoster roster = (IRoster) iss.getFirstElement();
-				MultiRosterAccount account = findAccountForUser(roster
-						.getUser().getID());
+				MultiRosterAccount account = findAccountForUser(roster.getUser().getID());
 				if (account != null)
-					selectAndJoinChatRoomForAccounts(new MultiRosterAccount[] { account });
+					selectAndJoinChatRoomForAccounts(new MultiRosterAccount[] {account});
 			}
 		};
-		openAccountChatRoomAction
-				.setText(Messages.MultiRosterView_SHOW_CHAT_ROOMS_FOR_ACCOUNT_ACTION_TEXT);
+		openAccountChatRoomAction.setText(Messages.MultiRosterView_SHOW_CHAT_ROOMS_FOR_ACCOUNT_ACTION_TEXT);
 		openAccountChatRoomAction.setEnabled(true);
-		openAccountChatRoomAction.setImageDescriptor(SharedImages
-				.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
+		openAccountChatRoomAction.setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_ADD_CHAT));
 
 		changePasswordAction = new Action() {
 			public void run() {
-				IStructuredSelection iss = (IStructuredSelection) treeViewer
-						.getSelection();
+				IStructuredSelection iss = (IStructuredSelection) treeViewer.getSelection();
 				IRoster roster = (IRoster) iss.getFirstElement();
-				MultiRosterAccount account = findAccountForUser(roster
-						.getUser().getID());
+				MultiRosterAccount account = findAccountForUser(roster.getUser().getID());
 				if (account != null)
 					changePasswordForAccount(account);
 			}
 		};
 
-		changePasswordAction
-				.setText(Messages.MultiRosterView_CHANGE_PASSWORD_MENU);
+		changePasswordAction.setText(Messages.MultiRosterView_CHANGE_PASSWORD_MENU);
 		changePasswordAction.setEnabled(true);
 
 		disconnectAllAccountsAction = new Action() {
 			public void run() {
-				if (MessageDialog
-						.openQuestion(
-								getViewSite().getShell(),
-								Messages.MultiRosterView_DISCONNECT_QUESTION_TITLE,
-								Messages.MultiRosterView_DISCONNECT_ALL_ACCOUNTS_QUESTION_MESSAGE)) {
-					disconnectAccounts((MultiRosterAccount[]) rosterAccounts
-							.toArray(new MultiRosterAccount[] {}));
+				if (MessageDialog.openQuestion(getViewSite().getShell(), Messages.MultiRosterView_DISCONNECT_QUESTION_TITLE, Messages.MultiRosterView_DISCONNECT_ALL_ACCOUNTS_QUESTION_MESSAGE)) {
+					disconnectAccounts((MultiRosterAccount[]) rosterAccounts.toArray(new MultiRosterAccount[] {}));
 				}
 			}
 		};
-		disconnectAllAccountsAction
-				.setText(Messages.MultiRosterView_DISCONNECT_ALL_ACCOUNTS_ACTION_TEXT);
+		disconnectAllAccountsAction.setText(Messages.MultiRosterView_DISCONNECT_ALL_ACCOUNTS_ACTION_TEXT);
 		disconnectAllAccountsAction.setEnabled(true);
-		disconnectAllAccountsAction.setImageDescriptor(PlatformUI
-				.getWorkbench().getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_DELETE));
+		disconnectAllAccountsAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 
 		disconnectAccountAction = new Action() {
 			public void run() {
-				IStructuredSelection iss = (IStructuredSelection) treeViewer
-						.getSelection();
+				IStructuredSelection iss = (IStructuredSelection) treeViewer.getSelection();
 				IRoster roster = (IRoster) iss.getFirstElement();
-				MultiRosterAccount account = findAccountForUser(roster
-						.getUser().getID());
+				MultiRosterAccount account = findAccountForUser(roster.getUser().getID());
 				ID connectedID = account.getContainer().getConnectedID();
-				if (account != null
-						&& connectedID != null
-						&& MessageDialog
-								.openQuestion(
-										getViewSite().getShell(),
-										Messages.MultiRosterView_DISCONNECT_QUESTION_TITLE,
-										NLS
-												.bind(
-														Messages.MultiRosterView_DISCONNECT_ACCOUNT_QUESTION_MESSAGE,
-														connectedID.getName()))) {
-					disconnectAccounts(new MultiRosterAccount[] { account });
+				if (account != null && connectedID != null && MessageDialog.openQuestion(getViewSite().getShell(), Messages.MultiRosterView_DISCONNECT_QUESTION_TITLE, NLS.bind(Messages.MultiRosterView_DISCONNECT_ACCOUNT_QUESTION_MESSAGE, connectedID.getName()))) {
+					disconnectAccounts(new MultiRosterAccount[] {account});
 				}
 			}
 		};
-		disconnectAccountAction
-				.setText(Messages.MultiRosterView_DISCONNECT_ACCOUNT_ACTION_TEXT);
-		disconnectAccountAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_DELETE));
+		disconnectAccountAction.setText(Messages.MultiRosterView_DISCONNECT_ACCOUNT_ACTION_TEXT);
+		disconnectAccountAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 
 	}
 
 	protected void changePasswordForAccount(MultiRosterAccount account) {
-		ChangePasswordDialog cpd = new ChangePasswordDialog(getViewSite()
-				.getShell(), account.getRoster().getUser().getID().getName());
+		ChangePasswordDialog cpd = new ChangePasswordDialog(getViewSite().getShell(), account.getRoster().getUser().getID().getName());
 		cpd.open();
 		if (cpd.getResult() == Window.OK) {
-			IPresenceContainerAdapter pc = account
-					.getPresenceContainerAdapter();
+			IPresenceContainerAdapter pc = account.getPresenceContainerAdapter();
 			IAccountManager am = pc.getAccountManager();
 			try {
 				if (am.changePassword(cpd.getNewPassword()))
-					MessageDialog
-							.openInformation(
-									getViewSite().getShell(),
-									Messages.MultiRosterView_PASSWORD_CHANGED_DIALOG_TITLE,
-									Messages.MultiRosterView_PASSWORD_CHANGED_MESSAGE);
+					MessageDialog.openInformation(getViewSite().getShell(), Messages.MultiRosterView_PASSWORD_CHANGED_DIALOG_TITLE, Messages.MultiRosterView_PASSWORD_CHANGED_MESSAGE);
 				else
-					MessageDialog
-							.openInformation(
-									getViewSite().getShell(),
-									Messages.MultiRosterView_PASSWORD_NOT_CHANGED_TITLE,
-									Messages.MultiRosterView_PASSWORD_NOT_CHANGED_MESSAGE);
+					MessageDialog.openInformation(getViewSite().getShell(), Messages.MultiRosterView_PASSWORD_NOT_CHANGED_TITLE, Messages.MultiRosterView_PASSWORD_NOT_CHANGED_MESSAGE);
 			} catch (ECFException e) {
-				MessageDialog.openError(getViewSite().getShell(),
-						Messages.MultiRosterView_PASSWORD_NOT_CHANGED_TITLE,
-						Messages.MultiRosterView_PASSWORD_CHANGE_ERROR);
+				MessageDialog.openError(getViewSite().getShell(), Messages.MultiRosterView_PASSWORD_NOT_CHANGED_TITLE, Messages.MultiRosterView_PASSWORD_CHANGE_ERROR);
 				Activator.getDefault().getLog().log(e.getStatus());
 			}
 		}
@@ -746,11 +557,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		try {
 			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
 				MultiRosterAccount account = (MultiRosterAccount) i.next();
-				account.getRosterManager().getPresenceSender()
-						.sendPresenceUpdate(
-								null,
-								new Presence(IPresence.Type.AVAILABLE, null,
-										mode));
+				account.getRosterManager().getPresenceSender().sendPresenceUpdate(null, new Presence(IPresence.Type.AVAILABLE, null, mode));
 			}
 		} catch (ECFException e) {
 			Activator.getDefault().getLog().log(e.getStatus());
@@ -771,24 +578,21 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		IStructuredSelection iss = (IStructuredSelection) treeViewer
-				.getSelection();
+		IStructuredSelection iss = (IStructuredSelection) treeViewer.getSelection();
 		Object element = iss.getFirstElement();
 		if (element instanceof IRosterEntry) {
 			IRosterEntry entry = (IRosterEntry) element;
 			manager.add(imAction);
 			imAction.setText(Messages.MultiRosterView_SendIM);
 			// if the person is not online, we'll disable the action
-			imAction
-					.setEnabled(entry.getPresence().getType() == IPresence.Type.AVAILABLE);
+			imAction.setEnabled(entry.getPresence().getType() == IPresence.Type.AVAILABLE);
 			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 			manager.add(removeAction);
 		} else if (element instanceof IRoster) {
-			IAccountManager accountManager = ((IRoster) element)
-					.getPresenceContainerAdapter().getAccountManager();
+			IAccountManager accountManager = ((IRoster) element).getPresenceContainerAdapter().getAccountManager();
 			if (accountManager != null) {
 				manager.add(changePasswordAction);
-				manager.add(new Separator());	
+				manager.add(new Separator());
 			}
 			manager.add(addContactAction);
 			manager.add(new Separator());
@@ -805,8 +609,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		for (Iterator it = items.iterator(); it.hasNext();) {
 			Object item = it.next();
 			if (item instanceof IRosterGroup) {
-				IRosterEntry entry = find(((IRosterGroup) item).getEntries(),
-						userID);
+				IRosterEntry entry = find(((IRosterGroup) item).getEntries(), userID);
 				if (entry != null) {
 					return entry;
 				}
@@ -834,20 +637,11 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		try {
 			IRoster roster = entry.getRoster();
 			if (roster != null) {
-				roster.getPresenceContainerAdapter().getRosterManager()
-						.getRosterSubscriptionSender().sendRosterRemove(
-								entry.getUser().getID());
+				roster.getPresenceContainerAdapter().getRosterManager().getRosterSubscriptionSender().sendRosterRemove(entry.getUser().getID());
 			}
 		} catch (ECFException e) {
-			MessageDialog
-					.openError(
-							getViewSite().getShell(),
-							Messages.MultiRosterView_ERROR_CONTACT_REMOVE_TITLE,
-							NLS
-									.bind(
-											Messages.MultiRosterView_ERROR_CONTACT_REMOVED_MESSAGE,
-											entry.getUser().getID().getName()));
-			Activator.getDefault().getLog().log(e.getStatus()); //$NON-NLS-1$
+			MessageDialog.openError(getViewSite().getShell(), Messages.MultiRosterView_ERROR_CONTACT_REMOVE_TITLE, NLS.bind(Messages.MultiRosterView_ERROR_CONTACT_REMOVED_MESSAGE, entry.getUser().getID().getName()));
+			Activator.getDefault().getLog().log(e.getStatus());
 		}
 	}
 
@@ -859,16 +653,12 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		IRosterEntry entry = (IRosterEntry) element;
 		IRoster roster = entry.getRoster();
 		if (roster != null) {
-			IChatManager manager = roster.getPresenceContainerAdapter()
-					.getChatManager();
+			IChatManager manager = roster.getPresenceContainerAdapter().getChatManager();
 			IChatMessageSender icms = manager.getChatMessageSender();
 			ITypingMessageSender itms = manager.getTypingMessageSender();
 			try {
-				MessagesView view = (MessagesView) getSite()
-						.getWorkbenchWindow().getActivePage().showView(
-								MessagesView.VIEW_ID);
-				view.selectTab(icms, itms, roster.getUser().getID(), entry
-						.getUser().getID());
+				MessagesView view = (MessagesView) getSite().getWorkbenchWindow().getActivePage().showView(MessagesView.VIEW_ID);
+				view.selectTab(icms, itms, roster.getUser().getID(), entry.getUser().getID());
 			} catch (PartInitException e) {
 				e.printStackTrace();
 			}
@@ -894,8 +684,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		setStatusMenu = new MenuManager(Messages.MultiRosterView_SetStatusAs,
-				null);
+		setStatusMenu = new MenuManager(Messages.MultiRosterView_SetStatusAs, null);
 		setStatusMenu.add(setAvailableAction);
 		setStatusMenu.add(setAwayAction);
 		setStatusMenu.add(setDNDAction);
@@ -943,8 +732,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		return result;
 	}
 
-	protected void rosterAccountDisconnected(
-			MultiRosterAccount disconnectedAccount) {
+	protected void rosterAccountDisconnected(MultiRosterAccount disconnectedAccount) {
 		// remove account. This will be changed to maintain the roster account
 		// info even though disconnected...see bug
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=166670
@@ -1006,8 +794,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		synchronized (rosterAccounts) {
 			for (Iterator i = rosterAccounts.iterator(); i.hasNext();) {
 				MultiRosterAccount account = (MultiRosterAccount) i.next();
-				final IRosterEntry entry = find(account.getRoster().getItems(),
-						entryID);
+				final IRosterEntry entry = find(account.getRoster().getItems(), entryID);
 				if (entry != null)
 					treeViewer.remove(entry);
 			}
@@ -1022,44 +809,34 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	public boolean addContainer(IContainer container) {
 		if (container == null)
 			return false;
-		IPresenceContainerAdapter containerAdapter = (IPresenceContainerAdapter) container
-				.getAdapter(IPresenceContainerAdapter.class);
+		IPresenceContainerAdapter containerAdapter = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
 		if (containerAdapter == null)
 			return false;
-		else {
-			MultiRosterAccount account = new MultiRosterAccount(this,
-					container, containerAdapter);
-			if (!addRosterAccount(account))
-				return false;
+		MultiRosterAccount account = new MultiRosterAccount(this, container, containerAdapter);
+		if (!addRosterAccount(account))
+			return false;
 
-			IRosterManager manager = containerAdapter.getRosterManager();
-			try {
-				if (setAvailableAction.isChecked()
-						|| setOfflineAction.isChecked()) {
-					manager.getPresenceSender().sendPresenceUpdate(null,
-							new Presence(null, null, IPresence.Mode.AVAILABLE));
-					setOfflineAction.setChecked(false);
-					setAvailableAction.setChecked(true);
-				} else if (setAwayAction.isChecked()) {
-					manager.getPresenceSender().sendPresenceUpdate(null,
-							new Presence(null, null, IPresence.Mode.AWAY));
-				} else if (setDNDAction.isChecked()) {
-					manager.getPresenceSender().sendPresenceUpdate(null,
-							new Presence(null, null, IPresence.Mode.DND));
-				} else if (setInvisibleAction.isChecked()) {
-					manager.getPresenceSender().sendPresenceUpdate(null,
-							new Presence(null, null, IPresence.Mode.INVISIBLE));
-				}
-			} catch (ECFException e) {
-				Activator.getDefault().getLog().log(e.getStatus());
+		IRosterManager manager = containerAdapter.getRosterManager();
+		try {
+			if (setAvailableAction.isChecked() || setOfflineAction.isChecked()) {
+				manager.getPresenceSender().sendPresenceUpdate(null, new Presence(null, null, IPresence.Mode.AVAILABLE));
+				setOfflineAction.setChecked(false);
+				setAvailableAction.setChecked(true);
+			} else if (setAwayAction.isChecked()) {
+				manager.getPresenceSender().sendPresenceUpdate(null, new Presence(null, null, IPresence.Mode.AWAY));
+			} else if (setDNDAction.isChecked()) {
+				manager.getPresenceSender().sendPresenceUpdate(null, new Presence(null, null, IPresence.Mode.DND));
+			} else if (setInvisibleAction.isChecked()) {
+				manager.getPresenceSender().sendPresenceUpdate(null, new Presence(null, null, IPresence.Mode.INVISIBLE));
 			}
-			containerAdapter.getRosterManager().addPresenceListener(
-					presenceListener);
-			setStatusMenu.setVisible(true);
-			getViewSite().getActionBars().getMenuManager().update(true);
-			treeViewer.add(treeViewer.getInput(), account.getRoster());
-			return true;
+		} catch (ECFException e) {
+			Activator.getDefault().getLog().log(e.getStatus());
 		}
+		containerAdapter.getRosterManager().addPresenceListener(presenceListener);
+		setStatusMenu.setVisible(true);
+		getViewSite().getActionBars().getMenuManager().update(true);
+		treeViewer.add(treeViewer.getInput(), account.getRoster());
+		return true;
 	}
 
 	private class PresenceListener implements IPresenceListener {
@@ -1071,6 +848,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		 *      org.eclipse.ecf.presence.IPresence)
 		 */
 		public void handlePresence(ID fromID, IPresence presence) {
+			// do nothing
 		}
 
 	}
@@ -1078,31 +856,29 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 	private class ViewerToolTip extends ToolTip {
 
 		private Image image;
-		
+
 		public ViewerToolTip(Control control) {
 			super(control);
 		}
 
-		protected Composite createToolTipContentArea(Event event,
-				Composite parent) {
-			TreeItem item = treeViewer.getTree().getItem(
-					new Point(event.x, event.y));
+		protected Composite createToolTipContentArea(Event event, Composite parent) {
+			TreeItem item = treeViewer.getTree().getItem(new Point(event.x, event.y));
 			IRosterEntry entry = (IRosterEntry) item.getData();
 
 			FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 			FormColors colors = toolkit.getColors();
 			Color top = colors.getColor(IFormColors.H_GRADIENT_END);
 			Color bot = colors.getColor(IFormColors.H_GRADIENT_START);
-			
+
 			// create the base form
 			Form form = toolkit.createForm(parent);
 			form.setText(entry.getName());
 			form.setImage(SharedImages.getImage(SharedImages.IMG_USER_AVAILABLE));
-			form.setTextBackground(new Color[] { top, bot }, new int[] { 100 }, true);
+			form.setTextBackground(new Color[] {top, bot}, new int[] {100}, true);
 			GridLayout layout = new GridLayout();
 			layout.numColumns = 3;
 			form.getBody().setLayout(layout);
-			
+
 			// create the text
 			FormText text = toolkit.createFormText(form.getBody(), true);
 			GridData td = new GridData();
@@ -1110,10 +886,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			td.heightHint = 100;
 			td.widthHint = 200;
 			text.setLayoutData(td);
-			
+
 			String buffer = getRosterEntryChildrenFromPresence(entry);
 			text.setText(buffer, true, false);
-			
+
 			// create the picture
 			td = new GridData();
 			td.horizontalSpan = 1;
@@ -1122,36 +898,35 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			FormText formImage = toolkit.createFormText(form.getBody(), false);
 			formImage.setText("<form><p><img href=\"image\"/></p></form>", true, false); //$NON-NLS-1$
 			formImage.setLayoutData(td);
-			
+
 			// grab the image and resize it
 			byte[] data = entry.getPresence().getPictureData();
-			if(data.length != 0) {
-				Image originalImage = new Image(parent.getDisplay(),
-						new ByteArrayInputStream(data));
+			if (data.length != 0) {
+				Image originalImage = new Image(parent.getDisplay(), new ByteArrayInputStream(data));
 				image = resize(originalImage, 64, 64);
 				formImage.setImage("image", image); //$NON-NLS-1$
 				originalImage.dispose();
 			}
-			
+
 			return parent;
 		}
-		
+
 		public void deactivate() {
 			super.deactivate();
 			if (image != null)
 				image.dispose();
 		}
-		
-		private Image resize(Image image, int width, int height) {
+
+		private Image resize(Image image1, int width, int height) {
 			final Image scaled = new Image(Display.getDefault(), width, height);
 			GC gc = new GC(scaled);
 			gc.setAntialias(SWT.ON);
 			gc.setInterpolation(SWT.HIGH);
-			gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, width, height);
+			gc.drawImage(image1, 0, 0, image1.getBounds().width, image1.getBounds().height, 0, 0, width, height);
 			gc.dispose();
 			return scaled;
 		}
-		
+
 		private String getRosterEntryChildrenFromPresence(IRosterEntry entry) {
 			IPresence presence = entry.getPresence();
 			Map properties = presence.getProperties();
@@ -1159,16 +934,13 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 			StringBuffer buffer = new StringBuffer();
 			buffer.append("<form>"); //$NON-NLS-1$
 			buffer.append("<p>"); //$NON-NLS-1$
-			buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Account,
-					entry.getUser().getID().getName()));
+			buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Account, entry.getUser().getID().getName()));
 			buffer.append("</p>"); //$NON-NLS-1$
 			buffer.append("<p>"); //$NON-NLS-1$
-			buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Type,
-					presence.getType()));
+			buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Type, presence.getType()));
 			buffer.append("</p>"); //$NON-NLS-1$
 			buffer.append("<p>");//$NON-NLS-1$
-			buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Mode,
-					presence.getMode().toString()));
+			buffer.append(NLS.bind(Messages.RosterWorkbenchAdapterFactory_Mode, presence.getMode().toString()));
 			buffer.append("</p>"); //$NON-NLS-1$
 			for (Iterator i = properties.keySet().iterator(); i.hasNext(); fixedEntries++) {
 				buffer.append("<p>"); //$NON-NLS-1$
@@ -1182,12 +954,10 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 
 		protected boolean shouldCreateToolTip(Event e) {
 			if (super.shouldCreateToolTip(e)) {
-				TreeItem item = treeViewer.getTree().getItem(
-						new Point(e.x, e.y));
+				TreeItem item = treeViewer.getTree().getItem(new Point(e.x, e.y));
 				return item != null && item.getData() instanceof IRosterEntry;
-			} else {
-				return false;
 			}
+			return false;
 		}
 	}
 

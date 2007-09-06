@@ -32,16 +32,10 @@ public class Activator extends AbstractUIPlugin {
 	private ServiceTracker tracker;
 
 	private ServiceTracker extensionRegistryTracker = null;
-	
+
 	private ServiceTracker containerManagerTracker = null;
-	
-	private BundleContext context;
-	
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
+
+	private BundleContext bundleContext;
 
 	public IPresenceService[] getPresenceServices() {
 		ServiceReference[] references = tracker.getServiceReferences();
@@ -64,9 +58,8 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		this.context = context;
-		tracker = new ServiceTracker(context, IPresenceService.class.getName(),
-				null);
+		this.bundleContext = context;
+		tracker = new ServiceTracker(context, IPresenceService.class.getName(), null);
 		tracker.open();
 	}
 
@@ -85,7 +78,7 @@ public class Activator extends AbstractUIPlugin {
 			containerManagerTracker.close();
 			containerManagerTracker = null;
 		}
-		this.context = null;
+		this.bundleContext = null;
 		super.stop(context);
 	}
 
@@ -100,17 +93,15 @@ public class Activator extends AbstractUIPlugin {
 
 	public IExtensionRegistry getExtensionRegistry() {
 		if (extensionRegistryTracker == null) {
-			this.extensionRegistryTracker = new ServiceTracker(context,
-					IExtensionRegistry.class.getName(), null);
+			this.extensionRegistryTracker = new ServiceTracker(bundleContext, IExtensionRegistry.class.getName(), null);
 			this.extensionRegistryTracker.open();
 		}
 		return (IExtensionRegistry) extensionRegistryTracker.getService();
 	}
-	
+
 	public IContainerManager getContainerManager() {
 		if (containerManagerTracker == null) {
-			containerManagerTracker = new ServiceTracker(context,
-					IContainerManager.class.getName(), null);
+			containerManagerTracker = new ServiceTracker(bundleContext, IContainerManager.class.getName(), null);
 			containerManagerTracker.open();
 		}
 		return (IContainerManager) containerManagerTracker.getService();

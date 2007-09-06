@@ -204,11 +204,11 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 					vsb.addSelectionListener(scrollSelectionListener);
 					vsb.addDisposeListener(new DisposeListener() {
 						public void widgetDisposed(DisposeEvent e) {
-							StyledText st = getOutputText();
-							if (st != null) {
-								ScrollBar vsb = st.getVerticalBar();
-								if (vsb != null)
-									vsb.removeSelectionListener(scrollSelectionListener);
+							StyledText ot = getOutputText();
+							if (ot != null) {
+								ScrollBar sb = ot.getVerticalBar();
+								if (sb != null)
+									sb.removeSelectionListener(scrollSelectionListener);
 							}
 						}
 					});
@@ -220,6 +220,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		private SelectionListener scrollSelectionListener = new SelectionListener() {
 
 			public void widgetDefaultSelected(SelectionEvent e) {
+				// do nothing
 			}
 
 			public void widgetSelected(SelectionEvent e) {
@@ -293,6 +294,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			ISelectionProvider selectionProvider = new ISelectionProvider() {
 
 				public void addSelectionChangedListener(ISelectionChangedListener listener) {
+					// do nothing
 				}
 
 				public ISelection getSelection() {
@@ -302,6 +304,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				}
 
 				public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+					// do nothing
 				}
 
 				public void setSelection(ISelection selection) {
@@ -416,13 +419,12 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		ChatRoom chatRoom = findChatRoomForTabItem(tabItem);
 		if (chatRoom == null) {
 			return true;
-		} else {
-			if (MessageDialog.openQuestion(getSite().getShell(), Messages.ChatRoomManagerView_CLOSE_CHAT_ROOM_TITLE, NLS.bind(Messages.ChatRoomManagerView_CLOSE_CHAT_ROOM_MESSAGE, tabItem.getText()))) {
-				chatRoom.chatRoomDisconnect();
-				return true;
-			} else
-				return false;
 		}
+		if (MessageDialog.openQuestion(getSite().getShell(), Messages.ChatRoomManagerView_CLOSE_CHAT_ROOM_TITLE, NLS.bind(Messages.ChatRoomManagerView_CLOSE_CHAT_ROOM_MESSAGE, tabItem.getText()))) {
+			chatRoom.chatRoomDisconnect();
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -452,27 +454,25 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 	private Text getRootTextInput() {
 		if (rootChannelTab == null)
 			return null;
-		else
-			return rootChannelTab.getInputText();
+		return rootChannelTab.getInputText();
 	}
 
 	private StyledText getRootTextOutput() {
 		if (rootChannelTab == null)
 			return null;
-		else
-			return rootChannelTab.getOutputText();
+		return rootChannelTab.getOutputText();
 	}
 
-	public void initializeWithoutManager(String localUserName, String hostName, final IChatRoomCommandListener commandListener, final IChatRoomViewCloseListener closeListener) {
-		initializeWithManager(localUserName, hostName, null, commandListener, closeListener);
+	public void initializeWithoutManager(String username, String hostname, final IChatRoomCommandListener commandListener1, final IChatRoomViewCloseListener closeListener) {
+		initializeWithManager(username, hostname, null, commandListener1, closeListener);
 	}
 
-	public void initializeWithManager(String localUserName, String hostName, final IChatRoomContainer rootChatRoomContainer, final IChatRoomCommandListener commandListener, final IChatRoomViewCloseListener closeListener) {
-		ChatRoomManagerView.this.localUserName = (localUserName == null) ? Messages.ChatRoomManagerView_DEFAULT_USER : localUserName;
-		ChatRoomManagerView.this.hostName = (hostName == null) ? Messages.ChatRoomManagerView_DEFAULT_HOST : hostName;
+	public void initializeWithManager(String localUserName1, String hostName1, final IChatRoomContainer rootChatRoomContainer, final IChatRoomCommandListener commandListener1, final IChatRoomViewCloseListener closeListener) {
+		ChatRoomManagerView.this.localUserName = (localUserName1 == null) ? Messages.ChatRoomManagerView_DEFAULT_USER : localUserName1;
+		ChatRoomManagerView.this.hostName = (hostName1 == null) ? Messages.ChatRoomManagerView_DEFAULT_HOST : hostName1;
 		ChatRoomManagerView.this.rootCloseListener = closeListener;
-		ChatRoomManagerView.this.commandListener = commandListener;
-		String viewTitle = localUserName + ATSIGN + hostName;
+		ChatRoomManagerView.this.commandListener = commandListener1;
+		String viewTitle = localUserName1 + ATSIGN + hostName1;
 		ChatRoomManagerView.this.setPartName(NLS.bind(Messages.ChatRoomManagerView_VIEW_TITLE, viewTitle));
 		ChatRoomManagerView.this.setTitleToolTip(Messages.ChatRoomManagerView_VIEW_TITLE_HOST_PREFIX + ChatRoomManagerView.this.hostName);
 		if (rootChatRoomContainer != null) {
@@ -484,6 +484,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				}
 
 				public void keyReleased(KeyEvent evt) {
+					// do nothing
 				}
 			});
 			makeActions();
@@ -578,12 +579,15 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				}
 
 				public void handleArrived(IUser participant) {
+					// do nothing
 				}
 
 				public void handleUpdated(IUser updatedParticipant) {
+					// do nothing
 				}
 
 				public void handleDeparted(IUser participant) {
+					// do nothing
 				}
 			});
 			chatRoomContainer.addListener(new IContainerListener() {
@@ -715,6 +719,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			rootTabFolder.addSelectionListener(new SelectionListener() {
 
 				public void widgetDefaultSelected(SelectionEvent e) {
+					// do nothing
 				}
 
 				public void widgetSelected(SelectionEvent e) {
@@ -733,11 +738,11 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 					vsb.addSelectionListener(scrollSelectionListener);
 					vsb.addDisposeListener(new DisposeListener() {
 						public void widgetDisposed(DisposeEvent e) {
-							StyledText st = getOutputText();
-							if (st != null) {
-								ScrollBar vsb = st.getVerticalBar();
-								if (vsb != null)
-									vsb.removeSelectionListener(scrollSelectionListener);
+							StyledText ot = getOutputText();
+							if (ot != null) {
+								ScrollBar vb = ot.getVerticalBar();
+								if (vb != null)
+									vb.removeSelectionListener(scrollSelectionListener);
 							}
 						}
 					});
@@ -748,6 +753,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		private SelectionListener scrollSelectionListener = new SelectionListener() {
 
 			public void widgetDefaultSelected(SelectionEvent e) {
+				// do nothing
 			}
 
 			public void widgetSelected(SelectionEvent e) {
@@ -919,11 +925,10 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			if (chatRoomMessageSender == null) {
 				MessageDialog.openError(getViewSite().getShell(), Messages.ChatRoomManagerView_NOT_CONNECTED_TITLE, Messages.ChatRoomManagerView_NOT_CONNECTED_MESSAGE);
 				return;
-			} else {
-				String output = processForCommand(chatRoomContainer, text);
-				if (output != null)
-					sendMessageLine(output);
 			}
+			String output = processForCommand(chatRoomContainer, text);
+			if (output != null)
+				sendMessageLine(output);
 		}
 
 		protected void chatRoomDisconnect() {
@@ -1052,8 +1057,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		IChatRoomCommandListener l = commandListener;
 		if (l != null)
 			return l.handleCommand(chatRoomContainer, text);
-		else
-			return text;
+		return text;
 	}
 
 	protected void handleEnter() {
@@ -1099,14 +1103,13 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 	}
 
 	private ID createStringID(String str) {
-		ID id = null;
-
 		try {
-			id = IDFactory.getDefault().createStringID(str);
+			return IDFactory.getDefault().createStringID(str);
 		} catch (IDCreateException e) {
+			// Should not happen
 		}
 
-		return id;
+		return null;
 	}
 
 	private MessagesView getMessagesView() throws PartInitException {
@@ -1165,18 +1168,17 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		IChatID chatID = (IChatID) targetID.getAdapter(IChatID.class);
 		if (chatID != null)
 			return chatID.getUsername();
-		else
-			try {
-				URI uri = new URI(targetID.getName());
-				String user = uri.getUserInfo();
-				return user == null ? targetID.getName() : user;
-			} catch (URISyntaxException e) {
-				String userAtHost = targetID.getName();
-				int atIndex = userAtHost.lastIndexOf(ATSIGN);
-				if (atIndex != -1)
-					userAtHost = userAtHost.substring(0, atIndex);
-				return userAtHost;
-			}
+		try {
+			URI uri = new URI(targetID.getName());
+			String user = uri.getUserInfo();
+			return user == null ? targetID.getName() : user;
+		} catch (URISyntaxException e) {
+			String userAtHost = targetID.getName();
+			int atIndex = userAtHost.lastIndexOf(ATSIGN);
+			if (atIndex != -1)
+				userAtHost = userAtHost.substring(0, atIndex);
+			return userAtHost;
+		}
 	}
 
 	/**
@@ -1186,18 +1188,17 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		IChatID chatID = (IChatID) targetID.getAdapter(IChatID.class);
 		if (chatID != null)
 			return chatID.getHostname();
-		else
-			try {
-				URI uri = new URI(targetID.getName());
-				String host = uri.getHost();
-				return host == null ? targetID.getName() : host;
-			} catch (URISyntaxException e) {
-				String userAtHost = targetID.getName();
-				int atIndex = userAtHost.lastIndexOf(ATSIGN);
-				if (atIndex != -1)
-					userAtHost = userAtHost.substring(atIndex + 1);
-				return userAtHost;
-			}
+		try {
+			URI uri = new URI(targetID.getName());
+			String host = uri.getHost();
+			return host == null ? targetID.getName() : host;
+		} catch (URISyntaxException e) {
+			String userAtHost = targetID.getName();
+			int atIndex = userAtHost.lastIndexOf(ATSIGN);
+			if (atIndex != -1)
+				userAtHost = userAtHost.substring(atIndex + 1);
+			return userAtHost;
+		}
 	}
 
 	class ChatRoomParticipant implements IUser, IActionFilter {
@@ -1253,8 +1254,8 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 
 		public boolean testAttribute(Object target, String name, String value) {
 			if (name.equals("scheme")) { //$NON-NLS-1$
-				IChatRoomContainer container = ChatRoomManagerView.this.container;
-				String scheme = container.getConnectedID().getNamespace().getScheme();
+				IChatRoomContainer c = ChatRoomManagerView.this.container;
+				String scheme = c.getConnectedID().getNamespace().getScheme();
 				return scheme.equalsIgnoreCase(value);
 			}
 			return false;
@@ -1268,9 +1269,9 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		// disconnect from each chat room container
 		for (Iterator i = chatRooms.values().iterator(); i.hasNext();) {
 			ChatRoom chatRoom = (ChatRoom) i.next();
-			IChatRoomContainer container = chatRoom.chatRoomContainer;
-			if (container != null)
-				container.disconnect();
+			IChatRoomContainer c = chatRoom.chatRoomContainer;
+			if (c != null)
+				c.disconnect();
 		}
 		rootMessageSender = null;
 		rootCloseListener = null;
@@ -1427,23 +1428,25 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		ISelectionProvider selectionProvider = new ISelectionProvider() {
 
 			public void addSelectionChangedListener(ISelectionChangedListener listener) {
+				// do nothing
 			}
 
 			public ISelection getSelection() {
-				StyledText outputText = getRootTextOutput();
-				ISelection selection = new TextSelection(outputText.getSelectionRange().x, outputText.getSelectionRange().y);
+				StyledText ot = getRootTextOutput();
+				ISelection selection = new TextSelection(ot.getSelectionRange().x, ot.getSelectionRange().y);
 
 				return selection;
 			}
 
 			public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+				// do nothing
 			}
 
 			public void setSelection(ISelection selection) {
 				if (selection instanceof ITextSelection) {
 					ITextSelection textSelection = (ITextSelection) selection;
-					StyledText outputText = getRootTextOutput();
-					outputText.setSelection(textSelection.getOffset(), textSelection.getOffset() + textSelection.getLength());
+					StyledText ot = getRootTextOutput();
+					ot.setSelection(textSelection.getOffset(), textSelection.getOffset() + textSelection.getLength());
 				}
 			}
 

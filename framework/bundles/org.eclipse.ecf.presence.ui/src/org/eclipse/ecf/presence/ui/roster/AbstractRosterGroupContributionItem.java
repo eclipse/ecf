@@ -20,11 +20,10 @@ import org.eclipse.ecf.presence.roster.IRosterGroup;
  * Abstract contribution item class for creating menu contribution items for
  * roster entries. Subclasses should be created as appropriate.
  */
-public abstract class AbstractRosterGroupContributionItem extends
-		AbstractPresenceContributionItem {
+public abstract class AbstractRosterGroupContributionItem extends AbstractPresenceContributionItem {
 
 	public AbstractRosterGroupContributionItem() {
-
+		super(null);
 	}
 
 	public AbstractRosterGroupContributionItem(String id) {
@@ -59,8 +58,7 @@ public abstract class AbstractRosterGroupContributionItem extends
 	protected IContainer getContainerForRosterEntry(IRosterEntry group) {
 		if (group == null)
 			return null;
-		IPresenceContainerAdapter pca = group.getRoster()
-				.getPresenceContainerAdapter();
+		IPresenceContainerAdapter pca = group.getRoster().getPresenceContainerAdapter();
 		if (pca != null)
 			return (IContainer) pca.getAdapter(IContainer.class);
 		return null;

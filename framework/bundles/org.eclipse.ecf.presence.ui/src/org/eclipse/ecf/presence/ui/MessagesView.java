@@ -11,27 +11,14 @@
 package org.eclipse.ecf.presence.ui;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import java.util.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.Messages;
-import org.eclipse.ecf.presence.im.IChatID;
-import org.eclipse.ecf.presence.im.IChatMessage;
-import org.eclipse.ecf.presence.im.IChatMessageSender;
-import org.eclipse.ecf.presence.im.ITypingMessageEvent;
-import org.eclipse.ecf.presence.im.ITypingMessageSender;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.ecf.presence.im.*;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.source.SourceViewer;
@@ -39,35 +26,11 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Adapter;
-import org.eclipse.swt.custom.CTabFolderEvent;
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.custom.ST;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.custom.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.ScrollBar;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
@@ -77,12 +40,11 @@ import org.eclipse.ui.progress.UIJob;
 
 public class MessagesView extends ViewPart {
 
-	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat(
-			"(hh:mm:ss a)"); //$NON-NLS-1$
+	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("(hh:mm:ss a)"); //$NON-NLS-1$
 
 	public static final String VIEW_ID = "org.eclipse.ecf.presence.ui.MessagesView"; //$NON-NLS-1$
 
-	private static final int[] WEIGHTS = { 75, 25 };
+	private static final int[] WEIGHTS = {75, 25};
 
 	private CTabFolder tabFolder;
 
@@ -104,28 +66,19 @@ public class MessagesView extends ViewPart {
 	}
 
 	public void createPartControl(Composite parent) {
-		boolean useTraditionalTabFolder = PlatformUI
-		.getPreferenceStore()
-		.getBoolean(
-				IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS);
+		boolean useTraditionalTabFolder = PlatformUI.getPreferenceStore().getBoolean(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS);
 
 		tabFolder = new CTabFolder(parent, SWT.CLOSE);
 		tabFolder.setTabPosition(SWT.BOTTOM);
 		tabFolder.setSimple(useTraditionalTabFolder);
-		PlatformUI.getPreferenceStore().addPropertyChangeListener(
-				new IPropertyChangeListener() {
-					public void propertyChange(PropertyChangeEvent event) {
-						if (event
-								.getProperty()
-								.equals(
-										IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS)
-								&& !tabFolder.isDisposed()) {
-							tabFolder.setSimple(((Boolean) event
-									.getNewValue()).booleanValue());
-							tabFolder.redraw();
-						}
-					}
-				});
+		PlatformUI.getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getProperty().equals(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS) && !tabFolder.isDisposed()) {
+					tabFolder.setSimple(((Boolean) event.getNewValue()).booleanValue());
+					tabFolder.redraw();
+				}
+			}
+		});
 
 		tabFolder.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -155,15 +108,13 @@ public class MessagesView extends ViewPart {
 		});
 
 		IMenuManager manager = getViewSite().getActionBars().getMenuManager();
-		IAction timestampAction = new Action(
-				Messages.MessagesView_ShowTimestamps, IAction.AS_CHECK_BOX) {
+		IAction timestampAction = new Action(Messages.MessagesView_ShowTimestamps, IAction.AS_CHECK_BOX) {
 			public void run() {
 				showTimestamps = !showTimestamps;
 			}
 		};
 		timestampAction.setChecked(true);
-		IAction clearChatLogAction = new Action(
-				Messages.MessagesView_ClearChatLog) {
+		IAction clearChatLogAction = new Action(Messages.MessagesView_ClearChatLog) {
 			public void run() {
 				CTabItem item = tabFolder.getSelection();
 				if (item != null) {
@@ -171,14 +122,7 @@ public class MessagesView extends ViewPart {
 					while (iterator.hasNext()) {
 						ChatTab tab = (ChatTab) iterator.next();
 						if (tab.item == item) {
-							if (MessageDialog
-									.openConfirm(
-											tabFolder.getShell(),
-											Messages.MessagesView_ClearChatLogDialogTitle,
-											NLS
-													.bind(
-															Messages.MessagesView_ClearChatLogDialogMessage,
-															getUserName(tab.remoteID)))) {
+							if (MessageDialog.openConfirm(tabFolder.getShell(), Messages.MessagesView_ClearChatLogDialogTitle, NLS.bind(Messages.MessagesView_ClearChatLogDialogMessage, getUserName(tab.remoteID)))) {
 								synchronized (tab) {
 									tab.chatText.setText(""); //$NON-NLS-1$
 								}
@@ -202,8 +146,7 @@ public class MessagesView extends ViewPart {
 		super.dispose();
 	}
 
-	private ChatTab getTab(IChatMessageSender messageSender,
-			ITypingMessageSender typingSender, ID localID, ID userID) {
+	private ChatTab getTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID userID) {
 		ChatTab tab = (ChatTab) tabs.get(userID);
 		if (tab == null) {
 			tab = new ChatTab(messageSender, typingSender, localID, userID);
@@ -244,8 +187,7 @@ public class MessagesView extends ViewPart {
 	 * @param remoteID
 	 *            the ID of the remote user
 	 */
-	public synchronized void openTab(IChatMessageSender messageSender,
-			ITypingMessageSender typingSender, ID localID, ID remoteID) {
+	public synchronized void openTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID remoteID) {
 		Assert.isNotNull(messageSender);
 		Assert.isNotNull(localID);
 		Assert.isNotNull(remoteID);
@@ -256,8 +198,7 @@ public class MessagesView extends ViewPart {
 		}
 	}
 
-	public synchronized void selectTab(IChatMessageSender messageSender,
-			ITypingMessageSender typingSender, ID localID, ID userID) {
+	public synchronized void selectTab(IChatMessageSender messageSender, ITypingMessageSender typingSender, ID localID, ID userID) {
 		ChatTab tab = getTab(messageSender, typingSender, localID, userID);
 		tabFolder.setSelection(tab.item);
 		tab.inputText.setFocus();
@@ -310,8 +251,7 @@ public class MessagesView extends ViewPart {
 
 		private boolean isFirstMessage = true;
 
-		private ChatTab(IChatMessageSender icms, ITypingMessageSender itms,
-				ID localID, ID remoteID) {
+		private ChatTab(IChatMessageSender icms, ITypingMessageSender itms, ID localID, ID remoteID) {
 			this.icms = icms;
 			this.itms = itms;
 			this.localID = localID;
@@ -324,23 +264,23 @@ public class MessagesView extends ViewPart {
 			inputText.addKeyListener(new KeyAdapter() {
 				public void keyPressed(KeyEvent e) {
 					switch (e.keyCode) {
-					case SWT.CR:
-					case SWT.KEYPAD_CR:
-						if (e.stateMask == 0) {
-							String text = inputText.getText();
-							inputText.setText(""); //$NON-NLS-1$
-							try {
-								if (!text.equals("")) { //$NON-NLS-1$
-									icms.sendChatMessage(remoteID, text);
+						case SWT.CR :
+						case SWT.KEYPAD_CR :
+							if (e.stateMask == 0) {
+								String text = inputText.getText();
+								inputText.setText(""); //$NON-NLS-1$
+								try {
+									if (!text.equals("")) { //$NON-NLS-1$
+										icms.sendChatMessage(remoteID, text);
+									}
+									append(localID, text);
+								} catch (ECFException ex) {
+									setContentDescription(Messages.MessagesView_CouldNotSendMessage);
 								}
-								append(localID, text);
-							} catch (ECFException ex) {
-								setContentDescription(Messages.MessagesView_CouldNotSendMessage);
+								e.doit = false;
+								sendTyping = false;
 							}
-							e.doit = false;
-							sendTyping = false;
-						}
-						break;
+							break;
 					}
 				}
 			});
@@ -365,22 +305,29 @@ public class MessagesView extends ViewPart {
 				chatText.addDisposeListener(new DisposeListener() {
 					public void widgetDisposed(DisposeEvent e) {
 						ScrollBar bar = chatText.getVerticalBar();
-						if (bar != null) bar.removeSelectionListener(scrollSelectionListener);
-					}});
+						if (bar != null)
+							bar.removeSelectionListener(scrollSelectionListener);
+					}
+				});
 			}
 		}
 
 		private SelectionListener scrollSelectionListener = new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {}
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// do nothing
+			}
+
 			public void widgetSelected(SelectionEvent e) {
-				if (shouldScrollToEnd(chatText)) boldTabTitle(false);
+				if (shouldScrollToEnd(chatText))
+					boldTabTitle(false);
 			}
 		};
 
-		private boolean shouldScrollToEnd(StyledText chatText) {
-			Point locAtEnd = chatText.getLocationAtOffset(chatText.getText().length());
-			Rectangle bounds = chatText.getBounds();
-			if (locAtEnd.y > bounds.height + 5) return false;
+		private boolean shouldScrollToEnd(StyledText chatText1) {
+			Point locAtEnd = chatText1.getLocationAtOffset(chatText1.getText().length());
+			Rectangle bounds = chatText1.getBounds();
+			if (locAtEnd.y > bounds.height + 5)
+				return false;
 			return true;
 		}
 
@@ -394,20 +341,15 @@ public class MessagesView extends ViewPart {
 			String name = getUserName(fromID);
 			if (fromID.equals(remoteID)) {
 				if (showTimestamps) {
-					chatText.append(FORMATTER.format(new Date(System
-							.currentTimeMillis())) + ' ');
-					chatText.setStyleRange(new StyleRange(length, 13, redColor,
-							null));
+					chatText.append(FORMATTER.format(new Date(System.currentTimeMillis())) + ' ');
+					chatText.setStyleRange(new StyleRange(length, 13, redColor, null));
 					length = chatText.getCharCount();
 				}
 				chatText.append(name + ": " + body); //$NON-NLS-1$
-				chatText.setStyleRange(new StyleRange(length,
-						name.length() + 1, redColor, null, SWT.BOLD));
+				chatText.setStyleRange(new StyleRange(length, name.length() + 1, redColor, null, SWT.BOLD));
 				setContentDescription(""); //$NON-NLS-1$
 				if (isFirstMessage) {
-					final MessageNotificationPopup popup = new MessageNotificationPopup(
-							getSite().getWorkbenchWindow(), tabFolder
-									.getShell(), remoteID);
+					final MessageNotificationPopup popup = new MessageNotificationPopup(getSite().getWorkbenchWindow(), tabFolder.getShell(), remoteID);
 					popup.setContent(name, body);
 					popup.open();
 
@@ -423,51 +365,35 @@ public class MessagesView extends ViewPart {
 				}
 			} else {
 				if (showTimestamps) {
-					chatText.append(FORMATTER.format(new Date(System
-							.currentTimeMillis())) + ' ');
-					chatText.setStyleRange(new StyleRange(length, 13,
-							blueColor, null));
+					chatText.append(FORMATTER.format(new Date(System.currentTimeMillis())) + ' ');
+					chatText.setStyleRange(new StyleRange(length, 13, blueColor, null));
 					length = chatText.getCharCount();
 				}
 				chatText.append(name + ": " + body); //$NON-NLS-1$
-				chatText.setStyleRange(new StyleRange(length,
-						name.length() + 1, blueColor, null, SWT.BOLD));
+				chatText.setStyleRange(new StyleRange(length, name.length() + 1, blueColor, null, SWT.BOLD));
 			}
 			isFirstMessage = false;
-			if (scrollToEnd) chatText.invokeAction(ST.TEXT_END);
+			if (scrollToEnd)
+				chatText.invokeAction(ST.TEXT_END);
 			boldTabTitle(!scrollToEnd);
 		}
 
 		private StyledText createStyledTextWidget(Composite parent) {
 			try {
-				SourceViewer result = new SourceViewer(parent, null, null,
-						true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI
-								| SWT.READ_ONLY);
-				result.configure(new TextSourceViewerConfiguration(EditorsUI
-						.getPreferenceStore()));
+				SourceViewer result = new SourceViewer(parent, null, null, true, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+				result.configure(new TextSourceViewerConfiguration(EditorsUI.getPreferenceStore()));
 				result.setDocument(new Document());
 				return result.getTextWidget();
 			} catch (Exception e) {
-				Activator
-						.getDefault()
-						.getLog()
-						.log(
-								new Status(
-										IStatus.WARNING,
-										Activator.PLUGIN_ID,
-										IStatus.WARNING,
-										Messages.MessagesView_WARNING_HYPERLINKING_NOT_AVAILABLE,
-										e));
-				return new StyledText(parent, SWT.BORDER | SWT.WRAP
-						| SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
+				Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, Messages.MessagesView_WARNING_HYPERLINKING_NOT_AVAILABLE, e));
+				return new StyledText(parent, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.READ_ONLY);
 			}
 		}
 
 		private void boldTabTitle(boolean bold) {
 			Font oldFont = item.getFont();
 			FontData[] fd = oldFont.getFontData();
-			item.setFont(new Font(oldFont.getDevice(), fd[0].getName(), fd[0]
-					.getHeight(), (bold) ? SWT.BOLD : SWT.NORMAL));
+			item.setFont(new Font(oldFont.getDevice(), fd[0].getName(), fd[0].getHeight(), (bold) ? SWT.BOLD : SWT.NORMAL));
 		}
 
 		private void constructWidgets() {
@@ -486,8 +412,7 @@ public class MessagesView extends ViewPart {
 			Menu menu = new Menu(chatText);
 			MenuItem mi = new MenuItem(menu, SWT.PUSH);
 			mi.setText(Messages.MessagesView_Copy);
-			mi.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
-					org.eclipse.ui.ISharedImages.IMG_TOOL_COPY));
+			mi.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(org.eclipse.ui.ISharedImages.IMG_TOOL_COPY));
 			mi.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					String text = chatText.getSelectionText();
@@ -510,9 +435,7 @@ public class MessagesView extends ViewPart {
 		}
 
 		private void showIsTyping(boolean isTyping) {
-			setContentDescription(isTyping ? NLS.bind(
-					Messages.MessagesView_TypingNotification,
-					getUserName(remoteID)) : ""); //$NON-NLS-1$
+			setContentDescription(isTyping ? NLS.bind(Messages.MessagesView_TypingNotification, getUserName(remoteID)) : ""); //$NON-NLS-1$
 		}
 	}
 

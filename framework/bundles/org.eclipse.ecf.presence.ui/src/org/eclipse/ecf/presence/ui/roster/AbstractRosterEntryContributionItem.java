@@ -20,11 +20,10 @@ import org.eclipse.ecf.presence.roster.IRosterEntry;
  * Abstract contribution item class for creating menu contribution items for
  * roster entries. Subclasses should be created as appropriate.
  */
-public abstract class AbstractRosterEntryContributionItem extends
-		AbstractPresenceContributionItem {
+public abstract class AbstractRosterEntryContributionItem extends AbstractPresenceContributionItem {
 
 	public AbstractRosterEntryContributionItem() {
-
+		super(null);
 	}
 
 	public AbstractRosterEntryContributionItem(String id) {
@@ -59,8 +58,7 @@ public abstract class AbstractRosterEntryContributionItem extends
 	protected IContainer getContainerForRosterEntry(IRosterEntry entry) {
 		if (entry == null)
 			return null;
-		IPresenceContainerAdapter pca = entry.getRoster()
-				.getPresenceContainerAdapter();
+		IPresenceContainerAdapter pca = entry.getRoster().getPresenceContainerAdapter();
 		if (pca != null)
 			return (IContainer) pca.getAdapter(IContainer.class);
 		return null;
@@ -82,10 +80,8 @@ public abstract class AbstractRosterEntryContributionItem extends
 		if (entry == null)
 			return false;
 		IPresence presence = entry.getPresence();
-		boolean type = (presence == null) ? false : presence.getType().equals(
-				IPresence.Type.AVAILABLE);
-		boolean mode = (presence == null) ? false : presence.getMode().equals(
-				IPresence.Mode.AVAILABLE);
+		boolean type = (presence == null) ? false : presence.getType().equals(IPresence.Type.AVAILABLE);
+		boolean mode = (presence == null) ? false : presence.getMode().equals(IPresence.Mode.AVAILABLE);
 		return (type && mode);
 	}
 }

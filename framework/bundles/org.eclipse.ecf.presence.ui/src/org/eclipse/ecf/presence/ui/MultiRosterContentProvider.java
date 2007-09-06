@@ -10,10 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.ui;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import java.util.*;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -36,11 +33,9 @@ public class MultiRosterContentProvider implements ITreeContentProvider {
 	protected IWorkbenchAdapter getAdapter(Object element) {
 		IWorkbenchAdapter adapter = null;
 		if (element instanceof IAdaptable)
-			adapter = (IWorkbenchAdapter) ((IAdaptable) element)
-					.getAdapter(IWorkbenchAdapter.class);
+			adapter = (IWorkbenchAdapter) ((IAdaptable) element).getAdapter(IWorkbenchAdapter.class);
 		if (element != null && adapter == null)
-			adapter = (IWorkbenchAdapter) Platform.getAdapterManager()
-					.loadAdapter(element, IWorkbenchAdapter.class.getName());
+			adapter = (IWorkbenchAdapter) Platform.getAdapterManager().loadAdapter(element, IWorkbenchAdapter.class.getName());
 		return adapter;
 	}
 
@@ -51,8 +46,7 @@ public class MultiRosterContentProvider implements ITreeContentProvider {
 	 */
 	public Object[] getChildren(Object parentElement) {
 		IWorkbenchAdapter adapter = getAdapter(parentElement);
-		return adapter == null ? new Object[0] : adapter
-				.getChildren(parentElement);
+		return adapter == null ? new Object[0] : adapter.getChildren(parentElement);
 	}
 
 	/*
@@ -88,9 +82,8 @@ public class MultiRosterContentProvider implements ITreeContentProvider {
 				elements[i] = account.getRoster();
 			}
 			return elements;
-		} else {
-			return new Object[0];
 		}
+		return new Object[0];
 	}
 
 	/*
@@ -99,6 +92,7 @@ public class MultiRosterContentProvider implements ITreeContentProvider {
 	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 	 */
 	public void dispose() {
+		// do nothing
 	}
 
 	/*
@@ -108,6 +102,7 @@ public class MultiRosterContentProvider implements ITreeContentProvider {
 	 *      java.lang.Object, java.lang.Object)
 	 */
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		// do nothing
 	}
 
 }

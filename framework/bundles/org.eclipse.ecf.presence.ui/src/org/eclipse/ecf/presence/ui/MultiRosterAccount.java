@@ -20,15 +20,8 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.presence.ui.Activator;
 import org.eclipse.ecf.internal.presence.ui.dialogs.ReceiveAuthorizeRequestDialog;
-import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.IPresenceContainerAdapter;
-import org.eclipse.ecf.presence.Presence;
-import org.eclipse.ecf.presence.roster.IRoster;
-import org.eclipse.ecf.presence.roster.IRosterEntry;
-import org.eclipse.ecf.presence.roster.IRosterItem;
-import org.eclipse.ecf.presence.roster.IRosterManager;
-import org.eclipse.ecf.presence.roster.IRosterListener;
-import org.eclipse.ecf.presence.roster.IRosterSubscriptionListener;
+import org.eclipse.ecf.presence.*;
+import org.eclipse.ecf.presence.roster.*;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -46,12 +39,10 @@ public class MultiRosterAccount {
 	protected IPresenceContainerAdapter adapter;
 
 	IRosterListener updateListener = new IRosterListener() {
-		public void handleRosterUpdate(final IRoster roster,
-				final IRosterItem changedValue) {
+		public void handleRosterUpdate(final IRoster roster, final IRosterItem changedValue) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					MultiRosterAccount.this.multiRosterView.refreshTreeViewer(
-							changedValue, true);
+					MultiRosterAccount.this.multiRosterView.refreshTreeViewer(changedValue, true);
 				}
 			});
 		}
@@ -59,8 +50,7 @@ public class MultiRosterAccount {
 		public void handleRosterEntryAdd(final IRosterEntry entry) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					MultiRosterAccount.this.multiRosterView
-							.addEntryToTreeViewer(entry);
+					MultiRosterAccount.this.multiRosterView.addEntryToTreeViewer(entry);
 				}
 			});
 		}
@@ -68,8 +58,7 @@ public class MultiRosterAccount {
 		public void handleRosterEntryRemove(final IRosterEntry entry) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					MultiRosterAccount.this.multiRosterView
-							.removeEntryFromTreeViewer(entry);
+					MultiRosterAccount.this.multiRosterView.removeEntryFromTreeViewer(entry);
 				}
 			});
 		}
@@ -80,8 +69,7 @@ public class MultiRosterAccount {
 			if (event instanceof IContainerDisconnectedEvent) {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						MultiRosterAccount.this.multiRosterView
-								.rosterAccountDisconnected(MultiRosterAccount.this);
+						MultiRosterAccount.this.multiRosterView.rosterAccountDisconnected(MultiRosterAccount.this);
 					}
 				});
 			}
@@ -94,21 +82,13 @@ public class MultiRosterAccount {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					try {
-						Shell shell = MultiRosterAccount.this.multiRosterView
-								.getViewSite().getShell();
-						ReceiveAuthorizeRequestDialog authRequest = new ReceiveAuthorizeRequestDialog(
-								shell, fromID.getName(),
-								MultiRosterAccount.this.getRoster().getUser()
-										.getID().getName());
+						Shell shell = MultiRosterAccount.this.multiRosterView.getViewSite().getShell();
+						ReceiveAuthorizeRequestDialog authRequest = new ReceiveAuthorizeRequestDialog(shell, fromID.getName(), MultiRosterAccount.this.getRoster().getUser().getID().getName());
 						authRequest.setBlockOnOpen(true);
 						authRequest.open();
 						int res = authRequest.getButtonPressed();
 						if (res == ReceiveAuthorizeRequestDialog.AUTHORIZE_ID) {
-							MultiRosterAccount.this.getRosterManager()
-									.getPresenceSender().sendPresenceUpdate(
-											fromID,
-											new Presence(
-													IPresence.Type.SUBSCRIBED));
+							MultiRosterAccount.this.getRosterManager().getPresenceSender().sendPresenceUpdate(fromID, new Presence(IPresence.Type.SUBSCRIBED));
 						} else if (res == ReceiveAuthorizeRequestDialog.REFUSE_ID) {
 							// do nothing
 						} else {
@@ -123,21 +103,20 @@ public class MultiRosterAccount {
 		}
 
 		public void handleSubscribed(ID fromID) {
+			// do nothing
 		}
 
 		public void handleUnsubscribed(final ID fromID) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					MultiRosterAccount.this.multiRosterView
-							.removeEntryFromTreeViewer(fromID);
+					MultiRosterAccount.this.multiRosterView.removeEntryFromTreeViewer(fromID);
 				}
 			});
 		}
 
 	};
 
-	public MultiRosterAccount(MultiRosterView multiRosterView,
-			IContainer container, IPresenceContainerAdapter adapter) {
+	public MultiRosterAccount(MultiRosterView multiRosterView, IContainer container, IPresenceContainerAdapter adapter) {
 		this.multiRosterView = multiRosterView;
 		Assert.isNotNull(container);
 		Assert.isNotNull(adapter);
@@ -165,8 +144,7 @@ public class MultiRosterAccount {
 	}
 
 	public void dispose() {
-		getRosterManager().removeRosterSubscriptionListener(
-				subscriptionListener);
+		getRosterManager().removeRosterSubscriptionListener(subscriptionListener);
 		getRosterManager().removeRosterListener(updateListener);
 		container.removeListener(containerListener);
 	}

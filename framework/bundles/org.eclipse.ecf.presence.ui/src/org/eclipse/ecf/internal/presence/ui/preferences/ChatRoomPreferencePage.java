@@ -18,8 +18,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-public class ChatRoomPreferencePage extends FieldEditorPreferencePage implements
-		IWorkbenchPreferencePage {
+public class ChatRoomPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
 	public ChatRoomPreferencePage() {
 		super(GRID);
@@ -30,16 +29,14 @@ public class ChatRoomPreferencePage extends FieldEditorPreferencePage implements
 	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
 	 */
 	public void createFieldEditors() {
-		addField(new BooleanFieldEditor(
-				PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE,
-				Messages.ChatRoomPreferencePage_CHATROOM_SHOW_USER_PRESENCE_TEXT,
-				getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceConstants.CHATROOM_SHOW_USER_PRESENCE, Messages.ChatRoomPreferencePage_CHATROOM_SHOW_USER_PRESENCE_TEXT, getFieldEditorParent()));
 	}
 
 	/*
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
 	public void init(IWorkbench workbench) {
+		// do nothing
 	}
 
 }

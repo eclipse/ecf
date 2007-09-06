@@ -19,19 +19,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.eclipse.ui.forms.widgets.Form;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
-import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.forms.widgets.*;
 
 class MessageNotificationPopup extends PopupDialog {
 
@@ -49,8 +41,7 @@ class MessageNotificationPopup extends PopupDialog {
 	private ID userID;
 
 	MessageNotificationPopup(IWorkbenchWindow window, Shell parent, ID userID) {
-		super(parent, PopupDialog.INFOPOPUP_SHELLSTYLE | SWT.ON_TOP, false,
-				false, false, false, null, null);
+		super(parent, PopupDialog.INFOPOPUP_SHELLSTYLE | SWT.ON_TOP, false, false, false, false, null, null);
 		this.window = window;
 		this.userID = userID;
 	}
@@ -66,26 +57,22 @@ class MessageNotificationPopup extends PopupDialog {
 	}
 
 	protected Control createContents(Composite parent) {
-		getShell().setBackground(
-				getShell().getDisplay().getSystemColor(SWT.COLOR_GRAY));
+		getShell().setBackground(getShell().getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		toolkit = new FormToolkit(parent.getDisplay());
 		form = toolkit.createForm(parent);
 		form.getBody().setLayout(new FillLayout());
 
-		Section section = toolkit.createSection(form.getBody(),
-				Section.TITLE_BAR);
+		Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TITLE_BAR);
 		section.setText(userName);
 		section.setLayout(new FillLayout());
 
 		sectionClient = toolkit.createComposite(section);
 		sectionClient.setLayout(new GridLayout());
-		Hyperlink link = toolkit.createHyperlink(sectionClient, message,
-				SWT.NONE);
+		Hyperlink link = toolkit.createHyperlink(sectionClient, message, SWT.NONE);
 		link.addHyperlinkListener(new HyperlinkAdapter() {
 			public void linkActivated(HyperlinkEvent e) {
 				try {
-					MessagesView view = (MessagesView) window.getActivePage()
-							.showView(MessagesView.VIEW_ID);
+					MessagesView view = (MessagesView) window.getActivePage().showView(MessagesView.VIEW_ID);
 					view.selectTab(null, null, null, userID);
 				} catch (CoreException ce) {
 					ce.printStackTrace();
@@ -95,11 +82,9 @@ class MessageNotificationPopup extends PopupDialog {
 
 		section.setClient(sectionClient);
 
-		ImageHyperlink hyperlink = toolkit.createImageHyperlink(section,
-				SWT.NONE);
+		ImageHyperlink hyperlink = toolkit.createImageHyperlink(section, SWT.NONE);
 		hyperlink.setBackground(null);
-		hyperlink.setImage(PlatformUI.getWorkbench().getSharedImages()
-				.getImage(ISharedImages.IMG_TOOL_DELETE));
+		hyperlink.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_DELETE));
 		hyperlink.addHyperlinkListener(new HyperlinkAdapter() {
 			public void linkActivated(HyperlinkEvent e) {
 				close();

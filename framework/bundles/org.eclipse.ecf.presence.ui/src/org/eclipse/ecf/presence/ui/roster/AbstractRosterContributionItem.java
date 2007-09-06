@@ -19,11 +19,10 @@ import org.eclipse.ecf.presence.roster.IRoster;
  * Abstract contribution item class for creating menu contribution items for
  * roster entries. Subclasses should be created as appropriate.
  */
-public abstract class AbstractRosterContributionItem extends
-		AbstractPresenceContributionItem {
+public abstract class AbstractRosterContributionItem extends AbstractPresenceContributionItem {
 
 	public AbstractRosterContributionItem() {
-
+		super(null);
 	}
 
 	public AbstractRosterContributionItem(String id) {

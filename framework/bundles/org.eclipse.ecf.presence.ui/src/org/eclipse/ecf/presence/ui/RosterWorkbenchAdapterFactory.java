@@ -12,15 +12,11 @@ package org.eclipse.ecf.presence.ui;
 
 import java.util.Collection;
 import java.util.Iterator;
-
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.presence.ui.Messages;
 import org.eclipse.ecf.presence.IPresence;
-import org.eclipse.ecf.presence.roster.IRoster;
-import org.eclipse.ecf.presence.roster.IRosterEntry;
-import org.eclipse.ecf.presence.roster.IRosterGroup;
-import org.eclipse.ecf.presence.roster.IRosterItem;
+import org.eclipse.ecf.presence.roster.*;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
@@ -50,16 +46,14 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	protected String getRosterLabel(IRoster roster) {
 		IUser user = roster.getUser();
-		return user == null ? Messages.RosterWorkbenchAdapterFactory_Disconnected
-				: user.getName();
+		return user == null ? Messages.RosterWorkbenchAdapterFactory_Disconnected : user.getName();
 	}
 
 	protected ImageDescriptor getRosterImageDescriptor(IRoster roster) {
 		IUser user = roster.getUser();
 		if (user == null)
 			return getImageDescriptor(SharedImages.IMG_USER_UNAVAILABLE);
-		else
-			return getImageDescriptor(SharedImages.IMG_IDENTITY);
+		return getImageDescriptor(SharedImages.IMG_IDENTITY);
 	}
 
 	private IWorkbenchAdapter rosterAdapter = new IWorkbenchAdapter() {
@@ -89,8 +83,7 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 				Object o = i.next();
 				if (o instanceof IRosterEntry) {
 					IRosterEntry entry = (IRosterEntry) o;
-					if (entry.getPresence().getType().equals(
-							IPresence.Type.AVAILABLE))
+					if (entry.getPresence().getType().equals(IPresence.Type.AVAILABLE))
 						count++;
 				}
 			}
@@ -112,10 +105,7 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 
 	protected String getRosterGroupLabel(IRosterGroup group) {
 		Collection entries = group.getEntries();
-		return NLS.bind(Messages.RosterWorkbenchAdapterFactory_GroupLabel,
-				new Object[] { group.getName(),
-						Integer.toString(getEntriesAvailableCount(entries)),
-						Integer.toString(getEntriesTotalCount(entries)) });
+		return NLS.bind(Messages.RosterWorkbenchAdapterFactory_GroupLabel, new Object[] {group.getName(), Integer.toString(getEntriesAvailableCount(entries)), Integer.toString(getEntriesTotalCount(entries))});
 	}
 
 	protected ImageDescriptor getRosterGroupImageDescriptor(IRosterGroup group) {
@@ -186,8 +176,7 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 				if (pMode.equals(IPresence.Mode.AVAILABLE))
 					return getImageDescriptor(SharedImages.IMG_USER_AVAILABLE);
 				// If mode is away then we're away
-				else if (pMode.equals(IPresence.Mode.AWAY)
-						|| pMode.equals(IPresence.Mode.EXTENDED_AWAY))
+				else if (pMode.equals(IPresence.Mode.AWAY) || pMode.equals(IPresence.Mode.EXTENDED_AWAY))
 					return getImageDescriptor(SharedImages.IMG_USER_AWAY);
 				else if (pMode.equals(IPresence.Mode.DND))
 					return getImageDescriptor(SharedImages.IMG_USER_DND);
@@ -242,7 +231,7 @@ public class RosterWorkbenchAdapterFactory implements IAdapterFactory {
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
 	 */
 	public Class[] getAdapterList() {
-		return new Class[] { IWorkbenchAdapter.class };
+		return new Class[] {IWorkbenchAdapter.class};
 	}
 
 }

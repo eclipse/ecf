@@ -111,9 +111,9 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 						} else if (evt instanceof IContainerConnectedEvent) {
 							isContainerConnected = true;
 							chatroomview.setEnabled(true);
-							String[] channels = getRoomsForTarget();
-							for (int i = 0; i < channels.length; i++) {
-								IChatRoomInfo info = manager.getChatRoomInfo(channels[i]);
+							String[] roomsForTarget = getRoomsForTarget();
+							for (int i = 0; i < roomsForTarget.length; i++) {
+								IChatRoomInfo info = manager.getChatRoomInfo(roomsForTarget[i]);
 								chatroomview.joinRoom(info, getPasswordForChatRoomConnect(info));
 							}
 						}
@@ -145,22 +145,22 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 	}
 
 	/**
-	 * Show a chat room manager UI for given targetID. If a UI already exists
-	 * that is connected to the given targetID, then it will be raised. and
-	 * isContainerConnected connected to the given targetID then this will show
-	 * the view associated with this targetID, and return <code>true</code>.
+	 * Show a chat room manager UI for given target. If a UI already exists
+	 * that is connected to the given target, then it will be raised. and
+	 * isContainerConnected connected to the given target then this will show
+	 * the view associated with this target, and return <code>true</code>.
 	 * The caller then <b>should not</b> connect the container, as there is
 	 * already a container connected to the given target. If we are not already
 	 * connected, then this method will return <code>false</code>, indicating
 	 * that the caller should connect the new container to the given target ID.
 	 * 
-	 * @param targetID
+	 * @param target
 	 */
-	public void showForTarget(final ID targetID) {
+	public void showForTarget(final ID target) {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				try {
-					ChatRoomManagerUI.this.targetID = targetID;
+					ChatRoomManagerUI.this.targetID = target;
 					chatroomview = getChatRoomManagerView();
 					// If we're not already active, then setup new view
 					if (!viewAlreadyActive) {
@@ -180,7 +180,7 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 					if (exceptionHandler != null)
 						exceptionHandler.handleException(e);
 					else
-						Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.ChatRoomManagerUI_EXCEPTION_CHAT_ROOM_VIEW_INITIALIZATION + targetID, e));
+						Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.ChatRoomManagerUI_EXCEPTION_CHAT_ROOM_VIEW_INITIALIZATION + target, e));
 				}
 			}
 
@@ -191,10 +191,10 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 		return isContainerConnected;
 	}
 
-	protected String getSecondaryViewID(ID targetID) {
+	protected String getSecondaryViewID(ID id) {
 		URI uri;
 		try {
-			uri = new URI(targetID.getName());
+			uri = new URI(id.getName());
 		} catch (URISyntaxException e) {
 			return null;
 		}
@@ -235,6 +235,7 @@ public class ChatRoomManagerUI implements IChatRoomCommandListener {
 			URI targetURI = new URI(targetID.getName());
 			initialRooms = targetURI.getPath();
 		} catch (URISyntaxException e) {
+			return new String[0];
 		}
 		if (initialRooms == null || initialRooms.equals("")) //$NON-NLS-1$
 			return new String[0];

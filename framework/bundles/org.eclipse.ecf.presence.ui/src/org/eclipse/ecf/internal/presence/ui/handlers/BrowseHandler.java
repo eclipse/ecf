@@ -10,15 +10,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.presence.ui.handlers;
 
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.*;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.internal.presence.ui.Activator;
-import org.eclipse.ecf.presence.im.IChatManager;
-import org.eclipse.ecf.presence.im.IChatMessageSender;
-import org.eclipse.ecf.presence.im.ITypingMessageSender;
+import org.eclipse.ecf.presence.im.*;
 import org.eclipse.ecf.presence.roster.IRoster;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.MessagesView;
@@ -33,44 +29,36 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * @see org.eclipse.core.commands.AbstractHandler
  */
 public class BrowseHandler extends AbstractHandler {
-	/**
-	 * The constructor.
-	 */
-	public BrowseHandler() {}
 
 	/**
 	 * the command has been executed, so extract extract the needed information
 	 * from the application context.
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		IWorkbenchWindow window = 
-			HandlerUtil.getActiveWorkbenchWindowChecked(event);
-		
+		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
+
 		IContainerManager containerManager = Activator.getDefault().getContainerManager();
 		IContainer[] containers = containerManager.getAllContainers();
-		
+
 		BrowseDialog dialog = new BrowseDialog(window.getShell(), containers);
 		int status = dialog.open();
-		if(status == Window.OK) {
+		if (status == Window.OK) {
 			Object[] object = dialog.getResult();
 			IRosterEntry entry = (IRosterEntry) object[0];
 			IRoster roster = entry.getRoster();
 			if (roster != null) {
-				IChatManager manager = 
-					roster.getPresenceContainerAdapter().getChatManager();
+				IChatManager manager = roster.getPresenceContainerAdapter().getChatManager();
 				IChatMessageSender icms = manager.getChatMessageSender();
 				ITypingMessageSender itms = manager.getTypingMessageSender();
 				try {
-					MessagesView view = 
-						(MessagesView) window.getActivePage().showView(MessagesView.VIEW_ID);
-					view.selectTab(icms, itms, roster.getUser().getID(), entry
-							.getUser().getID());
+					MessagesView view = (MessagesView) window.getActivePage().showView(MessagesView.VIEW_ID);
+					view.selectTab(icms, itms, roster.getUser().getID(), entry.getUser().getID());
 				} catch (PartInitException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		
+
 		return null;
 	}
 }

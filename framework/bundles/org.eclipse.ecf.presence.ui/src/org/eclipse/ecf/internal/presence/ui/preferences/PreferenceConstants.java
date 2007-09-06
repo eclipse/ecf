@@ -15,5 +15,5 @@ package org.eclipse.ecf.internal.presence.ui.preferences;
  * Constant definitions for plug-in preferences
  */
 public class PreferenceConstants {
-	public static final String CHATROOM_SHOW_USER_PRESENCE = "chatroom.user.presence.visible";
+	public static final String CHATROOM_SHOW_USER_PRESENCE = "chatroom.user.presence.visible"; //$NON-NLS-1$
 }

@@ -24,10 +24,6 @@ public class ChatLine {
 
 	private boolean noCRLF = false;
 
-	public ChatLine() {
-
-	}
-
 	public ChatLine(String text) {
 		this.text = text;
 
