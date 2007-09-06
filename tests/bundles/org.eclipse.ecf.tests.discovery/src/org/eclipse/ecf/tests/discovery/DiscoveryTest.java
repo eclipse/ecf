@@ -19,7 +19,6 @@ import junit.framework.TestCase;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
@@ -77,9 +76,7 @@ public class DiscoveryTest extends TestCase {
 		final InetAddress host = InetAddress.getByName(TEST_HOST);
 		final int port = TEST_PORT;
 		final String svcName = System.getProperty("user.name") + "." + protocol;
-		// XXX change this to create IServiceID in appropriate way
-		final Namespace ns = IDFactory.getDefault().getNamespaceByName("ecf.namespace.jmdns");
-		final IServiceID serviceID = (IServiceID) IDFactory.getDefault().createID(ns, new Object[] {TEST_SERVICE_TYPE, svcName});
+		final IServiceID serviceID = (IServiceID) IDFactory.getDefault().createID(discoveryContainer.getServicesNamespace(), new Object[] {TEST_SERVICE_TYPE, svcName});
 		final ServiceInfo svcInfo = new ServiceInfo(host, serviceID, port, 0, 0, new ServiceProperties(props));
 		discoveryContainer.registerService(svcInfo);
 	}
