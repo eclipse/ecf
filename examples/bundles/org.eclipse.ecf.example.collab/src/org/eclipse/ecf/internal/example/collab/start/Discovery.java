@@ -28,28 +28,23 @@ public class Discovery {
 	}
 
 	private void startDiscovery() throws Exception {
-		container = ContainerFactory.getDefault().createContainer(
-				"ecf.discovery.jmdns");
+		container = ContainerFactory.getDefault().createContainer("ecf.discovery.jmdns");
 		container.connect(null, null);
-		discoveryContainer = (IDiscoveryContainerAdapter) container
-				.getAdapter(IDiscoveryContainerAdapter.class);
-		discoveryContainer
-				.addServiceTypeListener(new CollabServiceTypeListener());
+		discoveryContainer = (IDiscoveryContainerAdapter) container.getAdapter(IDiscoveryContainerAdapter.class);
+		discoveryContainer.addServiceTypeListener(new CollabServiceTypeListener());
 	}
 
 	class CollabServiceTypeListener implements IServiceTypeListener {
 		public void serviceTypeAdded(IServiceEvent event) {
-			IServiceID svcID = event.getServiceInfo().getServiceID();
-			discoveryContainer.addServiceListener(svcID.getServiceType(),
-					new CollabServiceListener());
-			discoveryContainer.registerServiceType(svcID.getServiceType());
+			final IServiceID svcID = event.getServiceInfo().getServiceID();
+			discoveryContainer.addServiceListener(svcID.getServiceTypeID(), new CollabServiceListener());
+			discoveryContainer.registerServiceType(svcID.getServiceTypeID());
 		}
 	}
 
 	class CollabServiceListener implements IServiceListener {
 		public void serviceAdded(IServiceEvent event) {
-			discoveryContainer.requestServiceInfo(event.getServiceInfo()
-					.getServiceID(), 3000);
+			discoveryContainer.requestServiceInfo(event.getServiceInfo().getServiceID(), 3000);
 		}
 
 		public void serviceRemoved(IServiceEvent event) {

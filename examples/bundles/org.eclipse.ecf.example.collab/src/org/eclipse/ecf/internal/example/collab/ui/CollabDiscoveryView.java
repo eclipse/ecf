@@ -28,44 +28,34 @@ public class CollabDiscoveryView extends DiscoveryView {
 	public CollabDiscoveryView() {
 		super();
 		setShowTypeDetails(false);
-		this.setDiscoveryController(ClientPlugin.getDefault()
-				.getDiscoveryController());
+		this.setDiscoveryController(ClientPlugin.getDefault().getDiscoveryController());
 	}
 
 	public void setDiscoveryController(final IDiscoveryController controller) {
 		super.setDiscoveryController(controller);
 		if (controller != null) {
-			final IDiscoveryContainerAdapter dc = controller
-					.getDiscoveryContainer();
+			final IDiscoveryContainerAdapter dc = controller.getDiscoveryContainer();
 			if (dc != null) {
 				// setup listeners
 				dc.addServiceTypeListener(new IServiceTypeListener() {
 					public void serviceTypeAdded(IServiceEvent event) {
-						IServiceID svcID = event.getServiceInfo()
-								.getServiceID();
-						addServiceTypeInfo(svcID.getServiceType());
-						dc.addServiceListener(event.getServiceInfo()
-								.getServiceID().getServiceType(),
-								new IServiceListener() {
-									public void serviceAdded(IServiceEvent evt) {
-										addServiceInfo(evt.getServiceInfo()
-												.getServiceID());
-										dc.requestServiceInfo(evt
-												.getServiceInfo()
-												.getServiceID(),
-												SERVICE_REQUEST_TIMEOUT);
-									}
+						final IServiceID svcID = event.getServiceInfo().getServiceID();
+						addServiceTypeInfo(svcID.getServiceTypeID().getName());
+						dc.addServiceListener(event.getServiceInfo().getServiceID().getServiceTypeID(), new IServiceListener() {
+							public void serviceAdded(IServiceEvent evt) {
+								addServiceInfo(evt.getServiceInfo().getServiceID());
+								dc.requestServiceInfo(evt.getServiceInfo().getServiceID(), SERVICE_REQUEST_TIMEOUT);
+							}
 
-									public void serviceRemoved(IServiceEvent evt) {
-										removeServiceInfo(evt.getServiceInfo());
-									}
+							public void serviceRemoved(IServiceEvent evt) {
+								removeServiceInfo(evt.getServiceInfo());
+							}
 
-									public void serviceResolved(
-											IServiceEvent evt) {
-										addServiceInfo(evt.getServiceInfo());
-									}
-								});
-						dc.registerServiceType(svcID.getServiceType());
+							public void serviceResolved(IServiceEvent evt) {
+								addServiceInfo(evt.getServiceInfo());
+							}
+						});
+						dc.registerServiceType(svcID.getServiceTypeID());
 					}
 				});
 			}
@@ -73,7 +63,7 @@ public class CollabDiscoveryView extends DiscoveryView {
 	}
 
 	public void dispose() {
-		IDiscoveryController c = getController();
+		final IDiscoveryController c = getController();
 		if (c != null && c.isDiscoveryStarted()) {
 			c.stopDiscovery();
 		}
