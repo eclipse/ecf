@@ -155,8 +155,10 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 *            getting service info about. Must not be <code>null</code>
 	 * @return IServiceInfo[] the resulting array of service info instances.
 	 *         Will not be <code>null</code>. May be of length 0.
+	 * @deprecated Use getServices(IServiceTypeID) instead.
 	 */
 	public IServiceInfo[] getServices(String type);
+	public IServiceInfo[] getServices(IServiceTypeID type);
 
 	/**
 	 * Get a namespace for services associated with this discovery container adapter.  The given namespace
