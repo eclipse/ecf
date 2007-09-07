@@ -15,6 +15,8 @@ import org.eclipse.ecf.core.util.ECFException;
 
 /**
  * Perform administrative functions for an IChatRoomContainer.
+ * 
+ * @since 1.1
  */
 public interface IChatRoomAdminSender {
 
