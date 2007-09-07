@@ -43,6 +43,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 
 	protected Vector channelParticipants = new Vector();
 
+	protected IChatRoomAdminSender adminSender = null;
+
 	protected IChatRoomMessageSender sender = new IChatRoomMessageSender() {
 		public void sendMessage(String message) throws ECFException {
 			rootContainer.doSendChannelMessage(targetID.getName(), ircUser.toString(), message);
@@ -301,4 +303,19 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 		return (ID[]) channelParticipants.toArray(new ID[channelParticipants.size()]);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#getChatRoomAdminSender()
+	 */
+	public IChatRoomAdminSender getChatRoomAdminSender() {
+		synchronized (this) {
+			if (adminSender == null) {
+				adminSender = new IChatRoomAdminSender() {
+					public void sendSubjectChange(String newsubject) throws ECFException {
+						rootContainer.doSendSubjectChangeMessage(targetID.getName(), newsubject);
+					}
+				};
+			}
+		}
+		return adminSender;
+	}
 }

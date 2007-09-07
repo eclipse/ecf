@@ -825,6 +825,12 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 		}
 	}
 
+	protected void doSendSubjectChangeMessage(String channelName, String topic) throws ECFException {
+		if (connection == null)
+			throw new ECFException(Messages.IRCRootContainer_Exception_Unexplained_Disconnect);
+		connection.doTopic(channelName, topic);
+	}
+
 	protected void addChannel(String channel, IRCChannelContainer container) {
 		channels.put(channel, container);
 	}
@@ -940,6 +946,13 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 	public ID[] getChatRoomParticipants() {
 		// root channel has no participants
 		return new ID[0];
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#getChatRoomAdminSender()
+	 */
+	public IChatRoomAdminSender getChatRoomAdminSender() {
+		return null;
 	}
 
 }
