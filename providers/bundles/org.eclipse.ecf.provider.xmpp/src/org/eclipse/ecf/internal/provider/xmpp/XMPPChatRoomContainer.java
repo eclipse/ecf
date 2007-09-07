@@ -39,6 +39,7 @@ import org.eclipse.ecf.internal.provider.xmpp.events.PresenceEvent;
 import org.eclipse.ecf.internal.provider.xmpp.smack.ECFConnection;
 import org.eclipse.ecf.presence.IIMMessageListener;
 import org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener;
+import org.eclipse.ecf.presence.chatroom.IChatRoomAdminSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomContainer;
 import org.eclipse.ecf.presence.chatroom.IChatRoomMessageSender;
 import org.eclipse.ecf.presence.chatroom.IChatRoomParticipantListener;
@@ -57,6 +58,7 @@ import org.eclipse.ecf.provider.xmpp.identity.XMPPRoomID;
 import org.eclipse.osgi.util.NLS;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
@@ -77,6 +79,8 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements IChatRoo
 	private MultiUserChat multiuserchat;
 
 	private List chatRoomAdminListeners;
+
+	private IChatRoomAdminSender chatRoomAdminSender;
 
 	public XMPPChatRoomContainer(ISharedObjectContainerConfig config, ECFConnection conn, Namespace usernamespace) throws IDCreateException {
 		super(config);
@@ -527,5 +531,28 @@ public class XMPPChatRoomContainer extends ClientSOContainer implements IChatRoo
 	 */
 	public ID[] getChatRoomParticipants() {
 		return containerHelper.getChatRoomParticipants();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#getChatRoomAdminSender()
+	 */
+	public IChatRoomAdminSender getChatRoomAdminSender() {
+		synchronized (this) {
+			if (chatRoomAdminSender == null) {
+				chatRoomAdminSender = new IChatRoomAdminSender() {
+					public void sendSubjectChange(String newsubject) throws ECFException {
+						if (multiuserchat == null)
+							throw new ECFException(Messages.XMPPChatRoomContainer_EXCEPTION_NOT_CONNECTED);
+						try {
+							multiuserchat.changeSubject(newsubject);
+						} catch (final XMPPException e) {
+							throw new ECFException(e);
+						}
+					}
+
+				};
+			}
+		}
+		return chatRoomAdminSender;
 	}
 }
