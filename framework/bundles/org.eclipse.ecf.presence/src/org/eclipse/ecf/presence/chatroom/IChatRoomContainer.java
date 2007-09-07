@@ -90,6 +90,13 @@ public interface IChatRoomContainer extends IContainer {
 	public void removeChatRoomAdminListener(IChatRoomAdminListener adminListener);
 
 	/**
+	 * Get chat room admin sender.  
+	 * @return IChatRoomAdminSender for sending admin update messages.  Will return
+	 * <code>null</code> if there is no sender available for provider.
+	 */
+	public IChatRoomAdminSender getChatRoomAdminSender();
+
+	/**
 	 * Returns an array of IDs of current chatroom participants.  
 	 * 
 	 * @return ID[] of chatroom participants.  If no participants in chat room, will return
