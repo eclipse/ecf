@@ -14,7 +14,6 @@ Export-Package: org.eclipse.ecf.example.collab.share,
  org.eclipse.ecf.internal.example.collab.ui;x-internal:=true,
  org.eclipse.ecf.internal.example.collab.ui.hyperlink;x-internal:=true
 Eclipse-LazyStart: true
-Provide-Package: org.eclipse.ecf.example.collab
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.4,
  CDC-1.1/Foundation-1.1
@@ -28,8 +27,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ecf.sharedobject,
  org.eclipse.ecf.discovery,
  org.eclipse.ecf.discovery.ui,
- org.eclipse.ecf.presence,
  org.eclipse.ecf.provider,
  org.eclipse.ecf.ui,
- org.eclipse.ecf.presence.ui,
  org.eclipse.ecf.server.generic
