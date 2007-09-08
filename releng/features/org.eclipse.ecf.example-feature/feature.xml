@@ -46,6 +46,7 @@
       <import plugin="org.eclipse.ecf.provider"/>
       <import plugin="org.eclipse.ecf.datashare"/>
       <import plugin="org.eclipse.ecf.provider.datashare"/>
+      <import plugin="org.eclipse.ecf.server.generic"/>
    </requires>
 
    <plugin
