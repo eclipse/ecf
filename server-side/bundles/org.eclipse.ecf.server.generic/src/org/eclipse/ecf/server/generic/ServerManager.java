@@ -117,7 +117,7 @@ public class ServerManager {
 			boolean discovery = false;
 			final String discoveryString = element.getAttribute(DISCOVERY_ATTR);
 			if (discoveryString != null)
-				discovery = Boolean.parseBoolean(discoveryString);
+				discovery = Boolean.valueOf(discoveryString).booleanValue();
 			final Connector connector = new Connector(null, element.getAttribute(HOSTNAME_ATTR), port, keepAlive, discovery);
 			final IConfigurationElement[] groupElements = element.getChildren(GROUP_ELEMENT);
 			for (int j = 0; j < groupElements.length; j++) {
