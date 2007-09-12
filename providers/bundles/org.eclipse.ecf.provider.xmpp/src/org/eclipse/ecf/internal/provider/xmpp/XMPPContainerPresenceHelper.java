@@ -27,9 +27,10 @@ import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageListener;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.core.user.User;
-import org.eclipse.ecf.core.util.AsynchResult;
+import org.eclipse.ecf.core.util.AsyncResult;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
+import org.eclipse.ecf.core.util.IAsyncResult;
 import org.eclipse.ecf.core.util.ICallable;
 import org.eclipse.ecf.internal.provider.xmpp.events.IQEvent;
 import org.eclipse.ecf.internal.provider.xmpp.events.MessageEvent;
@@ -674,10 +675,10 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 		private static final long serialVersionUID = 7843634971520771692L;
 
-		AsynchResult asynchResult = null;
+		IAsyncResult asyncResult = null;
 		String fromID = null;
 
-		XMPPPresence(String fromID, Presence xmppPresence, AsynchResult future) {
+		XMPPPresence(String fromID, Presence xmppPresence, IAsyncResult future) {
 			super(createIPresenceType(xmppPresence), xmppPresence.getStatus(),
 					createIPresenceMode(xmppPresence), ECFConnection
 							.getPropertiesFromPacket(xmppPresence), null);
@@ -686,10 +687,10 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 
 		private void fillFromVCard() {
 			VCard card = getFromCache(fromID);
-			if (card == null && asynchResult != null) {
+			if (card == null && asyncResult != null) {
 				try {
-					card = (VCard) asynchResult.get();
-					asynchResult = null;
+					card = (VCard) asyncResult.get();
+					asyncResult = null;
 				} catch (Exception e) {
 				}
 			}
@@ -723,13 +724,13 @@ public class XMPPContainerPresenceHelper implements ISharedObject {
 	}
 
 	protected IPresence createIPresence(final Presence xmppPresence) {
-		AsynchResult asynchResult = new AsynchResult();
-		Thread t = new Thread(asynchResult.setter(new ICallable() {
+		AsyncResult asyncResult = new AsyncResult();
+		Thread t = new Thread(asyncResult.setter(new ICallable() {
 			public Object call() throws Throwable {
 				return getVCardForPresence(xmppPresence);
 			}}));
 		t.start();
-		return new XMPPPresence(xmppPresence.getFrom(),xmppPresence,asynchResult);
+		return new XMPPPresence(xmppPresence.getFrom(),xmppPresence,asyncResult);
 	}
 
 	protected Presence createPresence(IPresence ipresence) {
