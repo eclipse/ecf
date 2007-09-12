@@ -205,7 +205,7 @@ public class MultiRosterView extends ViewPart implements IMultiRosterViewPart {
 		}
 
 		public boolean validateDrop(Object target, int operation, TransferData transferType) {
-			if (target != null && target instanceof IRosterItem) {
+			if (target instanceof IRosterItem) {
 				rosterPerformDrop.clear();
 				boolean result = false;
 				for (Iterator i = rosterDropTargets.iterator(); i.hasNext();) {
