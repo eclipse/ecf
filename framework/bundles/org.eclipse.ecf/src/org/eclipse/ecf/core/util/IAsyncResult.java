@@ -31,7 +31,7 @@ public interface IAsyncResult {
 
 	/**
 	 * Get the underlying result with limited wait time. Behaves similarly to
-	 * {@link #wait()}, but only waits msecs (ms) before throwing
+	 * {@link Object#wait()}, but only waits msecs (ms) before throwing
 	 * TimeoutException
 	 * 
 	 * @param msecs
