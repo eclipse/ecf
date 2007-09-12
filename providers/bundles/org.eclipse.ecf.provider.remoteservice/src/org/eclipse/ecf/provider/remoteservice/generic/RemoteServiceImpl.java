@@ -12,10 +12,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import org.eclipse.ecf.core.util.AsyncResult;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.IAsyncResult;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent;
+import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 
 public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
@@ -25,14 +29,33 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 
 	protected RegistrySharedObject sharedObject = null;
 
-	public RemoteServiceImpl(RegistrySharedObject sharedObject,
-			RemoteServiceRegistrationImpl registration) {
+	public RemoteServiceImpl(RegistrySharedObject sharedObject, RemoteServiceRegistrationImpl registration) {
 		this.sharedObject = sharedObject;
 		this.registration = registration;
 	}
 
 	public void callAsynch(IRemoteCall call, IRemoteCallListener listener) {
 		sharedObject.sendCallRequestWithListener(registration, call, listener);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.remoteservice.IRemoteService#callAsynch(org.eclipse.ecf.remoteservice.IRemoteCall)
+	 */
+	public IAsyncResult callAsynch(IRemoteCall call) {
+		final AsyncResult result = new AsyncResult();
+		final IRemoteCallListener listener = new IRemoteCallListener() {
+			public void handleEvent(IRemoteCallEvent event) {
+				if (event instanceof IRemoteCallCompleteEvent) {
+					IRemoteCallCompleteEvent cce = (IRemoteCallCompleteEvent) event;
+					if (cce.hadException())
+						result.setException(cce.getException());
+					else
+						result.set(cce.getResponse());
+				}
+			}
+		};
+		callAsynch(call, listener);
+		return result;
 	}
 
 	public Object callSynch(IRemoteCall call) throws ECFException {
@@ -47,21 +70,17 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 		Object proxy;
 		try {
 			// Get clazz from reference
-			final RemoteServiceReferenceImpl reference = (RemoteServiceReferenceImpl) registration
-					.getReference();
+			final RemoteServiceReferenceImpl reference = (RemoteServiceReferenceImpl) registration.getReference();
 			final String clazz = reference.getRemoteClass();
 			final Class loadedClass = Class.forName(clazz);
-			proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(),
-					new Class[] { loadedClass }, this);
+			proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] {loadedClass}, this);
 		} catch (final Exception e) {
-			throw new ECFException(
-					"Exception creating proxy for remote service", e);
+			throw new ECFException("Exception creating proxy for remote service", e);
 		}
 		return proxy;
 	}
 
-	public Object invoke(Object proxy, final Method method, final Object[] args)
-			throws Throwable {
+	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
 		return this.callSynch(new IRemoteCall() {
 
 			public String getMethod() {
