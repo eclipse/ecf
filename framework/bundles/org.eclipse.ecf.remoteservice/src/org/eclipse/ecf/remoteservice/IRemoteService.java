@@ -24,7 +24,12 @@ import org.eclipse.ecf.core.util.IAsyncResult;
  * <li>callSynch -- A synchronous invocation that will block the calling thread
  * until complete (or timeout) and return the result from the remote or throw
  * exception if remote invocation fails or throws exception</li>
- * <li>callAsynch -- An asynchronous invocation that will not block the caller
+ * <li>callAsynch/1 -- An asynchronous invocation that will not block the caller
+ * thread but rather return a non-<code>null</code> {@link IAsyncResult} instance
+ * that can be polled for results.  See {@link IAsyncResult#get()},
+ * {@link IAsyncResult#get(long)}, and {@link IAsyncResult#isReady()}.
+ * timeout, exception, or successful completion)</li>
+ * <li>callAsynch/2 -- An asynchronous invocation that will not block the caller
  * thread but rather notify the given listener asynchronously when complete (via
  * timeout, exception, or successful completion)</li>
  * <li>fireAsynch -- An asynchronous invocation that will simply execute the
