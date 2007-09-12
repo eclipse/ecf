@@ -274,10 +274,11 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		}
 
 		private void fillContextMenu(IMenuManager manager) {
-			manager.add(outputCopy);
-			manager.add(outputClear);
+			manager.add(tabCopy);
+			manager.add(tabPaste);
+			manager.add(tabClear);
 			manager.add(new Separator());
-			manager.add(outputSelectAll);
+			manager.add(tabSelectAll);
 			manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		}
 
@@ -362,6 +363,8 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 					getInputText().paste();
 				}
 			};
+			tabPaste.setText(Messages.ChatRoomManagerView_PASTE_TEXT);
+			tabPaste.setToolTipText(Messages.ChatRoomManagerView_PASTE_TOOLTIP);
 			tabPaste.setAccelerator(SWT.CTRL | 'V');
 			tabPaste.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
 
