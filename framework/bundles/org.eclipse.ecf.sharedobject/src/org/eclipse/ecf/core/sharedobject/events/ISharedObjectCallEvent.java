@@ -8,8 +8,8 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.sharedobject.events;
 
-import org.eclipse.ecf.core.util.AsynchResult;
+import org.eclipse.ecf.core.util.IAsyncResult;
 
 public interface ISharedObjectCallEvent extends ISharedObjectEvent {
-	AsynchResult getAsynchResult();
+	IAsyncResult getAsyncResult();
 }
