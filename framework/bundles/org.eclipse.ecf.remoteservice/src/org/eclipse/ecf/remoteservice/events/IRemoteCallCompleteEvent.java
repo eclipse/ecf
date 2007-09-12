@@ -19,7 +19,7 @@ public interface IRemoteCallCompleteEvent extends IRemoteCallEvent {
 	/**
 	 * Get response object.
 	 * 
-	 * @return Object that is response to remmote call. May be null.
+	 * @return Object that is response to remmote call. May be <code>null</code>.
 	 */
 	public Object getResponse();
 

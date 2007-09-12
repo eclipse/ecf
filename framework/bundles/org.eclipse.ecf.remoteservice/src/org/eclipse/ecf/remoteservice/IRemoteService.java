@@ -12,6 +12,7 @@
 package org.eclipse.ecf.remoteservice;
 
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.IAsyncResult;
 
 /**
  * Interface providing runtime access to a remote service. An instance
@@ -72,6 +73,19 @@ public interface IRemoteService {
 	 * @see org.eclipse.ecf.remoteservice.events.IRemoteCallCompleteEvent
 	 */
 	public void callAsynch(IRemoteCall call, IRemoteCallListener listener);
+
+	/**
+	 * Call remote method specified by call parameter asynchronously, and immediately
+	 * return {@link IAsyncResult} instance.  Returned IAsynchResult will not be <code>null</code>,
+	 * and allows the caller to retrieve the actual resulting value from the remote call
+	 * (or exception).
+	 * 
+	 * @param call the remote call to make. Must not be <code>null</code> .
+	 * @return IAsyncResult the asynchronous result to allow the caller to poll
+	 * for whether the result {@link IAsyncResult#isReady()}, and then to {@link IAsyncResult#get(long)}
+	 * the actual result.
+	 */
+	public IAsyncResult callAsynch(IRemoteCall call);
 
 	/**
 	 * Fire remote method specified by call parameter. The remote method will be
