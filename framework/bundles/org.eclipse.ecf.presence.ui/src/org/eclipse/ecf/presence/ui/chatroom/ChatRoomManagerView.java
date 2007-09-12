@@ -115,6 +115,8 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 
 		private SashForm rightSash;
 
+		private Text subjectText;
+
 		private StyledText outputText;
 
 		private Text inputText;
@@ -141,6 +143,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			if (withParticipants) {
 				fullChat = new SashForm(parent, SWT.HORIZONTAL);
 				fullChat.setLayout(new FillLayout());
+
 				Composite memberComp = new Composite(fullChat, SWT.NONE);
 				GridLayout layout = new GridLayout(1, true);
 				layout.marginWidth = 0;
@@ -170,8 +173,13 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				});
 
 				Composite rightComp = new Composite(fullChat, SWT.NONE);
-				rightComp.setLayout(new FillLayout());
+				rightComp.setLayout(layout);
+
+				subjectText = new Text(rightComp, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+				subjectText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
 				rightSash = new SashForm(rightComp, SWT.VERTICAL);
+				rightSash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			} else
 				rightSash = new SashForm(parent, SWT.VERTICAL);
 
@@ -392,6 +400,10 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		 */
 		public StyledText getOutputText() {
 			return outputText;
+		}
+
+		public void setSubject(String subject) {
+			subjectText.setText(subject);
 		}
 	}
 
@@ -716,6 +728,16 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 			this.chatRoomTab.setKeyListener(this);
 			this.chatRoomParticipantsLabel = tabItem.getParticipantsLabel();
 			this.chatRoomParticipantViewer = tabItem.getParticipantsViewer();
+
+			chatRoomContainer.addChatRoomAdminListener(new IChatRoomAdminListener() {
+				public void handleSubjectChange(ID from, final String newSubject) {
+					chatRoomTab.getInputText().getDisplay().asyncExec(new Runnable() {
+						public void run() {
+							chatRoomTab.setSubject(newSubject);
+						}
+					});
+				}
+			});
 
 			rootTabFolder.setUnselectedCloseVisible(true);
 
