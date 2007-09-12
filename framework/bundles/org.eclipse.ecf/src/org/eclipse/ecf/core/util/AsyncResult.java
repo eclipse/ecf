@@ -14,14 +14,14 @@ import java.lang.reflect.InvocationTargetException;
  * Class to represent asynchronous result (aka Future)
  * 
  */
-public class AsynchResult {
+public class AsyncResult implements IAsyncResult {
 	protected Object resultValue = null;
 
 	protected boolean resultReady = false;
 
 	protected InvocationTargetException resultException = null;
 
-	public AsynchResult() {
+	public AsyncResult() {
 	}
 
 	/**
@@ -50,14 +50,8 @@ public class AsynchResult {
 			return resultValue;
 	}
 
-	/**
-	 * Get the underlying result. Block until result is available.
-	 * 
-	 * @return Object that is result
-	 * @throws InterruptedException
-	 *             thrown if waiting is interrupted
-	 * @throws InvocationTargetException
-	 *             thrown if exception was thrown by execution
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.util.IAsyncResult#get()
 	 */
 	public synchronized Object get() throws InterruptedException, InvocationTargetException {
 		while (!resultReady)
@@ -65,20 +59,8 @@ public class AsynchResult {
 		return doGet();
 	}
 
-	/**
-	 * Get the underlying result with limited wait time. Behaves similarly to
-	 * {@link #wait()}, but only waits msecs (ms) before throwing
-	 * TimeoutException
-	 * 
-	 * @param msecs
-	 *            to wait before timing out
-	 * @return Object that is result
-	 * @throws TimeoutException
-	 *             thrown if msecs elapse before a result is available
-	 * @throws InterruptedException
-	 *             thrown if waiting is interrupted
-	 * @throws InvocationTargetException
-	 *             thrown if exception was thrown by execution
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.util.IAsyncResult#get(long)
 	 */
 	public synchronized Object get(long msecs) throws TimeoutException, InterruptedException, InvocationTargetException {
 		long startTime = (msecs <= 0) ? 0 : System.currentTimeMillis();
@@ -125,36 +107,29 @@ public class AsynchResult {
 		notifyAll();
 	}
 
-	/**
-	 * Get the InvocationTargetException that occured during invocation. If
-	 * null, no exception was thrown
-	 * 
-	 * @return InvocationTargetException if an exception occurred (available via
-	 *         {@link InvocationTargetException#getCause()}. Null if no
-	 *         exception has occurred
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.util.IAsyncResult#getException()
 	 */
 	public synchronized InvocationTargetException getException() {
 		return resultException;
 	}
 
-	/**
-	 * @return true if result has been set or exception has occurred, false if
-	 *         not.
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.util.IAsyncResult#isReady()
 	 */
 	public synchronized boolean isReady() {
 		return resultReady;
 	}
 
-	/**
-	 * @return Object result that has been set or null if has not been set
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.util.IAsyncResult#peek()
 	 */
 	public synchronized Object peek() {
 		return resultValue;
 	}
 
-	/**
-	 * Clear this AsynchResult. Clears both the result Object and the
-	 * InvocationTargetException (if set)
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.util.IAsyncResult#clear()
 	 */
 	public synchronized void clear() {
 		resultValue = null;
