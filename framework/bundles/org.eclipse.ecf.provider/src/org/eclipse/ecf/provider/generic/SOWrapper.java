@@ -127,40 +127,37 @@ public class SOWrapper {
 	}
 
 	protected Thread getThread() {
-		return container.getNewSharedObjectThread(sharedObjectID,
-				new Runnable() {
-					public void run() {
-						debug("runner(" + sharedObjectID + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-						Event evt = null;
-						for (;;) {
-							if (Thread.currentThread().isInterrupted())
-								break;
-							evt = (Event) queue.dequeue();
-							if (Thread.currentThread().isInterrupted()
-									|| evt == null)
-								break;
-							try {
-								if (evt instanceof ProcEvent) {
-									SOWrapper.this.svc(((ProcEvent) evt)
-											.getEvent());
-								} else if (evt instanceof DisposeEvent) {
-									SOWrapper.this.doDestroy();
-								} else {
-									SOWrapper.this.svc(evt);
-								}
-							} catch (Throwable t) {
-								handleRuntimeException(t);
-							}
-						}
-						if (Thread.currentThread().isInterrupted()) {
-							debug("runner(" + sharedObjectID //$NON-NLS-1$
-									+ ") terminating interrupted"); //$NON-NLS-1$
+		return container.getNewSharedObjectThread(sharedObjectID, new Runnable() {
+			public void run() {
+				debug("runner(" + sharedObjectID + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+				Event evt = null;
+				for (;;) {
+					if (Thread.currentThread().isInterrupted())
+						break;
+					evt = (Event) queue.dequeue();
+					if (Thread.currentThread().isInterrupted() || evt == null)
+						break;
+					try {
+						if (evt instanceof ProcEvent) {
+							SOWrapper.this.svc(((ProcEvent) evt).getEvent());
+						} else if (evt instanceof DisposeEvent) {
+							SOWrapper.this.doDestroy();
 						} else {
-							debug("runner(" + sharedObjectID //$NON-NLS-1$
-									+ ") terminating normally"); //$NON-NLS-1$
+							SOWrapper.this.svc(evt);
 						}
+					} catch (Throwable t) {
+						handleRuntimeException(t);
 					}
-				});
+				}
+				if (Thread.currentThread().isInterrupted()) {
+					debug("runner(" + sharedObjectID //$NON-NLS-1$
+							+ ") terminating interrupted"); //$NON-NLS-1$
+				} else {
+					debug("runner(" + sharedObjectID //$NON-NLS-1$
+							+ ") terminating normally"); //$NON-NLS-1$
+				}
+			}
+		});
 	}
 
 	private void send(Event evt) {
@@ -201,11 +198,8 @@ public class SOWrapper {
 		send(new RemoteSharedObjectEvent(getObjID(), fromID, data));
 	}
 
-	protected void deliverCreateResponse(ID fromID,
-			ContainerMessage.CreateResponseMessage resp) {
-		send(new RemoteSharedObjectCreateResponseEvent(
-				resp.getSharedObjectID(), fromID, resp.getSequence(), resp
-						.getException()));
+	protected void deliverCreateResponse(ID fromID, ContainerMessage.CreateResponseMessage resp) {
+		send(new RemoteSharedObjectCreateResponseEvent(resp.getSharedObjectID(), fromID, resp.getSequence(), resp.getException()));
 	}
 
 	public void deliverEvent(Event evt) {
@@ -224,20 +218,16 @@ public class SOWrapper {
 	}
 
 	protected void debug(String msg) {
-		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG,
-				msg + ":" + container.getID()); //$NON-NLS-1$
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg + ":" + container.getID()); //$NON-NLS-1$
 	}
 
 	protected void traceStack(String msg, Throwable e) {
-		Trace.catching(ProviderPlugin.PLUGIN_ID,
-				ECFProviderDebugOptions.EXCEPTIONS_CATCHING,
-				SOContainerGMM.class, container.getID() + ":" + msg, e); //$NON-NLS-1$
+		Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContainerGMM.class, container.getID() + ":" + msg, e); //$NON-NLS-1$
 	}
 
 	protected void handleRuntimeException(Throwable except) {
 		except.printStackTrace(System.err);
-		traceStack(
-				"runner:handleRuntimeException(" + sharedObjectID.getName() + ")", //$NON-NLS-1$ //$NON-NLS-2$
+		traceStack("runner:handleRuntimeException(" + sharedObjectID.getName() + ")", //$NON-NLS-1$ //$NON-NLS-2$
 				except);
 	}
 

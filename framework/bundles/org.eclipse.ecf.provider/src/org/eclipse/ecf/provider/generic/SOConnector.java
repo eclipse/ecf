@@ -54,15 +54,13 @@ public class SOConnector implements ISharedObjectConnector {
 		}
 	}
 
-	protected IAsyncResult[] fireCallEvent(ISharedObjectEvent event)
-			throws QueueException {
+	protected IAsyncResult[] fireCallEvent(ISharedObjectEvent event) throws QueueException {
 		IAsyncResult[] results = new IAsyncResult[receiverQueues.size()];
 		int i = 0;
 		for (Enumeration e = receiverQueues.elements(); e.hasMoreElements();) {
 			IQueueEnqueue queue = (IQueueEnqueue) e.nextElement();
 			results[i] = new AsyncResult();
-			queue.enqueue(new SharedObjectCallEvent(event
-					.getSenderSharedObjectID(), event, results[i]));
+			queue.enqueue(new SharedObjectCallEvent(event.getSenderSharedObjectID(), event, results[i]));
 		}
 		return results;
 	}
@@ -82,8 +80,7 @@ public class SOConnector implements ISharedObjectConnector {
 	 * @see org.eclipse.ecf.core.ISharedObjectConnector#getReceivers()
 	 */
 	public ID[] getReceiverIDs() {
-		return (ID[]) receiverQueues.keySet().toArray(
-				new ID[receiverQueues.size()]);
+		return (ID[]) receiverQueues.keySet().toArray(new ID[receiverQueues.size()]);
 	}
 
 	/*

@@ -21,8 +21,7 @@ import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.provider.comm.IConnectRequestHandler;
 import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
 
-public class TCPServerSOContainer extends ServerSOContainer implements
-		IConnectRequestHandler {
+public class TCPServerSOContainer extends ServerSOContainer implements IConnectRequestHandler {
 	public static final String DEFAULT_PROTOCOL = "ecftcp"; //$NON-NLS-1$
 
 	public static final int DEFAULT_PORT = 3282;
@@ -54,9 +53,7 @@ public class TCPServerSOContainer extends ServerSOContainer implements
 		return getServerURL("localhost", DEFAULT_NAME); //$NON-NLS-1$
 	}
 
-	public TCPServerSOContainer(ISharedObjectContainerConfig config,
-			TCPServerSOContainerGroup grp, int keepAlive) throws IOException,
-			URISyntaxException {
+	public TCPServerSOContainer(ISharedObjectContainerConfig config, TCPServerSOContainerGroup grp, int keepAlive) throws IOException, URISyntaxException {
 		super(config);
 		this.keepAlive = keepAlive;
 		// Make sure URI syntax is followed.
@@ -72,14 +69,12 @@ public class TCPServerSOContainer extends ServerSOContainer implements
 		group.add(path, this);
 	}
 
-	public TCPServerSOContainer(ISharedObjectContainerConfig config,
-			TCPServerSOContainerGroup listener, String path, int keepAlive) {
+	public TCPServerSOContainer(ISharedObjectContainerConfig config, TCPServerSOContainerGroup listener, String path, int keepAlive) {
 		super(config);
 		initialize(listener, path, keepAlive);
 	}
 
-	protected void initialize(TCPServerSOContainerGroup listener, String path,
-			int ka) {
+	protected void initialize(TCPServerSOContainerGroup listener, String path, int ka) {
 		this.keepAlive = ka;
 		this.group = listener;
 		this.group.add(path, this);
@@ -93,27 +88,24 @@ public class TCPServerSOContainer extends ServerSOContainer implements
 			// Should never happen
 		}
 		group.remove(aURI.getPath());
-		if (isSingle) group.takeOffTheAir();
+		if (isSingle)
+			group.takeOffTheAir();
 		super.dispose();
 	}
 
-	public TCPServerSOContainer(ISharedObjectContainerConfig config)
-			throws IOException, URISyntaxException {
+	public TCPServerSOContainer(ISharedObjectContainerConfig config) throws IOException, URISyntaxException {
 		this(config, null, DEFAULT_KEEPALIVE);
 	}
 
-	public TCPServerSOContainer(ISharedObjectContainerConfig config,
-			int keepAlive) throws IOException, URISyntaxException {
+	public TCPServerSOContainer(ISharedObjectContainerConfig config, int keepAlive) throws IOException, URISyntaxException {
 		this(config, null, keepAlive);
 	}
 
-	public Serializable handleConnectRequest(Socket socket, String target,
-			Serializable data, ISynchAsynchConnection conn) {
+	public Serializable handleConnectRequest(Socket socket, String target, Serializable data, ISynchAsynchConnection conn) {
 		return acceptNewClient(socket, target, data, conn);
 	}
 
-	protected Serializable getConnectDataFromInput(Serializable input)
-			throws Exception {
+	protected Serializable getConnectDataFromInput(Serializable input) throws Exception {
 		return input;
 	}
 

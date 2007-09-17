@@ -39,8 +39,7 @@ public class SOContext implements ISharedObjectContext {
 	protected Map properties;
 	protected IQueueEnqueue queue;
 
-	public SOContext(ID objID, ID homeID, SOContainer cont, Map props,
-			IQueueEnqueue queue) {
+	public SOContext(ID objID, ID homeID, SOContainer cont, Map props, IQueueEnqueue queue) {
 		super();
 		this.sharedObjectID = objID;
 		this.homeContainerID = homeID;
@@ -55,14 +54,11 @@ public class SOContext implements ISharedObjectContext {
 	}
 
 	protected void trace(String msg) {
-		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG,
-				msg + ":" + container.getID()); //$NON-NLS-1$
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg + ":" + container.getID()); //$NON-NLS-1$
 	}
 
 	protected void traceStack(String msg, Throwable e) {
-		Trace.catching(ProviderPlugin.PLUGIN_ID,
-				ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContext.class,
-				container.getID() + ":" + msg, e); //$NON-NLS-1$
+		Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, SOContext.class, container.getID() + ":" + msg, e); //$NON-NLS-1$
 	}
 
 	protected void makeInactive() {
@@ -112,8 +108,7 @@ public class SOContext implements ISharedObjectContext {
 	 * @see org.eclipse.ecf.core.ISharedObjectContext#connect(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID groupID, IConnectContext joinContext)
-			throws ContainerConnectException {
+	public void connect(ID groupID, IConnectContext joinContext) throws ContainerConnectException {
 		if (isInactive()) {
 			return;
 		} else {
@@ -190,8 +185,7 @@ public class SOContext implements ISharedObjectContext {
 	 * @see org.eclipse.ecf.core.ISharedObjectContext#sendCreate(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.ReplicaSharedObjectDescription)
 	 */
-	public void sendCreate(ID toContainerID, ReplicaSharedObjectDescription sd)
-			throws IOException {
+	public void sendCreate(ID toContainerID, ReplicaSharedObjectDescription sd) throws IOException {
 		if (isInactive()) {
 			trace("sendCreate(" + toContainerID + "," + sd + ") CONTEXT INACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return;
@@ -207,15 +201,13 @@ public class SOContext implements ISharedObjectContext {
 	 * @see org.eclipse.ecf.core.ISharedObjectContext#sendCreateResponse(org.eclipse.ecf.core.identity.ID,
 	 *      java.lang.Throwable, long)
 	 */
-	public void sendCreateResponse(ID toContainerID, Throwable throwable,
-			long identifier) throws IOException {
+	public void sendCreateResponse(ID toContainerID, Throwable throwable, long identifier) throws IOException {
 		if (isInactive()) {
 			trace("sendCreateResponse(" + toContainerID + "," + throwable + "," + identifier + ") CONTEXT INACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			return;
 		} else {
 			trace("sendCreateResponse(" + toContainerID + "," + throwable + "," + identifier + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			container.sendCreateResponse(toContainerID, sharedObjectID,
-					throwable, identifier);
+			container.sendCreateResponse(toContainerID, sharedObjectID, throwable, identifier);
 		}
 	}
 
@@ -270,8 +262,7 @@ public class SOContext implements ISharedObjectContext {
 		if (isInactive())
 			return new HashMap();
 		else
-			return container
-					.createContainerPropertiesForSharedObject(sharedObjectID);
+			return container.createContainerPropertiesForSharedObject(sharedObjectID);
 	}
 
 }

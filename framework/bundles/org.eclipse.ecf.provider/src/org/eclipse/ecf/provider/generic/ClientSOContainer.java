@@ -63,6 +63,13 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 
 	protected Lock connectLock;
 
+	public ClientSOContainer(ISharedObjectContainerConfig config) {
+		super(config);
+		connection = null;
+		connectionState = DISCONNECTED;
+		connectLock = new Lock();
+	}
+
 	protected Lock getConnectLock() {
 		return connectLock;
 	}
@@ -71,17 +78,13 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		return connection;
 	}
 
-	public ClientSOContainer(ISharedObjectContainerConfig config) {
-		super(config);
-		connection = null;
-		connectionState = DISCONNECTED;
-		connectLock = new Lock();
-	}
-
 	public void setConnectInitiatorPolicy(IConnectInitiatorPolicy policy) {
 		this.connectPolicy = policy;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#dispose()
+	 */
 	public void dispose() {
 		synchronized (connectLock) {
 			isClosing = true;
@@ -94,10 +97,16 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		super.dispose();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#isGroupManager()
+	 */
 	public final boolean isGroupManager() {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#getConnectedID()
+	 */
 	public ID getConnectedID() {
 		synchronized (getConnectLock()) {
 			return remoteServerID;
@@ -122,6 +131,9 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		remoteServerID = serverID;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#connect(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.security.IConnectContext)
+	 */
 	public void connect(ID targetID, IConnectContext joinContext) throws ContainerConnectException {
 		try {
 			if (isClosing)
@@ -278,6 +290,9 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#forwardExcluding(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.provider.generic.ContainerMessage)
+	 */
 	protected void forwardExcluding(ID from, ID excluding, ContainerMessage data) throws IOException {
 		// NOP
 	}
@@ -286,6 +301,9 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#disconnect()
+	 */
 	public void disconnect() {
 		synchronized (getConnectLock()) {
 			// If we are currently connected then get connection lock and send
@@ -308,8 +326,20 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		}
 	}
 
-	protected abstract ISynchAsynchConnection createConnection(ID remoteSpace, Object data) throws ConnectionCreateException;
+	/**
+	 * Create connection instance.  This method is called by {@link #connect(ID, IConnectContext)} prior to
+	 * calling the {@link IConnection#connect(ID, Object, int)} method.
+	 * @param targetID the targetID to connect to, from the first parameter to {@link #connect(ID, IConnectContext)}
+	 * @param data and data provided to the connection via the IConnectContext passed into the {@link #connect(ID, IConnectContext)}
+	 * call.
+	 * @return {@link ISynchAsynchConnection} a connection instance.  Will not be <code>null</code>.
+	 * @throws ConnectionCreateException thrown if the connection cannot be created.
+	 */
+	protected abstract ISynchAsynchConnection createConnection(ID targetID, Object data) throws ConnectionCreateException;
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#queueContainerMessage(org.eclipse.ecf.provider.generic.ContainerMessage)
+	 */
 	protected void queueContainerMessage(ContainerMessage message) throws IOException {
 		// Do it
 		connection.sendAsynch(message.getToContainerID(), serialize(message));
@@ -321,10 +351,16 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 	protected void forwardToRemote(ID from, ID to, ContainerMessage message) throws IOException { /* NOP */
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#getIDForConnection(org.eclipse.ecf.provider.comm.IAsynchConnection)
+	 */
 	protected ID getIDForConnection(IAsynchConnection conn) {
 		return remoteServerID;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#handleLeave(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.provider.comm.IConnection)
+	 */
 	protected void handleLeave(ID fromID, IConnection conn) {
 		// If it's the remote server then we're completely disconnected
 		if (fromID.equals(remoteServerID)) {
@@ -336,6 +372,9 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 			super.handleLeave(fromID, conn);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#sendMessage(org.eclipse.ecf.provider.generic.ContainerMessage)
+	 */
 	protected void sendMessage(ContainerMessage data) throws IOException {
 		// Get connect lock, then call super version
 		synchronized (connectLock) {
@@ -352,12 +391,18 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#processDisconnect(org.eclipse.ecf.provider.comm.DisconnectEvent)
+	 */
 	protected void processDisconnect(DisconnectEvent evt) {
 		// Get connect lock, and just return if this connection has been
 		// terminated
 		disconnect();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#processAsynch(org.eclipse.ecf.provider.comm.AsynchEvent)
+	 */
 	protected void processAsynch(AsynchEvent evt) throws IOException {
 		// Get connect lock, then call super version
 		synchronized (connectLock) {
@@ -366,6 +411,9 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.generic.SOContainer#processSynch(org.eclipse.ecf.provider.comm.SynchEvent)
+	 */
 	protected Serializable processSynch(SynchEvent evt) throws IOException {
 		synchronized (connectLock) {
 			checkConnected();

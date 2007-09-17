@@ -81,43 +81,32 @@ public class ContainerMessage implements Serializable {
 		this.toContainerID = toContainerID;
 	}
 
-	public static ContainerMessage createViewChangeMessage(ID from, ID to,
-			long seq, ID ids[], boolean add, Serializable data) {
-		return new ContainerMessage(from, to, seq, new ViewChangeMessage(ids,
-				add, data));
+	public static ContainerMessage createViewChangeMessage(ID from, ID to, long seq, ID ids[], boolean add, Serializable data) {
+		return new ContainerMessage(from, to, seq, new ViewChangeMessage(ids, add, data));
 	}
 
-	public static ContainerMessage createJoinGroupMessage(ID from, ID to,
-			long seq, Serializable data) {
+	public static ContainerMessage createJoinGroupMessage(ID from, ID to, long seq, Serializable data) {
 		return new ContainerMessage(from, to, seq, new JoinGroupMessage(data));
 	}
 
-	public static ContainerMessage createLeaveGroupMessage(ID from, ID to,
-			long seq, Serializable data) {
+	public static ContainerMessage createLeaveGroupMessage(ID from, ID to, long seq, Serializable data) {
 		return new ContainerMessage(from, to, seq, new LeaveGroupMessage(data));
 	}
 
-	public static ContainerMessage createSharedObjectCreateMessage(ID from,
-			ID to, long seq, Serializable data) {
+	public static ContainerMessage createSharedObjectCreateMessage(ID from, ID to, long seq, Serializable data) {
 		return new ContainerMessage(from, to, seq, new CreateMessage(data));
 	}
 
-	public static ContainerMessage createSharedObjectCreateResponseMessage(
-			ID from, ID to, long contSeq, ID soID, Throwable e, long sequence) {
-		return new ContainerMessage(from, to, contSeq,
-				new CreateResponseMessage(soID, e, sequence));
+	public static ContainerMessage createSharedObjectCreateResponseMessage(ID from, ID to, long contSeq, ID soID, Throwable e, long sequence) {
+		return new ContainerMessage(from, to, contSeq, new CreateResponseMessage(soID, e, sequence));
 	}
 
-	public static ContainerMessage createSharedObjectMessage(ID from, ID to,
-			long seq, ID fromSharedObject, Serializable data) {
-		return new ContainerMessage(from, to, seq, new SharedObjectMessage(
-				fromSharedObject, data));
+	public static ContainerMessage createSharedObjectMessage(ID from, ID to, long seq, ID fromSharedObject, Serializable data) {
+		return new ContainerMessage(from, to, seq, new SharedObjectMessage(fromSharedObject, data));
 	}
 
-	public static ContainerMessage createSharedObjectDisposeMessage(ID from,
-			ID to, long seq, ID sharedObjectID) {
-		return new ContainerMessage(from, to, seq,
-				new SharedObjectDisposeMessage(sharedObjectID));
+	public static ContainerMessage createSharedObjectDisposeMessage(ID from, ID to, long seq, ID sharedObjectID) {
+		return new ContainerMessage(from, to, seq, new SharedObjectDisposeMessage(sharedObjectID));
 	}
 
 	protected ContainerMessage(ID from, ID to, long seq, Serializable data) {
@@ -279,8 +268,7 @@ public class ContainerMessage implements Serializable {
 		}
 	}
 
-	public static final class SharedObjectDisposeMessage implements
-			Serializable {
+	public static final class SharedObjectDisposeMessage implements Serializable {
 		private static final long serialVersionUID = 3905241221474498104L;
 		ID sharedObjectID;
 

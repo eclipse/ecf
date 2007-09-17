@@ -23,8 +23,7 @@ public class TCPClientSOContainer extends ClientSOContainer {
 
 	public static final int DEFAULT_TCP_CONNECT_TIMEOUT = 30000;
 
-	public static final String DEFAULT_COMM_NAME = org.eclipse.ecf.provider.comm.tcp.Client.class
-			.getName();
+	public static final String DEFAULT_COMM_NAME = org.eclipse.ecf.provider.comm.tcp.Client.class.getName();
 
 	public TCPClientSOContainer(ISharedObjectContainerConfig config) {
 		super(config);
@@ -39,20 +38,17 @@ public class TCPClientSOContainer extends ClientSOContainer {
 		return DEFAULT_TCP_CONNECT_TIMEOUT;
 	}
 
-	protected ISynchAsynchConnection createConnection(ID remoteSpace,
-			Object data) throws ConnectionCreateException {
+	protected ISynchAsynchConnection createConnection(ID remoteSpace, Object data) throws ConnectionCreateException {
 		debug("createClientConnection:" + remoteSpace + ":" + data); //$NON-NLS-1$ //$NON-NLS-2$
 		ISynchAsynchConnection conn = new Client(receiver, keepAlive);
 		return conn;
 	}
 
 	public static final void main(String[] args) throws Exception {
-		ISharedObjectContainerConfig config = new SOContainerConfig(IDFactory
-				.getDefault().createGUID());
+		ISharedObjectContainerConfig config = new SOContainerConfig(IDFactory.getDefault().createGUID());
 		TCPClientSOContainer container = new TCPClientSOContainer(config);
 		// now join group
-		ID serverID = IDFactory.getDefault().createStringID(
-				TCPServerSOContainer.getDefaultServerURL());
+		ID serverID = IDFactory.getDefault().createStringID(TCPServerSOContainer.getDefaultServerURL());
 		container.connect(serverID, null);
 		Thread.sleep(200000);
 	}

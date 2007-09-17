@@ -25,7 +25,7 @@ public class SOContainerConfig implements ISharedObjectContainerConfig {
 	public SOContainerConfig(ID id, Map props) {
 		Assert.isNotNull(id);
 		this.id = id;
-		this.properties = (props == null)?new HashMap():props;
+		this.properties = (props == null) ? new HashMap() : props;
 	}
 
 	public SOContainerConfig(ID id) {

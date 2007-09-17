@@ -30,8 +30,7 @@ public class SOConfig implements ISharedObjectConfig {
 	protected Map properties;
 	protected SOContext context;
 
-	public SOConfig(ID sharedObjectID, ID homeContainerID, SOContainer cont,
-			Map dict) {
+	public SOConfig(ID sharedObjectID, ID homeContainerID, SOContainer cont, Map dict) {
 		super();
 		this.sharedObjectID = sharedObjectID;
 		this.homeContainerID = homeContainerID;
@@ -45,8 +44,7 @@ public class SOConfig implements ISharedObjectConfig {
 		if (container.getID().equals(homeContainerID)) {
 			this.context = container.createSharedObjectContext(this, queue);
 		} else {
-			this.context = container.createRemoteSharedObjectContext(this,
-					queue);
+			this.context = container.createRemoteSharedObjectContext(this, queue);
 		}
 	}
 
