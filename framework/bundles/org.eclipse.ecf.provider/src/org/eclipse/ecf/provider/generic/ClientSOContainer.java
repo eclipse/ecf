@@ -327,9 +327,10 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 	}
 
 	/**
-	 * Create connection instance.  This method is called by {@link #connect(ID, IConnectContext)} prior to
-	 * calling the {@link IConnection#connect(ID, Object, int)} method.
-	 * @param targetID the targetID to connect to, from the first parameter to {@link #connect(ID, IConnectContext)}
+	 * Create connection instance.  This method is called by {@link ClientSOContainer#connect(ID, IConnectContext)}.  Following
+	 * a return from this method, the new ISynchAsynchConnection instance's {@link IConnection#connect(ID, Object, int)} method is subsequently 
+	 * called.  
+	 * @param targetID the targetID to connect to.  The value is the same as that passed into {@link ClientSOContainer#connect(ID, IConnectContext)}.
 	 * @param data and data provided to the connection via the IConnectContext passed into the {@link #connect(ID, IConnectContext)}
 	 * call.
 	 * @return {@link ISynchAsynchConnection} a connection instance.  Will not be <code>null</code>.
