@@ -14,9 +14,6 @@ package org.eclipse.ecf.provider.comm;
  * Event handler callback interface for connections that have both asynchronous
  * and synchronous capabilities
  * 
- * @author slewis
- * 
  */
-public interface ISynchAsynchEventHandler extends ISynchEventHandler,
-		IAsynchEventHandler {
+public interface ISynchAsynchEventHandler extends ISynchEventHandler, IAsynchEventHandler {
 }

@@ -19,9 +19,9 @@ import org.eclipse.ecf.core.util.Event;
 public class ConnectionEvent implements Event {
 	private static final long serialVersionUID = 3257290214476362291L;
 
-	Object data = null;
+	private final Object data;
 
-	IConnection connection = null;
+	private final IConnection connection;
 
 	public ConnectionEvent(IConnection source, Object data) {
 		this.connection = source;
@@ -37,7 +37,7 @@ public class ConnectionEvent implements Event {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer("ConnectionEvent["); //$NON-NLS-1$
+		final StringBuffer buf = new StringBuffer("ConnectionEvent["); //$NON-NLS-1$
 		buf.append("conn=").append(getConnection()).append(";").append("data=") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				.append(getData());
 		buf.append("]"); //$NON-NLS-1$

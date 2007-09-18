@@ -33,7 +33,7 @@ public interface IConnectionListener {
 	 *            the disconnect event
 	 */
 	public void handleDisconnectEvent(DisconnectEvent event);
-	
+
 	/**
 	 * Handle connect event
 	 * 

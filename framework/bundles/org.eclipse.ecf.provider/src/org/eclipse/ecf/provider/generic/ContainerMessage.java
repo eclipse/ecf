@@ -16,10 +16,10 @@ import org.eclipse.ecf.core.identity.ID;
 
 public class ContainerMessage implements Serializable {
 	private static final long serialVersionUID = 3257009847533975857L;
-	ID fromContainerID;
-	public ID toContainerID;
-	long sequence;
-	Serializable data;
+	private ID fromContainerID;
+	private ID toContainerID;
+	private long sequence;
+	private Serializable data;
 
 	/**
 	 * @return Returns the data.
@@ -117,7 +117,7 @@ public class ContainerMessage implements Serializable {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("ContainerMessage["); //$NON-NLS-1$
+		final StringBuffer sb = new StringBuffer("ContainerMessage["); //$NON-NLS-1$
 		sb.append(fromContainerID).append(";").append(toContainerID) //$NON-NLS-1$
 				.append(";"); //$NON-NLS-1$
 		sb.append(sequence).append(";").append(data).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -126,9 +126,9 @@ public class ContainerMessage implements Serializable {
 
 	public static final class ViewChangeMessage implements Serializable {
 		private static final long serialVersionUID = 3256999977782882869L;
-		ID changeIDs[];
-		boolean add;
-		Serializable data;
+		private final ID changeIDs[];
+		private final boolean add;
+		private final Serializable data;
 
 		ViewChangeMessage(ID id[], boolean a, Serializable data) {
 			this.changeIDs = id;
@@ -139,7 +139,7 @@ public class ContainerMessage implements Serializable {
 		protected String printChangeIDs() {
 			if (changeIDs == null)
 				return "null"; //$NON-NLS-1$
-			StringBuffer buf = new StringBuffer();
+			final StringBuffer buf = new StringBuffer();
 			for (int i = 0; i < changeIDs.length; i++) {
 				buf.append(changeIDs[i]);
 				if (i != (changeIDs.length - 1))
@@ -149,7 +149,7 @@ public class ContainerMessage implements Serializable {
 		}
 
 		public String toString() {
-			StringBuffer sb = new StringBuffer("ViewChangeMessage["); //$NON-NLS-1$
+			final StringBuffer sb = new StringBuffer("ViewChangeMessage["); //$NON-NLS-1$
 			sb.append(printChangeIDs()).append(";").append(add).append(";") //$NON-NLS-1$ //$NON-NLS-2$
 					.append(data).append("]"); //$NON-NLS-1$
 			return sb.toString();
@@ -190,7 +190,7 @@ public class ContainerMessage implements Serializable {
 		}
 
 		public String toString() {
-			StringBuffer sb = new StringBuffer("CreateMessage["); //$NON-NLS-1$
+			final StringBuffer sb = new StringBuffer("CreateMessage["); //$NON-NLS-1$
 			sb.append(data).append("]"); //$NON-NLS-1$
 			return sb.toString();
 		}
@@ -198,9 +198,9 @@ public class ContainerMessage implements Serializable {
 
 	public static final class CreateResponseMessage implements Serializable {
 		private static final long serialVersionUID = 3762531213570554166L;
-		ID sharedObjectID;
-		Throwable exception;
-		long sequence;
+		private final ID sharedObjectID;
+		private final Throwable exception;
+		private final long sequence;
 
 		public CreateResponseMessage(ID objID, Throwable except, long sequence) {
 			this.sharedObjectID = objID;
@@ -209,7 +209,7 @@ public class ContainerMessage implements Serializable {
 		}
 
 		public String toString() {
-			StringBuffer sb = new StringBuffer("CreateResponseMessage["); //$NON-NLS-1$
+			final StringBuffer sb = new StringBuffer("CreateResponseMessage["); //$NON-NLS-1$
 			sb.append(sharedObjectID).append(";").append(exception).append(";") //$NON-NLS-1$ //$NON-NLS-2$
 					.append(sequence).append("]"); //$NON-NLS-1$
 			return sb.toString();
@@ -239,8 +239,8 @@ public class ContainerMessage implements Serializable {
 
 	public static final class SharedObjectMessage implements Serializable {
 		private static final long serialVersionUID = 3257281448531867441L;
-		Serializable data;
-		ID fromSharedObjectID;
+		private final Serializable data;
+		private final ID fromSharedObjectID;
 
 		SharedObjectMessage(ID fromSharedObject, Serializable data) {
 			this.fromSharedObjectID = fromSharedObject;
@@ -248,7 +248,7 @@ public class ContainerMessage implements Serializable {
 		}
 
 		public String toString() {
-			StringBuffer sb = new StringBuffer("SharedObjectMessage["); //$NON-NLS-1$
+			final StringBuffer sb = new StringBuffer("SharedObjectMessage["); //$NON-NLS-1$
 			sb.append(fromSharedObjectID).append(";").append(data).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 			return sb.toString();
 		}
@@ -270,14 +270,14 @@ public class ContainerMessage implements Serializable {
 
 	public static final class SharedObjectDisposeMessage implements Serializable {
 		private static final long serialVersionUID = 3905241221474498104L;
-		ID sharedObjectID;
+		private final ID sharedObjectID;
 
 		SharedObjectDisposeMessage(ID objID) {
 			this.sharedObjectID = objID;
 		}
 
 		public String toString() {
-			StringBuffer sb = new StringBuffer("SharedObjectDisposeMessage["); //$NON-NLS-1$
+			final StringBuffer sb = new StringBuffer("SharedObjectDisposeMessage["); //$NON-NLS-1$
 			sb.append(sharedObjectID).append("]"); //$NON-NLS-1$
 			return sb.toString();
 		}
@@ -292,7 +292,7 @@ public class ContainerMessage implements Serializable {
 
 	public static final class JoinGroupMessage implements Serializable {
 		private static final long serialVersionUID = 3257564022885855287L;
-		Serializable data;
+		private final Serializable data;
 
 		public JoinGroupMessage(Serializable data) {
 			this.data = data;
@@ -303,7 +303,7 @@ public class ContainerMessage implements Serializable {
 		}
 
 		public String toString() {
-			StringBuffer sb = new StringBuffer("JoinGroupMessage["); //$NON-NLS-1$
+			final StringBuffer sb = new StringBuffer("JoinGroupMessage["); //$NON-NLS-1$
 			sb.append(data).append("]"); //$NON-NLS-1$
 			return sb.toString();
 		}
@@ -311,7 +311,7 @@ public class ContainerMessage implements Serializable {
 
 	public static final class LeaveGroupMessage implements Serializable {
 		private static final long serialVersionUID = 3258128072350972213L;
-		Serializable data;
+		private final Serializable data;
 
 		public LeaveGroupMessage(Serializable data) {
 			this.data = data;
@@ -322,7 +322,7 @@ public class ContainerMessage implements Serializable {
 		}
 
 		public String toString() {
-			StringBuffer sb = new StringBuffer("LeaveGroupMessage["); //$NON-NLS-1$
+			final StringBuffer sb = new StringBuffer("LeaveGroupMessage["); //$NON-NLS-1$
 			sb.append(data).append("]"); //$NON-NLS-1$
 			return sb.toString();
 		}
