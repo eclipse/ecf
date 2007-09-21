@@ -46,8 +46,7 @@ import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
 
-public class RegistrySharedObject extends BaseSharedObject implements
-		IRemoteServiceContainerAdapter {
+public class RegistrySharedObject extends BaseSharedObject implements IRemoteServiceContainerAdapter {
 
 	protected RemoteServiceRegistryImpl localRegistry;
 
@@ -72,73 +71,51 @@ public class RegistrySharedObject extends BaseSharedObject implements
 	}
 
 	public IRemoteService getRemoteService(IRemoteServiceReference reference) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "getRemoteService", reference);
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteService", reference);
 		final RemoteServiceRegistrationImpl registration = getRemoteServiceRegistrationImpl(reference);
 		if (registration == null) {
 			return null;
 		}
-		final RemoteServiceImpl remoteService = new RemoteServiceImpl(this,
-				registration);
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "getRemoteService", remoteService);
+		final RemoteServiceImpl remoteService = new RemoteServiceImpl(this, registration);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteService", remoteService);
 		return remoteService;
 	}
 
-	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter,
-			String clazz, String filter) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "getRemoteServiceReferences",
-				new Object[] { idFilter, clazz, filter });
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteServiceReferences", new Object[] {idFilter, clazz, filter});
 		final IRemoteFilter remoteFilter = createRemoteFilterFromString(filter);
 		final List references = new ArrayList();
 		synchronized (remoteRegistrys) {
 			if (idFilter == null) {
-				final ArrayList registrys = new ArrayList(remoteRegistrys
-						.values());
+				final ArrayList registrys = new ArrayList(remoteRegistrys.values());
 				for (final Iterator i = registrys.iterator(); i.hasNext();) {
-					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i
-							.next();
+					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) i.next();
 					// Add IRemoteServiceReferences from each remote registry
-					addReferencesFromRegistry(clazz, remoteFilter, registry,
-							references);
+					addReferencesFromRegistry(clazz, remoteFilter, registry, references);
 				}
 			} else {
 				for (int i = 0; i < idFilter.length; i++) {
-					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys
-							.get(idFilter[i]);
+					final RemoteServiceRegistryImpl registry = (RemoteServiceRegistryImpl) remoteRegistrys.get(idFilter[i]);
 					if (registry != null) {
-						addReferencesFromRegistry(clazz, remoteFilter,
-								registry, references);
+						addReferencesFromRegistry(clazz, remoteFilter, registry, references);
 					}
 				}
 			}
 		}
 		synchronized (localRegistry) {
-			addReferencesFromRegistry(clazz, remoteFilter, localRegistry,
-					references);
+			addReferencesFromRegistry(clazz, remoteFilter, localRegistry, references);
 		}
-		final IRemoteServiceReference[] result = (IRemoteServiceReference[]) references
-				.toArray(new IRemoteServiceReference[references.size()]);
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "getRemoteServiceReferences", result);
+		final IRemoteServiceReference[] result = (IRemoteServiceReference[]) references.toArray(new IRemoteServiceReference[references.size()]);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteServiceReferences", result);
 		return result;
 	}
 
 	protected ID[] getTargetsFromProperties(Dictionary properties) {
 		return null;
 	}
-	
-	public IRemoteServiceRegistration registerRemoteService(String[] clazzes,
-			Object service, Dictionary properties) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "registerRemoteService", new Object[] {
-						clazzes, service, properties });
+
+	public IRemoteServiceRegistration registerRemoteService(String[] clazzes, Object service, Dictionary properties) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "registerRemoteService", new Object[] {clazzes, service, properties});
 		if (service == null) {
 			throw new NullPointerException("service cannot be null");
 		}
@@ -156,21 +133,21 @@ public class RegistrySharedObject extends BaseSharedObject implements
 
 		final String invalidService = checkServiceClass(clazzes, service);
 		if (invalidService != null) {
-			throw new IllegalArgumentException("Service is not valid: "
-					+ invalidService);
+			throw new IllegalArgumentException("Service is not valid: " + invalidService);
 		}
 
 		final RemoteServiceRegistrationImpl reg = new RemoteServiceRegistrationImpl();
 		reg.publish(this, localRegistry, service, clazzes, properties);
 
-		ID [] targets = getTargetsFromProperties(properties);
-		if (targets == null) sendAddRegistration(null,reg);
-		else for(int i=0; i < targets.length; i++) sendAddRegistration(targets[i], reg);
+		final ID[] targets = getTargetsFromProperties(properties);
+		if (targets == null)
+			sendAddRegistration(null, reg);
+		else
+			for (int i = 0; i < targets.length; i++)
+				sendAddRegistration(targets[i], reg);
 
 		fireRemoteServiceListeners(createRegisteredEvent(reg));
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "registerRemoteService", reg);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "registerRemoteService", reg);
 
 		return reg;
 	}
@@ -183,9 +160,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 
 	public void initialize() throws SharedObjectInitException {
 		super.initialize();
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "initialize");
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "initialize");
 		super.addEventProcessor(new IEventProcessor() {
 			public boolean processEvent(Event arg0) {
 				if (arg0 instanceof IContainerConnectedEvent) {
@@ -197,23 +172,21 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			}
 		});
 		localRegistry = new RemoteServiceRegistryImpl(getLocalContainerID());
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "initialize");
+		if (getConfig().getContext().getConnectedID() != null) {
+			// We're already connected, so send request for update
+			sendRegistryUpdateRequest();
+		}
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "initialize");
 	}
 
-	protected void handleContainerDisconnectedEvent(
-			IContainerDisconnectedEvent event) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "handleContainerDisconnectedEvent", event);
+	protected void handleContainerDisconnectedEvent(IContainerDisconnectedEvent event) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleContainerDisconnectedEvent", event);
 		final ID targetID = event.getTargetID();
 		synchronized (remoteRegistrys) {
 			final RemoteServiceRegistryImpl registry = getRemoteRegistry(targetID);
 			if (registry != null) {
 				removeRemoteRegistry(targetID);
-				final RemoteServiceRegistrationImpl registrations[] = registry
-						.getRegistrations();
+				final RemoteServiceRegistrationImpl registrations[] = registry.getRegistrations();
 				if (registrations != null) {
 					for (int i = 0; i < registrations.length; i++) {
 						registry.unpublishService(registrations[i]);
@@ -222,62 +195,52 @@ public class RegistrySharedObject extends BaseSharedObject implements
 				}
 			}
 		}
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "handleContainerDisconnectedEvent");
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleContainerDisconnectedEvent");
+	}
+
+	protected void sendRegistryUpdate(ID targetContainerID) {
+		synchronized (localRegistry) {
+			final RemoteServiceRegistrationImpl registrations[] = localRegistry.getRegistrations();
+			if (registrations != null) {
+				for (int i = 0; i < registrations.length; i++) {
+					final RemoteServiceRegistrationImpl registration = registrations[i];
+					sendAddRegistration(targetContainerID, registration);
+				}
+			}
+		}
 	}
 
 	protected void handleContainerConnectedEvent(IContainerConnectedEvent event) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "handleContainerConnectedEvent", event);
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleContainerConnectedEvent", event);
 		// If we're a group manager or the newly connected container is the
 		// group manager
 		ID targetID = event.getTargetID();
 		// If we're the group manager, or we've just joined the group,
 		// then we sendAddRegistration to all
-		if (getContext().isGroupManager()
-				|| event.getTargetID().equals(getGroupID())) {
+		if (getContext().isGroupManager() || event.getTargetID().equals(getGroupID())) {
 			targetID = null;
 		}
-		synchronized (localRegistry) {
-			final RemoteServiceRegistrationImpl registrations[] = localRegistry
-					.getRegistrations();
-			if (registrations != null) {
-				for (int i = 0; i < registrations.length; i++) {
-					final RemoteServiceRegistrationImpl registration = registrations[i];
-					sendAddRegistration(targetID, registration);
-				}
-			}
-		}
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "handleContainerDisconnectedEvent");
+		sendRegistryUpdate(targetID);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleContainerDisconnectedEvent");
 	}
 
-	private Request createRequest(
-			RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call,
-			IRemoteCallListener listener) {
-		final RemoteServiceReferenceImpl refImpl = (RemoteServiceReferenceImpl) remoteRegistration
-				.getReference();
-		return new Request(this.getLocalContainerID(), remoteRegistration
-				.getServiceId(), RemoteCallImpl.createRemoteCall(refImpl
-				.getRemoteClass(), call.getMethod(), call.getParameters(), call
-				.getTimeout()), listener);
+	private Request createRequest(RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call, IRemoteCallListener listener) {
+		final RemoteServiceReferenceImpl refImpl = (RemoteServiceReferenceImpl) remoteRegistration.getReference();
+		return new Request(this.getLocalContainerID(), remoteRegistration.getServiceId(), RemoteCallImpl.createRemoteCall(refImpl.getRemoteClass(), call.getMethod(), call.getParameters(), call.getTimeout()), listener);
 	}
 
 	protected void fireRemoteServiceListeners(IRemoteServiceEvent event) {
+		List entries = null;
 		synchronized (serviceListeners) {
-			for (final Iterator i = serviceListeners.iterator(); i.hasNext();) {
-				final IRemoteServiceListener l = (IRemoteServiceListener) i
-						.next();
-				l.handleServiceEvent(event);
-			}
+			entries = new ArrayList(serviceListeners);
+		}
+		for (final Iterator i = entries.iterator(); i.hasNext();) {
+			final IRemoteServiceListener l = (IRemoteServiceListener) i.next();
+			l.handleServiceEvent(event);
 		}
 	}
 
-	private RemoteServiceRegistrationImpl getRemoteServiceRegistrationImpl(
-			IRemoteServiceReference reference) {
+	private RemoteServiceRegistrationImpl getRemoteServiceRegistrationImpl(IRemoteServiceReference reference) {
 		if (reference instanceof RemoteServiceReferenceImpl) {
 			final RemoteServiceReferenceImpl ref = (RemoteServiceReferenceImpl) reference;
 			if (!ref.isActive()) {
@@ -295,11 +258,8 @@ public class RegistrySharedObject extends BaseSharedObject implements
 		return null;
 	}
 
-	private void addReferencesFromRegistry(String clazz,
-			IRemoteFilter remoteFilter, RemoteServiceRegistryImpl registry,
-			List references) {
-		final IRemoteServiceReference[] rs = registry.lookupServiceReferences(
-				clazz, remoteFilter);
+	private void addReferencesFromRegistry(String clazz, IRemoteFilter remoteFilter, RemoteServiceRegistryImpl registry, List references) {
+		final IRemoteServiceReference[] rs = registry.lookupServiceReferences(clazz, remoteFilter);
 		if (rs != null) {
 			for (int j = 0; j < rs.length; j++) {
 				references.add(rs[j]);
@@ -307,12 +267,8 @@ public class RegistrySharedObject extends BaseSharedObject implements
 		}
 	}
 
-	protected Object callSynch(RemoteServiceRegistrationImpl registration,
-			IRemoteCall call) throws ECFException {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "callSynch", new Object[] { registration,
-						call });
+	protected Object callSynch(RemoteServiceRegistrationImpl registration, IRemoteCall call) throws ECFException {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "callSynch", new Object[] {registration, call});
 		boolean doneWaiting = false;
 		Response response = null;
 		try {
@@ -325,59 +281,47 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			while ((timeout - System.currentTimeMillis()) > 0 && !doneWaiting) {
 				final Request request = findRequestForId(requestId);
 				if (request == null) {
-					throw new NullPointerException(
-							"No pending request found id " + requestId);
+					throw new NullPointerException("No pending request found id " + requestId);
 				}
 				synchronized (request) {
 					if (request.isDone()) {
 						removeRequest(request);
-						Trace.trace(Activator.PLUGIN_ID,
-								"callSynch.request/response DONE: " + request);
+						Trace.trace(Activator.PLUGIN_ID, "callSynch.request/response DONE: " + request);
 						doneWaiting = true;
 						response = request.getResponse();
 						if (response == null) {
-							throw new NullPointerException(
-									"Response to request is null");
+							throw new NullPointerException("Response to request is null");
 						}
 					} else {
-						Trace.trace(Activator.PLUGIN_ID, "Waiting "
-								+ RESPONSE_WAIT_INTERVAL
-								+ " for response to request: " + request);
+						Trace.trace(Activator.PLUGIN_ID, "Waiting " + RESPONSE_WAIT_INTERVAL + " for response to request: " + request);
 						request.wait(RESPONSE_WAIT_INTERVAL);
 					}
 				}
 			}
 			if (!doneWaiting) {
-				throw new ECFException("Request timed out after "
-						+ call.getTimeout() + " ms");
+				throw new ECFException("Request timed out after " + call.getTimeout() + " ms");
 			}
 		} catch (final IOException e) {
 			log(CALL_REQUEST_ERROR_CODE, CALL_REQUEST_ERROR_MESSAGE, e);
 			throw new ECFException("Exception sending request", e);
 		} catch (final InterruptedException e) {
-			log(CALL_REQUEST_TIMEOUT_ERROR_CODE,
-					CALL_REQUEST_TIMEOUT_ERROR_MESSAGE, e);
+			log(CALL_REQUEST_TIMEOUT_ERROR_CODE, CALL_REQUEST_TIMEOUT_ERROR_MESSAGE, e);
 			throw new ECFException("Wait for response interrupted", e);
 		}
 		// Success...now get values and return
 		Object result = null;
 		if (response.hadException()) {
-			throw new ECFException("Exception in remote call", response
-					.getException());
+			throw new ECFException("Exception in remote call", response.getException());
 		} else {
 			result = response.getResponse();
 		}
 
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "callSynch", result);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "callSynch", result);
 		return result;
 
 	}
 
-	protected void fireCallStartEvent(IRemoteCallListener listener,
-			final long requestId, final IRemoteServiceReference reference,
-			final IRemoteCall call) {
+	protected void fireCallStartEvent(IRemoteCallListener listener, final long requestId, final IRemoteServiceReference reference, final IRemoteCall call) {
 		if (listener != null) {
 			listener.handleEvent(new IRemoteCallStartEvent() {
 				public long getRequestId() {
@@ -393,19 +337,15 @@ public class RegistrySharedObject extends BaseSharedObject implements
 				}
 
 				public String toString() {
-					final StringBuffer buf = new StringBuffer(
-							"IRemoteCallStartEvent[");
-					buf.append(";reference=").append(reference)
-							.append(";call=").append(call).append("]");
+					final StringBuffer buf = new StringBuffer("IRemoteCallStartEvent[");
+					buf.append(";reference=").append(reference).append(";call=").append(call).append("]");
 					return buf.toString();
 				}
 			});
 		}
 	}
 
-	protected void fireCallCompleteEvent(IRemoteCallListener listener,
-			final long requestId, final Object response,
-			final boolean hadException, final Throwable exception) {
+	protected void fireCallCompleteEvent(IRemoteCallListener listener, final long requestId, final Object response, final boolean hadException, final Throwable exception) {
 		if (listener != null) {
 			listener.handleEvent(new IRemoteCallCompleteEvent() {
 				public long getRequestId() {
@@ -425,36 +365,29 @@ public class RegistrySharedObject extends BaseSharedObject implements
 				}
 
 				public String toString() {
-					final StringBuffer buf = new StringBuffer(
-							"IRemoteCallCompleteEvent[");
-					buf.append(";response=").append(response).append(
-							";hadException=").append(hadException).append(
-							";exception=").append(exception).append("]");
+					final StringBuffer buf = new StringBuffer("IRemoteCallCompleteEvent[");
+					buf.append(";response=").append(response).append(";hadException=").append(hadException).append(";exception=").append(exception).append("]");
 					return buf.toString();
 				}
 			});
 		}
 	}
 
-	static String checkServiceClass(final String[] clazzes,
-			final Object serviceObject) {
-		final ClassLoader cl = (ClassLoader) AccessController
-				.doPrivileged(new PrivilegedAction() {
-					public Object run() {
-						return serviceObject.getClass().getClassLoader();
-					}
-				});
+	static String checkServiceClass(final String[] clazzes, final Object serviceObject) {
+		final ClassLoader cl = (ClassLoader) AccessController.doPrivileged(new PrivilegedAction() {
+			public Object run() {
+				return serviceObject.getClass().getClassLoader();
+			}
+		});
 		for (int i = 0; i < clazzes.length; i++) {
 			try {
-				final Class serviceClazz = cl == null ? Class
-						.forName(clazzes[i]) : cl.loadClass(clazzes[i]);
+				final Class serviceClazz = cl == null ? Class.forName(clazzes[i]) : cl.loadClass(clazzes[i]);
 				if (!serviceClazz.isInstance(serviceObject)) {
 					return clazzes[i];
 				}
 			} catch (final ClassNotFoundException e) {
 				// This check is rarely done
-				if (extensiveCheckServiceClass(clazzes[i], serviceObject
-						.getClass())) {
+				if (extensiveCheckServiceClass(clazzes[i], serviceObject.getClass())) {
 					return clazzes[i];
 				}
 			}
@@ -462,8 +395,7 @@ public class RegistrySharedObject extends BaseSharedObject implements
 		return null;
 	}
 
-	private static boolean extensiveCheckServiceClass(String clazz,
-			Class serviceClazz) {
+	private static boolean extensiveCheckServiceClass(String clazz, Class serviceClazz) {
 		if (clazz.equals(serviceClazz.getName())) {
 			return false;
 		}
@@ -537,32 +469,40 @@ public class RegistrySharedObject extends BaseSharedObject implements
 
 	private static final int ADD_REGISTRATION_ERROR_CODE = 212;
 
-	protected void sendAddRegistration(ID receiver,
-			RemoteServiceRegistrationImpl reg) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "sendAddRegistration", new Object[] {
-						receiver, reg });
+	private static final String REGISTRY_UPDATE_REQUEST = "handleRegistryUpdateRequest";
+
+	protected void sendRegistryUpdateRequest() {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendRegistryUpdateRequest");
 		try {
-			sendSharedObjectMsgTo(receiver, SharedObjectMsg.createMsg(null,
-					ADD_REGISTRATION, getLocalContainerID(), reg));
+			sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(REGISTRY_UPDATE_REQUEST, getLocalContainerID()));
 		} catch (final IOException e) {
-			log(ADD_REGISTRATION_ERROR_CODE,
-					ADD_REGISTRATION_ERROR_MESSAGE, e);
+			log(CALL_RESPONSE_ERROR_CODE, CALL_RESPONSE_ERROR_MESSAGE, e);
 		}
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "sendAddRegistration");
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendRegistryUpdateRequest");
 	}
 
-	protected void handleAddRegistration(ID remoteContainerID,
-			final RemoteServiceRegistrationImpl registration) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), ADD_REGISTRATION, new Object[] {
-						remoteContainerID, registration });
-		if (remoteContainerID == null
-				|| getLocalContainerID().equals(remoteContainerID)) {
+	protected void handleRegistryUpdateRequest(ID remoteContainerID) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), REGISTRY_UPDATE_REQUEST);
+		if (remoteContainerID == null || getLocalContainerID().equals(remoteContainerID)) {
+			return;
+		}
+		sendRegistryUpdate(remoteContainerID);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), REGISTRY_UPDATE_REQUEST);
+	}
+
+	protected void sendAddRegistration(ID receiver, RemoteServiceRegistrationImpl reg) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendAddRegistration", new Object[] {receiver, reg});
+		try {
+			sendSharedObjectMsgTo(receiver, SharedObjectMsg.createMsg(null, ADD_REGISTRATION, getLocalContainerID(), reg));
+		} catch (final IOException e) {
+			log(ADD_REGISTRATION_ERROR_CODE, ADD_REGISTRATION_ERROR_MESSAGE, e);
+		}
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendAddRegistration");
+	}
+
+	protected void handleAddRegistration(ID remoteContainerID, final RemoteServiceRegistrationImpl registration) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), ADD_REGISTRATION, new Object[] {remoteContainerID, registration});
+		if (remoteContainerID == null || getLocalContainerID().equals(remoteContainerID)) {
 			return;
 		}
 		synchronized (remoteRegistrys) {
@@ -578,38 +518,26 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			// notify IRemoteServiceListeners synchronously
 			fireRemoteServiceListeners(createRegisteredEvent(registration));
 		}
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), ADD_REGISTRATION);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), ADD_REGISTRATION);
 	}
 
-	protected long sendCallRequest(
-			RemoteServiceRegistrationImpl remoteRegistration,
-			final IRemoteCall call) throws IOException {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "sendCallRequest", new Object[] {
-						remoteRegistration, call });
+	protected long sendCallRequest(RemoteServiceRegistrationImpl remoteRegistration, final IRemoteCall call) throws IOException {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendCallRequest", new Object[] {remoteRegistration, call});
 		final Request request = createRequest(remoteRegistration, call, null);
 		addRequest(request);
 		try {
-			sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
-					SharedObjectMsg.createMsg(CALL_REQUEST, request));
+			sendSharedObjectMsgTo(remoteRegistration.getContainerID(), SharedObjectMsg.createMsg(CALL_REQUEST, request));
 		} catch (final IOException e) {
 			removeRequest(request);
 			throw e;
 		}
 		final long requestId = request.getRequestId();
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "sendCallRequest", new Long(requestId));
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendCallRequest", new Long(requestId));
 		return requestId;
 	}
 
 	protected void handleCallRequest(Request request) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "handleCallRequest", request);
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleCallRequest", request);
 		final ID responseTarget = request.getRequestContainerID();
 		final RemoteServiceRegistrationImpl localRegistration = getLocalRegistrationForRequest(request);
 		// Else we've got a local service and we invoke it
@@ -625,68 +553,44 @@ public class RegistrySharedObject extends BaseSharedObject implements
 		}
 		// Now send response back to responseTarget (original requestor)
 		sendCallResponse(responseTarget, response);
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "handleCallRequest");
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleCallRequest");
 	}
 
-	protected void sendCallRequestWithListener(
-			RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call,
-			IRemoteCallListener listener) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "sendCallRequestWithListener",
-				new Object[] { remoteRegistration, call, listener });
-		final Request request = createRequest(remoteRegistration, call,
-				listener);
-		fireCallStartEvent(listener, request.getRequestId(), remoteRegistration
-				.getReference(), call);
+	protected void sendCallRequestWithListener(RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call, IRemoteCallListener listener) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendCallRequestWithListener", new Object[] {remoteRegistration, call, listener});
+		final Request request = createRequest(remoteRegistration, call, listener);
+		fireCallStartEvent(listener, request.getRequestId(), remoteRegistration.getReference(), call);
 		try {
 			addRequest(request);
-			sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
-					SharedObjectMsg.createMsg(CALL_REQUEST, request));
+			sendSharedObjectMsgTo(remoteRegistration.getContainerID(), SharedObjectMsg.createMsg(CALL_REQUEST, request));
 		} catch (final IOException e) {
 			log(CALL_REQUEST_ERROR_CODE, CALL_REQUEST_ERROR_MESSAGE, e);
 			removeRequest(request);
-			fireCallCompleteEvent(listener, request.getRequestId(), null, true,
-					e);
+			fireCallCompleteEvent(listener, request.getRequestId(), null, true, e);
 		}
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "sendCallRequestWithListener");
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendCallRequestWithListener");
 	}
 
 	protected void sendCallResponse(ID responseTarget, Response response) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "sendCallResponse", new Object[] {
-						responseTarget, response });
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendCallResponse", new Object[] {responseTarget, response});
 		try {
-			sendSharedObjectMsgTo(responseTarget, SharedObjectMsg.createMsg(
-					CALL_RESPONSE, response));
+			sendSharedObjectMsgTo(responseTarget, SharedObjectMsg.createMsg(CALL_RESPONSE, response));
 		} catch (final IOException e) {
 			log(CALL_RESPONSE_ERROR_CODE, CALL_RESPONSE_ERROR_MESSAGE, e);
 		}
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "sendCallResponse");
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendCallResponse");
 	}
 
 	protected void handleCallResponse(Response response) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), CALL_RESPONSE, new Object[] { response });
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), CALL_RESPONSE, new Object[] {response});
 		final Request request = findRequestForId(response.getRequestId());
 		if (request == null) {
-			log(REQUEST_NOT_FOUND_ERROR_CODE,
-					REQUEST_NOT_FOUND_ERROR_MESSAGE, new NullPointerException());
+			log(REQUEST_NOT_FOUND_ERROR_CODE, REQUEST_NOT_FOUND_ERROR_MESSAGE, new NullPointerException());
 			return;
 		} else {
 			final IRemoteCallListener listener = request.getListener();
 			if (listener != null) {
-				fireCallCompleteEvent(listener, request.getRequestId(),
-						response.getResponse(), response.hadException(),
-						response.getException());
+				fireCallCompleteEvent(listener, request.getRequestId(), response.getResponse(), response.hadException(), response.getException());
 				return;
 			} else {
 				synchronized (request) {
@@ -696,36 +600,24 @@ public class RegistrySharedObject extends BaseSharedObject implements
 				}
 			}
 		}
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), CALL_RESPONSE);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), CALL_RESPONSE);
 	}
 
-	protected Request sendFireRequest(
-			RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call)
-			throws ECFException {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "sendFireRequest", new Object[] {
-						remoteRegistration, call });
+	protected Request sendFireRequest(RemoteServiceRegistrationImpl remoteRegistration, IRemoteCall call) throws ECFException {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendFireRequest", new Object[] {remoteRegistration, call});
 		final Request request = createRequest(remoteRegistration, call, null);
 		try {
-			sendSharedObjectMsgTo(remoteRegistration.getContainerID(),
-					SharedObjectMsg.createMsg(FIRE_REQUEST, request));
+			sendSharedObjectMsgTo(remoteRegistration.getContainerID(), SharedObjectMsg.createMsg(FIRE_REQUEST, request));
 		} catch (final IOException e) {
 			log(FIRE_REQUEST_ERROR_CODE, FIRE_REQUEST_ERROR_MESSAGE, e);
 			throw new ECFException("IOException sending remote request", e);
 		}
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "sendFireRequest", request);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendFireRequest", request);
 		return request;
 	}
 
 	protected void handleFireRequest(Request request) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), FIRE_REQUEST, new Object[] { request });
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), FIRE_REQUEST, new Object[] {request});
 		final RemoteServiceRegistrationImpl localRegistration = getLocalRegistrationForRequest(request);
 		// Else we've got a local service and we invoke it
 		final RemoteCallImpl call = request.getCall();
@@ -734,58 +626,41 @@ public class RegistrySharedObject extends BaseSharedObject implements
 		} catch (final Exception e) {
 			log(HANDLE_REQUEST_ERROR_CODE, HANDLE_REQUEST_ERROR_MESSAGE, e);
 		}
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), FIRE_REQUEST);
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), FIRE_REQUEST);
 	}
 
-	protected void sendUnregister(
-			RemoteServiceRegistrationImpl serviceRegistration) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "sendUnregister",
-				new Object[] { serviceRegistration });
+	protected void sendUnregister(RemoteServiceRegistrationImpl serviceRegistration) {
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "sendUnregister", new Object[] {serviceRegistration});
 		synchronized (localRegistry) {
 			localRegistry.unpublishService(serviceRegistration);
 			final ID containerID = serviceRegistration.getContainerID();
 			final Long serviceId = new Long(serviceRegistration.getServiceId());
 			try {
-				this.sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(
-						UNREGISTER, new Object[] { containerID, serviceId }));
+				this.sendSharedObjectMsgTo(null, SharedObjectMsg.createMsg(UNREGISTER, new Object[] {containerID, serviceId}));
 			} catch (final IOException e) {
 				log(UNREGISTER_ERROR_CODE, UNREGISTER_ERROR_MESSAGE, e);
 			}
 		}
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "sendUnregister");
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendUnregister");
 	}
 
 	protected void handleUnregister(ID containerID, Long serviceId) {
-		Trace.entering(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this
-						.getClass(), "handleUnregister", new Object[] {
-						containerID, serviceId });
+		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleUnregister", new Object[] {containerID, serviceId});
 		synchronized (remoteRegistrys) {
 			// get registry for given containerID
-			final RemoteServiceRegistryImpl serviceRegistry = (RemoteServiceRegistryImpl) remoteRegistrys
-					.get(containerID);
+			final RemoteServiceRegistryImpl serviceRegistry = (RemoteServiceRegistryImpl) remoteRegistrys.get(containerID);
 			if (serviceRegistry != null) {
-				final RemoteServiceRegistrationImpl registration = serviceRegistry
-						.findRegistrationForServiceId(serviceId.longValue());
+				final RemoteServiceRegistrationImpl registration = serviceRegistry.findRegistrationForServiceId(serviceId.longValue());
 				if (registration != null) {
 					serviceRegistry.unpublishService(registration);
 					fireRemoteServiceListeners(createUnregisteredEvent(registration));
 				}
 			}
 		}
-		Trace.exiting(Activator.PLUGIN_ID,
-				IRemoteServiceProviderDebugOptions.METHODS_EXITING, this
-						.getClass(), "handleUnregister");
+		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "handleUnregister");
 	}
 
-	protected IRemoteServiceUnregisteredEvent createUnregisteredEvent(
-			final RemoteServiceRegistrationImpl registration) {
+	protected IRemoteServiceUnregisteredEvent createUnregisteredEvent(final RemoteServiceRegistrationImpl registration) {
 		return new IRemoteServiceUnregisteredEvent() {
 
 			public String[] getClazzes() {
@@ -801,21 +676,16 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			}
 
 			public String toString() {
-				final StringBuffer buf = new StringBuffer(
-						"RemoteServiceUnregisteredEvent[");
-				buf.append("containerID=")
-						.append(registration.getContainerID());
-				buf.append(";clazzes=").append(
-						Arrays.asList(registration.getClasses()));
-				buf.append(";reference=").append(registration.getReference())
-						.append("]");
+				final StringBuffer buf = new StringBuffer("RemoteServiceUnregisteredEvent[");
+				buf.append("containerID=").append(registration.getContainerID());
+				buf.append(";clazzes=").append(Arrays.asList(registration.getClasses()));
+				buf.append(";reference=").append(registration.getReference()).append("]");
 				return buf.toString();
 			}
 		};
 	}
 
-	protected IRemoteServiceRegisteredEvent createRegisteredEvent(
-			final RemoteServiceRegistrationImpl registration) {
+	protected IRemoteServiceRegisteredEvent createRegisteredEvent(final RemoteServiceRegistrationImpl registration) {
 		return new IRemoteServiceRegisteredEvent() {
 
 			public String[] getClazzes() {
@@ -831,14 +701,10 @@ public class RegistrySharedObject extends BaseSharedObject implements
 			}
 
 			public String toString() {
-				final StringBuffer buf = new StringBuffer(
-						"RemoteServiceRegisteredEvent[");
-				buf.append("containerID=")
-						.append(registration.getContainerID());
-				buf.append(";clazzes=").append(
-						Arrays.asList(registration.getClasses()));
-				buf.append(";reference=").append(registration.getReference())
-						.append("]");
+				final StringBuffer buf = new StringBuffer("RemoteServiceRegisteredEvent[");
+				buf.append("containerID=").append(registration.getContainerID());
+				buf.append(";clazzes=").append(Arrays.asList(registration.getClasses()));
+				buf.append(";reference=").append(registration.getReference()).append("]");
 				return buf.toString();
 			}
 		};
@@ -848,10 +714,8 @@ public class RegistrySharedObject extends BaseSharedObject implements
 	 * End message send/handlers
 	 */
 
-	protected RemoteServiceRegistryImpl addRemoteRegistry(
-			RemoteServiceRegistryImpl registry) {
-		return (RemoteServiceRegistryImpl) remoteRegistrys.put(registry
-				.getContainerID(), registry);
+	protected RemoteServiceRegistryImpl addRemoteRegistry(RemoteServiceRegistryImpl registry) {
+		return (RemoteServiceRegistryImpl) remoteRegistrys.put(registry.getContainerID(), registry);
 	}
 
 	protected RemoteServiceRegistryImpl getRemoteRegistry(ID containerID) {
@@ -862,11 +726,9 @@ public class RegistrySharedObject extends BaseSharedObject implements
 		return (RemoteServiceRegistryImpl) remoteRegistrys.remove(containerID);
 	}
 
-	private RemoteServiceRegistrationImpl getLocalRegistrationForRequest(
-			Request request) {
+	private RemoteServiceRegistrationImpl getLocalRegistrationForRequest(Request request) {
 		synchronized (localRegistry) {
-			return localRegistry.findRegistrationForServiceId(request
-					.getServiceId());
+			return localRegistry.findRegistrationForServiceId(request.getServiceId());
 		}
 	}
 
