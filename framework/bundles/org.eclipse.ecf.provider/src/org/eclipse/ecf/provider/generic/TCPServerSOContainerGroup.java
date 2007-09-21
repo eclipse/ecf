@@ -31,21 +31,12 @@ import org.eclipse.ecf.provider.comm.tcp.Server;
 
 public class TCPServerSOContainerGroup extends SOContainerGroup implements ISocketAcceptHandler {
 
-	public static final int DEFAULT_SOCKET_KEEPALIVE = 30000;
 	public static final String INVALID_CONNECT = Messages.TCPServerSOContainerGroup_Invalid_Connect_Request;
 	public static final String DEFAULT_GROUP_NAME = TCPServerSOContainerGroup.class.getName();
 	private int port;
 	private Server listener;
 	private boolean isOnTheAir = false;
-	private ThreadGroup threadGroup;
-	private int socketKeepAlive = DEFAULT_SOCKET_KEEPALIVE;
-
-	public TCPServerSOContainerGroup(String name, ThreadGroup group, int port, int socketKeepAlive) {
-		super(name);
-		threadGroup = group;
-		this.port = port;
-		this.socketKeepAlive = socketKeepAlive;
-	}
+	private final ThreadGroup threadGroup;
 
 	public TCPServerSOContainerGroup(String name, ThreadGroup group, int port) {
 		super(name);
@@ -61,7 +52,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements ISock
 		this(DEFAULT_GROUP_NAME, null, port);
 	}
 
-	protected void debug(String msg) {
+	protected void trace(String msg) {
 		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg);
 	}
 
@@ -70,7 +61,7 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements ISock
 	}
 
 	public synchronized void putOnTheAir() throws IOException {
-		debug("group at port " + port + " on the air"); //$NON-NLS-1$ //$NON-NLS-2$
+		trace("TCPServerSOContainerGroup at port " + port + " on the air"); //$NON-NLS-1$ //$NON-NLS-2$
 		listener = new Server(threadGroup, port, this);
 		port = listener.getLocalPort();
 		isOnTheAir = true;
@@ -82,40 +73,34 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements ISock
 
 	private void setSocketOptions(Socket aSocket) throws SocketException {
 		aSocket.setTcpNoDelay(true);
-		if (socketKeepAlive > 0) {
-			aSocket.setKeepAlive(true);
-			aSocket.setSoTimeout(socketKeepAlive);
-		}
 	}
 
 	public void handleAccept(Socket aSocket) throws Exception {
 		// Set socket options
 		setSocketOptions(aSocket);
-		ObjectOutputStream oStream = new ObjectOutputStream(aSocket.getOutputStream());
+		final ObjectOutputStream oStream = new ObjectOutputStream(aSocket.getOutputStream());
 		oStream.flush();
-		ObjectInputStream iStream = new ObjectInputStream(aSocket.getInputStream());
-		ConnectRequestMessage req = (ConnectRequestMessage) iStream.readObject();
-		debug("serverrecv:" + req); //$NON-NLS-1$
+		final ObjectInputStream iStream = new ObjectInputStream(aSocket.getInputStream());
+		final ConnectRequestMessage req = (ConnectRequestMessage) iStream.readObject();
 		if (req == null)
 			throw new InvalidObjectException(INVALID_CONNECT + Messages.TCPServerSOContainerGroup_Exception_Connect_Request_Null);
-		URI uri = req.getTarget();
+		final URI uri = req.getTarget();
 		if (uri == null)
 			throw new InvalidObjectException(INVALID_CONNECT + Messages.TCPServerSOContainerGroup_Target_Null);
-		String path = uri.getPath();
+		final String path = uri.getPath();
 		if (path == null)
 			throw new InvalidObjectException(INVALID_CONNECT + Messages.TCPServerSOContainerGroup_Target_Path_Null);
-		TCPServerSOContainer srs = (TCPServerSOContainer) get(path);
+		final TCPServerSOContainer srs = (TCPServerSOContainer) get(path);
 		if (srs == null)
 			throw new InvalidObjectException(Messages.TCPServerSOContainerGroup_Container_For_Target + path + Messages.TCPServerSOContainerGroup_Not_Found);
-		debug("found container:" + srs.getID().getName() + " for target " + uri); //$NON-NLS-1$ //$NON-NLS-2$
 		// Create our local messaging interface
-		Client newClient = new Client(aSocket, iStream, oStream, srs.getReceiver(), srs.keepAlive);
+		final Client newClient = new Client(aSocket, iStream, oStream, srs.getReceiver());
 		// No other threads can access messaging interface until space has
 		// accepted/rejected
 		// connect request
 		synchronized (newClient) {
 			// Call checkConnect
-			Serializable resp = srs.handleConnectRequest(aSocket, path, req.getData(), newClient);
+			final Serializable resp = srs.handleConnectRequest(aSocket, path, req.getData(), newClient);
 			// Create connect response wrapper and send it back
 			oStream.writeObject(new ConnectResultMessage(resp));
 			oStream.flush();
@@ -124,10 +109,10 @@ public class TCPServerSOContainerGroup extends SOContainerGroup implements ISock
 
 	public synchronized void takeOffTheAir() {
 		if (listener != null) {
-			debug("Taking " + getName() + " off the air."); //$NON-NLS-1$ //$NON-NLS-2$
+			trace("Taking " + getName() + " off the air."); //$NON-NLS-1$ //$NON-NLS-2$
 			try {
 				listener.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				traceStack("Exception in closeListener", e); //$NON-NLS-1$
 			}
 			listener = null;
