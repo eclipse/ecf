@@ -47,7 +47,7 @@ public class RemoteContainerTest extends AbstractRemoteServiceTestCase {
 	}
 
 	public void testRemoteServiceAdapters() throws Exception {
-		IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
+		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		assertNotNull(adapters);
 		for (int i = 0; i < adapters.length; i++)
 			assertNotNull(adapters[i]);
@@ -56,128 +56,124 @@ public class RemoteContainerTest extends AbstractRemoteServiceTestCase {
 	protected Object createService() {
 		return new IConcatService() {
 			public String concat(String string1, String string2) {
-				String result = string1.concat(string2);
-				System.out.println("SERVICE.concat("+string1+","+string2+") returning "+result);
+				final String result = string1.concat(string2);
+				System.out.println("SERVICE.concat(" + string1 + "," + string2 + ") returning " + result);
 				return string1.concat(string2);
 			}
 		};
 	}
 
 	public void testRegisterService() throws Exception {
-		IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
+		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// adapter [0] is the service 'server'
-		IRemoteServiceRegistration reg = registerService(adapters[0],
-				IConcatService.class.getName(), createService(), 1500);
+		final IRemoteServiceRegistration reg = registerService(adapters[0], IConcatService.class.getName(), createService(), 1500);
 		assertNotNull(reg);
 		assertNotNull(reg.getContainerID());
 	}
 
 	public void testUnregisterService() throws Exception {
-		IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
+		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
 		// adapter [0] is the service 'server'
-		IRemoteServiceRegistration reg = registerService(adapters[0],
-				IConcatService.class.getName(), createService(), 1500);
+		final IRemoteServiceRegistration reg = registerService(adapters[0], IConcatService.class.getName(), createService(), 1500);
 		assertNotNull(reg);
 		assertNotNull(reg.getContainerID());
 
 		reg.unregister();
-		
-	}
-	
-	public void testGetServiceReference() throws Exception {
-		IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
-		registerService(adapters[0], IConcatService.class.getName(),
-				createService(), 3000);
 
-		IRemoteServiceReference[] refs = getRemoteServiceReferences(
-				adapters[1], IConcatService.class.getName());
+	}
+
+	public void testGetServiceReference() throws Exception {
+		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
+		registerService(adapters[0], IConcatService.class.getName(), createService(), 3000);
+
+		final IRemoteServiceReference[] refs = getRemoteServiceReferences(adapters[1], IConcatService.class.getName());
 
 		assertNotNull(refs);
-		assertTrue(refs.length == 1);
+		assertTrue(refs.length > 0);
 	}
 
 	public void testGetService() throws Exception {
-		IRemoteService service = registerAndGetRemoteService();
-		
+		final IRemoteService service = registerAndGetRemoteService();
+
 		assertNotNull(service);
 	}
 
 	protected IRemoteCall createRemoteConcat(String first, String second) {
-		return createRemoteCall("concat",new Object [] { first, second });
+		return createRemoteCall("concat", new Object[] {first, second});
 	}
-	
+
 	protected IRemoteService registerAndGetRemoteService() {
-		IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
-		return registerAndGetRemoteService(adapters[0],
-				adapters[1], IConcatService.class.getName(), 1500);
-		
+		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
+		return registerAndGetRemoteService(adapters[0], adapters[1], IConcatService.class.getName(), 1500);
+
 	}
-	
+
 	protected IRemoteCallListener createRemoteCallListener() {
 		return new IRemoteCallListener() {
 			public void handleEvent(IRemoteCallEvent event) {
-				System.out.println("CLIENT.handleEvent("+event+")");
-			}};
+				System.out.println("CLIENT.handleEvent(" + event + ")");
+			}
+		};
 	}
-	
+
 	public void testCallSynch() throws Exception {
-		IRemoteService service = registerAndGetRemoteService();
-		
+		final IRemoteService service = registerAndGetRemoteService();
+
 		System.out.println("CLIENT.callSynch start");
-		Object result = service.callSynch(createRemoteConcat("Eclipse ","is cool"));
-		System.out.println("CLIENT.callSynch end. result="+result);
+		final Object result = service.callSynch(createRemoteConcat("Eclipse ", "is cool"));
+		System.out.println("CLIENT.callSynch end. result=" + result);
 		assertNotNull(result);
 		assertTrue(result.equals("Eclipse ".concat("is cool")));
 	}
 
 	public void testBadCallSynch() throws Exception {
-		IRemoteService service = registerAndGetRemoteService();
-		
-				// Following should throw exception because "concat1" method does not exist
+		final IRemoteService service = registerAndGetRemoteService();
+
+		// Following should throw exception because "concat1" method does not exist
 		try {
-			service.callSynch(createRemoteCall("concat1",new Object [] { "first", "second" }));
+			service.callSynch(createRemoteCall("concat1", new Object[] {"first", "second"}));
 			fail();
-		} catch (ECFException e) {
+		} catch (final ECFException e) {
 			// Exception should occur
 		}
-		
+
 		// Following should throw exception because wrong number of params for concat	
 		try {
-			service.callSynch(createRemoteCall("concat",new Object [] { "first" }));
+			service.callSynch(createRemoteCall("concat", new Object[] {"first"}));
 			fail();
-		} catch (ECFException e) {
+		} catch (final ECFException e) {
 			// Exception should occur
 		}
-		
+
 	}
-	
+
 	public void testCallAsynch() throws Exception {
-		IRemoteService service = registerAndGetRemoteService();
-		
+		final IRemoteService service = registerAndGetRemoteService();
+
 		System.out.println("CLIENT.callAsynch start");
-		service.callAsynch(createRemoteConcat("ECF ", "is cool"),createRemoteCallListener());
+		service.callAsynch(createRemoteConcat("ECF ", "is cool"), createRemoteCallListener());
 		System.out.println("CLIENT.callAsynch end");
 		sleep(1500);
 	}
-	
+
 	public void testFireAsynch() throws Exception {
-		IRemoteService service = registerAndGetRemoteService();
-				
+		final IRemoteService service = registerAndGetRemoteService();
+
 		System.out.println("CLIENT.fireAsynch start");
 		service.fireAsynch(createRemoteConcat("Eclipse ", "sucks"));
 		System.out.println("CLIENT.fireAsynch end");
-		
+
 		sleep(1500);
 	}
 
 	public void testProxy() throws Exception {
-		IRemoteService service = registerAndGetRemoteService();
-		
-		IConcatService proxy = (IConcatService) service.getProxy();
+		final IRemoteService service = registerAndGetRemoteService();
+
+		final IConcatService proxy = (IConcatService) service.getProxy();
 		assertNotNull(proxy);
 		System.out.println("CLIENT.proxy start");
-		String result = proxy.concat("ECF ", "sucks");
-		System.out.println("CLIENT.proxy end. result="+result);
+		final String result = proxy.concat("ECF ", "sucks");
+		System.out.println("CLIENT.proxy end. result=" + result);
 		sleep(1500);
 	}
 
