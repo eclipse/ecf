@@ -26,6 +26,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.BaseSharedObject;
 import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
 import org.eclipse.ecf.core.sharedobject.SharedObjectMsg;
+import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Event;
 import org.eclipse.ecf.core.util.IEventProcessor;
@@ -167,15 +168,16 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 					handleContainerConnectedEvent((IContainerConnectedEvent) arg0);
 				} else if (arg0 instanceof IContainerDisconnectedEvent) {
 					handleContainerDisconnectedEvent((IContainerDisconnectedEvent) arg0);
+				} else if (arg0 instanceof ISharedObjectActivatedEvent) {
+					if (getConfig().getContext().getConnectedID() != null) {
+						// We're already connected, so send request for update
+						sendRegistryUpdateRequest();
+					}
 				}
 				return false;
 			}
 		});
 		localRegistry = new RemoteServiceRegistryImpl(getLocalContainerID());
-		if (getConfig().getContext().getConnectedID() != null) {
-			// We're already connected, so send request for update
-			sendRegistryUpdateRequest();
-		}
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "initialize");
 	}
 
