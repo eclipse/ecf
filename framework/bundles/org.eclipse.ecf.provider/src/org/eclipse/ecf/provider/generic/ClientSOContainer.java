@@ -108,9 +108,7 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 	 * @see org.eclipse.ecf.provider.generic.SOContainer#getConnectedID()
 	 */
 	public ID getConnectedID() {
-		synchronized (getConnectLock()) {
-			return remoteServerID;
-		}
+		return remoteServerID;
 	}
 
 	private void setStateDisconnected(ISynchAsynchConnection conn) {
