@@ -1,5 +1,5 @@
 <server>
-	<connector protocol="ecftcp"  hostname="localhost" port="3283" timeout="30000">
+	<connector protocol="ecftcp"  hostname="localhost" port="3282" timeout="30000">
 		<group name="server"/>
 	</connector>
 </server>
