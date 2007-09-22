@@ -40,8 +40,7 @@ import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
 
-public class HttpClientRetrieveFileTransfer extends
-		AbstractRetrieveFileTransfer {
+public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
 	private static final String HTTP_PROXY_PORT = Messages.HttpClientRetrieveFileTransfer_Http_ProxyPort_Prop;
 
@@ -61,7 +60,7 @@ public class HttpClientRetrieveFileTransfer extends
 
 	protected static final String HTTP = Messages.FileTransferNamespace_Http_Protocol;
 
-	protected static final String[] supportedProtocols = { HTTP, HTTPS };
+	protected static final String[] supportedProtocols = {HTTP, HTTPS};
 
 	private GetMethod getMethod = null;
 
@@ -89,100 +88,81 @@ public class HttpClientRetrieveFileTransfer extends
 		super.hardClose();
 	}
 
-	protected Credentials getFileRequestCredentials()
-			throws UnsupportedCallbackException, IOException {
+	protected Credentials getFileRequestCredentials() throws UnsupportedCallbackException, IOException {
 		if (fileRequestConnectContext == null)
 			return null;
-		CallbackHandler callbackHandler = fileRequestConnectContext
-				.getCallbackHandler();
+		final CallbackHandler callbackHandler = fileRequestConnectContext.getCallbackHandler();
 		if (callbackHandler == null)
 			return null;
-		NameCallback usernameCallback = new NameCallback(USERNAME_PREFIX);
-		ObjectCallback passwordCallback = new ObjectCallback();
-		callbackHandler.handle(new Callback[] { usernameCallback,
-				passwordCallback });
+		final NameCallback usernameCallback = new NameCallback(USERNAME_PREFIX);
+		final ObjectCallback passwordCallback = new ObjectCallback();
+		callbackHandler.handle(new Callback[] {usernameCallback, passwordCallback});
 		username = usernameCallback.getName();
 		password = (String) passwordCallback.getObject();
 		return new UsernamePasswordCredentials(username, password);
 	}
 
 	private Proxy getSystemProxy() {
-		String systemHttpProxyHost = System.getProperty(HTTP_PROXY_HOST, null);
-		String systemHttpProxyPort = System.getProperty(HTTP_PROXY_PORT, "" //$NON-NLS-1$
+		final String systemHttpProxyHost = System.getProperty(HTTP_PROXY_HOST, null);
+		final String systemHttpProxyPort = System.getProperty(HTTP_PROXY_PORT, "" //$NON-NLS-1$
 				+ HTTP_PORT);
 		int port = -1;
 		try {
 			port = Integer.parseInt(systemHttpProxyPort);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 
 		}
 		if (systemHttpProxyHost == null || systemHttpProxyHost.equals("")) //$NON-NLS-1$
 			return null;
-		return new Proxy(Proxy.Type.HTTP, new ProxyAddress(systemHttpProxyHost,
-				port));
+		return new Proxy(Proxy.Type.HTTP, new ProxyAddress(systemHttpProxyHost, port));
 	}
 
 	protected void setupProxy(String urlString) {
 		if (proxy == null)
 			proxy = getSystemProxy();
-		if (proxy != null && !Proxy.NO_PROXY.equals(proxy)
-				&& !urlUsesHttps(urlString)) {
-			ProxyAddress address = proxy.getAddress();
-			httpClient.getHostConfiguration().setProxy(
-					getHostFromURL(address.getHostName()), address.getPort());
-			String proxyUsername = proxy.getUsername();
-			String proxyPassword = proxy.getPassword();
+		if (proxy != null && !Proxy.NO_PROXY.equals(proxy) && !urlUsesHttps(urlString)) {
+			final ProxyAddress address = proxy.getAddress();
+			httpClient.getHostConfiguration().setProxy(getHostFromURL(address.getHostName()), address.getPort());
+			final String proxyUsername = proxy.getUsername();
+			final String proxyPassword = proxy.getPassword();
 			if (username != null) {
-				Credentials credentials = new UsernamePasswordCredentials(
-						proxyUsername, proxyPassword);
-				AuthScope proxyAuthScope = new AuthScope(address.getHostName(),
-						address.getPort(), AuthScope.ANY_REALM);
-				httpClient.getState().setProxyCredentials(proxyAuthScope,
-						credentials);
+				final Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
+				final AuthScope proxyAuthScope = new AuthScope(address.getHostName(), address.getPort(), AuthScope.ANY_REALM);
+				httpClient.getState().setProxyCredentials(proxyAuthScope, credentials);
 			}
 		}
 	}
 
-	protected void setupAuthentication(String urlString)
-			throws UnsupportedCallbackException, IOException {
+	protected void setupAuthentication(String urlString) throws UnsupportedCallbackException, IOException {
 		Credentials credentials = null;
 		if (username == null) {
 			credentials = getFileRequestCredentials();
 		}
 
 		if (credentials != null && username != null) {
-			AuthScope authScope = new AuthScope(getHostFromURL(urlString),
-					getPortFromURL(urlString), AuthScope.ANY_REALM);
+			final AuthScope authScope = new AuthScope(getHostFromURL(urlString), getPortFromURL(urlString), AuthScope.ANY_REALM);
 			httpClient.getState().setCredentials(authScope, credentials);
 		}
 	}
 
 	protected void setupHostAndPort(String urlString) {
 		if (urlUsesHttps(urlString)) {
-			Protocol acceptAllSsl = new Protocol(HTTPS,
-					new SslProtocolSocketFactory(proxy),
-					getPortFromURL(urlString));
-			httpClient.getHostConfiguration().setHost(
-					getHostFromURL(urlString), getPortFromURL(urlString),
-					acceptAllSsl);
+			final Protocol acceptAllSsl = new Protocol(HTTPS, new SslProtocolSocketFactory(proxy), getPortFromURL(urlString));
+			httpClient.getHostConfiguration().setHost(getHostFromURL(urlString), getPortFromURL(urlString), acceptAllSsl);
 		} else {
-			httpClient.getHostConfiguration().setHost(
-					getHostFromURL(urlString), getPortFromURL(urlString));
+			httpClient.getHostConfiguration().setHost(getHostFromURL(urlString), getPortFromURL(urlString));
 		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
-	protected void openStreams()
-			throws IncomingFileTransferException {
-		String urlString = getRemoteFileURL().toString();
+	protected void openStreams() throws IncomingFileTransferException {
+		final String urlString = getRemoteFileURL().toString();
 
 		try {
-			httpClient.getHttpConnectionManager().getParams().setSoTimeout(
-					DEFAULT_CONNECTION_TIMEOUT);
-			httpClient.getHttpConnectionManager().getParams()
-					.setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
+			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_CONNECTION_TIMEOUT);
+			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
 
 			setupProxy(urlString);
 
@@ -193,71 +173,59 @@ public class HttpClientRetrieveFileTransfer extends
 			getMethod = new GetMethod(urlString);
 			getMethod.setFollowRedirects(true);
 
-			int code = httpClient.executeMethod(getMethod);
+			final int code = httpClient.executeMethod(getMethod);
 
 			if (code == HttpURLConnection.HTTP_OK) {
-				long contentLength = getMethod.getResponseContentLength();
+				final long contentLength = getMethod.getResponseContentLength();
 				setInputStream(getMethod.getResponseBodyAsStream());
 				setFileLength(contentLength);
 
-				listener
-						.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
-							private static final long serialVersionUID = -59096575294481755L;
+				listener.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
+					private static final long serialVersionUID = -59096575294481755L;
 
-							public IFileID getFileID() {
-								return remoteFileID;
-							}
+					public IFileID getFileID() {
+						return remoteFileID;
+					}
 
-							public IIncomingFileTransfer receive(
-									File localFileToSave) throws IOException {
-								setOutputStream(new BufferedOutputStream(
-										new FileOutputStream(localFileToSave)));
-								job = new FileTransferJob(getRemoteFileURL()
-										.toString());
-								job.schedule();
-								return HttpClientRetrieveFileTransfer.this;
-							}
+					public IIncomingFileTransfer receive(File localFileToSave) throws IOException {
+						setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave)));
+						job = new FileTransferJob(getRemoteFileURL().toString());
+						job.schedule();
+						return HttpClientRetrieveFileTransfer.this;
+					}
 
-							public String toString() {
-								StringBuffer sb = new StringBuffer(
-										"IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
-								sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-								sb.append("bytesReceived=").append( //$NON-NLS-1$
-										bytesReceived).append("]"); //$NON-NLS-1$
-								return sb.toString();
-							}
+					public String toString() {
+						final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
+						sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+						sb.append("bytesReceived=").append( //$NON-NLS-1$
+								bytesReceived).append("]"); //$NON-NLS-1$
+						return sb.toString();
+					}
 
-							public void cancel() {
-								hardClose();
-							}
+					public void cancel() {
+						hardClose();
+					}
 
-							public IIncomingFileTransfer receive(
-									OutputStream streamToStore)
-									throws IOException {
-								setOutputStream(streamToStore);
-								setCloseOutputStream(false);
-								job = new FileTransferJob(getRemoteFileURL()
-										.toString());
-								job.schedule();
-								return HttpClientRetrieveFileTransfer.this;
-							}
+					public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
+						setOutputStream(streamToStore);
+						setCloseOutputStream(false);
+						job = new FileTransferJob(getRemoteFileURL().toString());
+						job.schedule();
+						return HttpClientRetrieveFileTransfer.this;
+					}
 
-						});
-			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED
-					|| code == HttpURLConnection.HTTP_FORBIDDEN) {
+				});
+			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED || code == HttpURLConnection.HTTP_FORBIDDEN) {
 				getMethod.getResponseBody();
 				// login or reauthenticate due to an expired session
 				getMethod.releaseConnection();
-				throw new IncomingFileTransferException(
-						Messages.HttpClientRetrieveFileTransfer_Unauthorized);
+				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
-				throw new LoginException(
-						Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
+				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
 			} else {
-				throw new IOException(
-						"HttpClient connection error response code: " + code); //$NON-NLS-1$
+				throw new IOException("HttpClient connection error response code: " + code); //$NON-NLS-1$
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IncomingFileTransferException("Could not connect to " //$NON-NLS-1$
 					+ urlString, e);
 		}
@@ -269,8 +237,7 @@ public class HttpClientRetrieveFileTransfer extends
 	 * 
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void setConnectContextForAuthentication(
-			IConnectContext connectContext) {
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		this.fileRequestConnectContext = connectContext;
 		this.username = null;
 		this.password = null;
@@ -287,14 +254,14 @@ public class HttpClientRetrieveFileTransfer extends
 
 	protected static String getHostFromURL(String url) {
 		String result = url;
-		int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
+		final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
 
 		if (colonSlashSlash >= 0) {
 			result = url.substring(colonSlashSlash + 3);
 		}
 
-		int colonPort = result.indexOf(':');
-		int requestPath = result.indexOf('/');
+		final int colonPort = result.indexOf(':');
+		final int requestPath = result.indexOf('/');
 
 		int substringEnd;
 
@@ -312,12 +279,12 @@ public class HttpClientRetrieveFileTransfer extends
 	}
 
 	protected static int getPortFromURL(String url) {
-		int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
-		int colonPort = url.indexOf(':', colonSlashSlash + 1);
+		final int colonSlashSlash = url.indexOf("://"); //$NON-NLS-1$
+		final int colonPort = url.indexOf(':', colonSlashSlash + 1);
 		if (colonPort < 0)
 			return urlUsesHttps(url) ? HTTPS_PORT : HTTP_PORT;
 
-		int requestPath = url.indexOf('/', colonPort + 1);
+		final int requestPath = url.indexOf('/', colonPort + 1);
 
 		int end;
 		if (requestPath < 0)
