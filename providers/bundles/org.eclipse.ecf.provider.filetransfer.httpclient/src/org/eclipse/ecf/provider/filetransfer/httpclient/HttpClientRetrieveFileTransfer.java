@@ -320,4 +320,20 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return new FileTransferID(getRetrieveNamespace(), getRemoteFileURL());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doPause()
+	 */
+	protected boolean doPause() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doResume()
+	 */
+	protected boolean doResume() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
