@@ -45,55 +45,48 @@ public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 	 */
 	protected void openStreams() throws IncomingFileTransferException {
 		try {
-			IFileStore fileStore = EFS.getStore(new URI(getRemoteFileURL().getFile()));
-			IFileInfo info = fileStore.fetchInfo();
+			final IFileStore fileStore = EFS.getStore(new URI(getRemoteFileURL().getFile()));
+			final IFileInfo info = fileStore.fetchInfo();
 			setFileLength(info.getLength());
 			setInputStream(fileStore.openInputStream(0, null));
 
-			listener
-					.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
-						private static final long serialVersionUID = 5693211912862160540L;
+			listener.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
+				private static final long serialVersionUID = 5693211912862160540L;
 
-						public IFileID getFileID() {
-							return remoteFileID;
-						}
+				public IFileID getFileID() {
+					return remoteFileID;
+				}
 
-						public IIncomingFileTransfer receive(
-								File localFileToSave) throws IOException {
-							setOutputStream(new BufferedOutputStream(
-									new FileOutputStream(localFileToSave)));
-							job = new FileTransferJob(getRemoteFileURL()
-									.toString());
-							job.schedule();
-							return EFSRetrieveFileTransfer.this;
-						}
+				public IIncomingFileTransfer receive(File localFileToSave) throws IOException {
+					setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave)));
+					job = new FileTransferJob(getRemoteFileURL().toString());
+					job.schedule();
+					return EFSRetrieveFileTransfer.this;
+				}
 
-						public String toString() {
-							StringBuffer sb = new StringBuffer(
-									"IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
-							sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-							sb.append("bytesReceived=").append( //$NON-NLS-1$
-									bytesReceived).append("]"); //$NON-NLS-1$
-							return sb.toString();
-						}
+				public String toString() {
+					final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
+					sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+					sb.append("bytesReceived=").append( //$NON-NLS-1$
+							bytesReceived).append("]"); //$NON-NLS-1$
+					return sb.toString();
+				}
 
-						public void cancel() {
-							hardClose();
-						}
+				public void cancel() {
+					hardClose();
+				}
 
-						public IIncomingFileTransfer receive(
-								OutputStream streamToStore) throws IOException {
-							setOutputStream(streamToStore);
-							setCloseOutputStream(false);
-							job = new FileTransferJob(getRemoteFileURL()
-									.toString());
-							job.schedule();
-							return EFSRetrieveFileTransfer.this;
-						}
+				public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
+					setOutputStream(streamToStore);
+					setCloseOutputStream(false);
+					job = new FileTransferJob(getRemoteFileURL().toString());
+					job.schedule();
+					return EFSRetrieveFileTransfer.this;
+				}
 
-					});
+			});
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IncomingFileTransferException(e);
 		}
 	}
@@ -112,8 +105,7 @@ public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 	 * 
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void setConnectContextForAuthentication(
-			IConnectContext connectContext) {
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		this.connectContext = connectContext;
 	}
 
@@ -124,6 +116,20 @@ public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 	 */
 	public void setProxy(Proxy proxy) {
 		this.proxy = proxy;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doPause()
+	 */
+	protected boolean doPause() {
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doResume()
+	 */
+	protected boolean doResume() {
+		return false;
 	}
 
 }
