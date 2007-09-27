@@ -31,7 +31,7 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.filetransfer.service.IRetrieveFileTransfer;
 
-public class MultiRetrieveFileTransferServiceTest extends TestCase {
+public class MultiRetrieveServiceTest extends TestCase {
 
 	private static final String TESTSRCPATH = "test.src";
 	private static final String TESTTARGETPATH = "test.target";

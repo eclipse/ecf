@@ -20,7 +20,7 @@ import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.tests.ECFAbstractTestCase;
 
-public class FileTransferNamespaceTest extends ECFAbstractTestCase {
+public class NamespaceTest extends ECFAbstractTestCase {
 
 	private Namespace fixture;
 	

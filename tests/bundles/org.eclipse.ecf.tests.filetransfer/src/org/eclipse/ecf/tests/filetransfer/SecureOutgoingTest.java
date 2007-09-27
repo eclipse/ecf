@@ -29,14 +29,14 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 /**
  * 
  */
-public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
+public class SecureOutgoingTest extends ContainerAbstractTestCase {
 
 	private static final String TESTSRCPATH = "test.src";
 	private static final String TESTSRCFILE = TESTSRCPATH + "/test.txt";
 
 	private static final String TESTTARGETPATH = "test.target";
 
-	static final String XMPP_CONTAINER = "ecf.xmpp.smack";
+	static final String XMPP_CONTAINER = "ecf.xmpps.smack";
 
 	protected IOutgoingFileTransferContainerAdapter adapter0, adapter1 = null;
 
@@ -97,6 +97,25 @@ public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
 		}
 	}
 
+/*
+	public void testOneClientToSend() throws Exception {
+		// Setup one client.  Client 0 is the sender
+		setClientCount(2);
+		clients = createClients();
+		adapter0 = getOutgoingFileTransfer(0);
+		for (int i = 0; i < 1; i++) {
+			// Only connect client 0 (not client 1)
+			connectClient(i);
+		}
+
+		adapter0.sendOutgoingRequest(getServerConnectID(1), new File(
+				TESTSRCFILE), senderTransferListener, null);
+		sleep(200000);
+		
+		disconnectClients();
+
+	}
+*/
 	public void testTwoClientsToSendAndReceive() throws Exception {
 		// Setup two clients.  Client 0 is the receiver, client 1 is the sender
 		setClientCount(2);
@@ -111,7 +130,7 @@ public class OutgoingFileTransferTest extends ContainerAbstractTestCase {
 		adapter1.sendOutgoingRequest(getServerConnectID(0), new File(
 				TESTSRCFILE), senderTransferListener, null);
 		
-		sleep(20000);
+		sleep(10000);
 		
 		disconnectClients();
 

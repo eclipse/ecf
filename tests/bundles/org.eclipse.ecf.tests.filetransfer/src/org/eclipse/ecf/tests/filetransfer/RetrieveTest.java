@@ -27,15 +27,19 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
-public class AuthenticatedRetrieveFileTransferTest extends ContainerAbstractTestCase {
+public class RetrieveTest extends ContainerAbstractTestCase {
 
 	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
 	private static final String HTTPS_RETRIEVE = "https://bugs.eclipse.org/bugs";
 	
 	File tmpFile = null;
-
+	
 	protected IContainer createClient(int index) throws Exception {
 		return ContainerFactory.getDefault().createContainer();
+	}
+
+	protected int getClientCount() {
+		return 1;
 	}
 
 	/*
@@ -89,9 +93,6 @@ public class AuthenticatedRetrieveFileTransferTest extends ContainerAbstractTest
 				}
 			}
 		};
-
-		// XXX Setup authentication here
-		// retrieveAdapter.setConnectContextForAuthentication(ConnectContextFactory.createUsernamePasswordConnectContext("username", "password"));
 
 		retrieveAdapter.sendRetrieveRequest(FileIDFactory.getDefault()
 				.createFileID(retrieveAdapter.getRetrieveNamespace(),

@@ -32,7 +32,7 @@ import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEven
 import org.eclipse.ecf.filetransfer.identity.FileIDFactory;
 import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
-public class MultiRetrieveFileTransferTest extends ContainerAbstractTestCase {
+public class MultiRetrieveTest extends ContainerAbstractTestCase {
 
 	private static final String TESTSRCPATH = "test.src";
 	private static final String TESTTARGETPATH = "test.target";
