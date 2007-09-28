@@ -9,6 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *    Jacek Pospychala <jacek.pospychala@pl.ibm.com> - bug 192762, 197329, 190851
  *    Abner Ballardo <modlost@modlost.net> - bug 192756, 199336, 200630
+ *    Jakub Jurkiewicz <jakub.jurkiewicz@pl.ibm.com> - bug 197332
  ******************************************************************************/
 package org.eclipse.ecf.presence.ui.chatroom;
 
@@ -175,8 +176,25 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 				Composite rightComp = new Composite(fullChat, SWT.NONE);
 				rightComp.setLayout(layout);
 
-				subjectText = new Text(rightComp, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+				subjectText = new Text(rightComp, SWT.SINGLE | SWT.BORDER);
 				subjectText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+				subjectText.addKeyListener(new KeyAdapter() {
+					public void keyPressed(KeyEvent evt) {
+						if (evt.character == SWT.CR || evt.character == SWT.KEYPAD_CR) {
+							ChatRoom chatroom = (ChatRoom) chatRooms.get(tabItem.getText());
+							if (chatroom != null) {
+								IChatRoomAdminSender chatRoomAdminSender = chatroom.chatRoomContainer.getChatRoomAdminSender();
+								try {
+									if (chatRoomAdminSender != null) {
+										chatRoomAdminSender.sendSubjectChange(subjectText.getText());
+									}
+								} catch (ECFException e) {
+									disconnected();
+								}
+							}
+						}
+					}
+				});
 
 				rightSash = new SashForm(rightComp, SWT.VERTICAL);
 				rightSash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
