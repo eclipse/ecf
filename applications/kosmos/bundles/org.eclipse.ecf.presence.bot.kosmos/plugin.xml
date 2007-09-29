@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.presence.bot.chatRoomRobot">
+      <chatRoomRobot
+            connectId="irc://KOS-MOS@irc.freenode.net"
+            containerFactoryName="ecf.irc.irclib"
+            id="org.eclipse.ecf.presence.bot.kosmos.chatroomBot">
+         <chatRooms
+               name="#easyeclipse">
+         </chatRooms>
+         <chatRooms
+               name="#eclipse">
+         </chatRooms>
+         <chatRooms
+               name="#eclipse-de">
+         </chatRooms>
+         <chatRooms
+               name="#eclipse-soc">
+         </chatRooms>
+         <chatRooms
+               name="#eclipse-linux">
+         </chatRooms>
+         <chatRooms
+               name="#eclipse-dev">
+         </chatRooms>
+         <chatRooms
+               name="#eclipse-ecf">
+         </chatRooms>
+      </chatRoomRobot>
+   </extension>
+   <extension
+         point="org.eclipse.ecf.presence.bot.chatRoomMessageHandler">
+      <handler
+            chatRoomRobotId="org.eclipse.ecf.presence.bot.kosmos.chatroomBot"
+            class="org.eclipse.ecf.internal.presence.bot.kosmos.ChatRoomMessageHandler"
+            filterExpression=".*">
+      </handler>
+   </extension>
+</plugin>
