@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
@@ -76,6 +77,8 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	protected Map options = null;
 
 	protected boolean paused = false;
+
+	protected IFileRangeSpecification rangeSpecification = null;
 
 	protected URL getRemoteFileURL() {
 		return remoteFileURL;
@@ -431,4 +434,10 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		});
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getFileRangeSpecification()
+	 */
+	public IFileRangeSpecification getFileRangeSpecification() {
+		return rangeSpecification;
+	}
 }
