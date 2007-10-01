@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.UserCancelledException;
@@ -55,17 +56,14 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 		}
 
 		protected IStatus run(IProgressMonitor monitor) {
-			byte[] buf = new byte[buff_length];
-			int totalWork = ((fileLength == -1) ? 100 : (int) fileLength);
-			monitor.beginTask(getID().getName()
-					+ Messages.XMPPIncomingFileTransfer_Progress_Data,
-					totalWork);
+			final byte[] buf = new byte[buff_length];
+			final int totalWork = ((fileLength == -1) ? 100 : (int) fileLength);
+			monitor.beginTask(getID().getName() + Messages.XMPPIncomingFileTransfer_Progress_Data, totalWork);
 			try {
 				while (!isDone()) {
 					if (monitor.isCanceled())
-						throw new UserCancelledException(
-								Messages.XMPPIncomingFileTransfer_Exception_User_Cancelled);
-					int bytes = remoteFileContents.read(buf);
+						throw new UserCancelledException(Messages.XMPPIncomingFileTransfer_Exception_User_Cancelled);
+					final int bytes = remoteFileContents.read(buf);
 					if (bytes != -1) {
 						bytesReceived += bytes;
 						localFileContents.write(buf, 0, bytes);
@@ -75,7 +73,7 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 						done = true;
 					}
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				exception = e;
 				done = true;
 			} finally {
@@ -89,13 +87,7 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 	}
 
 	protected IStatus getFinalStatus(Throwable exception) {
-		return (exception == null) ? new Status(IStatus.OK,
-				XmppPlugin.PLUGIN_ID, 0,
-				Messages.XMPPIncomingFileTransfer_Status_Transfer_Completed_OK,
-				null) : new Status(IStatus.ERROR, XmppPlugin.PLUGIN_ID,
-				IStatus.ERROR,
-				Messages.XMPPIncomingFileTransfer_Status_Transfer_Exception,
-				exception);
+		return (exception == null) ? new Status(IStatus.OK, XmppPlugin.PLUGIN_ID, 0, Messages.XMPPIncomingFileTransfer_Status_Transfer_Completed_OK, null) : new Status(IStatus.ERROR, XmppPlugin.PLUGIN_ID, IStatus.ERROR, Messages.XMPPIncomingFileTransfer_Status_Transfer_Exception, exception);
 	}
 
 	protected void hardClose() {
@@ -103,7 +95,7 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 			if (remoteFileContents != null) {
 				remoteFileContents.close();
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		}
 		job = null;
 		remoteFileContents = null;
@@ -112,51 +104,47 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 
 	protected void fireTransferReceiveDoneEvent() {
 		if (listener != null)
-			listener
-					.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
+			listener.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
 
-						private static final long serialVersionUID = 6925524078226825710L;
+				private static final long serialVersionUID = 6925524078226825710L;
 
-						public IIncomingFileTransfer getSource() {
-							return XMPPIncomingFileTransfer.this;
-						}
+				public IIncomingFileTransfer getSource() {
+					return XMPPIncomingFileTransfer.this;
+				}
 
-						public Exception getException() {
-							return XMPPIncomingFileTransfer.this.getException();
-						}
+				public Exception getException() {
+					return XMPPIncomingFileTransfer.this.getException();
+				}
 
-						public String toString() {
-							StringBuffer sb = new StringBuffer(
-									"IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
-							sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-							sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-									.append("]"); //$NON-NLS-1$
-							return sb.toString();
-						}
-					});
+				public String toString() {
+					final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
+					sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+					sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+							.append("]"); //$NON-NLS-1$
+					return sb.toString();
+				}
+			});
 	}
 
 	protected void fireTransferReceiveDataEvent() {
 		if (listener != null)
-			listener
-					.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
-						private static final long serialVersionUID = -5656328374614130161L;
+			listener.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
+				private static final long serialVersionUID = -5656328374614130161L;
 
-						public IIncomingFileTransfer getSource() {
-							return XMPPIncomingFileTransfer.this;
-						}
+				public IIncomingFileTransfer getSource() {
+					return XMPPIncomingFileTransfer.this;
+				}
 
-						public String toString() {
-							StringBuffer sb = new StringBuffer(
-									"IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
-							sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-							sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-									.append(";"); //$NON-NLS-1$
-							sb.append("percentComplete=").append( //$NON-NLS-1$
-									getPercentComplete() * 100).append("]"); //$NON-NLS-1$
-							return sb.toString();
-						}
-					});
+				public String toString() {
+					final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
+					sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+					sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+							.append(";"); //$NON-NLS-1$
+					sb.append("percentComplete=").append( //$NON-NLS-1$
+							getPercentComplete() * 100).append("]"); //$NON-NLS-1$
+					return sb.toString();
+				}
+			});
 	}
 
 	/**
@@ -165,9 +153,7 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 	 * @param incoming
 	 * @param listener
 	 */
-	public XMPPIncomingFileTransfer(ID threadID, InputStream inputStream,
-			OutputStream outputStream, long fileSize,
-			IFileTransferListener listener) {
+	public XMPPIncomingFileTransfer(ID threadID, InputStream inputStream, OutputStream outputStream, long fileSize, IFileTransferListener listener) {
 		this.threadID = threadID;
 		this.remoteFileContents = inputStream;
 		this.localFileContents = outputStream;
@@ -248,6 +234,13 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 	 */
 	public ID getID() {
 		return threadID;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getFileRangeSpecification()
+	 */
+	public IFileRangeSpecification getFileRangeSpecification() {
+		return null;
 	}
 
 }
