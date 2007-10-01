@@ -36,7 +36,7 @@ public class ServiceID extends BaseID implements IServiceID {
 		if (name == null)
 			return type.getName();
 		else
-			return type.getName() + name;
+			return type.getName() + "@" + name;
 	}
 
 	/* (non-Javadoc)

@@ -19,33 +19,59 @@ import org.eclipse.ecf.core.identity.Namespace;
  * ServiceTypeID base class.
  */
 public class ServiceTypeID extends BaseID implements IServiceTypeID {
-
 	private static final long serialVersionUID = 2546630451825262145L;
-	protected String type = null;
+
+	protected static final String[] DEFAULT_PROTO = new String[] {"unknown"}; //$NON-NLS-1$
+	protected static final String[] DEFAULT_SCOPE = new String[] {"default"}; //$NON-NLS-1$
+	protected static final String DEFAULT_NA = "IANA"; //$NON-NLS-1$
+	protected static final String DELIM = "._"; //$NON-NLS-1$
+
+	protected String typeName = ""; //$NON-NLS-1$
 	protected String namingAuthority;
 	protected String[] protocols;
 	protected String[] scopes;
 	protected String[] services;
 
-	protected ServiceTypeID(Namespace namespace, String aType) {
+	protected ServiceTypeID(Namespace namespace) {
 		super(namespace);
-		Assert.isNotNull(aType);
-		type = aType;
 	}
 
-	protected ServiceTypeID(Namespace namespace, String typeName, String[] services, String[] scopes, String[] protocols, String namingAuthority) {
-		this(namespace, typeName);
+	protected ServiceTypeID(Namespace namespace, String[] services, String[] scopes, String[] protocols, String namingAuthority) {
+		super(namespace);
+		Assert.isNotNull(services);
 		this.services = services;
+		Assert.isNotNull(scopes);
 		this.scopes = scopes;
+		Assert.isNotNull(protocols);
 		this.protocols = protocols;
+		Assert.isNotNull(namingAuthority);
 		this.namingAuthority = namingAuthority;
+		createType();
+		Assert.isNotNull(typeName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.identity.BaseID#getName()
-	 */
-	public String getName() {
-		return type;
+	protected void createType() {
+		final StringBuffer buf = new StringBuffer();
+		//services
+		buf.append("_"); //$NON-NLS-1$
+		for (int i = 0; i < services.length; i++) {
+			buf.append(services[i]);
+			buf.append(DELIM);
+		}
+		//protocols
+		for (int i = 0; i < protocols.length; i++) {
+			buf.append(protocols[i]);
+			buf.append(DELIM);
+		}
+		//scope
+		for (int i = 0; i < scopes.length; i++) {
+			buf.append(scopes[i]);
+			buf.append(DELIM);
+		}
+		//naming authority
+		buf.append(namingAuthority);
+
+		typeName = buf.toString();
 	}
 
 	/* (non-Javadoc)
@@ -56,9 +82,8 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 			final ServiceTypeID other = (ServiceTypeID) o;
 			final String typename = other.getName();
 			return getName().compareTo(typename);
-		} else {
-			return 1;
 		}
+		return 1;
 	}
 
 	/* (non-Javadoc)
@@ -80,7 +105,7 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 	 * @see org.eclipse.ecf.core.identity.BaseID#namespaceGetName()
 	 */
 	protected String namespaceGetName() {
-		return getName();
+		return typeName;
 	}
 
 	/* (non-Javadoc)
@@ -94,7 +119,9 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return type;
+		final StringBuffer buf = new StringBuffer("ServiceTypeID[");
+		buf.append("typeName=").append(typeName).append("]");
+		return buf.toString();
 	}
 
 	/* (non-Javadoc)
@@ -123,5 +150,25 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 	 */
 	public String[] getServices() {
 		return services;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object o) {
+		if (o == null)
+			return false;
+		if (!(o instanceof IServiceTypeID)) {
+			return false;
+		}
+		final IServiceTypeID stid = (ServiceTypeID) o;
+		return stid.getName().equals(getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.identity.IServiceTypeID#getInternal()
+	 */
+	public String getInternal() {
+		return typeName;
 	}
 }

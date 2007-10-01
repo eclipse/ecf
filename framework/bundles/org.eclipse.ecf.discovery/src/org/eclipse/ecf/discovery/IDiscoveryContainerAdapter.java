@@ -158,6 +158,7 @@ public interface IDiscoveryContainerAdapter extends IAdaptable {
 	 * @deprecated Use getServices(IServiceTypeID) instead.
 	 */
 	public IServiceInfo[] getServices(String type);
+
 	public IServiceInfo[] getServices(IServiceTypeID type);
 
 	/**
