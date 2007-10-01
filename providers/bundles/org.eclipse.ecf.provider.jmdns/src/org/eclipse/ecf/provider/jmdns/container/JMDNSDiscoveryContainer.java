@@ -127,6 +127,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 			jmdns = null;
 		}
 		this.targetID = null;
+		clearListeners();
 		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), connectedID));
 	}
 
