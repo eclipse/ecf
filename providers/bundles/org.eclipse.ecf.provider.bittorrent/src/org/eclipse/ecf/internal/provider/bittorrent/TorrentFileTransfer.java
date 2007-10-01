@@ -16,6 +16,7 @@ import org.eclipse.bittorrent.IPieceProgressListener;
 import org.eclipse.bittorrent.ITorrentStateListener;
 import org.eclipse.bittorrent.Torrent;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
 import org.eclipse.ecf.filetransfer.IFileTransferRateControl;
@@ -25,8 +26,7 @@ import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDataEvent;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveDoneEvent;
 
-final class TorrentFileTransfer implements IFileTransferPausable,
-		IFileTransferRateControl, IIncomingFileTransfer, IOutgoingFileTransfer {
+final class TorrentFileTransfer implements IFileTransferPausable, IFileTransferRateControl, IIncomingFileTransfer, IOutgoingFileTransfer {
 
 	private final ID id;
 
@@ -52,16 +52,15 @@ final class TorrentFileTransfer implements IFileTransferPausable,
 
 		pieceListener = new IPieceProgressListener() {
 			public void blockDownloaded(int piece, int index, int blockLength) {
-				TorrentFileTransfer.this.listener
-						.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
+				TorrentFileTransfer.this.listener.handleTransferEvent(new IIncomingFileTransferReceiveDataEvent() {
 
-							private static final long serialVersionUID = -7666111308704272599L;
+					private static final long serialVersionUID = -7666111308704272599L;
 
-							public IIncomingFileTransfer getSource() {
-								return TorrentFileTransfer.this;
-							}
+					public IIncomingFileTransfer getSource() {
+						return TorrentFileTransfer.this;
+					}
 
-						});
+				});
 			}
 		};
 
@@ -78,7 +77,7 @@ final class TorrentFileTransfer implements IFileTransferPausable,
 
 		try {
 			torrent.start();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			notifyCompletion(e);
 		}
 	}
@@ -87,28 +86,27 @@ final class TorrentFileTransfer implements IFileTransferPausable,
 		this.exception = exception;
 		torrent.removePieceProgressListener(pieceListener);
 		torrent.removeTorrentStateListener(stateListener);
-		
-		listener
-				.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
 
-					private static final long serialVersionUID = -6685158329789351560L;
+		listener.handleTransferEvent(new IIncomingFileTransferReceiveDoneEvent() {
 
-					public Exception getException() {
-						return TorrentFileTransfer.this.exception;
-					}
+			private static final long serialVersionUID = -6685158329789351560L;
 
-					public IIncomingFileTransfer getSource() {
-						return TorrentFileTransfer.this;
-					}
+			public Exception getException() {
+				return TorrentFileTransfer.this.exception;
+			}
 
-				});
+			public IIncomingFileTransfer getSource() {
+				return TorrentFileTransfer.this;
+			}
+
+		});
 	}
 
 	public void cancel() {
 		try {
 			torrent.stop();
 			notifyCompletion(new UserCancelledException());
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			notifyCompletion(e);
 		}
 	}
@@ -150,7 +148,7 @@ final class TorrentFileTransfer implements IFileTransferPausable,
 			torrent.stop();
 			paused = true;
 			return true;
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			notifyCompletion(e);
 			return false;
 		}
@@ -165,7 +163,7 @@ final class TorrentFileTransfer implements IFileTransferPausable,
 			torrent.start();
 			paused = false;
 			return true;
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			notifyCompletion(e);
 			return false;
 		}
@@ -188,6 +186,13 @@ final class TorrentFileTransfer implements IFileTransferPausable,
 	 */
 	public IFileTransferListener getListener() {
 		return listener;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IIncomingFileTransfer#getFileRangeSpecification()
+	 */
+	public IFileRangeSpecification getFileRangeSpecification() {
+		return null;
 	}
 
 }
