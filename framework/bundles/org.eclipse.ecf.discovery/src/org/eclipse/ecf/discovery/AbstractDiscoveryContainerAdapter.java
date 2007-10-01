@@ -147,6 +147,15 @@ public abstract class AbstractDiscoveryContainerAdapter extends AbstractContaine
 		}
 	}
 
+	protected void clearListeners() {
+		synchronized (serviceListeners) {
+			serviceListeners.clear();
+		}
+		synchronized (serviceTypeListeners) {
+			serviceTypeListeners.clear();
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServicesNamespace()
 	 */
