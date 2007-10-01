@@ -12,13 +12,8 @@ package org.eclipse.ecf.provider.jmdns.container;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.jmdns.JmDNS;
@@ -27,7 +22,6 @@ import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import javax.jmdns.ServiceTypeListener;
 
-import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
@@ -37,14 +31,13 @@ import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter;
+import org.eclipse.ecf.discovery.DiscoveryContainerConfig;
 import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceListener;
 import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.IServiceTypeListener;
 import org.eclipse.ecf.discovery.ServiceContainerEvent;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
@@ -56,129 +49,20 @@ import org.eclipse.ecf.internal.provider.jmdns.JMDNSPlugin;
 import org.eclipse.ecf.internal.provider.jmdns.Messages;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceID;
+import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceTypeID;
 
-public class JMDNSDiscoveryContainer extends AbstractContainer implements IContainer, IDiscoveryService, ServiceListener, ServiceTypeListener {
+public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IContainer, IDiscoveryService, ServiceListener, ServiceTypeListener {
 	public static final int DEFAULT_REQUEST_TIMEOUT = 3000;
 
 	private static int instanceCount = 0;
 
-	private ID localID = null;
 	private InetAddress intf = null;
 	private JmDNS jmdns = null;
-	private final Map serviceListeners = new HashMap();
-	private final List serviceTypeListeners = new ArrayList();
-
-	public JMDNSDiscoveryContainer() throws IOException, IDCreateException {
-		this(null);
-	}
-
-	public ID getID() {
-		return localID;
-	}
+	private ID targetID = null;
 
 	public JMDNSDiscoveryContainer(InetAddress addr) throws IOException, IDCreateException {
-		super();
-		intf = (addr == null) ? InetAddress.getLocalHost() : addr;
-		this.localID = IDFactory.getDefault().createStringID(intf.toString() + ";" + instanceCount++); //$NON-NLS-1$
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener(java.lang.String, org.eclipse.ecf.discovery.IServiceListener)
-	 */
-	public void addServiceListener(String type, IServiceListener listener) {
-		if (type == null || listener == null)
-			return;
-		synchronized (serviceListeners) {
-			List v = (List) serviceListeners.get(type);
-			if (v == null) {
-				v = new ArrayList();
-				serviceListeners.put(type, v);
-			}
-			v.add(listener);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)
-	 */
-	public void addServiceTypeListener(IServiceTypeListener listener) {
-		synchronized (serviceTypeListeners) {
-			serviceTypeListeners.add(listener);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.IContainer#dispose()
-	 */
-	public void dispose() {
-		disconnect();
-		super.dispose();
-	}
-
-	protected void fireServiceAdded(ServiceEvent arg0) {
-		final IServiceInfo iinfo = createIServiceInfoFromServiceEvent(arg0);
-		List notify = null;
-		synchronized (serviceListeners) {
-			final List orig = (List) serviceListeners.get(arg0.getType());
-			if (orig != null)
-				notify = new ArrayList(orig);
-		}
-		if (notify != null) {
-			for (final Iterator i = notify.iterator(); i.hasNext();) {
-				final IServiceListener l = (IServiceListener) i.next();
-				l.serviceAdded(new ServiceContainerEvent(iinfo, getID()));
-			}
-		}
-	}
-
-	protected void fireServiceRemoved(ServiceEvent arg0) {
-		final IServiceInfo iinfo = createIServiceInfoFromServiceEvent(arg0);
-		List notify = null;
-		synchronized (serviceListeners) {
-			final List orig = (List) serviceListeners.get(arg0.getType());
-			if (orig != null)
-				notify = new ArrayList(orig);
-		}
-		if (notify != null) {
-			for (final Iterator i = notify.iterator(); i.hasNext();) {
-				final IServiceListener l = (IServiceListener) i.next();
-				l.serviceRemoved(new ServiceContainerEvent(iinfo, getID()));
-			}
-		}
-	}
-
-	protected void fireServiceResolved(ServiceEvent arg0) {
-		final IServiceInfo iinfo = createIServiceInfoFromServiceEvent(arg0);
-		List notify = null;
-		synchronized (serviceListeners) {
-			final List orig = (List) serviceListeners.get(arg0.getType());
-			if (orig != null)
-				notify = new ArrayList(orig);
-		}
-		if (notify != null) {
-			for (final Iterator i = notify.iterator(); i.hasNext();) {
-				final IServiceListener l = (IServiceListener) i.next();
-				l.serviceResolved(new ServiceContainerEvent(iinfo, getID()));
-			}
-		}
-	}
-
-	protected void fireServiceTypeAdded(ServiceEvent arg0) {
-		List notify = null;
-		synchronized (serviceTypeListeners) {
-			notify = new ArrayList(serviceTypeListeners);
-		}
-		for (final Iterator i = notify.iterator(); i.hasNext();) {
-			final IServiceTypeListener l = (IServiceTypeListener) i.next();
-			l.serviceTypeAdded(new ServiceContainerEvent(createIServiceInfoFromServiceEvent(arg0), getID()));
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.IContainer#getConnectedID()
-	 */
-	public ID getConnectedID() {
-		return getID();
+		super(JMDNSNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(JMDNSDiscoveryContainer.class.getName() + ";" + addr.toString() + ";" + instanceCount++))); //$NON-NLS-1$  //$NON-NLS-2$
+		intf = addr;
 	}
 
 	/* (non-Javadoc)
@@ -213,37 +97,153 @@ public class JMDNSDiscoveryContainer extends AbstractContainer implements IConta
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID groupID, IConnectContext joinContext) throws ContainerConnectException {
-		if (this.jmdns != null)
+	public void connect(ID targetID, IConnectContext joinContext) throws ContainerConnectException {
+		if (this.targetID != null)
 			throw new ContainerConnectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_ALREADY_CONNECTED);
-		fireContainerEvent(new ContainerConnectingEvent(this.getID(), groupID, joinContext));
+		this.targetID = (targetID == null) ? getConfig().getID() : targetID;
+		fireContainerEvent(new ContainerConnectingEvent(this.getID(), this.targetID, joinContext));
 		try {
 			this.jmdns = new JmDNS(intf);
 			jmdns.addServiceTypeListener(this);
-			if (groupID != null && groupID instanceof JMDNSServiceID) {
-				final ServiceID svcid = (ServiceID) groupID;
-				jmdns.addServiceListener(svcid.getServiceTypeID().getName(), this);
+			if (targetID != null && targetID instanceof JMDNSServiceID) {
+				final JMDNSServiceID svcid = (JMDNSServiceID) targetID;
+				final JMDNSServiceTypeID serviceTypeID = (JMDNSServiceTypeID) svcid.getServiceTypeID();
+				jmdns.addServiceListener(serviceTypeID.getInternal(), this);
 			}
 		} catch (final IOException e) {
-			final ContainerConnectException soe = new ContainerConnectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_CREATE_JMDNS_INSTANCE);
-			throw soe;
+			throw new ContainerConnectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_CREATE_JMDNS_INSTANCE);
 		}
-		fireContainerEvent(new ContainerConnectedEvent(this.getID(), groupID));
+		fireContainerEvent(new ContainerConnectedEvent(this.getID(), this.targetID));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.IContainer#disconnect()
 	 */
 	public void disconnect() {
-		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(), getConnectedID()));
+		final ID connectedID = getConnectedID();
+		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(), connectedID));
 		if (this.jmdns != null) {
 			jmdns.close();
 			jmdns = null;
 		}
-		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), getConnectedID()));
+		this.targetID = null;
+		fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), connectedID));
 	}
 
-	protected IServiceInfo createIServiceInfoFromServiceEvent(ServiceEvent event) {
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)
+	 */
+	public void registerService(IServiceInfo serviceInfo) throws ECFException {
+		try {
+			registerServiceWithJmDNS(serviceInfo);
+		} catch (final IOException e) {
+			throw new ECFException(Messages.JMDNSDiscoveryContainer_EXCEPTION_REGISTER_SERVICE, e);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerServiceType(java.lang.String)
+	 */
+	public void registerServiceType(String serviceType) {
+		if (jmdns != null) {
+			jmdns.registerServiceType(serviceType);
+			jmdns.addServiceListener(serviceType, this);
+		}
+	}
+
+	protected void registerServiceWithJmDNS(IServiceInfo serviceInfo) throws IOException {
+		if (jmdns != null) {
+			jmdns.registerService(createServiceInfoFromIServiceInfo(serviceInfo));
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#requestServiceInfo(org.eclipse.ecf.discovery.identity.IServiceID, int)
+	 */
+	public void requestServiceInfo(IServiceID service, int timeout) {
+		if (jmdns != null) {
+			if (service instanceof JMDNSServiceID) {
+				final JMDNSServiceID svcID = (JMDNSServiceID) service;
+				final JMDNSServiceTypeID typeID = (JMDNSServiceTypeID) svcID.getServiceTypeID();
+				jmdns.requestServiceInfo(typeID.getInternal(), service.getServiceName(), timeout);
+			}
+		}
+	}
+
+	public void serviceAdded(ServiceEvent arg0) {
+		if (jmdns != null) {
+			try {
+				fireServiceAdded(new ServiceContainerEvent(createIServiceInfoFromServiceEvent(arg0), getID()));
+			} catch (final Exception e) {
+				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceAdded", e); //$NON-NLS-1$
+			}
+		}
+	}
+
+	public void serviceRemoved(ServiceEvent arg0) {
+		if (jmdns != null) {
+			try {
+				fireServiceRemoved(new ServiceContainerEvent(createIServiceInfoFromServiceEvent(arg0), getID()));
+			} catch (final Exception e) {
+				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceRemoved", e); //$NON-NLS-1$
+			}
+		}
+	}
+
+	public void serviceResolved(ServiceEvent arg0) {
+		if (jmdns != null) {
+			try {
+				fireServiceResolved(new ServiceContainerEvent(createIServiceInfoFromServiceEvent(arg0), getID()));
+			} catch (final Exception e) {
+				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceResolved", e);
+			}
+		}
+	}
+
+	public void serviceTypeAdded(ServiceEvent arg0) {
+		if (jmdns != null) {
+			try {
+				fireServiceTypeAdded(new ServiceContainerEvent(createIServiceInfoFromServiceEvent(arg0), getID()));
+			} catch (final Exception e) {
+				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceTypeAdded", e); //$NON-NLS-1$
+			}
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#unregisterService(org.eclipse.ecf.discovery.IServiceInfo)
+	 */
+	public void unregisterService(IServiceInfo serviceInfo) {
+		if (jmdns != null) {
+			jmdns.unregisterService(createServiceInfoFromIServiceInfo(serviceInfo));
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServices(org.eclipse.ecf.discovery.identity.IServiceTypeID)
+	 */
+	public IServiceInfo[] getServices(IServiceTypeID type) {
+		return getServices(type.getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerServiceType(org.eclipse.ecf.discovery.identity.IServiceTypeID)
+	 */
+	public void registerServiceType(IServiceTypeID type) {
+		if (type instanceof JMDNSServiceTypeID) {
+			final JMDNSServiceTypeID typeID = (JMDNSServiceTypeID) type;
+			registerServiceType(typeID.getInternal());
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.IContainer#getConnectedID()
+	 */
+	public ID getConnectedID() {
+		return this.targetID;
+	}
+
+	private IServiceInfo createIServiceInfoFromServiceEvent(ServiceEvent event) {
 		final ServiceID sID = createServiceID(event.getType(), event.getName());
 		final ServiceInfo sinfo = event.getInfo();
 		if (sinfo != null) {
@@ -253,7 +253,7 @@ public class JMDNSDiscoveryContainer extends AbstractContainer implements IConta
 		return newInfo;
 	}
 
-	protected IServiceInfo createIServiceInfoFromServiceInfo(final ServiceInfo serviceInfo) {
+	private IServiceInfo createIServiceInfoFromServiceInfo(final ServiceInfo serviceInfo) {
 		if (serviceInfo == null)
 			return null;
 		final ServiceID sID = createServiceID(serviceInfo.getType(), serviceInfo.getName());
@@ -304,7 +304,7 @@ public class JMDNSDiscoveryContainer extends AbstractContainer implements IConta
 		return newInfo;
 	}
 
-	protected ServiceID createServiceID(String type, String name) {
+	private ServiceID createServiceID(String type, String name) {
 		ServiceID id = null;
 		try {
 			id = (ServiceID) IDFactory.getDefault().createID(JMDNSNamespace.NAME, new Object[] {type, name});
@@ -315,7 +315,7 @@ public class JMDNSDiscoveryContainer extends AbstractContainer implements IConta
 		return id;
 	}
 
-	protected ServiceInfo createServiceInfoFromIServiceInfo(IServiceInfo serviceInfo) {
+	private ServiceInfo createServiceInfoFromIServiceInfo(IServiceInfo serviceInfo) {
 		if (serviceInfo == null)
 			return null;
 		final IServiceID sID = serviceInfo.getServiceID();
@@ -332,165 +332,6 @@ public class JMDNSDiscoveryContainer extends AbstractContainer implements IConta
 		}
 		final ServiceInfo si = new ServiceInfo(sID.getServiceTypeID().getName(), sID.getServiceName(), serviceInfo.getPort(), serviceInfo.getPriority(), serviceInfo.getWeight(), props);
 		return si;
-	}
-
-	protected String prepareSvcTypeForBonjour(String svcType) {
-		String result = svcType;
-		if (svcType.endsWith(Messages.JMDNSDiscoveryContainer_JMDNS_LOCAL_SUFFIX)) {
-			result = svcType.substring(0, svcType.indexOf(Messages.JMDNSDiscoveryContainer_JMDNS_LOCAL_SUFFIX));
-		}
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)
-	 */
-	public void registerService(IServiceInfo serviceInfo) throws ECFException {
-		try {
-			registerServiceWithJmDNS(serviceInfo);
-		} catch (final IOException e) {
-			throw new ECFException(Messages.JMDNSDiscoveryContainer_EXCEPTION_REGISTER_SERVICE, e);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerServiceType(java.lang.String)
-	 */
-	public void registerServiceType(String serviceType) {
-		if (jmdns != null) {
-			jmdns.registerServiceType(serviceType);
-			jmdns.addServiceListener(serviceType, this);
-		}
-	}
-
-	protected void registerServiceWithJmDNS(IServiceInfo serviceInfo) throws IOException {
-		if (jmdns != null) {
-			jmdns.registerService(createServiceInfoFromIServiceInfo(serviceInfo));
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceListener(java.lang.String, org.eclipse.ecf.discovery.IServiceListener)
-	 */
-	public void removeServiceListener(String type, IServiceListener listener) {
-		if (type == null || listener == null)
-			return;
-		synchronized (serviceListeners) {
-			final List v = (List) serviceListeners.get(type);
-			if (v == null) {
-				return;
-			}
-			v.remove(listener);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)
-	 */
-	public void removeServiceTypeListener(IServiceTypeListener listener) {
-		synchronized (serviceTypeListeners) {
-			serviceTypeListeners.add(listener);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#requestServiceInfo(org.eclipse.ecf.discovery.identity.IServiceID, int)
-	 */
-	public void requestServiceInfo(IServiceID service, int timeout) {
-		if (jmdns != null) {
-			jmdns.requestServiceInfo(service.getServiceTypeID().getName(), service.getServiceName(), timeout);
-		}
-	}
-
-	public void serviceAdded(ServiceEvent arg0) {
-		if (jmdns != null) {
-			try {
-				fireServiceAdded(arg0);
-			} catch (final Exception e) {
-				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceAdded", e); //$NON-NLS-1$
-			}
-		}
-	}
-
-	public void serviceRemoved(ServiceEvent arg0) {
-		if (jmdns != null) {
-			try {
-				fireServiceRemoved(arg0);
-			} catch (final Exception e) {
-				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceRemoved", e); //$NON-NLS-1$
-			}
-		}
-	}
-
-	public void serviceResolved(ServiceEvent arg0) {
-		if (jmdns != null) {
-			try {
-				fireServiceResolved(arg0);
-			} catch (final Exception e) {
-				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceResolved", e); //$NON-NLS-1$
-			}
-		}
-	}
-
-	public void serviceTypeAdded(ServiceEvent arg0) {
-		if (jmdns != null) {
-			try {
-				fireServiceTypeAdded(arg0);
-			} catch (final Exception e) {
-				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceResolved", e); //$NON-NLS-1$
-			}
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#unregisterService(org.eclipse.ecf.discovery.IServiceInfo)
-	 */
-	public void unregisterService(IServiceInfo serviceInfo) {
-		if (jmdns != null) {
-			jmdns.unregisterService(createServiceInfoFromIServiceInfo(serviceInfo));
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.core.IContainer#getConnectNamespace()
-	 */
-	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(JMDNSNamespace.NAME);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)
-	 */
-	public void addServiceListener(IServiceTypeID type, IServiceListener listener) {
-		addServiceListener(type.getName(), listener);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServices(org.eclipse.ecf.discovery.identity.IServiceTypeID)
-	 */
-	public IServiceInfo[] getServices(IServiceTypeID type) {
-		return getServices(type.getName());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerServiceType(org.eclipse.ecf.discovery.identity.IServiceTypeID)
-	 */
-	public void registerServiceType(IServiceTypeID type) {
-		registerServiceType(type.getName());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)
-	 */
-	public void removeServiceListener(IServiceTypeID type, IServiceListener listener) {
-		removeServiceListener(type.getName(), listener);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServicesNamespace()
-	 */
-	public Namespace getServicesNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(JMDNSNamespace.NAME);
 	}
 
 }

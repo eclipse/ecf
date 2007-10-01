@@ -11,7 +11,9 @@
 package org.eclipse.ecf.provider.jmdns.container;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
+import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.ContainerTypeDescription;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.IContainer;
@@ -28,7 +30,7 @@ public class ContainerInstantiator implements IContainerInstantiator {
 
 	public IContainer createInstance(ContainerTypeDescription description, Object[] args) throws ContainerCreateException {
 		try {
-			JMDNSDiscoveryContainer container = new JMDNSDiscoveryContainer();
+			AbstractContainer container = new JMDNSDiscoveryContainer(InetAddress.getLocalHost());
 			return container;
 		} catch (IDCreateException e) {
 			ContainerCreateException excep = new ContainerCreateException(Messages.ContainerInstantiator_EXCEPTION_CONTAINER_CREATE);
