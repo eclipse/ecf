@@ -109,7 +109,7 @@ public interface IRetrieveFileTransferContainerAdapter {
 	 * Send request for transfer of a remote file to local file storage. This
 	 * method is used to initiate a file retrieve for a remoteFileID (first
 	 * parameter). File transfer events are asynchronously delivered a file
-	 * transfer listener (second parameter). The given remoteFileID and
+	 * transfer listener (third parameter). The given remoteFileID and
 	 * transferListener must not be null.
 	 * 
 	 * @param remoteFileID
