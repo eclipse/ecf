@@ -12,12 +12,16 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
 
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
+import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
+import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
+import org.eclipse.ecf.filetransfer.InvalidFileRangeSpecificationException;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 
@@ -217,5 +221,13 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			fireTransferReceiveDoneEvent();
 			return false;
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#sendRetrieveRequest(org.eclipse.ecf.filetransfer.identity.IFileID, org.eclipse.ecf.filetransfer.IFileRangeSpecification, org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
+	 */
+	public void sendRetrieveRequest(IFileID remoteFileID, IFileRangeSpecification rangeSpecification, IFileTransferListener transferListener, Map options) throws IncomingFileTransferException {
+		// TODO Auto-generated method stub
+		throw new InvalidFileRangeSpecificationException("range specification not supported", rangeSpecification); //$NON-NLS-1$
 	}
 }
