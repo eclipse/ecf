@@ -33,4 +33,14 @@ public interface IIncomingFileTransfer extends IFileTransfer {
 	 * @return listener the IFileTransferListener provided for this incoming file transfer.
 	 */
 	public IFileTransferListener getListener();
+
+	/**
+	 * Get file range specification for this incoming file transfer instance.  Will return
+	 * <code>null</code> if the retrieval is of the entire file.
+	 * 
+	 * @return file range specification for this incoming file transfer instance.  Returns
+	 * <code>null</code> if the retrieval is of the entire file.
+	 */
+	public IFileRangeSpecification getFileRangeSpecification();
+
 }
