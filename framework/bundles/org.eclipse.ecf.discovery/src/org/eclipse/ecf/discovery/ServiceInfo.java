@@ -46,6 +46,10 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 		this.properties = props;
 	}
 
+	public ServiceInfo(InetAddress address, IServiceID serviceID, int port, IServiceProperties props) {
+		this(address, serviceID, port, DEFAULT_PRIORITY, DEFAULT_WEIGHT, props);
+	}
+
 	public ServiceInfo(InetAddress address, IServiceID serviceID, int port) {
 		this(address, serviceID, port, DEFAULT_PRIORITY, DEFAULT_WEIGHT, new ServiceProperties());
 	}
