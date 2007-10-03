@@ -12,7 +12,7 @@
 package org.eclipse.ecf.remoteservice;
 
 /**
- * 
+ * Remote service API constants.
  */
 public interface Constants {
 
@@ -108,5 +108,35 @@ public interface Constants {
 	 * method.
 	 */
 	public static final String SERVICE_REGISTRATION_TARGETS = "remote.service.registration.targets";
+
+	/**
+	 * Service property that defines the container factory name.
+	 * <p>
+	 * This property may be supplied in the properties <code>Dictionary</code>
+	 * object passed to the
+	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
+	 * method.
+	 */
+	public static final String CONTAINER_FACTORY_NAME = "org.eclipse.ecf.containerFactory";
+
+	/**
+	 * Service property that defines the container target for connection.
+	 * <p>
+	 * This property may be supplied in the properties <code>Dictionary</code>
+	 * object passed to the
+	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
+	 * method.
+	 */
+	public static final String CONTAINER_TARGET = "org.eclipse.ecf.containerTarget";
+
+	/**
+	 * Service property that defines the container target password.
+	 * <p>
+	 * This property may be supplied in the properties <code>Dictionary</code>
+	 * object passed to the
+	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
+	 * method.
+	 */
+	public static final String CONTAINER_PASSWORD = "org.eclipse.ecf.containerPassword";
 
 }
