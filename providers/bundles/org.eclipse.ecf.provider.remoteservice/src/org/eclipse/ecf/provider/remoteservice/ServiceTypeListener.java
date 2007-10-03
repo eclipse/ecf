@@ -1,0 +1,135 @@
+/****************************************************************************
+ * Copyright (c) 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
+
+package org.eclipse.ecf.provider.remoteservice;
+
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
+import org.eclipse.ecf.discovery.IServiceEvent;
+import org.eclipse.ecf.discovery.IServiceInfo;
+import org.eclipse.ecf.discovery.IServiceListener;
+import org.eclipse.ecf.discovery.IServiceProperties;
+import org.eclipse.ecf.discovery.IServiceTypeListener;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+
+/**
+ * Helper class for setting up service listeners for a given serviceTypeID.
+ */
+public class ServiceTypeListener implements IServiceTypeListener {
+
+	private final IDiscoveryContainerAdapter discovery;
+	private final IServiceTypeID[] serviceTypeIDs;
+	private final IServiceListener serviceListener;
+	private final String[] requiredProperties;
+
+	class ServiceListener implements IServiceListener {
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceAdded(org.eclipse.ecf.discovery.IServiceEvent)
+		 */
+		public void serviceAdded(IServiceEvent event) {
+			final IServiceInfo svcInfo = event.getServiceInfo();
+			if (hasRequiredProperties(svcInfo.getServiceProperties()))
+				serviceListener.serviceAdded(event);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceRemoved(org.eclipse.ecf.discovery.IServiceEvent)
+		 */
+		public void serviceRemoved(IServiceEvent event) {
+			final IServiceInfo svcInfo = event.getServiceInfo();
+			if (hasRequiredProperties(svcInfo.getServiceProperties()))
+				serviceListener.serviceRemoved(event);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceResolved(org.eclipse.ecf.discovery.IServiceEvent)
+		 */
+		public void serviceResolved(IServiceEvent event) {
+			final IServiceInfo svcInfo = event.getServiceInfo();
+			if (hasRequiredProperties(svcInfo.getServiceProperties()))
+				serviceListener.serviceResolved(event);
+		}
+	}
+
+	/**
+	 * 
+	 * @param discovery discovery adapter instance to set up.  Must not be <code>null</code>.
+	 * @param serviceListener service listener to receive notifications of service added/removed and resolved notifications.  Must not be <code>null</code>.
+	 * @param serviceTypeID service type IDs to setup service listeners for.  May be <code>null</code>.  If <code>null</code>, then
+	 * all service types will notify the given serviceListener.
+	 * @param requiredProperties properties required of the service info
+	 */
+	public ServiceTypeListener(IDiscoveryContainerAdapter discovery, IServiceListener serviceListener, IServiceTypeID[] serviceTypeIDs, String[] requiredProperties) {
+		this.discovery = discovery;
+		Assert.isNotNull(this.discovery);
+		this.serviceListener = serviceListener;
+		Assert.isNotNull(this.serviceListener);
+		this.serviceTypeIDs = serviceTypeIDs;
+		this.requiredProperties = requiredProperties;
+	}
+
+	/**
+	 * 
+	 * @param discovery discovery adapter instance to set up.  Must not be <code>null</code>.
+	 * @param serviceListener service listener to receive notifications of service added/removed and resolved notifications.  Must not be <code>null</code>.
+	 * @param serviceTypeID service type IDs to setup service listeners for.  May be <code>null</code>.  If <code>null</code>, then
+	 * all service types will notify the given serviceListener.
+	 * @param requiredProperties properties required of the service info
+	 */
+	public ServiceTypeListener(IDiscoveryContainerAdapter discovery, IServiceListener serviceListener, IServiceTypeID serviceTypeID, String[] requiredProperties) {
+		this(discovery, serviceListener, new IServiceTypeID[] {serviceTypeID}, requiredProperties);
+	}
+
+	/**
+	 * 
+	 * @param discovery discovery adapter instance to set up.  Must not be <code>null</code>.
+	 * @param serviceListener service listener to receive notifications of service added/removed and resolved notifications.  Must not be <code>null</code>.
+	 * @param serviceTypeID service type IDs to setup service listeners for.  May be <code>null</code>.  If <code>null</code>, then
+	 * all service types will notify the given serviceListener.
+	 */
+	public ServiceTypeListener(IDiscoveryContainerAdapter discovery, IServiceListener serviceListener, IServiceTypeID serviceTypeID) {
+		this(discovery, serviceListener, new IServiceTypeID[] {serviceTypeID}, null);
+	}
+
+	public ServiceTypeListener(IDiscoveryContainerAdapter discovery, IServiceListener serviceListener) {
+		this(discovery, serviceListener, (IServiceTypeID[]) null, null);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceTypeListener#serviceTypeAdded(org.eclipse.ecf.discovery.IServiceEvent)
+	 */
+	public final void serviceTypeAdded(IServiceEvent event) {
+		final IServiceTypeID remoteServiceTypeID = event.getServiceInfo().getServiceID().getServiceTypeID();
+		if (hasRequiredTypeID(remoteServiceTypeID)) {
+			this.discovery.addServiceListener(remoteServiceTypeID, serviceListener);
+			this.discovery.registerServiceType(remoteServiceTypeID);
+		}
+	}
+
+	private boolean hasRequiredTypeID(IServiceTypeID remoteServiceTypeID) {
+		if (serviceTypeIDs == null)
+			return true;
+		for (int i = 0; i < serviceTypeIDs.length; i++)
+			if (remoteServiceTypeID.equals(serviceTypeIDs[i]))
+				return true;
+		return false;
+	}
+
+	private boolean hasRequiredProperties(IServiceProperties serviceProperties) {
+		if (requiredProperties == null)
+			return true;
+		for (int i = 0; i < requiredProperties.length; i++)
+			if (serviceProperties.getProperty(requiredProperties[i]) == null)
+				return false;
+		return true;
+	}
+}
