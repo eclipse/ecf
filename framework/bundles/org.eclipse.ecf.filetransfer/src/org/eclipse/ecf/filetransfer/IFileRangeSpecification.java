@@ -38,7 +38,7 @@ public interface IFileRangeSpecification {
 	 * but less than the {@link #getStartPosition()} then this range specification is invalid.  If greater than or
 	 * equal to N (where N is length of the file in bytes), then the remaining part of the given file will
 	 * be downloaded.  If both {@link #getStartPosition()} and {@link #getEndPosition()} are valid, then
-	 * the number of bytes downloaded will be <code>(endPostion - startPosition) + 1</code>. So, for example:
+	 * the number of bytes downloaded will be <code>(endPosition - startPosition) + 1</code>. So, for example:
 	 * <pre>
 	 * For a fileLength = 20
 	 * 
