@@ -11,10 +11,8 @@
 
 package org.eclipse.ecf.tests.filetransfer;
 
-import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IFileTransferPausable;
@@ -31,18 +29,13 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 
 public class PauseResumeServiceTest extends ContainerAbstractTestCase {
 
-	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
-	private static final String HTTPS_RETRIEVE = "https://bugs.eclipse.org/bugs";
+	private static final String HTTP_RETRIEVE = "http://ftp.osuosl.org/pub/eclipse/technology/ecf/org.eclipse.ecf.examples-1.0.3.v20070927-1821.zip";
 
-	//private static final String EFS_RETRIEVE = "efs:file://c:/foo.txt";
+	private static final String FILENAME = "foo.zip";
 
-	File tmpFile = null;
+	private static final int PAUSE_TIME = 4000;
 
 	private IRetrieveFileTransfer transferInstance;
-
-	protected IRetrieveFileTransfer getTransferInstance() {
-		return Activator.getDefault().getRetrieveFileTransferFactory().newInstance();
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -51,8 +44,7 @@ public class PauseResumeServiceTest extends ContainerAbstractTestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		transferInstance = getTransferInstance();
-		tmpFile = File.createTempFile("ECFTest", "");
+		transferInstance = Activator.getDefault().getRetrieveFileTransferFactory().newInstance();
 	}
 
 	/*
@@ -62,120 +54,98 @@ public class PauseResumeServiceTest extends ContainerAbstractTestCase {
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		tmpFile = null;
 		session = null;
 		pausable = null;
 	}
-
-	List receiveStartEvents = new ArrayList();
-
-	List receiveDataEvents = new ArrayList();
-
-	List receiveDoneEvents = new ArrayList();
 
 	IIncomingFileTransfer session = null;
 
 	IFileTransferPausable pausable = null;
 
-	Object synch = new Object();
+	FileOutputStream outs = null;
 
-	protected void startPauseThread() {
-		final Thread t = new Thread(new Runnable() {
-			public void run() {
-				if (session == null || pausable == null)
-					return;
-				try {
-					Thread.sleep(1000);
-					System.out.println("pausable.pause returns=" + pausable.pause());
-					Thread.sleep(2000);
-					System.out.println("pausable.resume returns=" + pausable.resume());
-					Thread.sleep(3000);
-					System.out.println("pause thread exiting");
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} finally {
-					synchronized (synch) {
-						synch.notify();
-					}
-				}
+	Object notify = new Object();
+
+	private void closeOutputStream() {
+		if (outs != null) {
+			try {
+				outs.close();
+			} catch (final IOException e) {
+				fail("output stream close exception");
+			} finally {
+				outs = null;
 			}
-		});
-		t.start();
+		}
 	}
 
 	protected void testReceiveHttp(String url) throws Exception {
 		assertNotNull(transferInstance);
 		final IFileTransferListener listener = new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
-				if (event instanceof IIncomingFileTransferReceiveStartEvent) {
-					IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
-					receiveStartEvents.add(rse);
-					assertNotNull(rse.getFileID());
-					assertNotNull(rse.getFileID().getFilename());
+				if (event instanceof IIncomingFileTransferReceiveResumedEvent) {
 					try {
-						session = rse.receive(System.out);
+						IIncomingFileTransferReceiveResumedEvent rse = (IIncomingFileTransferReceiveResumedEvent) event;
+						session = rse.receive(outs);
+					} catch (Exception e) {
+						fail(e.getLocalizedMessage());
+					}
+				} else if (event instanceof IIncomingFileTransferReceiveStartEvent) {
+					IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
+					try {
+						outs = new FileOutputStream(FILENAME);
+						session = rse.receive(outs);
 						pausable = (IFileTransferPausable) session.getAdapter(IFileTransferPausable.class);
-						//rse.receive(tmpFile);
+						if (pausable == null)
+							fail("pausable is null");
 					} catch (IOException e) {
 						fail(e.getLocalizedMessage());
 					}
 				} else if (event instanceof IIncomingFileTransferReceiveDataEvent) {
-					receiveDataEvents.add(event);
-					if (session.getPercentComplete() > 0.5) {
-						// start other thread to do pause/resume
-						if (pausable != null) {
-							pausable.pause();
-						} else {
-							System.out.println("pausable not supported");
-						}
-					}
-				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
-					receiveDoneEvents.add(event);
+					System.out.println("data=" + event);
 				} else if (event instanceof IIncomingFileTransferReceivePausedEvent) {
-					System.out.println("Transfer paused event=" + event);
-				} else if (event instanceof IIncomingFileTransferReceiveResumedEvent) {
-					try {
-						IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
-						session = rse.receive(System.out);
-					} catch (Exception e) {
-						fail(e.getLocalizedMessage());
+					System.out.println("paused=" + event);
+				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
+					closeOutputStream();
+					System.out.println("done=" + event);
+					synchronized (notify) {
+						notify.notify();
 					}
 				}
 			}
 		};
 
 		transferInstance.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(transferInstance.getRetrieveNamespace(), url), listener, null);
-		// Wait for 5 seconds
 
-		try {
-			synchronized (synch) {
-				synch.wait();
+		// Now if we can do pausing, then pause, wait a while and resume
+		if (pausable != null) {
+			Thread.sleep(1000);
+			System.out.println("pausable.pause()=" + pausable.pause());
+			System.out.println("Pausing " + PAUSE_TIME / 1000 + " seconds");
+			Thread.sleep(PAUSE_TIME);
+			final boolean success = pausable.resume();
+			System.out.println("pausable.resume()=" + success);
+			if (!success) {
+				System.out.println("session=" + session);
+				final Exception e = session.getException();
+				System.out.println("  exception=" + e);
+				if (e != null)
+					e.printStackTrace();
+				System.out.println("  isDone=" + session.isDone());
+				return;
 			}
-		} catch (final Exception e) {
-			e.printStackTrace();
+			System.out.println();
 		}
 
-		sleep(5000, "Starting 5 second wait", "Ending 5 second wait");
+		synchronized (notify) {
+			notify.wait();
+		}
 
-		//assertHasEvent(receiveStartEvents, IIncomingFileTransferReceiveStartEvent.class);
-		//assertHasMoreThanEventCount(receiveDataEvents, IIncomingFileTransferReceiveDataEvent.class, 0);
-		//assertHasEvent(receiveDoneEvents, IIncomingFileTransferReceiveDoneEvent.class);
-
-		//assertTrue(tmpFile.exists());
-		//assertTrue(tmpFile.length() > 0);
+		final Exception e = session.getException();
+		if (e != null)
+			throw e;
 	}
 
 	public void testReceiveFile() throws Exception {
 		testReceiveHttp(HTTP_RETRIEVE);
 	}
-
-	public void testHttpsReceiveFile() throws Exception {
-		testReceiveHttp(HTTPS_RETRIEVE);
-	}
-	/*
-	public void testEFSReceiveFile() throws Exception {
-		testReceiveHttp(EFS_RETRIEVE);
-	}
-	*/
 }
