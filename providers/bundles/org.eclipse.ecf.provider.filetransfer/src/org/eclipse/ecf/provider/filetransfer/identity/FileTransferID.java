@@ -31,8 +31,7 @@ public class FileTransferID extends BaseID implements IFileID {
 	}
 
 	protected int namespaceCompareTo(BaseID o) {
-		return this.fileURL.toExternalForm().compareTo(
-				((FileTransferID) o).toExternalForm());
+		return this.fileURL.toExternalForm().compareTo(((FileTransferID) o).toExternalForm());
 	}
 
 	protected boolean namespaceEquals(BaseID o) {

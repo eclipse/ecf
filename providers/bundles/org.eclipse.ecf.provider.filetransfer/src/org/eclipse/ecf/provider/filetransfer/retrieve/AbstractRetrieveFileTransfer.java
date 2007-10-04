@@ -127,12 +127,8 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 						localFileContents.write(buf, 0, bytes);
 						fireTransferReceiveDataEvent();
 						monitor.worked(bytes);
-					} else {
+					} else
 						done = true;
-						if (closeOutputStream) {
-							localFileContents.close();
-						}
-					}
 				}
 			} catch (final Exception e) {
 				exception = e;
@@ -187,7 +183,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			public String toString() {
 				final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceivePausedEvent["); //$NON-NLS-1$
 				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-						.append("fileLength=").append(fileLength).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+						.append(";fileLength=").append(fileLength).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 				return sb.toString();
 			}
 		});
@@ -208,8 +204,8 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 			public String toString() {
 				final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveDoneEvent["); //$NON-NLS-1$
-				sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
+						.append(";fileLength=").append(fileLength).append(";exception=").append(getException()) //$NON-NLS-1$ //$NON-NLS-2$
 						.append("]"); //$NON-NLS-1$
 				return sb.toString();
 			}
@@ -226,11 +222,9 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 			public String toString() {
 				final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveDataEvent["); //$NON-NLS-1$
-				sb.append("isDone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
 				sb.append("bytesReceived=").append(bytesReceived) //$NON-NLS-1$
-						.append(";"); //$NON-NLS-1$
-				sb.append("percentComplete=").append( //$NON-NLS-1$
-						getPercentComplete()).append("]"); //$NON-NLS-1$
+						.append(";fileLength=").append(fileLength) //$NON-NLS-1$ 
+						.append("]"); //$NON-NLS-1$
 				return sb.toString();
 			}
 		});
@@ -244,7 +238,6 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		if (isPaused()) {
 			done = true;
 			this.exception = new UserCancelledException(Messages.AbstractRetrieveFileTransfer_Exception_User_Cancelled);
-			hardClose();
 			fireTransferReceiveDoneEvent();
 		} else if (job != null)
 			job.cancel();
@@ -296,22 +289,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 *      org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
 	 */
 	public void sendRetrieveRequest(final IFileID remoteFileID, IFileTransferListener transferListener, Map options) throws IncomingFileTransferException {
-		Assert.isNotNull(remoteFileID, Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
-		Assert.isNotNull(transferListener, Messages.AbstractRetrieveFileTransfer_TransferListener_Not_Null);
-		this.done = false;
-		this.bytesReceived = 0;
-		this.exception = null;
-		this.fileLength = 0;
-		this.remoteFileID = remoteFileID;
-		this.options = options;
-
-		try {
-			this.remoteFileURL = remoteFileID.getURL();
-		} catch (final MalformedURLException e) {
-			throw new IncomingFileTransferException(NLS.bind(Messages.AbstractRetrieveFileTransfer_MalformedURLException, remoteFileID), e);
-		}
-		this.listener = transferListener;
-		openStreams();
+		sendRetrieveRequest(remoteFileID, null, transferListener, options);
 	}
 
 	public Namespace getRetrieveNamespace() {
@@ -357,6 +335,11 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 		return listener;
 	}
 
+	protected void setupAndScheduleJob() {
+		job = new FileTransferJob(getRemoteFileURL().toString());
+		job.schedule();
+	}
+
 	protected void fireReceiveStartEvent() {
 		listener.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
 			private static final long serialVersionUID = -59096575294481755L;
@@ -367,8 +350,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 			public IIncomingFileTransfer receive(File localFileToSave) throws IOException {
 				setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave)));
-				job = new FileTransferJob(getRemoteFileURL().toString());
-				job.schedule();
+				setupAndScheduleJob();
 				return AbstractRetrieveFileTransfer.this;
 			}
 
@@ -387,8 +369,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
 				setOutputStream(streamToStore);
 				setCloseOutputStream(false);
-				job = new FileTransferJob(getRemoteFileURL().toString());
-				job.schedule();
+				setupAndScheduleJob();
 				return AbstractRetrieveFileTransfer.this;
 			}
 
@@ -406,8 +387,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 
 			public IIncomingFileTransfer receive(File localFileToSave) throws IOException {
 				setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave)));
-				job = new FileTransferJob(getRemoteFileURL().toString());
-				job.schedule();
+				setupAndScheduleJob();
 				return AbstractRetrieveFileTransfer.this;
 			}
 
@@ -426,8 +406,7 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 			public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
 				setOutputStream(streamToStore);
 				setCloseOutputStream(false);
-				job = new FileTransferJob(getRemoteFileURL().toString());
-				job.schedule();
+				setupAndScheduleJob();
 				return AbstractRetrieveFileTransfer.this;
 			}
 
@@ -439,5 +418,25 @@ public abstract class AbstractRetrieveFileTransfer implements IIncomingFileTrans
 	 */
 	public IFileRangeSpecification getFileRangeSpecification() {
 		return rangeSpecification;
+	}
+
+	public void sendRetrieveRequest(IFileID remoteFileID, IFileRangeSpecification rangeSpecification, IFileTransferListener transferListener, Map options) throws IncomingFileTransferException {
+		Assert.isNotNull(remoteFileID, Messages.AbstractRetrieveFileTransfer_RemoteFileID_Not_Null);
+		Assert.isNotNull(transferListener, Messages.AbstractRetrieveFileTransfer_TransferListener_Not_Null);
+		this.done = false;
+		this.bytesReceived = 0;
+		this.exception = null;
+		this.fileLength = 0;
+		this.remoteFileID = remoteFileID;
+		this.rangeSpecification = rangeSpecification;
+		this.options = options;
+
+		try {
+			this.remoteFileURL = remoteFileID.getURL();
+		} catch (final MalformedURLException e) {
+			throw new IncomingFileTransferException(NLS.bind(Messages.AbstractRetrieveFileTransfer_MalformedURLException, remoteFileID), e);
+		}
+		this.listener = transferListener;
+		openStreams();
 	}
 }
