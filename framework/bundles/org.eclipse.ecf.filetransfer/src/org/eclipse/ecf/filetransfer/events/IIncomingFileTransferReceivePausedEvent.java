@@ -8,12 +8,21 @@
  ******************************************************************************/
 package org.eclipse.ecf.filetransfer.events;
 
+import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 
 /**
  * Event sent to IFileTransferListeners when an incoming file transfer is
  * paused.
  * 
  */
-public interface IIncomingFileTransferReceivePausedEvent extends IIncomingFileTransferEvent {
+public interface IIncomingFileTransferReceivePausedEvent extends IFileTransferEvent {
+
+	/**
+	 * Get {@link IIncomingFileTransfer} associated with this event
+	 * 
+	 * @return IIncomingFileTransfer that is source of this event. Will not be
+	 *         <code>null</code>.
+	 */
+	public IIncomingFileTransfer getSource();
 
 }
