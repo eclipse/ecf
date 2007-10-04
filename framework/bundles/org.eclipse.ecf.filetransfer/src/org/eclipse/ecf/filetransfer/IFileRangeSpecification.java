@@ -22,7 +22,11 @@ public interface IFileRangeSpecification {
 	 * of the file, N-1 is the last position in the file, where N is the length of the file in bytes.  
 	 * @return the position in the file (in bytes) to start from.  If the returned start position is
 	 * less than 0, or equal to or greater than N, then it is an invalid range specification and
-	 * will result in a InvalidPartialFileTransferRequestException.
+	 * when used in {@link IRetrieveFileTransferContainerAdapter#sendRetrieveRequest(org.eclipse.ecf.filetransfer.identity.IFileID, IFileRangeSpecification, IFileTransferListener, java.util.Map)} will result in a 
+	 * {@link InvalidFileRangeSpecificationException}.
+	 * 
+	 * @see IRetrieveFileTransferContainerAdapter#sendRetrieveRequest(org.eclipse.ecf.filetransfer.identity.IFileID, IFileRangeSpecification, IFileTransferListener, java.util.Map)
+	 * @see #getEndPosition()
 	 */
 	public long getStartPosition();
 
@@ -33,7 +37,35 @@ public interface IFileRangeSpecification {
 	 * then this means that no end position is specified, and the download will continue to the end of file.  If >= 0,
 	 * but less than the {@link #getStartPosition()} then this range specification is invalid.  If greater than or
 	 * equal to N (where N is length of the file in bytes), then the remaining part of the given file will
-	 * be downloaded.
+	 * be downloaded.  If both {@link #getStartPosition()} and {@link #getEndPosition()} are valid, then
+	 * the number of bytes downloaded will be <code>(endPostion - startPosition) + 1</code>. So, for example:
+	 * <pre>
+	 * For a fileLength = 20
+	 * 
+	 * startPosition = 10
+	 * endPosition = 19
+	 * bytesDownloaded = 10
+	 * 
+	 * startPosition = 0
+	 * endPosition = -1
+	 * bytesDownloaded = 20
+	 * 
+	 * startPosition = 5
+	 * endPosition = 3
+	 * invalid range
+	 * 
+	 * startPosition = 5
+	 * endPosition = 6
+	 * bytesDownloaded = 2
+	 * 
+	 * startPosition = 5
+	 * endPosition = -1
+	 * bytesDownloaded = 15
+	 * 
+	 * </pre>
+	 * 
+	 * @see IRetrieveFileTransferContainerAdapter#sendRetrieveRequest(org.eclipse.ecf.filetransfer.identity.IFileID, IFileRangeSpecification, IFileTransferListener, java.util.Map)
+	 * @see #getStartPosition()
 	 */
 	public long getEndPosition();
 
