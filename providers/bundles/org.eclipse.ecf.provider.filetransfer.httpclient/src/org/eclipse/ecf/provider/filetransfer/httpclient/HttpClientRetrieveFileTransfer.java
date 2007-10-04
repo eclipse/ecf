@@ -14,7 +14,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.util.Map;
 
 import javax.security.auth.login.LoginException;
 
@@ -33,11 +32,8 @@ import org.eclipse.ecf.core.security.ObjectCallback;
 import org.eclipse.ecf.core.security.UnsupportedCallbackException;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
-import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
-import org.eclipse.ecf.filetransfer.IFileTransferListener;
 import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
 import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
-import org.eclipse.ecf.filetransfer.InvalidFileRangeSpecificationException;
 import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Messages;
@@ -338,14 +334,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	protected boolean doResume() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#sendRetrieveRequest(org.eclipse.ecf.filetransfer.identity.IFileID, org.eclipse.ecf.filetransfer.IFileRangeSpecification, org.eclipse.ecf.filetransfer.IFileTransferListener, java.util.Map)
-	 */
-	public void sendRetrieveRequest(IFileID remoteFileID, IFileRangeSpecification rangeSpecification, IFileTransferListener transferListener, Map options) throws IncomingFileTransferException {
-		// TODO Auto-generated method stub
-		throw new InvalidFileRangeSpecificationException("range specification not supported", rangeSpecification); //$NON-NLS-1$
 	}
 
 }
