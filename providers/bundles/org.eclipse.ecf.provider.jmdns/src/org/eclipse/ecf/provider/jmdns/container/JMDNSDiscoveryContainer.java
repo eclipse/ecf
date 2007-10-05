@@ -50,6 +50,7 @@ import org.eclipse.ecf.internal.provider.jmdns.Messages;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceID;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceTypeID;
+import org.eclipse.osgi.util.NLS;
 
 public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IContainer, IDiscoveryService, ServiceListener, ServiceTypeListener {
 	public static final int DEFAULT_REQUEST_TIMEOUT = 3000;
@@ -135,8 +136,12 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerService(org.eclipse.ecf.discovery.IServiceInfo)
 	 */
 	public void registerService(IServiceInfo serviceInfo) throws ECFException {
+		if (jmdns == null)
+			throw new ECFException("Discovery not initialized.  May need to connect.");
+		final ServiceInfo svcInfo = createServiceInfoFromIServiceInfo(serviceInfo);
+		checkServiceInfo(svcInfo);
 		try {
-			registerServiceWithJmDNS(serviceInfo);
+			jmdns.registerService(svcInfo);
 		} catch (final IOException e) {
 			throw new ECFException(Messages.JMDNSDiscoveryContainer_EXCEPTION_REGISTER_SERVICE, e);
 		}
@@ -146,16 +151,16 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerServiceType(java.lang.String)
 	 */
 	public void registerServiceType(String serviceType) {
-		if (jmdns != null) {
+		if (jmdns != null && serviceType != null) {
 			jmdns.registerServiceType(serviceType);
 			jmdns.addServiceListener(serviceType, this);
 		}
 	}
 
-	protected void registerServiceWithJmDNS(IServiceInfo serviceInfo) throws IOException {
-		if (jmdns != null) {
-			jmdns.registerService(createServiceInfoFromIServiceInfo(serviceInfo));
-		}
+	protected void checkServiceInfo(ServiceInfo serviceInfo) throws ECFException {
+		final String serviceName = serviceInfo.getName();
+		if (serviceName == null)
+			throw new ECFException(NLS.bind("Service name cannot be null", serviceName));
 	}
 
 	/* (non-Javadoc)
