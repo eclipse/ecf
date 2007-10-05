@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import org.eclipse.ecf.protocol.msn.events.ISessionListener;
@@ -148,7 +149,7 @@ final class NotificationSession extends DispatchSession {
 						" ", 2)); //$NON-NLS-1$
 			} else if (input.startsWith("LSG")) { //$NON-NLS-1$
 				split = StringUtils.splitOnSpace(input);
-				list.addGroup(split[2], new Group(split[1]));
+				list.addGroup(split[2], new Group(URLDecoder.decode(split[1])));
 			}
 			input = reader.readLine();
 		}
