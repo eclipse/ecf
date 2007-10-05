@@ -50,7 +50,6 @@ import org.eclipse.ecf.internal.provider.jmdns.Messages;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceID;
 import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceTypeID;
-import org.eclipse.osgi.util.NLS;
 
 public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IContainer, IDiscoveryService, ServiceListener, ServiceTypeListener {
 	public static final int DEFAULT_REQUEST_TIMEOUT = 3000;
@@ -137,7 +136,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	 */
 	public void registerService(IServiceInfo serviceInfo) throws ECFException {
 		if (jmdns == null)
-			throw new ECFException("Discovery not initialized.  May need to connect.");
+			throw new ECFException(Messages.JMDNSDiscoveryContainer_DISCOVERY_NOT_INITIALIZED);
 		final ServiceInfo svcInfo = createServiceInfoFromIServiceInfo(serviceInfo);
 		checkServiceInfo(svcInfo);
 		try {
@@ -160,7 +159,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	protected void checkServiceInfo(ServiceInfo serviceInfo) throws ECFException {
 		final String serviceName = serviceInfo.getName();
 		if (serviceName == null)
-			throw new ECFException(NLS.bind("Service name cannot be null", serviceName));
+			throw new ECFException(Messages.JMDNSDiscoveryContainer_SERVICE_NAME_NOT_NULL);
 	}
 
 	/* (non-Javadoc)
@@ -201,7 +200,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 			try {
 				fireServiceResolved(new ServiceContainerEvent(createIServiceInfoFromServiceEvent(arg0), getID()));
 			} catch (final Exception e) {
-				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceResolved", e);
+				Trace.catching(JMDNSPlugin.PLUGIN_ID, JMDNSDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "serviceResolved", e); //$NON-NLS-1$
 			}
 		}
 	}
