@@ -121,7 +121,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 				fireContainerEvent(new ContainerConnectedEvent(getID(), this.targetID));
 			} catch (Exception e) {
 				this.targetID = null;
-				throw new ContainerConnectException(NLS.bind(Messages.IRCRootContainer_Exception_Connect_Failed, targetID.getName()), e);
+				throw new ContainerConnectException(NLS.bind(Messages.IRCRootContainer_Exception_Connect_Failed, connectID.getName()), e);
 			} finally {
 				connectWaiting = false;
 				connectException = null;
