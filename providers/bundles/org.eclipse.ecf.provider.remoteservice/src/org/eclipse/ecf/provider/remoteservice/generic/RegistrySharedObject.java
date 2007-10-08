@@ -711,7 +711,12 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		if (containerRegistrations != null) {
 			for (final Iterator i = containerRegistrations.iterator(); i.hasNext();) {
 				final ServiceRegistration serviceRegistration = (ServiceRegistration) i.next();
-				serviceRegistration.unregister();
+				try {
+					serviceRegistration.unregister();
+				} catch (Exception e) {
+					// Simply log
+					log("unregister", e);
+				}
 			}
 		}
 	}
