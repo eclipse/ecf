@@ -117,7 +117,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String CONTAINER_FACTORY_NAME = "org.eclipse.ecf.containerFactory";
+	public static final String CONTAINER_FACTORY_NAME = "org.eclipse.ecf.containerFactoryName";
 
 	/**
 	 * Service property that defines the container target for connection.
@@ -138,5 +138,20 @@ public interface Constants {
 	 * method.
 	 */
 	public static final String CONTAINER_PASSWORD = "org.eclipse.ecf.containerPassword";
+
+	/**
+	 * Service property that defines the remote service container ID.
+	 * <p>
+	 * This property may be supplied in the properties <code>Dictionary</code>
+	 * object passed to the <code>BundleContext.registerService</code> method.
+	 */
+	public static final String SERVICE_REGISTRATION_CONTAINER_ID = "org.eclipse.ecf.containerID";
+
+	/**
+	 * Service property that determines whether a remote service is added to the local
+	 * service registry.  If present in the remote service registration properties,
+	 * the associated remote service proxy will be added to the local service registry.
+	 */
+	public static final String LOCAL_SERVICE_REGISTRATION = "org.eclipse.ecf.serviceRegistrationRemote";
 
 }
