@@ -75,7 +75,7 @@ public class ServiceReferenceTest extends AbstractRemoteServiceTestCase {
 		assertNotNull(concatService);
 		System.out.println("proxy call start");
 		final String result = concatService.concat("OSGi ", "is cool");
-		System.out.println("CLIENT.proxy end. result=" + result);
+		System.out.println("proxy call end. result=" + result);
 		sleep(1500);
 	}
 
