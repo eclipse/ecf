@@ -69,9 +69,9 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	 */
 	public void dispose(ID containerID) {
 		super.dispose(containerID);
+		unregisterAllServiceRegistrations();
 		remoteRegistrys.clear();
 		serviceListeners.clear();
-		unpublishAllServiceRegistrations();
 		localServiceRegistrations.clear();
 	}
 
@@ -208,7 +208,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				if (registrations != null) {
 					for (int i = 0; i < registrations.length; i++) {
 						registry.unpublishService(registrations[i]);
-						unpublishServiceRegistrationsForContainer(registrations[i].getContainerID());
+						unregisterServiceRegistrationsForContainer(registrations[i].getContainerID());
 						fireRemoteServiceListeners(createUnregisteredEvent(registrations[i]));
 					}
 				}
@@ -704,7 +704,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendUnregister");
 	}
 
-	private void unpublishServiceRegistrationsForContainer(ID containerID) {
+	private void unregisterServiceRegistrationsForContainer(ID containerID) {
 		if (containerID == null)
 			return;
 		final List containerRegistrations = (List) localServiceRegistrations.remove(containerID);
@@ -716,10 +716,10 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		}
 	}
 
-	private void unpublishAllServiceRegistrations() {
+	private void unregisterAllServiceRegistrations() {
 		synchronized (remoteRegistrys) {
 			for (final Iterator i = localServiceRegistrations.keySet().iterator(); i.hasNext();) {
-				unpublishServiceRegistrationsForContainer((ID) i.next());
+				unregisterServiceRegistrationsForContainer((ID) i.next());
 			}
 		}
 	}
@@ -733,7 +733,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				final RemoteServiceRegistrationImpl registration = serviceRegistry.findRegistrationForServiceId(serviceId.longValue());
 				if (registration != null) {
 					serviceRegistry.unpublishService(registration);
-					unpublishServiceRegistrationsForContainer(registration.getContainerID());
+					unregisterServiceRegistrationsForContainer(registration.getContainerID());
 					fireRemoteServiceListeners(createUnregisteredEvent(registration));
 				}
 			}
