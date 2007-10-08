@@ -13,7 +13,9 @@ public class Activator implements BundleActivator {
 
 	// The shared instance
 	private static Activator plugin;
-	
+
+	private BundleContext context;
+
 	/**
 	 * The constructor
 	 */
@@ -26,6 +28,7 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext context) throws Exception {
 		plugin = this;
+		this.context = context;
 	}
 
 	/*
@@ -34,6 +37,7 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
+		this.context = null;
 	}
 
 	/**
@@ -43,6 +47,13 @@ public class Activator implements BundleActivator {
 	 */
 	public static Activator getDefault() {
 		return plugin;
+	}
+
+	/**
+	 * 
+	 */
+	public BundleContext getContext() {
+		return context;
 	}
 
 }

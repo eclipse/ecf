@@ -9,9 +9,15 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.tests.remoteservice;
+package org.eclipse.ecf.tests.remoteservice.presence;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.IAsyncResult;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -20,7 +26,7 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 import org.eclipse.ecf.remoteservice.events.IRemoteCallEvent;
 
-public class RemoteContainerTest extends AbstractRemoteServiceTestCase {
+public class RemoteServiceContainerAdapterTest extends AbstractRemoteServiceTestCase {
 
 	/*
 	 * (non-Javadoc)
@@ -65,16 +71,31 @@ public class RemoteContainerTest extends AbstractRemoteServiceTestCase {
 
 	public void testRegisterService() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
-		// adapter [0] is the service 'server'
-		final IRemoteServiceRegistration reg = registerService(adapters[0], IConcatService.class.getName(), createService(), 1500);
+		// client [0]/adapter[0] is the service 'server'
+		// client [1]/adapter[1] is the service target (client)
+		final Dictionary props = new Hashtable();
+		props.put(Constants.SERVICE_REGISTRATION_TARGETS, getClients()[1].getConnectedID());
+		// Register
+		final IRemoteServiceRegistration result = adapters[0].registerRemoteService(new String[] {IConcatService.class.getName()}, createService(), props);
+		// Give some time for propagation
+		sleep(1500);
+
+		final IRemoteServiceRegistration reg = result;
 		assertNotNull(reg);
 		assertNotNull(reg.getContainerID());
 	}
 
 	public void testUnregisterService() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
-		// adapter [0] is the service 'server'
-		final IRemoteServiceRegistration reg = registerService(adapters[0], IConcatService.class.getName(), createService(), 1500);
+		// client [0]/adapter[0] is the service 'server'
+		// client [1]/adapter[1] is the service target (client)
+		final Dictionary props = new Hashtable();
+		props.put(Constants.SERVICE_REGISTRATION_TARGETS, getClients()[1].getConnectedID());
+		// Register
+		final IRemoteServiceRegistration reg = adapters[0].registerRemoteService(new String[] {IConcatService.class.getName()}, createService(), props);
+		// Give some time for propagation
+		sleep(1500);
+
 		assertNotNull(reg);
 		assertNotNull(reg.getContainerID());
 
@@ -84,12 +105,19 @@ public class RemoteContainerTest extends AbstractRemoteServiceTestCase {
 
 	public void testGetServiceReference() throws Exception {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
-		registerService(adapters[0], IConcatService.class.getName(), createService(), 3000);
+		// client [0]/adapter[0] is the service 'server'
+		// client [1]/adapter[1] is the service target (client)
+		final Dictionary props = new Hashtable();
+		props.put(Constants.SERVICE_REGISTRATION_TARGETS, getClients()[1].getConnectedID());
+		// Register
+		adapters[0].registerRemoteService(new String[] {IConcatService.class.getName()}, createService(), props);
+		// Give some time for propagation
+		sleep(1500);
 
-		final IRemoteServiceReference[] refs = getRemoteServiceReferences(adapters[1], IConcatService.class.getName());
+		final IRemoteServiceReference[] refs = adapters[1].getRemoteServiceReferences(null, IConcatService.class.getName(), null);
 
 		assertNotNull(refs);
-		assertTrue(refs.length > 0);
+		assertTrue(refs.length == 1);
 	}
 
 	public void testGetService() throws Exception {
@@ -102,9 +130,25 @@ public class RemoteContainerTest extends AbstractRemoteServiceTestCase {
 		return createRemoteCall("concat", new Object[] {first, second});
 	}
 
+	protected IRemoteCall createBogus(String first, String second) {
+		return createRemoteCall("bogus", new Object[] {first, second});
+	}
+
 	protected IRemoteService registerAndGetRemoteService() {
 		final IRemoteServiceContainerAdapter[] adapters = getRemoteServiceAdapters();
-		return registerAndGetRemoteService(adapters[0], adapters[1], IConcatService.class.getName(), 1500);
+		// client [0]/adapter[0] is the service 'server'
+		// client [1]/adapter[1] is the service target (client)
+		final ID targetID = getClients()[1].getConnectedID();
+		final String serviceName = IConcatService.class.getName();
+		final Dictionary props = new Hashtable();
+		props.put(Constants.SERVICE_REGISTRATION_TARGETS, targetID);
+		adapters[0].registerRemoteService(new String[] {serviceName}, createService(), props);
+		sleep(1500);
+		final IRemoteServiceContainerAdapter adapter = adapters[1];
+		final IRemoteServiceReference[] refs = adapter.getRemoteServiceReferences(null, serviceName, null);
+		if (refs.length == 0)
+			return null;
+		return adapter.getRemoteService(refs[0]);
 
 	}
 
@@ -175,6 +219,15 @@ public class RemoteContainerTest extends AbstractRemoteServiceTestCase {
 		final String result = proxy.concat("ECF ", "sucks");
 		System.out.println("CLIENT.proxy end. result=" + result);
 		sleep(1500);
+	}
+
+	public void testAsyncResult() throws Exception {
+		final IRemoteService service = registerAndGetRemoteService();
+		System.out.println("CLIENT.asyncResult start");
+		final IAsyncResult result = service.callAsynch(createRemoteConcat("ECF AsynchResults ", "are cool"));
+		assertNotNull(result);
+		sleep(2500);
+		System.out.println("CLIENT.asyncResult end. result=" + result.get());
 	}
 
 }
