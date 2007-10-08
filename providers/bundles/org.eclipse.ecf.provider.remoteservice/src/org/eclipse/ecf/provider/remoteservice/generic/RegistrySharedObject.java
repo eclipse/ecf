@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.eclipse.ecf.core.util.IEventProcessor;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.remoteservice.Activator;
 import org.eclipse.ecf.internal.provider.remoteservice.IRemoteServiceProviderDebugOptions;
+import org.eclipse.ecf.remoteservice.Constants;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteFilter;
@@ -46,16 +48,30 @@ import org.eclipse.ecf.remoteservice.events.IRemoteCallStartEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceRegisteredEvent;
 import org.eclipse.ecf.remoteservice.events.IRemoteServiceUnregisteredEvent;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 public class RegistrySharedObject extends BaseSharedObject implements IRemoteServiceContainerAdapter {
 
 	protected RemoteServiceRegistryImpl localRegistry;
 
-	protected Map remoteRegistrys = Collections.synchronizedMap(new HashMap());
+	protected final Map remoteRegistrys = Collections.synchronizedMap(new HashMap());
 
-	protected List serviceListeners = new ArrayList();
+	protected final List serviceListeners = new ArrayList();
+
+	protected final Map serviceRegistrationMap = new HashMap();
 
 	public RegistrySharedObject() {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.sharedobject.BaseSharedObject#dispose(org.eclipse.ecf.core.identity.ID)
+	 */
+	public void dispose(ID containerID) {
+		super.dispose(containerID);
+		remoteRegistrys.clear();
+		serviceListeners.clear();
+		serviceRegistrationMap.clear();
 	}
 
 	/* Begin implementation of IRemoteServiceContainerAdapter public interface */
@@ -74,9 +90,8 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	public IRemoteService getRemoteService(IRemoteServiceReference reference) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "getRemoteService", reference);
 		final RemoteServiceRegistrationImpl registration = getRemoteServiceRegistrationImpl(reference);
-		if (registration == null) {
+		if (registration == null)
 			return null;
-		}
 		final RemoteServiceImpl remoteService = new RemoteServiceImpl(this, registration);
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "getRemoteService", remoteService);
 		return remoteService;
@@ -192,6 +207,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				if (registrations != null) {
 					for (int i = 0; i < registrations.length; i++) {
 						registry.unpublishService(registrations[i]);
+						unpublishServiceRegistration(registrations[i].getContainerID());
 						fireRemoteServiceListeners(createUnregisteredEvent(registrations[i]));
 					}
 				}
@@ -517,10 +533,42 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 			}
 			// publish service in this registry. At this point it's ready to go
 			registry.publishService(registration);
+			localRegisterService(registration);
 			// notify IRemoteServiceListeners synchronously
 			fireRemoteServiceListeners(createRegisteredEvent(registration));
 		}
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), ADD_REGISTRATION);
+	}
+
+	private void localRegisterService(RemoteServiceRegistrationImpl registration) {
+		final Object localServiceRegistrationValue = registration.getProperty(Constants.LOCAL_SERVICE_REGISTRATION);
+		if (localServiceRegistrationValue != null) {
+			final BundleContext context = Activator.getDefault().getContext();
+			if (context == null)
+				return;
+			final RemoteServiceImpl remoteServiceImpl = new RemoteServiceImpl(this, registration);
+			Object service;
+			try {
+				service = remoteServiceImpl.getProxy();
+			} catch (final ECFException e) {
+				e.printStackTrace();
+				log("localRegisterService", e);
+				return;
+			}
+			final Hashtable properties = new Hashtable();
+			final String[] keys = registration.getPropertyKeys();
+			for (int i = 0; i < keys.length; i++) {
+				final Object value = registration.getProperty(keys[i]);
+				if (value != null) {
+					properties.put(keys[i], value);
+				}
+			}
+			final ID remoteContainerID = registration.getContainerID();
+			properties.put(Constants.SERVICE_REGISTRATION_CONTAINER_ID, remoteContainerID.getName());
+			final ServiceRegistration reg = context.registerService(registration.getClasses(), service, properties);
+			System.out.println("registered service with registration=" + reg);
+			serviceRegistrationMap.put(remoteContainerID, reg);
+		}
 	}
 
 	protected long sendCallRequest(RemoteServiceRegistrationImpl remoteRegistration, final IRemoteCall call) throws IOException {
@@ -646,6 +694,14 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 		Trace.exiting(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_EXITING, this.getClass(), "sendUnregister");
 	}
 
+	private void unpublishServiceRegistration(ID containerID) {
+		if (containerID == null)
+			return;
+		final ServiceRegistration serviceRegistration = (ServiceRegistration) serviceRegistrationMap.remove(containerID);
+		if (serviceRegistration != null)
+			serviceRegistration.unregister();
+	}
+
 	protected void handleUnregister(ID containerID, Long serviceId) {
 		Trace.entering(Activator.PLUGIN_ID, IRemoteServiceProviderDebugOptions.METHODS_ENTERING, this.getClass(), "handleUnregister", new Object[] {containerID, serviceId});
 		synchronized (remoteRegistrys) {
@@ -655,6 +711,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				final RemoteServiceRegistrationImpl registration = serviceRegistry.findRegistrationForServiceId(serviceId.longValue());
 				if (registration != null) {
 					serviceRegistry.unpublishService(registration);
+					unpublishServiceRegistration(registration.getContainerID());
 					fireRemoteServiceListeners(createUnregisteredEvent(registration));
 				}
 			}

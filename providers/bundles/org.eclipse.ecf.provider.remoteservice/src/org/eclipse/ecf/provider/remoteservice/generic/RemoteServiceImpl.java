@@ -70,10 +70,11 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 		Object proxy;
 		try {
 			// Get clazz from reference
-			final RemoteServiceReferenceImpl reference = (RemoteServiceReferenceImpl) registration.getReference();
-			final String clazz = reference.getRemoteClass();
-			final Class loadedClass = Class.forName(clazz);
-			proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] {loadedClass}, this);
+			final String[] clazzes = registration.getClasses();
+			final Class[] cs = new Class[clazzes.length];
+			for (int i = 0; i < clazzes.length; i++)
+				cs[i] = Class.forName(clazzes[i]);
+			proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(), cs, this);
 		} catch (final Exception e) {
 			throw new ECFException("Exception creating proxy for remote service", e);
 		}

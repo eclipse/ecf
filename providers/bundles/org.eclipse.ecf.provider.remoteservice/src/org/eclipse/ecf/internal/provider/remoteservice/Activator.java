@@ -22,6 +22,8 @@ public class Activator implements BundleActivator {
 	// The shared instance
 	private static Activator plugin;
 
+	private BundleContext context;
+
 	/**
 	 * The constructor
 	 */
@@ -30,10 +32,16 @@ public class Activator implements BundleActivator {
 	}
 
 	public void start(BundleContext context) throws Exception {
+		this.context = context;
 	}
 
 	public void stop(BundleContext context) throws Exception {
+		this.context = null;
 		plugin = null;
+	}
+
+	public BundleContext getContext() {
+		return context;
 	}
 
 	/**
