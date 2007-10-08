@@ -154,4 +154,10 @@ public interface Constants {
 	 */
 	public static final String LOCAL_SERVICE_REGISTRATION = "org.eclipse.ecf.serviceRegistrationRemote";
 
+	/**
+	 * Remote Service property.  If a ServiceReference has the REMOTE_SERVICE property,
+	 * then the value will be a <code>non-null</code> instance of {@link IRemoteService}.
+	 */
+	public static final String REMOTE_SERVICE = "org.eclipse.ecf.remoteService";
+
 }
