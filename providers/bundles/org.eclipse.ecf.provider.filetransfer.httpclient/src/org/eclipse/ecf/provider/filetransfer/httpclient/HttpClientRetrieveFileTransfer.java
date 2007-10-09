@@ -8,37 +8,26 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.filetransfer.httpclient;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-
+import java.net.URL;
+import java.text.SimpleDateFormat;
 import javax.security.auth.login.LoginException;
-
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.Callback;
-import org.eclipse.ecf.core.security.CallbackHandler;
-import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.security.NameCallback;
-import org.eclipse.ecf.core.security.ObjectCallback;
-import org.eclipse.ecf.core.security.UnsupportedCallbackException;
+import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.core.util.Proxy;
 import org.eclipse.ecf.core.util.ProxyAddress;
-import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
-import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
-import org.eclipse.ecf.filetransfer.events.IIncomingFileTransferReceiveStartEvent;
+import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.httpclient.Messages;
 import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
 import org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer;
+import org.eclipse.osgi.util.NLS;
 
 public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
@@ -62,6 +51,8 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	protected static final String[] supportedProtocols = {HTTP, HTTPS};
 
+	private static final String LAST_MODIFIED_HEADER = "Last-Modified"; //$NON-NLS-1$
+
 	private GetMethod getMethod = null;
 
 	private HttpClient httpClient = null;
@@ -74,18 +65,31 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 	private Proxy proxy;
 
+	private int responseCode = -1;
+
+	protected int httpVersion = 1;
+
+	protected IFileID fileid = null;
+
+	protected long lastModifiedTime = 0L;
+
 	public HttpClientRetrieveFileTransfer(HttpClient httpClient) {
-		if (httpClient == null)
-			throw new NullPointerException("httpClient cannot be null"); //$NON-NLS-1$
 		this.httpClient = httpClient;
+		Assert.isNotNull(this.httpClient);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#hardClose()
+	 */
 	protected void hardClose() {
+		super.hardClose();
 		if (getMethod != null) {
 			getMethod.releaseConnection();
 			getMethod = null;
 		}
-		super.hardClose();
+		responseCode = -1;
 	}
 
 	protected Credentials getFileRequestCredentials() throws UnsupportedCallbackException, IOException {
@@ -110,7 +114,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		try {
 			port = Integer.parseInt(systemHttpProxyPort);
 		} catch (final Exception e) {
-
+			// Shouldn't happen
 		}
 		if (systemHttpProxyHost == null || systemHttpProxyHost.equals("")) //$NON-NLS-1$
 			return null;
@@ -154,6 +158,78 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		}
 	}
 
+	protected void setRequestHeaderValues() throws InvalidFileRangeSpecificationException {
+		final IFileRangeSpecification rangeSpec = getFileRangeSpecification();
+		if (rangeSpec != null) {
+			final long startPosition = rangeSpec.getStartPosition();
+			final long endPosition = rangeSpec.getEndPosition();
+			if (startPosition < 0)
+				throw new InvalidFileRangeSpecificationException(Messages.HttpClientRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO, rangeSpec);
+			if (endPosition != -1L && endPosition <= startPosition)
+				throw new InvalidFileRangeSpecificationException(Messages.HttpClientRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START, rangeSpec);
+			setRangeHeader("bytes=" + startPosition + "-" + ((endPosition == -1L) ? "" : ("" + endPosition))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		}
+	}
+
+	private void setRangeHeader(String value) {
+		getMethod.addRequestHeader("Range", value); //$NON-NLS-1$
+	}
+
+	private boolean isHTTP11() {
+		return (httpVersion >= 1);
+	}
+
+	public int getResponseCode() {
+		if (responseCode != -1)
+			return responseCode;
+		HttpVersion version = getMethod.getEffectiveVersion();
+		if (version == null) {
+			responseCode = -1;
+			httpVersion = 1;
+			return responseCode;
+		}
+		httpVersion = version.getMinor();
+		responseCode = getMethod.getStatusCode();
+		return responseCode;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
+	 */
+	public ID getID() {
+		return fileid;
+	}
+
+	private long getLastModifiedTimeFromHeader() throws IOException {
+		Header lastModifiedHeader = getMethod.getResponseHeader(LAST_MODIFIED_HEADER);
+		if (lastModifiedHeader == null)
+			throw new IOException(Messages.HttpClientRetrieveFileTransfer_INVALID_LAST_MODIFIED_TIME);
+
+		String lastModifiedString = lastModifiedHeader.getValue();
+		long lastModified = 0;
+		if (lastModifiedString != null) {
+			try {
+				lastModified = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z").parse(lastModifiedString).getTime(); //$NON-NLS-1$
+			} catch (Exception e) {
+				throw new IOException(Messages.HttpClientRetrieveFileTransfer_EXCEPITION_INVALID_LAST_MODIFIED_FROM_SERVER);
+			}
+		}
+		return lastModified;
+	}
+
+	protected void getResponseHeaderValues() throws IOException {
+		if (getResponseCode() == -1)
+			throw new IOException(Messages.HttpClientRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST);
+		Header lastModifiedHeader = getMethod.getResponseHeader(LAST_MODIFIED_HEADER);
+		if (lastModifiedHeader == null)
+			throw new IOException(Messages.HttpClientRetrieveFileTransfer_INVALID_LAST_MODIFIED_TIME);
+		lastModifiedTime = getLastModifiedTimeFromHeader();
+		setFileLength(getMethod.getResponseContentLength());
+		fileid = new FileTransferID(getRetrieveNamespace(), getRemoteFileURL());
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
@@ -173,61 +249,28 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 			getMethod = new GetMethod(urlString);
 			getMethod.setFollowRedirects(true);
 
+			setRequestHeaderValues();
+
 			final int code = httpClient.executeMethod(getMethod);
 
 			if (code == HttpURLConnection.HTTP_OK) {
-				final long contentLength = getMethod.getResponseContentLength();
+				getResponseHeaderValues();
 				setInputStream(getMethod.getResponseBodyAsStream());
-				setFileLength(contentLength);
-
-				listener.handleTransferEvent(new IIncomingFileTransferReceiveStartEvent() {
-					private static final long serialVersionUID = -59096575294481755L;
-
-					public IFileID getFileID() {
-						return remoteFileID;
-					}
-
-					public IIncomingFileTransfer receive(File localFileToSave) throws IOException {
-						setOutputStream(new BufferedOutputStream(new FileOutputStream(localFileToSave)));
-						job = new FileTransferJob(getRemoteFileURL().toString());
-						job.schedule();
-						return HttpClientRetrieveFileTransfer.this;
-					}
-
-					public String toString() {
-						final StringBuffer sb = new StringBuffer("IIncomingFileTransferReceiveStartEvent["); //$NON-NLS-1$
-						sb.append("isdone=").append(done).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
-						sb.append("bytesReceived=").append( //$NON-NLS-1$
-								bytesReceived).append("]"); //$NON-NLS-1$
-						return sb.toString();
-					}
-
-					public void cancel() {
-						hardClose();
-					}
-
-					public IIncomingFileTransfer receive(OutputStream streamToStore) throws IOException {
-						setOutputStream(streamToStore);
-						setCloseOutputStream(false);
-						job = new FileTransferJob(getRemoteFileURL().toString());
-						job.schedule();
-						return HttpClientRetrieveFileTransfer.this;
-					}
-
-				});
+				fireReceiveStartEvent();
 			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED || code == HttpURLConnection.HTTP_FORBIDDEN) {
 				getMethod.getResponseBody();
 				// login or reauthenticate due to an expired session
 				getMethod.releaseConnection();
 				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
 			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
+				getMethod.releaseConnection();
 				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
 			} else {
-				throw new IOException("HttpClient connection error response code: " + code); //$NON-NLS-1$
+				getMethod.releaseConnection();
+				throw new IOException(NLS.bind("HttpClient connection error response code {0}.", new Integer(code))); //$NON-NLS-1$
 			}
 		} catch (final Exception e) {
-			throw new IncomingFileTransferException("Could not connect to " //$NON-NLS-1$
-					+ urlString, e);
+			throw new IncomingFileTransferException(NLS.bind(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, urlString), e);
 		}
 
 	}
@@ -311,29 +354,106 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		return false;
 	}
 
+	protected boolean isConnected() {
+		return (getMethod != null);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
-	 */
-	public ID getID() {
-		return new FileTransferID(getRetrieveNamespace(), getRemoteFileURL());
-	}
-
-	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doPause()
 	 */
 	protected boolean doPause() {
-		// TODO Auto-generated method stub
-		return false;
+		if (isPaused() || !isConnected() || isDone())
+			return false;
+		this.paused = true;
+		return this.paused;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doResume()
 	 */
 	protected boolean doResume() {
-		// TODO Auto-generated method stub
-		return false;
+		if (!isPaused() || isConnected())
+			return false;
+		return openStreamsForResume();
+	}
+
+	protected void setResumeRequestHeaderValues() throws IOException {
+		if (this.bytesReceived <= 0 || this.fileLength <= this.bytesReceived)
+			throw new IOException(Messages.HttpClientRetrieveFileTransfer_RESUME_START_ERROR);
+		setRangeHeader("bytes=" + this.bytesReceived + "-"); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	private boolean openStreamsForResume() {
+		final URL theURL = getRemoteFileURL();
+		try {
+			remoteFileURL = new URL(theURL.toString());
+			final String urlString = getRemoteFileURL().toString();
+
+			httpClient.getHttpConnectionManager().getParams().setSoTimeout(DEFAULT_CONNECTION_TIMEOUT);
+			httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT);
+
+			setupProxy(urlString);
+
+			setupAuthentication(urlString);
+
+			setupHostAndPort(urlString);
+
+			getMethod = new GetMethod(urlString);
+			getMethod.setFollowRedirects(true);
+
+			setResumeRequestHeaderValues();
+
+			final int code = httpClient.executeMethod(getMethod);
+
+			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
+				getResumeResponseHeaderValues();
+				setInputStream(getMethod.getResponseBodyAsStream());
+				this.paused = false;
+				fireReceiveResumedEvent();
+			} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED || code == HttpURLConnection.HTTP_FORBIDDEN) {
+				getMethod.getResponseBody();
+				// login or reauthenticate due to an expired session
+				getMethod.releaseConnection();
+				throw new IncomingFileTransferException(Messages.HttpClientRetrieveFileTransfer_Unauthorized);
+			} else if (code == HttpURLConnection.HTTP_PROXY_AUTH) {
+				getMethod.releaseConnection();
+				throw new LoginException(Messages.HttpClientRetrieveFileTransfer_Proxy_Auth_Required);
+			} else {
+				getMethod.releaseConnection();
+				throw new IOException(NLS.bind("Httpclient connection error response code {0}.", new Integer(code))); //$NON-NLS-1$
+			}
+			return true;
+		} catch (final Exception e) {
+			this.exception = e;
+			this.done = true;
+			hardClose();
+			fireTransferReceiveDoneEvent();
+			return false;
+		}
+	}
+
+	protected void getResumeResponseHeaderValues() throws IOException {
+		if (getResponseCode() != HttpURLConnection.HTTP_PARTIAL)
+			throw new IOException();
+		if (lastModifiedTime != getLastModifiedTimeFromHeader())
+			throw new IOException(Messages.HttpClientRetrieveFileTransfer_EXCEPTION_FILE_MODIFIED_SINCE_LAST_ACCESS);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter) {
+		if (adapter == null)
+			return null;
+		if (adapter.equals(IFileTransferPausable.class) && isHTTP11())
+			return this;
+		return super.getAdapter(adapter);
 	}
 
 }

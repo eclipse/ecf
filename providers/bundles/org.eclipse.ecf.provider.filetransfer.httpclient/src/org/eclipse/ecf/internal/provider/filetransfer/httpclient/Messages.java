@@ -35,6 +35,14 @@ public class Messages extends NLS {
 	public static String FileTransferID_Exception_Url_Not_Null;
 	public static String SslProtocolSocketFactory_SSLContext_Instance;
 	public static String SslProtocolSocketFactory_Status_Create_Error;
+	public static String HttpClientRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO;
+	public static String HttpClientRetrieveFileTransfer_EXCEPITION_INVALID_LAST_MODIFIED_FROM_SERVER;
+	public static String HttpClientRetrieveFileTransfer_EXCEPTION_FILE_MODIFIED_SINCE_LAST_ACCESS;
+	public static String HttpClientRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START;
+	public static String HttpClientRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT;
+	public static String HttpClientRetrieveFileTransfer_INVALID_LAST_MODIFIED_TIME;
+	public static String HttpClientRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST;
+	public static String HttpClientRetrieveFileTransfer_RESUME_START_ERROR;
 
 	static {
 		// initialize resource bundle
@@ -42,5 +50,6 @@ public class Messages extends NLS {
 	}
 
 	private Messages() {
+		// Generated
 	}
 }
