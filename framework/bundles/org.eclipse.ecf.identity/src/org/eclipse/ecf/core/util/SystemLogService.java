@@ -22,7 +22,7 @@ import org.osgi.service.log.LogService;
  */
 public class SystemLogService implements LogService {
 
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("Z yyyy.MM.dd HH:mm:ss:S");
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("Z yyyy.MM.dd HH:mm:ss:S"); //$NON-NLS-1$
 
 	private final String pluginName;
 
@@ -33,27 +33,27 @@ public class SystemLogService implements LogService {
 	private static final String getLogCode(int level) {
 		switch (level) {
 			case LogService.LOG_INFO :
-				return "INFO";
+				return "INFO"; //$NON-NLS-1$
 			case LogService.LOG_ERROR :
-				return "ERROR";
+				return "ERROR"; //$NON-NLS-1$
 			case LogService.LOG_DEBUG :
-				return "DEBUG";
+				return "DEBUG"; //$NON-NLS-1$
 			case LogService.LOG_WARNING :
-				return "WARNING";
+				return "WARNING"; //$NON-NLS-1$
 			default :
-				return "UNKNOWN";
+				return "UNKNOWN"; //$NON-NLS-1$
 		}
 	}
 
 	private final void doLog(ServiceReference sr, int level, String message, Throwable t) {
-		final StringBuffer buf = new StringBuffer("[log;");
-		buf.append(dateFormat.format(new Date())).append(";");
-		buf.append(getLogCode(level)).append(";");
+		final StringBuffer buf = new StringBuffer("[log;"); //$NON-NLS-1$
+		buf.append(dateFormat.format(new Date())).append(";"); //$NON-NLS-1$
+		buf.append(getLogCode(level)).append(";"); //$NON-NLS-1$
 		if (sr != null)
-			buf.append(sr.getBundle().getSymbolicName()).append(";");
+			buf.append(sr.getBundle().getSymbolicName()).append(";"); //$NON-NLS-1$
 		else
-			buf.append(pluginName).append(";");
-		buf.append(message).append("]");
+			buf.append(pluginName).append(";"); //$NON-NLS-1$
+		buf.append(message).append("]"); //$NON-NLS-1$
 		if (t != null) {
 			System.err.println(message);
 			t.printStackTrace(System.err);
