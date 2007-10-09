@@ -50,7 +50,14 @@ public class Activator implements BundleActivator {
 	private static final String CLASS_ATTR = "class"; //$NON-NLS-1$
 	private static final String PROTOCOL_ATTR = "protocol"; //$NON-NLS-1$
 
-	private static final String[] jvmSchemes = new String[] {Messages.FileTransferNamespace_Http_Protocol, Messages.FileTransferNamespace_Ftp_Protocol, Messages.FileTransferNamespace_File_Protocol, Messages.FileTransferNamespace_Jar_Protocol, Messages.FileTransferNamespace_Https_Protocol, Messages.FileTransferNamespace_Mailto_Protocol, Messages.FileTransferNamespace_Gopher_Protocol};
+	private static final String[] jvmSchemes = new String[] {
+			Messages.FileTransferNamespace_Http_Protocol,
+			Messages.FileTransferNamespace_Ftp_Protocol,
+			Messages.FileTransferNamespace_File_Protocol,
+			Messages.FileTransferNamespace_Jar_Protocol,
+			Messages.FileTransferNamespace_Https_Protocol,
+			Messages.FileTransferNamespace_Mailto_Protocol,
+			Messages.FileTransferNamespace_Gopher_Protocol };
 
 	private static final String URL_HANDLER_PROTOCOL_NAME = "url.handler.protocol"; //$NON-NLS-1$
 
@@ -59,7 +66,8 @@ public class Activator implements BundleActivator {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.filetransfer"; //$NON-NLS-1$
 
-	private static final String FILETRANSFER_PROTOCOL_FACTORY_EPOINT = PLUGIN_ID + "." //$NON-NLS-1$
+	private static final String FILETRANSFER_PROTOCOL_FACTORY_EPOINT = PLUGIN_ID
+			+ "." //$NON-NLS-1$
 			+ "fileTransferProtocolFactory"; //$NON-NLS-1$
 
 	// The shared instance
@@ -84,7 +92,8 @@ public class Activator implements BundleActivator {
 
 	protected LogService getLogService() {
 		if (logServiceTracker == null) {
-			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
+			logServiceTracker = new ServiceTracker(this.context,
+					LogService.class.getName(), null);
 			logServiceTracker.open();
 		}
 		return (LogService) logServiceTracker.getService();
@@ -93,7 +102,8 @@ public class Activator implements BundleActivator {
 	public void log(IStatus status) {
 		final LogService logService = getLogService();
 		if (logService != null) {
-			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
+			logService.log(LogHelper.getLogCode(status), LogHelper
+					.getLogMessage(status), status.getException());
 		}
 	}
 
@@ -111,11 +121,13 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		plugin = this;
 		this.context = context;
-		fileTransferServiceRegistration = context.registerService(IRetrieveFileTransferFactory.class.getName(), new IRetrieveFileTransferFactory() {
-			public IRetrieveFileTransfer newInstance() {
-				return new MultiProtocolRetrieveAdapter();
-			}
-		}, null);
+		fileTransferServiceRegistration = context.registerService(
+				IRetrieveFileTransferFactory.class.getName(),
+				new IRetrieveFileTransferFactory() {
+					public IRetrieveFileTransfer newInstance() {
+						return new MultiProtocolRetrieveAdapter();
+					}
+				}, null);
 		// Can't be lazy about this, as schemes need to be registered with
 		// platform
 		loadProtocolHandlers();
@@ -154,13 +166,15 @@ public class Activator implements BundleActivator {
 	}
 
 	public String[] getPlatformSupportedSchemes() {
-		final ServiceTracker handlers = new ServiceTracker(context, URLSTREAM_HANDLER_SERVICE_NAME, null);
+		final ServiceTracker handlers = new ServiceTracker(context,
+				URLSTREAM_HANDLER_SERVICE_NAME, null);
 		handlers.open();
 		final ServiceReference[] refs = handlers.getServiceReferences();
 		final Set protocols = new HashSet();
 		if (refs != null)
 			for (int i = 0; i < refs.length; i++) {
-				final Object protocol = refs[i].getProperty(URL_HANDLER_PROTOCOL_NAME);
+				final Object protocol = refs[i]
+						.getProperty(URL_HANDLER_PROTOCOL_NAME);
 				if (protocol instanceof String)
 					protocols.add(protocol);
 				else if (protocol instanceof String[]) {
@@ -177,7 +191,8 @@ public class Activator implements BundleActivator {
 
 	public IExtensionRegistry getExtensionRegistry() {
 		if (extensionRegistryTracker == null) {
-			this.extensionRegistryTracker = new ServiceTracker(context, IExtensionRegistry.class.getName(), null);
+			this.extensionRegistryTracker = new ServiceTracker(context,
+					IExtensionRegistry.class.getName(), null);
 			this.extensionRegistryTracker.open();
 		}
 		return (IExtensionRegistry) extensionRegistryTracker.getService();
@@ -188,23 +203,27 @@ public class Activator implements BundleActivator {
 		this.fileTransferProtocolMap = new HashMap(3);
 		final IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
-			final IExtensionPoint extensionPoint = reg.getExtensionPoint(FILETRANSFER_PROTOCOL_FACTORY_EPOINT);
+			final IExtensionPoint extensionPoint = reg
+					.getExtensionPoint(FILETRANSFER_PROTOCOL_FACTORY_EPOINT);
 			if (extensionPoint == null) {
 				return;
 			}
-			final IConfigurationElement[] configurationElements = extensionPoint.getConfigurationElements();
+			final IConfigurationElement[] configurationElements = extensionPoint
+					.getConfigurationElements();
 
 			final String[] existingSchemes = getPlatformSupportedSchemes();
 
 			for (int i = 0; i < configurationElements.length; i++) {
 				try {
-					final String protocol = configurationElements[i].getAttribute(PROTOCOL_ATTR);
+					final String protocol = configurationElements[i]
+							.getAttribute(PROTOCOL_ATTR);
 					// If the protocol is not already registered as a scheme
 					// with platform
 					// then register
 					if (!isSchemeRegistered(protocol, existingSchemes))
 						registerScheme(protocol);
-					final IRetrieveFileTransferFactory clazz = (IRetrieveFileTransferFactory) configurationElements[i].createExecutableExtension(CLASS_ATTR);
+					final IRetrieveFileTransferFactory clazz = (IRetrieveFileTransferFactory) configurationElements[i]
+							.createExecutableExtension(CLASS_ATTR);
 					fileTransferProtocolMap.put(protocol, clazz);
 				} catch (final CoreException e) {
 					e.printStackTrace();
@@ -229,7 +248,11 @@ public class Activator implements BundleActivator {
 		 * @see org.osgi.service.url.AbstractURLStreamHandlerService#openConnection(java.net.URL)
 		 */
 		public URLConnection openConnection(URL u) throws IOException {
-			throw new IOException(NLS.bind(Messages.Activator_EXCEPTION_URLConnection_CANNOT_BE_CREATED, u.toExternalForm()));
+			throw new IOException(
+					NLS
+							.bind(
+									Messages.Activator_EXCEPTION_URLConnection_CANNOT_BE_CREATED,
+									u.toExternalForm()));
 		}
 
 	}
@@ -238,13 +261,16 @@ public class Activator implements BundleActivator {
 
 	private void registerScheme(String protocol) {
 		final Hashtable properties = new Hashtable();
-		properties.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] {protocol});
-		context.registerService(URLStreamHandlerService.class.getName(), dummyService, properties);
+		properties.put(URLConstants.URL_HANDLER_PROTOCOL,
+				new String[] { protocol });
+		context.registerService(URLStreamHandlerService.class.getName(),
+				dummyService, properties);
 	}
 
 	// TODO we can be more lazy here
 	public IRetrieveFileTransfer getFileTransfer(String protocol) {
-		final IRetrieveFileTransferFactory factory = (IRetrieveFileTransferFactory) fileTransferProtocolMap.get(protocol);
+		final IRetrieveFileTransferFactory factory = (IRetrieveFileTransferFactory) fileTransferProtocolMap
+				.get(protocol);
 		if (factory != null)
 			return factory.newInstance();
 		return null;
@@ -253,10 +279,12 @@ public class Activator implements BundleActivator {
 	public IAdapterManager getAdapterManager() {
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
-			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
+			adapterManagerTracker = new ServiceTracker(this.context,
+					IAdapterManager.class.getName(), null);
 			adapterManagerTracker.open();
 		}
-		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker
+				.getService();
 		// Then, if the service isn't there, try to get from Platform class via
 		// PlatformHelper class
 		if (adapterManager == null)

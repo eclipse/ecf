@@ -22,9 +22,10 @@ import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
 import org.eclipse.ecf.filetransfer.InvalidFileRangeSpecificationException;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
-import org.eclipse.ecf.provider.filetransfer.identity.FileTransferID;
+import org.eclipse.osgi.util.NLS;
 
-public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
+public class UrlConnectionRetrieveFileTransfer extends
+		AbstractRetrieveFileTransfer {
 
 	private static final int HTTP_RANGE_RESPONSE = 206;
 
@@ -37,8 +38,6 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	// XXX currently unused
 	protected Proxy proxy;
 
-	protected IFileID fileid = null;
-
 	protected long lastModifiedTime = 0L;
 
 	protected int httpVersion = 1;
@@ -47,8 +46,10 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	protected String responseMessage = null;
 
-	protected void connect(URL theURL) throws IOException {
-		urlConnection = theURL.openConnection();
+	protected IFileID fileid = null;
+
+	protected void connect() throws IOException {
+		urlConnection = getRemoteFileURL().openConnection();
 	}
 
 	protected boolean isConnected() {
@@ -57,19 +58,25 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 
 	protected void setResumeRequestHeaderValues() throws IOException {
 		if (this.bytesReceived <= 0 || this.fileLength <= this.bytesReceived)
-			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_ERROR);
+			throw new IOException(
+					Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_ERROR);
 		setRangeHeader("bytes=" + this.bytesReceived + "-"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	protected void setRequestHeaderValues() throws InvalidFileRangeSpecificationException {
+	protected void setRequestHeaderValues()
+			throws InvalidFileRangeSpecificationException {
 		final IFileRangeSpecification rangeSpec = getFileRangeSpecification();
 		if (rangeSpec != null && isHTTP()) {
 			final long startPosition = rangeSpec.getStartPosition();
 			final long endPosition = rangeSpec.getEndPosition();
 			if (startPosition < 0)
-				throw new InvalidFileRangeSpecificationException(Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO, rangeSpec);
+				throw new InvalidFileRangeSpecificationException(
+						Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO,
+						rangeSpec);
 			if (endPosition != -1L && endPosition <= startPosition)
-				throw new InvalidFileRangeSpecificationException(Messages.UrlConnectionRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START, rangeSpec);
+				throw new InvalidFileRangeSpecificationException(
+						Messages.UrlConnectionRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START,
+						rangeSpec);
 			setRangeHeader("bytes=" + startPosition + "-" + ((endPosition == -1L) ? "" : ("" + endPosition))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 	}
@@ -122,40 +129,48 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		return (isHTTP() && httpVersion >= 1);
 	}
 
-	protected void getResponseHeaderValues(URL theURL) throws IOException {
+	protected void getResponseHeaderValues() throws IOException {
 		if (!isConnected())
-			throw new ConnectException(Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
+			throw new ConnectException(
+					Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
 		if (getResponseCode() == -1)
-			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_INVALID_SERVER_RESPONSE);
+			throw new IOException(
+					Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_INVALID_SERVER_RESPONSE);
 		lastModifiedTime = urlConnection.getLastModified();
 		setFileLength(urlConnection.getContentLength());
-		fileid = new FileTransferID(getRetrieveNamespace(), theURL);
 	}
 
-	protected void getResumeResponseHeaderValues(URL theURL) throws IOException {
+	protected void getResumeResponseHeaderValues() throws IOException {
 		if (!isConnected())
-			throw new ConnectException(Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
+			throw new ConnectException(
+					Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
 		if (getResponseCode() != HTTP_RANGE_RESPONSE)
-			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST);
+			throw new IOException(
+					Messages.UrlConnectionRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST);
 		if (lastModifiedTime != urlConnection.getLastModified())
-			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_FILE_MODIFIED_SINCE_LAST_ACCESS);
+			throw new IOException(
+					Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_FILE_MODIFIED_SINCE_LAST_ACCESS);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#openStreams()
 	 */
 	protected void openStreams() throws IncomingFileTransferException {
-		final URL theURL = getRemoteFileURL();
 		try {
-			connect(theURL);
+			connect();
 			setRequestHeaderValues();
 			// Make actual GET request
 			setInputStream(urlConnection.getInputStream());
-			getResponseHeaderValues(theURL);
+			getResponseHeaderValues();
 			fireReceiveStartEvent();
 		} catch (final Exception e) {
-			throw new IncomingFileTransferException("Exception connecting to " //$NON-NLS-1$
-					+ theURL.toString(), e);
+			throw new IncomingFileTransferException(
+					NLS
+							.bind(
+									Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT,
+									getRemoteFileURL().toString()), e);
 		}
 	}
 
@@ -175,7 +190,8 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	 * 
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void setConnectContextForAuthentication(IConnectContext connectContext) {
+	public void setConnectContextForAuthentication(
+			IConnectContext connectContext) {
 		this.connectContext = connectContext;
 	}
 
@@ -191,13 +207,6 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
-	 */
-	public ID getID() {
-		return fileid;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doPause()
 	 */
 	protected boolean doPause() {
@@ -207,7 +216,9 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		return this.paused;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#doResume()
 	 */
 	protected boolean doResume() {
@@ -216,7 +227,9 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		return openStreamsForResume();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ecf.provider.filetransfer.retrieve.AbstractRetrieveFileTransfer#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {
@@ -235,11 +248,11 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 		final URL theURL = getRemoteFileURL();
 		try {
 			remoteFileURL = new URL(theURL.toString());
-			connect(remoteFileURL);
+			connect();
 			setResumeRequestHeaderValues();
 			// Make actual GET request
 			setInputStream(urlConnection.getInputStream());
-			getResumeResponseHeaderValues(theURL);
+			getResumeResponseHeaderValues();
 			this.paused = false;
 			fireReceiveResumedEvent();
 			return true;
@@ -251,4 +264,9 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 			return false;
 		}
 	}
+
+	public ID getID() {
+		return fileid;
+	}
+
 }
