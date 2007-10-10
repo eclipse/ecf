@@ -44,7 +44,7 @@ public class GenericServer implements IApplication {
 	 */
 	public Object start(IApplicationContext context) throws Exception {
 		try {
-			String[] args = mungeArguments((String[]) context.getArguments()
+			final String[] args = mungeArguments((String[]) context.getArguments()
 					.get("application.args")); //$NON-NLS-1$
 			if (args.length == 1
 					&& (args[0].equals("-help") || args[0].equals("-h"))) { //$NON-NLS-1$ //$NON-NLS-2$
@@ -83,7 +83,7 @@ public class GenericServer implements IApplication {
 				this.wait();
 			}
 			return IApplication.EXIT_OK;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			stop();
 			throw e;
 		}
@@ -114,23 +114,31 @@ public class GenericServer implements IApplication {
 	 */
 	protected void setupServerFromParameters(String hostname, int port,
 			String name, int keepAlive) throws IOException, IDCreateException {
-		String hostnamePort = hostname + ":" + port; //$NON-NLS-1$
+		final String hostnamePort = hostname + ":" + port; //$NON-NLS-1$
 		synchronized (serverGroups) {
 			TCPServerSOContainerGroup serverGroup = (TCPServerSOContainerGroup) serverGroups
 					.get(hostnamePort);
 			if (serverGroup == null) {
 				System.out
 						.println("Putting server " + hostnamePort + " on the air..."); //$NON-NLS-1$ //$NON-NLS-2$
+				try {
 				serverGroup = new TCPServerSOContainerGroup(hostname, port);
-				String url = TCPServerSOContainer.DEFAULT_PROTOCOL + "://" //$NON-NLS-1$
+				final String url = TCPServerSOContainer.DEFAULT_PROTOCOL + "://" //$NON-NLS-1$
 						+ hostnamePort + name;
 				// Create
-				TCPServerSOContainer container = createServerContainer(url,
+				final TCPServerSOContainer container = createServerContainer(url,
 						serverGroup, name, keepAlive);
 				// Configure
 				configureServerContainer(container);
 				// Put on the air
 				serverGroup.putOnTheAir();
+				} catch (final IOException e) {
+					e.printStackTrace(System.err);
+					throw e;
+				} catch (IDCreateException e) {
+				e.printStackTrace(System.err);
+				throw e;
+			}
 				serverGroups.put(hostnamePort, serverGroup);
 				System.out
 						.println("GenericServer " + hostnamePort + " on the air."); //$NON-NLS-1$ //$NON-NLS-2$
@@ -158,11 +166,11 @@ public class GenericServer implements IApplication {
 
 	protected void setupServerFromConfig(List connectors) throws IOException,
 			IDCreateException {
-		for (Iterator i = connectors.iterator(); i.hasNext();) {
-			Connector connector = (Connector) i.next();
-			String hostname = connector.getHostname();
-			int port = connector.getPort();
-			String hostnamePort = hostname + ":" + port; //$NON-NLS-1$
+		for (final Iterator i = connectors.iterator(); i.hasNext();) {
+			final Connector connector = (Connector) i.next();
+			final String hostname = connector.getHostname();
+			final int port = connector.getPort();
+			final String hostnamePort = hostname + ":" + port; //$NON-NLS-1$
 			TCPServerSOContainerGroup serverGroup = null;
 			synchronized (serverGroups) {
 				serverGroup = (TCPServerSOContainerGroup) serverGroups
@@ -171,11 +179,11 @@ public class GenericServer implements IApplication {
 					System.out
 							.println("Putting server " + hostnamePort + " on the air..."); //$NON-NLS-1$ //$NON-NLS-2$
 					serverGroup = new TCPServerSOContainerGroup(hostname, port);
-					List groups = connector.getGroups();
-					for (Iterator g = groups.iterator(); g.hasNext();) {
-						NamedGroup group = (NamedGroup) g.next();
+					final List groups = connector.getGroups();
+					for (final Iterator g = groups.iterator(); g.hasNext();) {
+						final NamedGroup group = (NamedGroup) g.next();
 						// Create
-						TCPServerSOContainer container = createServerContainer(
+						final TCPServerSOContainer container = createServerContainer(
 								group.getIDForGroup(), serverGroup, group
 										.getName(), connector.getTimeout());
 						// Configure
@@ -200,13 +208,13 @@ public class GenericServer implements IApplication {
 	 */
 	public void stop() {
 		synchronized (serverGroups) {
-			for (Iterator i = serverGroups.keySet().iterator(); i.hasNext();) {
-				TCPServerSOContainerGroup serverGroup = (TCPServerSOContainerGroup) serverGroups
+			for (final Iterator i = serverGroups.keySet().iterator(); i.hasNext();) {
+				final TCPServerSOContainerGroup serverGroup = (TCPServerSOContainerGroup) serverGroups
 						.get(i.next());
 				serverGroup.takeOffTheAir();
-				Iterator iter = serverGroup.elements();
+				final Iterator iter = serverGroup.elements();
 				for (; iter.hasNext();) {
-					TCPServerSOContainer container = (TCPServerSOContainer) iter
+					final TCPServerSOContainer container = (TCPServerSOContainer) iter
 							.next();
 					container.dispose();
 				}
@@ -220,7 +228,7 @@ public class GenericServer implements IApplication {
 	private String[] mungeArguments(String originalArgs[]) {
 		if (originalArgs == null)
 			return new String[0];
-		List l = new ArrayList();
+		final List l = new ArrayList();
 		for (int i = 0; i < originalArgs.length; i++)
 			if (!originalArgs[i].equals("-pdelaunch")) //$NON-NLS-1$
 				l.add(originalArgs[i]);
@@ -231,9 +239,9 @@ public class GenericServer implements IApplication {
 			TCPServerSOContainerGroup group, String path, int keepAlive)
 			throws IDCreateException {
 		System.out
-				.println("  Creating container with id=" + id + " keepAlive=" + keepAlive); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		ID newServerID = IDFactory.getDefault().createStringID(id);
-		SOContainerConfig config = new SOContainerConfig(newServerID);
+				.println("  Creating container with id=" + id + " keepAlive=" + keepAlive); //$NON-NLS-1$ //$NON-NLS-2$ 
+		final ID newServerID = IDFactory.getDefault().createStringID(id);
+		final SOContainerConfig config = new SOContainerConfig(newServerID);
 		return new TCPServerSOContainer(config, group, path, keepAlive);
 	}
 
@@ -242,7 +250,7 @@ public class GenericServer implements IApplication {
 				ID targetID, String targetGroup, Object joinData)
 				throws Exception {
 			System.out
-					.println("CLIENT CONNECT: fromAddress=" + addr + ";fromID=" + fromID + ";targetGroup=" + targetGroup); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					.println("CLIENT CONNECT: fromAddress=" + addr + ";fromID=" + fromID + ";targetGroup=" + targetGroup); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
 			return null;
 		}
 
