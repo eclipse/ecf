@@ -30,10 +30,10 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 public class RetrieveTest extends ContainerAbstractTestCase {
 
 	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
-	private static final String HTTPS_RETRIEVE = "https://bugs.eclipse.org/bugs";
-	
+	protected static final String HTTPS_RETRIEVE = "https://www.verisign.com/";
+
 	File tmpFile = null;
-	
+
 	protected IContainer createClient(int index) throws Exception {
 		return ContainerFactory.getDefault().createContainer();
 	}
@@ -71,10 +71,9 @@ public class RetrieveTest extends ContainerAbstractTestCase {
 	List receiveDoneEvents = new ArrayList();
 
 	protected void testReceiveHttp(String url) throws Exception {
-		IRetrieveFileTransferContainerAdapter retrieveAdapter = (IRetrieveFileTransferContainerAdapter) getClients()[0]
-				.getAdapter(IRetrieveFileTransferContainerAdapter.class);
+		final IRetrieveFileTransferContainerAdapter retrieveAdapter = (IRetrieveFileTransferContainerAdapter) getClients()[0].getAdapter(IRetrieveFileTransferContainerAdapter.class);
 		assertNotNull(retrieveAdapter);
-		IFileTransferListener listener = new IFileTransferListener() {
+		final IFileTransferListener listener = new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
 				if (event instanceof IIncomingFileTransferReceiveStartEvent) {
 					IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
@@ -94,19 +93,14 @@ public class RetrieveTest extends ContainerAbstractTestCase {
 			}
 		};
 
-		retrieveAdapter.sendRetrieveRequest(FileIDFactory.getDefault()
-				.createFileID(retrieveAdapter.getRetrieveNamespace(),
-						url), listener, null);
+		retrieveAdapter.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(retrieveAdapter.getRetrieveNamespace(), url), listener, null);
 		// Wait for 5 seconds
 		sleep(5000, "Starting 5 second wait", "Ending 5 second wait");
 
-		assertHasEvent(receiveStartEvents,
-				IIncomingFileTransferReceiveStartEvent.class);
-		assertHasMoreThanEventCount(receiveDataEvents,
-				IIncomingFileTransferReceiveDataEvent.class, 0);
-		assertHasEvent(receiveDoneEvents,
-				IIncomingFileTransferReceiveDoneEvent.class);
-		
+		assertHasEvent(receiveStartEvents, IIncomingFileTransferReceiveStartEvent.class);
+		assertHasMoreThanEventCount(receiveDataEvents, IIncomingFileTransferReceiveDataEvent.class, 0);
+		assertHasEvent(receiveDoneEvents, IIncomingFileTransferReceiveDoneEvent.class);
+
 		assertTrue(tmpFile.exists());
 		assertTrue(tmpFile.length() > 0);
 	}

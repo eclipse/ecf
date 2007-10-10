@@ -27,17 +27,18 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 public class CancelServiceTest extends ContainerAbstractTestCase {
 
 	private static final String HTTP_RETRIEVE = "http://www.eclipse.org/ecf/ip_log.html";
-	private static final String HTTPS_RETRIEVE = "https://bugs.eclipse.org/bugs";
-	
+	private static final String HTTPS_RETRIEVE = RetrieveTest.HTTPS_RETRIEVE;
+
 	//private static final String EFS_RETRIEVE = "efs:file://c:/foo.txt";
-	
+
 	File tmpFile = null;
-	
+
 	private IRetrieveFileTransfer transferInstance;
-	
+
 	protected IRetrieveFileTransfer getTransferInstance() {
 		return Activator.getDefault().getRetrieveFileTransferFactory().newInstance();
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -60,10 +61,10 @@ public class CancelServiceTest extends ContainerAbstractTestCase {
 	}
 
 	IIncomingFileTransfer incoming = null;
-	
+
 	protected void testReceiveHttp(String url) throws Exception {
 		assertNotNull(transferInstance);
-		IFileTransferListener listener = new IFileTransferListener() {
+		final IFileTransferListener listener = new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
 				if (event instanceof IIncomingFileTransferReceiveStartEvent) {
 					IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
@@ -78,17 +79,15 @@ public class CancelServiceTest extends ContainerAbstractTestCase {
 					if (incoming != null && incoming.getPercentComplete() > 0.50) {
 						incoming.cancel();
 					}
-					System.out.println("receive data="+event);
+					System.out.println("receive data=" + event);
 				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
-					System.out.println("receive done="+event+", exception="+incoming.getException());
+					System.out.println("receive done=" + event + ", exception=" + incoming.getException());
 					assertTrue(incoming.getException() != null);
 				}
 			}
 		};
 
-		transferInstance.sendRetrieveRequest(FileIDFactory.getDefault()
-				.createFileID(transferInstance.getRetrieveNamespace(),
-						url), listener, null);
+		transferInstance.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(transferInstance.getRetrieveNamespace(), url), listener, null);
 		// Wait for 5 seconds
 		sleep(5000, "Starting 5 second wait", "Ending 5 second wait");
 	}
