@@ -223,9 +223,9 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		if (getResponseCode() == -1)
 			throw new IOException(Messages.HttpClientRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST);
 		Header lastModifiedHeader = getMethod.getResponseHeader(LAST_MODIFIED_HEADER);
-		if (lastModifiedHeader == null)
-			throw new IOException(Messages.HttpClientRetrieveFileTransfer_INVALID_LAST_MODIFIED_TIME);
-		lastModifiedTime = getLastModifiedTimeFromHeader();
+		if (lastModifiedHeader != null) {
+			lastModifiedTime = getLastModifiedTimeFromHeader();
+		}
 		setFileLength(getMethod.getResponseContentLength());
 		fileid = new FileTransferID(getRetrieveNamespace(), getRemoteFileURL());
 	}
@@ -253,7 +253,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 
 			final int code = httpClient.executeMethod(getMethod);
 
-			if (code == HttpURLConnection.HTTP_OK) {
+			if (code == HttpURLConnection.HTTP_PARTIAL || code == HttpURLConnection.HTTP_OK) {
 				getResponseHeaderValues();
 				setInputStream(getMethod.getResponseBodyAsStream());
 				fireReceiveStartEvent();
