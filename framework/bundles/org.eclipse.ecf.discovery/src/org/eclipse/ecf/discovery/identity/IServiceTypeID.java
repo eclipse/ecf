@@ -56,11 +56,20 @@ public interface IServiceTypeID extends ID {
 	 */
 
 	/**
-	 * @return The name of the Service, if the underlying discovery mechanism
+	 * @return The name of the service type.  If the underlying discovery mechanism
 	 *         supports naming hierarchies, the hierarchy will be returned
 	 *         flattened as an array.  Will not be <code>null</code>, but may
 	 *         be empty array.
 	 */
 	public String[] getServices();
+
+	/**
+	 * Get the internal name of the service type.  Provider implementations may choose
+	 * to have this return the same value as {@link ID#getName()}, or they may return
+	 * a different, internal value appropriate to the provider.
+	 * 
+	 * @return String internal name for this service type.  Will not return <code>null</code>.
+	 */
+	public String getInternal();
 
 }
