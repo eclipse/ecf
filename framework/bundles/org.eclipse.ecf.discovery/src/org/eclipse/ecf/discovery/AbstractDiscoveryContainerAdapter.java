@@ -28,10 +28,10 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 
 public abstract class AbstractDiscoveryContainerAdapter extends AbstractContainer implements IDiscoveryContainerAdapter, IContainer {
-	private final String servicesNamespaceName;
-	private final Map serviceListeners;
-	private final Collection serviceTypeListeners;
-	private final DiscoveryContainerConfig config;
+	protected final String servicesNamespaceName;
+	protected final Map serviceListeners;
+	protected final Collection serviceTypeListeners;
+	protected final DiscoveryContainerConfig config;
 
 	public AbstractDiscoveryContainerAdapter(String aNamespaceName, DiscoveryContainerConfig aConfig) {
 		servicesNamespaceName = aNamespaceName;
