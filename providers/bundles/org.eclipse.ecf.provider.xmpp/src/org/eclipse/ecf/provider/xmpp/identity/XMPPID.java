@@ -70,6 +70,8 @@ public class XMPPID extends BaseID implements IChatID {
 		} else {
 			resourcename = PATH_DELIMITER + ECFConnection.CLIENT_TYPE;
 		}
+		if (hostname == null)
+			hostname = remainder;
 		uri = new URI(namespace.getScheme(), username, hostname, port, resourcename, null, null);
 	}
 

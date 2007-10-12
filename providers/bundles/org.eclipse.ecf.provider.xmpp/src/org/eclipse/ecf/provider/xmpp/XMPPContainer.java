@@ -71,33 +71,30 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.packet.MUCUser;
 import org.jivesoftware.smackx.packet.XHTMLExtension;
 
-public class XMPPContainer extends ClientSOContainer implements
-		IPresenceService {
+public class XMPPContainer extends ClientSOContainer implements IPresenceService {
 
 	public static final int DEFAULT_KEEPALIVE = 30000;
 
-	public static final String CONNECT_NAMESPACE = XmppPlugin.getDefault()
-			.getNamespaceIdentifier();
+	public static final String CONNECT_NAMESPACE = XmppPlugin.getDefault().getNamespaceIdentifier();
 
-	public static final String CONTAINER_HELPER_ID = XMPPContainer.class
-			.getName()
-			+ ".xmpphandler"; //$NON-NLS-1$
+	public static final String CONTAINER_HELPER_ID = XMPPContainer.class.getName() + ".xmpphandler"; //$NON-NLS-1$
 
 	protected static final String GOOGLE_SERVICENAME = "gmail.com"; //$NON-NLS-1$
 
-	private static final String [] googleHosts = { GOOGLE_SERVICENAME, "talk.google.com", "googlemail.com" }; //$NON-NLS-1$ //$NON-NLS-2$
-	
+	private static final String[] googleHosts = {GOOGLE_SERVICENAME, "talk.google.com", "googlemail.com"}; //$NON-NLS-1$ //$NON-NLS-2$
+
 	public static final String XMPP_GOOGLE_OVERRIDE_PROP_NAME = "ecf.xmpp.google.override"; //$NON-NLS-1$
-	
+
 	private static Set googleNames = new HashSet();
-	
+
 	static {
-		for(int i=0; i < googleHosts.length; i++) googleNames.add(googleHosts[i]);
-		String override = System.getProperty(XMPP_GOOGLE_OVERRIDE_PROP_NAME);
+		for (int i = 0; i < googleHosts.length; i++)
+			googleNames.add(googleHosts[i]);
+		final String override = System.getProperty(XMPP_GOOGLE_OVERRIDE_PROP_NAME);
 		if (override != null)
 			googleNames.add(override.toLowerCase());
 	}
-	
+
 	protected int keepAlive = 0;
 
 	protected XMPPContainerAccountManager accountManager = null;
@@ -110,17 +107,14 @@ public class XMPPContainer extends ClientSOContainer implements
 
 	protected ID presenceHelperID = null;
 
-	protected XMPPContainer(SOContainerConfig config, int keepAlive)
-			throws Exception {
+	protected XMPPContainer(SOContainerConfig config, int keepAlive) throws Exception {
 		super(config);
 		this.keepAlive = keepAlive;
 		accountManager = new XMPPContainerAccountManager();
 		chatRoomManager = new XMPPChatRoomManager(getID());
-		this.presenceHelperID = IDFactory.getDefault().createStringID(
-				CONTAINER_HELPER_ID);
+		this.presenceHelperID = IDFactory.getDefault().createStringID(CONTAINER_HELPER_ID);
 		presenceHelper = new XMPPContainerPresenceHelper(this);
-		outgoingFileTransferContainerAdapter = new XMPPOutgoingFileTransferHelper(
-				this);
+		outgoingFileTransferContainerAdapter = new XMPPOutgoingFileTransferHelper(this);
 	}
 
 	public XMPPContainer() throws Exception {
@@ -132,8 +126,7 @@ public class XMPPContainer extends ClientSOContainer implements
 	}
 
 	public XMPPContainer(String userhost, int ka) throws Exception {
-		this(new SOContainerConfig(IDFactory.getDefault().createStringID(
-				userhost)), ka);
+		this(new SOContainerConfig(IDFactory.getDefault().createStringID(userhost)), ka);
 	}
 
 	public IRosterManager getRosterManager() {
@@ -158,8 +151,7 @@ public class XMPPContainer extends ClientSOContainer implements
 	 * @see org.eclipse.ecf.provider.generic.SOContainer#getConnectNamespace()
 	 */
 	public Namespace getConnectNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(
-				XmppPlugin.getDefault().getNamespaceIdentifier());
+		return IDFactory.getDefault().getNamespaceByName(XmppPlugin.getDefault().getNamespaceIdentifier());
 	}
 
 	/*
@@ -168,19 +160,16 @@ public class XMPPContainer extends ClientSOContainer implements
 	 * @see org.eclipse.ecf.provider.generic.ClientSOContainer#connect(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID remote, IConnectContext joinContext)
-			throws ContainerConnectException {
+	public void connect(ID remote, IConnectContext joinContext) throws ContainerConnectException {
 		try {
-			getSharedObjectManager().addSharedObject(presenceHelperID,
-					presenceHelper, null);
+			getSharedObjectManager().addSharedObject(presenceHelperID, presenceHelper, null);
 			super.connect(remote, joinContext);
-		} catch (ContainerConnectException e) {
+		} catch (final ContainerConnectException e) {
 			disconnect();
 			throw e;
-		} catch (SharedObjectAddException e1) {
+		} catch (final SharedObjectAddException e1) {
 			disconnect();
-			throw new ContainerConnectException(NLS.bind(
-					Messages.XMPPContainer_EXCEPTION_ADDING_SHARED_OBJECT,presenceHelperID), e1);
+			throw new ContainerConnectException(NLS.bind(Messages.XMPPContainer_EXCEPTION_ADDING_SHARED_OBJECT, presenceHelperID), e1);
 		}
 	}
 
@@ -190,13 +179,12 @@ public class XMPPContainer extends ClientSOContainer implements
 	 * @see org.eclipse.ecf.provider.generic.ClientSOContainer#disconnect()
 	 */
 	public void disconnect() {
-		ID groupID = getConnectedID();
-		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(),
-				groupID));
+		final ID groupID = getConnectedID();
+		fireContainerEvent(new ContainerDisconnectingEvent(this.getID(), groupID));
 		synchronized (getConnectLock()) {
 			// If we are currently connected
 			if (isConnected()) {
-				ISynchAsynchConnection conn = getConnection();
+				final ISynchAsynchConnection conn = getConnection();
 				synchronized (conn) {
 					synchronized (getGroupMembershipLock()) {
 						handleLeave(groupID, conn);
@@ -251,18 +239,15 @@ public class XMPPContainer extends ClientSOContainer implements
 			return super.getAdapter(clazz);
 	}
 
-	protected ID handleConnectResponse(ID originalTarget, Object serverData)
-			throws Exception {
+	protected ID handleConnectResponse(ID originalTarget, Object serverData) throws Exception {
 		if (originalTarget != null && !originalTarget.equals(getID())) {
 			addNewRemoteMember(originalTarget, null);
 
-			ECFConnection conn = getECFConnection();
+			final ECFConnection conn = getECFConnection();
 			accountManager.setConnection(conn.getXMPPConnection());
-			chatRoomManager.setConnection(getConnectNamespace(),
-					originalTarget, conn);
+			chatRoomManager.setConnection(getConnectNamespace(), originalTarget, conn);
 			presenceHelper.setUser(new User(originalTarget));
-			outgoingFileTransferContainerAdapter.setConnection(conn
-					.getXMPPConnection());
+			outgoingFileTransferContainerAdapter.setConnection(conn.getXMPPConnection());
 			return originalTarget;
 
 		} else
@@ -275,16 +260,17 @@ public class XMPPContainer extends ClientSOContainer implements
 	 * @see org.eclipse.ecf.provider.generic.ClientSOContainer#createConnection(org.eclipse.ecf.core.identity.ID,
 	 *      java.lang.Object)
 	 */
-	protected ISynchAsynchConnection createConnection(ID remoteSpace,
-			Object data) throws ConnectionCreateException {
-		boolean google = isGoogle(remoteSpace);
+	protected ISynchAsynchConnection createConnection(ID remoteSpace, Object data) throws ConnectionCreateException {
+		final boolean google = isGoogle(remoteSpace);
 		return new ECFConnection(google, getConnectNamespace(), receiver);
 	}
 
 	protected boolean isGoogle(ID remoteSpace) {
 		if (remoteSpace instanceof XMPPID) {
-			XMPPID theID = (XMPPID) remoteSpace;
-			String host = theID.getHostname();
+			final XMPPID theID = (XMPPID) remoteSpace;
+			final String host = theID.getHostname();
+			if (host == null)
+				return false;
 			return googleNames.contains(host.toLowerCase());
 		}
 		return false;
@@ -296,16 +282,15 @@ public class XMPPContainer extends ClientSOContainer implements
 	 * @see org.eclipse.ecf.provider.generic.ClientSOContainer#getConnectData(org.eclipse.ecf.core.identity.ID,
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	protected Object getConnectData(ID remote, IConnectContext joinContext)
-			throws IOException, UnsupportedCallbackException {
-		Callback[] callbacks = createAuthorizationCallbacks();
+	protected Object getConnectData(ID remote, IConnectContext joinContext) throws IOException, UnsupportedCallbackException {
+		final Callback[] callbacks = createAuthorizationCallbacks();
 		if (joinContext != null && callbacks != null && callbacks.length > 0) {
-			CallbackHandler handler = joinContext.getCallbackHandler();
+			final CallbackHandler handler = joinContext.getCallbackHandler();
 			if (handler != null) {
 				handler.handle(callbacks);
 			}
 			if (callbacks[0] instanceof ObjectCallback) {
-				ObjectCallback cb = (ObjectCallback) callbacks[0];
+				final ObjectCallback cb = (ObjectCallback) callbacks[0];
 				return cb.getObject();
 			}
 		}
@@ -316,7 +301,7 @@ public class XMPPContainer extends ClientSOContainer implements
 		// first one is password callback
 		if (cbs.length > 0) {
 			if (cbs[0] instanceof ObjectCallback) {
-				ObjectCallback cb = (ObjectCallback) cbs[0];
+				final ObjectCallback cb = (ObjectCallback) cbs[0];
 				return cb.getObject();
 			}
 		}
@@ -324,7 +309,7 @@ public class XMPPContainer extends ClientSOContainer implements
 	}
 
 	protected Callback[] createAuthorizationCallbacks() {
-		Callback[] cbs = new Callback[1];
+		final Callback[] cbs = new Callback[1];
 		cbs[0] = new ObjectCallback();
 		return cbs;
 	}
@@ -339,7 +324,7 @@ public class XMPPContainer extends ClientSOContainer implements
 	}
 
 	protected Roster getRoster() throws IOException {
-		ECFConnection connection = getECFConnection();
+		final ECFConnection connection = getECFConnection();
 		if (connection != null) {
 			return connection.getRoster();
 		} else
@@ -347,7 +332,7 @@ public class XMPPContainer extends ClientSOContainer implements
 	}
 
 	protected void deliverEvent(Event evt) {
-		SOWrapper wrap = getSharedObjectWrapper(presenceHelperID);
+		final SOWrapper wrap = getSharedObjectWrapper(presenceHelperID);
 		if (wrap != null)
 			wrap.deliverEvent(evt);
 	}
@@ -361,19 +346,18 @@ public class XMPPContainer extends ClientSOContainer implements
 			} else if (aPacket instanceof Presence) {
 				deliverEvent(new PresenceEvent((Presence) aPacket));
 			} else {
-				log(NLS.bind(Messages.XMPPContainer_UNEXPECTED_XMPP_MESSAGE,aPacket.toXML()),null);
+				log(NLS.bind(Messages.XMPPContainer_UNEXPECTED_XMPP_MESSAGE, aPacket.toXML()), null);
 			}
 		}
 	}
 
 	protected boolean handleAsExtension(Packet packet) {
-		Iterator i = packet.getExtensions();
+		final Iterator i = packet.getExtensions();
 		for (; i.hasNext();) {
-			Object extension = i.next();
+			final Object extension = i.next();
 			if (extension instanceof XHTMLExtension) {
-				XHTMLExtension xhtmlExtension = (XHTMLExtension) extension;
-				deliverEvent(new MessageEvent((Message) packet, xhtmlExtension
-						.getBodies()));
+				final XHTMLExtension xhtmlExtension = (XHTMLExtension) extension;
+				deliverEvent(new MessageEvent((Message) packet, xhtmlExtension.getBodies()));
 				return true;
 			}
 			if (packet instanceof Presence && extension instanceof MUCUser) {
@@ -389,10 +373,8 @@ public class XMPPContainer extends ClientSOContainer implements
 	 * @see org.eclipse.ecf.provider.generic.SOContainer#createSharedObjectContext(org.eclipse.ecf.provider.generic.SOConfig,
 	 *      org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue)
 	 */
-	protected SOContext createSharedObjectContext(SOConfig soconfig,
-			IQueueEnqueue queue) {
-		return new XMPPContainerContext(soconfig.getSharedObjectID(), soconfig
-				.getHomeContainerID(), this, soconfig.getProperties(), queue);
+	protected SOContext createSharedObjectContext(SOConfig soconfig, IQueueEnqueue queue) {
+		return new XMPPContainerContext(soconfig.getSharedObjectID(), soconfig.getHomeContainerID(), this, soconfig.getProperties(), queue);
 	}
 
 	/*
@@ -408,21 +390,20 @@ public class XMPPContainer extends ClientSOContainer implements
 				return;
 			} else if (e instanceof ECFConnectionObjectPacketEvent) {
 				// It's an ECF object message
-				ECFConnectionObjectPacketEvent evt = (ECFConnectionObjectPacketEvent) e;
-				Object obj = evt.getObjectValue();
+				final ECFConnectionObjectPacketEvent evt = (ECFConnectionObjectPacketEvent) e;
+				final Object obj = evt.getObjectValue();
 				// this should be a ContainerMessage
-				Object cm = deserializeContainerMessage((byte[]) obj);
+				final Object cm = deserializeContainerMessage((byte[]) obj);
 				if (cm == null)
 					throw new IOException(Messages.XMPPContainer_EXCEPTION_DESERIALIZED_OBJECT_NULL);
-				ContainerMessage contMessage = (ContainerMessage) cm;
-				IChatRoomContainer chat = chatRoomManager
-						.findReceiverChatRoom(contMessage.getToContainerID());
+				final ContainerMessage contMessage = (ContainerMessage) cm;
+				final IChatRoomContainer chat = chatRoomManager.findReceiverChatRoom(contMessage.getToContainerID());
 				if (chat != null && chat instanceof XMPPChatRoomContainer) {
-					XMPPChatRoomContainer cont = (XMPPChatRoomContainer) chat;
+					final XMPPChatRoomContainer cont = (XMPPChatRoomContainer) chat;
 					cont.handleContainerMessage(contMessage);
 					return;
 				}
-				Object data = contMessage.getData();
+				final Object data = contMessage.getData();
 				if (data instanceof ContainerMessage.CreateMessage) {
 					handleCreateMessage(contMessage);
 				} else if (data instanceof ContainerMessage.CreateResponseMessage) {
@@ -432,14 +413,14 @@ public class XMPPContainer extends ClientSOContainer implements
 				} else if (data instanceof ContainerMessage.SharedObjectDisposeMessage) {
 					handleSharedObjectDisposeMessage(contMessage);
 				} else {
-					debug(NLS.bind(Messages.XMPPContainer_UNRECOGONIZED_CONTAINER_MESSAGE,contMessage));
+					debug(NLS.bind(Messages.XMPPContainer_UNRECOGONIZED_CONTAINER_MESSAGE, contMessage));
 				}
 			} else {
 				// Unexpected type...
-				log(NLS.bind(Messages.XMPPContainer_UNEXPECTED_EVENT,e),null);
+				log(NLS.bind(Messages.XMPPContainer_UNEXPECTED_EVENT, e), null);
 			}
-		} catch (Exception except) {
-			log(NLS.bind(Messages.XMPPContainer_EXCEPTION_HANDLING_ASYCH_EVENT,e), except);
+		} catch (final Exception except) {
+			log(NLS.bind(Messages.XMPPContainer_EXCEPTION_HANDLING_ASYCH_EVENT, e), except);
 		}
 	}
 
@@ -448,7 +429,7 @@ public class XMPPContainer extends ClientSOContainer implements
 	}
 
 	public XMPPConnection getXMPPConnection() {
-		ECFConnection conn = getECFConnection();
+		final ECFConnection conn = getECFConnection();
 		if (conn == null)
 			return null;
 		else
