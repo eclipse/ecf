@@ -226,8 +226,8 @@ public class RemoteServiceContainerAdapterTest extends AbstractRemoteServiceTest
 		System.out.println("CLIENT.asyncResult start");
 		final IAsyncResult result = service.callAsynch(createRemoteConcat("ECF AsynchResults ", "are cool"));
 		assertNotNull(result);
-		sleep(2500);
 		System.out.println("CLIENT.asyncResult end. result=" + result.get());
+		sleep(4000);
 	}
 
 }

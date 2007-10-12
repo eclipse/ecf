@@ -12,6 +12,7 @@
 package org.eclipse.ecf.tests.remoteservice;
 
 import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.core.util.IAsyncResult;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -175,6 +176,15 @@ public class RemoteServiceContainerAdapterTest extends AbstractRemoteServiceTest
 		final String result = proxy.concat("ECF ", "sucks");
 		System.out.println("CLIENT.proxy end. result=" + result);
 		sleep(1500);
+	}
+
+	public void testAsyncResult() throws Exception {
+		final IRemoteService service = registerAndGetRemoteService();
+		System.out.println("CLIENT.asyncResult start");
+		final IAsyncResult result = service.callAsynch(createRemoteConcat("ECF AsynchResults ", "are cool"));
+		assertNotNull(result);
+		System.out.println("CLIENT.asyncResult end. result=" + result.get());
+		sleep(4000);
 	}
 
 }
