@@ -9,19 +9,12 @@
 package org.eclipse.ecf.internal.filetransfer;
 
 import java.util.Hashtable;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.util.LogHelper;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
-import org.osgi.service.url.AbstractURLStreamHandlerService;
-import org.osgi.service.url.URLConstants;
-import org.osgi.service.url.URLStreamHandlerService;
+import org.osgi.service.url.*;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -52,6 +45,7 @@ public class Activator implements BundleActivator {
 	 * The constructor
 	 */
 	public Activator() {
+		// null constructor
 	}
 
 	/*
@@ -59,10 +53,10 @@ public class Activator implements BundleActivator {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
-		this.context = context;
+	public void start(BundleContext ctxt) throws Exception {
+		this.context = ctxt;
 		plugin = this;
-		setupProtocolHandlers(context);
+		setupProtocolHandlers(ctxt);
 	}
 
 	protected LogService getLogService() {
@@ -120,7 +114,7 @@ public class Activator implements BundleActivator {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext ctxt) throws Exception {
 		if (extensionRegistryTracker != null) {
 			extensionRegistryTracker.close();
 			extensionRegistryTracker = null;

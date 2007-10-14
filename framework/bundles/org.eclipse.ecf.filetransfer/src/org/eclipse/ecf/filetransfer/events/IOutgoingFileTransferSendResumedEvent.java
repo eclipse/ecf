@@ -15,5 +15,6 @@ package org.eclipse.ecf.filetransfer.events;
  *
  */
 public interface IOutgoingFileTransferSendResumedEvent extends IOutgoingFileTransferEvent {
+	// no methods for interface
 
 }

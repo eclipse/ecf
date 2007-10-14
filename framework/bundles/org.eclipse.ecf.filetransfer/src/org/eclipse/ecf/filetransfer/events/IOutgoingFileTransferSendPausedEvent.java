@@ -15,5 +15,5 @@ package org.eclipse.ecf.filetransfer.events;
  *
  */
 public interface IOutgoingFileTransferSendPausedEvent extends IOutgoingFileTransferEvent {
-
+	// no methods for interface
 }

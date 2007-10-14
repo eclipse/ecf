@@ -17,4 +17,5 @@ import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
  * 
  */
 public interface IIncomingFileTransferReceiveDataEvent extends IIncomingFileTransferEvent {
+	// no methods for interface
 }

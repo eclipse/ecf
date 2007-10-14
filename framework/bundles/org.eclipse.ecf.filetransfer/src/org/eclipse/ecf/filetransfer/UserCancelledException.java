@@ -20,6 +20,7 @@ public class UserCancelledException extends ECFException {
 	private static final long serialVersionUID = -1147166028435325320L;
 
 	public UserCancelledException() {
+		// null constructor
 	}
 
 	public UserCancelledException(IStatus status) {

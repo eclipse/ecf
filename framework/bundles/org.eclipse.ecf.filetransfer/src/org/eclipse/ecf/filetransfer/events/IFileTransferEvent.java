@@ -15,4 +15,5 @@ import org.eclipse.ecf.core.util.Event;
  * 
  */
 public interface IFileTransferEvent extends Event {
+	// no methods for interface
 }

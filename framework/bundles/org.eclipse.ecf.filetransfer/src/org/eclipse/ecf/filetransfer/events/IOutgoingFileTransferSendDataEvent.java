@@ -17,4 +17,5 @@ import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
  * 
  */
 public interface IOutgoingFileTransferSendDataEvent extends IOutgoingFileTransferEvent {
+	// no methods for interface
 }

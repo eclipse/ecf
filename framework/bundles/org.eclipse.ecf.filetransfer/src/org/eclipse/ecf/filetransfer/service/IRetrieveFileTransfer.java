@@ -14,5 +14,6 @@ package org.eclipse.ecf.filetransfer.service;
 import org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter;
 
 public interface IRetrieveFileTransfer extends IRetrieveFileTransferContainerAdapter {
+	// no methods for interface
 
 }

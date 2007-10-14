@@ -24,6 +24,7 @@ public class IncomingFileTransferException extends ECFException {
 	}
 
 	public IncomingFileTransferException() {
+		// null constructor
 	}
 
 	public IncomingFileTransferException(String message) {

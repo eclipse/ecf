@@ -24,6 +24,7 @@ public class OutgoingFileTransferException extends ECFException {
 	}
 
 	public OutgoingFileTransferException() {
+		// null constructor
 	}
 
 	public OutgoingFileTransferException(String message) {
