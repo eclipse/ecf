@@ -16,4 +16,5 @@ package org.eclipse.ecf.core.sharedobject.util;
  * @see IQueueDequeue
  */
 public interface IQueue extends IQueueDequeue, IQueueEnqueue {
+	// no methods
 }

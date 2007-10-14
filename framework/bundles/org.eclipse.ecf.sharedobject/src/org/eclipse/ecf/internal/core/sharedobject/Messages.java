@@ -38,12 +38,13 @@ public class Messages extends NLS {
 	public static String TwoPhaseCommitEventProcessor_Exception_Commit_Timeout;
 	public static String TwoPhaseCommitEventProcessor_Exception_Shared_Object_Add_Abort;
 	public static String TwoPhaseCommitEventProcessor_Exception_Timeout_Adding_To;
-	
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 
 	private Messages() {
+		// private null constructor
 	}
 }

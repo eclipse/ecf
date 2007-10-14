@@ -26,6 +26,10 @@ public class QueueEnqueueImpl implements IQueueEnqueue {
 	 * 
 	 * @see org.eclipse.ecf.core.util.IQueueEnqueue#enqueue(org.eclipse.ecf.core.util.Event)
 	 */
+	/**
+	 * @param element
+	 * @throws QueueException not thrown by this implementation.
+	 */
 	public void enqueue(Event element) throws QueueException {
 		queue.enqueue(element);
 	}
@@ -47,6 +51,11 @@ public class QueueEnqueueImpl implements IQueueEnqueue {
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ecf.core.util.IQueueEnqueue#enqueue_prepare(org.eclipse.ecf.core.util.Event[])
+	 */
+	/**
+	 * @param elements
+	 * @return
+	 * @throws QueueException not thrown by this implementation.
 	 */
 	public Object enqueue_prepare(Event[] elements) throws QueueException {
 		return elements;

@@ -9,4 +9,5 @@
 package org.eclipse.ecf.core.sharedobject.events;
 
 public interface ISharedObjectCommitEvent extends ISharedObjectEvent {
+	// no methods
 }

@@ -8,10 +8,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.core.sharedobject;
 
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.core.sharedobject.Activator;
 import org.eclipse.ecf.internal.core.sharedobject.Messages;
@@ -33,14 +30,14 @@ import org.eclipse.ecf.internal.core.sharedobject.Messages;
  * </code>
  * 
  */
-public class SharedObjectContainerFactory implements
-		ISharedObjectContainerFactory {
+public class SharedObjectContainerFactory implements ISharedObjectContainerFactory {
 	protected static ISharedObjectContainerFactory instance = null;
 	static {
 		instance = new SharedObjectContainerFactory();
 	}
 
 	protected SharedObjectContainerFactory() {
+		// null constructor
 	}
 
 	public static ISharedObjectContainerFactory getDefault() {
@@ -57,22 +54,16 @@ public class SharedObjectContainerFactory implements
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObjectContainer(org.eclipse.ecf.core.SharedObjectContainerDescription,
 	 *      java.lang.Object[])
 	 */
-	public ISharedObjectContainer createSharedObjectContainer(
-			ContainerTypeDescription desc, Object[] args)
-			throws ContainerCreateException {
+	public ISharedObjectContainer createSharedObjectContainer(ContainerTypeDescription desc, Object[] args) throws ContainerCreateException {
 		trace("createSharedObjectContainer(" + desc + "," //$NON-NLS-1$ //$NON-NLS-2$
 				+ Trace.getArgumentsString(args) + ")"); //$NON-NLS-1$
 		if (desc == null)
-			throw new ContainerCreateException(
-					Messages.SharedObjectContainerFactory_Exception_Description_Not_Null);
-		IContainer newContainer = ContainerFactory.getDefault()
-				.createContainer(desc, args);
-		ISharedObjectContainer soContainer = (ISharedObjectContainer) newContainer
-				.getAdapter(ISharedObjectContainer.class);
+			throw new ContainerCreateException(Messages.SharedObjectContainerFactory_Exception_Description_Not_Null);
+		IContainer newContainer = ContainerFactory.getDefault().createContainer(desc, args);
+		ISharedObjectContainer soContainer = (ISharedObjectContainer) newContainer.getAdapter(ISharedObjectContainer.class);
 		if (soContainer == null) {
 			newContainer.dispose();
-			throw new ContainerCreateException(
-					Messages.SharedObjectContainerFactory_Exception_Container_Wrong_Type);
+			throw new ContainerCreateException(Messages.SharedObjectContainerFactory_Exception_Container_Wrong_Type);
 		}
 		return soContainer;
 	}
@@ -82,10 +73,8 @@ public class SharedObjectContainerFactory implements
 	 * 
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObjectContainer(java.lang.String)
 	 */
-	public ISharedObjectContainer createSharedObjectContainer(
-			String descriptionName) throws ContainerCreateException {
-		return createSharedObjectContainer(ContainerFactory.getDefault()
-				.getDescriptionByName(descriptionName), null);
+	public ISharedObjectContainer createSharedObjectContainer(String descriptionName) throws ContainerCreateException {
+		return createSharedObjectContainer(ContainerFactory.getDefault().getDescriptionByName(descriptionName), null);
 	}
 
 	/*
@@ -94,11 +83,8 @@ public class SharedObjectContainerFactory implements
 	 * @see org.eclipse.ecf.core.ISharedObjectContainerFactory#createSharedObjectContainer(java.lang.String,
 	 *      java.lang.Object[])
 	 */
-	public ISharedObjectContainer createSharedObjectContainer(
-			String descriptionName, Object[] args)
-			throws ContainerCreateException {
-		return createSharedObjectContainer(ContainerFactory.getDefault()
-				.getDescriptionByName(descriptionName), args);
+	public ISharedObjectContainer createSharedObjectContainer(String descriptionName, Object[] args) throws ContainerCreateException {
+		return createSharedObjectContainer(ContainerFactory.getDefault().getDescriptionByName(descriptionName), args);
 	}
 
 }

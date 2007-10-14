@@ -44,14 +44,12 @@ public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 
 	public synchronized Object peekQueue() {
 		while (isEmpty()) {
-			if (stopped) {
+			if (stopped)
 				return null;
-			} else {
-				try {
-					wait();
-				} catch (Exception e) {
-					return null;
-				}
+			try {
+				wait();
+			} catch (Exception e) {
+				return null;
 			}
 		}
 		return list.get(0);
@@ -62,17 +60,15 @@ public class SimpleFIFOQueue implements ISimpleFIFOQueue {
 			return peekQueue();
 		if (stopped) {
 			return null;
-		} else {
-			try {
-				wait(waitMS);
-			} catch (Exception e) {
-				return null;
-			}
+		}
+		try {
+			wait(waitMS);
+		} catch (Exception e) {
+			return null;
 		}
 		if (isEmpty())
 			return null;
-		else
-			return list.get(0);
+		return list.get(0);
 	}
 
 	public synchronized Object removeHead() {

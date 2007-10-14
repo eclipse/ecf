@@ -11,19 +11,12 @@
 package org.eclipse.ecf.core.sharedobject;
 
 import java.util.Map;
-
-import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.AbstractContainerAdapterFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.core.sharedobject.Activator;
-import org.eclipse.ecf.internal.core.sharedobject.Messages;
-import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
+import org.eclipse.ecf.internal.core.sharedobject.*;
 
 /**
  * Abstract container adapter factory. This class implements the
@@ -36,8 +29,7 @@ import org.eclipse.ecf.internal.core.sharedobject.SharedObjectDebugOptions;
  * @see #getSharedObjectAdapter(ISharedObjectContainer, Class)
  * 
  */
-public abstract class AbstractSharedObjectContainerAdapterFactory extends
-		AbstractContainerAdapterFactory {
+public abstract class AbstractSharedObjectContainerAdapterFactory extends AbstractContainerAdapterFactory {
 
 	protected static final int ADD_ADAPTER_ERROR_CODE = 300001;
 
@@ -55,10 +47,8 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 	 */
 	protected Object getContainerAdapter(IContainer container, Class adapterType) {
 		if (ISharedObjectContainer.class.isInstance(container))
-			return getSharedObjectAdapter((ISharedObjectContainer) container,
-					adapterType);
-		else
-			return null;
+			return getSharedObjectAdapter((ISharedObjectContainer) container, adapterType);
+		return null;
 	}
 
 	/**
@@ -85,8 +75,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 	 * @return ISharedObject adapter. Must also implement adapterType interface
 	 *         class
 	 */
-	protected synchronized ISharedObject getSharedObjectAdapter(
-			ISharedObjectContainer container, Class adapterType) {
+	protected synchronized ISharedObject getSharedObjectAdapter(ISharedObjectContainer container, Class adapterType) {
 		// Get adapter ID for given adapter type
 		ID adapterID = createAdapterID(container, adapterType);
 		if (adapterID == null)
@@ -101,20 +90,12 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 		ISharedObject adapter = createAdapter(container, adapterType, adapterID);
 		if (adapter == null)
 			return null;
-		Map adapterProperties = createAdapterProperties(container, adapterType,
-				adapterID, adapter);
+		Map adapterProperties = createAdapterProperties(container, adapterType, adapterID, adapter);
 		try {
 			manager.addSharedObject(adapterID, adapter, adapterProperties);
 		} catch (SharedObjectAddException e) {
-			Trace.catching(Activator.PLUGIN_ID,
-					SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
-					AbstractSharedObjectContainerAdapterFactory.class,
-					"getSharedObjectAdapter", e); //$NON-NLS-1$
-			Activator.getDefault().log(
-					new Status(IStatus.ERROR, Activator.getDefault()
-							.getBundle().getSymbolicName(),
-							ADD_ADAPTER_ERROR_CODE, ADD_ADAPTER_ERROR_MESSAGE,
-							e));
+			Trace.catching(Activator.PLUGIN_ID, SharedObjectDebugOptions.EXCEPTIONS_CATCHING, AbstractSharedObjectContainerAdapterFactory.class, "getSharedObjectAdapter", e); //$NON-NLS-1$
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), ADD_ADAPTER_ERROR_CODE, ADD_ADAPTER_ERROR_MESSAGE, e));
 			return null;
 		}
 		return adapter;
@@ -136,9 +117,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 	 *         new shared object adapter. This implementation returns null.
 	 *         Subclasses may override as appropriate
 	 */
-	protected Map createAdapterProperties(ISharedObjectContainer container,
-			Class adapterType, ID sharedObjectID,
-			ISharedObject sharedObjectAdapter) {
+	protected Map createAdapterProperties(ISharedObjectContainer container, Class adapterType, ID sharedObjectID, ISharedObject sharedObjectAdapter) {
 		return null;
 	}
 
@@ -153,21 +132,13 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 	 *         {@link #getSharedObjectAdapter(ISharedObjectContainer, Class)}
 	 *         will also return null
 	 */
-	protected ID createAdapterID(ISharedObjectContainer container,
-			Class adapterType) {
+	protected ID createAdapterID(ISharedObjectContainer container, Class adapterType) {
 		String singletonName = adapterType.getName();
 		try {
 			return IDFactory.getDefault().createStringID(singletonName);
 		} catch (IDCreateException e) {
-			Trace.catching(Activator.PLUGIN_ID,
-					SharedObjectDebugOptions.EXCEPTIONS_CATCHING,
-					AbstractSharedObjectContainerAdapterFactory.class,
-					"getAdapterID", e); //$NON-NLS-1$
-			Activator.getDefault().log(
-					new Status(IStatus.ERROR, Activator.getDefault()
-							.getBundle().getSymbolicName(),
-							CREATE_ADAPTER_ID_ERROR_CODE,
-							CREATE_ADAPTER_ID_ERROR_MESSAGE, e));
+			Trace.catching(Activator.PLUGIN_ID, SharedObjectDebugOptions.EXCEPTIONS_CATCHING, AbstractSharedObjectContainerAdapterFactory.class, "getAdapterID", e); //$NON-NLS-1$
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), CREATE_ADAPTER_ID_ERROR_CODE, CREATE_ADAPTER_ID_ERROR_MESSAGE, e));
 			return null;
 		}
 	}
@@ -188,8 +159,7 @@ public abstract class AbstractSharedObjectContainerAdapterFactory extends
 	 *         {@link #getSharedObjectAdapter(ISharedObjectContainer, Class)}
 	 *         will also return null
 	 */
-	protected abstract ISharedObject createAdapter(
-			ISharedObjectContainer container, Class adapterType, ID adapterID);
+	protected abstract ISharedObject createAdapter(ISharedObjectContainer container, Class adapterType, ID adapterID);
 
 	public abstract Class[] getAdapterList();
 
