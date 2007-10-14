@@ -153,7 +153,7 @@ public interface IPresence extends IAdaptable, Serializable {
 		private static final Type[] VALUES = {AVAILABLE, ERROR, SUBSCRIBE, SUBSCRIBED, UNAVAILABLE, UNSUBSCRIBE, UNSUBSCRIBED, UNKNOWN};
 
 		/**
-		 * @return
+		 * @return Object
 		 * @throws ObjectStreamException not thrown by this implementation.
 		 */
 		Object readResolve() throws ObjectStreamException {
@@ -241,7 +241,7 @@ public interface IPresence extends IAdaptable, Serializable {
 		private static final Mode[] VALUES = {AVAILABLE, AWAY, CHAT, DND, EXTENDED_AWAY, INVISIBLE};
 
 		/**
-		 * @return
+		 * @return Object
 		 * @throws ObjectStreamException not thrown by this implementation.
 		 */
 		Object readResolve() throws ObjectStreamException {
