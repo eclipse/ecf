@@ -5,15 +5,16 @@ import org.osgi.framework.BundleContext;
 
 public class Activator extends AbstractUIPlugin {
 
-	public static final String PLUGIN_ID = "org.eclipse.ecf.telephony.call.ui";
-	
+	public static final String PLUGIN_ID = "org.eclipse.ecf.telephony.call.ui"; //$NON-NLS-1$
+
 	// The shared instance
 	private static Activator plugin;
-	
+
 	/**
 	 * The constructor
 	 */
 	public Activator() {
+		// null constructor
 	}
 
 	/*
