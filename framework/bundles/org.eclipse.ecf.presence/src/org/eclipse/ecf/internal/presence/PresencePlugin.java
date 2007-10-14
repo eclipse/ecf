@@ -22,23 +22,21 @@ import org.osgi.util.tracker.ServiceTracker;
 public class PresencePlugin implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.eclipse.ecf.presence"; //$NON-NLS-1$
-	
+
 	// The shared instance.
 	private static PresencePlugin plugin;
 
 	private BundleContext context = null;
-	
+
 	private ServiceTracker adapterManagerTracker = null;
 
 	public IAdapterManager getAdapterManager() {
 		// First, try to get the adapter manager via
 		if (adapterManagerTracker == null) {
-			adapterManagerTracker = new ServiceTracker(this.context,
-					IAdapterManager.class.getName(), null);
+			adapterManagerTracker = new ServiceTracker(this.context, IAdapterManager.class.getName(), null);
 			adapterManagerTracker.open();
 		}
-		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker
-				.getService();
+		IAdapterManager adapterManager = (IAdapterManager) adapterManagerTracker.getService();
 		// Then, if the service isn't there, try to get from Platform class via
 		// PlatformHelper class
 		if (adapterManager == null)
@@ -57,14 +55,14 @@ public class PresencePlugin implements BundleActivator {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context) throws Exception {
-		this.context = context;
+	public void start(BundleContext ctxt) throws Exception {
+		this.context = ctxt;
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext ctxt) throws Exception {
 		if (adapterManagerTracker != null) {
 			adapterManagerTracker.close();
 			adapterManagerTracker = null;
@@ -72,7 +70,7 @@ public class PresencePlugin implements BundleActivator {
 		this.context = null;
 		plugin = null;
 	}
-	
+
 	/**
 	 * Returns the shared instance.
 	 */

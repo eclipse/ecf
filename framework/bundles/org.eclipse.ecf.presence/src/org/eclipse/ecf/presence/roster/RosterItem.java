@@ -25,6 +25,7 @@ public class RosterItem implements IRosterItem {
 	protected IRosterItem parent;
 
 	protected RosterItem() {
+		// protected root constructor
 	}
 
 	public RosterItem(IRosterItem parent, String name) {
@@ -58,14 +59,17 @@ public class RosterItem implements IRosterItem {
 	 */
 	public Object getAdapter(Class adapter) {
 		IAdapterManager adapterManager = PresencePlugin.getDefault().getAdapterManager();
-		if (adapterManager == null) return null;
+		if (adapterManager == null)
+			return null;
 		return adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	public IRoster getRoster() {
-		if (this instanceof IRoster) return (IRoster) this;
-		IRosterItem parent = getParent();
-		while (parent != null && !(parent instanceof IRoster)) parent = parent.getParent();
-		return (IRoster) parent;
+		if (this instanceof IRoster)
+			return (IRoster) this;
+		IRosterItem p = getParent();
+		while (p != null && !(p instanceof IRoster))
+			p = p.getParent();
+		return (IRoster) p;
 	}
 }

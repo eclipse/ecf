@@ -22,8 +22,8 @@ public class ChatMessageEvent implements IChatMessageEvent {
 
 	protected ID fromID;
 	protected IChatMessage message;
-    protected IChat chat;
-    
+	protected IChat chat;
+
 	public ChatMessageEvent(ID fromID, IChatMessage message, IChat chat) {
 		this.fromID = fromID;
 		this.message = message;
@@ -31,7 +31,7 @@ public class ChatMessageEvent implements IChatMessageEvent {
 	}
 
 	public ChatMessageEvent(ID fromID, IChatMessage message) {
-		this(fromID,message,null);
+		this(fromID, message, null);
 	}
 
 	/*
@@ -58,7 +58,7 @@ public class ChatMessageEvent implements IChatMessageEvent {
 	public IChat getChat() {
 		return chat;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -67,7 +67,7 @@ public class ChatMessageEvent implements IChatMessageEvent {
 	public String toString() {
 		StringBuffer buf = new StringBuffer("ChatMessageEvent["); //$NON-NLS-1$
 		buf.append("fromID=").append(getFromID()); //$NON-NLS-1$
-		buf.append(";message=").append(message);
+		buf.append(";message=").append(message); //$NON-NLS-1$
 		buf.append(";chat=").append(chat).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}

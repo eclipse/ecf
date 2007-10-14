@@ -25,6 +25,7 @@ public class ChatRoomCreateException extends ECFException {
 	protected String roomname;
 
 	public ChatRoomCreateException() {
+		// null constructor
 	}
 
 	public String getRoomName() {
@@ -36,8 +37,7 @@ public class ChatRoomCreateException extends ECFException {
 	 * @param message
 	 * @param cause
 	 */
-	public ChatRoomCreateException(String roomname, String message,
-			Throwable cause) {
+	public ChatRoomCreateException(String roomname, String message, Throwable cause) {
 		super(message, cause);
 		this.roomname = roomname;
 	}

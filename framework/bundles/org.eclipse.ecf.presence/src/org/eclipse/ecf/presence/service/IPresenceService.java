@@ -19,5 +19,5 @@ import org.eclipse.ecf.presence.IPresenceContainerAdapter;
  * service clients.
  */
 public interface IPresenceService extends IPresenceContainerAdapter {
-
+	// no methods for interface
 }

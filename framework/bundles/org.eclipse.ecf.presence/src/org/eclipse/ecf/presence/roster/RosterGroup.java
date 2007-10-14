@@ -11,11 +11,7 @@
 
 package org.eclipse.ecf.presence.roster;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Base roster group class implementing {@link IRosterGroup}. Subclasses may be
@@ -26,8 +22,7 @@ public class RosterGroup extends RosterItem implements IRosterGroup {
 
 	protected List entries;
 
-	public RosterGroup(IRosterItem parent, String name,
-			Collection /* <IRosterEntry> */existingEntries) {
+	public RosterGroup(IRosterItem parent, String name, Collection /* <IRosterEntry> */existingEntries) {
 		super(parent, name);
 		entries = Collections.synchronizedList(new ArrayList());
 		if (existingEntries != null)
@@ -43,8 +38,7 @@ public class RosterGroup extends RosterItem implements IRosterGroup {
 			return false;
 		if (entries.add(item))
 			return true;
-		else
-			return false;
+		return false;
 	}
 
 	protected void addAll(Collection /* <IRosterEntry> */existingEntries) {

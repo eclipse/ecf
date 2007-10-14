@@ -150,9 +150,12 @@ public interface IPresence extends IAdaptable, Serializable {
 
 		private final int ordinal = nextOrdinal++;
 
-		private static final Type[] VALUES = { AVAILABLE, ERROR, SUBSCRIBE,
-				SUBSCRIBED, UNAVAILABLE, UNSUBSCRIBE, UNSUBSCRIBED, UNKNOWN };
+		private static final Type[] VALUES = {AVAILABLE, ERROR, SUBSCRIBE, SUBSCRIBED, UNAVAILABLE, UNSUBSCRIBE, UNSUBSCRIBED, UNKNOWN};
 
+		/**
+		 * @return
+		 * @throws ObjectStreamException not thrown by this implementation.
+		 */
 		Object readResolve() throws ObjectStreamException {
 			return VALUES[ordinal];
 		}
@@ -235,9 +238,12 @@ public interface IPresence extends IAdaptable, Serializable {
 
 		private final int ordinal = nextOrdinal++;
 
-		private static final Mode[] VALUES = { AVAILABLE, AWAY, CHAT, DND,
-				EXTENDED_AWAY, INVISIBLE };
+		private static final Mode[] VALUES = {AVAILABLE, AWAY, CHAT, DND, EXTENDED_AWAY, INVISIBLE};
 
+		/**
+		 * @return
+		 * @throws ObjectStreamException not thrown by this implementation.
+		 */
 		Object readResolve() throws ObjectStreamException {
 			return VALUES[ordinal];
 		}

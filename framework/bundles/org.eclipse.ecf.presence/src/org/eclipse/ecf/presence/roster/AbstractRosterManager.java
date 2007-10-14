@@ -11,10 +11,7 @@
 
 package org.eclipse.ecf.presence.roster;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceSender;
@@ -27,15 +24,14 @@ public abstract class AbstractRosterManager implements IRosterManager {
 	private List rosterUpdateListeners = new ArrayList();
 
 	public AbstractRosterManager() {
-
+		// null constructor
 	}
 
 	public AbstractRosterManager(IRoster roster) {
 		this.roster = roster;
 	}
 
-	public synchronized void addRosterSubscriptionListener(
-			IRosterSubscriptionListener listener) {
+	public synchronized void addRosterSubscriptionListener(IRosterSubscriptionListener listener) {
 		if (listener != null) {
 			synchronized (rosterSubscriptionListeners) {
 				rosterSubscriptionListeners.add(listener);
@@ -43,8 +39,7 @@ public abstract class AbstractRosterManager implements IRosterManager {
 		}
 	}
 
-	public synchronized void addRosterListener(
-			IRosterListener listener) {
+	public synchronized void addRosterListener(IRosterListener listener) {
 		if (listener != null) {
 			synchronized (rosterUpdateListeners) {
 				rosterUpdateListeners.add(listener);
@@ -58,8 +53,7 @@ public abstract class AbstractRosterManager implements IRosterManager {
 			toNotify = new ArrayList(rosterUpdateListeners);
 		}
 		for (Iterator i = toNotify.iterator(); i.hasNext();)
-			((IRosterListener) i.next()).handleRosterUpdate(roster,
-					changedItem);
+			((IRosterListener) i.next()).handleRosterUpdate(roster, changedItem);
 	}
 
 	protected void fireRosterAdd(IRosterEntry entry) {
@@ -69,9 +63,9 @@ public abstract class AbstractRosterManager implements IRosterManager {
 		}
 		for (Iterator i = toNotify.iterator(); i.hasNext();)
 			((IRosterListener) i.next()).handleRosterEntryAdd(entry);
-		
+
 	}
-	
+
 	protected void fireRosterRemove(IRosterEntry entry) {
 		List toNotify = null;
 		synchronized (rosterUpdateListeners) {
@@ -79,24 +73,21 @@ public abstract class AbstractRosterManager implements IRosterManager {
 		}
 		for (Iterator i = toNotify.iterator(); i.hasNext();)
 			((IRosterListener) i.next()).handleRosterEntryRemove(entry);
-		
+
 	}
-	
+
 	protected void fireSubscriptionListener(ID fromID, IPresence.Type presencetype) {
 		List toNotify = null;
 		synchronized (rosterSubscriptionListeners) {
 			toNotify = new ArrayList(rosterSubscriptionListeners);
 		}
-		for (Iterator i = toNotify.iterator(); i
-				.hasNext();) {
-			IRosterSubscriptionListener l = (IRosterSubscriptionListener) i
-					.next();
+		for (Iterator i = toNotify.iterator(); i.hasNext();) {
+			IRosterSubscriptionListener l = (IRosterSubscriptionListener) i.next();
 			if (presencetype.equals(IPresence.Type.SUBSCRIBE)) {
 				l.handleSubscribeRequest(fromID);
 			} else if (presencetype.equals(IPresence.Type.SUBSCRIBED)) {
 				l.handleSubscribed(fromID);
-			} else if (presencetype.equals(
-					IPresence.Type.UNSUBSCRIBED)) {
+			} else if (presencetype.equals(IPresence.Type.UNSUBSCRIBED)) {
 				l.handleUnsubscribed(fromID);
 			}
 		}
@@ -110,20 +101,18 @@ public abstract class AbstractRosterManager implements IRosterManager {
 
 	public abstract IRosterSubscriptionSender getRosterSubscriptionSender();
 
-	public synchronized void removeRosterSubscriptionListener(
-			IRosterSubscriptionListener listener) {
+	public synchronized void removeRosterSubscriptionListener(IRosterSubscriptionListener listener) {
 		if (listener != null) {
 			synchronized (rosterSubscriptionListeners) {
-				rosterSubscriptionListeners.remove(listener);				
+				rosterSubscriptionListeners.remove(listener);
 			}
 		}
 	}
 
-	public synchronized void removeRosterListener(
-			IRosterListener listener) {
+	public synchronized void removeRosterListener(IRosterListener listener) {
 		if (listener != null) {
 			synchronized (rosterUpdateListeners) {
-				rosterUpdateListeners.remove(listener);				
+				rosterUpdateListeners.remove(listener);
 			}
 		}
 	}
@@ -131,7 +120,7 @@ public abstract class AbstractRosterManager implements IRosterManager {
 	public Object getAdapter(Class adapter) {
 		return null;
 	}
-	
+
 	public void disconnect() {
 		roster.getItems().clear();
 		fireRosterUpdate(roster);
