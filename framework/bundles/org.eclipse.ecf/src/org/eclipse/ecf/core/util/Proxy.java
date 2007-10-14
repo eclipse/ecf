@@ -64,6 +64,10 @@ public class Proxy implements Serializable {
 
 		private static final Type[] VALUES = {DIRECT, HTTP, SOCKS};
 
+		/**
+		 * @return
+		 * @throws ObjectStreamException not thrown by this implementation.
+		 */
 		Object readResolve() throws ObjectStreamException {
 			return VALUES[ordinal];
 		}
@@ -128,8 +132,8 @@ public class Proxy implements Serializable {
 		if (p.getType() == getType()) {
 			if (getAddress() == null) {
 				return (p.getAddress() == null);
-			} else
-				return getAddress().equals(p.getAddress());
+			}
+			return getAddress().equals(p.getAddress());
 		}
 		return false;
 	}

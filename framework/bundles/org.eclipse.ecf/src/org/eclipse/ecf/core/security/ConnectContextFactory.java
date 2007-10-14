@@ -33,6 +33,11 @@ public class ConnectContextFactory {
 		return new IConnectContext() {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {
+					/**
+					 * @param callbacks
+					 * @throws IOException not thrown by this implementation.
+					 * @throws UnsupportedCallbackException not thrown by this implementation.
+					 */
 					public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
 						if (callbacks == null)
 							return;
@@ -63,6 +68,11 @@ public class ConnectContextFactory {
 		return new IConnectContext() {
 			public CallbackHandler getCallbackHandler() {
 				return new CallbackHandler() {
+					/**
+					 * @param callbacks
+					 * @throws IOException not thrown by this implementation.
+					 * @throws UnsupportedCallbackException not thrown by this implementation.
+					 */
 					public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
 						if (callbacks == null)
 							return;

@@ -22,6 +22,7 @@ public class AsyncResult implements IAsyncResult {
 	protected InvocationTargetException resultException = null;
 
 	public AsyncResult() {
+		// null constructor
 	}
 
 	/**
@@ -46,8 +47,7 @@ public class AsyncResult implements IAsyncResult {
 	protected Object doGet() throws InvocationTargetException {
 		if (resultException != null)
 			throw resultException;
-		else
-			return resultValue;
+		return resultValue;
 	}
 
 	/* (non-Javadoc)
@@ -74,11 +74,9 @@ public class AsyncResult implements IAsyncResult {
 				wait(waitTime);
 				if (resultReady)
 					return doGet();
-				else {
-					waitTime = msecs - (System.currentTimeMillis() - startTime);
-					if (waitTime <= 0)
-						throw new TimeoutException(msecs);
-				}
+				waitTime = msecs - (System.currentTimeMillis() - startTime);
+				if (waitTime <= 0)
+					throw new TimeoutException(msecs);
 			}
 		}
 	}

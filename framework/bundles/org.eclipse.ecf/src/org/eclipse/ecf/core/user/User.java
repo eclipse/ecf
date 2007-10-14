@@ -11,10 +11,8 @@
 package org.eclipse.ecf.core.user;
 
 import java.util.Map;
-
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 
 public class User implements IUser {
@@ -93,12 +91,11 @@ public class User implements IUser {
 	public Object getAdapter(Class adapter) {
 		if (adapter.isInstance(this)) {
 			return this;
-		} else {
-			IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
-			if (adapterManager == null)
-				return null;
-			return adapterManager.loadAdapter(this, adapter.getName());
 		}
+		IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
+		if (adapterManager == null)
+			return null;
+		return adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	public String toString() {

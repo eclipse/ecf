@@ -10,21 +10,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.Status;
+import java.util.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.core.ECFDebugOptions;
-import org.eclipse.ecf.internal.core.ECFPlugin;
-import org.eclipse.ecf.internal.core.IDisposable;
-import org.eclipse.ecf.internal.core.Messages;
+import org.eclipse.ecf.internal.core.*;
 
 /**
  * Factory for creating {@link IContainer} instances. This class provides ECF
@@ -49,11 +40,11 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 
 	public static final String BASE_CONTAINER_NAME = Messages.ContainerFactory_Base_Container_Name;
 
-	private static final Map containerdescriptions = new HashMap();
+	static final Map containerdescriptions = new HashMap();
 
-	private static final Map containers = new HashMap();
+	static final Map containers = new HashMap();
 
-	private static final List managerListeners = new ArrayList();
+	static final List managerListeners = new ArrayList();
 
 	private static IContainerFactory instance = null;
 
@@ -75,7 +66,7 @@ public class ContainerFactory implements IContainerFactory, IContainerManager {
 							c.dispose();
 						} catch (Throwable e) {
 							// Log exception
-							ECFPlugin.getDefault().log(new Status(Status.ERROR, ECFPlugin.getDefault().getBundle().getSymbolicName(), Status.ERROR, "container dispose error", e)); //$NON-NLS-1$
+							ECFPlugin.getDefault().log(new Status(IStatus.ERROR, ECFPlugin.getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "container dispose error", e)); //$NON-NLS-1$
 							Trace.catching(ECFPlugin.PLUGIN_ID, ECFDebugOptions.EXCEPTIONS_CATCHING, ContainerFactory.class, "doDispose", e); //$NON-NLS-1$
 						}
 					}

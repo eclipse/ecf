@@ -9,4 +9,5 @@
 package org.eclipse.ecf.core.security;
 
 public interface Callback {
+	// no method defined on this interface
 }

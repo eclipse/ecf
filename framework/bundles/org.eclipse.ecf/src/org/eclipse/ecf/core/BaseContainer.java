@@ -10,10 +10,7 @@
  *****************************************************************************/
 package org.eclipse.ecf.core;
 
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.provider.BaseContainerInstantiator;
 import org.eclipse.ecf.core.security.IConnectContext;
 
@@ -60,6 +57,7 @@ public class BaseContainer extends AbstractContainer {
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void connect(ID targetID, IConnectContext connectContext) throws ContainerConnectException {
+		throw new ContainerConnectException("connect not supported"); //$NON-NLS-1$
 	}
 
 	/*
@@ -68,6 +66,7 @@ public class BaseContainer extends AbstractContainer {
 	 * @see org.eclipse.ecf.core.IContainer#disconnect()
 	 */
 	public void disconnect() {
+		// Nothing to disconnect
 	}
 
 	/*
@@ -98,8 +97,8 @@ public class BaseContainer extends AbstractContainer {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer("BaseContainer[");
-		sb.append("id=").append(getID()).append("]");
+		StringBuffer sb = new StringBuffer("BaseContainer["); //$NON-NLS-1$
+		sb.append("id=").append(getID()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return sb.toString();
 	}
 }

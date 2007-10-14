@@ -11,15 +11,9 @@
 
 package org.eclipse.ecf.core.provider;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
+import java.util.*;
 import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 
 /**
@@ -41,8 +35,7 @@ public class BaseContainerInstantiator implements IContainerInstantiator {
 	protected Set getInterfacesForClass(Set s, Class clazz) {
 		if (clazz.equals(Object.class))
 			return s;
-		else
-			s.addAll(getInterfacesForClass(s, clazz.getSuperclass()));
+		s.addAll(getInterfacesForClass(s, clazz.getSuperclass()));
 		s.addAll(Arrays.asList(clazz.getInterfaces()));
 		return s;
 	}

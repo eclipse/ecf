@@ -8,17 +8,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.core;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import java.util.*;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.events.ContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
-import org.eclipse.ecf.core.security.Callback;
-import org.eclipse.ecf.core.security.CallbackHandler;
-import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.security.ObjectCallback;
+import org.eclipse.ecf.core.security.*;
 import org.eclipse.ecf.internal.core.ECFPlugin;
 import org.eclipse.ecf.internal.core.Messages;
 
@@ -74,10 +68,9 @@ public abstract class AbstractContainer implements IContainer {
 			return null;
 		if (serviceType.isInstance(this)) {
 			return this;
-		} else {
-			IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
-			return (adapterManager == null) ? null : adapterManager.loadAdapter(this, serviceType.getName());
 		}
+		IAdapterManager adapterManager = ECFPlugin.getDefault().getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, serviceType.getName());
 	}
 
 	protected String getPasswordFromConnectContext(IConnectContext connectContext) throws ContainerConnectException {

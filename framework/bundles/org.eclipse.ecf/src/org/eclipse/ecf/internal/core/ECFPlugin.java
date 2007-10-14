@@ -8,38 +8,15 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.core;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.WeakHashMap;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionDelta;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IRegistryChangeEvent;
-import org.eclipse.core.runtime.IRegistryChangeListener;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.ContainerFactory;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainerFactory;
-import org.eclipse.ecf.core.IContainerManager;
+import java.util.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.*;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.start.ECFStartJob;
 import org.eclipse.ecf.core.start.IECFStart;
-import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.core.util.PlatformHelper;
-import org.eclipse.ecf.core.util.SystemLogService;
-import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.ecf.core.util.*;
 import org.eclipse.osgi.util.NLS;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -111,6 +88,7 @@ public class ECFPlugin implements BundleActivator {
 	}
 
 	public ECFPlugin() {
+		// null constructor
 	}
 
 	public void addDisposable(IDisposable disposable) {
@@ -147,10 +125,10 @@ public class ECFPlugin implements BundleActivator {
 	}
 
 	public void log(IStatus status) {
-		final LogService logService = getLogService();
-		if (logService != null) {
+		if (logService == null)
+			logService = getLogService();
+		if (logService != null)
 			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
-		}
 	}
 
 	protected void logException(IStatus status, String method, Throwable exception) {
@@ -188,7 +166,7 @@ public class ECFPlugin implements BundleActivator {
 				factory.removeDescription(cd);
 				Trace.trace(ECFPlugin.PLUGIN_ID, ECFDebugOptions.DEBUG, method + ".removed " + cd + " from factory"); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch (final Exception e) {
-				logException(new Status(Status.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, NLS.bind(Messages.ECFPlugin_Container_Name_Collision_Prefix, name, extension.getExtensionPointUniqueIdentifier()), null), method, e);
+				logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, NLS.bind(Messages.ECFPlugin_Container_Name_Collision_Prefix, name, extension.getExtensionPointUniqueIdentifier()), null), method, e);
 			}
 		}
 	}
@@ -235,7 +213,7 @@ public class ECFPlugin implements BundleActivator {
 				final IContainerFactory factory = ContainerFactory.getDefault();
 
 				if (factory.containsDescription(scd)) {
-					throw new CoreException(new Status(Status.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, NLS.bind(Messages.ECFPlugin_Container_Name_Collision_Prefix, name, extension.getExtensionPointUniqueIdentifier()), null));
+					throw new CoreException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, NLS.bind(Messages.ECFPlugin_Container_Name_Collision_Prefix, name, extension.getExtensionPointUniqueIdentifier()), null));
 				}
 				// Now add the description and we're ready to go.
 				factory.addDescription(scd);
@@ -243,7 +221,7 @@ public class ECFPlugin implements BundleActivator {
 			} catch (final CoreException e) {
 				logException(e.getStatus(), method, e);
 			} catch (final Exception e) {
-				logException(new Status(Status.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, NLS.bind(Messages.ECFPlugin_Container_Name_Collision_Prefix, name, extension.getExtensionPointUniqueIdentifier()), null), method, e);
+				logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, NLS.bind(Messages.ECFPlugin_Container_Name_Collision_Prefix, name, extension.getExtensionPointUniqueIdentifier()), null), method, e);
 			}
 		}
 	}
@@ -305,7 +283,7 @@ public class ECFPlugin implements BundleActivator {
 			} catch (final CoreException e) {
 				logException(e.getStatus(), method, e);
 			} catch (final Exception e) {
-				logException(new Status(Status.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "Unknown start exception", e), method, e); //$NON-NLS-1$
+				logException(new Status(IStatus.ERROR, getDefault().getBundle().getSymbolicName(), IStatus.ERROR, "Unknown start exception", e), method, e); //$NON-NLS-1$
 			}
 		}
 	}
@@ -331,20 +309,20 @@ public class ECFPlugin implements BundleActivator {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
-		this.context = context;
-		this.extensionRegistryTracker = new ServiceTracker(context, IExtensionRegistry.class.getName(), null);
+		this.context = ctxt;
+		this.extensionRegistryTracker = new ServiceTracker(ctxt, IExtensionRegistry.class.getName(), null);
 		this.extensionRegistryTracker.open();
 		final IExtensionRegistry registry = getExtensionRegistry();
 		if (registry != null) {
 			this.registryManager = new ECFRegistryManager();
 			registry.addRegistryChangeListener(registryManager);
 		}
-		containerFactoryServiceRegistration = context.registerService(IContainerFactory.class.getName(), ContainerFactory.getDefault(), null);
-		containerManagerServiceRegistration = context.registerService(IContainerManager.class.getName(), ContainerFactory.getDefault(), null);
-		setupContainerFactoryExtensionPoint(context);
-		setupStartExtensionPoint(context);
+		containerFactoryServiceRegistration = ctxt.registerService(IContainerFactory.class.getName(), ContainerFactory.getDefault(), null);
+		containerManagerServiceRegistration = ctxt.registerService(IContainerManager.class.getName(), ContainerFactory.getDefault(), null);
+		setupContainerFactoryExtensionPoint(ctxt);
+		setupStartExtensionPoint(ctxt);
 	}
 
 	protected class ECFRegistryManager implements IRegistryChangeListener {
@@ -366,7 +344,7 @@ public class ECFPlugin implements BundleActivator {
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext ctxt) throws Exception {
 		fireDisposables();
 		this.disposables = null;
 		final IExtensionRegistry reg = getExtensionRegistry();

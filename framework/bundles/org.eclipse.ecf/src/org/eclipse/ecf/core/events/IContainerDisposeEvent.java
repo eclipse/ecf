@@ -13,4 +13,5 @@ package org.eclipse.ecf.core.events;
  * 
  */
 public interface IContainerDisposeEvent extends IContainerEvent {
+	// No methods
 }
