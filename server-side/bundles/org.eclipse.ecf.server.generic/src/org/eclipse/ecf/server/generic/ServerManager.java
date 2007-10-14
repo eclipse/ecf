@@ -14,20 +14,9 @@ package org.eclipse.ecf.server.generic;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
+import java.util.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
@@ -36,12 +25,8 @@ import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
 import org.eclipse.ecf.internal.server.generic.Activator;
 import org.eclipse.ecf.internal.server.generic.Messages;
-import org.eclipse.ecf.provider.generic.SOContainerConfig;
-import org.eclipse.ecf.provider.generic.TCPServerSOContainer;
-import org.eclipse.ecf.provider.generic.TCPServerSOContainerGroup;
-import org.eclipse.ecf.server.generic.app.Connector;
-import org.eclipse.ecf.server.generic.app.NamedGroup;
-import org.eclipse.ecf.server.generic.app.ServerConfigParser;
+import org.eclipse.ecf.provider.generic.*;
+import org.eclipse.ecf.server.generic.app.*;
 import org.eclipse.osgi.util.NLS;
 
 public class ServerManager {
@@ -49,7 +34,7 @@ public class ServerManager {
 	/**
 	 * 
 	 */
-	private static final String ECF_NAMESPACE_JMDNS = "ecf.namespace.jmdns";
+	private static final String ECF_NAMESPACE_JMDNS = "ecf.namespace.jmdns"; //$NON-NLS-1$
 
 	private static final String GROUP_PROPERTY_NAME = "group"; //$NON-NLS-1$
 

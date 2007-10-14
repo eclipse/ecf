@@ -25,12 +25,13 @@ public class Messages extends NLS {
 	public static String ServerStarter_EXCEPTION_CREATING_SERVER;
 	public static String ServerStarter_EXCEPTION_DISPOSING_SERVER;
 	public static String ServerStarter_STARTING_SERVER;
-	
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 
 	private Messages() {
+		// private null constructor
 	}
 }

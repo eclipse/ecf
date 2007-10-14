@@ -8,22 +8,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.server.generic.app;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentType;
-import org.w3c.dom.Entity;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import java.io.*;
+import java.util.*;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 public class ServerConfigParser {
@@ -41,24 +29,23 @@ public class ServerConfigParser {
 	protected void findElementsNamed(Node top, String name, List aList) {
 		int type = top.getNodeType();
 		switch (type) {
-		case Node.DOCUMENT_TYPE_NODE:
-			// Print entities if any
-			NamedNodeMap nodeMap = ((DocumentType) top).getEntities();
-			for (int i = 0; i < nodeMap.getLength(); i++) {
-				Entity entity = (Entity) nodeMap.item(i);
-				findElementsNamed(entity, name, aList);
-			}
-			break;
-		case Node.ELEMENT_NODE:
-			String elementName = top.getNodeName();
-			if (name.equals(elementName)) {
-				aList.add(top);
-			}
-		default:
-			for (Node child = top.getFirstChild(); child != null; child = child
-					.getNextSibling()) {
-				findElementsNamed(child, name, aList);
-			}
+			case Node.DOCUMENT_TYPE_NODE :
+				// Print entities if any
+				NamedNodeMap nodeMap = ((DocumentType) top).getEntities();
+				for (int i = 0; i < nodeMap.getLength(); i++) {
+					Entity entity = (Entity) nodeMap.item(i);
+					findElementsNamed(entity, name, aList);
+				}
+				break;
+			case Node.ELEMENT_NODE :
+				String elementName = top.getNodeName();
+				if (name.equals(elementName)) {
+					aList.add(top);
+				}
+			default :
+				for (Node child = top.getFirstChild(); child != null; child = child.getNextSibling()) {
+					findElementsNamed(child, name, aList);
+				}
 		}
 	}
 
@@ -120,12 +107,11 @@ public class ServerConfigParser {
 		Node attrNode = attrs.getNamedItem(attrName);
 		if (attrNode != null) {
 			return attrNode.getNodeValue();
-		} else
-			return ""; //$NON-NLS-1$
+		}
+		return ""; //$NON-NLS-1$
 	}
 
-	public List load(InputStream ins) throws ParserConfigurationException,
-			SAXException, IOException {
+	public List load(InputStream ins) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document doc = db.parse(ins);
