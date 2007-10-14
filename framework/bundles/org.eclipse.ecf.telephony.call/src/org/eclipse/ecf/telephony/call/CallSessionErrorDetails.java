@@ -66,7 +66,7 @@ public class CallSessionErrorDetails implements Serializable {
 	private static final CallSessionErrorDetails[] VALUES = {SERVICE_UNAVAILABLE, UNSUPPORTED_MEDIA, UNSUPPORTED_TRANSPORTS, BAD_REQUEST, UNKWOWN_ERROR};
 
 	/**
-	 * @return
+	 * @return Object
 	 * @throws ObjectStreamException not thrown by this implementation.
 	 */
 	Object readResolve() throws ObjectStreamException {

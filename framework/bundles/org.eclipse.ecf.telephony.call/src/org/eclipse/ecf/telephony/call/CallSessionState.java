@@ -169,7 +169,7 @@ public class CallSessionState implements Serializable {
 	private static final CallSessionState[] VALUES = {UNPLACED, REDIRECTED, ROUTING, PREPENDING, FAILED, PENDING, ACTIVE, ONHOLD, FINISHED, MISSED, REFUSED, BUSY, CANCELLED, UNKNOWN, ERROR};
 
 	/**
-	 * @return
+	 * @return Object
 	 * @throws ObjectStreamException not thrown by this implementation.
 	 */
 	Object readResolve() throws ObjectStreamException {
