@@ -23,6 +23,7 @@ public class CallException extends ECFException {
 	private CallSessionState callSessionState;
 
 	public CallException() {
+		// null constructor
 	}
 
 	/**
@@ -36,6 +37,7 @@ public class CallException extends ECFException {
 		super(message);
 		this.callSessionState = state;
 	}
+
 	/**
 	 * @param cause
 	 */
@@ -47,7 +49,7 @@ public class CallException extends ECFException {
 		super(cause);
 		this.callSessionState = state;
 	}
-	
+
 	/**
 	 * @param message
 	 * @param cause
@@ -60,16 +62,16 @@ public class CallException extends ECFException {
 		super(message, cause);
 		this.callSessionState = state;
 	}
-	
+
 	public CallException(IStatus status) {
 		super(status);
 	}
-	
+
 	public CallException(IStatus status, CallSessionState state) {
 		super(status);
 		this.callSessionState = state;
 	}
-	
+
 	public CallSessionState getCallSessionState() {
 		return this.callSessionState;
 	}

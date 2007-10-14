@@ -19,5 +19,6 @@ import org.eclipse.ecf.telephony.call.ICallSessionContainerAdapter;
  * service clients.
  */
 public interface ICallSessionService extends ICallSessionContainerAdapter {
+	// no methods
 
 }

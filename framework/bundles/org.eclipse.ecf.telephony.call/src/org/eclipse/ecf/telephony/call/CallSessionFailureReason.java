@@ -18,28 +18,28 @@ public class CallSessionFailureReason {
 
 	protected int code = -1;
 	protected String reason;
-	
+
 	public CallSessionFailureReason(int code, String reason) {
 		this.code = code;
 		this.reason = reason;
 	}
-	
+
 	public CallSessionFailureReason(int code) {
-		this(code,String.valueOf(code));
+		this(code, String.valueOf(code));
 	}
-	
+
 	public String getReason() {
 		return reason;
 	}
-	
+
 	public int getCode() {
 		return code;
 	}
-	
+
 	public String toString() {
-		StringBuffer buffer = new StringBuffer("CallSessionFailureReason[");
-		buffer.append("code=").append(code);
-		buffer.append(";reason=").append(reason).append("]");
+		StringBuffer buffer = new StringBuffer("CallSessionFailureReason["); //$NON-NLS-1$
+		buffer.append("code=").append(code); //$NON-NLS-1$
+		buffer.append(";reason=").append(reason).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buffer.toString();
 	}
 }

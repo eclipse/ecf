@@ -41,12 +41,9 @@ public class CallSessionErrorDetails implements Serializable {
 			return null;
 	}
 
-	public static final CallSessionErrorDetails SERVICE_UNAVAILABLE = new CallSessionErrorDetails(
-			SERVICE_UNAVAILABLE_NAME);
-	public static final CallSessionErrorDetails UNSUPPORTED_MEDIA = new CallSessionErrorDetails(
-			UNSUPPORTED_MEDIA_NAME);
-	public static final CallSessionErrorDetails UNSUPPORTED_TRANSPORTS = new CallSessionErrorDetails(
-			UNSUPPORTED_TRANSPORTS_NAME);
+	public static final CallSessionErrorDetails SERVICE_UNAVAILABLE = new CallSessionErrorDetails(SERVICE_UNAVAILABLE_NAME);
+	public static final CallSessionErrorDetails UNSUPPORTED_MEDIA = new CallSessionErrorDetails(UNSUPPORTED_MEDIA_NAME);
+	public static final CallSessionErrorDetails UNSUPPORTED_TRANSPORTS = new CallSessionErrorDetails(UNSUPPORTED_TRANSPORTS_NAME);
 	public static final CallSessionErrorDetails BAD_REQUEST = new CallSessionErrorDetails(BAD_REQUEST_NAME);
 	public static final CallSessionErrorDetails UNKWOWN_ERROR = new CallSessionErrorDetails(UNKWOWN_ERROR_NAME);
 
@@ -66,10 +63,12 @@ public class CallSessionErrorDetails implements Serializable {
 	// For serialization
 	private static int nextOrdinal = 0;
 	private final int ordinal = nextOrdinal++;
-	private static final CallSessionErrorDetails[] VALUES = { SERVICE_UNAVAILABLE,
-			UNSUPPORTED_MEDIA, UNSUPPORTED_TRANSPORTS, BAD_REQUEST,
-			UNKWOWN_ERROR };
+	private static final CallSessionErrorDetails[] VALUES = {SERVICE_UNAVAILABLE, UNSUPPORTED_MEDIA, UNSUPPORTED_TRANSPORTS, BAD_REQUEST, UNKWOWN_ERROR};
 
+	/**
+	 * @return
+	 * @throws ObjectStreamException not thrown by this implementation.
+	 */
 	Object readResolve() throws ObjectStreamException {
 		return VALUES[ordinal];
 	}
