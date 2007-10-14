@@ -21,7 +21,7 @@ public class Activator implements BundleActivator {
 
 	//The shared instance.
 	private static Activator plugin;
-	
+
 	/**
 	 * The constructor.
 	 */
@@ -33,6 +33,7 @@ public class Activator implements BundleActivator {
 	 * This method is called upon plug-in activation
 	 */
 	public void start(BundleContext context) throws Exception {
+		// nothing to do
 	}
 
 	/**
