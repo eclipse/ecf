@@ -65,7 +65,7 @@ public class Proxy implements Serializable {
 		private static final Type[] VALUES = {DIRECT, HTTP, SOCKS};
 
 		/**
-		 * @return
+		 * @return Object
 		 * @throws ObjectStreamException not thrown by this implementation.
 		 */
 		Object readResolve() throws ObjectStreamException {
