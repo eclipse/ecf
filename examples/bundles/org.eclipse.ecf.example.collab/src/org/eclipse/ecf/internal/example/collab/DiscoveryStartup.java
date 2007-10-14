@@ -19,6 +19,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
+import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
@@ -28,7 +29,9 @@ import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
+import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.internal.example.collab.actions.URIClientConnectAction;
+import org.eclipse.osgi.util.NLS;
 
 public class DiscoveryStartup {
 	public static final String DISCOVERY_CONTAINER = "ecf.discovery.jmdns";
@@ -72,46 +75,42 @@ public class DiscoveryStartup {
 
 	protected void setupDiscovery() throws Exception {
 		try {
-			container = ContainerFactory.getDefault().createContainer(
-					DISCOVERY_CONTAINER);
-			discovery = (IDiscoveryContainerAdapter) container
-					.getAdapter(IDiscoveryContainerAdapter.class);
+			container = ContainerFactory.getDefault().createContainer(DISCOVERY_CONTAINER);
+			discovery = (IDiscoveryContainerAdapter) container.getAdapter(IDiscoveryContainerAdapter.class);
 			if (discovery != null) {
 				container.connect(null, null);
 			} else {
 				dispose();
 				ClientPlugin.log("No discovery container available");
 			}
-		} catch (ContainerCreateException e1) {
+		} catch (final ContainerCreateException e1) {
 			container = null;
 			discovery = null;
 			ClientPlugin.log("No discovery container available", e1);
 			return;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			dispose();
 			throw e;
 		}
 	}
 
 	protected void connectToServiceFromInfo(IServiceInfo svcInfo) {
-		IServiceProperties props = svcInfo.getServiceProperties();
+		final IServiceProperties props = svcInfo.getServiceProperties();
 		String type = props.getPropertyString(PROP_CONTAINER_TYPE_NAME);
 		if (type == null || type.equals("")) {
 			type = CollabClient.GENERIC_CONTAINER_CLIENT_NAME;
 		}
-		String username = System.getProperty("user.name");
+		final String username = System.getProperty("user.name");
 		String targetString = null;
 		IResource workspace = null;
 		try {
 			targetString = new URI(svcInfo.getServiceID().getName()).toString();
 			workspace = ResourcesPlugin.getWorkspace().getRoot();
-		} catch (Exception e) {
-			ClientPlugin.log("Exception connecting to service with info "
-					+ svcInfo, e);
+		} catch (final Exception e) {
+			ClientPlugin.log("Exception connecting to service with info " + svcInfo, e);
 			return;
 		}
-		URIClientConnectAction action = new URIClientConnectAction(type,
-				targetString, username, null, workspace, false);
+		final URIClientConnectAction action = new URIClientConnectAction(type, targetString, username, null, workspace, false);
 		// do it
 		action.run(null);
 	}
@@ -119,32 +118,27 @@ public class DiscoveryStartup {
 	public static void registerService(URI uri) {
 		if (discovery != null) {
 			try {
-				String path = uri.getPath();
-				Properties props = new Properties();
-				String protocol = uri.getScheme();
-				props.setProperty(PROP_CONTAINER_TYPE_NAME,
-						PROP_CONTAINER_TYPE_VALUE);
+				final String path = uri.getPath();
+				final Properties props = new Properties();
+				final String protocol = uri.getScheme();
+				props.setProperty(PROP_CONTAINER_TYPE_NAME, PROP_CONTAINER_TYPE_VALUE);
 				props.setProperty(PROP_PROTOCOL_NAME, protocol);
 				props.setProperty(PROP_PW_REQ_NAME, PROP_PW_REQ_VALUE);
 				props.setProperty(PROP_DEF_USER_NAME, PROP_DEF_USER_VALUE);
 				props.setProperty(PROP_PATH_NAME, path);
-				InetAddress host = InetAddress.getByName(uri.getHost());
-				int port = uri.getPort();
-				String svcName = System.getProperty("user.name") + "."
-						+ protocol;
-				Namespace namespace = IDFactory.getDefault().getNamespaceByName("zeroconf.jmdns");
-				IServiceID srvID = (IServiceID) namespace.createInstance(new String[]{ClientPlugin.TCPSERVER_DISCOVERY_TYPE, svcName});
-				
-				ServiceInfo svcInfo = new ServiceInfo(host, srvID, port,
-						SVC_DEF_PRIORITY, SVC_DEF_WEIGHT,
-						new ServiceProperties(props));
+				final InetAddress host = InetAddress.getByName(uri.getHost());
+				final int port = uri.getPort();
+				final String svcName = System.getProperty("user.name") + "." + protocol;
+				final Namespace namespace = IDFactory.getDefault().getNamespaceByName("zeroconf.jmdns");
+				final IServiceID srvID = (IServiceID) namespace.createInstance(new String[] {ClientPlugin.TCPSERVER_DISCOVERY_TYPE, svcName});
+
+				final ServiceInfo svcInfo = new ServiceInfo(host, srvID, port, SVC_DEF_PRIORITY, SVC_DEF_WEIGHT, new ServiceProperties(props));
 				discovery.registerService(svcInfo);
-			} catch (Exception e) {
-				ClientPlugin.log("Exception registering service " + uri,e);
+			} catch (final Exception e) {
+				ClientPlugin.log("Exception registering service " + uri, e);
 			}
 		} else {
-			ClientPlugin.log("Cannot register service " + uri
-					+ " because no discovery service is available");
+			ClientPlugin.log("Cannot register service " + uri + " because no discovery service is available");
 		}
 	}
 
@@ -154,7 +148,11 @@ public class DiscoveryStartup {
 	public static void registerServiceTypes() {
 		if (discovery != null) {
 			for (int i = 0; i < ClientPlugin.serviceTypes.length; i++) {
-				discovery.registerServiceType(ClientPlugin.serviceTypes[i]);
+				try {
+					discovery.registerServiceType(ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), ClientPlugin.serviceTypes[i]).getServiceTypeID());
+				} catch (final IDCreateException e) {
+					ClientPlugin.log(NLS.bind("Cannot register service type {0}", ClientPlugin.serviceTypes[i]));
+				}
 			}
 		}
 	}
