@@ -54,7 +54,7 @@ public class QueueEnqueueImpl implements IQueueEnqueue {
 	 */
 	/**
 	 * @param elements
-	 * @return
+	 * @return Object
 	 * @throws QueueException not thrown by this implementation.
 	 */
 	public Object enqueue_prepare(Event[] elements) throws QueueException {
