@@ -9,10 +9,7 @@
 package org.eclipse.ecf.core.identity;
 
 import java.io.Serializable;
-
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.core.identity.Activator;
 import org.eclipse.ecf.internal.core.identity.Messages;
 
@@ -58,18 +55,19 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	private boolean isInitialized = false;
 
 	public Namespace() {
+		// public null constructor
 	}
 
-	public final boolean initialize(String name, String desc) {
-		Assert.isNotNull(name, Messages.Namespace_Namespace_Name_Not_Null);
+	public final boolean initialize(String n, String desc) {
+		Assert.isNotNull(n, Messages.Namespace_Namespace_Name_Not_Null);
 		if (!isInitialized) {
-			this.name = name;
+			this.name = n;
 			this.description = desc;
 			this.hashCode = name.hashCode();
 			this.isInitialized = true;
 			return true;
-		} else
-			return false;
+		}
+		return false;
 	}
 
 	public Namespace(String name, String desc) {
@@ -234,13 +232,11 @@ public abstract class Namespace implements Serializable, IAdaptable {
 	public Object getAdapter(Class adapter) {
 		if (adapter.isInstance(this)) {
 			return this;
-		} else {
-			IAdapterManager manager = Activator.getDefault().getAdapterManager();
-			if (manager == null)
-				return null;
-			else
-				return manager.loadAdapter(this, adapter.getName());
 		}
+		IAdapterManager manager = Activator.getDefault().getAdapterManager();
+		if (manager == null)
+			return null;
+		return manager.loadAdapter(this, adapter.getName());
 	}
 
 	public String toString() {

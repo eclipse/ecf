@@ -8,29 +8,11 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.core.identity;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionDelta;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IRegistryChangeEvent;
-import org.eclipse.core.runtime.IRegistryChangeListener;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IIDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.util.LogHelper;
-import org.eclipse.ecf.core.util.PlatformHelper;
-import org.eclipse.ecf.core.util.SystemLogService;
-import org.eclipse.ecf.core.util.Trace;
+import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.util.*;
 import org.eclipse.osgi.service.debug.DebugOptions;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.*;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -96,6 +78,7 @@ public class Activator implements BundleActivator {
 	 * The constructor
 	 */
 	public Activator() {
+		// public null constructor
 	}
 
 	public IExtensionRegistry getExtensionRegistry() {
@@ -121,9 +104,9 @@ public class Activator implements BundleActivator {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(BundleContext ctxt) throws Exception {
 		plugin = this;
-		this.context = context;
+		this.context = ctxt;
 		final IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null) {
 			this.registryManager = new IdentityRegistryManager();
@@ -194,8 +177,7 @@ public class Activator implements BundleActivator {
 	public Bundle getBundle() {
 		if (context == null)
 			return null;
-		else
-			return context.getBundle();
+		return context.getBundle();
 	}
 
 	protected LogService getLogService() {
@@ -210,10 +192,11 @@ public class Activator implements BundleActivator {
 	}
 
 	public void log(IStatus status) {
-		final LogService logService = getLogService();
-		if (logService != null) {
+		if (logService == null)
+			logService = getLogService();
+
+		if (logService != null)
 			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
-		}
 	}
 
 	/**
@@ -243,7 +226,7 @@ public class Activator implements BundleActivator {
 				org.eclipse.ecf.core.util.Trace.trace(Activator.PLUGIN_ID, IdentityDebugOptions.DEBUG, "addNamespaceExtensions.createdNamespace(" + ns + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 				// Check to see if we have a namespace name collision
 				if (IDFactory.getDefault().containsNamespace(ns))
-					throw new CoreException(new Status(Status.ERROR, bundleName, FACTORY_NAME_COLLISION_ERRORCODE, "name=" //$NON-NLS-1$
+					throw new CoreException(new Status(IStatus.ERROR, bundleName, FACTORY_NAME_COLLISION_ERRORCODE, "name=" //$NON-NLS-1$
 							+ nsName + ";extension point id=" //$NON-NLS-1$
 							+ extension.getExtensionPointUniqueIdentifier(), null));
 				// Now add to known namespaces
@@ -254,7 +237,7 @@ public class Activator implements BundleActivator {
 				getDefault().log(e.getStatus());
 				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID, IdentityDebugOptions.EXCEPTIONS_CATCHING, Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
 			} catch (final Exception e) {
-				getDefault().log(new Status(Status.ERROR, bundleName, FACTORY_NAME_COLLISION_ERRORCODE, "name=" //$NON-NLS-1$
+				getDefault().log(new Status(IStatus.ERROR, bundleName, FACTORY_NAME_COLLISION_ERRORCODE, "name=" //$NON-NLS-1$
 						+ nsName + ";extension point id=" //$NON-NLS-1$
 						+ extension.getExtensionPointUniqueIdentifier(), null));
 				org.eclipse.ecf.core.util.Trace.catching(Activator.PLUGIN_ID, IdentityDebugOptions.EXCEPTIONS_CATCHING, Activator.class, "addNamespaceExtensions", e); //$NON-NLS-1$
@@ -284,7 +267,7 @@ public class Activator implements BundleActivator {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext ctxt) throws Exception {
 		Trace.entering(Activator.PLUGIN_ID, IdentityDebugOptions.METHODS_EXITING, Activator.class, "stop"); //$NON-NLS-1$
 		final IExtensionRegistry reg = getExtensionRegistry();
 		if (reg != null)

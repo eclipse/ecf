@@ -9,10 +9,7 @@
 package org.eclipse.ecf.core.util;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.*;
 import org.eclipse.ecf.internal.core.identity.Activator;
 import org.eclipse.ecf.internal.core.identity.Messages;
 import org.eclipse.osgi.service.debug.DebugOptions;
@@ -48,6 +45,12 @@ public class Trace {
 	 * 
 	 */
 	protected static final String TRACE_STR = "TRACE"; //$NON-NLS-1$
+
+	/**
+	 * Prefix for tracing the changing of values.
+	 * 
+	 */
+	protected static final String PREFIX_TRACING = "TRACING "; //$NON-NLS-1$
 
 	/**
 	 * Prefix for tracing the changing of values.
@@ -192,8 +195,7 @@ public class Trace {
 			return getStringFromByteArray((byte[]) argument);
 		if (argument.getClass().isArray())
 			return getArgumentsString((Object[]) argument);
-		else
-			return String.valueOf(argument);
+		return String.valueOf(argument);
 	}
 
 	private static String getStringFromByteArray(byte[] bytes) {
@@ -284,6 +286,31 @@ public class Trace {
 	public static void trace(String pluginId, String option, String message) {
 		if (shouldTrace(pluginId, option))
 			trace(message);
+	}
+
+	/**
+	 * Traces the specified message from the specified plug-in for the specified
+	 * debug option.
+	 * 
+	 * @param pluginId
+	 *            The plug-in from which to trace.
+	 * @param option
+	 *            The debug option for which to trace.
+	 * @param clazz
+	 *            The class whose method is being entered.
+	 * @param methodName
+	 *            The name of method that is being entered.
+	 * @param message
+	 *            The message to be traced.
+	 * 
+	 */
+	public static void trace(String pluginId, String option, Class clazz, String methodName, String message) {
+		if (shouldTrace(pluginId, option)) {
+			StringBuffer buf = new StringBuffer(PREFIX_TRACING).append(clazz.getName());
+			buf.append(SEPARATOR_METHOD).append(methodName);
+			buf.append(PARENTHESIS_OPEN).append(message).append(PARENTHESIS_CLOSE);
+			trace(buf.toString());
+		}
 	}
 
 	/**

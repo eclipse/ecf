@@ -31,8 +31,8 @@ public class StringID extends BaseID {
 		public ID createInstance(Object[] parameters) throws IDCreateException {
 			if (parameters == null || parameters.length == 0) {
 				throw new IDCreateException(Messages.StringID_StringID_Name_Not_Null);
-			} else
-				return new StringID(this, (String) parameters[0]);
+			}
+			return new StringID(this, (String) parameters[0]);
 		}
 
 		public String getScheme() {

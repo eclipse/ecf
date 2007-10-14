@@ -12,11 +12,7 @@
 package org.eclipse.ecf.core.util;
 
 import java.lang.reflect.Method;
-
-import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.internal.core.identity.Activator;
 import org.osgi.framework.Bundle;
 
@@ -52,6 +48,7 @@ public class PlatformHelper {
 				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Cannot load Platform class.  No adapter manager available", //$NON-NLS-1$
 						e));
 			} catch (Throwable t) {
+				// Should never happen, if does irrecoverable
 			}
 		}
 	}
@@ -72,8 +69,8 @@ public class PlatformHelper {
 				Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, "Exception in PlatformHelper.getPlatformAdapterManager()", e)); //$NON-NLS-1$
 				return null;
 			}
-		} else
-			return null;
+		}
+		return null;
 	}
 
 	public synchronized static IExtensionRegistry getExtensionRegistry() {
@@ -89,7 +86,7 @@ public class PlatformHelper {
 				return null;
 			}
 
-		} else
-			return null;
+		}
+		return null;
 	}
 }

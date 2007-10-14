@@ -9,16 +9,11 @@
 package org.eclipse.ecf.core.identity;
 
 import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-
+import java.util.*;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.core.identity.Activator;
-import org.eclipse.ecf.internal.core.identity.IdentityDebugOptions;
-import org.eclipse.ecf.internal.core.identity.Messages;
+import org.eclipse.ecf.internal.core.identity.*;
 import org.eclipse.osgi.util.NLS;
 
 /**
@@ -45,6 +40,7 @@ public class IDFactory implements IIDFactory {
 	}
 
 	protected IDFactory() {
+		// protected constructor
 	}
 
 	public static IIDFactory getDefault() {
@@ -144,8 +140,7 @@ public class IDFactory implements IIDFactory {
 	protected final static Namespace getNamespace0(String name) {
 		if (name == null)
 			return null;
-		else
-			return (Namespace) namespaces.get(name);
+		return (Namespace) namespaces.get(name);
 	}
 
 	/*

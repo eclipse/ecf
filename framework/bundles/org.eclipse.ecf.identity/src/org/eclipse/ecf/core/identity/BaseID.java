@@ -27,6 +27,7 @@ public abstract class BaseID implements ID {
 	protected Namespace namespace;
 
 	protected BaseID() {
+		// 
 	}
 
 	protected BaseID(Namespace namespace) {

@@ -26,6 +26,11 @@ public class LongID extends BaseID {
 			super(LongID.class.getName(), Messages.LongID_LongID_Namespace_Description);
 		}
 
+		/**
+		 * @param args must not be <code>null></code>
+		 * @return ID created.  Will not be <code>null</code>.
+		 * @throws IDCreateException never thrown
+		 */
 		public ID createInstance(Object[] args) throws IDCreateException {
 			return new LongID(this, (Long) args[0]);
 		}
