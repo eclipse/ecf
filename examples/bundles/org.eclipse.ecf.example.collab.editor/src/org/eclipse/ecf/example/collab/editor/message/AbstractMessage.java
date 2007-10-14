@@ -17,11 +17,12 @@ import java.io.Serializable;
 import org.eclipse.ecf.core.util.ECFException;
 
 public abstract class AbstractMessage implements Serializable {
-	
-	
+
+	private static final long serialVersionUID = 6948157547330289296L;
+
 	public byte[] toByteArray() throws IOException, ECFException {
-		ByteArrayOutputStream bouts = new ByteArrayOutputStream();
-		ObjectOutputStream douts = new ObjectOutputStream(bouts);
+		final ByteArrayOutputStream bouts = new ByteArrayOutputStream();
+		final ObjectOutputStream douts = new ObjectOutputStream(bouts);
 		douts.writeObject(this);
 		return bouts.toByteArray();
 	}
