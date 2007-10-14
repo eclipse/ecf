@@ -37,7 +37,6 @@ public interface IRemoteCallCompleteEvent extends IRemoteCallEvent {
 	 *         false. Will be non-<code>null</code> if
 	 *         {@link #hadException()} returns true.
 	 * 
-	 * @return Throwable exception that occurred with remote call.
 	 */
 	public Throwable getException();
 }

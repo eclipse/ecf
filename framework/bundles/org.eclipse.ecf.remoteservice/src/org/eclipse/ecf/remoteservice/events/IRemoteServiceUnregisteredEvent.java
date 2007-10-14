@@ -10,12 +10,12 @@
  *****************************************************************************/
 package org.eclipse.ecf.remoteservice.events;
 
-
 /**
  * Remote service unregistered event. Instances of this class will be received
  * when a remote service has been unregistered.
  * 
  */
 public interface IRemoteServiceUnregisteredEvent extends IRemoteServiceEvent {
+	// no methods for interface
 
 }

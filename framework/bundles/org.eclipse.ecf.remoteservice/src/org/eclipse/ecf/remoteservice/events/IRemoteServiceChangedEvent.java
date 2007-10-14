@@ -15,5 +15,6 @@ package org.eclipse.ecf.remoteservice.events;
  * Remote service changed event.
  */
 public interface IRemoteServiceChangedEvent extends IRemoteServiceEvent {
+	// no methods for inteface
 
 }

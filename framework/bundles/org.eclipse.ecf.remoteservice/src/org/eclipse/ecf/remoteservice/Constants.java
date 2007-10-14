@@ -25,7 +25,7 @@ public interface Constants {
 	 * This property is set by the remote services API when a service is
 	 * registered.
 	 */
-	public static final String OBJECTCLASS = "remote.objectClass";
+	public static final String OBJECTCLASS = "remote.objectClass"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remote.service.id&quot;) identifying a
@@ -38,7 +38,7 @@ public interface Constants {
 	 * services API was started. These values are NOT persistent across restarts
 	 * of the remote services API.
 	 */
-	public static final String SERVICE_ID = "remote.service.id";
+	public static final String SERVICE_ID = "remote.service.id"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remote.service.ranking&quot;) identifying a
@@ -70,7 +70,7 @@ public interface Constants {
 	 * <code>java.lang.Integer</code>, it is deemed to have a ranking value
 	 * of zero.
 	 */
-	public static final String SERVICE_RANKING = "remote.service.ranking";
+	public static final String SERVICE_RANKING = "remote.service.ranking"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remote.service.vendor&quot;) identifying a
@@ -82,7 +82,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String SERVICE_VENDOR = "remote.service.vendor";
+	public static final String SERVICE_VENDOR = "remote.service.vendor"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remoteservice.description&quot;)
@@ -94,7 +94,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String SERVICE_DESCRIPTION = "remote.service.description";
+	public static final String SERVICE_DESCRIPTION = "remote.service.description"; //$NON-NLS-1$
 
 	/**
 	 * Service property (named &quot;remoteservice.description&quot;)
@@ -107,7 +107,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String SERVICE_REGISTRATION_TARGETS = "remote.service.registration.targets";
+	public static final String SERVICE_REGISTRATION_TARGETS = "remote.service.registration.targets"; //$NON-NLS-1$
 
 	/**
 	 * Service property that defines the container factory name.
@@ -117,7 +117,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String CONTAINER_FACTORY_NAME = "org.eclipse.ecf.containerFactoryName";
+	public static final String CONTAINER_FACTORY_NAME = "org.eclipse.ecf.containerFactoryName"; //$NON-NLS-1$
 
 	/**
 	 * Service property that defines the container target for connection.
@@ -127,7 +127,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String CONTAINER_TARGET = "org.eclipse.ecf.containerTarget";
+	public static final String CONTAINER_TARGET = "org.eclipse.ecf.containerTarget"; //$NON-NLS-1$
 
 	/**
 	 * Service property that defines the container target password.
@@ -137,7 +137,7 @@ public interface Constants {
 	 * <code>IRemoteServiceContainerAdapter.registerRemoteService</code>
 	 * method.
 	 */
-	public static final String CONTAINER_PASSWORD = "org.eclipse.ecf.containerPassword";
+	public static final String CONTAINER_PASSWORD = "org.eclipse.ecf.containerPassword"; //$NON-NLS-1$
 
 	/**
 	 * Service property that defines the remote service container ID.
@@ -145,19 +145,19 @@ public interface Constants {
 	 * This property may be supplied in the properties <code>Dictionary</code>
 	 * object passed to the <code>BundleContext.registerService</code> method.
 	 */
-	public static final String SERVICE_REGISTRATION_CONTAINER_ID = "org.eclipse.ecf.containerID";
+	public static final String SERVICE_REGISTRATION_CONTAINER_ID = "org.eclipse.ecf.containerID"; //$NON-NLS-1$
 
 	/**
 	 * Service property that determines whether a remote service is added to the local
 	 * service registry.  If present in the remote service registration properties,
 	 * the associated remote service proxy will be added to the local service registry.
 	 */
-	public static final String LOCAL_SERVICE_REGISTRATION = "org.eclipse.ecf.serviceRegistrationRemote";
+	public static final String LOCAL_SERVICE_REGISTRATION = "org.eclipse.ecf.serviceRegistrationRemote"; //$NON-NLS-1$
 
 	/**
 	 * Remote Service property.  If a ServiceReference has the REMOTE_SERVICE property,
 	 * then the value will be a <code>non-null</code> instance of {@link IRemoteService}.
 	 */
-	public static final String REMOTE_SERVICE = "org.eclipse.ecf.remoteService";
+	public static final String REMOTE_SERVICE = "org.eclipse.ecf.remoteService"; //$NON-NLS-1$
 
 }

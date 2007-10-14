@@ -10,12 +10,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.remoteservice.events;
 
-
 /**
  * Remote service registered event. Instances of this class will be received
  * when a remote service has been registered.
  * 
  */
 public interface IRemoteServiceRegisteredEvent extends IRemoteServiceEvent {
-
+	// no methods for interface
 }

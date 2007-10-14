@@ -19,5 +19,6 @@ import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
  * service clients.
  */
 public interface IRemoteServiceService extends IRemoteServiceContainerAdapter {
+	// no methods for interface
 
 }

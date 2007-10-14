@@ -38,6 +38,7 @@ public class Activator implements BundleActivator {
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
+		// nothing to do
 	}
 
 	/*
