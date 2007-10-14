@@ -13,16 +13,10 @@ package org.eclipse.ecf.filetransfer.ui.actions;
 
 import java.io.File;
 import java.util.Map;
-
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.IExceptionHandler;
-import org.eclipse.ecf.filetransfer.FileTransferInfo;
-import org.eclipse.ecf.filetransfer.IFileTransferInfo;
-import org.eclipse.ecf.filetransfer.IFileTransferListener;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransferContainerAdapter;
+import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.events.IFileTransferEvent;
 import org.eclipse.ecf.filetransfer.events.IOutgoingFileTransferSendDoneEvent;
 import org.eclipse.ecf.internal.filetransfer.ui.Activator;
@@ -74,16 +68,14 @@ public abstract class AbstractFileSendAction extends Action {
 	 * @param fileToSend
 	 * @return
 	 */
-	private IFileTransferInfo createFileTransferInfoFromFile(
-			final File fileToSend) {
+	private IFileTransferInfo createFileTransferInfoFromFile(final File fileToSend) {
 		return new FileTransferInfo(fileToSend);
 	}
 
 	public File getFileToSend() {
 		if (this.fileTransferInfo == null)
 			return null;
-		else
-			return this.fileTransferInfo.getFile();
+		return this.fileTransferInfo.getFile();
 	}
 
 	public void setFileTransferListener(IFileTransferListener listener) {
@@ -122,11 +114,8 @@ public abstract class AbstractFileSendAction extends Action {
 			if (exceptionHandler != null)
 				exceptionHandler.handleException(e);
 			else
-				Activator.getDefault().getLog().log(
-						new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-								IStatus.ERROR, NLS.bind(
-										Messages.getString("AbstractFileSendAction.EXCEPTION_SENDING_TO_TARGET"), //$NON-NLS-1$
-										getTargetReceiver()), e));
+				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, NLS.bind(Messages.getString("AbstractFileSendAction.EXCEPTION_SENDING_TO_TARGET"), //$NON-NLS-1$
+						getTargetReceiver()), e));
 		}
 
 	}
@@ -167,31 +156,17 @@ public abstract class AbstractFileSendAction extends Action {
 				// then a custom IFileTransferListener should be provided.
 				if (event instanceof IOutgoingFileTransferSendDoneEvent) {
 					final IOutgoingFileTransferSendDoneEvent oftsde = (IOutgoingFileTransferSendDoneEvent) event;
-					final Exception errorException = oftsde.getSource()
-							.getException();
+					final Exception errorException = oftsde.getSource().getException();
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							if (errorException == null) {
-								MessageDialog
-										.openInformation(
-												null,
-												Messages.getString("AbstractFileSendAction.TITLE_FILE_TRANSFER_SUCESSFUL"), //$NON-NLS-1$
-												NLS
-														.bind(
-																Messages.getString("AbstractFileSendAction.MESSAGE_FILE_TRANSFER_SUCCESSFUL"), //$NON-NLS-1$
-																getFileTransferInfo()
-																		.getFile()
-																		.getName()));
+								MessageDialog.openInformation(null, Messages.getString("AbstractFileSendAction.TITLE_FILE_TRANSFER_SUCESSFUL"), //$NON-NLS-1$
+										NLS.bind(Messages.getString("AbstractFileSendAction.MESSAGE_FILE_TRANSFER_SUCCESSFUL"), //$NON-NLS-1$
+												getFileTransferInfo().getFile().getName()));
 							} else {
-								MessageDialog
-										.openError(
-												null,
-												Messages.getString("AbstractFileSendAction.TITLE_FILE_TRANSFER_FAILED"), //$NON-NLS-1$
-												NLS
-														.bind(
-																Messages.getString("AbstractFileSendAction.MESSAGE_FILE_TRANSFER_FAILED"), //$NON-NLS-1$
-																errorException
-																		.getLocalizedMessage()));
+								MessageDialog.openError(null, Messages.getString("AbstractFileSendAction.TITLE_FILE_TRANSFER_FAILED"), //$NON-NLS-1$
+										NLS.bind(Messages.getString("AbstractFileSendAction.MESSAGE_FILE_TRANSFER_FAILED"), //$NON-NLS-1$
+												errorException.getLocalizedMessage()));
 							}
 						}
 					});

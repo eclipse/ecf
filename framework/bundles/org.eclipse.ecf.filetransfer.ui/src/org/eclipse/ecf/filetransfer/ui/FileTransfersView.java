@@ -12,34 +12,14 @@ package org.eclipse.ecf.filetransfer.ui;
 
 import java.util.Iterator;
 import java.util.Vector;
-
-import org.eclipse.ecf.filetransfer.IFileTransfer;
-import org.eclipse.ecf.filetransfer.IFileTransferPausable;
-import org.eclipse.ecf.filetransfer.IIncomingFileTransfer;
-import org.eclipse.ecf.filetransfer.IOutgoingFileTransfer;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.ecf.filetransfer.*;
+import org.eclipse.jface.action.*;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 
 public class FileTransfersView extends ViewPart {
@@ -48,12 +28,12 @@ public class FileTransfersView extends ViewPart {
 
 	public static final String ID = "org.eclipse.ecf.filetransfer.ui.FileTransfersView"; //$NON-NLS-1$
 
-	private static final String[] COLUMNS = { "Name", "Downloaded", "Uploaded",
-			"Done" };
+	private static final String[] COLUMNS = {"Name", "Downloaded", "Uploaded", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			"Done"}; //$NON-NLS-1$
 
-	private static final int[] WIDTHS = { 250, 100, 100, 40 };
+	private static final int[] WIDTHS = {250, 100, 100, 40};
 
-	private static final Object[] EMPTY_ARRAY = new Object[0];
+	static final Object[] EMPTY_ARRAY = new Object[0];
 
 	private static final double GIGABYTE = Math.pow(2, 30);
 
@@ -76,7 +56,7 @@ public class FileTransfersView extends ViewPart {
 		}
 	}
 
-	private TableViewer viewer;
+	TableViewer viewer;
 
 	private Table table;
 
@@ -86,18 +66,18 @@ public class FileTransfersView extends ViewPart {
 
 	private Action removeAction;
 
-	private static String getTwoDigitNumber(long value) {
+	static String getTwoDigitNumber(long value) {
 		if (value > GIGABYTE) {
 			double num = value / GIGABYTE;
-			return Double.toString(Math.floor(num * 100) / 100) + " GB";
+			return Double.toString(Math.floor(num * 100) / 100) + " GB"; //$NON-NLS-1$
 		} else if (value > MEGABYTE) {
 			double num = value / MEGABYTE;
-			return Double.toString(Math.floor(num * 100) / 100) + " MB";
+			return Double.toString(Math.floor(num * 100) / 100) + " MB"; //$NON-NLS-1$
 		} else if (value > KILOBYTE) {
 			double num = value / KILOBYTE;
-			return Double.toString(Math.floor(num * 100) / 100) + " KB";
+			return Double.toString(Math.floor(num * 100) / 100) + " KB"; //$NON-NLS-1$
 		}
-		return value + " bytes";
+		return value + " bytes"; //$NON-NLS-1$
 	}
 
 	private static FileTransfersView instance;
@@ -112,8 +92,7 @@ public class FileTransfersView extends ViewPart {
 	}
 
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.VIRTUAL);
+		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.VIRTUAL);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(new ViewerSorter());
@@ -166,7 +145,7 @@ public class FileTransfersView extends ViewPart {
 		getSite().registerContextMenu(menuMgr, viewer);
 	}
 
-	private void fillContextMenu(IMenuManager manager) {
+	void fillContextMenu(IMenuManager manager) {
 		manager.add(resumeAction);
 		manager.add(pauseAction);
 		manager.add(removeAction);
@@ -184,15 +163,14 @@ public class FileTransfersView extends ViewPart {
 				Iterator iterator = ssel.iterator();
 				while (iterator.hasNext()) {
 					IFileTransfer transfer = (IFileTransfer) iterator.next();
-					IFileTransferPausable pausable = (IFileTransferPausable) transfer
-							.getAdapter(IFileTransferPausable.class);
+					IFileTransferPausable pausable = (IFileTransferPausable) transfer.getAdapter(IFileTransferPausable.class);
 					if (pausable != null) {
 						pausable.resume();
 					}
 				}
 			}
 		};
-		resumeAction.setText("&Resume");
+		resumeAction.setText("&Resume"); //$NON-NLS-1$
 
 		pauseAction = new Action() {
 			public void run() {
@@ -204,15 +182,14 @@ public class FileTransfersView extends ViewPart {
 				Iterator iterator = ssel.iterator();
 				while (iterator.hasNext()) {
 					IFileTransfer transfer = (IFileTransfer) iterator.next();
-					IFileTransferPausable pausable = (IFileTransferPausable) transfer
-							.getAdapter(IFileTransferPausable.class);
+					IFileTransferPausable pausable = (IFileTransferPausable) transfer.getAdapter(IFileTransferPausable.class);
 					if (pausable != null) {
 						pausable.pause();
 					}
 				}
 			}
 		};
-		pauseAction.setText("&Pause");
+		pauseAction.setText("&Pause"); //$NON-NLS-1$
 
 		removeAction = new Action() {
 			public void run() {
@@ -229,13 +206,11 @@ public class FileTransfersView extends ViewPart {
 				}
 			}
 		};
-		removeAction.setText("&Remove");
-		removeAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_DELETE));
+		removeAction.setText("&Remove"); //$NON-NLS-1$
+		removeAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 	}
 
-	private void enableActions() {
+	void enableActions() {
 		ISelection is = viewer.getSelection();
 		resumeAction.setEnabled(false);
 		pauseAction.setEnabled(false);
@@ -245,8 +220,7 @@ public class FileTransfersView extends ViewPart {
 			Iterator iterator = iss.iterator();
 			while (iterator.hasNext()) {
 				IFileTransfer transfer = (IFileTransfer) iterator.next();
-				IFileTransferPausable pausable = (IFileTransferPausable) transfer
-						.getAdapter(IFileTransferPausable.class);
+				IFileTransferPausable pausable = (IFileTransferPausable) transfer.getAdapter(IFileTransferPausable.class);
 				if (pausable != null) {
 					resumeAction.setEnabled(true);
 					pauseAction.setEnabled(true);
@@ -260,8 +234,7 @@ public class FileTransfersView extends ViewPart {
 		table.setFocus();
 	}
 
-	private class ViewLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
+	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 		public String getColumnText(Object obj, int index) {
 			if (!(obj instanceof IFileTransfer)) {
@@ -269,24 +242,18 @@ public class FileTransfersView extends ViewPart {
 			}
 			IFileTransfer transfer = (IFileTransfer) obj;
 			switch (index) {
-			case NAME:
-				return transfer.getID().getName();
-			case DOWNLOADED:
-				if (transfer instanceof IIncomingFileTransfer) {
-					return getTwoDigitNumber(((IIncomingFileTransfer) transfer)
-							.getBytesReceived());
-				} else {
+				case NAME :
+					return transfer.getID().getName();
+				case DOWNLOADED :
+					if (transfer instanceof IIncomingFileTransfer)
+						return getTwoDigitNumber(((IIncomingFileTransfer) transfer).getBytesReceived());
 					return "N/A"; //$NON-NLS-1$
-				}
-			case UPLOADED:
-				if (transfer instanceof IOutgoingFileTransfer) {
-					return getTwoDigitNumber(((IOutgoingFileTransfer) transfer)
-							.getBytesSent());
-				} else {
+				case UPLOADED :
+					if (transfer instanceof IOutgoingFileTransfer)
+						return getTwoDigitNumber(((IOutgoingFileTransfer) transfer).getBytesSent());
 					return "N/A"; //$NON-NLS-1$
-				}
-			case DONE:
-				return Double.toString(transfer.getPercentComplete()) + '%';
+				case DONE :
+					return Double.toString(transfer.getPercentComplete()) + '%';
 			}
 			return getText(obj);
 		}
@@ -296,12 +263,14 @@ public class FileTransfersView extends ViewPart {
 		}
 	}
 
-	private class ViewContentProvider implements IStructuredContentProvider {
+	class ViewContentProvider implements IStructuredContentProvider {
 
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+			// nothing to do in this case
 		}
 
 		public void dispose() {
+			// nothing to do in this case
 		}
 
 		public Object[] getElements(Object inputElement) {

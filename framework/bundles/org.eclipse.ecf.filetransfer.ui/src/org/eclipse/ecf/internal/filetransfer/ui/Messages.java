@@ -20,10 +20,10 @@ import java.util.ResourceBundle;
 public class Messages {
 	private static final String BUNDLE_NAME = "org.eclipse.ecf.internal.filetransfer.ui.messages"; //$NON-NLS-1$
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-			.getBundle(BUNDLE_NAME);
+	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
 	private Messages() {
+		// private null constructor
 	}
 
 	public static String getString(String key) {
