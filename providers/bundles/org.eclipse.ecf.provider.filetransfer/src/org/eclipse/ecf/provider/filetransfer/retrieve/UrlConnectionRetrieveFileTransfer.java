@@ -9,23 +9,16 @@
 package org.eclipse.ecf.provider.filetransfer.retrieve;
 
 import java.io.IOException;
-import java.net.ConnectException;
-import java.net.URL;
-import java.net.URLConnection;
-
+import java.net.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.Proxy;
-import org.eclipse.ecf.filetransfer.IFileRangeSpecification;
-import org.eclipse.ecf.filetransfer.IFileTransferPausable;
-import org.eclipse.ecf.filetransfer.IncomingFileTransferException;
-import org.eclipse.ecf.filetransfer.InvalidFileRangeSpecificationException;
+import org.eclipse.ecf.filetransfer.*;
 import org.eclipse.ecf.filetransfer.identity.IFileID;
 import org.eclipse.ecf.internal.provider.filetransfer.Messages;
 import org.eclipse.osgi.util.NLS;
 
-public class UrlConnectionRetrieveFileTransfer extends
-		AbstractRetrieveFileTransfer {
+public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 
 	private static final int HTTP_RANGE_RESPONSE = 206;
 
@@ -58,25 +51,19 @@ public class UrlConnectionRetrieveFileTransfer extends
 
 	protected void setResumeRequestHeaderValues() throws IOException {
 		if (this.bytesReceived <= 0 || this.fileLength <= this.bytesReceived)
-			throw new IOException(
-					Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_ERROR);
+			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_ERROR);
 		setRangeHeader("bytes=" + this.bytesReceived + "-"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	protected void setRequestHeaderValues()
-			throws InvalidFileRangeSpecificationException {
+	protected void setRequestHeaderValues() throws InvalidFileRangeSpecificationException {
 		final IFileRangeSpecification rangeSpec = getFileRangeSpecification();
 		if (rangeSpec != null && isHTTP()) {
 			final long startPosition = rangeSpec.getStartPosition();
 			final long endPosition = rangeSpec.getEndPosition();
 			if (startPosition < 0)
-				throw new InvalidFileRangeSpecificationException(
-						Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO,
-						rangeSpec);
+				throw new InvalidFileRangeSpecificationException(Messages.UrlConnectionRetrieveFileTransfer_RESUME_START_POSITION_LESS_THAN_ZERO, rangeSpec);
 			if (endPosition != -1L && endPosition <= startPosition)
-				throw new InvalidFileRangeSpecificationException(
-						Messages.UrlConnectionRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START,
-						rangeSpec);
+				throw new InvalidFileRangeSpecificationException(Messages.UrlConnectionRetrieveFileTransfer_RESUME_ERROR_END_POSITION_LESS_THAN_START, rangeSpec);
 			setRangeHeader("bytes=" + startPosition + "-" + ((endPosition == -1L) ? "" : ("" + endPosition))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 	}
@@ -131,25 +118,20 @@ public class UrlConnectionRetrieveFileTransfer extends
 
 	protected void getResponseHeaderValues() throws IOException {
 		if (!isConnected())
-			throw new ConnectException(
-					Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
+			throw new ConnectException(Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
 		if (getResponseCode() == -1)
-			throw new IOException(
-					Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_INVALID_SERVER_RESPONSE);
+			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_INVALID_SERVER_RESPONSE);
 		lastModifiedTime = urlConnection.getLastModified();
 		setFileLength(urlConnection.getContentLength());
 	}
 
 	protected void getResumeResponseHeaderValues() throws IOException {
 		if (!isConnected())
-			throw new ConnectException(
-					Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
+			throw new ConnectException(Messages.UrlConnectionRetrieveFileTransfer_CONNECT_EXCEPTION_NOT_CONNECTED);
 		if (getResponseCode() != HTTP_RANGE_RESPONSE)
-			throw new IOException(
-					Messages.UrlConnectionRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST);
+			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_INVALID_SERVER_RESPONSE_TO_PARTIAL_RANGE_REQUEST);
 		if (lastModifiedTime != urlConnection.getLastModified())
-			throw new IOException(
-					Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_FILE_MODIFIED_SINCE_LAST_ACCESS);
+			throw new IOException(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_FILE_MODIFIED_SINCE_LAST_ACCESS);
 	}
 
 	/*
@@ -166,11 +148,7 @@ public class UrlConnectionRetrieveFileTransfer extends
 			getResponseHeaderValues();
 			fireReceiveStartEvent();
 		} catch (final Exception e) {
-			throw new IncomingFileTransferException(
-					NLS
-							.bind(
-									Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT,
-									getRemoteFileURL().toString()), e);
+			throw new IncomingFileTransferException(NLS.bind(Messages.UrlConnectionRetrieveFileTransfer_EXCEPTION_COULD_NOT_CONNECT, getRemoteFileURL().toString()), e);
 		}
 	}
 
@@ -190,8 +168,7 @@ public class UrlConnectionRetrieveFileTransfer extends
 	 * 
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void setConnectContextForAuthentication(
-			IConnectContext connectContext) {
+	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		this.connectContext = connectContext;
 	}
 
@@ -237,8 +214,7 @@ public class UrlConnectionRetrieveFileTransfer extends
 			return null;
 		if (adapter.equals(IFileTransferPausable.class) && isHTTP11())
 			return this;
-		else
-			return super.getAdapter(adapter);
+		return super.getAdapter(adapter);
 	}
 
 	/**
