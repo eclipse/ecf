@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.tests;
 
+import java.net.Socket;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -21,6 +22,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.security.ConnectContextFactory;
 import org.eclipse.ecf.core.security.IConnectContext;
+import org.eclipse.osgi.util.NLS;
 
 public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 
@@ -28,7 +30,9 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 
 	protected String genericClientName = "ecf.generic.client";
 
-	protected String genericServerIdentity = "ecftcp://localhost:2222/server";
+	protected int genericServerPort = 30000;
+
+	protected String genericServerIdentity = "ecftcp://localhost:{0}/server";
 
 	protected IContainer server;
 
@@ -41,6 +45,35 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	protected String[] usernames = null;
 
 	protected String[] passwords = null;
+
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	protected void setUp() throws Exception {
+		super.setUp();
+		findEmptySocket();
+	}
+
+	/**
+	 * 
+	 */
+	private void findEmptySocket() {
+		final boolean done = false;
+		while (!done) {
+			try {
+				final Socket s = new Socket("localhost", genericServerPort);
+				// If this connects, the port is in use...so move onto next won
+				genericServerPort++;
+				try {
+					s.close();
+				} catch (final Exception e) {
+				};
+			} catch (final Exception e) {
+				// found it...we're done
+				return;
+			}
+		}
+	}
 
 	protected String getUsername(int client) {
 		if (usernames == null || usernames.length <= client)
@@ -89,7 +122,7 @@ public abstract class ContainerAbstractTestCase extends ECFAbstractTestCase {
 	}
 
 	protected String getServerIdentity() {
-		return genericServerIdentity;
+		return NLS.bind(genericServerIdentity, new Integer(genericServerPort));
 	}
 
 	protected ID getServerConnectID(int client) {
