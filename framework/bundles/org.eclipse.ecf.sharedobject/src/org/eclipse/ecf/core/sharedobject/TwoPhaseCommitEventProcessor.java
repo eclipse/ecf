@@ -348,7 +348,7 @@ public class TwoPhaseCommitEventProcessor implements IEventProcessor, ISharedObj
 	protected void doTMCommit() throws SharedObjectAddAbortException {
 		trace("doTMCommit"); //$NON-NLS-1$
 		// Make sure we are connected. If so then send commit message
-		if (getSharedObject().getGroupID() != null) {
+		if (getSharedObject().getConnectedID() != null) {
 			sendCommit();
 		}
 		// Call local committed message

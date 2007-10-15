@@ -101,22 +101,26 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 
 	public void handleEvent(Event event) {
 		traceEntering("handleEvent", event); //$NON-NLS-1$
-		synchronized (eventProcessors) {
-			fireEventProcessors(event);
-		}
+		fireEventProcessors(event);
 		traceExiting("handleEvent"); //$NON-NLS-1$
 	}
 
 	public boolean addEventProcessor(IEventProcessor proc) {
-		return eventProcessors.add(proc);
+		synchronized (eventProcessors) {
+			return eventProcessors.add(proc);
+		}
 	}
 
 	public boolean removeEventProcessor(IEventProcessor proc) {
-		return eventProcessors.remove(proc);
+		synchronized (eventProcessors) {
+			return eventProcessors.remove(proc);
+		}
 	}
 
 	public void clearEventProcessors() {
-		eventProcessors.clear();
+		synchronized (eventProcessors) {
+			eventProcessors.clear();
+		}
 	}
 
 	protected void handleUnhandledEvent(Event event) {
@@ -127,11 +131,15 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		if (event == null)
 			return;
 		Event evt = event;
-		if (eventProcessors.size() == 0) {
-			handleUnhandledEvent(event);
+		List notify = null;
+		synchronized (eventProcessors) {
+			notify = new ArrayList(eventProcessors);
+		}
+		if (notify.size() == 0) {
+			handleUnhandledEvent(evt);
 			return;
 		}
-		for (Iterator i = eventProcessors.iterator(); i.hasNext();) {
+		for (Iterator i = notify.iterator(); i.hasNext();) {
 			IEventProcessor ep = (IEventProcessor) i.next();
 			if (ep.processEvent(evt))
 				break;
@@ -152,11 +160,11 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		return getConfig().getSharedObjectID();
 	}
 
-	protected ISharedObjectConfig getConfig() {
+	protected final ISharedObjectConfig getConfig() {
 		return config;
 	}
 
-	protected ISharedObjectContext getContext() {
+	protected final ISharedObjectContext getContext() {
 		return getConfig().getContext();
 	}
 
@@ -168,15 +176,15 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		return getContext().getLocalContainerID();
 	}
 
-	protected ID getGroupID() {
+	protected ID getConnectedID() {
 		return getContext().getConnectedID();
 	}
 
-	protected boolean isConnected() {
-		return (getContext().getConnectedID() != null);
+	protected final boolean isConnected() {
+		return (getConnectedID() != null);
 	}
 
-	protected boolean isPrimary() {
+	protected final boolean isPrimary() {
 		ID local = getLocalContainerID();
 		ID home = getHomeContainerID();
 		if (local == null || home == null) {
@@ -185,7 +193,7 @@ public class BaseSharedObject implements ISharedObject, IIdentifiable {
 		return (local.equals(home));
 	}
 
-	protected Map getProperties() {
+	protected final Map getProperties() {
 		return getConfig().getProperties();
 	}
 
