@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-<!--
-   <extension-point id="providerManagers" name="Smack Extension/IQ Provider Managers" schema="schema/providerManagers.exsd"/>
-   <extension-point id="debuggers" name="Smack Debugger" schema="schema/debuggers.exsd"/>
-   -->
 </plugin>
