@@ -12,23 +12,14 @@
 package org.eclipse.ecf.provider.datashare;
 
 import java.util.Map;
-
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.identity.StringID;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.datashare.IChannel;
-import org.eclipse.ecf.datashare.IChannelConfig;
-import org.eclipse.ecf.datashare.IChannelContainerAdapter;
-import org.eclipse.ecf.datashare.IChannelContainerListener;
-import org.eclipse.ecf.datashare.IChannelListener;
-import org.eclipse.ecf.internal.provider.datashare.Activator;
-import org.eclipse.ecf.internal.provider.datashare.DatashareProviderDebugOptions;
+import org.eclipse.ecf.datashare.*;
+import org.eclipse.ecf.internal.provider.datashare.*;
+import org.eclipse.ecf.internal.provider.datashare.Messages;
 import org.eclipse.ecf.provider.generic.SOContainer;
 
 public class DatashareContainerAdapter implements IChannelContainerAdapter {
@@ -50,25 +41,12 @@ public class DatashareContainerAdapter implements IChannelContainerAdapter {
 
 	protected void initialize() {
 		try {
-			this.delegateID = IDFactory.getDefault().createStringID(
-					SharedObjectDatashareContainerAdapter.class.getName());
+			this.delegateID = IDFactory.getDefault().createStringID(SharedObjectDatashareContainerAdapter.class.getName());
 			this.delegate = new SharedObjectDatashareContainerAdapter();
-			this.container.getSharedObjectManager().addSharedObject(delegateID,
-					delegate, null);
+			this.container.getSharedObjectManager().addSharedObject(delegateID, delegate, null);
 		} catch (Exception e) {
-			Trace.catching(Activator.PLUGIN_ID,
-					DatashareProviderDebugOptions.EXCEPTIONS_CATCHING,
-					DatashareContainerAdapter.class,
-					"DatashareContainerAdapter.initialize", e);
-			Activator
-					.getDefault()
-					.log(
-							new Status(
-									IStatus.ERROR,
-									Activator.PLUGIN_ID,
-									SO_CREATION_ERROR,
-									"Exception in creating datashare container adapter",
-									e));
+			Trace.catching(Activator.PLUGIN_ID, DatashareProviderDebugOptions.EXCEPTIONS_CATCHING, DatashareContainerAdapter.class, "DatashareContainerAdapter.initialize", e); //$NON-NLS-1$
+			Activator.getDefault().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, SO_CREATION_ERROR, Messages.DatashareContainerAdapter_EXCEPTION_CREATING_ADAPTER, e));
 		}
 	}
 
@@ -77,14 +55,11 @@ public class DatashareContainerAdapter implements IChannelContainerAdapter {
 	 * 
 	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#createChannel(org.eclipse.ecf.datashare.IChannelConfig)
 	 */
-	public IChannel createChannel(final ID newID,
-			final IChannelListener listener, final Map properties)
-			throws ECFException {
+	public IChannel createChannel(final ID newID, final IChannelListener listener, final Map properties) throws ECFException {
 		return delegate.createChannel(newID, listener, properties);
 	}
 
-	public IChannel createChannel(IChannelConfig newChannelConfig)
-			throws ECFException {
+	public IChannel createChannel(IChannelConfig newChannelConfig) throws ECFException {
 		return delegate.createChannel(newChannelConfig);
 	}
 
@@ -112,8 +87,7 @@ public class DatashareContainerAdapter implements IChannelContainerAdapter {
 	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#getChannelNamespace()
 	 */
 	public Namespace getChannelNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(
-				StringID.class.getName());
+		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
 	}
 
 	public void addListener(IChannelContainerListener listener) {
@@ -127,7 +101,7 @@ public class DatashareContainerAdapter implements IChannelContainerAdapter {
 	public Object getAdapter(Class adapter) {
 		if (adapter != null && adapter.equals(IContainer.class))
 			return container;
-		else
-			return null;
+		final IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
+		return (adapterManager == null) ? null : adapterManager.loadAdapter(this, adapter.getName());
 	}
 }

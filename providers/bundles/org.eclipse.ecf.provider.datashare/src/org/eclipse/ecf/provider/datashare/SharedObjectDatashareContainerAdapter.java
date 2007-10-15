@@ -12,45 +12,22 @@
 package org.eclipse.ecf.provider.datashare;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
-import org.eclipse.ecf.core.identity.StringID;
-import org.eclipse.ecf.core.sharedobject.BaseSharedObject;
-import org.eclipse.ecf.core.sharedobject.ISharedObject;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.sharedobject.SharedObjectCreateException;
-import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
-import org.eclipse.ecf.core.sharedobject.SharedObjectFactory;
-import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
-import org.eclipse.ecf.core.sharedobject.SharedObjectTypeDescription;
+import java.util.*;
+import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectActivatedEvent;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectDeactivatedEvent;
-import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.IEventProcessor;
-import org.eclipse.ecf.datashare.IChannel;
-import org.eclipse.ecf.datashare.IChannelConfig;
-import org.eclipse.ecf.datashare.IChannelContainerAdapter;
-import org.eclipse.ecf.datashare.IChannelContainerListener;
-import org.eclipse.ecf.datashare.IChannelListener;
-import org.eclipse.ecf.datashare.events.IChannelContainerChannelActivatedEvent;
-import org.eclipse.ecf.datashare.events.IChannelContainerChannelDeactivatedEvent;
-import org.eclipse.ecf.datashare.events.IChannelContainerEvent;
+import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.datashare.*;
+import org.eclipse.ecf.datashare.events.*;
+import org.eclipse.ecf.internal.provider.datashare.Messages;
+import org.eclipse.osgi.util.NLS;
 
-public class SharedObjectDatashareContainerAdapter extends BaseSharedObject
-		implements IChannelContainerAdapter {
+public class SharedObjectDatashareContainerAdapter extends BaseSharedObject implements IChannelContainerAdapter {
 
 	protected static final int DEFAULT_TRANSACTION_WAIT = 30000;
 
-	protected List channelContainerListeners = Collections
-			.synchronizedList(new ArrayList());
+	protected List channelContainerListeners = Collections.synchronizedList(new ArrayList());
 
 	protected void initialize() throws SharedObjectInitException {
 		super.initialize();
@@ -69,12 +46,9 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject
 							}
 
 							public String toString() {
-								StringBuffer buf = new StringBuffer(
-										"ChannelActivatedEvent[");
-								buf.append("channelid=").append(
-										soae.getActivatedID()).append(";");
-								buf.append("containerid=").append(
-										soae.getLocalContainerID()).append("]");
+								StringBuffer buf = new StringBuffer("ChannelActivatedEvent["); //$NON-NLS-1$
+								buf.append("channelid=").append(soae.getActivatedID()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+								buf.append("containerid=").append(soae.getLocalContainerID()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 								return buf.toString();
 							}
 						});
@@ -91,12 +65,9 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject
 							}
 
 							public String toString() {
-								StringBuffer buf = new StringBuffer(
-										"ChannelDeactivatedEvent[");
-								buf.append("channelid=").append(
-										sode.getDeactivatedID()).append(";");
-								buf.append("containerid=").append(
-										sode.getLocalContainerID()).append("]");
+								StringBuffer buf = new StringBuffer("ChannelDeactivatedEvent["); //$NON-NLS-1$
+								buf.append("channelid=").append(sode.getDeactivatedID()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+								buf.append("containerid=").append(sode.getLocalContainerID()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 								return buf.toString();
 							}
 						});
@@ -109,8 +80,7 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject
 	protected void fireChannelContainerListeners(IChannelContainerEvent event) {
 		synchronized (channelContainerListeners) {
 			for (Iterator i = channelContainerListeners.iterator(); i.hasNext();) {
-				IChannelContainerListener l = (IChannelContainerListener) i
-						.next();
+				IChannelContainerListener l = (IChannelContainerListener) i.next();
 				if (l != null)
 					l.handleChannelContainerEvent(event);
 			}
@@ -122,9 +92,7 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject
 	 * 
 	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#createChannel(org.eclipse.ecf.datashare.IChannelConfig)
 	 */
-	public IChannel createChannel(final ID newID,
-			final IChannelListener listener, final Map properties)
-			throws ECFException {
+	public IChannel createChannel(final ID newID, final IChannelListener listener, final Map properties) throws ECFException {
 		return createChannel(new IChannelConfig() {
 			public IChannelListener getListener() {
 				return listener;
@@ -144,57 +112,48 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject
 		});
 	}
 
-	protected SharedObjectDescription createChannelSharedObjectDescription(
-			final IChannelConfig channelConfig) throws ECFException {
-		return new SharedObjectDescription(BaseChannel.class, channelConfig
-				.getID(), channelConfig.getProperties());
+	/**
+	 * @param channelConfig
+	 * @return SharedObjectDescription a non-<code>null</code> instance.
+	 * @throws ECFException not thrown by this implementation.
+	 */
+	protected SharedObjectDescription createChannelSharedObjectDescription(final IChannelConfig channelConfig) throws ECFException {
+		return new SharedObjectDescription(BaseChannel.class, channelConfig.getID(), channelConfig.getProperties());
 	}
 
 	protected ISharedObjectTransactionConfig createChannelSharedObjectTransactionConfig() {
 		return null;
 	}
 
-	protected ISharedObject createSharedObject(
-			SharedObjectTypeDescription typeDescription,
-			ISharedObjectTransactionConfig transactionConfig,
-			IChannelListener listener) throws SharedObjectCreateException {
+	protected ISharedObject createSharedObject(SharedObjectTypeDescription typeDescription, ISharedObjectTransactionConfig transactionConfig, IChannelListener listener) throws SharedObjectCreateException {
 		try {
 			Class clazz = Class.forName(typeDescription.getClassName());
-			Constructor cons = clazz.getDeclaredConstructor(new Class[] {
-					ISharedObjectTransactionConfig.class,
-					IChannelListener.class });
-			return (ISharedObject) cons.newInstance(new Object[] {
-					transactionConfig, listener });
+			Constructor cons = clazz.getDeclaredConstructor(new Class[] {ISharedObjectTransactionConfig.class, IChannelListener.class});
+			return (ISharedObject) cons.newInstance(new Object[] {transactionConfig, listener});
 		} catch (Exception e) {
-			throw new SharedObjectCreateException(
-					"Cannot create"
-							+ typeDescription.getClassName(), e);
+			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectDatashareContainerAdapter_EXCEPTION_CANNOTCREATESHAREDOBJECT, typeDescription.getClassName()), e);
 		}
 	}
 
-	public IChannel createChannel(IChannelConfig newChannelConfig)
-			throws ECFException {
+	public IChannel createChannel(IChannelConfig newChannelConfig) throws ECFException {
 		SharedObjectDescription sodesc = createChannelSharedObjectDescription(newChannelConfig);
 		SharedObjectTypeDescription sotypedesc = sodesc.getTypeDescription();
 		IChannelListener listener = newChannelConfig.getListener();
 		ISharedObjectTransactionConfig transactionConfig = createChannelSharedObjectTransactionConfig();
 		ISharedObject so = null;
 		if (sotypedesc.getName() != null) {
-			so = SharedObjectFactory.getDefault().createSharedObject(
-					sotypedesc, new Object[] { transactionConfig, listener });
+			so = SharedObjectFactory.getDefault().createSharedObject(sotypedesc, new Object[] {transactionConfig, listener});
 		} else {
 			so = createSharedObject(sotypedesc, transactionConfig, listener);
 		}
 		IChannel channel = (IChannel) so.getAdapter(IChannel.class);
 		if (channel == null)
-			throw new SharedObjectCreateException("Cannot adapt object "
-					+ channel + " to be of type IChannel");
+			throw new SharedObjectCreateException(NLS.bind(Messages.SharedObjectDatashareContainerAdapter_EXCEPTION_CANNOT_CREATE_OBJECT_OF_TYPE, channel));
 		ID newID = sodesc.getID();
 		if (newID == null)
 			newID = IDFactory.getDefault().createGUID();
 		// Now add channel to container...this will block
-		getContext().getSharedObjectManager().addSharedObject(newID, so,
-				sodesc.getProperties());
+		getContext().getSharedObjectManager().addSharedObject(newID, so, sodesc.getProperties());
 		return channel;
 	}
 
@@ -206,9 +165,7 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject
 	public IChannel getChannel(ID channelID) {
 		if (channelID == null || channelID.equals(getID()))
 			return null;
-		else
-			return (IChannel) getContext().getSharedObjectManager()
-					.getSharedObject(channelID);
+		return (IChannel) getContext().getSharedObjectManager().getSharedObject(channelID);
 	}
 
 	/*
@@ -219,8 +176,7 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject
 	public boolean removeChannel(ID channelID) {
 		if (channelID == null || channelID.equals(getID()))
 			return false;
-		ISharedObject o = getContext().getSharedObjectManager()
-				.removeSharedObject(channelID);
+		ISharedObject o = getContext().getSharedObjectManager().removeSharedObject(channelID);
 		return (o != null);
 	}
 
@@ -230,8 +186,7 @@ public class SharedObjectDatashareContainerAdapter extends BaseSharedObject
 	 * @see org.eclipse.ecf.datashare.IChannelContainerAdapter#getChannelNamespace()
 	 */
 	public Namespace getChannelNamespace() {
-		return IDFactory.getDefault().getNamespaceByName(
-				StringID.class.getName());
+		return IDFactory.getDefault().getNamespaceByName(StringID.class.getName());
 	}
 
 	public void addListener(IChannelContainerListener listener) {

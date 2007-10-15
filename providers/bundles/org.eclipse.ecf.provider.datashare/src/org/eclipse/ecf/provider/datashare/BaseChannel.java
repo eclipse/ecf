@@ -15,34 +15,24 @@ import java.util.Map;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectTransactionConfig;
-import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
-import org.eclipse.ecf.core.sharedobject.TransactionSharedObject;
+import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.events.ISharedObjectMessageEvent;
-import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.IEventProcessor;
-import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.datashare.IChannel;
-import org.eclipse.ecf.datashare.IChannelContainerAdapter;
-import org.eclipse.ecf.datashare.IChannelListener;
-import org.eclipse.ecf.datashare.events.IChannelEvent;
-import org.eclipse.ecf.datashare.events.IChannelDisconnectEvent;
-import org.eclipse.ecf.datashare.events.IChannelConnectEvent;
-import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
+import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.datashare.*;
+import org.eclipse.ecf.datashare.events.*;
 import org.eclipse.ecf.internal.provider.datashare.Activator;
+import org.eclipse.ecf.internal.provider.datashare.Messages;
 
 public class BaseChannel extends TransactionSharedObject implements IChannel {
 
-	public static final String RECEIVER_ID_PROPERTY = BaseChannel.class
-			.getName();
+	public static final String RECEIVER_ID_PROPERTY = BaseChannel.class.getName();
 
 	static class ChannelMsg implements Serializable {
 		private static final long serialVersionUID = 9065358269778864152L;
 		byte[] channelData = null;
 
 		ChannelMsg() {
+			//
 		}
 
 		ChannelMsg(byte[] data) {
@@ -54,8 +44,8 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		}
 
 		public String toString() {
-			StringBuffer buf = new StringBuffer("BaseChannel.ChannelMsg[");
-			buf.append("data=").append(getData()).append("]");
+			StringBuffer buf = new StringBuffer("BaseChannel.ChannelMsg["); //$NON-NLS-1$
+			buf.append("data=").append(getData()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 			return buf.toString();
 		}
 	}
@@ -71,8 +61,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 * @param listener
 	 *            the listener associated with this channel instance
 	 */
-	public BaseChannel(ISharedObjectTransactionConfig config,
-			IChannelListener listener) {
+	public BaseChannel(ISharedObjectTransactionConfig config, IChannelListener listener) {
 		super(config);
 		setChannelListener(listener);
 	}
@@ -111,26 +100,21 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 
 		addEventProcessor(new IEventProcessor() {
 			public boolean processEvent(Event event) {
-				trace("processEvent(" + event + ")");
+				trace("processEvent(" + event + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 				IChannelListener l = getListener();
 				if (event instanceof IContainerConnectedEvent) {
 					if (l != null)
-						l.handleChannelEvent(createChannelGroupJoinEvent(true,
-								((IContainerConnectedEvent) event)
-										.getTargetID()));
+						l.handleChannelEvent(createChannelGroupJoinEvent(true, ((IContainerConnectedEvent) event).getTargetID()));
 				} else if (event instanceof IContainerDisconnectedEvent) {
 					if (l != null)
-						l.handleChannelEvent(createChannelGroupDepartEvent(
-								true, ((IContainerDisconnectedEvent) event)
-										.getTargetID()));
+						l.handleChannelEvent(createChannelGroupDepartEvent(true, ((IContainerDisconnectedEvent) event).getTargetID()));
 				} else if (event instanceof ISharedObjectMessageEvent) {
-					BaseChannel.this
-							.handleMessageEvent((ISharedObjectMessageEvent) event);
+					BaseChannel.this.handleMessageEvent((ISharedObjectMessageEvent) event);
 				}
 				return false;
 			}
 		});
-		trace("initialize()");
+		trace("initialize()"); //$NON-NLS-1$
 
 	}
 
@@ -140,12 +124,11 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	public Object getAdapter(Class clazz) {
 		if (clazz.equals(IChannel.class)) {
 			return this;
-		} else
-			return super.getAdapter(clazz);
+		}
+		return super.getAdapter(clazz);
 	}
 
-	private IChannelConnectEvent createChannelGroupJoinEvent(
-			final boolean hasJoined, final ID targetID) {
+	IChannelConnectEvent createChannelGroupJoinEvent(final boolean hasJoined, final ID targetID) {
 		return new IChannelConnectEvent() {
 			private static final long serialVersionUID = -1085237280463725283L;
 
@@ -158,16 +141,14 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			}
 
 			public String toString() {
-				StringBuffer buf = new StringBuffer("ChannelConnectEvent[");
-				buf.append("channelid=").append(getChannelID()).append(
-						";targetid=").append(getTargetID()).append("]");
+				StringBuffer buf = new StringBuffer("ChannelConnectEvent["); //$NON-NLS-1$
+				buf.append("channelid=").append(getChannelID()).append(";targetid=").append(getTargetID()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				return buf.toString();
 			}
 		};
 	}
 
-	private IChannelDisconnectEvent createChannelGroupDepartEvent(
-			final boolean hasJoined, final ID targetID) {
+	IChannelDisconnectEvent createChannelGroupDepartEvent(final boolean hasJoined, final ID targetID) {
 		return new IChannelDisconnectEvent() {
 			private static final long serialVersionUID = -1085237280463725283L;
 
@@ -180,15 +161,14 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 			}
 
 			public String toString() {
-				StringBuffer buf = new StringBuffer("ChannelDisconnectEvent[");
-				buf.append("channelid=").append(getChannelID()).append(
-						";targetid=").append(getTargetID()).append("]");
+				StringBuffer buf = new StringBuffer("ChannelDisconnectEvent["); //$NON-NLS-1$
+				buf.append("channelid=").append(getChannelID()).append(";targetid=").append(getTargetID()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				return buf.toString();
 			}
 		};
 	}
 
-	private Event handleMessageEvent(final ISharedObjectMessageEvent event) {
+	Event handleMessageEvent(final ISharedObjectMessageEvent event) {
 		Object eventData = event.getData();
 		ChannelMsg channelMsg = null;
 		IChannelListener l = getListener();
@@ -214,11 +194,8 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 					}
 
 					public String toString() {
-						StringBuffer buf = new StringBuffer(
-								"ChannelMessageEvent[");
-						buf.append("channelid=").append(getChannelID()).append(
-								";fromid=").append(getFromContainerID())
-								.append(";data=").append(getData()).append("]");
+						StringBuffer buf = new StringBuffer("ChannelMessageEvent["); //$NON-NLS-1$
+						buf.append("channelid=").append(getChannelID()).append(";fromid=").append(getFromContainerID()).append(";data=").append(getData()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 						return buf.toString();
 					}
 				});
@@ -249,7 +226,7 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		try {
 			getContext().sendMessage(receiver, new ChannelMsg(message));
 		} catch (Exception e) {
-			throw new ECFException("send message exception", e);
+			throw new ECFException("send message exception", e); //$NON-NLS-1$
 		}
 	}
 
@@ -283,13 +260,9 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 */
 	protected void receiveUndeliveredChannelEvent(IChannelEvent channelEvent) {
 		if (isPrimary())
-			trace("host.receiveUndeliveredChannelEvent(" + channelEvent
-					+ ";containerid=" + getContext().getLocalContainerID()
-					+ ")");
+			trace("host.receiveUndeliveredChannelEvent(" + channelEvent + ";containerid=" + getContext().getLocalContainerID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		else
-			trace("replica.receiveUndeliveredChannelEvent(" + channelEvent
-					+ ";containerid=" + getContext().getLocalContainerID()
-					+ ")");
+			trace("replica.receiveUndeliveredChannelEvent(" + channelEvent + ";containerid=" + getContext().getLocalContainerID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	/**
@@ -304,10 +277,8 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 	 *         replica of this host shared object. If null, no create message
 	 *         will be sent to the target container.
 	 */
-	protected ReplicaSharedObjectDescription getReplicaDescription(
-			ID targetContainerID) {
-		return new ReplicaSharedObjectDescription(getClass(), getID(),
-				getConfig().getHomeContainerID(), getConfig().getProperties());
+	protected ReplicaSharedObjectDescription getReplicaDescription(ID targetContainerID) {
+		return new ReplicaSharedObjectDescription(getClass(), getID(), getConfig().getHomeContainerID(), getConfig().getProperties());
 	}
 
 	/**
@@ -339,22 +310,18 @@ public class BaseChannel extends TransactionSharedObject implements IChannel {
 		try {
 			rcvr = (ID) properties.get(RECEIVER_ID_PROPERTY);
 		} catch (ClassCastException e) {
-			throw new SharedObjectInitException(
-					"Bad RECEIVER_ID_PROPERTY for replica.  Cannot be cast to org.eclipse.ecf.core.identity.ID type");
+			throw new SharedObjectInitException(Messages.BaseChannel_EXCEPTION_BAD_RECEIVER_ID);
 		}
 		if (rcvr != null) {
 			// Now...get local channel container first...throw if we can't get
 			// it
-			IChannelContainerAdapter container = (IChannelContainerAdapter) getContext()
-					.getAdapter(IChannelContainerAdapter.class);
+			IChannelContainerAdapter container = (IChannelContainerAdapter) getContext().getAdapter(IChannelContainerAdapter.class);
 			if (container == null)
-				throw new SharedObjectInitException(
-						"channel container is null/not available");
+				throw new SharedObjectInitException(Messages.BaseChannel_EXCEPTION_CHANNEL_CONTAINER_NULL);
 			// Now get receiver IChannel...throw if we can't get it
 			final IChannel receiver = container.getChannel(rcvr);
 			if (receiver == null)
-				throw new SharedObjectInitException(
-						"receiver channel is null/not available");
+				throw new SharedObjectInitException(Messages.BaseChannel_EXCEPTION_RECEIVER_NULL);
 			setChannelListener(receiver.getListener());
 		}
 	}
