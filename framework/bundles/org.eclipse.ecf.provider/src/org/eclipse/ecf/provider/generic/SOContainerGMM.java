@@ -11,18 +11,12 @@
 
 package org.eclipse.ecf.provider.generic;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.TreeMap;
+import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
 import org.eclipse.ecf.internal.provider.ProviderPlugin;
-import org.eclipse.ecf.provider.generic.gmm.GMMImpl;
-import org.eclipse.ecf.provider.generic.gmm.Member;
-import org.eclipse.ecf.provider.generic.gmm.MemberChanged;
+import org.eclipse.ecf.provider.generic.gmm.*;
 
 class SOContainerGMM implements Observer {
 	SOContainer container;
@@ -44,7 +38,7 @@ class SOContainerGMM implements Observer {
 
 	protected void debug(String msg) {
 		if (Trace.shouldTrace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG)) {
-			Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg + ";container=" + container.getID() + ";existingmembers=" + groupManager); //$NON-NLS-1$
+			Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, msg + ";container=" + container.getID() + ";existingmembers=" + groupManager); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -60,9 +54,8 @@ class SOContainerGMM implements Observer {
 		debug("addMember(" + m.getID() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (maxMembers > 0 && getSize() > maxMembers) {
 			return false;
-		} else {
-			return groupManager.addMember(m);
 		}
+		return groupManager.addMember(m);
 	}
 
 	synchronized int setMaxMembers(int max) {
@@ -183,8 +176,8 @@ class SOContainerGMM implements Observer {
 		debug("removeSharedObjectFromLoading(" + id + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (loading.remove(id) != null) {
 			return true;
-		} else
-			return false;
+		}
+		return false;
 	}
 
 	synchronized ID[] getActiveKeys() {
@@ -338,9 +331,8 @@ class DestroyIterator implements Iterator {
 			final ID value = next;
 			next = null;
 			return value;
-		} else {
-			throw new java.util.NoSuchElementException();
 		}
+		throw new java.util.NoSuchElementException();
 	}
 
 	ID getNext() {

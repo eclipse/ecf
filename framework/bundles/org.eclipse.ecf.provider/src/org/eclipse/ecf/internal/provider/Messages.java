@@ -31,6 +31,7 @@ public class Messages extends NLS {
 	public static String ClientSOContainer_Currently_Connecting;
 	public static String ClientSOContainer_Exception_Connecting;
 	public static String ClientSOContainer_Exception_ID_Array_Null;
+	public static String ClientSOContainer_EXCEPTION_TARGETID_NOT_NULL;
 	public static String ClientSOContainer_Invalid_Server_Response;
 	public static String ClientSOContainer_Is_Not_Same;
 	public static String ClientSOContainer_Not_Connected;
@@ -50,6 +51,9 @@ public class Messages extends NLS {
 	public static String SOContainer_Exception_Already_In_Container;
 	public static String SOContainer_Exception_Bad_Container_Message;
 	public static String SOContainer_Exception_Bad_Description;
+	public static String SOContainer_EXCEPTION_CLASS_NOT_FOUND;
+	public static String SOContainer_EXCEPTION_NOT_CONTAINER_MESSAGE;
+	public static String SOContainer_EXCEPTION_INVALID_CLASS;
 	public static String SOContainer_Exception_Config_Not_Null;
 	public static String SOContainer_Exception_Object_With_ID;
 	public static String SOContainer_Exception_ObjectID_Is_Null;
@@ -83,5 +87,6 @@ public class Messages extends NLS {
 	}
 
 	private Messages() {
+		// 
 	}
 }

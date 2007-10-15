@@ -16,4 +16,5 @@ package org.eclipse.ecf.provider.comm;
  * 
  */
 public interface ISynchAsynchEventHandler extends ISynchEventHandler, IAsynchEventHandler {
+	// no methods
 }

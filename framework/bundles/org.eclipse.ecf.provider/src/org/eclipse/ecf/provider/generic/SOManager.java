@@ -18,39 +18,18 @@ package org.eclipse.ecf.provider.generic;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
+import java.util.*;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.IDCreateException;
+import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.sharedobject.*;
+import org.eclipse.ecf.core.sharedobject.events.*;
 import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.sharedobject.util.QueueEnqueueImpl;
-import org.eclipse.ecf.core.sharedobject.ISharedObject;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectConnector;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
-import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
-import org.eclipse.ecf.core.sharedobject.SharedObjectConnectException;
-import org.eclipse.ecf.core.sharedobject.SharedObjectCreateException;
-import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
-import org.eclipse.ecf.core.sharedobject.SharedObjectDisconnectException;
-import org.eclipse.ecf.core.sharedobject.SharedObjectFactory;
-import org.eclipse.ecf.core.sharedobject.SharedObjectTypeDescription;
-import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerAddEvent;
-import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerConnectEvent;
-import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerCreateEvent;
-import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerDisconnectEvent;
-import org.eclipse.ecf.core.sharedobject.events.SharedObjectManagerRemoveEvent;
 import org.eclipse.ecf.core.util.AbstractFactory;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.internal.provider.*;
 import org.eclipse.ecf.internal.provider.Messages;
-import org.eclipse.ecf.internal.provider.ProviderPlugin;
 
 /**
  * 
@@ -111,8 +90,7 @@ public class SOManager implements ISharedObjectManager {
 	protected ISharedObject verifySharedObject(Object newSharedObject) {
 		if (newSharedObject instanceof ISharedObject)
 			return (ISharedObject) newSharedObject;
-		else
-			throw new ClassCastException(Messages.SOManager_Object + newSharedObject.toString() + Messages.SOManager_Does_Not_Implement + ISharedObject.class.getName());
+		throw new ClassCastException(Messages.SOManager_Object + newSharedObject.toString() + Messages.SOManager_Does_Not_Implement + ISharedObject.class.getName());
 	}
 
 	protected ISharedObject loadSharedObject(SharedObjectDescription sd) throws Exception {
@@ -177,8 +155,8 @@ public class SOManager implements ISharedObjectManager {
 		ID descID = sd.getID();
 		if (descID == null) {
 			return IDFactory.getDefault().createGUID(GUID_SIZE);
-		} else
-			return descID;
+		}
+		return descID;
 	}
 
 	/*

@@ -10,20 +10,10 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.ecf.core.ContainerCreateException;
-import org.eclipse.ecf.core.ContainerTypeDescription;
-import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
+import java.util.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.ecf.core.*;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.provider.IContainerInstantiator;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
@@ -50,8 +40,8 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 			String val = (String) arg;
 			if (val.equals("")) { //$NON-NLS-1$
 				return IDFactory.getDefault().createGUID();
-			} else
-				return IDFactory.getDefault().createStringID(val);
+			}
+			return IDFactory.getDefault().createStringID(val);
 		} else if (arg instanceof Integer) {
 			return IDFactory.getDefault().createGUID(((Integer) arg).intValue());
 		} else
@@ -155,9 +145,8 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 			// new ID must not be null
 			if (isClient) {
 				return new TCPClientSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getKeepAlive().intValue());
-			} else {
-				return new TCPServerSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getKeepAlive().intValue());
 			}
+			return new TCPServerSOContainer(new SOContainerConfig(gcargs.getID()), gcargs.getKeepAlive().intValue());
 		} catch (Exception e) {
 			Trace.catching(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), "createInstance", e); //$NON-NLS-1$
 			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, CREATE_INSTANCE_ERROR_CODE, "createInstance", e)); //$NON-NLS-1$
@@ -177,8 +166,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 	protected Set getInterfacesForClass(Set s, Class clazz) {
 		if (clazz.equals(Object.class))
 			return s;
-		else
-			s.addAll(getInterfacesForClass(s, clazz.getSuperclass()));
+		s.addAll(getInterfacesForClass(s, clazz.getSuperclass()));
 		s.addAll(Arrays.asList(clazz.getInterfaces()));
 		return s;
 	}
@@ -206,8 +194,7 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 	public String[] getSupportedAdapterTypes(ContainerTypeDescription description) {
 		if (!isClient(description))
 			return getInterfacesAndAdaptersForClass(TCPServerSOContainer.class);
-		else
-			return getInterfacesAndAdaptersForClass(TCPClientSOContainer.class);
+		return getInterfacesAndAdaptersForClass(TCPClientSOContainer.class);
 	}
 
 	/*
@@ -218,7 +205,6 @@ public class GenericContainerInstantiator implements IContainerInstantiator {
 	public Class[][] getSupportedParameterTypes(ContainerTypeDescription description) {
 		if (!isClient(description))
 			return new Class[][] { {ID.class}, {ID.class, Integer.class}};
-		else
-			return new Class[][] { {}, {ID.class}, {ID.class, Integer.class}};
+		return new Class[][] { {}, {ID.class}, {ID.class, Integer.class}};
 	}
 }

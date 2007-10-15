@@ -17,20 +17,21 @@ public class AsynchMessage implements Serializable {
 	private static final long serialVersionUID = 3258689905679873075L;
 	Serializable data;
 
-    protected AsynchMessage() {
-    }
+	protected AsynchMessage() {
+		//
+	}
 
-    protected AsynchMessage(Serializable data) {
-        this.data = data;
-    }
+	protected AsynchMessage(Serializable data) {
+		this.data = data;
+	}
 
-    Serializable getData() {
-        return data;
-    }
+	Serializable getData() {
+		return data;
+	}
 
-    public String toString() {
-        StringBuffer buf = new StringBuffer("AsynchMessage["); //$NON-NLS-1$
-        buf.append(data).append("]"); //$NON-NLS-1$
-        return buf.toString();
-    }
+	public String toString() {
+		StringBuffer buf = new StringBuffer("AsynchMessage["); //$NON-NLS-1$
+		buf.append(data).append("]"); //$NON-NLS-1$
+		return buf.toString();
+	}
 }

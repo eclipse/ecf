@@ -8,36 +8,18 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic;
 
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.net.ConnectException;
-
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.events.ContainerConnectedEvent;
-import org.eclipse.ecf.core.events.ContainerConnectingEvent;
-import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
-import org.eclipse.ecf.core.events.ContainerEjectedEvent;
+import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.security.Callback;
-import org.eclipse.ecf.core.security.CallbackHandler;
-import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.security.IConnectInitiatorPolicy;
-import org.eclipse.ecf.core.security.UnsupportedCallbackException;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerClient;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
-import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
+import org.eclipse.ecf.core.security.*;
+import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.internal.provider.Messages;
-import org.eclipse.ecf.provider.comm.AsynchEvent;
-import org.eclipse.ecf.provider.comm.ConnectionCreateException;
-import org.eclipse.ecf.provider.comm.DisconnectEvent;
-import org.eclipse.ecf.provider.comm.IAsynchConnection;
-import org.eclipse.ecf.provider.comm.IConnection;
-import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.provider.comm.SynchEvent;
+import org.eclipse.ecf.internal.provider.ProviderPlugin;
+import org.eclipse.ecf.provider.comm.*;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public abstract class ClientSOContainer extends SOContainer implements ISharedObjectContainerClient {
@@ -59,6 +41,7 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 	public static final byte CONNECTED = 2;
 
 	static final class Lock {
+		//
 	}
 
 	protected Lock connectLock;
@@ -137,7 +120,7 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 			if (isClosing)
 				throw new IllegalStateException(Messages.ClientSOContainer_Container_Closing);
 			if (targetID == null)
-				throw new ContainerConnectException("targetID cannot be null");
+				throw new ContainerConnectException(Messages.ClientSOContainer_EXCEPTION_TARGETID_NOT_NULL);
 			Object response = null;
 			synchronized (getConnectLock()) {
 				// Throw if already connected
@@ -218,8 +201,7 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 	protected int getConnectTimeout() {
 		if (connectPolicy != null)
 			return connectPolicy.getConnectTimeout();
-		else
-			return DEFAULT_CONNECT_TIMEOUT;
+		return DEFAULT_CONNECT_TIMEOUT;
 	}
 
 	protected void handleLeaveGroupMessage(ContainerMessage mess) {
@@ -288,8 +270,11 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.provider.generic.SOContainer#forwardExcluding(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.provider.generic.ContainerMessage)
+	/**
+	 * @param from
+	 * @param excluding
+	 * @param data
+	 * @throws IOException not thrown by this implementation.
 	 */
 	protected void forwardExcluding(ID from, ID excluding, ContainerMessage data) throws IOException {
 		// NOP
@@ -313,6 +298,7 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 					try {
 						connection.sendSynch(groupID, serialize(ContainerMessage.createLeaveGroupMessage(getID(), groupID, getNextSequenceNumber(), getLeaveData(groupID))));
 					} catch (final Exception e) {
+						ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, IStatus.ERROR, "disconnect.sendSynch", e)); //$NON-NLS-1$
 					}
 					synchronized (getGroupMembershipLock()) {
 						handleLeave(groupID, connection);
@@ -344,10 +330,25 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 		connection.sendAsynch(message.getToContainerID(), serialize(message));
 	}
 
-	protected void forwardExcluding(ID from, ID excluding, byte msg, Serializable data) throws IOException { /* NOP */
+	/**
+	 * @param from
+	 * @param excluding
+	 * @param msg
+	 * @param data
+	 * @throws IOException not thrown by this implementation.
+	 */
+	protected void forwardExcluding(ID from, ID excluding, byte msg, Serializable data) throws IOException {
+		// NOP 
 	}
 
-	protected void forwardToRemote(ID from, ID to, ContainerMessage message) throws IOException { /* NOP */
+	/**
+	 * @param from
+	 * @param to
+	 * @param message
+	 * @throws IOException not thrown by this implementation.
+	 */
+	protected void forwardToRemote(ID from, ID to, ContainerMessage message) throws IOException {
+		// NOP
 	}
 
 	/* (non-Javadoc)
@@ -449,8 +450,7 @@ public abstract class ClientSOContainer extends SOContainer implements ISharedOb
 			final Object data = viewChangeMessage.getData();
 			if (data != null && data instanceof Exception)
 				throw (Exception) data;
-			else
-				throw new NullPointerException(Messages.ClientSOContainer_Invalid_Server_Response);
+			throw new InvalidObjectException(Messages.ClientSOContainer_Invalid_Server_Response);
 		}
 		// Otherwise everything is OK to this point and we get the group member
 		// IDs from server

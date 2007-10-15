@@ -14,16 +14,12 @@ package org.eclipse.ecf.provider.generic;
 import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-
-import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.events.ContainerConnectedEvent;
+import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObject;
 import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
-import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectCreateResponseEvent;
-import org.eclipse.ecf.core.sharedobject.events.RemoteSharedObjectEvent;
-import org.eclipse.ecf.core.sharedobject.events.SharedObjectActivatedEvent;
-import org.eclipse.ecf.core.sharedobject.events.SharedObjectDeactivatedEvent;
+import org.eclipse.ecf.core.sharedobject.events.*;
 import org.eclipse.ecf.core.sharedobject.util.QueueEnqueueImpl;
 import org.eclipse.ecf.core.sharedobject.util.SimpleFIFOQueue;
 import org.eclipse.ecf.core.util.Event;
@@ -35,11 +31,11 @@ import org.eclipse.ecf.provider.generic.gmm.Member;
 public class SOWrapper {
 	protected ISharedObject sharedObject;
 	private SOConfig sharedObjectConfig;
-	private ID sharedObjectID;
+	ID sharedObjectID;
 	private SOContainer container;
 	private ID containerID;
 	private Thread thread;
-	private SimpleFIFOQueue queue;
+	SimpleFIFOQueue queue;
 
 	protected SOWrapper(SOContainer.LoadingSharedObject obj, SOContainer cont) {
 		sharedObjectID = obj.getID();
@@ -181,6 +177,7 @@ public class SOWrapper {
 		private static final long serialVersionUID = 3688503311859135536L;
 
 		DisposeEvent() {
+			//
 		}
 	}
 

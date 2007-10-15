@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ecf.provider.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectStreamClass;
+import java.io.*;
 
 /**
  * Restores Java objects from the underlying stream by using the classloader
@@ -24,8 +21,7 @@ import java.io.ObjectStreamClass;
 public class IdentifiableObjectInputStream extends ObjectInputStream {
 	IClassLoaderMapper mapper;
 
-	public IdentifiableObjectInputStream(IClassLoaderMapper map, InputStream ins)
-			throws IOException {
+	public IdentifiableObjectInputStream(IClassLoaderMapper map, InputStream ins) throws IOException {
 		super(ins);
 		this.mapper = map;
 	}
@@ -35,17 +31,15 @@ public class IdentifiableObjectInputStream extends ObjectInputStream {
 	 * 
 	 * @see java.io.ObjectInputStream#resolveClass(java.io.ObjectStreamClass)
 	 */
-	protected Class resolveClass(ObjectStreamClass desc) throws IOException,
-			ClassNotFoundException {
+	protected Class resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
 		String name = readUTF();
 		if (name == null || mapper == null) {
 			return super.resolveClass(desc);
-		} else {
-			ClassLoader cl = mapper.mapNameToClassLoader(name);
-			if (cl == null)
-				return super.resolveClass(desc);
-			Class ret = cl.loadClass(desc.getName());
-			return ret;
 		}
+		ClassLoader cl = mapper.mapNameToClassLoader(name);
+		if (cl == null)
+			return super.resolveClass(desc);
+		Class ret = cl.loadClass(desc.getName());
+		return ret;
 	}
 }

@@ -10,37 +10,19 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.comm.tcp;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.net.ConnectException;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.*;
+import java.net.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-
+import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.sharedobject.util.SimpleFIFOQueue;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
-import org.eclipse.ecf.internal.provider.Messages;
-import org.eclipse.ecf.internal.provider.ProviderPlugin;
-import org.eclipse.ecf.provider.comm.AsynchEvent;
-import org.eclipse.ecf.provider.comm.DisconnectEvent;
-import org.eclipse.ecf.provider.comm.IConnectionListener;
-import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.provider.comm.ISynchAsynchEventHandler;
-import org.eclipse.ecf.provider.comm.SynchEvent;
+import org.eclipse.ecf.internal.provider.*;
+import org.eclipse.ecf.provider.comm.*;
 
 public final class Client implements ISynchAsynchConnection {
 	public static final String PROTOCOL = "ecftcp"; //$NON-NLS-1$
@@ -73,9 +55,13 @@ public final class Client implements ISynchAsynchConnection {
 	protected Map properties;
 	protected ID containerID = null;
 	protected Object pingLock = new Object();
-	private boolean disconnectHandled = false;
+	boolean disconnectHandled = false;
 	private final Object disconnectLock = new Object();
 
+	/**
+	 * @param s
+	 * @throws SocketException not thrown by this implementation.
+	 */
 	private void setSocket(Socket s) throws SocketException {
 		socket = s;
 		if (s != null)
@@ -129,23 +115,23 @@ public final class Client implements ISynchAsynchConnection {
 	}
 
 	public void removeListener(IConnectionListener l) {
+		// XXX does not support listeners
 	}
 
 	public void addListener(IConnectionListener l) {
+		// XXX does not support listeners
 	}
 
 	public synchronized boolean isConnected() {
 		if (socket != null)
 			return socket.isConnected();
-		else
-			return false;
+		return false;
 	}
 
 	public synchronized boolean isStarted() {
 		if (sendThread != null)
 			return sendThread.isAlive();
-		else
-			return false;
+		return false;
 	}
 
 	private void setSocketOptions(Socket aSocket) throws SocketException {
@@ -213,7 +199,7 @@ public final class Client implements ISynchAsynchConnection {
 		});
 	}
 
-	private Thread getSendThread() {
+	Thread getSendThread() {
 		final Thread aThread = new Thread(new Runnable() {
 			public void run() {
 				int msgCount = 0;
@@ -252,7 +238,7 @@ public final class Client implements ISynchAsynchConnection {
 		return aThread;
 	}
 
-	private void handleException(Throwable e) {
+	void handleException(Throwable e) {
 		synchronized (disconnectLock) {
 			if (!disconnectHandled) {
 				disconnectHandled = true;
@@ -278,7 +264,7 @@ public final class Client implements ISynchAsynchConnection {
 		}
 	}
 
-	private void send(Serializable snd) throws IOException {
+	void send(Serializable snd) throws IOException {
 		debug("send(" + snd + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		outputStream.writeObject(snd);
 		outputStream.flush();
@@ -311,7 +297,7 @@ public final class Client implements ISynchAsynchConnection {
 		}
 	}
 
-	private Thread getRcvThread() {
+	Thread getRcvThread() {
 		final Thread aThread = new Thread(new Runnable() {
 			public void run() {
 				Thread me = Thread.currentThread();
@@ -336,7 +322,7 @@ public final class Client implements ISynchAsynchConnection {
 	}
 
 	// private int rcvCount = 0;
-	private void handleRcv(Serializable rcv) throws IOException {
+	void handleRcv(Serializable rcv) throws IOException {
 		try {
 			debug("recv(" + rcv + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 			// Handle all messages
@@ -486,7 +472,7 @@ public final class Client implements ISynchAsynchConnection {
 		return sendObject(rec, obj);
 	}
 
-	private Serializable readObject() throws IOException {
+	Serializable readObject() throws IOException {
 		Serializable ret = null;
 		try {
 			ret = (Serializable) inputStream.readObject();
@@ -507,12 +493,12 @@ public final class Client implements ISynchAsynchConnection {
 		return null;
 	}
 
-	private String getAddressPort() {
+	String getAddressPort() {
 		return addressPort;
 	}
 
 	protected void debug(String msg) {
-		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, getLocalID() + "." + msg);
+		Trace.trace(ProviderPlugin.PLUGIN_ID, ECFProviderDebugOptions.DEBUG, getLocalID() + "." + msg); //$NON-NLS-1$
 	}
 
 	protected void traceStack(String msg, Throwable e) {

@@ -38,6 +38,12 @@ public class TCPClientSOContainer extends ClientSOContainer {
 		return DEFAULT_TCP_CONNECT_TIMEOUT;
 	}
 
+	/**
+	 * @param remoteSpace
+	 * @param data
+	 * @return ISynchAsynchConnection a non-<code>null</code> instance.
+	 * @throws ConnectionCreateException not thrown by this implementation.
+	 */
 	protected ISynchAsynchConnection createConnection(ID remoteSpace, Object data) throws ConnectionCreateException {
 		debug("createClientConnection:" + remoteSpace + ":" + data); //$NON-NLS-1$ //$NON-NLS-2$
 		ISynchAsynchConnection conn = new Client(receiver, keepAlive);

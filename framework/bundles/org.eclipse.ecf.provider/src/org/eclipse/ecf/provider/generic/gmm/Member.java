@@ -29,8 +29,8 @@ public class Member implements Comparable {
 	public boolean equals(Object o) {
 		if (o != null && o instanceof Member) {
 			return member.equals(((Member) o).member);
-		} else
-			return false;
+		}
+		return false;
 	}
 
 	public int hashCode() {
@@ -40,8 +40,8 @@ public class Member implements Comparable {
 	public int compareTo(Object o) {
 		if (o != null && o instanceof Member) {
 			return member.compareTo(((Member) o).member);
-		} else
-			return 0;
+		}
+		return 0;
 	}
 
 	public ID getID() {

@@ -15,6 +15,6 @@ package org.eclipse.ecf.provider.comm;
  * capabilities
  * 
  */
-public interface ISynchAsynchConnection extends IAsynchConnection,
-		ISynchConnection {
+public interface ISynchAsynchConnection extends IAsynchConnection, ISynchConnection {
+	// no methods
 }

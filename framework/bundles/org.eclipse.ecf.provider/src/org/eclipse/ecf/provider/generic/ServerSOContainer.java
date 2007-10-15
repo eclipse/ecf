@@ -13,24 +13,16 @@ package org.eclipse.ecf.provider.generic;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.ConnectException;
-import java.net.Socket;
-import java.net.SocketAddress;
-
+import java.net.*;
 import org.eclipse.ecf.core.ContainerConnectException;
-import org.eclipse.ecf.core.events.ContainerConnectedEvent;
-import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ContainerEjectedEvent;
+import org.eclipse.ecf.core.events.*;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.security.IConnectHandlerPolicy;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerGroupManager;
 import org.eclipse.ecf.internal.provider.Messages;
-import org.eclipse.ecf.provider.comm.DisconnectEvent;
-import org.eclipse.ecf.provider.comm.IAsynchConnection;
-import org.eclipse.ecf.provider.comm.ISynchAsynchConnection;
-import org.eclipse.ecf.provider.comm.ISynchConnection;
+import org.eclipse.ecf.provider.comm.*;
 import org.eclipse.ecf.provider.generic.gmm.Member;
 
 public class ServerSOContainer extends SOContainer implements ISharedObjectContainerGroupManager {
@@ -177,6 +169,10 @@ public class ServerSOContainer extends SOContainer implements ISharedObjectConta
 		}
 	}
 
+	/**
+	 * @param mess
+	 * @throws IOException not thrown by this implementation.
+	 */
 	protected void handleViewChangeMessage(ContainerMessage mess) throws IOException {
 		// ServerApplication should never receive change messages
 		debug("handleViewChangeMessage(" + mess + ")"); //$NON-NLS-1$ //$NON-NLS-2$

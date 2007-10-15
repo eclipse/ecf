@@ -12,48 +12,42 @@
 package org.eclipse.ecf.provider.comm.tcp;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 
-public class SocketFactory implements IClientSocketFactory,
-        IServerSocketFactory {
-    protected static SocketFactory defaultFactory;
-    protected static SocketFactory factory = null;
+public class SocketFactory implements IClientSocketFactory, IServerSocketFactory {
+	protected static SocketFactory defaultFactory;
+	protected static SocketFactory factory = null;
 
-    public Socket createSocket(String name, int port, int timeout)
-            throws IOException {
-        if (factory != null) {
-            return factory.createSocket(name, port, timeout);
-        } else {
-            Socket s = new Socket();
-            s.connect(new InetSocketAddress(name, port), timeout);
-            return s;
-        }
-    }
+	public Socket createSocket(String name, int port, int timeout) throws IOException {
+		if (factory != null) {
+			return factory.createSocket(name, port, timeout);
+		}
+		Socket s = new Socket();
+		s.connect(new InetSocketAddress(name, port), timeout);
+		return s;
+	}
 
-    public ServerSocket createServerSocket(int port, int backlog)
-            throws IOException {
-        if (factory != null) {
-            return factory.createServerSocket(port, backlog);
-        } else
-            return new ServerSocket(port, backlog);
-    }
+	public ServerSocket createServerSocket(int port, int backlog) throws IOException {
+		if (factory != null) {
+			return factory.createServerSocket(port, backlog);
+		}
+		return new ServerSocket(port, backlog);
+	}
 
-    public static synchronized SocketFactory getSocketFactory() {
-        return factory;
-    }
+	public static synchronized SocketFactory getSocketFactory() {
+		return factory;
+	}
 
-    public synchronized static SocketFactory getDefaultSocketFactory() {
-        if (defaultFactory == null) {
-            defaultFactory = new SocketFactory();
-        }
-        return defaultFactory;
-    }
+	public synchronized static SocketFactory getDefaultSocketFactory() {
+		if (defaultFactory == null) {
+			defaultFactory = new SocketFactory();
+		}
+		return defaultFactory;
+	}
 
-    public synchronized static void setSocketFactory(SocketFactory fact) {
-        if (!fact.equals(defaultFactory)) {
-            factory = fact;
-        }
-    }
+	public synchronized static void setSocketFactory(SocketFactory fact) {
+		if (!fact.equals(defaultFactory)) {
+			factory = fact;
+		}
+	}
 }

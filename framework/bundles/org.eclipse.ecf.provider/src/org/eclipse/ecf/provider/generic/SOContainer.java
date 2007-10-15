@@ -8,69 +8,34 @@
  ******************************************************************************/
 package org.eclipse.ecf.provider.generic;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InvalidClassException;
-import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.events.IContainerEvent;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.sharedobject.ISharedObject;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerTransaction;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
-import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
-import org.eclipse.ecf.core.sharedobject.SharedObjectAddException;
-import org.eclipse.ecf.core.sharedobject.SharedObjectDescription;
-import org.eclipse.ecf.core.sharedobject.SharedObjectInitException;
-import org.eclipse.ecf.core.sharedobject.events.ContainerSharedObjectMessageReceivingEvent;
-import org.eclipse.ecf.core.sharedobject.events.ContainerSharedObjectMessageSendingEvent;
-import org.eclipse.ecf.core.sharedobject.events.SharedObjectActivatedEvent;
-import org.eclipse.ecf.core.sharedobject.events.SharedObjectDeactivatedEvent;
+import org.eclipse.ecf.core.sharedobject.*;
+import org.eclipse.ecf.core.sharedobject.events.*;
 import org.eclipse.ecf.core.sharedobject.security.ISharedObjectPolicy;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
-import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.core.util.Event;
-import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
+import org.eclipse.ecf.core.util.*;
+import org.eclipse.ecf.internal.provider.*;
 import org.eclipse.ecf.internal.provider.Messages;
-import org.eclipse.ecf.internal.provider.ProviderPlugin;
-import org.eclipse.ecf.provider.comm.AsynchEvent;
-import org.eclipse.ecf.provider.comm.ConnectionEvent;
-import org.eclipse.ecf.provider.comm.DisconnectEvent;
-import org.eclipse.ecf.provider.comm.IAsynchConnection;
-import org.eclipse.ecf.provider.comm.IConnection;
-import org.eclipse.ecf.provider.comm.ISynchAsynchEventHandler;
-import org.eclipse.ecf.provider.comm.SynchEvent;
+import org.eclipse.ecf.provider.comm.*;
 import org.eclipse.ecf.provider.generic.gmm.Member;
-import org.eclipse.ecf.provider.util.IClassLoaderMapper;
-import org.eclipse.ecf.provider.util.IdentifiableObjectInputStream;
-import org.eclipse.ecf.provider.util.IdentifiableObjectOutputStream;
+import org.eclipse.ecf.provider.util.*;
+import org.eclipse.osgi.util.NLS;
 
 public abstract class SOContainer extends AbstractContainer implements ISharedObjectContainer {
 	class LoadingSharedObject implements ISharedObject {
-		private final ReplicaSharedObjectDescription description;
+		final ReplicaSharedObjectDescription description;
 		private Thread runner = null;
-		private ID fromID = null;
+		ID fromID = null;
 
 		LoadingSharedObject(ID fromID, ReplicaSharedObjectDescription sd) {
 			this.fromID = fromID;
@@ -78,6 +43,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		}
 
 		public void dispose(ID containerID) {
+			// nothing to do
 		}
 
 		public Object getAdapter(Class clazz) {
@@ -88,8 +54,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			final ID homeID = description.getHomeID();
 			if (homeID == null)
 				return getID();
-			else
-				return homeID;
+			return homeID;
 		}
 
 		ID getID() {
@@ -97,12 +62,19 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		}
 
 		public void handleEvent(Event event) {
+			// nothing to do
 		}
 
 		public void handleEvents(Event[] events) {
+			// nothing to do
 		}
 
+		/**
+		 * @param initData
+		 * @throws SharedObjectInitException not thrown in this implementation.
+		 */
 		public void init(ISharedObjectConfig initData) throws SharedObjectInitException {
+			// nothing to do
 		}
 
 		void start() {
@@ -182,7 +154,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		}
 
 		public void handleConnectEvent(ConnectionEvent event) {
-
+			// nothing to do
 		}
 
 		public void handleDisconnectEvent(DisconnectEvent event) {
@@ -199,8 +171,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		this.config = config;
 		groupManager = new SOContainerGMM(this, new Member(config.getID()));
 		sharedObjectManager = new SOManager(this);
-		loadingThreadGroup = new ThreadGroup(getID() + ":loading");
-		sharedObjectThreadGroup = new ThreadGroup(getID() + ":SOs");
+		loadingThreadGroup = new ThreadGroup(getID() + ":loading"); //$NON-NLS-1$
+		sharedObjectThreadGroup = new ThreadGroup(getID() + ":SOs"); //$NON-NLS-1$
 	}
 
 	// Implementation of IIdentifiable
@@ -278,12 +250,11 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	public Object getAdapter(Class adapter) {
 		if (adapter.isInstance(this)) {
 			return this;
-		} else {
-			final IAdapterManager adapterManager = ProviderPlugin.getDefault().getAdapterManager();
-			if (adapterManager == null)
-				return null;
-			return adapterManager.loadAdapter(this, adapter.getName());
 		}
+		final IAdapterManager adapterManager = ProviderPlugin.getDefault().getAdapterManager();
+		if (adapterManager == null)
+			return null;
+		return adapterManager.loadAdapter(this, adapter.getName());
 	}
 
 	// Impl of ISharedObjectContainer
@@ -446,8 +417,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			final Object[] ret = (Object[]) obj;
 			aMap.remove(DEFAULT_OBJECT_ARG_KEY);
 			return ret;
-		} else
-			return null;
+		}
+		return null;
 	}
 
 	/**
@@ -467,8 +438,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			final String[] ret = (String[]) obj;
 			aMap.remove(DEFAULT_OBJECT_ARGTYPES_KEY);
 			return ret;
-		} else
-			return null;
+		}
+		return null;
 	}
 
 	public static byte[] serialize(Serializable obj) throws IOException {
@@ -509,8 +480,8 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		if (sequenceNumber == Long.MAX_VALUE) {
 			sequenceNumber = 0;
 			return sequenceNumber;
-		} else
-			return sequenceNumber++;
+		}
+		return sequenceNumber++;
 	}
 
 	public static ContainerMessage deserializeContainerMessage(byte[] bytes) throws IOException {
@@ -520,18 +491,16 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		try {
 			obj = ois.readObject();
 		} catch (final ClassNotFoundException e) {
-			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, "container message deserialization ClassNotFoundException", e));
+			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, Messages.SOContainer_EXCEPTION_CLASS_NOT_FOUND, e));
 			return null;
 		} catch (final InvalidClassException e) {
-			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, "container message deserialization InvalidClassException", e));
+			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, Messages.SOContainer_EXCEPTION_INVALID_CLASS, e));
 			return null;
 		}
 		if (obj instanceof ContainerMessage)
 			return (ContainerMessage) obj;
-		else {
-			ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, "container message deserialization not a ContainerMessage", null));
-			return null;
-		}
+		ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, Messages.SOContainer_EXCEPTION_NOT_CONTAINER_MESSAGE, null));
+		return null;
 	}
 
 	protected ID[] getOtherMemberIDs() {
@@ -655,8 +624,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 	protected boolean verifyToIDForSharedObjectMessage(ID toID) {
 		if (toID == null || toID.equals(getID()))
 			return true;
-		else
-			return false;
+		return false;
 	}
 
 	protected void handleSharedObjectMessage(ContainerMessage mess) throws IOException {
@@ -684,9 +652,14 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		}
 	}
 
+	/**
+	 * @param mess
+	 * @throws IOException not thrown by this implementation.
+	 */
 	protected void handleUnidentifiedMessage(ContainerMessage mess) throws IOException {
 		// do nothing
-		debug("received unidentified message: " + mess);
+		ProviderPlugin.getDefault().log(new Status(IStatus.ERROR, ProviderPlugin.PLUGIN_ID, IStatus.ERROR, NLS.bind("unidentified message {0}", mess), null)); //$NON-NLS-1$
+		debug("received unidentified message: " + mess); //$NON-NLS-1$
 	}
 
 	protected abstract void handleViewChangeMessage(ContainerMessage mess) throws IOException;
@@ -704,6 +677,13 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 		return sharedObjectManager.loadSharedObject(sd);
 	}
 
+	/**
+	 * @param id
+	 * @param obj
+	 * @param props
+	 * @return SOConfig a non-<code>null</code> instance.
+	 * @throws ECFException not thrown by this implementation.
+	 */
 	protected SOConfig createSharedObjectConfig(ID id, ISharedObject obj, Map props) throws ECFException {
 		return new SOConfig(id, getID(), this, props);
 	}
@@ -776,10 +756,14 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 				return null;
 			// OK..let it continue on it's journey
 			return contmess;
-		} else
-			return null;
+		}
+		return null;
 	}
 
+	/**
+	 * @param event
+	 * @throws IOException not thrown by this implementation.
+	 */
 	protected void processAsynch(AsynchEvent event) throws IOException {
 		try {
 			final Object obj = event.getData();
@@ -798,7 +782,7 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 			}
 			final Serializable submess = mess.getData();
 			if (submess == null) {
-				debug("submess is null: " + event);
+				debug("submess is null: " + event); //$NON-NLS-1$
 				return;
 			}
 			if (submess instanceof ContainerMessage.CreateMessage)
@@ -942,10 +926,10 @@ public abstract class SOContainer extends AbstractContainer implements ISharedOb
 					}
 					if (found == null)
 						return null;
-					ISharedObject obj = manager.getSharedObject(found);
-					if (obj == null)
+					ISharedObject obj1 = manager.getSharedObject(found);
+					if (obj1 == null)
 						return null;
-					return obj.getClass().getClassLoader();
+					return obj1.getClass().getClassLoader();
 				}
 			}, bins);
 			obj = iins.readObject();

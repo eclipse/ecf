@@ -22,9 +22,7 @@ import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.security.IConnectContext;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectContext;
-import org.eclipse.ecf.core.sharedobject.ISharedObjectManager;
-import org.eclipse.ecf.core.sharedobject.ReplicaSharedObjectDescription;
+import org.eclipse.ecf.core.sharedobject.*;
 import org.eclipse.ecf.core.sharedobject.util.IQueueEnqueue;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.ECFProviderDebugOptions;
@@ -86,8 +84,8 @@ public class SOContext implements ISharedObjectContext {
 	public ISharedObjectManager getSharedObjectManager() {
 		if (isInactive()) {
 			return null;
-		} else
-			return container.getSharedObjectManager();
+		}
+		return container.getSharedObjectManager();
 	}
 
 	/*
@@ -98,8 +96,8 @@ public class SOContext implements ISharedObjectContext {
 	public IQueueEnqueue getQueue() {
 		if (isInactive()) {
 			return null;
-		} else
-			return queue;
+		}
+		return queue;
 	}
 
 	/*
@@ -109,11 +107,9 @@ public class SOContext implements ISharedObjectContext {
 	 *      org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void connect(ID groupID, IConnectContext joinContext) throws ContainerConnectException {
-		if (isInactive()) {
+		if (isInactive())
 			return;
-		} else {
-			container.connect(groupID, joinContext);
-		}
+		container.connect(groupID, joinContext);
 	}
 
 	/*
@@ -125,10 +121,9 @@ public class SOContext implements ISharedObjectContext {
 		if (isInactive()) {
 			trace("leaveGroup() CONTEXT INACTIVE"); //$NON-NLS-1$
 			return;
-		} else {
-			trace("leaveGroup()"); //$NON-NLS-1$
-			container.disconnect();
 		}
+		trace("leaveGroup()"); //$NON-NLS-1$
+		container.disconnect();
 	}
 
 	/*
@@ -139,8 +134,8 @@ public class SOContext implements ISharedObjectContext {
 	public ID getConnectedID() {
 		if (isInactive()) {
 			return null;
-		} else
-			return container.getConnectedID();
+		}
+		return container.getConnectedID();
 	}
 
 	/*
@@ -151,8 +146,8 @@ public class SOContext implements ISharedObjectContext {
 	public boolean isGroupManager() {
 		if (isInactive()) {
 			return false;
-		} else
-			return container.isGroupManager();
+		}
+		return container.isGroupManager();
 	}
 
 	/*
@@ -163,8 +158,8 @@ public class SOContext implements ISharedObjectContext {
 	public boolean isGroupServer() {
 		if (isInactive()) {
 			return false;
-		} else
-			return container.isGroupManager();
+		}
+		return container.isGroupManager();
 	}
 
 	/*
@@ -175,8 +170,8 @@ public class SOContext implements ISharedObjectContext {
 	public ID[] getGroupMemberIDs() {
 		if (isInactive()) {
 			return new ID[0];
-		} else
-			return container.getGroupMemberIDs();
+		}
+		return container.getGroupMemberIDs();
 	}
 
 	/*
@@ -189,10 +184,9 @@ public class SOContext implements ISharedObjectContext {
 		if (isInactive()) {
 			trace("sendCreate(" + toContainerID + "," + sd + ") CONTEXT INACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return;
-		} else {
-			trace("sendCreate(" + toContainerID + "," + sd + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			container.sendCreate(sharedObjectID, toContainerID, sd);
 		}
+		trace("sendCreate(" + toContainerID + "," + sd + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		container.sendCreate(sharedObjectID, toContainerID, sd);
 	}
 
 	/*
@@ -205,10 +199,9 @@ public class SOContext implements ISharedObjectContext {
 		if (isInactive()) {
 			trace("sendCreateResponse(" + toContainerID + "," + throwable + "," + identifier + ") CONTEXT INACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			return;
-		} else {
-			trace("sendCreateResponse(" + toContainerID + "," + throwable + "," + identifier + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			container.sendCreateResponse(toContainerID, sharedObjectID, throwable, identifier);
 		}
+		trace("sendCreateResponse(" + toContainerID + "," + throwable + "," + identifier + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		container.sendCreateResponse(toContainerID, sharedObjectID, throwable, identifier);
 	}
 
 	/*
@@ -220,10 +213,9 @@ public class SOContext implements ISharedObjectContext {
 		if (isInactive()) {
 			trace("sendDispose(" + toContainerID + ") CONTEXT INACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
-		} else {
-			trace("sendDispose(" + toContainerID + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-			container.sendDispose(toContainerID, sharedObjectID);
 		}
+		trace("sendDispose(" + toContainerID + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+		container.sendDispose(toContainerID, sharedObjectID);
 	}
 
 	/*
@@ -236,10 +228,9 @@ public class SOContext implements ISharedObjectContext {
 		if (isInactive()) {
 			trace("sendMessage(" + toContainerID + "," + data + ") CONTEXT INACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			return;
-		} else {
-			trace("sendMessage(" + toContainerID + "," + data + ") CONTEXT ACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			container.sendMessage(toContainerID, sharedObjectID, data);
 		}
+		trace("sendMessage(" + toContainerID + "," + data + ") CONTEXT ACTIVE"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		container.sendMessage(toContainerID, sharedObjectID, data);
 	}
 
 	/*
@@ -254,15 +245,14 @@ public class SOContext implements ISharedObjectContext {
 	public Namespace getConnectNamespace() {
 		if (isInactive()) {
 			return null;
-		} else
-			return container.getConnectNamespace();
+		}
+		return container.getConnectNamespace();
 	}
 
 	public Map getLocalContainerProperties() {
 		if (isInactive())
 			return new HashMap();
-		else
-			return container.createContainerPropertiesForSharedObject(sharedObjectID);
+		return container.createContainerPropertiesForSharedObject(sharedObjectID);
 	}
 
 }

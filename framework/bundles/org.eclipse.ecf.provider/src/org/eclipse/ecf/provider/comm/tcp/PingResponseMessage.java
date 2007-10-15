@@ -17,10 +17,11 @@ public class PingResponseMessage implements Serializable {
 	private static final long serialVersionUID = 3257569516165740857L;
 
 	protected PingResponseMessage() {
-    }
+		//
+	}
 
-    public String toString() {
-        StringBuffer buf = new StringBuffer("PingResponseMessage[]"); //$NON-NLS-1$
-        return buf.toString();
-    }
+	public String toString() {
+		StringBuffer buf = new StringBuffer("PingResponseMessage[]"); //$NON-NLS-1$
+		return buf.toString();
+	}
 }

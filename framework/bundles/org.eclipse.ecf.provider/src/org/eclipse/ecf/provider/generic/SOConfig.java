@@ -82,8 +82,8 @@ public class SOConfig implements ISharedObjectConfig {
 	public ISharedObjectContext getContext() {
 		if (isActive) {
 			return context;
-		} else
-			return null;
+		}
+		return null;
 	}
 
 	/*
@@ -94,7 +94,6 @@ public class SOConfig implements ISharedObjectConfig {
 	public Map getProperties() {
 		if (properties == null)
 			return new HashMap();
-		else
-			return properties;
+		return properties;
 	}
 }
