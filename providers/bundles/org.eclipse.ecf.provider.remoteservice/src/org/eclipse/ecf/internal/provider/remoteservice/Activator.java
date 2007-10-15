@@ -17,7 +17,7 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.remoteservice";
+	public static final String PLUGIN_ID = "org.eclipse.ecf.provider.remoteservice"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
@@ -31,11 +31,11 @@ public class Activator implements BundleActivator {
 		plugin = this;
 	}
 
-	public void start(BundleContext context) throws Exception {
-		this.context = context;
+	public void start(BundleContext ctxt) throws Exception {
+		this.context = ctxt;
 	}
 
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext ctxt) throws Exception {
 		this.context = null;
 		plugin = null;
 	}

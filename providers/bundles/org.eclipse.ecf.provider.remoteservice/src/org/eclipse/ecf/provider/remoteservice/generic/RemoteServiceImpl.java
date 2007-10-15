@@ -15,6 +15,7 @@ import java.lang.reflect.Proxy;
 import org.eclipse.ecf.core.util.AsyncResult;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.IAsyncResult;
+import org.eclipse.ecf.internal.provider.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.IRemoteCall;
 import org.eclipse.ecf.remoteservice.IRemoteCallListener;
 import org.eclipse.ecf.remoteservice.IRemoteService;
@@ -76,7 +77,7 @@ public class RemoteServiceImpl implements IRemoteService, InvocationHandler {
 				cs[i] = Class.forName(clazzes[i]);
 			proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(), cs, this);
 		} catch (final Exception e) {
-			throw new ECFException("Exception creating proxy for remote service", e);
+			throw new ECFException(Messages.RemoteServiceImpl_EXCEPTION_CREATING_PROXY, e);
 		}
 		return proxy;
 	}

@@ -55,9 +55,9 @@ public class RemoteServiceReferenceImpl implements IRemoteServiceReference {
 	}
 	
 	public String toString() {
-		StringBuffer buf = new StringBuffer("RemoteServiceReferenceImpl[");
-		buf.append("class=").append(getRemoteClass()).append(";");
-		buf.append("registration=").append(getRegistration()).append("]");
+		StringBuffer buf = new StringBuffer("RemoteServiceReferenceImpl["); //$NON-NLS-1$
+		buf.append("class=").append(getRemoteClass()).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("registration=").append(getRegistration()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 }

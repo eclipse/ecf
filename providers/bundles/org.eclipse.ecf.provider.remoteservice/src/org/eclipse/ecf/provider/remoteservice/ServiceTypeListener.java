@@ -12,12 +12,7 @@
 package org.eclipse.ecf.provider.remoteservice;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
-import org.eclipse.ecf.discovery.IServiceEvent;
-import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceListener;
-import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.IServiceTypeListener;
+import org.eclipse.ecf.discovery.*;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 
 /**
@@ -27,7 +22,7 @@ public class ServiceTypeListener implements IServiceTypeListener {
 
 	private final IDiscoveryContainerAdapter discovery;
 	private final IServiceTypeID[] serviceTypeIDs;
-	private final IServiceListener serviceListener;
+	final IServiceListener serviceListener;
 	private final String[] requiredProperties;
 
 	class ServiceListener implements IServiceListener {
@@ -124,7 +119,7 @@ public class ServiceTypeListener implements IServiceTypeListener {
 		return false;
 	}
 
-	private boolean hasRequiredProperties(IServiceProperties serviceProperties) {
+	boolean hasRequiredProperties(IServiceProperties serviceProperties) {
 		if (requiredProperties == null)
 			return true;
 		for (int i = 0; i < requiredProperties.length; i++)

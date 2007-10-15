@@ -83,12 +83,12 @@ public class Request implements Serializable {
 	}
 
 	public String toString() {
-		final StringBuffer buf = new StringBuffer("Request[");
-		buf.append("requestId=").append(requestId).append(";cont=").append(
-				requestContainerID).append(";serviceId=").append(serviceId)
-				.append(";call=").append(call).append(";done=").append(done)
-				.append(";response=").append(response).append(";listener=")
-				.append(listener).append("]");
+		final StringBuffer buf = new StringBuffer("Request["); //$NON-NLS-1$
+		buf.append("requestId=").append(requestId).append(";cont=").append( //$NON-NLS-1$ //$NON-NLS-2$
+				requestContainerID).append(";serviceId=").append(serviceId) //$NON-NLS-1$
+				.append(";call=").append(call).append(";done=").append(done) //$NON-NLS-1$ //$NON-NLS-2$
+				.append(";response=").append(response).append(";listener=") //$NON-NLS-1$ //$NON-NLS-2$
+				.append(listener).append("]"); //$NON-NLS-1$
 		return buf.toString();
 	}
 

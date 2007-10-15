@@ -9,15 +9,9 @@
 package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
+import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.remoteservice.Constants;
-import org.eclipse.ecf.remoteservice.IRemoteFilter;
-import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
-import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.eclipse.ecf.remoteservice.*;
 
 public class RemoteServiceRegistryImpl implements Serializable {
 
@@ -34,6 +28,7 @@ public class RemoteServiceRegistryImpl implements Serializable {
 	protected ID containerID;
 
 	public RemoteServiceRegistryImpl() {
+		//
 	}
 
 	/**
@@ -62,15 +57,13 @@ public class RemoteServiceRegistryImpl implements Serializable {
 
 		// Add the ServiceRegistration to the list of Services published by
 		// Class Name.
-		final String[] clazzes = (String[]) serviceReg.getReference()
-				.getProperty(REMOTEOBJECTCLASS);
+		final String[] clazzes = (String[]) serviceReg.getReference().getProperty(REMOTEOBJECTCLASS);
 		final int size = clazzes.length;
 
 		for (int i = 0; i < size; i++) {
 			final String clazz = clazzes[i];
 
-			ArrayList services = (ArrayList) publishedServicesByClass
-					.get(clazz);
+			ArrayList services = (ArrayList) publishedServicesByClass.get(clazz);
 
 			if (services == null) {
 				services = new ArrayList(10);
@@ -88,14 +81,12 @@ public class RemoteServiceRegistryImpl implements Serializable {
 
 		// Remove the ServiceRegistration from the list of Services published by
 		// Class Name.
-		final String[] clazzes = (String[]) serviceReg.getReference()
-				.getProperty(REMOTEOBJECTCLASS);
+		final String[] clazzes = (String[]) serviceReg.getReference().getProperty(REMOTEOBJECTCLASS);
 		final int size = clazzes.length;
 
 		for (int i = 0; i < size; i++) {
 			final String clazz = clazzes[i];
-			final ArrayList services = (ArrayList) publishedServicesByClass
-					.get(clazz);
+			final ArrayList services = (ArrayList) publishedServicesByClass.get(clazz);
 			services.remove(serviceReg);
 		}
 
@@ -110,8 +101,7 @@ public class RemoteServiceRegistryImpl implements Serializable {
 		allPublishedServices.clear();
 	}
 
-	public IRemoteServiceReference[] lookupServiceReferences(String clazz,
-			IRemoteFilter filter) {
+	public IRemoteServiceReference[] lookupServiceReferences(String clazz, IRemoteFilter filter) {
 		int size;
 		ArrayList references;
 		ArrayList serviceRegs;
@@ -134,11 +124,9 @@ public class RemoteServiceRegistryImpl implements Serializable {
 
 		references = new ArrayList(size);
 		for (int i = 0; i < size; i++) {
-			final IRemoteServiceRegistration registration = (IRemoteServiceRegistration) serviceRegs
-					.get(i);
+			final IRemoteServiceRegistration registration = (IRemoteServiceRegistration) serviceRegs.get(i);
 
-			final IRemoteServiceReference reference = registration
-					.getReference();
+			final IRemoteServiceReference reference = registration.getReference();
 			if ((filter == null) || filter.match(reference)) {
 				// Must be RemoteServiceReferenceImpl
 				final RemoteServiceReferenceImpl impl = (RemoteServiceReferenceImpl) reference;
@@ -151,8 +139,7 @@ public class RemoteServiceRegistryImpl implements Serializable {
 			return null;
 		}
 
-		return (IRemoteServiceReference[]) references
-				.toArray(new RemoteServiceReferenceImpl[references.size()]);
+		return (IRemoteServiceReference[]) references.toArray(new RemoteServiceReferenceImpl[references.size()]);
 
 	}
 
@@ -167,11 +154,9 @@ public class RemoteServiceRegistryImpl implements Serializable {
 
 		references = new ArrayList(size);
 		for (int i = 0; i < size; i++) {
-			final IRemoteServiceRegistration registration = (IRemoteServiceRegistration) allPublishedServices
-					.get(i);
+			final IRemoteServiceRegistration registration = (IRemoteServiceRegistration) allPublishedServices.get(i);
 
-			final IRemoteServiceReference reference = registration
-					.getReference();
+			final IRemoteServiceReference reference = registration.getReference();
 			references.add(reference);
 		}
 
@@ -179,21 +164,16 @@ public class RemoteServiceRegistryImpl implements Serializable {
 			return null;
 		}
 
-		return (IRemoteServiceReference[]) references
-				.toArray(new RemoteServiceReferenceImpl[references.size()]);
+		return (IRemoteServiceReference[]) references.toArray(new RemoteServiceReferenceImpl[references.size()]);
 	}
 
 	protected RemoteServiceRegistrationImpl[] getRegistrations() {
-		return (RemoteServiceRegistrationImpl[]) allPublishedServices
-				.toArray(new RemoteServiceRegistrationImpl[allPublishedServices
-						.size()]);
+		return (RemoteServiceRegistrationImpl[]) allPublishedServices.toArray(new RemoteServiceRegistrationImpl[allPublishedServices.size()]);
 	}
 
-	protected RemoteServiceRegistrationImpl findRegistrationForServiceId(
-			long serviceId) {
+	protected RemoteServiceRegistrationImpl findRegistrationForServiceId(long serviceId) {
 		for (final Iterator i = allPublishedServices.iterator(); i.hasNext();) {
-			final RemoteServiceRegistrationImpl reg = (RemoteServiceRegistrationImpl) i
-					.next();
+			final RemoteServiceRegistrationImpl reg = (RemoteServiceRegistrationImpl) i.next();
 			if (serviceId == reg.getServiceId()) {
 				return reg;
 			}
@@ -202,9 +182,8 @@ public class RemoteServiceRegistryImpl implements Serializable {
 	}
 
 	public String toString() {
-		final StringBuffer buf = new StringBuffer("RemoteServiceRegistryImpl[");
-		buf.append("all=").append(allPublishedServices).append(";").append(
-				"byclass=").append(publishedServicesByClass).append("]");
+		final StringBuffer buf = new StringBuffer("RemoteServiceRegistryImpl["); //$NON-NLS-1$
+		buf.append("all=").append(allPublishedServices).append(";").append("byclass=").append(publishedServicesByClass).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		return buf.toString();
 	}
 

@@ -10,18 +10,13 @@ package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
-
+import java.util.*;
 import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.internal.provider.remoteservice.Messages;
 import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
 import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
 
-public class RemoteServiceRegistrationImpl implements
-		IRemoteServiceRegistration, Serializable {
+public class RemoteServiceRegistrationImpl implements IRemoteServiceRegistration, Serializable {
 
 	private static final long serialVersionUID = -3206899332723536545L;
 
@@ -58,20 +53,19 @@ public class RemoteServiceRegistrationImpl implements
 	protected transient RegistrySharedObject sharedObject = null;
 
 	public RemoteServiceRegistrationImpl() {
+		//
 
 	}
 
-	public void publish(RegistrySharedObject sharedObject,
-			RemoteServiceRegistryImpl registry, Object service,
-			String[] clazzes, Dictionary properties) {
-		this.sharedObject = sharedObject;
-		this.service = service;
-		this.clazzes = clazzes;
+	public void publish(RegistrySharedObject sharedObject1, RemoteServiceRegistryImpl registry, Object svc, String[] clzzes, Dictionary props) {
+		this.sharedObject = sharedObject1;
+		this.service = svc;
+		this.clazzes = clzzes;
 		this.containerID = registry.getContainerID();
 		this.reference = new RemoteServiceReferenceImpl(this);
 		synchronized (registry) {
 			serviceid = registry.getNextServiceId();
-			this.properties = createProperties(properties);
+			this.properties = createProperties(props);
 			registry.publishService(this);
 		}
 	}
@@ -101,7 +95,7 @@ public class RemoteServiceRegistrationImpl implements
 		synchronized (registrationLock) {
 			/* in the process of unregistering */
 			if (state != REGISTERED) {
-				throw new IllegalStateException("Service already registered");
+				throw new IllegalStateException(Messages.RemoteServiceRegistrationImpl_EXCEPTION_SERVICE_ALREADY_REGISTERED);
 			}
 			this.properties = createProperties(properties);
 		}
@@ -124,21 +118,17 @@ public class RemoteServiceRegistrationImpl implements
 	 * @return A Properties object for this ServiceRegistration.
 	 */
 	protected Properties createProperties(Dictionary props) {
-		final Properties properties = new Properties(props);
+		final Properties resultProps = new Properties(props);
 
-		properties.setProperty(RemoteServiceRegistryImpl.REMOTEOBJECTCLASS,
-				clazzes);
+		resultProps.setProperty(RemoteServiceRegistryImpl.REMOTEOBJECTCLASS, clazzes);
 
-		properties.setProperty(RemoteServiceRegistryImpl.REMOTESERVICE_ID,
-				new Long(serviceid));
+		resultProps.setProperty(RemoteServiceRegistryImpl.REMOTESERVICE_ID, new Long(serviceid));
 
-		final Object ranking = properties
-				.getProperty(RemoteServiceRegistryImpl.REMOTESERVICE_RANKING);
+		final Object ranking = resultProps.getProperty(RemoteServiceRegistryImpl.REMOTESERVICE_RANKING);
 
-		serviceranking = (ranking instanceof Integer) ? ((Integer) ranking)
-				.intValue() : 0;
+		serviceranking = (ranking instanceof Integer) ? ((Integer) ranking).intValue() : 0;
 
-		return (properties);
+		return (resultProps);
 	}
 
 	static class Properties extends Hashtable {
@@ -258,8 +248,7 @@ public class RemoteServiceRegistrationImpl implements
 			}
 			// must use reflection because Object clone method is protected!!
 			try {
-				return (clazz.getMethod("clone", (Class[]) null).invoke(value,
-						(Object[]) null));
+				return (clazz.getMethod("clone", (Class[]) null).invoke(value, (Object[]) null)); //$NON-NLS-1$
 			} catch (final Exception e) {
 				/* clone is not a public method on value's class */
 			} catch (final Error e) {
@@ -332,15 +321,15 @@ public class RemoteServiceRegistrationImpl implements
 	public Object callService(RemoteCallImpl call) throws Exception {
 		return call.invoke(service);
 	}
-	
+
 	public String toString() {
-		StringBuffer buf = new StringBuffer("RemoteServiceRegistrationImpl[");
-		buf.append("containerID=").append(containerID).append(";");
-		buf.append("serviceid=").append(serviceid).append(";");
-		buf.append("serviceranking=").append(serviceranking).append(";");
-		buf.append("classes=").append(Arrays.asList(clazzes)).append(";");
-		buf.append("state=").append(state).append(";");
-		buf.append("sharedobject=").append(sharedObject).append("]");
+		StringBuffer buf = new StringBuffer("RemoteServiceRegistrationImpl["); //$NON-NLS-1$
+		buf.append("containerID=").append(containerID).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("serviceid=").append(serviceid).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("serviceranking=").append(serviceranking).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("classes=").append(Arrays.asList(clazzes)).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("state=").append(state).append(";"); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("sharedobject=").append(sharedObject).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 

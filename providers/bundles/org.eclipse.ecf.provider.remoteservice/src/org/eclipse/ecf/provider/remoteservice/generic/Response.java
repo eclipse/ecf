@@ -47,9 +47,9 @@ public class Response implements Serializable {
 	}
 
 	public String toString() {
-		final StringBuffer buf = new StringBuffer("Response[");
-		buf.append("requestId=").append(requestId).append(";response=").append(
-				response).append(";exception=").append(exception).append("]");
+		final StringBuffer buf = new StringBuffer("Response["); //$NON-NLS-1$
+		buf.append("requestId=").append(requestId).append(";response=").append( //$NON-NLS-1$ //$NON-NLS-2$
+				response).append(";exception=").append(exception).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();
 	}
 }
