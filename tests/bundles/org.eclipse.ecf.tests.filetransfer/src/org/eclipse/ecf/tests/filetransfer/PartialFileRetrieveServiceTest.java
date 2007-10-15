@@ -79,6 +79,8 @@ public class PartialFileRetrieveServiceTest extends ContainerAbstractTestCase {
 		}
 	}
 
+	protected boolean isDone = false;
+
 	protected void testReceiveHttp(final long start, final long end, String url) throws Exception {
 		assertNotNull(transferInstance);
 		final IFileTransferListener listener = new IFileTransferListener() {
@@ -109,6 +111,7 @@ public class PartialFileRetrieveServiceTest extends ContainerAbstractTestCase {
 					closeOutputStream();
 					System.out.println("done=" + event);
 					synchronized (notify) {
+						isDone = true;
 						notify.notify();
 					}
 				}
@@ -130,8 +133,10 @@ public class PartialFileRetrieveServiceTest extends ContainerAbstractTestCase {
 		}
 		transferInstance.sendRetrieveRequest(fileID, rangeSpecification, listener, null);
 
-		synchronized (notify) {
-			notify.wait();
+		if (!isDone) {
+			synchronized (notify) {
+				notify.wait();
+			}
 		}
 
 		final Exception e = session.getException();
