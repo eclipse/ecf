@@ -12,9 +12,7 @@ package org.eclipse.ecf.internal.provider.jmdns;
 
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.ecf.core.util.PlatformHelper;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -55,26 +53,25 @@ public class JMDNSPlugin implements BundleActivator {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context) throws Exception {
-		this.context = context;
+	public void start(BundleContext ctxt) throws Exception {
+		this.context = ctxt;
 	}
 
 	protected Bundle getBundle() {
 		if (context == null)
 			return null;
-		else
-			return context.getBundle();
+		return context.getBundle();
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext ctxt) throws Exception {
 		if (adapterManagerTracker != null) {
 			adapterManagerTracker.close();
 			adapterManagerTracker = null;
 		}
-		this.context = context;
+		this.context = ctxt;
 		plugin = null;
 	}
 

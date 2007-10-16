@@ -29,6 +29,7 @@ public class Messages extends NLS {
 	public static String JMDNSNamespace_EXCEPTION_ID_CREATE_SERVICE_TYPE_CANNOT_BE_EMPTY;
 	public static String JMDNSNamespace_EXCEPTION_ID_PARAM_2_WRONG_TYPE;
 	public static String JMDNSNamespace_EXCEPTION_ID_WRONG_PARAM_COUNT;
+	public static String JMDNSServiceTypeID_EXCEPTION_INVALID_TYPE_ID;
 	public static String JMDNSNamespace_EXCEPTION_TYPE_PARAM_NOT_STRING;
 	static {
 		// initialize resource bundle
@@ -36,5 +37,6 @@ public class Messages extends NLS {
 	}
 
 	private Messages() {
+		//
 	}
 }

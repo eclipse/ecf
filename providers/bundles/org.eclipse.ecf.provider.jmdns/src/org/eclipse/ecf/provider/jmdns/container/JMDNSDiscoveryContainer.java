@@ -12,44 +12,21 @@ package org.eclipse.ecf.provider.jmdns.container;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Properties;
-
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceEvent;
+import java.util.*;
+import javax.jmdns.*;
 import javax.jmdns.ServiceInfo;
-import javax.jmdns.ServiceListener;
-import javax.jmdns.ServiceTypeListener;
-
 import org.eclipse.ecf.core.ContainerConnectException;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.events.ContainerConnectedEvent;
-import org.eclipse.ecf.core.events.ContainerConnectingEvent;
-import org.eclipse.ecf.core.events.ContainerDisconnectedEvent;
-import org.eclipse.ecf.core.events.ContainerDisconnectingEvent;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.events.*;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.security.IConnectContext;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.core.util.Trace;
-import org.eclipse.ecf.discovery.AbstractDiscoveryContainerAdapter;
-import org.eclipse.ecf.discovery.DiscoveryContainerConfig;
-import org.eclipse.ecf.discovery.IServiceInfo;
-import org.eclipse.ecf.discovery.IServiceProperties;
-import org.eclipse.ecf.discovery.ServiceContainerEvent;
-import org.eclipse.ecf.discovery.ServiceProperties;
-import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.IServiceTypeID;
-import org.eclipse.ecf.discovery.identity.ServiceID;
+import org.eclipse.ecf.discovery.*;
+import org.eclipse.ecf.discovery.identity.*;
 import org.eclipse.ecf.discovery.service.IDiscoveryService;
-import org.eclipse.ecf.internal.provider.jmdns.JMDNSDebugOptions;
-import org.eclipse.ecf.internal.provider.jmdns.JMDNSPlugin;
-import org.eclipse.ecf.internal.provider.jmdns.Messages;
-import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
-import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceID;
-import org.eclipse.ecf.provider.jmdns.identity.JMDNSServiceTypeID;
+import org.eclipse.ecf.internal.provider.jmdns.*;
+import org.eclipse.ecf.provider.jmdns.identity.*;
 
 public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter implements IContainer, IDiscoveryService, ServiceListener, ServiceTypeListener {
 	public static final int DEFAULT_REQUEST_TIMEOUT = 3000;
@@ -60,7 +37,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	private JmDNS jmdns = null;
 	private ID targetID = null;
 
-	public JMDNSDiscoveryContainer(InetAddress addr) throws IOException, IDCreateException {
+	public JMDNSDiscoveryContainer(InetAddress addr) throws IDCreateException {
 		super(JMDNSNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(JMDNSDiscoveryContainer.class.getName() + ";" + addr.toString() + ";" + instanceCount++))); //$NON-NLS-1$  //$NON-NLS-2$
 		intf = addr;
 	}
@@ -77,8 +54,8 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#getServices(java.lang.String)
+	/**
+	 * @deprecated
 	 */
 	public IServiceInfo[] getServices(String type) {
 		IServiceInfo svs[] = new IServiceInfo[0];
@@ -97,16 +74,16 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.IContainer#connect(org.eclipse.ecf.core.identity.ID, org.eclipse.ecf.core.security.IConnectContext)
 	 */
-	public void connect(ID targetID, IConnectContext joinContext) throws ContainerConnectException {
+	public void connect(ID targetID1, IConnectContext joinContext) throws ContainerConnectException {
 		if (this.targetID != null)
 			throw new ContainerConnectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_ALREADY_CONNECTED);
-		this.targetID = (targetID == null) ? getConfig().getID() : targetID;
+		this.targetID = (targetID1 == null) ? getConfig().getID() : targetID1;
 		fireContainerEvent(new ContainerConnectingEvent(this.getID(), this.targetID, joinContext));
 		try {
 			this.jmdns = new JmDNS(intf);
 			jmdns.addServiceTypeListener(this);
-			if (targetID != null && targetID instanceof JMDNSServiceID) {
-				final JMDNSServiceID svcid = (JMDNSServiceID) targetID;
+			if (targetID1 != null && targetID1 instanceof JMDNSServiceID) {
+				final JMDNSServiceID svcid = (JMDNSServiceID) targetID1;
 				final JMDNSServiceTypeID serviceTypeID = (JMDNSServiceTypeID) svcid.getServiceTypeID();
 				jmdns.addServiceListener(serviceTypeID.getInternal(), this);
 			}
@@ -146,8 +123,8 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#registerServiceType(java.lang.String)
+	/**
+	 * @deprecated
 	 */
 	public void registerServiceType(String serviceType) {
 		if (jmdns != null && serviceType != null) {

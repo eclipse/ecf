@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.ServiceTypeID;
+import org.eclipse.ecf.internal.provider.jmdns.Messages;
 import org.eclipse.osgi.util.NLS;
 
 /**
@@ -29,7 +30,7 @@ public class JMDNSServiceTypeID extends ServiceTypeID {
 		try {
 			parse(type);
 		} catch (final Exception e) {
-			throw new IDCreateException(NLS.bind("{0} is not a valid JMDNSServiceTypeID", type));
+			throw new IDCreateException(NLS.bind(Messages.JMDNSServiceTypeID_EXCEPTION_INVALID_TYPE_ID, type));
 		}
 	}
 
@@ -40,13 +41,13 @@ public class JMDNSServiceTypeID extends ServiceTypeID {
 		this.typeName = type;
 		Assert.isNotNull(this.typeName);
 		this.namingAuthority = DEFAULT_NA;
-		final int protoBegin = type.lastIndexOf("_");
-		final int protoEnd = type.indexOf(".", protoBegin);
+		final int protoBegin = type.lastIndexOf("_"); //$NON-NLS-1$
+		final int protoEnd = type.indexOf(".", protoBegin); //$NON-NLS-1$
 		protocols = new String[] {type.substring(protoBegin + 1, protoEnd)};
 		scopes = new String[] {type.substring(protoEnd + 1, type.length() - 1)};
 		String servicesString = type.substring(0, protoBegin - 1);
 		servicesString = servicesString.substring(1);
-		services = servicesString.split("._");
+		services = servicesString.split("._"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -62,10 +63,10 @@ public class JMDNSServiceTypeID extends ServiceTypeID {
 		}
 
 		buf.append(protocols[0]);
-		buf.append(".");
+		buf.append("."); //$NON-NLS-1$
 
 		buf.append(scopes[0]);
-		buf.append(".");
+		buf.append("."); //$NON-NLS-1$
 
 		return buf.toString();
 	}
