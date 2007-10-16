@@ -19,6 +19,7 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator implements BundleActivator {
 
+	public static final String PLUGIN_ID = "org.eclipse.ecf.server"; //$NON-NLS-1$
 	//The shared instance.
 	private static Activator plugin;
 
