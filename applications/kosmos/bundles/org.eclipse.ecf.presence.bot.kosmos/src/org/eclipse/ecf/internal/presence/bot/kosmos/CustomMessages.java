@@ -28,7 +28,7 @@ public class CustomMessages {
 	static final String BugContent = "BugContent";
 	static final String BugContent_Reply = "BugContent_Reply";
 
-	static final String Javadoc_NotFound = "Javadoc_notFound";
+	static final String Javadoc_NotFound = "Javadoc_NotFound";
 	static final String Javadoc_ResultsUnknown = "Javadoc_ResultsUnknown";
 
 	static final String NewsgroupSearch = "NewsgroupSearch";
