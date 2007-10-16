@@ -17,16 +17,22 @@
                name="#eclipse-de">
          </chatRooms>
          <chatRooms
-               name="#eclipse-soc">
+               name="#eclipse-dev">
+         </chatRooms>
+         <chatRooms
+               name="#eclipse-ecf">
          </chatRooms>
          <chatRooms
                name="#eclipse-linux">
          </chatRooms>
          <chatRooms
-               name="#eclipse-dev">
+               name="#eclipse-modeling">
          </chatRooms>
          <chatRooms
-               name="#eclipse-ecf">
+               name="#eclipse-soc">
+         </chatRooms>
+         <chatRooms
+               name="#higgins">
          </chatRooms>
       </chatRoomRobot>
    </extension>
