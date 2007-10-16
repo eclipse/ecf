@@ -14,7 +14,7 @@ import java.util.Map;
 
 class Javadoc {
 
-	private static final String LINK_PREFIX = "http://help.eclipse.org/help32/nftopic/org.eclipse.platform.doc.isv/reference/api/"; //$NON-NLS-1$
+	private static final String LINK_PREFIX = "http://help.eclipse.org/stable/nftopic/org.eclipse.platform.doc.isv/reference/api/"; //$NON-NLS-1$
 	private static final String LINK_SUFFIX = ".html"; //$NON-NLS-1$
 
 	private Map javadocs;
