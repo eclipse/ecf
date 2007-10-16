@@ -17,7 +17,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
-
 /**
  * The activator class controls the plug-in life cycle
  */
@@ -29,20 +28,22 @@ public class Activator implements BundleActivator {
 	// The shared instance
 	private static Activator plugin;
 	private BundleContext context = null;
-	
+
 	private ServiceTracker logServiceTracker = null;
-	
+
 	/**
 	 * The constructor
 	 */
-	public Activator() {}
-
-	public void start(BundleContext context) throws Exception {
-		plugin = this;
-		this.context = context;
+	public Activator() {
+		//
 	}
 
-	public void stop(BundleContext context) throws Exception {
+	public void start(BundleContext ctxt) throws Exception {
+		plugin = this;
+		this.context = ctxt;
+	}
+
+	public void stop(BundleContext ctxt) throws Exception {
 		this.context = null;
 		plugin = null;
 	}
@@ -58,11 +59,10 @@ public class Activator implements BundleActivator {
 		}
 		return plugin;
 	}
-	
+
 	protected LogService getLogService() {
 		if (logServiceTracker == null) {
-			logServiceTracker = new ServiceTracker(this.context,
-					LogService.class.getName(), null);
+			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
 		}
 		return (LogService) logServiceTracker.getService();
@@ -71,8 +71,7 @@ public class Activator implements BundleActivator {
 	public void log(IStatus status) {
 		LogService logService = getLogService();
 		if (logService != null) {
-			logService.log(LogHelper.getLogCode(status), LogHelper
-					.getLogMessage(status), status.getException());
+			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
 		}
 	}
 
