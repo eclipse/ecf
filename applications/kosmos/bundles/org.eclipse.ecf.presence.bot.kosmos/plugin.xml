@@ -14,6 +14,9 @@
                name="#eclipse">
          </chatRooms>
          <chatRooms
+               name="#eclipse-bugs">
+         </chatRooms>
+         <chatRooms
                name="#eclipse-de">
          </chatRooms>
          <chatRooms
