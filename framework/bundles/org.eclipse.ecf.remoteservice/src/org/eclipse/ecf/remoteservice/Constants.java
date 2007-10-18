@@ -152,7 +152,7 @@ public interface Constants {
 	 * service registry.  If present in the remote service registration properties,
 	 * the associated remote service proxy will be added to the local service registry.
 	 */
-	public static final String LOCAL_SERVICE_REGISTRATION = "org.eclipse.ecf.serviceRegistrationRemote"; //$NON-NLS-1$
+	public static final String PROXY_SERVICE_REGISTRATION = "org.eclipse.ecf.serviceRegistrationRemote"; //$NON-NLS-1$
 
 	/**
 	 * Remote Service property.  If a ServiceReference has the REMOTE_SERVICE property,
