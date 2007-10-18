@@ -517,7 +517,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	private void localRegisterService(RemoteServiceRegistrationImpl registration) {
-		final Object localServiceRegistrationValue = registration.getProperty(Constants.LOCAL_SERVICE_REGISTRATION);
+		final Object localServiceRegistrationValue = registration.getProperty(Constants.PROXY_SERVICE_REGISTRATION);
 		if (localServiceRegistrationValue != null) {
 			final BundleContext context = Activator.getDefault().getContext();
 			if (context == null)
