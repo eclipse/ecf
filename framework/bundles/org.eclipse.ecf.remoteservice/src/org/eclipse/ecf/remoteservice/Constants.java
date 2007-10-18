@@ -145,14 +145,14 @@ public interface Constants {
 	 * This property may be supplied in the properties <code>Dictionary</code>
 	 * object passed to the <code>BundleContext.registerService</code> method.
 	 */
-	public static final String SERVICE_REGISTRATION_CONTAINER_ID = "org.eclipse.ecf.containerID"; //$NON-NLS-1$
+	public static final String REMOTE_SERVICE_CONTAINER_ID = "org.eclipse.ecf.containerID"; //$NON-NLS-1$
 
 	/**
-	 * Service property that determines whether a remote service is added to the local
+	 * Service property that determines whether a remote service proxy is automatically added to the local
 	 * service registry.  If present in the remote service registration properties,
 	 * the associated remote service proxy will be added to the local service registry.
 	 */
-	public static final String PROXY_SERVICE_REGISTRATION = "org.eclipse.ecf.serviceRegistrationRemote"; //$NON-NLS-1$
+	public static final String AUTOREGISTER_REMOTE_PROXY = "org.eclipse.ecf.serviceRegistrationRemote"; //$NON-NLS-1$
 
 	/**
 	 * Remote Service property.  If a ServiceReference has the REMOTE_SERVICE property,
