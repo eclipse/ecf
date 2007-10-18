@@ -149,14 +149,35 @@ public interface Constants {
 
 	/**
 	 * Service property that determines whether a remote service proxy is automatically added to the local
-	 * service registry.  If present in the remote service registration properties,
-	 * the associated remote service proxy will be added to the local service registry.
+	 * service registry.  This property can be used to expose remote services transparently
+	 * to client (i.e. automatically putting a proxy into the client's local service registry).
+	 * If this property is set in during service registration, then the the associated remote 
+	 * service proxy should be added to the client's service registry by the implementing provider.  The value 
+	 * of the property can be any non-<code>null</code> value.  
+	 * <p></p>
+	 * For example:
+	 * <pre>
+	 * final Dictionary props = new Hashtable();
+	 * props.put(Constants.AUTOREGISTER_REMOTE_PROXY, "true");
+	 * // Register
+	 * adapters[0].registerRemoteService(new String[] {IConcatService.class.getName()}, serviceImpl, props);
+	 * </pre>
+	 * 
 	 */
 	public static final String AUTOREGISTER_REMOTE_PROXY = "org.eclipse.ecf.serviceRegistrationRemote"; //$NON-NLS-1$
 
 	/**
 	 * Remote Service property.  If a ServiceReference has the REMOTE_SERVICE property,
 	 * then the value will be a <code>non-null</code> instance of {@link IRemoteService}.
+	 * <p></p>
+	 * This property may be used by clients to access the {@link IRemoteService} for 
+	 * a given service.
+	 * <pre>
+	 * ServiceReference ref = bc.getServiceReference(IConcatService.class.getName());
+	 * IRemoteService remoteService = (IRemoteService) ref.getProperty(Constants.REMOTE_SERVICE);
+	 * // Call it asynchronously with listener
+	 * remoteService.callAsynch(remoteCall, remoteCallListener);
+	 * </pre>
 	 */
 	public static final String REMOTE_SERVICE = "org.eclipse.ecf.remoteService"; //$NON-NLS-1$
 
