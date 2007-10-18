@@ -517,7 +517,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 	}
 
 	private void localRegisterService(RemoteServiceRegistrationImpl registration) {
-		final Object localServiceRegistrationValue = registration.getProperty(Constants.PROXY_SERVICE_REGISTRATION);
+		final Object localServiceRegistrationValue = registration.getProperty(Constants.AUTOREGISTER_REMOTE_PROXY);
 		if (localServiceRegistrationValue != null) {
 			final BundleContext context = Activator.getDefault().getContext();
 			if (context == null)
@@ -540,7 +540,7 @@ public class RegistrySharedObject extends BaseSharedObject implements IRemoteSer
 				}
 			}
 			final ID remoteContainerID = registration.getContainerID();
-			properties.put(Constants.SERVICE_REGISTRATION_CONTAINER_ID, remoteContainerID.getName());
+			properties.put(Constants.REMOTE_SERVICE_CONTAINER_ID, remoteContainerID.getName());
 			properties.put(Constants.REMOTE_SERVICE, remoteServiceImpl);
 			final ServiceRegistration serviceRegistration = context.registerService(registration.getClasses(), service, properties);
 			addLocalServiceRegistration(remoteContainerID, serviceRegistration);
