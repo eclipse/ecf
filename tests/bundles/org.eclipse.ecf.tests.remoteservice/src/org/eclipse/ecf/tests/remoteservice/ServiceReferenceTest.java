@@ -65,7 +65,7 @@ public class ServiceReferenceTest extends AbstractRemoteServiceTestCase {
 		// client [1]/adapter[1] is the service target (client)
 		final Dictionary props = new Hashtable();
 		props.put(Constants.SERVICE_REGISTRATION_TARGETS, getClients()[1].getConnectedID());
-		props.put(Constants.LOCAL_SERVICE_REGISTRATION, "true");
+		props.put(Constants.PROXY_SERVICE_REGISTRATION, "true");
 		// Register
 		adapters[0].registerRemoteService(new String[] {IConcatService.class.getName()}, createService(), props);
 		// Give some time for propagation
@@ -103,7 +103,7 @@ public class ServiceReferenceTest extends AbstractRemoteServiceTestCase {
 		// client [1]/adapter[1] is the service target (client)
 		final Dictionary props = new Hashtable();
 		props.put(Constants.SERVICE_REGISTRATION_TARGETS, getClients()[1].getConnectedID());
-		props.put(Constants.LOCAL_SERVICE_REGISTRATION, "true");
+		props.put(Constants.PROXY_SERVICE_REGISTRATION, "true");
 		// Register
 		adapters[0].registerRemoteService(new String[] {IConcatService.class.getName()}, createService(), props);
 		// Give some time for propagation
