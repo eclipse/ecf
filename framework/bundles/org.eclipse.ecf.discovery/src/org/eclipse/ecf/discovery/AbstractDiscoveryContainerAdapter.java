@@ -28,18 +28,29 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 
 public abstract class AbstractDiscoveryContainerAdapter extends AbstractContainer implements IDiscoveryContainerAdapter, IContainer {
+
 	protected final String servicesNamespaceName;
-	protected final Map serviceListeners;
-	protected final Collection serviceTypeListeners;
+
 	protected final DiscoveryContainerConfig config;
+
+	/**
+	 * Map of service type to collection of service listeners i.e. <String,Collection<IServiceListener>>.
+	 * NOTE: Access to this map is synchronized, so subclasses should take this into account.
+	 */
+	protected final Map serviceListeners;
+	/**
+	 * Collection of service type listeners i.e. Collection<IServiceTypeListener>.
+	 * NOTE: Access to this collection is synchronized, so subclasses should take this into account.
+	 */
+	protected final Collection serviceTypeListeners;
 
 	public AbstractDiscoveryContainerAdapter(String aNamespaceName, DiscoveryContainerConfig aConfig) {
 		servicesNamespaceName = aNamespaceName;
 		Assert.isNotNull(servicesNamespaceName);
 		config = aConfig;
 		Assert.isNotNull(config);
-		serviceTypeListeners = new HashSet();
-		serviceListeners = new HashMap();
+		serviceTypeListeners = Collections.synchronizedSet(new HashSet());
+		serviceListeners = Collections.synchronizedMap(new HashMap());
 	}
 
 	protected DiscoveryContainerConfig getConfig() {
