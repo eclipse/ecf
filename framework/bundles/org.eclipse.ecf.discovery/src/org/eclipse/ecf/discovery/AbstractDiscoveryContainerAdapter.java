@@ -73,7 +73,9 @@ public abstract class AbstractDiscoveryContainerAdapter extends AbstractContaine
 	public void addServiceTypeListener(IServiceTypeListener listener) {
 		if (listener == null)
 			return;
-		serviceTypeListeners.add(listener);
+		synchronized (serviceTypeListeners) {
+			serviceTypeListeners.add(listener);
+		}
 	}
 
 	/*
@@ -129,7 +131,9 @@ public abstract class AbstractDiscoveryContainerAdapter extends AbstractContaine
 	public void removeServiceTypeListener(IServiceTypeListener listener) {
 		if (listener == null)
 			return;
-		serviceTypeListeners.remove(listener);
+		synchronized (serviceTypeListeners) {
+			serviceTypeListeners.remove(listener);
+		}
 	}
 
 	/**
@@ -141,9 +145,11 @@ public abstract class AbstractDiscoveryContainerAdapter extends AbstractContaine
 		if (type == null || listener == null) {
 			return;
 		}
-		final Collection v = (Collection) serviceListeners.get(type);
-		if (v != null) {
-			v.remove(listener);
+		synchronized (serviceListeners) {
+			final Collection v = (Collection) serviceListeners.get(type);
+			if (v != null) {
+				v.remove(listener);
+			}
 		}
 	}
 
