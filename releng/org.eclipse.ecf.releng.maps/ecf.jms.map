@@ -7,3 +7,4 @@ plugin@org.eclipse.ecf.provider.jms.activemq=@CVSTag@,:pserver:anonymous@ecf1.os
 plugin@org.eclipse.ecf.provider.jms.activemq.ui=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jms.activemq.ui
 plugin@org.eclipse.ecf.provider.jms.weblogic=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jms.weblogic
 plugin@org.eclipse.ecf.provider.jms.weblogic.ui=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jms.weblogic.ui
+plugin@org.eclipse.ecf.example.collab=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.example.collab 
