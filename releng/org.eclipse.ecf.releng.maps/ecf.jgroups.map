@@ -5,4 +5,4 @@ feature@org.eclipse.ecf.provider.jgroups_feature=@CVSTag@,:pserver:anonymous@ecf
 plugin@org.eclipse.ecf.provider.jgroups=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jgroups
 plugin@org.eclipse.ecf.provider.jgroups.ui=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.provider.jgroups.ui
 plugin@org.eclipse.ecf.server.jgroups=@CVSTag@,:pserver:anonymous@ecf1.osuosl.org:/ecf,,plugins/org.eclipse.ecf.server.jgroups
-plugin@org.eclipse.ecf.example.collab=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,plugins/org.eclipse.ecf.example.collab
+plugin@org.eclipse.ecf.example.collab=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.example.collab 
