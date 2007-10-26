@@ -24,7 +24,7 @@ public interface IMember extends IBBObject {
 	 * Returns true if the forum member is also a member of the group.
 	 * 
 	 * @param group
-	 * @return
+	 * @return <code>true</code> if this is member of given group, <code>false</code> otherwise.
 	 */
 	public boolean isMemberOf(IMemberGroup group);
 
@@ -33,7 +33,7 @@ public interface IMember extends IBBObject {
 	 * 
 	 * Note: this method may return only a partial list.
 	 * 
-	 * @return
+	 * @return Collection of groups associated with this member.
 	 */
 	public Collection getGroups();
 }

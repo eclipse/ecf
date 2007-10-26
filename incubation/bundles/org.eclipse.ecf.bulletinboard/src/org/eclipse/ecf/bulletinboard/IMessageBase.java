@@ -24,7 +24,7 @@ public interface IMessageBase extends IBBObject {
 	 * 
 	 * TODO Design timezone handling.
 	 * 
-	 * @return
+	 * @return date that the message was posted.
 	 */
 	public Date getTimePosted();
 
