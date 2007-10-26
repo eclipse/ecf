@@ -23,7 +23,7 @@ import org.eclipse.ecf.internal.example.collab.CollabClient;
 public class CollabStart implements IECFStart {
 	Discovery discovery = null;
 
-	public IStatus startup(IProgressMonitor monitor) {
+	public IStatus run(IProgressMonitor monitor) {
 		try {
 			AccountStart as = new AccountStart();
 			as.loadConnectionDetailsFromPreferenceStore();
