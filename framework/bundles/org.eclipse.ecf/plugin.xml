@@ -2,7 +2,7 @@
 <?eclipse version="3.1"?>
 <plugin>
    <extension-point id="containerFactory" name="ECF Container Factory" schema="schema/containerFactory.exsd"/>
-   <extension-point id="startup" name="ECF Start Up" schema="schema/startup.exsd"/>
+   <extension-point id="start" name="ECF start" schema="schema/start.exsd"/>
    <extension
          point="org.eclipse.ecf.containerFactory">
       <containerFactory

@@ -3,17 +3,17 @@
 <schema targetNamespace="org.eclipse.ecf">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.ecf" id="startup" name="ECF Core Startup"/>
+         <meta.schema plugin="org.eclipse.ecf" id="start" name="ECF start"/>
       </appInfo>
       <documentation>
-         ECF Core Startup Extension Point.  This extension point (&lt;b&gt;org.eclipse.ecf.startup&lt;/b&gt;) allows other bundles to have arbitrary code run upon ECF startup.  Note that extensions will be run when the ECF core bundle (ID: &lt;b&gt;org.eclipse.ecf&lt;/b&gt;) is started by the runtime, not necessarily upon platform startup.  Of course, if the &lt;b&gt;org.eclipse.ecf&lt;/b&gt; bundle is started at platform startup, then extensions of this extension point will also be run.
+         ECF Core Start Extension Point.  This extension point (&lt;b&gt;org.eclipse.ecf.start&lt;/b&gt;) allows extensions to run upon ECF core bundle startup.  Note that extensions will be run when the ECF core bundle (ID: &lt;b&gt;org.eclipse.ecf&lt;/b&gt;) is started by the runtime, not necessarily upon platform startup.  
       </documentation>
    </annotation>
 
    <element name="extension">
       <complexType>
-         <sequence>
-            <element ref="ecfstart"/>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="run"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -42,32 +42,22 @@
       </complexType>
    </element>
 
-   <element name="ecfstart">
+   <element name="run">
       <complexType>
-         <sequence>
-            <element ref="property" minOccurs="0" maxOccurs="unbounded"/>
-         </sequence>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  The fully qualified name of the class that implements the org.eclipse.ecf.core.start.IECFStart interface.
+                  Class that must implement IECFStart.
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.ecf.core.start.IECFStart"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.ecf.core.start.IECFStart"/>
                </appInfo>
             </annotation>
          </attribute>
-         <attribute name="name" type="string">
+         <attribute name="synchronous" type="boolean">
             <annotation>
                <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="synch" type="boolean">
-            <annotation>
-               <documentation>
-                  
+                  Attribute to determine whether the given run class is run synchronously (default) or asynchronously
                </documentation>
             </annotation>
          </attribute>
@@ -79,7 +69,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         0.9.0
+         2.0.0M4
       </documentation>
    </annotation>
 
@@ -92,9 +82,9 @@
 
 &lt;pre&gt;
 &lt;extension
-      point=&quot;org.eclipse.ecf.startup&quot;&gt;
-   &lt;ecfstart
-         class=&quot;org.eclipse.ecf.example.collab.start.CollabStart&quot; synch=&quot;true&quot; /&gt;
+      point=&quot;org.eclipse.ecf.start&quot;&gt;
+   &lt;run
+         class=&quot;org.eclipse.ecf.example.collab.start.CollabStart&quot; synchronous=&quot;true&quot; /&gt;
 &lt;/extension&gt;
 &lt;/pre&gt;
 
@@ -104,28 +94,11 @@ Here&apos;s an example implementation class:
 
 &lt;pre&gt;
 public class CollabStart implements IECFStart {
- Discovery discovery = null;
- public IStatus startup(IProgressMonitor monitor) {
-  try {
-   AccountStart as = new AccountStart();
-   as.loadConnectionDetailsFromPreferenceStore();
-   Collection c = as.getConnectionDetails();
-   for (Iterator i = c.iterator(); i.hasNext();) {
-    startConnection((ConnectionDetails) i.next());
-   }
-  } catch (Exception e) {
-   return new Status(IStatus.ERROR, ClientPlugin.PLUGIN_ID, 200,
-     &quot;Exception in starting connection&quot;, e);
-  }
-  return new Status(IStatus.OK, ClientPlugin.PLUGIN_ID, 100, &quot;OK&quot;, null);
+
+ public IStatus run(IProgressMonitor monitor) {
+     ...
  }
- private void startConnection(ConnectionDetails details) throws Exception {
-  CollabClient client = new CollabClient();
-  //ClientPlugin.log(&quot;ECF: Autostarting containerType=&quot;+details.getContainerType()+&quot;,uri=&quot;+details.getTargetURI()+&quot;,nickname=&quot;+details.getNickname());
-  client.createAndConnectClient(details.getContainerType(), details
-    .getTargetURI(), details.getNickname(), details.getPassword(),
-    ResourcesPlugin.getWorkspace().getRoot());
- }
+
 }
 
 &lt;/pre&gt;
@@ -137,8 +110,7 @@ public class CollabStart implements IECFStart {
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         The API for the &lt;b&gt;org.eclipse.ecf.startup&lt;/b&gt; extension point is provided by the
-&lt;b&gt;org.eclipse.ecf.startup.IECFStartup&lt;/b&gt; interface:
+         &lt;b&gt;org.eclipse.ecf.startup.IECFStartup&lt;/b&gt; interface:
 
 &lt;pre&gt;
 /**
@@ -148,13 +120,11 @@ public class CollabStart implements IECFStart {
  */
 public interface IECFStart {
  /**
-  * Start ECF client or server.
+  * Run some startup task.
   * 
   * @return IStatus the status of the start
-  * @throws ECFStartException
-  *             if some exception thrown during start
   */
- public IStatus startup(IProgressMonitor monitor);
+ public IStatus run(IProgressMonitor monitor);
 }
 &lt;/pre&gt;
       </documentation>
@@ -174,7 +144,7 @@ public interface IECFStart {
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         Copyright (c) 2004 Composent, Inc. and others.
+         Copyright (c) 2007 Composent, Inc. and others.
 All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html.  Contributors:  Composent, Inc. - initial API and implementation
       </documentation>
    </annotation>

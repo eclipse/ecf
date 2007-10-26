@@ -30,7 +30,7 @@ public class ECFPlugin implements BundleActivator {
 
 	private static final String CONTAINER_FACTORY_EPOINT = ECFNAMESPACE + "." + CONTAINER_FACTORY_NAME; //$NON-NLS-1$
 
-	private static final String STARTUP_NAME = "startup"; //$NON-NLS-1$
+	private static final String STARTUP_NAME = "start"; //$NON-NLS-1$
 
 	public static final String START_EPOINT = ECFNAMESPACE + "." + STARTUP_NAME; //$NON-NLS-1$
 
@@ -48,7 +48,7 @@ public class ECFPlugin implements BundleActivator {
 
 	public static final String HIDDEN_ATTRIBUTE = "hidden"; //$NON-NLS-1$
 
-	public static final String SYNCH_ATTRIBUTE = "synch"; //$NON-NLS-1$
+	public static final String SYNCH_ATTRIBUTE = "synchronous"; //$NON-NLS-1$
 
 	// The shared instance.
 	private static ECFPlugin plugin;
@@ -269,17 +269,12 @@ public class ECFPlugin implements BundleActivator {
 		// For each configuration element
 		for (int m = 0; m < configurationElements.length; m++) {
 			final IConfigurationElement member = configurationElements[m];
-			IECFStart exten = null;
-			String name = null;
 			try {
 				// The only required attribute is "class"
-				exten = (IECFStart) member.createExecutableExtension(CLASS_ATTRIBUTE);
-				// Get name and get version, if available
-				name = member.getAttribute(NAME_ATTRIBUTE);
-				if (name == null)
-					name = exten.getClass().getName();
-				startExtension(name, exten, Boolean.valueOf(member.getAttribute(SYNCH_ATTRIBUTE)).booleanValue());
-
+				String sync = member.getAttribute(SYNCH_ATTRIBUTE);
+				boolean bsync = (sync == null) ? true : Boolean.valueOf(sync).booleanValue();
+				IECFStart clazz = (IECFStart) member.createExecutableExtension(CLASS_ATTRIBUTE);
+				startExtension(clazz.getClass().getName(), clazz, bsync);
 			} catch (final CoreException e) {
 				logException(e.getStatus(), method, e);
 			} catch (final Exception e) {
@@ -293,7 +288,7 @@ public class ECFPlugin implements BundleActivator {
 		if (synchronous) {
 			IStatus result = null;
 			try {
-				result = exten.startup(new NullProgressMonitor());
+				result = exten.run(new NullProgressMonitor());
 			} catch (final Exception e) {
 				final String message = "startup extension error"; //$NON-NLS-1$
 				logException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, message, e), message, e);

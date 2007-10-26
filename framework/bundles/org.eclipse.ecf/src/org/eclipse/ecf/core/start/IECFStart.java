@@ -18,9 +18,9 @@ import org.eclipse.core.runtime.IStatus;
  */
 public interface IECFStart {
 	/**
-	 * Start ECF client or server.
+	 * Run some startup task.
 	 * 
 	 * @return IStatus the status of the start
 	 */
-	public IStatus startup(IProgressMonitor monitor);
+	public IStatus run(IProgressMonitor monitor);
 }
