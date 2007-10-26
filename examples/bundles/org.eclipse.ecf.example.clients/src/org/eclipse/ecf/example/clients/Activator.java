@@ -17,10 +17,11 @@ import org.osgi.framework.BundleContext;
 public class Activator extends AbstractUIPlugin {
 
 	private static Activator instance = null;
-	
+
 	public static final int CLIENT_ERROR_CODE = 121;
-	
+
 	public static final String PLUGIN_ID = "org.eclipse.ecf.example.clients"; //$NON-NLS-1$
+
 	public Activator() {
 		super();
 		instance = this;
@@ -29,12 +30,15 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return instance;
 	}
-	
+
 	public void log(int status, String message, Throwable exception) {
-		getLog().log(new Status(status,PLUGIN_ID,CLIENT_ERROR_CODE,message,exception));
+		getLog().log(new Status(status, PLUGIN_ID, CLIENT_ERROR_CODE, message, exception));
 	}
+
 	/**
 	 * This method is called upon plug-in activation
+	 * @param context 
+	 * @throws Exception 
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
@@ -42,11 +46,12 @@ public class Activator extends AbstractUIPlugin {
 
 	/**
 	 * This method is called when the plug-in is stopped
+	 * @param context 
+	 * @throws Exception 
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		instance = null;
 	}
-
 
 }
