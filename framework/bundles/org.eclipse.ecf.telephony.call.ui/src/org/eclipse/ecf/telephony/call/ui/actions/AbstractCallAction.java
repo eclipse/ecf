@@ -28,7 +28,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
 /**
  * Abstract class to implement calling via ECF Call API. Subclasses may be
@@ -138,7 +137,6 @@ public abstract class AbstractCallAction extends Action {
 	 * The action has been activated. The argument of the method represents the
 	 * 'real' action sitting in the workbench UI.
 	 * 
-	 * @see IWorkbenchWindowActionDelegate#run
 	 */
 	public void run() {
 		try {
