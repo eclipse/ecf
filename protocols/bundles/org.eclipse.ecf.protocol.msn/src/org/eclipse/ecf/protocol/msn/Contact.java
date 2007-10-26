@@ -127,8 +127,7 @@ public final class Contact {
 	private void firePersonalMessageChanged(String message) {
 		synchronized (listeners) {
 			for (int i = 0; i < listeners.size(); i++) {
-				((IContactListener) listeners.get(i))
-						.personalMessageChanged(message);
+				((IContactListener) listeners.get(i)).personalMessageChanged(message);
 			}
 		}
 	}
@@ -286,6 +285,7 @@ public final class Contact {
 	 * Returns whether the specified object is equal to this. An object is equal
 	 * to this if it is also a <tt>Contact</tt> and its email addresses is
 	 * equal to this contact's email address.
+	 * @param obj 
 	 * 
 	 * @return <code>true</code> if the argument is a <tt>Contact</tt> and
 	 *         also has the same email address as this

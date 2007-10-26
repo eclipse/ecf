@@ -89,8 +89,7 @@ public final class ChatSession extends Session {
 	 *             If an I/O error occurs while attempting to connect to the
 	 *             specified host
 	 */
-	ChatSession(String host, MsnClient client, String username, String info)
-			throws IOException {
+	ChatSession(String host, MsnClient client, String username, String info) throws IOException {
 		this(host, client);
 		authenticate(username, info);
 	}
@@ -107,12 +106,11 @@ public final class ChatSession extends Session {
 	 */
 	private void authenticate(String username, String info) throws IOException {
 		write("USR", username + ' ' + info); //$NON-NLS-1$
-		String input = super.read();
+		final String input = super.read();
 		// FIXME: check if this indexOf(String) call can be replaced with
 		// startsWith(String)
 		if (input == null || input.indexOf("USR") == -1) { //$NON-NLS-1$
-			throw new ConnectException("Authentication has failed with the "
-					+ "switchboard server.");
+			throw new ConnectException("Authentication has failed with the " + "switchboard server.");
 		}
 		idle();
 	}
@@ -120,7 +118,7 @@ public final class ChatSession extends Session {
 	public void close() {
 		try {
 			write("OUT"); //$NON-NLS-1$
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// ignored
 		}
 		super.close();
@@ -144,8 +142,7 @@ public final class ChatSession extends Session {
 			}
 		}
 		write("CAL", email); //$NON-NLS-1$
-		while (!joined)
-			;
+		while (!joined);
 		joined = false;
 	}
 
@@ -159,8 +156,7 @@ public final class ChatSession extends Session {
 	private void fireContactJoinedEvent(Contact contact) {
 		synchronized (listeners) {
 			for (int i = 0; i < listeners.size(); i++) {
-				((IChatSessionListener) listeners.get(i))
-						.contactJoined(contact);
+				((IChatSessionListener) listeners.get(i)).contactJoined(contact);
 			}
 		}
 	}
@@ -189,8 +185,7 @@ public final class ChatSession extends Session {
 	private void fireContactIsTypingEvent(Contact contact) {
 		synchronized (listeners) {
 			for (int i = 0; i < listeners.size(); i++) {
-				((IChatSessionListener) listeners.get(i))
-						.contactIsTyping(contact);
+				((IChatSessionListener) listeners.get(i)).contactIsTyping(contact);
 			}
 		}
 	}
@@ -206,8 +201,7 @@ public final class ChatSession extends Session {
 	private void fireMessageReceivedEvent(Contact contact, String message) {
 		synchronized (listeners) {
 			for (int i = 0; i < listeners.size(); i++) {
-				((IChatSessionListener) listeners.get(i)).messageReceived(
-						contact, message);
+				((IChatSessionListener) listeners.get(i)).messageReceived(contact, message);
 			}
 		}
 	}
@@ -237,13 +231,12 @@ public final class ChatSession extends Session {
 	 */
 	private Contact findContact(String email) throws IllegalArgumentException {
 		for (int i = 0; i < contacts.size(); i++) {
-			Contact contact = (Contact) contacts.get(i);
+			final Contact contact = (Contact) contacts.get(i);
 			if (contact.getEmail().equals(email)) {
 				return contact;
 			}
 		}
-		throw new IllegalArgumentException("A contact with the email " + email
-				+ " could not be found in this ChatSession.");
+		throw new IllegalArgumentException("A contact with the email " + email + " could not be found in this ChatSession.");
 	}
 
 	/**
@@ -253,15 +246,15 @@ public final class ChatSession extends Session {
 	 * @return the String returned from {@link Session#read()}
 	 */
 	String read() throws IOException {
-		String input = super.read();
+		final String input = super.read();
 		if (input == null) {
 			return null;
 		}
 
-		String[] lines = StringUtils.split(input, "\r\n"); //$NON-NLS-1$
+		final String[] lines = StringUtils.split(input, "\r\n"); //$NON-NLS-1$
 		for (int i = 0; i < lines.length; i++) {
 			if (lines[i].startsWith("IRO")) { //$NON-NLS-1$
-				String[] split = StringUtils.splitOnSpace(lines[i]);
+				final String[] split = StringUtils.splitOnSpace(lines[i]);
 				Contact contact = contactList.getContact(split[4]);
 				if (contact == null) {
 					contact = new Contact(split[4], split[5]);
@@ -269,7 +262,7 @@ public final class ChatSession extends Session {
 				contacts.add(contact);
 				fireContactJoinedEvent(contact);
 			} else if (lines[i].startsWith("JOI")) { //$NON-NLS-1$
-				String[] split = StringUtils.splitOnSpace(lines[i]);
+				final String[] split = StringUtils.splitOnSpace(lines[i]);
 				Contact contact = contactList.getContact(split[2]);
 				if (contact == null) {
 					contact = new Contact(split[1], split[2]);
@@ -278,9 +271,9 @@ public final class ChatSession extends Session {
 				joined = true;
 				fireContactJoinedEvent(contact);
 			} else if (lines[i].startsWith("BYE")) { //$NON-NLS-1$
-				String[] split = StringUtils.splitOnSpace(lines[i]);
+				final String[] split = StringUtils.splitOnSpace(lines[i]);
 				if (split.length == 2) {
-					Contact contact = findContact(split[1]);
+					final Contact contact = findContact(split[1]);
 					contacts.remove(contact);
 					fireContactLeftEvent(contact);
 					if (contacts.isEmpty()) {
@@ -292,24 +285,20 @@ public final class ChatSession extends Session {
 				}
 			} else if (lines[i].startsWith("MSG")) { //$NON-NLS-1$
 				if (input.indexOf("TypingUser:") != -1) { //$NON-NLS-1$
-					String trim = input.substring(input.indexOf("MSG")); //$NON-NLS-1$
-					String content = StringUtils
-							.splitSubstring(trim, "\r\n", 3); //$NON-NLS-1$
-					fireContactIsTypingEvent(findContact(StringUtils
-							.splitOnSpace(content)[1]));
+					final String trim = input.substring(input.indexOf("MSG")); //$NON-NLS-1$
+					final String content = StringUtils.splitSubstring(trim, "\r\n", 3); //$NON-NLS-1$
+					fireContactIsTypingEvent(findContact(StringUtils.splitOnSpace(content)[1]));
 				} else if (input.indexOf("text/plain") != -1) { //$NON-NLS-1$
-					int index = input.indexOf("ANS") == -1 ? 2 : 3; //$NON-NLS-1$
-					String[] contents = StringUtils.split(input, "\r\n", index); //$NON-NLS-1$
-					String[] split = StringUtils
-							.splitOnSpace(contents[index - 2]);
-					Contact contact = findContact(split[1]);
+					final int index = input.indexOf("ANS") == -1 ? 2 : 3; //$NON-NLS-1$
+					final String[] contents = StringUtils.split(input, "\r\n", index); //$NON-NLS-1$
+					String[] split = StringUtils.splitOnSpace(contents[index - 2]);
+					final Contact contact = findContact(split[1]);
 
-					int count = Integer.parseInt(split[3]);
+					final int count = Integer.parseInt(split[3]);
 					split = StringUtils.split(contents[index - 1], "\r\n\r\n"); //$NON-NLS-1$
 
-					int text = count - (split[0].length() + 4);
-					fireMessageReceivedEvent(contact, split[1].substring(0,
-							text));
+					final int text = count - (split[0].length() + 4);
+					fireMessageReceivedEvent(contact, split[1].substring(0, text));
 				}
 			}
 		}
@@ -329,6 +318,7 @@ public final class ChatSession extends Session {
 	 * This method returns the Contacts that are currently participating in this
 	 * ChatSession. Note that this does not include the current user.
 	 * </p>
+	 * @return array of contacts that are the participants.
 	 */
 	public Contact[] getParticipants() {
 		return (Contact[]) contacts.toArray(new Contact[contacts.size()]);
@@ -358,7 +348,7 @@ public final class ChatSession extends Session {
 	 *             If an I/O occurs when sending the message to the server
 	 */
 	public void sendTypingNotification() throws IOException {
-		String message = "MIME-Version: 1.0\r\n" //$NON-NLS-1$
+		final String message = "MIME-Version: 1.0\r\n" //$NON-NLS-1$
 				+ "Content-Type: text/x-msmsgscontrol\r\nTypingUser: " + email //$NON-NLS-1$
 				+ "\r\n\r\n\r\n"; //$NON-NLS-1$
 		write("MSG", "U " + message.length() + "\r\n" + message, false); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

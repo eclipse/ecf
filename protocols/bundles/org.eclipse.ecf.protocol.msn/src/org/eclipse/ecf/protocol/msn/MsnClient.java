@@ -69,7 +69,7 @@ public final class MsnClient {
 	/**
 	 * The hostname to use to connect to the dispatch server.
 	 */
-	private String hostname;
+	private final String hostname;
 
 	/**
 	 * The user's personal message.
@@ -79,12 +79,12 @@ public final class MsnClient {
 	/**
 	 * The media that the user is currently playing.
 	 */
-	private String currentMedia = "";//$NON-NLS-1$
+	private final String currentMedia = "";//$NON-NLS-1$
 
 	/**
 	 * The port to use to connect to the dispatch server.
 	 */
-	private int port;
+	private final int port;
 
 	/**
 	 * The current status of the user.
@@ -95,9 +95,6 @@ public final class MsnClient {
 	 * Instantiate a new MsnClient that defaults to setting the user as being
 	 * online and available when signing in.
 	 * 
-	 * @throws IOException
-	 *             If an I/O error occurred during instantiation of the
-	 *             DispatchSession.
 	 */
 	public MsnClient() {
 		this(Status.ONLINE);
@@ -134,10 +131,10 @@ public final class MsnClient {
 	 */
 	public void connect(String username, String password) throws IOException {
 		this.username = username;
-		DispatchSession dispatch = new DispatchSession(hostname, port);
+		final DispatchSession dispatch = new DispatchSession(hostname, port);
 		// get the address of the notification server by first authenticating
 		// ourselves
-		String address = dispatch.authenticate(username);
+		final String address = dispatch.authenticate(username);
 		// close the session
 		dispatch.close();
 		// connect the notification session to the received address
@@ -147,11 +144,11 @@ public final class MsnClient {
 			while (!notification.login(username, password)) {
 				notification.reset();
 			}
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			if (!notification.isClosed()) {
 				throw e;
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			if (!notification.isClosed()) {
 				throw e;
 			}
@@ -167,7 +164,7 @@ public final class MsnClient {
 		if (notification != null) {
 			try {
 				notification.write("OUT"); //$NON-NLS-1$
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				// ignored since we're disconnecting anyway
 			}
 			notification.close();
@@ -180,6 +177,7 @@ public final class MsnClient {
 	 * 
 	 * @param status
 	 *            the status that the user wishes to change to
+	 * @throws IOException if some problem setting status (e.g. disconnected).
 	 */
 	public void setStatus(Status status) throws IOException {
 		if (this.status != status) {
@@ -206,8 +204,8 @@ public final class MsnClient {
 	}
 
 	void remove(Contact contact) throws IOException {
-		String guid = contact.getGuid();
-		for (Iterator it = contact.getGroups().iterator(); it.hasNext();) {
+		final String guid = contact.getGuid();
+		for (final Iterator it = contact.getGroups().iterator(); it.hasNext();) {
 			notification.write("REM", "FL " + guid + " " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					+ list.getGuid((Group) it.next()));
 		}
@@ -237,9 +235,8 @@ public final class MsnClient {
 	 *             If an I/O error occurred
 	 */
 	public ChatSession createChatSession(String email) throws IOException {
-		ResponseCommand cmd = notification.getChatSession();
-		ChatSession cs = new ChatSession(cmd.getParam(2), this, username, cmd
-				.getParam(4));
+		final ResponseCommand cmd = notification.getChatSession();
+		final ChatSession cs = new ChatSession(cmd.getParam(2), this, username, cmd.getParam(4));
 		// reset the ResponseCommand so that the next XFR request won't conflict
 		cmd.process(null);
 		cs.invite(email);
@@ -255,6 +252,7 @@ public final class MsnClient {
 	 * 
 	 * @param newName
 	 *            the new name of this user
+	 * @throws IOException 
 	 */
 	public void setDisplayName(String newName) throws IOException {
 		notification.write("PRP", "MFN " + URLEncoder.encode(newName)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -280,7 +278,7 @@ public final class MsnClient {
 	}
 
 	private void sendStatusData() throws IOException {
-		String message = "<Data><PSM>" + personalMessage //$NON-NLS-1$
+		final String message = "<Data><PSM>" + personalMessage //$NON-NLS-1$
 				+ "</PSM><CurrentMedia>" + currentMedia //$NON-NLS-1$
 				+ "</CurrentMedia></Data>"; //$NON-NLS-1$
 		notification.write("UUX", message.length() + "\r\n" //$NON-NLS-1$ //$NON-NLS-2$

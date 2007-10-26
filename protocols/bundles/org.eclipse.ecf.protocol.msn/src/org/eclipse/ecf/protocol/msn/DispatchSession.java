@@ -18,7 +18,7 @@ import org.eclipse.ecf.protocol.msn.internal.encode.ResponseCommand;
 /**
  * <p>
  * The DispatchSession class connects to the dispatch server and retrieves the
- * address of the notification server for the {@link NotificationSession} class
+ * address of the notification server for the NotificationSession class
  * to connect to. It currently does not serve any other purpose.
  * </p>
  * 
@@ -67,8 +67,7 @@ class DispatchSession extends Session {
 	 * @throws IOException
 	 *             If an I/O error occurs during the read or write operations
 	 */
-	ResponseCommand connect(String username) throws ConnectException,
-			IOException {
+	ResponseCommand connect(String username) throws ConnectException, IOException {
 		write("VER", "MSNP11 CVR0"); //$NON-NLS-1$ //$NON-NLS-2$
 		String input = super.read();
 		if (!input.startsWith("VER")) { //$NON-NLS-1$
@@ -100,7 +99,7 @@ class DispatchSession extends Session {
 	 *             If an I/O error occurs during the read or write operations
 	 */
 	String authenticate(String username) throws ConnectException, IOException {
-		ResponseCommand received = connect(username);
+		final ResponseCommand received = connect(username);
 		if (!received.getCommand().equals("XFR")) { //$NON-NLS-1$
 			throw new ConnectException("The server did not respond properly.");
 		}

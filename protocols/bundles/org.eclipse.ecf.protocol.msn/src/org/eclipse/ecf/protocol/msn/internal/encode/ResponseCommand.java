@@ -32,8 +32,6 @@ public class ResponseCommand {
 	 * Creates a new ResponseCommand that will process the given line. The
 	 * constructor does not do anything outside of calling
 	 * 
-	 * @link #process(String) on the given line.
-	 * 
 	 * @param line
 	 *            the line that this should represent
 	 */

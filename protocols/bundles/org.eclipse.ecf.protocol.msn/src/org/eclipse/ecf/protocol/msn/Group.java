@@ -60,6 +60,7 @@ public final class Group {
 
 	/**
 	 * Returns whether the specified contact is in this group.
+	 * @param contact 
 	 * 
 	 * @return <tt>true</tt> if the contact is in this group, <tt>false</tt>
 	 *         otherwise
