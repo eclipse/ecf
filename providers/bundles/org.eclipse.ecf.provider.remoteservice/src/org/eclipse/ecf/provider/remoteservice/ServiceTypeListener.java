@@ -59,7 +59,7 @@ public class ServiceTypeListener implements IServiceTypeListener {
 	 * 
 	 * @param discovery discovery adapter instance to set up.  Must not be <code>null</code>.
 	 * @param serviceListener service listener to receive notifications of service added/removed and resolved notifications.  Must not be <code>null</code>.
-	 * @param serviceTypeID service type IDs to setup service listeners for.  May be <code>null</code>.  If <code>null</code>, then
+	 * @param serviceTypeIDs service type IDs to setup service listeners for.  May be <code>null</code>.  If <code>null</code>, then
 	 * all service types will notify the given serviceListener.
 	 * @param requiredProperties properties required of the service info
 	 */
