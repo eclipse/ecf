@@ -24,16 +24,13 @@ import org.eclipse.ecf.datashare.events.IChannelMessageEvent;
 
 /**
  * Abstract class for sharing data using {@link IChannel}.  Subclasses should
- * be created as desired to share objects of different types.  Note that
- * to send data, subclasses can use {@link #sendMessage(ID, byte[])}, and
- * to receive data subclasses must implement {@link #handleMessage(ID, byte[])}
- * or {@link #handleChannelEvent(IChannelEvent)}.
+ * be created as desired to share objects of different types.  
  */
 public abstract class AbstractShare {
 
 	protected IChannel channel = null;
 
-	private IChannelListener listener = new IChannelListener() {
+	private final IChannelListener listener = new IChannelListener() {
 		public void handleChannelEvent(IChannelEvent event) {
 			AbstractShare.this.handleChannelEvent(event);
 		}
@@ -41,17 +38,14 @@ public abstract class AbstractShare {
 
 	public AbstractShare(IChannelContainerAdapter adapter) throws ECFException {
 		Assert.isNotNull(adapter);
-		channel = adapter.createChannel(IDFactory.getDefault().createStringID(
-				this.getClass().getName()), listener, null);
+		channel = adapter.createChannel(IDFactory.getDefault().createStringID(this.getClass().getName()), listener, null);
 	}
 
-	public AbstractShare(IChannelContainerAdapter adapter, ID channelID)
-			throws ECFException {
+	public AbstractShare(IChannelContainerAdapter adapter, ID channelID) throws ECFException {
 		this(adapter, channelID, null);
 	}
 
-	public AbstractShare(IChannelContainerAdapter adapter, ID channelID,
-			Map options) throws ECFException {
+	public AbstractShare(IChannelContainerAdapter adapter, ID channelID, Map options) throws ECFException {
 		Assert.isNotNull(adapter);
 		Assert.isNotNull(channelID);
 		channel = adapter.createChannel(channelID, listener, options);
@@ -67,23 +61,23 @@ public abstract class AbstractShare {
 	 */
 	protected void handleChannelEvent(IChannelEvent event) {
 		if (event instanceof IChannelMessageEvent) {
-			IChannelMessageEvent cme = (IChannelMessageEvent) event;
-			handleMessage(cme.getFromContainerID(),cme.getData());
+			final IChannelMessageEvent cme = (IChannelMessageEvent) event;
+			handleMessage(cme.getFromContainerID(), cme.getData());
 		} else if (event instanceof IChannelConnectEvent) {
-			IChannelConnectEvent cce = (IChannelConnectEvent) event;
+			final IChannelConnectEvent cce = (IChannelConnectEvent) event;
 			handleConnectEvent(cce);
 		} else if (event instanceof IChannelDisconnectEvent) {
-			IChannelDisconnectEvent cde = (IChannelDisconnectEvent) event;
+			final IChannelDisconnectEvent cde = (IChannelDisconnectEvent) event;
 			handleDisconnectEvent(cde);
 		}
 	}
-	
+
 	/**
 	 * @param cde
 	 */
 	protected void handleDisconnectEvent(IChannelDisconnectEvent cde) {
 	}
-	
+
 	/**
 	 * @param cce
 	 */
@@ -99,8 +93,7 @@ public abstract class AbstractShare {
 	 */
 	protected abstract void handleMessage(ID fromContainerID, byte[] data);
 
-	protected synchronized void sendMessage(ID toID, byte[] data)
-			throws ECFException {
+	protected synchronized void sendMessage(ID toID, byte[] data) throws ECFException {
 		if (channel != null)
 			channel.sendMessage(toID, data);
 	}
@@ -112,7 +105,7 @@ public abstract class AbstractShare {
 	public boolean isDisposed() {
 		return (getChannel() == null);
 	}
-	
+
 	public synchronized void dispose() {
 		if (channel != null) {
 			channel.dispose();
