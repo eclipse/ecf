@@ -66,7 +66,7 @@ public abstract class AbstractFileSendAction extends Action {
 
 	/**
 	 * @param fileToSend
-	 * @return
+	 * @return file transfer info for given file.
 	 */
 	private IFileTransferInfo createFileTransferInfoFromFile(final File fileToSend) {
 		return new FileTransferInfo(fileToSend);
