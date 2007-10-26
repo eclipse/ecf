@@ -218,7 +218,7 @@ public class UrlConnectionRetrieveFileTransfer extends AbstractRetrieveFileTrans
 	}
 
 	/**
-	 * @return
+	 * @return <code>true</code> if streams successfully, <code>false</code> otherwise.
 	 */
 	private boolean openStreamsForResume() {
 		final URL theURL = getRemoteFileURL();
