@@ -47,13 +47,12 @@ public class PHPBBParser extends AbstractParser {
 		super(namespace, baseURL);
 	}
 
-	public static final Pattern PAT_PHPBB_SIGNATURE = Pattern.compile(
-			"<span class=\"copyright\">(.*)</span>", Pattern.DOTALL);
+	public static final Pattern PAT_PHPBB_SIGNATURE = Pattern.compile("<span class=\"copyright\">(.*)</span>", Pattern.DOTALL);
 
 	public static final String PHPBB_SIGNATURE = "Powered by phpBB";
 
 	public boolean isServiceSupported(final CharSequence seq) {
-		Matcher m = PAT_PHPBB_SIGNATURE.matcher(seq);
+		final Matcher m = PAT_PHPBB_SIGNATURE.matcher(seq);
 		if (m.find()) {
 			String copyright = m.group(1);
 			copyright = StringUtil.stripHTMLTrim(copyright);
@@ -62,37 +61,33 @@ public class PHPBBParser extends AbstractParser {
 		return false;
 	}
 
-	public static final Pattern PAT_FORUM_OR_CATEGORY = Pattern
-			.compile("(?:"
-					+ "<span class=\"forumlink\"> <a href=\"viewforum.php\\?f=([0-9]+)(?:.*)\" class=\"forumlink\">(.*)</a><br />"
-					+ "(?:\\s*)</span> <span class=\"genmed\">(?s)(.*?)</span>"
-					+ ")|(?:"
-					+ "<a href=\"index.php\\?c=([0-9]+)(?:.*)\" class=\"cattitle\">(.*)</a>"
-					+ ")");
+	public static final Pattern PAT_FORUM_OR_CATEGORY = Pattern.compile("(?:" + "<span class=\"forumlink\"> <a href=\"viewforum.php\\?f=([0-9]+)(?:.*)\" class=\"forumlink\">(.*)</a><br />" + "(?:\\s*)</span> <span class=\"genmed\">(?s)(.*?)</span>" + ")|(?:" + "<a href=\"index.php\\?c=([0-9]+)(?:.*)\" class=\"cattitle\">(.*)</a>" + ")");
 
 	/**
 	 * Parses forum HTML output into a list of forums.
+	 * @param seq 
+	 * @return map of ID -> Forum associations.
 	 */
 	public Map<ID, Forum> parseForums(final CharSequence seq) {
-		Map<ID, Forum> forums = new LinkedHashMap<ID, Forum>();
-		Matcher matcher = PAT_FORUM_OR_CATEGORY.matcher(seq);
+		final Map<ID, Forum> forums = new LinkedHashMap<ID, Forum>();
+		final Matcher matcher = PAT_FORUM_OR_CATEGORY.matcher(seq);
 		Category lastCat = null;
 		while (matcher.find()) {
 			// Matched forum
 			if (matcher.group(2) != null) {
-				String name = StringUtil.stripHTMLTrim(matcher.group(2));
-				String desc = StringUtil.stripHTMLTrim(matcher.group(3));
+				final String name = StringUtil.stripHTMLTrim(matcher.group(2));
+				final String desc = StringUtil.stripHTMLTrim(matcher.group(3));
 				if (StringUtil.notEmptyStr(name)) {
-					ForumFactory ff = new ForumFactory();
-					String idStr = matcher.group(1);
+					final ForumFactory ff = new ForumFactory();
+					final String idStr = matcher.group(1);
 					ID id = null;
 					try {
 						id = ff.createBBObjectId(namespace, baseURL, idStr);
-					} catch (IDCreateException e) {
+					} catch (final IDCreateException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					Forum forum = (Forum) ff.createBBObject(id, name, null);
+					final Forum forum = (Forum) ff.createBBObject(id, name, null);
 					forum.setDescription(desc);
 					if (lastCat != null) {
 						lastCat.addSubForum(forum);
@@ -103,17 +98,17 @@ public class PHPBBParser extends AbstractParser {
 			}
 			// Matched category
 			if (matcher.group(5) != null) {
-				String name = StringUtil.stripHTMLTrim(matcher.group(5));
+				final String name = StringUtil.stripHTMLTrim(matcher.group(5));
 				if (StringUtil.notEmptyStr(name)) {
-					CategoryFactory cf = new CategoryFactory();
-					String idStr = matcher.group(4);
+					final CategoryFactory cf = new CategoryFactory();
+					final String idStr = matcher.group(4);
 					ID id = null;
 					try {
 						id = cf.createBBObjectId(namespace, baseURL, idStr);
-					} catch (NumberFormatException e) {
+					} catch (final NumberFormatException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (IDCreateException e) {
+					} catch (final IDCreateException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -132,13 +127,7 @@ public class PHPBBParser extends AbstractParser {
 
 	@Override
 	public IPatternDescriptor getThreadPattern() {
-		return DefaultPatternDescriptor
-				.defaultCustom(
-						Pattern
-								.compile(
-										"<a href=\"viewtopic.php\\?t=([0-9]+)(?:.*?)\" class=\"topictitle\">(.*)</a>(?:.*?)<span class=\"name\">(.+?)</span>",
-										Pattern.DOTALL), new String[] { "id",
-								"name", "authorInfo" });
+		return DefaultPatternDescriptor.defaultCustom(Pattern.compile("<a href=\"viewtopic.php\\?t=([0-9]+)(?:.*?)\" class=\"topictitle\">(.*)</a>(?:.*?)<span class=\"name\">(.+?)</span>", Pattern.DOTALL), new String[] {"id", "name", "authorInfo"});
 	}
 
 	@Override
@@ -152,9 +141,7 @@ public class PHPBBParser extends AbstractParser {
 
 	@Override
 	public IPatternDescriptor getAuthorInfoMemberPattern() {
-		return DefaultPatternDescriptor
-				.defaultIdAndName(Pattern
-						.compile("<a href=\"profile.php\\?mode=viewprofile&amp;u=([0-9]+?)\">(.*?)</a>"));
+		return DefaultPatternDescriptor.defaultIdAndName(Pattern.compile("<a href=\"profile.php\\?mode=viewprofile&amp;u=([0-9]+?)\">(.*?)</a>"));
 	}
 
 	@Override
@@ -174,16 +161,11 @@ public class PHPBBParser extends AbstractParser {
 	 * 
 	 * </tr> <tr> <td>&nbsp;</td> </tr> </table></td> </tr> </table>
 	 */
-	public static final Pattern PAT_MSG_INFORMATION = Pattern
-			.compile(
-					"<table class=\"forumline\"(?:.*?)"
-							+ "<th class=\"thHead\"(?:.*?)><b>Information</b></th>(?:.*?)"
-							+ "<td align=\"center\"><span class=\"gen\">(.*?)</span></td>",
-					Pattern.DOTALL);
+	public static final Pattern PAT_MSG_INFORMATION = Pattern.compile("<table class=\"forumline\"(?:.*?)" + "<th class=\"thHead\"(?:.*?)><b>Information</b></th>(?:.*?)" + "<td align=\"center\"><span class=\"gen\">(.*?)</span></td>", Pattern.DOTALL);
 
 	public String parseInformationMessage(CharSequence seq) {
 		String msg = null;
-		Matcher m = PAT_MSG_INFORMATION.matcher(seq);
+		final Matcher m = PAT_MSG_INFORMATION.matcher(seq);
 		if (m.find()) {
 			msg = "PHPBB: " + m.group(1);
 		}
@@ -191,7 +173,7 @@ public class PHPBBParser extends AbstractParser {
 	}
 
 	private BBException createPHPBBException(String msg, CharSequence seq) {
-		String phpBBmsg = parseInformationMessage(seq);
+		final String phpBBmsg = parseInformationMessage(seq);
 		if (phpBBmsg != null) {
 			return new BBException(msg, new PHPBBException(phpBBmsg));
 		} else {
@@ -203,22 +185,16 @@ public class PHPBBParser extends AbstractParser {
 	// .compile("<title>(?:.*?) :: View topic - (.*?)</title>");
 			.compile("<a class=\"maintitle\" href=\"viewtopic.php\\?t=([0-9]+)(?:.*?)\">(.*?)</a>");
 
-	public static final Pattern PAT_THEAD_ATTRS_FORUM = Pattern
-			.compile("<link rel=\"up\" href=\"viewforum.php\\?f=([0-9]+?)\" title=\"(.*?)\" />");
+	public static final Pattern PAT_THEAD_ATTRS_FORUM = Pattern.compile("<link rel=\"up\" href=\"viewforum.php\\?f=([0-9]+?)\" title=\"(.*?)\" />");
 
-	public static final IPatternDescriptor PD_THREAD_ATTRS = DefaultPatternDescriptor
-			.defaultIdAndName(PAT_THEAD_ATTRS);
+	public static final IPatternDescriptor PD_THREAD_ATTRS = DefaultPatternDescriptor.defaultIdAndName(PAT_THEAD_ATTRS);
 
-	public static final IPatternDescriptor PD_THREAD_ATTRS_FORUM = DefaultPatternDescriptor
-			.defaultIdAndName(PAT_THEAD_ATTRS_FORUM);
+	public static final IPatternDescriptor PD_THREAD_ATTRS_FORUM = DefaultPatternDescriptor.defaultIdAndName(PAT_THEAD_ATTRS_FORUM);
 
-	public Thread parseThreadPageForThreadAttributes(CharSequence seq)
-			throws BBException {
-		Thread t = (Thread) genericParser.parseSingleIdName(PD_THREAD_ATTRS,
-				seq, new ThreadFactory());
+	public Thread parseThreadPageForThreadAttributes(CharSequence seq) throws BBException {
+		final Thread t = (Thread) genericParser.parseSingleIdName(PD_THREAD_ATTRS, seq, new ThreadFactory());
 		if (t != null) {
-			Forum f = (Forum) genericParser.parseSingleIdName(
-					PD_THREAD_ATTRS_FORUM, seq, new ForumFactory());
+			final Forum f = (Forum) genericParser.parseSingleIdName(PD_THREAD_ATTRS_FORUM, seq, new ForumFactory());
 			t.forum = f;
 			return t;
 		} else {
@@ -226,32 +202,22 @@ public class PHPBBParser extends AbstractParser {
 		}
 	}
 
-	public static final Pattern PAT_MSG_TIMESTAMP = Pattern
-			.compile("Posted: (.*?)<span class=\"gen\">&nbsp;</span>");
+	public static final Pattern PAT_MSG_TIMESTAMP = Pattern.compile("Posted: (.*?)<span class=\"gen\">&nbsp;</span>");
 
-	public static final Pattern PAT_MSG = Pattern
-			.compile(
-					"<tr>(?:.*?)<td width=\"150\" align=\"left\" valign=\"top\" class=\"row(?:[12]{1})\"><span class=\"name\">(.*?)<script language=\"JavaScript\"",
-					Pattern.DOTALL);
+	public static final Pattern PAT_MSG = Pattern.compile("<tr>(?:.*?)<td width=\"150\" align=\"left\" valign=\"top\" class=\"row(?:[12]{1})\"><span class=\"name\">(.*?)<script language=\"JavaScript\"", Pattern.DOTALL);
 
-	public static final Pattern PAT_MSG_USERID = Pattern
-			.compile("profile.php\\?mode=viewprofile&amp;u=([0-9]+)");
+	public static final Pattern PAT_MSG_USERID = Pattern.compile("profile.php\\?mode=viewprofile&amp;u=([0-9]+)");
 
-	public static final Pattern PAT_MSG_POSTID_USERNAME = Pattern
-			.compile("<a name=\"([0-9]+)\"></a><b>(.*?)</b></span>");
+	public static final Pattern PAT_MSG_POSTID_USERNAME = Pattern.compile("<a name=\"([0-9]+)\"></a><b>(.*?)</b></span>");
 
-	public static final Pattern PAT_MSG_TITLE = Pattern
-			.compile("Post subject: (.*?)</span>");
+	public static final Pattern PAT_MSG_TITLE = Pattern.compile("Post subject: (.*?)</span>");
 
 	// <td colspan="2"><span class="postbody">test</span><span
 	// class="gensmall"></span></td>
-	public static final Pattern PAT_MSG_MESSAGE = Pattern
-			.compile(
-					"<td colspan=\"2\"><span class=\"postbody\">(.*?)</span><span class=\"gensmall\"></span></td>",
-					Pattern.DOTALL);
+	public static final Pattern PAT_MSG_MESSAGE = Pattern.compile("<td colspan=\"2\"><span class=\"postbody\">(.*?)</span><span class=\"gensmall\"></span></td>", Pattern.DOTALL);
 
 	public String parseMessageId(String msgContent) {
-		Matcher matcher = PAT_MSG_POSTID_USERNAME.matcher(msgContent);
+		final Matcher matcher = PAT_MSG_POSTID_USERNAME.matcher(msgContent);
 		if (matcher.find()) {
 			return new String(matcher.group(1));
 		}
@@ -275,32 +241,29 @@ public class PHPBBParser extends AbstractParser {
 		 */
 	}
 
-	public ThreadMessage parseRequestedMessage(final ThreadMessageID id,
-			final CharSequence seq) throws BBException {
-		ThreadMessageFactory tmf = new ThreadMessageFactory();
+	public ThreadMessage parseRequestedMessage(final ThreadMessageID id, final CharSequence seq) throws BBException {
+		final ThreadMessageFactory tmf = new ThreadMessageFactory();
 		// lastRead = -1 the one we want
 		ThreadMessageID lastReadId = null;
 		try {
-			lastReadId = (ThreadMessageID) tmf.createBBObjectId(namespace,
-					baseURL, String.valueOf(id.getLongValue() - 1));
-		} catch (IDCreateException e) {
+			lastReadId = (ThreadMessageID) tmf.createBBObjectId(namespace, baseURL, String.valueOf(id.getLongValue() - 1));
+		} catch (final IDCreateException e) {
 			e.printStackTrace();
 		}
-		List<ThreadMessage> msgs = parseMessages2(seq, lastReadId, true);
+		final List<ThreadMessage> msgs = parseMessages2(seq, lastReadId, true);
 		if (msgs.size() > 0) {
 			return msgs.get(0);
 		}
 		return null;
 	}
 
-	public List<ThreadMessage> parseMessages2(final CharSequence seq,
-			final ThreadMessageID lastReadId, boolean desc) throws BBException {
+	public List<ThreadMessage> parseMessages2(final CharSequence seq, final ThreadMessageID lastReadId, boolean desc) throws BBException {
 		Matcher m;
 		ThreadMessage msg;
-		List<ThreadMessage> messages = new ArrayList<ThreadMessage>();
+		final List<ThreadMessage> messages = new ArrayList<ThreadMessage>();
 		m = PAT_MSG.matcher(seq);
 		while (m.find()) {
-			String msgSrc = m.group(1);
+			final String msgSrc = m.group(1);
 			msg = parseMessage2(msgSrc, lastReadId);
 			if (msg != null) {
 				if (desc) {
@@ -320,10 +283,9 @@ public class PHPBBParser extends AbstractParser {
 		final String dateFormat = "EEE MMM d, yyyy";
 		final String timeFormat = "h:mm aa";
 		final String dateTimeSeparator = " ";
-		final DateFormat fmtTimestamp = new SimpleDateFormat(dateFormat
-				+ dateTimeSeparator + timeFormat, locale);
+		final DateFormat fmtTimestamp = new SimpleDateFormat(dateFormat + dateTimeSeparator + timeFormat, locale);
 		final DateFormat fmtTime = new SimpleDateFormat(timeFormat, locale);
-		String timestamp = new StringBuilder(seq).toString();
+		final String timestamp = new StringBuilder(seq).toString();
 		/*
 		 * timestamp = timestamp.replaceAll("1st", "1"); timestamp =
 		 * timestamp.replaceAll("2nd", "2"); timestamp =
@@ -331,86 +293,80 @@ public class PHPBBParser extends AbstractParser {
 		 * timestamp.replaceAll("th", "");
 		 */
 		if (timestamp.startsWith("Today") || timestamp.startsWith("Yesterday")) {
-			String[] s = timestamp.split(dateTimeSeparator);
+			final String[] s = timestamp.split(dateTimeSeparator);
 			try {
-				Calendar now = Calendar
-						.getInstance(/* fmtTime.getTimeZone() */);
+				final Calendar now = Calendar.getInstance(/* fmtTime.getTimeZone() */);
 				if ("Yesterday".equals(s[0])) {
 					now.add(Calendar.DATE, -1);
 				}
 
-				Date d = fmtTime.parse(s[1]);
-				Calendar then = Calendar.getInstance(fmtTime.getTimeZone());
+				final Date d = fmtTime.parse(s[1]);
+				final Calendar then = Calendar.getInstance(fmtTime.getTimeZone());
 				then.setTime(d);
-				then.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now
-						.get(Calendar.DATE));
+				then.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DATE));
 				l = new Long(then.getTimeInMillis());
-			} catch (ParseException e) {
+			} catch (final ParseException e) {
 				e.printStackTrace();
 			}
 		} else {
 			try {
 				l = new Long(fmtTimestamp.parse(timestamp).getTime());
-			} catch (ParseException e) {
+			} catch (final ParseException e) {
 				e.printStackTrace();
 			}
 		}
 		return l;
 	}
 
-	private ThreadMessage parseMessage2(final CharSequence seq,
-			final ThreadMessageID lastReadId) {
+	private ThreadMessage parseMessage2(final CharSequence seq, final ThreadMessageID lastReadId) {
 		ThreadMessage msg = null;
 		Matcher m;
 		m = PAT_MSG_POSTID_USERNAME.matcher(seq);
 		if (m.find()) {
-			ThreadMessageFactory tmf = new ThreadMessageFactory();
+			final ThreadMessageFactory tmf = new ThreadMessageFactory();
 			String idStr = m.group(1);
 			ThreadMessageID id = null;
 			try {
-				id = (ThreadMessageID) tmf.createBBObjectId(namespace, baseURL,
-						idStr);
-			} catch (IDCreateException e1) {
+				id = (ThreadMessageID) tmf.createBBObjectId(namespace, baseURL, idStr);
+			} catch (final IDCreateException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			if (lastReadId == null
-					|| id.getLongValue() > lastReadId.getLongValue()) {
-				String uname = new String(m.group(2));
+			if (lastReadId == null || id.getLongValue() > lastReadId.getLongValue()) {
+				final String uname = new String(m.group(2));
 				msg = new ThreadMessage(id, null);
 				m = PAT_MSG_TIMESTAMP.matcher(seq);
 				if (m.find()) {
-					msg.timePosted = new Date(parseTimestamp(
-							new String(m.group(1))).longValue());
+					msg.timePosted = new Date(parseTimestamp(new String(m.group(1))).longValue());
 				}
 				m = PAT_MSG_TITLE.matcher(seq);
 				m.find();
 				msg.setNameInternal(new String(m.group(1)));
 				m = PAT_MSG_MESSAGE.matcher(seq);
 				m.find();
-				String message = StringUtil.stripHTMLFullTrim(m.group(1));
+				final String message = StringUtil.stripHTMLFullTrim(m.group(1));
 				msg.message = message;
 				m = PAT_MEMBER_ID_FROM_LINK.matcher(seq);
 				if (m.find()) {
-					MemberFactory mf = new MemberFactory();
+					final MemberFactory mf = new MemberFactory();
 					idStr = m.group(1);
 					ID id2 = null;
 					try {
 						id2 = mf.createBBObjectId(namespace, baseURL, idStr);
-					} catch (NumberFormatException e) {
+					} catch (final NumberFormatException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (IDCreateException e) {
+					} catch (final IDCreateException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					msg.author = new Member(id2, uname);
 				} else {
-					GuestFactory gf = new GuestFactory();
+					final GuestFactory gf = new GuestFactory();
 					ID id2 = null;
 					try {
 						id2 = gf.createBBObjectId(namespace, baseURL, null);
-					} catch (IDCreateException e) {
+					} catch (final IDCreateException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -421,27 +377,26 @@ public class PHPBBParser extends AbstractParser {
 		return msg;
 	}
 
-	public Map<ID, ThreadMessage> parseMessages(final CharSequence seq,
-			final boolean newOnly) throws BBException {
+	public Map<ID, ThreadMessage> parseMessages(final CharSequence seq, final boolean newOnly) throws BBException {
 		Matcher matcher;
 		String title;
 		ThreadMessage msg;
-		Map<ID, ThreadMessage> messages = new HashMap<ID, ThreadMessage>();
+		final Map<ID, ThreadMessage> messages = new HashMap<ID, ThreadMessage>();
 		matcher = PAT_MSG.matcher(seq);
 		boolean anyFound = false;
 		while (matcher.find()) {
 			anyFound = true;
 			title = StringUtil.stripHTMLTrim(matcher.group(3));
 			if (StringUtil.notEmptyStr(title)) {
-				ThreadMessageFactory tmf = new ThreadMessageFactory();
-				String idStr = matcher.group(1);
+				final ThreadMessageFactory tmf = new ThreadMessageFactory();
+				final String idStr = matcher.group(1);
 				ID id = null;
 				try {
 					id = tmf.createBBObjectId(namespace, baseURL, idStr);
-				} catch (NumberFormatException e) {
+				} catch (final NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (IDCreateException e) {
+				} catch (final IDCreateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -455,15 +410,14 @@ public class PHPBBParser extends AbstractParser {
 		return messages;
 	}
 
-	public static final Pattern PAT_PAGES = Pattern
-			.compile("<span class=\"nav\">Page <b>([0-9]+)</b> of <b>([0-9]+)</b></span>");
+	public static final Pattern PAT_PAGES = Pattern.compile("<span class=\"nav\">Page <b>([0-9]+)</b> of <b>([0-9]+)</b></span>");
 
 	public int parseNextPage(CharSequence seq) {
-		Matcher m = PAT_PAGES.matcher(seq);
+		final Matcher m = PAT_PAGES.matcher(seq);
 		int next = -1;
 		if (m.find()) {
-			int current = Integer.parseInt(m.group(1));
-			int last = Integer.parseInt(m.group(2));
+			final int current = Integer.parseInt(m.group(1));
+			final int last = Integer.parseInt(m.group(2));
 			if (current < last) {
 				next = current + 1;
 			}
@@ -472,10 +426,10 @@ public class PHPBBParser extends AbstractParser {
 	}
 
 	public int parsePrevPage(CharSequence seq) {
-		Matcher m = PAT_PAGES.matcher(seq);
+		final Matcher m = PAT_PAGES.matcher(seq);
 		int prev = -1;
 		if (m.find()) {
-			int current = Integer.parseInt(m.group(1));
+			final int current = Integer.parseInt(m.group(1));
 			if (current > 1) {
 				prev = current - 1;
 			}
@@ -491,33 +445,23 @@ public class PHPBBParser extends AbstractParser {
 	 * description:</span></td> <td class="row2"><span class="gen">Zerobot
 	 * identities</span></td> </tr>
 	 */
-	public static final Pattern PAT_GROUP = Pattern
-			.compile(
-					"<form action=\"groupcp.php\\?g=([0-9]+?)\" method=\"post\">"
-							+ "(?:.*?)<tr>"
-							+ "(?:.*?)<td class=\"row1\"(?:.*?)><span class=\"gen\">Group name:</span></td>"
-							+ "(?:.*?)<td class=\"row2\"(?:.*?)><span class=\"gen\">(.*?)</span></td>"
-							+ "(?:.*?)</tr>"
-							+ "(?:.*?)<tr>"
-							+ "(?:.*?)<td class=\"row1\"(?:.*?)><span class=\"gen\">Group description:</span></td>"
-							+ "(?:.*?)<td class=\"row2\"(?:.*?)><span class=\"gen\">(.*?)</span></td>"
-							+ "(?:.*?)</tr>" + "(?:.*?)</form>", Pattern.DOTALL);
+	public static final Pattern PAT_GROUP = Pattern.compile("<form action=\"groupcp.php\\?g=([0-9]+?)\" method=\"post\">" + "(?:.*?)<tr>" + "(?:.*?)<td class=\"row1\"(?:.*?)><span class=\"gen\">Group name:</span></td>" + "(?:.*?)<td class=\"row2\"(?:.*?)><span class=\"gen\">(.*?)</span></td>" + "(?:.*?)</tr>" + "(?:.*?)<tr>" + "(?:.*?)<td class=\"row1\"(?:.*?)><span class=\"gen\">Group description:</span></td>" + "(?:.*?)<td class=\"row2\"(?:.*?)><span class=\"gen\">(.*?)</span></td>" + "(?:.*?)</tr>" + "(?:.*?)</form>", Pattern.DOTALL);
 
 	public MemberGroup parseMemberGroup(CharSequence seq) {
-		Matcher m = PAT_GROUP.matcher(seq);
+		final Matcher m = PAT_GROUP.matcher(seq);
 		if (m.find()) {
-			MemberGroupFactory mgf = new MemberGroupFactory();
-			String idStr = m.group(1);
-			String name = StringUtil.stripHTMLTrim(m.group(2));
-			String desc = StringUtil.stripHTMLTrim(m.group(3));
+			final MemberGroupFactory mgf = new MemberGroupFactory();
+			final String idStr = m.group(1);
+			final String name = StringUtil.stripHTMLTrim(m.group(2));
+			final String desc = StringUtil.stripHTMLTrim(m.group(3));
 			ID id = null;
 			try {
 				id = mgf.createBBObjectId(namespace, baseURL, idStr);
-			} catch (IDCreateException e) {
+			} catch (final IDCreateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			MemberGroup grp = (MemberGroup) mgf.createBBObject(id, name, null);
+			final MemberGroup grp = (MemberGroup) mgf.createBBObject(id, name, null);
 			grp.setDescription(desc);
 			return grp;
 		}
@@ -529,13 +473,9 @@ public class PHPBBParser extends AbstractParser {
 	 * value="4">Zerobot</option></select> TODO this didn't work for several
 	 * groups, so I split into two patterns
 	 */
-	public static final Pattern PAT_GROUPS = Pattern
-			.compile("<select name=\"g\">"
-					+ "(?:<option value=\"([0-9]+?)\">(.*?)</option>?)"
-					+ "</select>");
+	public static final Pattern PAT_GROUPS = Pattern.compile("<select name=\"g\">" + "(?:<option value=\"([0-9]+?)\">(.*?)</option>?)" + "</select>");
 
-	public static final Pattern PAT_GROUPS_GROUP = Pattern
-			.compile("<option value=\"([0-9]+?)\">(.*?)</option>");
+	public static final Pattern PAT_GROUPS_GROUP = Pattern.compile("<option value=\"([0-9]+?)\">(.*?)</option>");
 
 	@Override
 	public IBBObjectFactory getMemberGroupFactory() {
@@ -543,41 +483,33 @@ public class PHPBBParser extends AbstractParser {
 	}
 
 	public Pattern getMemberGroupContainerPattern() {
-		return Pattern.compile("<select name=\"g\">"
-				+ "(?:<option value=\"([0-9]+?)\">(.*?)</option>?)"
-				+ "</select>");
+		return Pattern.compile("<select name=\"g\">" + "(?:<option value=\"([0-9]+?)\">(.*?)</option>?)" + "</select>");
 	}
 
 	public IPatternDescriptor getMemberGroupPattern() {
-		return DefaultPatternDescriptor.defaultIdAndName(Pattern
-				.compile("<option value=\"([0-9]+?)\">(.*?)</option>"));
+		return DefaultPatternDescriptor.defaultIdAndName(Pattern.compile("<option value=\"([0-9]+?)\">(.*?)</option>"));
 	}
 
 	@Deprecated
-	private static final Pattern PAT_MEMBER_ID_FROM_LINK = Pattern
-			.compile("<a href=\"profile.php\\?mode=viewprofile&amp;u=([0-9]+?)\">");
+	private static final Pattern PAT_MEMBER_ID_FROM_LINK = Pattern.compile("<a href=\"profile.php\\?mode=viewprofile&amp;u=([0-9]+?)\">");
 
 	public IPatternDescriptor getMemberPattern() {
-		return DefaultPatternDescriptor
-				.defaultIdAndName(Pattern
-						.compile("<a href=\"profile.php\\?mode=viewprofile&amp;u=([0-9]+?)\" class=\"gen\">(.*?)</a>"));
+		return DefaultPatternDescriptor.defaultIdAndName(Pattern.compile("<a href=\"profile.php\\?mode=viewprofile&amp;u=([0-9]+?)\" class=\"gen\">(.*?)</a>"));
 	}
 
-	private static final Pattern PAT_TITLE = Pattern
-			.compile("<title>(.*?)</title>");
+	private static final Pattern PAT_TITLE = Pattern.compile("<title>(.*?)</title>");
 
 	public String parseTitle(CharSequence seq) {
-		Matcher m = PAT_TITLE.matcher(seq);
+		final Matcher m = PAT_TITLE.matcher(seq);
 		if (m.find()) {
-			String title = new String(m.group(1));
+			final String title = new String(m.group(1));
 			return title;
 		}
 		return null;
 	}
 
 	@Override
-	public void throwException(final String msg, final CharSequence seq)
-			throws BBException {
+	public void throwException(final String msg, final CharSequence seq) throws BBException {
 		throw createPHPBBException(msg, seq);
 	}
 
