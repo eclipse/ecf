@@ -32,7 +32,7 @@ public class IRCHyperlink extends AbstractURLHyperlink {
 	 * Creates a new URL hyperlink.
 	 * 
 	 * @param region
-	 * @param urlString
+	 * @param uri
 	 */
 	public IRCHyperlink(IRegion region, URI uri) {
 		super(region, uri);
@@ -42,17 +42,17 @@ public class IRCHyperlink extends AbstractURLHyperlink {
 	 * @see org.eclipse.ecf.ui.hyperlink.AbstractURLHyperlink#createConnectWizard()
 	 */
 	protected IConnectWizard createConnectWizard() {
-		URI uri = getURI();
+		final URI uri = getURI();
 		String authAndPath = uri.getSchemeSpecificPart();
-		while (authAndPath.startsWith("/")) authAndPath = authAndPath.substring(1); //$NON-NLS-1$
+		while (authAndPath.startsWith("/"))authAndPath = authAndPath.substring(1); //$NON-NLS-1$
 
-		String fragment = uri.getFragment();
+		final String fragment = uri.getFragment();
 		if (fragment != null) {
-			StringBuffer buf = new StringBuffer(authAndPath);
+			final StringBuffer buf = new StringBuffer(authAndPath);
 			buf.append("#").append(fragment); //$NON-NLS-1$
 			authAndPath = buf.toString();
 		}
-		
+
 		return new IRCConnectWizard(authAndPath);
 	}
 
