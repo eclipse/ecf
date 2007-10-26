@@ -29,12 +29,16 @@ public class DiscoveryPlugin implements BundleActivator {
 
 	/**
 	 * This method is called upon plug-in activation
+	 * @param context 
+	 * @throws Exception 
 	 */
 	public void start(BundleContext context) throws Exception {
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
+	 * @param context 
+	 * @throws Exception 
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
@@ -42,6 +46,7 @@ public class DiscoveryPlugin implements BundleActivator {
 
 	/**
 	 * Returns the shared instance.
+	 * @return default discovery plugin instance.
 	 */
 	public synchronized static DiscoveryPlugin getDefault() {
 		if (plugin == null) {
