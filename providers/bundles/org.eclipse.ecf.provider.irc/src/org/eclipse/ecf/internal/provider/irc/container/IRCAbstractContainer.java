@@ -10,22 +10,14 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.provider.irc.container;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
+import java.util.*;
 import org.eclipse.ecf.core.AbstractContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.IDFactory;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.provider.irc.Activator;
 import org.eclipse.ecf.internal.provider.irc.IRCDebugOptions;
 import org.eclipse.ecf.presence.IIMMessageListener;
-import org.eclipse.ecf.presence.chatroom.ChatRoomMessage;
-import org.eclipse.ecf.presence.chatroom.ChatRoomMessageEvent;
-import org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener;
+import org.eclipse.ecf.presence.chatroom.*;
 import org.eclipse.ecf.presence.im.ChatMessage;
 import org.eclipse.ecf.presence.im.ChatMessageEvent;
 
@@ -52,7 +44,7 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	protected List msgListeners = new ArrayList();
 	protected ID unknownID = null;
 	private ArrayList subjectListeners = new ArrayList();
-	
+
 	public IRCAbstractContainer() {
 		super();
 	}
@@ -64,20 +56,18 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	protected void traceStack(Throwable t, String msg) {
 		Trace.catching(Activator.PLUGIN_ID, IRCDebugOptions.EXCEPTIONS_CATCHING, this.getClass(), msg, t);
 	}
-	
+
 	public void fireChatMessageEvent(ID sender, String msg) {
 		for (Iterator i = msgListeners.iterator(); i.hasNext();) {
 			IIMMessageListener l = (IIMMessageListener) i.next();
-			l.handleMessageEvent(new ChatMessageEvent(sender,
-					new ChatMessage(sender, msg)));
+			l.handleMessageEvent(new ChatMessageEvent(sender, new ChatMessage(sender, msg)));
 		}
 	}
 
 	public void fireChatRoomMessageEvent(ID sender, String msg) {
 		for (Iterator i = msgListeners.iterator(); i.hasNext();) {
 			IIMMessageListener l = (IIMMessageListener) i.next();
-			l.handleMessageEvent(new ChatRoomMessageEvent(sender,
-					new ChatRoomMessage(sender, targetID, msg)));
+			l.handleMessageEvent(new ChatRoomMessageEvent(sender, new ChatRoomMessage(sender, targetID, msg)));
 		}
 	}
 
@@ -125,10 +115,8 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 		try {
 			return IDFactory.getDefault().createStringID(str);
 		} catch (IDCreateException e) {
-			Activator
-					.log(
-							"ID creation exception in IRCContainer.getIDForString()", //$NON-NLS-1$
-							e);
+			Activator.log("ID creation exception in IRCContainer.getIDForString()", //$NON-NLS-1$
+					e);
 			return unknownID;
 		}
 	}
@@ -162,29 +150,27 @@ public abstract class IRCAbstractContainer extends AbstractContainer {
 	public void removeMessageListener(IIMMessageListener l) {
 		msgListeners.remove(l);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#addChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
 	 */
-	public void addChatRoomAdminListener(
-			IChatRoomAdminListener subjectListener) {
+	public void addChatRoomAdminListener(IChatRoomAdminListener subjectListener) {
 		subjectListeners.add(subjectListener);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.presence.chatroom.IChatRoomContainer#removeChatRoomSubjectListener(org.eclipse.ecf.presence.chatroom.IChatRoomAdminListener)
 	 */
-	public void removeChatRoomAdminListener(
-			IChatRoomAdminListener subjectListener) {
+	public void removeChatRoomAdminListener(IChatRoomAdminListener subjectListener) {
 		subjectListeners.remove(subjectListener);
 	}
 
 	/**
 	 * @param fromID
-	 * @param arg2
+	 * @param newSubject
 	 */
 	public void fireSubjectListeners(ID fromID, String newSubject) {
-		for(Iterator i=subjectListeners.iterator(); i.hasNext(); ) {
+		for (Iterator i = subjectListeners.iterator(); i.hasNext();) {
 			IChatRoomAdminListener l = (IChatRoomAdminListener) i.next();
 			l.handleSubjectChange(fromID, newSubject);
 		}
