@@ -148,9 +148,10 @@ public class XMPPIncomingFileTransfer implements IIncomingFileTransfer {
 	}
 
 	/**
+	 * @param threadID 
 	 * @param inputStream
 	 * @param outputStream
-	 * @param incoming
+	 * @param fileSize 
 	 * @param listener
 	 */
 	public XMPPIncomingFileTransfer(ID threadID, InputStream inputStream, OutputStream outputStream, long fileSize, IFileTransferListener listener) {

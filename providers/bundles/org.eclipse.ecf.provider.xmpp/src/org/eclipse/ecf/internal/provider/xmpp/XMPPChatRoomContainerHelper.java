@@ -339,7 +339,7 @@ public class XMPPChatRoomContainerHelper implements ISharedObject {
 	}
 
 	/**
-	 * @return
+	 * @return array of IDs of chat room participants.
 	 */
 	public ID[] getChatRoomParticipants() {
 		return (ID[]) chatRoomContainerParticipants.toArray(new ID[] {});

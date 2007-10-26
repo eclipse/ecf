@@ -32,14 +32,11 @@ public class XmppPlugin implements BundleActivator {
 	private ServiceTracker logServiceTracker = null;
 
 	public static void log(String message) {
-		getDefault().log(
-				new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
+		getDefault().log(new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
 	}
 
 	public static void log(String message, Throwable e) {
-		getDefault().log(
-				new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK,
-						message, e)); 
+		getDefault().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, message, e));
 	}
 
 	/**
@@ -52,23 +49,23 @@ public class XmppPlugin implements BundleActivator {
 
 	protected LogService getLogService() {
 		if (logServiceTracker == null) {
-			logServiceTracker = new ServiceTracker(this.context,
-					LogService.class.getName(), null);
+			logServiceTracker = new ServiceTracker(this.context, LogService.class.getName(), null);
 			logServiceTracker.open();
 		}
 		return (LogService) logServiceTracker.getService();
 	}
 
 	public void log(IStatus status) {
-		LogService logService = getLogService();
+		final LogService logService = getLogService();
 		if (logService != null) {
-			logService.log(LogHelper.getLogCode(status), LogHelper
-					.getLogMessage(status), status.getException());
+			logService.log(LogHelper.getLogCode(status), LogHelper.getLogMessage(status), status.getException());
 		}
 	}
 
 	/**
 	 * This method is called upon plug-in activation
+	 * @param context 
+	 * @throws Exception 
 	 */
 	public void start(BundleContext context) throws Exception {
 		this.context = context;
@@ -76,6 +73,8 @@ public class XmppPlugin implements BundleActivator {
 
 	/**
 	 * This method is called when the plug-in is stopped
+	 * @param context 
+	 * @throws Exception 
 	 */
 	public void stop(BundleContext context) throws Exception {
 		if (logServiceTracker != null) {
@@ -88,6 +87,7 @@ public class XmppPlugin implements BundleActivator {
 
 	/**
 	 * Returns the shared instance.
+	 * @return default instance of xmpp plugin.
 	 */
 	public synchronized static XmppPlugin getDefault() {
 		if (plugin == null) {

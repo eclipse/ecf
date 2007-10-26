@@ -45,8 +45,7 @@ public class XMPPFileTransferRequestListener implements FileTransferListener {
 
 	protected IContainer container = null;
 
-	public XMPPFileTransferRequestListener(IContainer container,
-			IIncomingFileTransferRequestListener listener) {
+	public XMPPFileTransferRequestListener(IContainer container, IIncomingFileTransferRequestListener listener) {
 		this.container = container;
 		this.requestListener = listener;
 	}
@@ -57,142 +56,122 @@ public class XMPPFileTransferRequestListener implements FileTransferListener {
 	 * @see org.jivesoftware.smackx.filetransfer.FileTransferListener#fileTransferRequest(org.jivesoftware.smackx.filetransfer.FileTransferRequest)
 	 */
 	public void fileTransferRequest(final FileTransferRequest request) {
-		requestListener
-				.handleFileTransferRequest(new IFileTransferRequestEvent() {
+		requestListener.handleFileTransferRequest(new IFileTransferRequestEvent() {
 
-					private static final long serialVersionUID = -6173401619917403353L;
+			private static final long serialVersionUID = -6173401619917403353L;
 
-					boolean requestAccepted = false;
+			boolean requestAccepted = false;
 
-					IFileTransferInfo fileTransferInfo = new IFileTransferInfo() {
+			IFileTransferInfo fileTransferInfo = new IFileTransferInfo() {
 
-						Map props = new HashMap();
+				Map props = new HashMap();
 
-						File f = new File(request.getFileName());
+				File f = new File(request.getFileName());
 
-						public String getDescription() {
-							return request.getDescription();
-						}
+				public String getDescription() {
+					return request.getDescription();
+				}
 
-						public File getFile() {
-							return f;
-						}
+				public File getFile() {
+					return f;
+				}
 
-						public Map getProperties() {
-							return props;
-						}
+				public Map getProperties() {
+					return props;
+				}
 
-						public Object getAdapter(Class adapter) {
-							return null;
-						}
+				public Object getAdapter(Class adapter) {
+					return null;
+				}
 
-						public long getFileSize() {
-							return request.getFileSize();
-						}
+				public long getFileSize() {
+					return request.getFileSize();
+				}
 
-						public String getMimeType() {
-							return request.getMimeType();
-						}
+				public String getMimeType() {
+					return request.getMimeType();
+				}
 
-						public String toString() {
-							StringBuffer buf = new StringBuffer(
-									"FileTransferInfo[");
-							buf.append("file=").append(f);
-							buf.append(";size=").append(getFileSize());
-							buf.append(";description=" + getDescription());
-							buf.append(";mimeType=").append(getMimeType())
-									.append("]");
-							return buf.toString();
-						}
+				public String toString() {
+					StringBuffer buf = new StringBuffer("FileTransferInfo[");
+					buf.append("file=").append(f);
+					buf.append(";size=").append(getFileSize());
+					buf.append(";description=" + getDescription());
+					buf.append(";mimeType=").append(getMimeType()).append("]");
+					return buf.toString();
+				}
 
-					};
+			};
 
-					public IIncomingFileTransfer accept(File localFileToSave)
-							throws IncomingFileTransferException {
+			public IIncomingFileTransfer accept(File localFileToSave) throws IncomingFileTransferException {
 
-						try {
-							final OutputStream outs = new FileOutputStream(
-									localFileToSave);
-							return accept(outs, new IFileTransferListener() {
-								public void handleTransferEvent(
-										IFileTransferEvent event) {
-									if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
-										try {
-											outs.close();
-										} catch (IOException e) {
-										}
-									}
+				try {
+					final OutputStream outs = new FileOutputStream(localFileToSave);
+					return accept(outs, new IFileTransferListener() {
+						public void handleTransferEvent(IFileTransferEvent event) {
+							if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
+								try {
+									outs.close();
+								} catch (final IOException e) {
 								}
-							});
-						} catch (FileNotFoundException e) {
-							throw new IncomingFileTransferException(
-									"Exception opening file for writing", e);
+							}
 						}
-					}
+					});
+				} catch (final FileNotFoundException e) {
+					throw new IncomingFileTransferException("Exception opening file for writing", e);
+				}
+			}
 
-					public IFileTransferInfo getFileTransferInfo() {
-						return fileTransferInfo;
-					}
+			public IFileTransferInfo getFileTransferInfo() {
+				return fileTransferInfo;
+			}
 
-					public ID getRequesterID() {
-						return createIDFromName(request.getRequestor());
-					}
+			public ID getRequesterID() {
+				return createIDFromName(request.getRequestor());
+			}
 
-					public void reject() {
-						request.reject();
-					}
+			public void reject() {
+				request.reject();
+			}
 
-					public boolean requestAccepted() {
-						return requestAccepted;
-					}
+			public boolean requestAccepted() {
+				return requestAccepted;
+			}
 
-					public String toString() {
-						StringBuffer buf = new StringBuffer(
-								"FileTransferRequestEvent[");
-						buf.append("requester=").append(getRequesterID());
-						buf.append(";requestAccepted=").append(
-								requestAccepted());
-						buf.append(";transferInfo=").append(
-								getFileTransferInfo()).append("]");
-						return buf.toString();
-					}
+			public String toString() {
+				final StringBuffer buf = new StringBuffer("FileTransferRequestEvent[");
+				buf.append("requester=").append(getRequesterID());
+				buf.append(";requestAccepted=").append(requestAccepted());
+				buf.append(";transferInfo=").append(getFileTransferInfo()).append("]");
+				return buf.toString();
+			}
 
-					public IIncomingFileTransfer accept(
-							OutputStream outputStream,
-							IFileTransferListener listener)
-							throws IncomingFileTransferException {
-						if (requestAccepted)
-							throw new IncomingFileTransferException(
-									"Incoming request previously accepted");
-						if (outputStream == null)
-							throw new IncomingFileTransferException(
-									"outputStream cannot be null");
-						incoming = request.accept();
-						try {
-							return new XMPPIncomingFileTransfer(IDFactory
-									.getDefault().createStringID(
-											request.getStreamID()), incoming
-									.recieveFile(), outputStream, request
-									.getFileSize(), listener);
-						} catch (Exception e) {
-							throw new IncomingFileTransferException(
-									"Exception receiving file", e);
-						}
-					}
-				});
+			public IIncomingFileTransfer accept(OutputStream outputStream, IFileTransferListener listener) throws IncomingFileTransferException {
+				if (requestAccepted)
+					throw new IncomingFileTransferException("Incoming request previously accepted");
+				if (outputStream == null)
+					throw new IncomingFileTransferException("outputStream cannot be null");
+				incoming = request.accept();
+				try {
+					return new XMPPIncomingFileTransfer(IDFactory.getDefault().createStringID(request.getStreamID()), incoming.recieveFile(), outputStream, request.getFileSize(), listener);
+				} catch (final Exception e) {
+					throw new IncomingFileTransferException("Exception receiving file", e);
+				}
+			}
+		});
 	}
 
 	private XMPPID createIDFromName(String uname) {
 		try {
 			return new XMPPID(container.getConnectNamespace(), uname);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}
 
 	/**
 	 * @param listener2
-	 * @return
+	 * @return <code>true if this has given request listener.
 	 */
 	public boolean hasListener(IIncomingFileTransferRequestListener listener2) {
 		return (listener2 == requestListener);
