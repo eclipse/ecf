@@ -91,8 +91,7 @@ public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
 	 */
@@ -100,18 +99,14 @@ public class EFSRetrieveFileTransfer extends AbstractRetrieveFileTransfer {
 		return remoteFileID;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setConnectContextForAuthentication(org.eclipse.ecf.core.security.IConnectContext)
 	 */
 	public void setConnectContextForAuthentication(IConnectContext connectContext) {
 		this.connectContext = connectContext;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see org.eclipse.ecf.filetransfer.IRetrieveFileTransferContainerAdapter#setProxy(org.eclipse.ecf.core.util.Proxy)
 	 */
 	public void setProxy(Proxy proxy) {
