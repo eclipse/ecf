@@ -4,12 +4,16 @@
    <extension
          point="org.eclipse.ecf.start">
       <run
-            class="org.eclipse.ecf.tests.core.ECFStartup"
-            synchronous="true">
+            class="org.eclipse.ecf.tests.core.ECFStartup">
       </run>
       <run
             class="org.eclipse.ecf.tests.core.ECFStartup"
-            synchronous="false">
+            asynchronous="true">
+      </run>
+
+      <run
+            class="org.eclipse.ecf.tests.core.ECFStartup"
+            asynchronous="true">
       </run>
    </extension>
 </plugin>

@@ -28,9 +28,6 @@ public class ECFStartup implements IECFStart {
 	 */
 	public IStatus run(IProgressMonitor monitor) {
 		isSet = true;
-		int i = 0;
-		while (i < 10)
-			System.out.println("thread=" + Thread.currentThread().getName() + " i=" + i++);
 		return Status.OK_STATUS;
 	}
 
