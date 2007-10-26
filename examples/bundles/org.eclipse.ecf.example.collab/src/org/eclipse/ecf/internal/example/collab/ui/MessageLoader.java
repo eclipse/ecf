@@ -18,8 +18,7 @@ import java.util.ResourceBundle;
 public class MessageLoader {
 
 	private static final String RESOURCE_BUNDLE = MessageLoader.class.getName();
-	private static ResourceBundle fgResourceBundle = ResourceBundle
-			.getBundle(RESOURCE_BUNDLE);
+	private static ResourceBundle fgResourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE);
 
 	private MessageLoader() {
 	}
@@ -27,7 +26,7 @@ public class MessageLoader {
 	public static String getString(String key) {
 		try {
 			return fgResourceBundle.getString(key);
-		} catch (MissingResourceException e) {
+		} catch (final MissingResourceException e) {
 			return '!' + key + '!';
 		}
 	}
@@ -37,13 +36,18 @@ public class MessageLoader {
 	 * 
 	 * @param key
 	 *            the string used to get the bundle value, must not be null
+	 * @param arg 
+	 * @return formatted string
 	 */
 	public static String getFormattedString(String key, Object arg) {
-		return MessageFormat.format(getString(key), new Object[] { arg });
+		return MessageFormat.format(getString(key), new Object[] {arg});
 	}
 
 	/**
 	 * Gets a string from the resource bundle and formats it with arguments
+	 * @param key 
+	 * @param args 
+	 * @return formatted string.
 	 */
 	public static String getFormattedString(String key, Object[] args) {
 		return MessageFormat.format(getString(key), args);

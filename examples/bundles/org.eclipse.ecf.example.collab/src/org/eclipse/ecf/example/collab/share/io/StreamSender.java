@@ -21,7 +21,7 @@ public interface StreamSender {
 	 * around and call the 'add' method on their SharedObjectInputStream to
 	 * receive the data.
 	 * 
-	 * @param bytesSentCount
+	 * @param currentCount
 	 *            the length of the data (assuming data are compressed)
 	 * @param data
 	 *            the actual data to send

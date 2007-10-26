@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectConfig;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerTransaction;
@@ -28,8 +29,7 @@ import org.eclipse.ecf.internal.example.collab.ui.FileSenderUI;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-public class EclipseFileTransfer extends FileTransferSharedObject implements
-		FileTransferListener {
+public class EclipseFileTransfer extends FileTransferSharedObject implements FileTransferListener {
 
 	private static final long serialVersionUID = -4496151870561737078L;
 
@@ -39,8 +39,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 	protected FileReceiverUI receiverUI = null;
 	protected EclipseCollabSharedObject receiver = null;
 
-	public EclipseFileTransfer(FileSenderUI view, ID target, InputStream ins,
-			FileTransferParams params, ID sharedObjectID) {
+	public EclipseFileTransfer(FileSenderUI view, ID target, InputStream ins, FileTransferParams params, ID sharedObjectID) {
 		super(target, ins, params);
 		this.senderUI = view;
 		this.progressListener = this;
@@ -48,7 +47,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 	}
 
 	protected void addRemoteParticipants(ID ids[]) {
-		ID groupID = getContext().getConnectedID();
+		final ID groupID = getContext().getConnectedID();
 		if (ids != null && participantIDs != null) {
 			for (int i = 0; i < ids.length; i++) {
 				if (groupID != null && groupID.equals(ids[i]))
@@ -64,20 +63,16 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 		}
 	}
 
-	protected ReplicaSharedObjectDescription getReplicaDescription(
-			ID remoteMember) {
-		HashMap map = new HashMap();
-		map.put(ARGS_PROPERTY_NAME, new Object[] { transferParams,
-				sharedObjectID });
-		return new ReplicaSharedObjectDescription(getClass(), getID(),
-				getConfig().getHomeContainerID(), map, getNextReplicateID());
+	protected ReplicaSharedObjectDescription getReplicaDescription(ID remoteMember) {
+		final HashMap map = new HashMap();
+		map.put(ARGS_PROPERTY_NAME, new Object[] {transferParams, sharedObjectID});
+		return new ReplicaSharedObjectDescription(getClass(), getID(), getConfig().getHomeContainerID(), map, getNextReplicateID());
 	}
 
-	public void init(ISharedObjectConfig config)
-			throws SharedObjectInitException {
+	public void init(ISharedObjectConfig config) throws SharedObjectInitException {
 		super.init(config);
-		Map props = config.getProperties();
-		Object[] args = (Object[]) props.get(ARGS_PROPERTY_NAME);
+		final Map props = config.getProperties();
+		final Object[] args = (Object[]) props.get(ARGS_PROPERTY_NAME);
 		if (args != null && args.length == 2) {
 			transferParams = (FileTransferParams) args[0];
 			sharedObjectID = (ID) args[1];
@@ -98,6 +93,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 	 * 
 	 * @param params
 	 *            the file send parameters associated with this file delivery
+	 * @param receiverID 
 	 */
 	public EclipseFileTransfer(FileTransferParams params, ID receiverID) {
 		super(params);
@@ -124,18 +120,16 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 			senderUI.sendDone(transferParams.getRemoteFile(), e);
 	}
 
-	protected File createPath(EclipseCollabSharedObject sharedObject,
-			boolean server, File file, long length, float rate) {
-		File downloadDir = new File(sharedObject.getLocalFullDownloadPath());
+	protected File createPath(EclipseCollabSharedObject sharedObject, boolean server, File file, long length, float rate) {
+		final File downloadDir = new File(sharedObject.getLocalFullDownloadPath());
 		// create directories if we need them
 		downloadDir.mkdirs();
 		// Then create new file
-		File retFile = new File(downloadDir, file.getName());
+		final File retFile = new File(downloadDir, file.getName());
 		return retFile;
 	}
 
-	public void receiveStart(FileTransferSharedObject obj, File aFile,
-			long length, float rate) {
+	public void receiveStart(FileTransferSharedObject obj, File aFile, long length, float rate) {
 		final FileReceiver r = new FileReceiver(aFile, length, rate);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
@@ -161,8 +155,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 			// Abort!
 			// If no problems, and the number of participants to here from is 0,
 			// then we're done
-		} else if (state == ISharedObjectContainerTransaction.VOTING
-				&& participantIDs.size() == 0) {
+		} else if (state == ISharedObjectContainerTransaction.VOTING && participantIDs.size() == 0) {
 			// Success!
 			return true;
 		}
@@ -172,8 +165,8 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 
 	private class FileReceiver implements Runnable {
 		private File aFile = null;
-		private long length;
-		private float rate;
+		private final long length;
+		private final float rate;
 
 		public FileReceiver(File aFile, long length, float rate) {
 			this.aFile = aFile;
@@ -187,25 +180,18 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 		 * @see java.lang.Runnable#run()
 		 */
 		public void run() {
-			if (ClientPlugin.getDefault().getPluginPreferences().getBoolean(
-					ClientPlugin.PREF_CONFIRM_FILE_RECEIVE)) {
-				MessageDialog dialog = new MessageDialog(ClientPlugin
-						.getDefault().getActiveShell(),
-						"File Receive Confirmation", null, "Accept file?",
-						MessageDialog.QUESTION, null, 0);
+			if (ClientPlugin.getDefault().getPluginPreferences().getBoolean(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE)) {
+				final MessageDialog dialog = new MessageDialog(ClientPlugin.getDefault().getActiveShell(), "File Receive Confirmation", null, "Accept file?", MessageDialog.QUESTION, null, 0);
 				dialog.setBlockOnOpen(true);
-				int response = dialog.open();
+				final int response = dialog.open();
 
 				if (response == MessageDialog.CANCEL)
 					return;
 			}
-			receiver = (EclipseCollabSharedObject) getContext()
-					.getSharedObjectManager().getSharedObject(sharedObjectID);
+			receiver = (EclipseCollabSharedObject) getContext().getSharedObjectManager().getSharedObject(sharedObjectID);
 
-			receiverUI = receiver.getFileReceiverUI(EclipseFileTransfer.this,
-					transferParams);
-			localFile = createPath(receiver, getContext().isGroupManager(),
-					aFile, length, rate);
+			receiverUI = receiver.getFileReceiverUI(EclipseFileTransfer.this, transferParams);
+			localFile = createPath(receiver, getContext().isGroupManager(), aFile, length, rate);
 			// Our superclass depends upon the transferParams.getRemoteFile()
 			// call
 			// to give a valid file.
@@ -213,8 +199,7 @@ public class EclipseFileTransfer extends FileTransferSharedObject implements
 			transferParams.setRemoteFile(localFile);
 
 			if (receiverUI != null)
-				receiverUI.receiveStart(getHomeContainerID(), localFile,
-						length, rate);
+				receiverUI.receiveStart(getHomeContainerID(), localFile, length, rate);
 		}
 
 	}

@@ -25,8 +25,7 @@ import org.osgi.framework.BundleContext;
 /**
  * The main plug-in class to be used in the desktop.
  */
-public class ClientPlugin extends AbstractUIPlugin implements
-		ClientPluginConstants {
+public class ClientPlugin extends AbstractUIPlugin implements ClientPluginConstants {
 	public static final String PLUGIN_ID = "org.eclipse.ecf.example.collab"; //$NON-NLS-1$
 	// The shared instance.
 	private static ClientPlugin plugin;
@@ -35,18 +34,14 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	private ServerStartup serverStartup = null;
 	private DiscoveryStartup discoveryStartup = null;
 	public static final String TCPSERVER_DISCOVERY_TYPE = "_ecftcp._tcp.local."; //$NON-NLS-1$
-	protected static String serviceTypes[] = new String[] { TCPSERVER_DISCOVERY_TYPE };
+	protected static String serviceTypes[] = new String[] {TCPSERVER_DISCOVERY_TYPE};
 
 	public static void log(String message) {
-		getDefault().getLog().log(
-				new Status(IStatus.OK, ClientPlugin.getDefault().getBundle()
-						.getSymbolicName(), IStatus.OK, message, null));
+		getDefault().getLog().log(new Status(IStatus.OK, ClientPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK, message, null));
 	}
 
 	public static void log(String message, Throwable e) {
-		getDefault().getLog().log(
-				new Status(IStatus.ERROR, ClientPlugin.getDefault().getBundle()
-						.getSymbolicName(), IStatus.OK, message, e));
+		getDefault().getLog().log(new Status(IStatus.ERROR, ClientPlugin.getDefault().getBundle().getSymbolicName(), IStatus.OK, message, e));
 	}
 
 	/**
@@ -71,7 +66,7 @@ public class ClientPlugin extends AbstractUIPlugin implements
 			public void startDiscovery() {
 				try {
 					getDefault().initDiscovery();
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					ClientPlugin.log("Exception initializing discovery", e);
 				}
 			}
@@ -107,31 +102,25 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	}
 
 	protected void setPreferenceDefaults() {
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_USE_CHAT_WINDOW,
-				false);
-		this.getPreferenceStore().setDefault(
-				ClientPlugin.PREF_DISPLAY_TIMESTAMP, true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_USE_CHAT_WINDOW, false);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_DISPLAY_TIMESTAMP, true);
 		// this.getPreferenceStore().setDefault(ClientPlugin.PREF_CHAT_FONT,
 		// "");
-		this.getPreferenceStore().setDefault(
-				ClientPlugin.PREF_CONFIRM_FILE_SEND, true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_SEND, true);
 		// this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_FILE_RECEIVE,
 		// true);
-		this.getPreferenceStore().setDefault(
-				ClientPlugin.PREF_CONFIRM_REMOTE_VIEW, true);
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_SERVER,
-				false);
-		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER,
-				false);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_CONFIRM_REMOTE_VIEW, true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_START_SERVER, false);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_REGISTER_SERVER, false);
 
-		this.getPreferenceStore().setDefault(
-				ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY, true);
-		this.getPreferenceStore().setDefault(
-				ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER, true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_SHAREDEDITOR_PLAY_EVENTS_IMMEDIATELY, true);
+		this.getPreferenceStore().setDefault(ClientPlugin.PREF_SHAREDEDITOR_ASK_RECEIVER, true);
 	}
 
 	/**
 	 * This method is called upon plug-in activation
+	 * @param context 
+	 * @throws Exception 
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
@@ -186,6 +175,8 @@ public class ClientPlugin extends AbstractUIPlugin implements
 
 	/**
 	 * This method is called when the plug-in is stopped
+	 * @param context 
+	 * @throws Exception 
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
@@ -208,15 +199,14 @@ public class ClientPlugin extends AbstractUIPlugin implements
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#createImageRegistry()
 	 */
 	protected ImageRegistry createImageRegistry() {
-		ImageRegistry registry = super.createImageRegistry();
-		registry.put(ClientPluginConstants.DECORATION_DEFAULT_PROVIDER,
-				AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID,
-						"icons/default_provider_image.gif").createImage());
+		final ImageRegistry registry = super.createImageRegistry();
+		registry.put(ClientPluginConstants.DECORATION_DEFAULT_PROVIDER, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/default_provider_image.gif").createImage());
 		return registry;
 	}
 
 	/**
 	 * Returns the shared instance.
+	 * @return default client plugin
 	 */
 	public static ClientPlugin getDefault() {
 		return plugin;
