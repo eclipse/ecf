@@ -57,14 +57,13 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	/**
+	 * @return array of containers.
 	 * 
 	 */
 	public IContainer[] getContainers() {
-		ServiceTracker tracker = new ServiceTracker(context,
-				IContainerManager.class.getName(), null);
+		final ServiceTracker tracker = new ServiceTracker(context, IContainerManager.class.getName(), null);
 		tracker.open();
-		return (IContainer[]) ((IContainerManager) tracker.getService())
-				.getAllContainers();
+		return ((IContainerManager) tracker.getService()).getAllContainers();
 	}
 
 }
