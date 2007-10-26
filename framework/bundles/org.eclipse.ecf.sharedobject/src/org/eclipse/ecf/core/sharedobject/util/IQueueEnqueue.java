@@ -56,8 +56,6 @@ public interface IQueueEnqueue {
 	 * @param enqueue_key
 	 *            the transaction key previously returned from the call to
 	 *            {@link #enqueue_prepare(Event[])}
-	 * @throws QueueException
-	 *             if commit cannot occur
 	 */
 	void enqueue_commit(Object enqueue_key);
 

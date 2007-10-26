@@ -33,8 +33,7 @@ public interface ISharedObjectManager {
 	 * @throws SharedObjectAddException
 	 *             if the add cannot be accomplished for any reason
 	 */
-	public ID addSharedObject(ID sharedObjectID, ISharedObject sharedObject,
-			Map properties) throws SharedObjectAddException;
+	public ID addSharedObject(ID sharedObjectID, ISharedObject sharedObject, Map properties) throws SharedObjectAddException;
 
 	/**
 	 * Create an ISharedObjectConnector instance for sending messages from a
@@ -52,8 +51,7 @@ public interface ISharedObjectManager {
 	 *             thrown if specified sender or receivers do not exist within
 	 *             the context of this container
 	 */
-	public ISharedObjectConnector connectSharedObjects(ID sharedObjectFrom,
-			ID[] sharedObjectsTo) throws SharedObjectConnectException;
+	public ISharedObjectConnector connectSharedObjects(ID sharedObjectFrom, ID[] sharedObjectsTo) throws SharedObjectConnectException;
 
 	/**
 	 * Create a new ISharedObject within this container from the given
@@ -66,20 +64,18 @@ public interface ISharedObjectManager {
 	 * @throws SharedObjectCreateException
 	 *             if the SharedObject cannot be created
 	 */
-	public ID createSharedObject(SharedObjectDescription sd)
-			throws SharedObjectCreateException;
+	public ID createSharedObject(SharedObjectDescription sd) throws SharedObjectCreateException;
 
 	/**
 	 * Destroy an ISharedObjectConnector instance.
 	 * 
 	 * @param connector
 	 *            the connector previously created via connectSharedObjects
-	 * @throws SharedObjectConnectException
+	 * @throws SharedObjectDisconnectException
 	 *             thrown if specified connector does not exist in the context
 	 *             of this container
 	 */
-	public void disconnectSharedObjects(ISharedObjectConnector connector)
-			throws SharedObjectDisconnectException;
+	public void disconnectSharedObjects(ISharedObjectConnector connector) throws SharedObjectDisconnectException;
 
 	/**
 	 * Get the ISharedObject instance corresponding to the given sharedObjectID.
