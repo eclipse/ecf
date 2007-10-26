@@ -48,7 +48,7 @@ public class ECFPlugin implements BundleActivator {
 
 	public static final String HIDDEN_ATTRIBUTE = "hidden"; //$NON-NLS-1$
 
-	public static final String SYNCH_ATTRIBUTE = "synchronous"; //$NON-NLS-1$
+	public static final String ASYNCH_ATTRIBUTE = "asynchronous"; //$NON-NLS-1$
 
 	// The shared instance.
 	private static ECFPlugin plugin;
@@ -271,10 +271,9 @@ public class ECFPlugin implements BundleActivator {
 			final IConfigurationElement member = configurationElements[m];
 			try {
 				// The only required attribute is "class"
-				String sync = member.getAttribute(SYNCH_ATTRIBUTE);
-				boolean bsync = (sync == null) ? true : Boolean.valueOf(sync).booleanValue();
+				boolean sync = (member.getAttribute(ASYNCH_ATTRIBUTE) == null);
 				IECFStart clazz = (IECFStart) member.createExecutableExtension(CLASS_ATTRIBUTE);
-				startExtension(clazz.getClass().getName(), clazz, bsync);
+				startExtension(clazz.getClass().getName(), clazz, sync);
 			} catch (final CoreException e) {
 				logException(e.getStatus(), method, e);
 			} catch (final Exception e) {
@@ -289,7 +288,7 @@ public class ECFPlugin implements BundleActivator {
 			IStatus result = null;
 			try {
 				result = exten.run(new NullProgressMonitor());
-			} catch (final Exception e) {
+			} catch (final Throwable e) {
 				final String message = "startup extension error"; //$NON-NLS-1$
 				logException(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, message, e), message, e);
 			}

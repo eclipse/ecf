@@ -54,7 +54,7 @@
                </appInfo>
             </annotation>
          </attribute>
-         <attribute name="synchronous" type="boolean">
+         <attribute name="asynchronous" type="boolean">
             <annotation>
                <documentation>
                   Attribute to determine whether the given run class is run synchronously (default) or asynchronously
@@ -84,8 +84,15 @@
 &lt;extension
       point=&quot;org.eclipse.ecf.start&quot;&gt;
    &lt;run
-         class=&quot;org.eclipse.ecf.example.collab.start.CollabStart&quot; synchronous=&quot;true&quot; /&gt;
+         class=&quot;org.eclipse.ecf.example.collab.start.CollabStart&quot;/&gt;
 &lt;/extension&gt;
+
+&lt;extension
+      point=&quot;org.eclipse.ecf.start&quot;&gt;
+   &lt;run
+         class=&quot;org.eclipse.ecf.example.collab.start.CollabStart&quot; asynchronous=&quot;true&quot;/&gt;
+&lt;/extension&gt;
+
 &lt;/pre&gt;
 
 Note that the CollabStart class must implement the &lt;b&gt;org.eclipse.ecf.start.IECFStart&lt;/b&gt; interface.
