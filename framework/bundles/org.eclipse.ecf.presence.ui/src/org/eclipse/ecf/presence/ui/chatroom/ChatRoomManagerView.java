@@ -414,7 +414,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		}
 
 		/**
-		 * @return
+		 * @return the <tt>StyledText</tt> widget that is displaying the output of the chatroom
 		 */
 		public StyledText getOutputText() {
 			return outputText;
