@@ -31,7 +31,7 @@ public class MSNHyperlink extends AbstractURLHyperlink {
 	 * Creates a new URL hyperlink.
 	 * 
 	 * @param region
-	 * @param urlString
+	 * @param uri
 	 */
 	public MSNHyperlink(IRegion region, URI uri) {
 		super(region, uri);
