@@ -22,12 +22,15 @@ import org.eclipse.ecf.core.start.IECFStart;
 public class ECFStartup implements IECFStart {
 
 	static boolean isSet = false;
-	
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.start.IECFStart#startup(org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public IStatus startup(IProgressMonitor monitor) {
+	public IStatus run(IProgressMonitor monitor) {
 		isSet = true;
+		int i = 0;
+		while (i < 10)
+			System.out.println("thread=" + Thread.currentThread().getName() + " i=" + i++);
 		return Status.OK_STATUS;
 	}
 

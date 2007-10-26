@@ -2,10 +2,14 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="org.eclipse.ecf.startup">
-      <ecfstart
+         point="org.eclipse.ecf.start">
+      <run
             class="org.eclipse.ecf.tests.core.ECFStartup"
-            synch="true">
-      </ecfstart>
+            synchronous="true">
+      </run>
+      <run
+            class="org.eclipse.ecf.tests.core.ECFStartup"
+            synchronous="false">
+      </run>
    </extension>
 </plugin>
