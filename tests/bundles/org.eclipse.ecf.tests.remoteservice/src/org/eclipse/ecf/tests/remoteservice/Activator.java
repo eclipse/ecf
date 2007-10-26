@@ -50,6 +50,7 @@ public class Activator implements BundleActivator {
 	}
 
 	/**
+	 * @return context.
 	 * 
 	 */
 	public BundleContext getContext() {
