@@ -28,9 +28,9 @@ public class Activator implements BundleActivator {
 
 	// The shared instance
 	private static Activator plugin;
-	
+
 	private ServiceTracker tracker;
-	
+
 	private ServiceRegistration discoveryRegistration;
 
 	/**
@@ -45,11 +45,10 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext context) throws Exception {
 		plugin = this;
-		IContainer container = ContainerFactory.getDefault().createContainer(
-		"ecf.discovery.jmdns");
+		final IContainer container = ContainerFactory.getDefault().createContainer("ecf.discovery.jmdns");
 		container.connect(null, null);
 		discoveryRegistration = context.registerService(IDiscoveryService.class.getName(), container, null);
-		tracker = new ServiceTracker(context,IDiscoveryService.class.getName(),null);
+		tracker = new ServiceTracker(context, IDiscoveryService.class.getName(), null);
 		tracker.open();
 	}
 
@@ -79,6 +78,7 @@ public class Activator implements BundleActivator {
 	}
 
 	/**
+	 * @return discovery service
 	 * 
 	 */
 	public IDiscoveryService getDiscoveryService() {
