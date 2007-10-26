@@ -31,7 +31,7 @@ public class BitTorrentHyperlink extends AbstractURLHyperlink {
 	 * Creates a new URL hyperlink.
 	 * 
 	 * @param region
-	 * @param urlString
+	 * @param uri
 	 */
 	public BitTorrentHyperlink(IRegion region, URI uri) {
 		super(region, uri);
@@ -55,8 +55,7 @@ public class BitTorrentHyperlink extends AbstractURLHyperlink {
 	 * @see org.eclipse.ecf.ui.hyperlink.AbstractURLHyperlink#createContainer()
 	 */
 	protected IContainer createContainer() throws ContainerCreateException {
-		return ContainerFactory.getDefault().createContainer(
-				ECF_BITTORRENT_CONTAINER_NAME);
+		return ContainerFactory.getDefault().createContainer(ECF_BITTORRENT_CONTAINER_NAME);
 	}
 
 }
