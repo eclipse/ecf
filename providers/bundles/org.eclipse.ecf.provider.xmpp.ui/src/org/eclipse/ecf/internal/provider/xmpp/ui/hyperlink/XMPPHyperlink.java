@@ -64,17 +64,15 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 	boolean isXMPPS;
 
 	protected IContainer[] getContainers() {
-		IContainerManager manager = Activator.getDefault()
-				.getContainerManager();
+		final IContainerManager manager = Activator.getDefault().getContainerManager();
 		if (manager == null)
 			return EMPTY;
-		List results = new ArrayList();
-		IContainer[] containers = manager.getAllContainers();
+		final List results = new ArrayList();
+		final IContainer[] containers = manager.getAllContainers();
 		for (int i = 0; i < containers.length; i++) {
-			ID connectedID = containers[i].getConnectedID();
+			final ID connectedID = containers[i].getConnectedID();
 			// Must be connected and ID of correct type
-			if (connectedID != null
-					&& ((isXMPPS && containers[i] instanceof XMPPSContainer) || (!isXMPPS && containers[i] instanceof XMPPContainer)))
+			if (connectedID != null && ((isXMPPS && containers[i] instanceof XMPPSContainer) || (!isXMPPS && containers[i] instanceof XMPPContainer)))
 				results.add(containers[i]);
 		}
 		return (IContainer[]) results.toArray(EMPTY);
@@ -86,18 +84,11 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 	 * @see org.eclipse.ecf.ui.hyperlink.AbstractURLHyperlink#open()
 	 */
 	public void open() {
-		IContainer[] containers = getContainers();
+		final IContainer[] containers = getContainers();
 		if (containers.length > 0) {
 			chooseAccount(containers);
 		} else {
-			if (MessageDialog
-					.openQuestion(
-							null,
-							Messages.XMPPHyperlink_CONNECT_ACCOUNT_DIALOG_TITLE,
-							NLS
-									.bind(
-											Messages.XMPPHyperlink_CONNECT_ACCOUNT_DIALOG_MESSAGE,
-											getURI().getAuthority()))) {
+			if (MessageDialog.openQuestion(null, Messages.XMPPHyperlink_CONNECT_ACCOUNT_DIALOG_TITLE, NLS.bind(Messages.XMPPHyperlink_CONNECT_ACCOUNT_DIALOG_MESSAGE, getURI().getAuthority()))) {
 				super.open();
 			}
 		}
@@ -114,9 +105,8 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 		} else {
 			final IPresenceContainerAdapter[] adapters = new IPresenceContainerAdapter[containers.length];
 			for (int i = 0; i < containers.length; i++)
-				adapters[i] = (IPresenceContainerAdapter) containers[i]
-						.getAdapter(IPresenceContainerAdapter.class);
-			ListDialog dialog = new ListDialog(null);
+				adapters[i] = (IPresenceContainerAdapter) containers[i].getAdapter(IPresenceContainerAdapter.class);
+			final ListDialog dialog = new ListDialog(null);
 			dialog.setContentProvider(new IStructuredContentProvider() {
 
 				public Object[] getElements(Object inputElement) {
@@ -126,8 +116,7 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 				public void dispose() {
 				}
 
-				public void inputChanged(Viewer viewer, Object oldInput,
-						Object newInput) {
+				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				}
 			});
 			dialog.setInput(adapters);
@@ -136,16 +125,14 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 			dialog.setTitle(Messages.XMPPHyperlink_SELECT_ACCOUNT_TITLE);
 			dialog.setMessage(Messages.XMPPHyperlink_SELECT_ACCOUNT_MESSAGE);
 			dialog.setHeightInChars(adapters.length > 4 ? adapters.length : 4);
-			dialog
-					.setInitialSelections(new IPresenceContainerAdapter[] { adapters[0] });
+			dialog.setInitialSelections(new IPresenceContainerAdapter[] {adapters[0]});
 			dialog.setLabelProvider(new ILabelProvider() {
 				public Image getImage(Object element) {
 					return null;
 				}
 
 				public String getText(Object element) {
-					IRosterManager manager = ((IPresenceContainerAdapter) element)
-							.getRosterManager();
+					final IRosterManager manager = ((IPresenceContainerAdapter) element).getRosterManager();
 					if (manager == null)
 						return null;
 					return manager.getRoster().getUser().getID().getName();
@@ -164,23 +151,20 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 				public void removeListener(ILabelProviderListener listener) {
 				}
 			});
-			int result = dialog.open();
+			final int result = dialog.open();
 			if (result == ListDialog.OK) {
-				Object[] res = dialog.getResult();
+				final Object[] res = dialog.getResult();
 				if (res.length > 0)
 					openContainer((IContainer) res[0]);
 			}
 		}
 	}
 
-	private void openMessagesView(IChatManager chatManager, ID localID,
-			ID targetID) throws PartInitException {
-		IChatMessageSender icms = chatManager.getChatMessageSender();
-		ITypingMessageSender itms = chatManager.getTypingMessageSender();
-		IWorkbenchWindow ww = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
-		MessagesView view = (MessagesView) ww.getActivePage().showView(
-				MessagesView.VIEW_ID);
+	private void openMessagesView(IChatManager chatManager, ID localID, ID targetID) throws PartInitException {
+		final IChatMessageSender icms = chatManager.getChatMessageSender();
+		final ITypingMessageSender itms = chatManager.getTypingMessageSender();
+		final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		final MessagesView view = (MessagesView) ww.getActivePage().showView(MessagesView.VIEW_ID);
 		view.selectTab(icms, itms, localID, targetID);
 	}
 
@@ -188,30 +172,23 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 	 * @param presenceContainerAdapter
 	 */
 	private void openContainer(IContainer container) {
-		IPresenceContainerAdapter presenceContainerAdapter = (IPresenceContainerAdapter) container
-				.getAdapter(IPresenceContainerAdapter.class);
-		IChatManager chatManager = presenceContainerAdapter.getChatManager();
-		IRosterManager rosterManager = presenceContainerAdapter
-				.getRosterManager();
+		final IPresenceContainerAdapter presenceContainerAdapter = (IPresenceContainerAdapter) container.getAdapter(IPresenceContainerAdapter.class);
+		final IChatManager chatManager = presenceContainerAdapter.getChatManager();
+		final IRosterManager rosterManager = presenceContainerAdapter.getRosterManager();
 		if (chatManager != null && rosterManager != null) {
 			try {
 				// get local ID
-				XMPPID localID = (XMPPID) rosterManager.getRoster().getUser()
-						.getID();
-				Namespace ns = container.getConnectNamespace();
+				final XMPPID localID = (XMPPID) rosterManager.getRoster().getUser().getID();
+				final Namespace ns = container.getConnectNamespace();
 				// create target ID
-				XMPPID targetID = (isXMPPS) ? new XMPPSID(ns, getURI()
-						.getAuthority()) : new XMPPID(ns, getURI()
-						.getAuthority());
+				final XMPPID targetID = (isXMPPS) ? new XMPPSID(ns, getURI().getAuthority()) : new XMPPID(ns, getURI().getAuthority());
 				// If they are same, just tell user and return
 				if (localID.equals(targetID)) {
-					MessageDialog.openError(null,
-							Messages.XMPPHyperlink_MESSAGING_ERROR_TITLE,
-							Messages.XMPPHyperlink_MESSAGING_ERROR_MESSAGE);
+					MessageDialog.openError(null, Messages.XMPPHyperlink_MESSAGING_ERROR_TITLE, Messages.XMPPHyperlink_MESSAGING_ERROR_MESSAGE);
 					return;
 				} else {
-					String localHost = localID.getHostname();
-					String targetHost = targetID.getHostname();
+					final String localHost = localID.getHostname();
+					final String targetHost = targetID.getHostname();
 					// If the hosts are the same for the target and local
 					// accounts,
 					// it's pretty obvious that we wish to message to them
@@ -220,53 +197,24 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 					} else {
 						// Otherwise, ask the user whether messaging, or
 						// connecting is desired
-						MessageDialog messageDialog = new MessageDialog(
-								null,
-								Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_TITLE,
-								null,
-								NLS
-										.bind(
-												Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_MESSAGE,
-												new Object[] { targetHost,
-														localHost,
-														targetID.getName(),
-														localID.getName() }),
-								MessageDialog.QUESTION, new String[] {
-										Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_SEND_MESSAGE, Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_CONNECT,
-										Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_CANCEL }, 2);
-						int selected = messageDialog.open();
+						final MessageDialog messageDialog = new MessageDialog(null, Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_TITLE, null, NLS.bind(Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_MESSAGE, new Object[] {targetHost, localHost, targetID.getName(), localID.getName()}), MessageDialog.QUESTION, new String[] {Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_SEND_MESSAGE, Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_CONNECT, Messages.XMPPHyperlink_SELECT_ACTION_DIALOG_BUTTON_CANCEL}, 2);
+						final int selected = messageDialog.open();
 						switch (selected) {
-						case 0:
-							openMessagesView(chatManager, localID, targetID);
-							return;
-						case 1:
-							super.open();
-							return;
-						default:
-							return;
+							case 0 :
+								openMessagesView(chatManager, localID, targetID);
+								return;
+							case 1 :
+								super.open();
+								return;
+							default :
+								return;
 
 						}
 					}
 				}
-			} catch (Exception e) {
-				MessageDialog
-						.openError(
-								null,
-								Messages.XMPPHyperlink_ERROR_OPEN_MESSAGE_VIEW_DIALOG_TITLE,
-								NLS
-										.bind(
-												Messages.XMPPHyperlink_ERROR_OPEN_MESSAGE_VIEW_DIALOG_MESSAGE,
-												e.getLocalizedMessage()));
-				Activator
-						.getDefault()
-						.getLog()
-						.log(
-								new Status(
-										IStatus.ERROR,
-										Activator.PLUGIN_ID,
-										IStatus.ERROR,
-										Messages.XMPPHyperlink_ERROR_OPEN_MESSAGE_VIEW_LOG_STATUS_MESSAGE,
-										e));
+			} catch (final Exception e) {
+				MessageDialog.openError(null, Messages.XMPPHyperlink_ERROR_OPEN_MESSAGE_VIEW_DIALOG_TITLE, NLS.bind(Messages.XMPPHyperlink_ERROR_OPEN_MESSAGE_VIEW_DIALOG_MESSAGE, e.getLocalizedMessage()));
+				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, Messages.XMPPHyperlink_ERROR_OPEN_MESSAGE_VIEW_LOG_STATUS_MESSAGE, e));
 			}
 		}
 	}
@@ -275,12 +223,11 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 	 * Creates a new URL hyperlink.
 	 * 
 	 * @param region
-	 * @param urlString
+	 * @param uri
 	 */
 	public XMPPHyperlink(IRegion region, URI uri) {
 		super(region, uri);
-		isXMPPS = getURI().getScheme().equalsIgnoreCase(
-				XMPPHyperlinkDetector.XMPPS_PROTOCOL);
+		isXMPPS = getURI().getScheme().equalsIgnoreCase(XMPPHyperlinkDetector.XMPPS_PROTOCOL);
 	}
 
 	/*
@@ -289,7 +236,7 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 	 * @see org.eclipse.ecf.ui.hyperlink.AbstractURLHyperlink#createConnectWizard()
 	 */
 	protected IConnectWizard createConnectWizard() {
-		String auth = getURI().getAuthority();
+		final String auth = getURI().getAuthority();
 		if (isXMPPS)
 			return new XMPPSConnectWizard(auth);
 		else
@@ -302,8 +249,7 @@ public class XMPPHyperlink extends AbstractURLHyperlink {
 	 * @see org.eclipse.ecf.ui.hyperlink.AbstractURLHyperlink#createContainer()
 	 */
 	protected IContainer createContainer() throws ContainerCreateException {
-		return ContainerFactory.getDefault().createContainer(
-				(isXMPPS) ? ECF_XMPPS_CONTAINER_NAME : ECF_XMPP_CONTAINER_NAME);
+		return ContainerFactory.getDefault().createContainer((isXMPPS) ? ECF_XMPPS_CONTAINER_NAME : ECF_XMPP_CONTAINER_NAME);
 	}
 
 }

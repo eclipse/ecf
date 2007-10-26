@@ -65,12 +65,11 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	/**
-	 * @return
+	 * @return container manager.
 	 */
 	public IContainerManager getContainerManager() {
 		if (containerManagerTracker == null) {
-			containerManagerTracker = new ServiceTracker(context,
-					IContainerManager.class.getName(), null);
+			containerManagerTracker = new ServiceTracker(context, IContainerManager.class.getName(), null);
 			containerManagerTracker.open();
 		}
 		return (IContainerManager) containerManagerTracker.getService();
