@@ -17,13 +17,13 @@ public class Activator implements BundleActivator {
 
 	// The shared instance
 	private static Activator plugin;
-	
+
 	private static ServiceTracker idFactoryServiceTracker;
 	private static IIDFactory idFactory;
-	
+
 	private static ServiceTracker containerFactoryServiceTracker;
 	private static IContainerFactory containerFactory;
-	
+
 	private static ServiceTracker containerManagerServiceTracker;
 
 	/**
@@ -38,13 +38,13 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext context) throws Exception {
 		plugin = this;
-		idFactoryServiceTracker = new ServiceTracker(context,IIDFactory.class.getName(), null);
+		idFactoryServiceTracker = new ServiceTracker(context, IIDFactory.class.getName(), null);
 		idFactoryServiceTracker.open();
 		idFactory = (IIDFactory) idFactoryServiceTracker.getService();
-		containerFactoryServiceTracker = new ServiceTracker(context,IContainerFactory.class.getName(),null);
+		containerFactoryServiceTracker = new ServiceTracker(context, IContainerFactory.class.getName(), null);
 		containerFactoryServiceTracker.open();
 		containerFactory = (IContainerFactory) containerFactoryServiceTracker.getService();
-		containerManagerServiceTracker = new ServiceTracker(context,IContainerManager.class.getName(),null);
+		containerManagerServiceTracker = new ServiceTracker(context, IContainerManager.class.getName(), null);
 		containerManagerServiceTracker.open();
 	}
 
@@ -81,13 +81,13 @@ public class Activator implements BundleActivator {
 	public IIDFactory getIDFactory() {
 		return idFactory;
 	}
-	
+
 	public IContainerFactory getContainerFactory() {
 		return containerFactory;
 	}
 
 	/**
-	 * @return
+	 * @return container manager.
 	 */
 	public IContainerManager getContainerManager() {
 		return (IContainerManager) containerManagerServiceTracker.getService();
