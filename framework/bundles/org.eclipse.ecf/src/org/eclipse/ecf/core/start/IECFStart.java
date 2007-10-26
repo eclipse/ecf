@@ -21,8 +21,6 @@ public interface IECFStart {
 	 * Start ECF client or server.
 	 * 
 	 * @return IStatus the status of the start
-	 * @throws ECFStartException
-	 *             if some exception thrown during start
 	 */
 	public IStatus startup(IProgressMonitor monitor);
 }

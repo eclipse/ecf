@@ -50,8 +50,7 @@ public interface IAsyncResult {
 	 * Get the InvocationTargetException that occured during invocation. If
 	 * null, no exception was thrown
 	 * 
-	 * @return InvocationTargetException if an exception occurred (available via
-	 *         {@link InvocationTargetException#getCause()}. Null if no
+	 * @return InvocationTargetException if an exception occurred. <code>Null</code> if no
 	 *         exception has occurred
 	 */
 	public abstract InvocationTargetException getException();
