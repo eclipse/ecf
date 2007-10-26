@@ -21,10 +21,9 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.internal.bulletinboard.commons.webapp.WebRequest;
 
-public abstract class AbstractBulletinBoard implements
-		IBulletinBoardContainerAdapter {
+public abstract class AbstractBulletinBoard implements IBulletinBoardContainerAdapter {
 
-	private AbstractBBContainer mainContainer;
+	private final AbstractBBContainer mainContainer;
 
 	protected AbstractParser parser;
 
@@ -56,9 +55,9 @@ public abstract class AbstractBulletinBoard implements
 	public void postConnect() {
 		try {
 			this.url = new URL(getID().toExternalForm());
-			MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+			final MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
 			httpClient = new HttpClient(connectionManager);
-		} catch (MalformedURLException e) {
+		} catch (final MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -70,6 +69,7 @@ public abstract class AbstractBulletinBoard implements
 	}
 
 	/**
+	 * @return <code>true</code> if connected, <code>false</code> otherwise.
 	 * @deprecated Connection status should be the business of the main
 	 *             container.
 	 */
@@ -78,6 +78,7 @@ public abstract class AbstractBulletinBoard implements
 	}
 
 	/**
+	 * @throws BBException 
 	 * @deprecated Connection status should be the business of the main
 	 *             container.
 	 */
@@ -94,8 +95,9 @@ public abstract class AbstractBulletinBoard implements
 	}
 
 	public Object getAdapter(Class adapter) {
-		IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
-		if (adapterManager == null) return null;
+		final IAdapterManager adapterManager = Activator.getDefault().getAdapterManager();
+		if (adapterManager == null)
+			return null;
 		return adapterManager.getAdapter(this, adapter);
 	}
 
@@ -121,19 +123,19 @@ public abstract class AbstractBulletinBoard implements
 		if (cachedMembers.containsKey(id)) {
 			return cachedMembers.get(id);
 		} else {
-			WebRequest request = createMemberPageRequest(id);
+			final WebRequest request = createMemberPageRequest(id);
 
 			try {
 				request.execute();
-				String str = request.getResponseBodyAsString();
+				final String str = request.getResponseBodyAsString();
 				request.releaseConnection();
-				IMember member = parser.parseMemberPageForName(str, id);
+				final IMember member = parser.parseMemberPageForName(str, id);
 				if (member != null) {
 					((AbstractBBObject) member).setBulletinBoard(this);
 					cachedMembers.put(member.getID(), member);
 					return member;
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 			return null;
@@ -152,16 +154,16 @@ public abstract class AbstractBulletinBoard implements
 	public List<IMember> getMembers() throws BBException {
 		// TODO: this only returns first page
 		if (cachedMembers.isEmpty()) {
-			WebRequest request = createMemberListRequest();
+			final WebRequest request = createMemberListRequest();
 			try {
 				request.execute();
-				String str = request.getResponseBodyAsString();
+				final String str = request.getResponseBodyAsString();
 				request.releaseConnection();
 				cachedMembers = parser.parseMembers(str);
-				for (IMember member : cachedMembers.values()) {
+				for (final IMember member : cachedMembers.values()) {
 					((AbstractBBObject) member).setBulletinBoard(this);
 				}
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -172,16 +174,16 @@ public abstract class AbstractBulletinBoard implements
 
 	public Collection<IMemberGroup> getMemberGroups() throws BBException {
 		if (cachedMemberGroups.isEmpty()) {
-			WebRequest request = createMemberGroupListRequest();
+			final WebRequest request = createMemberGroupListRequest();
 			try {
 				request.execute();
-				String str = request.getResponseBodyAsString();
+				final String str = request.getResponseBodyAsString();
 				request.releaseConnection();
 				cachedMemberGroups = parser.parseMemberGroups(str);
-				for (IMemberGroup grp : cachedMemberGroups.values()) {
+				for (final IMemberGroup grp : cachedMemberGroups.values()) {
 					((AbstractBBObject) grp).setBulletinBoard(this);
 				}
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				// log.error(e);
 			}
 		}

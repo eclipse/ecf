@@ -35,13 +35,11 @@ public interface IBBObjectFactory {
 	 * @param stringValue
 	 *            the value that the id is to be created from
 	 * @return the created IBBObjectId implementation
-	 * @throws IDInstantiationException
+	 * @throws IDCreateException
 	 */
-	public ID createBBObjectId(Namespace namespace, String stringValue)
-			throws IDCreateException;
+	public ID createBBObjectId(Namespace namespace, String stringValue) throws IDCreateException;
 
-	public ID createBBObjectId(Namespace namespace, URL baseURL,
-			String stringValue) throws IDCreateException;
+	public ID createBBObjectId(Namespace namespace, URL baseURL, String stringValue) throws IDCreateException;
 
 	/**
 	 * Creates a named and identified IBBObject implementation.
@@ -50,6 +48,7 @@ public interface IBBObjectFactory {
 	 *            the object's identifier
 	 * @param name
 	 *            the object's name
+	 * @param parameters any parameters
 	 * @return the created IBBObject implementation
 	 */
 	public IBBObject createBBObject(ID id, String name, Map<String, Object> parameters);
