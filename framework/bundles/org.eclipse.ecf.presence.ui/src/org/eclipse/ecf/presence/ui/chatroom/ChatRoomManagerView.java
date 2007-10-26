@@ -697,7 +697,7 @@ public class ChatRoomManagerView extends ViewPart implements IChatRoomInvitation
 		private int nickRemainder;
 
 		/**
-		 * The caret position of {@link #inputText} when the user first started
+		 * The caret position when the user first started
 		 * cycling through nickname completion options.
 		 */
 		private int caret;
