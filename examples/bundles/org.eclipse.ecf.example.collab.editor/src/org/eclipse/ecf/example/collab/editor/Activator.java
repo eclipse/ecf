@@ -59,12 +59,14 @@ public class Activator extends AbstractUIPlugin {
 
 	/**
 	 * This method is called upon plug-in activation
+	 * @param context 
+	 * @throws Exception 
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 
 		// Make sure the defaults get created.
-		ClientPreferencePage p = new ClientPreferencePage();
+		final ClientPreferencePage p = new ClientPreferencePage();
 		p.initializeDefaults();
 
 		sessionNames = new ArrayList();
@@ -72,6 +74,8 @@ public class Activator extends AbstractUIPlugin {
 
 	/**
 	 * This method is called when the plug-in is stopped
+	 * @param context 
+	 * @throws Exception 
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
@@ -113,21 +117,16 @@ public class Activator extends AbstractUIPlugin {
 
 	public void addSession(String channelID, String sessionName) {
 
-		sessionNames
-				.add(new SessionInstance(channelID, sessionName,
-						getPreferenceStore().getString(
-								ClientPreferencePage.LOCAL_NAME), Calendar
-								.getInstance().getTime()));
+		sessionNames.add(new SessionInstance(channelID, sessionName, getPreferenceStore().getString(ClientPreferencePage.LOCAL_NAME), Calendar.getInstance().getTime()));
 
 		if (presenceChannel != null) {
 			// Tell everyone there is a new shared editor.
 			try {
-				presenceChannel.sendMessage((new SharedEditorSessionList(
-						sessionNames)).toByteArray());
-			} catch (ECFException e) {
+				presenceChannel.sendMessage((new SharedEditorSessionList(sessionNames)).toByteArray());
+			} catch (final ECFException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -138,30 +137,18 @@ public class Activator extends AbstractUIPlugin {
 		return presenceChannelListener;
 	}
 
-	public IChannel intializePresenceSession(IChannelListener clistener)
-			throws ECFException {
-		presenceContainer = ContainerFactory.getDefault().createContainer(
-				Activator.getDefault().getPreferenceStore().getString(
-						ClientPreferencePage.CONTAINER_TYPE));
+	public IChannel intializePresenceSession(IChannelListener clistener) throws ECFException {
+		presenceContainer = ContainerFactory.getDefault().createContainer(Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CONTAINER_TYPE));
 
-		IChannelContainerAdapter channelContainer = (IChannelContainerAdapter) presenceContainer
-				.getAdapter(IChannelContainerAdapter.class);
+		final IChannelContainerAdapter channelContainer = (IChannelContainerAdapter) presenceContainer.getAdapter(IChannelContainerAdapter.class);
 
-		final ID channelID = IDFactory.getDefault().createID(
-				channelContainer.getChannelNamespace(),
-				Activator.getDefault().getPreferenceStore().getString(
-						ClientPreferencePage.CHANNEL_ID)
-						+ ".presence");
+		final ID channelID = IDFactory.getDefault().createID(channelContainer.getChannelNamespace(), Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.CHANNEL_ID) + ".presence");
 
-		presenceChannel = channelContainer.createChannel(channelID, clistener,
-				new HashMap());
+		presenceChannel = channelContainer.createChannel(channelID, clistener, new HashMap());
 
 		this.presenceChannelListener = clistener;
 
-		presenceContainer.connect(IDFactory.getDefault().createID(
-				presenceContainer.getConnectNamespace(),
-				Activator.getDefault().getPreferenceStore().getString(
-						ClientPreferencePage.TARGET_SERVER)), null);
+		presenceContainer.connect(IDFactory.getDefault().createID(presenceContainer.getConnectNamespace(), Activator.getDefault().getPreferenceStore().getString(ClientPreferencePage.TARGET_SERVER)), null);
 
 		return presenceChannel;
 	}
