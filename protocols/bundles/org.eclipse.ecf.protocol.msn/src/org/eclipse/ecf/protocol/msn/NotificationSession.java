@@ -11,17 +11,12 @@
  ******************************************************************************/
 package org.eclipse.ecf.protocol.msn;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-
 import org.eclipse.ecf.protocol.msn.events.ISessionListener;
-import org.eclipse.ecf.protocol.msn.internal.encode.Challenge;
-import org.eclipse.ecf.protocol.msn.internal.encode.ResponseCommand;
-import org.eclipse.ecf.protocol.msn.internal.encode.StringUtils;
+import org.eclipse.ecf.protocol.msn.internal.encode.*;
 import org.eclipse.ecf.protocol.msn.internal.net.ClientTicketRequest;
 
 /**
@@ -100,21 +95,17 @@ final class NotificationSession extends DispatchSession {
 	boolean login(String username, String password) throws IOException {
 		response = connect(username);
 		if (response.getCommand().equals("USR")) { //$NON-NLS-1$
-			String ticket = request.getTicket(username, password, response
-					.getParam(3));
+			String ticket = request.getTicket(username, password, response.getParam(3));
 			password = null;
 
-			if(ticket == null){
+			if (ticket == null) {
 				throw new ConnectException("Wrong username and/or password.");
-			}
-			else {
+			} else {
 				write("USR", "TWN S " + ticket); //$NON-NLS-1$ //$NON-NLS-2$
 				ticket = null;
 				String input = super.read();
 				if (!input.startsWith("USR")) { //$NON-NLS-1$
-					throw new ConnectException(
-							"An error occurred while attempting to authenticate "
-							+ "with the Tweener server.");
+					throw new ConnectException("An error occurred while attempting to authenticate " + "with the Tweener server.");
 				}
 
 				retrieveBuddyList();
@@ -127,14 +118,13 @@ final class NotificationSession extends DispatchSession {
 			alternateServer = response.getParam(2);
 			return false;
 		}
-		
+
 	}
 
 	private void retrieveBuddyList() throws IOException {
 		write("SYN", "0 0"); //$NON-NLS-1$ //$NON-NLS-2$
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				getInputStream()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(getInputStream()));
 		String input = reader.readLine();
 		while (input == null || !input.startsWith("SYN")) { //$NON-NLS-1$
 			input = reader.readLine();
@@ -145,8 +135,7 @@ final class NotificationSession extends DispatchSession {
 
 		while (!input.startsWith("LST")) { //$NON-NLS-1$
 			if (input.startsWith("PRP MFN")) { //$NON-NLS-1$
-				client.internalSetDisplayName(StringUtils.splitSubstring(input,
-						" ", 2)); //$NON-NLS-1$
+				client.internalSetDisplayName(StringUtils.splitSubstring(input, " ", 2)); //$NON-NLS-1$
 			} else if (input.startsWith("LSG")) { //$NON-NLS-1$
 				split = StringUtils.splitOnSpace(input);
 				list.addGroup(split[2], new Group(URLDecoder.decode(split[1])));
@@ -161,16 +150,15 @@ final class NotificationSession extends DispatchSession {
 				String[] contact = StringUtils.splitOnSpace(input);
 				String email = contact[1].substring(2);
 				switch (contact.length) {
-				case 3:
-					list.internalAddContact(email, email);
-					break;
-				case 5:
-					list.addContact(email, email, contact[3].substring(2));
-					break;
-				default:
-					list.addContact(contact[2].substring(2), email, contact[3]
-							.substring(2), contact[5]);
-					break;
+					case 3 :
+						list.internalAddContact(email, email);
+						break;
+					case 5 :
+						list.addContact(email, email, contact[3].substring(2));
+						break;
+					default :
+						list.addContact(contact[2].substring(2), email, contact[3].substring(2), contact[5]);
+						break;
 				}
 
 				if (count == contacts) {
@@ -218,10 +206,8 @@ final class NotificationSession extends DispatchSession {
 	 *             If an I/O error occurred while reading or writing data.
 	 */
 	ResponseCommand getChatSession() throws IOException {
-		if (client.getStatus() == Status.APPEAR_OFFLINE
-				|| client.getStatus() == Status.OFFLINE) {
-			throw new ConnectException("Switchboards cannot be created when "
-					+ "the user is hidden or offline.");
+		if (client.getStatus() == Status.APPEAR_OFFLINE || client.getStatus() == Status.OFFLINE) {
+			throw new ConnectException("Switchboards cannot be created when " + "the user is hidden or offline.");
 		}
 		write("XFR", "SB"); //$NON-NLS-1$ //$NON-NLS-2$
 		String command = response.getCommand();
@@ -274,10 +260,8 @@ final class NotificationSession extends DispatchSession {
 			String[] events = StringUtils.split(input, "\r\n"); //$NON-NLS-1$
 			for (int i = 0; i < events.length; i++) {
 				if (events[i].substring(0, 3).equals("NLN")) { //$NON-NLS-1$
-					String[] sub = StringUtils.split(events[i], " ", 3); //$NON-NLS-1$
-					String[] split = StringUtils.splitOnSpace(sub[2]
-							.substring(4));
-					changeContactInfo(split);
+					String[] sub = StringUtils.splitOnSpace(events[i].substring(4));
+					changeContactInfo(sub);
 				} else if (events[i].substring(1, 3).equals("LN")) { //$NON-NLS-1$
 					String[] sub = StringUtils.split(events[i], " ", 3); //$NON-NLS-1$
 					String[] split = StringUtils.splitOnSpace(sub[2]);
@@ -286,8 +270,7 @@ final class NotificationSession extends DispatchSession {
 			}
 		} else if (input.indexOf("CHL") != -1) { //$NON-NLS-1$
 			// the read input is a challenge string
-			String query = Challenge.createQuery(StringUtils.splitSubstring(
-					input, " ", 2)); //$NON-NLS-1$
+			String query = Challenge.createQuery(StringUtils.splitSubstring(input, " ", 2)); //$NON-NLS-1$
 			write("QRY", Challenge.PRODUCT_ID + ' ' + query.length() + "\r\n" //$NON-NLS-1$ //$NON-NLS-2$
 					+ query, false);
 		} else if (input.indexOf("RNG") != -1) { //$NON-NLS-1$
@@ -318,9 +301,7 @@ final class NotificationSession extends DispatchSession {
 				if (split[i].startsWith("ADC")) { //$NON-NLS-1$
 					String[] subSplit = StringUtils.splitOnSpace(split[i]);
 					if (subSplit[2].equals("FL")) { //$NON-NLS-1$
-						processContactAdded(subSplit[3].substring(2),
-								subSplit[4].substring(2), subSplit[5]
-										.substring(2));
+						processContactAdded(subSplit[3].substring(2), subSplit[4].substring(2), subSplit[5].substring(2));
 					} else if (subSplit[2].equals("RL")) { //$NON-NLS-1$
 						processContactAddedUser(subSplit[3].substring(2));
 					}
@@ -385,8 +366,7 @@ final class NotificationSession extends DispatchSession {
 		pingingThread.start();
 	}
 
-	private void processContactAdded(String email, String contactName,
-			String guid) {
+	private void processContactAdded(String email, String contactName, String guid) {
 		list.addContact(email, contactName, guid);
 	}
 
@@ -413,9 +393,8 @@ final class NotificationSession extends DispatchSession {
 	 *            the index of the String array that processing should begin
 	 */
 	private void processContactData(String[] eventString, int index) {
-		if (eventString.length == index + 1
-				|| StringUtils.splitSubstring(eventString[index], " ", 2) //$NON-NLS-1$
-						.equals("0")) { //$NON-NLS-1$
+		if (eventString.length == index + 1 || StringUtils.splitSubstring(eventString[index], " ", 2) //$NON-NLS-1$
+				.equals("0")) { //$NON-NLS-1$
 			eventString = StringUtils.splitOnSpace(eventString[index]);
 			Contact contact = list.getContact(eventString[1]);
 			if (contact != null) {
