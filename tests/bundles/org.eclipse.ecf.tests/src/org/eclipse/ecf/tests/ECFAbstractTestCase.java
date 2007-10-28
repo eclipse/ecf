@@ -1,9 +1,19 @@
+/****************************************************************************
+ * Copyright (c) 2006, 2007 Composent, Inc. and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Composent, Inc. - initial API and implementation
+ *****************************************************************************/
 package org.eclipse.ecf.tests;
+
+import junit.framework.TestCase;
 
 import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.internal.tests.Activator;
-
-import junit.framework.TestCase;
 
 /**
  * Base ECF test case provide utility methods for subclasses.
