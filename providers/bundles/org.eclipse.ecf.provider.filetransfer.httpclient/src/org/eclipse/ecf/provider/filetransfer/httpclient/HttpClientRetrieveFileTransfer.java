@@ -11,13 +11,12 @@ package org.eclipse.ecf.provider.filetransfer.httpclient;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 import javax.security.auth.login.LoginException;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.util.DateUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.security.*;
@@ -37,8 +36,6 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 	private static final String HTTP_PROXY_HOST = Messages.HttpClientRetrieveFileTransfer_Http_ProxyHost_Prop;
 
 	private static final String USERNAME_PREFIX = Messages.HttpClientRetrieveFileTransfer_Username_Prefix;
-
-	private static final SimpleDateFormat RFC1123 = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", new Locale("en")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	protected static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
 
@@ -214,7 +211,7 @@ public class HttpClientRetrieveFileTransfer extends AbstractRetrieveFileTransfer
 		long lastModified = 0;
 		if (lastModifiedString != null) {
 			try {
-				lastModified = RFC1123.parse(lastModifiedString).getTime();
+				lastModified = DateUtil.parseDate(lastModifiedString).getTime();
 			} catch (Exception e) {
 				throw new IOException(Messages.HttpClientRetrieveFileTransfer_EXCEPITION_INVALID_LAST_MODIFIED_FROM_SERVER);
 			}
