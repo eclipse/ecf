@@ -125,7 +125,7 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 			if (menuContributions != null && menuContributions.length > 0) {
 				for (int j = 0; j < menuContributions.length; j++) {
 					if (menuManager == null) {
-						menuManager = new MenuManager(group.getName(), SharedImages.getImageDescriptor(SharedImages.IMG_GROUP), null);
+						menuManager = createMenuManagerForGroup(group);
 					}
 					menuManager.add(menuContributions[j]);
 				}
@@ -134,6 +134,15 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 		if (menuManager != null)
 			return new IContributionItem[] {menuManager};
 		return NO_CONTRIBUTIONS;
+	}
+
+	/**
+	 * Create a MenuManager for the given {@link IRosterGroup}.
+	 * @param group the IRosterGroup to create the menu manager for.  Will not be <code>null</code>.
+	 * @return the menu manager.  Should not be <code>null</code>.
+	 */
+	protected MenuManager createMenuManagerForGroup(IRosterGroup group) {
+		return new MenuManager(group.getName(), SharedImages.getImageDescriptor(SharedImages.IMG_GROUP), null);
 	}
 
 	/**
@@ -148,11 +157,20 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 		IContributionItem[] contributions = createContributionItemsForRoster(roster);
 		if (contributions == null || contributions.length == 0)
 			return NO_CONTRIBUTIONS;
-		MenuManager menuManager = new MenuManager(roster.getUser().getName(), SharedImages.getImageDescriptor(SharedImages.IMG_IDENTITY), null);
+		MenuManager menuManager = createMenuManagerForRoster(roster);
 		for (int i = 0; i < contributions.length; i++) {
 			menuManager.add(contributions[i]);
 		}
 		return new IContributionItem[] {menuManager};
+	}
+
+	/**
+	 * Create a MenuManager for the given {@link IRosterGroup}.
+	 * @param roster the IRosterGroup to create the menu manager for.  Will not be <code>null</code>.
+	 * @return the menu manager.  Should not be <code>null</code>.
+	 */
+	protected MenuManager createMenuManagerForRoster(IRoster roster) {
+		return new MenuManager(roster.getUser().getName(), SharedImages.getImageDescriptor(SharedImages.IMG_IDENTITY), null);
 	}
 
 	private int getNextCommandIdIndex() {
@@ -295,13 +313,21 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 				contributions.add(items[j]);
 		}
 		if (contributions.size() > 0) {
-			MenuManager menuManager = new MenuManager(topMenuName, topMenuImageDescriptor, null);
+			MenuManager menuManager = createMenuManagerForTop();
 			IContributionItem[] items = (IContributionItem[]) contributions.toArray(new IContributionItem[] {});
 			for (int i = 0; i < items.length; i++)
 				menuManager.add(items[i]);
 			return new IContributionItem[] {menuManager};
 		}
 		return NO_CONTRIBUTIONS;
+	}
+
+	/**
+	 * Create a MenuManager for the top level menu.
+	 * @return the menu manager.  Should not be <code>null</code>.
+	 */
+	protected MenuManager createMenuManagerForTop() {
+		return new MenuManager(topMenuName, topMenuImageDescriptor, null);
 	}
 
 }
