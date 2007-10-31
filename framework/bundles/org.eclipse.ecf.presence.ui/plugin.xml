@@ -116,6 +116,206 @@
             id="org.eclipse.ecf.presence.ui.commands.browse"
             name="Open Contact">
       </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.0"
+            name="command 0">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.1"
+            name="command 1">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.2"
+            name="command 2">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.3"
+            name="command 3">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.4"
+            name="command 4">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.5"
+            name="command 5">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.6"
+            name="command 6">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.7"
+            name="command 7">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.8"
+            name="command 8">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.9"
+            name="command 9">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.10"
+            name="command 10">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.11"
+            name="command 11">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.12"
+            name="command 12">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.13"
+            name="command 13">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.14"
+            name="command 14">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.15"
+            name="command 15">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.16"
+            name="command 16">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.17"
+            name="command 17">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.18"
+            name="command 18">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.19"
+            name="command 19">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.20"
+            name="command 20">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.21"
+            name="command 21">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.22"
+            name="command 22">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.23"
+            name="command 23">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.24"
+            name="command 24">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.25"
+            name="command 25">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.26"
+            name="command 26">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.27"
+            name="command 27">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.28"
+            name="command 28">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.29"
+            name="command 29">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.30"
+            name="command 30">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.31"
+            name="command 31">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.32"
+            name="command 32">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.33"
+            name="command 33">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.34"
+            name="command 34">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.35"
+            name="command 35">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.36"
+            name="command 36">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.37"
+            name="command 37">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.38"
+            name="command 38">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.39"
+            name="command 39">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.40"
+            name="command 40">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.41"
+            name="command 41">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.42"
+            name="command 42">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.43"
+            name="command 43">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.44"
+            name="command 44">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.45"
+            name="command 45">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.46"
+            name="command 46">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.47"
+            name="command 47">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.48"
+            name="command 48">
+      </command>
+      <command
+            id="org.eclipse.ecf.presence.ui.rosterCommand.49"
+            name="command 49">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -282,5 +482,4 @@
       </colorDefinition>
       
    </extension>
-
 </plugin>

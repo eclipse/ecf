@@ -13,6 +13,7 @@ package org.eclipse.ecf.internal.presence.ui;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.presence.service.IPresenceService;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -25,6 +26,8 @@ public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipse.ecf.presence.ui"; //$NON-NLS-1$
+
+	public static final String CONTACTS_IMAGE = "contacts"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
@@ -61,6 +64,17 @@ public class Activator extends AbstractUIPlugin {
 		this.bundleContext = context;
 		tracker = new ServiceTracker(context, IPresenceService.class.getName(), null);
 		tracker.open();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#createImageRegistry()
+	 */
+	protected ImageRegistry createImageRegistry() {
+		ImageRegistry registry = super.createImageRegistry();
+		registry.put(CONTACTS_IMAGE, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/contacts.gif").createImage()); //$NON-NLS-1$
+		return registry;
 	}
 
 	/*
