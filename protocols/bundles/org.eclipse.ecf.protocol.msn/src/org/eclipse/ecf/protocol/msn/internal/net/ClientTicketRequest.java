@@ -12,10 +12,7 @@
 package org.eclipse.ecf.protocol.msn.internal.net;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-
+import java.net.*;
 import org.eclipse.ecf.protocol.msn.internal.encode.StringUtils;
 
 /**
@@ -40,7 +37,7 @@ public final class ClientTicketRequest {
 	 * TODO: documentation
 	 */
 	private String daLoginURL;
-	
+
 	private boolean cancelled = false;
 
 	/**
@@ -49,14 +46,14 @@ public final class ClientTicketRequest {
 	public ClientTicketRequest() {
 		HttpURLConnection.setFollowRedirects(true);
 	}
-	
+
 	public void setCancelled(boolean cancelled) {
 		this.cancelled = cancelled;
 	}
 
 	/**
 	 * Retrieves information from {@link #PASSPORT_NEXUS} and stores it in
-	 * {@link #passportInfo}.
+	 * {@link #daLoginURL}.
 	 * 
 	 * @return <code>true</code> if the retrieval process completed
 	 *         successfully
@@ -67,8 +64,7 @@ public final class ClientTicketRequest {
 	private boolean getLoginServerAddress() throws IOException {
 		request = (HttpURLConnection) new URL(PASSPORT_NEXUS).openConnection();
 		if (request.getResponseCode() == HttpURLConnection.HTTP_OK) {
-			daLoginURL = StringUtils.splitSubstring(request
-					.getHeaderField("PassportURLs"), ",", 1); //$NON-NLS-1$ //$NON-NLS-2$
+			daLoginURL = StringUtils.splitSubstring(request.getHeaderField("PassportURLs"), ",", 1); //$NON-NLS-1$ //$NON-NLS-2$
 			daLoginURL = "https://" //$NON-NLS-1$
 					+ daLoginURL.substring(daLoginURL.indexOf('=') + 1);
 			request.disconnect();
@@ -93,23 +89,20 @@ public final class ClientTicketRequest {
 	 *             If an I/O error occurs while connecting to the Passport Nexus
 	 *             page or when getting the response codes from the connection
 	 */
-	public synchronized String getTicket(String username, String password,
-			String challengeString) throws IOException {
+	public synchronized String getTicket(String username, String password, String challengeString) throws IOException {
 		if (getLoginServerAddress()) {
 			username = URLEncoder.encode(username);
 			password = URLEncoder.encode(password);
 			try {
 				while (!cancelled) {
-					request = (HttpURLConnection) new URL(daLoginURL)
-							.openConnection();
+					request = (HttpURLConnection) new URL(daLoginURL).openConnection();
 					request.setRequestProperty("Authorization", //$NON-NLS-1$
 							"Passport1.4 OrgVerb=GET,OrgURL=http%3A%2F%2Fmessenger%2Emsn%2Ecom,sign-in=" //$NON-NLS-1$
 									+ username + ",pwd=" + password + ',' //$NON-NLS-1$
 									+ challengeString);
 					if (request.getResponseCode() == HttpURLConnection.HTTP_OK) {
 						password = null;
-						String authenticationInfo = request
-								.getHeaderField("Authentication-Info"); //$NON-NLS-1$
+						String authenticationInfo = request.getHeaderField("Authentication-Info"); //$NON-NLS-1$
 						int start = authenticationInfo.indexOf('\'');
 						int end = authenticationInfo.lastIndexOf('\'');
 						request.disconnect();
@@ -118,10 +111,8 @@ public final class ClientTicketRequest {
 						daLoginURL = request.getHeaderField("Location"); //$NON-NLS-1$
 						// truncate the uri as the received string is of the
 						// form [http://www.msn.com/]
-						daLoginURL = daLoginURL.substring(1, daLoginURL
-								.length() - 1);
-					}
-					else if(request.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED){
+						daLoginURL = daLoginURL.substring(1, daLoginURL.length() - 1);
+					} else if (request.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
 						request.disconnect();
 						return null;
 					}

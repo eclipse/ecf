@@ -13,7 +13,6 @@ package org.eclipse.ecf.protocol.msn;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
-
 import org.eclipse.ecf.protocol.msn.events.IChatSessionListener;
 import org.eclipse.ecf.protocol.msn.internal.encode.StringUtils;
 
@@ -207,7 +206,7 @@ public final class ChatSession extends Session {
 	}
 
 	/**
-	 * Notifies attached {@link ChatSessionListeners} that this session has now
+	 * Notifies attached {@link IChatSessionListener} that this session has now
 	 * timed out.
 	 */
 	private void fireSessionTimedOutEvent() {

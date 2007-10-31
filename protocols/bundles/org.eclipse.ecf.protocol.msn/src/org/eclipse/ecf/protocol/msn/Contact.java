@@ -11,10 +11,7 @@
 package org.eclipse.ecf.protocol.msn;
 
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
+import java.util.*;
 import org.eclipse.ecf.protocol.msn.events.IContactListener;
 import org.eclipse.ecf.protocol.msn.internal.encode.StringUtils;
 
@@ -95,31 +92,31 @@ public final class Contact {
 	/**
 	 * Invokes the {@link IContactListener#statusChanged(Status)} method on
 	 * every listener within {@link #listeners}. This method is automatically
-	 * invoked when {@link #setStatus(int)} is called.
+	 * invoked when {@link #setStatus(Status)} is called.
 	 * 
-	 * @param status
+	 * @param status1
 	 *            the status that this contact has now switched to
 	 */
-	private void fireStatusChanged(Status status) {
+	private void fireStatusChanged(Status status1) {
 		synchronized (listeners) {
 			for (int i = 0; i < listeners.size(); i++) {
-				((IContactListener) listeners.get(i)).statusChanged(status);
+				((IContactListener) listeners.get(i)).statusChanged(status1);
 			}
 		}
 	}
 
 	/**
-	 * Invokes the {@link IContactListener#nameChanged(Status)} method on every
+	 * Invokes the {@link IContactListener#nameChanged(String)} method on every
 	 * listener within {@link #listeners}. This method is automatically invoked
 	 * when {@link #setDisplayName(String)} is called.
 	 * 
-	 * @param name
+	 * @param name1
 	 *            the new name of this contact
 	 */
-	private void fireNameChanged(String name) {
+	private void fireNameChanged(String name1) {
 		synchronized (listeners) {
 			for (int i = 0; i < listeners.size(); i++) {
-				((IContactListener) listeners.get(i)).nameChanged(name);
+				((IContactListener) listeners.get(i)).nameChanged(name1);
 			}
 		}
 	}
@@ -155,7 +152,7 @@ public final class Contact {
 	/**
 	 * Sets this contact's status to the given status. Developers are highly
 	 * discouraged from calling this method since if the user's status actually
-	 * did change, the {@link IContactListener#nameChanged(Status)} method will
+	 * did change, the {@link IContactListener#nameChanged(String)} method will
 	 * be invoked on all the listeners attached to this contact.
 	 * 
 	 * @param status
@@ -181,7 +178,7 @@ public final class Contact {
 	 * Sets the user name of this contact with the given name. Developers are
 	 * highly discouraged from calling this method since if the value of
 	 * <code>newName</code> differs from the current name, the
-	 * {@link IContactListener#nameChanged(Status)} method will be invoked on
+	 * {@link IContactListener#nameChanged(String)} method will be invoked on
 	 * all the listeners attached to this contact.
 	 * 
 	 * @param newName

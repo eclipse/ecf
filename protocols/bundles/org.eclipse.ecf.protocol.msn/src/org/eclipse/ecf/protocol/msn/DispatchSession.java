@@ -12,7 +12,6 @@ package org.eclipse.ecf.protocol.msn;
 
 import java.io.IOException;
 import java.net.ConnectException;
-
 import org.eclipse.ecf.protocol.msn.internal.encode.ResponseCommand;
 
 /**
@@ -43,8 +42,6 @@ class DispatchSession extends Session {
 	 *            the host to be connected to
 	 * @param port
 	 *            the corresponding port number
-	 * @param client
-	 *            the client that that invoked this dispatch session
 	 * @throws IOException
 	 *             If an I/O error occurs while attempting to open the
 	 *             SocketChannel
