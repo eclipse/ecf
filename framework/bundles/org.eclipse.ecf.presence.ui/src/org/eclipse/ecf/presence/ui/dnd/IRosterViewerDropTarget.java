@@ -21,27 +21,26 @@ import org.eclipse.swt.dnd.TransferData;
  */
 public interface IRosterViewerDropTarget {
 
-    /**
-     * Validates dropping on the given roster item. This method is called whenever some 
-     * aspect of the drop operation changes.
-     * 
-     * @param rosterItem the roster item that the mouse is currently hovering over, or
-     *   <code>null</code> if the mouse is hovering over empty space
-     * @param operation the current drag operation (copy, move, etc.)
-     * @param transferType the current transfer type
-     * @return <code>true</code> if the drop is valid, and <code>false</code>
-     *   otherwise
-     */
-	public boolean validateDrop(IRosterItem rosterItem, int operation,
-            TransferData transferType);
+	/**
+	 * Validates dropping on the given roster item. This method is called whenever some 
+	 * aspect of the drop operation changes.
+	 * 
+	 * @param rosterItem the roster item that the mouse is currently hovering over, or
+	 *   <code>null</code> if the mouse is hovering over empty space
+	 * @param operation the current drag operation (copy, move, etc.)
+	 * @param transferData the current transfer type
+	 * @return <code>true</code> if the drop is valid, and <code>false</code>
+	 *   otherwise
+	 */
+	public boolean validateDrop(IRosterItem rosterItem, int operation, TransferData transferData);
 
-    /**
-     * Performs any work associated with the drop.
-     *
-     * @param data the drop data
-     * @return <code>true</code> if the drop was successful, and 
-     *   <code>false</code> otherwise
-     */
+	/**
+	 * Performs any work associated with the drop.
+	 *
+	 * @param data the drop data
+	 * @return <code>true</code> if the drop was successful, and 
+	 *   <code>false</code> otherwise
+	 */
 
 	public boolean performDrop(Object data);
 }
