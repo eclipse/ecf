@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 20047 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
+import java.util.Hashtable;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
@@ -41,8 +42,21 @@ public class URLShare extends AbstractShare {
 
 	private ID containerID = null;
 
-	public URLShare(ID containerID, IChannelContainerAdapter adapter)
-			throws ECFException {
+	private static Hashtable urlsharechannels = new Hashtable();
+
+	public static URLShare getURLShare(ID containerID) {
+		return (URLShare) urlsharechannels.get(containerID);
+	}
+
+	public static URLShare addURLShare(ID containerID, IChannelContainerAdapter channelAdapter) throws ECFException {
+		return (URLShare) urlsharechannels.put(containerID, new URLShare(containerID, channelAdapter));
+	}
+
+	public static URLShare removeURLShare(ID containerID) {
+		return (URLShare) urlsharechannels.remove(containerID);
+	}
+
+	public URLShare(ID containerID, IChannelContainerAdapter adapter) throws ECFException {
 		super(adapter);
 		Assert.isNotNull(containerID);
 		this.containerID = containerID;
@@ -53,9 +67,7 @@ public class URLShare extends AbstractShare {
 	}
 
 	private void logError(String exceptionString, Throwable e) {
-		Activator.getDefault().getLog().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
-						exceptionString, e));
+		Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, exceptionString, e));
 
 	}
 
@@ -70,22 +82,14 @@ public class URLShare extends AbstractShare {
 	private void showURL(final String user, final String url) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				if (MessageDialog.openQuestion(null,
-						Messages.URLShare_RECEIVED_URL_TITLE, NLS.bind(
-								Messages.URLShare_RECEIVED_URL_MESSAGE, user))) {
-					IWorkbenchBrowserSupport support = PlatformUI
-							.getWorkbench().getBrowserSupport();
+				if (MessageDialog.openQuestion(null, Messages.URLShare_RECEIVED_URL_TITLE, NLS.bind(Messages.URLShare_RECEIVED_URL_MESSAGE, user, url))) {
+					final IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
 					IWebBrowser browser;
 					try {
 						browser = support.createBrowser(null);
 						browser.openURL(new URL(url));
-					} catch (Exception e) {
-						showErrorToUser(
-								Messages.URLShare_ERROR_BROWSER_TITLE,
-								NLS
-										.bind(
-												Messages.URLShare_ERROR_BROWSER_MESSAGE,
-												e.getLocalizedMessage()));
+					} catch (final Exception e) {
+						showErrorToUser(Messages.URLShare_ERROR_BROWSER_TITLE, NLS.bind(Messages.URLShare_ERROR_BROWSER_MESSAGE, e.getLocalizedMessage()));
 						logError(Messages.URLShare_EXCEPTION_LOG_BROWSER, e);
 					}
 				}
@@ -93,31 +97,34 @@ public class URLShare extends AbstractShare {
 		});
 	}
 
-	public void sendURL(final String senderuser, final ID toID) {
+	public void sendURL(final String senderuser, final ID toID, final String theURL) {
+		try {
+			sendMessage(toID, serialize(new Object[] {senderuser, theURL}));
+		} catch (final ECFException e) {
+			showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
+			logError(e.getStatus());
+		} catch (final Exception e) {
+			showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
+			logError(Messages.Share_EXCEPTION_LOG_SEND, e);
+		}
+	}
+
+	public void showDialogAndSendURL(final String senderuser, final ID toID) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				InputDialog input = new InputDialog(null,
-						Messages.URLShare_INPUT_URL_DIALOG_TITLE,
-						Messages.URLShare_ENTER_URL_DIALOG_TEXT,
-						Messages.URLShare_ENTER_URL_DEFAULT_URL, null);
+				final InputDialog input = new InputDialog(null, Messages.URLShare_INPUT_URL_DIALOG_TITLE, Messages.URLShare_ENTER_URL_DIALOG_TEXT, Messages.URLShare_ENTER_URL_DEFAULT_URL, null);
 				input.setBlockOnOpen(true);
-				int result = input.open();
+				final int result = input.open();
 				if (result == InputDialog.OK) {
-					String send = input.getValue();
+					final String send = input.getValue();
 					if (send != null && !send.equals("")) { //$NON-NLS-1$
 						try {
-							sendMessage(toID, serialize(new Object[] {
-									senderuser, send }));
-						} catch (ECFException e) {
-							showErrorToUser(Messages.Share_ERROR_SEND_TITLE,
-									NLS.bind(Messages.Share_ERROR_SEND_MESSAGE,
-											e.getStatus().getException()
-													.getLocalizedMessage()));
+							sendMessage(toID, serialize(new Object[] {senderuser, send}));
+						} catch (final ECFException e) {
+							showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
 							logError(e.getStatus());
-						} catch (Exception e) {
-							showErrorToUser(Messages.Share_ERROR_SEND_TITLE,
-									NLS.bind(Messages.Share_ERROR_SEND_MESSAGE,
-											e.getLocalizedMessage()));
+						} catch (final Exception e) {
+							showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
 							logError(Messages.Share_EXCEPTION_LOG_SEND, e);
 						}
 					}
@@ -133,26 +140,24 @@ public class URLShare extends AbstractShare {
 	 */
 	protected void handleMessage(ID fromContainerID, byte[] data) {
 		try {
-			Object[] msg = (Object[]) deserialize(data);
+			final Object[] msg = (Object[]) deserialize(data);
 			showURL((String) msg[0], (String) msg[1]);
-		} catch (Exception e) {
-			showErrorToUser(Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(
-					Messages.Share_ERROR_RECEIVE_MESSAGE, e
-							.getLocalizedMessage()));
+		} catch (final Exception e) {
+			showErrorToUser(Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(Messages.Share_ERROR_RECEIVE_MESSAGE, e.getLocalizedMessage()));
 			logError(Messages.Share_EXCEPTION_LOG_MESSAGE, e);
 		}
 	}
 
 	protected byte[] serialize(Object o) throws Exception {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(bos);
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final ObjectOutputStream oos = new ObjectOutputStream(bos);
 		oos.writeObject(o);
 		return bos.toByteArray();
 	}
 
 	protected Object deserialize(byte[] bytes) throws Exception {
-		ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
-		ObjectInputStream oins = new ObjectInputStream(bins);
+		final ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
+		final ObjectInputStream oins = new ObjectInputStream(bins);
 		return oins.readObject();
 	}
 }

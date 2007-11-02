@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Hashtable;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
@@ -47,10 +48,23 @@ import org.eclipse.ui.views.IViewRegistry;
  */
 public class ViewShare extends AbstractShare {
 
+	private static Hashtable viewSharechannels = new Hashtable();
+
 	private ID containerID = null;
 
-	public ViewShare(ID containerID, IChannelContainerAdapter adapter)
-			throws ECFException {
+	public static ViewShare getViewShare(ID containerID) {
+		return (ViewShare) viewSharechannels.get(containerID);
+	}
+
+	public static ViewShare addViewShare(ID containerID, IChannelContainerAdapter channelAdapter) throws ECFException {
+		return (ViewShare) viewSharechannels.put(containerID, new ViewShare(containerID, channelAdapter));
+	}
+
+	public static ViewShare removeViewShare(ID containerID) {
+		return (ViewShare) viewSharechannels.remove(containerID);
+	}
+
+	public ViewShare(ID containerID, IChannelContainerAdapter adapter) throws ECFException {
 		super(adapter);
 		Assert.isNotNull(containerID);
 		this.containerID = containerID;
@@ -61,9 +75,7 @@ public class ViewShare extends AbstractShare {
 	}
 
 	private void logError(String exceptionString, Throwable e) {
-		Activator.getDefault().getLog().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR,
-						exceptionString, e));
+		Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, exceptionString, e));
 
 	}
 
@@ -75,33 +87,21 @@ public class ViewShare extends AbstractShare {
 		MessageDialog.openError(null, title, message);
 	}
 
-	private void handleOpenViewRequest(final String user, final String viewID,
-			final String secondaryID, final int mode) {
+	private void handleOpenViewRequest(final String user, final String viewID, final String secondaryID, final int mode) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				// Ask user if they want to display view.
-				if (MessageDialog
-						.openQuestion(
-								null,
-								Messages.ViewShare_VIEWSHARE_RECEIVED_REQUEST_TITLE,
-								NLS
-										.bind(
-												Messages.ViewShare_VIEWSHARE_RECEIVED_REQUEST_MESSAGE,
-												user))) {
+				if (MessageDialog.openQuestion(null, Messages.ViewShare_VIEWSHARE_RECEIVED_REQUEST_TITLE, NLS.bind(Messages.ViewShare_VIEWSHARE_RECEIVED_REQUEST_MESSAGE, user))) {
 					try {
-						IWorkbenchWindow ww = PlatformUI.getWorkbench()
-								.getActiveWorkbenchWindow();
-						IWorkbenchPage wp = ww.getActivePage();
+						final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+						final IWorkbenchPage wp = ww.getActivePage();
 						if (wp == null)
-							throw new PartInitException(
-									Messages.ViewShare_EXCEPTION_WORKBENCHPAGE_NULL);
+							throw new PartInitException(Messages.ViewShare_EXCEPTION_WORKBENCHPAGE_NULL);
 						// Actually show view requested
 						wp.showView(viewID, secondaryID, mode);
 
-					} catch (Exception e) {
-						showErrorToUser(Messages.ViewShare_VIEWSHARE_ERROR_DIALOG_TITLE, NLS.bind(
-								Messages.ViewShare_VIEWSHARE_ERROR_DIALOG_MESSAGE, e
-										.getLocalizedMessage()));
+					} catch (final Exception e) {
+						showErrorToUser(Messages.ViewShare_VIEWSHARE_ERROR_DIALOG_TITLE, NLS.bind(Messages.ViewShare_VIEWSHARE_ERROR_DIALOG_MESSAGE, e.getLocalizedMessage()));
 						logError(Messages.ViewShare_VIEWSHARE_ERROR_LOG_MESSAGE, e);
 					}
 				}
@@ -112,14 +112,11 @@ public class ViewShare extends AbstractShare {
 	public void sendOpenViewRequest(final String senderuser, final ID toID) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				IWorkbenchWindow ww = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow();
-				IWorkbenchPage page = ww.getActivePage();
+				final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				final IWorkbenchPage page = ww.getActivePage();
 				if (page == null)
 					return;
-				ElementTreeSelectionDialog dlg = new ElementTreeSelectionDialog(
-						null, new ShowViewDialogLabelProvider(),
-						new ShowViewDialogTreeContentProvider());
+				final ElementTreeSelectionDialog dlg = new ElementTreeSelectionDialog(null, new ShowViewDialogLabelProvider(), new ShowViewDialogTreeContentProvider());
 				dlg.setTitle(Messages.ViewShare_VIEWSHARE_VIEW_REQUEST_DIALOG_TITLE);
 				dlg.setMessage(Messages.ViewShare_VIEWSHARE_VIEW_REQUEST_DIALOG_MESSAGE);
 				dlg.addFilter(new ShowViewDialogViewerFilter());
@@ -128,41 +125,33 @@ public class ViewShare extends AbstractShare {
 					public IStatus validate(Object[] selection) {
 						for (int i = 0; i < selection.length; ++i)
 							if (!(selection[i] instanceof IViewDescriptor))
-								return new Status(Status.ERROR,
-										Activator.PLUGIN_ID, 0, "", null); //$NON-NLS-1$
+								return new Status(Status.ERROR, Activator.PLUGIN_ID, 0, "", null); //$NON-NLS-1$
 
-						return new Status(Status.OK, Activator.getDefault()
-								.getBundle().getSymbolicName(), 0, "", null); //$NON-NLS-1$
+						return new Status(Status.OK, Activator.getDefault().getBundle().getSymbolicName(), 0, "", null); //$NON-NLS-1$
 					}
 				});
-				IViewRegistry reg = PlatformUI.getWorkbench().getViewRegistry();
+				final IViewRegistry reg = PlatformUI.getWorkbench().getViewRegistry();
 				dlg.setInput(reg);
 				dlg.open();
 				if (dlg.getReturnCode() == Window.CANCEL)
 					return;
 
-				Object[] descs = dlg.getResult();
+				final Object[] descs = dlg.getResult();
 				if (descs == null)
 					return;
 
-				String[] selectedIDs = new String[descs.length];
+				final String[] selectedIDs = new String[descs.length];
 				for (int i = 0; i < descs.length; ++i) {
 					selectedIDs[i] = ((IViewDescriptor) descs[i]).getId();
 					try {
 						// Actually send messages to target remote user (toID),
 						// with selectedIDs (view IDs) to show
-						sendMessage(toID, serialize(new Object[] { senderuser,
-								selectedIDs[i] }));
-					} catch (ECFException e) {
-						showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS
-								.bind(Messages.Share_ERROR_SEND_MESSAGE, e
-										.getStatus().getException()
-										.getLocalizedMessage()));
+						sendMessage(toID, serialize(new Object[] {senderuser, selectedIDs[i]}));
+					} catch (final ECFException e) {
+						showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
 						logError(e.getStatus());
-					} catch (Exception e) {
-						showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS
-								.bind(Messages.Share_ERROR_SEND_MESSAGE, e
-										.getLocalizedMessage()));
+					} catch (final Exception e) {
+						showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getLocalizedMessage()));
 						logError(Messages.Share_EXCEPTION_LOG_SEND, e);
 					}
 				}
@@ -177,27 +166,24 @@ public class ViewShare extends AbstractShare {
 	 */
 	protected void handleMessage(ID fromContainerID, byte[] data) {
 		try {
-			Object[] msg = (Object[]) deserialize(data);
-			handleOpenViewRequest((String) msg[0], (String) msg[1], null,
-					IWorkbenchPage.VIEW_ACTIVATE);
-		} catch (Exception e) {
-			showErrorToUser(Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(
-					Messages.Share_ERROR_RECEIVE_MESSAGE, e
-							.getLocalizedMessage()));
+			final Object[] msg = (Object[]) deserialize(data);
+			handleOpenViewRequest((String) msg[0], (String) msg[1], null, IWorkbenchPage.VIEW_ACTIVATE);
+		} catch (final Exception e) {
+			showErrorToUser(Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(Messages.Share_ERROR_RECEIVE_MESSAGE, e.getLocalizedMessage()));
 			logError(Messages.Share_EXCEPTION_LOG_MESSAGE, e);
 		}
 	}
 
 	protected byte[] serialize(Object o) throws Exception {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(bos);
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final ObjectOutputStream oos = new ObjectOutputStream(bos);
 		oos.writeObject(o);
 		return bos.toByteArray();
 	}
 
 	protected Object deserialize(byte[] bytes) throws Exception {
-		ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
-		ObjectInputStream oins = new ObjectInputStream(bins);
+		final ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
+		final ObjectInputStream oins = new ObjectInputStream(bins);
 		return oins.readObject();
 	}
 }

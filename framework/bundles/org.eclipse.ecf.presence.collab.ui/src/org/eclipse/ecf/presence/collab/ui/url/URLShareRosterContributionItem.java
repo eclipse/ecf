@@ -10,8 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.presence.collab.ui.url;
 
-import java.util.Hashtable;
-
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
@@ -23,10 +21,7 @@ import org.eclipse.ecf.presence.ui.roster.AbstractRosterContributionItem;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 
-public class URLShareRosterContributionItem extends
-		AbstractRosterContributionItem {
-
-	private static Hashtable urlsharechannels = new Hashtable();
+public class URLShareRosterContributionItem extends AbstractRosterContributionItem {
 
 	public URLShareRosterContributionItem() {
 	}
@@ -35,68 +30,48 @@ public class URLShareRosterContributionItem extends
 		super(id);
 	}
 
-	protected static URLShare getURLShare(ID containerID) {
-		return (URLShare) urlsharechannels.get(containerID);
-	}
-
-	protected static URLShare addURLShare(ID containerID, URLShare urlshare) {
-		return (URLShare) urlsharechannels.put(containerID, urlshare);
-	}
-
-	protected static URLShare removeURLShare(ID containerID) {
-		return (URLShare) urlsharechannels.remove(containerID);
-	}
-
-	private IAction[] createActionAdd(final ID containerID,
-			final IChannelContainerAdapter channelAdapter) {
-		IAction action = new Action() {
+	private IAction[] createActionAdd(final ID containerID, final IChannelContainerAdapter channelAdapter) {
+		final IAction action = new Action() {
 			public void run() {
 				try {
-					addURLShare(containerID, new URLShare(containerID, channelAdapter));
+					URLShare.addURLShare(containerID, channelAdapter);
 				} catch (ECFException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		};
-		action
-				.setText(Messages.URLShareRosterContributionItem_ADD_URL_SHARE_MENU_TEXT);
-		action.setImageDescriptor(Activator.imageDescriptorFromPlugin(
-				Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
-		return new IAction[] { action };
+		action.setText(Messages.URLShareRosterContributionItem_ADD_URL_SHARE_MENU_TEXT);
+		action.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
+		return new IAction[] {action};
 	}
 
-	private IAction[] createActionRemove(final ID containerID,
-			final URLShare urlshare) {
-		IAction action = new Action() {
+	private IAction[] createActionRemove(final ID containerID, final URLShare urlshare) {
+		final IAction action = new Action() {
 			public void run() {
-				removeURLShare(containerID);
+				URLShare.removeURLShare(containerID);
 				urlshare.dispose();
 			}
 		};
-		action
-				.setText(Messages.URLShareRosterContributionItem_REMOVE_URL_SHARE_MENU_TEXT);
-		action.setImageDescriptor(Activator.imageDescriptorFromPlugin(
-				Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
-		return new IAction[] { action };
+		action.setText(Messages.URLShareRosterContributionItem_REMOVE_URL_SHARE_MENU_TEXT);
+		action.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
+		return new IAction[] {action};
 	}
 
 	protected IAction[] makeActions() {
 		final IRoster roster = getSelectedRoster();
 		if (roster != null) {
 			// Roster is selected
-			IContainer c = getContainerForRoster(roster);
+			final IContainer c = getContainerForRoster(roster);
 			if (c != null) {
 				// Get existing urlshare for this container (if it exists)
-				URLShare urlshare = getURLShare(c.getID());
+				final URLShare urlshare = URLShare.getURLShare(c.getID());
 				// If it does exist already, then create action to remove
 				if (urlshare != null)
 					return createActionRemove(c.getID(), urlshare);
 				else {
-					IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c
-							.getAdapter(IChannelContainerAdapter.class);
-					return (channelAdapter == null) ? null : createActionAdd(c
-							.getID(), channelAdapter);
+					final IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c.getAdapter(IChannelContainerAdapter.class);
+					return (channelAdapter == null) ? null : createActionAdd(c.getID(), channelAdapter);
 				}
 			}
 		}

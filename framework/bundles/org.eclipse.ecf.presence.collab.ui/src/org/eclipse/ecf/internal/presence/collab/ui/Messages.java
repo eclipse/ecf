@@ -32,6 +32,8 @@ public class Messages extends NLS {
 	public static String URLShare_INPUT_URL_DIALOG_TITLE;
 	public static String URLShare_RECEIVED_URL_MESSAGE;
 	public static String URLShare_RECEIVED_URL_TITLE;
+	public static String StartURLShareAndViewShare_ERROR_CONTAINERMANAGER_NOT_ACCESSIBLE;
+	public static String StartURLShareAndViewShare_STATUS_URLSHARE_NOT_CREATED;
 	public static String URLShareRosterContributionItem_ADD_URL_SHARE_MENU_TEXT;
 	public static String URLShareRosterContributionItem_BROWSER_ICON;
 	public static String URLShareRosterContributionItem_REMOVE_URL_SHARE_MENU_TEXT;

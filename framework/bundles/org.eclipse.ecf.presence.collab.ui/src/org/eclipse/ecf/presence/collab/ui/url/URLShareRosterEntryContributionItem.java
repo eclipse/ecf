@@ -19,8 +19,7 @@ import org.eclipse.ecf.presence.ui.roster.AbstractRosterEntryContributionItem;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 
-public class URLShareRosterEntryContributionItem extends
-		AbstractRosterEntryContributionItem {
+public class URLShareRosterEntryContributionItem extends AbstractRosterEntryContributionItem {
 
 	public URLShareRosterEntryContributionItem() {
 	}
@@ -32,28 +31,24 @@ public class URLShareRosterEntryContributionItem extends
 	protected IAction[] makeActions() {
 		// Else check for Roster entry
 		final IRosterEntry entry = getSelectedRosterEntry();
-		IContainer c = getContainerForRosterEntry(entry);
+		final IContainer c = getContainerForRosterEntry(entry);
 		// If roster entry is selected and it has a container
 		if (entry != null && c != null) {
-			final IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c
-					.getAdapter(IChannelContainerAdapter.class);
+			final IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c.getAdapter(IChannelContainerAdapter.class);
 			// If the container has channel container adapter and is online/available
 			if (channelAdapter != null && isAvailable(entry)) {
-				URLShare tmp = URLShareRosterContributionItem.getURLShare(c
-						.getID());
+				final URLShare tmp = URLShare.getURLShare(c.getID());
 				// If there is an URL share associated with this container
 				if (tmp != null) {
 					final URLShare urlshare = tmp;
-					IAction action = new Action() {
+					final IAction action = new Action() {
 						public void run() {
-							urlshare.sendURL(entry.getRoster().getUser().getName(),entry.getUser().getID());
+							urlshare.showDialogAndSendURL(entry.getRoster().getUser().getName(), entry.getUser().getID());
 						}
 					};
-					action
-							.setText(Messages.URLShareRosterEntryContributionItem_SEND_URL_MENU_TEXT);
-					action.setImageDescriptor(Activator.imageDescriptorFromPlugin(
-							Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
-					return new IAction[] { action };
+					action.setText(Messages.URLShareRosterEntryContributionItem_SEND_URL_MENU_TEXT);
+					action.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
+					return new IAction[] {action};
 				}
 			}
 		}

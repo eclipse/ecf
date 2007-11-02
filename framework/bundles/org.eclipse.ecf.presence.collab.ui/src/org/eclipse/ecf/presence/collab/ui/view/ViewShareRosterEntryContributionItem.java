@@ -20,8 +20,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-public class ViewShareRosterEntryContributionItem extends
-		AbstractRosterEntryContributionItem {
+public class ViewShareRosterEntryContributionItem extends AbstractRosterEntryContributionItem {
 
 	public ViewShareRosterEntryContributionItem() {
 	}
@@ -33,29 +32,24 @@ public class ViewShareRosterEntryContributionItem extends
 	protected IAction[] makeActions() {
 		// Else check for Roster entry
 		final IRosterEntry entry = getSelectedRosterEntry();
-		IContainer c = getContainerForRosterEntry(entry);
+		final IContainer c = getContainerForRosterEntry(entry);
 		// If roster entry is selected and it has a container
 		if (entry != null && c != null) {
-			final IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c
-					.getAdapter(IChannelContainerAdapter.class);
+			final IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c.getAdapter(IChannelContainerAdapter.class);
 			// If the container has channel container adapter and is online/available
 			if (channelAdapter != null && isAvailable(entry)) {
-				ViewShare tmp = ViewShareRosterContributionItem.getViewShare(c
-						.getID());
+				final ViewShare tmp = ViewShare.getViewShare(c.getID());
 				// If there is an URL share associated with this container
 				if (tmp != null) {
 					final ViewShare viewshare = tmp;
-					IAction action = new Action() {
+					final IAction action = new Action() {
 						public void run() {
-							viewshare.sendOpenViewRequest(entry.getRoster().getUser().getName(),entry.getUser().getID());
+							viewshare.sendOpenViewRequest(entry.getRoster().getUser().getName(), entry.getUser().getID());
 						}
 					};
-					action
-							.setText(Messages.ViewShareRosterEntryContributionItem_VIEWSHARE_MENU_TEXT);
-					action.setImageDescriptor(PlatformUI.getWorkbench()
-							.getSharedImages().getImageDescriptor(
-									ISharedImages.IMG_DEF_VIEW));
-					return new IAction[] { action };
+					action.setText(Messages.ViewShareRosterEntryContributionItem_VIEWSHARE_MENU_TEXT);
+					action.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_DEF_VIEW));
+					return new IAction[] {action};
 				}
 			}
 		}
