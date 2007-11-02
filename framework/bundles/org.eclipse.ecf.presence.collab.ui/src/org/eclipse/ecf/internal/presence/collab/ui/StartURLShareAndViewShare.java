@@ -20,6 +20,7 @@ import org.eclipse.ecf.core.IContainerManager;
 import org.eclipse.ecf.core.IContainerManagerListener;
 import org.eclipse.ecf.core.events.IContainerConnectedEvent;
 import org.eclipse.ecf.core.events.IContainerDisconnectedEvent;
+import org.eclipse.ecf.core.events.IContainerDisposeEvent;
 import org.eclipse.ecf.core.events.IContainerEvent;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.ECFException;
@@ -36,14 +37,14 @@ public class StartURLShareAndViewShare implements IECFStart {
 		 * @see org.eclipse.ecf.core.IContainerListener#handleEvent(org.eclipse.ecf.core.events.IContainerEvent)
 		 */
 		public void handleEvent(IContainerEvent event) {
+			final IContainerManager containerManager = Activator.getDefault().getContainerManager();
+			if (containerManager == null)
+				return;
+			IContainer container = containerManager.getContainer(event.getLocalContainerID());
+			if (container == null)
+				return;
 			if (event instanceof IContainerConnectedEvent || event instanceof IContainerDisconnectedEvent) {
 				// connected
-				final IContainerManager containerManager = Activator.getDefault().getContainerManager();
-				if (containerManager == null)
-					return;
-				IContainer container = containerManager.getContainer(event.getLocalContainerID());
-				if (container == null)
-					return;
 				IChannelContainerAdapter cca = (IChannelContainerAdapter) container.getAdapter(IChannelContainerAdapter.class);
 				if (cca == null)
 					return;
@@ -58,6 +59,8 @@ public class StartURLShareAndViewShare implements IECFStart {
 					// disconnected
 					URLShare.removeURLShare(container.getID());
 					ViewShare.removeViewShare(container.getID());
+				} else if (event instanceof IContainerDisposeEvent) {
+					containerManager.removeListener(containerManagerListener);
 				}
 			}
 		}
