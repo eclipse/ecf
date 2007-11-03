@@ -15,33 +15,36 @@ import java.util.ResourceBundle;
 
 public class CustomMessages {
 	
-	static final String No_Operation_Privileges = "No_Operation_Privileges";
-	static final String Learn_Failure = "Learn_Failure";
-	static final String Learn_Reply = "Learn_Reply";
-	static final String Learn_Conflict = "Learn_Conflict";
-	static final String Learn_Update = "Learn_Update";
-	static final String Learn_Remove = "Learn_Remove";
+	static final String No_Operation_Privileges = "No_Operation_Privileges"; //$NON-NLS-1$
+	static final String Learn_Failure = "Learn_Failure"; //$NON-NLS-1$
+	static final String Learn_Reply = "Learn_Reply"; //$NON-NLS-1$
+	static final String Learn_Conflict = "Learn_Conflict"; //$NON-NLS-1$
+	static final String Learn_Update = "Learn_Update"; //$NON-NLS-1$
+	static final String Learn_Remove = "Learn_Remove"; //$NON-NLS-1$
 
-	static final String Bug = "Bug";
-	static final String Bug_Reply = "Bug_Reply";
+	static final String Bug = "Bug"; //$NON-NLS-1$
+	static final String Bug_Reply = "Bug_Reply"; //$NON-NLS-1$
 
-	static final String BugContent = "BugContent";
-	static final String BugContent_Reply = "BugContent_Reply";
+	static final String BugContent = "BugContent"; //$NON-NLS-1$
+	static final String BugContent_Reply = "BugContent_Reply"; //$NON-NLS-1$
 
-	static final String Javadoc_NotFound = "Javadoc_NotFound";
-	static final String Javadoc_ResultsUnknown = "Javadoc_ResultsUnknown";
+	static final String Javadoc_NotFound = "Javadoc_NotFound"; //$NON-NLS-1$
+	static final String Javadoc_ResultsUnknown = "Javadoc_ResultsUnknown"; //$NON-NLS-1$
 
-	static final String NewsgroupSearch = "NewsgroupSearch";
-	static final String NewsgroupSearch_Reply = "NewsgroupSearch_Reply";
+	static final String NewsgroupSearch = "NewsgroupSearch"; //$NON-NLS-1$
+	static final String NewsgroupSearch_Reply = "NewsgroupSearch_Reply"; //$NON-NLS-1$
 
-	static final String Google = "Google";
-	static final String Google_Reply = "Google_Reply";
+	static final String Google = "Google"; //$NON-NLS-1$
+	static final String Google_Reply = "Google_Reply"; //$NON-NLS-1$
 
-	static final String Wiki = "Wiki";
-	static final String Wiki_Reply = "Wiki_Reply";
+	static final String Wiki = "Wiki"; //$NON-NLS-1$
+	static final String Wiki_Reply = "Wiki_Reply"; //$NON-NLS-1$
 
-	static final String EclipseHelp = "EclipseHelp";
-	static final String EclipseHelp_Reply = "EclipseHelp_Reply";
+	static final String EclipseHelp = "EclipseHelp"; //$NON-NLS-1$
+	static final String EclipseHelp_Reply = "EclipseHelp_Reply"; //$NON-NLS-1$
+	
+	static final String MessageList = "MessageList"; //$NON-NLS-1$
+	static final String MessageList_Reply = "MessageList_Reply"; //$NON-NLS-1$
 
 	private static final String RESOURCE_BUNDLE = "org.eclipse.ecf.internal.presence.bot.kosmos.custom"; //$NON-NLS-1$
 
@@ -59,7 +62,7 @@ public class CustomMessages {
 		try {
 			return BUNDLE.getString(key);
 		} catch (MissingResourceException e) {
-			return "!" + key + "!";
+			return '!' + key + '!';
 		}
 	}
 

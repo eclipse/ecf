@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,6 +33,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
@@ -56,32 +60,40 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 
 	private static final String NEWLINE = System.getProperty("line.separator"); //$NON-NLS-1$
 
-	private static final String LICENSE = "###############################################################################"
+	private static final String LICENSE = "###############################################################################" //$NON-NLS-1$
 			+ NEWLINE
-			+ "# Copyright (c) 2007 Remy Suen and others."
+			+ "# Copyright (c) 2007 Remy Suen and others." //$NON-NLS-1$
 			+ NEWLINE
-			+ "# All rights reserved. This program and the accompaning materials"
+			+ "# All rights reserved. This program and the accompaning materials" //$NON-NLS-1$
 			+ NEWLINE
-			+ "# are made available under the terms of the Eclipse Public License v1.0"
+			+ "# are made available under the terms of the Eclipse Public License v1.0" //$NON-NLS-1$
 			+ NEWLINE
-			+ "# which accompanies this distribution, and is available at"
+			+ "# which accompanies this distribution, and is available at" //$NON-NLS-1$
 			+ NEWLINE
-			+ "# http://www.eclipse.org/legal/epl-v10.html"
+			+ "# http://www.eclipse.org/legal/epl-v10.html" //$NON-NLS-1$
 			+ NEWLINE
-			+ "#"
+			+ "#" //$NON-NLS-1$
 			+ NEWLINE
-			+ "# Contributors:"
+			+ "# Contributors:" //$NON-NLS-1$
 			+ NEWLINE
-			+ "#    Remy Suen <remy.suen@gmail.com> - initial API and implementation"
+			+ "#    Remy Suen <remy.suen@gmail.com> - initial API and implementation" //$NON-NLS-1$
 			+ NEWLINE
-			+ "#    Markus Kuppe <mkuppe@versant.com> - bug 1830436"
+			+ "#    Markus Kuppe <mkuppe@versant.com> - bug 1830436" //$NON-NLS-1$
 			+ NEWLINE
-			+ "################################################################################";
+			+ "################################################################################"; //$NON-NLS-1$
 
 	private static final String BUG_DATABASE_PREFIX = "https://bugs.eclipse.org/bugs/show_bug.cgi?id="; //$NON-NLS-1$
 	private static final String BUG_DATABASE_POSTFIX = "&ctype=xml"; //$NON-NLS-1$
 	private static final String SUM_OPEN_TAG = "<short_desc>"; //$NON-NLS-1$
 	private static final String SUM_CLOSE_TAG = "</short_desc>"; //$NON-NLS-1$
+	private static final File HTML_FILE = new File(
+			"/home/rcjsuen/public_html/messages.html"); //$NON-NLS-1$
+
+	private static final String URL_REGEX = "(http://.+|https://.+|ftp://.+)"; //$NON-NLS-1$
+	private static final String CMD_REGEX = "(~.+)"; //$NON-NLS-1$
+
+	private static final Pattern URL_PATTERN = Pattern.compile(URL_REGEX);
+	private static final Pattern CMD_PATTERN = Pattern.compile(CMD_REGEX);
 
 	private Map messageSenders;
 	private Map newsgroups;
@@ -213,7 +225,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		}
 	}
 
-	public void sendBug(ID roomID, String target, String number, String comment) {
+	private void sendBug(ID roomID, String target, String number, String comment) {
 		String urlString = BUG_DATABASE_PREFIX + number;
 		if (comment != null) {
 			urlString = urlString + "#c" + comment; //$NON-NLS-1$
@@ -432,6 +444,70 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		sendMessage(roomID, append + message);
 	}
 
+	private void sendMessageList(ID roomID, String target) {
+		if (target == null) {
+			sendMessage(roomID, CustomMessages.getString(CustomMessages.MessageList));
+		} else {
+			sendMessage(roomID, NLS.bind(CustomMessages
+					.getString(CustomMessages.MessageList_Reply), target));
+		}
+	}
+
+	private void writeToHTML() throws IOException {
+		FileWriter out = new FileWriter(HTML_FILE);
+		out
+				.write("<html>\n<head><title>KOS-MOS Commands</title></head>\n<body>\n<table cellspacing=\"2\" cellpadding=\"2\" border=\"0\">\n"); //$NON-NLS-1$
+		Iterator it = messages.keySet().iterator();
+		while (it.hasNext()) {
+			String key = (String) it.next();
+			String val = messages.getProperty(key);
+			out.write(formatTableRow(key, val));
+		}
+
+		out.write("</table>\n</body></html>\n"); //$NON-NLS-1$
+		out.flush();
+
+		try {
+			out.close();
+		} catch (IOException e) {
+			// ignored
+		}
+	}
+
+	private String formatTableRow(String key, String val) {
+		return "<tr valign=\"top\"><td><b>" //$NON-NLS-1$
+				+ key
+				+ "</b></td><td>" //$NON-NLS-1$
+				+ text2html(val)
+				+ "</td></tr>\n<tr><td colspan=\"2\"><hr noshade=\"noshade\" size=\"1\" width=\"100%\"/></td></tr>\n\n"; //$NON-NLS-1$
+	}
+
+	private String text2html(String val) {
+		StringTokenizer st = new StringTokenizer(val, " )(\"", true); //$NON-NLS-1$
+		StringBuffer sb = new StringBuffer();
+		while (st.hasMoreTokens()) {
+			String tok = st.nextToken();
+			Matcher patternMatcher = URL_PATTERN.matcher(tok);
+			if (patternMatcher.matches()) {
+				sb.append("<a href=\""); //$NON-NLS-1$
+				sb.append(patternMatcher.group(1));
+				sb.append("\">"); //$NON-NLS-1$
+				sb.append(patternMatcher.group(1));
+				sb.append("</a>"); //$NON-NLS-1$
+			} else {
+				Matcher cmdMatcher = CMD_PATTERN.matcher(tok);
+				if (cmdMatcher.matches()) {
+					sb.append("<b style=\"color:red\">"); //$NON-NLS-1$
+					sb.append(cmdMatcher.group(1));
+					sb.append("</b>"); //$NON-NLS-1$
+				} else {
+					sb.append(tok);
+				}
+			}
+		}
+		return sb.toString();
+	}
+
 	private boolean isProcessed(ID roomID, String target, String msg) {
 		String reply = (String) messages.get(msg);
 		if (reply == null) {
@@ -458,6 +534,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 				messages.setProperty(key, contents.substring(key.length())
 						.trim());
 				messages.store(stream, LICENSE);
+				writeToHTML();
 				sendMessage(roomID, NLS.bind(CustomMessages
 						.getString(CustomMessages.Learn_Reply), key));
 			} else {
@@ -481,6 +558,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 			OutputStream stream = new FileOutputStream(url.getPath());
 			messages.setProperty(key, contents.substring(key.length()).trim());
 			messages.store(stream, LICENSE);
+			writeToHTML();
 			sendMessage(roomID, NLS.bind(CustomMessages
 					.getString(CustomMessages.Learn_Update), key));
 		} catch (Exception e) {
@@ -499,6 +577,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 			OutputStream stream = new FileOutputStream(url.getPath());
 			messages.remove(key);
 			messages.store(stream, LICENSE);
+			writeToHTML();
 			sendMessage(roomID, NLS.bind(CustomMessages
 					.getString(CustomMessages.Learn_Remove), key));
 		} catch (Exception e) {
@@ -560,8 +639,8 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 				try {
 					// check if what's before the 'c' is a valid number
 					Integer.parseInt(msg.substring(0, index));
-					sendBug(roomID, target, msg.substring(0, index),
-							msg.substring(index + 1));
+					sendBug(roomID, target, msg.substring(0, index), msg
+							.substring(index + 1));
 				} catch (NumberFormatException e) {
 					// ignored
 				}
@@ -580,6 +659,8 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 			sendWiki(roomID, target, msg.substring(5));
 		} else if (msg.startsWith("eh")) { //$NON-NLS-1$
 			sendEclipseHelp(roomID, target, msg.substring(3));
+		} else if (msg.equals("list")) { //$NON-NLS-1$
+			sendMessageList(roomID, target);
 		} else {
 			int index = msg.indexOf('c');
 			if (index == -1) {
@@ -594,8 +675,8 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 				try {
 					// check if what's before the 'c' is a valid number
 					Integer.parseInt(msg.substring(0, index));
-					sendBug(roomID, target, msg.substring(0, index),
-							msg.substring(index + 1));
+					sendBug(roomID, target, msg.substring(0, index), msg
+							.substring(index + 1));
 				} catch (NumberFormatException e) {
 					// ignored
 				}
@@ -626,7 +707,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		}
 	}
 
-	public void handleMessage(ID fromID, ID roomID, String message) {
+	private void handleMessage(ID fromID, ID roomID, String message) {
 		try {
 			String[] info = parseInput(message);
 			if (info != null) {
