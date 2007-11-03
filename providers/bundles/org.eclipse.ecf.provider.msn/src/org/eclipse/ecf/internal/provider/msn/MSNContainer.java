@@ -517,6 +517,7 @@ final class MSNContainer implements IContainer, IChatManager,
 
 		IPresence.Mode mode = presence.getMode();
 		try {
+			client.setPersonalMessage(presence.getStatus());
 			if (presence.getType() == IPresence.Type.UNAVAILABLE) {
 				disconnect();
 			} else if (mode == IPresence.Mode.AVAILABLE
@@ -530,7 +531,6 @@ final class MSNContainer implements IContainer, IChatManager,
 			} else {
 				client.setStatus(Status.APPEAR_OFFLINE);
 			}
-			client.setPersonalMessage(presence.getStatus());
 		} catch (IOException e) {
 			throw new ECFException(e);
 		}
