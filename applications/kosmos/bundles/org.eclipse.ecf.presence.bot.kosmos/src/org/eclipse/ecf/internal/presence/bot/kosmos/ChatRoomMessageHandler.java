@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -457,11 +458,13 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		FileWriter out = new FileWriter(HTML_FILE);
 		out
 				.write("<html>\n<head><title>KOS-MOS Commands</title></head>\n<body>\n<table cellspacing=\"2\" cellpadding=\"2\" border=\"0\">\n"); //$NON-NLS-1$
-		Iterator it = messages.keySet().iterator();
-		while (it.hasNext()) {
-			String key = (String) it.next();
-			String val = messages.getProperty(key);
-			out.write(formatTableRow(key, val));
+		Set set = messages.keySet();
+		String[] commands = (String[]) set.toArray(new String[set.size()]);
+		Arrays.sort(commands);
+		
+		for (int i = 0; i < commands.length; i++) {
+			String output = messages.getProperty(commands[i]);
+			out.write(formatTableRow(commands[i], output));
 		}
 
 		out.write("</table>\n</body></html>\n"); //$NON-NLS-1$
