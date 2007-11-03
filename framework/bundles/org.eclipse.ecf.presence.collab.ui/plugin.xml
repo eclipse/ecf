@@ -58,9 +58,9 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:javaStackTraceConsole.#ContextMenu">
+            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
          <dynamic
-               class="org.eclipse.ecf.presence.collab.ui.console.ConsoleRosterMenuContributionItem"
+               class="org.eclipse.ecf.presence.collab.ui.console.StackShareRosterEntryContributionItem"
                id="org.eclipse.ecf.presence.collab.ui.console">
          </dynamic>
       </menuContribution>

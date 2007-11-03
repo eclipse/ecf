@@ -52,6 +52,11 @@ public class Messages extends NLS {
 
 	public static String StackShare_STACKSHARE_ERROR_DIALOG_TITLE;
 	public static String StackShare_STACKSHARE_ERROR_DIALOG_MESSAGE;
+	public static String StackShare_EXCEPTION_WP_NOT_AVAILABLE;
+	public static String StackShare_EXCEPTION_WW_NOT_AVAILABLE;
+	public static String StackShare_STACK_TRACE_FROM_MESSAGE;
+	public static String StackShare_STACK_TRACE_CONTENT;
+	public static String StackShare_STACK_TRACE_FROM_TITLE;
 	public static String StackShare_STACKSHARE_ERROR_LOG_MESSAGE;
 
 	static {

@@ -28,15 +28,20 @@ import org.eclipse.ecf.internal.presence.collab.ui.Activator;
 import org.eclipse.ecf.internal.presence.collab.ui.Messages;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
+import org.eclipse.ui.console.IConsoleView;
 import org.eclipse.ui.console.TextConsole;
 
 /**
@@ -48,12 +53,41 @@ public class StackShare extends AbstractShare {
 
 	private ID containerID = null;
 
+	private static TextSelection selection = null;
+	private static boolean initialized = false;
+
+	private static final ISelectionListener selectionListener = new ISelectionListener() {
+		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+			if (part instanceof IConsoleView && selection instanceof TextSelection) {
+				StackShare.selection = (TextSelection) selection;
+			}
+		}
+	};
+
 	public static StackShare getStackShare(ID containerID) {
 		return (StackShare) stackSharechannels.get(containerID);
 	}
 
 	public static StackShare addStackShare(ID containerID, IChannelContainerAdapter channelAdapter) throws ECFException {
+		initialize();
 		return (StackShare) stackSharechannels.put(containerID, new StackShare(containerID, channelAdapter));
+	}
+
+	private static void initialize() {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				if (!initialized) {
+					final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+					final IWorkbenchPage page = ww.getActivePage();
+					page.addSelectionListener(selectionListener);
+					initialized = true;
+				}
+			}
+		});
+	}
+
+	public static TextSelection getSelection() {
+		return selection;
 	}
 
 	public static StackShare removeStackShare(ID containerID) {
@@ -87,23 +121,23 @@ public class StackShare extends AbstractShare {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
-					final String viewID = "org.eclipse.ui.console.ConsoleView";
+					final String viewID = "org.eclipse.ui.console.ConsoleView"; //$NON-NLS-1$
 					final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 					if (ww == null)
-						throw new PartInitException("workbench window not available");
+						throw new PartInitException(Messages.StackShare_EXCEPTION_WW_NOT_AVAILABLE);
 					final IWorkbenchPage wp = ww.getActivePage();
 					if (wp == null)
-						throw new PartInitException("workbench page not available");
+						throw new PartInitException(Messages.StackShare_EXCEPTION_WP_NOT_AVAILABLE);
 					wp.showView(viewID);
 					final IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
 					final IConsole[] consoles = consoleManager.getConsoles();
 					if (consoles.length == 0) {
-						MessageDialog.openInformation(null, NLS.bind("Stack Trace from {0}", user), NLS.bind("{0} has sent you a stack trace.\n\nTo be able to receive stack traces you must have the 'Java Stack Trace Console' open.", user));
+						MessageDialog.openInformation(null, NLS.bind(Messages.StackShare_STACK_TRACE_FROM_TITLE, user), NLS.bind(Messages.StackShare_STACK_TRACE_FROM_MESSAGE, user));
 						return;
 					} else {
 						for (int i = 0; i < consoles.length; i++) {
 							final String consoleType = consoles[i].getType();
-							if (consoleType != null && consoleType.equals("javaStackTraceConsole")) {
+							if (consoleType != null && consoleType.equals("javaStackTraceConsole")) { //$NON-NLS-1$
 								final TextConsole textConsole = (TextConsole) consoles[i];
 								textConsole.activate();
 								final IDocument document = textConsole.getDocument();
@@ -121,7 +155,7 @@ public class StackShare extends AbstractShare {
 	}
 
 	private String getStackTraceToShow(String user, String stackTrace) {
-		return NLS.bind("\n\n------Received Stack Trace from {0}------\n\n{1}\n\n------End Stack Trace from {0}------", user, stackTrace);
+		return NLS.bind(Messages.StackShare_STACK_TRACE_CONTENT, user, stackTrace);
 	}
 
 	public void sendShareStackRequest(final String senderuser, final ID toID, final String stackTrace) {
