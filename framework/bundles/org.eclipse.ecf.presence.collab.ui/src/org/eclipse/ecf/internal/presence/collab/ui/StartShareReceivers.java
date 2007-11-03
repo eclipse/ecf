@@ -26,7 +26,7 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
-import org.eclipse.ecf.presence.collab.ui.console.StackShare;
+import org.eclipse.ecf.presence.collab.ui.console.ConsoleShare;
 import org.eclipse.ecf.presence.collab.ui.url.URLShare;
 import org.eclipse.ecf.presence.collab.ui.view.ViewShare;
 import org.eclipse.osgi.util.NLS;
@@ -55,7 +55,7 @@ public class StartShareReceivers implements IECFStart {
 					try {
 						URLShare.addURLShare(containerID, cca);
 						ViewShare.addViewShare(containerID, cca);
-						StackShare.addStackShare(containerID, cca);
+						ConsoleShare.addStackShare(containerID, cca);
 					} catch (ECFException e) {
 						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.StartURLShareAndViewShare_STATUS_URLSHARE_NOT_CREATED, container.getID()), null));
 					}
@@ -63,7 +63,7 @@ public class StartShareReceivers implements IECFStart {
 					// disconnected
 					URLShare.removeURLShare(containerID);
 					ViewShare.removeViewShare(containerID);
-					StackShare.removeStackShare(containerID);
+					ConsoleShare.removeStackShare(containerID);
 				} else if (event instanceof IContainerDisposeEvent) {
 					containerManager.removeListener(containerManagerListener);
 				}

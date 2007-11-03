@@ -11,21 +11,14 @@
 
 package org.eclipse.ecf.presence.collab.ui.console;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Hashtable;
+import java.util.Map;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.datashare.AbstractShare;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
-import org.eclipse.ecf.internal.presence.collab.ui.Activator;
 import org.eclipse.ecf.internal.presence.collab.ui.Messages;
+import org.eclipse.ecf.presence.collab.ui.AbstractCollabShare;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
@@ -40,6 +33,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.IConsoleView;
 import org.eclipse.ui.console.TextConsole;
@@ -47,11 +41,9 @@ import org.eclipse.ui.console.TextConsole;
 /**
  * Send/receive requests to share a specific view (identified by view ID).
  */
-public class StackShare extends AbstractShare {
+public class ConsoleShare extends AbstractCollabShare {
 
-	private static Hashtable stackSharechannels = new Hashtable();
-
-	private ID containerID = null;
+	private static final Map consoleSharechannels = new Hashtable();
 
 	private static TextSelection selection = null;
 	private static boolean initialized = false;
@@ -59,18 +51,22 @@ public class StackShare extends AbstractShare {
 	private static final ISelectionListener selectionListener = new ISelectionListener() {
 		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 			if (part instanceof IConsoleView && selection instanceof TextSelection) {
-				StackShare.selection = (TextSelection) selection;
+				TextSelection s = (TextSelection) selection;
+				if (s == null || s.getLength() == 0)
+					ConsoleShare.selection = null;
+				else
+					ConsoleShare.selection = (TextSelection) selection;
 			}
 		}
 	};
 
-	public static StackShare getStackShare(ID containerID) {
-		return (StackShare) stackSharechannels.get(containerID);
+	public static ConsoleShare getStackShare(ID containerID) {
+		return (ConsoleShare) consoleSharechannels.get(containerID);
 	}
 
-	public static StackShare addStackShare(ID containerID, IChannelContainerAdapter channelAdapter) throws ECFException {
+	public static ConsoleShare addStackShare(ID containerID, IChannelContainerAdapter channelAdapter) throws ECFException {
 		initialize();
-		return (StackShare) stackSharechannels.put(containerID, new StackShare(containerID, channelAdapter));
+		return (ConsoleShare) consoleSharechannels.put(containerID, new ConsoleShare(channelAdapter));
 	}
 
 	private static void initialize() {
@@ -90,49 +86,29 @@ public class StackShare extends AbstractShare {
 		return selection;
 	}
 
-	public static StackShare removeStackShare(ID containerID) {
-		return (StackShare) stackSharechannels.remove(containerID);
+	public static ConsoleShare removeStackShare(ID containerID) {
+		return (ConsoleShare) consoleSharechannels.remove(containerID);
 	}
 
-	public StackShare(ID containerID, IChannelContainerAdapter adapter) throws ECFException {
+	public ConsoleShare(IChannelContainerAdapter adapter) throws ECFException {
 		super(adapter);
-		Assert.isNotNull(containerID);
-		this.containerID = containerID;
-	}
-
-	protected ID getContainerID() {
-		return containerID;
-	}
-
-	private void logError(String exceptionString, Throwable e) {
-		Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, exceptionString, e));
-
-	}
-
-	private void logError(IStatus status) {
-		Activator.getDefault().getLog().log(status);
-	}
-
-	private void showErrorToUser(String title, String message) {
-		MessageDialog.openError(null, title, message);
 	}
 
 	private void handleShowStackRequest(final String user, final String stackTrace) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
-					final String viewID = "org.eclipse.ui.console.ConsoleView"; //$NON-NLS-1$
 					final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 					if (ww == null)
-						throw new PartInitException(Messages.StackShare_EXCEPTION_WW_NOT_AVAILABLE);
+						throw new PartInitException(Messages.ConsoleShare_EXCEPTION_WW_NOT_AVAILABLE);
 					final IWorkbenchPage wp = ww.getActivePage();
 					if (wp == null)
-						throw new PartInitException(Messages.StackShare_EXCEPTION_WP_NOT_AVAILABLE);
-					wp.showView(viewID);
+						throw new PartInitException(Messages.ConsoleShare_EXCEPTION_WP_NOT_AVAILABLE);
+					wp.showView(IConsoleConstants.ID_CONSOLE_VIEW);
 					final IConsoleManager consoleManager = ConsolePlugin.getDefault().getConsoleManager();
 					final IConsole[] consoles = consoleManager.getConsoles();
 					if (consoles.length == 0) {
-						MessageDialog.openInformation(null, NLS.bind(Messages.StackShare_STACK_TRACE_FROM_TITLE, user), NLS.bind(Messages.StackShare_STACK_TRACE_FROM_MESSAGE, user));
+						MessageDialog.openInformation(null, NLS.bind(Messages.ConsoleShare_STACK_TRACE_FROM_TITLE, user), NLS.bind(Messages.ConsoleShare_STACK_TRACE_FROM_MESSAGE, user));
 						return;
 					} else {
 						for (int i = 0; i < consoles.length; i++) {
@@ -147,24 +123,21 @@ public class StackShare extends AbstractShare {
 						}
 					}
 				} catch (final Exception e) {
-					showErrorToUser(Messages.StackShare_STACKSHARE_ERROR_DIALOG_TITLE, NLS.bind(Messages.StackShare_STACKSHARE_ERROR_DIALOG_MESSAGE, e.getLocalizedMessage()));
-					logError(Messages.StackShare_STACKSHARE_ERROR_LOG_MESSAGE, e);
+					showErrorToUser(Messages.ConsoleShare_STACKSHARE_ERROR_DIALOG_TITLE, NLS.bind(Messages.ConsoleShare_STACKSHARE_ERROR_DIALOG_MESSAGE, e.getLocalizedMessage()));
+					logError(Messages.ConsoleShare_STACKSHARE_ERROR_LOG_MESSAGE, e);
 				}
 			}
 		});
 	}
 
 	private String getStackTraceToShow(String user, String stackTrace) {
-		return NLS.bind(Messages.StackShare_STACK_TRACE_CONTENT, user, stackTrace);
+		return NLS.bind(Messages.ConsoleShare_STACK_TRACE_CONTENT, user, stackTrace);
 	}
 
 	public void sendShareStackRequest(final String senderuser, final ID toID, final String stackTrace) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-
 				try {
-					// Actually send messages to target remote user (toID),
-					// with selectedIDs (view IDs) to show
 					sendMessage(toID, serialize(new Object[] {senderuser, stackTrace}));
 				} catch (final ECFException e) {
 					showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
@@ -192,16 +165,4 @@ public class StackShare extends AbstractShare {
 		}
 	}
 
-	protected byte[] serialize(Object o) throws Exception {
-		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		final ObjectOutputStream oos = new ObjectOutputStream(bos);
-		oos.writeObject(o);
-		return bos.toByteArray();
-	}
-
-	protected Object deserialize(byte[] bytes) throws Exception {
-		final ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
-		final ObjectInputStream oins = new ObjectInputStream(bins);
-		return oins.readObject();
-	}
 }

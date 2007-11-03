@@ -11,24 +11,20 @@
 
 package org.eclipse.ecf.presence.collab.ui.view;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Hashtable;
+import java.util.Map;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.util.ECFException;
-import org.eclipse.ecf.datashare.AbstractShare;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
 import org.eclipse.ecf.internal.presence.collab.ui.Activator;
 import org.eclipse.ecf.internal.presence.collab.ui.Messages;
 import org.eclipse.ecf.internal.presence.collab.ui.view.ShowViewDialogLabelProvider;
 import org.eclipse.ecf.internal.presence.collab.ui.view.ShowViewDialogTreeContentProvider;
 import org.eclipse.ecf.internal.presence.collab.ui.view.ShowViewDialogViewerFilter;
+import org.eclipse.ecf.presence.collab.ui.AbstractCollabShare;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
@@ -46,45 +42,24 @@ import org.eclipse.ui.views.IViewRegistry;
 /**
  * Send/receive requests to share a specific view (identified by view ID).
  */
-public class ViewShare extends AbstractShare {
+public class ViewShare extends AbstractCollabShare {
 
-	private static Hashtable viewSharechannels = new Hashtable();
-
-	private ID containerID = null;
+	private static final Map viewSharechannels = new Hashtable();
 
 	public static ViewShare getViewShare(ID containerID) {
 		return (ViewShare) viewSharechannels.get(containerID);
 	}
 
 	public static ViewShare addViewShare(ID containerID, IChannelContainerAdapter channelAdapter) throws ECFException {
-		return (ViewShare) viewSharechannels.put(containerID, new ViewShare(containerID, channelAdapter));
+		return (ViewShare) viewSharechannels.put(containerID, new ViewShare(channelAdapter));
 	}
 
 	public static ViewShare removeViewShare(ID containerID) {
 		return (ViewShare) viewSharechannels.remove(containerID);
 	}
 
-	public ViewShare(ID containerID, IChannelContainerAdapter adapter) throws ECFException {
+	public ViewShare(IChannelContainerAdapter adapter) throws ECFException {
 		super(adapter);
-		Assert.isNotNull(containerID);
-		this.containerID = containerID;
-	}
-
-	protected ID getContainerID() {
-		return containerID;
-	}
-
-	private void logError(String exceptionString, Throwable e) {
-		Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.ERROR, exceptionString, e));
-
-	}
-
-	private void logError(IStatus status) {
-		Activator.getDefault().getLog().log(status);
-	}
-
-	private void showErrorToUser(String title, String message) {
-		MessageDialog.openError(null, title, message);
 	}
 
 	private void handleOpenViewRequest(final String user, final String viewID, final String secondaryID, final int mode) {
@@ -174,16 +149,4 @@ public class ViewShare extends AbstractShare {
 		}
 	}
 
-	protected byte[] serialize(Object o) throws Exception {
-		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		final ObjectOutputStream oos = new ObjectOutputStream(bos);
-		oos.writeObject(o);
-		return bos.toByteArray();
-	}
-
-	protected Object deserialize(byte[] bytes) throws Exception {
-		final ByteArrayInputStream bins = new ByteArrayInputStream(bytes);
-		final ObjectInputStream oins = new ObjectInputStream(bins);
-		return oins.readObject();
-	}
 }

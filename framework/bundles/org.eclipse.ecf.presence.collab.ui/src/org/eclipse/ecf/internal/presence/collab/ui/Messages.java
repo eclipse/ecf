@@ -49,15 +49,17 @@ public class Messages extends NLS {
 	public static String ViewShareRosterContributionItem_VIEWSHARE_LISTENER_MENU_ADD_TEXT;
 	public static String ViewShareRosterContributionItem_VIEWSHARE_LISTENER_MENU_REMOVE_TEXT;
 	public static String ViewShareRosterEntryContributionItem_VIEWSHARE_MENU_TEXT;
+	public static String ConsoleShare_RosterContributionItem_CONSOLE_ICON;
 
-	public static String StackShare_STACKSHARE_ERROR_DIALOG_TITLE;
-	public static String StackShare_STACKSHARE_ERROR_DIALOG_MESSAGE;
-	public static String StackShare_EXCEPTION_WP_NOT_AVAILABLE;
-	public static String StackShare_EXCEPTION_WW_NOT_AVAILABLE;
-	public static String StackShare_STACK_TRACE_FROM_MESSAGE;
-	public static String StackShare_STACK_TRACE_CONTENT;
-	public static String StackShare_STACK_TRACE_FROM_TITLE;
-	public static String StackShare_STACKSHARE_ERROR_LOG_MESSAGE;
+	public static String ConsoleShare_STACKSHARE_ERROR_DIALOG_TITLE;
+	public static String ConsoleShare_STACKSHARE_ERROR_DIALOG_MESSAGE;
+	public static String ConsoleShare_EXCEPTION_WP_NOT_AVAILABLE;
+	public static String ConsoleShare_EXCEPTION_WW_NOT_AVAILABLE;
+	public static String ConsoleShare_STACK_TRACE_FROM_MESSAGE;
+	public static String ConsoleShare_STACK_TRACE_CONTENT;
+	public static String ConsoleShare_STACK_TRACE_FROM_TITLE;
+	public static String ConsoleShare_STACKSHARE_ERROR_LOG_MESSAGE;
+	public static String ConsoleShare_RosterEntryMenu;
 
 	static {
 		// initialize resource bundle

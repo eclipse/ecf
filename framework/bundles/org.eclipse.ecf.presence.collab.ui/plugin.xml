@@ -35,13 +35,6 @@
                id="org.eclipse.ecf.presence.collab.ui.dynamic5">
          </dynamic>
       </menuContribution>
-      <menuContribution
-            locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
-         <dynamic
-               class="org.eclipse.ecf.presence.ui.menu.NoopRosterMenuContributionItem"
-               id="org.eclipse.ecf.presence.collab.ui.dynamic5">
-         </dynamic>
-      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ecf.presence.ui.rosterViewerDropTarget">
@@ -60,7 +53,7 @@
       <menuContribution
             locationURI="popup:org.eclipse.ecf.presence.ui.MultiRosterView?before=additions">
          <dynamic
-               class="org.eclipse.ecf.presence.collab.ui.console.StackShareRosterEntryContributionItem"
+               class="org.eclipse.ecf.presence.collab.ui.console.ConsoleShareRosterEntryContributionItem"
                id="org.eclipse.ecf.presence.collab.ui.console">
          </dynamic>
       </menuContribution>

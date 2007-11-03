@@ -12,23 +12,25 @@ package org.eclipse.ecf.presence.collab.ui.console;
 
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
+import org.eclipse.ecf.internal.presence.collab.ui.Activator;
+import org.eclipse.ecf.internal.presence.collab.ui.Messages;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.roster.AbstractRosterEntryContributionItem;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.TextSelection;
 
-public class StackShareRosterEntryContributionItem extends AbstractRosterEntryContributionItem {
+public class ConsoleShareRosterEntryContributionItem extends AbstractRosterEntryContributionItem {
 
-	public StackShareRosterEntryContributionItem() {
+	public ConsoleShareRosterEntryContributionItem() {
 	}
 
-	public StackShareRosterEntryContributionItem(String id) {
+	public ConsoleShareRosterEntryContributionItem(String id) {
 		super(id);
 	}
 
 	protected IAction[] makeActions() {
-		final TextSelection selection = StackShare.getSelection();
+		final TextSelection selection = ConsoleShare.getSelection();
 		if (selection == null)
 			return null;
 		// Else check for Roster entry
@@ -39,17 +41,17 @@ public class StackShareRosterEntryContributionItem extends AbstractRosterEntryCo
 			final IChannelContainerAdapter channelAdapter = (IChannelContainerAdapter) c.getAdapter(IChannelContainerAdapter.class);
 			// If the container has channel container adapter and is online/available
 			if (channelAdapter != null && isAvailable(entry)) {
-				final StackShare tmp = StackShare.getStackShare(c.getID());
+				final ConsoleShare tmp = ConsoleShare.getStackShare(c.getID());
 				// If there is an URL share associated with this container
 				if (tmp != null) {
-					final StackShare stackshare = tmp;
+					final ConsoleShare stackshare = tmp;
 					final IAction action = new Action() {
 						public void run() {
 							stackshare.sendShareStackRequest(entry.getRoster().getUser().getName(), entry.getUser().getID(), selection.getText());
 						}
 					};
-					action.setText(Messages.getString("StackShareRosterEntryContributionItem.SEND_STACK_TRACE_MENU")); //$NON-NLS-1$
-					//action.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.URLShareRosterContributionItem_BROWSER_ICON));
+					action.setText(Messages.ConsoleShare_RosterEntryMenu);
+					action.setImageDescriptor(Activator.imageDescriptorFromPlugin(Activator.PLUGIN_ID, Messages.ConsoleShare_RosterContributionItem_CONSOLE_ICON));
 					return new IAction[] {action};
 				}
 			}
