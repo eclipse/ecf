@@ -52,8 +52,18 @@
    <extension
          point="org.eclipse.ecf.start">
       <run
-            class="org.eclipse.ecf.internal.presence.collab.ui.StartURLShareAndViewShare">
+            class="org.eclipse.ecf.internal.presence.collab.ui.StartShareReceivers">
       </run>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:javaStackTraceConsole.#ContextMenu">
+         <dynamic
+               class="org.eclipse.ecf.presence.collab.ui.console.ConsoleRosterMenuContributionItem"
+               id="org.eclipse.ecf.presence.collab.ui.console">
+         </dynamic>
+      </menuContribution>
    </extension>
    
    

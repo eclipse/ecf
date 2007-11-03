@@ -49,6 +49,11 @@ public class Messages extends NLS {
 	public static String ViewShareRosterContributionItem_VIEWSHARE_LISTENER_MENU_ADD_TEXT;
 	public static String ViewShareRosterContributionItem_VIEWSHARE_LISTENER_MENU_REMOVE_TEXT;
 	public static String ViewShareRosterEntryContributionItem_VIEWSHARE_MENU_TEXT;
+
+	public static String StackShare_STACKSHARE_ERROR_DIALOG_TITLE;
+	public static String StackShare_STACKSHARE_ERROR_DIALOG_MESSAGE;
+	public static String StackShare_STACKSHARE_ERROR_LOG_MESSAGE;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

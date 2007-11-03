@@ -44,6 +44,8 @@ public class URLShare extends AbstractShare {
 
 	private static Hashtable urlsharechannels = new Hashtable();
 
+	private static String FOO = "java.lang.NullPointerException\n\t\tat org.eclipse.ecf.provider.xmpp.XMPPContainer.isGoogle(XMPPContainer.java:288)\n" + "\t\tat org.eclipse.ecf.provider.xmpp.XMPPSContainer.createConnection(XMPPSContainer.java:50)\n" + "\t\tat org.eclipse.ecf.provider.generic.ClientSOContainer.connect(ClientSOContainer.java:151)\n" + "\t\tat org.eclipse.ecf.provider.xmpp.XMPPContainer.connect(XMPPContainer.java:176)\n" + "\t\tat org.eclipse.ecf.ui.actions.AsynchContainerConnectAction$AsynchActionJob.run(AsynchContainerConnectAction.java:127)\n" + "\t\tat org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)\n";
+
 	public static URLShare getURLShare(ID containerID) {
 		return (URLShare) urlsharechannels.get(containerID);
 	}
@@ -82,6 +84,7 @@ public class URLShare extends AbstractShare {
 	private void showURL(final String user, final String url) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
+
 				if (MessageDialog.openQuestion(null, Messages.URLShare_RECEIVED_URL_TITLE, NLS.bind(Messages.URLShare_RECEIVED_URL_MESSAGE, user, url))) {
 					final IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
 					IWebBrowser browser;
