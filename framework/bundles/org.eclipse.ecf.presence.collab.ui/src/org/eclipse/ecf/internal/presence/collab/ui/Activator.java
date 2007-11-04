@@ -58,6 +58,7 @@ public class Activator extends AbstractUIPlugin {
 			containerManagerTracker = null;
 		}
 		plugin = null;
+		context = null;
 		super.stop(context);
 	}
 

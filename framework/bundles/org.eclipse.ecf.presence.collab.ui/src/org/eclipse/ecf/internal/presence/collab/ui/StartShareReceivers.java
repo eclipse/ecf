@@ -66,6 +66,7 @@ public class StartShareReceivers implements IECFStart {
 					ConsoleShare.removeStackShare(containerID);
 				} else if (event instanceof IContainerDisposeEvent) {
 					containerManager.removeListener(containerManagerListener);
+					container.removeListener(containerListener);
 				}
 			}
 		}
@@ -78,6 +79,9 @@ public class StartShareReceivers implements IECFStart {
 		 * @see org.eclipse.ecf.core.IContainerManagerListener#containerAdded(org.eclipse.ecf.core.IContainer)
 		 */
 		public void containerAdded(IContainer container) {
+			IChannelContainerAdapter cca = (IChannelContainerAdapter) container.getAdapter(IChannelContainerAdapter.class);
+			if (cca == null)
+				return;
 			container.addListener(containerListener);
 		}
 
@@ -102,4 +106,5 @@ public class StartShareReceivers implements IECFStart {
 		containerManager.addListener(containerManagerListener);
 		return Status.OK_STATUS;
 	}
+
 }
