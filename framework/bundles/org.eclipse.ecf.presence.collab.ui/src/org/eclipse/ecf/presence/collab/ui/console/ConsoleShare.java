@@ -94,7 +94,7 @@ public class ConsoleShare extends AbstractCollabShare {
 		super(adapter);
 	}
 
-	private void handleShowStackRequest(final String user, final String stackTrace) {
+	private void handleShowConsoleSelection(final String user, final String consoleSelection) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
@@ -117,7 +117,7 @@ public class ConsoleShare extends AbstractCollabShare {
 								final TextConsole textConsole = (TextConsole) consoles[i];
 								textConsole.activate();
 								final IDocument document = textConsole.getDocument();
-								final String text = document.get() + getStackTraceToShow(user, stackTrace);
+								final String text = document.get() + getConsoleSelectionToShow(user, consoleSelection);
 								document.set(text);
 							}
 						}
@@ -130,15 +130,15 @@ public class ConsoleShare extends AbstractCollabShare {
 		});
 	}
 
-	private String getStackTraceToShow(String user, String stackTrace) {
+	private String getConsoleSelectionToShow(String user, String stackTrace) {
 		return NLS.bind(Messages.ConsoleShare_STACK_TRACE_CONTENT, user, stackTrace);
 	}
 
-	public void sendShareStackRequest(final String senderuser, final ID toID, final String stackTrace) {
+	public void sendShareConsoleSelection(final String senderuser, final ID toID, final String consoleSelection) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
-					sendMessage(toID, serialize(new Object[] {senderuser, stackTrace}));
+					sendMessage(toID, serialize(new Object[] {senderuser, consoleSelection}));
 				} catch (final ECFException e) {
 					showErrorToUser(Messages.Share_ERROR_SEND_TITLE, NLS.bind(Messages.Share_ERROR_SEND_MESSAGE, e.getStatus().getException().getLocalizedMessage()));
 					logError(e.getStatus());
@@ -158,7 +158,7 @@ public class ConsoleShare extends AbstractCollabShare {
 	protected void handleMessage(ID fromContainerID, byte[] data) {
 		try {
 			final Object[] msg = (Object[]) deserialize(data);
-			handleShowStackRequest((String) msg[0], (String) msg[1]);
+			handleShowConsoleSelection((String) msg[0], (String) msg[1]);
 		} catch (final Exception e) {
 			showErrorToUser(Messages.Share_ERROR_RECEIVE_TITLE, NLS.bind(Messages.Share_ERROR_RECEIVE_MESSAGE, e.getLocalizedMessage()));
 			logError(Messages.Share_EXCEPTION_LOG_MESSAGE, e);

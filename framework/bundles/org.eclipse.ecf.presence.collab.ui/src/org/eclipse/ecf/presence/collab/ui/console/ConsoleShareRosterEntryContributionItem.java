@@ -47,7 +47,7 @@ public class ConsoleShareRosterEntryContributionItem extends AbstractRosterEntry
 					final ConsoleShare stackshare = tmp;
 					final IAction action = new Action() {
 						public void run() {
-							stackshare.sendShareStackRequest(entry.getRoster().getUser().getName(), entry.getUser().getID(), selection.getText());
+							stackshare.sendShareConsoleSelection(entry.getRoster().getUser().getName(), entry.getUser().getID(), selection.getText());
 						}
 					};
 					action.setText(Messages.ConsoleShare_RosterEntryMenu);
