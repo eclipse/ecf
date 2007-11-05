@@ -58,9 +58,4 @@
          </dynamic>
       </menuContribution>
    </extension>
-   <extension
-         point="org.eclipse.ui.menus">
-   </extension>
-   
-   
 </plugin>
