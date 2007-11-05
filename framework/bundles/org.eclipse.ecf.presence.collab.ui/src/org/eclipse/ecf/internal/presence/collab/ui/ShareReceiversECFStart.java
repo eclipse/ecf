@@ -31,7 +31,7 @@ import org.eclipse.ecf.presence.collab.ui.url.URLShare;
 import org.eclipse.ecf.presence.collab.ui.view.ViewShare;
 import org.eclipse.osgi.util.NLS;
 
-public class StartShareReceivers implements IECFStart {
+public class ShareReceiversECFStart implements IECFStart {
 
 	IContainerListener containerListener = new IContainerListener() {
 
@@ -93,7 +93,7 @@ public class StartShareReceivers implements IECFStart {
 		}
 	};
 
-	public StartShareReceivers() {
+	public ShareReceiversECFStart() {
 	}
 
 	/* (non-Javadoc)

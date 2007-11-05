@@ -45,7 +45,7 @@
    <extension
          point="org.eclipse.ecf.start">
       <run
-            class="org.eclipse.ecf.internal.presence.collab.ui.StartShareReceivers">
+            class="org.eclipse.ecf.internal.presence.collab.ui.ShareReceiversECFStart">
       </run>
    </extension>
    <extension
