@@ -46,7 +46,6 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 	private static final List contributionItems = new ArrayList();
 	private static final List handlerActivations = new ArrayList();
 	private static int commandIdIndex = 0;
-	private static final int maxCommandIds = 50;
 
 	private IServiceLocator serviceLocator;
 	private IHandlerService handlerService;
@@ -174,8 +173,7 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 	}
 
 	private int getNextCommandIdIndex() {
-		commandIdIndex = (commandIdIndex == (maxCommandIds - 1)) ? 0 : commandIdIndex + 1;
-		return commandIdIndex;
+		return commandIdIndex++;
 	}
 
 	/**
@@ -219,6 +217,7 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 			String commandId = ROSTERCOMMAND_PREFIX + getNextCommandIdIndex();
 			// Get existing/new command
 			Command command = commandService.getCommand(commandId);
+			command.define(commandId, null, commandService.getCategory(commandId + ".c")); //$NON-NLS-1$
 			IHandler handler = command.getHandler();
 			// Only mess with it if it was of old type
 			if (handler != null && handler instanceof AbstractRosterMenuHandler) {
