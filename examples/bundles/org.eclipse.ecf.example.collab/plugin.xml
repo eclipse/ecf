@@ -18,44 +18,6 @@
             name="Service Discovery"/>
    </extension>
    <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            adaptable="true"
-            objectClass="org.eclipse.core.resources.IProject"
-            id="org.eclipse.ecf.example.collab.contribution1">
-         <menu
-               label="Communications"
-               path="additions"
-               id="org.eclipse.ecf.example.collab.menu1">
-            <separator name="group1"/>
-            <separator name="group2"/>
-         </menu>
-         <action
-               class="org.eclipse.ecf.internal.example.collab.actions.JoinGroupWizardAction"
-               icon="icons/collaboration.gif"
-               id="org.eclipse.ecf.client.joingroupwizardaction"
-               label="Connect Project to Collaboration Group..."
-               menubarPath="org.eclipse.ecf.example.collab.menu1/group1"/>
-      </objectContribution>
-      <objectContribution
-            adaptable="true"
-            id="org.eclipse.ecf.example.collab.contribution2"
-            objectClass="org.eclipse.core.resources.IFile">
-         <menu
-               id="org.eclipse.ecf.example.collab.menu1"
-               label="Communications"
-               path="additions">
-            <separator name="group1"/>
-            <separator name="group2"/>
-         </menu>
-         <action
-               class="org.eclipse.ecf.internal.example.collab.actions.OpenSharedEditorAction"
-               id="org.eclipse.ecf.client.editfileaction"
-               label="Send Request to Open Resource"
-               menubarPath="org.eclipse.ecf.example.collab.menu1/group1"/>
-      </objectContribution>
-   </extension>
-   <extension
          point="org.eclipse.ui.preferencePages">
       <page
             category="org.eclipse.ecf.ui.category"
@@ -185,6 +147,27 @@
             name="ECF Generic"
             targetId="org.eclipse.ui.DefaultTextEditor">
       </hyperlinkDetector>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:#CompilationUnitEditorContext">
+         <dynamic
+               class="org.eclipse.ecf.internal.example.collab.EditorCompoundContributionItem"
+               id="org.eclipse.ecf.example.collab.dynamic1">
+         </dynamic>
+      </menuContribution>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:#TextEditorContext">
+         <dynamic
+               class="org.eclipse.ecf.internal.example.collab.EditorCompoundContributionItem"
+               id="org.eclipse.ecf.example.collab.dynamic2">
+         </dynamic>
+      </menuContribution>
    </extension>
 
 </plugin>

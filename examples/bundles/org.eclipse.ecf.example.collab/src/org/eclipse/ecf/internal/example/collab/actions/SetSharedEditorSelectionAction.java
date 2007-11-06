@@ -36,35 +36,17 @@ public class SetSharedEditorSelectionAction implements IEditorActionDelegate {
 		if (targetEditor instanceof ITextEditor) {
 			// Got one
 			editor = (ITextEditor) targetEditor;
-			setEnabled(action);
-		}
-	}
-
-	protected void setEnabled(IAction action) {
-		action.setEnabled(false);
-		if (editor == null)
-			return;
-		IFile file = getFileForPart(editor);
-		if (file != null) {
-			ClientEntry client = isConnected(file.getProject());
-			if (client != null) {
-				action.setEnabled(true);
-			}
+			action.setEnabled(true);
 		}
 	}
 
 	protected IFile getFileForPart(ITextEditor editor) {
-		IEditorInput input = editor.getEditorInput();
+		final IEditorInput input = editor.getEditorInput();
 		if (input instanceof FileEditorInput) {
-			FileEditorInput fei = (FileEditorInput) input;
+			final FileEditorInput fei = (FileEditorInput) input;
 			return fei.getFile();
 		}
 		return null;
-	}
-
-	protected IProject getProjectForResource(IResource res) {
-		IProject proj = res.getProject();
-		return proj;
 	}
 
 	protected IWorkbench getWorkbench() {
@@ -74,49 +56,36 @@ public class SetSharedEditorSelectionAction implements IEditorActionDelegate {
 	protected ClientEntry isConnected(IResource res) {
 		if (res == null)
 			return null;
-		CollabClient client = CollabClient.getDefault();
-		ClientEntry entry = client.isConnected(res,
-				CollabClient.GENERIC_CONTAINER_CLIENT_NAME);
+		final CollabClient client = CollabClient.getDefault();
+		final ClientEntry entry = client.isConnected(res, CollabClient.GENERIC_CONTAINER_CLIENT_NAME);
 		return entry;
 	}
 
 	public void run(IAction action) {
 		if (editor == null)
 			return;
-		ISelection s = editor.getSelectionProvider().getSelection();
+		final ISelection s = editor.getSelectionProvider().getSelection();
 		ITextSelection textSelection = null;
 		if (s instanceof ITextSelection) {
 			textSelection = (ITextSelection) s;
 		}
 		if (textSelection == null)
 			return;
-		IFile file = getFileForPart(editor);
+		final IFile file = getFileForPart(editor);
 		if (file == null)
 			return;
-		IProject project = getProjectForResource(file);
-		ClientEntry entry = isConnected(project);
+		final IProject project = file.getProject();
+		final ClientEntry entry = isConnected(project.getWorkspace().getRoot());
 		if (entry == null) {
-			MessageDialog
-					.openInformation(
-							getWorkbench().getDisplay().getActiveShell(),
-							"Project Not Connected to Collaboration Group",
-							"Project '"
-									+ project.getName()
-									+ "' not connected to any collaboration group.  To connect, open context menu for resource and choose ECF->Join ECF Collaboration...");
+			MessageDialog.openInformation(getWorkbench().getDisplay().getActiveShell(), "Not Connected to Collaboration Session", "Not connected to any collaboration group.  To connect, open Collaboration View");
 			return;
 		}
-		EclipseCollabSharedObject collabsharedobject = entry.getSharedObject();
+		final EclipseCollabSharedObject collabsharedobject = entry.getSharedObject();
 		if (collabsharedobject != null) {
-			collabsharedobject.sendOpenAndSelectForFile(null, file
-					.getProjectRelativePath().toString(), textSelection
-					.getOffset(), textSelection.getLength());
-// collabsharedobject.sendAddMarkerForFile(null, file
-// .getProjectRelativePath().toString(), textSelection
-// .getOffset(), textSelection.getLength());
+			collabsharedobject.sendOpenAndSelectForFile(null, project.getName() + "/" + file.getProjectRelativePath().toString(), textSelection.getOffset(), textSelection.getLength());
 		}
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
-		setEnabled(action);
 	}
 }
