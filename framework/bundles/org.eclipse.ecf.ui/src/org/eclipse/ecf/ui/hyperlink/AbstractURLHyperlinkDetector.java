@@ -15,12 +15,7 @@ package org.eclipse.ecf.ui.hyperlink;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.StringTokenizer;
-
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.*;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
 
@@ -32,8 +27,7 @@ import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
  * xmpp://foo@bar.com
  * </p>
  */
-public abstract class AbstractURLHyperlinkDetector extends
-		org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector {
+public abstract class AbstractURLHyperlinkDetector extends org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector {
 
 	public static final String DEFAULT_DETECTABLE = "://"; //$NON-NLS-1$
 	public static final String DEFAULT_ENDDELIMITERS = " \t\n\r\f<>"; //$NON-NLS-1$
@@ -50,8 +44,7 @@ public abstract class AbstractURLHyperlinkDetector extends
 		return protocols;
 	}
 
-	protected IRegion detectSubRegion(IRegion lineInfo, String fromLine,
-			int offsetInLine) {
+	protected IRegion detectSubRegion(IRegion lineInfo, String fromLine, int offsetInLine) {
 		boolean startDoubleQuote = false;
 		int detectableOffsetInLine = 0;
 		int resultLength = 0;
@@ -70,20 +63,15 @@ public abstract class AbstractURLHyperlinkDetector extends
 			} while (Character.isUnicodeIdentifierStart(ch));
 			detectableOffsetInLine++;
 
-			StringTokenizer tokenizer = new StringTokenizer(fromLine
-					.substring(separatorOffset + DEFAULT_DETECTABLE.length()),
-					DEFAULT_ENDDELIMITERS, false);
+			StringTokenizer tokenizer = new StringTokenizer(fromLine.substring(separatorOffset + DEFAULT_DETECTABLE.length()), DEFAULT_ENDDELIMITERS, false);
 			if (!tokenizer.hasMoreTokens())
 				return null;
 
-			resultLength = tokenizer.nextToken().length() + 3 + separatorOffset
-					- detectableOffsetInLine;
-			if (offsetInLine >= detectableOffsetInLine
-					&& offsetInLine <= detectableOffsetInLine + resultLength)
+			resultLength = tokenizer.nextToken().length() + DEFAULT_DETECTABLE.length() + separatorOffset - detectableOffsetInLine;
+			if (offsetInLine >= detectableOffsetInLine && offsetInLine <= detectableOffsetInLine + resultLength)
 				break;
 
-			separatorOffset = fromLine.indexOf(DEFAULT_DETECTABLE,
-					separatorOffset + 1);
+			separatorOffset = fromLine.indexOf(DEFAULT_DETECTABLE, separatorOffset + 1);
 		}
 
 		if (separatorOffset < 0)
@@ -103,8 +91,7 @@ public abstract class AbstractURLHyperlinkDetector extends
 				resultLength = endOffset - detectableOffsetInLine;
 		}
 
-		return new Region(lineInfo.getOffset() + detectableOffsetInLine,
-				resultLength);
+		return new Region(lineInfo.getOffset() + detectableOffsetInLine, resultLength);
 	}
 
 	protected URI detectProtocol(String uriString) {
@@ -138,14 +125,12 @@ public abstract class AbstractURLHyperlinkDetector extends
 	 *         <code>null</code> if no hyperlinks should be displayed for
 	 *         detected URI.
 	 */
-	protected abstract IHyperlink[] createHyperLinksForURI(IRegion region,
-			URI uri);
+	protected abstract IHyperlink[] createHyperLinksForURI(IRegion region, URI uri);
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.hyperlink.IHyperlinkDetector#detectHyperlinks(org.eclipse.jface.text.ITextViewer, org.eclipse.jface.text.IRegion, boolean)
 	 */
-	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
-			IRegion region, boolean canShowMultipleHyperlinks) {
+	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
 
 		if (region == null || textViewer == null)
 			return null;
@@ -168,15 +153,13 @@ public abstract class AbstractURLHyperlinkDetector extends
 			return null;
 		}
 
-		IRegion detectedRegion = detectSubRegion(lineInfo, line, offset
-				- lineInfo.getOffset());
+		IRegion detectedRegion = detectSubRegion(lineInfo, line, offset - lineInfo.getOffset());
 		if (detectedRegion == null)
 			return null;
-		
+
 		// Set and validate URL string
 		int detectedOffset = detectedRegion.getOffset() - lineInfo.getOffset();
-		URI uri = detectProtocol(line.substring(detectedOffset, detectedOffset
-				+ detectedRegion.getLength()));
+		URI uri = detectProtocol(line.substring(detectedOffset, detectedOffset + detectedRegion.getLength()));
 		if (uri == null)
 			return null;
 
