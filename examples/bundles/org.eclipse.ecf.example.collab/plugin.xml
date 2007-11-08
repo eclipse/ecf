@@ -174,8 +174,8 @@
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
       <hyperlinkDetector
             activate="true"
-            class="org.eclipse.ecf.example.collab.share.EclipseCollabHyperlinkDetector"
-            id="org.eclipse.ecf.internal.irc.hyperlink.IRCHyperlinkDetector"
+            class="org.eclipse.ecf.internal.example.collab.ui.hyperlink.EclipseCollabHyperlinkDetector"
+            id="org.eclipse.ecf.internal.example.collab.ui.hyperlink.EclipseCollabHyperlinkDetector"
             name="%ShareHyperlinkDetector"
             targetId="org.eclipse.ui.DefaultTextEditor">
       </hyperlinkDetector>

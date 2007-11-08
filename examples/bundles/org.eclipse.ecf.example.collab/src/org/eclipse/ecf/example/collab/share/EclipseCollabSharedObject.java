@@ -37,6 +37,7 @@ import org.eclipse.ecf.internal.example.collab.ui.ImageWrapper;
 import org.eclipse.ecf.internal.example.collab.ui.LineChatClientView;
 import org.eclipse.ecf.internal.example.collab.ui.LineChatHandler;
 import org.eclipse.ecf.internal.example.collab.ui.LineChatView;
+import org.eclipse.ecf.internal.example.collab.ui.hyperlink.EclipseCollabHyperlinkDetector;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.events.DisposeEvent;

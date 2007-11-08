@@ -68,17 +68,17 @@ public class EditorCompoundContributionItem extends CompoundContributionItem {
 			public void run() {
 				final ClientEntry entry = isConnected(project.getWorkspace().getRoot());
 				if (entry == null) {
-					MessageDialog.openInformation(getWorkbench().getDisplay().getActiveShell(), "Not Connected to Collaboration Session", "Not connected to any collaboration group.  To connect, open Collaboration View");
+					MessageDialog.openInformation(getWorkbench().getDisplay().getActiveShell(), Messages.EditorCompoundContributionItem_EXCEPTION_NOT_CONNECTED_TITLE, Messages.EditorCompoundContributionItem_EXCEPTION_NOT_CONNECTED_MESSAGE);
 					return;
 				}
 				final EclipseCollabSharedObject collabsharedobject = entry.getSharedObject();
 				if (collabsharedobject != null) {
-					collabsharedobject.sendOpenAndSelectForFile(null, project.getName() + "/" + file.getProjectRelativePath().toString(), textSelection.getOffset(), textSelection.getLength());
+					collabsharedobject.sendOpenAndSelectForFile(null, project.getName() + "/" + file.getProjectRelativePath().toString(), textSelection.getOffset(), textSelection.getLength()); //$NON-NLS-1$
 				}
 			}
 		};
 
-		action.setText("Share Selection");
+		action.setText(Messages.EditorCompoundContributionItem_SHARE_SELECTION_MENU_ITEM_NAME);
 		//action.setAccelerator(SWT.CTRL | SWT.SHIFT | '1');
 		return new IContributionItem[] {new Separator(), new ActionContributionItem(action)};
 	}

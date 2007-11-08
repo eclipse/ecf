@@ -9,14 +9,15 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.example.collab.share;
+package org.eclipse.ecf.internal.example.collab.ui.hyperlink;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.ecf.example.collab.share.EclipseCollabHyperlinkDetector.Selection;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
+import org.eclipse.ecf.internal.example.collab.Messages;
 import org.eclipse.ecf.internal.example.collab.ui.EditorHelper;
+import org.eclipse.ecf.internal.example.collab.ui.hyperlink.EclipseCollabHyperlinkDetector.Selection;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
@@ -80,10 +81,10 @@ public class EclipseCollabHyperlink implements IHyperlink {
 			try {
 				eh.openAndSelectForFile(file, (selection == null) ? 0 : selection.getStart(), (selection == null) ? 0 : (selection.getEnd() - selection.getStart()));
 			} catch (final Exception e) {
-				ClientPlugin.log("Exception in openEditorAndSelectForFile", e);
+				ClientPlugin.log(Messages.EclipseCollabHyperlink_EXCEPTION_OPEN_EDITOR, e);
 			}
 		} else {
-			MessageDialog.openInformation(ww.getShell(), "Open Editor Failed", NLS.bind("Cannot open editor for {0}.  It was not found in your workspace.", fileName));
+			MessageDialog.openInformation(ww.getShell(), Messages.EclipseCollabHyperlink_EXCEPTION_OPEN_EDITOR_TITLE, NLS.bind(Messages.EclipseCollabHyperlink_MESSAGE_EXCEPTION_OPEN_EDITOR, fileName));
 		}
 
 	}

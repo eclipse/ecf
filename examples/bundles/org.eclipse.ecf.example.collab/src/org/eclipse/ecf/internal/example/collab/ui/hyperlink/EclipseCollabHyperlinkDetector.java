@@ -8,8 +8,9 @@
  * Contributors:
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
-package org.eclipse.ecf.example.collab.share;
+package org.eclipse.ecf.internal.example.collab.ui.hyperlink;
 
+import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject;
 import org.eclipse.ecf.example.collab.share.EclipseCollabSharedObject.SharedMarker;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -21,9 +22,9 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 
 public class EclipseCollabHyperlinkDetector extends AbstractHyperlinkDetector {
 
-	public static final String SHARE_FILE_HYPERLINK_END = "/>";
-	public static final String SHARE_FILE_HYPERLINK_START = "<open file=\"";
-	public static final String SHARE_FILE_HYPERLINK_SELECTION = " selection=";
+	public static final String SHARE_FILE_HYPERLINK_END = "/>"; //$NON-NLS-1$
+	public static final String SHARE_FILE_HYPERLINK_START = "<open file=\""; //$NON-NLS-1$
+	public static final String SHARE_FILE_HYPERLINK_SELECTION = " selection="; //$NON-NLS-1$
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.hyperlink.IHyperlinkDetector#detectHyperlinks(org.eclipse.jface.text.ITextViewer, org.eclipse.jface.text.IRegion, boolean)
@@ -77,7 +78,7 @@ public class EclipseCollabHyperlinkDetector extends AbstractHyperlinkDetector {
 			return null;
 		// should have syntax start-end
 		final String selection = linkString.substring(beginIndex + SHARE_FILE_HYPERLINK_SELECTION.length(), endIndex);
-		final int dashIndex = selection.indexOf("-");
+		final int dashIndex = selection.indexOf("-"); //$NON-NLS-1$
 		if (dashIndex == -1)
 			return null;
 		try {
@@ -112,10 +113,10 @@ public class EclipseCollabHyperlinkDetector extends AbstractHyperlinkDetector {
 	 * @return
 	 */
 	private String detectFileName(String substring) {
-		final int startIndex = substring.indexOf("\"");
+		final int startIndex = substring.indexOf("\""); //$NON-NLS-1$
 		if (startIndex == -1)
 			return null;
-		final int endIndex = substring.indexOf("\"", startIndex + 1);
+		final int endIndex = substring.indexOf("\"", startIndex + 1); //$NON-NLS-1$
 		if (endIndex == -1)
 			return null;
 		return substring.substring(startIndex + 1, endIndex);
@@ -134,13 +135,13 @@ public class EclipseCollabHyperlinkDetector extends AbstractHyperlinkDetector {
 
 	public static String createDisplayStringForEditorOpen(String resourceName, SharedMarker marker) {
 		final StringBuffer se = new StringBuffer(EclipseCollabHyperlinkDetector.SHARE_FILE_HYPERLINK_START);
-		se.append(resourceName).append("\"");
+		se.append(resourceName).append("\""); //$NON-NLS-1$
 		if (marker != null) {
 			final int start = marker.getOffset().intValue();
 			final int length = marker.getLength().intValue();
 			if (length > 0) {
 				se.append(EclipseCollabHyperlinkDetector.SHARE_FILE_HYPERLINK_SELECTION);
-				se.append(start).append("-").append(start + length);
+				se.append(start).append("-").append(start + length); //$NON-NLS-1$
 			}
 		}
 		se.append(EclipseCollabHyperlinkDetector.SHARE_FILE_HYPERLINK_END);
