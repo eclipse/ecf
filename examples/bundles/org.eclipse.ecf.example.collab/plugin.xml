@@ -170,4 +170,15 @@
       </menuContribution>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="org.eclipse.ecf.example.collab.share.EclipseCollabHyperlinkDetector"
+            id="org.eclipse.ecf.internal.irc.hyperlink.IRCHyperlinkDetector"
+            name="%ShareHyperlinkDetector"
+            targetId="org.eclipse.ui.DefaultTextEditor">
+      </hyperlinkDetector>
+   </extension>
+
 </plugin>

@@ -835,13 +835,7 @@ public class EclipseCollabSharedObject extends GenericSharedObject implements Li
 	}
 
 	protected String createDisplayStringForEditorOpen(String resourceName, SharedMarker marker) {
-		final StringBuffer se = new StringBuffer((marker == null) ? "<open " : "<share ");
-		se.append(resourceName).append(" ");
-		if (marker != null) {
-			se.append(marker.getOffset()).append("-").append(marker.getOffset().intValue() + marker.getLength().intValue());
-		}
-		se.append(">");
-		return se.toString();
+		return EclipseCollabHyperlinkDetector.createDisplayStringForEditorOpen(resourceName, marker);
 	}
 
 	protected IFile getLocalFileForRemote(String file) {
