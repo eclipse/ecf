@@ -206,7 +206,7 @@ public final class ChatSession extends Session {
 	}
 
 	/**
-	 * Notifies attached {@link IChatSessionListener} that this session has now
+	 * Notifies attached {@link IChatSessionListener}s that this session has now
 	 * timed out.
 	 */
 	private void fireSessionTimedOutEvent() {
