@@ -36,11 +36,14 @@ Contributors: Composent, Inc. - initial API and implementation
       <import plugin="org.eclipse.ui.intro"/>
       <import plugin="org.eclipse.ui.intro.universal"/>
       <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.equinox.app"/>
       <import plugin="org.jivesoftware.smack" version="2.2.1" match="compatible"/>
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.ui.forms"/>
-      <import plugin="org.eclipse.equinox.app"/>
+      <import plugin="org.eclipse.core.expressions"/>
+      <import plugin="org.eclipse.ui.console"/>
+      <import plugin="org.eclipse.core.filesystem"/>
    </requires>
 
    <plugin
