@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ecf.serverfeature"
       label="ECF Server"
-      version="1.2.0.qualifier"
+      version="2.0.0.qualifier"
       provider-name="Eclipse.org">
 
    <description url="http://www.eclipse.org/ecf">
@@ -43,6 +43,10 @@ indicated below, the terms and conditions of the EPL still apply
 to any source code in the Content and such source code may be
 obtained at http://www.eclipse.org.
    </license>
+
+   <requires>
+      <import plugin="org.eclipse.osgi"/>
+   </requires>
 
    <plugin
          id="org.eclipse.ecf.server"
