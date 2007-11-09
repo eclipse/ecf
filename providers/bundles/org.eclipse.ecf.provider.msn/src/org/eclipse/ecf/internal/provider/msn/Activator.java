@@ -41,7 +41,7 @@ public final class Activator implements BundleActivator {
 
 	void unregisterService(IPresenceService service) {
 		ServiceRegistration registration = (ServiceRegistration) services
-				.get(service);
+				.remove(service);
 		if (registration != null) {
 			registration.unregister();
 		}
