@@ -600,33 +600,24 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 				learn(roomID, msg.substring(4).trim());
 			} else {
 				sendMessage(
-						roomID,
-						fromID
-								+ ": "
-								+ CustomMessages
-										.getString(CustomMessages.No_Operation_Privileges));
+						roomID, NLS.bind(CustomMessages
+										.getString(CustomMessages.No_Operation_Privileges), fromID.getName()));
 			}
 		} else if (msg.startsWith("set ") || msg.startsWith("update")) { //$NON-NLS-1$ //$NON-NLS-2$
 			if (operators.contains(fromID.getName())) {
 				update(roomID, msg.substring(4).trim());
 			} else {
 				sendMessage(
-						roomID,
-						fromID
-								+ ": "
-								+ CustomMessages
-										.getString(CustomMessages.No_Operation_Privileges));
+						roomID, NLS.bind(CustomMessages
+								.getString(CustomMessages.No_Operation_Privileges), fromID.getName()));
 			}
 		} else if (msg.startsWith("remove ")) { //$NON-NLS-1$
 			if (operators.contains(fromID.getName())) {
 				remove(roomID, msg.substring(7).trim());
 			} else {
 				sendMessage(
-						roomID,
-						fromID
-								+ ": "
-								+ CustomMessages
-										.getString(CustomMessages.No_Operation_Privileges));
+						roomID, NLS.bind(CustomMessages
+								.getString(CustomMessages.No_Operation_Privileges), fromID.getName()));
 			}
 		} else if (msg.startsWith("bug")) { //$NON-NLS-1$
 			msg = msg.substring(3).trim();
