@@ -6,7 +6,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ *    IBM Corporation - initial API and implementation
+ *    Nick Boldt <codeslave@ca.ibm.com> - bug 206528
  *******************************************************************************/
 package org.eclipse.ecf.internal.presence.bot.kosmos;
 

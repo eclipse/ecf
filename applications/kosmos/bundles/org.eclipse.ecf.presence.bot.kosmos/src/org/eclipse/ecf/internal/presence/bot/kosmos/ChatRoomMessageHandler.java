@@ -7,7 +7,8 @@
  *
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
- *    Markus Kuppe <mkuppe@versant.com> - bug 1830436
+ *    Markus Kuppe <mkuppe@versant.com> - bug 184036
+ *    Nick Boldt <codeslave@ca.ibm.com> - bug 206528
  ******************************************************************************/
 package org.eclipse.ecf.internal.presence.bot.kosmos;
 
@@ -79,7 +80,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 			+ NEWLINE
 			+ "#    Remy Suen <remy.suen@gmail.com> - initial API and implementation" //$NON-NLS-1$
 			+ NEWLINE
-			+ "#    Markus Kuppe <mkuppe@versant.com> - bug 1830436" //$NON-NLS-1$
+			+ "#    Markus Kuppe <mkuppe@versant.com> - bug 184036" //$NON-NLS-1$
 			+ NEWLINE
 			+ "################################################################################"; //$NON-NLS-1$
 
