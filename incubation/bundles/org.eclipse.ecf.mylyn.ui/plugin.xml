@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ecf.start">
+      <run
+            asynchronous="true"
+            class="org.eclipse.ecf.internal.mylyn.ui.NoopECFStart">
+      </run>
+   </extension>
+     <extension point="org.eclipse.ui.commands">
+     <command defaultHandler="org.eclipse.ecf.internal.mylyn.ui.ActivateReceivedContextHandler"  
+              id="org.eclipse.ecf.internal.mylyn.ui.activateReceivedContextCommand" name="Activate Received Context...">
+     </command>
+  </extension>
+     <extension point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.mylyn.tasks.ui.views.tasks?after=additions">
+         <dynamic
+               class="org.eclipse.ecf.internal.mylyn.ui.SendContextContributionItem"
+               id="org.eclipse.ecf.mylyn.ui.sendContextMenuContribution">
+         </dynamic>
+      </menuContribution>
+     <menuContribution locationURI="toolbar:org.eclipse.ui.trim.status">
+        <toolbar id="org.eclipse.ecf.internal.mylyn.ui.trimToolbar">
+           <command
+                 commandId="org.eclipse.ecf.internal.mylyn.ui.activateReceivedContextCommand"
+                 disabledIcon="icons/full/dtool16/shared_task.gif"
+                 icon="icons/full/etool16/shared_task.gif"
+                 id="org.eclipse.ecf.internal.mylyn.ui.activateReceivedContextCommandContribution"
+                 style="pulldown"
+                 tooltip="Activate Received Context...">
+           </command>
+        </toolbar>
+     </menuContribution>
+     <menuContribution locationURI="menu:org.eclipse.ecf.internal.mylyn.ui.activateReceivedContextCommandContribution">
+           <dynamic
+                 class="org.eclipse.ecf.internal.mylyn.ui.CompoundContextActivationContributionItem"
+                 id="org.eclipse.ecf.mylyn.ui.dynamic1">
+           </dynamic>
+     </menuContribution>
+  </extension>
+</plugin>
