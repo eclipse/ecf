@@ -58,6 +58,8 @@ public class RetrieveFileTransferServiceTest extends ContainerAbstractTestCase {
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		if (tmpFile != null)
+			tmpFile.delete();
 		tmpFile = null;
 	}
 

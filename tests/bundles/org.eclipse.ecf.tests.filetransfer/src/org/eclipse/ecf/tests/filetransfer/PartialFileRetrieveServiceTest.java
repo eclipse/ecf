@@ -38,6 +38,8 @@ public class PartialFileRetrieveServiceTest extends ContainerAbstractTestCase {
 
 	private IRetrieveFileTransfer transferInstance;
 
+	File incomingFile = null;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -57,6 +59,9 @@ public class PartialFileRetrieveServiceTest extends ContainerAbstractTestCase {
 		super.tearDown();
 		session = null;
 		pausable = null;
+		if (incomingFile != null)
+			incomingFile.delete();
+		incomingFile = null;
 	}
 
 	IIncomingFileTransfer session = null;
@@ -143,8 +148,8 @@ public class PartialFileRetrieveServiceTest extends ContainerAbstractTestCase {
 		if (e != null)
 			throw e;
 
-		final File aFile = new File(FILENAME);
-		final long fileLength = aFile.length();
+		incomingFile = new File(FILENAME);
+		final long fileLength = incomingFile.length();
 		final long bytesReceived = session.getBytesReceived();
 		System.out.println("start=" + start);
 		System.out.println("end=" + end);

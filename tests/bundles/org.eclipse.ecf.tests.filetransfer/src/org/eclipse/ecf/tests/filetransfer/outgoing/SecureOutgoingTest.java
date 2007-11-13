@@ -9,7 +9,7 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.tests.filetransfer;
+package org.eclipse.ecf.tests.filetransfer.outgoing;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,14 +29,14 @@ import org.eclipse.ecf.tests.ContainerAbstractTestCase;
 /**
  * 
  */
-public class OutgoingTest extends ContainerAbstractTestCase {
+public class SecureOutgoingTest extends ContainerAbstractTestCase {
 
 	private static final String TESTSRCPATH = "test.src";
 	private static final String TESTSRCFILE = TESTSRCPATH + "/test.txt";
 
 	private static final String TESTTARGETPATH = "test.target";
 
-	static final String XMPP_CONTAINER = "ecf.xmpp.smack";
+	static final String XMPP_CONTAINER = "ecf.xmpps.smack";
 
 	protected IOutgoingFileTransferContainerAdapter adapter0, adapter1 = null;
 
@@ -44,12 +44,10 @@ public class OutgoingTest extends ContainerAbstractTestCase {
 		return XMPP_CONTAINER;
 	}
 
-	protected IOutgoingFileTransferContainerAdapter getOutgoingFileTransfer(
-			int client) {
-		IContainer c = getClient(client);
+	protected IOutgoingFileTransferContainerAdapter getOutgoingFileTransfer(int client) {
+		final IContainer c = getClient(client);
 		if (c != null)
-			return (IOutgoingFileTransferContainerAdapter) c
-					.getAdapter(IOutgoingFileTransferContainerAdapter.class);
+			return (IOutgoingFileTransferContainerAdapter) c.getAdapter(IOutgoingFileTransferContainerAdapter.class);
 		else
 			return null;
 	}
@@ -57,21 +55,37 @@ public class OutgoingTest extends ContainerAbstractTestCase {
 	protected IFileTransferListener getFileTransferListener(final String prefix) {
 		return new IFileTransferListener() {
 			public void handleTransferEvent(IFileTransferEvent event) {
-				System.out.println(prefix+".handleTransferEvent("+event+")");
-			}};
+				System.out.println(prefix + ".handleTransferEvent(" + event + ")");
+			}
+		};
 	}
-	
+
+	File incomingDirectory = null;
+	File incomingFile = null;
+
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#tearDown()
+	 */
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		if (incomingFile != null)
+			incomingFile.delete();
+		incomingFile = null;
+		if (incomingDirectory != null)
+			incomingDirectory.delete();
+		incomingDirectory = null;
+	}
+
 	protected IIncomingFileTransferRequestListener requestListener = new IIncomingFileTransferRequestListener() {
 
 		public void handleFileTransferRequest(IFileTransferRequestEvent event) {
 			System.out.println("receiver.handleFileTransferRequest(" + event + ")");
+			incomingDirectory = new File(TESTTARGETPATH);
+			incomingDirectory.mkdirs();
+			incomingFile = new File(incomingDirectory, event.getFileTransferInfo().getFile().getName());
 			try {
-				File dir = new File(TESTTARGETPATH);
-				dir.mkdirs();
-				File f = new File(dir, event
-						.getFileTransferInfo().getFile().getName());
-				FileOutputStream fos = new FileOutputStream(f);
-				event.accept(fos,receiverTransferListener);
+				FileOutputStream fos = new FileOutputStream(incomingFile);
+				event.accept(fos, receiverTransferListener);
 				//event.accept(f);
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
@@ -83,20 +97,39 @@ public class OutgoingTest extends ContainerAbstractTestCase {
 
 	protected IFileTransferListener senderTransferListener = getFileTransferListener("sender");
 	protected IFileTransferListener receiverTransferListener = getFileTransferListener("receiver");
-	
+
 	protected ID getServerConnectID(int client) {
-		IContainer container = getClient(client);
-		Namespace connectNamespace = container.getConnectNamespace();
-		String username = getUsername(client);
+		final IContainer container = getClient(client);
+		final Namespace connectNamespace = container.getConnectNamespace();
+		final String username = getUsername(client);
 		try {
 			return IDFactory.getDefault().createID(connectNamespace, username);
-		} catch (IDCreateException e) {
+		} catch (final IDCreateException e) {
 			e.printStackTrace(System.err);
 			fail("Could not create server connect ID");
 			return null;
 		}
 	}
 
+	/*
+		public void testOneClientToSend() throws Exception {
+			// Setup one client.  Client 0 is the sender
+			setClientCount(2);
+			clients = createClients();
+			adapter0 = getOutgoingFileTransfer(0);
+			for (int i = 0; i < 1; i++) {
+				// Only connect client 0 (not client 1)
+				connectClient(i);
+			}
+
+			adapter0.sendOutgoingRequest(getServerConnectID(1), new File(
+					TESTSRCFILE), senderTransferListener, null);
+			sleep(200000);
+			
+			disconnectClients();
+
+		}
+	*/
 	public void testTwoClientsToSendAndReceive() throws Exception {
 		// Setup two clients.  Client 0 is the receiver, client 1 is the sender
 		setClientCount(2);
@@ -108,13 +141,12 @@ public class OutgoingTest extends ContainerAbstractTestCase {
 			connectClient(i);
 		}
 
-		adapter1.sendOutgoingRequest(getServerConnectID(0), new File(
-				TESTSRCFILE), senderTransferListener, null);
-		
-		sleep(20000);
-		
+		adapter1.sendOutgoingRequest(getServerConnectID(0), new File(TESTSRCFILE), senderTransferListener, null);
+
+		sleep(10000);
+
 		disconnectClients();
 
 	}
-	
+
 }

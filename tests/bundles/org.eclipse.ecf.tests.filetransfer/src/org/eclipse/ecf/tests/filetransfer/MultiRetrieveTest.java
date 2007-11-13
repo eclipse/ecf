@@ -36,9 +36,9 @@ public class MultiRetrieveTest extends ContainerAbstractTestCase {
 
 	private static final String TESTSRCPATH = "test.src";
 	private static final String TESTTARGETPATH = "test.target";
-	
+
 	private static List srcFiles = new ArrayList();
-	
+
 	protected IContainer createClient(int index) throws Exception {
 		return ContainerFactory.getDefault().createContainer();
 	}
@@ -46,6 +46,8 @@ public class MultiRetrieveTest extends ContainerAbstractTestCase {
 	protected int getClientCount() {
 		return 1;
 	}
+
+	File targetDir = null;
 
 	/*
 	 * (non-Javadoc)
@@ -55,16 +57,16 @@ public class MultiRetrieveTest extends ContainerAbstractTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		clients = createClients();
-		Enumeration files = Activator.getDefault().getBundle().getEntryPaths(TESTSRCPATH);
-		for( ; files.hasMoreElements(); ) {
-			URL url = Activator.getDefault().getBundle().getEntry((String) files.nextElement());
-			String file = url.getFile();
+		final Enumeration files = Activator.getDefault().getBundle().getEntryPaths(TESTSRCPATH);
+		for (; files.hasMoreElements();) {
+			final URL url = Activator.getDefault().getBundle().getEntry((String) files.nextElement());
+			final String file = url.getFile();
 			if (file != null && !file.equals("") && !file.endsWith("/")) {
 				srcFiles.add(url.toExternalForm());
 			}
 		}
 		// Make target directory if it's not there
-		File targetDir = new File(TESTTARGETPATH);
+		targetDir = new File(TESTTARGETPATH);
 		targetDir.mkdirs();
 	}
 
@@ -76,27 +78,26 @@ public class MultiRetrieveTest extends ContainerAbstractTestCase {
 	protected void tearDown() throws Exception {
 		cleanUpClients();
 		super.tearDown();
+		targetDir.delete();
 	}
 
 	protected void printFileInfo(String prefix, IFileTransferEvent event, File targetFile) {
-		System.out.println(prefix+";" + event
-				+ ";length="+targetFile.length()
-				+ ";file=" + targetFile.getAbsolutePath());
+		System.out.println(prefix + ";" + event + ";length=" + targetFile.length() + ";file=" + targetFile.getAbsolutePath());
 	}
-	
+
 	protected void testReceive(String url) throws Exception {
 		final File srcFile = new File(url);
-		IRetrieveFileTransferContainerAdapter retrieveAdapter = (IRetrieveFileTransferContainerAdapter) getClients()[0]
-				.getAdapter(IRetrieveFileTransferContainerAdapter.class);
+		final IRetrieveFileTransferContainerAdapter retrieveAdapter = (IRetrieveFileTransferContainerAdapter) getClients()[0].getAdapter(IRetrieveFileTransferContainerAdapter.class);
 		assertNotNull(retrieveAdapter);
-		IFileTransferListener listener = new IFileTransferListener() {
+		final IFileTransferListener listener = new IFileTransferListener() {
 			File targetFile = null;
 			BufferedOutputStream bufferedStream = null;
+
 			public void handleTransferEvent(IFileTransferEvent event) {
 				if (event instanceof IIncomingFileTransferReceiveStartEvent) {
 					IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
-					targetFile = new File(TESTTARGETPATH,rse.getFileID().getFilename());
-					printFileInfo("START",event,targetFile);
+					targetFile = new File(TESTTARGETPATH, rse.getFileID().getFilename());
+					printFileInfo("START", event, targetFile);
 					try {
 						bufferedStream = new BufferedOutputStream(new FileOutputStream(targetFile));
 						rse.receive(bufferedStream);
@@ -105,29 +106,31 @@ public class MultiRetrieveTest extends ContainerAbstractTestCase {
 						fail(e.getLocalizedMessage());
 					}
 				} else if (event instanceof IIncomingFileTransferReceiveDataEvent) {
-					printFileInfo("DATA",event,targetFile);
+					printFileInfo("DATA", event, targetFile);
 				} else if (event instanceof IIncomingFileTransferReceiveDoneEvent) {
 					try {
 						bufferedStream.flush();
-						printFileInfo("DONE",event,targetFile);
-						assertTrue(srcFile.length()==targetFile.length());
+						printFileInfo("DONE", event, targetFile);
+						assertTrue(srcFile.length() == targetFile.length());
 					} catch (IOException e) {
 						e.printStackTrace();
 						fail(e.getLocalizedMessage());
+					} finally {
+						if (targetFile != null)
+							targetFile.delete();
+						targetFile = null;
 					}
 				} else {
-					printFileInfo("OTHER",event,targetFile);
+					printFileInfo("OTHER", event, targetFile);
 				}
 			}
 		};
 
-		retrieveAdapter.sendRetrieveRequest(FileIDFactory.getDefault()
-				.createFileID(retrieveAdapter.getRetrieveNamespace(), url),
-				listener, null);
+		retrieveAdapter.sendRetrieveRequest(FileIDFactory.getDefault().createFileID(retrieveAdapter.getRetrieveNamespace(), url), listener, null);
 	}
 
 	public void testReceives() throws Exception {
-		for (Iterator i = srcFiles.iterator(); i.hasNext(); ) {
+		for (final Iterator i = srcFiles.iterator(); i.hasNext();) {
 			testReceive((String) i.next());
 		}
 		sleep(10000, "Starting sleeping", "Ending sleeping");

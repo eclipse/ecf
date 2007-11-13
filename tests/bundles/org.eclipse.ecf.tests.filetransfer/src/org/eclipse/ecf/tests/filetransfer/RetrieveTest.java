@@ -61,6 +61,8 @@ public class RetrieveTest extends ContainerAbstractTestCase {
 	protected void tearDown() throws Exception {
 		cleanUpClients();
 		super.tearDown();
+		if (tmpFile != null)
+			tmpFile.delete();
 		tmpFile = null;
 	}
 

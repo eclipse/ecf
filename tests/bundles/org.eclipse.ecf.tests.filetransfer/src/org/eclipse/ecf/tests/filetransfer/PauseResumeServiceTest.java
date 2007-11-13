@@ -11,6 +11,7 @@
 
 package org.eclipse.ecf.tests.filetransfer;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -37,6 +38,8 @@ public class PauseResumeServiceTest extends ContainerAbstractTestCase {
 
 	private IRetrieveFileTransfer transferInstance;
 
+	private File incomingFile = null;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -56,6 +59,9 @@ public class PauseResumeServiceTest extends ContainerAbstractTestCase {
 		super.tearDown();
 		session = null;
 		pausable = null;
+		if (incomingFile != null)
+			incomingFile.delete();
+		incomingFile = null;
 	}
 
 	IIncomingFileTransfer session = null;
@@ -92,7 +98,8 @@ public class PauseResumeServiceTest extends ContainerAbstractTestCase {
 				} else if (event instanceof IIncomingFileTransferReceiveStartEvent) {
 					IIncomingFileTransferReceiveStartEvent rse = (IIncomingFileTransferReceiveStartEvent) event;
 					try {
-						outs = new FileOutputStream(FILENAME);
+						incomingFile = new File(FILENAME);
+						outs = new FileOutputStream(incomingFile);
 						session = rse.receive(outs);
 						pausable = (IFileTransferPausable) session.getAdapter(IFileTransferPausable.class);
 						if (pausable == null)
