@@ -164,6 +164,7 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 		try {
 			getSharedObjectManager().addSharedObject(presenceHelperID, presenceHelper, null);
 			super.connect(remote, joinContext);
+			XmppPlugin.getDefault().registerService(this);
 		} catch (final ContainerConnectException e) {
 			disconnect();
 			throw e;
@@ -184,6 +185,7 @@ public class XMPPContainer extends ClientSOContainer implements IPresenceService
 		synchronized (getConnectLock()) {
 			// If we are currently connected
 			if (isConnected()) {
+				XmppPlugin.getDefault().unregisterService(this);
 				final ISynchAsynchConnection conn = getConnection();
 				synchronized (conn) {
 					synchronized (getGroupMembershipLock()) {

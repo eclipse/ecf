@@ -8,11 +8,16 @@
  ******************************************************************************/
 package org.eclipse.ecf.internal.provider.xmpp;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ecf.core.util.LogHelper;
+import org.eclipse.ecf.presence.service.IPresenceService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -30,6 +35,8 @@ public class XmppPlugin implements BundleActivator {
 	private BundleContext context = null;
 
 	private ServiceTracker logServiceTracker = null;
+
+	private Map services;
 
 	public static void log(String message) {
 		getDefault().log(new Status(IStatus.OK, PLUGIN_ID, IStatus.OK, message, null));
@@ -69,6 +76,7 @@ public class XmppPlugin implements BundleActivator {
 	 */
 	public void start(BundleContext context) throws Exception {
 		this.context = context;
+		services = new HashMap();
 	}
 
 	/**
@@ -83,6 +91,21 @@ public class XmppPlugin implements BundleActivator {
 		}
 		this.context = null;
 		plugin = null;
+	}
+
+	public void registerService(IPresenceService service) {
+		if (context != null) {
+			services.put(service, context.registerService(IPresenceService.class
+					.getName(), service, null));	
+		}
+	}
+
+	public void unregisterService(IPresenceService service) {
+		ServiceRegistration registration = (ServiceRegistration) services
+				.remove(service);
+		if (registration != null) {
+			registration.unregister();
+		}
 	}
 
 	/**
