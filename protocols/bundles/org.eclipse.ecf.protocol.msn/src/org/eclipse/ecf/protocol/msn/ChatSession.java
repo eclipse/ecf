@@ -52,8 +52,6 @@ public final class ChatSession extends Session {
 
 	private final String email = client.getUserEmail();
 
-	private boolean joined = false;
-
 	/**
 	 * Create a new ChatSession that connects to the given host.
 	 * 
@@ -141,8 +139,6 @@ public final class ChatSession extends Session {
 			}
 		}
 		write("CAL", email); //$NON-NLS-1$
-		while (!joined);
-		joined = false;
 	}
 
 	/**
@@ -267,7 +263,6 @@ public final class ChatSession extends Session {
 					contact = new Contact(split[1], split[2]);
 				}
 				contacts.add(contact);
-				joined = true;
 				fireContactJoinedEvent(contact);
 			} else if (lines[i].startsWith("BYE")) { //$NON-NLS-1$
 				final String[] split = StringUtils.splitOnSpace(lines[i]);
@@ -296,8 +291,8 @@ public final class ChatSession extends Session {
 					final int count = Integer.parseInt(split[3]);
 					split = StringUtils.split(contents[index - 1], "\r\n\r\n"); //$NON-NLS-1$
 
-					final int text = count - (split[0].length() + 4);
-					fireMessageReceivedEvent(contact, split[1].substring(0, text));
+					final int text = count - (split[0].getBytes("UTF-8").length + 4); //$NON-NLS-1$
+					fireMessageReceivedEvent(contact, new String(split[1].getBytes("UTF-8"), 0, text, "UTF-8")); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}
@@ -336,7 +331,7 @@ public final class ChatSession extends Session {
 				+ "Content-Type: text/plain; charset=UTF-8\r\n" //$NON-NLS-1$
 				+ "X-MMS-IM-Format: FN=MS%20Sans%20Serif; EF=; CO=0; PF=0\r\n\r\n" //$NON-NLS-1$
 				+ message;
-		write("MSG", "N " + message.length() + "\r\n" + message, false); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		write("MSG", "N " + message.getBytes("UTF-8").length + "\r\n" + message, false); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}
 
 	/**

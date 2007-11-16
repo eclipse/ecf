@@ -124,7 +124,7 @@ final class NotificationSession extends DispatchSession {
 	private void retrieveBuddyList() throws IOException {
 		write("SYN", "0 0"); //$NON-NLS-1$ //$NON-NLS-2$
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(getInputStream()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(getInputStream(), "UTF-8")); //$NON-NLS-1$
 		String input = reader.readLine();
 		while (input == null || !input.startsWith("SYN")) { //$NON-NLS-1$
 			input = reader.readLine();

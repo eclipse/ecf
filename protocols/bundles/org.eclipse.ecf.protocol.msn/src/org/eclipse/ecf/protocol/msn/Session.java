@@ -10,9 +10,7 @@
  ******************************************************************************/
 package org.eclipse.ecf.protocol.msn;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -63,7 +61,7 @@ abstract class Session {
 	 * A thread used to wait indefinitely for incoming messages from the server.
 	 */
 	private IdleThread idleThread;
-	
+
 	private boolean closed = false;
 
 	Session(MsnClient client) {
@@ -117,8 +115,7 @@ abstract class Session {
 	final void openSocket(String host) throws IOException {
 		closed = false;
 		int index = host.indexOf(':');
-		openSocket(host.substring(0, index), Integer.parseInt(host
-				.substring(index + 1)));
+		openSocket(host.substring(0, index), Integer.parseInt(host.substring(index + 1)));
 	}
 
 	final void openSocket(String ip, int port) throws IOException {
@@ -144,9 +141,8 @@ abstract class Session {
 		int read = is.read(buffer);
 		if (read < 1) {
 			return null;
-		} else {
-			return new String(buffer, 0, read).trim();
 		}
+		return new String(buffer, 0, read, "UTF-8").trim(); //$NON-NLS-1$
 	}
 
 	/**
@@ -164,7 +160,7 @@ abstract class Session {
 	 *             channel.
 	 */
 	private final void write(String input, boolean newline) throws IOException {
-		byte[] bytes = newline ? (input + "\r\n").getBytes() : input.getBytes(); //$NON-NLS-1$
+		byte[] bytes = newline ? (input + "\r\n").getBytes("UTF-8") : input.getBytes("UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		os.write(bytes);
 		os.flush();
 	}
@@ -201,8 +197,7 @@ abstract class Session {
 	 *             If an I/O error occurs while attempting to write to the
 	 *             channel.
 	 */
-	final void write(String command, String parameters, boolean newline)
-			throws IOException {
+	final void write(String command, String parameters, boolean newline) throws IOException {
 		transactionID++;
 		write(command + ' ' + transactionID + ' ' + parameters, newline);
 	}
@@ -273,7 +268,7 @@ abstract class Session {
 			idleThread.start();
 		}
 	}
-	
+
 	final boolean isClosed() {
 		return closed;
 	}
