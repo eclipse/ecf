@@ -8,7 +8,7 @@
  * Contributors:
  *    Remy Suen <remy.suen@gmail.com> - initial API and implementation
  *    Markus Kuppe <mkuppe@versant.com> - bug 184036
- *    Nick Boldt <codeslave@ca.ibm.com> - bug 206528
+ *    Nick Boldt <codeslave@ca.ibm.com> - bug 206528, 209410
  ******************************************************************************/
 package org.eclipse.ecf.internal.presence.bot.kosmos;
 
@@ -29,6 +29,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -88,8 +89,10 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	private static final String BUG_DATABASE_POSTFIX = "&ctype=xml"; //$NON-NLS-1$
 	private static final String SUM_OPEN_TAG = "<short_desc>"; //$NON-NLS-1$
 	private static final String SUM_CLOSE_TAG = "</short_desc>"; //$NON-NLS-1$
-	private static final File HTML_FILE = new File(
-			"/home/rcjsuen/public_html/messages.html"); //$NON-NLS-1$
+	private static final File HTML_FILE_MESSAGES = new File(
+		System.getProperty("user.home") + File.separator + "public_html" + File.separator + "messages.html"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	private static final File HTML_FILE_COMMANDS = new File(
+			System.getProperty("user.home") + File.separator + "public_html" + File.separator + "commands.html"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	private static final String URL_REGEX = "(http://.+|https://.+|ftp://.+)"; //$NON-NLS-1$
 	private static final String CMD_REGEX = "(~.+)"; //$NON-NLS-1$
@@ -101,6 +104,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	private Map newsgroups;
 	private Set operators;
 	private Properties messages;
+	private Properties commands;
 	private JavadocAnalyzer analyzer;
 
 	private IContainer container;
@@ -168,6 +172,13 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		}
 
 		try {
+			parseCommands();
+			writeCommandsToHTML();
+		} catch (Exception e) {
+			commands = new Properties();
+		}
+
+		try {
 			parseNewsgroup();
 		} catch (Exception e) {
 			newsgroups = Collections.EMPTY_MAP;
@@ -194,6 +205,26 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 				new Path("messages.properties"), false);
 		messages.load(stream);
 		stream.close();
+	}
+
+	/*
+	 * collect commands from custom.properties -- only want those for which there's 
+	 * a matching *_Regex key/value pair, eg., EclipseHelp + EclipseHelp_Regex
+	 */ 
+	private void parseCommands() throws IOException {
+		commands = new Properties();
+		Properties commandsAll = new Properties();
+		commandsAll.load(ChatRoomMessageHandler.class
+				.getResourceAsStream("custom.properties")); //$NON-NLS-1$
+		Enumeration keys = commandsAll.keys(); 
+		while (keys.hasMoreElements()) {
+			String key = (String) keys.nextElement();
+			String keyRegex = key + "_Regex"; //$NON-NLS-1$
+			if (commandsAll.keySet().contains(keyRegex))
+			{
+				commands.setProperty(commandsAll.get(keyRegex).toString(), commandsAll.get(key).toString());
+			}
+		}
 	}
 
 	private void parseNewsgroup() throws IOException {
@@ -455,17 +486,17 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		}
 	}
 
-	private void writeToHTML() throws IOException {
-		FileWriter out = new FileWriter(HTML_FILE);
+	private void writeToHTML(File file, String title, Properties properties) throws IOException {
+		FileWriter out = new FileWriter(file);
 		out
-				.write("<html>\n<head><title>KOS-MOS Commands</title></head>\n<body>\n<table cellspacing=\"2\" cellpadding=\"2\" border=\"0\">\n"); //$NON-NLS-1$
-		Set set = messages.keySet();
-		String[] commands = (String[]) set.toArray(new String[set.size()]);
-		Arrays.sort(commands);
+				.write("<html>\n<head><title>" + title + "</title></head>\n<body>\n<table cellspacing=\"2\" cellpadding=\"2\" border=\"0\">\n"); //$NON-NLS-1$
+		Set set = properties.keySet();
+		String[] propertiesSorted = (String[]) set.toArray(new String[set.size()]);
+		Arrays.sort(propertiesSorted);
 		
-		for (int i = 0; i < commands.length; i++) {
-			String output = messages.getProperty(commands[i]);
-			out.write(formatTableRow(commands[i], output));
+		for (int i = 0; i < propertiesSorted.length; i++) {
+			String output = properties.getProperty(propertiesSorted[i]);
+			out.write(formatTableRow(propertiesSorted[i], output));
 		}
 
 		out.write("</table>\n</body></html>\n"); //$NON-NLS-1$
@@ -476,6 +507,13 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 		} catch (IOException e) {
 			// ignored
 		}
+	}
+	private void writeMessagesToHTML() throws IOException {
+		writeToHTML(HTML_FILE_MESSAGES, "KOS-MOS Messages", messages); //$NON-NLS-1$
+	}
+
+	private void writeCommandsToHTML() throws IOException {
+		writeToHTML(HTML_FILE_COMMANDS, "KOS-MOS Commands", commands); //$NON-NLS-1$
 	}
 
 	private String formatTableRow(String key, String val) {
@@ -538,7 +576,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 				messages.setProperty(key, contents.substring(key.length())
 						.trim());
 				messages.store(stream, LICENSE);
-				writeToHTML();
+				writeMessagesToHTML();
 				sendMessage(roomID, NLS.bind(CustomMessages
 						.getString(CustomMessages.Learn_Reply), key));
 			} else {
@@ -562,7 +600,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 			OutputStream stream = new FileOutputStream(url.getPath());
 			messages.setProperty(key, contents.substring(key.length()).trim());
 			messages.store(stream, LICENSE);
-			writeToHTML();
+			writeMessagesToHTML();
 			sendMessage(roomID, NLS.bind(CustomMessages
 					.getString(CustomMessages.Learn_Update), key));
 		} catch (Exception e) {
@@ -581,7 +619,7 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 			OutputStream stream = new FileOutputStream(url.getPath());
 			messages.remove(key);
 			messages.store(stream, LICENSE);
-			writeToHTML();
+			writeMessagesToHTML();
 			sendMessage(roomID, NLS.bind(CustomMessages
 					.getString(CustomMessages.Learn_Remove), key));
 		} catch (Exception e) {
@@ -591,90 +629,84 @@ public class ChatRoomMessageHandler implements IChatRoomMessageHandler {
 	}
 
 	private void send(ID fromID, ID roomID, String target, String msg) {
+		
+		/* handle operator-added messages - see messages.properties */
 		if (isProcessed(roomID, target, msg)) {
 			return;
 		}
 
-		if (msg.startsWith("add ")) {
-			if (operators.contains(fromID.getName())) {
-				learn(roomID, msg.substring(4).trim());
-			} else {
-				sendMessage(
+		/* handle custom commands - see custom.properties */
+		Matcher cmdMatcher = null;
+		Enumeration keys = commands.keys(); 
+		while (keys.hasMoreElements()) {
+			String key = (String)keys.nextElement();
+			Pattern pattern = Pattern.compile(key);
+			cmdMatcher = pattern.matcher(msg);
+			if (cmdMatcher.matches())
+			{
+				break;
+			}
+		}
+		
+		if (cmdMatcher != null && cmdMatcher.matches()) 
+		{
+			if (cmdMatcher.group(1).equals("add ")) { //$NON-NLS-1$
+				if (operators.contains(fromID.getName())) {
+					learn(roomID, cmdMatcher.group(2));
+				} else {
+					sendMessage(
 						roomID, NLS.bind(CustomMessages
 										.getString(CustomMessages.No_Operation_Privileges), fromID.getName()));
-			}
-		} else if (msg.startsWith("set ") || msg.startsWith("update")) { //$NON-NLS-1$ //$NON-NLS-2$
-			if (operators.contains(fromID.getName())) {
-				update(roomID, msg.substring(4).trim());
-			} else {
+				}				
+			} else if (cmdMatcher.group(1).equals("set ")) { //$NON-NLS-1$
+				if (operators.contains(fromID.getName())) {
+					update(roomID, cmdMatcher.group(2));
+				} else {
+					sendMessage(
+						roomID, NLS.bind(CustomMessages
+								.getString(CustomMessages.No_Operation_Privileges), fromID.getName()));
+				}
+			} else if (cmdMatcher.group(1).equals("remove ")) { //$NON-NLS-1$
+				if (operators.contains(fromID.getName())) {
+					remove(roomID, cmdMatcher.group(2));
+				} else {
 				sendMessage(
 						roomID, NLS.bind(CustomMessages
 								.getString(CustomMessages.No_Operation_Privileges), fromID.getName()));
-			}
-		} else if (msg.startsWith("remove ")) { //$NON-NLS-1$
-			if (operators.contains(fromID.getName())) {
-				remove(roomID, msg.substring(7).trim());
-			} else {
-				sendMessage(
-						roomID, NLS.bind(CustomMessages
-								.getString(CustomMessages.No_Operation_Privileges), fromID.getName()));
-			}
-		} else if (msg.startsWith("bug")) { //$NON-NLS-1$
-			msg = msg.substring(3).trim();
-			int index = msg.indexOf('c');
-			if (index == -1) {
-				try {
-					// check if what's before the 'c' is a valid number
-					Integer.parseInt(msg);
-					sendBug(roomID, target, msg, null);
-				} catch (NumberFormatException e) {
-					// ignored
 				}
-			} else {
-				try {
-					// check if what's before the 'c' is a valid number
-					Integer.parseInt(msg.substring(0, index));
-					sendBug(roomID, target, msg.substring(0, index), msg
-							.substring(index + 1));
-				} catch (NumberFormatException e) {
-					// ignored
+			} else if (cmdMatcher.group(1).equals("") || cmdMatcher.group(1).equals("bug") || cmdMatcher.group(1).equals("bug ")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				msg = cmdMatcher.group(2);
+				int index = msg.indexOf('c');
+				if (index == -1) {
+					try {
+						// check if what's before the 'c' is a valid number
+						Integer.parseInt(msg);
+						sendBug(roomID, target, msg, null);
+					} catch (NumberFormatException e) {
+						// ignored
+					}
+				} else {
+					try {
+						// check if what's before the 'c' is a valid number
+						Integer.parseInt(msg.substring(0, index));
+						sendBug(roomID, target, msg.substring(0, index), msg
+								.substring(index + 1));
+					} catch (NumberFormatException e) {
+						// ignored
+					}
 				}
-			}
-		} else if (msg.startsWith("javadoc ")) { //$NON-NLS-1$
-			sendJavaDoc(roomID, target, msg.substring(8));
-		} else if (msg.startsWith("api ")) { //$NON-NLS-1$
-			sendJavaDoc(roomID, target, msg.substring(4));
-		} else if (msg.startsWith("news ")) { //$NON-NLS-1$
-			sendNewsgroupSearch(roomID, target, msg.substring(5));
-		} else if (msg.startsWith("newsgroup ")) {
-			sendNewsgroupSearch(roomID, target, msg.substring(10));
-		} else if (msg.startsWith("g ")) { //$NON-NLS-1$
-			sendGoogle(roomID, target, msg.substring(2));
-		} else if (msg.startsWith("wiki ")) { //$NON-NLS-1$
-			sendWiki(roomID, target, msg.substring(5));
-		} else if (msg.startsWith("eh")) { //$NON-NLS-1$
-			sendEclipseHelp(roomID, target, msg.substring(3));
-		} else if (msg.equals("list")) { //$NON-NLS-1$
-			sendMessageList(roomID, target);
-		} else {
-			int index = msg.indexOf('c');
-			if (index == -1) {
-				try {
-					// check if what's before the 'c' is a valid number
-					Integer.parseInt(msg);
-					sendBug(roomID, target, msg, null);
-				} catch (NumberFormatException e) {
-					// ignored
-				}
-			} else {
-				try {
-					// check if what's before the 'c' is a valid number
-					Integer.parseInt(msg.substring(0, index));
-					sendBug(roomID, target, msg.substring(0, index), msg
-							.substring(index + 1));
-				} catch (NumberFormatException e) {
-					// ignored
-				}
+			} else if (cmdMatcher.group(1).equals("javadoc ") || cmdMatcher.group(1).equals("api ")) { //$NON-NLS-1$ //$NON-NLS-2$
+				sendJavaDoc(roomID, target, cmdMatcher.group(2));
+			} else if (cmdMatcher.group(1).equals("news ") || cmdMatcher.group(1).equals("newsgroup ")) { //$NON-NLS-1$ //$NON-NLS-2$
+				sendNewsgroupSearch(roomID, target, cmdMatcher.group(2));
+			} else if (cmdMatcher.group(1).equals("g ")) { //$NON-NLS-1$
+				sendGoogle(roomID, target, cmdMatcher.group(2));
+			} else if (cmdMatcher.group(1).equals("wiki ")) { //$NON-NLS-1$
+				sendWiki(roomID, target, cmdMatcher.group(2));
+			} else if (cmdMatcher.group(1).equals("eh ")) { //$NON-NLS-1$
+				sendEclipseHelp(roomID, target, cmdMatcher.group(2));
+			} else if (cmdMatcher.group(1).equals("list")) { //$NON-NLS-1$
+				sendMessageList(roomID, target);
 			}
 		}
 	}
