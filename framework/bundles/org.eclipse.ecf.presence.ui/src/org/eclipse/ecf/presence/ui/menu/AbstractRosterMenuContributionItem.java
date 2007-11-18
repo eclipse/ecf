@@ -21,8 +21,7 @@ import org.eclipse.ecf.presence.IPresence;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.roster.*;
 import org.eclipse.ecf.ui.SharedImages;
-import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.CompoundContributionItem;
@@ -40,7 +39,7 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 
 	private static final String DEFAULT_TOP_MENU_NAME = "Share"; //$NON-NLS-1$
 
-	private static final IContributionItem[] NO_CONTRIBUTIONS = new IContributionItem[] {};
+	protected static final IContributionItem[] NO_CONTRIBUTIONS = new IContributionItem[] {};
 
 	private static final String ROSTERCOMMAND_PREFIX = "org.eclipse.ecf.presence.ui.rosterCommand."; //$NON-NLS-1$
 	private static final List contributionItems = new ArrayList();
@@ -61,6 +60,10 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 
 	public void setTopMenuImageDescriptor(ImageDescriptor image) {
 		this.topMenuImageDescriptor = image;
+	}
+
+	protected ImageDescriptor getTopMenuImageDescriptor() {
+		return this.topMenuImageDescriptor;
 	}
 
 	private void initialize() {
@@ -282,9 +285,24 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 		commandService = null;
 	}
 
-	private void clearOldContributions() {
+	protected void clearOldContributions() {
 		contributionItems.clear();
 		handlerService.deactivateHandlers(handlerActivations);
+	}
+
+	protected List getPresenceContainerAdapters() {
+		List presenceContainers = new ArrayList();
+		IContainerManager containerManager = Activator.getDefault().getContainerManager();
+		if (containerManager == null)
+			return presenceContainers;
+		IContainer[] containers = containerManager.getAllContainers();
+		for (int i = 0; i < containers.length; i++) {
+			IPresenceContainerAdapter presenceContainerAdapter = (IPresenceContainerAdapter) containers[i].getAdapter(IPresenceContainerAdapter.class);
+			if ((containers[i].getConnectedID() != null) && (presenceContainerAdapter != null)) {
+				presenceContainers.add(presenceContainerAdapter);
+			}
+		}
+		return presenceContainers;
 	}
 
 	/* (non-Javadoc)
@@ -292,17 +310,7 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 	 */
 	protected IContributionItem[] getContributionItems() {
 		clearOldContributions();
-		IContainerManager containerManager = Activator.getDefault().getContainerManager();
-		if (containerManager == null)
-			return NO_CONTRIBUTIONS;
-		IContainer[] containers = containerManager.getAllContainers();
-		List presenceContainers = new ArrayList();
-		for (int i = 0; i < containers.length; i++) {
-			IPresenceContainerAdapter presenceContainerAdapter = (IPresenceContainerAdapter) containers[i].getAdapter(IPresenceContainerAdapter.class);
-			if ((containers[i].getConnectedID() != null) && (presenceContainerAdapter != null)) {
-				presenceContainers.add(presenceContainerAdapter);
-			}
-		}
+		List presenceContainers = getPresenceContainerAdapters();
 		if (presenceContainers.size() == 0)
 			return NO_CONTRIBUTIONS;
 		List contributions = new ArrayList();
@@ -316,7 +324,7 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 			IContributionItem[] items = (IContributionItem[]) contributions.toArray(new IContributionItem[] {});
 			for (int i = 0; i < items.length; i++)
 				menuManager.add(items[i]);
-			return new IContributionItem[] {menuManager};
+			return new IContributionItem[] {new Separator(), menuManager};
 		}
 		return NO_CONTRIBUTIONS;
 	}
