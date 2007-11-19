@@ -52,7 +52,7 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 
 	private String topMenuName = DEFAULT_TOP_MENU_NAME;
 
-	private ImageDescriptor topMenuImageDescriptor = Activator.getDefault().getImageRegistry().getDescriptor(Activator.CONTACTS_IMAGE);
+	private ImageDescriptor topMenuImageDescriptor = Activator.getDefault().getImageRegistry().getDescriptor(Activator.COLLABORATION_IMAGE);
 
 	protected void setTopMenuName(String name) {
 		this.topMenuName = name;

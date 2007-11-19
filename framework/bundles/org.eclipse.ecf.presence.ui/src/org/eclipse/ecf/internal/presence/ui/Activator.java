@@ -29,6 +29,8 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final String CONTACTS_IMAGE = "contacts"; //$NON-NLS-1$
 
+	public static final String COLLABORATION_IMAGE = "collaboration"; //$NON-NLS-1$
+
 	// The shared instance
 	private static Activator plugin;
 
@@ -74,6 +76,7 @@ public class Activator extends AbstractUIPlugin {
 	protected ImageRegistry createImageRegistry() {
 		ImageRegistry registry = super.createImageRegistry();
 		registry.put(CONTACTS_IMAGE, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/contacts.gif").createImage()); //$NON-NLS-1$
+		registry.put(COLLABORATION_IMAGE, AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, "icons/collaboration.gif").createImage()); //$NON-NLS-1$
 		return registry;
 	}
 
