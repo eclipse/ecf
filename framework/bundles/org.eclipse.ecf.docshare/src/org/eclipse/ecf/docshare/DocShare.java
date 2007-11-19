@@ -240,11 +240,13 @@ public class DocShare extends AbstractShare {
 			// If we are already sharing, or have non-null start content
 			if (isSharing() || startContent != null) {
 				sendStopMessage(senderID);
+				// And we're done
 				return;
 			}
 			// Otherwise set start content to the message-provided documentContent
 			startContent = documentContent;
 		}
+		// Then open UI and show text editor if appropriate
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
@@ -300,8 +302,8 @@ public class DocShare extends AbstractShare {
 			public void run() {
 				try {
 					final IDocument document = getDocumentFromEditor();
-					// We setup editor to not take input while we are changing document
 					if (document != null) {
+						// We setup editor to not take input while we are changing document
 						setEditorToRefuseInput();
 						document.replace(offset, length, text);
 					}
