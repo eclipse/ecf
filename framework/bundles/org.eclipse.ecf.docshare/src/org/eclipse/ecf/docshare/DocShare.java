@@ -48,6 +48,7 @@ import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
@@ -301,9 +302,10 @@ public class DocShare extends AbstractShare {
 				try {
 					final IDocument document = getDocumentFromEditor();
 					// We setup editor to not take input while we are changing document
-					Assert.isNotNull(document);
-					setEditorToRefuseInput();
-					document.replace(offset, length, text);
+					if (document != null) {
+						setEditorToRefuseInput();
+						document.replace(offset, length, text);
+					}
 				} catch (final Exception e) {
 					logError(Messages.DocShare_EXCEPTION_RECEIVING_MESSAGE_TITLE, e);
 					showErrorToUser(Messages.DocShare_EXCEPTION_RECEIVING_MESSAGE_TITLE, NLS.bind(Messages.DocShare_EXCEPTION_RECEIVING_MESSAGE_MESSAGE, e.getLocalizedMessage()));
@@ -411,7 +413,10 @@ public class DocShare extends AbstractShare {
 		synchronized (stateLock) {
 			if (editor == null)
 				return null;
-			return editor.getDocumentProvider().getDocument(editor.getEditorInput());
+			final IDocumentProvider documentProvider = editor.getDocumentProvider();
+			if (documentProvider == null)
+				return null;
+			return documentProvider.getDocument(editor.getEditorInput());
 		}
 	}
 
