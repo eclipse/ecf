@@ -239,9 +239,8 @@ public class DocShare extends AbstractShare {
 		synchronized (stateLock) {
 			// If we are already sharing, or have non-null start content
 			if (isSharing() || startContent != null) {
-				// XXX send refusal message to sender as we're already participating
-				// sendMessage(senderID,)
-				// return;
+				sendStopMessage(senderID);
+				return;
 			}
 			// Otherwise set start content to the message-provided documentContent
 			startContent = documentContent;
@@ -457,9 +456,13 @@ public class DocShare extends AbstractShare {
 	}
 
 	void sendStopMessage() {
+		sendStopMessage(getOtherID());
+	}
+
+	void sendStopMessage(ID other) {
 		if (isSharing()) {
 			try {
-				send(getOtherID(), new StopMessage());
+				send(other, new StopMessage());
 			} catch (final Exception e) {
 				logError(Messages.DocShare_EXCEPTION_SEND_MESSAGE, e);
 			}
