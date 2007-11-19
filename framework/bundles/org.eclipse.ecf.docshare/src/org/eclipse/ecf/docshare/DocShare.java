@@ -85,12 +85,21 @@ public class DocShare extends AbstractShare {
 	 * Text editor
 	 */
 	ITextEditor editor;
-
+	/**
+	 * Content that we have received via start message, before user has responded
+	 * to question about whether or not to display in editor.  Should be null
+	 * at all other times.
+	 */
+	String startContent = null;
+	/**
+	 * Object to use as lock for changing connected state of this docshare instance
+	 */
 	Object stateLock = new Object();
 
 	/**
 	 * The document listener is the listener for changes to the *local* copy of the 
-	 * IDocument.
+	 * IDocument.  This listener is responsible for sending document update messages when 
+	 * notified.
 	 */
 	IDocumentListener documentListener = new IDocumentListener() {
 		public void documentAboutToBeChanged(DocumentEvent event) {
@@ -98,16 +107,17 @@ public class DocShare extends AbstractShare {
 		}
 
 		public void documentChanged(DocumentEvent event) {
+			// If the channel is gone, then no reason to handle this.
 			if (getChannel() == null || !Activator.getDefault().isListenerActive()) {
 				return;
 			}
-
+			// If the listener is not active, ignore input
 			if (!Activator.getDefault().isListenerActive()) {
 				//The local editor is being updated by an remote peer, so we do not
 				//wish to echo this change.
 				return;
 			}
-			// Send update message
+			// Otherwise end update message
 			sendUpdateMessage(event);
 		}
 	};
@@ -154,24 +164,27 @@ public class DocShare extends AbstractShare {
 		}
 	}
 
-	public void startShare(ID our, String fromName, final ID toID, String fileName, ITextEditor editorPart) {
+	public void startShare(final ID our, final String fromName, final ID toID, final String fileName, final ITextEditor editorPart) {
 		Assert.isNotNull(our);
-		if (fromName == null)
-			fromName = our.getName();
+		final String fName = (fromName == null) ? our.getName() : fromName;
 		Assert.isNotNull(toID);
 		Assert.isNotNull(fileName);
 		Assert.isNotNull(editorPart);
-		try {
-			// Get content from local document
-			final String content = editorPart.getDocumentProvider().getDocument(editorPart.getEditorInput()).get();
-			// send start message
-			sendMessage(toID, new StartMessage(our, fromName, toID, content, fileName).serialize());
-			// Set local sharing start (to setup doc listener)
-			localStartShare(our, our, toID, editorPart);
-		} catch (final Exception e) {
-			logError(Messages.DocShare_ERROR_STARTING_EDITOR_TITLE, e);
-			showErrorToUser(Messages.DocShare_ERROR_STARTING_EDITOR_TITLE, NLS.bind(Messages.DocShare_ERROR_STARTING_EDITOR_MESSAGE, e.getLocalizedMessage()));
-		}
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				try {
+					// Get content from local document
+					final String content = editorPart.getDocumentProvider().getDocument(editorPart.getEditorInput()).get();
+					// send start message
+					send(toID, new StartMessage(our, fName, toID, content, fileName));
+					// Set local sharing start (to setup doc listener)
+					localStartShare(our, our, toID, editorPart);
+				} catch (final Exception e) {
+					logError(Messages.DocShare_ERROR_STARTING_EDITOR_TITLE, e);
+					showErrorToUser(Messages.DocShare_ERROR_STARTING_EDITOR_TITLE, NLS.bind(Messages.DocShare_ERROR_STARTING_EDITOR_MESSAGE, e.getLocalizedMessage()));
+				}
+			}
+		});
 	}
 
 	public void stopShare() {
@@ -180,6 +193,10 @@ public class DocShare extends AbstractShare {
 			sendStopMessage();
 		}
 		localStopShare();
+	}
+
+	void send(ID toID, Message message) throws Exception {
+		super.sendMessage(toID, message.serialize());
 	}
 
 	/* (non-Javadoc)
@@ -207,25 +224,43 @@ public class DocShare extends AbstractShare {
 	 * @param message
 	 */
 	protected void handleStartMessage(final StartMessage message) {
+		final ID senderID = message.getSenderID();
+		Assert.isNotNull(senderID);
+		final String senderUsername = message.getSenderUsername();
+		Assert.isNotNull(senderUsername);
+		final ID our = message.getReceiverID();
+		Assert.isNotNull(our);
+		final String filename = message.getFilename();
+		Assert.isNotNull(filename);
+		final String documentContent = message.getDocumentContent();
+		Assert.isNotNull(documentContent);
+		// First synchronize on any state changes by getting stateLock
+		synchronized (stateLock) {
+			// If we are already sharing, or have non-null start content
+			if (isSharing() || startContent != null) {
+				// XXX send refusal message to sender as we're already participating
+				// sendMessage(senderID,)
+				// return;
+			}
+			// Otherwise set start content to the message-provided documentContent
+			startContent = documentContent;
+		}
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
-					final ID senderID = message.getSenderID();
-					Assert.isNotNull(senderID);
-					final String senderUsername = message.getSenderUsername();
-					Assert.isNotNull(senderUsername);
-					final ID our = message.getReceiverID();
-					Assert.isNotNull(our);
-					final String filename = message.getFilename();
-					Assert.isNotNull(filename);
-					final String documentContent = message.getDocumentContent();
-					Assert.isNotNull(documentContent);
+					// First, ask user if they want to receive the doc
 					if (openReceiverDialog(senderID, senderUsername, filename)) {
-						final DocShareEditorInput dsei = new DocShareEditorInput(getTempFileStore(senderUsername, filename, documentContent), senderUsername, filename);
+						// If so, then we create a new DocShareEditorInput
+						final DocShareEditorInput dsei = new DocShareEditorInput(getTempFileStore(senderUsername, filename, startContent), senderUsername, filename);
+						// Then open up text editor
 						final ITextEditor ep = (ITextEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(dsei, getEditorIdForFileName(filename));
+						// Then change our local state
 						localStartShare(our, senderID, our, ep);
 					} else {
-						// XXX TODO send refusal
+						// Send stop message to initiator
+						sendStopMessage();
+						// Then we stop the local share
+						localStopShare();
 					}
 				} catch (final Exception e) {
 					logError(Messages.DocShare_EXCEPTION_RECEIVING_MESSAGE_TITLE, e);
@@ -235,25 +270,40 @@ public class DocShare extends AbstractShare {
 		});
 	}
 
+	void modifyStartContent(int offset, int length, String text) {
+		final StringBuffer result = new StringBuffer(startContent.substring(0, offset));
+		result.append(text);
+		result.append(startContent.substring(offset + length));
+		startContent = result.toString();
+	}
+
 	/**
 	 * @param message
 	 */
 	protected void handleUpdateMessage(final UpdateMessage message) {
+		final int offset = message.getOffset();
+		Assert.isTrue(offset > -1);
+		final int length = message.getLength();
+		Assert.isTrue(length > -1);
+		final String text = message.getText();
+		Assert.isTrue(text != null);
+		synchronized (stateLock) {
+			// If we're waiting on user to start then change the startContent directly
+			if (startContent != null) {
+				modifyStartContent(offset, length, text);
+				// And we're done
+				return;
+			}
+		}
+		// Else replace in document directly
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
-					final int offset = message.getOffset();
-					Assert.isTrue(offset > -1);
-					final int length = message.getLength();
-					Assert.isTrue(length > -1);
-					final String text = message.getText();
-					Assert.isTrue(text != null);
 					final IDocument document = getDocumentFromEditor();
 					// We setup editor to not take input while we are changing document
+					Assert.isNotNull(document);
 					setEditorToRefuseInput();
-					if (document != null) {
-						document.replace(offset, length, text);
-					}
+					document.replace(offset, length, text);
 				} catch (final Exception e) {
 					logError(Messages.DocShare_EXCEPTION_RECEIVING_MESSAGE_TITLE, e);
 					showErrorToUser(Messages.DocShare_EXCEPTION_RECEIVING_MESSAGE_TITLE, NLS.bind(Messages.DocShare_EXCEPTION_RECEIVING_MESSAGE_MESSAGE, e.getLocalizedMessage()));
@@ -383,6 +433,7 @@ public class DocShare extends AbstractShare {
 			this.ourID = null;
 			this.initiatorID = null;
 			this.receiverID = null;
+			this.startContent = null;
 			final IDocument doc = getDocumentFromEditor();
 			if (doc != null)
 				doc.removeDocumentListener(documentListener);
@@ -393,7 +444,7 @@ public class DocShare extends AbstractShare {
 	void sendUpdateMessage(DocumentEvent event) {
 		if (isSharing()) {
 			try {
-				sendMessage(getOtherID(), new UpdateMessage(event.getOffset(), event.getLength(), event.getText()).serialize());
+				send(getOtherID(), new UpdateMessage(event.getOffset(), event.getLength(), event.getText()));
 			} catch (final Exception e) {
 				logError(Messages.DocShare_EXCEPTION_SEND_MESSAGE, e);
 			}
@@ -403,7 +454,7 @@ public class DocShare extends AbstractShare {
 	void sendStopMessage() {
 		if (isSharing()) {
 			try {
-				sendMessage(getOtherID(), new StopMessage().serialize());
+				send(getOtherID(), new StopMessage());
 			} catch (final Exception e) {
 				logError(Messages.DocShare_EXCEPTION_SEND_MESSAGE, e);
 			}
