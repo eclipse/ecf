@@ -40,6 +40,7 @@ plugin@org.eclipse.ecf.filetransfer.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.o
 plugin@org.eclipse.ecf.protocol.msn=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/org.eclipse.ecf.protocol.msn
 plugin@org.eclipse.ecf.provider.msn=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/org.eclipse.ecf.provider.msn
 plugin@org.eclipse.ecf.provider.msn.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/org.eclipse.ecf.provider.msn.ui
+plugin@org.eclipse.ecf.docshare=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.docshare
 
 plugin@org.apache.commons.httpclient,3.0.1=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R200706131308/bundles/org.apache.commons.httpclient_3.0.1.v200706111724.jar
 plugin@org.apache.commons.codec,1.2.0=GET,http://download.eclipse.org/tools/orbit/downloads/drops/R200706131308/bundles/org.apache.commons.codec_1.2.0.v200706111724.jar
