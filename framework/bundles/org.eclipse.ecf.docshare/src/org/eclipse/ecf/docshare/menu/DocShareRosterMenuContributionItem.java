@@ -85,6 +85,8 @@ public class DocShareRosterMenuContributionItem extends AbstractRosterMenuContri
 	 */
 	protected IContributionItem[] createContributionItemsForPresenceContainer(IPresenceContainerAdapter presenceContainerAdapter) {
 		final IContainer container = (IContainer) presenceContainerAdapter.getAdapter(IContainer.class);
+		if (container == null)
+			return NO_CONTRIBUTIONS;
 		final DocShare docShare = DocShare.getDocShare(container.getID());
 		if (docShare == null)
 			return NO_CONTRIBUTIONS;
