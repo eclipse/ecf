@@ -169,7 +169,7 @@ public class DocShare extends AbstractShare {
 		Assert.isNotNull(our);
 		final String fName = (fromName == null) ? our.getName() : fromName;
 		Assert.isNotNull(toID);
-		Assert.isNotNull(fileName);
+		Assert.isNotNull(fName);
 		Assert.isNotNull(editorPart);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
