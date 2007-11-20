@@ -53,6 +53,9 @@ import org.eclipse.ui.texteditor.ITextEditor;
 /**
  * Represents a document sharing session between two participants.
  */
+/**
+ *
+ */
 public class DocShare extends AbstractShare {
 
 	/**
@@ -108,6 +111,12 @@ public class DocShare extends AbstractShare {
 		}
 	};
 
+	/**
+	 * Create a document sharing session instance.
+	 * 
+	 * @param adapter the {@link IChannelContainerAdapter} to use to create this document sharing session.
+	 * @throws ECFException if the channel cannot be created.
+	 */
 	public DocShare(IChannelContainerAdapter adapter) throws ECFException {
 		super(adapter);
 	}
@@ -150,6 +159,17 @@ public class DocShare extends AbstractShare {
 		}
 	}
 
+	/**
+	 * Start sharing an editor's contents between two participants.  This will send a request to start sharing 
+	 * with the target identified by the <code>toID</code> parameter.  The remote receiver will be displayed a
+	 * message dialog, and given the option to start editor sharing, or not.  
+	 * 
+	 * @param our the ID associated with the initiator.  Must not be <code>null</code>.
+	 * @param fromName a name to present to the receiver.  If <code>null, our.getName() will be used.
+	 * @param toID the ID of the intended receiver.  Must not be <code>null</code>.
+	 * @param fileName the file name of the file to be shared (with suffix type extension).  Must not be <code>null</code>.
+	 * @param editorPart the text editor currently showing the contents of this editor.  Must not be <code>null</code>.
+	 */
 	public void startShare(final ID our, final String fromName, final ID toID, final String fileName, final ITextEditor editorPart) {
 		Assert.isNotNull(our);
 		final String fName = (fromName == null) ? our.getName() : fromName;
@@ -173,6 +193,10 @@ public class DocShare extends AbstractShare {
 		});
 	}
 
+	/**
+	 * Stop editor sharing.  Message only sent if we are currently engaged in an editor sharing session
+	 * ({@link #isSharing()} returns <code>true</code>.
+	 */
 	public void stopShare() {
 		if (isSharing()) {
 			// send stop message to other
@@ -207,7 +231,9 @@ public class DocShare extends AbstractShare {
 	}
 
 	/**
-	 * @param message
+	 * This method called by the {@link #handleMessage(ID, byte[])} method if the type of the message received is a start message (sent
+	 * by remote party via {@link #startShare(ID, String, ID, String, ITextEditor)}.
+	 * @param message the UpdateMessage received.
 	 */
 	protected void handleStartMessage(final StartMessage message) {
 		final ID senderID = message.getSenderID();
@@ -265,7 +291,8 @@ public class DocShare extends AbstractShare {
 	}
 
 	/**
-	 * @param message
+	 * This method called by the {@link #handleMessage(ID, byte[])} method if the type of the message received is an update message.
+	 * @param message the UpdateMessage received.
 	 */
 	protected void handleUpdateMessage(final UpdateMessage message) {
 		final int offset = message.getOffset();
