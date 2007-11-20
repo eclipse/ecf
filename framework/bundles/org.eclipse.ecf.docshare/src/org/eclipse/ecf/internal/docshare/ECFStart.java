@@ -26,7 +26,6 @@ import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.start.IECFStart;
 import org.eclipse.ecf.core.util.ECFException;
 import org.eclipse.ecf.datashare.IChannelContainerAdapter;
-import org.eclipse.ecf.docshare.DocShare;
 import org.eclipse.osgi.util.NLS;
 
 public class ECFStart implements IECFStart {
@@ -51,13 +50,13 @@ public class ECFStart implements IECFStart {
 				ID containerID = container.getID();
 				if (event instanceof IContainerConnectedEvent) {
 					try {
-						DocShare.addDocShare(containerID, cca);
+						Activator.getDefault().addDocShare(containerID, cca);
 					} catch (ECFException e) {
 						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, IStatus.WARNING, NLS.bind(Messages.ECFStart_ERROR_DOCUMENT_SHARE_NOT_CREATED, container.getID()), null));
 					}
 				} else if (event instanceof IContainerDisconnectedEvent) {
 					// disconnected
-					DocShare.removeDocShare(containerID);
+					Activator.getDefault().removeDocShare(containerID);
 				} else if (event instanceof IContainerDisposeEvent) {
 					containerManager.removeListener(containerManagerListener);
 					container.removeListener(containerListener);

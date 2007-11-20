@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.docshare.DocShare;
+import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.Messages;
 import org.eclipse.ecf.presence.IPresenceContainerAdapter;
 import org.eclipse.ecf.presence.roster.IRoster;
@@ -55,7 +56,7 @@ public class DocShareRosterMenuContributionItem extends AbstractRosterMenuContri
 		final IContainer container = (IContainer) presenceContainerAdapter.getAdapter(IContainer.class);
 		if (container == null)
 			return null;
-		return DocShare.getDocShare(container.getID());
+		return Activator.getDefault().getDocShare(container.getID());
 	}
 
 	/* (non-Javadoc)
@@ -87,7 +88,7 @@ public class DocShareRosterMenuContributionItem extends AbstractRosterMenuContri
 		final IContainer container = (IContainer) presenceContainerAdapter.getAdapter(IContainer.class);
 		if (container == null)
 			return NO_CONTRIBUTIONS;
-		final DocShare docShare = DocShare.getDocShare(container.getID());
+		final DocShare docShare = Activator.getDefault().getDocShare(container.getID());
 		if (docShare == null)
 			return NO_CONTRIBUTIONS;
 		final IRoster roster = presenceContainerAdapter.getRosterManager().getRoster();

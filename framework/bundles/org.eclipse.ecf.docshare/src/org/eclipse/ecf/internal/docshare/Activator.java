@@ -1,6 +1,12 @@
 package org.eclipse.ecf.internal.docshare;
 
+import java.util.Hashtable;
+
 import org.eclipse.ecf.core.IContainerManager;
+import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.util.ECFException;
+import org.eclipse.ecf.datashare.IChannelContainerAdapter;
+import org.eclipse.ecf.docshare.DocShare;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -21,6 +27,20 @@ public class Activator extends AbstractUIPlugin {
 	private ServiceTracker containerManagerTracker;
 
 	private boolean listenerActive;
+
+	private static final Hashtable docsharechannels = new Hashtable();
+
+	public DocShare getDocShare(ID containerID) {
+		return (DocShare) docsharechannels.get(containerID);
+	}
+
+	public DocShare addDocShare(ID containerID, IChannelContainerAdapter channelAdapter) throws ECFException {
+		return (DocShare) docsharechannels.put(containerID, new DocShare(channelAdapter));
+	}
+
+	public DocShare removeDocShare(ID containerID) {
+		return (DocShare) docsharechannels.remove(containerID);
+	}
 
 	/**
 	 * The constructor

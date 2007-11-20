@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.OutputStream;
-import java.util.Hashtable;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -55,20 +54,6 @@ import org.eclipse.ui.texteditor.ITextEditor;
  * Represents a document sharing session between two participants.
  */
 public class DocShare extends AbstractShare {
-
-	private static final Hashtable docsharechannels = new Hashtable();
-
-	public static DocShare getDocShare(ID containerID) {
-		return (DocShare) docsharechannels.get(containerID);
-	}
-
-	public static DocShare addDocShare(ID containerID, IChannelContainerAdapter channelAdapter) throws ECFException {
-		return (DocShare) docsharechannels.put(containerID, new DocShare(channelAdapter));
-	}
-
-	public static DocShare removeDocShare(ID containerID) {
-		return (DocShare) docsharechannels.remove(containerID);
-	}
 
 	/**
 	 * The ID of the initiator

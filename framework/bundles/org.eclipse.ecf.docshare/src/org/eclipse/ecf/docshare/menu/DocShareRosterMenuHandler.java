@@ -16,6 +16,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.core.user.IUser;
 import org.eclipse.ecf.docshare.DocShare;
+import org.eclipse.ecf.internal.docshare.Activator;
 import org.eclipse.ecf.internal.docshare.Messages;
 import org.eclipse.ecf.presence.roster.IRosterEntry;
 import org.eclipse.ecf.presence.ui.menu.AbstractRosterMenuHandler;
@@ -72,7 +73,7 @@ public class DocShareRosterMenuHandler extends AbstractRosterMenuHandler {
 		final IContainer container = (IContainer) getRosterEntry().getRoster().getPresenceContainerAdapter().getAdapter(IContainer.class);
 		if (container.getConnectedID() == null)
 			throw new ExecutionException(Messages.DocShareRosterMenuHandler_ERROR_NOT_CONNECTED);
-		final DocShare sender = DocShare.getDocShare(container.getID());
+		final DocShare sender = Activator.getDefault().getDocShare(container.getID());
 		if (sender == null)
 			throw new ExecutionException(Messages.DocShareRosterMenuHandler_ERROR_NO_SENDER);
 		if (sender.isSharing())
