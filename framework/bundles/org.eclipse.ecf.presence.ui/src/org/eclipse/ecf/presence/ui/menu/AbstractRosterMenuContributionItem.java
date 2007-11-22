@@ -144,7 +144,8 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 	 * @return the menu manager.  Should not be <code>null</code>.
 	 */
 	protected MenuManager createMenuManagerForGroup(IRosterGroup group) {
-		return new MenuManager(group.getName(), SharedImages.getImageDescriptor(SharedImages.IMG_GROUP), null);
+		return new MenuManager(group.getName());
+		// XXX 3.4 constructor return new MenuManager(group.getName(), SharedImages.getImageDescriptor(SharedImages.IMG_GROUP), null);
 	}
 
 	/**
@@ -172,7 +173,8 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 	 * @return the menu manager.  Should not be <code>null</code>.
 	 */
 	protected MenuManager createMenuManagerForRoster(IRoster roster) {
-		return new MenuManager(roster.getUser().getName(), SharedImages.getImageDescriptor(SharedImages.IMG_IDENTITY), null);
+		// 3.4 constructor return new MenuManager(roster.getUser().getName(), SharedImages.getImageDescriptor(SharedImages.IMG_IDENTITY), null);
+		return new MenuManager(roster.getUser().getName());
 	}
 
 	private int getNextCommandIdIndex() {
@@ -334,7 +336,8 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 	 * @return the menu manager.  Should not be <code>null</code>.
 	 */
 	protected MenuManager createMenuManagerForTop() {
-		return new MenuManager(topMenuName, topMenuImageDescriptor, null);
+		// 3.4 constructor return new MenuManager(topMenuName, topMenuImageDescriptor, null);
+		return new MenuManager(topMenuName);
 	}
 
 }
