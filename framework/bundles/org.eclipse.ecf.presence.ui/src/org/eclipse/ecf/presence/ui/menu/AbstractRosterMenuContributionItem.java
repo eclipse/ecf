@@ -336,7 +336,7 @@ public abstract class AbstractRosterMenuContributionItem extends CompoundContrib
 	 * @return the menu manager.  Should not be <code>null</code>.
 	 */
 	protected MenuManager createMenuManagerForTop() {
-		// 3.4 constructor return new MenuManager(topMenuName, topMenuImageDescriptor, null);
+		// XXX 3.4 constructor return new MenuManager(topMenuName, topMenuImageDescriptor, null);
 		return new MenuManager(topMenuName);
 	}
 
