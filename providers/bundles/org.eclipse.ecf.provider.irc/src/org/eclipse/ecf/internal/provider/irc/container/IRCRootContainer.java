@@ -114,7 +114,7 @@ public class IRCRootContainer extends IRCAbstractContainer implements IContainer
 					connectLock.wait(2000);
 				}
 				if (connectWaiting)
-					throw new TimeoutException(CONNECT_TIMEOUT, Messages.IRCRootContainer_Connect_Timeout + targetID.getName());
+					throw new TimeoutException(CONNECT_TIMEOUT, Messages.IRCRootContainer_Connect_Timeout + tID.getName());
 				if (connectException != null)
 					throw connectException;
 				this.targetID = tID;
