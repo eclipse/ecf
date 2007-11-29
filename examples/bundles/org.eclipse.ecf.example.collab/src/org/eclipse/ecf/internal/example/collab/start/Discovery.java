@@ -15,8 +15,8 @@ import org.eclipse.ecf.core.IContainer;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
+import org.eclipse.ecf.discovery.IServiceTypeEvent;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
-import org.eclipse.ecf.discovery.identity.IServiceID;
 
 public class Discovery {
 
@@ -35,22 +35,29 @@ public class Discovery {
 	}
 
 	class CollabServiceTypeListener implements IServiceTypeListener {
-		public void serviceTypeAdded(IServiceEvent event) {
-			final IServiceID svcID = event.getServiceInfo().getServiceID();
-			discoveryContainer.addServiceListener(svcID.getServiceTypeID(), new CollabServiceListener());
-			discoveryContainer.registerServiceType(svcID.getServiceTypeID());
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.discovery.IServiceTypeListener#serviceTypeDiscovered(org.eclipse.ecf.discovery.IServiceTypeEvent)
+		 */
+		public void serviceTypeDiscovered(IServiceTypeEvent event) {
+			discoveryContainer.addServiceListener(event.getServiceTypeID(), new CollabServiceListener());
 		}
 	}
 
 	class CollabServiceListener implements IServiceListener {
-		public void serviceAdded(IServiceEvent event) {
-			discoveryContainer.requestServiceInfo(event.getServiceInfo().getServiceID(), 3000);
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
+		 */
+		public void serviceDiscovered(IServiceEvent anEvent) {
+			// TODO Auto-generated method stub
+
 		}
 
-		public void serviceRemoved(IServiceEvent event) {
-		}
+		/* (non-Javadoc)
+		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceUndiscovered(org.eclipse.ecf.discovery.IServiceEvent)
+		 */
+		public void serviceUndiscovered(IServiceEvent anEvent) {
+			// TODO Auto-generated method stub
 
-		public void serviceResolved(IServiceEvent event) {
 		}
 	}
 }

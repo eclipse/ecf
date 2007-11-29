@@ -10,7 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.internal.example.collab;
 
-import java.net.InetAddress;
 import java.net.URI;
 import java.util.Properties;
 
@@ -19,7 +18,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ecf.core.ContainerCreateException;
 import org.eclipse.ecf.core.ContainerFactory;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.IDFactory;
 import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainer;
@@ -29,9 +27,7 @@ import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.ServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.internal.example.collab.actions.URIClientConnectAction;
-import org.eclipse.osgi.util.NLS;
 
 public class DiscoveryStartup {
 	public static final String DISCOVERY_CONTAINER = "ecf.discovery.jmdns";
@@ -126,13 +122,10 @@ public class DiscoveryStartup {
 				props.setProperty(PROP_PW_REQ_NAME, PROP_PW_REQ_VALUE);
 				props.setProperty(PROP_DEF_USER_NAME, PROP_DEF_USER_VALUE);
 				props.setProperty(PROP_PATH_NAME, path);
-				final InetAddress host = InetAddress.getByName(uri.getHost());
-				final int port = uri.getPort();
 				final String svcName = System.getProperty("user.name") + "." + protocol;
 				final Namespace namespace = IDFactory.getDefault().getNamespaceByName("zeroconf.jmdns");
 				final IServiceID srvID = (IServiceID) namespace.createInstance(new String[] {ClientPlugin.TCPSERVER_DISCOVERY_TYPE, svcName});
-
-				final ServiceInfo svcInfo = new ServiceInfo(host, srvID, port, SVC_DEF_PRIORITY, SVC_DEF_WEIGHT, new ServiceProperties(props));
+				final ServiceInfo svcInfo = new ServiceInfo(uri, srvID, SVC_DEF_PRIORITY, SVC_DEF_WEIGHT, new ServiceProperties(props));
 				discovery.registerService(svcInfo);
 			} catch (final Exception e) {
 				ClientPlugin.log("Exception registering service " + uri, e);
@@ -145,15 +138,4 @@ public class DiscoveryStartup {
 	public static void unregisterServer(ISharedObjectContainer container) {
 	}
 
-	public static void registerServiceTypes() {
-		if (discovery != null) {
-			for (int i = 0; i < ClientPlugin.serviceTypes.length; i++) {
-				try {
-					discovery.registerServiceType(ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), ClientPlugin.serviceTypes[i]).getServiceTypeID());
-				} catch (final IDCreateException e) {
-					ClientPlugin.log(NLS.bind("Cannot register service type {0}", ClientPlugin.serviceTypes[i]));
-				}
-			}
-		}
-	}
 }

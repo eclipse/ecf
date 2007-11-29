@@ -13,8 +13,8 @@ package org.eclipse.ecf.internal.example.collab.ui;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceEvent;
 import org.eclipse.ecf.discovery.IServiceListener;
+import org.eclipse.ecf.discovery.IServiceTypeEvent;
 import org.eclipse.ecf.discovery.IServiceTypeListener;
-import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.ui.views.DiscoveryView;
 import org.eclipse.ecf.discovery.ui.views.IDiscoveryController;
 import org.eclipse.ecf.internal.example.collab.ClientPlugin;
@@ -38,24 +38,18 @@ public class CollabDiscoveryView extends DiscoveryView {
 			if (dc != null) {
 				// setup listeners
 				dc.addServiceTypeListener(new IServiceTypeListener() {
-					public void serviceTypeAdded(IServiceEvent event) {
-						final IServiceID svcID = event.getServiceInfo().getServiceID();
-						addServiceTypeInfo(svcID.getServiceTypeID().getName());
-						dc.addServiceListener(event.getServiceInfo().getServiceID().getServiceTypeID(), new IServiceListener() {
-							public void serviceAdded(IServiceEvent evt) {
-								addServiceInfo(evt.getServiceInfo().getServiceID());
-								dc.requestServiceInfo(evt.getServiceInfo().getServiceID(), SERVICE_REQUEST_TIMEOUT);
+					public void serviceTypeDiscovered(IServiceTypeEvent event) {
+						addServiceTypeInfo(event.getServiceTypeID().getName());
+						dc.addServiceListener(event.getServiceTypeID(), new IServiceListener() {
+							public void serviceDiscovered(IServiceEvent anEvent) {
+								addServiceInfo(anEvent.getServiceInfo().getServiceID());
+								addServiceInfo(anEvent.getServiceInfo());
 							}
 
-							public void serviceRemoved(IServiceEvent evt) {
-								removeServiceInfo(evt.getServiceInfo());
-							}
-
-							public void serviceResolved(IServiceEvent evt) {
-								addServiceInfo(evt.getServiceInfo());
+							public void serviceUndiscovered(IServiceEvent anEvent) {
+								removeServiceInfo(anEvent.getServiceInfo());
 							}
 						});
-						dc.registerServiceType(svcID.getServiceTypeID());
 					}
 				});
 			}
