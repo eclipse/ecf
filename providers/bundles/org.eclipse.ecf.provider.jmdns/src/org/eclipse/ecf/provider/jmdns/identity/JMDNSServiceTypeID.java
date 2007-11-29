@@ -14,6 +14,7 @@ package org.eclipse.ecf.provider.jmdns.identity;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.util.StringUtils;
 import org.eclipse.ecf.discovery.identity.ServiceTypeID;
 import org.eclipse.ecf.internal.provider.jmdns.Messages;
 import org.eclipse.osgi.util.NLS;
@@ -48,7 +49,7 @@ public class JMDNSServiceTypeID extends ServiceTypeID {
 		scopes = new String[] {type.substring(protoEnd + 1, type.length() - 1)};
 		String servicesString = type.substring(0, protoBegin - 1);
 		servicesString = servicesString.substring(1);
-		services = servicesString.split("._"); //$NON-NLS-1$
+		services = StringUtils.split(servicesString, "_"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
