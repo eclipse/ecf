@@ -229,7 +229,8 @@ public class IRCChannelContainer extends IRCAbstractContainer implements IChatMe
 				this.targetID = connectID;
 				fireContainerEvent(new ContainerConnectedEvent(this.getID(), this.targetID));
 			} catch (Exception e) {
-				throw new ContainerConnectException(NLS.bind(Messages.IRCChannelContainer_Exception_Connect_Failed, targetID.getName()), e);
+				this.targetID = null;
+				throw new ContainerConnectException(NLS.bind(Messages.IRCChannelContainer_Exception_Connect_Failed, connectID.getName()), e);
 			} finally {
 				connectWaiting = false;
 			}
