@@ -14,6 +14,7 @@ package org.eclipse.ecf.server.generic;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.URI;
 import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ecf.core.identity.*;
@@ -184,7 +185,6 @@ public class ServerManager {
 		if (discovery != null) {
 			try {
 				final IServiceID sID = ServiceIDFactory.getDefault().createServiceID(discovery.getServicesNamespace(), SERVICE_TYPE);
-				discovery.registerServiceType(sID.getServiceTypeID());
 				final String rawGroupName = group.getRawName();
 				final Connector connector = group.getConnector();
 				final Properties props = new Properties();
@@ -194,7 +194,8 @@ public class ServerManager {
 				final Namespace ns = IDFactory.getDefault().getNamespaceByName(ECF_NAMESPACE_JMDNS);
 				final IServiceID serviceID = (IServiceID) IDFactory.getDefault().createID(ns, new Object[] {SERVICE_TYPE, rawGroupName});
 				final InetAddress host = InetAddress.getByName(connector.getHostname());
-				final ServiceInfo svcInfo = new ServiceInfo(host, serviceID, connector.getPort(), 0, 0, new ServiceProperties(props));
+				URI uri = new URI(TCPServerSOContainer.DEFAULT_PROTOCOL, null, host.getHostAddress(), connector.getPort(), null, null, null);
+				final ServiceInfo svcInfo = new ServiceInfo(uri, serviceID, 0, 0, new ServiceProperties(props));
 				discovery.registerService(svcInfo);
 			} catch (final Exception e) {
 				Activator.log(Messages.ServerManager_EXCEPTION_DISCOVERY_REGISTRATION, e);
