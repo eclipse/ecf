@@ -21,6 +21,7 @@ public class Messages extends NLS {
 	public static String ContainerInstantiator_EXCEPTION_CONTAINER_CREATE;
 	public static String ContainerInstantiator_EXCEPTION_GETTING_INETADDRESS;
 	public static String JMDNSDiscoveryContainer_EXCEPTION_ALREADY_CONNECTED;
+	public static String JMDNSDiscoveryContainer_EXCEPTION_CONTAINER_DISPOSED;
 	public static String JMDNSDiscoveryContainer_EXCEPTION_CREATE_JMDNS_INSTANCE;
 	public static String JMDNSDiscoveryContainer_DISCOVERY_NOT_INITIALIZED;
 	public static String JMDNSDiscoveryContainer_EXCEPTION_REGISTER_SERVICE;

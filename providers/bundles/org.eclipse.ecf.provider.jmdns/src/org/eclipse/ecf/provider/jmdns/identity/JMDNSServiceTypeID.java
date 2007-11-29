@@ -29,6 +29,7 @@ public class JMDNSServiceTypeID extends ServiceTypeID {
 		super(namespace);
 		try {
 			parse(type);
+			createType();
 		} catch (final Exception e) {
 			throw new IDCreateException(NLS.bind(Messages.JMDNSServiceTypeID_EXCEPTION_INVALID_TYPE_ID, type));
 		}

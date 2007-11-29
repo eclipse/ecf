@@ -10,11 +10,11 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.jmdns.container;
 
-import java.net.InetAddress;
-
+import java.net.*;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.ServiceInfo;
 import org.eclipse.ecf.discovery.identity.ServiceID;
+import org.eclipse.ecf.provider.jmdns.identity.JMDNSNamespace;
 
 public class JMDNSServiceInfo extends ServiceInfo {
 
@@ -23,8 +23,8 @@ public class JMDNSServiceInfo extends ServiceInfo {
 	public static final String PROP_PATH_NAME = "path"; //$NON-NLS-1$
 	public static final String SLASH = "/"; //$NON-NLS-1$
 
-	public JMDNSServiceInfo(InetAddress address, ServiceID id, int port, int priority, int weight, IServiceProperties props) {
-		super(address, id, port, priority, weight, props);
+	public JMDNSServiceInfo(InetAddress address, ServiceID id, int port, int priority, int weight, IServiceProperties props) throws URISyntaxException {
+		super(new URI(JMDNSNamespace.JMDNS_SCHEME, null, address.getHostAddress(), port, null, null, null), id, priority, weight, props);
 	}
 
 }

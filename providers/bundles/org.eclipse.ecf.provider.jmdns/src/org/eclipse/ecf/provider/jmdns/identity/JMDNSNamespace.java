@@ -10,18 +10,23 @@
  *****************************************************************************/
 package org.eclipse.ecf.provider.jmdns.identity;
 
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDCreateException;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
 import org.eclipse.ecf.internal.provider.jmdns.Messages;
 
 public class JMDNSNamespace extends Namespace {
 
 	private static final long serialVersionUID = -7220857203720337921L;
 
-	private static final String JMDNS_SCHEME = "jmdns"; //$NON-NLS-1$
+	public static final String JMDNS_SCHEME = "jmdns"; //$NON-NLS-1$
 
 	public static final String NAME = "ecf.namespace.jmdns"; //$NON-NLS-1$
+
+	/**
+	 * 
+	 */
+	public JMDNSNamespace() {
+		super();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.Namespace#createInstance(java.lang.Object[])
@@ -31,13 +36,12 @@ public class JMDNSNamespace extends Namespace {
 			throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_ID_WRONG_PARAM_COUNT);
 		}
 		String type = null;
-		try {
+		if (parameters[0] instanceof JMDNSServiceTypeID) {
+			type = ((JMDNSServiceTypeID) parameters[0]).getInternal();
+		} else if (parameters[0] instanceof String) {
 			type = (String) parameters[0];
-			if (type == null || type.equals("")) //$NON-NLS-1$
-				throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_ID_CREATE_SERVICE_TYPE_CANNOT_BE_EMPTY);
-		} catch (final ClassCastException e) {
+		} else
 			throw new IDCreateException(Messages.JMDNSNamespace_EXCEPTION_TYPE_PARAM_NOT_STRING);
-		}
 		final JMDNSServiceTypeID stid = new JMDNSServiceTypeID(this, type);
 
 		String name = null;

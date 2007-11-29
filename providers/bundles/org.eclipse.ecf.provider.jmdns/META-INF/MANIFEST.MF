@@ -2,17 +2,17 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.ecf.provider.jmdns;singleton:=true
-Bundle-Version: 1.2.0.qualifier
+Bundle-Version: 2.0.0.qualifier
 Bundle-Activator: org.eclipse.ecf.internal.provider.jmdns.JMDNSPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.equinox.common,
+Require-Bundle: org.eclipse.ecf.discovery,
  org.eclipse.ecf,
- org.eclipse.ecf.discovery
+ org.eclipse.equinox.common
 Eclipse-LazyStart: true
 Bundle-ClassPath: ., lib/jmdns-1.0.3.jar
-Bundle-RequiredExecutionEnvironment: J2SE-1.4,
- CDC-1.1/Foundation-1.1
+Bundle-RequiredExecutionEnvironment: CDC-1.1/Foundation-1.1,
+ J2SE-1.4
 Export-Package: org.eclipse.ecf.internal.provider.jmdns;x-internal:=true,
  org.eclipse.ecf.provider.jmdns.container,
  org.eclipse.ecf.provider.jmdns.identity
