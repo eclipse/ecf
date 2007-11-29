@@ -28,30 +28,21 @@ public class ServiceTypeListener implements IServiceTypeListener {
 	class ServiceListener implements IServiceListener {
 
 		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceAdded(org.eclipse.ecf.discovery.IServiceEvent)
+		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
 		 */
-		public void serviceAdded(IServiceEvent event) {
-			final IServiceInfo svcInfo = event.getServiceInfo();
+		public void serviceDiscovered(IServiceEvent anEvent) {
+			final IServiceInfo svcInfo = anEvent.getServiceInfo();
 			if (hasRequiredProperties(svcInfo.getServiceProperties()))
-				serviceListener.serviceAdded(event);
+				serviceListener.serviceDiscovered(anEvent);
 		}
 
 		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceRemoved(org.eclipse.ecf.discovery.IServiceEvent)
+		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceUndiscovered(org.eclipse.ecf.discovery.IServiceEvent)
 		 */
-		public void serviceRemoved(IServiceEvent event) {
-			final IServiceInfo svcInfo = event.getServiceInfo();
+		public void serviceUndiscovered(IServiceEvent anEvent) {
+			final IServiceInfo svcInfo = anEvent.getServiceInfo();
 			if (hasRequiredProperties(svcInfo.getServiceProperties()))
-				serviceListener.serviceRemoved(event);
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.ecf.discovery.IServiceListener#serviceResolved(org.eclipse.ecf.discovery.IServiceEvent)
-		 */
-		public void serviceResolved(IServiceEvent event) {
-			final IServiceInfo svcInfo = event.getServiceInfo();
-			if (hasRequiredProperties(svcInfo.getServiceProperties()))
-				serviceListener.serviceResolved(event);
+				serviceListener.serviceUndiscovered(anEvent);
 		}
 	}
 
@@ -100,13 +91,12 @@ public class ServiceTypeListener implements IServiceTypeListener {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceTypeListener#serviceTypeAdded(org.eclipse.ecf.discovery.IServiceEvent)
+	 * @see org.eclipse.ecf.discovery.IServiceTypeListener#serviceTypeAdded(org.eclipse.ecf.discovery.IServiceTypeEvent)
 	 */
-	public final void serviceTypeAdded(IServiceEvent event) {
-		final IServiceTypeID remoteServiceTypeID = event.getServiceInfo().getServiceID().getServiceTypeID();
+	public final void serviceTypeAdded(IServiceTypeEvent event) {
+		final IServiceTypeID remoteServiceTypeID = event.getServiceTypeID();
 		if (hasRequiredTypeID(remoteServiceTypeID)) {
 			this.discovery.addServiceListener(remoteServiceTypeID, serviceListener);
-			this.discovery.registerServiceType(remoteServiceTypeID);
 		}
 	}
 
@@ -126,5 +116,15 @@ public class ServiceTypeListener implements IServiceTypeListener {
 			if (serviceProperties.getProperty(requiredProperties[i]) == null)
 				return false;
 		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceTypeListener#serviceTypeDiscovered(org.eclipse.ecf.discovery.IServiceEvent)
+	 */
+	public void serviceTypeDiscovered(IServiceTypeEvent event) {
+		final IServiceTypeID remoteServiceTypeID = event.getServiceTypeID();
+		if (hasRequiredTypeID(remoteServiceTypeID)) {
+			this.discovery.addServiceListener(remoteServiceTypeID, serviceListener);
+		}
 	}
 }
