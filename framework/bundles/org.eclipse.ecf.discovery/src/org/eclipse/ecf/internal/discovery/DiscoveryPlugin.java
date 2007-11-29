@@ -16,6 +16,9 @@ import org.osgi.framework.BundleContext;
  * The main plugin class to be used in the desktop.
  */
 public class DiscoveryPlugin implements BundleActivator {
+
+	public static final String PLUGIN_ID = "org.eclipse.ecf.discovery"; //$NON-NLS-1$
+
 	// The shared instance.
 	private static DiscoveryPlugin plugin;
 
@@ -33,6 +36,7 @@ public class DiscoveryPlugin implements BundleActivator {
 	 * @throws Exception 
 	 */
 	public void start(BundleContext context) throws Exception {
+		// nothing to do
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2004 Composent, Inc. and others.
+ * Copyright (c) 2007 Composent, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,25 +9,19 @@
  *    Composent, Inc. - initial API and implementation
  *****************************************************************************/
 
-package org.eclipse.ecf.discovery.identity;
+package org.eclipse.ecf.discovery;
 
-import org.eclipse.ecf.core.identity.ID;
+import org.eclipse.ecf.core.events.IContainerEvent;
+import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 
 /**
- * Service identity contract.
+ * Service type discovery event that provides access to service type
  */
-public interface IServiceID extends ID {
+public interface IServiceTypeEvent extends IContainerEvent {
 
 	/**
-	 * Get service type ID for this ID.
-	 * @return IServiceTypeID.  Will not be <code>null</code>.
+	 * Get service type id for this service type event.
+	 * @return IServiceTypeID for this service type event.  Will not be <code>null</code>.
 	 */
 	public IServiceTypeID getServiceTypeID();
-
-	/**
-	 * Get service name for this ID.  
-	 * 
-	 * @return String service name.  May be <code>null</code>.
-	 */
-	public String getServiceName();
 }

@@ -10,40 +10,42 @@
  ******************************************************************************/
 package org.eclipse.ecf.discovery;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ecf.core.AbstractContainer;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.ID;
-import org.eclipse.ecf.core.identity.IDFactory;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.util.Trace;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
+import org.eclipse.ecf.internal.discovery.DiscoveryDebugOption;
+import org.eclipse.ecf.internal.discovery.DiscoveryPlugin;
 
 public abstract class AbstractDiscoveryContainerAdapter extends AbstractContainer implements IDiscoveryContainerAdapter, IContainer {
 
-	protected final String servicesNamespaceName;
+	/**
+	 * Collection of service listeners i.e. Collection<IServiceListener>.
+	 * NOTE: Access to this collection is synchronized, so subclasses should take this into account.
+	 */
+	protected final Set allServiceListeners;
 
-	protected final DiscoveryContainerConfig config;
+	private DiscoveryContainerConfig config;
 
 	/**
 	 * Map of service type to collection of service listeners i.e. <String,Collection<IServiceListener>>.
 	 * NOTE: Access to this map is synchronized, so subclasses should take this into account.
 	 */
 	protected final Map serviceListeners;
+	protected final String servicesNamespaceName;
 	/**
 	 * Collection of service type listeners i.e. Collection<IServiceTypeListener>.
 	 * NOTE: Access to this collection is synchronized, so subclasses should take this into account.
 	 */
 	protected final Collection serviceTypeListeners;
 
+	/**
+	 * @param aNamespaceName
+	 * @param aConfig
+	 */
 	public AbstractDiscoveryContainerAdapter(String aNamespaceName, DiscoveryContainerConfig aConfig) {
 		servicesNamespaceName = aNamespaceName;
 		Assert.isNotNull(servicesNamespaceName);
@@ -51,66 +53,121 @@ public abstract class AbstractDiscoveryContainerAdapter extends AbstractContaine
 		Assert.isNotNull(config);
 		serviceTypeListeners = Collections.synchronizedSet(new HashSet());
 		serviceListeners = Collections.synchronizedMap(new HashMap());
+		allServiceListeners = Collections.synchronizedSet(new HashSet());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener(org.eclipse.ecf.discovery.IServiceListener)
+	 */
+	public void addServiceListener(IServiceListener aListener) {
+		Assert.isNotNull(aListener);
+		allServiceListeners.add(aListener);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)
+	 */
+	public void addServiceListener(IServiceTypeID aType, IServiceListener aListener) {
+		Assert.isNotNull(aListener);
+		Assert.isNotNull(aType);
+		synchronized (serviceListeners) { // put-if-absent idiom race condition
+			Collection v = (Collection) serviceListeners.get(aType);
+			if (v == null) {
+				v = Collections.synchronizedSet(new HashSet());
+				serviceListeners.put(aType, v);
+			}
+			v.add(aListener);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)
+	 */
+	public void addServiceTypeListener(IServiceTypeListener aListener) {
+		Assert.isNotNull(aListener);
+		serviceTypeListeners.add(aListener);
+	}
+
+	protected void clearListeners() {
+		serviceListeners.clear();
+		serviceTypeListeners.clear();
+		allServiceListeners.clear();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.AbstractContainer#dispose()
+	 */
+	public void dispose() {
+		disconnect();
+		clearListeners();
+		config = null;
+		super.dispose();
+	}
+
+	/**
+	 * Calls {@link IServiceListener#serviceDiscovered(IServiceEvent)} for all registered {@link IServiceListener}
+	 * @param aServiceEvent The {@link IServiceEvent} to send along the call
+	 */
+	protected void fireServiceDiscovered(IServiceEvent aServiceEvent) {
+		Assert.isNotNull(aServiceEvent);
+		final Collection listeners = getListeners(aServiceEvent.getServiceInfo().getServiceID().getServiceTypeID());
+		if (listeners != null) {
+			for (final Iterator i = listeners.iterator(); i.hasNext();) {
+				final IServiceListener l = (IServiceListener) i.next();
+				l.serviceDiscovered(aServiceEvent);
+				Trace.trace(DiscoveryPlugin.PLUGIN_ID, DiscoveryDebugOption.METHODS_TRACING, this.getClass(), "fireServiceDiscovered", aServiceEvent.toString()); //$NON-NLS-1$
+			}
+		}
+	}
+
+	/**
+	 * Calls {@link IServiceTypeListener#serviceTypeDiscovered(IServiceTypeEvent)} for all registered {@link IServiceTypeListener}
+	 * @param aServiceTypeEvent The {@link IServiceTypeEvent} to send along the call
+	 */
+	protected void fireServiceTypeDiscovered(IServiceTypeEvent aServiceTypeEvent) {
+		Assert.isNotNull(aServiceTypeEvent);
+		List notify = null;
+		synchronized (serviceTypeListeners) {
+			notify = new ArrayList(serviceTypeListeners);
+		}
+		for (final Iterator i = notify.iterator(); i.hasNext();) {
+			final IServiceTypeListener l = (IServiceTypeListener) i.next();
+			l.serviceTypeDiscovered(aServiceTypeEvent);
+			Trace.trace(DiscoveryPlugin.PLUGIN_ID, DiscoveryDebugOption.METHODS_TRACING, this.getClass(), "fireServiceTypeDiscovered", aServiceTypeEvent.toString()); //$NON-NLS-1$
+		}
+	}
+
+	/**
+	 * Calls {@link IServiceListener#serviceUndiscovered(IServiceEvent)} for all registered {@link IServiceListener}
+	 * @param aServiceEvent The {@link IServiceEvent} to send along the call
+	 */
+	protected void fireServiceUndiscovered(IServiceEvent aServiceEvent) {
+		Assert.isNotNull(aServiceEvent);
+		final Collection listeners = getListeners(aServiceEvent.getServiceInfo().getServiceID().getServiceTypeID());
+		if (listeners != null) {
+			for (final Iterator i = listeners.iterator(); i.hasNext();) {
+				final IServiceListener l = (IServiceListener) i.next();
+				l.serviceUndiscovered(aServiceEvent);
+				Trace.trace(DiscoveryPlugin.PLUGIN_ID, DiscoveryDebugOption.METHODS_TRACING, this.getClass(), "fireServiceUndiscovered", aServiceEvent.toString()); //$NON-NLS-1$
+			}
+		}
+	}
+
+	/**
+	 * @return The {@link DiscoveryContainerConfig} of this {@link IDiscoveryContainerAdapter}
+	 */
 	protected DiscoveryContainerConfig getConfig() {
 		return config;
 	}
 
-	/**
-	 * @deprecated
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener(java.lang.String,
-	 *      org.eclipse.ecf.discovery.IServiceListener)
-	 */
-	public void addServiceListener(String type, IServiceListener listener) {
-		if (type == null || listener == null) {
-			return;
-		}
-		synchronized (serviceListeners) { // put-if-absent idiom race condition
-			Collection v = (Collection) serviceListeners.get(type);
-			if (v == null) {
-				v = Collections.synchronizedSet(new HashSet());
-				serviceListeners.put(type, v);
-			}
-			v.add(listener);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)
-	 */
-	public void addServiceTypeListener(IServiceTypeListener listener) {
-		if (listener == null)
-			return;
-		synchronized (serviceTypeListeners) {
-			serviceTypeListeners.add(listener);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.core.IContainer#dispose()
-	 */
-	public void dispose() {
-		disconnect();
-		super.dispose();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.IContainer#getConnectNamespace()
 	 */
 	public Namespace getConnectNamespace() {
 		return IDFactory.getDefault().getNamespaceByName(servicesNamespaceName);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.identity.IIdentifiable#getID()
 	 */
 	public ID getID() {
@@ -120,57 +177,27 @@ public abstract class AbstractDiscoveryContainerAdapter extends AbstractContaine
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)
-	 */
-	public void removeServiceListener(IServiceTypeID type, IServiceListener listener) {
-		removeServiceListener(type.getName(), listener);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#addServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)
-	 */
-	public void addServiceListener(IServiceTypeID type, IServiceListener listener) {
-		addServiceListener(type.getName(), listener);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)
-	 */
-	public void removeServiceTypeListener(IServiceTypeListener listener) {
-		if (listener == null)
-			return;
-		synchronized (serviceTypeListeners) {
-			serviceTypeListeners.remove(listener);
-		}
-	}
+	// merges the allServiceListener with the serviceListeners for the given type
 
 	/**
-	 * @deprecated
-	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceListener(java.lang.String,
-	 *      org.eclipse.ecf.discovery.IServiceListener)
+	 * Joins the {@link Collection} of {@link IServiceListener}s interested in any {@link IServiceTypeID} with
+	 * the {@link Collection} of the {@link IServiceListener} registered for the given {@link IServiceTypeID}
+	 * @param aServiceType The {@link IServiceTypeID} for which the {@link IServiceListener}s are returned
+	 * @return All {@link IServiceListener}s interested in the given {@link IServiceTypeID}
 	 */
-	public void removeServiceListener(String type, IServiceListener listener) {
-		if (type == null || listener == null) {
-			return;
-		}
+	protected Collection getListeners(IServiceTypeID aServiceType) {
+		Assert.isNotNull(aServiceType);
+		Collection listeners = new HashSet();
 		synchronized (serviceListeners) {
-			final Collection v = (Collection) serviceListeners.get(type);
-			if (v != null) {
-				v.remove(listener);
+			Collection collection = (Collection) serviceListeners.get(aServiceType);
+			if (collection != null) {
+				listeners.addAll(collection);
 			}
 		}
-	}
-
-	protected void clearListeners() {
-		synchronized (serviceListeners) {
-			serviceListeners.clear();
+		synchronized (allServiceListeners) {
+			listeners.addAll(allServiceListeners);
 		}
-		synchronized (serviceTypeListeners) {
-			serviceTypeListeners.clear();
-		}
+		return Collections.unmodifiableCollection(listeners);
 	}
 
 	/* (non-Javadoc)
@@ -180,65 +207,33 @@ public abstract class AbstractDiscoveryContainerAdapter extends AbstractContaine
 		return IDFactory.getDefault().getNamespaceByName(servicesNamespaceName);
 	}
 
-	protected void fireServiceTypeAdded(IServiceEvent serviceEvent) {
-		if (serviceEvent == null)
-			return;
-		List notify = null;
-		synchronized (serviceTypeListeners) {
-			notify = new ArrayList(serviceTypeListeners);
-		}
-		for (final Iterator i = notify.iterator(); i.hasNext();) {
-			final IServiceTypeListener l = (IServiceTypeListener) i.next();
-			l.serviceTypeAdded(serviceEvent);
-		}
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceListener(org.eclipse.ecf.discovery.IServiceListener)
+	 */
+	public void removeServiceListener(IServiceListener aListener) {
+		Assert.isNotNull(aListener);
+		allServiceListeners.remove(aListener);
 	}
 
-	protected void fireServiceAdded(IServiceEvent serviceEvent) {
-		if (serviceEvent == null)
-			return;
-		Collection notify = null;
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceListener(org.eclipse.ecf.discovery.identity.IServiceTypeID, org.eclipse.ecf.discovery.IServiceListener)
+	 */
+	public void removeServiceListener(IServiceTypeID aType, IServiceListener aListener) {
+		Assert.isNotNull(aListener);
+		Assert.isNotNull(aType);
 		synchronized (serviceListeners) {
-			final Collection orig = (Collection) serviceListeners.get(serviceEvent.getServiceInfo().getServiceID().getServiceTypeID().getName());
-			if (orig != null)
-				notify = new ArrayList(orig);
-		}
-		if (notify != null) {
-			for (final Iterator i = notify.iterator(); i.hasNext();) {
-				final IServiceListener l = (IServiceListener) i.next();
-				l.serviceAdded(serviceEvent);
+			final Collection v = (Collection) serviceListeners.get(aType);
+			if (v != null) {
+				v.remove(aListener);
 			}
 		}
 	}
 
-	protected void fireServiceRemoved(IServiceEvent serviceEvent) {
-		Collection notify = null;
-		synchronized (serviceListeners) {
-			final Collection orig = (Collection) serviceListeners.get(serviceEvent.getServiceInfo().getServiceID().getServiceTypeID().getName());
-			if (orig != null)
-				notify = new ArrayList(orig);
-		}
-		if (notify != null) {
-			for (final Iterator i = notify.iterator(); i.hasNext();) {
-				final IServiceListener l = (IServiceListener) i.next();
-				l.serviceRemoved(serviceEvent);
-			}
-		}
-	}
-
-	protected void fireServiceResolved(IServiceEvent serviceEvent) {
-		if (serviceEvent == null)
-			return;
-		Collection notify = null;
-		synchronized (serviceListeners) {
-			final Collection orig = (Collection) serviceListeners.get(serviceEvent.getServiceInfo().getServiceID().getServiceTypeID().getName());
-			if (orig != null)
-				notify = new ArrayList(orig);
-		}
-		if (notify != null) {
-			for (final Iterator i = notify.iterator(); i.hasNext();) {
-				final IServiceListener l = (IServiceListener) i.next();
-				l.serviceResolved(serviceEvent);
-			}
-		}
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IDiscoveryContainerAdapter#removeServiceTypeListener(org.eclipse.ecf.discovery.IServiceTypeListener)
+	 */
+	public void removeServiceTypeListener(IServiceTypeListener aListener) {
+		Assert.isNotNull(aListener);
+		serviceTypeListeners.remove(aListener);
 	}
 }

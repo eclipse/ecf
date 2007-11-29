@@ -35,8 +35,7 @@ public class ServiceID extends BaseID implements IServiceID {
 	protected String getFullyQualifiedName() {
 		if (name == null)
 			return type.getName();
-		else
-			return type.getName() + "@" + name;
+		return type.getName() + "@" + name; //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -47,9 +46,8 @@ public class ServiceID extends BaseID implements IServiceID {
 			final ServiceID other = (ServiceID) o;
 			final String typename = other.getFullyQualifiedName();
 			return getFullyQualifiedName().compareTo(typename);
-		} else {
-			return 1;
 		}
+		return 1;
 	}
 
 	/* (non-Javadoc)

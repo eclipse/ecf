@@ -36,25 +36,18 @@ package org.eclipse.ecf.discovery;
  * via I/O operations or blocking UI calls.
  */
 public interface IServiceListener {
-	/**
-	 * Notification that a service has been added.
-	 * 
-	 * @param event  Will not be <code>null</code>.
-	 */
-	public void serviceAdded(IServiceEvent event);
 
 	/**
-	 * Notification that a service has been removed.
+	 * Notification that a service has been discovered (the service is fully resolved).
 	 * 
-	 * @param event  Will not be <code>null</code>.
+	 * @param anEvent Will not be <code>null</code>
 	 */
-	public void serviceRemoved(IServiceEvent event);
+	public void serviceDiscovered(IServiceEvent anEvent);
 
 	/**
-	 * Notification that a service has been resolved (that complete service info
-	 * is now available).
+	 * Notification that a previously discovered service has been undiscovered.
 	 * 
-	 * @param event  Will not be <code>null</code>.
+	 * @param anEvent Will not be <code>null</code>
 	 */
-	public void serviceResolved(IServiceEvent event);
+	public void serviceUndiscovered(IServiceEvent anEvent);
 }

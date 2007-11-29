@@ -19,5 +19,6 @@ import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
  * service clients.
  */
 public interface IDiscoveryService extends IDiscoveryContainerAdapter {
+	// All methods provided by superclass
 
 }

@@ -10,6 +10,7 @@
 package org.eclipse.ecf.discovery;
 
 import java.util.Enumeration;
+import java.util.Properties;
 
 public interface IServiceProperties {
 	/**
@@ -95,4 +96,8 @@ public interface IServiceProperties {
 	 */
 	public Object setProperty(String name, Object value);
 
+	/**
+	 * @return A copy of this {@link IServiceProperties} as a {@link Properties}
+	 */
+	public Properties asProperties();
 }

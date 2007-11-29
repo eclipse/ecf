@@ -35,10 +35,11 @@ package org.eclipse.ecf.discovery;
  * via I/O operations or blocking UI calls.
  */
 public interface IServiceTypeListener {
+
 	/**
-	 * Notification that a service type has been added
+	 * Notification that a service type has been discovered
 	 * 
 	 * @param event  Must not be <code>null</code>.
 	 */
-	public void serviceTypeAdded(IServiceEvent event);
+	public void serviceTypeDiscovered(IServiceTypeEvent event);
 }

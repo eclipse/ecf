@@ -9,23 +9,22 @@
 
 package org.eclipse.ecf.discovery;
 
-import java.net.InetAddress;
-
+import java.net.URI;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
 /**
- * Service information contrace. Defines the information associated with a
+ * Service information contract. Defines the information associated with a
  * remotely discoverable service
  * 
  */
 public interface IServiceInfo {
 	/**
-	 * Get InetAddress for service
+	 * Get URI for service
 	 * 
-	 * @return InetAddress the address for the service. May be <code>null</code> if address
+	 * @return {@link java.net.URI} the location for the service. May be <code>null</code> if location
 	 *         is not known.
 	 */
-	public InetAddress getAddress();
+	public URI getLocation();
 
 	/**
 	 * Get ServiceID for service.
@@ -33,13 +32,6 @@ public interface IServiceInfo {
 	 * @return ServiceID the serviceID for the service. Will not be <code>null</code>.
 	 */
 	public IServiceID getServiceID();
-
-	/**
-	 * The port for the service
-	 * 
-	 * @return port
-	 */
-	public int getPort();
 
 	/**
 	 * The priority for the service
@@ -62,13 +54,4 @@ public interface IServiceInfo {
 	 * @return Map the properties associated with this service.  Will not be <code>null</code>.
 	 */
 	public IServiceProperties getServiceProperties();
-
-	/**
-	 * Returns true if this service info has been resolved by the service
-	 * publisher, false if not.
-	 * 
-	 * @return true if this instance has been resolved, false if not
-	 */
-	public boolean isResolved();
-
 }

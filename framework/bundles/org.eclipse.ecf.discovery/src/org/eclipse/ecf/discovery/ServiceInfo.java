@@ -10,8 +10,7 @@
 package org.eclipse.ecf.discovery;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-
+import java.net.URI;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 
 /**
@@ -22,14 +21,12 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 
 	private static final long serialVersionUID = -5651115550295457142L;
 
-	public static final int DEFAULT_PRIORITY = -1;
-	public static final int DEFAULT_WEIGHT = -1;
+	public static final int DEFAULT_PRIORITY = 0;
+	public static final int DEFAULT_WEIGHT = 0;
 
-	protected InetAddress addr = null;
+	protected URI uri = null;
 
 	protected IServiceID serviceID;
-
-	protected int port;
 
 	protected int priority;
 
@@ -37,32 +34,35 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 
 	protected IServiceProperties properties;
 
-	public ServiceInfo(InetAddress address, IServiceID serviceID, int port, int priority, int weight, IServiceProperties props) {
-		this.addr = address;
+	public ServiceInfo() {
+		// null constructor for subclasses
+	}
+
+	public ServiceInfo(URI anURI, IServiceID serviceID, int priority, int weight, IServiceProperties props) {
+		this.uri = anURI;
 		this.serviceID = serviceID;
-		this.port = port;
 		this.priority = priority;
 		this.weight = weight;
 		this.properties = props;
 	}
 
-	public ServiceInfo(InetAddress address, IServiceID serviceID, int port, IServiceProperties props) {
-		this(address, serviceID, port, DEFAULT_PRIORITY, DEFAULT_WEIGHT, props);
+	public ServiceInfo(URI anURI, IServiceID serviceID, IServiceProperties props) {
+		this(anURI, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, props);
 	}
 
-	public ServiceInfo(InetAddress address, IServiceID serviceID, int port) {
-		this(address, serviceID, port, DEFAULT_PRIORITY, DEFAULT_WEIGHT, new ServiceProperties());
+	public ServiceInfo(URI anURI, IServiceID serviceID) {
+		this(anURI, serviceID, DEFAULT_PRIORITY, DEFAULT_WEIGHT, new ServiceProperties());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.discovery.IServiceInfo#getAddress()
 	 */
-	public InetAddress getAddress() {
-		return addr;
+	public URI getLocation() {
+		return uri;
 	}
 
-	protected void setAddress(InetAddress address) {
-		this.addr = address;
+	protected void setLocation(URI address) {
+		this.uri = address;
 	}
 
 	/* (non-Javadoc)
@@ -70,13 +70,6 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	 */
 	public IServiceID getServiceID() {
 		return serviceID;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ecf.discovery.IServiceInfo#getPort()
-	 */
-	public int getPort() {
-		return port;
 	}
 
 	/* (non-Javadoc)
@@ -104,7 +97,7 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	 * @see org.eclipse.ecf.discovery.IServiceInfo#isResolved()
 	 */
 	public boolean isResolved() {
-		return (addr != null);
+		return (uri != null);
 	}
 
 	/* (non-Javadoc)
@@ -112,8 +105,8 @@ public class ServiceInfo implements IServiceInfo, Serializable {
 	 */
 	public String toString() {
 		final StringBuffer buf = new StringBuffer("ServiceInfo["); //$NON-NLS-1$
-		buf.append("addr=").append(addr).append(";id=").append(serviceID) //$NON-NLS-1$ //$NON-NLS-2$
-				.append(";port=").append(port).append(";priority=").append( //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("uri=").append(uri).append(";id=").append(serviceID) //$NON-NLS-1$ //$NON-NLS-2$
+				.append(";priority=").append( //$NON-NLS-1$
 						priority).append(";weight=").append(weight).append( //$NON-NLS-1$
 						";props=").append(properties).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
 		return buf.toString();

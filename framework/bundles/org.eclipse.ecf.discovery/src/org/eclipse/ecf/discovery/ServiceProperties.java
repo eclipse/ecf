@@ -93,4 +93,11 @@ public class ServiceProperties implements IServiceProperties {
 	public Object setPropertyString(String name, String value) {
 		return props.put(name, value);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.discovery.IServiceProperties#asProperties()
+	 */
+	public Properties asProperties() {
+		return new Properties(props);
+	}
 }

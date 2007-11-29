@@ -11,9 +11,12 @@
 
 package org.eclipse.ecf.discovery.identity;
 
+import java.util.Arrays;
+import java.util.List;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.ecf.core.identity.BaseID;
-import org.eclipse.ecf.core.identity.Namespace;
+import org.eclipse.ecf.core.identity.*;
+import org.eclipse.ecf.core.util.StringUtils;
+import org.eclipse.ecf.internal.discovery.Messages;
 
 /**
  * ServiceTypeID base class.
@@ -50,6 +53,39 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 		Assert.isNotNull(typeName);
 	}
 
+	protected ServiceTypeID(Namespace ns, IServiceTypeID id) {
+		this(ns, id.getServices(), id.getScopes(), id.getProtocols(), id.getNamingAuthority());
+	}
+
+	public ServiceTypeID(String aType) throws IDCreateException {
+		if (aType == null)
+			throw new IDCreateException(Messages.ServiceTypeID_EXCEPTION_SERVICE_TYPE_ID_NOT_NULL);
+		try {
+			// remove the leading _
+			String type = aType.substring(1);
+
+			String[] split = StringUtils.split(type, "_"); //$NON-NLS-1$
+			// naming authority
+			int offset = split.length - 1;
+			this.namingAuthority = split[offset];
+
+			// protocol and scope
+			String string = split[--offset];
+			String[] protoAndScope = StringUtils.split(string, ".", string.indexOf(".") - 1); //$NON-NLS-1$ //$NON-NLS-2$
+			this.protocols = new String[] {protoAndScope[0]};
+			this.scopes = new String[] {protoAndScope[1]};
+
+			// services are the remaining strings in the array
+			List subList = Arrays.asList(split).subList(0, offset);
+			this.services = (String[]) subList.toArray(new String[0]);
+
+			createType();
+		} catch (Exception e) {
+			throw new IDCreateException(Messages.ServiceTypeID_EXCEPTION_SERVICE_TYPE_ID_NOT_PARSEABLE, e);
+		}
+		Assert.isTrue(aType.equals(typeName));
+	}
+
 	protected void createType() {
 		final StringBuffer buf = new StringBuffer();
 		//services
@@ -61,7 +97,11 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 		//protocols
 		for (int i = 0; i < protocols.length; i++) {
 			buf.append(protocols[i]);
-			buf.append(DELIM);
+			if (i != protocols.length - 1) {
+				buf.append(DELIM);
+			} else {
+				buf.append("."); //$NON-NLS-1$
+			}
 		}
 		//scope
 		for (int i = 0; i < scopes.length; i++) {
@@ -72,6 +112,13 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 		buf.append(namingAuthority);
 
 		typeName = buf.toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.BaseID#getName()
+	 */
+	public String getName() {
+		return typeName;
 	}
 
 	/* (non-Javadoc)
@@ -119,8 +166,8 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		final StringBuffer buf = new StringBuffer("ServiceTypeID[");
-		buf.append("typeName=").append(typeName).append("]");
+		final StringBuffer buf = new StringBuffer("ServiceTypeID["); //$NON-NLS-1$
+		buf.append("typeName=").append(typeName).append("]"); //$NON-NLS-1$//$NON-NLS-2$
 		return buf.toString();
 	}
 
@@ -163,6 +210,13 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 		}
 		final IServiceTypeID stid = (ServiceTypeID) o;
 		return stid.getName().equals(getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ecf.core.identity.BaseID#hashCode()
+	 */
+	public int hashCode() {
+		return getName().hashCode();
 	}
 
 	/* (non-Javadoc)
