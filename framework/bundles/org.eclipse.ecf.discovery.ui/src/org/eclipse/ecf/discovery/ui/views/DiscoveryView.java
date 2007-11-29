@@ -10,7 +10,6 @@
  *****************************************************************************/
 package org.eclipse.ecf.discovery.ui.views;
 
-import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -18,12 +17,10 @@ import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.IContainer;
-import org.eclipse.ecf.core.identity.IDCreateException;
 import org.eclipse.ecf.discovery.IDiscoveryContainerAdapter;
 import org.eclipse.ecf.discovery.IServiceInfo;
 import org.eclipse.ecf.discovery.IServiceProperties;
 import org.eclipse.ecf.discovery.identity.IServiceID;
-import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
 import org.eclipse.ecf.internal.discovery.ui.Messages;
 import org.eclipse.ecf.ui.SharedImages;
 import org.eclipse.jface.action.Action;
@@ -65,7 +62,6 @@ public class DiscoveryView extends ViewPart {
 	private TreeViewer viewer;
 
 	private Action requestServiceInfoAction;
-	private Action registerServiceTypeAction;
 	private Action connectToAction;
 	private Action disconnectContainerAction;
 	private Action connectContainerAction;
@@ -319,15 +315,13 @@ public class DiscoveryView extends ViewPart {
 				root.addChild(typenode);
 			}
 			final TreeParent newEntry = new TreeParent(svcID, svcID.getServiceName(), serviceInfo);
-			final InetAddress addr = serviceInfo.getAddress();
-			if (addr != null) {
-				final TreeObject toaddr = new TreeObject(NLS.bind(Messages.DiscoveryView_AddressLabel, addr.getHostAddress()));
+			final URI uri = serviceInfo.getLocation();
+			if (uri != null) {
+				final TreeObject toaddr = new TreeObject(NLS.bind(Messages.DiscoveryView_AddressLabel, uri));
 				newEntry.addChild(toaddr);
 			}
 			final TreeObject typeo = new TreeObject(NLS.bind(Messages.DiscoveryView_TypeLabel, svcID.getServiceTypeID().getName()));
 			newEntry.addChild(typeo);
-			final TreeObject porto = new TreeObject(NLS.bind(Messages.DiscoveryView_PortLabel, Integer.toString(serviceInfo.getPort())));
-			newEntry.addChild(porto);
 			final TreeObject prioo = new TreeObject(NLS.bind(Messages.DiscoveryView_PriorityLabel, Integer.toString(serviceInfo.getPriority())));
 			newEntry.addChild(prioo);
 			final TreeObject weighto = new TreeObject(NLS.bind(Messages.DiscoveryView_WeightLabel, Integer.toString(serviceInfo.getWeight())));
@@ -516,6 +510,7 @@ public class DiscoveryView extends ViewPart {
 	 * 
 	 */
 	private void makeActions() {
+		/*
 		requestServiceInfoAction = new Action() {
 			public void run() {
 				final TreeObject treeObject = getSelectedTreeObject();
@@ -524,7 +519,7 @@ public class DiscoveryView extends ViewPart {
 					final IServiceID targetID = p.getID();
 					final IDiscoveryContainerAdapter dcontainer = getDiscoveryContainer();
 					if (dcontainer != null) {
-						dcontainer.requestServiceInfo(targetID, SERVICE_INFO_TIMEOUT);
+						dcontainer.getServiceInfo(targetID);
 					}
 				}
 			}
@@ -532,7 +527,8 @@ public class DiscoveryView extends ViewPart {
 		requestServiceInfoAction.setText(Messages.DiscoveryView_RequestInfo);
 		requestServiceInfoAction.setToolTipText(Messages.DiscoveryView_RequestInfoTooltip);
 		requestServiceInfoAction.setEnabled(true);
-
+		*/
+		/*
 		registerServiceTypeAction = new Action() {
 			public void run() {
 				final TreeObject treeObject = getSelectedTreeObject();
@@ -554,7 +550,7 @@ public class DiscoveryView extends ViewPart {
 		registerServiceTypeAction.setText(Messages.DiscoveryView_RegisterType);
 		registerServiceTypeAction.setToolTipText(Messages.DiscoveryView_RegisterTypeTooltip);
 		registerServiceTypeAction.setEnabled(true);
-
+		*/
 		connectToAction = new Action() {
 			public void run() {
 				final TreeObject treeObject = getSelectedTreeObject();
@@ -637,7 +633,7 @@ public class DiscoveryView extends ViewPart {
 					manager.add(requestServiceInfoAction);
 					requestServiceInfoAction.setEnabled(true);
 					if (svcInfo != null) {
-						if (svcInfo.isResolved() && isSupportedServiceType(svcID.getServiceTypeID().getName())) {
+						if (isSupportedServiceType(svcID.getServiceTypeID().getName())) {
 							try {
 								// try to create a URI to see if the format is
 								// correct before we enable the action
@@ -718,7 +714,7 @@ public class DiscoveryView extends ViewPart {
 					final TreeParent tp = (TreeParent) treeObject;
 					if (tp.getID() != null) {
 						final IServiceInfo info = tp.getServiceInfo();
-						if (info != null && info.isResolved()) {
+						if (info != null) {
 							connectToAction.run();
 						} else {
 							requestServiceInfoAction.run();
