@@ -21,7 +21,6 @@ import org.eclipse.ecf.core.identity.Namespace;
 import org.eclipse.ecf.discovery.identity.IServiceID;
 import org.eclipse.ecf.discovery.identity.IServiceTypeID;
 import org.eclipse.ecf.discovery.identity.ServiceIDFactory;
-import org.eclipse.ecf.discovery.identity.ServiceTypeID;
 import org.eclipse.ecf.tests.discovery.ITestConstants;
 
 public abstract class ServiceIDTest extends TestCase {
@@ -125,7 +124,8 @@ public abstract class ServiceIDTest extends TestCase {
 	 * use case: conversion from one IServiceTypeID to another (provider A -> provider B)
 	 */
 	public void testServiceTypeIDWithServiceTypeID() throws IDCreateException {
-		final IServiceTypeID aServiceTypeID = new ServiceTypeID("_service._ecf._foo._bar._tcp.ecf.eclipse.org._IANA");
+		final Namespace ns = IDFactory.getDefault().getNamespaceByName(namespace);
+		final IServiceTypeID aServiceTypeID = ServiceIDFactory.getDefault().createServiceID(ns, "_service._ecf._foo._bar._tcp.ecf.eclipse.org._IANA").getServiceTypeID();
 		final IServiceID sid = createIDFromServiceTypeID(aServiceTypeID);
 		final IServiceTypeID stid = sid.getServiceTypeID();
 
