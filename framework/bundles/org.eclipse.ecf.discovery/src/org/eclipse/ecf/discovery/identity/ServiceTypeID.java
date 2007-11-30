@@ -57,33 +57,48 @@ public class ServiceTypeID extends BaseID implements IServiceTypeID {
 		this(ns, id.getServices(), id.getScopes(), id.getProtocols(), id.getNamingAuthority());
 	}
 
-	public ServiceTypeID(String aType) throws IDCreateException {
-		if (aType == null)
-			throw new IDCreateException(Messages.ServiceTypeID_EXCEPTION_SERVICE_TYPE_ID_NOT_NULL);
-		try {
-			// remove the leading _
-			String type = aType.substring(1);
+	public ServiceTypeID(Namespace namespace, String aType) throws IDCreateException {
+		this(namespace);
+		if (aType != null) {
+			try {
+				// sanitize (remove the leading _, dangling . or white spaces
+				aType = aType.trim();
+				if (aType.endsWith(".")) { //$NON-NLS-1$
+					aType = aType.substring(0, aType.length() - 1);
+				}
 
-			String[] split = StringUtils.split(type, "_"); //$NON-NLS-1$
-			// naming authority
-			int offset = split.length - 1;
-			this.namingAuthority = split[offset];
+				// attach naming authority to simplify parsing if not present
+				int lastDot = aType.lastIndexOf('.');
+				int lastUnderscore = aType.lastIndexOf('_');
+				if (lastDot + 1 != lastUnderscore) {
+					aType = aType + "._" + DEFAULT_NA; //$NON-NLS-1$
+				}
 
-			// protocol and scope
-			String string = split[--offset];
-			String[] protoAndScope = StringUtils.split(string, ".", string.indexOf(".") - 1); //$NON-NLS-1$ //$NON-NLS-2$
-			this.protocols = new String[] {protoAndScope[0]};
-			this.scopes = new String[] {protoAndScope[1]};
+				String type = aType.substring(1);
 
-			// services are the remaining strings in the array
-			List subList = Arrays.asList(split).subList(0, offset);
-			this.services = (String[]) subList.toArray(new String[0]);
+				String[] split = StringUtils.split(type, "._"); //$NON-NLS-1$
+				// naming authority
+				int offset = split.length - 1;
+				this.namingAuthority = split[offset];
 
-			createType();
-		} catch (Exception e) {
-			throw new IDCreateException(Messages.ServiceTypeID_EXCEPTION_SERVICE_TYPE_ID_NOT_PARSEABLE, e);
+				// protocol and scope
+				String string = split[--offset];
+				String[] protoAndScope = StringUtils.split(string, ".", string.indexOf(".") - 1); //$NON-NLS-1$ //$NON-NLS-2$
+				this.protocols = new String[] {protoAndScope[0]};
+				this.scopes = new String[] {protoAndScope[1]};
+
+				// services are the remaining strings in the array
+				List subList = Arrays.asList(split).subList(0, offset);
+				this.services = (String[]) subList.toArray(new String[0]);
+
+				createType();
+				Assert.isTrue(aType.equals(typeName));
+			} catch (Exception e) {
+				throw new IDCreateException(Messages.ServiceTypeID_EXCEPTION_SERVICE_TYPE_ID_NOT_PARSEABLE, e);
+			}
+		} else {
+			throw new IDCreateException(Messages.ServiceTypeID_EXCEPTION_SERVICE_TYPE_ID_NOT_PARSEABLE);
 		}
-		Assert.isTrue(aType.equals(typeName));
 	}
 
 	protected void createType() {
