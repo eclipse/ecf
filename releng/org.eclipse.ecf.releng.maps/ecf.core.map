@@ -18,6 +18,7 @@ plugin@org.eclipse.ecf.presence.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/
 plugin@org.eclipse.ecf.presence.collab.ui=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.presence.collab.ui
 plugin@org.eclipse.ecf.provider=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider
 plugin@org.eclipse.ecf.provider.datashare=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.datashare
+plugin@org.eclipse.ecf.provider.discovery=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.discovery
 plugin@org.eclipse.ecf.provider.filetransfer=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/plugins/org.eclipse.ecf.provider.filetransfer
 plugin@org.eclipse.ecf.provider.filetransfer.httpclient=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/org.eclipse.ecf.provider.filetransfer.httpclient
 plugin@org.eclipse.ecf.provider.filetransfer.efs=@CVSTag@,:pserver:anonymous@dev.eclipse.org:/cvsroot/technology,,org.eclipse.ecf/providers/org.eclipse.ecf.provider.filetransfer.efs
