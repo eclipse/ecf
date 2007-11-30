@@ -42,6 +42,9 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	boolean disposed = false;
 	Object lock = new Object();
 
+	SimpleFIFOQueue queue = null;
+	Thread notificationThread = null;
+
 	public JMDNSDiscoveryContainer(InetAddress addr) throws IDCreateException {
 		super(JMDNSNamespace.NAME, new DiscoveryContainerConfig(IDFactory.getDefault().createStringID(JMDNSDiscoveryContainer.class.getName() + ";" + addr.toString() + ";" + instanceCount++))); //$NON-NLS-1$  //$NON-NLS-2$
 		intf = addr;
@@ -78,6 +81,7 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 				throw new ContainerConnectException(Messages.JMDNSDiscoveryContainer_EXCEPTION_ALREADY_CONNECTED);
 			this.targetID = (targetID1 == null) ? getConfig().getID() : targetID1;
 			fireContainerEvent(new ContainerConnectingEvent(this.getID(), this.targetID, joinContext));
+			initializeQueue();
 			try {
 				this.jmdns = new JmDNS(intf);
 				jmdns.addServiceTypeListener(this);
@@ -92,6 +96,31 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 		}
 	}
 
+	private void initializeQueue() {
+		queue = new SimpleFIFOQueue();
+		notificationThread = new Thread(new Runnable() {
+			public void run() {
+				for (;;) {
+					if (Thread.currentThread().isInterrupted())
+						break;
+					Runnable runnable = (Runnable) queue.dequeue();
+					if (Thread.currentThread().isInterrupted() || runnable == null)
+						break;
+					try {
+						runnable.run();
+					} catch (Throwable t) {
+						handleRuntimeException(t);
+					}
+				}
+			}
+		}, "JMDNS Discovery Thread"); //$NON-NLS-1$
+		notificationThread.start();
+	}
+
+	protected void handleRuntimeException(Throwable t) {
+		// Nothing to do except log
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ecf.core.IContainer#disconnect()
 	 */
@@ -102,6 +131,9 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 				fireContainerEvent(new ContainerDisconnectingEvent(this.getID(), connectedID));
 				jmdns.close();
 				jmdns = null;
+				queue.close();
+				queue = null;
+				notificationThread = null;
 				this.targetID = null;
 				fireContainerEvent(new ContainerDisconnectedEvent(this.getID(), connectedID));
 			}
@@ -204,7 +236,12 @@ public class JMDNSDiscoveryContainer extends AbstractDiscoveryContainerAdapter i
 	/**************************** JMDNS listeners ***********************************/
 
 	private void runInThread(Runnable runnable) {
-		new Thread(runnable).start();
+		SimpleFIFOQueue localQueue = null;
+		synchronized (lock) {
+			localQueue = queue;
+		}
+		if (localQueue != null)
+			localQueue.enqueue(runnable);
 	}
 
 	/* (non-Javadoc)
