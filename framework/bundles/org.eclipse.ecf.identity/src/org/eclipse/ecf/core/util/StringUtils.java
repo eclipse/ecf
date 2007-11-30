@@ -231,6 +231,6 @@ public final class StringUtils {
 		final int index = string.indexOf(target);
 		if (index == -1)
 			return string;
-		return string.substring(0, index) + replace + replaceAll(string.substring(index + replace.length()), target, replace);
+		return string.substring(0, index) + replace + replaceAll(string.substring(index + target.length()), target, replace);
 	}
 }
