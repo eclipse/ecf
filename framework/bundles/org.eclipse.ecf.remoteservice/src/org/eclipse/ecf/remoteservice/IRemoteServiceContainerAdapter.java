@@ -12,7 +12,6 @@
 package org.eclipse.ecf.remoteservice;
 
 import java.util.Dictionary;
-
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ecf.core.identity.ID;
 import org.osgi.framework.Filter;
@@ -61,8 +60,7 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * @return IRemoteServiceRegistration the service registration. Will not
 	 *         return <code>null</code> .
 	 */
-	public IRemoteServiceRegistration registerRemoteService(String[] clazzes,
-			Object service, Dictionary properties);
+	public IRemoteServiceRegistration registerRemoteService(String[] clazzes, Object service, Dictionary properties);
 
 	/**
 	 * Returns an array of <code>IRemoteServiceReference</code> objects. The
@@ -107,9 +105,10 @@ public interface IRemoteServiceContainerAdapter extends IAdaptable {
 	 * @param filter
 	 *            The filter criteria. May be <code>null</code> .
 	 * @return IRemoteServiceReference [] the matching IRemoteServiceReferences
+	 * 
+	 * @throws InvalidSyntaxException If filter contains an invalid filter string that cannot be parsed.
 	 */
-	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter,
-			String clazz, String filter);
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException;
 
 	/**
 	 * Get remote service for given IRemoteServiceReference. Note that clients
