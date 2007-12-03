@@ -43,6 +43,7 @@ args[0] is http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/package-list
 <topic label="org.eclipse.ecf.provider.app" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/app/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.comm" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/comm/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.comm.tcp" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/comm/tcp/package-summary.html"/>
+<topic label="org.eclipse.ecf.provider.discovery" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/discovery/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.filetransfer.identity" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/filetransfer/identity/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.filetransfer.retrieve" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/filetransfer/retrieve/package-summary.html"/>
 <topic label="org.eclipse.ecf.provider.generic" href="http://www.eclipse.org/ecf/org.eclipse.ecf.docs/api/org/eclipse/ecf/provider/generic/package-summary.html"/>
