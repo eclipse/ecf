@@ -9,18 +9,13 @@
 package org.eclipse.ecf.provider.remoteservice.generic;
 
 import java.util.Dictionary;
-
 import org.eclipse.ecf.core.identity.ID;
 import org.eclipse.ecf.core.sharedobject.ISharedObjectContainerConfig;
 import org.eclipse.ecf.provider.generic.TCPClientSOContainer;
-import org.eclipse.ecf.remoteservice.IRemoteService;
-import org.eclipse.ecf.remoteservice.IRemoteServiceContainerAdapter;
-import org.eclipse.ecf.remoteservice.IRemoteServiceListener;
-import org.eclipse.ecf.remoteservice.IRemoteServiceReference;
-import org.eclipse.ecf.remoteservice.IRemoteServiceRegistration;
+import org.eclipse.ecf.remoteservice.*;
+import org.osgi.framework.InvalidSyntaxException;
 
-public class RemoteServiceContainer extends TCPClientSOContainer implements
-		IRemoteServiceContainerAdapter {
+public class RemoteServiceContainer extends TCPClientSOContainer implements IRemoteServiceContainerAdapter {
 
 	protected IRemoteServiceContainerAdapter registry;
 
@@ -46,13 +41,11 @@ public class RemoteServiceContainer extends TCPClientSOContainer implements
 		return registry.getRemoteService(ref);
 	}
 
-	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter,
-			String clazz, String filter) {
+	public IRemoteServiceReference[] getRemoteServiceReferences(ID[] idFilter, String clazz, String filter) throws InvalidSyntaxException {
 		return registry.getRemoteServiceReferences(idFilter, clazz, filter);
 	}
 
-	public IRemoteServiceRegistration registerRemoteService(String[] clazzes,
-			Object service, Dictionary properties) {
+	public IRemoteServiceRegistration registerRemoteService(String[] clazzes, Object service, Dictionary properties) {
 		return registry.registerRemoteService(clazzes, service, properties);
 	}
 
